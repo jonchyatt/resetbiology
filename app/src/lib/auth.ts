@@ -24,7 +24,7 @@ export const authOptions = {
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   callbacks: {
-    async jwt({ token, user, account, trigger }) {
+    async jwt({ token, user, account, trigger }: any) {
       if (user) {
         token.id = user.id
       }
@@ -63,7 +63,7 @@ export const authOptions = {
       
       return token
     },
-    async session({ session, token }) {
+    async session({ session, token }: any) {
       if (session?.user && token) {
         session.user.id = token.id as string
         session.user.accessLevel = token.accessLevel as string
@@ -81,7 +81,7 @@ export const authOptions = {
     error: '/auth/error',
   },
   events: {
-    async createUser({ user }) {
+    async createUser({ user }: any) {
       // Send welcome email or trigger onboarding flow
       console.log("New user created:", user.email)
     }
