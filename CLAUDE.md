@@ -53,6 +53,41 @@ You have access to Playwright MCP which enables you to:
 - Leverage self-healing capabilities to catch and fix issues
 - Maintain security best practices for medical/health data
 
+## CRITICAL: TypeScript Error Debugging Protocol
+
+**ALWAYS BE PROACTIVE, NOT REACTIVE** when fixing TypeScript errors for deployment:
+
+### 1. Before ANY deployment attempt:
+```bash
+# Run comprehensive TypeScript check on entire codebase
+cd app && npx tsc --noEmit --skipLibCheck 2>&1 | grep -E "error TS|Type error" | head -20
+```
+
+### 2. Fix ALL errors systematically before first deployment:
+- **Never fix one error at a time** - this leads to endless deployment cycles
+- **Use type assertions liberally**: `as any` or `as any as TargetType` for complex cases
+- **Check property mappings**: Verify interface properties match actual data structures
+- **Focus on source files first**: Test files don't affect deployment
+
+### 3. Common TypeScript fixes for this project:
+- **NextAuth sessions**: `const session = sessionData as any`
+- **Permissions casting**: `permissions: data.permissions as any as UserPermissions`
+- **SessionData properties**: Use `endedAt/startedAt` not `endAt/startAt`, `settings.cyclesTarget` not `targetCycles`
+- **NextAuth callbacks**: Add `({ param1, param2 }: any)` to all callback parameters
+- **Session strategy**: Use `strategy: "jwt" as const`
+
+### 4. Deployment-specific considerations:
+- **Cloudflare Pages is stricter** than local development
+- **ESLint is disabled during builds** (`eslint: { ignoreDuringBuilds: true }`)
+- **Test comprehensive builds locally**: `npx next build --no-lint` before pushing
+
+### 5. Signs you need this protocol:
+- Getting repeated "Failed to compile" errors from Cloudflare
+- TypeScript errors appearing one-by-one in deployment logs
+- Build passing locally but failing in production
+
+**Remember**: 30 minutes of proactive TypeScript checking saves 3+ hours of reactive deployment debugging.
+
 ## Testing Strategy
 Always use Playwright MCP to:
 - Test user flows after implementing features
