@@ -3,6 +3,7 @@
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { AlertCircle } from "lucide-react"
+import { Suspense } from "react"
 
 const errorMessages: Record<string, string> = {
   Configuration: "There is a problem with the server configuration.",
@@ -11,7 +12,7 @@ const errorMessages: Record<string, string> = {
   Default: "An unexpected error occurred during authentication.",
 }
 
-export default function AuthErrorPage() {
+function AuthErrorContent() {
   const searchParams = useSearchParams()
   const error = searchParams.get("error") || "Default"
   const errorMessage = errorMessages[error] || errorMessages.Default
@@ -84,5 +85,24 @@ export default function AuthErrorPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function AuthErrorPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <img
+            className="mx-auto h-12 w-auto mb-4"
+            src="/reset-logo-pro.png"
+            alt="Reset Biology"
+          />
+          <div className="text-teal-600">Loading...</div>
+        </div>
+      </div>
+    }>
+      <AuthErrorContent />
+    </Suspense>
   )
 }

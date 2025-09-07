@@ -19,7 +19,7 @@ export interface TestAction {
 export interface TestAssertion {
   type: 'visible' | 'hidden' | 'text' | 'count' | 'url' | 'attribute'
   selector?: string
-  expected: string | number
+  expected?: string | number
   description?: string
 }
 
@@ -34,14 +34,16 @@ export class UniversalTestRunner {
     await this.page.waitForLoadState('networkidle')
     
     // Execute all actions
-    for (const [index, action] of scenario.actions.entries()) {
+    for (let index = 0; index < scenario.actions.length; index++) {
+      const action = scenario.actions[index]
       console.log(`  📝 Step ${index + 1}: ${action.description || action.type}`)
       await this.executeAction(action)
     }
     
     // Run all assertions
     if (scenario.assertions) {
-      for (const [index, assertion] of scenario.assertions.entries()) {
+      for (let index = 0; index < scenario.assertions.length; index++) {
+        const assertion = scenario.assertions[index]
         console.log(`  ✅ Assertion ${index + 1}: ${assertion.description || assertion.type}`)
         await this.executeAssertion(assertion)
       }
@@ -123,20 +125,24 @@ export class UniversalTestRunner {
         
       case 'text':
         if (!selector) throw new Error('Selector required for text assertion')
+        if (expected === undefined) throw new Error('Expected value required for text assertion')
         await expect(this.page.locator(selector)).toContainText(expected as string)
         break
         
       case 'count':
         if (!selector) throw new Error('Selector required for count assertion')
+        if (expected === undefined) throw new Error('Expected value required for count assertion')
         await expect(this.page.locator(selector)).toHaveCount(expected as number)
         break
         
       case 'url':
+        if (expected === undefined) throw new Error('Expected value required for url assertion')
         await expect(this.page).toHaveURL(expected as string)
         break
         
       case 'attribute':
         if (!selector) throw new Error('Selector required for attribute assertion')
+        if (expected === undefined) throw new Error('Expected value required for attribute assertion')
         // Expected format: "attributeName:expectedValue"
         const [attrName, attrValue] = (expected as string).split(':')
         await expect(this.page.locator(selector)).toHaveAttribute(attrName, attrValue)
@@ -160,8 +166,8 @@ export const commonTestScenarios: TestScenario[] = [
       { type: 'wait', timeout: 1000 },
     ],
     assertions: [
-      { type: 'visible', selector: 'text=Peptide Tracker', description: 'Peptide tracker page loaded' },
-      { type: 'visible', selector: 'text=Active Protocols', description: 'Active protocols section visible' }
+      { type: 'visible', selector: 'text=Peptide Tracker', expected: '', description: 'Peptide tracker page loaded' },
+      { type: 'visible', selector: 'text=Active Protocols', expected: '', description: 'Active protocols section visible' }
     ]
   },
   
@@ -174,7 +180,7 @@ export const commonTestScenarios: TestScenario[] = [
       { type: 'click', selector: '[data-testid="pause-session"]', description: 'Pause session' },
     ],
     assertions: [
-      { type: 'visible', selector: 'text=Session Paused', description: 'Session paused successfully' }
+      { type: 'visible', selector: 'text=Session Paused', expected: '', description: 'Session paused successfully' }
     ]
   },
   
@@ -187,9 +193,9 @@ export const commonTestScenarios: TestScenario[] = [
       { type: 'click', text: 'current', description: 'Go to current protocols' },
     ],
     assertions: [
-      { type: 'visible', selector: 'text=Ipamorelin', description: 'Protocol was added successfully' },
-      { type: 'visible', selector: 'text=View Schedule', description: 'View Schedule button available' },
-      { type: 'visible', selector: 'text=Log Dose', description: 'Log Dose button available' }
+      { type: 'visible', selector: 'text=Ipamorelin', expected: '', description: 'Protocol was added successfully' },
+      { type: 'visible', selector: 'text=View Schedule', expected: '', description: 'View Schedule button available' },
+      { type: 'visible', selector: 'text=Log Dose', expected: '', description: 'Log Dose button available' }
     ]
   }
 ]
@@ -224,6 +230,7 @@ export function generateMultiClickTest(
       {
         type: 'visible',
         selector: `text=${expectedResult}`,
+        expected: '',
         description: `Expected result after ${clickCount} clicks`
       }
     ]

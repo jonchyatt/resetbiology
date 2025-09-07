@@ -59,8 +59,14 @@ You have access to Playwright MCP which enables you to:
 
 ### 1. Before ANY deployment attempt:
 ```bash
-# Run comprehensive TypeScript check on entire codebase
-cd app && npx tsc --noEmit --skipLibCheck 2>&1 | grep -E "error TS|Type error" | head -20
+# Run comprehensive TypeScript check on entire codebase (includes ALL files)
+npx tsc --noEmit --skipLibCheck --project . 2>&1 | grep -E "error TS|Type error" | head -20
+
+# Test files specific check (since they're excluded from main tsconfig)
+npx tsc --noEmit --skipLibCheck tests/*.ts 2>&1 | grep -E "error TS|Type error" | head -10
+
+# Final build check to catch Next.js runtime issues
+npm run build
 ```
 
 ### 2. Fix ALL errors systematically before first deployment:
@@ -74,6 +80,7 @@ cd app && npx tsc --noEmit --skipLibCheck 2>&1 | grep -E "error TS|Type error" |
 - **Permissions casting**: `permissions: data.permissions as any as UserPermissions`
 - **SessionData properties**: Use `endedAt/startedAt` not `endAt/startAt`, `settings.cyclesTarget` not `targetCycles`
 - **NextAuth callbacks**: Add `({ param1, param2 }: any)` to all callback parameters
+- **Test interfaces**: Cloudflare enforces stricter interface requirements than local builds - always provide ALL required properties even if marked optional locally
 - **Session strategy**: Use `strategy: "jwt" as const`
 
 ### 4. Deployment-specific considerations:
