@@ -1,0 +1,193 @@
+// Reset Biology Database Schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Access Control & Permissions
+  accessLevel       String   @default("guest") // guest, trial, basic, premium, platinum
+  permissions       Json?    // Granular feature permissions
+  subscriptionStatus String  @default("none")  // none, trial, active, expired
+  subscriptionExpiry DateTime?
+  trialStartDate    DateTime?
+  trialEndDate      DateTime?
+  
+  // Google Drive integration
+  drivePermissions  Json?
+  driveFolder       String?
+  
+  // Profile data
+  profileData       Json?
+  
+  // IRB compliance status
+  irbApprovalStatus String?
+  irbSubmissionDate DateTime?
+  
+  // Relationships
+  progress          ClientProgress[]
+  moduleCompletions ModuleCompletion[]
+  gamificationPoints GamificationPoint[]
+  successDeposits   SuccessDeposit[]
+  breathSessions    BreathSession[]
+  affiliateTracking AffiliateTracking[]
+  
+  // NextAuth relationships
+  accounts          Account[]
+  sessions          Session[]
+  
+  @@map("users")
+}
+
+model ClientProgress {
+  id         String   @id @default(cuid())
+  userId     String
+  metricType String
+  value      Float
+  date       DateTime @default(now())
+  notes      String?
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("client_progress")
+}
+
+model ModuleCompletion {
+  id            String   @id @default(cuid())
+  userId        String
+  moduleId      String
+  completedAt   DateTime @default(now())
+  audioDuration Int?     // Duration listened in seconds
+  fullCompletion Boolean @default(false)
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("module_completions")
+}
+
+model GamificationPoint {
+  id             String   @id @default(cuid())
+  userId         String
+  pointType      String   // daily_checkin, module_completion, streak_bonus, etc.
+  amount         Int
+  earnedAt       DateTime @default(now())
+  activitySource String?  // What triggered the points
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("gamification_points")
+}
+
+model SuccessDeposit {
+  id               String   @id @default(cuid())
+  userId           String
+  amount           Float
+  status           String   // active, earning, completed, refunded
+  payoutConditions Json     // Conditions for earning deposit back
+  partnerShare     Float?   // Additional partner bonus percentage
+  createdAt        DateTime @default(now())
+  completedAt      DateTime?
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("success_deposits")
+}
+
+model BreathSession {
+  id            String   @id @default(cuid())
+  userId        String
+  sessionType   String   // guided, freeform, challenge
+  duration      Int      // Duration in seconds
+  cycles        Int?     // Number of breath cycles
+  progressScore Float?   // Performance metric
+  createdAt     DateTime @default(now())
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("breath_sessions")
+}
+
+model AffiliateTracking {
+  id           String   @id @default(cuid())
+  userId       String
+  referralCode String   @unique
+  clicks       Int      @default(0)
+  conversions  Int      @default(0)
+  commissions  Float    @default(0)
+  createdAt    DateTime @default(now())
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("affiliate_tracking")
+}
+
+model Assessment {
+  id          String   @id @default(cuid())
+  userId      String?
+  responses   Json     // Assessment question responses
+  results     Json?    // Calculated results and recommendations
+  irbSubmitted Boolean @default(false)
+  createdAt   DateTime @default(now())
+  
+  @@map("assessments")
+}
+
+model VariableReward {
+  id        String   @id @default(cuid())
+  userId    String
+  rewardType String   // daily_spinner, streak_bonus, jackpot
+  amount    Int
+  claimedAt DateTime @default(now())
+  
+  @@map("variable_rewards")
+}
+
+// NextAuth.js required models
+model Account {
+  id                       String  @id @default(cuid())
+  userId                   String
+  type                     String
+  provider                 String
+  providerAccountId        String
+  refresh_token            String?
+  access_token             String?
+  expires_at               Int?
+  token_type               String?
+  scope                    String?
+  id_token                 String?
+  session_state            String?
+  refresh_token_expires_in Int?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}

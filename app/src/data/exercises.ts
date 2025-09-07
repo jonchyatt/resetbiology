@@ -1,0 +1,22 @@
+export const exercises = [
+  { name: "Back Squat", category: "Strength", equipment: "Barbell", primaryMuscle: "Quads" },
+  { name: "Deadlift", category: "Strength", equipment: "Barbell", primaryMuscle: "Posterior Chain" },
+  { name: "Bench Press", category: "Strength", equipment: "Barbell", primaryMuscle: "Chest" },
+  { name: "Overhead Press", category: "Strength", equipment: "Barbell", primaryMuscle: "Shoulders" },
+  { name: "Pull-up", category: "Calisthenics", equipment: "Bar", primaryMuscle: "Back" },
+  { name: "Kettlebell Swing", category: "Power", equipment: "Kettlebell", primaryMuscle: "Glutes" },
+  { name: "Burpee", category: "Conditioning", equipment: "Bodyweight", primaryMuscle: "Full Body" },
+  { name: "Row (Machine)", category: "Conditioning", equipment: "Machine", primaryMuscle: "Back" },
+  { name: "Push-up", category: "Calisthenics", equipment: "Bodyweight", primaryMuscle: "Chest" },
+  { name: "Plank", category: "Core", equipment: "Bodyweight", primaryMuscle: "Core" },
+  { name: "Lunges", category: "Strength", equipment: "Bodyweight", primaryMuscle: "Legs" },
+  { name: "Dumbbell Curl", category: "Isolation", equipment: "Dumbbell", primaryMuscle: "Biceps" },
+  { name: "Tricep Dip", category: "Calisthenics", equipment: "Bodyweight", primaryMuscle: "Triceps" },
+  { name: "Mountain Climber", category: "Conditioning", equipment: "Bodyweight", primaryMuscle: "Full Body" },
+  { name: "Jumping Jacks", category: "Cardio", equipment: "Bodyweight", primaryMuscle: "Full Body" },
+  { name: "Battle Ropes", category: "Conditioning", equipment: "Battle Ropes", primaryMuscle: "Full Body" },
+  { name: "Box Jump", category: "Power", equipment: "Box", primaryMuscle: "Legs" },
+  { name: "Farmer's Walk", category: "Strength", equipment: "Dumbbell", primaryMuscle: "Full Body" },
+  { name: "Russian Twist", category: "Core", equipment: "Bodyweight", primaryMuscle: "Core" },
+  { name: "Hip Thrust", category: "Strength", equipment: "Barbell", primaryMuscle: "Glutes" }
+]

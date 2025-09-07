@@ -1,0 +1,22 @@
+export const foods = [
+  { name: "Eggs", serving: "2 large", calories: 156, protein: 13, carbs: 1, fats: 11, tags: ["breakfast", "protein"] },
+  { name: "Greek Yogurt (Plain)", serving: "170 g (1 cup)", calories: 100, protein: 17, carbs: 6, fats: 0, tags: ["breakfast", "snack", "dairy"] },
+  { name: "Chicken Breast", serving: "100 g cooked", calories: 165, protein: 31, carbs: 0, fats: 3, tags: ["lunch", "dinner", "protein"] },
+  { name: "Salmon", serving: "100 g cooked", calories: 208, protein: 22, carbs: 0, fats: 13, tags: ["omega-3", "dinner"] },
+  { name: "Brown Rice", serving: "1 cup cooked", calories: 216, protein: 5, carbs: 45, fats: 2, tags: ["carb", "lunch", "dinner"] },
+  { name: "Avocado", serving: "1/2 medium", calories: 120, protein: 1, carbs: 6, fats: 10, tags: ["fat", "snack"] },
+  { name: "Banana", serving: "1 medium", calories: 105, protein: 1, carbs: 27, fats: 0, tags: ["snack", "fruit"] },
+  { name: "Oats", serving: "1/2 cup dry", calories: 150, protein: 5, carbs: 27, fats: 3, tags: ["breakfast", "carb"] },
+  { name: "Spinach", serving: "1 cup raw", calories: 7, protein: 1, carbs: 1, fats: 0, tags: ["veggie"] },
+  { name: "Whey Protein", serving: "1 scoop (30 g)", calories: 120, protein: 24, carbs: 3, fats: 2, tags: ["shake", "protein"] },
+  { name: "Sweet Potato", serving: "1 medium (150g)", calories: 112, protein: 2, carbs: 26, fats: 0, tags: ["carb", "veggie"] },
+  { name: "Almonds", serving: "1 oz (28g)", calories: 164, protein: 6, carbs: 6, fats: 14, tags: ["snack", "fat", "nuts"] },
+  { name: "Cottage Cheese", serving: "1/2 cup", calories: 90, protein: 14, carbs: 5, fats: 2, tags: ["protein", "dairy", "snack"] },
+  { name: "Beef (Lean)", serving: "100g cooked", calories: 250, protein: 26, carbs: 0, fats: 17, tags: ["protein", "dinner"] },
+  { name: "Broccoli", serving: "1 cup", calories: 25, protein: 3, carbs: 5, fats: 0, tags: ["veggie", "fiber"] },
+  { name: "Olive Oil", serving: "1 tbsp", calories: 119, protein: 0, carbs: 0, fats: 14, tags: ["fat", "cooking"] },
+  { name: "Tuna (Canned)", serving: "1 can (85g)", calories: 100, protein: 22, carbs: 0, fats: 1, tags: ["protein", "omega-3"] },
+  { name: "Quinoa", serving: "1 cup cooked", calories: 222, protein: 8, carbs: 39, fats: 4, tags: ["carb", "protein"] },
+  { name: "Apple", serving: "1 medium", calories: 95, protein: 0, carbs: 25, fats: 0, tags: ["fruit", "snack"] },
+  { name: "Blueberries", serving: "1 cup", calories: 84, protein: 1, carbs: 21, fats: 0, tags: ["fruit", "antioxidant"] }
+]

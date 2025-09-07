@@ -1,0 +1,138 @@
+# WordPress
+wp-config.php
+wp-content/uploads/
+wp-content/upgrade/
+wp-content/backup-db/
+wp-content/backups/
+wp-content/blogs.dir/
+wp-content/cache/
+wp-content/w3tc-config/
+
+# Environment files
+.env
+.env.local
+.env.development
+.env.staging
+.env.production
+
+# SSL certificates
+ssl/
+*.pem
+*.key
+*.crt
+*.p12
+
+# Logs
+*.log
+logs/
+error_log
+access_log
+
+# Database
+*.sql
+*.sql.gz
+
+# Node modules and build files
+node_modules/
+npm-debug.log
+yarn-error.log
+.npm
+.yarn-integrity
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Docker
+.docker/
+docker-compose.override.yml
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Compiled assets
+wp-content/themes/reset-biology/assets/css/main.css
+wp-content/themes/reset-biology/assets/js/compiled/
+
+# Plugin specific
+wp-content/plugins/hello.php
+wp-content/plugins/akismet/
+
+# Security
+.htaccess.backup
+auth.json
+wp-keys.txt
+
+# Next.js and App-specific
+app/.next/
+app/out/
+app/.env.local
+app/.env.development.local
+app/.env.test.local
+app/.env.production.local
+app/playwright-report/
+app/test-results/
+*.png
+*.jpg
+*.jpeg
+*.gif
+
+# Claude Code and WSL
+../.aws
+../.azure
+../.bash_history
+../.bash_logout
+../.bashrc
+../.cache/
+../.claude-code-router/
+../.claude.json
+../.claude.json.backup
+../.claude/
+../.config/
+../.docker/
+../.landscape/
+../.local/
+../.modal.toml
+../.motd_shown
+../.npm/
+../.pki/
+../.profile
+../.sudo_as_admin_successful
+../.wget-hsts
+../comfyui-modal/
+../comfyui_project/
+../modal-examples/
+../session-complete-screenshot.png
+../signup-error.png
+
+# Test and development files
+app/analyze-breath-startup.js
+app/breath-startup-analysis.png
+app/test-breath-startup.js
+app/desktop-view.png
+app/mobile-view.png
+app/process-page.png
+app/tablet-view.png
+
+# Database files
+app/prisma/dev.db
+app/prisma/dev.db-journal
