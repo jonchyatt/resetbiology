@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef, useCallback } from "react"
+import { Wind, Play, Pause, RotateCcw, Heart, TrendingUp } from "lucide-react"
 import { BreathOrb } from "./BreathOrb"
 import { PhaseTimer } from "./PhaseTimer"
 import { Controls } from "./Controls"
