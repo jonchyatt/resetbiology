@@ -13,26 +13,14 @@ export default function AdminDashboard() {
            backgroundAttachment: 'fixed'
          }}>
       <div className="relative z-10">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm shadow-2xl border-b border-primary-400/30">
-          <div className="container mx-auto px-4 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <img src="/logo1.png" alt="Reset Biology" className="h-8 w-auto mr-3 rounded-lg drop-shadow-lg bg-white/10 backdrop-blur-sm p-1 border border-white/20" />
-                <div>
-                  <h1 className="text-xl font-bold text-white drop-shadow-lg">Admin Portal</h1>
-                  <span className="text-lg text-gray-200 drop-shadow-sm">• System Management</span>
-                </div>
-              </div>
-              <Link href="/portal" className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
-                ← Back to Portal
-              </Link>
-            </div>
-          </div>
-        </div>
-
         {/* Title */}
         <div className="text-center py-8">
+          <div className="mb-4">
+            <Link href="/portal" className="inline-flex items-center text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
+              ← Back to Portal
+            </Link>
+          </div>
+          <h1 className="text-2xl font-bold text-primary-300 mb-2">Admin Portal • System Management</h1>
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 text-shadow-lg animate-fade-in">
             <span className="text-secondary-400">Admin</span> Dashboard
           </h2>
