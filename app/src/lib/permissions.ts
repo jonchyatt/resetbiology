@@ -85,7 +85,7 @@ export function hasPermission(
 ): boolean {
   if (!session?.user) return false
   
-  const userPermissions = session.user.permissions as UserPermissions
+  const userPermissions = session.user.permissions as any as UserPermissions
   if (!userPermissions) {
     // Fall back to access level default permissions
     const accessLevel = (session.user.accessLevel as AccessLevel) || 'guest'

@@ -72,8 +72,8 @@ export async function exportBreathSessionToGoogleSheets(
     }
     
     // Prepare session data row
-    const sessionDurationMin = (sessionData.endAt ? 
-      (new Date(sessionData.endAt).getTime() - new Date(sessionData.startAt).getTime()) / 60000 : 0
+    const sessionDurationMin = (sessionData.endedAt ? 
+      (new Date(sessionData.endedAt).getTime() - new Date(sessionData.startedAt).getTime()) / 60000 : 0
     ).toFixed(1)
     
     const totalBreaths = sessionData.cycles.reduce((sum, cycle) => sum + cycle.breathing.actualBreaths, 0)
@@ -83,7 +83,13 @@ export async function exportBreathSessionToGoogleSheets(
       sessionData.cycles.reduce((sum, cycle) => sum + cycle.inhaleHold.durationMs, 0) / sessionData.cycles.length / 1000 : 0
     const totalHoldTime = sessionData.cycles.reduce((sum, cycle) => 
       sum + cycle.exhaleHold.durationMs + cycle.inhaleHold.durationMs, 0) / 1000
-    const completionRate = (sessionData.cycles.length / sessionData.targetCycles * 100).toFixed(1)
+    const completionRate = (sessionData.cycles.length / sessionData.settings.cyclesTarget * 100).toFixed(1)
+    
+    // Calculate best holds from cycles data
+    const bestExhaleHold = sessionData.cycles.length > 0 ? 
+      Math.max(...sessionData.cycles.map(cycle => cycle.exhaleHold.durationMs)) : 0
+    const bestInhaleHold = sessionData.cycles.length > 0 ?
+      Math.max(...sessionData.cycles.map(cycle => cycle.inhaleHold.durationMs)) : 0
     
     const rowData = [
       new Date().toLocaleDateString(),
@@ -91,13 +97,13 @@ export async function exportBreathSessionToGoogleSheets(
       sessionData.cycles.length,
       totalBreaths,
       sessionDurationMin,
-      (sessionData.bestExhaleHold / 1000).toFixed(1),
-      (sessionData.bestInhaleHold / 1000).toFixed(1), 
+      (bestExhaleHold / 1000).toFixed(1),
+      (bestInhaleHold / 1000).toFixed(1), 
       totalHoldTime.toFixed(1),
       avgExhale.toFixed(1),
       avgInhale.toFixed(1),
       completionRate,
-      sessionData.notes || '',
+      '', // Notes not available on SessionData
       `${sessionData.cycles.length > 0 ? sessionData.cycles[0].breathing.targetBreaths : 'N/A'} breaths/cycle`,
       Math.round(totalHoldTime / sessionData.cycles.length || 0),
       '' // Improvement calculation could be added

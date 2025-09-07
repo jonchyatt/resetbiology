@@ -39,7 +39,7 @@ export async function getUserById(userId: string): Promise<UserWithPermissions |
   return {
     ...user,
     accessLevel: user.accessLevel as AccessLevel,
-    permissions: user.permissions as UserPermissions,
+    permissions: user.permissions as any as UserPermissions,
   }
 }
 
@@ -74,7 +74,7 @@ export async function updateUserAccess(
   return {
     ...updatedUser,
     accessLevel: updatedUser.accessLevel as AccessLevel,
-    permissions: updatedUser.permissions as UserPermissions,
+    permissions: updatedUser.permissions as any as UserPermissions,
   }
 }
 
@@ -126,7 +126,7 @@ export async function startUserTrial(
   return {
     ...updatedUser,
     accessLevel: updatedUser.accessLevel as AccessLevel,
-    permissions: updatedUser.permissions as UserPermissions,
+    permissions: updatedUser.permissions as any as UserPermissions,
   }
 }
 
@@ -174,7 +174,7 @@ export async function activateSubscription(
   return {
     ...updatedUser,
     accessLevel: updatedUser.accessLevel as AccessLevel,
-    permissions: updatedUser.permissions as UserPermissions,
+    permissions: updatedUser.permissions as any as UserPermissions,
   }
 }
 
@@ -238,7 +238,7 @@ export async function getUsersByAccessLevel(
   return users.map(user => ({
     ...user,
     accessLevel: user.accessLevel as AccessLevel,
-    permissions: user.permissions as UserPermissions,
+    permissions: user.permissions as any as UserPermissions,
   }))
 }
 
