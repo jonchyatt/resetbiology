@@ -62,8 +62,8 @@ export async function POST(request: NextRequest) {
     const assessment = await prisma.assessment.create({
       data: {
         userId,
-        responses: responses,
-        results,
+        responses: responses as any,
+        results: results as any,
         irbSubmitted: false
       }
     })
