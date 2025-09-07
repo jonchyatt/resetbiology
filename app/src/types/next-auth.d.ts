@@ -6,7 +6,7 @@ declare module "next-auth" {
       email?: string | null
       image?: string | null
       accessLevel?: string
-      permissions?: any
+      permissions?: string[]
       subscriptionStatus?: string
       subscriptionExpiry?: Date | null
       trialStartDate?: Date | null
@@ -22,7 +22,7 @@ declare module "next-auth" {
     name?: string | null
     image?: string | null
     accessLevel?: string
-    permissions?: any
+    permissions?: string[]
     subscriptionStatus?: string
     subscriptionExpiry?: Date | null
     trialStartDate?: Date | null

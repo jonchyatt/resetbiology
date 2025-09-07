@@ -131,7 +131,7 @@ export function initGoogleAuth(onSuccess: (token: string) => void) {
   script.onload = () => {
     google.accounts.id.initialize({
       client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
-      callback: (response: any) => {
+      callback: (response: { credential: string }) => {
         onSuccess(response.credential)
       }
     })

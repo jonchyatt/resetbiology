@@ -1,4 +1,4 @@
-import { User, Session } from "next-auth"
+import { Session } from "next-auth"
 
 export type AccessLevel = 'guest' | 'trial' | 'basic' | 'premium' | 'platinum'
 export type SubscriptionStatus = 'none' | 'trial' | 'active' | 'expired'
@@ -133,7 +133,7 @@ export function getAccessLevel(session: Session | null): AccessLevel {
 
 export function getUpgradeMessage(
   session: Session | null,
-  requiredPermission: keyof UserPermissions
+  _requiredPermission: keyof UserPermissions
 ): string {
   const currentAccess = getAccessLevel(session)
   
