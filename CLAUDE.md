@@ -85,6 +85,50 @@ npm run build
 
 ### 4. Deployment-specific considerations:
 - **Cloudflare Pages is stricter** than local development
+
+## CRITICAL: Cloudflare Pages Deployment Guidelines
+
+### **🚨 FILE SIZE LIMITS (25 MiB per file)**
+**Common issues and fixes:**
+- **Source maps**: Disable with `productionBrowserSourceMaps: false` and webpack `config.devtool = false`
+- **Webpack cache**: Disable with webpack `config.cache = false` for production
+- **Build with standard webpack**: Remove `--turbopack` from production build script
+- **Add .vercelignore**: Exclude cache directories (.next/cache/, node_modules/, *.log)
+
+### **Build Configuration for Cloudflare:**
+```javascript
+// next.config.ts
+const nextConfig: NextConfig = {
+  eslint: { ignoreDuringBuilds: true },
+  productionBrowserSourceMaps: false,
+  webpack: (config, { dev }) => {
+    if (!dev) {
+      config.devtool = false;
+      config.cache = false;
+    }
+    return config;
+  },
+};
+```
+
+```json
+// package.json
+"build": "next build"  // Remove --turbopack for production
+```
+
+```
+// .vercelignore
+.next/cache/
+node_modules/
+.env.local
+*.log
+```
+
+### **Pre-deployment checklist:**
+1. Run full TypeScript check (including test files)
+2. Run production build locally to verify file sizes
+3. Commit AND push changes to GitHub (Cloudflare builds from git)
+4. Check that no files exceed 25 MiB in .next output
 - **ESLint is disabled during builds** (`eslint: { ignoreDuringBuilds: true }`)
 - **Test comprehensive builds locally**: `npx next build --no-lint` before pushing
 
