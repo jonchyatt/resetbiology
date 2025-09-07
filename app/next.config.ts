@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
   webpack: (config, { dev, isServer }) => {
     if (!dev) {
       config.devtool = false;
+      config.cache = false;
     }
     return config;
   },
