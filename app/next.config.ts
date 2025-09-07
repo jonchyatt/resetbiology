@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   productionBrowserSourceMaps: false,
+  output: 'standalone',
   webpack: (config, { dev, isServer }) => {
     if (!dev) {
       config.devtool = false;

@@ -1,0 +1,6 @@
+name = "reset-biology"
+compatibility_date = "2025-09-07"
+pages_build_output_dir = ".next"
+
+[env.production]
+name = "reset-biology"
