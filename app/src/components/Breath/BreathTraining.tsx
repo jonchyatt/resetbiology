@@ -9,6 +9,7 @@ import { Configurator } from "./Configurator"
 import { SessionStats } from "./SessionStats"
 import { BreathStorage } from "@/lib/breathStorage"
 import { BreathState, BreathSettings, DEFAULT_SETTINGS, CycleData, SessionData } from "@/types/breath"
+import type { BreathSession } from "@/types"
 
 interface BreathTrainingProps {
   onSessionComplete?: (session: any) => void
@@ -25,7 +26,7 @@ export function BreathTraining({ onSessionComplete }: BreathTrainingProps) {
   const [relaxationScore, setRelaxationScore] = useState(50)
   
   const phaseTimeouts = useRef<NodeJS.Timeout[]>([])
-  const sessionInterval = useRef<NodeJS.Timeout>()
+  const sessionInterval = useRef<NodeJS.Timeout | undefined>(undefined)
 
   // Breath pattern configurations
   const breathPatterns = {

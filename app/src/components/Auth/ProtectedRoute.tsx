@@ -19,7 +19,8 @@ export function ProtectedRoute({
   fallback,
   showUpgradePrompt = true 
 }: ProtectedRouteProps) {
-  const { data: session, status } = useSession()
+  const { data: sessionData, status } = useSession()
+  const session = sessionData as any
 
   if (status === "loading") {
     return (

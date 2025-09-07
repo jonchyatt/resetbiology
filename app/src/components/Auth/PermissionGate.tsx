@@ -18,7 +18,8 @@ export function PermissionGate({
   fallback,
   showUpgradePrompt = true 
 }: PermissionGateProps) {
-  const { data: session } = useSession()
+  const { data: sessionData } = useSession()
+  const session = sessionData as any
 
   if (hasPermission(session, permission)) {
     return <>{children}</>

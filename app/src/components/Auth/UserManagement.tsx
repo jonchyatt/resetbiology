@@ -5,7 +5,8 @@ import { useSession, signIn } from "next-auth/react"
 import { User, Shield, Clock, CreditCard } from "lucide-react"
 
 export function UserManagement() {
-  const { data: session, update } = useSession()
+  const { data: sessionData, update } = useSession()
+  const session = sessionData as any
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState("")
 
@@ -136,7 +137,8 @@ export function UserManagement() {
         
         {session.user.permissions ? (
           <div className="grid grid-cols-1 gap-3">
-            {Object.entries(session.user.permissions).map(([feature, hasAccess]) => {
+            {Object.entries(session.user.permissions).map(([feature, hasAccessRaw]) => {
+              const hasAccess = hasAccessRaw as boolean
               const getFeatureLink = (featureName: string) => {
                 const links: Record<string, string> = {
                   'assessment': '/assessment',

@@ -8,7 +8,8 @@ import { getRemainingTrialDays, getAccessLevel } from "@/lib/permissions"
 import type { SuccessDeposit, GamificationPoint } from "@/types"
 
 export function Dashboard() {
-  const { data: session } = useSession()
+  const { data: sessionData } = useSession()
+  const session = sessionData as any
   const [deposit, setDeposit] = useState<SuccessDeposit | null>(null)
   const [totalPoints, setTotalPoints] = useState(0)
   const [currentTier, setCurrentTier] = useState<'bronze' | 'silver' | 'gold' | 'platinum'>('bronze')

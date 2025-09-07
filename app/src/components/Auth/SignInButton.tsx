@@ -9,7 +9,8 @@ interface SignInButtonProps {
 }
 
 export function SignInButton({ className = "", showUserInfo = false }: SignInButtonProps) {
-  const { data: session, status } = useSession()
+  const { data: sessionData, status } = useSession()
+  const session = sessionData as any
 
   if (status === "loading") {
     return (
