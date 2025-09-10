@@ -1,7 +1,9 @@
 {
-  "buildCommand": "cd app && npm run build",
-  "outputDirectory": "app/.next",
-  "installCommand": "cd app && npm install",
-  "devCommand": "cd app && npm run dev",
-  "framework": "nextjs"
+  "version": 2,
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next"
+    }
+  ]
 }
