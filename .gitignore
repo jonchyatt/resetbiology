@@ -1,138 +1,42 @@
-# WordPress
-wp-config.php
-wp-content/uploads/
-wp-content/upgrade/
-wp-content/backup-db/
-wp-content/backups/
-wp-content/blogs.dir/
-wp-content/cache/
-wp-content/w3tc-config/
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# Environment files
-.env
-.env.local
-.env.development
-.env.staging
-.env.production
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
 
-# SSL certificates
-ssl/
-*.pem
-*.key
-*.crt
-*.p12
+# testing
+/coverage
 
-# Logs
-*.log
-logs/
-error_log
-access_log
+# next.js
+/.next/
+/out/
+/.open-next/
 
-# Database
-*.sql
-*.sql.gz
+# production
+/build
 
-# Node modules and build files
-node_modules/
-npm-debug.log
-yarn-error.log
-.npm
-.yarn-integrity
-
-# IDE files
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-
-# OS files
+# misc
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
+*.pem
 
-# Docker
-.docker/
-docker-compose.override.yml
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
 
-# Backup files
-*.bak
-*.backup
-*.old
+# env files (can opt-in for committing if needed)
+.env*
 
-# Temporary files
-tmp/
-temp/
-*.tmp
+# vercel
+.vercel
 
-# Compiled assets
-wp-content/themes/reset-biology/assets/css/main.css
-wp-content/themes/reset-biology/assets/js/compiled/
-
-# Plugin specific
-wp-content/plugins/hello.php
-wp-content/plugins/akismet/
-
-# Security
-.htaccess.backup
-auth.json
-wp-keys.txt
-
-# Next.js and App-specific
-app/.next/
-app/out/
-app/.env.local
-app/.env.development.local
-app/.env.test.local
-app/.env.production.local
-app/playwright-report/
-app/test-results/
-*.png
-*.jpg
-*.jpeg
-*.gif
-
-# Claude Code and WSL
-../.aws
-../.azure
-../.bash_history
-../.bash_logout
-../.bashrc
-../.cache/
-../.claude-code-router/
-../.claude.json
-../.claude.json.backup
-../.claude/
-../.config/
-../.docker/
-../.landscape/
-../.local/
-../.modal.toml
-../.motd_shown
-../.npm/
-../.pki/
-../.profile
-../.sudo_as_admin_successful
-../.wget-hsts
-../comfyui-modal/
-../comfyui_project/
-../modal-examples/
-../session-complete-screenshot.png
-../signup-error.png
-
-# Test and development files
-app/analyze-breath-startup.js
-app/breath-startup-analysis.png
-app/test-breath-startup.js
-app/desktop-view.png
-app/mobile-view.png
-app/process-page.png
-app/tablet-view.png
-
-# Database files
-app/prisma/dev.db
-app/prisma/dev.db-journal
+# typescript
+*.tsbuildinfo
+next-env.d.ts
