@@ -1,5 +1,4 @@
 import { ProtectedRoute } from "@/components/Auth/ProtectedRoute"
-import { UserManagement } from "@/components/Auth/UserManagement"
 
 export default function ProfilePage() {
   return (
@@ -23,7 +22,31 @@ export default function ProfilePage() {
                 </p>
               </div>
               
-              <UserManagement />
+              <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-8 shadow-2xl border border-primary-400/30">
+                <div className="text-center">
+                  <h2 className="text-2xl font-bold text-white mb-4">🔧 Profile Management</h2>
+                  <p className="text-gray-300 mb-6">
+                    Account management features will be available once the authentication system is implemented.
+                  </p>
+                  <div className="space-y-4">
+                    <div className="p-4 bg-primary-600/20 rounded-lg border border-primary-400/30">
+                      <h3 className="font-semibold text-primary-300">Coming Soon:</h3>
+                      <ul className="text-sm text-gray-300 mt-2 space-y-1">
+                        <li>• Account settings and preferences</li>
+                        <li>• Subscription and trial management</li>
+                        <li>• Progress tracking and analytics</li>
+                        <li>• Data export and privacy controls</li>
+                      </ul>
+                    </div>
+                    <a 
+                      href="/portal" 
+                      className="bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 px-6 rounded-lg transition-colors inline-block"
+                    >
+                      ← Back to Portal
+                    </a>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

@@ -7,7 +7,6 @@ import { Controls } from "./Controls"
 import { Configurator } from "./Configurator"
 import { SessionStats } from "./SessionStats"
 import { BreathStorage } from "@/lib/breathStorage"
-import { exportBreathSessionToGoogleSheets } from "@/lib/google-drive"
 import { BreathState, BreathSettings, DEFAULT_SETTINGS, CycleData, SessionData } from "@/types/breath"
 
 interface BreathTrainingAppProps {
@@ -387,11 +386,6 @@ export function BreathTrainingApp({ onSessionComplete }: BreathTrainingAppProps)
                 <a href="/portal" className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
                   ← Back to Portal
                 </a>
-                <Configurator
-                  settings={settings}
-                  onSettingsChange={setSettings}
-                  isSessionActive={state !== 'idle' && state !== 'session_complete'}
-                />
               </div>
             </div>
           </div>
@@ -405,18 +399,134 @@ export function BreathTrainingApp({ onSessionComplete }: BreathTrainingAppProps)
           <p className="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto font-medium leading-relaxed drop-shadow-sm">
             Master your nervous system through conscious breathing. Enhance your metabolic reset with precision breathing techniques.
           </p>
-          {state !== 'idle' && state !== 'session_complete' && (
-            <div className="mt-6 inline-flex items-center bg-gradient-to-r from-primary-600/30 to-secondary-600/30 backdrop-blur-sm text-primary-200 px-6 py-3 rounded-full font-medium border border-primary-400/50 shadow-lg">
-              Session Active • Cycle {currentCycle} of {settings.cyclesTarget}
-            </div>
-          )}
         </div>
 
       {/* Main Training Interface */}
       <div className="flex-1 flex items-center justify-center px-4">
         <div className="w-full max-w-7xl">
-          {/* Session Stats */}
-          <div className="mb-8">
+          {/* Three Column Layout: Left = Breath Count, Center = Orb, Right = Controls */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+            
+            {/* Left Side: Breath Count + Settings */}
+            <div className="lg:justify-self-start">
+              <div className="space-y-4 max-w-xs">
+                {/* Breath Count Card */}
+                <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 shadow-2xl border border-primary-400/30">
+                  <h3 className="text-lg font-bold text-white mb-4">Breath Count</h3>
+                  <div className="text-center mb-4">
+                    <div className="text-4xl font-bold text-primary-300 mb-2">{breathCount}</div>
+                    <div className="text-sm text-gray-300">of {settings.breathsPerCycle}</div>
+                  </div>
+                  <div className="border-t border-primary-400/30 pt-4">
+                    <div className="text-sm text-gray-300 mb-2">Pace: {settings.pace.label}</div>
+                    <div className="text-xs text-gray-400">{settings.pace.inhaleMs/1000}s in • {settings.pace.exhaleMs/1000}s out</div>
+                  </div>
+                  <div className="mt-4 pt-4 border-t border-primary-400/30">
+                    <div className="text-sm text-gray-300 mb-1">Cycle {currentCycle} of {settings.cyclesTarget}</div>
+                    <div className="w-full bg-primary-900/50 rounded-full h-2">
+                      <div 
+                        className="bg-gradient-to-r from-primary-400 to-secondary-400 h-2 rounded-full transition-all duration-300"
+                        style={{ width: `${(currentCycle / settings.cyclesTarget) * 100}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Settings - moved from right side, smaller */}
+                <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-4 shadow-2xl border border-primary-400/30">
+                  <div className="flex items-center justify-center mb-3">
+                    <h3 className="text-sm font-bold text-white">Settings</h3>
+                  </div>
+                  <div className="flex justify-center">
+                    <Configurator
+                      settings={settings}
+                      onSettingsChange={setSettings}
+                      isSessionActive={state !== 'idle' && state !== 'session_complete'}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Center: Breath Orb */}
+            <div className="flex flex-col items-center space-y-8">
+              {/* Breath Orb - hide during session complete */}
+              {state !== 'session_complete' && (
+                <BreathOrb
+                  state={state}
+                  isInhale={isInhale}
+                  progress={getBreathProgress()}
+                  motionReduced={settings.motionReduced}
+                />
+              )}
+
+              {/* Session Active Indicator - Below Orb with consistent height to prevent jump */}
+              <div className="h-12 flex items-center justify-center">
+                {state !== 'idle' && state !== 'session_complete' && (
+                  <div className="inline-flex items-center bg-gradient-to-r from-primary-600/30 to-secondary-600/30 backdrop-blur-sm text-primary-200 px-6 py-3 rounded-full font-medium border border-primary-400/50 shadow-lg">
+                    Session Active • Cycle {currentCycle} of {settings.cyclesTarget}
+                  </div>
+                )}
+              </div>
+
+              {/* Phase Timer - ONLY show during hold phases (not breathing) */}
+              {(state === 'exhale_hold_active' || state === 'inhale_hold_active') && (
+                <PhaseTimer
+                  timeMs={currentHoldDuration}
+                  phase={state === 'exhale_hold_active' ? 'exhale hold' : 'inhale hold'}
+                  isActive={true}
+                  className="mb-4"
+                />
+              )}
+            </div>
+
+            {/* Right Side: Start Session + Pro Tips */}
+            <div className="lg:justify-self-end">
+              <div className="space-y-4 max-w-xs">
+                {/* Control Buttons */}
+                <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-4 shadow-2xl border border-primary-400/30">
+                  <Controls
+                    state={state}
+                    onStart={startSession}
+                    onPause={pauseSession}
+                    onResume={resumeSession}
+                    onStartExhaleHold={startExhaleHold}
+                    onStartInhaleHold={startInhaleHold}
+                    onBeginInhaleHold={beginInhaleHold}
+                    onEndInhaleHold={endInhaleHold}
+                    onNextCycle={nextCycle}
+                    onEndSession={endSession}
+                  />
+                </div>
+
+                {/* Pro Tips - moved from bottom */}
+                <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/30 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30 shadow-xl">
+                  <div className="flex items-center justify-center mb-3">
+                    <h4 className="font-bold text-primary-300 text-sm">💡 Pro Tips & Controls</h4>
+                  </div>
+                  <div className="flex items-center justify-center gap-3 text-xs text-gray-200 flex-wrap">
+                    <div className="flex items-center gap-1">
+                      <kbd className="bg-primary-600/30 text-primary-100 px-2 py-1 rounded border border-primary-400/40 font-mono font-bold shadow-lg text-xs">Space</kbd>
+                      <span className="text-white text-xs">advance</span>
+                    </div>
+                    <span className="text-gray-500">•</span>
+                    <div className="flex items-center gap-1">
+                      <kbd className="bg-amber-600/30 text-amber-100 px-2 py-1 rounded border border-amber-400/40 font-mono font-bold shadow-lg text-xs">P</kbd>
+                      <span className="text-white text-xs">pause</span>
+                    </div>
+                    <span className="text-gray-500">•</span>
+                    <div className="flex items-center gap-1">
+                      <kbd className="bg-red-600/30 text-red-100 px-2 py-1 rounded border border-red-400/40 font-mono font-bold shadow-lg text-xs">Esc</kbd>
+                      <span className="text-white text-xs">end</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Mobile: Show stats at bottom on small screens */}
+          <div className="lg:hidden mt-12">
             <SessionStats
               state={state}
               currentCycle={currentCycle}
@@ -426,43 +536,6 @@ export function BreathTrainingApp({ onSessionComplete }: BreathTrainingAppProps)
               bestInhaleHold={bestInhaleHold}
               settings={settings}
               cycles={completedCycles}
-            />
-          </div>
-
-          {/* Central Training Interface */}
-          <div className="flex flex-col items-center space-y-12">
-            {/* Breath Orb - hide during session complete */}
-            {state !== 'session_complete' && (
-              <BreathOrb
-                state={state}
-                isInhale={isInhale}
-                progress={getBreathProgress()}
-                motionReduced={settings.motionReduced}
-              />
-            )}
-
-            {/* Phase Timer - ONLY show during hold phases (not breathing) */}
-            {(state === 'exhale_hold_active' || state === 'inhale_hold_active') && (
-              <PhaseTimer
-                timeMs={currentHoldDuration}
-                phase={state === 'exhale_hold_active' ? 'exhale hold' : 'inhale hold'}
-                isActive={true}
-                className="mb-4"
-              />
-            )}
-
-            {/* Controls */}
-            <Controls
-              state={state}
-              onStart={startSession}
-              onPause={pauseSession}
-              onResume={resumeSession}
-              onStartExhaleHold={startExhaleHold}
-              onStartInhaleHold={startInhaleHold}
-              onBeginInhaleHold={beginInhaleHold}
-              onEndInhaleHold={endInhaleHold}
-              onNextCycle={nextCycle}
-              onEndSession={endSession}
             />
           </div>
         </div>
@@ -614,7 +687,7 @@ export function BreathTrainingApp({ onSessionComplete }: BreathTrainingAppProps)
 
       {/* Instructions for new users */}
       {state === 'idle' && (
-        <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm mx-4 mb-8 p-6 rounded-xl border border-primary-400/30 shadow-2xl max-w-2xl mx-auto">
+        <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm mx-4 mb-8 mt-16 p-6 rounded-xl border border-primary-400/30 shadow-2xl max-w-2xl mx-auto">
           <h3 className="text-xl font-bold text-white mb-3 drop-shadow-sm">How It Works</h3>
           <ol className="space-y-2 text-gray-200">
             <li className="flex items-start">

@@ -1,0 +1,424 @@
+{
+  "source": "Elite Biogenix",
+  "baseUrl": "https://elitebiogenix.com",
+  "scrapedAt": "2024-09-10",
+  "categories": {
+    "glp1_metabolic": [
+      {
+        "id": "retatrutide-10mg",
+        "name": "Retatrutide",
+        "dosage": "10mg",
+        "price": 169.99,
+        "url": "https://elitebiogenix.com/product/retatrutide-10mg/",
+        "casNumber": null,
+        "type": "Triple-receptor agonist (GLP-1/GIP/Glucagon)",
+        "purity": "≥99% by HPLC-MS",
+        "researchDosage": {
+          "murine": "0.1-0.3mg/kg weekly, 8-12 weeks",
+          "primate": "0.05-0.15mg/kg biweekly, 12-16 weeks",
+          "canine": "0.07-0.2mg/kg weekly, 10-14 weeks"
+        },
+        "keyBenefits": [
+          "24.2% body weight reduction in primate models",
+          "Reduces liver fat content by 43-51% in NAFLD models"
+        ],
+        "storage": "36 months at -20°C, 28 days at 4°C post-reconstitution",
+        "category": "Weight Loss & Metabolic"
+      },
+      {
+        "id": "semaglutide-5mg",
+        "name": "Semaglutide",
+        "dosage": "5mg",
+        "price": 129.99,
+        "url": "https://elitebiogenix.com/product/semaglutide-5mg/",
+        "casNumber": "910463-68-2",
+        "type": "GLP-1 receptor agonist",
+        "purity": null,
+        "researchApplications": [
+          "Type 2 diabetes",
+          "Weight loss management",
+          "Glycemic control"
+        ],
+        "keyBenefits": [
+          "Dose-dependent reduction in HbA1c levels",
+          "Fasting plasma glucose reduction",
+          "Body weight reduction"
+        ],
+        "storage": "Keep refrigerated, DO NOT FREEZE, store lyophilized at -20°C, reconstituted at 4°C",
+        "reconstitution": "Use sterile bacteriostatic water, NEVER SHAKE to mix",
+        "category": "Weight Loss & Metabolic"
+      }
+    ],
+    "growth_hormone": [
+      {
+        "id": "cjc-1295-dac-5mg",
+        "name": "CJC-1295 DAC",
+        "dosage": "5mg",
+        "price": 84.99,
+        "url": "https://elitebiogenix.com/product/cjc-1295-dac-5mg/",
+        "casNumber": "863288-34-0",
+        "molecularFormula": "C152H252N44O42",
+        "halfLife": "6-8 days",
+        "purity": "Minimum 98%",
+        "keyFeatures": [
+          "Mimics GHRH",
+          "Extends half-life through Drug Affinity Complex (DAC) technology"
+        ],
+        "researchApplications": [
+          "Growth hormone production and release",
+          "IGF-1 stimulation"
+        ],
+        "category": "Growth Hormone"
+      },
+      {
+        "id": "ipamorelin-5mg",
+        "name": "Ipamorelin",
+        "dosage": "5mg",
+        "price": 55.00,
+        "url": "https://elitebiogenix.com/product/ipamorelin-5mg/",
+        "casNumber": "170851-70-4",
+        "molecularFormula": "C38H49N9O5",
+        "halfLife": "Approximately 2 hours",
+        "purity": "Minimum 99%",
+        "keyFeatures": [
+          "Selective growth hormone secretagogue",
+          "Minimal impact on other hormones"
+        ],
+        "researchApplications": [
+          "Growth hormone stimulation",
+          "Muscle mass preservation",
+          "Metabolic health"
+        ],
+        "category": "Growth Hormone"
+      },
+      {
+        "id": "tesamorelin-10mg",
+        "name": "Tesamorelin",
+        "dosage": "10mg",
+        "price": 95.99,
+        "url": "https://elitebiogenix.com/product/tesamorelin-10mg/",
+        "type": "Synthetic GHRH analog",
+        "purity": "≥98%",
+        "researchDosage": {
+          "inVitro": "10-100 nM",
+          "primate": "1-2 mg/day",
+          "rodent": "100-200 μg/kg"
+        },
+        "researchApplications": [
+          "Visceral fat reduction",
+          "Metabolic syndrome studies",
+          "Insulin sensitivity enhancement"
+        ],
+        "storage": "Lyophilized stable 24 months at -20°C, reconstituted stable 30 days at 4°C",
+        "category": "Growth Hormone"
+      },
+      {
+        "id": "peg-mgf-2mg",
+        "name": "PEG-MGF",
+        "dosage": "2mg",
+        "price": 74.99,
+        "url": "https://elitebiogenix.com/product/peg-mgf-2mg/",
+        "casNumber": "108174-48-7",
+        "type": "Pegylated IGF-1 derivative",
+        "halfLifeExtension": "From 5-7 minutes to 48-72 hours due to pegylation",
+        "keyFeatures": [
+          "Stimulates myoblast division",
+          "Increases muscle stem cell production"
+        ],
+        "storage": "Keep refrigerated, do NOT freeze, use bacteriostatic water",
+        "category": "Growth Hormone"
+      }
+    ],
+    "regenerative": [
+      {
+        "id": "bpc-157-5mg-10mg",
+        "name": "BPC-157",
+        "dosage": "5mg & 10mg",
+        "price": 54.99,
+        "priceRange": "54.99 - 97.99",
+        "url": "https://elitebiogenix.com/product/bpc-157-5mg-10mg/",
+        "casNumber": "137525-51-0",
+        "formula": "C62H98N16O22",
+        "sequence": "Gly-Glu-Pro-Pro-Pro-Gly-Lys-Pro-Ala-Asp-Asp-Ala-Gly-Leu-Val",
+        "purity": "≥99%",
+        "researchApplications": [
+          "Musculoskeletal tissue regeneration",
+          "Gastrointestinal system protection",
+          "Neurological protection & repair"
+        ],
+        "reconstitution": {
+          "5mg": "Add 2.5mL (2mg/mL)",
+          "10mg": "Add 5mL (2mg/mL)"
+        },
+        "storage": "Lyophilized 24 months at -20°C, reconstituted 7 days at 4°C",
+        "category": "Healing & Recovery"
+      },
+      {
+        "id": "tb-500-5mg",
+        "name": "TB-500 (Thymosin Beta-4)",
+        "dosage": "5mg",
+        "price": 64.99,
+        "url": "https://elitebiogenix.com/product/tb-500-thymosin-beta-4-5mg/",
+        "casNumber": "77591-33-4",
+        "formula": "C212H350N56O78S",
+        "molecularWeight": "4963.49 g/mol",
+        "purity": "≥99%",
+        "researchApplications": [
+          "Tissue regeneration",
+          "Wound healing",
+          "Angiogenesis",
+          "Anti-inflammatory pathways"
+        ],
+        "researchProtocols": {
+          "inVitro": "1-10 ng/mL",
+          "murine": "2-5 mg/kg, 2x/week"
+        },
+        "category": "Healing & Recovery"
+      },
+      {
+        "id": "ghk-cu-50mg",
+        "name": "GHK-CU Copper Peptide",
+        "dosage": "50mg",
+        "price": 59.99,
+        "url": "https://elitebiogenix.com/product/ghk-cu-copper-peptide-50mg/",
+        "casNumber": "89030-95-5",
+        "molecularFormula": "C14H22CuN6O4",
+        "color": "Purple (due to copper content)",
+        "purity": "Minimum 98%",
+        "researchApplications": [
+          "Skin regeneration",
+          "Collagen production",
+          "Wound healing",
+          "Neuroprotective properties"
+        ],
+        "category": "Healing & Recovery"
+      }
+    ],
+    "neurological": [
+      {
+        "id": "dsip-5mg",
+        "name": "DSIP (Delta Sleep Inducing Peptide)",
+        "dosage": "5mg",
+        "price": 48.99,
+        "url": "https://elitebiogenix.com/product/dsip-5mg/",
+        "casNumber": "62568-57-4",
+        "formula": "C35H48N10O15",
+        "molarMass": "848.81 g/mol",
+        "researchApplications": [
+          "Sleep regulation",
+          "Increases delta-wave activity",
+          "Enhances REM sleep",
+          "Potential pain reduction"
+        ],
+        "keyFeatures": [
+          "Can cross blood-brain barrier",
+          "Naturally occurring neuropeptide"
+        ],
+        "category": "Neurological & Cognitive"
+      },
+      {
+        "id": "adamax-10mg",
+        "name": "Adamax",
+        "dosage": "10mg",
+        "price": 69.99,
+        "url": "https://elitebiogenix.com/product/adamax-10mg/",
+        "purity": "≥98%",
+        "researchDosage": {
+          "inVitro": "10-500 μM",
+          "rodent": "5-50 mg/kg",
+          "primate": "3-20 mg/kg"
+        },
+        "researchApplications": [
+          "Cognitive enhancement",
+          "Memory formation",
+          "Neuroprotection",
+          "Synaptic plasticity"
+        ],
+        "mechanism": [
+          "AMPA receptor potentiation",
+          "Cholinergic enhancement"
+        ],
+        "category": "Neurological & Cognitive"
+      }
+    ],
+    "anti_aging": [
+      {
+        "id": "epitalon-10mg",
+        "name": "Epitalon",
+        "dosage": "10mg",
+        "price": 55.99,
+        "url": "https://elitebiogenix.com/product/epitalon-10mg/",
+        "casNumber": "307297-40-1",
+        "chemicalFormula": "C14H22N4O9",
+        "sequence": "Ala-Glu-Asp-Gly (Tetrapeptide)",
+        "purity": "≥98%",
+        "researchApplications": [
+          "Telomere extension",
+          "Cellular senescence studies",
+          "Anti-aging research",
+          "Neuroprotective effects"
+        ],
+        "researchDosage": {
+          "inVitro": "0.01-10 μg/mL",
+          "rodent": "0.05-1.0 mg/kg",
+          "primate": "0.1-0.5 mg/kg"
+        },
+        "category": "Anti-Aging & Longevity"
+      },
+      {
+        "id": "5-amino-1mq-45mg",
+        "name": "5-Amino-1MQ",
+        "dosage": "45mg",
+        "price": 75.99,
+        "url": "https://elitebiogenix.com/product/5-amino-1mq-45mg/",
+        "purity": "≥98% HPLC-verified",
+        "researchApplications": [
+          "NNMT inhibitor",
+          "Promotes adipose tissue browning",
+          "Boosts NAD+ levels",
+          "Supports mitochondrial biogenesis"
+        ],
+        "researchDosage": {
+          "inVitro": "1-10 µM",
+          "animal": "5-20 mg/kg",
+          "metabolic": "10-30 mg/kg (chronic)"
+        },
+        "category": "Anti-Aging & Longevity"
+      }
+    ],
+    "hormone_regulation": [
+      {
+        "id": "pt-141-10mg",
+        "name": "PT-141 (Bremelanotide)",
+        "dosage": "10mg",
+        "price": 55.99,
+        "url": "https://elitebiogenix.com/product/pt-141-bremelanotide-10mg/",
+        "casNumber": "1607799-13-2",
+        "chemicalFormula": "C50H68N14O10",
+        "classification": "Cyclic Heptapeptide",
+        "purity": "≥98%",
+        "researchApplications": [
+          "Central nervous system research",
+          "Behavioral neuroscience studies"
+        ],
+        "researchDosages": {
+          "inVitro": "1-100 μM",
+          "rodent": "0.1-2.0 mg/kg",
+          "primate": "0.05-0.5 mg/kg"
+        },
+        "category": "Hormone & Sexual Health"
+      },
+      {
+        "id": "kisspeptin-10mg",
+        "name": "Kisspeptin",
+        "dosage": "10mg",
+        "price": 85.99,
+        "url": "https://elitebiogenix.com/product/kisspeptin-10mg/",
+        "purity": "≥98%",
+        "researchApplications": [
+          "GnRH release mechanisms",
+          "Gonadotropin secretion studies",
+          "Fertility regulation"
+        ],
+        "researchProtocols": {
+          "inVitro": "1-100 nM, 2-24 hour exposure",
+          "rodent": "0.1-5.0 nmol/kg",
+          "primate": "0.1-1.0 μg/kg"
+        },
+        "category": "Hormone & Sexual Health"
+      },
+      {
+        "id": "melanotan-2-10mg",
+        "name": "Melanotan-2",
+        "dosage": "10mg",
+        "price": 49.99,
+        "url": "https://elitebiogenix.com/product/melanotan-2-10mg/",
+        "casNumber": "121062-08-6",
+        "molecularFormula": "C50H69N15O9",
+        "halfLife": "Approximately 2 hours",
+        "purity": "Minimum 96%",
+        "researchApplications": [
+          "Skin pigmentation",
+          "Weight management",
+          "Impulse control",
+          "Potential autism spectrum disorder treatment"
+        ],
+        "category": "Hormone & Sexual Health"
+      }
+    ],
+    "specialized": [
+      {
+        "id": "kpv-10mg",
+        "name": "KPV",
+        "dosage": "10mg",
+        "price": 50.99,
+        "url": "https://elitebiogenix.com/product/kpv-10mg/",
+        "type": "Tripeptide (Lysine-Proline-Valine)",
+        "purity": "≥98% HPLC-verified",
+        "researchApplications": [
+          "Anti-inflammatory studies",
+          "Skin regeneration",
+          "Gut barrier integrity research",
+          "Neuroprotective effects"
+        ],
+        "mechanisms": [
+          "NF-κB pathway inhibition",
+          "Melanocortin receptor modulation"
+        ],
+        "category": "Anti-Inflammatory"
+      },
+      {
+        "id": "slu-pp-332-5mg",
+        "name": "SLU-PP-332",
+        "dosage": "5mg With DMSO 60ml",
+        "price": 92.99,
+        "url": "https://elitebiogenix.com/product/slu-pp-332-5mg/",
+        "type": "Selective Estrogen-Related Receptor Alpha (ERRα) agonist",
+        "purity": "≥98% HPLC/MS verified",
+        "includes": "5mg SLU-PP-332 + 60ml DMSO Solution",
+        "researchApplications": [
+          "Metabolic disease & obesity mechanisms",
+          "Exercise endurance",
+          "Muscle remodeling",
+          "Neuroprotection",
+          "Anti-aging research"
+        ],
+        "category": "Metabolic Research"
+      }
+    ]
+  },
+  "qualityStandards": {
+    "purityRange": "≥96-99%",
+    "verification": ["HPLC", "Mass spectrometry"],
+    "manufacturing": "cGMP standards",
+    "formulation": "Sterile, endotoxin-free",
+    "testing": "Third-party lab testing available",
+    "disclaimer": "Research use only"
+  },
+  "storageProtocol": {
+    "lyophilized": "-20°C for 24-36 months",
+    "reconstituted": "4°C for 7-30 days (varies by peptide)",
+    "protection": "Protect from light and moisture",
+    "reconstitution": "Use sterile bacteriostatic water"
+  },
+  "summary": {
+    "totalProducts": 18,
+    "priceRange": "$48.99 - $169.99",
+    "topCategories": [
+      "Weight Loss & Metabolic",
+      "Growth Hormone",
+      "Healing & Recovery",
+      "Neurological & Cognitive",
+      "Anti-Aging & Longevity",
+      "Hormone & Sexual Health"
+    ],
+    "keyPeptides": [
+      "Retatrutide (Triple GLP-1/GIP/Glucagon)",
+      "Semaglutide (GLP-1)",
+      "BPC-157 (Body Protection Compound)",
+      "TB-500 (Thymosin Beta-4)",
+      "CJC-1295 DAC (Growth Hormone)",
+      "Tesamorelin (GHRH Analog)"
+    ]
+  }
+}

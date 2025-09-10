@@ -43,10 +43,10 @@ export function Configurator({ settings, onSettingsChange, isSessionActive }: Co
       <button
         onClick={() => setIsOpen(true)}
         disabled={isSessionActive}
-        className="bg-white hover:bg-gray-50 border border-gray-300 rounded-lg p-2 shadow-lg transition-colors disabled:opacity-50"
+        className="bg-gradient-to-r from-primary-600/60 to-secondary-600/60 hover:from-primary-500/80 hover:to-secondary-500/80 backdrop-blur-sm border border-primary-400/40 rounded-xl p-4 shadow-xl transition-all duration-200 disabled:opacity-50 hover:scale-105"
         title="Session Settings"
       >
-        <Settings className="w-5 h-5 text-gray-600" />
+        <Settings className="w-6 h-6 text-primary-200" />
       </button>
     )
   }

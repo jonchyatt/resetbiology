@@ -1,9 +1,23 @@
 import { prisma } from './prisma'
-import type { AccessLevel, UserPermissions } from './permissions'
+
+// Simplified type definitions since permissions module is missing
+type AccessLevel = 'guest' | 'trial' | 'basic' | 'premium' | 'admin'
+type UserPermissions = {
+  assessment: boolean
+  breathApp: boolean
+  portalPreview: boolean
+  audioModules: boolean
+  peptideTracking: boolean
+  workoutPlanning: boolean
+  nutritionTracking: boolean
+  education: boolean
+  gamification: boolean
+  affiliateSystem: boolean
+}
 
 export interface UserWithPermissions {
   id: string
-  email: string
+  email: string | null
   name?: string | null
   accessLevel: AccessLevel
   permissions: UserPermissions
