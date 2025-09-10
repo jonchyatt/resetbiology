@@ -146,6 +146,103 @@ node_modules/
 
 **Remember**: 30 minutes of proactive TypeScript checking saves 3+ hours of reactive deployment debugging.
 
+## CRITICAL: Vercel Deployment Guidelines - NEVER REPEAT THESE MISTAKES
+
+### **🚨 HARD-LEARNED LESSONS FROM SEPTEMBER 2025 DEPLOYMENT HELL**
+
+**GOLDEN RULE:** Keep it simple! Standard Next.js in root directory with minimal configuration.
+
+### **✅ CORRECT Vercel Setup (What Finally Worked):**
+
+1. **Project Structure:**
+   ```
+   /reset-biology-website/          ← Root directory
+   ├── package.json                 ← Next.js project files here
+   ├── next.config.ts
+   ├── src/app/                     ← App router
+   ├── public/                      ← Static assets
+   ├── prisma/
+   └── tsconfig.json
+   ```
+
+2. **Vercel Dashboard Settings:**
+   - **Root Directory**: `.` (root, not `app` subdirectory)
+   - **Framework Preset**: Next.js (auto-detected)
+   - **Build Command**: Leave empty (auto-detected)
+   - **Output Directory**: Leave empty (auto-detected)
+
+3. **NO vercel.json file needed!** Delete it entirely. Vercel auto-detects everything correctly.
+
+### **❌ WHAT BROKE DEPLOYMENT (Never Do This Again):**
+
+1. **Subdirectory Structure:** Having Next.js project in `/app` subdirectory
+   - Causes static asset serving failures (404 errors on all images)
+   - Path resolution issues with imports
+   - Complex build configuration requirements
+
+2. **Custom vercel.json with invalid runtimes:**
+   ```json
+   // ❌ WRONG - This breaks deployment
+   {
+     "functions": {
+       "src/app/api/**/*.ts": {
+         "runtime": "nodejs18.x"  // Invalid format!
+       }
+     }
+   }
+   ```
+
+3. **Wrong Root Directory Settings:**
+   - Setting Root Directory to `app` when project is in root
+   - Trying to fix with complex build commands instead of fixing structure
+
+### **🛠 Emergency Fix Protocol (If Deployment Breaks):**
+
+1. **Check for these common issues first:**
+   ```bash
+   # 1. Verify project is in root directory
+   ls -la package.json next.config.ts  # Should be in root
+   
+   # 2. Remove any problematic vercel.json
+   rm vercel.json  # Let Vercel auto-detect
+   
+   # 3. Test build locally
+   npm run build  # Must pass before deploying
+   
+   # 4. Test static assets locally
+   npm run dev
+   curl http://localhost:3000/logo1.png  # Should return 200
+   ```
+
+2. **Vercel Dashboard Quick Fixes:**
+   - Root Directory: Set to `.` (root)
+   - Framework: Next.js
+   - Build Command: Leave empty
+   - Clear all custom settings
+
+3. **If images still don't load:**
+   - Check if `public/` directory exists in root
+   - Verify image files are committed to git
+   - Wait for Vercel CDN cache to clear (5-10 minutes)
+
+### **📋 Pre-Deployment Checklist:**
+
+**Before every deployment:**
+- [ ] Project files in root directory (not subdirectory)
+- [ ] No `vercel.json` file (delete if exists)
+- [ ] `npm run build` passes locally
+- [ ] Static assets work locally: `curl localhost:3000/logo1.png`
+- [ ] All changes committed and pushed to GitHub
+- [ ] Vercel Root Directory set to `.` (root)
+
+### **🎯 Success Indicators:**
+- Build logs show: "Detected Next.js project"
+- No "Function Runtimes must have a valid version" errors
+- Images load correctly: `https://resetbiology.com/logo1.png` returns 200
+- No 404 errors on static assets
+
+**LESSON LEARNED:** Complexity kills deployments. Keep Next.js projects simple and let Vercel handle the magic.
+
 ## Testing Strategy
 Always use Playwright MCP to:
 - Test user flows after implementing features
