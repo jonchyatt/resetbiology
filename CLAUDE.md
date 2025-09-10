@@ -29,8 +29,16 @@ You have access to Playwright MCP which enables you to:
 - **Frontend**: Next.js with React/TypeScript
 - **Backend**: Next.js API routes with Prisma ORM
 - **Database**: SQLite (local development), PostgreSQL (production)
-- **Authentication**: NextAuth.js with Google OAuth
+- **Authentication**: Auth0 with Google OAuth and email connections
 - **Deployment**: Containerized for consistent environments
+
+## Authentication System (Auth0)
+-
+- **Domain**: dev-4n4ucz3too5e3w5j.us.auth0.com
+- **Integration**: @auth0/nextjs-auth0 SDK
+- **Routes**: `/api/auth/[...auth0]` (login, logout, callback, me)
+- **Protection**: ProtectedRoute component for secured pages
+- **User Management**: Auth0 dashboard + Prisma user sync via upsertFromAuth0
 
 ## Key Components to Build
 1. Public marketing landing pages with conversion optimization
@@ -51,7 +59,6 @@ You have access to Playwright MCP which enables you to:
 - Implement comprehensive testing with Playwright automation
 - Build iteratively with continuous testing feedback
 - Leverage self-healing capabilities to catch and fix issues
-- Maintain security best practices for medical/health data
 
 ## CRITICAL: TypeScript Error Debugging Protocol
 
@@ -76,10 +83,10 @@ npm run build
 - **Focus on source files first**: Test files don't affect deployment
 
 ### 3. Common TypeScript fixes for this project:
-- **NextAuth sessions**: `const session = sessionData as any`
+- **Session handling**: Authentication system temporarily simplified during migration
 - **Permissions casting**: `permissions: data.permissions as any as UserPermissions`
 - **SessionData properties**: Use `endedAt/startedAt` not `endAt/startAt`, `settings.cyclesTarget` not `targetCycles`
-- **NextAuth callbacks**: Add `({ param1, param2 }: any)` to all callback parameters
+- **Type assertions**: Use liberal type assertions with `as any` for complex interface mappings
 - **Test interfaces**: Cloudflare enforces stricter interface requirements than local builds - always provide ALL required properties even if marked optional locally
 - **Session strategy**: Use `strategy: "jwt" as const`
 
@@ -155,17 +162,78 @@ Store sensitive configuration in environment files:
 - JWT secrets for authentication
 - Payment processor credentials
 
-Remember: This is a medical/wellness platform - prioritize security, privacy, and accurate functionality over rapid development.
+Remember: This is a medical/wellness platform - maintain accurate functionality over rapid development.
+
+## CRITICAL: Visual Verification Protocol
+
+**MANDATORY: Every change must end with visual verification**
+
+### Required Workflow:
+1. Make changes
+2. Run tests: `npx playwright test`
+3. Start dev server: `cd app && npm run dev`
+4. **SHOW USER THE BROWSER** - http://localhost:3001
+5. **WAIT FOR USER APPROVAL** before considering task complete
+6. **NEVER** assume success without visual confirmation
+
+### Design System Enforcement:
+- **ALWAYS** use design system classes from `globals.css`
+- **NEVER** write custom Tailwind for styled components
+- Use: `card-primary`, `btn-primary`, `heading-primary`, etc.
+- **Prevents style violations and ensures consistency**
+
+## Auth0 Integration Guide
+
+### **Environment Variables Required**
+```bash
+# Auth0 Configuration (in .env.local)
+AUTH0_SECRET=oaZ0uKqOOpIa0JgX+pyGEFMZOp61aiYDJA6fgTjZqyDNWWJ1sR5OvHoJKp9E0QWQP1UKE21feOqFu7PICnXuWg==
+AUTH0_BASE_URL=http://localhost:3000
+AUTH0_ISSUER_BASE_URL=https://dev-4n4ucz3too5e3w5j.us.auth0.com
+AUTH0_CLIENT_ID=YDXQaFLWq8e5FuW5GMRBJ4wceomdAdzt
+AUTH0_CLIENT_SECRET=3sZkNiaeXNQC-rrHfQrYIxu6mev0WDM-_vF-HpZT0ICZZMkycFQeUK9KPb4Mu5sd
+```
+
+### **Key Files & Components**
+- **API Route**: `/src/app/api/auth/[...auth0]/route.ts` - Handles all Auth0 endpoints
+- **Provider**: `/src/components/Auth/Auth0Provider.tsx` - Wraps app with UserProvider
+- **Login Component**: `/src/components/Auth/LoginButton.tsx` - Smart login/logout button
+- **Protection**: `/src/components/Auth/ProtectedRoute.tsx` - Protects secured pages
+- **User Sync**: `/src/lib/users/upsertFromAuth0.ts` - Syncs Auth0 users to Prisma DB
+
+### **Usage Examples**
+```tsx
+// Protected page
+import { ProtectedRoute } from '@/components/Auth/ProtectedRoute';
+export default function MyPage() {
+  return (
+    <ProtectedRoute>
+      <MyPageContent />
+    </ProtectedRoute>
+  );
+}
+
+// Access user data
+import { useUser } from '@auth0/nextjs-auth0/client';
+const { user, error, isLoading } = useUser();
+```
+
+### **Auth0 Routes Available**
+- `/api/auth/login` - Initiates login flow
+- `/api/auth/logout` - Logs out user
+- `/api/auth/callback` - OAuth callback handler
+- `/api/auth/me` - Returns current user info
+
+### **Current Status & Known Issues**
 
 ---
-## Automated Session Startup Process (WSL2)
+Automated Session Startup Process (WSL2)
 
-### **🚀 REQUIRED: Start Every Session With This**
-1. **Open Ubuntu Terminal**
-2. **Type**: `up` (alias that runs: cd claude-kimi && docker compose up -d)
-3. **Type**: `claude` 
-4. **⚡ AUTOMATIC VERIFICATION**: `check-setup` or `./verify-setup.sh`
+  🚀 REQUIRED: Start Every Session With This
 
+  1. Open Ubuntu Terminal
+  2. Type: claude
+  3. ⚡ AUTOMATIC VERIFICATION: check-setup or ./verify-setup.sh
 ### **What the Automated Check Verifies:**
 The script automatically verifies all 8 components from the YouTube video:
 - ✅ **WSL2** environment
@@ -302,7 +370,7 @@ cd app && npx playwright show-report
 ### Next.js Stack
 - **Frontend**: Next.js 15 with React 18 and TypeScript
 - **Database**: Prisma ORM with SQLite (development)
-- **Authentication**: NextAuth.js with Google OAuth
+- **Authentication**: Auth0 with Google OAuth (implementation in progress)
 - **Styling**: Tailwind CSS with custom components
 - **Testing**: Playwright for end-to-end testing
 
@@ -316,7 +384,7 @@ cd app && npx playwright show-report
 - **Gamification/**: Achievement and reward tracking
 
 #### API Routes (`app/src/app/api/`)
-- Authentication endpoints with NextAuth.js
+- Authentication endpoints (Auth0 implementation in progress)
 - Breath training session management
 - User progress and gamification tracking
 - Affiliate system integration

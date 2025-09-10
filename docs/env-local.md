@@ -1,0 +1,1 @@
+.env.local is a file you would place in the project root (same folder as package.json) for local-only environment variables. Next.js ignores it in git by default. We are not using it now because all env is set in Vercel. If needed later, you'd mirror DATABASE_URL=… there for local runs.
