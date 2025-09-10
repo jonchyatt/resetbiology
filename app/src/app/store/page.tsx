@@ -10,12 +10,7 @@ async function getPeptides() {
       { featured: 'desc' },
       { category: 'asc' },
       { name: 'asc' }
-    ],
-    include: {
-      _count: {
-        select: { educationContent: true }
-      }
-    }
+    ]
   });
 }
 

@@ -5,6 +5,9 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
+    "vercel-build": "next build",
+    "postinstall": "prisma generate",
+    "prisma:generate": "prisma generate",
     "build:worker": "npx @opennextjs/cloudflare build",
     "build:full": "npm run build && npm run build:worker",
     "start": "next start",

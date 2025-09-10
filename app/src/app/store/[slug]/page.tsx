@@ -8,7 +8,7 @@ async function getPeptide(slug: string) {
   return prisma.peptide.findUnique({
     where: { slug },
     include: {
-      educationContent: {
+      peptide_education: {
         where: { isPublished: true },
         orderBy: { displayOrder: 'asc' }
       }
@@ -201,11 +201,11 @@ export default async function PeptidePage({ params }: PageProps) {
               )}
 
               {/* Education Content */}
-              {peptide.educationContent.length > 0 && (
+              {peptide.peptide_education.length > 0 && (
                 <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-8 shadow-2xl border border-primary-400/30">
                   <h2 className="text-2xl md:text-3xl font-bold text-white mb-6 text-shadow-lg">Educational Resources</h2>
                   <div className="space-y-6">
-                    {peptide.educationContent.map((content) => (
+                    {peptide.peptide_education.map((content) => (
                       <div key={content.id} className="border-b border-primary-400/30 pb-6 last:border-b-0 last:pb-0">
                         <h3 className="text-xl font-semibold text-white mb-3">{content.title}</h3>
                         <div className="prose max-w-none text-gray-200" dangerouslySetInnerHTML={{ __html: content.content.replace(/\n/g, '<br/>') }} />

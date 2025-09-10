@@ -63,10 +63,11 @@ export async function importEliteBiogenixPeptides() {
   // Create categories
   for (const [slug, name] of Object.entries(categoryMap)) {
     try {
-      await prisma.peptideCategory.upsert({
+      await prisma.peptide_categories.upsert({
         where: { slug },
         update: { name },
         create: {
+          id: slug, // Use slug as ID since it's unique
           name,
           slug,
           description: `Research peptides in the ${name} category`,
@@ -199,13 +200,15 @@ async function createEducationContent(peptideId: string, peptideData: EliteBioge
   
   for (const section of educationSections) {
     try {
-      await prisma.peptideEducation.create({
+      await prisma.peptide_education.create({
         data: {
+          id: `${peptideId}-${section.type}-${section.displayOrder}`, // Generate unique ID
           peptideId,
           title: section.title,
           content: section.content,
           type: section.type,
           displayOrder: section.displayOrder,
+          updatedAt: new Date(), // Explicit updatedAt
         },
       });
     } catch (error) {
