@@ -407,26 +407,30 @@ export function BreathTrainingApp({ onSessionComplete }: BreathTrainingAppProps)
           {/* Three Column Layout: Left = Controls, Center = Orb, Right = How it Works */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
             
-            {/* Left Side: Start Session on top, then Breath Count and Settings side by side */}
-            <div className="space-y-4">
-              {/* Control Buttons - moved to top, smaller width */}
-              <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-4 shadow-2xl border border-primary-400/30 max-w-sm">
-                <Controls
-                  state={state}
-                  onStart={startSession}
-                  onPause={pauseSession}
-                  onResume={resumeSession}
-                  onStartExhaleHold={startExhaleHold}
-                  onStartInhaleHold={startInhaleHold}
-                  onBeginInhaleHold={beginInhaleHold}
-                  onEndInhaleHold={endInhaleHold}
-                  onNextCycle={nextCycle}
-                  onEndSession={endSession}
-                />
+            {/* Left Side: Breath Count and Settings side by side on top, then keyboard shortcuts */}
+            <div className="space-y-4 flex flex-col items-center">
+              {/* Keyboard Shortcuts - moved to top, same size as Start Session */}
+              <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-4 shadow-2xl border border-primary-400/30 max-w-lg">
+                <div className="flex items-center justify-center gap-4 text-sm text-gray-200 flex-wrap">
+                  <div className="flex items-center gap-1">
+                    <kbd className="bg-primary-600/30 text-primary-100 px-2 py-1 rounded border border-primary-400/40 font-mono font-bold shadow-lg text-xs">Space</kbd>
+                    <span className="text-white text-xs">advance</span>
+                  </div>
+                  <span className="text-gray-500">•</span>
+                  <div className="flex items-center gap-1">
+                    <kbd className="bg-amber-600/30 text-amber-100 px-2 py-1 rounded border border-amber-400/40 font-mono font-bold shadow-lg text-xs">P</kbd>
+                    <span className="text-white text-xs">pause</span>
+                  </div>
+                  <span className="text-gray-500">•</span>
+                  <div className="flex items-center gap-1">
+                    <kbd className="bg-red-600/30 text-red-100 px-2 py-1 rounded border border-red-400/40 font-mono font-bold shadow-lg text-xs">Esc</kbd>
+                    <span className="text-white text-xs">end</span>
+                  </div>
+                </div>
               </div>
 
               {/* Breath Count and Settings side by side - much smaller */}
-              <div className="grid grid-cols-2 gap-2 max-w-sm">
+              <div className="grid grid-cols-2 gap-2 max-w-sm mx-auto">
                 {/* Breath Count Card - half width, centered content */}
                 <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-3 shadow-2xl border border-primary-400/30">
                   <h3 className="text-sm font-bold text-white mb-2 text-center">Breath Count</h3>
@@ -506,24 +510,20 @@ export function BreathTrainingApp({ onSessionComplete }: BreathTrainingAppProps)
                 />
               )}
 
-              {/* Pro Tips - flattened under animation */}
-              <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-4 shadow-2xl border border-primary-400/30 max-w-lg mb-8">
-                <div className="flex items-center justify-center gap-4 text-sm text-gray-200 flex-wrap">
-                  <div className="flex items-center gap-1">
-                    <kbd className="bg-primary-600/30 text-primary-100 px-2 py-1 rounded border border-primary-400/40 font-mono font-bold shadow-lg text-xs">Space</kbd>
-                    <span className="text-white text-xs">advance</span>
-                  </div>
-                  <span className="text-gray-500">•</span>
-                  <div className="flex items-center gap-1">
-                    <kbd className="bg-amber-600/30 text-amber-100 px-2 py-1 rounded border border-amber-400/40 font-mono font-bold shadow-lg text-xs">P</kbd>
-                    <span className="text-white text-xs">pause</span>
-                  </div>
-                  <span className="text-gray-500">•</span>
-                  <div className="flex items-center gap-1">
-                    <kbd className="bg-red-600/30 text-red-100 px-2 py-1 rounded border border-red-400/40 font-mono font-bold shadow-lg text-xs">Esc</kbd>
-                    <span className="text-white text-xs">end</span>
-                  </div>
-                </div>
+              {/* Start Session Controls - moved from left column */}
+              <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-4 shadow-2xl border border-primary-400/30 max-w-lg mb-8">
+                <Controls
+                  state={state}
+                  onStart={startSession}
+                  onPause={pauseSession}
+                  onResume={resumeSession}
+                  onStartExhaleHold={startExhaleHold}
+                  onStartInhaleHold={startInhaleHold}
+                  onBeginInhaleHold={beginInhaleHold}
+                  onEndInhaleHold={endInhaleHold}
+                  onNextCycle={nextCycle}
+                  onEndSession={endSession}
+                />
               </div>
             </div>
 
