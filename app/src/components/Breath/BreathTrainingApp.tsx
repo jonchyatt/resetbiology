@@ -392,11 +392,11 @@ export function BreathTrainingApp({ onSessionComplete }: BreathTrainingAppProps)
         </div>
       
         {/* Training Description */}
-        <div className="text-center py-8">
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 text-shadow-lg animate-fade-in">
+        <div className="text-center py-12">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-8 text-shadow-lg animate-fade-in">
             Guided <span className="text-primary-400">Breath Training</span>
           </h2>
-          <p className="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto font-medium leading-relaxed drop-shadow-sm">
+          <p className="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto font-medium leading-relaxed drop-shadow-sm mb-4">
             Master your nervous system through conscious breathing. Enhance your metabolic reset with precision breathing techniques.
           </p>
         </div>
@@ -404,37 +404,54 @@ export function BreathTrainingApp({ onSessionComplete }: BreathTrainingAppProps)
       {/* Main Training Interface */}
       <div className="flex-1 flex items-center justify-center px-4">
         <div className="w-full max-w-7xl">
-          {/* Three Column Layout: Left = Breath Count, Center = Orb, Right = Controls */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+          {/* Three Column Layout: Left = Controls, Center = Orb, Right = How it Works */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
             
-            {/* Left Side: Breath Count + Settings */}
-            <div className="lg:justify-self-start">
-              <div className="space-y-4 max-w-xs">
-                {/* Breath Count Card */}
-                <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 shadow-2xl border border-primary-400/30">
-                  <h3 className="text-lg font-bold text-white mb-4">Breath Count</h3>
-                  <div className="text-center mb-4">
-                    <div className="text-4xl font-bold text-primary-300 mb-2">{breathCount}</div>
-                    <div className="text-sm text-gray-300">of {settings.breathsPerCycle}</div>
+            {/* Left Side: Start Session on top, then Breath Count and Settings side by side */}
+            <div className="space-y-4">
+              {/* Control Buttons - moved to top, smaller width */}
+              <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-4 shadow-2xl border border-primary-400/30 max-w-sm">
+                <Controls
+                  state={state}
+                  onStart={startSession}
+                  onPause={pauseSession}
+                  onResume={resumeSession}
+                  onStartExhaleHold={startExhaleHold}
+                  onStartInhaleHold={startInhaleHold}
+                  onBeginInhaleHold={beginInhaleHold}
+                  onEndInhaleHold={endInhaleHold}
+                  onNextCycle={nextCycle}
+                  onEndSession={endSession}
+                />
+              </div>
+
+              {/* Breath Count and Settings side by side - much smaller */}
+              <div className="grid grid-cols-2 gap-2 max-w-sm">
+                {/* Breath Count Card - half width, centered content */}
+                <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-3 shadow-2xl border border-primary-400/30">
+                  <h3 className="text-sm font-bold text-white mb-2 text-center">Breath Count</h3>
+                  <div className="text-center mb-3">
+                    <div className="text-2xl font-bold text-primary-300 mb-1">{breathCount}</div>
+                    <div className="text-xs text-gray-300">of {settings.breathsPerCycle}</div>
                   </div>
-                  <div className="border-t border-primary-400/30 pt-4">
-                    <div className="text-sm text-gray-300 mb-2">Pace: {settings.pace.label}</div>
-                    <div className="text-xs text-gray-400">{settings.pace.inhaleMs/1000}s in • {settings.pace.exhaleMs/1000}s out</div>
+                  <div className="border-t border-primary-400/30 pt-2">
+                    <div className="text-xs text-gray-300 mb-1 text-center">Pace: {settings.pace.label}</div>
+                    <div className="text-xs text-gray-400 text-center">{settings.pace.inhaleMs/1000}s in • {settings.pace.exhaleMs/1000}s out</div>
                   </div>
-                  <div className="mt-4 pt-4 border-t border-primary-400/30">
-                    <div className="text-sm text-gray-300 mb-1">Cycle {currentCycle} of {settings.cyclesTarget}</div>
-                    <div className="w-full bg-primary-900/50 rounded-full h-2">
+                  <div className="mt-2 pt-2 border-t border-primary-400/30">
+                    <div className="text-xs text-gray-300 mb-1 text-center">Cycle {currentCycle} of {settings.cyclesTarget}</div>
+                    <div className="w-full bg-primary-900/50 rounded-full h-1">
                       <div 
-                        className="bg-gradient-to-r from-primary-400 to-secondary-400 h-2 rounded-full transition-all duration-300"
+                        className="bg-gradient-to-r from-primary-400 to-secondary-400 h-1 rounded-full transition-all duration-300"
                         style={{ width: `${(currentCycle / settings.cyclesTarget) * 100}%` }}
                       ></div>
                     </div>
                   </div>
                 </div>
 
-                {/* Settings - moved from right side, smaller */}
-                <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-4 shadow-2xl border border-primary-400/30">
-                  <div className="flex items-center justify-center mb-3">
+                {/* Settings - much smaller to match Breath Count */}
+                <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-3 shadow-2xl border border-primary-400/30">
+                  <div className="flex items-center justify-center mb-2">
                     <h3 className="text-sm font-bold text-white">Settings</h3>
                   </div>
                   <div className="flex justify-center">
@@ -478,50 +495,76 @@ export function BreathTrainingApp({ onSessionComplete }: BreathTrainingAppProps)
                   className="mb-4"
                 />
               )}
-            </div>
 
-            {/* Right Side: Start Session + Pro Tips */}
-            <div className="lg:justify-self-end">
-              <div className="space-y-4 max-w-xs">
-                {/* Control Buttons */}
-                <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-4 shadow-2xl border border-primary-400/30">
-                  <Controls
-                    state={state}
-                    onStart={startSession}
-                    onPause={pauseSession}
-                    onResume={resumeSession}
-                    onStartExhaleHold={startExhaleHold}
-                    onStartInhaleHold={startInhaleHold}
-                    onBeginInhaleHold={beginInhaleHold}
-                    onEndInhaleHold={endInhaleHold}
-                    onNextCycle={nextCycle}
-                    onEndSession={endSession}
-                  />
-                </div>
+              {/* Phase Timer - ONLY show during hold phases (not breathing) */}
+              {(state === 'exhale_hold_active' || state === 'inhale_hold_active') && (
+                <PhaseTimer
+                  timeMs={currentHoldDuration}
+                  phase={state === 'exhale_hold_active' ? 'exhale hold' : 'inhale hold'}
+                  isActive={true}
+                  className="mb-4"
+                />
+              )}
 
-                {/* Pro Tips - moved from bottom */}
-                <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/30 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30 shadow-xl">
-                  <div className="flex items-center justify-center mb-3">
-                    <h4 className="font-bold text-primary-300 text-sm">💡 Pro Tips & Controls</h4>
+              {/* Pro Tips - flattened under animation */}
+              <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-4 shadow-2xl border border-primary-400/30 max-w-lg mb-8">
+                <div className="flex items-center justify-center gap-4 text-sm text-gray-200 flex-wrap">
+                  <div className="flex items-center gap-1">
+                    <kbd className="bg-primary-600/30 text-primary-100 px-2 py-1 rounded border border-primary-400/40 font-mono font-bold shadow-lg text-xs">Space</kbd>
+                    <span className="text-white text-xs">advance</span>
                   </div>
-                  <div className="flex items-center justify-center gap-3 text-xs text-gray-200 flex-wrap">
-                    <div className="flex items-center gap-1">
-                      <kbd className="bg-primary-600/30 text-primary-100 px-2 py-1 rounded border border-primary-400/40 font-mono font-bold shadow-lg text-xs">Space</kbd>
-                      <span className="text-white text-xs">advance</span>
-                    </div>
-                    <span className="text-gray-500">•</span>
-                    <div className="flex items-center gap-1">
-                      <kbd className="bg-amber-600/30 text-amber-100 px-2 py-1 rounded border border-amber-400/40 font-mono font-bold shadow-lg text-xs">P</kbd>
-                      <span className="text-white text-xs">pause</span>
-                    </div>
-                    <span className="text-gray-500">•</span>
-                    <div className="flex items-center gap-1">
-                      <kbd className="bg-red-600/30 text-red-100 px-2 py-1 rounded border border-red-400/40 font-mono font-bold shadow-lg text-xs">Esc</kbd>
-                      <span className="text-white text-xs">end</span>
-                    </div>
+                  <span className="text-gray-500">•</span>
+                  <div className="flex items-center gap-1">
+                    <kbd className="bg-amber-600/30 text-amber-100 px-2 py-1 rounded border border-amber-400/40 font-mono font-bold shadow-lg text-xs">P</kbd>
+                    <span className="text-white text-xs">pause</span>
+                  </div>
+                  <span className="text-gray-500">•</span>
+                  <div className="flex items-center gap-1">
+                    <kbd className="bg-red-600/30 text-red-100 px-2 py-1 rounded border border-red-400/40 font-mono font-bold shadow-lg text-xs">Esc</kbd>
+                    <span className="text-white text-xs">end</span>
                   </div>
                 </div>
               </div>
+            </div>
+
+            {/* Right Side: How it Works */}
+            <div className="space-y-4">
+              {/* How It Works - moved to right side, always visible */}
+              <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm p-6 rounded-xl border border-primary-400/30 shadow-2xl">
+                  <h3 className="text-xl font-bold text-white mb-3 drop-shadow-sm">How It Works</h3>
+                  <ol className="space-y-2 text-gray-200">
+                    <li className="flex items-start">
+                      <span className="bg-primary-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold mr-3 mt-0.5 flex-shrink-0">1</span>
+                      <span><strong>Breathing Phase:</strong> Follow the orb rhythm for {settings.breathsPerCycle} breaths at your selected pace</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="bg-amber-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold mr-3 mt-0.5 flex-shrink-0">2</span>
+                      <span><strong>Exhale Hold:</strong> After the final exhale, press Space to start your exhale hold</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="bg-green-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold mr-3 mt-0.5 flex-shrink-0">3</span>
+                      <span><strong>Inhale Hold:</strong> When ready, press Space to inhale and hold as long as possible</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="bg-purple-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold mr-3 mt-0.5 flex-shrink-0">4</span>
+                      <span><strong>Complete Cycle:</strong> Press Space to exhale and finish the cycle</span>
+                    </li>
+                  </ol>
+                  <div className="mt-6 p-3 bg-gradient-to-br from-primary-600/20 to-secondary-600/30 backdrop-blur-sm rounded-xl border border-primary-400/30 shadow-xl">
+                    <div className="text-center">
+                      <div className="group relative inline-block">
+                        <a href="/education" className="text-primary-300 hover:text-primary-200 text-sm underline transition-colors">
+                          *nerd stuff - studies and research papers
+                        </a>
+                        <div className="absolute bottom-full left-0 mb-2 w-80 p-3 bg-gradient-to-br from-gray-900/95 to-gray-800/95 backdrop-blur-md rounded-lg border border-primary-400/40 shadow-2xl opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-50">
+                          <p className="text-xs text-gray-200 leading-relaxed">
+                            <strong>Low oxygen practice</strong> stimulates autophagy better than HIIT, while <strong>hypercarbia</strong> stimulates growth hormone - both crucial for reducing loose skin during weight loss.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
             </div>
           </div>
 
@@ -685,66 +728,6 @@ export function BreathTrainingApp({ onSessionComplete }: BreathTrainingAppProps)
         </div>
       )}
 
-      {/* Instructions for new users */}
-      {state === 'idle' && (
-        <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm mx-4 mb-8 mt-16 p-6 rounded-xl border border-primary-400/30 shadow-2xl max-w-2xl mx-auto">
-          <h3 className="text-xl font-bold text-white mb-3 drop-shadow-sm">How It Works</h3>
-          <ol className="space-y-2 text-gray-200">
-            <li className="flex items-start">
-              <span className="bg-primary-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold mr-3 mt-0.5 flex-shrink-0">1</span>
-              <span><strong>Breathing Phase:</strong> Follow the orb rhythm for {settings.breathsPerCycle} breaths at your selected pace</span>
-            </li>
-            <li className="flex items-start">
-              <span className="bg-amber-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold mr-3 mt-0.5 flex-shrink-0">2</span>
-              <span><strong>Exhale Hold:</strong> After the final exhale, press Space to start your exhale hold</span>
-            </li>
-            <li className="flex items-start">
-              <span className="bg-green-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold mr-3 mt-0.5 flex-shrink-0">3</span>
-              <span><strong>Inhale Hold:</strong> When ready, press Space to inhale and hold as long as possible</span>
-            </li>
-            <li className="flex items-start">
-              <span className="bg-purple-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold mr-3 mt-0.5 flex-shrink-0">4</span>
-              <span><strong>Complete Cycle:</strong> Press Space to exhale and finish the cycle</span>
-            </li>
-          </ol>
-          <div className="mt-6 p-4 bg-gradient-to-br from-primary-600/20 to-secondary-600/30 backdrop-blur-sm rounded-xl border border-primary-400/30 shadow-xl hover:shadow-primary-400/20 transition-all duration-300">
-            <div className="flex items-center justify-center mb-4">
-              <h4 className="font-bold text-primary-300 text-lg">💡 Pro Tips & Controls</h4>
-            </div>
-            <div className="flex items-center justify-center gap-4 text-sm text-gray-200 flex-wrap">
-              <div className="flex items-center gap-2">
-                <kbd className="bg-primary-600/30 text-primary-100 px-3 py-1.5 rounded-lg border border-primary-400/40 font-mono font-bold shadow-lg">Space</kbd>
-                <span className="text-white">to advance</span>
-              </div>
-              <span className="text-gray-500">•</span>
-              <div className="flex items-center gap-2">
-                <kbd className="bg-amber-600/30 text-amber-100 px-3 py-1.5 rounded-lg border border-amber-400/40 font-mono font-bold shadow-lg">P</kbd>
-                <span className="text-white">to pause</span>
-              </div>
-              <span className="text-gray-500">•</span>
-              <div className="flex items-center gap-2">
-                <kbd className="bg-red-600/30 text-red-100 px-3 py-1.5 rounded-lg border border-red-400/40 font-mono font-bold shadow-lg">Esc</kbd>
-                <span className="text-white">to end</span>
-              </div>
-            </div>
-            <div className="pt-2 border-t border-primary-400/20 text-primary-200 text-center">
-              <div className="group relative inline-block">
-                <a href="/education" className="text-primary-300 hover:text-primary-200 text-xs underline transition-colors">
-                  *nerd stuff
-                </a>
-                <div className="absolute bottom-full left-0 mb-2 w-80 p-3 bg-gradient-to-br from-gray-900/95 to-gray-800/95 backdrop-blur-md rounded-lg border border-primary-400/40 shadow-2xl opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-50">
-                  <p className="text-xs text-gray-200 leading-relaxed">
-                    <strong>Low oxygen practice</strong> stimulates autophagy better than HIIT, while <strong>hypercarbia</strong> stimulates growth hormone - both crucial for reducing loose skin during weight loss.
-                  </p>
-                  <div className="text-xs text-primary-300 mt-2">
-                    → Click for studies and research papers
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
       </div>
     </div>
   )
