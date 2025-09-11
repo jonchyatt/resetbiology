@@ -16,6 +16,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@auth0/nextjs-auth0": "^4.9.0",
     "@prisma/client": "^6.15.0",
     "@tailwindcss/forms": "^0.5.10",
     "@tailwindcss/typography": "^0.5.16",
@@ -26,6 +27,7 @@
     "framer-motion": "^12.23.12",
     "googleapis": "^159.0.0",
     "lucide-react": "^0.542.0",
+    "nanoid": "^5.1.5",
     "next": "15.5.2",
     "playwright": "^1.55.0",
     "prisma": "^6.15.0",

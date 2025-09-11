@@ -1,0 +1,284 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                     String                   @id @default(auto()) @map("_id") @db.ObjectId
+  name                   String?
+  email                  String?                  @unique
+  emailVerified          DateTime?
+  image                  String?
+  createdAt              DateTime                 @default(now())
+  updatedAt              DateTime                 @updatedAt
+  auth0Sub               String?                  @unique
+  rbClientId             String?                  @unique
+  displayName            String?
+  avatarUrl              String?
+  role                   String                   @default("basic")
+  profileJson            Json?
+  permissionsJson        Json?
+  accessLevel            String                   @default("guest")
+  permissions            Json?
+  subscriptionStatus     String                   @default("none")
+  subscriptionExpiry     DateTime?
+  trialStartDate         DateTime?
+  trialEndDate           DateTime?
+  drivePermissions       Json?
+  driveFolder            String?
+  profileData            Json?
+  irbApprovalStatus      String?
+  irbSubmissionDate      DateTime?
+  accounts               Account[]
+  sessions               Session[]
+  affiliateTracking      AffiliateTracking[]
+  breathSessions         BreathSession[]
+  progress               ClientProgress[]
+  gamificationPoints     GamificationPoint[]
+  moduleCompletions      ModuleCompletion[]
+  peptide_orders         peptide_orders[]
+  successDeposits        SuccessDeposit[]
+  user_peptide_protocols user_peptide_protocols[]
+
+  @@map("users")
+}
+
+model ClientProgress {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String  @db.ObjectId
+  metricType String
+  value      Float
+  date       DateTime @default(now())
+  notes      String?
+  user       User     @relation(fields: [userId], references: [id])
+
+  @@map("client_progress")
+}
+
+model ModuleCompletion {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId         String  @db.ObjectId
+  moduleId       String
+  completedAt    DateTime @default(now())
+  audioDuration  Int?
+  fullCompletion Boolean  @default(false)
+  user           User     @relation(fields: [userId], references: [id])
+
+  @@map("module_completions")
+}
+
+model GamificationPoint {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId         String  @db.ObjectId
+  pointType      String
+  amount         Int
+  earnedAt       DateTime @default(now())
+  activitySource String?
+  user           User     @relation(fields: [userId], references: [id])
+
+  @@map("gamification_points")
+}
+
+model SuccessDeposit {
+  id               String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId           String
+  amount           Float
+  status           String
+  payoutConditions Json
+  partnerShare     Float?
+  createdAt        DateTime  @default(now())
+  completedAt      DateTime?
+  user             User      @relation(fields: [userId], references: [id])
+
+  @@map("success_deposits")
+}
+
+model BreathSession {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId        String
+  sessionType   String
+  duration      Int
+  cycles        Int?
+  progressScore Float?
+  createdAt     DateTime @default(now())
+  user          User     @relation(fields: [userId], references: [id])
+
+  @@map("breath_sessions")
+}
+
+model AffiliateTracking {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String  @db.ObjectId
+  referralCode String   @unique
+  clicks       Int      @default(0)
+  conversions  Int      @default(0)
+  commissions  Float    @default(0)
+  createdAt    DateTime @default(now())
+  user         User     @relation(fields: [userId], references: [id])
+
+  @@map("affiliate_tracking")
+}
+
+model Assessment {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String? @db.ObjectId
+  responses    Json
+  results      Json?
+  irbSubmitted Boolean  @default(false)
+  createdAt    DateTime @default(now())
+
+  @@map("assessments")
+}
+
+model VariableReward {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String
+  rewardType String
+  amount     Int
+  claimedAt  DateTime @default(now())
+
+  @@map("variable_rewards")
+}
+
+model Account {
+  id                       String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId                   String  @db.ObjectId
+  type                     String
+  provider                 String
+  providerAccountId        String
+  refresh_token            String?
+  access_token             String?
+  expires_at               Int?
+  token_type               String?
+  scope                    String?
+  id_token                 String?
+  session_state            String?
+  refresh_token_expires_in Int?
+  user                     User    @relation(fields: [userId], references: [id])
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  sessionToken String   @unique
+  userId       String  @db.ObjectId
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Peptide {
+  id                     String                   @id @default(auto()) @map("_id") @db.ObjectId
+  slug                   String                   @unique
+  name                   String
+  dosage                 String?
+  price                  Float
+  originalUrl            String?
+  casNumber              String?
+  molecularFormula       String?
+  purity                 String?
+  halfLife               String?
+  type                   String?
+  classification         String?
+  researchApplications   Json?
+  keyBenefits            Json?
+  keyFeatures            Json?
+  mechanisms             Json?
+  researchDosage         Json?
+  researchProtocols      Json?
+  color                  String?
+  sequence               String?
+  molecularWeight        String?
+  storage                String?
+  reconstitution         String?
+  category               String
+  subcategory            String?
+  inStock                Boolean                  @default(true)
+  featured               Boolean                  @default(false)
+  createdAt              DateTime                 @default(now())
+  updatedAt              DateTime                 @updatedAt
+  peptide_education      peptide_education[]
+  peptide_orders         peptide_orders[]
+  user_peptide_protocols user_peptide_protocols[]
+
+  @@map("peptides")
+}
+
+model peptide_categories {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  name         String   @unique
+  slug         String   @unique
+  description  String?
+  displayOrder Int?     @default(0)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+}
+
+model peptide_doses {
+  id                     String                 @id @default(auto()) @map("_id") @db.ObjectId
+  protocolId             String  @db.ObjectId
+  doseDate               DateTime
+  dosage                 String
+  time                   String?
+  notes                  String?
+  sideEffects            String?
+  createdAt              DateTime               @default(now())
+  user_peptide_protocols user_peptide_protocols @relation(fields: [protocolId], references: [id])
+}
+
+model peptide_education {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  peptideId    String  @db.ObjectId
+  title        String
+  content      String
+  type         String
+  displayOrder Int?     @default(0)
+  isPublished  Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime
+  peptides     Peptide  @relation(fields: [peptideId], references: [id])
+}
+
+model peptide_orders {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String  @db.ObjectId
+  peptideId    String  @db.ObjectId
+  quantity     Int
+  unitPrice    Float
+  totalPrice   Float
+  status       String   @default("pending")
+  orderDate    DateTime @default(now())
+  shippingInfo Json?
+  trackingInfo Json?
+  peptides     Peptide  @relation(fields: [peptideId], references: [id])
+  users        User     @relation(fields: [userId], references: [id])
+}
+
+model user_peptide_protocols {
+  id            String          @id @default(auto()) @map("_id") @db.ObjectId
+  userId        String
+  peptideId     String
+  startDate     DateTime        @default(now())
+  endDate       DateTime?
+  dosage        String
+  frequency     String
+  notes         String?
+  isActive      Boolean         @default(true)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime
+  peptide_doses peptide_doses[]
+  peptides      Peptide         @relation(fields: [peptideId], references: [id])
+  users         User            @relation(fields: [userId], references: [id])
+}

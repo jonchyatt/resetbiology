@@ -3,10 +3,13 @@
 import Link from "next/link"
 import { useState } from "react"
 import { Menu, X } from "lucide-react"
-import { SignInButton } from "@/components/Auth/SignInButton"
+// Temporarily removed Auth0 useUser due to Next.js 15 compatibility
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  // Temporarily simplified due to Auth0 Next.js 15 compatibility issues
+  const user = null as any; // Will be replaced with proper Auth0 once compatibility is resolved
+  const isLoading = false;
 
   return (
     <header className="fixed top-0 w-full z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200">
@@ -44,7 +47,26 @@ export function Header() {
             <Link href="/admin" className="text-gray-700 hover:text-orange-600 font-medium transition-colors">
               Admin
             </Link>
-            <SignInButton />
+            {!isLoading && (
+              user ? (
+                <div className="flex items-center space-x-4">
+                  <span className="text-gray-700">Hello, {user.name || user.email}</span>
+                  <a 
+                    href="/api/auth/logout" 
+                    className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+                  >
+                    Logout
+                  </a>
+                </div>
+              ) : (
+                <a 
+                  href="/api/auth/login" 
+                  className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors"
+                >
+                  Login
+                </a>
+              )
+            )}
           </nav>
 
           {/* Mobile Menu Button */}
@@ -78,9 +100,28 @@ export function Header() {
               <Link href="/admin" className="text-gray-700 hover:text-orange-600 font-medium">
                 Admin
               </Link>
-              <div className="pt-2">
-                <SignInButton showUserInfo={true} />
-              </div>
+              {!isLoading && (
+                <div className="pt-2">
+                  {user ? (
+                    <div className="space-y-2">
+                      <div className="text-gray-700">Hello, {user.name || user.email}</div>
+                      <a 
+                        href="/api/auth/logout" 
+                        className="block px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors text-center"
+                      >
+                        Logout
+                      </a>
+                    </div>
+                  ) : (
+                    <a 
+                      href="/api/auth/login" 
+                      className="block px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors text-center"
+                    >
+                      Login
+                    </a>
+                  )}
+                </div>
+              )}
             </nav>
           </div>
         )}
