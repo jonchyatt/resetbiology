@@ -1,10 +1,7 @@
-import type { ReactNode } from 'react';
-import { Header } from '@/components/Navigation/Header';
 import './globals.css';
+import Header from '@/components/Navigation/Header';
 
-export const metadata = { title: 'ResetBiology' };
-
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body>
