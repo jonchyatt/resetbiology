@@ -10,10 +10,10 @@ export default async function PortalPage() {
     <main className="p-6">
       <h1 className="text-2xl font-semibold">Your Portal</h1>
       <p>Portal access - Auth0 integration pending Next.js 15 compatibility fix</p>
-      <div className="mt-4">
-        <a href="/api/auth/login" className="text-blue-600 hover:text-blue-800">Sign in</a>
-        <a href="/api/auth/logout" className="ml-4 text-red-600 hover:text-red-800">Sign out</a>
-      </div>
+      <p>
+        <a href="/api/auth/login">Sign in</a>
+        <a href="/api/auth/logout" className="ml-4">Sign out</a>
+      </p>
     </main>
   );
 }
