@@ -1,9 +1,16 @@
-// app/layout.tsx
+import type { ReactNode } from 'react';
+import { Header } from '@/components/Navigation/Header';
+import './globals.css';
+
 export const metadata = { title: 'ResetBiology' };
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <Header />
+        {children}
+      </body>
     </html>
   );
 }
