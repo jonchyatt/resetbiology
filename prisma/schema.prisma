@@ -49,7 +49,7 @@ model User {
 
 model ClientProgress {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId     String   @db.ObjectId
+  userId     String  @db.ObjectId
   metricType String
   value      Float
   date       DateTime @default(now())
@@ -61,7 +61,7 @@ model ClientProgress {
 
 model ModuleCompletion {
   id             String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId         String   @db.ObjectId
+  userId         String  @db.ObjectId
   moduleId       String
   completedAt    DateTime @default(now())
   audioDuration  Int?
@@ -73,7 +73,7 @@ model ModuleCompletion {
 
 model GamificationPoint {
   id             String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId         String   @db.ObjectId
+  userId         String  @db.ObjectId
   pointType      String
   amount         Int
   earnedAt       DateTime @default(now())
@@ -112,7 +112,7 @@ model BreathSession {
 
 model AffiliateTracking {
   id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId       String   @db.ObjectId
+  userId       String  @db.ObjectId
   referralCode String   @unique
   clicks       Int      @default(0)
   conversions  Int      @default(0)
@@ -125,7 +125,7 @@ model AffiliateTracking {
 
 model Assessment {
   id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId       String   @db.ObjectId?
+  userId       String? @db.ObjectId
   responses    Json
   results      Json?
   irbSubmitted Boolean  @default(false)
@@ -146,7 +146,7 @@ model VariableReward {
 
 model Account {
   id                       String  @id @default(auto()) @map("_id") @db.ObjectId
-  userId                   String   @db.ObjectId
+  userId                   String  @db.ObjectId
   type                     String
   provider                 String
   providerAccountId        String
@@ -166,7 +166,7 @@ model Account {
 model Session {
   id           String   @id @default(auto()) @map("_id") @db.ObjectId
   sessionToken String   @unique
-  userId       String   @db.ObjectId
+  userId       String  @db.ObjectId
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id])
 }
@@ -228,7 +228,7 @@ model peptide_categories {
 
 model peptide_doses {
   id                     String                 @id @default(auto()) @map("_id") @db.ObjectId
-  protocolId             String   @db.ObjectId
+  protocolId             String  @db.ObjectId
   doseDate               DateTime
   dosage                 String
   time                   String?
@@ -240,7 +240,7 @@ model peptide_doses {
 
 model peptide_education {
   id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  peptideId    String   @db.ObjectId
+  peptideId    String  @db.ObjectId
   title        String
   content      String
   type         String
@@ -253,8 +253,8 @@ model peptide_education {
 
 model peptide_orders {
   id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId       String   @db.ObjectId
-  peptideId    String   @db.ObjectId
+  userId       String  @db.ObjectId
+  peptideId    String  @db.ObjectId
   quantity     Int
   unitPrice    Float
   totalPrice   Float
