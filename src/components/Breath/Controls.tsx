@@ -91,63 +91,58 @@ export function Controls({
           text: 'Start Session',
           action: onStart,
           icon: <Play className="w-5 h-5 mr-2" />,
-          color: 'bg-gradient-to-r from-primary-600/80 to-secondary-600/80 hover:from-primary-500/90 hover:to-secondary-500/90 backdrop-blur-sm'
+          color: 'bg-gradient-to-r from-primary-600/20 to-secondary-600/20 hover:from-primary-600/30 hover:to-secondary-600/30 backdrop-blur-sm'
         }
       case 'breathing_active':
-        return {
-          text: 'Pause',
-          action: onPause,
-          icon: <Pause className="w-5 h-5 mr-2" />,
-          color: 'bg-gradient-to-r from-amber-600/80 to-yellow-600/80 hover:from-amber-500/90 hover:to-yellow-500/90 backdrop-blur-sm'
-        }
+        return null // No primary button needed during breathing - pause/end are in secondary controls
       case 'paused':
         return {
           text: 'Resume',
           action: onResume,
           icon: <Play className="w-5 h-5 mr-2" />,
-          color: 'bg-gradient-to-r from-green-600/80 to-emerald-600/80 hover:from-green-500/90 hover:to-emerald-500/90 backdrop-blur-sm'
+          color: 'bg-gradient-to-r from-green-600/20 to-emerald-600/20 hover:from-green-600/30 hover:to-emerald-600/30 backdrop-blur-sm'
         }
       case 'exhale_hold_ready':
         return {
           text: 'Start Exhale Hold',
           action: onStartExhaleHold,
           icon: <div className="w-5 h-5 mr-2 bg-amber-400 rounded-full" />,
-          color: 'bg-gradient-to-r from-amber-600/80 to-orange-600/80 hover:from-amber-500/90 hover:to-orange-500/90 backdrop-blur-sm'
+          color: 'bg-gradient-to-r from-amber-600/20 to-orange-600/20 hover:from-amber-600/30 hover:to-orange-600/30 backdrop-blur-sm'
         }
       case 'exhale_hold_active':
         return {
           text: 'Start Inhale Hold',
           action: onStartInhaleHold,
           icon: <div className="w-5 h-5 mr-2 bg-green-400 rounded-full" />,
-          color: 'bg-gradient-to-r from-green-600/80 to-teal-600/80 hover:from-green-500/90 hover:to-teal-500/90 backdrop-blur-sm'
+          color: 'bg-gradient-to-r from-green-600/20 to-teal-600/20 hover:from-green-600/30 hover:to-teal-600/30 backdrop-blur-sm'
         }
       case 'inhale_hold_active':
         return {
           text: 'End Inhale Hold (Exhale)',
           action: onEndInhaleHold,
           icon: <div className="w-5 h-5 mr-2 bg-blue-400 rounded-full" />,
-          color: 'bg-gradient-to-r from-blue-600/80 to-indigo-600/80 hover:from-blue-500/90 hover:to-indigo-500/90 backdrop-blur-sm'
+          color: 'bg-gradient-to-r from-blue-600/20 to-indigo-600/20 hover:from-blue-600/30 hover:to-indigo-600/30 backdrop-blur-sm'
         }
       case 'cycle_complete':
         return {
           text: 'Next Cycle',
           action: onNextCycle,
           icon: <SkipForward className="w-5 h-5 mr-2" />,
-          color: 'bg-gradient-to-r from-purple-600/80 to-violet-600/80 hover:from-purple-500/90 hover:to-violet-500/90 backdrop-blur-sm'
+          color: 'bg-gradient-to-r from-purple-600/20 to-violet-600/20 hover:from-purple-600/30 hover:to-violet-600/30 backdrop-blur-sm'
         }
       case 'session_complete':
         return {
           text: 'New Session',
           action: onStart,
           icon: <Play className="w-5 h-5 mr-2" />,
-          color: 'bg-gradient-to-r from-primary-600/80 to-secondary-600/80 hover:from-primary-500/90 hover:to-secondary-500/90 backdrop-blur-sm'
+          color: 'bg-gradient-to-r from-primary-600/20 to-secondary-600/20 hover:from-primary-600/30 hover:to-secondary-600/30 backdrop-blur-sm'
         }
       default:
         return {
           text: 'Start',
           action: onStart,
           icon: <Play className="w-5 h-5 mr-2" />,
-          color: 'bg-gradient-to-r from-primary-600/80 to-secondary-600/80 hover:from-primary-500/90 hover:to-secondary-500/90 backdrop-blur-sm'
+          color: 'bg-gradient-to-r from-primary-600/20 to-secondary-600/20 hover:from-primary-600/30 hover:to-secondary-600/30 backdrop-blur-sm'
         }
     }
   }
@@ -156,29 +151,50 @@ export function Controls({
 
   return (
     <div className="flex flex-col items-center space-y-4">
-      {/* Primary Control */}
-      <button
-        onClick={primary.action}
-        disabled={disabled}
-        className={`${primary.color} text-white font-bold py-4 px-8 rounded-xl transition-all duration-200 hover:scale-105 shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center text-lg w-full justify-center border border-primary-400/40`}
-      >
-        {primary.icon}
-        {primary.text}
-      </button>
+      {/* Primary Control - only show if not null */}
+      {primary && (
+        <button
+          onClick={primary.action}
+          disabled={disabled}
+          className={`${primary.color} text-white font-bold py-4 px-8 rounded-xl transition-all duration-200 hover:scale-105 shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center text-lg w-full justify-center border border-primary-400/30`}
+        >
+          {primary.icon}
+          {primary.text}
+        </button>
+      )}
 
-      {/* Secondary Controls */}
-      <div className="flex gap-3 w-full">
-        
-        {state !== 'idle' && state !== 'session_complete' && (
+      {/* Secondary Controls - Show Pause and End Session on same line when both available */}
+      {(state === 'breathing_active' || state === 'exhale_hold_active' || state === 'inhale_hold_active') && (
+        <div className="flex gap-3 w-full">
+          <button
+            onClick={onPause}
+            className="bg-gradient-to-r from-amber-600/20 to-yellow-600/20 hover:from-amber-600/30 hover:to-yellow-600/30 backdrop-blur-sm text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center shadow-xl border border-amber-400/30 text-sm flex-1 justify-center"
+          >
+            <Pause className="w-4 h-4 mr-1" />
+            Pause
+          </button>
           <button
             onClick={onEndSession}
-            className="bg-gradient-to-r from-red-600/80 to-rose-600/80 hover:from-red-500/90 hover:to-rose-500/90 backdrop-blur-sm text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center shadow-xl border border-red-400/40 text-sm flex-1 justify-center"
+            className="bg-gradient-to-r from-red-600/20 to-rose-600/20 hover:from-red-600/30 hover:to-rose-600/30 backdrop-blur-sm text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center shadow-xl border border-red-400/30 text-sm flex-1 justify-center"
           >
             <Square className="w-4 h-4 mr-1" />
             End Session
           </button>
-        )}
-      </div>
+        </div>
+      )}
+
+      {/* End Session only for paused state */}
+      {state === 'paused' && (
+        <div className="flex gap-3 w-full">
+          <button
+            onClick={onEndSession}
+            className="bg-gradient-to-r from-red-600/20 to-rose-600/20 hover:from-red-600/30 hover:to-rose-600/30 backdrop-blur-sm text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center shadow-xl border border-red-400/30 text-sm flex-1 justify-center"
+          >
+            <Square className="w-4 h-4 mr-1" />
+            End Session
+          </button>
+        </div>
+      )}
 
     </div>
   )

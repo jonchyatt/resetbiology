@@ -99,11 +99,8 @@ export function SessionStats({
                 <h3 className="text-2xl font-bold text-blue-300 drop-shadow-lg">Breathing Phase</h3>
                 <div className="w-3 h-3 bg-blue-400 rounded-full animate-pulse shadow-lg shadow-blue-400/50" />
               </div>
-              <div className="text-5xl font-bold text-white mb-4 font-mono tracking-wider drop-shadow-xl">
+              <div className="text-5xl font-bold text-white mb-6 font-mono tracking-wider drop-shadow-xl">
                 {breathCount} / {settings.breathsPerCycle}
-              </div>
-              <div className="text-lg text-gray-300 mb-6 font-medium">
-                Pace: <span className="text-blue-300">{settings.pace.label}</span> • {settings.pace.inhaleMs/1000}s in • {settings.pace.exhaleMs/1000}s out
               </div>
               <div className="w-full bg-gray-700/50 rounded-full h-3 backdrop-blur-sm border border-gray-600/30 shadow-inner">
                 <motion.div 

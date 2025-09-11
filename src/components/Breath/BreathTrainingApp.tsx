@@ -409,61 +409,63 @@ export function BreathTrainingApp({ onSessionComplete }: BreathTrainingAppProps)
             
             {/* Left Side: Breath Count and Settings side by side on top, then keyboard shortcuts */}
             <div className="space-y-4 flex flex-col items-center">
-              {/* Keyboard Shortcuts - moved to top, same size as Start Session */}
-              <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-4 shadow-2xl border border-primary-400/30 max-w-lg">
-                <div className="flex items-center justify-center gap-4 text-sm text-gray-200 flex-wrap">
-                  <div className="flex items-center gap-1">
-                    <kbd className="bg-primary-600/30 text-primary-100 px-2 py-1 rounded border border-primary-400/40 font-mono font-bold shadow-lg text-xs">Space</kbd>
-                    <span className="text-white text-xs">advance</span>
+              {/* Keyboard Shortcuts - properly balanced without awkward gaps */}
+              <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 shadow-2xl border border-primary-400/30">
+                <div className="flex items-center justify-center gap-3 text-lg text-gray-200">
+                  <div className="flex items-center gap-2">
+                    <kbd className="bg-primary-600/30 text-primary-100 px-3 py-2 rounded border border-primary-400/40 font-mono font-bold shadow-lg text-sm">Space</kbd>
+                    <span className="text-white text-sm font-medium">advance</span>
                   </div>
                   <span className="text-gray-500">•</span>
-                  <div className="flex items-center gap-1">
-                    <kbd className="bg-amber-600/30 text-amber-100 px-2 py-1 rounded border border-amber-400/40 font-mono font-bold shadow-lg text-xs">P</kbd>
-                    <span className="text-white text-xs">pause</span>
+                  <div className="flex items-center gap-2">
+                    <kbd className="bg-amber-600/30 text-amber-100 px-3 py-2 rounded border border-amber-400/40 font-mono font-bold shadow-lg text-sm">P</kbd>
+                    <span className="text-white text-sm font-medium">pause</span>
                   </div>
                   <span className="text-gray-500">•</span>
-                  <div className="flex items-center gap-1">
-                    <kbd className="bg-red-600/30 text-red-100 px-2 py-1 rounded border border-red-400/40 font-mono font-bold shadow-lg text-xs">Esc</kbd>
-                    <span className="text-white text-xs">end</span>
+                  <div className="flex items-center gap-2">
+                    <kbd className="bg-red-600/30 text-red-100 px-3 py-2 rounded border border-red-400/40 font-mono font-bold shadow-lg text-sm">Esc</kbd>
+                    <span className="text-white text-sm font-medium">end</span>
                   </div>
                 </div>
               </div>
 
-              {/* Breath Count and Settings side by side - much smaller */}
-              <div className="grid grid-cols-2 gap-2 max-w-sm mx-auto">
-                {/* Breath Count Card - half width, centered content */}
-                <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-3 shadow-2xl border border-primary-400/30">
-                  <h3 className="text-sm font-bold text-white mb-2 text-center">Breath Count</h3>
-                  <div className="text-center mb-3">
-                    <div className="text-2xl font-bold text-primary-300 mb-1">{breathCount}</div>
-                    <div className="text-xs text-gray-300">of {settings.breathsPerCycle}</div>
+              {/* Breath Count and Settings side by side - wider, more square */}
+              <div className="grid grid-cols-2 gap-3 max-w-md mx-auto">
+                {/* Breath Count Card - larger font for visual balance */}
+                <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-4 shadow-2xl border border-primary-400/30 aspect-square flex flex-col justify-between">
+                  <h3 className="text-lg font-bold text-white text-center">Breath Count</h3>
+                  <div className="text-center">
+                    <div className="text-5xl font-bold text-primary-300 mb-2">{breathCount}</div>
+                    <div className="text-lg text-gray-300">of {settings.breathsPerCycle}</div>
                   </div>
-                  <div className="border-t border-primary-400/30 pt-2">
-                    <div className="text-xs text-gray-300 mb-1 text-center">Pace: {settings.pace.label}</div>
-                    <div className="text-xs text-gray-400 text-center">{settings.pace.inhaleMs/1000}s in • {settings.pace.exhaleMs/1000}s out</div>
-                  </div>
-                  <div className="mt-2 pt-2 border-t border-primary-400/30">
-                    <div className="text-xs text-gray-300 mb-1 text-center">Cycle {currentCycle} of {settings.cyclesTarget}</div>
-                    <div className="w-full bg-primary-900/50 rounded-full h-1">
-                      <div 
-                        className="bg-gradient-to-r from-primary-400 to-secondary-400 h-1 rounded-full transition-all duration-300"
-                        style={{ width: `${(currentCycle / settings.cyclesTarget) * 100}%` }}
-                      ></div>
+                  <div className="text-center border-t border-primary-400/20 pt-2">
+                    <div className="text-sm text-gray-300">
+                      Cycle {currentCycle} of {settings.cyclesTarget}
                     </div>
                   </div>
                 </div>
 
-                {/* Settings - much smaller to match Breath Count */}
-                <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-3 shadow-2xl border border-primary-400/30">
-                  <div className="flex items-center justify-center mb-2">
-                    <h3 className="text-sm font-bold text-white">Settings</h3>
+                {/* Settings - square with pace/cycle info */}
+                <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-4 shadow-2xl border border-primary-400/30 aspect-square flex flex-col justify-between">
+                  <div className="text-center">
+                    <h3 className="text-sm font-bold text-white mb-2">Settings</h3>
+                    <div className="flex justify-center">
+                      <Configurator
+                        settings={settings}
+                        onSettingsChange={setSettings}
+                        isSessionActive={state !== 'idle' && state !== 'session_complete'}
+                      />
+                    </div>
                   </div>
-                  <div className="flex justify-center">
-                    <Configurator
-                      settings={settings}
-                      onSettingsChange={setSettings}
-                      isSessionActive={state !== 'idle' && state !== 'session_complete'}
-                    />
+                  
+                  {/* Pace info */}
+                  <div className="text-center space-y-1 border-t border-primary-400/20 pt-2">
+                    <div className="text-xs text-primary-300 font-medium">
+                      Pace: {settings.pace.label}
+                    </div>
+                    <div className="text-xs text-gray-300">
+                      {settings.pace.inhaleMs/1000}s in • {settings.pace.exhaleMs/1000}s out
+                    </div>
                   </div>
                 </div>
               </div>
@@ -510,8 +512,8 @@ export function BreathTrainingApp({ onSessionComplete }: BreathTrainingAppProps)
                 />
               )}
 
-              {/* Start Session Controls - moved from left column */}
-              <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-4 shadow-2xl border border-primary-400/30 max-w-lg mb-8">
+              {/* Start Session Controls - matching right side sizing and spacing */}
+              <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 shadow-2xl border border-primary-400/30 mb-8">
                 <Controls
                   state={state}
                   onStart={startSession}
@@ -530,7 +532,7 @@ export function BreathTrainingApp({ onSessionComplete }: BreathTrainingAppProps)
             {/* Right Side: How it Works */}
             <div className="space-y-4">
               {/* How It Works - moved to right side, always visible */}
-              <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm p-6 rounded-xl border border-primary-400/30 shadow-2xl">
+              <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm p-6 rounded-xl border border-primary-400/30 shadow-2xl">
                   <h3 className="text-xl font-bold text-white mb-3 drop-shadow-sm">How It Works</h3>
                   <ol className="space-y-2 text-gray-200">
                     <li className="flex items-start">
