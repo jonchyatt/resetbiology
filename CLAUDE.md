@@ -25,12 +25,44 @@ You have access to Playwright MCP which enables you to:
 - Identify and fix bugs by observing actual browser behavior
 - Implement self-healing code that responds to runtime errors
 
-## Architecture Requirements
-- **Frontend**: Next.js with React/TypeScript
-- **Backend**: Next.js API routes with Prisma ORM
-- **Database**: SQLite (local development), PostgreSQL (production)
-- **Authentication**: Auth0 with Google OAuth and email connections
-- **Deployment**: Containerized for consistent environments
+# Reset Biology – Stack Truth (Sept 2025)
+
+Auth: Auth0 (Passwordless Email/Magic Link)
+- Routes: /api/auth/[...auth0]
+- Protected: /portal (server component guard), /admin/*
+- Required env:
+  AUTH0_DOMAIN=dev-xxxx.us.auth0.com
+  AUTH0_ISSUER_BASE_URL=https://dev-xxxx.us.auth0.com
+  AUTH0_BASE_URL=https://resetbiology.com
+  AUTH0_CLIENT_ID=…
+  AUTH0_CLIENT_SECRET=…
+  AUTH0_SECRET=…
+
+Database: MongoDB Atlas via Prisma (no Supabase)
+- prisma/schema.prisma uses provider = "mongodb"
+- Env: DATABASE_URL="mongodb+srv://…/resetbiology?retryWrites=true&w=majority&appName=Cluster0"
+
+Payments: Stripe
+- Endpoints:
+  - POST /api/stripe/create-checkout
+  - POST /api/stripe/webhook
+- Env:
+  STRIPE_SECRET_KEY=sk_…
+  STRIPE_WEBHOOK_SECRET=whsec_…
+  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_…
+  (optional) STRIPE_TEST_PRICE_ID=price_…
+
+Local Development
+- Create `.env.local` with the same variables (Auth0, DATABASE_URL, Stripe).
+- Run: npm i && npx prisma generate && npm run dev
+- Test login: http://localhost:3000/api/auth/login
+
+Health Checks
+- DB: GET /api/health/db → {"ok":true,…}
+
+Notes
+- Supabase is no longer used for any environment (prod or local).
+- Do not add Supabase envs or packages back.
 
 ## Authentication System (Auth0)
 -
@@ -340,7 +372,7 @@ The script automatically verifies all 8 components from the YouTube video:
 - ✅ **Playwright** installation and browser availability
 - ✅ **Playwright MCP** server connection
 - ✅ **GitHub integration** (CLI working)
-- ✅ **Supabase CLI** for local database testing
+- ✅ **MongoDB CLI** for local database testing
 
 ### **Expected Output When All Working:**
 ```
@@ -435,16 +467,16 @@ cd app && npm install
 ### Database Operations
 ```bash
 # Push database schema changes
-cd app && DATABASE_URL="file:./dev.db" npx prisma db push
+npx prisma db push
 
 # Generate Prisma client
-cd app && npx prisma generate
+npx prisma generate
 
-# Reset database
-cd app && DATABASE_URL="file:./dev.db" npx prisma db push --reset-database
+# Reset database (use with caution)
+npx prisma db push --force-reset
 
 # View database
-cd app && npx prisma studio
+npx prisma studio
 ```
 
 ### Testing
@@ -466,8 +498,9 @@ cd app && npx playwright show-report
 
 ### Next.js Stack
 - **Frontend**: Next.js 15 with React 18 and TypeScript
-- **Database**: Prisma ORM with SQLite (development)
-- **Authentication**: Auth0 with Google OAuth (implementation in progress)
+- **Database**: Prisma ORM with MongoDB Atlas
+- **Authentication**: Auth0 with Passwordless Email/Magic Link
+- **Payments**: Stripe integration with webhooks
 - **Styling**: Tailwind CSS with custom components
 - **Testing**: Playwright for end-to-end testing
 
@@ -487,8 +520,8 @@ cd app && npx playwright show-report
 - Affiliate system integration
 
 ### Environment Configuration
-- Development: Uses `.env.local` and SQLite database
-- Production: Uses environment variables and PostgreSQL
+- Development: Uses `.env.local` with MongoDB Atlas connection
+- Production: Uses environment variables with same MongoDB Atlas connection
 
 ### Access Points
 - Website: http://localhost:3001 (or 3000)
