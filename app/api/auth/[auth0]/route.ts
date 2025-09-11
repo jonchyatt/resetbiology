@@ -31,3 +31,9 @@ export async function GET(request: Request, { params }: { params: Promise<{ auth
   
   return NextResponse.json({ error: 'Not found' }, { status: 404 });
 }
+
+// Add POST for callback/logout that use POST under the hood
+export async function POST(request: Request, { params }: { params: Promise<{ auth0: string }> }) {
+  // Handle POST requests the same way as GET for simplified implementation
+  return GET(request, { params });
+}
