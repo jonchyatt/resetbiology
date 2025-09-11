@@ -7,8 +7,9 @@ export const revalidate = 0;
 
 export async function GET() {
   try {
-    const ping = await prisma.$runCommandRaw({ ping: 1 });
-    return NextResponse.json({ ok: true, ping }, { status: 200 });
+    // Simple connection test for MongoDB
+    await prisma.$connect();
+    return NextResponse.json({ ok: true, status: 'connected' }, { status: 200 });
   } catch (e: any) {
     return NextResponse.json({ ok: false, error: e?.message || 'unknown' }, { status: 500 });
   }
