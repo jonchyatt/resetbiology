@@ -1,12 +1,13 @@
-import { getSession } from '@auth0/nextjs-auth0';
+// app/portal/page.tsx
 import { redirect } from 'next/navigation';
+import { auth0 } from '@/lib/auth0';
 import { upsertUserFromAuth0 } from '@/lib/users/upsertFromAuth0';
 
 export const dynamic = 'force-dynamic';
 
 export default async function PortalPage() {
-  const session = await getSession();
-  if (!session?.user) redirect('/api/auth/login');
+  const session = await auth0.getSession();
+  if (!session) redirect('/auth/login');
 
   await upsertUserFromAuth0({
     sub: session.user.sub!,
@@ -19,7 +20,7 @@ export default async function PortalPage() {
     <main className="p-6">
       <h1 className="text-2xl font-semibold">Your Portal</h1>
       <p>Signed in as {session.user.email}</p>
-      <p className="mt-4"><a href="/api/auth/logout">Sign out</a></p>
+      <p className="mt-4"><a href="/auth/logout">Sign out</a></p>
     </main>
   );
 }
