@@ -3,12 +3,12 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id                     String                   @id @default(cuid())
+  id                     String                   @id @default(auto()) @map("_id") @db.ObjectId
   name                   String?
   email                  String?                  @unique
   emailVerified          DateTime?
@@ -48,43 +48,43 @@ model User {
 }
 
 model ClientProgress {
-  id         String   @id @default(cuid())
-  userId     String
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String   @db.ObjectId
   metricType String
   value      Float
   date       DateTime @default(now())
   notes      String?
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id])
 
   @@map("client_progress")
 }
 
 model ModuleCompletion {
-  id             String   @id @default(cuid())
-  userId         String
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId         String   @db.ObjectId
   moduleId       String
   completedAt    DateTime @default(now())
   audioDuration  Int?
   fullCompletion Boolean  @default(false)
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user           User     @relation(fields: [userId], references: [id])
 
   @@map("module_completions")
 }
 
 model GamificationPoint {
-  id             String   @id @default(cuid())
-  userId         String
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId         String   @db.ObjectId
   pointType      String
   amount         Int
   earnedAt       DateTime @default(now())
   activitySource String?
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user           User     @relation(fields: [userId], references: [id])
 
   @@map("gamification_points")
 }
 
 model SuccessDeposit {
-  id               String    @id @default(cuid())
+  id               String    @id @default(auto()) @map("_id") @db.ObjectId
   userId           String
   amount           Float
   status           String
@@ -92,40 +92,40 @@ model SuccessDeposit {
   partnerShare     Float?
   createdAt        DateTime  @default(now())
   completedAt      DateTime?
-  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user             User      @relation(fields: [userId], references: [id])
 
   @@map("success_deposits")
 }
 
 model BreathSession {
-  id            String   @id @default(cuid())
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
   userId        String
   sessionType   String
   duration      Int
   cycles        Int?
   progressScore Float?
   createdAt     DateTime @default(now())
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user          User     @relation(fields: [userId], references: [id])
 
   @@map("breath_sessions")
 }
 
 model AffiliateTracking {
-  id           String   @id @default(cuid())
-  userId       String
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String   @db.ObjectId
   referralCode String   @unique
   clicks       Int      @default(0)
   conversions  Int      @default(0)
   commissions  Float    @default(0)
   createdAt    DateTime @default(now())
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User     @relation(fields: [userId], references: [id])
 
   @@map("affiliate_tracking")
 }
 
 model Assessment {
-  id           String   @id @default(cuid())
-  userId       String?
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String   @db.ObjectId?
   responses    Json
   results      Json?
   irbSubmitted Boolean  @default(false)
@@ -135,7 +135,7 @@ model Assessment {
 }
 
 model VariableReward {
-  id         String   @id @default(cuid())
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
   userId     String
   rewardType String
   amount     Int
@@ -145,8 +145,8 @@ model VariableReward {
 }
 
 model Account {
-  id                       String  @id @default(cuid())
-  userId                   String
+  id                       String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId                   String   @db.ObjectId
   type                     String
   provider                 String
   providerAccountId        String
@@ -158,17 +158,17 @@ model Account {
   id_token                 String?
   session_state            String?
   refresh_token_expires_in Int?
-  user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user                     User    @relation(fields: [userId], references: [id])
 
   @@unique([provider, providerAccountId])
 }
 
 model Session {
-  id           String   @id @default(cuid())
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
   sessionToken String   @unique
-  userId       String
+  userId       String   @db.ObjectId
   expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User     @relation(fields: [userId], references: [id])
 }
 
 model VerificationToken {
@@ -180,7 +180,7 @@ model VerificationToken {
 }
 
 model Peptide {
-  id                     String                   @id @default(cuid())
+  id                     String                   @id @default(auto()) @map("_id") @db.ObjectId
   slug                   String                   @unique
   name                   String
   dosage                 String?
@@ -217,7 +217,7 @@ model Peptide {
 }
 
 model peptide_categories {
-  id           String   @id
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
   name         String   @unique
   slug         String   @unique
   description  String?
@@ -227,20 +227,20 @@ model peptide_categories {
 }
 
 model peptide_doses {
-  id                     String                 @id
-  protocolId             String
+  id                     String                 @id @default(auto()) @map("_id") @db.ObjectId
+  protocolId             String   @db.ObjectId
   doseDate               DateTime
   dosage                 String
   time                   String?
   notes                  String?
   sideEffects            String?
   createdAt              DateTime               @default(now())
-  user_peptide_protocols user_peptide_protocols @relation(fields: [protocolId], references: [id], onDelete: Cascade)
+  user_peptide_protocols user_peptide_protocols @relation(fields: [protocolId], references: [id])
 }
 
 model peptide_education {
-  id           String   @id
-  peptideId    String
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  peptideId    String   @db.ObjectId
   title        String
   content      String
   type         String
@@ -248,13 +248,13 @@ model peptide_education {
   isPublished  Boolean  @default(true)
   createdAt    DateTime @default(now())
   updatedAt    DateTime
-  peptides     Peptide  @relation(fields: [peptideId], references: [id], onDelete: Cascade)
+  peptides     Peptide  @relation(fields: [peptideId], references: [id])
 }
 
 model peptide_orders {
-  id           String   @id
-  userId       String
-  peptideId    String
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String   @db.ObjectId
+  peptideId    String   @db.ObjectId
   quantity     Int
   unitPrice    Float
   totalPrice   Float
@@ -263,11 +263,11 @@ model peptide_orders {
   shippingInfo Json?
   trackingInfo Json?
   peptides     Peptide  @relation(fields: [peptideId], references: [id])
-  users        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  users        User     @relation(fields: [userId], references: [id])
 }
 
 model user_peptide_protocols {
-  id            String          @id
+  id            String          @id @default(auto()) @map("_id") @db.ObjectId
   userId        String
   peptideId     String
   startDate     DateTime        @default(now())
@@ -280,5 +280,5 @@ model user_peptide_protocols {
   updatedAt     DateTime
   peptide_doses peptide_doses[]
   peptides      Peptide         @relation(fields: [peptideId], references: [id])
-  users         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  users         User            @relation(fields: [userId], references: [id])
 }
