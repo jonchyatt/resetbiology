@@ -14,7 +14,7 @@ export function HeroSection() {
          }}>
 
       {/* Hero Section */}
-      <section className="min-h-screen flex items-center justify-center px-4 pt-8">
+      <section className="min-h-screen flex items-center justify-center px-4 pt-20">
         <div className="max-w-5xl mx-auto text-center">
           {/* Logo */}
           <div className="mb-12">

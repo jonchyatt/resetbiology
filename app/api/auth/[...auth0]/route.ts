@@ -7,10 +7,15 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   
   if (path === 'login') {
     // Redirect to Auth0 login
+    // Use production URL if we're on resetbiology.com, otherwise localhost
+    const baseUrl = request.headers.get('host')?.includes('resetbiology.com') 
+      ? 'https://resetbiology.com' 
+      : process.env.AUTH0_BASE_URL;
+    
     const authParams = new URLSearchParams({
       response_type: 'code',
       client_id: process.env.AUTH0_CLIENT_ID!,
-      redirect_uri: `${process.env.AUTH0_BASE_URL}/api/auth/callback`,
+      redirect_uri: `${baseUrl}/api/auth/callback`,
       scope: 'openid profile email',
       state: 'randomState'
     });
@@ -42,8 +47,12 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       // TODO: Implement proper token exchange and session creation
       
       // For now, set a simple cookie to indicate logged in status
+      const baseUrl = request.headers.get('host')?.includes('resetbiology.com') 
+        ? 'https://resetbiology.com' 
+        : process.env.AUTH0_BASE_URL;
+      
       const headers = new Headers();
-      headers.set('Location', `${process.env.AUTH0_BASE_URL}/portal`);
+      headers.set('Location', `${baseUrl}/portal`);
       headers.set('Set-Cookie', 'auth0-session=logged-in; Path=/; HttpOnly');
       
       return new Response(null, {
