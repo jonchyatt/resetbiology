@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { Book, ExternalLink, Search, Filter, ChevronDown, ChevronUp } from "lucide-react"
+import { PortalHeader } from "@/components/Navigation/PortalHeader"
 
 interface Study {
   id: string
@@ -288,23 +289,10 @@ export default function EducationPage() {
            backgroundAttachment: 'fixed'
          }}>
       <div className="relative z-10">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm shadow-2xl border-b border-primary-400/30">
-          <div className="container mx-auto px-4 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <img src="/logo1.png" alt="Reset Biology" className="h-8 w-auto mr-3 rounded-lg drop-shadow-lg bg-white/10 backdrop-blur-sm p-1 border border-white/20" />
-                <div>
-                  <h1 className="text-xl font-bold text-white drop-shadow-lg">Education Center</h1>
-                  <span className="text-lg text-gray-200 drop-shadow-sm">• Research & Science</span>
-                </div>
-              </div>
-              <a href="/portal" className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
-                ← Back to Portal
-              </a>
-            </div>
-          </div>
-        </div>
+        <PortalHeader 
+          section="Education Center"
+          subtitle="Research & Science"
+        />
 
         {/* Title */}
         <div className="text-center py-8">
@@ -319,7 +307,7 @@ export default function EducationPage() {
         {/* Search and Filter */}
         <div className="container mx-auto px-4 mb-8">
           <div className="max-w-4xl mx-auto">
-            <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-xl mb-8">
+            <div className="card-hover-primary mb-8">
               {/* Search Bar */}
               <div className="relative mb-6">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -333,19 +321,19 @@ export default function EducationPage() {
               </div>
 
               {/* Category Filter */}
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-wrap gap-3 justify-center">
                 {categories.map(category => (
                   <button
                     key={category.id}
                     onClick={() => setActiveCategory(category.id)}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
+                    className={`flex items-center gap-2 px-4 py-3 rounded-lg font-medium transition-all duration-300 hover:scale-105 ${
                       activeCategory === category.id
-                        ? 'bg-primary-500/30 text-primary-200 border border-primary-400/40 shadow-lg'
-                        : 'bg-gray-700/30 text-gray-300 border border-gray-600/30 hover:bg-gray-600/40 hover:text-white'
+                        ? 'bg-primary-500/30 text-primary-200 border border-primary-400/40 shadow-lg hover:shadow-primary-400/20'
+                        : 'bg-gray-700/30 text-gray-300 border border-gray-600/30 hover:bg-gray-600/40 hover:text-white hover:shadow-gray-400/10'
                     }`}
                   >
-                    <span className="text-sm">{category.icon}</span>
-                    <span className="text-sm">{category.name}</span>
+                    <span className="text-base">{category.icon}</span>
+                    <span className="text-sm font-medium">{category.name}</span>
                   </button>
                 ))}
               </div>
@@ -356,7 +344,7 @@ export default function EducationPage() {
               {filteredResearch.map(section => {
                 const isExpanded = expandedSections.includes(section.id)
                 return (
-                  <div key={section.id} className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl border border-primary-400/30 shadow-xl hover:shadow-primary-400/20 transition-all duration-300">
+                  <div key={section.id} className="education-card-hover">
                     {/* Section Header */}
                     <button
                       onClick={() => toggleSection(section.id)}

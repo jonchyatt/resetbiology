@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { ShoppingCart, Check, Star, Clock, Shield, CreditCard, Truck, RefreshCw, AlertCircle } from "lucide-react"
+import { PortalHeader } from "@/components/Navigation/PortalHeader"
 
 interface PeptidePackage {
   id: string
@@ -195,23 +196,10 @@ export default function OrderPage() {
            backgroundAttachment: 'fixed'
          }}>
       <div className="relative z-10">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm shadow-2xl border-b border-primary-400/30">
-          <div className="container mx-auto px-4 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <img src="/logo1.png" alt="Reset Biology" className="h-8 w-auto mr-3 rounded-lg drop-shadow-lg bg-white/10 backdrop-blur-sm p-1 border border-white/20" />
-                <div>
-                  <h1 className="text-xl font-bold text-white drop-shadow-lg">Order Peptides</h1>
-                  <span className="text-lg text-gray-200 drop-shadow-sm">• Premium Protocols</span>
-                </div>
-              </div>
-              <a href="/portal" className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
-                ← Back to Portal
-              </a>
-            </div>
-          </div>
-        </div>
+        <PortalHeader 
+          section="Order Peptides"
+          subtitle="Premium Protocols"
+        />
 
         {/* Title */}
         <div className="text-center py-8">

@@ -41,7 +41,7 @@ export function Header() {
             <Link href="/portal" className="text-gray-700 hover:text-teal-600 font-medium transition-colors">
               Portal
             </Link>
-            <Link href="/auth/profile" className="text-gray-700 hover:text-teal-600 font-medium transition-colors">
+            <Link href="/profile" className="text-gray-700 hover:text-teal-600 font-medium transition-colors">
               Profile
             </Link>
             <Link href="/admin" className="text-gray-700 hover:text-orange-600 font-medium transition-colors">
@@ -94,7 +94,7 @@ export function Header() {
               <Link href="/portal" className="text-gray-700 hover:text-teal-600 font-medium">
                 Portal
               </Link>
-              <Link href="/auth/profile" className="text-gray-700 hover:text-teal-600 font-medium">
+              <Link href="/profile" className="text-gray-700 hover:text-teal-600 font-medium">
                 Profile
               </Link>
               <Link href="/admin" className="text-gray-700 hover:text-orange-600 font-medium">

@@ -60,13 +60,13 @@ test.describe('Peptide Tracker - Issue Testing', () => {
       await page.waitForTimeout(1000)
       
       // Check if dose appears in Today's Doses
-      const todaysDoses = page.locator('text=Today\\'s Doses')
+      const todaysDoses = page.locator('text=Today\'s Doses')
       const testDoseNote = page.locator('text=Test dose from active protocols')
       
       if (await testDoseNote.isVisible()) {
-        console.log('✅ Logged dose shows notes in Today\\'s Doses')
+        console.log('✅ Logged dose shows notes in Today\'s Doses')
       } else {
-        console.log('❌ Logged dose notes not visible in Today\\'s Doses')
+        console.log('❌ Logged dose notes not visible in Today\'s Doses')
       }
       
     } else {

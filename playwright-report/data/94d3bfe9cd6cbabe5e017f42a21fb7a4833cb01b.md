@@ -1,0 +1,119 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e4]:
+      - link "Reset Biology" [ref=e5] [cursor=pointer]:
+        - /url: /
+        - img "Reset Biology" [ref=e6] [cursor=pointer]
+      - navigation [ref=e7]:
+        - link "How It Works" [ref=e8] [cursor=pointer]:
+          - /url: /process
+        - link "Breath Training" [ref=e9] [cursor=pointer]:
+          - /url: /breath
+        - link "Research" [ref=e10] [cursor=pointer]:
+          - /url: /education
+        - link "Order" [ref=e11] [cursor=pointer]:
+          - /url: /order
+        - link "Portal" [ref=e12] [cursor=pointer]:
+          - /url: /portal
+        - link "Profile" [ref=e13] [cursor=pointer]:
+          - /url: /auth/profile
+        - link "Admin" [ref=e14] [cursor=pointer]:
+          - /url: /admin
+        - link "Login" [ref=e15] [cursor=pointer]:
+          - /url: /api/auth/login
+  - generic [ref=e18]:
+    - generic [ref=e21]:
+      - generic [ref=e22]:
+        - img "Reset Biology" [ref=e23]
+        - heading "Portal" [level=1] [ref=e24]
+        - generic [ref=e25]: •
+        - generic [ref=e26]: Breath Training
+      - link "← Back to Portal" [ref=e28] [cursor=pointer]:
+        - /url: /portal
+    - generic [ref=e29]:
+      - heading "Guided Breath Training" [level=2] [ref=e30]:
+        - text: Guided
+        - generic [ref=e31]: Breath Training
+      - paragraph [ref=e32]: Master your nervous system through conscious breathing. Enhance your metabolic reset with precision breathing techniques.
+    - generic [ref=e35]:
+      - generic [ref=e36]:
+        - generic [ref=e38]:
+          - generic [ref=e39]:
+            - generic [ref=e40]: Space
+            - generic [ref=e41]: advance
+          - generic [ref=e42]: •
+          - generic [ref=e43]:
+            - generic [ref=e44]: P
+            - generic [ref=e45]: pause
+          - generic [ref=e46]: •
+          - generic [ref=e47]:
+            - generic [ref=e48]: Esc
+            - generic [ref=e49]: end
+        - generic [ref=e50]:
+          - generic [ref=e51]:
+            - heading "Breath Count" [level=3] [ref=e52]
+            - generic [ref=e53]:
+              - generic [ref=e54]: "0"
+              - generic [ref=e55]: of 40
+            - generic [ref=e57]: Cycle 1 of 3
+          - generic [ref=e58]:
+            - generic [ref=e59]:
+              - heading "Settings" [level=3] [ref=e60]
+              - button "Session Settings" [ref=e62]:
+                - img [ref=e63]
+            - generic [ref=e66]:
+              - generic [ref=e67]: "Pace: Medium"
+              - generic [ref=e68]: 3s in • 3s out
+      - generic [ref=e69]:
+        - img [ref=e71]
+        - button "Start Session" [ref=e79]:
+          - img [ref=e80]
+          - text: Start Session
+      - generic [ref=e83]:
+        - heading "How It Works" [level=3] [ref=e84]
+        - list [ref=e85]:
+          - listitem [ref=e86]:
+            - generic [ref=e87]: "1"
+            - generic [ref=e88]:
+              - strong [ref=e89]: "Breathing Phase:"
+              - text: Follow the orb rhythm for 40 breaths at your selected pace
+          - listitem [ref=e90]:
+            - generic [ref=e91]: "2"
+            - generic [ref=e92]:
+              - strong [ref=e93]: "Exhale Hold:"
+              - text: After the final exhale, press Space to start your exhale hold
+          - listitem [ref=e94]:
+            - generic [ref=e95]: "3"
+            - generic [ref=e96]:
+              - strong [ref=e97]: "Inhale Hold:"
+              - text: When ready, press Space to inhale and hold as long as possible
+          - listitem [ref=e98]:
+            - generic [ref=e99]: "4"
+            - generic [ref=e100]:
+              - strong [ref=e101]: "Complete Cycle:"
+              - text: Press Space to exhale and finish the cycle
+        - generic [ref=e104]:
+          - link "*nerd stuff - studies and research papers" [ref=e105] [cursor=pointer]:
+            - /url: /education
+          - generic:
+            - paragraph:
+              - strong: Low oxygen practice
+              - text: stimulates autophagy better than HIIT, while
+              - strong: hypercarbia
+              - text: stimulates growth hormone - both crucial for reducing loose skin during weight loss.
+  - generic [ref=e110] [cursor=pointer]:
+    - button "Open Next.js Dev Tools" [ref=e111] [cursor=pointer]:
+      - img [ref=e112] [cursor=pointer]
+    - generic [ref=e115] [cursor=pointer]:
+      - button "Open issues overlay" [ref=e116] [cursor=pointer]:
+        - generic [ref=e117] [cursor=pointer]:
+          - generic [ref=e118] [cursor=pointer]: "0"
+          - generic [ref=e119] [cursor=pointer]: "1"
+        - generic [ref=e120] [cursor=pointer]: Issue
+      - button "Collapse issues badge" [ref=e121] [cursor=pointer]:
+        - img [ref=e122] [cursor=pointer]
+  - alert [ref=e124]
+```

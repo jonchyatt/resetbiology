@@ -179,3 +179,60 @@ body {
 .status-error {
   @apply bg-red-400/20 text-red-700 border border-red-400/30 rounded-full px-3 py-1 text-sm font-medium;
 }
+
+/* Professional Hover Effects - MANDATORY ON ALL INTERACTIVE ELEMENTS */
+/* These effects MUST be applied to every card, button, and interactive element */
+
+/* Primary Card Hover - for main content cards */
+.card-hover-primary {
+  @apply bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl border border-primary-400/30 shadow-xl hover:shadow-primary-400/20 transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl;
+}
+
+/* Secondary Card Hover - for smaller content cards */
+.card-hover-secondary {
+  @apply bg-gradient-to-br from-primary-600/20 to-primary-700/30 backdrop-blur-sm rounded-xl border border-primary-400/30 shadow-xl hover:shadow-primary-400/20 transition-all duration-300 hover:scale-[1.01];
+}
+
+/* Interactive Section Hover - for clickable sections */
+.section-hover {
+  @apply hover:bg-gray-700/20 transition-all duration-300 hover:shadow-primary-400/10;
+}
+
+/* Button Hover Effects */
+.btn-hover-scale {
+  @apply transition-all duration-300 hover:scale-105 hover:shadow-lg;
+}
+
+.btn-hover-glow {
+  @apply transition-all duration-300 hover:shadow-primary-400/20 hover:scale-105;
+}
+
+/* Peptide/Product Card Hover - matches order page exactly */
+.product-card-hover {
+  @apply bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl border border-primary-400/30 shadow-xl hover:shadow-primary-400/20 transition-all duration-300 hover:scale-[1.02];
+}
+
+/* Educational Content Hover */
+.education-card-hover {
+  @apply bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl border border-primary-400/30 shadow-xl hover:shadow-primary-400/20 transition-all duration-300;
+}
+
+/* Action Button with Primary Glow */
+.action-btn-primary {
+  @apply bg-gradient-to-br from-primary-500/80 to-primary-600/80 hover:from-primary-400/90 hover:to-primary-500/90 text-white border border-primary-400/30 hover:shadow-primary-400/20 transition-all duration-300 hover:scale-105 shadow-lg backdrop-blur-sm font-bold rounded-lg;
+}
+
+/* Action Button with Secondary Glow */
+.action-btn-secondary {
+  @apply bg-gradient-to-br from-secondary-500/80 to-secondary-600/80 hover:from-secondary-400/90 hover:to-secondary-500/90 text-white border border-secondary-400/30 hover:shadow-secondary-400/20 transition-all duration-300 hover:scale-105 shadow-lg backdrop-blur-sm font-bold rounded-lg;
+}
+
+/* Quick Action Link Hover */
+.quick-action-hover {
+  @apply hover:bg-primary-600/30 transition-all duration-300 border border-primary-400/20 rounded-lg hover:shadow-primary-400/10;
+}
+
+/* Portal Stat Card Hover */
+.stat-card-hover {
+  @apply bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl shadow-2xl border border-primary-400/30 hover:shadow-primary-400/20 transition-all duration-300 hover:scale-[1.02];
+}
