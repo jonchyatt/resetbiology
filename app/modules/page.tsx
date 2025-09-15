@@ -47,7 +47,7 @@ export default function ModulesPage() {
               </div>
               
               <a href="/modules/foundation" className="action-btn-primary w-full py-3 px-6 text-center block">
-                Continue Foundation Series
+                🎧 Start Audio Training
               </a>
             </div>
 
