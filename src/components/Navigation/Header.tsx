@@ -38,6 +38,9 @@ export function Header() {
             <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium transition-colors">
               Order
             </Link>
+            <Link href="/modules" className="text-gray-700 hover:text-purple-600 font-medium transition-colors">
+              Modules
+            </Link>
             <Link href="/portal" className="text-gray-700 hover:text-teal-600 font-medium transition-colors">
               Portal
             </Link>
@@ -90,6 +93,12 @@ export function Header() {
               </Link>
               <Link href="/education" className="text-gray-700 hover:text-blue-600 font-medium">
                 Research
+              </Link>
+              <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium">
+                Order
+              </Link>
+              <Link href="/modules" className="text-gray-700 hover:text-purple-600 font-medium">
+                Modules
               </Link>
               <Link href="/portal" className="text-gray-700 hover:text-teal-600 font-medium">
                 Portal
