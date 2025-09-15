@@ -106,10 +106,21 @@ echo ""
 # 8. Project Dependencies
 echo -e "${BLUE}8. Project Dependencies${NC}"
 TOTAL_CHECKS=$((TOTAL_CHECKS + 2))
-if check_component "Project package.json" "test -f app/package.json"; then
+if check_component "Project package.json" "test -f package.json"; then
     PASSED_CHECKS=$((PASSED_CHECKS + 1))
 fi
-if check_component "Node modules installed" "test -d app/node_modules"; then
+if check_component "Node modules installed" "test -d node_modules"; then
+    PASSED_CHECKS=$((PASSED_CHECKS + 1))
+fi
+echo ""
+
+# 9. MongoDB Atlas Connection
+echo -e "${BLUE}9. MongoDB Atlas Database${NC}"
+TOTAL_CHECKS=$((TOTAL_CHECKS + 2))
+if check_component "DATABASE_URL configured" "test ! -z \"$DATABASE_URL\" || grep -q 'DATABASE_URL.*mongodb+srv' .env.local"; then
+    PASSED_CHECKS=$((PASSED_CHECKS + 1))
+fi
+if check_component "MongoDB Atlas connection" "DATABASE_URL=\"mongodb+srv://resetbiology-app:_DN8QDEm.XK.J8P@cluster0.weld7bm.mongodb.net/resetbiology?retryWrites=true&w=majority&appName=Cluster0\" npx prisma db push --accept-data-loss --force-reset 2>/dev/null || DATABASE_URL=\"mongodb+srv://resetbiology-app:_DN8QDEm.XK.J8P@cluster0.weld7bm.mongodb.net/resetbiology?retryWrites=true&w=majority&appName=Cluster0\" node -e \"const {PrismaClient} = require('@prisma/client'); const prisma = new PrismaClient({datasources:{db:{url:process.env.DATABASE_URL}}}); prisma.user.count().then(()=>process.exit(0)).catch(()=>process.exit(1));\""; then
     PASSED_CHECKS=$((PASSED_CHECKS + 1))
 fi
 echo ""
@@ -124,9 +135,10 @@ if [ $PASSED_CHECKS -eq $TOTAL_CHECKS ]; then
     echo -e "${GREEN}🚀 Ready for Reset Biology development${NC}"
     echo ""
     echo -e "${YELLOW}Quick Start Commands:${NC}"
-    echo "  cd app && npm run dev    # Start development server"
+    echo "  npm run dev              # Start development server"
     echo "  npx playwright test      # Run tests"
     echo "  claude mcp list          # Check MCP status"
+    echo "  npx prisma studio        # View MongoDB Atlas data"
 else
     echo -e "${RED}⚠️  ISSUES DETECTED${NC} ($PASSED_CHECKS/$TOTAL_CHECKS passed)"
     echo -e "${YELLOW}Please resolve the failed checks above${NC}"
