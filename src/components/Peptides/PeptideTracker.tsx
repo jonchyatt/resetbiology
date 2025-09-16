@@ -841,11 +841,10 @@ export function PeptideTracker() {
               <div className="overflow-y-auto max-h-[calc(92vh-100px)] custom-scrollbar p-8">
                 <DosageCalculator
                   importedPeptide={{
+                    id: selectedProtocol.id || 'temp',
                     name: selectedProtocol.name,
-                    dosage: selectedProtocol.dosage,
-                    vialAmount: selectedProtocol.vialAmount,
-                    reconstitution: selectedProtocol.reconstitution,
-                    concentration: parseFloat(selectedProtocol.vialAmount) / parseFloat(selectedProtocol.reconstitution)
+                    vialSize: parseFloat(selectedProtocol.vialAmount.replace(/[^0-9.]/g, '')),
+                    recommendedDose: parseFloat(selectedProtocol.dosage.replace(/[^0-9.]/g, ''))
                   }}
                   onSaveToLog={(entry) => {
                     console.log('Saving calculator entry to log:', entry)

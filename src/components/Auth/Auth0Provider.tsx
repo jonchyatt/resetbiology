@@ -1,7 +1,9 @@
 'use client';
 
-import { UserProvider } from '@auth0/nextjs-auth0';
-
+// Auth0 v4 doesn't have UserProvider - authentication is handled by middleware
+// This component is kept for compatibility but doesn't wrap children anymore
 export function Auth0Provider({ children }: { children: React.ReactNode }) {
-  return <UserProvider>{children}</UserProvider>;
+  // Auth0 v4 uses middleware-based authentication
+  // No provider wrapper needed
+  return <>{children}</>;
 }
