@@ -1,16 +1,15 @@
 import { redirect } from 'next/navigation';
-import { cookies } from 'next/headers';
-import { Dashboard } from '@/components/Portal/Dashboard';
+import { auth0 } from '@/lib/auth0';
+import { EnhancedDashboard } from '@/components/Portal/EnhancedDashboard';
 
 export const dynamic = 'force-dynamic';
 
 export default async function PortalPage() {
-  const cookieStore = await cookies();
-  const authSession = cookieStore.get('auth0-session');
+  const session = await auth0.getSession();
   
-  if (!authSession) {
-    redirect('/api/auth/login');
+  if (!session) {
+    redirect('/auth/login');
   }
 
-  return <Dashboard />;
+  return <EnhancedDashboard />;
 }

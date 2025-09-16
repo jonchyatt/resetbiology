@@ -58,7 +58,7 @@ export function Header() {
                 <div className="flex items-center space-x-4">
                   <span className="text-gray-700">Hello, {user.name || user.email}</span>
                   <a 
-                    href="/api/auth/logout" 
+                    href="/auth/logout" 
                     className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
                   >
                     Logout
@@ -66,7 +66,7 @@ export function Header() {
                 </div>
               ) : (
                 <a 
-                  href="/api/auth/login" 
+                  href="/auth/login" 
                   className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors"
                 >
                   Login
@@ -121,7 +121,7 @@ export function Header() {
                     <div className="space-y-2">
                       <div className="text-gray-700">Hello, {user.name || user.email}</div>
                       <a 
-                        href="/api/auth/logout" 
+                        href="/auth/logout" 
                         className="block px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors text-center"
                       >
                         Logout
@@ -129,7 +129,7 @@ export function Header() {
                     </div>
                   ) : (
                     <a 
-                      href="/api/auth/login" 
+                      href="/auth/login" 
                       className="block px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors text-center"
                     >
                       Login

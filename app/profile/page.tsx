@@ -1,31 +1,61 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { User, Settings, Calendar, TrendingUp, Shield, CreditCard, Download, LogOut, Bell, Lock, Eye, EyeOff } from "lucide-react"
 import { PortalHeader } from "@/components/Navigation/PortalHeader"
+import { useUser } from "@auth0/nextjs-auth0"
+import { useRouter } from "next/navigation"
 
 export default function ProfilePage() {
+  const { user, isLoading } = useUser()
+  const router = useRouter()
   const [activeTab, setActiveTab] = useState("account")
   const [showPassword, setShowPassword] = useState(false)
   const [notifications, setNotifications] = useState({
     email: true,
-    sms: false,
     push: true,
     marketing: false
   })
+  
+  // Form state for editable fields
+  const [formData, setFormData] = useState({
+    name: "",
+    email: ""
+  })
+  
+  // Load user data when available
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        name: user.name || "",
+        email: user.email || ""
+      })
+    }
+  }, [user])
 
-  // Mock user data - would come from Auth0/database
-  const mockUser = {
-    name: "Dr. Sarah Johnson",
-    email: "sarah.johnson@example.com",
-    joined: "March 15, 2024",
-    subscription: "Trial",
-    trialDaysLeft: 14,
-    completedModules: 12,
-    totalModules: 30,
-    breathSessions: 47,
-    protocolDays: 23,
-    workoutStreak: 7
+  // Handle save changes
+  const handleSaveChanges = async () => {
+    try {
+      const response = await fetch("/api/profile/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData)
+      })
+      
+      if (response.ok) {
+        alert("Profile updated successfully!")
+      } else {
+        alert("Failed to update profile")
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error)
+      alert("Error updating profile")
+    }
+  }
+
+  // Handle sign out
+  const handleSignOut = () => {
+    window.location.href = "/auth/logout"
   }
 
   const tabs = [
@@ -35,6 +65,14 @@ export default function ProfilePage() {
     { id: "settings", name: "Settings", icon: Settings },
     { id: "privacy", name: "Privacy", icon: Shield }
   ]
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center">
+        <div className="text-white text-2xl">Loading...</div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 relative"
@@ -68,18 +106,21 @@ export default function ProfilePage() {
                 <User className="w-12 h-12 text-white" />
               </div>
               <div className="flex-1">
-                <h3 className="text-2xl font-bold text-white mb-2">{mockUser.name}</h3>
-                <p className="text-primary-300 mb-2">{mockUser.email}</p>
+                <h3 className="text-2xl font-bold text-white mb-2">
+                  {user?.name || "User"}
+                </h3>
+                <p className="text-primary-300 mb-2">
+                  {user?.email || "No email provided"}
+                </p>
                 <div className="flex items-center gap-4 text-sm text-gray-300">
-                  <span>Joined {mockUser.joined}</span>
-                  <span>•</span>
-                  <span className="px-2 py-1 bg-amber-600/20 text-amber-300 rounded border border-amber-400/30">
-                    {mockUser.subscription} - {mockUser.trialDaysLeft} days left
-                  </span>
+                  <span>Member Account</span>
                 </div>
               </div>
               <div className="text-right">
-                <button className="action-btn-primary px-6 py-3">
+                <button 
+                  onClick={handleSignOut}
+                  className="action-btn-primary px-6 py-3"
+                >
                   <LogOut className="w-4 h-4 mr-2" />
                   Sign Out
                 </button>
@@ -122,7 +163,8 @@ export default function ProfilePage() {
                       <label className="block text-sm font-medium text-gray-300 mb-2">Full Name</label>
                       <input
                         type="text"
-                        defaultValue={mockUser.name}
+                        value={formData.name}
+                        onChange={(e) => setFormData({...formData, name: e.target.value})}
                         className="input-primary"
                         placeholder="Enter your full name"
                       />
@@ -131,7 +173,8 @@ export default function ProfilePage() {
                       <label className="block text-sm font-medium text-gray-300 mb-2">Email Address</label>
                       <input
                         type="email"
-                        defaultValue={mockUser.email}
+                        value={formData.email}
+                        onChange={(e) => setFormData({...formData, email: e.target.value})}
                         className="input-primary"
                         placeholder="Enter your email"
                       />
@@ -143,6 +186,7 @@ export default function ProfilePage() {
                           type={showPassword ? "text" : "password"}
                           defaultValue="••••••••••"
                           className="input-primary pr-12"
+                          disabled
                         />
                         <button
                           onClick={() => setShowPassword(!showPassword)}
@@ -151,9 +195,13 @@ export default function ProfilePage() {
                           {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                         </button>
                       </div>
+                      <p className="text-xs text-gray-400 mt-1">Password management via Auth0</p>
                     </div>
                     <div className="pt-4">
-                      <button className="action-btn-primary px-6 py-3">
+                      <button 
+                        onClick={handleSaveChanges}
+                        className="action-btn-primary px-6 py-3"
+                      >
                         Save Changes
                       </button>
                     </div>
@@ -165,21 +213,17 @@ export default function ProfilePage() {
                 <div className="space-y-6">
                   <div className="card-hover-primary">
                     <h3 className="text-xl font-bold text-white mb-6">Current Subscription</h3>
-                    <div className="bg-gradient-to-r from-amber-600/20 to-amber-700/20 rounded-lg p-6 border border-amber-400/30">
+                    <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 rounded-lg p-6 border border-primary-400/30">
                       <div className="flex items-center justify-between mb-4">
                         <div>
-                          <h4 className="text-lg font-bold text-white">Trial Account</h4>
-                          <p className="text-amber-300">Full access to all features</p>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-2xl font-bold text-white">Free</p>
-                          <p className="text-sm text-gray-300">{mockUser.trialDaysLeft} days remaining</p>
+                          <h4 className="text-lg font-bold text-white">Member Account</h4>
+                          <p className="text-primary-300">Access to wellness features</p>
                         </div>
                       </div>
                       <div className="space-y-3">
                         <div className="flex items-center text-sm text-gray-200">
                           <span className="text-green-400 mr-2">✓</span>
-                          <span>All Mental Mastery Modules</span>
+                          <span>Mental Mastery Modules</span>
                         </div>
                         <div className="flex items-center text-sm text-gray-200">
                           <span className="text-green-400 mr-2">✓</span>
@@ -191,14 +235,6 @@ export default function ProfilePage() {
                         </div>
                       </div>
                     </div>
-                    <div className="mt-6">
-                      <button className="action-btn-secondary px-6 py-3 mr-4">
-                        Upgrade to Premium
-                      </button>
-                      <button className="btn-outline px-6 py-3">
-                        View All Plans
-                      </button>
-                    </div>
                   </div>
                 </div>
               )}
@@ -209,19 +245,19 @@ export default function ProfilePage() {
                     <h3 className="text-xl font-bold text-white mb-6">Wellness Progress</h3>
                     <div className="grid grid-cols-2 gap-6">
                       <div className="text-center">
-                        <div className="text-3xl font-bold text-primary-400">{mockUser.completedModules}/{mockUser.totalModules}</div>
+                        <div className="text-3xl font-bold text-primary-400">0/30</div>
                         <p className="text-gray-300">Modules Completed</p>
                       </div>
                       <div className="text-center">
-                        <div className="text-3xl font-bold text-secondary-400">{mockUser.breathSessions}</div>
+                        <div className="text-3xl font-bold text-secondary-400">0</div>
                         <p className="text-gray-300">Breath Sessions</p>
                       </div>
                       <div className="text-center">
-                        <div className="text-3xl font-bold text-amber-400">{mockUser.protocolDays}</div>
+                        <div className="text-3xl font-bold text-amber-400">0</div>
                         <p className="text-gray-300">Protocol Days</p>
                       </div>
                       <div className="text-center">
-                        <div className="text-3xl font-bold text-green-400">{mockUser.workoutStreak}</div>
+                        <div className="text-3xl font-bold text-green-400">0</div>
                         <p className="text-gray-300">Day Streak</p>
                       </div>
                     </div>
@@ -247,7 +283,6 @@ export default function ProfilePage() {
                           <h4 className="font-medium text-white capitalize">{key} Notifications</h4>
                           <p className="text-sm text-gray-300">
                             {key === 'email' && 'Receive progress updates and reminders via email'}
-                            {key === 'sms' && 'Get text messages for important alerts'}
                             {key === 'push' && 'Browser notifications for session reminders'}
                             {key === 'marketing' && 'Updates about new features and protocols'}
                           </p>
@@ -289,7 +324,7 @@ export default function ProfilePage() {
                           <Lock className="w-5 h-5 text-primary-400" />
                           <span className="text-white">Two-Factor Authentication</span>
                         </div>
-                        <span className="text-gray-400">Not Enabled</span>
+                        <span className="text-gray-400">Managed by Auth0</span>
                       </button>
                       <button className="w-full flex items-center justify-between p-4 bg-gray-800/50 rounded-lg border border-gray-600/30 hover:bg-gray-700/50 transition-colors">
                         <div className="flex items-center gap-3">
@@ -297,13 +332,6 @@ export default function ProfilePage() {
                           <span className="text-white">Download Your Data</span>
                         </div>
                         <span className="text-gray-400">Request</span>
-                      </button>
-                      <button className="w-full flex items-center justify-between p-4 bg-red-600/20 rounded-lg border border-red-400/30 hover:bg-red-500/30 transition-colors">
-                        <div className="flex items-center gap-3">
-                          <User className="w-5 h-5 text-red-400" />
-                          <span className="text-white">Delete Account</span>
-                        </div>
-                        <span className="text-red-400">Permanent</span>
                       </button>
                     </div>
                   </div>
@@ -318,15 +346,11 @@ export default function ProfilePage() {
                 <div className="space-y-3">
                   <div className="flex justify-between">
                     <span className="text-gray-300">Account Type</span>
-                    <span className="text-primary-400 font-medium">Trial</span>
+                    <span className="text-primary-400 font-medium">Member</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-300">Member Since</span>
-                    <span className="text-white">{mockUser.joined}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-300">Progress</span>
-                    <span className="text-secondary-400 font-medium">{Math.round((mockUser.completedModules / mockUser.totalModules) * 100)}%</span>
+                    <span className="text-gray-300">Auth Provider</span>
+                    <span className="text-white">Auth0</span>
                   </div>
                 </div>
               </div>

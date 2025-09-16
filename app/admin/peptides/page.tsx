@@ -265,6 +265,9 @@ export default function AdminPeptidesPage() {
 
   const [editingPeptide, setEditingPeptide] = useState<AdminPeptide | null>(null)
   const [showForm, setShowForm] = useState(false)
+  const [backupData, setBackupData] = useState<AdminPeptide[]>([])
+  const [showPreview, setShowPreview] = useState(false)
+  const [importMode, setImportMode] = useState(false)
   const [formData, setFormData] = useState<AdminPeptide>({
     name: "",
     purpose: "",
@@ -280,12 +283,221 @@ export default function AdminPeptidesPage() {
     contraindications: []
   })
 
-  const purposes = ["Fat Loss", "Muscle Building", "Recovery", "Anti-Aging", "Cognitive", "Healing", "Other"]
-  const frequencies = ["Daily", "Every other day", "3x per week", "5 days on, 2 days off", "Custom cycle"]
+  const purposes = ["Fat Loss", "Muscle Building", "Recovery", "Anti-Aging", "Cognitive", "Healing", "Longevity", "Immunity", "Cognitive Enhancement", "Other"]
+  const frequencies = ["Daily", "Every other day", "Every Day", "3x per week", "2x per week", "5 days on, 2 days off", "Once per week", "Custom cycle"]
   const timings = ["AM", "PM", "AM/PM", "Twice daily", "Before meals", "After meals", "Custom timing"]
+  
+  // New peptides from PEPTIDEHUNT screenshots
+  const peptidesFromScreenshots = [
+    {
+      name: "AOD-9604",
+      purpose: "Fat Loss",
+      dosage: "300mcg",
+      timing: "AM",
+      frequency: "5 days on, 2 days off",
+      duration: "8 weeks on, 8 weeks off",
+      vialAmount: "5mg",
+      reconstitution: "2ml BAC water",
+      syringeUnits: 11,
+      description: "Fragment 177-191 of human growth hormone - promotes fat metabolism without affecting blood sugar or tissue growth"
+    },
+    {
+      name: "Semaglutide",
+      purpose: "Fat Loss",
+      dosage: "250mcg",
+      timing: "AM",
+      frequency: "Once per week",
+      duration: "8 weeks on, 8 weeks off",
+      vialAmount: "3mg",
+      reconstitution: "2ml BAC water",
+      syringeUnits: 17,
+      description: "GLP-1 receptor agonist - reduces appetite, slows gastric emptying, improves insulin sensitivity"
+    },
+    {
+      name: "Tirzepatide",
+      purpose: "Fat Loss",
+      dosage: "0.5mg",
+      timing: "AM",
+      frequency: "3x per week",
+      duration: "8 weeks on, 8 weeks off or until goal weight is reached",
+      vialAmount: "10mg",
+      reconstitution: "2ml BAC water",
+      syringeUnits: 10,
+      description: "Dual GIP and GLP-1 receptor agonist - powerful appetite suppression and metabolic improvement"
+    },
+    {
+      name: "Retatrutide",
+      purpose: "Fat Loss",
+      dosage: "0.5mg",
+      timing: "AM",
+      frequency: "3x per week",
+      duration: "8 weeks on, 8 weeks off or until goal weight is reached",
+      vialAmount: "10mg",
+      reconstitution: "2ml BAC water",
+      syringeUnits: 10,
+      description: "Triple agonist (GLP-1, GIP, and glucagon) - next generation weight loss peptide"
+    },
+    {
+      name: "Ipamorelin/CJC-1295 No DAC",
+      purpose: "Fat Loss",
+      dosage: "250mcg/250mcg",
+      timing: "AM/PM",
+      frequency: "5 days on, 2 days off",
+      duration: "8 weeks on, 8 weeks off",
+      vialAmount: "5mg/5mg",
+      reconstitution: "2ml BAC water",
+      syringeUnits: 10,
+      description: "Combined GHRP and GHRH - synergistic growth hormone release for fat loss and anti-aging"
+    },
+    {
+      name: "CJC-1295 No DAC",
+      purpose: "Longevity",
+      dosage: "200mcg",
+      timing: "PM",
+      frequency: "5 days on, 2 days off",
+      duration: "8 weeks on, 8 weeks off",
+      vialAmount: "10mg",
+      reconstitution: "3ml BAC water",
+      syringeUnits: 6,
+      description: "Modified GHRH (Mod GRF 1-29) - stimulates natural growth hormone pulses"
+    },
+    {
+      name: "Epitalon",
+      purpose: "Longevity",
+      dosage: "2mg",
+      timing: "PM",
+      frequency: "Every day",
+      duration: "20 days in a row, 3x per year",
+      vialAmount: "20mg",
+      reconstitution: "2ml BAC water",
+      syringeUnits: 20,
+      description: "Telomerase activator - extends telomeres and cellular lifespan"
+    },
+    {
+      name: "Thymalin",
+      purpose: "Longevity",
+      dosage: "2mg",
+      timing: "PM",
+      frequency: "Every day",
+      duration: "20 days in a row, 3x per year",
+      vialAmount: "20mg",
+      reconstitution: "2ml BAC water",
+      syringeUnits: 20,
+      description: "Thymus extract - immune system restoration and anti-aging"
+    },
+    {
+      name: "Melanotan 1",
+      purpose: "Cognitive Enhancement",
+      dosage: "250mcg",
+      timing: "AM",
+      frequency: "2 days per week",
+      duration: "8 weeks on, 8 weeks off",
+      vialAmount: "10mg",
+      reconstitution: "2ml BAC water",
+      syringeUnits: 5,
+      description: "Alpha-MSH analog - neuroprotective, cognitive enhancement, and melanin production"
+    },
+    {
+      name: "Thymosin-Alpha 1",
+      purpose: "Immunity",
+      dosage: "1.5mg",
+      timing: "AM",
+      frequency: "5 days on, 2 days off",
+      duration: "8 weeks on, 8 weeks off",
+      vialAmount: "10mg",
+      reconstitution: "2ml BAC water",
+      syringeUnits: 30,
+      description: "Immune modulator - enhances T-cell function and immune response"
+    },
+    {
+      name: "LL-37",
+      purpose: "Immunity",
+      dosage: "125mcg",
+      timing: "AM",
+      frequency: "Every day",
+      duration: "50 days straight, 4 weeks off",
+      vialAmount: "5mg",
+      reconstitution: "2ml BAC water",
+      syringeUnits: 5,
+      description: "Antimicrobial peptide - broad spectrum antimicrobial and immunomodulatory effects"
+    }
+  ]
+
+  // Safety feature: Check for duplicates with different protocols
+  const checkForDuplicates = (peptideName: string) => {
+    const existing = peptides.filter(p => 
+      p.name.toLowerCase() === peptideName.toLowerCase()
+    )
+    if (existing.length > 0) {
+      const protocols = existing.map(p => `${p.dosage} - ${p.frequency}`)
+      return { 
+        exists: true, 
+        protocols,
+        message: `Found ${existing.length} existing protocol(s) for ${peptideName}`
+      }
+    }
+    return { exists: false, protocols: [], message: '' }
+  }
+
+  // Safety feature: Create backup before major changes
+  const createBackup = () => {
+    setBackupData([...peptides])
+    alert("Backup created successfully!")
+  }
+
+  // Safety feature: Restore from backup
+  const restoreFromBackup = () => {
+    if (backupData.length === 0) {
+      alert("No backup available!")
+      return
+    }
+    if (confirm("Are you sure you want to restore from backup? Current changes will be lost.")) {
+      setPeptides([...backupData])
+      alert("Data restored from backup!")
+    }
+  }
+
+  // Import peptides from screenshots
+  const importFromScreenshots = () => {
+    setImportMode(true)
+    const newPeptides: AdminPeptide[] = []
+    
+    peptidesFromScreenshots.forEach(peptide => {
+      const duplicate = checkForDuplicates(peptide.name)
+      
+      // Allow import if it's a different protocol or completely new
+      if (!duplicate.exists || 
+          !duplicate.protocols.includes(`${peptide.dosage} - ${peptide.frequency}`)) {
+        newPeptides.push({
+          ...peptide,
+          id: `admin-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+        })
+      }
+    })
+    
+    if (newPeptides.length > 0) {
+      if (confirm(`Import ${newPeptides.length} new peptide protocols?\n\nPeptides to import:\n${newPeptides.map(p => `• ${p.name} (${p.dosage})`).join('\n')}`)) {
+        createBackup() // Auto-backup before import
+        setPeptides(prev => [...prev, ...newPeptides])
+        alert(`Successfully imported ${newPeptides.length} peptide protocols!`)
+      }
+    } else {
+      alert("All peptides from screenshots already exist with the same protocols!")
+    }
+    setImportMode(false)
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Check for duplicates
+    const duplicate = checkForDuplicates(formData.name)
+    if (duplicate.exists && !editingPeptide) {
+      const proceed = confirm(
+        `${duplicate.message}\n\nExisting protocols:\n${duplicate.protocols.map(p => `• ${p}`).join('\n')}\n\nDo you want to add this as a new protocol?`
+      )
+      if (!proceed) return
+    }
     
     if (editingPeptide) {
       // Update existing peptide
@@ -363,7 +575,33 @@ export default function AdminPeptidesPage() {
               <h1 className="text-2xl font-bold text-white">Admin: Peptide Management</h1>
               <p className="text-gray-300 mt-1">Add, edit, and manage peptides in the library</p>
             </div>
-            <div className="flex gap-3">
+            <div className="flex gap-3 flex-wrap">
+              <button
+                onClick={importFromScreenshots}
+                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
+                title="Import peptides from PEPTIDEHUNT screenshots"
+              >
+                <Plus className="w-4 h-4" />
+                Import New
+              </button>
+              <button
+                onClick={createBackup}
+                className="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
+                title="Create backup of current data"
+              >
+                <Save className="w-4 h-4" />
+                Backup
+              </button>
+              {backupData.length > 0 && (
+                <button
+                  onClick={restoreFromBackup}
+                  className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
+                  title="Restore from last backup"
+                >
+                  <Save className="w-4 h-4" />
+                  Restore
+                </button>
+              )}
               <button
                 onClick={exportPeptides}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
@@ -376,7 +614,7 @@ export default function AdminPeptidesPage() {
                 className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
               >
                 <Plus className="w-4 h-4" />
-                Add Peptide
+                Add Manual
               </button>
             </div>
           </div>
@@ -548,18 +786,45 @@ export default function AdminPeptidesPage() {
 
           {/* Peptides List */}
           <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-blue-500/30 shadow-xl hover:shadow-blue-400/20 transition-all duration-300">
-            <h2 className="text-xl font-bold text-white mb-6">Peptide Library ({peptides.length})</h2>
+            <h2 className="text-xl font-bold text-white mb-6">
+              Peptide Library ({peptides.length} protocols)
+            </h2>
+            
+            {/* Stats */}
+            <div className="grid grid-cols-3 gap-2 mb-4 text-sm">
+              <div className="bg-primary-600/20 rounded-lg p-2 text-center">
+                <div className="text-primary-300 font-bold">{new Set(peptides.map(p => p.name)).size}</div>
+                <div className="text-gray-400 text-xs">Unique Peptides</div>
+              </div>
+              <div className="bg-secondary-600/20 rounded-lg p-2 text-center">
+                <div className="text-secondary-300 font-bold">{peptides.length}</div>
+                <div className="text-gray-400 text-xs">Total Protocols</div>
+              </div>
+              <div className="bg-amber-600/20 rounded-lg p-2 text-center">
+                <div className="text-amber-300 font-bold">{backupData.length > 0 ? '✓' : '✗'}</div>
+                <div className="text-gray-400 text-xs">Backup</div>
+              </div>
+            </div>
             
             <div className="space-y-4 max-h-96 overflow-y-auto">
-              {peptides.map((peptide) => (
-                <div key={peptide.id} className="bg-gradient-to-br from-gray-700/60 to-gray-800/60 backdrop-blur-sm rounded-lg p-4 border border-primary-400/20 shadow-lg hover:shadow-primary-400/10 transition-all duration-300">
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <h3 className="font-bold text-white">{peptide.name}</h3>
-                      <span className="text-sm text-primary-300 bg-primary-500/20 px-2 py-1 rounded-full">
-                        {peptide.purpose}
-                      </span>
-                    </div>
+              {peptides.map((peptide) => {
+                const duplicateCount = peptides.filter(p => p.name === peptide.name).length
+                return (
+                  <div key={peptide.id} className="bg-gradient-to-br from-gray-700/60 to-gray-800/60 backdrop-blur-sm rounded-lg p-4 border border-primary-400/20 shadow-lg hover:shadow-primary-400/10 transition-all duration-300">
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <h3 className="font-bold text-white">
+                          {peptide.name}
+                          {duplicateCount > 1 && (
+                            <span className="ml-2 text-xs text-amber-400 bg-amber-600/20 px-2 py-1 rounded-full">
+                              {duplicateCount} protocols
+                            </span>
+                          )}
+                        </h3>
+                        <span className="text-sm text-primary-300 bg-primary-500/20 px-2 py-1 rounded-full">
+                          {peptide.purpose}
+                        </span>
+                      </div>
                     <div className="flex gap-2">
                       <button
                         onClick={() => editPeptide(peptide)}
@@ -587,7 +852,8 @@ export default function AdminPeptidesPage() {
                     <p className="text-sm text-gray-400 mt-2">{peptide.description}</p>
                   )}
                 </div>
-              ))}
+              )
+              })}
             </div>
           </div>
         </div>

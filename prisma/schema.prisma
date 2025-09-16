@@ -41,6 +41,10 @@ model User {
   peptide_orders         peptide_orders[]
   successDeposits        SuccessDeposit[]
   user_peptide_protocols user_peptide_protocols[]
+  dailyTasks             DailyTask[]
+  foodEntries            FoodEntry[]
+  workoutSessions        WorkoutSession[]
+  journalEntries         JournalEntry[]
 
   @@map("users")
 }
@@ -247,4 +251,56 @@ model user_peptide_protocols {
   peptide_doses peptide_doses[]
   peptides      Peptide         @relation(fields: [peptideId], references: [id])
   users         User            @relation(fields: [userId], references: [id])
+}
+
+model DailyTask {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  date      DateTime
+  taskName  String   // peptides, journal, workout, meals, module, breath
+  completed Boolean  @default(false)
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, date, taskName], name: "userId_date_taskName")
+  @@map("daily_tasks")
+}
+
+model FoodEntry {
+  id       String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId   String   @db.ObjectId
+  name     String
+  calories Float
+  protein  Float
+  carbs    Float
+  fats     Float
+  mealType String   // breakfast, lunch, dinner, snack
+  loggedAt DateTime @default(now())
+  user     User     @relation(fields: [userId], references: [id])
+
+  @@map("food_entries")
+}
+
+model WorkoutSession {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @db.ObjectId
+  exercises   Json     // Array of exercises with sets/reps/weight
+  duration    Int      // in seconds
+  programId   String?
+  completedAt DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@map("workout_sessions")
+}
+
+model JournalEntry {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  entry     String   // JSON string containing all journal data
+  mood      String?
+  weight    Float?
+  date      DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@map("journal_entries")
 }

@@ -2,9 +2,9 @@
 import type { NextRequest } from 'next/server';
 import { auth0 } from '@/lib/auth0';
 
-// Let the SDK mount /auth/* and manage session cookies
 export async function middleware(request: NextRequest) {
-  return auth0.middleware(request);
+  console.log('Middleware running for:', request.nextUrl.pathname);
+  return await auth0.middleware(request);
 }
 
 // Auth0 recommends matching (almost) everything so /auth/* always works.

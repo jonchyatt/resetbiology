@@ -1,6 +1,7 @@
 'use client';
 
+import { UserProvider } from '@auth0/nextjs-auth0';
+
 export function Auth0Provider({ children }: { children: React.ReactNode }) {
-  // Auth0 provider temporarily simplified - authentication system being updated
-  return <>{children}</>;
+  return <UserProvider>{children}</UserProvider>;
 }
