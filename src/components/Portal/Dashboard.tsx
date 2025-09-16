@@ -5,10 +5,10 @@ import { Trophy, Target, Play, Calendar, TrendingUp, Gift } from "lucide-react"
 import { PortalHeader } from "@/components/Navigation/PortalHeader"
 
 export function Dashboard() {
-  const [totalPoints] = useState(150)
+  const [totalPoints] = useState(0)
   const [currentTier] = useState<'bronze' | 'silver' | 'gold' | 'platinum'>('bronze')
   const [dailyRewardAvailable] = useState(true)
-  const [checkInStreak] = useState(7)
+  const [checkInStreak] = useState(0)
 
   // For now, mock user access level
   const userAccessLevel = 'trial'
@@ -55,7 +55,7 @@ export function Dashboard() {
                 </div>
                 <div className="ml-4">
                   <p className="text-sm font-medium text-gray-300">Breath Sessions</p>
-                  <p className="text-2xl font-bold text-white">47</p>
+                  <p className="text-2xl font-bold text-white">0</p>
                 </div>
               </div>
             </div>
@@ -67,7 +67,7 @@ export function Dashboard() {
                 </div>
                 <div className="ml-4">
                   <p className="text-sm font-medium text-gray-300">Modules Completed</p>
-                  <p className="text-2xl font-bold text-white">12/30</p>
+                  <p className="text-2xl font-bold text-white">0/30</p>
                 </div>
               </div>
             </div>
@@ -91,7 +91,7 @@ export function Dashboard() {
                 </div>
                 <div className="ml-4">
                   <p className="text-sm font-medium text-gray-300">Protocol Days</p>
-                  <p className="text-2xl font-bold text-white">23</p>
+                  <p className="text-2xl font-bold text-white">0</p>
                 </div>
               </div>
             </div>

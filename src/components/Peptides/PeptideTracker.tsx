@@ -1,7 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Syringe, Calendar, AlertCircle, TrendingUp, Plus, Clock } from "lucide-react"
+import { Syringe, Calendar, AlertCircle, TrendingUp, Plus, Clock, Calculator, X } from "lucide-react"
+import { DosageCalculator } from './DosageCalculator'
 
 interface PeptideProtocol {
   id: string
@@ -36,6 +37,7 @@ export function PeptideTracker() {
   const [showScheduleModal, setShowScheduleModal] = useState(false)
   const [selectedProtocol, setSelectedProtocol] = useState<PeptideProtocol | null>(null)
   const [showDoseModal, setShowDoseModal] = useState(false)
+  const [showCalculatorModal, setShowCalculatorModal] = useState(false)
   const [doseNotes, setDoseNotes] = useState('')
   const [doseSideEffects, setDoseSideEffects] = useState<string[]>([])
 
@@ -327,6 +329,11 @@ export function PeptideTracker() {
     setDoseSideEffects([])
   }
 
+  const openCalculatorModal = (protocol: PeptideProtocol) => {
+    setSelectedProtocol(protocol)
+    setShowCalculatorModal(true)
+  }
+
   const logDose = () => {
     if (!selectedProtocol) return
     
@@ -426,6 +433,13 @@ export function PeptideTracker() {
           className="flex-1 bg-primary-600/30 hover:bg-primary-600/50 text-primary-200 font-medium py-2 px-4 rounded-lg transition-colors text-sm"
         >
           View Schedule
+        </button>
+        <button 
+          onClick={() => openCalculatorModal(protocol)}
+          className="bg-amber-600/30 hover:bg-amber-600/50 text-amber-200 font-medium py-2 px-4 rounded-lg transition-colors text-sm flex items-center"
+        >
+          <Calculator className="w-4 h-4 mr-1" />
+          Calculate
         </button>
         <button 
           onClick={() => openDoseModal(protocol)}
@@ -794,6 +808,50 @@ export function PeptideTracker() {
                 >
                   Close
                 </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Dosage Calculator Modal - Professional Medical-Grade Design */}
+        {showCalculatorModal && selectedProtocol && (
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-lg flex items-center justify-center z-50 p-4">
+            <div className="bg-gradient-to-br from-primary-900/95 via-gray-900/95 to-secondary-900/95 rounded-3xl max-w-7xl w-full max-h-[92vh] overflow-hidden shadow-[0_0_100px_rgba(63,191,181,0.3)] border border-primary-400/40">
+              {/* Premium Header Bar */}
+              <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-md border-b border-primary-400/30 px-8 py-6">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h2 className="text-3xl font-bold bg-gradient-to-r from-primary-300 to-secondary-300 bg-clip-text text-transparent">
+                      Professional Dosage Calculator
+                    </h2>
+                    <p className="text-primary-200 mt-1">
+                      {selectedProtocol.name} • {selectedProtocol.purpose} Protocol
+                    </p>
+                  </div>
+                  <button 
+                    onClick={() => setShowCalculatorModal(false)}
+                    className="bg-red-500/20 hover:bg-red-500/30 text-red-300 hover:text-red-200 rounded-full p-3 transition-all duration-300 hover:scale-110"
+                  >
+                    <X className="w-6 h-6" />
+                  </button>
+                </div>
+              </div>
+              
+              {/* Calculator Content with Premium Styling */}
+              <div className="overflow-y-auto max-h-[calc(92vh-100px)] custom-scrollbar p-8">
+                <DosageCalculator
+                  importedPeptide={{
+                    name: selectedProtocol.name,
+                    dosage: selectedProtocol.dosage,
+                    vialAmount: selectedProtocol.vialAmount,
+                    reconstitution: selectedProtocol.reconstitution,
+                    concentration: parseFloat(selectedProtocol.vialAmount) / parseFloat(selectedProtocol.reconstitution)
+                  }}
+                  onSaveToLog={(entry) => {
+                    console.log('Saving calculator entry to log:', entry)
+                    setShowCalculatorModal(false)
+                  }}
+                />
               </div>
             </div>
           </div>

@@ -118,4 +118,26 @@ test.describe('Peptide Tracker', () => {
     await expect(page.locator('text=Scheduled dose completed')).toBeVisible()
     await expect(page.locator('text=Fatigue')).toBeVisible()
   })
+
+  test('should open dosage calculator modal', async ({ page }) => {
+    // Add a protocol first
+    await page.click('text=library')
+    await page.click('text=Add to My Protocols').first()
+    await page.click('text=current')
+    
+    // Click Calculate button
+    await page.click('button:has-text("Calculate")')
+    
+    // Verify calculator modal opens
+    await expect(page.locator('text=Dosage Calculator • Ipamorelin')).toBeVisible()
+    await expect(page.locator('text=Peptide Dosage Calculator')).toBeVisible()
+    await expect(page.locator('text=Mixing Instructions')).toBeVisible()
+    
+    // Verify peptide data is pre-filled
+    await expect(page.locator('input[value="Ipamorelin"]')).toBeVisible()
+    
+    // Close modal with X button
+    await page.click('button:has-text("✕")')
+    await expect(page.locator('text=Dosage Calculator • Ipamorelin')).not.toBeVisible()
+  })
 })

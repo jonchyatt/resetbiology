@@ -38,6 +38,9 @@ export function Header() {
             <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium transition-colors">
               Order
             </Link>
+            <Link href="/peptides" className="text-gray-700 hover:text-primary-600 font-medium transition-colors">
+              Peptides
+            </Link>
             <Link href="/modules" className="text-gray-700 hover:text-purple-600 font-medium transition-colors">
               Modules
             </Link>
@@ -96,6 +99,9 @@ export function Header() {
               </Link>
               <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium">
                 Order
+              </Link>
+              <Link href="/peptides" className="text-gray-700 hover:text-primary-600 font-medium">
+                Peptides
               </Link>
               <Link href="/modules" className="text-gray-700 hover:text-purple-600 font-medium">
                 Modules

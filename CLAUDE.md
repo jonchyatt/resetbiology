@@ -546,3 +546,243 @@ className="bg-gradient-to-br from-[color]-600/20 to-[color]-700/30 backdrop-blur
 - Backdrop blur for glass effect
 - Brand colors (primary/secondary) not gray
 - Subtle borders with transparency
+
+# 🚨 PERMANENT FEATURE DEVELOPMENT TODO LIST
+
+## 🔴 BUG FIXES (URGENT - Profile Management)
+
+### 👤 Profile Management Page Fixes
+- [ ] **Pull REAL user data from MongoDB** - Use the User table data (name, email) saved by `upsertUserFromAuth0`
+- [ ] **If no data exists, leave fields BLANK** - Don't show fake placeholder data
+- [ ] **REMOVE SMS notification toggle** - Delete it entirely since we don't have SMS infrastructure
+- [ ] **Fix Sign Out button** - Make it actually sign out the user via Auth0
+- [ ] **Fix Save Changes button** - Save updates to MongoDB User table when clicked
+- [ ] **Create API endpoint** - `/api/profile/update` to handle profile updates
+
+## 🔴 PEPTIDE MANAGEMENT FIXES (URGENT - Prevent Another Rollback)
+
+### 🧬 Peptide Import Safety System
+- [ ] **Add validation before import** - Check data format matches schema
+- [ ] **Create automatic backup** - Backup database before any peptide data changes
+- [ ] **Build rollback function** - One-click restore to previous state if import fails
+- [ ] **Add preview mode** - Show what will be imported before committing
+- [ ] **Create import history log** - Track all imports with timestamps and who did them
+- [ ] **Build test mode** - Test import on copy of data first
+
+## ✅ COMPLETED: Complete Peptide Dosage Calculator
+
+### ✅ Full Interactive Calculator Application - INTEGRATED WITH PEPTIDE TRACKER
+- [x] **Calculator UI component** with:
+  - Dose input slider (0.1-15mg with increment controls) ✅
+  - Concentration selector dropdown (100-2000 mcg/ml) ✅
+  - Volume selector (0.5-3.0ml) ✅
+  - Custom input fields for non-standard values ✅
+  - Toggle between mg and mcg units ✅
+- [x] **Real-time calculation engine** showing:
+  - Exact ml to draw (2 decimal precision) ✅
+  - Visual syringe representation with fill level ✅
+  - Insulin units conversion ✅
+  - Step-by-step mixing instructions ✅
+- [x] **Preset peptide profiles**:
+  - Imports data from active protocols ✅
+- [x] **Modal integration**: Calculator opens from "Calculate" button on peptide cards ✅
+  - Quick-select buttons for popular protocols
+  - Save custom presets per user
+- [ ] **Include complete reconstitution guide**:
+  - Visual mixing animations
+  - BAC water calculator
+  - Storage instructions
+  - Safety warnings
+- [ ] **Build unit converter widget** (mg ↔ mcg ↔ IU)
+- [ ] **Add to peptide tracker page** as embedded tool
+
+## 🎯 PORTAL REDESIGN (Daily Check-in Focus)
+
+### 🏠 1. Header Section
+- [ ] Replace "Wellness Command Center" with "Welcome back, [Real User Name from MongoDB]"
+- [ ] Remove trial status completely
+- [ ] Show total points in top right corner
+- [ ] Pull real name from MongoDB User table
+
+### ✅ 2. Daily Check-in Section (MAIN FEATURE)
+- [ ] Add prominent "Daily Check-in" as central focus
+- [ ] Add subtitle: "Complete your daily activities to maximize progress and earn rewards"
+- [ ] Show current streak: "Current streak: X days" (calculated from DailyTask table)
+
+### 📋 3. Daily Task Checkboxes (Save State to Database)
+- [ ] ☐ **Log Peptides** → links to `/peptides`
+- [ ] ☐ **Daily Journal** → links to `/journal` (needs to be built)
+- [ ] ☐ **Log Workout** → links to `/workout`
+- [ ] ☐ **Log Meals** → links to `/nutrition`
+- [ ] ☐ **Complete Mental Mastery Module** → links to `/modules`
+- [ ] ☐ **Launch Breath Training** → links to `/breath`
+- [ ] Save checkbox states to database per user per day
+- [ ] Reset checkboxes at midnight daily
+
+### 🛒 4. Secondary Actions
+- [ ] ☐ **Order Peptides** → links to `/store`
+
+### 🗑️ 5. Remove from Portal
+- [ ] Remove fake progress numbers (already set to 0)
+- [ ] Remove generic "Exercise & Fitness" cards
+- [ ] Remove links to non-existent pages
+- [ ] Remove "Wellness Command Center" title
+
+## 🟡 USER REWARDS & GAMIFICATION SYSTEM (Using Existing Tables)
+
+### 🏆 Using Existing GamificationPoint Table
+- [ ] **Build points calculation engine** - Different points for different tasks
+- [ ] **Create daily reset job** - Reset checkboxes at midnight
+- [ ] **Points display component** - Shows total points with animation
+- [ ] **Achievement badges display** - Showcase earned badges
+- [ ] **Point notification toasts** - Celebrate earning points
+- [ ] **Define point values** per task (e.g., peptide log = 25 points)
+- [ ] **Create tier system** - Bronze (0-1000), Silver (1000-5000), Gold (5000-10000), Platinum (10000+)
+
+## 🟡 DAILY JOURNAL & AFFIRMATIONS (NEW)
+
+### 📔 Journal System
+- [ ] **Create JournalEntry database table** - userId, entry, mood, date
+- [ ] **Build journal entry page** at `/journal`
+- [ ] **Add rich text editor** - Bold, italic, lists
+- [ ] **Create entry templates** - Guided prompts for reflection
+- [ ] **Build journal history view** - Browse and search past entries
+
+### ✨ Affirmations System
+- [ ] **Create affirmations table** - userId, affirmation, isActive
+- [ ] **Build affirmation display** - Show on portal dashboard
+- [ ] **Add custom affirmation creator** - Users create their own
+- [ ] **Implement rotation system** - Different affirmation each day
+
+## 💳 STRIPE PAYMENT INTEGRATION
+
+### 🔒 E-commerce & Payment Processing
+- [ ] **Set up Stripe account** and obtain API keys
+- [ ] **Install Stripe SDK** in Next.js
+- [ ] **Create checkout flow** - Select peptides → payment → confirmation
+- [ ] **Build subscription management** - Monthly peptide deliveries
+- [ ] **Implement payment method storage** - Save cards securely
+- [ ] **Add invoice generation** - Email receipts
+
+## 🤝 AFFILIATE SYSTEM
+
+### 👥 Referral & Commission System
+- [ ] **Research platforms** - Post Affiliate Pro vs ReferralCandy vs custom
+- [ ] **Create affiliate dashboard** - Track referrals and commissions
+- [ ] **Build referral link generator** - Unique links per affiliate
+- [ ] **Implement commission calculation** - Percentage of sales
+- [ ] **Create payout system** - Monthly affiliate payments
+
+## 🏆 ACCOUNTABILITY DEPOSIT SYSTEM
+
+### 💰 "Treasure Chest" Motivation System
+- [ ] **Design deposit mechanism** - Users deposit money for motivation
+- [ ] **Create goal tracking** - Link deposits to specific goals
+- [ ] **Build release logic** - Release funds when goals achieved
+- [ ] **Implement partner payouts** - Failed goals go to accountability partner
+
+## 🗄️ DATABASE TABLES TO ADD
+
+### 📋 Required New Tables
+
+```prisma
+model FoodEntry {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @db.ObjectId
+  name        String
+  calories    Float
+  protein     Float
+  carbs       Float
+  fats        Float
+  mealType    String   // breakfast, lunch, dinner, snack
+  loggedAt    DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id])
+  @@map("food_entries")
+}
+
+model WorkoutSession {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @db.ObjectId
+  exercises   Json     // Array of exercises with sets/reps/weight
+  duration    Int      // in seconds
+  programId   String?
+  completedAt DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id])
+  @@map("workout_sessions")
+}
+
+model DailyTask {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @db.ObjectId
+  date        DateTime
+  taskName    String   // peptides, journal, workout, meals, module, breath
+  completed   Boolean  @default(false)
+  user        User     @relation(fields: [userId], references: [id])
+  @@map("daily_tasks")
+}
+
+model JournalEntry {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @db.ObjectId
+  entry       String
+  mood        String?
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id])
+  @@map("journal_entries")
+}
+```
+
+### ✅ Existing Tables (Already Built)
+- **BreathSession** - Tracks breath training progress
+- **ModuleCompletion** - Tracks Mental Mastery module access  
+- **GamificationPoint** - Points system for rewards
+- **ClientProgress** - Generic progress tracking
+- **User** - User data with Auth0 integration via `upsertUserFromAuth0`
+
+## 🔧 TECHNICAL IMPLEMENTATION NOTES
+
+### 📊 Current Reality
+- **User data IS saved to MongoDB** when they login (via `upsertUserFromAuth0`)
+- **BreathSession table already exists** for breath training
+- **ModuleCompletion table already exists** for Mental Mastery tracking  
+- **GamificationPoint table already exists** for points system
+- **Profile page should use REAL MongoDB data** or leave BLANK
+- **Portal checkboxes need DailyTask database** persistence per user
+- **Streak calculation from DailyTask data** (no separate streak table needed)
+
+### 🎯 API Endpoints to Build
+- `/api/profile/update` - Handle profile updates
+- `/api/daily-tasks/*` - Daily checkbox state management
+- `/api/journal/*` - Daily journal and affirmations
+- `/api/calculator/*` - Peptide dosage calculator
+- `/api/payments/*` - Stripe integration endpoints
+- `/api/affiliate/*` - Affiliate system integration
+
+### 🏗️ Component Architecture
+- Portal layout wrapper for authenticated users  
+- Daily check-in dashboard components with real data
+- Interactive peptide dosage calculator
+- Points display with real-time updates
+- Checkbox components with database persistence
+
+## 📊 PRIORITY ORDER
+
+### **PHASE 1 - THIS WEEK:**
+1. **Fix Profile Management bugs** (real data, remove SMS, fix buttons)
+2. **Portal Dashboard Redesign** (daily check-in with real data)  
+3. **Complete Peptide Dosage Calculator** ✅ COMPLETED
+4. **Add database tables** for FoodEntry, WorkoutSession, DailyTask, JournalEntry
+
+### **PHASE 2 - NEXT SPRINT:**
+1. **Peptide import safety system**
+2. **Connect all portal checkboxes** to DailyTask database
+3. **Daily Journal & Affirmations** with database
+
+### **PHASE 3 - FOLLOWING:**
+1. **Stripe Payment Integration**
+2. **Affiliate System** 
+3. **Accountability Deposit System**
+
+---
+
+*This list is PERMANENT and should be accessible across all Claude Code sessions. Each item should be broken down into smaller tasks when implementation begins.*
