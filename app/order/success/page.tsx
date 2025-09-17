@@ -1,5 +1,6 @@
-export default function SuccessPage({ searchParams }: { searchParams: Record<string, string> }) {
-  const sessionId = searchParams['session_id'];
+export default async function SuccessPage({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
+  const params = await searchParams;
+  const sessionId = params['session_id'];
   return (
     <main className="p-6">
       <h1 className="text-2xl font-semibold mb-2">Payment successful</h1>

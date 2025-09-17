@@ -6,11 +6,12 @@ const prisma = new PrismaClient();
 // GET /api/peptides/[slug] - Get single peptide by slug
 export async function GET(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
+    const { slug } = await params;
     const peptide = await prisma.peptide.findUnique({
-      where: { slug: params.slug }
+      where: { slug }
     });
 
     if (!peptide) {
@@ -27,13 +28,14 @@ export async function GET(
 // PUT /api/peptides/[slug] - Update peptide
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
+    const { slug } = await params;
     const peptideData = await request.json();
 
     const peptide = await prisma.peptide.update({
-      where: { slug: params.slug },
+      where: { slug },
       data: {
         name: peptideData.name,
         dosage: peptideData.dosage,
@@ -73,11 +75,12 @@ export async function PUT(
 // DELETE /api/peptides/[slug] - Delete peptide
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
+    const { slug } = await params;
     await prisma.peptide.delete({
-      where: { slug: params.slug }
+      where: { slug }
     });
 
     return NextResponse.json({ message: 'Peptide deleted successfully' });

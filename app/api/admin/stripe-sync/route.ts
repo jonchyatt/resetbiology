@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { requireAdmin } from '@/src/lib/adminGuard';
-import { ensureStripeSync } from '@/src/lib/stripeSync';
+import { requireAdmin } from '@/lib/adminGuard';
+import { ensureStripeSync } from '@/lib/stripeSync';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';

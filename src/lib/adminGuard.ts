@@ -1,7 +1,8 @@
-import { getSession } from '@auth0/nextjs-auth0';
+import { auth0 } from '@/lib/auth0';
+import { cookies } from 'next/headers';
 
 export async function requireAdmin() {
-  const session = await getSession();
+  const session = await auth0.getSession(cookies());
   if (!session?.user) {
     const err: any = new Error('Unauthorized');
     err.status = 401;

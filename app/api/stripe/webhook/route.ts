@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { stripe } from '@/src/lib/stripe';
-import { prisma } from '@/src/lib/prisma';
+import { stripe } from '@/lib/stripe';
+import { prisma } from '@/lib/prisma';
 import type Stripe from 'stripe';
 
 export const runtime = 'nodejs';

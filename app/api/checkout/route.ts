@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/src/lib/prisma';
-import { stripe } from '@/src/lib/stripe';
-import { ensureStripeSync } from '@/src/lib/stripeSync';
+import { prisma } from '@/lib/prisma';
+import { stripe } from '@/lib/stripe';
+import { ensureStripeSync } from '@/lib/stripeSync';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
