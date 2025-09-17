@@ -1,8 +1,24 @@
 import { NextResponse } from 'next/server';
 import peptideData from '@/data/peptides.json';
 
+type PriceRange = { min: number; max: number };
+type CatalogMeta = { 
+  lastUpdated?: string; 
+  source?: string; 
+  priceRange?: PriceRange;
+  totalPeptides?: number;
+  dataSources?: string[];
+  mergeStrategy?: string;
+};
+interface PeptideCatalog {
+  peptides: any[];
+  metadata: CatalogMeta;
+}
+
 export async function GET(request: Request) {
   try {
+    const { peptides, metadata } = peptideData as PeptideCatalog;
+    
     // Get query parameters
     const { searchParams } = new URL(request.url);
     const category = searchParams.get('category');
@@ -10,7 +26,7 @@ export async function GET(request: Request) {
     const minPrice = searchParams.get('minPrice');
     const maxPrice = searchParams.get('maxPrice');
     
-    let filteredPeptides = peptideData.peptides;
+    let filteredPeptides = peptides;
     
     // Apply filters
     if (category) {
@@ -34,9 +50,9 @@ export async function GET(request: Request) {
       products: filteredPeptides,
       totalCount: filteredPeptides.length,
       metadata: {
-        lastUpdated: peptideData.lastUpdated,
-        source: peptideData.source,
-        priceRange: peptideData.priceRange
+        lastUpdated: metadata?.lastUpdated ?? null,
+        source: metadata?.source ?? 'mongo',
+        priceRange: metadata?.priceRange
       }
     });
     
