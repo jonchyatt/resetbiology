@@ -2,26 +2,20 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import peptideData from '@/data/peptides.json';
 
 interface Peptide {
   id: string;
   slug: string;
   name: string;
-  description: string;
-  imageUrl: string;
+  price: number;
+  dosage?: string;
   category: string;
-  partnerPrice: number;
-  retailPrice: number;
-  subscriptionPrice: number;
-  vialSize: string;
+  subcategory?: string;
   inStock: boolean;
   featured: boolean;
-  protocolInstructions: any;
-  educationalContent: string;
-  sourceUrl: string;
-  benefits: string[];
-  usage: string;
+  researchProtocols?: any;
+  keyBenefits?: any;
+  originalUrl?: string;
 }
 
 export default function OrderPage() {
@@ -29,30 +23,47 @@ export default function OrderPage() {
   const [priceFilter, setPriceFilter] = useState('all');
   const [sortBy, setSortBy] = useState('featured');
   const [searchQuery, setSearchQuery] = useState('');
+  const [peptides, setPeptides] = useState<Peptide[]>([]);
+  const [loading, setLoading] = useState(true);
   
-  // Use local data directly
-  const peptides = peptideData.peptides as Peptide[];
-  
-  console.log('Total peptides loaded:', peptides.length);
+  // Fetch peptides from database
+  useEffect(() => {
+    async function fetchPeptides() {
+      try {
+        const response = await fetch('/api/peptides');
+        const data = await response.json();
+        setPeptides(data.peptides || []);
+        console.log('Total peptides loaded:', data.peptides?.length);
+      } catch (error) {
+        console.error('Failed to fetch peptides:', error);
+        setPeptides([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    fetchPeptides();
+  }, []);
   
   // Filter and sort peptides
   const filteredPeptides = peptides.filter(peptide => {
     // Category filter
     if (selectedCategory !== 'all') {
-      if (selectedCategory === 'packages' && !peptide.name.includes('Package')) return false;
-      if (selectedCategory === 'single' && peptide.name.includes('Package')) return false;
+      if (selectedCategory === 'packages' && peptide.subcategory !== 'protocol_package') return false;
+      if (selectedCategory === 'single' && peptide.subcategory !== 'single_vial') return false;
+      if (selectedCategory === 'supplies' && peptide.subcategory !== 'supplies') return false;
     }
     
     // Price filter
-    if (priceFilter === 'under100' && peptide.retailPrice >= 100) return false;
-    if (priceFilter === '100to500' && (peptide.retailPrice < 100 || peptide.retailPrice > 500)) return false;
-    if (priceFilter === 'over500' && peptide.retailPrice <= 500) return false;
+    if (priceFilter === 'under100' && peptide.price >= 100) return false;
+    if (priceFilter === '100to500' && (peptide.price < 100 || peptide.price > 500)) return false;
+    if (priceFilter === 'over500' && peptide.price <= 500) return false;
     
     // Search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       return peptide.name.toLowerCase().includes(query) || 
-             peptide.description.toLowerCase().includes(query);
+             peptide.slug.toLowerCase().includes(query);
     }
     
     return true;
@@ -61,14 +72,22 @@ export default function OrderPage() {
   // Sort
   const sortedPeptides = [...filteredPeptides].sort((a, b) => {
     if (sortBy === 'featured') return b.featured ? 1 : -1;
-    if (sortBy === 'price-low') return a.retailPrice - b.retailPrice;
-    if (sortBy === 'price-high') return b.retailPrice - a.retailPrice;
+    if (sortBy === 'price-low') return a.price - b.price;
+    if (sortBy === 'price-high') return b.price - a.price;
     if (sortBy === 'name') return a.name.localeCompare(b.name);
     return 0;
   });
 
   console.log('Filtered peptides:', filteredPeptides.length);
   console.log('Sorted peptides:', sortedPeptides.length);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center">
+        <div className="text-white text-xl">Loading peptides...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 relative py-20"
@@ -119,6 +138,7 @@ export default function OrderPage() {
                 <option value="all">All Products</option>
                 <option value="packages">Protocol Packages</option>
                 <option value="single">Single Vials</option>
+                <option value="supplies">Supplies</option>
               </select>
             </div>
             
@@ -170,9 +190,9 @@ export default function OrderPage() {
                     Featured
                   </span>
                 )}
-                {peptide.vialSize && (
+                {peptide.dosage && (
                   <span className="absolute top-2 left-2 bg-primary-600/20 text-primary-200 px-3 py-1 rounded-full text-sm shadow-lg backdrop-blur-sm border border-primary-400/30">
-                    {peptide.vialSize}
+                    {peptide.dosage.includes('mg') ? peptide.dosage : peptide.subcategory}
                   </span>
                 )}
                 <div className="flex items-center justify-center h-full">
@@ -188,43 +208,37 @@ export default function OrderPage() {
                 <div className="mb-4">
                   <div className="flex justify-between items-baseline">
                     <span className="text-3xl font-bold text-white">
-                      ${peptide.retailPrice}
+                      ${peptide.price}
                     </span>
-                    {peptide.partnerPrice > 0 && (
-                      <span className="text-sm text-gray-400 line-through">
-                        ${(peptide.partnerPrice * 2).toFixed(2)}
-                      </span>
-                    )}
+                    <span className="text-sm text-gray-400">
+                      Research Grade
+                    </span>
                   </div>
-                  {peptide.subscriptionPrice && (
-                    <div className="text-sm text-green-400 mt-1">
-                      Subscribe & Save: ${peptide.subscriptionPrice}/mo
-                    </div>
-                  )}
+                  <div className="text-sm text-green-400 mt-1">
+                    Subscribe & Save: ${(peptide.price * 0.85).toFixed(2)}/mo
+                  </div>
                 </div>
                 
                 {/* Protocol Info */}
-                {peptide.protocolInstructions && Object.keys(peptide.protocolInstructions).length > 0 && (
+                {peptide.researchProtocols && (
                   <div className="mb-4 p-3 bg-black/20 backdrop-blur-sm rounded-lg border border-primary-400/20">
-                    <div className="text-xs font-semibold text-gray-300 mb-1">Protocol Info:</div>
-                    {peptide.protocolInstructions.protocolLength && (
-                      <div className="text-xs text-gray-400">
-                        Length: {peptide.protocolInstructions.protocolLength}
-                      </div>
-                    )}
-                    {peptide.protocolInstructions.dosage && (
+                    <div className="text-xs font-semibold text-gray-300 mb-1">Research Info:</div>
+                    {peptide.dosage && (
                       <div className="text-xs text-gray-400 truncate">
-                        Dosage: {peptide.protocolInstructions.dosage.substring(0, 50)}...
+                        Dosage: {peptide.dosage.substring(0, 50)}...
                       </div>
                     )}
+                    <div className="text-xs text-gray-400">
+                      Category: {peptide.subcategory?.replace('_', ' ') || 'peptide'}
+                    </div>
                   </div>
                 )}
                 
                 {/* Benefits */}
-                {peptide.benefits && peptide.benefits.length > 0 && (
+                {peptide.keyBenefits && (
                   <div className="mb-4">
                     <div className="flex flex-wrap gap-1">
-                      {peptide.benefits.slice(0, 2).map((benefit, idx) => (
+                      {JSON.parse(peptide.keyBenefits).slice(0, 2).map((benefit: string, idx: number) => (
                         <span key={idx} className="text-xs bg-primary-600/20 text-primary-200 px-2 py-1 rounded backdrop-blur-sm border border-primary-400/30">
                           {benefit}
                         </span>

@@ -33,12 +33,76 @@ You have access to Playwright MCP which enables you to:
 - **Deployment**: Containerized for consistent environments
 
 ## Authentication System (Auth0)
--
 - **Domain**: dev-4n4ucz3too5e3w5j.us.auth0.com
 - **Integration**: @auth0/nextjs-auth0 SDK
 - **Routes**: `/api/auth/[...auth0]` (login, logout, callback, me)
 - **Protection**: ProtectedRoute component for secured pages
 - **User Management**: Auth0 dashboard + Prisma user sync via upsertFromAuth0
+
+## SUCCESSFUL Peptide Data Scraping Process (September 17, 2025)
+
+### What Worked - Complete Process Documentation
+
+**Environment Setup Required:**
+- WSL2 with working display (DISPLAY=:0)
+- Chromium browser via Playwright
+- Node.js with Playwright installed
+- Existing cookies saved (optional but helpful)
+
+**The Working Scraper Process:**
+
+1. **Launch browser in headed mode** (not headless) with Playwright
+```javascript
+const browser = await chromium.launch({
+  headless: false,
+  args: ['--disable-blink-features=AutomationControlled']
+});
+```
+
+2. **Navigate to collections pages** - Must scrape all 3 pages:
+- Page 1: https://cellularpeptide.com/collections/all
+- Page 2: https://cellularpeptide.com/collections/all?page=2
+- Page 3: https://cellularpeptide.com/collections/all?page=3
+
+3. **Extract product URLs from listing pages FIRST**
+- Get product name from listing (more reliable than product page)
+- Get list price from listing
+- Get product URL for detailed scraping
+
+4. **Visit each product page individually**
+- Wait for page load with domcontentloaded (not networkidle - it times out)
+- Extract protocol instructions using regex patterns
+- Click "Learn More" button for educational content
+- Click "More Protocol Information" for expanded protocols
+
+5. **Key extraction patterns that worked:**
+```javascript
+// Protocol extraction regex patterns
+/Reconstitution[:\s]*([^\n]+)/i
+/Protocol Length[:\s]*([^\n]+)/i
+/Dosage[:\s]*([^\n]+)/i
+/Timing[:\s]*([^\n]+)/i
+```
+
+6. **Apply 50% markup**: retail = partner * 1.5
+
+**Files Created:**
+- `improved-scraper.js` - The final working version
+- `cellularpeptide-final-data.json` - Complete scraped data
+
+**Results Achieved:**
+- ✅ 32 peptides scraped successfully
+- ✅ 32 with prices
+- ✅ 28 with protocol instructions
+- ✅ 11 with educational content
+
+**Critical Success Factors:**
+- Use headed browser (headless doesn't work well)
+- Scrape listing pages first for names/prices
+- Use shorter timeouts (15s) with domcontentloaded
+- Add delays between products (1.5s)
+- Extract from listing AND detail pages
+- Handle buttons that may or may not exist gracefully
 
 ## Key Components to Build
 1. Public marketing landing pages with conversion optimization

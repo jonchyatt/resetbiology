@@ -1,0 +1,680 @@
+[
+  {
+    "slug": "100-injection-syringes",
+    "name": "Filter:",
+    "description": "Filter: - Premium quality peptide",
+    "imageUrl": "https://cellularpeptide.com/cdn/shop/files/InjectionSyringesProductPhoto.png?v=1709682083&width=533",
+    "url": "https://cellularpeptide.com/products/100-injection-syringes",
+    "partnerPrice": 4,
+    "retailPrice": 6,
+    "storefront": true,
+    "active": true,
+    "metadata": {
+      "category": "peptide",
+      "vialSize": "",
+      "protocolInstructions": {},
+      "educationalContent": ""
+    }
+  },
+  {
+    "slug": "100-reconstitution-syringes",
+    "name": "10 Reconstitution Syringes",
+    "description": "10 Reconstitution Syringes - Premium quality peptide",
+    "imageUrl": "https://cellularpeptide.com/cdn/shop/files/ReconstitutionSyringesProductPhoto.png?v=1709682161&width=533",
+    "url": "https://cellularpeptide.com/products/100-reconstitution-syringes",
+    "partnerPrice": 4,
+    "retailPrice": 6,
+    "storefront": true,
+    "active": true,
+    "metadata": {
+      "category": "peptide",
+      "vialSize": "",
+      "protocolInstructions": {
+        "reconstitution": "Syringes $4.00"
+      },
+      "educationalContent": ""
+    }
+  },
+  {
+    "slug": "100-sterile-alcohol-wipes",
+    "name": "100 Sterile Alcohol Wipes",
+    "description": "100 Sterile Alcohol Wipes - Premium quality peptide",
+    "imageUrl": "https://cellularpeptide.com/cdn/shop/files/Alcohol_Wipes.png?v=1732856595&width=533",
+    "url": "https://cellularpeptide.com/products/100-sterile-alcohol-wipes",
+    "partnerPrice": 5,
+    "retailPrice": 7.5,
+    "storefront": true,
+    "active": true,
+    "metadata": {
+      "category": "peptide",
+      "vialSize": "",
+      "protocolInstructions": {},
+      "educationalContent": ""
+    }
+  },
+  {
+    "slug": "anxiety-depression-protocol-package",
+    "name": "More Protocol Information",
+    "description": "More Protocol Information - Premium quality peptide",
+    "imageUrl": "https://cellularpeptide.com/cdn/shop/files/Selank_CofA.png?v=10033029316428127871",
+    "url": "https://cellularpeptide.com/products/anxiety-depression-protocol-package",
+    "partnerPrice": 550,
+    "retailPrice": 825,
+    "storefront": true,
+    "active": true,
+    "metadata": {
+      "category": "peptide",
+      "vialSize": "",
+      "protocolInstructions": {
+        "reconstitution": "Syringes 140 Alcohol Wipes 2 Vials of Bacteriostatic Water",
+        "protocolLength": "12 Weeks",
+        "dosage": "Add To Cart",
+        "timing": "All doses should be taken on an empty stomach, 2 hours prior to and/or after eating."
+      },
+      "educationalContent": "lularPeptide Powered by Shopify"
+    }
+  },
+  {
+    "slug": "bacteriostatic-water-10ml-single-vial",
+    "name": "Bacteriostatic Water 10mL - Single Vial",
+    "description": "Bacteriostatic Water 10mL - Single Vial - Premium quality peptide",
+    "imageUrl": "https://cellularpeptide.com/cdn/shop/files/bac_water_-_new.png?v=1732856883&width=533",
+    "url": "https://cellularpeptide.com/products/bacteriostatic-water-10ml-single-vial",
+    "partnerPrice": 10,
+    "retailPrice": 15,
+    "storefront": true,
+    "active": true,
+    "metadata": {
+      "category": "peptide",
+      "vialSize": "",
+      "protocolInstructions": {},
+      "educationalContent": ""
+    }
+  },
+  {
+    "slug": "blood-sugar-weight-reduction-package",
+    "name": "More Protocol Information",
+    "description": "More Protocol Information - Premium quality peptide",
+    "imageUrl": "https://cellularpeptide.com/cdn/shop/files/Semaglutide_CofA.webp?v=188050945325171539",
+    "url": "https://cellularpeptide.com/products/blood-sugar-weight-reduction-package",
+    "partnerPrice": 720,
+    "retailPrice": 1080,
+    "storefront": true,
+    "active": true,
+    "metadata": {
+      "category": "peptide",
+      "vialSize": "",
+      "protocolInstructions": {
+        "reconstitution": "Syringes",
+        "protocolLength": "16 Weeks",
+        "dosage": "Add To Cart",
+        "timing": "All doses should be taken on an empty stomach, 2 hours prior to and/or after eating."
+      },
+      "educationalContent": "sults as the weight is still continuing to be trimmed off as I am into week 13 of the 16 week program.\"\n\nG. Kier, Health Professional from Colorado\n\n“I have battled weight loss for years getting in great shape and then rebounding back to having excess fat and weight. I've seen friends take semaglutide and although they had weight loss, many looked like zombies because they were so nutrient deficient. It's obvious that most people don't realize the importance of increasing their nutrient quality for immediate and long term health. By utilizing a complete holistic program of healthy eating habits and whole food nutrients to minimize semaglutide side effects, I have reduced body fat, retained shapely muscle and have a lifestyle I can follow for life.”\n\nAnonymous Patient\n\n“I have been on Semaglutide for 2.5 months and lost 17lbs so far. I'm 41 years old and have had bad digestive issues since I was 19. Since Semaglutide started March 3, 2024 I've had better digestion, limited cravings (if "
+    }
+  },
+  {
+    "slug": "body-recomposition-metabolic-health-package",
+    "name": "More Protocol Information",
+    "description": "More Protocol Information - Premium quality peptide",
+    "imageUrl": "https://cellularpeptide.com/cdn/shop/files/Retatrutide_CofA_1.png?v=6537752094447316042",
+    "url": "https://cellularpeptide.com/products/body-recomposition-metabolic-health-package",
+    "partnerPrice": 980,
+    "retailPrice": 1470,
+    "storefront": true,
+    "active": true,
+    "metadata": {
+      "category": "peptide",
+      "vialSize": "",
+      "protocolInstructions": {
+        "reconstitution": "Syringes",
+        "protocolLength": "10 Weeks",
+        "dosage": "Add To Cart",
+        "timing": "All doses should be taken on an empty stomach, 2 hours prior to and/or after eating."
+      },
+      "educationalContent": ""
+    }
+  },
+  {
+    "slug": "bpc157-tb500-5mg-5mg-combination",
+    "name": "More Protocol Information",
+    "description": "More Protocol Information - Premium quality peptide",
+    "imageUrl": "https://cellularpeptide.com/cdn/shop/files/BPC-157_TB500_CofA.webp?v=16230190115531293813",
+    "url": "https://cellularpeptide.com/products/bpc157-tb500-5mg-5mg-combination",
+    "partnerPrice": 80,
+    "retailPrice": 120,
+    "storefront": true,
+    "active": true,
+    "metadata": {
+      "category": "peptide",
+      "vialSize": "",
+      "protocolInstructions": {
+        "reconstitution": "Store in a freezer for up to 2 years.",
+        "protocolLength": "6 Weeks",
+        "dosage": "1000mcg (10 units), twice daily, for 6 weeks.",
+        "timing": "All doses should be taken on an empty stomach, 2 hours prior to and/or after eating."
+      },
+      "educationalContent": "weeks, my knee pain was completely gone. It truly is amazing. Saved me 10s of thousands of dollars and a lot of pain.”\n\nB. Schooner\n\nI had a shoulder injury for over 2 years and followed nutrient, nutrition and rehab perfectly to no avail... I started the BPC-157 / TB-500 protocol and by the 2nd month I was pain free and lifting like I did years previously.\n\nDoug Grant\n\nGet Started\n\nTerms & Policies Contact Us IRB Portal Gateway\n© 2025, CellularPeptide Powered by Shopify"
+    }
+  },
+  {
+    "slug": "cjc1295-ipamorelin-5mg-5mg-combination-single-vial",
+    "name": "More Protocol Information",
+    "description": "More Protocol Information - Premium quality peptide",
+    "imageUrl": "https://cellularpeptide.com/cdn/shop/files/CJC-1295_Ipamorelin_CofA.webp?v=2465561261680905219",
+    "url": "https://cellularpeptide.com/products/cjc1295-ipamorelin-5mg-5mg-combination-single-vial",
+    "partnerPrice": 55,
+    "retailPrice": 82.5,
+    "storefront": true,
+    "active": true,
+    "metadata": {
+      "category": "peptide",
+      "vialSize": "",
+      "protocolInstructions": {
+        "reconstitution": "Store in a freezer for up to 2 years.",
+        "protocolLength": "16 Weeks",
+        "dosage": "1000mcg (10 units), daily, right before bed.",
+        "timing": "All doses should be taken on an empty stomach, 2 hours prior to and/or after eating."
+      },
+      "educationalContent": ""
+    }
+  },
+  {
+    "slug": "dsip-2mg-single-vial",
+    "name": "More Protocol Information",
+    "description": "More Protocol Information - Premium quality peptide",
+    "imageUrl": "https://cellularpeptide.com/cdn/shop/files/DISP2mg-straight.png?v=1738611360&width=533",
+    "url": "https://cellularpeptide.com/products/dsip-2mg-single-vial",
+    "partnerPrice": 25,
+    "retailPrice": 37.5,
+    "storefront": true,
+    "active": true,
+    "metadata": {
+      "category": "peptide",
+      "vialSize": "",
+      "protocolInstructions": {
+        "reconstitution": "Store in a freezer for up to 2 years.",
+        "protocolLength": "12 Weeks",
+        "dosage": "Dose 10 units (200 mcg), once daily, before bed.",
+        "timing": "All doses should be injected on an empty stomach, at least 2 hours prior to/after eating."
+      },
+      "educationalContent": "o produce more energy, improving metabolic health by supporting the pathways that regulate glucose and lipid metabolism, promoting neuroprotection by reducing oxidative stress and supporting brain function.\n\nAs a result, users will experience more restorative, consistent sleep, naturally increased energy levels, and healthier aging.\n\nNew research is being performed and continuously discovering new exciting benefits of these peptides.\n\nTerms & Policies Contact Us IRB Portal Gateway\n© 2025, CellularPeptide Powered by Shopify"
+    }
+  },
+  {
+    "slug": "epitalon-20mg-single-vial",
+    "name": "More Protocol Information",
+    "description": "More Protocol Information - Premium quality peptide",
+    "imageUrl": "https://cellularpeptide.com/cdn/shop/files/Epitalon_CofA.webp?v=8647999983528953212",
+    "url": "https://cellularpeptide.com/products/epitalon-20mg-single-vial",
+    "partnerPrice": 60,
+    "retailPrice": 90,
+    "storefront": true,
+    "active": true,
+    "metadata": {
+      "category": "peptide",
+      "vialSize": "",
+      "protocolInstructions": {
+        "reconstitution": "Store in a freezer for up to 2 years.",
+        "protocolLength": "30 Days",
+        "dosage": "500 mcg (5 units) of Epitalon and 100 mcg (1 unit) of Kisspeptin, daily.",
+        "timing": "All doses should be taken on an empty stomach, 2 hours prior to and/or after eating."
+      },
+      "educationalContent": ""
+    }
+  },
+  {
+    "slug": "ghk-cu-100mg-single-vial",
+    "name": "More Protocol Information",
+    "description": "More Protocol Information - Premium quality peptide",
+    "imageUrl": "https://cellularpeptide.com/cdn/shop/files/ghk_cu_100mg_-_stright_on_1_6a1cceb2-d15e-433c-b350-cd5ecac779b5.png?v=1738611503&width=533",
+    "url": "https://cellularpeptide.com/products/ghk-cu-100mg-single-vial",
+    "partnerPrice": 90,
+    "retailPrice": 135,
+    "storefront": true,
+    "active": true,
+    "metadata": {
+      "category": "peptide",
+      "vialSize": "",
+      "protocolInstructions": {
+        "reconstitution": "Store in a freezer for up to 2 years.",
+        "protocolLength": "8 Weeks",
+        "dosage": "Inject 500 mcg (5 units), once daily.",
+        "timing": "All doses should be taken on an empty stomach, 2 hours prior to and/or after eating."
+      },
+      "educationalContent": ""
+    }
+  },
+  {
+    "slug": "growth-hormone-anti-aging-protocol-package",
+    "name": "More Protocol Information",
+    "description": "More Protocol Information - Premium quality peptide",
+    "imageUrl": "https://cellularpeptide.com/cdn/shop/files/CJC-1295_Ipamorelin_CofA.webp?v=2465561261680905219",
+    "url": "https://cellularpeptide.com/products/growth-hormone-anti-aging-protocol-package",
+    "partnerPrice": 1,
+    "retailPrice": 1.5,
+    "storefront": true,
+    "active": true,
+    "metadata": {
+      "category": "peptide",
+      "vialSize": "",
+      "protocolInstructions": {
+        "reconstitution": "Syringes",
+        "protocolLength": "16 Weeks",
+        "dosage": "Add To Cart",
+        "timing": "All doses should be taken on an empty stomach, 2 hours prior to and/or after eating."
+      },
+      "educationalContent": ""
+    }
+  },
+  {
+    "slug": "hair-growth-skin-health-protocol",
+    "name": "More Protocol Information",
+    "description": "More Protocol Information - Premium quality peptide",
+    "imageUrl": "https://cellularpeptide.com/cdn/shop/files/Hair_Growth_Skin_Health_Package_6d2ddef3-d9d5-4010-b026-a816846c0c2f.png?v=1738569280&width=533",
+    "url": "https://cellularpeptide.com/products/hair-growth-skin-health-protocol",
+    "partnerPrice": 340,
+    "retailPrice": 510,
+    "storefront": true,
+    "active": true,
+    "metadata": {
+      "category": "peptide",
+      "vialSize": "",
+      "protocolInstructions": {
+        "reconstitution": "Syringe",
+        "protocolLength": "8 Weeks",
+        "dosage": "Add To Cart",
+        "timing": "All doses should be taken on an empty stomach, 2 hours prior to and/or after eating."
+      },
+      "educationalContent": ""
+    }
+  },
+  {
+    "slug": "hormone-balancing-protocol-package",
+    "name": "More Protocol Information",
+    "description": "More Protocol Information - Premium quality peptide",
+    "imageUrl": "https://cellularpeptide.com/cdn/shop/files/Kisspeptin_CofA.webp?v=3534867336005953010",
+    "url": "https://cellularpeptide.com/products/hormone-balancing-protocol-package",
+    "partnerPrice": 360,
+    "retailPrice": 540,
+    "storefront": true,
+    "active": true,
+    "metadata": {
+      "category": "peptide",
+      "vialSize": "",
+      "protocolInstructions": {
+        "reconstitution": "Syringes",
+        "protocolLength": "10 Weeks",
+        "dosage": "Add To Cart",
+        "timing": "All doses should be taken on an empty stomach, 2 hours prior to and/or after eating."
+      },
+      "educationalContent": ""
+    }
+  },
+  {
+    "slug": "joint-wound-healing-protocol-package",
+    "name": "More Protocol Information",
+    "description": "More Protocol Information - Premium quality peptide",
+    "imageUrl": "https://cellularpeptide.com/cdn/shop/files/BPC157TB500_CofA_Lot394961.png?v=16694003050642913444",
+    "url": "https://cellularpeptide.com/products/joint-wound-healing-protocol-package",
+    "partnerPrice": 1,
+    "retailPrice": 1.5,
+    "storefront": true,
+    "active": true,
+    "metadata": {
+      "category": "peptide",
+      "vialSize": "",
+      "protocolInstructions": {
+        "reconstitution": "Syringes",
+        "protocolLength": "6 Weeks",
+        "dosage": "Add To Cart",
+        "timing": "All doses should be taken on an empty stomach, 2 hours prior to and/or after eating."
+      },
+      "educationalContent": "my knee pain was completely gone. It truly is amazing. Saved me 10s of thousands of dollars and a lot of pain.”\n\nB. Schooner\n\nI had a shoulder injury for over 2 years and followed nutrient, nutrition and rehab perfectly to no avail... I started the BPC-157 / TB-500 protocol and by the 2nd month I was pain free and lifting like I did years previously.\n\nDoug Grant\n\nGet Started\n\nTerms & Policies Contact Us IRB Portal Gateway\n© 2025, CellularPeptide Powered by Shopify"
+    }
+  },
+  {
+    "slug": "kisspeptin-10mg-single-vial",
+    "name": "More Protocol Information",
+    "description": "More Protocol Information - Premium quality peptide",
+    "imageUrl": "https://cellularpeptide.com/cdn/shop/files/Kisspeptin_CofA.webp?v=3534867336005953010",
+    "url": "https://cellularpeptide.com/products/kisspeptin-10mg-single-vial",
+    "partnerPrice": 40,
+    "retailPrice": 60,
+    "storefront": true,
+    "active": true,
+    "metadata": {
+      "category": "peptide",
+      "vialSize": "",
+      "protocolInstructions": {
+        "reconstitution": "Store in a freezer for up to 2 years.",
+        "protocolLength": "10 Weeks",
+        "dosage": "300mcg (3 units), 3 times per week, upon waking.",
+        "timing": "All doses should be taken on an empty stomach, 2 hours prior to and/or after eating."
+      },
+      "educationalContent": ""
+    }
+  },
+  {
+    "slug": "mt2-10mg-single-vial",
+    "name": "More Protocol Information",
+    "description": "More Protocol Information - Premium quality peptide",
+    "imageUrl": "https://cellularpeptide.com/cdn/shop/files/Melanotan_II_CofA.webp?v=6429495222932838004",
+    "url": "https://cellularpeptide.com/products/mt2-10mg-single-vial",
+    "partnerPrice": 30,
+    "retailPrice": 45,
+    "storefront": true,
+    "active": true,
+    "metadata": {
+      "category": "peptide",
+      "vialSize": "",
+      "protocolInstructions": {
+        "reconstitution": "Store in a freezer for up to 2 years.",
+        "protocolLength": "8 Weeks",
+        "dosage": "For the first 4 weeks, dose 100mcg (1 unit), twice daily. For the following 4 weeks, dose 100mcg (1 unit), 3 times per week to maintain the acquired tan.",
+        "timing": "All doses should be taken on an empty stomach, 2 hours prior to and/or after eating."
+      },
+      "educationalContent": ""
+    }
+  },
+  {
+    "slug": "nad-500mg-single-vial",
+    "name": "More Protocol Information",
+    "description": "More Protocol Information - Premium quality peptide",
+    "imageUrl": "https://cellularpeptide.com/cdn/shop/files/NAD_500mg-straight.png?v=1738611401&width=533",
+    "url": "https://cellularpeptide.com/products/nad-500mg-single-vial",
+    "partnerPrice": 100,
+    "retailPrice": 150,
+    "storefront": true,
+    "active": true,
+    "metadata": {
+      "category": "peptide",
+      "vialSize": "",
+      "protocolInstructions": {
+        "reconstitution": "Store in a freezer for up to 2 years.",
+        "protocolLength": "12 Weeks",
+        "dosage": "Dose 10 units (10 mg), once daily, upon waking.",
+        "timing": "All doses should be injected on an empty stomach, at least 2 hours prior to/after eating."
+      },
+      "educationalContent": "produce more energy, improving metabolic health by supporting the pathways that regulate glucose and lipid metabolism, promoting neuroprotection by reducing oxidative stress and supporting brain function.\n\nAs a result, users will experience more restorative, consistent sleep, naturally increased energy levels, and healthier aging.\n\nNew research is being performed and continuously discovering new exciting benefits of these peptides.\n\nTerms & Policies Contact Us IRB Portal Gateway\n© 2025, CellularPeptide Powered by Shopify"
+    }
+  },
+  {
+    "slug": "natural-energy-reset-protocol-package",
+    "name": "More Protocol Information",
+    "description": "More Protocol Information - Premium quality peptide",
+    "imageUrl": "https://cellularpeptide.com/cdn/shop/files/DSIP_CofA_1.png?v=8521414764492604178",
+    "url": "https://cellularpeptide.com/products/natural-energy-reset-protocol-package",
+    "partnerPrice": 650,
+    "retailPrice": 975,
+    "storefront": true,
+    "active": true,
+    "metadata": {
+      "category": "peptide",
+      "vialSize": "",
+      "protocolInstructions": {
+        "reconstitution": "Syringes",
+        "protocolLength": "12 Weeks",
+        "dosage": "Add To Cart",
+        "timing": "All doses should be injected on an empty stomach, at least 2 hours prior to/after eating."
+      },
+      "educationalContent": "restorative, consistent sleep, naturally increased energy levels, and healthier aging.\n\nNew research is being performed and continuously discovering new exciting benefits of these peptides.\n\nTerms & Policies Contact Us IRB Portal Gateway\n© 2025, CellularPeptide Powered by Shopify"
+    }
+  },
+  {
+    "slug": "oral-bpc-157",
+    "name": "More Protocol Information",
+    "description": "More Protocol Information - Premium quality peptide",
+    "imageUrl": "https://cellularpeptide.com/cdn/shop/files/BPCbox_sachet.png?v=1736965406&width=533",
+    "url": "https://cellularpeptide.com/products/oral-bpc-157",
+    "partnerPrice": 150,
+    "retailPrice": 225,
+    "storefront": true,
+    "active": true,
+    "metadata": {
+      "category": "peptide",
+      "vialSize": "",
+      "protocolInstructions": {
+        "dosage": "Add To Cart"
+      },
+      "educationalContent": "ell surface within the oral cavity and lower intestines. In addition, a liposome is utilized to safeguard the chelated BPC-157 from being broken down in the stomach.\n\nThe BPC-157 peptide speeds up the body's anti-inflammatory and recovery properties throughout the body. While there are promising studies, it is still undetermined as to whether or not BPC-157 can be fully absorbed through the intestinal wall when taken orally for recovery throughout the body. However, it has been shown to provide tremendous benefits to the gut, GI tract, and gut-brain axis when taken orally.\n\nAs a result, users can experience a reduction of inflammation, improved gut health, improved mood, and reduction of stomach/gut pain. In addition, individuals may also feel some relief to aches and pains from chronic injuries, but this result cannot be guaranteed.\n\nPlease see our Joint & Wound Healing Protocol Package for injectable BPC-157.\n\n\n\n\n“Patient with Crohn’s disease has had significant decrease in stomach p"
+    }
+  },
+  {
+    "slug": "organ-health-anti-aging-protocol-package",
+    "name": "More Protocol Information",
+    "description": "More Protocol Information - Premium quality peptide",
+    "imageUrl": "https://cellularpeptide.com/cdn/shop/files/Epitalon_CofA.webp?v=8647999983528953212",
+    "url": "https://cellularpeptide.com/products/organ-health-anti-aging-protocol-package",
+    "partnerPrice": 360,
+    "retailPrice": 540,
+    "storefront": true,
+    "active": true,
+    "metadata": {
+      "category": "peptide",
+      "vialSize": "",
+      "protocolInstructions": {
+        "reconstitution": "Syringes",
+        "protocolLength": "30 Days",
+        "dosage": "Add To Cart",
+        "timing": "All doses should be taken on an empty stomach, 2 hours prior to and/or after eating."
+      },
+      "educationalContent": ""
+    }
+  },
+  {
+    "slug": "patient-brochure",
+    "name": "Patient Brochure",
+    "description": "Patient Brochure - Premium quality peptide",
+    "imageUrl": "https://cellularpeptide.com/cdn/shop/files/ScreenShot2024-06-07at9.18.09AM.png?v=1717773674&width=533",
+    "url": "https://cellularpeptide.com/products/patient-brochure",
+    "partnerPrice": 0.5,
+    "retailPrice": 0.75,
+    "storefront": true,
+    "active": true,
+    "metadata": {
+      "category": "peptide",
+      "vialSize": "",
+      "protocolInstructions": {},
+      "educationalContent": ""
+    }
+  },
+  {
+    "slug": "prostamax-20mg-single-vial",
+    "name": "More Protocol Information",
+    "description": "More Protocol Information - Premium quality peptide",
+    "imageUrl": "https://cellularpeptide.com/cdn/shop/files/Prostamax_20mg_-_straight_de81c2d0-a080-4173-a511-c897f457720e.png?v=1738611557&width=533",
+    "url": "https://cellularpeptide.com/products/prostamax-20mg-single-vial",
+    "partnerPrice": 56,
+    "retailPrice": 84,
+    "storefront": true,
+    "active": true,
+    "metadata": {
+      "category": "peptide",
+      "vialSize": "",
+      "protocolInstructions": {
+        "reconstitution": "Store in a freezer for up to 2 years.",
+        "protocolLength": "12 Weeks",
+        "dosage": "Inject 1500 mcg (15 units), once daily.",
+        "timing": "All doses should be taken on an empty stomach, 2 hours prior to and/or after eating."
+      },
+      "educationalContent": ""
+    }
+  },
+  {
+    "slug": "prostate-support-package",
+    "name": "More Protocol Information",
+    "description": "More Protocol Information - Premium quality peptide",
+    "imageUrl": "https://cellularpeptide.com/cdn/shop/files/Prostate_Support_Package_f86dc26d-15b4-4b40-9f96-1b6b7abfb376.png?v=1738569987&width=533",
+    "url": "https://cellularpeptide.com/products/prostate-support-package",
+    "partnerPrice": 790,
+    "retailPrice": 1185,
+    "storefront": true,
+    "active": true,
+    "metadata": {
+      "category": "peptide",
+      "vialSize": "",
+      "protocolInstructions": {
+        "reconstitution": "Syringes",
+        "protocolLength": "12 Weeks",
+        "dosage": "Add To Cart",
+        "timing": "All doses should be taken on an empty stomach, 2 hours prior to and/or after eating."
+      },
+      "educationalContent": ""
+    }
+  },
+  {
+    "slug": "pt141-10mg-single-vial",
+    "name": "More Protocol Information",
+    "description": "More Protocol Information - Premium quality peptide",
+    "imageUrl": "https://cellularpeptide.com/cdn/shop/files/PT141_CofA.webp?v=9848710696694963589",
+    "url": "https://cellularpeptide.com/products/pt141-10mg-single-vial",
+    "partnerPrice": 35,
+    "retailPrice": 52.5,
+    "storefront": true,
+    "active": true,
+    "metadata": {
+      "category": "peptide",
+      "vialSize": "",
+      "protocolInstructions": {
+        "reconstitution": "Store in a freezer for up to 2 years.",
+        "protocolLength": "30 Doses",
+        "dosage": "500mcg (5 units) 1 hour prior to intimacy and another 500mcg (5 units) 30 minutes prior to intimacy.",
+        "timing": "All doses should be taken on an empty stomach, 2 hours prior to and/or after eating."
+      },
+      "educationalContent": ""
+    }
+  },
+  {
+    "slug": "retatrutide-10mg-single-vial",
+    "name": "More Protocol Information",
+    "description": "More Protocol Information - Premium quality peptide",
+    "imageUrl": "https://cellularpeptide.com/cdn/shop/files/Retatrutide_CofA_1.png?v=6537752094447316042",
+    "url": "https://cellularpeptide.com/products/retatrutide-10mg-single-vial",
+    "partnerPrice": 140,
+    "retailPrice": 210,
+    "storefront": true,
+    "active": true,
+    "metadata": {
+      "category": "peptide",
+      "vialSize": "",
+      "protocolInstructions": {
+        "reconstitution": "Store in a freezer for up to 2 years.",
+        "protocolLength": "10 Weeks",
+        "dosage": "Dosage differs per individual. To reduce the chance of nausea, follow the provided tiered dosage protocol, taking 1 injection per week. Once the desired appetite/craving reduction is accomplished, sto",
+        "timing": "All doses should be taken on an empty stomach, 2 hours prior to and/or after eating."
+      },
+      "educationalContent": ""
+    }
+  },
+  {
+    "slug": "selank-10mg-vial",
+    "name": "More Protocol Information",
+    "description": "More Protocol Information - Premium quality peptide",
+    "imageUrl": "https://cellularpeptide.com/cdn/shop/files/Selank_CofA.png?v=10033029316428127871",
+    "url": "https://cellularpeptide.com/products/selank-10mg-vial",
+    "partnerPrice": 35,
+    "retailPrice": 52.5,
+    "storefront": true,
+    "active": true,
+    "metadata": {
+      "category": "peptide",
+      "vialSize": "",
+      "protocolInstructions": {
+        "reconstitution": "Store in a freezer for up to 2 years.",
+        "protocolLength": "12 Weeks",
+        "dosage": "500 mcg (5 units) of Selank, daily (alternating on for 7 days & off for 7 days), & 500 mcg (5 units) of Semax, daily first thing in the morning, for 12 weeks.",
+        "timing": "All doses should be taken on an empty stomach, 2 hours prior to and/or after eating."
+      },
+      "educationalContent": "s IRB Portal Gateway\n© 2025, CellularPeptide Powered by Shopify"
+    }
+  },
+  {
+    "slug": "semaglutide-10mg-single-vial",
+    "name": "More Protocol Information",
+    "description": "More Protocol Information - Premium quality peptide",
+    "imageUrl": "https://cellularpeptide.com/cdn/shop/files/Semaglutide_CofA.webp?v=188050945325171539",
+    "url": "https://cellularpeptide.com/products/semaglutide-10mg-single-vial",
+    "partnerPrice": 150,
+    "retailPrice": 225,
+    "storefront": true,
+    "active": true,
+    "metadata": {
+      "category": "peptide",
+      "vialSize": "",
+      "protocolInstructions": {
+        "reconstitution": "Store in a freezer for up to 2 years.",
+        "protocolLength": "16 Weeks",
+        "dosage": "Dosage differs per individual. If individual weighs under 150lbs, begin protocol by dosing 250mcg (2.5 units), once weekly. If over 150lbs, begin protocol by dosing 500mcg (5 units), once weekly.",
+        "timing": "All doses should be taken on an empty stomach, 2 hours prior to and/or after eating."
+      },
+      "educationalContent": "\n\nG. Kier, Health Professional from Colorado\n\n“I have battled weight loss for years getting in great shape and then rebounding back to having excess fat and weight. I've seen friends take semaglutide and although they had weight loss, many looked like zombies because they were so nutrient deficient. It's obvious that most people don't realize the importance of increasing their nutrient quality for immediate and long term health. By utilizing a complete holistic program of healthy eating habits and whole food nutrients to minimize semaglutide side effects, I have reduced body fat, retained shapely muscle and have a lifestyle I can follow for life.”\n\nAnonymous Patient\n\n“I have been on Semaglutide for 2.5 months and lost 17lbs so far. I'm 41 years old and have had bad digestive issues since I was 19. Since Semaglutide started March 3, 2024 I've had better digestion, limited cravings (if any), and lost weight - excited! I've been working out 5 days a week, 20-30 min total each day with wei"
+    }
+  },
+  {
+    "slug": "semax-30mg-single-vial",
+    "name": "More Protocol Information",
+    "description": "More Protocol Information - Premium quality peptide",
+    "imageUrl": "https://cellularpeptide.com/cdn/shop/files/Semax_CofA.jpg?v=4461329650204026116",
+    "url": "https://cellularpeptide.com/products/semax-30mg-single-vial",
+    "partnerPrice": 55,
+    "retailPrice": 82.5,
+    "storefront": true,
+    "active": true,
+    "metadata": {
+      "category": "peptide",
+      "vialSize": "",
+      "protocolInstructions": {
+        "reconstitution": "Store in a freezer for up to 2 years.",
+        "protocolLength": "12 Weeks",
+        "dosage": "500 mcg (5 units) of Selank, daily (alternating on for 7 days & off for 7 days), & 500 mcg (5 units) of Semax, daily first thing in the morning, for 12 weeks.",
+        "timing": "All doses should be taken on an empty stomach, 2 hours prior to and/or after eating."
+      },
+      "educationalContent": "Us IRB Portal Gateway\n© 2025, CellularPeptide Powered by Shopify"
+    }
+  },
+  {
+    "slug": "sexual-enhancement-protocol-package",
+    "name": "More Protocol Information",
+    "description": "More Protocol Information - Premium quality peptide",
+    "imageUrl": "https://cellularpeptide.com/cdn/shop/files/PT141_CofA.webp?v=9848710696694963589",
+    "url": "https://cellularpeptide.com/products/sexual-enhancement-protocol-package",
+    "partnerPrice": 420,
+    "retailPrice": 630,
+    "storefront": true,
+    "active": true,
+    "metadata": {
+      "category": "peptide",
+      "vialSize": "",
+      "protocolInstructions": {
+        "reconstitution": "Syringes",
+        "protocolLength": "30 Doses",
+        "dosage": "Add To Cart",
+        "timing": "All doses should be taken on an empty stomach, 2 hours prior to and/or after eating."
+      },
+      "educationalContent": ""
+    }
+  },
+  {
+    "slug": "tanning-sexual-benefits",
+    "name": "More Protocol Information",
+    "description": "More Protocol Information - Premium quality peptide",
+    "imageUrl": "https://cellularpeptide.com/cdn/shop/files/Melanotan_II_CofA.webp?v=6429495222932838004",
+    "url": "https://cellularpeptide.com/products/tanning-sexual-benefits",
+    "partnerPrice": 340,
+    "retailPrice": 510,
+    "storefront": true,
+    "active": true,
+    "metadata": {
+      "category": "peptide",
+      "vialSize": "",
+      "protocolInstructions": {
+        "reconstitution": "Syringes",
+        "protocolLength": "8 Weeks",
+        "dosage": "Add To Cart",
+        "timing": "All doses should be taken on an empty stomach, 2 hours prior to and/or after eating."
+      },
+      "educationalContent": ""
+    }
+  }
+]
