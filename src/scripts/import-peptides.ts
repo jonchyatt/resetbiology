@@ -36,16 +36,11 @@ async function importPeptides() {
           // Try to extract name from slug
           name = peptide.slug
             .split('-')
-            .map(word => {
-              // Keep common abbreviations uppercase
-              if (['bpc', 'tb', 'cjc', 'ghk', 'cu', 'nad', 'mt2', 'pt'].includes(word.toLowerCase())) {
+            .map((word: string): string => {
+              const lower = word.toLowerCase();
+              if (['bpc','tb','cjc','ghk','cu','nad','mt2','pt'].includes(lower)) {
                 return word.toUpperCase();
               }
-              // Keep numbers as is
-              if (/^\d+/.test(word)) {
-                return word;
-              }
-              // Capitalize first letter
               return word.charAt(0).toUpperCase() + word.slice(1);
             })
             .join(' ');
