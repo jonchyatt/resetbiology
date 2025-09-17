@@ -100,11 +100,11 @@ export default function PeptideDetailPage() {
                   Featured
                 </span>
               )}
-              {peptide.vialSize && (
+              {/* {peptide.vialSize && (
                 <span className="absolute top-4 left-4 bg-primary-600/20 text-primary-200 px-3 py-1 rounded-full text-sm shadow-lg backdrop-blur-sm border border-primary-400/30">
                   {peptide.vialSize}
                 </span>
-              )}
+              )} */}
               <div className="text-center">
                 <h1 className="text-3xl font-bold text-white mb-2">{peptide.name}</h1>
                 <p className="text-gray-300">{peptide.category}</p>
@@ -117,19 +117,19 @@ export default function PeptideDetailPage() {
               <div className="bg-black/20 backdrop-blur-sm rounded-lg p-6 border border-primary-400/30">
                 <div className="flex justify-between items-baseline mb-4">
                   <span className="text-4xl font-bold text-white">
-                    ${peptide.retailPrice}
+                    ${peptide.price}
                   </span>
-                  {peptide.partnerPrice > 0 && (
+                  {/* {peptide.partnerPrice > 0 && (
                     <span className="text-sm text-gray-400 line-through">
                       ${(peptide.partnerPrice * 2).toFixed(2)}
                     </span>
-                  )}
+                  )} */}
                 </div>
-                {peptide.subscriptionPrice && (
+                {/* {peptide.subscriptionPrice && (
                   <div className="text-sm text-green-400 mb-4">
                     Subscribe & Save: ${peptide.subscriptionPrice}/mo
                   </div>
-                )}
+                )} */}
                 <div className="space-y-2">
                   <button className="w-full bg-gradient-to-r from-primary-500 to-secondary-500 text-white py-3 px-6 rounded-lg hover:from-primary-600 hover:to-secondary-600 transition-all font-medium shadow-lg hover:shadow-primary-400/30 hover:scale-105 duration-300">
                     Add to Cart
@@ -144,11 +144,11 @@ export default function PeptideDetailPage() {
               </div>
 
               {/* Benefits */}
-              {peptide.benefits && peptide.benefits.length > 0 && (
+              {peptide.keyBenefits && Array.isArray(peptide.keyBenefits) && (peptide.keyBenefits as any[]).length > 0 && (
                 <div className="bg-black/20 backdrop-blur-sm rounded-lg p-4 border border-primary-400/30">
                   <h3 className="font-semibold text-white mb-2">Key Benefits:</h3>
                   <div className="flex flex-wrap gap-2">
-                    {peptide.benefits.map((benefit, idx) => (
+                    {(peptide.keyBenefits as any[]).map((benefit: any, idx: number) => (
                       <span key={idx} className="text-xs bg-primary-600/20 text-primary-200 px-3 py-1 rounded-full backdrop-blur-sm border border-primary-400/30">
                         {benefit}
                       </span>
@@ -172,7 +172,7 @@ export default function PeptideDetailPage() {
         </div>
 
         {/* Protocol Instructions */}
-        {peptide.protocolInstructions && Object.keys(peptide.protocolInstructions).length > 0 && (
+        {/* {peptide.protocolInstructions && Object.keys(peptide.protocolInstructions).length > 0 && (
           <div className="bg-gradient-to-br from-blue-600/20 to-primary-600/20 backdrop-blur-sm rounded-xl p-6 mb-8 shadow-2xl border border-blue-400/30">
             <h2 className="text-2xl font-bold text-blue-300 mb-4">Protocol Instructions</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -202,10 +202,10 @@ export default function PeptideDetailPage() {
               )}
             </div>
           </div>
-        )}
+        )} */}
 
         {/* Educational Content */}
-        {peptide.educationalContent && peptide.educationalContent.trim() && (
+        {/* {peptide.educationalContent && peptide.educationalContent.trim() && (
           <div className="bg-gradient-to-br from-purple-600/20 to-primary-600/20 backdrop-blur-sm rounded-xl p-6 mb-8 shadow-2xl border border-purple-400/30">
             <h2 className="text-2xl font-bold text-purple-300 mb-4">Educational Information</h2>
             <div className="bg-black/20 backdrop-blur-sm rounded-lg p-6 border border-purple-400/30">
@@ -214,7 +214,7 @@ export default function PeptideDetailPage() {
               </div>
             </div>
           </div>
-        )}
+        )} */}
 
         {/* Source Information */}
         <div className="bg-gradient-to-br from-gray-600/20 to-gray-700/20 backdrop-blur-sm rounded-xl p-6 shadow-2xl border border-gray-400/30">
@@ -222,10 +222,10 @@ export default function PeptideDetailPage() {
           <div className="space-y-2 text-gray-300">
             <p><strong>Product ID:</strong> {peptide.id}</p>
             <p><strong>Category:</strong> {peptide.category}</p>
-            {peptide.sourceUrl && (
+            {peptide.originalUrl && (
               <p>
                 <strong>Source:</strong> 
-                <a href={peptide.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-primary-400 hover:text-primary-300 ml-2">
+                <a href={peptide.originalUrl} target="_blank" rel="noopener noreferrer" className="text-primary-400 hover:text-primary-300 ml-2">
                   View Original Product →
                 </a>
               </p>
@@ -236,11 +236,22 @@ export default function PeptideDetailPage() {
 
       {/* Dosage Calculator Modal */}
       {showCalculator && (
-        <DosageCalculator 
-          isOpen={showCalculator}
-          onClose={() => setShowCalculator(false)}
-          initialPeptide={peptide.name}
-        />
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-gray-900 rounded-xl max-w-4xl w-full max-h-[90vh] overflow-auto">
+            <div className="p-4 border-b border-gray-700 flex justify-between items-center">
+              <h2 className="text-xl font-bold text-white">Dosage Calculator</h2>
+              <button onClick={() => setShowCalculator(false)} className="text-gray-400 hover:text-white">✕</button>
+            </div>
+            <DosageCalculator 
+              importedPeptide={{
+                id: peptide.id,
+                name: peptide.name,
+                vialSize: 5,
+                recommendedDose: 250
+              }}
+            />
+          </div>
+        </div>
       )}
     </div>
   );
