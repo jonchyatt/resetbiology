@@ -78,11 +78,11 @@ export default function OrderPage() {
           <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">
             Premium Peptides
           </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-xl text-white/80 max-w-3xl mx-auto">
             Research-grade peptides sourced from certified laboratories. 
             All products include detailed protocols and educational materials.
           </p>
-          <div className="mt-6 text-sm text-gray-500">
+          <div className="mt-6 text-sm text-white/70">
             {peptides.length} products available • Prices shown with 50% markup • 15% discount on subscriptions
           </div>
         </div>

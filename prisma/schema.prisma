@@ -304,3 +304,53 @@ model JournalEntry {
 
   @@map("journal_entries")
 }
+
+// --- STRIPE CATALOG MODELS (Mongo) ---
+model Product {
+  id               String    @id @default(auto()) @map("_id") @db.ObjectId
+  slug             String    @unique
+  name             String
+  description      String?
+  imageUrl         String?
+  active           Boolean   @default(true)
+  storefront       Boolean   @default(false)
+  stripeProductId  String?
+  lastSyncedAt     DateTime?
+  metadata         Json?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  prices           Price[]
+}
+
+model Price {
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  productId      String    @db.ObjectId
+  product        Product   @relation(fields: [productId], references: [id])
+
+  label          String?
+  unitAmount     Int
+  currency       String    @default("usd")
+  interval       String?   // "month" | "year" | null for one-time
+  isPrimary      Boolean   @default(false)
+  active         Boolean   @default(true)
+
+  stripePriceId  String?
+
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model Order {
+  id                    String   @id @default(auto()) @map("_id") @db.ObjectId
+  stripeSessionId       String   @unique
+  stripePaymentIntentId String?
+  stripeCustomerId      String?
+  productId             String?  @db.ObjectId
+  priceId               String?  @db.ObjectId
+  amountTotal           Int?
+  currency              String?
+  email                 String?
+  status                String   @default("pending")
+  createdAt             DateTime @default(now())
+}
