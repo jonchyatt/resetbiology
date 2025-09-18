@@ -196,7 +196,7 @@ export default function PortalTestPage() {
           {/* Logout */}
           <div className="mt-8 text-center">
             <a 
-              href="/api/auth/logout" 
+              href="/auth/logout" 
               className="inline-block px-6 py-3 bg-red-600/20 hover:bg-red-600/30 border border-red-400/30 rounded-lg text-white transition-colors font-medium"
             >
               Logout
