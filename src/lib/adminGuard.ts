@@ -5,30 +5,27 @@ import { prisma } from '@/lib/prisma';
 
 /**
  * Server-only admin guard.
- * - Redirects to /auth/login if unauthenticated
- * - Redirects to /portal if not an admin
- * - Accepts admin if ANY of:
- *    - Auth0 token claim role === 'admin'
- *    - Mongo user role === 'admin'
- *    - Mongo user accessLevel === 'admin'
+ * - If not authenticated => redirect to /auth/login with ?returnTo=...
+ * - If authenticated but not admin => redirect to /portal
+ * - Admin if: Auth0 claim role === 'admin' OR Mongo user role/accessLevel === 'admin'
  */
-export async function requireAdmin() {
-  // Get session via cookies (server-side)
+export async function requireAdmin(returnTo: string = '/portal') {
   const cookieStore = await cookies();
   const session = await auth0.getSession(cookieStore as any);
 
-  // Not signed in → go login
+  // Not signed in → go login and come back
   if (!session?.user) {
-    redirect('/auth/login');
+    const rt = encodeURIComponent(returnTo);
+    redirect(`/auth/login?returnTo=${rt}`);
   }
 
-  // 1) Try role from Auth0 token claims
+  // Try role from Auth0 token claim
   const claimRole =
     (session.user as any)?.['https://resetbiology.com/claims/role'] ||
     (session.user as any)?.role ||
     null;
 
-  // 2) Try Mongo user
+  // Try DB user
   const email = (session.user.email || '').toLowerCase();
   const dbUser = email
     ? await prisma.user.findUnique({ where: { email } })
@@ -40,7 +37,6 @@ export async function requireAdmin() {
     dbUser?.accessLevel === 'admin';
 
   if (!isAdmin) {
-    // Signed in but not an admin → send to portal
     redirect('/portal');
   }
 

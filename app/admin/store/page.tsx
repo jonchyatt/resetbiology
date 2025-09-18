@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export default async function AdminStorePage() {
-  await requireAdmin();
+  await requireAdmin('/admin/store'); // important: preserves return after login
   const products = await listProducts();
 
   // ------ server action wrappers (form actions expect FormData) ------
