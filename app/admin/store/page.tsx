@@ -1,9 +1,9 @@
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 // app/admin/store/page.tsx
 import { requireAdmin } from '@/lib/adminGuard';
 import { listProducts, createProduct, updateProduct, archiveProduct, upsertPrice, deletePrice, syncProductToStripe } from '@/app/admin/store/actions';
-
-export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export default async function AdminStorePage() {

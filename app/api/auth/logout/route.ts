@@ -2,6 +2,7 @@ export const runtime = 'nodejs';
 
 export async function GET(req: Request) {
   const from = new URL(req.url);
+  console.log('[LEGACY SHIM] /api/auth/logout → /auth/logout', from.searchParams.toString());
   const to = new URL('/auth/logout', from.origin);
   from.searchParams.forEach((v, k) => to.searchParams.set(k, v));
   return Response.redirect(to, 307);

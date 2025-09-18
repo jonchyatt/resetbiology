@@ -8,10 +8,12 @@ function toAuth(url: URL, path: string) {
 
 export async function GET(req: Request) {
   const url = new URL(req.url);
+  console.log('[LEGACY SHIM] /api/auth/login → /auth/login', url.searchParams.toString());
   return Response.redirect(toAuth(url, '/auth/login'), 307);
 }
 
 export async function POST(req: Request) {
   const url = new URL(req.url);
+  console.log('[LEGACY SHIM] POST /api/auth/login → /auth/login', url.searchParams.toString());
   return Response.redirect(toAuth(url, '/auth/login'), 307);
 }

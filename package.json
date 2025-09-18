@@ -13,6 +13,7 @@
     "build:full": "npm run build && npm run build:worker",
     "start": "next start",
     "preview": "wrangler pages dev .worker-next --compatibility-flags=nodejs_compat",
+    "check:auth-links": "scripts/check-auth-links.sh",
     "deploy": "wrangler deploy",
     "lint": "eslint"
   },
