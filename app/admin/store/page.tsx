@@ -180,8 +180,8 @@ export default async function AdminStorePage() {
                         </form>
                       )}
                       
-                      {/* Archive */}
-                      {!product.archived && (
+                      {/* Archive - only show for active products */}
+                      {product.active && (
                         <form action={archiveAction}>
                           <input type="hidden" name="productId" value={product.id} />
                           <button type="submit" className="px-3 py-1 bg-red-100 text-red-700 rounded text-sm">
@@ -201,7 +201,7 @@ export default async function AdminStorePage() {
                       <div className="space-y-1">
                         {product.prices.map(price => (
                           <div key={price.id} className="flex items-center gap-2 text-sm">
-                            <span>${(price.amount / 100).toFixed(2)} {price.currency.toUpperCase()}</span>
+                            <span>${(price.unitAmount / 100).toFixed(2)} {price.currency.toUpperCase()}</span>
                             {price.interval && <span className="text-gray-500">/ {price.interval}</span>}
                             {price.isPrimary && <span className="text-green-600">✓ Primary</span>}
                             {price.stripePriceId && <span className="text-xs text-green-600">Stripe: {price.stripePriceId.slice(0, 10)}...</span>}
