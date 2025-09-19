@@ -8,7 +8,93 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(req: Request) {
   try {
-    if (!stripe) return NextResponse.json({ ok: false, error: 'Stripe not configured' }, { status: 503 });
+    // Check if Stripe is configured
+    if (!stripe) {
+      console.error('Stripe is not configured. Please set STRIPE_SECRET_KEY in environment variables.');
+      
+      // Return a user-friendly error page
+      const errorHtml = `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <title>Payment System Not Configured</title>
+            <style>
+              body {
+                font-family: system-ui, -apple-system, sans-serif;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                min-height: 100vh;
+                margin: 0;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+              }
+              .error-container {
+                background: white;
+                padding: 3rem;
+                border-radius: 12px;
+                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+                max-width: 500px;
+                text-align: center;
+              }
+              h1 {
+                color: #ef4444;
+                font-size: 1.5rem;
+                margin-bottom: 1rem;
+              }
+              p {
+                color: #6b7280;
+                margin-bottom: 2rem;
+                line-height: 1.6;
+              }
+              .back-button {
+                display: inline-block;
+                padding: 0.75rem 2rem;
+                background: #3b82f6;
+                color: white;
+                text-decoration: none;
+                border-radius: 6px;
+                font-weight: 500;
+                transition: background 0.2s;
+              }
+              .back-button:hover {
+                background: #2563eb;
+              }
+              .details {
+                margin-top: 2rem;
+                padding: 1rem;
+                background: #f3f4f6;
+                border-radius: 6px;
+                font-size: 0.875rem;
+                color: #6b7280;
+                font-family: monospace;
+              }
+            </style>
+          </head>
+          <body>
+            <div class="error-container">
+              <h1>⚠️ Payment System Not Available</h1>
+              <p>
+                The payment system is currently not configured. 
+                This is likely because Stripe API keys have not been set up yet.
+              </p>
+              <p>
+                <strong>For testing:</strong> Products need to be synced with Stripe 
+                and payment keys must be configured in the environment.
+              </p>
+              <a href="/order" class="back-button">← Back to Store</a>
+              <div class="details">
+                Error: STRIPE_SECRET_KEY not configured
+              </div>
+            </div>
+          </body>
+        </html>
+      `;
+      
+      return new NextResponse(errorHtml, {
+        status: 503,
+        headers: { 'Content-Type': 'text/html' }
+      });
+    }
     
     // Handle both JSON and form data
     let productId: string;
