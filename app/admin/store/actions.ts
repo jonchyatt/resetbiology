@@ -5,6 +5,9 @@ import { prisma } from '@/lib/prisma';
 import { requireAdmin } from '@/lib/adminGuard';
 import { ensureStripeSync } from '@/lib/stripeSync';
 
+// Import peptide data directly - no file system access in production!
+import peptidesData from '@/src/data/peptides-merged.json';
+
 export async function listProducts() {
   // Admin check already done in page component
   const products = await prisma.product.findMany({
@@ -134,39 +137,10 @@ export async function importPeptides() {
   // Admin check already done in page component
   
   try {
-    // Import peptide data from multiple sources, prioritizing peptides-merged.json
-    const fs = require('fs').promises;
-    const path = require('path');
+    // Use imported JSON data directly - no file system access in production!
+    const peptides = peptidesData as any[];
     
-    // Try multiple data sources in order of preference
-    const dataSources = [
-      'src/data/peptides-merged.json',
-      'peptide-data-complete.json', 
-      'cellularpeptide-final-data.json'
-    ];
-    
-    let peptides = [];
-    let sourceFile = '';
-    
-    // Try to load the best available data source
-    for (const source of dataSources) {
-      try {
-        const dataPath = path.join(process.cwd(), source);
-        const rawData = await fs.readFile(dataPath, 'utf-8');
-        peptides = JSON.parse(rawData);
-        sourceFile = source;
-        console.log(`[Import] Loaded ${peptides.length} items from ${source}`);
-        break;
-      } catch (error) {
-        console.log(`[Import] Could not load ${source}, trying next...`);
-      }
-    }
-    
-    if (peptides.length === 0) {
-      throw new Error('No peptide data files found');
-    }
-    
-    console.log(`[Import] Starting import of ${peptides.length} items from ${sourceFile}...`);
+    console.log(`[Import] Starting import of ${peptides.length} items from peptides-merged.json...`);
     
     let imported = 0;
     let skipped = 0;
@@ -214,7 +188,7 @@ export async function importPeptides() {
               ...peptide.metadata,
               protocolInstructions: {
                 ...existingMeta.protocolInstructions,
-                ...peptide.metadata.protocolInstructions
+                ...(peptide.metadata.protocolInstructions || {})
               }
             };
           }
@@ -311,7 +285,7 @@ export async function importPeptides() {
       updated,
       skipped,
       total: peptides.length,
-      source: sourceFile
+      source: 'peptides-merged.json'
     };
     
   } catch (error) {
