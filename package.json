@@ -17,7 +17,8 @@
     "preview": "wrangler pages dev .worker-next --compatibility-flags=nodejs_compat",
     "check:auth-links": "scripts/check-auth-links.sh",
     "deploy": "wrangler deploy",
-    "lint": "eslint"
+    "lint": "eslint",
+    "stripe:doctor": "node --env-file=.env.local -r ts-node/register src/scripts/stripe-doctor.ts"
   },
   "dependencies": {
     "@auth0/nextjs-auth0": "^4.10.0",

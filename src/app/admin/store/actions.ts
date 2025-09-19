@@ -128,3 +128,91 @@ export async function syncProductToStripe(productId: string) {
   revalidateTag('products');
   return result;
 }
+
+export async function importPeptides() {
+  // Admin check already done in page component
+  
+  try {
+    // Import peptide data from cellularpeptide-final-data.json
+    const fs = require('fs').promises;
+    const path = require('path');
+    
+    const dataPath = path.join(process.cwd(), 'cellularpeptide-final-data.json');
+    const rawData = await fs.readFile(dataPath, 'utf-8');
+    const peptides = JSON.parse(rawData);
+    
+    console.log(`[Import] Starting import of ${peptides.length} peptides...`);
+    
+    let imported = 0;
+    let skipped = 0;
+    
+    for (const peptide of peptides) {
+      try {
+        // Check if product already exists by slug
+        const slug = peptide.name.toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-|-$/g, '');
+        
+        const existing = await prisma.product.findFirst({
+          where: { slug }
+        });
+        
+        if (existing) {
+          console.log(`[Import] Skipping ${peptide.name} - already exists`);
+          skipped++;
+          continue;
+        }
+        
+        // Create the product
+        const product = await prisma.product.create({
+          data: {
+            name: peptide.name,
+            slug: slug,
+            description: peptide.protocols ? 
+              `${peptide.educationalContent || ''}\n\nProtocol: ${peptide.protocols}`.trim() : 
+              peptide.educationalContent || null,
+            imageUrl: null, // Images can be added later
+            active: true,
+            storefront: true, // Make visible in store by default
+          }
+        });
+        
+        // Add retail price if available
+        if (peptide.retailPrice) {
+          const priceInCents = Math.round(peptide.retailPrice * 100);
+          
+          await prisma.price.create({
+            data: {
+              productId: product.id,
+              unitAmount: priceInCents,
+              currency: 'usd',
+              interval: null, // One-time purchase
+              isPrimary: true,
+              active: true,
+            }
+          });
+        }
+        
+        console.log(`[Import] Imported ${peptide.name} successfully`);
+        imported++;
+        
+      } catch (error) {
+        console.error(`[Import] Error importing ${peptide.name}:`, error);
+      }
+    }
+    
+    console.log(`[Import] Complete! Imported: ${imported}, Skipped: ${skipped}`);
+    revalidateTag('products');
+    
+    return {
+      success: true,
+      imported,
+      skipped,
+      total: peptides.length
+    };
+    
+  } catch (error) {
+    console.error('[Import] Failed to import peptides:', error);
+    throw new Error(`Import failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}

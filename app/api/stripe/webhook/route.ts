@@ -7,6 +7,8 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 export async function POST(req: Request) {
+  console.log('[webhook] received', new Date().toISOString());
+  
   if (!stripe) return NextResponse.json({ ok: true, note: 'Stripe not configured' }, { status: 200 });
 
   const sig = req.headers.get('stripe-signature');
@@ -18,6 +20,7 @@ export async function POST(req: Request) {
 
   try {
     event = stripe.webhooks.constructEvent(payload, sig, secret);
+    console.log('[webhook] event type:', event.type);
   } catch (err: any) {
     return NextResponse.json({ ok: false, error: `Webhook signature verification failed: ${err.message}` }, { status: 400 });
   }

@@ -114,6 +114,8 @@ export async function POST(req: Request) {
       priceId = formData.get('priceId') as string;
     }
 
+    console.log('[checkout] creating session for product/price', { productId, priceId });
+    
     const product = await prisma.product.findUnique({
       where: { id: String(productId) },
       include: { prices: true },
