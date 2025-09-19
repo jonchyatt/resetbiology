@@ -49,7 +49,7 @@ export async function updateProduct(id: string, patch: Partial<{
   storefront: boolean;
 }>) {
   // await requireAdmin(); // Admin check already done in page component
-  if (!id) throw new Error('Missing product id');
+  if (!id || !patch) throw new Error('Missing id or patch data');
 
   const product = await prisma.product.update({
     where: { id },
@@ -59,43 +59,44 @@ export async function updateProduct(id: string, patch: Partial<{
   return product;
 }
 
-export async function archiveProduct(id: string) {
+export async function archiveProduct(productId: string) {
   // await requireAdmin(); // Admin check already done in page component
-  if (!id) throw new Error('Missing product id');
+  if (!productId) throw new Error('Missing productId');
 
   const product = await prisma.product.update({
-    where: { id },
-    data: { active: false, storefront: false },
+    where: { id: productId },
+    data: { active: false },
   });
   revalidateTag('products');
   return product;
 }
 
 export async function upsertPrice(productId: string, payload: {
-  id?: string;                 // if provided, update; else create
-  label?: string | null;
-  unitAmount: number;          // cents
-  currency?: string;           // defaults to 'usd'
-  interval?: 'month' | 'year' | null; // null => one-time
+  id?: string;
+  unitAmount: number;
+  currency?: string;
+  interval?: 'month' | 'year' | null;
   isPrimary?: boolean;
   active?: boolean;
 }) {
   // await requireAdmin(); // Admin check already done in page component
-
-  if (!productId) throw new Error('Missing productId');
-  if (typeof payload.unitAmount !== 'number' || payload.unitAmount <= 0) {
-    throw new Error('unitAmount (cents) must be > 0');
+  if (!productId || !payload?.unitAmount) {
+    throw new Error('Missing productId or unitAmount');
   }
 
+  const product = await prisma.product.findUnique({ where: { id: productId } });
+  if (!product) throw new Error('Product not found');
+
+  // If marking as primary, unmark others
   if (payload.isPrimary) {
     await prisma.price.updateMany({
-      where: { productId },
+      where: { productId, isPrimary: true },
       data: { isPrimary: false },
     });
   }
 
   const data = {
-    label: payload.label ?? null,
+    productId,
     unitAmount: Math.round(payload.unitAmount),
     currency: (payload.currency || 'usd').toLowerCase(),
     interval: payload.interval ?? null,
@@ -133,34 +134,134 @@ export async function importPeptides() {
   // Admin check already done in page component
   
   try {
-    // Import peptide data from cellularpeptide-final-data.json
+    // Import peptide data from multiple sources, prioritizing peptides-merged.json
     const fs = require('fs').promises;
     const path = require('path');
     
-    const dataPath = path.join(process.cwd(), 'cellularpeptide-final-data.json');
-    const rawData = await fs.readFile(dataPath, 'utf-8');
-    const peptides = JSON.parse(rawData);
+    // Try multiple data sources in order of preference
+    const dataSources = [
+      'src/data/peptides-merged.json',
+      'peptide-data-complete.json', 
+      'cellularpeptide-final-data.json'
+    ];
     
-    console.log(`[Import] Starting import of ${peptides.length} peptides...`);
+    let peptides = [];
+    let sourceFile = '';
+    
+    // Try to load the best available data source
+    for (const source of dataSources) {
+      try {
+        const dataPath = path.join(process.cwd(), source);
+        const rawData = await fs.readFile(dataPath, 'utf-8');
+        peptides = JSON.parse(rawData);
+        sourceFile = source;
+        console.log(`[Import] Loaded ${peptides.length} items from ${source}`);
+        break;
+      } catch (error) {
+        console.log(`[Import] Could not load ${source}, trying next...`);
+      }
+    }
+    
+    if (peptides.length === 0) {
+      throw new Error('No peptide data files found');
+    }
+    
+    console.log(`[Import] Starting import of ${peptides.length} items from ${sourceFile}...`);
     
     let imported = 0;
     let skipped = 0;
+    let updated = 0;
     
     for (const peptide of peptides) {
       try {
-        // Check if product already exists by slug
-        const slug = peptide.name.toLowerCase()
-          .replace(/[^a-z0-9]+/g, '-')
-          .replace(/^-|-$/g, '');
+        // Generate slug if not provided
+        let slug = peptide.slug || '';
+        if (!slug && peptide.name) {
+          slug = peptide.name.toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-|-$/g, '');
+        }
         
+        if (!slug || !peptide.name) {
+          console.log(`[Import] Skipping item without name/slug`);
+          skipped++;
+          continue;
+        }
+        
+        // Check if product already exists
         const existing = await prisma.product.findFirst({
           where: { slug }
         });
         
         if (existing) {
-          console.log(`[Import] Skipping ${peptide.name} - already exists`);
-          skipped++;
+          // Update existing product with better data if available
+          const updateData: any = {};
+          
+          // Only update if new data is better/longer
+          if (peptide.description && (!existing.description || peptide.description.length > existing.description.length)) {
+            updateData.description = peptide.description;
+          }
+          
+          if (peptide.imageUrl && !existing.imageUrl) {
+            updateData.imageUrl = peptide.imageUrl;
+          }
+          
+          // Merge metadata if available
+          if (peptide.metadata) {
+            const existingMeta = (existing.metadata as any) || {};
+            updateData.metadata = {
+              ...existingMeta,
+              ...peptide.metadata,
+              protocolInstructions: {
+                ...existingMeta.protocolInstructions,
+                ...peptide.metadata.protocolInstructions
+              }
+            };
+          }
+          
+          // Add protocols to description if available
+          if (peptide.protocols && !existing.description?.includes('Protocol:')) {
+            updateData.description = `${existing.description || ''}\n\nProtocol: ${peptide.protocols}`.trim();
+          }
+          
+          if (Object.keys(updateData).length > 0) {
+            await prisma.product.update({
+              where: { id: existing.id },
+              data: updateData
+            });
+            console.log(`[Import] Updated ${peptide.name} with additional data`);
+            updated++;
+          } else {
+            console.log(`[Import] Skipping ${peptide.name} - already exists with complete data`);
+            skipped++;
+          }
           continue;
+        }
+        
+        // Build description from available data
+        let description = peptide.description || '';
+        
+        // Add educational content if available
+        if (peptide.educationalContent) {
+          description = `${description}\n\n${peptide.educationalContent}`.trim();
+        }
+        
+        // Add protocols if available
+        if (peptide.protocols) {
+          description = `${description}\n\nProtocol: ${peptide.protocols}`.trim();
+        }
+        
+        // Add metadata instructions if available
+        if (peptide.metadata?.protocolInstructions) {
+          const instructions = peptide.metadata.protocolInstructions;
+          const instructionText = Object.entries(instructions)
+            .filter(([key, value]) => value)
+            .map(([key, value]) => `${key}: ${value}`)
+            .join('\n');
+          
+          if (instructionText) {
+            description = `${description}\n\n${instructionText}`.trim();
+          }
         }
         
         // Create the product
@@ -168,18 +269,18 @@ export async function importPeptides() {
           data: {
             name: peptide.name,
             slug: slug,
-            description: peptide.protocols ? 
-              `${peptide.educationalContent || ''}\n\nProtocol: ${peptide.protocols}`.trim() : 
-              peptide.educationalContent || null,
-            imageUrl: null, // Images can be added later
-            active: true,
-            storefront: true, // Make visible in store by default
+            description: description || null,
+            imageUrl: peptide.imageUrl || null,
+            metadata: peptide.metadata || {},
+            active: peptide.active !== false,
+            storefront: peptide.storefront !== false,
           }
         });
         
-        // Add retail price if available
-        if (peptide.retailPrice) {
-          const priceInCents = Math.round(peptide.retailPrice * 100);
+        // Add price if available
+        const price = peptide.retailPrice || peptide.partnerPrice;
+        if (price) {
+          const priceInCents = Math.round(price * 100);
           
           await prisma.price.create({
             data: {
@@ -197,18 +298,20 @@ export async function importPeptides() {
         imported++;
         
       } catch (error) {
-        console.error(`[Import] Error importing ${peptide.name}:`, error);
+        console.error(`[Import] Error importing ${peptide.name || 'unknown'}:`, error);
       }
     }
     
-    console.log(`[Import] Complete! Imported: ${imported}, Skipped: ${skipped}`);
+    console.log(`[Import] Complete! Imported: ${imported}, Updated: ${updated}, Skipped: ${skipped}`);
     revalidateTag('products');
     
     return {
       success: true,
       imported,
+      updated,
       skipped,
-      total: peptides.length
+      total: peptides.length,
+      source: sourceFile
     };
     
   } catch (error) {
