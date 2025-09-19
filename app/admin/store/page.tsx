@@ -83,13 +83,14 @@ export default async function AdminStorePage() {
   const upsertPriceAction = async (fd: FormData) => {
     'use server';
     const prodId = String(fd.get('productId') || '');
-    const priceId = fd.get('priceId')?.toString() || undefined;
+    const id = fd.get('priceId')?.toString() || undefined;
     const amount = Number(fd.get('amount') || 0);
     const currency = String(fd.get('currency') || 'usd');
     const intervalValue = fd.get('interval')?.toString() || '';
     const interval = intervalValue === 'month' || intervalValue === 'year' ? intervalValue : null;
     const isPrimary = String(fd.get('isPrimary') || 'false') === 'true';
-    await upsertPrice(prodId, { priceId, amount, currency, interval, isPrimary });
+    const unitAmount = amount; // upsertPrice expects unitAmount, not amount
+    await upsertPrice(prodId, { id, unitAmount, currency, interval, isPrimary });
   };
 
   const deletePriceAction = async (fd: FormData) => {
