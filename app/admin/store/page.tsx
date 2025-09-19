@@ -2,12 +2,45 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 // app/admin/store/page.tsx
-import { requireAdmin } from '@/lib/adminGuard';
+import { auth0 } from '@/lib/auth0';
+import { prisma } from '@/lib/prisma';
+import { redirect } from 'next/navigation';
 import { listProducts, createProduct, updateProduct, archiveProduct, upsertPrice, deletePrice, syncProductToStripe } from '@/app/admin/store/actions';
 export const revalidate = 0;
 
 export default async function AdminStorePage() {
-  await requireAdmin('/admin/store'); // important: preserves return after login
+  // Inline admin check for debugging
+  try {
+    const session = await auth0.getSession();
+    
+    if (!session?.user) {
+      console.log('[Admin Store] No session found, redirecting to login');
+      redirect('/auth/login?returnTo=/admin/store');
+    }
+    
+    const email = (session.user.email || '').toLowerCase();
+    console.log('[Admin Store] Checking admin access for:', email);
+    
+    const dbUser = email ? await prisma.user.findUnique({ where: { email } }) : null;
+    
+    if (!dbUser) {
+      console.log('[Admin Store] User not found in database:', email);
+      redirect('/portal');
+    }
+    
+    const isAdmin = dbUser?.role === 'admin' || dbUser?.accessLevel === 'admin';
+    
+    if (!isAdmin) {
+      console.log('[Admin Store] User is not admin:', { role: dbUser.role, accessLevel: dbUser.accessLevel });
+      redirect('/portal');
+    }
+    
+    console.log('[Admin Store] Admin access granted for:', email);
+  } catch (error) {
+    console.error('[Admin Store] Error checking admin access:', error);
+    redirect('/auth/login?returnTo=/admin/store');
+  }
+  
   const products = await listProducts();
 
   // ------ server action wrappers (form actions expect FormData) ------
@@ -49,18 +82,13 @@ export default async function AdminStorePage() {
 
   const upsertPriceAction = async (fd: FormData) => {
     'use server';
-    const productId = String(fd.get('productId') || '');
-    const id = fd.get('priceId')?.toString() || undefined;
-    const label = fd.get('label')?.toString() || null;
-    const amountStr = fd.get('unitAmount')?.toString() || '0';
-    const unitAmount = Math.round(Number(amountStr));
-    const currency = fd.get('currency')?.toString() || 'usd';
-    const intervalRaw = fd.get('interval')?.toString() || '';
-    const interval = intervalRaw === 'month' || intervalRaw === 'year' ? intervalRaw : null;
-    const isPrimary = (fd.get('isPrimary')?.toString() || '') === 'on';
-    const active = (fd.get('active')?.toString() || '') === 'on';
-
-    await upsertPrice(productId, { id, label, unitAmount, currency, interval, isPrimary, active });
+    const prodId = String(fd.get('productId') || '');
+    const priceId = fd.get('priceId')?.toString() || undefined;
+    const amount = Number(fd.get('amount') || 0);
+    const currency = String(fd.get('currency') || 'usd');
+    const interval = fd.get('interval')?.toString() || null;
+    const isPrimary = String(fd.get('isPrimary') || 'false') === 'true';
+    await upsertPrice(prodId, { priceId, amount, currency, interval, isPrimary });
   };
 
   const deletePriceAction = async (fd: FormData) => {
@@ -68,208 +96,151 @@ export default async function AdminStorePage() {
     const priceId = String(fd.get('priceId') || '');
     await deletePrice(priceId);
   };
-  // ------------------------------------------------------------------
+
+  const editProductAction = async (fd: FormData) => {
+    'use server';
+    const id = String(fd.get('productId') || '');
+    const name = String(fd.get('name') || '').trim();
+    const description = (fd.get('description')?.toString() || '').trim() || null;
+    const imageUrl = (fd.get('imageUrl')?.toString() || '').trim() || null;
+    await updateProduct(id, { name, description, imageUrl });
+  };
 
   return (
-    <main className="p-6 space-y-10">
-      <header>
-        <h1 className="text-2xl font-semibold">Store Admin</h1>
-        <p className="text-sm text-gray-500">Manage Products & Prices, publish to Stripe, and control storefront visibility.</p>
-      </header>
+    <div className="min-h-screen bg-gray-100 p-8">
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-3xl font-bold mb-8">Admin Store Management</h1>
 
-      {/* New Product */}
-      <section className="rounded border p-4">
-        <h2 className="font-semibold mb-3">Create Product</h2>
-        <form action={createProductAction} className="grid gap-3 max-w-xl">
-          <div>
-            <label className="block text-sm mb-1">Name</label>
-            <input name="name" className="border rounded p-2 w-full" required />
-          </div>
-          <div>
-            <label className="block text-sm mb-1">Slug</label>
-            <input name="slug" className="border rounded p-2 w-full" placeholder="lowercase-hyphens" required />
-          </div>
-          <div>
-            <label className="block text-sm mb-1">Description</label>
-            <textarea name="description" className="border rounded p-2 w-full" rows={3} />
-          </div>
-          <div>
-            <label className="block text-sm mb-1">Image URL</label>
-            <input name="imageUrl" className="border rounded p-2 w-full" placeholder="/images/peptide.jpg or https://..." />
-          </div>
-          <div>
-            <button className="px-3 py-2 rounded bg-black text-white">Create</button>
-          </div>
-        </form>
-      </section>
+        {/* Create Product Form */}
+        <div className="bg-white p-6 rounded-lg shadow mb-8">
+          <h2 className="text-xl font-semibold mb-4">Create New Product</h2>
+          <form action={createProductAction} className="flex flex-col gap-4">
+            <input name="name" placeholder="Product Name" required className="p-2 border rounded" />
+            <input name="slug" placeholder="URL Slug (e.g., bpc-157)" required className="p-2 border rounded" />
+            <textarea name="description" placeholder="Description" className="p-2 border rounded" />
+            <input name="imageUrl" placeholder="Image URL" className="p-2 border rounded" />
+            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+              Create Product
+            </button>
+          </form>
+        </div>
 
-      {/* Products table */}
-      <section className="space-y-6">
-        <h2 className="font-semibold">Products</h2>
-
-        {products.length === 0 ? (
-          <p className="text-gray-600">No products yet. Create one above.</p>
-        ) : (
-          <ul className="space-y-6">
-            {products.map((p) => (
-              <li key={p.id} className="rounded border p-4">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <div className="font-semibold">{p.name}</div>
-                    <div className="text-sm text-gray-500">slug: {p.slug}</div>
-                    {p.stripeProductId ? (
-                      <div className="text-xs text-green-700 mt-1">Stripe: {p.stripeProductId}</div>
-                    ) : (
-                      <div className="text-xs text-amber-700 mt-1">Not on Stripe yet</div>
-                    )}
-                  </div>
-
-                  <div className="flex items-center gap-3">
-                    {/* Storefront toggle */}
-                    <form action={toggleStorefrontAction} className="flex items-center gap-2">
-                      <input type="hidden" name="productId" value={p.id} />
-                      <input type="hidden" name="storefront" value={(!p.storefront).toString()} />
-                      <button className="px-3 py-1 border rounded">
-                        {p.storefront ? 'Hide from Storefront' : 'Show in Storefront'}
-                      </button>
-                    </form>
-
-                    {/* Active toggle */}
-                    <form action={toggleActiveAction} className="flex items-center gap-2">
-                      <input type="hidden" name="productId" value={p.id} />
-                      <input type="hidden" name="active" value={(!p.active).toString()} />
-                      <button className="px-3 py-1 border rounded">
-                        {p.active ? 'Deactivate' : 'Activate'}
-                      </button>
-                    </form>
-
-                    {/* Archive */}
-                    <form action={archiveAction}>
-                      <input type="hidden" name="productId" value={p.id} />
-                      <button className="px-3 py-1 border rounded">Archive</button>
-                    </form>
-
-                    {/* Sync to Stripe */}
-                    <form action={syncStripeAction}>
-                      <input type="hidden" name="productId" value={p.id} />
-                      <button className="px-3 py-1 rounded bg-purple-700 text-white">Sync to Stripe</button>
-                    </form>
-                  </div>
-                </div>
-
-                {/* Prices */}
-                <div className="mt-4">
-                  <h3 className="font-medium mb-2">Prices</h3>
-
-                  {p.prices.length === 0 ? (
-                    <p className="text-sm text-gray-600">No prices yet—add one.</p>
-                  ) : (
-                    <div className="overflow-x-auto">
-                      <table className="min-w-[700px] text-sm border">
-                        <thead className="bg-gray-50">
-                          <tr>
-                            <th className="text-left p-2 border-r">Label</th>
-                            <th className="text-left p-2 border-r">Amount</th>
-                            <th className="text-left p-2 border-r">Currency</th>
-                            <th className="text-left p-2 border-r">Interval</th>
-                            <th className="text-left p-2 border-r">Primary</th>
-                            <th className="text-left p-2 border-r">Active</th>
-                            <th className="text-left p-2 border-r">Stripe</th>
-                            <th className="text-left p-2">Actions</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {p.prices.map((pr) => (
-                            <tr key={pr.id} className="border-t align-top">
-                              <td className="p-2 border-r">{pr.label ?? '-'}</td>
-                              <td className="p-2 border-r">${(pr.unitAmount / 100).toFixed(2)}</td>
-                              <td className="p-2 border-r uppercase">{pr.currency}</td>
-                              <td className="p-2 border-r">{pr.interval ?? 'one-time'}</td>
-                              <td className="p-2 border-r">{pr.isPrimary ? 'Yes' : 'No'}</td>
-                              <td className="p-2 border-r">{pr.active ? 'Yes' : 'No'}</td>
-                              <td className="p-2 border-r">
-                                {pr.stripePriceId ? (
-                                  <span className="text-green-700">{pr.stripePriceId}</span>
-                                ) : (
-                                  <span className="text-amber-700">Not on Stripe yet</span>
-                                )}
-                              </td>
-                              <td className="p-2">
-                                {/* Update price form */}
-                                <form action={upsertPriceAction} className="grid gap-2 md:grid-cols-6 border p-2 rounded">
-                                  <input type="hidden" name="productId" value={p.id} />
-                                  <input type="hidden" name="priceId" value={pr.id} />
-
-                                  <input name="label" defaultValue={pr.label ?? ''} placeholder="Label" className="border p-1 rounded" />
-                                  <input name="unitAmount" defaultValue={String(pr.unitAmount)} className="border p-1 rounded" />
-                                  <select name="currency" defaultValue={pr.currency} className="border p-1 rounded">
-                                    <option value="usd">usd</option>
-                                  </select>
-                                  <select name="interval" defaultValue={pr.interval ?? ''} className="border p-1 rounded">
-                                    <option value="">one-time</option>
-                                    <option value="month">month</option>
-                                    <option value="year">year</option>
-                                  </select>
-                                  <label className="inline-flex items-center gap-1">
-                                    <input type="checkbox" name="isPrimary" defaultChecked={pr.isPrimary} />
-                                    <span className="text-xs">Primary</span>
-                                  </label>
-                                  <label className="inline-flex items-center gap-1">
-                                    <input type="checkbox" name="active" defaultChecked={pr.active} />
-                                    <span className="text-xs">Active</span>
-                                  </label>
-
-                                  <div className="md:col-span-6 flex gap-2">
-                                    <button className="px-3 py-1 border rounded">Save</button>
-                                    <form action={deletePriceAction}>
-                                      <input type="hidden" name="priceId" value={pr.id} />
-                                      <button className="px-3 py-1 border rounded">Delete</button>
-                                    </form>
-                                  </div>
-                                </form>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
+        {/* Products List */}
+        <div className="bg-white p-6 rounded-lg shadow">
+          <h2 className="text-xl font-semibold mb-4">Products ({products.length})</h2>
+          
+          {products.length === 0 ? (
+            <p className="text-gray-500">No products yet. Create your first product above.</p>
+          ) : (
+            <div className="space-y-6">
+              {products.map(product => (
+                <div key={product.id} className="border-b pb-4">
+                  <div className="flex justify-between items-start mb-2">
+                    <div>
+                      <h3 className="text-lg font-medium">{product.name}</h3>
+                      <p className="text-sm text-gray-500">Slug: {product.slug}</p>
+                      {product.description && <p className="text-sm mt-1">{product.description}</p>}
+                      {product.stripeProductId && (
+                        <p className="text-xs text-green-600 mt-1">✓ Synced to Stripe: {product.stripeProductId}</p>
+                      )}
                     </div>
-                  )}
-
-                  {/* New price */}
-                  <div className="mt-3">
-                    <form action={upsertPriceAction} className="grid gap-2 md:grid-cols-6 border p-3 rounded">
-                      <input type="hidden" name="productId" value={p.id} />
-
-                      <input name="label" placeholder="Label (optional)" className="border p-1 rounded" />
-                      <input name="unitAmount" placeholder="Amount (cents)" className="border p-1 rounded" />
-                      <select name="currency" defaultValue="usd" className="border p-1 rounded">
-                        <option value="usd">usd</option>
-                      </select>
-                      <select name="interval" defaultValue="" className="border p-1 rounded">
-                        <option value="">one-time</option>
-                        <option value="month">month</option>
-                        <option value="year">year</option>
-                      </select>
-                      <label className="inline-flex items-center gap-1">
-                        <input type="checkbox" name="isPrimary" />
-                        <span className="text-xs">Primary</span>
-                      </label>
-                      <label className="inline-flex items-center gap-1">
-                        <input type="checkbox" name="active" defaultChecked />
-                        <span className="text-xs">Active</span>
-                      </label>
-
-                      <div className="md:col-span-6">
-                        <button className="px-3 py-1 border rounded">Add Price</button>
+                    
+                    <div className="flex gap-2">
+                      {/* Toggle Active */}
+                      <form action={toggleActiveAction}>
+                        <input type="hidden" name="productId" value={product.id} />
+                        <input type="hidden" name="active" value={String(!product.active)} />
+                        <button type="submit" className={`px-3 py-1 rounded text-sm ${
+                          product.active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
+                        }`}>
+                          {product.active ? 'Active' : 'Inactive'}
+                        </button>
+                      </form>
+                      
+                      {/* Toggle Storefront */}
+                      <form action={toggleStorefrontAction}>
+                        <input type="hidden" name="productId" value={product.id} />
+                        <input type="hidden" name="storefront" value={String(!product.storefront)} />
+                        <button type="submit" className={`px-3 py-1 rounded text-sm ${
+                          product.storefront ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'
+                        }`}>
+                          {product.storefront ? 'In Store' : 'Hidden'}
+                        </button>
+                      </form>
+                      
+                      {/* Sync to Stripe */}
+                      {!product.stripeProductId && (
+                        <form action={syncStripeAction}>
+                          <input type="hidden" name="productId" value={product.id} />
+                          <button type="submit" className="px-3 py-1 bg-purple-100 text-purple-700 rounded text-sm">
+                            Sync to Stripe
+                          </button>
+                        </form>
+                      )}
+                      
+                      {/* Archive */}
+                      {!product.archived && (
+                        <form action={archiveAction}>
+                          <input type="hidden" name="productId" value={product.id} />
+                          <button type="submit" className="px-3 py-1 bg-red-100 text-red-700 rounded text-sm">
+                            Archive
+                          </button>
+                        </form>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {/* Prices */}
+                  <div className="mt-4">
+                    <h4 className="text-sm font-medium mb-2">Prices:</h4>
+                    {product.prices.length === 0 ? (
+                      <p className="text-sm text-gray-500">No prices set</p>
+                    ) : (
+                      <div className="space-y-1">
+                        {product.prices.map(price => (
+                          <div key={price.id} className="flex items-center gap-2 text-sm">
+                            <span>${(price.amount / 100).toFixed(2)} {price.currency.toUpperCase()}</span>
+                            {price.interval && <span className="text-gray-500">/ {price.interval}</span>}
+                            {price.isPrimary && <span className="text-green-600">✓ Primary</span>}
+                            {price.stripePriceId && <span className="text-xs text-green-600">Stripe: {price.stripePriceId.slice(0, 10)}...</span>}
+                            <form action={deletePriceAction} className="inline">
+                              <input type="hidden" name="priceId" value={price.id} />
+                              <button type="submit" className="text-red-600 hover:underline">Remove</button>
+                            </form>
+                          </div>
+                        ))}
                       </div>
+                    )}
+                    
+                    {/* Add Price Form */}
+                    <form action={upsertPriceAction} className="mt-2 flex gap-2">
+                      <input type="hidden" name="productId" value={product.id} />
+                      <input name="amount" type="number" placeholder="Amount (cents)" required className="p-1 border rounded text-sm" />
+                      <select name="currency" className="p-1 border rounded text-sm">
+                        <option value="usd">USD</option>
+                        <option value="eur">EUR</option>
+                        <option value="gbp">GBP</option>
+                      </select>
+                      <select name="interval" className="p-1 border rounded text-sm">
+                        <option value="">One-time</option>
+                        <option value="month">Monthly</option>
+                        <option value="year">Yearly</option>
+                      </select>
+                      <label className="flex items-center gap-1 text-sm">
+                        <input type="checkbox" name="isPrimary" value="true" />
+                        Primary
+                      </label>
+                      <button type="submit" className="px-2 py-1 bg-green-500 text-white rounded text-sm">
+                        Add Price
+                      </button>
                     </form>
                   </div>
                 </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-    </main>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
