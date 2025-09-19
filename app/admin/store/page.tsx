@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic';
 import { auth0 } from '@/lib/auth0';
 import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
-import { listProducts, createProduct, updateProduct, archiveProduct, upsertPrice, deletePrice, syncProductToStripe } from '@/app/admin/store/actions';
+import { listProducts, createProduct, updateProduct, archiveProduct, upsertPrice, deletePrice, syncProductToStripe, importPeptides } from './actions';
 export const revalidate = 0;
 
 export default async function AdminStorePage() {
@@ -108,139 +108,325 @@ export default async function AdminStorePage() {
     await updateProduct(id, { name, description, imageUrl });
   };
 
+  const importPeptidesAction = async () => {
+    'use server';
+    await importPeptides();
+  };
+
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold mb-8">Admin Store Management</h1>
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-primary-900/20 to-gray-900">
+      {/* Add margin-top to avoid navbar overlap */}
+      <div className="pt-24 pb-8 px-4">
+        <div className="max-w-7xl mx-auto">
+          {/* Page Header */}
+          <div className="mb-8">
+            <h1 className="text-4xl font-bold text-white mb-2">
+              Admin Store Management
+            </h1>
+            <p className="text-gray-300">
+              Manage your products, pricing, and Stripe integration
+            </p>
+          </div>
 
-        {/* Create Product Form */}
-        <div className="bg-white p-6 rounded-lg shadow mb-8">
-          <h2 className="text-xl font-semibold mb-4">Create New Product</h2>
-          <form action={createProductAction} className="flex flex-col gap-4">
-            <input name="name" placeholder="Product Name" required className="p-2 border rounded" />
-            <input name="slug" placeholder="URL Slug (e.g., bpc-157)" required className="p-2 border rounded" />
-            <textarea name="description" placeholder="Description" className="p-2 border rounded" />
-            <input name="imageUrl" placeholder="Image URL" className="p-2 border rounded" />
-            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-              Create Product
-            </button>
-          </form>
-        </div>
-
-        {/* Products List */}
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-xl font-semibold mb-4">Products ({products.length})</h2>
-          
-          {products.length === 0 ? (
-            <p className="text-gray-500">No products yet. Create your first product above.</p>
-          ) : (
-            <div className="space-y-6">
-              {products.map(product => (
-                <div key={product.id} className="border-b pb-4">
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <h3 className="text-lg font-medium">{product.name}</h3>
-                      <p className="text-sm text-gray-500">Slug: {product.slug}</p>
-                      {product.description && <p className="text-sm mt-1">{product.description}</p>}
-                      {product.stripeProductId && (
-                        <p className="text-xs text-green-600 mt-1">✓ Synced to Stripe: {product.stripeProductId}</p>
-                      )}
-                    </div>
-                    
-                    <div className="flex gap-2">
-                      {/* Toggle Active */}
-                      <form action={toggleActiveAction}>
-                        <input type="hidden" name="productId" value={product.id} />
-                        <input type="hidden" name="active" value={String(!product.active)} />
-                        <button type="submit" className={`px-3 py-1 rounded text-sm ${
-                          product.active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
-                        }`}>
-                          {product.active ? 'Active' : 'Inactive'}
-                        </button>
-                      </form>
-                      
-                      {/* Toggle Storefront */}
-                      <form action={toggleStorefrontAction}>
-                        <input type="hidden" name="productId" value={product.id} />
-                        <input type="hidden" name="storefront" value={String(!product.storefront)} />
-                        <button type="submit" className={`px-3 py-1 rounded text-sm ${
-                          product.storefront ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'
-                        }`}>
-                          {product.storefront ? 'In Store' : 'Hidden'}
-                        </button>
-                      </form>
-                      
-                      {/* Sync to Stripe */}
-                      {!product.stripeProductId && (
-                        <form action={syncStripeAction}>
-                          <input type="hidden" name="productId" value={product.id} />
-                          <button type="submit" className="px-3 py-1 bg-purple-100 text-purple-700 rounded text-sm">
-                            Sync to Stripe
-                          </button>
-                        </form>
-                      )}
-                      
-                      {/* Archive - only show for active products */}
-                      {product.active && (
-                        <form action={archiveAction}>
-                          <input type="hidden" name="productId" value={product.id} />
-                          <button type="submit" className="px-3 py-1 bg-red-100 text-red-700 rounded text-sm">
-                            Archive
-                          </button>
-                        </form>
-                      )}
-                    </div>
-                  </div>
-                  
-                  {/* Prices */}
-                  <div className="mt-4">
-                    <h4 className="text-sm font-medium mb-2">Prices:</h4>
-                    {product.prices.length === 0 ? (
-                      <p className="text-sm text-gray-500">No prices set</p>
-                    ) : (
-                      <div className="space-y-1">
-                        {product.prices.map(price => (
-                          <div key={price.id} className="flex items-center gap-2 text-sm">
-                            <span>${(price.unitAmount / 100).toFixed(2)} {price.currency.toUpperCase()}</span>
-                            {price.interval && <span className="text-gray-500">/ {price.interval}</span>}
-                            {price.isPrimary && <span className="text-green-600">✓ Primary</span>}
-                            {price.stripePriceId && <span className="text-xs text-green-600">Stripe: {price.stripePriceId.slice(0, 10)}...</span>}
-                            <form action={deletePriceAction} className="inline">
-                              <input type="hidden" name="priceId" value={price.id} />
-                              <button type="submit" className="text-red-600 hover:underline">Remove</button>
-                            </form>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                    
-                    {/* Add Price Form */}
-                    <form action={upsertPriceAction} className="mt-2 flex gap-2">
-                      <input type="hidden" name="productId" value={product.id} />
-                      <input name="amount" type="number" placeholder="Amount (cents)" required className="p-1 border rounded text-sm" />
-                      <select name="currency" className="p-1 border rounded text-sm">
-                        <option value="usd">USD</option>
-                        <option value="eur">EUR</option>
-                        <option value="gbp">GBP</option>
-                      </select>
-                      <select name="interval" className="p-1 border rounded text-sm">
-                        <option value="">One-time</option>
-                        <option value="month">Monthly</option>
-                        <option value="year">Yearly</option>
-                      </select>
-                      <label className="flex items-center gap-1 text-sm">
-                        <input type="checkbox" name="isPrimary" value="true" />
-                        Primary
-                      </label>
-                      <button type="submit" className="px-2 py-1 bg-green-500 text-white rounded text-sm">
-                        Add Price
-                      </button>
-                    </form>
-                  </div>
-                </div>
-              ))}
+          {/* Quick Actions Bar */}
+          <div className="card-primary mb-8">
+            <div className="flex flex-wrap gap-4 items-center justify-between">
+              <div className="flex gap-4">
+                <form action={importPeptidesAction}>
+                  <button 
+                    type="submit"
+                    className="btn-primary bg-gradient-to-r from-secondary-500 to-secondary-600 hover:from-secondary-600 hover:to-secondary-700"
+                  >
+                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                    Import Peptides from Data
+                  </button>
+                </form>
+              </div>
+              <div className="text-white">
+                <span className="text-2xl font-bold">{products.length}</span>
+                <span className="text-gray-300 ml-2">Total Products</span>
+              </div>
             </div>
-          )}
+          </div>
+
+          {/* Create Product Form */}
+          <div className="card-primary mb-8">
+            <h2 className="text-2xl font-semibold text-white mb-6">Create New Product</h2>
+            
+            <form action={createProductAction} className="space-y-6">
+              <div>
+                <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
+                  Product Name *
+                </label>
+                <input 
+                  name="name" 
+                  id="name"
+                  placeholder="e.g., BPC-157" 
+                  required 
+                  className="input-primary w-full bg-gray-800/50 text-white placeholder-gray-400 border-gray-600"
+                />
+                <p className="mt-1 text-sm text-gray-400">
+                  The display name for your product (e.g., "BPC-157", "Ipamorelin")
+                </p>
+              </div>
+
+              <div>
+                <label htmlFor="slug" className="block text-sm font-medium text-gray-300 mb-2">
+                  URL Slug *
+                </label>
+                <input 
+                  name="slug" 
+                  id="slug"
+                  placeholder="e.g., bpc-157" 
+                  required 
+                  pattern="[a-z0-9-]+"
+                  className="input-primary w-full bg-gray-800/50 text-white placeholder-gray-400 border-gray-600"
+                />
+                <p className="mt-1 text-sm text-gray-400">
+                  URL-friendly version (lowercase, no spaces, use hyphens). This will be used in the product URL: 
+                  <code className="text-primary-400 ml-1">/store/bpc-157</code>
+                </p>
+              </div>
+
+              <div>
+                <label htmlFor="description" className="block text-sm font-medium text-gray-300 mb-2">
+                  Description
+                </label>
+                <textarea 
+                  name="description" 
+                  id="description"
+                  rows={4}
+                  placeholder="Enter product description, benefits, usage instructions..."
+                  className="input-primary w-full bg-gray-800/50 text-white placeholder-gray-400 border-gray-600"
+                />
+                <p className="mt-1 text-sm text-gray-400">
+                  Detailed description shown on the product page. Include benefits, usage, and any important information.
+                </p>
+              </div>
+
+              <div>
+                <label htmlFor="imageUrl" className="block text-sm font-medium text-gray-300 mb-2">
+                  Image URL
+                </label>
+                <input 
+                  name="imageUrl" 
+                  id="imageUrl"
+                  type="url"
+                  placeholder="https://example.com/image.jpg"
+                  className="input-primary w-full bg-gray-800/50 text-white placeholder-gray-400 border-gray-600"
+                />
+                <div className="mt-2 p-3 bg-blue-900/20 border border-blue-400/30 rounded-lg">
+                  <p className="text-sm text-blue-300 font-medium mb-1">📸 Image Upload Instructions:</p>
+                  <ol className="text-sm text-gray-300 space-y-1 list-decimal list-inside">
+                    <li>Upload your image to a service like <a href="https://imgur.com" target="_blank" className="text-primary-400 hover:underline">Imgur</a> or <a href="https://cloudinary.com" target="_blank" className="text-primary-400 hover:underline">Cloudinary</a></li>
+                    <li>Right-click the uploaded image and select "Copy Image Address"</li>
+                    <li>Paste the URL here (must start with https://)</li>
+                    <li>Recommended size: 800x800px for product images</li>
+                  </ol>
+                </div>
+              </div>
+
+              <button 
+                type="submit" 
+                className="btn-primary w-full bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700"
+              >
+                Create Product
+              </button>
+            </form>
+          </div>
+
+          {/* Products List */}
+          <div className="card-primary">
+            <h2 className="text-2xl font-semibold text-white mb-6">
+              Products ({products.length})
+            </h2>
+            
+            {products.length === 0 ? (
+              <div className="text-center py-12">
+                <svg className="w-16 h-16 mx-auto text-gray-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
+                <p className="text-gray-400 mb-4">No products yet. Create your first product above.</p>
+                <p className="text-sm text-gray-500">
+                  Or import existing peptide data using the "Import Peptides" button
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {products.map(product => (
+                  <div key={product.id} className="bg-gray-800/30 rounded-lg p-6 border border-gray-700/50">
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="flex-1">
+                        <h3 className="text-xl font-medium text-white">{product.name}</h3>
+                        <p className="text-sm text-gray-400 mt-1">
+                          Slug: <code className="text-primary-400">{product.slug}</code>
+                        </p>
+                        {product.description && (
+                          <p className="text-gray-300 mt-2">{product.description}</p>
+                        )}
+                        {product.stripeProductId && (
+                          <div className="flex items-center gap-2 mt-2">
+                            <svg className="w-4 h-4 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                            <span className="text-sm text-green-400">
+                              Synced to Stripe: {product.stripeProductId}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                      
+                      <div className="flex flex-wrap gap-2 ml-4">
+                        {/* Toggle Active */}
+                        <form action={toggleActiveAction}>
+                          <input type="hidden" name="productId" value={product.id} />
+                          <input type="hidden" name="active" value={String(!product.active)} />
+                          <button 
+                            type="submit" 
+                            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                              product.active 
+                                ? 'bg-green-500/20 text-green-400 border border-green-400/30 hover:bg-green-500/30' 
+                                : 'bg-gray-700/50 text-gray-400 border border-gray-600 hover:bg-gray-700'
+                            }`}
+                          >
+                            {product.active ? '✓ Active' : 'Inactive'}
+                          </button>
+                        </form>
+                        
+                        {/* Toggle Storefront */}
+                        <form action={toggleStorefrontAction}>
+                          <input type="hidden" name="productId" value={product.id} />
+                          <input type="hidden" name="storefront" value={String(!product.storefront)} />
+                          <button 
+                            type="submit" 
+                            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                              product.storefront 
+                                ? 'bg-blue-500/20 text-blue-400 border border-blue-400/30 hover:bg-blue-500/30' 
+                                : 'bg-gray-700/50 text-gray-400 border border-gray-600 hover:bg-gray-700'
+                            }`}
+                          >
+                            {product.storefront ? '🛍 In Store' : 'Hidden'}
+                          </button>
+                        </form>
+                        
+                        {/* Sync to Stripe */}
+                        {!product.stripeProductId && (
+                          <form action={syncStripeAction}>
+                            <input type="hidden" name="productId" value={product.id} />
+                            <button 
+                              type="submit" 
+                              className="px-4 py-2 bg-purple-500/20 text-purple-400 border border-purple-400/30 rounded-lg font-medium hover:bg-purple-500/30 transition-colors"
+                            >
+                              Sync to Stripe
+                            </button>
+                          </form>
+                        )}
+                        
+                        {/* Archive - only show for active products */}
+                        {product.active && (
+                          <form action={archiveAction}>
+                            <input type="hidden" name="productId" value={product.id} />
+                            <button 
+                              type="submit" 
+                              className="px-4 py-2 bg-red-500/20 text-red-400 border border-red-400/30 rounded-lg font-medium hover:bg-red-500/30 transition-colors"
+                            >
+                              Archive
+                            </button>
+                          </form>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {/* Prices Section */}
+                    <div className="bg-gray-900/30 rounded-lg p-4 mt-4">
+                      <h4 className="font-medium text-white mb-3">Pricing</h4>
+                      
+                      {product.prices.length === 0 ? (
+                        <p className="text-gray-400 text-sm mb-3">No prices set. Add a price below to make this product purchasable.</p>
+                      ) : (
+                        <div className="space-y-2 mb-4">
+                          {product.prices.map(price => (
+                            <div key={price.id} className="flex items-center justify-between bg-gray-800/50 rounded-lg px-4 py-2">
+                              <div className="flex items-center gap-3">
+                                <span className="text-white font-medium">
+                                  ${(price.unitAmount / 100).toFixed(2)} {price.currency.toUpperCase()}
+                                </span>
+                                {price.interval && (
+                                  <span className="text-gray-400">/ {price.interval}</span>
+                                )}
+                                {price.isPrimary && (
+                                  <span className="px-2 py-1 bg-green-500/20 text-green-400 text-xs rounded-full">
+                                    Primary
+                                  </span>
+                                )}
+                                {price.stripePriceId && (
+                                  <span className="text-xs text-gray-500">
+                                    Stripe: {price.stripePriceId.slice(0, 10)}...
+                                  </span>
+                                )}
+                              </div>
+                              <form action={deletePriceAction} className="inline">
+                                <input type="hidden" name="priceId" value={price.id} />
+                                <button 
+                                  type="submit" 
+                                  className="text-red-400 hover:text-red-300 text-sm"
+                                >
+                                  Remove
+                                </button>
+                              </form>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      
+                      {/* Add Price Form */}
+                      <form action={upsertPriceAction} className="flex flex-wrap gap-2">
+                        <input type="hidden" name="productId" value={product.id} />
+                        <div className="flex-1 min-w-[120px]">
+                          <input 
+                            name="amount" 
+                            type="number" 
+                            placeholder="Price (cents)" 
+                            required 
+                            className="w-full px-3 py-2 bg-gray-800/50 text-white placeholder-gray-400 border border-gray-600 rounded-lg text-sm"
+                          />
+                          <p className="text-xs text-gray-500 mt-1">Enter in cents (e.g., 5999 = $59.99)</p>
+                        </div>
+                        <select 
+                          name="currency" 
+                          className="px-3 py-2 bg-gray-800/50 text-white border border-gray-600 rounded-lg text-sm"
+                        >
+                          <option value="usd">USD</option>
+                          <option value="eur">EUR</option>
+                          <option value="gbp">GBP</option>
+                        </select>
+                        <select 
+                          name="interval" 
+                          className="px-3 py-2 bg-gray-800/50 text-white border border-gray-600 rounded-lg text-sm"
+                        >
+                          <option value="">One-time</option>
+                          <option value="month">Monthly</option>
+                          <option value="year">Yearly</option>
+                        </select>
+                        <label className="flex items-center gap-2 text-sm text-gray-300">
+                          <input type="checkbox" name="isPrimary" value="true" className="rounded" />
+                          Primary
+                        </label>
+                        <button 
+                          type="submit" 
+                          className="px-4 py-2 bg-green-500/20 text-green-400 border border-green-400/30 rounded-lg text-sm font-medium hover:bg-green-500/30 transition-colors"
+                        >
+                          Add Price
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
