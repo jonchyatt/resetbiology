@@ -9,7 +9,24 @@ export const dynamic = 'force-dynamic';
 export async function POST(req: Request) {
   try {
     if (!stripe) return NextResponse.json({ ok: false, error: 'Stripe not configured' }, { status: 503 });
-    const { productId, priceId } = await req.json();
+    
+    // Handle both JSON and form data
+    let productId: string;
+    let priceId: string;
+    
+    const contentType = req.headers.get('content-type');
+    
+    if (contentType?.includes('application/json')) {
+      // Handle JSON request (from API calls)
+      const data = await req.json();
+      productId = data.productId;
+      priceId = data.priceId;
+    } else {
+      // Handle form submission (from order page)
+      const formData = await req.formData();
+      productId = formData.get('productId') as string;
+      priceId = formData.get('priceId') as string;
+    }
 
     const product = await prisma.product.findUnique({
       where: { id: String(productId) },
@@ -30,8 +47,9 @@ export async function POST(req: Request) {
       price = refreshed;
     }
 
-    const success = `${process.env.APP_BASE_URL}/order/success?session_id={CHECKOUT_SESSION_ID}`;
-    const cancel  = `${process.env.APP_BASE_URL}/order`;
+    const baseUrl = process.env.APP_BASE_URL || process.env.AUTH0_BASE_URL || 'https://resetbiology.com';
+    const success = `${baseUrl}/order/success?session_id={CHECKOUT_SESSION_ID}`;
+    const cancel  = `${baseUrl}/order`;
 
     const session = await stripe.checkout.sessions.create({
       mode: price.interval ? 'subscription' : 'payment',
@@ -45,8 +63,15 @@ export async function POST(req: Request) {
       },
     });
 
+    // If form submission, redirect to Stripe checkout
+    if (!contentType?.includes('application/json')) {
+      return NextResponse.redirect(session.url!);
+    }
+    
+    // If JSON request, return the URL
     return NextResponse.json({ ok: true, url: session.url }, { status: 200 });
   } catch (err: any) {
+    console.error('Checkout error:', err);
     return NextResponse.json({ ok: false, error: err?.message || 'Checkout error' }, { status: 500 });
   }
 }
