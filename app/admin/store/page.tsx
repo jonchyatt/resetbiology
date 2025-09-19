@@ -86,7 +86,8 @@ export default async function AdminStorePage() {
     const priceId = fd.get('priceId')?.toString() || undefined;
     const amount = Number(fd.get('amount') || 0);
     const currency = String(fd.get('currency') || 'usd');
-    const interval = fd.get('interval')?.toString() || null;
+    const intervalValue = fd.get('interval')?.toString() || '';
+    const interval = intervalValue === 'month' || intervalValue === 'year' ? intervalValue : null;
     const isPrimary = String(fd.get('isPrimary') || 'false') === 'true';
     await upsertPrice(prodId, { priceId, amount, currency, interval, isPrimary });
   };
