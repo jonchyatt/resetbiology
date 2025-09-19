@@ -138,7 +138,7 @@ export async function importPeptides() {
   
   try {
     // Use imported JSON data directly - no file system access in production!
-    const peptides = peptidesData as any[];
+    const peptides = (peptidesData as any).peptides || [];
     
     console.log(`[Import] Starting import of ${peptides.length} items from peptides-merged.json...`);
     
