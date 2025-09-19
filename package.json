@@ -18,7 +18,7 @@
     "check:auth-links": "scripts/check-auth-links.sh",
     "deploy": "wrangler deploy",
     "lint": "eslint",
-    "stripe:doctor": "node --env-file=.env.local -r ts-node/register src/scripts/stripe-doctor.ts"
+    "stripe:doctor": "tsx --env-file=.env.local src/scripts/stripe-doctor.ts"
   },
   "dependencies": {
     "@auth0/nextjs-auth0": "^4.10.0",
@@ -53,6 +53,7 @@
     "eslint": "^9",
     "eslint-config-next": "15.5.2",
     "tailwindcss": "^4",
+    "ts-node": "^10.9.2",
     "typescript": "^5"
   }
 }
