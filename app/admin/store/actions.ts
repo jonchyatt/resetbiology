@@ -6,7 +6,7 @@ import { requireAdmin } from '@/lib/adminGuard';
 import { ensureStripeSync } from '@/lib/stripeSync';
 
 // Import peptide data directly - no file system access in production!
-import peptidesData from '@/src/data/peptides-merged.json';
+import peptidesData from '../../src/data/peptides-merged.json';
 
 export async function listProducts() {
   // Admin check already done in page component
