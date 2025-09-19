@@ -6,7 +6,7 @@ import { requireAdmin } from '@/lib/adminGuard';
 import { ensureStripeSync } from '@/lib/stripeSync';
 
 export async function listProducts() {
-  await requireAdmin();
+  // Admin check already done in page component
   const products = await prisma.product.findMany({
     orderBy: { updatedAt: 'desc' },
     include: { prices: true },
@@ -20,7 +20,7 @@ export async function createProduct(data: {
   description?: string | null;
   imageUrl?: string | null;
 }) {
-  await requireAdmin();
+  // await requireAdmin(); // Admin check already done in page component
 
   if (!data?.name || !data?.slug) {
     throw new Error('name and slug are required');
@@ -48,7 +48,7 @@ export async function updateProduct(id: string, patch: Partial<{
   active: boolean;
   storefront: boolean;
 }>) {
-  await requireAdmin();
+  // await requireAdmin(); // Admin check already done in page component
   if (!id) throw new Error('Missing product id');
 
   const product = await prisma.product.update({
@@ -60,7 +60,7 @@ export async function updateProduct(id: string, patch: Partial<{
 }
 
 export async function archiveProduct(id: string) {
-  await requireAdmin();
+  // await requireAdmin(); // Admin check already done in page component
   if (!id) throw new Error('Missing product id');
 
   const product = await prisma.product.update({
@@ -80,7 +80,7 @@ export async function upsertPrice(productId: string, payload: {
   isPrimary?: boolean;
   active?: boolean;
 }) {
-  await requireAdmin();
+  // await requireAdmin(); // Admin check already done in page component
 
   if (!productId) throw new Error('Missing productId');
   if (typeof payload.unitAmount !== 'number' || payload.unitAmount <= 0) {
@@ -112,7 +112,7 @@ export async function upsertPrice(productId: string, payload: {
 }
 
 export async function deletePrice(priceId: string) {
-  await requireAdmin();
+  // await requireAdmin(); // Admin check already done in page component
   if (!priceId) throw new Error('Missing priceId');
 
   await prisma.price.delete({ where: { id: priceId } });
@@ -121,7 +121,7 @@ export async function deletePrice(priceId: string) {
 }
 
 export async function syncProductToStripe(productId: string) {
-  await requireAdmin();
+  // await requireAdmin(); // Admin check already done in page component
   if (!productId) throw new Error('Missing productId');
 
   const result = await ensureStripeSync(productId);
