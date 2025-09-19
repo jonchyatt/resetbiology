@@ -279,8 +279,74 @@ export default async function AdminStorePage() {
                   {products.map(product => (
                     <div key={product.id} className="bg-gray-800/30 rounded-lg p-6 border border-gray-700/50 backdrop-blur-sm hover:bg-gray-800/40 transition-all">
                       <div className="flex justify-between items-start mb-4">
+                        {/* Product Image */}
+                        {product.imageUrl && (
+                          <div className="mr-4 flex-shrink-0">
+                            <img 
+                              src={product.imageUrl} 
+                              alt={product.name}
+                              className="w-24 h-24 object-cover rounded-lg border border-gray-700"
+                            />
+                          </div>
+                        )}
+                        
                         <div className="flex-1">
-                          <h3 className="text-xl font-bold text-white">{product.name}</h3>
+                          {/* Editable Product Name */}
+                          <details className="group">
+                            <summary className="cursor-pointer list-none">
+                              <h3 className="text-xl font-bold text-white hover:text-primary-400 transition-colors inline-flex items-center gap-2">
+                                {product.name}
+                                <svg className="w-4 h-4 text-gray-400 group-open:rotate-90 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                </svg>
+                              </h3>
+                            </summary>
+                            
+                            {/* Edit Form - Hidden by default, shown when details is open */}
+                            <div className="mt-4 p-4 bg-gray-900/50 rounded-lg border border-gray-600">
+                              <form action={editProductAction} className="space-y-3">
+                                <input type="hidden" name="productId" value={product.id} />
+                                
+                                <div>
+                                  <label className="text-xs text-gray-400">Product Name</label>
+                                  <input 
+                                    name="name" 
+                                    defaultValue={product.name}
+                                    className="w-full px-3 py-2 bg-gray-800 text-white border border-gray-600 rounded text-sm"
+                                  />
+                                </div>
+                                
+                                <div>
+                                  <label className="text-xs text-gray-400">Description</label>
+                                  <textarea 
+                                    name="description" 
+                                    defaultValue={product.description || ''}
+                                    rows={3}
+                                    className="w-full px-3 py-2 bg-gray-800 text-white border border-gray-600 rounded text-sm"
+                                  />
+                                </div>
+                                
+                                <div>
+                                  <label className="text-xs text-gray-400">Image URL</label>
+                                  <input 
+                                    name="imageUrl" 
+                                    type="url"
+                                    defaultValue={product.imageUrl || ''}
+                                    placeholder="https://example.com/image.jpg"
+                                    className="w-full px-3 py-2 bg-gray-800 text-white border border-gray-600 rounded text-sm"
+                                  />
+                                </div>
+                                
+                                <button 
+                                  type="submit"
+                                  className="w-full bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-medium py-2 rounded text-sm"
+                                >
+                                  Save Changes
+                                </button>
+                              </form>
+                            </div>
+                          </details>
+                          
                           <p className="text-sm text-gray-400 mt-1">
                             Slug: <code className="text-primary-400">{product.slug}</code>
                           </p>
