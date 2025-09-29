@@ -62,9 +62,16 @@ Building a complex medical/wellness platform with public marketing site, secure 
 
 ## Current Session Status (Update This When Ending Session)
 - **Date:** September 29, 2025
-- **Last Action:** Fixed login redirect with simple parameter addition
-- **Next Priority:** [Check TODO list at bottom]
+- **Last Action:** Fixed breathing app settings modal positioning & journal link
+- **Next Priority:** Workout & Nutrition tracking pages (see TODO list)
 - **Watch Out For:** Tendency to overcomplicate simple fixes
+
+## ⚠️ CRITICAL PERFORMANCE REMINDERS
+- **CHECK AVAILABLE TOOLS FIRST** - Run `claude mcp list` to see what's connected
+- **USE CHROME-DEVTOOLS MCP** - Already configured for browser testing
+- **FOLLOW THE FOUR-STEP PROTOCOL** - No exceptions, no shortcuts
+- **ONE-LINE FIXES FIRST** - Always try the simplest solution
+- **READ THE ERROR** - Don't assume, read what actually failed
 
 ## Session Management Guidelines
 
@@ -92,16 +99,21 @@ Building a complex medical/wellness platform with public marketing site, secure 
 - **Production Site**: https://resetbiology.com
 - **Testing Preference**: Test on production site when possible using ChromeMCP
 
-## Testing Strategy - USE CHROMEMCP
+## Testing Strategy - USE CHROME-DEVTOOLS MCP
+
+### Setup Check (RUN FIRST EACH SESSION):
+```bash
+claude mcp list  # Should show: chrome-devtools: ✓ Connected
+```
 
 ### Preferred Testing Workflow:
 1. **Make changes locally**
-2. **Deploy to production** (Vercel)
-3. **Use ChromeMCP to test on production site**
+2. **Deploy to production** (Vercel) 
+3. **Use chrome-devtools MCP to test on production site**
 4. **Visual verification directly in Chrome**
 5. **No need for complex Playwright scripts**
 
-### ChromeMCP Advantages:
+### Chrome-DevTools MCP Advantages:
 - Test on actual production environment
 - See real user experience
 - Faster than writing test scripts
@@ -223,6 +235,8 @@ DATABASE_URL="file:./dev.db" npx prisma db push
 
 ### Completed This Session:
 - ✅ Login redirect fix (added `?returnTo=/portal` parameter)
+- ✅ Journal link fixed (changed `/journal` to `#journal` for same-page scroll)
+- ✅ Breathing app settings modal positioning (proper centering with translate)
 
 ### Previously Completed:
 - ✅ Profile Management with Auth0 integration
