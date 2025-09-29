@@ -364,7 +364,7 @@ export function EnhancedDashboard() {
                   </div>
                 </a>
                 
-                <a href="/journal" className="group">
+                <a href="#journal" className="group">
                   <div className="p-6 bg-gradient-to-br from-secondary-600/30 to-secondary-700/30 border border-secondary-400/30 rounded-lg hover:scale-105 transition-all text-center">
                     <BookOpen className="w-8 h-8 text-secondary-300 mx-auto mb-2" />
                     <span className="text-white font-medium">Journal</span>

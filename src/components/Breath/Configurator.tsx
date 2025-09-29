@@ -52,8 +52,10 @@ export function Configurator({ settings, onSettingsChange, isSessionActive }: Co
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+    <>
+      <div className="fixed inset-0 bg-black/50 z-50" onClick={() => setIsOpen(false)} />
+      <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-md p-4">
+        <div className="bg-white rounded-xl shadow-2xl max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">Session Settings</h2>
           
@@ -217,6 +219,7 @@ export function Configurator({ settings, onSettingsChange, isSessionActive }: Co
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   )
 }
