@@ -49,7 +49,7 @@ export function Header() {
                   Order
                 </Link>
                 <a 
-                  href="/auth/login" 
+                  href="/auth/login?returnTo=/portal" 
                   className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors"
                 >
                   Login / Sign Up
@@ -140,7 +140,7 @@ export function Header() {
                     Order
                   </Link>
                   <a 
-                    href="/auth/login" 
+                    href="/auth/login?returnTo=/portal" 
                     className="block px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors text-center"
                   >
                     Login / Sign Up
