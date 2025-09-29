@@ -50,6 +50,16 @@ export async function updateProduct(id: string, patch: Partial<{
   imageUrl: string | null;
   active: boolean;
   storefront: boolean;
+  // Protocol fields for peptide tracker
+  isTrackable: boolean;
+  protocolPurpose: string | null;
+  protocolDosageRange: string | null;
+  protocolFrequency: string | null;
+  protocolTiming: string | null;
+  protocolDuration: string | null;
+  vialAmount: string | null;
+  reconstitutionInstructions: string | null;
+  syringeUnits: number | null;
 }>) {
   // await requireAdmin(); // Admin check already done in page component
   if (!id || !patch) throw new Error('Missing id or patch data');

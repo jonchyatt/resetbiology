@@ -327,6 +327,17 @@ model Product {
   educationalContent Json?   // Array of educational content
   learnMoreLinks   Json?     // Array of learn more page URLs
   
+  // Peptide Tracker Protocol Fields
+  isTrackable      Boolean   @default(false)  // Show in peptide tracker
+  protocolPurpose  String?   // "Fat Loss", "Healing", "Performance", etc
+  protocolDosageRange String? // e.g., "0.5mg-2.5mg" or "250mcg"
+  protocolFrequency String?  // e.g., "3x per week", "daily", "every other day"
+  protocolTiming   String?   // e.g., "AM", "PM", "twice daily"
+  protocolDuration String?   // e.g., "8 weeks on, 8 weeks off"
+  vialAmount       String?   // e.g., "10mg", "5mg"
+  reconstitutionInstructions String? // e.g., "2ml BAC water"
+  syringeUnits     Float?    // For dosage calculator
+  
   // Product flags
   active           Boolean   @default(true)
   storefront       Boolean   @default(false)

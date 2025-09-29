@@ -46,25 +46,55 @@ export function PeptideTracker() {
   const [customFrequency, setCustomFrequency] = useState('')
   const [customTiming, setCustomTiming] = useState('')
   const [customDuration, setCustomDuration] = useState('')
+  const [peptideLibrary, setPeptideLibrary] = useState<Omit<PeptideProtocol, 'id' | 'startDate' | 'currentCycle' | 'isActive'>[]>([])
+  const [loadingLibrary, setLoadingLibrary] = useState(true)
+
+  // Fetch peptide library from database
+  useEffect(() => {
+    fetchPeptideLibrary()
+  }, [])
 
   // Auto-generate today's doses when protocols change (preserve existing logged doses)
   useEffect(() => {
     generateTodaysDosesPreservingLogged(currentProtocols)
   }, [currentProtocols])
 
-  const peptideLibrary: Omit<PeptideProtocol, 'id' | 'startDate' | 'currentCycle' | 'isActive'>[] = [
-    // Fat Loss Peptides
-    {
-      name: "Ipamorelin",
-      purpose: "Fat Loss",
-      dosage: "300mcg",
-      timing: "PM (or AM - your choice)",
-      frequency: "5 days on, 2 days off",
-      duration: "8 weeks on, 8 weeks off",
-      vialAmount: "10mg",
-      reconstitution: "3ml",
-      syringeUnits: 9
-    },
+  const fetchPeptideLibrary = async () => {
+    try {
+      setLoadingLibrary(true)
+      const response = await fetch('/api/products/trackable')
+      const data = await response.json()
+      
+      if (data.success && data.data) {
+        // Transform API data to match our interface
+        const formattedLibrary = data.data.map((product: any) => ({
+          name: product.name,
+          purpose: product.protocolPurpose || 'General',
+          dosage: product.protocolDosageRange || '250mcg',
+          timing: product.protocolTiming || 'AM',
+          frequency: product.protocolFrequency || 'Daily',
+          duration: product.protocolDuration || '8 weeks',
+          vialAmount: product.vialAmount || '10mg',
+          reconstitution: product.reconstitutionInstructions?.replace('BAC water', '').trim() || '2ml',
+          syringeUnits: product.syringeUnits || 10
+        }))
+        setPeptideLibrary(formattedLibrary)
+      } else {
+        console.error('Failed to fetch peptide library:', data.error)
+        // Fallback to hardcoded library if API fails
+        setPeptideLibrary(fallbackLibrary)
+      }
+    } catch (error) {
+      console.error('Error fetching peptide library:', error)
+      // Fallback to hardcoded library if API fails
+      setPeptideLibrary(fallbackLibrary)
+    } finally {
+      setLoadingLibrary(false)
+    }
+  }
+
+  // Fallback library in case API fails
+  const fallbackLibrary: Omit<PeptideProtocol, 'id' | 'startDate' | 'currentCycle' | 'isActive'>[] = [
     {
       name: "Semaglutide",
       purpose: "Fat Loss",
@@ -77,73 +107,15 @@ export function PeptideTracker() {
       syringeUnits: 17
     },
     {
-      name: "Tirzepatide", 
-      purpose: "Fat Loss",
-      dosage: "0.5mg",
-      timing: "AM",
-      frequency: "3x per week",
-      duration: "8 weeks on, 8 weeks off or until goal weight",
-      vialAmount: "10mg",
-      reconstitution: "2ml",
-      syringeUnits: 10
-    },
-    {
-      name: "Retatrutide",
-      purpose: "Fat Loss", 
-      dosage: "0.5mg-2.5mg",
-      timing: "AM",
-      frequency: "3x per week or every other day",
-      duration: "8 weeks on, 8 weeks off or until goal weight",
-      vialAmount: "10mg",
-      reconstitution: "2ml",
-      syringeUnits: 10
-    },
-    // Healing Peptides
-    {
       name: "BPC-157",
       purpose: "Healing",
       dosage: "500mcg",
       timing: "AM & PM (twice daily)",
-      frequency: "Every day",
-      duration: "8 weeks on, 8 weeks off",
+      frequency: "Daily",
+      duration: "4-6 weeks",
       vialAmount: "10mg",
-      reconstitution: "2ml",
+      reconstitution: "3ml",
       syringeUnits: 10
-    },
-    {
-      name: "TB-500",
-      purpose: "Healing",
-      dosage: "500mcg", 
-      timing: "AM",
-      frequency: "Every day",
-      duration: "8 weeks on, 8 weeks off",
-      vialAmount: "10mg",
-      reconstitution: "2ml",
-      syringeUnits: 10
-    },
-    // Longevity Peptides
-    {
-      name: "Epitalon",
-      purpose: "Longevity",
-      dosage: "2mg",
-      timing: "PM",
-      frequency: "Every day",
-      duration: "20 days in a row, 3x per year",
-      vialAmount: "20mg",
-      reconstitution: "2ml",
-      syringeUnits: 20
-    },
-    // Immunity Peptides
-    {
-      name: "Thymosin Alpha-1",
-      purpose: "Immunity",
-      dosage: "1.5mg",
-      timing: "AM",
-      frequency: "5 days on, 2 days off",
-      duration: "8 weeks on, 8 weeks off",
-      vialAmount: "10mg",
-      reconstitution: "2ml",
-      syringeUnits: 30
     }
   ]
 
@@ -828,9 +800,12 @@ export function PeptideTracker() {
                       }
                     }}
                     className="w-full bg-gray-700/50 text-white border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:border-primary-400"
+                    disabled={loadingLibrary}
                   >
-                    <option value="">Choose a peptide...</option>
-                    {peptideLibrary.map((peptide) => (
+                    <option value="">
+                      {loadingLibrary ? 'Loading peptides...' : 'Choose a peptide...'}
+                    </option>
+                    {!loadingLibrary && peptideLibrary.map((peptide) => (
                       <option key={peptide.name} value={peptide.name}>
                         {peptide.name} - {peptide.purpose}
                       </option>

@@ -107,7 +107,33 @@ export default async function AdminStorePage() {
     const name = String(fd.get('name') || '').trim();
     const description = (fd.get('description')?.toString() || '').trim() || null;
     const imageUrl = (fd.get('imageUrl')?.toString() || '').trim() || null;
-    await updateProduct(id, { name, description, imageUrl });
+    
+    // Protocol fields
+    const isTrackable = String(fd.get('isTrackable') || 'false') === 'true';
+    const protocolPurpose = (fd.get('protocolPurpose')?.toString() || '').trim() || null;
+    const protocolDosageRange = (fd.get('protocolDosageRange')?.toString() || '').trim() || null;
+    const protocolFrequency = (fd.get('protocolFrequency')?.toString() || '').trim() || null;
+    const protocolTiming = (fd.get('protocolTiming')?.toString() || '').trim() || null;
+    const protocolDuration = (fd.get('protocolDuration')?.toString() || '').trim() || null;
+    const vialAmount = (fd.get('vialAmount')?.toString() || '').trim() || null;
+    const reconstitutionInstructions = (fd.get('reconstitutionInstructions')?.toString() || '').trim() || null;
+    const syringeUnitsValue = fd.get('syringeUnits')?.toString() || '';
+    const syringeUnits = syringeUnitsValue ? parseFloat(syringeUnitsValue) : null;
+    
+    await updateProduct(id, { 
+      name, 
+      description, 
+      imageUrl,
+      isTrackable,
+      protocolPurpose,
+      protocolDosageRange,
+      protocolFrequency,
+      protocolTiming,
+      protocolDuration,
+      vialAmount,
+      reconstitutionInstructions,
+      syringeUnits
+    });
   };
 
   const importPeptidesAction = async () => {
@@ -307,51 +333,192 @@ export default async function AdminStorePage() {
                               <form action={editProductAction} className="space-y-3">
                                 <input type="hidden" name="productId" value={product.id} />
                                 
-                                <div>
-                                  <label className="text-xs text-gray-400">Product Name</label>
-                                  <input 
-                                    name="name" 
-                                    defaultValue={product.name}
-                                    className="w-full px-3 py-2 bg-gray-800 text-white border border-gray-600 rounded text-sm"
-                                  />
+                                {/* Basic Info Section */}
+                                <div className="border-b border-gray-700 pb-3 mb-3">
+                                  <h4 className="text-sm font-semibold text-primary-300 mb-3">Basic Information</h4>
+                                  
+                                  <div className="space-y-3">
+                                    <div>
+                                      <label className="text-xs text-gray-400">Product Name</label>
+                                      <input 
+                                        name="name" 
+                                        defaultValue={product.name}
+                                        className="w-full px-3 py-2 bg-gray-800 text-white border border-gray-600 rounded text-sm"
+                                      />
+                                    </div>
+                                    
+                                    <div>
+                                      <label className="text-xs text-gray-400">Description</label>
+                                      <textarea 
+                                        name="description" 
+                                        defaultValue={product.description || ''}
+                                        rows={2}
+                                        className="w-full px-3 py-2 bg-gray-800 text-white border border-gray-600 rounded text-sm"
+                                      />
+                                    </div>
+                                    
+                                    <div>
+                                      <label className="text-xs text-gray-400">Image URL</label>
+                                      <input 
+                                        name="imageUrl" 
+                                        type="url"
+                                        defaultValue={product.imageUrl || ''}
+                                        placeholder="https://example.com/image.jpg"
+                                        className="w-full px-3 py-2 bg-gray-800 text-white border border-gray-600 rounded text-sm"
+                                      />
+                                    </div>
+                                  </div>
                                 </div>
                                 
-                                <div>
-                                  <label className="text-xs text-gray-400">Description</label>
-                                  <textarea 
-                                    name="description" 
-                                    defaultValue={product.description || ''}
-                                    rows={3}
-                                    className="w-full px-3 py-2 bg-gray-800 text-white border border-gray-600 rounded text-sm"
-                                  />
-                                </div>
-                                
-                                <div>
-                                  <label className="text-xs text-gray-400">Image URL</label>
-                                  <input 
-                                    name="imageUrl" 
-                                    type="url"
-                                    defaultValue={product.imageUrl || ''}
-                                    placeholder="https://example.com/image.jpg"
-                                    className="w-full px-3 py-2 bg-gray-800 text-white border border-gray-600 rounded text-sm"
-                                  />
+                                {/* Protocol Management Section */}
+                                <div className="border-b border-gray-700 pb-3 mb-3">
+                                  <h4 className="text-sm font-semibold text-secondary-300 mb-3">Peptide Protocol Settings</h4>
+                                  
+                                  <div className="space-y-3">
+                                    {/* Enable Tracking Checkbox */}
+                                    <div className="flex items-center gap-2">
+                                      <input 
+                                        type="checkbox"
+                                        name="isTrackable"
+                                        id={`trackable-${product.id}`}
+                                        defaultChecked={product.isTrackable}
+                                        value="true"
+                                        className="rounded border-gray-600 bg-gray-800 text-primary-500 focus:ring-primary-500"
+                                      />
+                                      <label htmlFor={`trackable-${product.id}`} className="text-sm text-white font-medium">
+                                        Enable in Peptide Tracker
+                                      </label>
+                                    </div>
+                                    
+                                    {/* Protocol Fields - Grid Layout */}
+                                    <div className="grid grid-cols-2 gap-3">
+                                      <div>
+                                        <label className="text-xs text-gray-400">Purpose</label>
+                                        <select 
+                                          name="protocolPurpose"
+                                          defaultValue={product.protocolPurpose || ''}
+                                          className="w-full px-3 py-2 bg-gray-800 text-white border border-gray-600 rounded text-sm"
+                                        >
+                                          <option value="">Select...</option>
+                                          <option value="Fat Loss">Fat Loss</option>
+                                          <option value="Healing">Healing</option>
+                                          <option value="Performance">Performance</option>
+                                          <option value="Longevity">Longevity</option>
+                                          <option value="Sleep">Sleep</option>
+                                          <option value="Immunity">Immunity</option>
+                                        </select>
+                                      </div>
+                                      
+                                      <div>
+                                        <label className="text-xs text-gray-400">Dosage Range</label>
+                                        <input 
+                                          name="protocolDosageRange"
+                                          placeholder="e.g., 0.5mg-2.5mg"
+                                          defaultValue={product.protocolDosageRange || ''}
+                                          className="w-full px-3 py-2 bg-gray-800 text-white border border-gray-600 rounded text-sm"
+                                        />
+                                      </div>
+                                      
+                                      <div>
+                                        <label className="text-xs text-gray-400">Frequency</label>
+                                        <input 
+                                          name="protocolFrequency"
+                                          placeholder="e.g., 3x per week"
+                                          defaultValue={product.protocolFrequency || ''}
+                                          className="w-full px-3 py-2 bg-gray-800 text-white border border-gray-600 rounded text-sm"
+                                        />
+                                      </div>
+                                      
+                                      <div>
+                                        <label className="text-xs text-gray-400">Timing</label>
+                                        <input 
+                                          name="protocolTiming"
+                                          placeholder="e.g., AM or PM"
+                                          defaultValue={product.protocolTiming || ''}
+                                          className="w-full px-3 py-2 bg-gray-800 text-white border border-gray-600 rounded text-sm"
+                                        />
+                                      </div>
+                                      
+                                      <div>
+                                        <label className="text-xs text-gray-400">Duration</label>
+                                        <input 
+                                          name="protocolDuration"
+                                          placeholder="e.g., 8 weeks on/off"
+                                          defaultValue={product.protocolDuration || ''}
+                                          className="w-full px-3 py-2 bg-gray-800 text-white border border-gray-600 rounded text-sm"
+                                        />
+                                      </div>
+                                      
+                                      <div>
+                                        <label className="text-xs text-gray-400">Vial Amount</label>
+                                        <input 
+                                          name="vialAmount"
+                                          placeholder="e.g., 10mg"
+                                          defaultValue={product.vialAmount || ''}
+                                          className="w-full px-3 py-2 bg-gray-800 text-white border border-gray-600 rounded text-sm"
+                                        />
+                                      </div>
+                                    </div>
+                                    
+                                    <div>
+                                      <label className="text-xs text-gray-400">Reconstitution Instructions</label>
+                                      <input 
+                                        name="reconstitutionInstructions"
+                                        placeholder="e.g., 2ml BAC water"
+                                        defaultValue={product.reconstitutionInstructions || ''}
+                                        className="w-full px-3 py-2 bg-gray-800 text-white border border-gray-600 rounded text-sm"
+                                      />
+                                    </div>
+                                    
+                                    <div>
+                                      <label className="text-xs text-gray-400">Syringe Units (for calculator)</label>
+                                      <input 
+                                        name="syringeUnits"
+                                        type="number"
+                                        step="0.1"
+                                        placeholder="e.g., 10"
+                                        defaultValue={product.syringeUnits || ''}
+                                        className="w-full px-3 py-2 bg-gray-800 text-white border border-gray-600 rounded text-sm"
+                                      />
+                                    </div>
+                                  </div>
                                 </div>
                                 
                                 <button 
                                   type="submit"
                                   className="w-full bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-medium py-2 rounded text-sm"
                                 >
-                                  Save Changes
+                                  Save All Changes
                                 </button>
                               </form>
                             </div>
                           </details>
                           
-                          <p className="text-sm text-gray-400 mt-1">
-                            Slug: <code className="text-primary-400">{product.slug}</code>
-                          </p>
+                          <div className="flex items-center gap-3 mt-1">
+                            <p className="text-sm text-gray-400">
+                              Slug: <code className="text-primary-400">{product.slug}</code>
+                            </p>
+                            {product.isTrackable && (
+                              <span className="inline-flex items-center gap-1 px-2 py-1 bg-secondary-500/20 text-secondary-400 border border-secondary-400/30 rounded-full text-xs font-medium">
+                                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                </svg>
+                                Peptide Tracker
+                              </span>
+                            )}
+                          </div>
                           {product.description && (
                             <p className="text-gray-300 mt-2 line-clamp-2">{product.description}</p>
+                          )}
+                          {product.isTrackable && product.protocolDosageRange && (
+                            <div className="mt-2 p-2 bg-gray-800/50 rounded-lg border border-gray-700">
+                              <p className="text-xs text-secondary-300 font-medium mb-1">Protocol Info:</p>
+                              <div className="flex flex-wrap gap-3 text-xs text-gray-400">
+                                {product.protocolPurpose && <span>Purpose: <span className="text-white">{product.protocolPurpose}</span></span>}
+                                {product.protocolDosageRange && <span>Dosage: <span className="text-white">{product.protocolDosageRange}</span></span>}
+                                {product.protocolFrequency && <span>Frequency: <span className="text-white">{product.protocolFrequency}</span></span>}
+                              </div>
+                            </div>
                           )}
                           {product.stripeProductId && (
                             <div className="flex items-center gap-2 mt-2">
