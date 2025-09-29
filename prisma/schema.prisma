@@ -312,15 +312,40 @@ model Product {
   name             String
   description      String?
   imageUrl         String?
+  
+  // Additional images and media
+  allImages        Json?     // Array of all product image URLs
+  localImages      Json?     // Array of local image file paths
+  videos           Json?     // Array of video URLs (YouTube, etc)
+  
+  // Pricing
+  partnerPrice     Float?    // Wholesale/partner price
+  retailPrice      Float?    // Customer price (with markup)
+  
+  // Protocol and dosage information
+  protocolInfo     Json?     // Object with dosage, frequency, timing, etc
+  educationalContent Json?   // Array of educational content
+  learnMoreLinks   Json?     // Array of learn more page URLs
+  
+  // Product flags
   active           Boolean   @default(true)
   storefront       Boolean   @default(false)
+  featured         Boolean   @default(false)
+  category         String?   // Product category
+  
+  // Stripe integration
   stripeProductId  String?
   lastSyncedAt     DateTime?
+  
+  // Rich metadata
   metadata         Json?
+  originalUrl      String?   // Original product URL from source
+  
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
 
   prices           Price[]
+  productPages     ProductPage[]
 }
 
 model Price {
@@ -353,4 +378,23 @@ model Order {
   email                 String?
   status                String   @default("pending")
   createdAt             DateTime @default(now())
+}
+
+// Store full HTML content for product pages
+model ProductPage {
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  productId         String   @db.ObjectId
+  product           Product  @relation(fields: [productId], references: [id])
+  
+  pageType          String   // "main" | "learn_more" | "education"
+  title             String?
+  htmlContent       String   // Full HTML content
+  textContent       String?  // Plain text version
+  sourceUrl         String?  // Original URL where content came from
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  @@unique([productId, pageType])
+  @@map("product_pages")
 }

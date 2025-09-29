@@ -22,7 +22,6 @@ async function importProducts() {
     
     // Clear existing products (optional - comment out if you want to keep existing)
     console.log('\n🗑️  Clearing existing products...');
-    await prisma.productPage.deleteMany({});
     await prisma.price.deleteMany({});
     await prisma.product.deleteMany({});
     console.log('✅ Existing data cleared');
@@ -92,23 +91,8 @@ async function importProducts() {
           }
         });
         
-        // Create product pages if we have HTML content
-        if (product.educationalContent && product.educationalContent.length > 0) {
-          for (const eduContent of product.educationalContent) {
-            if (typeof eduContent === 'object' && eduContent.content) {
-              await prisma.productPage.create({
-                data: {
-                  productId: createdProduct.id,
-                  pageType: 'education',
-                  title: eduContent.title || 'Educational Content',
-                  htmlContent: eduContent.content || '',
-                  textContent: eduContent.textContent || '',
-                  sourceUrl: eduContent.url || product.originalUrl
-                }
-              });
-            }
-          }
-        }
+        // Skip product pages creation - model doesn't exist in schema
+        // Educational content is stored in the product's metadata field
         
         console.log(`   ✅ Imported successfully`);
         console.log(`   💰 Price: $${product.partnerPrice} → $${product.retailPrice}`);
@@ -132,12 +116,10 @@ async function importProducts() {
     // Verify the import
     const productCount = await prisma.product.count();
     const priceCount = await prisma.price.count();
-    const pageCount = await prisma.productPage.count();
     
     console.log('\n📊 DATABASE VERIFICATION:');
     console.log(`   Products in database: ${productCount}`);
     console.log(`   Prices in database: ${priceCount}`);
-    console.log(`   Product pages in database: ${pageCount}`);
     
     // Show sample products
     const sampleProducts = await prisma.product.findMany({
