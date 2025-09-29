@@ -37,12 +37,18 @@ function PeptideCard({ peptide }: { peptide: any }) {
       </div>
       
       <div className="space-y-2 mb-4">
-        {peptide.researchApplications && (peptide.researchApplications as string[]).slice(0, 2).map((app: string, idx: number) => (
+        {peptide.researchApplications && Array.isArray(peptide.researchApplications) && (peptide.researchApplications as string[]).slice(0, 2).map((app: string, idx: number) => (
           <div key={idx} className="flex items-center text-sm text-gray-700">
             <span className="text-green-600 mr-2">✓</span>
             {app}
           </div>
         ))}
+        {peptide.researchApplications && !Array.isArray(peptide.researchApplications) && (
+          <div className="flex items-center text-sm text-gray-700">
+            <span className="text-green-600 mr-2">✓</span>
+            Research applications available
+          </div>
+        )}
       </div>
       
       <Link 

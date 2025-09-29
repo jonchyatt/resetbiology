@@ -143,7 +143,7 @@ export default async function PeptidePage({ params }: PageProps) {
               </div>
 
               {/* Research Applications */}
-              {peptide.researchApplications && (peptide.researchApplications as string[]).length > 0 && (
+              {peptide.researchApplications && Array.isArray(peptide.researchApplications) && (peptide.researchApplications as string[]).length > 0 && (
                 <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-8 shadow-2xl border border-primary-400/30 mb-8">
                   <h2 className="text-2xl md:text-3xl font-bold text-white mb-6 text-shadow-lg">Research Applications</h2>
                   <ul className="space-y-3">
@@ -158,7 +158,7 @@ export default async function PeptidePage({ params }: PageProps) {
               )}
 
               {/* Key Benefits */}
-              {peptide.keyBenefits && (peptide.keyBenefits as string[]).length > 0 && (
+              {peptide.keyBenefits && Array.isArray(peptide.keyBenefits) && (peptide.keyBenefits as string[]).length > 0 && (
                 <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-8 shadow-2xl border border-primary-400/30 mb-8">
                   <h2 className="text-2xl md:text-3xl font-bold text-white mb-6 text-shadow-lg">Key Research Benefits</h2>
                   <ul className="space-y-3">
