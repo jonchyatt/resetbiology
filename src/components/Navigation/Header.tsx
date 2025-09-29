@@ -1,15 +1,28 @@
 "use client"
 
 import Link from "next/link"
-import { useState } from "react"
-import { Menu, X } from "lucide-react"
+import { useState, useEffect } from "react"
+import { Menu, X, ChevronDown, User, Settings, Shield } from "lucide-react"
 // Temporarily removed Auth0 useUser due to Next.js 15 compatibility
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
   // Temporarily simplified due to Auth0 Next.js 15 compatibility issues
   const user = null as any; // Will be replaced with proper Auth0 once compatibility is resolved
   const isLoading = false;
+  const isAdmin = false; // Will be determined by user.role === 'admin'
+
+  // Close menus when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (isUserMenuOpen && !(e.target as Element).closest('.user-menu-container')) {
+        setIsUserMenuOpen(false)
+      }
+    }
+    document.addEventListener('click', handleClickOutside)
+    return () => document.removeEventListener('click', handleClickOutside)
+  }, [isUserMenuOpen])
 
   return (
     <header className="fixed top-0 w-full z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200">
@@ -26,52 +39,82 @@ export function Header() {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <Link href="/process" className="text-gray-700 hover:text-teal-600 font-medium transition-colors">
-              How It Works
-            </Link>
-            <Link href="/breath" className="text-gray-700 hover:text-teal-600 font-medium transition-colors">
-              Breath Training
-            </Link>
-            <Link href="/education" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
-              Research
-            </Link>
-            <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium transition-colors">
-              Order
-            </Link>
-            <Link href="/peptides" className="text-gray-700 hover:text-primary-600 font-medium transition-colors">
-              Peptides
-            </Link>
-            <Link href="/modules" className="text-gray-700 hover:text-purple-600 font-medium transition-colors">
-              Modules
-            </Link>
-            <Link href="/portal" className="text-gray-700 hover:text-teal-600 font-medium transition-colors">
-              Portal
-            </Link>
-            <Link href="/profile" className="text-gray-700 hover:text-teal-600 font-medium transition-colors">
-              Profile
-            </Link>
-            <Link href="/admin" className="text-gray-700 hover:text-orange-600 font-medium transition-colors">
-              Admin
-            </Link>
-            {!isLoading && (
-              user ? (
-                <div className="flex items-center space-x-4">
-                  <span className="text-gray-700">Hello, {user.name || user.email}</span>
-                  <a 
-                    href="/auth/logout" 
-                    className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
-                  >
-                    Logout
-                  </a>
-                </div>
-              ) : (
+            {/* Public/Logged Out Navigation */}
+            {!user && (
+              <>
+                <Link href="/process" className="text-gray-700 hover:text-teal-600 font-medium transition-colors">
+                  How It Works
+                </Link>
+                <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium transition-colors">
+                  Order
+                </Link>
                 <a 
                   href="/auth/login" 
                   className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors"
                 >
-                  Login
+                  Login / Sign Up
                 </a>
-              )
+              </>
+            )}
+            
+            {/* Logged In Navigation */}
+            {user && (
+              <>
+                <Link href="/portal" className="text-gray-700 hover:text-teal-600 font-medium transition-colors">
+                  Portal
+                </Link>
+                <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium transition-colors">
+                  Order
+                </Link>
+                
+                {/* User Menu Dropdown */}
+                <div className="relative user-menu-container">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setIsUserMenuOpen(!isUserMenuOpen)
+                    }}
+                    className="flex items-center space-x-2 text-gray-700 hover:text-teal-600 font-medium transition-colors"
+                  >
+                    <User className="w-4 h-4" />
+                    <span>{user.name || user.email || 'Account'}</span>
+                    <ChevronDown className={`w-4 h-4 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
+                  </button>
+                  
+                  {isUserMenuOpen && (
+                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2">
+                      <Link 
+                        href="/profile" 
+                        className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors"
+                        onClick={() => setIsUserMenuOpen(false)}
+                      >
+                        <Settings className="w-4 h-4 mr-2" />
+                        Profile Settings
+                      </Link>
+                      
+                      {isAdmin && (
+                        <Link 
+                          href="/admin" 
+                          className="flex items-center px-4 py-2 text-orange-600 hover:bg-orange-50 transition-colors"
+                          onClick={() => setIsUserMenuOpen(false)}
+                        >
+                          <Shield className="w-4 h-4 mr-2" />
+                          Admin Dashboard
+                        </Link>
+                      )}
+                      
+                      <hr className="my-2 border-gray-200" />
+                      
+                      <a 
+                        href="/auth/logout" 
+                        className="flex items-center px-4 py-2 text-red-600 hover:bg-red-50 transition-colors"
+                      >
+                        Logout
+                      </a>
+                    </div>
+                  )}
+                </div>
+              </>
             )}
           </nav>
 
@@ -88,54 +131,47 @@ export function Header() {
         {isMenuOpen && (
           <div className="md:hidden py-4 border-t border-gray-200">
             <nav className="flex flex-col space-y-4">
-              <Link href="/process" className="text-gray-700 hover:text-teal-600 font-medium">
-                How It Works
-              </Link>
-              <Link href="/breath" className="text-gray-700 hover:text-teal-600 font-medium">
-                Breath Training
-              </Link>
-              <Link href="/education" className="text-gray-700 hover:text-blue-600 font-medium">
-                Research
-              </Link>
-              <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium">
-                Order
-              </Link>
-              <Link href="/peptides" className="text-gray-700 hover:text-primary-600 font-medium">
-                Peptides
-              </Link>
-              <Link href="/modules" className="text-gray-700 hover:text-purple-600 font-medium">
-                Modules
-              </Link>
-              <Link href="/portal" className="text-gray-700 hover:text-teal-600 font-medium">
-                Portal
-              </Link>
-              <Link href="/profile" className="text-gray-700 hover:text-teal-600 font-medium">
-                Profile
-              </Link>
-              <Link href="/admin" className="text-gray-700 hover:text-orange-600 font-medium">
-                Admin
-              </Link>
-              {!isLoading && (
-                <div className="pt-2">
-                  {user ? (
-                    <div className="space-y-2">
-                      <div className="text-gray-700">Hello, {user.name || user.email}</div>
-                      <a 
-                        href="/auth/logout" 
-                        className="block px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors text-center"
-                      >
-                        Logout
-                      </a>
-                    </div>
-                  ) : (
-                    <a 
-                      href="/auth/login" 
-                      className="block px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors text-center"
-                    >
-                      Login
-                    </a>
+              {!user ? (
+                <>
+                  <Link href="/process" className="text-gray-700 hover:text-teal-600 font-medium">
+                    How It Works
+                  </Link>
+                  <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium">
+                    Order
+                  </Link>
+                  <a 
+                    href="/auth/login" 
+                    className="block px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors text-center"
+                  >
+                    Login / Sign Up
+                  </a>
+                </>
+              ) : (
+                <>
+                  <Link href="/portal" className="text-gray-700 hover:text-teal-600 font-medium">
+                    Portal
+                  </Link>
+                  <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium">
+                    Order
+                  </Link>
+                  <Link href="/profile" className="text-gray-700 hover:text-teal-600 font-medium">
+                    Profile Settings
+                  </Link>
+                  {isAdmin && (
+                    <Link href="/admin" className="text-orange-600 hover:text-orange-700 font-medium">
+                      Admin Dashboard
+                    </Link>
                   )}
-                </div>
+                  <div className="pt-2 space-y-2">
+                    <div className="text-gray-700">Hello, {user.name || user.email}</div>
+                    <a 
+                      href="/auth/logout" 
+                      className="block px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors text-center"
+                    >
+                      Logout
+                    </a>
+                  </div>
+                </>
               )}
             </nav>
           </div>

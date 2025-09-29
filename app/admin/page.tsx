@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Database, Dumbbell, Apple, Syringe, Settings } from "lucide-react"
+import { Database, Dumbbell, Apple, Syringe, Settings, Package } from "lucide-react"
 
 export default function AdminDashboard() {
   return (
@@ -133,8 +133,24 @@ export default function AdminDashboard() {
               </div>
             </div>
 
+            {/* Store Management */}
+            <Link href="/admin/store" className="group">
+              <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-purple-400/30 shadow-2xl hover:shadow-purple-400/20 group-hover:scale-105 transition-all duration-300">
+                <div className="flex items-center mb-4">
+                  <Package className="w-8 h-8 text-purple-400 mr-3" />
+                  <h3 className="text-xl font-bold text-white">Store Management</h3>
+                </div>
+                <p className="text-gray-300 mb-4">
+                  Manage products, pricing, and Stripe integration for the e-commerce store.
+                </p>
+                <div className="text-purple-300 font-medium group-hover:text-purple-200 transition-colors">
+                  Manage Store →
+                </div>
+              </div>
+            </Link>
+
             {/* Quick Actions */}
-            <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-purple-400/30 shadow-2xl hover:shadow-purple-400/20 transition-all duration-300">
+            <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-blue-400/30 shadow-2xl hover:shadow-blue-400/20 transition-all duration-300">
               <div className="flex items-center mb-4">
                 <h3 className="text-xl font-bold text-white">Quick Actions</h3>
               </div>
