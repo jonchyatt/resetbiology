@@ -19,6 +19,12 @@
 /out/
 /.open-next/
 
+# build artifacts
+/breath-screenshots/
+/screenshots/
+/playwright-report/
+/test-results/
+
 # production
 /build
 
