@@ -53,15 +53,15 @@ export function Configurator({ settings, onSettingsChange, isSessionActive }: Co
 
   return (
     <>
-      <div className="fixed inset-0 bg-black/50 z-50" onClick={() => setIsOpen(false)} />
-      <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-md p-4">
-        <div className="bg-white rounded-xl shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50" onClick={() => setIsOpen(false)} />
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl shadow-2xl border border-white/20 max-h-[90vh] overflow-y-auto w-full max-w-md">
         <div className="p-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Session Settings</h2>
+          <h2 className="text-2xl font-bold text-white mb-6 drop-shadow-lg">Session Settings</h2>
           
           {/* Cycles Target */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-white mb-2">
               Number of Cycles (1-8)
             </label>
             <input
@@ -70,18 +70,18 @@ export function Configurator({ settings, onSettingsChange, isSessionActive }: Co
               max="8"
               value={tempSettings.cyclesTarget}
               onChange={(e) => updateTempSetting('cyclesTarget', parseInt(e.target.value))}
-              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+              className="w-full h-2 bg-primary-600/30 rounded-lg appearance-none cursor-pointer accent-primary-400"
             />
-            <div className="flex justify-between text-sm text-gray-500 mt-1">
+            <div className="flex justify-between text-sm text-gray-200 mt-1">
               <span>1</span>
-              <span className="font-medium text-primary-600">{tempSettings.cyclesTarget}</span>
+              <span className="font-medium text-primary-300">{tempSettings.cyclesTarget}</span>
               <span>8</span>
             </div>
           </div>
 
           {/* Breaths Per Cycle */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-white mb-2">
               Breaths Per Cycle (30-60)
             </label>
             <input
@@ -91,18 +91,18 @@ export function Configurator({ settings, onSettingsChange, isSessionActive }: Co
               step="5"
               value={tempSettings.breathsPerCycle}
               onChange={(e) => updateTempSetting('breathsPerCycle', parseInt(e.target.value))}
-              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+              className="w-full h-2 bg-primary-600/30 rounded-lg appearance-none cursor-pointer accent-primary-400"
             />
-            <div className="flex justify-between text-sm text-gray-500 mt-1">
+            <div className="flex justify-between text-sm text-gray-200 mt-1">
               <span>30</span>
-              <span className="font-medium text-primary-600">{tempSettings.breathsPerCycle}</span>
+              <span className="font-medium text-primary-300">{tempSettings.breathsPerCycle}</span>
               <span>60</span>
             </div>
           </div>
 
           {/* Breathing Pace */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-white mb-2">
               Breathing Pace
             </label>
             <div className="grid grid-cols-2 gap-2 mb-3">
@@ -112,12 +112,12 @@ export function Configurator({ settings, onSettingsChange, isSessionActive }: Co
                   onClick={() => updateTempSetting('pace', pace)}
                   className={`p-3 rounded-lg border-2 transition-colors ${
                     tempSettings.pace.label === pace.label
-                      ? 'border-primary-500 bg-primary-50 text-primary-700'
-                      : 'border-gray-200 hover:border-gray-300'
+                      ? 'border-primary-400 bg-primary-500/30 text-white'
+                      : 'border-primary-400/30 hover:border-primary-400/60 text-gray-200 hover:text-white'
                   }`}
                 >
                   <div className="font-medium">{pace.label}</div>
-                  <div className="text-xs text-gray-500">
+                  <div className="text-xs text-gray-300">
                     {pace.inhaleMs/1000}s in • {pace.exhaleMs/1000}s out
                   </div>
                 </button>
@@ -126,9 +126,9 @@ export function Configurator({ settings, onSettingsChange, isSessionActive }: Co
 
             {/* Custom Pace Controls */}
             {tempSettings.pace.label === 'Custom' && (
-              <div className="grid grid-cols-2 gap-4 p-3 bg-gray-50 rounded-lg">
+              <div className="grid grid-cols-2 gap-4 p-3 bg-primary-600/20 rounded-lg border border-primary-400/30">
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">
+                  <label className="block text-xs font-medium text-gray-200 mb-1">
                     Inhale (seconds)
                   </label>
                   <input
@@ -141,11 +141,11 @@ export function Configurator({ settings, onSettingsChange, isSessionActive }: Co
                       ...tempSettings.pace,
                       inhaleMs: parseFloat(e.target.value) * 1000
                     })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                    className="w-full px-3 py-2 bg-white/10 border border-primary-400/30 rounded-lg text-white"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">
+                  <label className="block text-xs font-medium text-gray-200 mb-1">
                     Exhale (seconds)
                   </label>
                   <input
@@ -158,7 +158,7 @@ export function Configurator({ settings, onSettingsChange, isSessionActive }: Co
                       ...tempSettings.pace,
                       exhaleMs: parseFloat(e.target.value) * 1000
                     })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                    className="w-full px-3 py-2 bg-white/10 border border-primary-400/30 rounded-lg text-white"
                   />
                 </div>
               </div>
@@ -166,15 +166,15 @@ export function Configurator({ settings, onSettingsChange, isSessionActive }: Co
           </div>
 
           {/* Audio & Accessibility */}
-          <div className="space-y-4 mb-6">
+          <div className="space-y-3 mb-6">
             <button
               onClick={() => updateTempSetting('audioEnabled', !tempSettings.audioEnabled)}
-              className="flex items-center justify-between w-full p-3 border border-gray-300 rounded-lg hover:bg-gray-50"
+              className="flex items-center justify-between w-full p-3 border border-primary-400/30 rounded-lg hover:bg-primary-500/20 text-white transition-colors"
             >
               <span className="font-medium">Audio Cues</span>
               <div className="flex items-center">
                 {tempSettings.audioEnabled ? (
-                  <Volume className="w-5 h-5 text-primary-500" />
+                  <Volume className="w-5 h-5 text-primary-300" />
                 ) : (
                   <VolumeX className="w-5 h-5 text-gray-400" />
                 )}
@@ -183,12 +183,12 @@ export function Configurator({ settings, onSettingsChange, isSessionActive }: Co
 
             <button
               onClick={() => updateTempSetting('motionReduced', !tempSettings.motionReduced)}
-              className="flex items-center justify-between w-full p-3 border border-gray-300 rounded-lg hover:bg-gray-50"
+              className="flex items-center justify-between w-full p-3 border border-primary-400/30 rounded-lg hover:bg-primary-500/20 text-white transition-colors"
             >
               <span className="font-medium">Reduce Motion</span>
               <div className="flex items-center">
                 {tempSettings.motionReduced ? (
-                  <EyeOff className="w-5 h-5 text-primary-500" />
+                  <EyeOff className="w-5 h-5 text-primary-300" />
                 ) : (
                   <Eye className="w-5 h-5 text-gray-400" />
                 )}
@@ -200,25 +200,24 @@ export function Configurator({ settings, onSettingsChange, isSessionActive }: Co
           <div className="flex gap-3">
             <button
               onClick={() => setIsOpen(false)}
-              className="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-medium py-3 px-4 rounded-lg transition-colors"
+              className="flex-1 bg-gray-600/50 hover:bg-gray-600/70 backdrop-blur-sm text-white font-medium py-3 px-4 rounded-lg transition-colors border border-gray-400/30"
             >
               Cancel
             </button>
             <button
               onClick={resetToDefaults}
-              className="bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-3 px-4 rounded-lg transition-colors"
+              className="bg-amber-600/60 hover:bg-amber-600/80 backdrop-blur-sm text-white font-medium py-3 px-4 rounded-lg transition-colors border border-amber-400/30"
             >
               Reset
             </button>
             <button
               onClick={applySettings}
-              className="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-medium py-3 px-4 rounded-lg transition-colors"
+              className="flex-1 bg-primary-500/70 hover:bg-primary-500/90 backdrop-blur-sm text-white font-bold py-3 px-4 rounded-lg transition-colors border border-primary-400/50 shadow-lg"
             >
               Apply
             </button>
           </div>
         </div>
-      </div>
       </div>
     </>
   )

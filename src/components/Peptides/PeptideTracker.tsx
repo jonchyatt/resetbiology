@@ -172,7 +172,7 @@ export function PeptideTracker() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          peptideName: selectedPeptideName,
+          peptideName: peptide.name, // Use the actual peptide name, not the dropdown display text
           dosage: customDosage || peptide.dosage,
           frequency: customFrequency || peptide.frequency,
           notes: `Timing: ${customTiming || peptide.timing}; Duration: ${customDuration || peptide.duration}`
