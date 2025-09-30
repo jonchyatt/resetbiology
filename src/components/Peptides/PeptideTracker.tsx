@@ -52,6 +52,7 @@ export function PeptideTracker() {
   // Fetch peptide library from database
   useEffect(() => {
     fetchPeptideLibrary()
+    fetchUserProtocols()
   }, [])
 
   // Auto-generate today's doses when protocols change (preserve existing logged doses)
@@ -93,6 +94,36 @@ export function PeptideTracker() {
     }
   }
 
+  // Fetch user's protocols from database
+  const fetchUserProtocols = async () => {
+    try {
+      const response = await fetch('/api/peptides/protocols')
+      const data = await response.json()
+
+      if (data.success && data.protocols) {
+        // Transform database protocols to match our interface
+        const formattedProtocols = data.protocols.map((p: any) => ({
+          id: p.id,
+          name: p.peptides.name,
+          purpose: p.peptides.protocolPurpose || 'General',
+          dosage: p.dosage,
+          timing: p.peptides.protocolTiming || 'AM',
+          frequency: p.frequency,
+          duration: p.peptides.protocolDuration || '8 weeks',
+          vialAmount: p.peptides.vialAmount || '10mg',
+          reconstitution: p.peptides.reconstitutionInstructions?.replace('BAC water', '').trim() || '2ml',
+          syringeUnits: p.peptides.syringeUnits || 10,
+          startDate: new Date(p.startDate).toISOString().split('T')[0],
+          currentCycle: 1,
+          isActive: p.isActive
+        }))
+        setCurrentProtocols(formattedProtocols)
+      }
+    } catch (error) {
+      console.error('Error fetching user protocols:', error)
+    }
+  }
+
   // Fallback library in case API fails
   const fallbackLibrary: Omit<PeptideProtocol, 'id' | 'startDate' | 'currentCycle' | 'isActive'>[] = [
     {
@@ -119,7 +150,7 @@ export function PeptideTracker() {
     }
   ]
 
-  const confirmAddProtocol = () => {
+  const confirmAddProtocol = async () => {
     if (!selectedPeptideName) {
       alert('Please select a peptide')
       return
@@ -135,20 +166,50 @@ export function PeptideTracker() {
       return
     }
 
-    const newProtocol: PeptideProtocol = {
-      ...peptide,
-      dosage: customDosage || peptide.dosage,
-      frequency: customFrequency || peptide.frequency,
-      timing: customTiming || peptide.timing,
-      duration: customDuration || peptide.duration,
-      id: Date.now().toString(),
-      startDate: new Date().toISOString().split('T')[0],
-      currentCycle: 1,
-      isActive: true
+    // Save protocol to database
+    try {
+      const response = await fetch('/api/peptides/protocols', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          peptideName: selectedPeptideName,
+          dosage: customDosage || peptide.dosage,
+          frequency: customFrequency || peptide.frequency,
+          notes: `Timing: ${customTiming || peptide.timing}; Duration: ${customDuration || peptide.duration}`
+        })
+      })
+
+      const data = await response.json()
+
+      if (data.success && data.protocol) {
+        // Transform saved protocol to match our interface
+        const newProtocol: PeptideProtocol = {
+          id: data.protocol.id,
+          name: data.protocol.peptides.name,
+          purpose: data.protocol.peptides.protocolPurpose || 'General',
+          dosage: data.protocol.dosage,
+          timing: customTiming || peptide.timing,
+          frequency: data.protocol.frequency,
+          duration: customDuration || peptide.duration,
+          vialAmount: data.protocol.peptides.vialAmount || peptide.vialAmount,
+          reconstitution: data.protocol.peptides.reconstitutionInstructions?.replace('BAC water', '').trim() || peptide.reconstitution,
+          syringeUnits: data.protocol.peptides.syringeUnits || peptide.syringeUnits,
+          startDate: new Date(data.protocol.startDate).toISOString().split('T')[0],
+          currentCycle: 1,
+          isActive: data.protocol.isActive
+        }
+
+        setCurrentProtocols([...currentProtocols, newProtocol])
+      } else {
+        alert(`Failed to save protocol: ${data.error || 'Unknown error'}`)
+        return
+      }
+    } catch (error) {
+      console.error('Error saving protocol:', error)
+      alert('Failed to save protocol. Please try again.')
+      return
     }
-    
-    setCurrentProtocols([...currentProtocols, newProtocol])
-    
+
     // Reset modal
     setShowAddProtocolModal(false)
     setSelectedPeptideName('')
@@ -333,29 +394,55 @@ export function PeptideTracker() {
     setShowCalculatorModal(true)
   }
 
-  const logDose = () => {
+  const logDose = async () => {
     if (!selectedProtocol) return
-    
+
     const now = new Date()
     const currentTime = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
-    
-    // Check if we're updating a specific scheduled dose
+
+    // Save dose to database
+    try {
+      const response = await fetch('/api/peptides/doses', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          protocolId: selectedProtocol.id,
+          dosage: selectedProtocol.dosage,
+          time: currentTime,
+          notes: doseNotes || null,
+          sideEffects: doseSideEffects.length > 0 ? doseSideEffects.join(', ') : null
+        })
+      })
+
+      const data = await response.json()
+
+      if (!data.success) {
+        alert(`Failed to log dose: ${data.error || 'Unknown error'}`)
+        return
+      }
+    } catch (error) {
+      console.error('Error logging dose:', error)
+      alert('Failed to log dose. Please try again.')
+      return
+    }
+
+    // Update UI state
     const scheduledDoseId = (selectedProtocol as any).scheduledDoseId
-    const existingDose = scheduledDoseId ? 
-      todaysDoses.find(dose => dose.id === scheduledDoseId) : 
-      todaysDoses.find(dose => 
-        dose.peptideId === selectedProtocol.id && 
+    const existingDose = scheduledDoseId ?
+      todaysDoses.find(dose => dose.id === scheduledDoseId) :
+      todaysDoses.find(dose =>
+        dose.peptideId === selectedProtocol.id &&
         !dose.completed &&
         Math.abs(new Date(`1970-01-01 ${dose.scheduledTime}`).getTime() - new Date(`1970-01-01 ${currentTime}`).getTime()) < 3600000 // within 1 hour
       )
-    
+
     if (existingDose) {
       // Update existing scheduled dose
-      setTodaysDoses(prev => prev.map(dose => 
+      setTodaysDoses(prev => prev.map(dose =>
         dose.id === existingDose.id
-          ? { 
-              ...dose, 
-              completed: true, 
+          ? {
+              ...dose,
+              completed: true,
               actualTime: now.toISOString(),
               notes: doseNotes || undefined,
               sideEffects: doseSideEffects.length > 0 ? doseSideEffects : undefined
@@ -375,7 +462,7 @@ export function PeptideTracker() {
       }
       setTodaysDoses(prev => [...prev, newDose])
     }
-    
+
     setShowDoseModal(false)
     setSelectedProtocol(null)
   }

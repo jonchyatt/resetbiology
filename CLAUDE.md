@@ -1,7 +1,7 @@
 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-**Last Updated:** September 29, 2025
+**Last Updated:** September 30, 2025
 
 # 🚨 CRITICAL: Change Protocol - MUST FOLLOW BEFORE ANY CODE CHANGES
 
@@ -61,8 +61,8 @@ Before making ANY code changes, you MUST follow these steps:
 Building a complex medical/wellness platform with public marketing site, secure client portal, gamification system, and integrated breath training application.
 
 ## Current Session Status (Update This When Ending Session)
-- **Date:** September 29, 2025
-- **Last Action:** Fixed breathing app settings modal positioning & journal link
+- **Date:** September 30, 2025
+- **Last Action:** Moved project from WSL2 to Windows environment
 - **Next Priority:** Workout & Nutrition tracking pages (see TODO list)
 - **Watch Out For:** Tendency to overcomplicate simple fixes
 
@@ -93,11 +93,13 @@ Building a complex medical/wellness platform with public marketing site, secure 
 4. Note any pending deployments or issues
 
 ## Development Environment & Capabilities
-- **Operating System**: WSL2 (Ubuntu on Windows)
-- **Development Tool**: Claude Code running in WSL2
+- **Operating System**: Windows (moved from WSL2 September 30, 2025)
+- **Development Tool**: Claude Code running in Windows VS Code
 - **Browser Testing**: ChromeMCP (preferred) or Playwright MCP
 - **Production Site**: https://resetbiology.com
 - **Testing Preference**: Test on production site when possible using ChromeMCP
+- **Screenshots Location**: `C:\Users\jonch\Pictures\Screenshots\` - Check here first for deployment/UI screenshots
+- **Note**: Moved out of WSL2 due to Docker conflicts and performance issues
 
 ## Testing Strategy - USE CHROME-DEVTOOLS MCP
 
@@ -234,6 +236,7 @@ DATABASE_URL="file:./dev.db" npx prisma db push
 ## ✅ RECENTLY COMPLETED (September 2025)
 
 ### Completed This Session:
+- ✅ Migrated project from WSL2 to Windows environment
 - ✅ Login redirect fix (added `?returnTo=/portal` parameter)
 - ✅ Journal link fixed (changed `/journal` to `#journal` for same-page scroll)
 - ✅ Breathing app settings modal positioning (proper centering with translate)

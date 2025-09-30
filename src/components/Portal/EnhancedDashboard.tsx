@@ -90,7 +90,7 @@ export function EnhancedDashboard() {
   // Save journal data
   const saveJournalEntry = async () => {
     try {
-      await fetch('/api/journal/entry', {
+      const response = await fetch('/api/journal', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -99,9 +99,16 @@ export function EnhancedDashboard() {
           tasksCompleted: dailyTasks
         })
       })
-      alert('Daily journal entry saved!')
+
+      if (response.ok) {
+        alert('Daily journal entry saved!')
+      } else {
+        const error = await response.json()
+        alert(`Failed to save journal: ${error.error || 'Unknown error'}`)
+      }
     } catch (error) {
       console.error('Failed to save journal:', error)
+      alert('Failed to save journal entry. Please try again.')
     }
   }
 

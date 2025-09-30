@@ -298,7 +298,7 @@ export function BreathTrainingApp({ onSessionComplete }: BreathTrainingAppProps)
 
   const finishSession = async () => {
     setState('session_complete')
-    
+
     const sessionData: SessionData = {
       sessionId,
       startedAt: new Date(sessionStartTime).toISOString(),
@@ -308,9 +308,23 @@ export function BreathTrainingApp({ onSessionComplete }: BreathTrainingAppProps)
       cyclesCompleted: completedCycles.length
     }
 
+    // Save to local IndexedDB
     await storage.saveSession(sessionData)
+
+    // ALSO save to MongoDB database for persistence across devices
+    try {
+      await fetch('/api/breath/sessions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionData })
+      })
+    } catch (error) {
+      console.error('Failed to save breath session to database:', error)
+      // Continue anyway - data is still saved locally
+    }
+
     onSessionComplete?.(sessionData)
-    
+
     if (rafRef.current) {
       cancelAnimationFrame(rafRef.current)
       rafRef.current = null
