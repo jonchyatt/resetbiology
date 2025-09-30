@@ -104,21 +104,21 @@ export function Controls({
         }
       case 'exhale_hold_ready':
         return {
-          text: 'Start Exhale Hold',
+          text: 'Start Exhale Hold (Space)',
           action: onStartExhaleHold,
           icon: <div className="w-5 h-5 mr-2 bg-amber-400 rounded-full" />,
           color: 'bg-gradient-to-r from-amber-600/20 to-orange-600/20 hover:from-amber-600/30 hover:to-orange-600/30 backdrop-blur-sm'
         }
       case 'exhale_hold_active':
         return {
-          text: 'Start Inhale Hold',
+          text: 'Start Inhale Hold (Space)',
           action: onStartInhaleHold,
           icon: <div className="w-5 h-5 mr-2 bg-green-400 rounded-full" />,
           color: 'bg-gradient-to-r from-green-600/20 to-teal-600/20 hover:from-green-600/30 hover:to-teal-600/30 backdrop-blur-sm'
         }
       case 'inhale_hold_active':
         return {
-          text: 'End Inhale Hold (Exhale)',
+          text: 'End Inhale Hold (Space)',
           action: onEndInhaleHold,
           icon: <div className="w-5 h-5 mr-2 bg-blue-400 rounded-full" />,
           color: 'bg-gradient-to-r from-blue-600/20 to-indigo-600/20 hover:from-blue-600/30 hover:to-indigo-600/30 backdrop-blur-sm'

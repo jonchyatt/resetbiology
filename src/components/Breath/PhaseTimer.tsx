@@ -40,28 +40,29 @@ export function PhaseTimer({ timeMs, phase, isActive, className = "" }: PhaseTim
 
   return (
     <div className={`text-center ${className}`}>
-      <motion.div
-        className={`font-mono text-6xl md:text-7xl font-bold ${getTextColor()} tabular-nums drop-shadow-lg`}
-        style={{ textShadow: '0 2px 4px rgba(0,0,0,0.2)' }}
-        animate={{ 
-          scale: isActive ? [1, 1.05, 1] : 1,
-          opacity: isActive ? 1 : 0.7
-        }}
-        transition={{ 
-          scale: { duration: 1, repeat: isActive ? Infinity : 0, ease: "easeInOut" },
-          opacity: { duration: 0.3 }
-        }}
-      >
-        {formatTime(timeMs)}
-      </motion.div>
-      
-      {phase && (
-        <div className="mt-2">
-          <span className={`text-xl font-semibold ${getTextColor()} uppercase tracking-wider drop-shadow-md`}>
-            {phase.replace('_', ' ')}
-          </span>
-        </div>
-      )}
+      <div className="bg-gradient-to-br from-gray-900/95 to-gray-800/95 backdrop-blur-md rounded-xl p-6 border border-primary-400/50 shadow-2xl inline-block">
+        <motion.div
+          className="font-mono text-6xl md:text-7xl font-bold text-white tabular-nums"
+          animate={{
+            scale: isActive ? [1, 1.05, 1] : 1,
+            opacity: isActive ? 1 : 0.7
+          }}
+          transition={{
+            scale: { duration: 1, repeat: isActive ? Infinity : 0, ease: "easeInOut" },
+            opacity: { duration: 0.3 }
+          }}
+        >
+          {formatTime(timeMs)}
+        </motion.div>
+
+        {phase && (
+          <div className="mt-2">
+            <span className="text-xl font-semibold text-primary-300 uppercase tracking-wider">
+              {phase.replace('_', ' ')}
+            </span>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
