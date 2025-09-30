@@ -55,8 +55,7 @@ export function Configurator({ settings, onSettingsChange, isSessionActive }: Co
     <>
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50" onClick={() => setIsOpen(false)} />
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl shadow-2xl border border-white/20 max-h-[90vh] overflow-y-auto w-full max-w-md">
-        <div className="p-6">
+        <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl shadow-2xl border border-white/20 max-h-[90vh] overflow-y-auto w-full max-w-md p-6">
           <h2 className="text-2xl font-bold text-white mb-6 drop-shadow-lg">Session Settings</h2>
           
           {/* Cycles Target */}
