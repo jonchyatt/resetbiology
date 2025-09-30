@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+/wp-content/themes/reset-biology/node_modules
 /.pnp
 .pnp.*
 .yarn/*
