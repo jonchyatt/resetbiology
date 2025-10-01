@@ -533,6 +533,64 @@ export function PeptideTracker() {
     setSelectedProtocol(null)
   }
 
+  const deleteDose = async (doseId: string) => {
+    if (!confirm('Are you sure you want to delete this dose?')) {
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/peptides/doses?id=${doseId}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        console.log('✅ Dose deleted successfully')
+        // Remove from local state
+        setTodaysDoses(prev => prev.filter(d => d.id !== doseId))
+        // Refresh history
+        fetchDoseHistory()
+      } else {
+        console.error('Failed to delete dose:', data.error)
+        alert('Failed to delete dose. Please try again.')
+      }
+    } catch (error) {
+      console.error('Error deleting dose:', error)
+      alert('Failed to delete dose. Please try again.')
+    }
+  }
+
+  const deleteProtocol = async (protocolId: string) => {
+    if (!confirm('Are you sure you want to delete this protocol? This will also delete all associated doses.')) {
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/peptides/protocols?id=${protocolId}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        console.log('✅ Protocol deleted successfully')
+        // Refresh protocols and doses
+        fetchUserProtocols()
+        fetchTodaysDoses()
+        fetchDoseHistory()
+      } else {
+        console.error('Failed to delete protocol:', data.error)
+        alert('Failed to delete protocol. Please try again.')
+      }
+    } catch (error) {
+      console.error('Error deleting protocol:', error)
+      alert('Failed to delete protocol. Please try again.')
+    }
+  }
+
   const PeptideCard = ({ protocol }: { protocol: PeptideProtocol }) => (
     <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/30 rounded-lg p-6 border border-primary-400/30 backdrop-blur-sm shadow-xl hover:shadow-primary-400/20 transition-all duration-300">
       <div className="flex items-start justify-between mb-4">
@@ -580,24 +638,31 @@ export function PeptideTracker() {
       </div>
 
       <div className="flex gap-2 mt-4">
-        <button 
+        <button
           onClick={() => openScheduleModal(protocol)}
           className="flex-1 bg-primary-600/30 hover:bg-primary-600/50 text-primary-200 font-medium py-2 px-4 rounded-lg transition-colors text-sm"
         >
           View Schedule
         </button>
-        <button 
+        <button
           onClick={() => openCalculatorModal(protocol)}
           className="bg-amber-600/30 hover:bg-amber-600/50 text-amber-200 font-medium py-2 px-4 rounded-lg transition-colors text-sm flex items-center"
         >
           <Calculator className="w-4 h-4 mr-1" />
           Calculate
         </button>
-        <button 
+        <button
           onClick={() => openDoseModal(protocol)}
           className="bg-secondary-600/30 hover:bg-secondary-600/50 text-secondary-200 font-medium py-2 px-4 rounded-lg transition-colors text-sm"
         >
           Log Dose
+        </button>
+        <button
+          onClick={() => deleteProtocol(protocol.id)}
+          className="bg-red-600/30 hover:bg-red-600/50 text-red-200 font-medium py-2 px-4 rounded-lg transition-colors text-sm"
+          title="Delete Protocol"
+        >
+          <X className="w-4 h-4" />
         </button>
       </div>
     </div>
@@ -709,20 +774,29 @@ export function PeptideTracker() {
                           return (
                             <div key={dose.id} className="p-3 rounded-lg border transition-all bg-green-900/20 border-green-600/30">
                               <div className="flex justify-between items-start mb-2">
-                                <div>
+                                <div className="flex-1">
                                   <span className="font-medium text-white">{protocol?.name || 'Unknown Protocol'}</span>
                                   <p className="text-xs text-gray-400">{protocol?.dosage}</p>
                                 </div>
-                                <div className="text-right">
-                                  <span className="text-sm text-green-300">
-                                    {dose.actualTime ? new Date(dose.actualTime).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : dose.scheduledTime}
-                                  </span>
-                                  <div className="flex items-center justify-end mt-1">
-                                    <div className="w-4 h-4 bg-green-500 rounded mr-1 flex items-center justify-center">
-                                      <div className="w-2 h-2 bg-white rounded"></div>
+                                <div className="text-right flex items-start gap-2">
+                                  <div>
+                                    <span className="text-sm text-green-300">
+                                      {dose.actualTime ? new Date(dose.actualTime).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : dose.scheduledTime}
+                                    </span>
+                                    <div className="flex items-center justify-end mt-1">
+                                      <div className="w-4 h-4 bg-green-500 rounded mr-1 flex items-center justify-center">
+                                        <div className="w-2 h-2 bg-white rounded"></div>
+                                      </div>
+                                      <span className="text-xs text-green-400">Logged</span>
                                     </div>
-                                    <span className="text-xs text-green-400">Logged</span>
                                   </div>
+                                  <button
+                                    onClick={() => deleteDose(dose.id)}
+                                    className="text-red-400 hover:text-red-300 transition-colors"
+                                    title="Delete dose"
+                                  >
+                                    <X className="w-4 h-4" />
+                                  </button>
                                 </div>
                               </div>
                               
@@ -835,7 +909,7 @@ export function PeptideTracker() {
                       return (
                         <div key={dose.id} className="p-4 bg-gray-700/30 rounded-lg border border-gray-600/30">
                           <div className="flex justify-between items-start mb-2">
-                            <div>
+                            <div className="flex-1">
                               <h4 className="font-semibold text-white">
                                 {protocol?.peptides?.name || 'Unknown Peptide'}
                               </h4>
@@ -843,13 +917,22 @@ export function PeptideTracker() {
                                 {dose.dosage} - {dose.time}
                               </p>
                             </div>
-                            <div className="text-right">
-                              <p className="text-sm text-gray-300">
-                                {doseDate.toLocaleDateString()}
-                              </p>
-                              <p className="text-xs text-gray-500">
-                                {doseDate.toLocaleTimeString()}
-                              </p>
+                            <div className="text-right flex items-start gap-2">
+                              <div>
+                                <p className="text-sm text-gray-300">
+                                  {doseDate.toLocaleDateString()}
+                                </p>
+                                <p className="text-xs text-gray-500">
+                                  {doseDate.toLocaleTimeString()}
+                                </p>
+                              </div>
+                              <button
+                                onClick={() => deleteDose(dose.id)}
+                                className="text-red-400 hover:text-red-300 transition-colors"
+                                title="Delete dose"
+                              >
+                                <X className="w-4 h-4" />
+                              </button>
                             </div>
                           </div>
                           {dose.notes && (

@@ -230,3 +230,77 @@ export async function GET(request: Request) {
     }, { status: 500 })
   }
 }
+
+// DELETE: Delete a specific dose
+export async function DELETE(request: Request) {
+  try {
+    const session = await auth0.getSession()
+
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Find user by Auth0 sub OR email
+    let user = await prisma.user.findUnique({
+      where: { auth0Sub: session.user.sub }
+    })
+
+    if (!user && session.user.email) {
+      user = await prisma.user.findUnique({
+        where: { email: session.user.email }
+      })
+
+      if (user) {
+        user = await prisma.user.update({
+          where: { id: user.id },
+          data: { auth0Sub: session.user.sub }
+        })
+      }
+    }
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    }
+
+    const { searchParams } = new URL(request.url)
+    const doseId = searchParams.get('id')
+
+    if (!doseId) {
+      return NextResponse.json({ error: 'Dose ID required' }, { status: 400 })
+    }
+
+    // Get the dose to verify ownership
+    const dose = await prisma.peptide_doses.findUnique({
+      where: { id: doseId },
+      include: {
+        user_peptide_protocols: true
+      }
+    })
+
+    if (!dose) {
+      return NextResponse.json({ error: 'Dose not found' }, { status: 404 })
+    }
+
+    // Verify the protocol belongs to the user
+    if (dose.user_peptide_protocols.userId !== user.id) {
+      return NextResponse.json({ error: 'Access denied' }, { status: 403 })
+    }
+
+    // Delete the dose
+    await prisma.peptide_doses.delete({
+      where: { id: doseId }
+    })
+
+    return NextResponse.json({
+      success: true,
+      message: 'Dose deleted successfully'
+    })
+
+  } catch (error) {
+    console.error('DELETE /api/peptides/doses error:', error)
+    return NextResponse.json({
+      error: 'Failed to delete dose',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    }, { status: 500 })
+  }
+}

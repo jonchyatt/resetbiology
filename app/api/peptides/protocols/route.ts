@@ -289,3 +289,78 @@ export async function PATCH(request: Request) {
     }, { status: 500 })
   }
 }
+
+// DELETE: Remove a protocol
+export async function DELETE(request: Request) {
+  try {
+    const session = await auth0.getSession()
+
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Find user
+    let user = await prisma.user.findUnique({
+      where: { auth0Sub: session.user.sub }
+    })
+
+    if (!user && session.user.email) {
+      user = await prisma.user.findUnique({
+        where: { email: session.user.email }
+      })
+
+      if (user) {
+        user = await prisma.user.update({
+          where: { id: user.id },
+          data: { auth0Sub: session.user.sub }
+        })
+      }
+    }
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    }
+
+    const { searchParams } = new URL(request.url)
+    const protocolId = searchParams.get('id')
+
+    if (!protocolId) {
+      return NextResponse.json({ error: 'Protocol ID required' }, { status: 400 })
+    }
+
+    // Verify protocol belongs to user
+    const protocol = await prisma.user_peptide_protocols.findUnique({
+      where: { id: protocolId }
+    })
+
+    if (!protocol) {
+      return NextResponse.json({ error: 'Protocol not found' }, { status: 404 })
+    }
+
+    if (protocol.userId !== user.id) {
+      return NextResponse.json({ error: 'Access denied' }, { status: 403 })
+    }
+
+    // Delete all doses associated with this protocol first
+    await prisma.peptide_doses.deleteMany({
+      where: { protocolId }
+    })
+
+    // Delete the protocol
+    await prisma.user_peptide_protocols.delete({
+      where: { id: protocolId }
+    })
+
+    return NextResponse.json({
+      success: true,
+      message: 'Protocol and associated doses deleted successfully'
+    })
+
+  } catch (error) {
+    console.error('DELETE /api/peptides/protocols error:', error)
+    return NextResponse.json({
+      error: 'Failed to delete protocol',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    }, { status: 500 })
+  }
+}
