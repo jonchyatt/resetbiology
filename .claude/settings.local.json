@@ -20,7 +20,9 @@
       "Bash(npx tsx:*)",
       "Bash(claude mcp:*)",
       "Bash(npx dotenv -e .env.local:*)",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(npm install:*)",
+      "Bash(npx playwright install:*)"
     ],
     "deny": [],
     "ask": [],
