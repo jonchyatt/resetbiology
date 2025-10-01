@@ -605,55 +605,52 @@ export function PeptideTracker() {
           <div>
             <h3 className="text-xl font-bold text-white">{displayName}</h3>
           </div>
-          <div className="flex items-center gap-2">
-            <div className={`px-3 py-1 rounded-full text-sm font-semibold ${
-              protocol.isActive ? 'bg-green-500/20 text-green-300' : 'bg-gray-500/20 text-gray-300'
-            }`}>
-              {protocol.isActive ? 'Active' : 'Paused'}
+          <button
+            onClick={() => deleteProtocol(protocol.id)}
+            className="text-red-400 hover:text-red-300 transition-colors"
+            title="Delete Protocol"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <div className="flex gap-4">
+          {/* Left side - Protocol details */}
+          <div className="flex-1 space-y-3 text-sm">
+            <div className="space-y-2">
+              <div>
+                <span className="text-gray-400">Dosage:</span>
+                <span className="text-white font-medium ml-2">{protocol.dosage}</span>
+              </div>
+              <div>
+                <span className="text-gray-400">Timing:</span>
+                <span className="text-white font-medium ml-2">{protocol.timing}</span>
+              </div>
             </div>
+
+            <div className="border-t border-gray-600 pt-3">
+              <span className="text-gray-400">Preparation:</span>
+              <p className="text-gray-300 text-xs mt-1">
+                {protocol.vialAmount} vial + {protocol.reconstitution} BAC water = {protocol.syringeUnits} units per dose
+              </p>
+            </div>
+          </div>
+
+          {/* Right side - Action buttons */}
+          <div className="flex flex-col gap-2 justify-center">
             <button
-              onClick={() => deleteProtocol(protocol.id)}
-              className="text-red-400 hover:text-red-300 transition-colors"
-              title="Delete Protocol"
+              onClick={() => openScheduleModal(protocol)}
+              className="bg-primary-600/30 hover:bg-primary-600/50 text-primary-200 font-medium py-2 px-4 rounded-lg transition-colors text-sm whitespace-nowrap"
             >
-              <X className="w-5 h-5" />
+              View Schedule
+            </button>
+            <button
+              onClick={() => openDoseModal(protocol)}
+              className="bg-secondary-600/30 hover:bg-secondary-600/50 text-secondary-200 font-medium py-2 px-4 rounded-lg transition-colors text-sm whitespace-nowrap"
+            >
+              Log Dose
             </button>
           </div>
-        </div>
-
-        <div className="space-y-3 text-sm">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <span className="text-gray-400">Dosage:</span>
-              <p className="text-white font-medium">{protocol.dosage}</p>
-            </div>
-            <div>
-              <span className="text-gray-400">Timing:</span>
-              <p className="text-white font-medium">{protocol.timing}</p>
-            </div>
-          </div>
-
-          <div className="border-t border-gray-600 pt-3">
-            <span className="text-gray-400">Preparation:</span>
-            <p className="text-gray-300 text-xs">
-              {protocol.vialAmount} vial + {protocol.reconstitution} BAC water = {protocol.syringeUnits} units per dose
-            </p>
-          </div>
-        </div>
-
-        <div className="flex gap-2 mt-4">
-          <button
-            onClick={() => openScheduleModal(protocol)}
-            className="flex-1 bg-primary-600/30 hover:bg-primary-600/50 text-primary-200 font-medium py-2 px-4 rounded-lg transition-colors text-sm"
-          >
-            View Schedule
-          </button>
-          <button
-            onClick={() => openDoseModal(protocol)}
-            className="flex-1 bg-secondary-600/30 hover:bg-secondary-600/50 text-secondary-200 font-medium py-2 px-4 rounded-lg transition-colors text-sm"
-          >
-            Log Dose
-          </button>
         </div>
       </div>
     );
