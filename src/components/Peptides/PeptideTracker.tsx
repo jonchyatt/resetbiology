@@ -331,8 +331,9 @@ export function PeptideTracker() {
       // Handle timing - twice daily peptides get 2 doses, others get 1
       if (protocol.timing.includes('twice daily')) {
         // Check if AM dose already exists (logged or pending)
-        const existingAmDose = todaysDoses.find(dose => 
-          dose.peptideId === protocol.id && dose.scheduledTime === '08:00'
+        const existingAmDose = todaysDoses.find(dose =>
+          dose.peptideId === protocol.id &&
+          (dose.scheduledTime === '08:00' || (dose.completed && dose.scheduledTime.includes('AM')))
         )
         if (!existingAmDose) {
           newDoses.push({
@@ -342,10 +343,11 @@ export function PeptideTracker() {
             completed: false
           })
         }
-        
+
         // Check if PM dose already exists (logged or pending)
-        const existingPmDose = todaysDoses.find(dose => 
-          dose.peptideId === protocol.id && dose.scheduledTime === '20:00'
+        const existingPmDose = todaysDoses.find(dose =>
+          dose.peptideId === protocol.id &&
+          (dose.scheduledTime === '20:00' || (dose.completed && dose.scheduledTime.includes('PM')))
         )
         if (!existingPmDose) {
           newDoses.push({
@@ -356,15 +358,15 @@ export function PeptideTracker() {
           })
         }
       } else {
-        // Single dose - AM/PM is user's choice
-        const defaultTime = protocol.timing.includes('AM') ? '08:00' : 
-                           protocol.timing.includes('PM') ? '20:00' : '12:00'
-        
-        // Check if this dose already exists (logged or pending)
-        const existingDose = todaysDoses.find(dose => 
-          dose.peptideId === protocol.id && dose.scheduledTime === defaultTime
+        // Single dose - check if ANY dose for this protocol has been logged today
+        const existingDose = todaysDoses.find(dose =>
+          dose.peptideId === protocol.id
         )
+
+        // Only add a pending dose if NO dose exists for this protocol today
         if (!existingDose) {
+          const defaultTime = protocol.timing.includes('AM') ? '08:00' :
+                             protocol.timing.includes('PM') ? '20:00' : '12:00'
           newDoses.push({
             id: `${protocol.id}-${today}-0`,
             peptideId: protocol.id,
