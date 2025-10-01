@@ -440,7 +440,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
   }, [inputs.peptideAmount, inputs.totalVolume]);
 
   return (
-    <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl">
+    <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-6 pt-8 border border-primary-400/30 shadow-2xl">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center">
@@ -473,7 +473,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
             <label className="block mb-2 text-sm text-gray-300">
               {mode === 'addProtocol' ? 'Select Peptide' : 'Preset'}
             </label>
-            <div className="flex gap-2">
+            <div className="flex gap-2 max-w-md">
               <select
                 aria-label={mode === 'addProtocol' ? 'Select Peptide' : 'Peptide preset'}
                 value={mode === 'addProtocol' ? peptideName : selectedPreset}
@@ -545,7 +545,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
 
           {/* Dose + Unit */}
           <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30 space-y-3">
-            <div className="flex items-end gap-3">
+            <div className="flex items-end gap-3 max-w-md">
               <label className="flex-1">
                 <span className="block mb-1 text-sm text-gray-300">Desired dose</span>
                 <div className="flex items-center gap-2">
@@ -711,37 +711,8 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                 </p>
               </div>
 
-              {/* Duration */}
-              <div className="bg-gradient-to-br from-primary-900/20 to-secondary-900/20 backdrop-blur-sm rounded-xl p-4 border border-primary-400/40">
-                <label className="block mb-2 text-sm text-gray-300 font-medium">
-                  Protocol Duration <span className="text-primary-400">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={duration}
-                  onChange={(e) => setDuration(e.target.value)}
-                  placeholder="e.g., 8 weeks, 12 weeks, 6 months"
-                  className="w-full bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-primary-400 focus:outline-none"
-                />
-                <p className="mt-2 text-xs text-gray-400">
-                  Example: "8 weeks on, 8 weeks off" or "12 weeks continuous"
-                </p>
-              </div>
             </>
           )}
-
-          {/* Notes */}
-          <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30">
-            <label className="block mb-2 text-sm text-gray-300">Notes (optional)</label>
-            <textarea
-              aria-label="Notes"
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              rows={3}
-              className="w-full bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-primary-400 focus:outline-none"
-              placeholder="Timing, site, symptoms, etc."
-            />
-          </div>
         </div>
 
         {/* Visual Display */}
@@ -778,7 +749,42 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
               <div className="text-white font-medium">{results.dosesPerVial}</div>
             </div>
             <div className="mt-3 text-xs text-gray-400">Formula: volume (ml) = dose (mcg) / concentration (mcg/ml)</div>
+          </div>
 
+          {/* Duration - Only in addProtocol mode */}
+          {mode === 'addProtocol' && (
+            <div className="bg-gradient-to-br from-primary-900/20 to-secondary-900/20 backdrop-blur-sm rounded-xl p-4 border border-primary-400/40">
+              <label className="block mb-2 text-sm text-gray-300 font-medium">
+                Protocol Duration <span className="text-primary-400">*</span>
+              </label>
+              <input
+                type="text"
+                value={duration}
+                onChange={(e) => setDuration(e.target.value)}
+                placeholder="e.g., 8 weeks, 12 weeks, 6 months"
+                className="w-full bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-primary-400 focus:outline-none"
+              />
+              <p className="mt-2 text-xs text-gray-400">
+                Example: "8 weeks on, 8 weeks off" or "12 weeks continuous"
+              </p>
+            </div>
+          )}
+
+          {/* Notes */}
+          <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30">
+            <label className="block mb-2 text-sm text-gray-300">Notes (optional)</label>
+            <textarea
+              aria-label="Notes"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              rows={3}
+              className="w-full bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-primary-400 focus:outline-none"
+              placeholder="Timing, site, symptoms, etc."
+            />
+          </div>
+
+          {/* Action Buttons */}
+          <div>
             {mode === 'addProtocol' ? (
               <div className="mt-4 flex gap-3">
                 <button
