@@ -481,42 +481,26 @@ export function PeptideTracker() {
       if (data.success) {
         console.log('✅ Dose logged successfully')
 
-        // Check if we're updating a specific scheduled dose
-        const scheduledDoseId = (selectedProtocol as any).scheduledDoseId
-        const existingDose = scheduledDoseId ?
-          todaysDoses.find(dose => dose.id === scheduledDoseId) :
-          todaysDoses.find(dose =>
-            dose.peptideId === selectedProtocol.id &&
-            !dose.completed &&
-            Math.abs(new Date(`1970-01-01 ${dose.scheduledTime}`).getTime() - new Date(`1970-01-01 ${currentTime}`).getTime()) < 3600000 // within 1 hour
-          )
-
-        if (existingDose) {
-          // Update existing scheduled dose
-          setTodaysDoses(prev => prev.map(dose =>
-            dose.id === existingDose.id
-              ? {
-                  ...dose,
-                  completed: true,
-                  actualTime: now.toISOString(),
-                  notes: doseNotes || undefined,
-                  sideEffects: doseSideEffects.length > 0 ? doseSideEffects : undefined
-                }
-              : dose
-          ))
-        } else {
-          // Create new unscheduled dose entry
-          const newDose: DoseEntry = {
-            id: data.dose?.id || `${selectedProtocol.id}-unscheduled-${Date.now()}`,
-            peptideId: selectedProtocol.id,
-            scheduledTime: currentTime,
-            actualTime: now.toISOString(),
-            completed: true,
-            notes: doseNotes || undefined,
-            sideEffects: doseSideEffects.length > 0 ? doseSideEffects : undefined
-          }
-          setTodaysDoses(prev => [...prev, newDose])
+        // Create the completed dose entry
+        const newDose: DoseEntry = {
+          id: data.dose?.id || `${selectedProtocol.id}-logged-${Date.now()}`,
+          peptideId: selectedProtocol.id,
+          scheduledTime: currentTime,
+          actualTime: now.toISOString(),
+          completed: true,
+          notes: doseNotes || undefined,
+          sideEffects: doseSideEffects.length > 0 ? doseSideEffects : undefined
         }
+
+        // Remove ALL pending doses for this protocol and add the completed dose
+        setTodaysDoses(prev => {
+          // Filter out any pending doses for this protocol
+          const withoutPending = prev.filter(dose =>
+            !(dose.peptideId === selectedProtocol.id && !dose.completed)
+          )
+          // Add the new completed dose
+          return [...withoutPending, newDose]
+        })
 
         // Refresh dose history
         fetchDoseHistory()
@@ -760,7 +744,7 @@ export function PeptideTracker() {
                                   <span className="text-sm text-gray-300">{dose.scheduledTime}</span>
                                   <div className="flex items-center justify-end mt-1">
                                     <div className="w-4 h-4 border border-gray-400 rounded mr-1"></div>
-                                    <span className="text-xs text-gray-400">Pending</span>
+                                    <span className="text-xs text-gray-400">Due Soon</span>
                                   </div>
                                 </div>
                               </div>
