@@ -164,8 +164,30 @@ export function Configurator({ settings, onSettingsChange, isSessionActive }: Co
             )}
           </div>
 
+          {/* Actions */}
+          <div className="flex gap-3 mb-6">
+            <button
+              onClick={() => setIsOpen(false)}
+              className="flex-1 bg-gray-600/50 hover:bg-gray-600/70 backdrop-blur-sm text-white font-medium py-3 px-4 rounded-lg transition-colors border border-gray-400/30"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={resetToDefaults}
+              className="bg-amber-600/60 hover:bg-amber-600/80 backdrop-blur-sm text-white font-medium py-3 px-4 rounded-lg transition-colors border border-amber-400/30"
+            >
+              Reset
+            </button>
+            <button
+              onClick={applySettings}
+              className="flex-1 bg-primary-500/70 hover:bg-primary-500/90 backdrop-blur-sm text-white font-bold py-3 px-4 rounded-lg transition-colors border border-primary-400/50 shadow-lg"
+            >
+              Apply
+            </button>
+          </div>
+
           {/* Audio & Accessibility */}
-          <div className="space-y-3 mb-6">
+          <div className="space-y-3">
             <button
               onClick={() => updateTempSetting('audioEnabled', !tempSettings.audioEnabled)}
               className="flex items-center justify-between w-full p-3 border border-primary-400/30 rounded-lg hover:bg-primary-500/20 text-white transition-colors"
@@ -192,28 +214,6 @@ export function Configurator({ settings, onSettingsChange, isSessionActive }: Co
                   <Eye className="w-5 h-5 text-gray-400" />
                 )}
               </div>
-            </button>
-          </div>
-
-          {/* Actions */}
-          <div className="flex gap-3">
-            <button
-              onClick={() => setIsOpen(false)}
-              className="flex-1 bg-gray-600/50 hover:bg-gray-600/70 backdrop-blur-sm text-white font-medium py-3 px-4 rounded-lg transition-colors border border-gray-400/30"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={resetToDefaults}
-              className="bg-amber-600/60 hover:bg-amber-600/80 backdrop-blur-sm text-white font-medium py-3 px-4 rounded-lg transition-colors border border-amber-400/30"
-            >
-              Reset
-            </button>
-            <button
-              onClick={applySettings}
-              className="flex-1 bg-primary-500/70 hover:bg-primary-500/90 backdrop-blur-sm text-white font-bold py-3 px-4 rounded-lg transition-colors border border-primary-400/50 shadow-lg"
-            >
-              Apply
             </button>
           </div>
         </div>
