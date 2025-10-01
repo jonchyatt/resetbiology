@@ -592,15 +592,16 @@ export function BreathTrainingApp({ onSessionComplete }: BreathTrainingAppProps)
 
       {/* Session Complete Modal */}
       {state === 'session_complete' && completedCycles.length > 0 && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50" onClick={() => setState('idle')}>
+          <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-3xl p-4">
+            <div className="bg-gradient-to-br from-gray-900/95 to-gray-800/95 backdrop-blur-md rounded-2xl shadow-2xl border border-primary-400/50 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="p-8">
               <div className="text-center mb-8">
                 <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-primary-400 to-secondary-500 rounded-full flex items-center justify-center">
                   <span className="text-white text-2xl">🌬️</span>
                 </div>
-                <h2 className="text-3xl font-bold text-gray-900 mb-2">Session Complete!</h2>
-                <p className="text-lg text-gray-600">You've mastered another breathing session</p>
+                <h2 className="text-3xl font-bold text-white mb-2 drop-shadow-lg">Session Complete!</h2>
+                <p className="text-lg text-gray-200 drop-shadow-sm">You've mastered another breathing session</p>
               </div>
               
               {/* Performance Summary */}
@@ -621,28 +622,28 @@ export function BreathTrainingApp({ onSessionComplete }: BreathTrainingAppProps)
 
               {/* Detailed Cycle Results */}
               <div className="mb-8">
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">Cycle Details</h3>
+                <h3 className="text-xl font-semibold text-white mb-4">Cycle Details</h3>
                 <div className="overflow-x-auto">
-                  <table className="w-full text-sm border border-gray-200 rounded-lg overflow-hidden">
-                    <thead className="bg-gray-50">
+                  <table className="w-full text-sm border border-primary-400/30 rounded-lg overflow-hidden">
+                    <thead className="bg-gray-800/50">
                       <tr>
-                        <th className="text-left py-3 px-4 font-medium text-gray-600">Cycle</th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-600">Breaths</th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-600">Breathing Time</th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-600">Exhale Hold</th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-600">Inhale Hold</th>
+                        <th className="text-left py-3 px-4 font-medium text-gray-200">Cycle</th>
+                        <th className="text-left py-3 px-4 font-medium text-gray-200">Breaths</th>
+                        <th className="text-left py-3 px-4 font-medium text-gray-200">Breathing Time</th>
+                        <th className="text-left py-3 px-4 font-medium text-gray-200">Exhale Hold</th>
+                        <th className="text-left py-3 px-4 font-medium text-gray-200">Inhale Hold</th>
                       </tr>
                     </thead>
                     <tbody>
                       {completedCycles.map((cycle, index) => (
-                        <tr key={index} className="border-t border-gray-100">
-                          <td className="py-3 px-4 font-medium">{cycle.cycleIndex}</td>
-                          <td className="py-3 px-4">{cycle.breathing.actualBreaths}</td>
-                          <td className="py-3 px-4">{Math.round(cycle.breathing.actualDurationMs / 1000)}s</td>
-                          <td className="py-3 px-4 text-amber-600 font-medium">
+                        <tr key={index} className="border-t border-gray-700/30 bg-gray-800/30">
+                          <td className="py-3 px-4 font-medium text-white">{cycle.cycleIndex}</td>
+                          <td className="py-3 px-4 text-gray-200">{cycle.breathing.actualBreaths}</td>
+                          <td className="py-3 px-4 text-gray-200">{Math.round(cycle.breathing.actualDurationMs / 1000)}s</td>
+                          <td className="py-3 px-4 text-amber-400 font-medium">
                             {(cycle.exhaleHold.durationMs / 1000).toFixed(1)}s
                           </td>
-                          <td className="py-3 px-4 text-green-600 font-medium">
+                          <td className="py-3 px-4 text-green-400 font-medium">
                             {(cycle.inhaleHold.durationMs / 1000).toFixed(1)}s
                           </td>
                         </tr>
@@ -689,7 +690,7 @@ export function BreathTrainingApp({ onSessionComplete }: BreathTrainingAppProps)
                       URL.revokeObjectURL(url)
                     }
                   }}
-                  className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-3 px-4 rounded-lg transition-colors text-sm"
+                  className="flex-1 bg-gray-700/50 hover:bg-gray-600/50 text-gray-200 font-medium py-3 px-4 rounded-lg transition-colors text-sm border border-gray-600/30"
                 >
                   Export CSV
                 </button>
@@ -721,7 +722,7 @@ export function BreathTrainingApp({ onSessionComplete }: BreathTrainingAppProps)
                       alert('Export error: ' + error)
                     }
                   }}
-                  className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-3 px-4 rounded-lg transition-colors text-sm flex items-center justify-center gap-2"
+                  className="flex-1 bg-gray-700/50 hover:bg-gray-600/50 text-gray-200 font-medium py-3 px-4 rounded-lg transition-colors text-sm flex items-center justify-center gap-2 border border-gray-600/30"
                 >
                   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M19.35 10.04A7.49 7.49 0 0 0 12 4C9.11 4 6.6 5.64 5.35 8.04A5.994 5.994 0 0 0 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
@@ -729,6 +730,7 @@ export function BreathTrainingApp({ onSessionComplete }: BreathTrainingAppProps)
                   Export to Sheets
                 </button>
               </div>
+            </div>
             </div>
           </div>
         </div>
