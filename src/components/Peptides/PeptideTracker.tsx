@@ -48,11 +48,15 @@ export function PeptideTracker() {
   const [customDuration, setCustomDuration] = useState('')
   const [peptideLibrary, setPeptideLibrary] = useState<Omit<PeptideProtocol, 'id' | 'startDate' | 'currentCycle' | 'isActive'>[]>([])
   const [loadingLibrary, setLoadingLibrary] = useState(true)
+  const [doseHistory, setDoseHistory] = useState<any[]>([])
+  const [loadingHistory, setLoadingHistory] = useState(false)
 
   // Fetch peptide library and user protocols from database
   useEffect(() => {
     fetchPeptideLibrary()
     fetchUserProtocols()
+    fetchTodaysDoses()
+    fetchDoseHistory()
   }, [])
 
   // Auto-generate today's doses when protocols change (preserve existing logged doses)
@@ -129,6 +133,68 @@ export function PeptideTracker() {
       setPeptideLibrary(fallbackLibrary)
     } finally {
       setLoadingLibrary(false)
+    }
+  }
+
+  const fetchTodaysDoses = async () => {
+    try {
+      const today = new Date().toISOString().split('T')[0]
+      const response = await fetch(`/api/peptides/doses?date=${today}`, {
+        credentials: 'include'
+      })
+      const data = await response.json()
+
+      if (data.success && data.doses) {
+        // Transform doses from database to match our interface
+        const formattedDoses = data.doses.map((dose: any) => ({
+          id: dose.id,
+          peptideId: dose.protocolId,
+          scheduledTime: dose.time,
+          completed: true,
+          actualTime: dose.doseDate,
+          notes: dose.notes || dose.sideEffects || ''
+        }))
+
+        // Merge with any pending doses already generated
+        setTodaysDoses((currentDoses: DoseEntry[]) => {
+          const pendingDoses = currentDoses.filter(d => !d.completed)
+          const mergedDoses = [...formattedDoses]
+
+          // Add pending doses that don't have a completed equivalent
+          pendingDoses.forEach(pending => {
+            const hasCompleted = formattedDoses.some((completed: DoseEntry) =>
+              completed.peptideId === pending.peptideId &&
+              completed.scheduledTime === pending.scheduledTime
+            )
+            if (!hasCompleted) {
+              mergedDoses.push(pending)
+            }
+          })
+
+          return mergedDoses
+        })
+      }
+    } catch (error) {
+      console.error('Error fetching today\'s doses:', error)
+    }
+  }
+
+  const fetchDoseHistory = async () => {
+    try {
+      setLoadingHistory(true)
+      const response = await fetch('/api/peptides/doses?limit=50', {
+        credentials: 'include'
+      })
+      const data = await response.json()
+
+      if (data.success && data.doses) {
+        setDoseHistory(data.doses)
+        console.log(`✅ Loaded ${data.doses.length} historical doses`)
+      }
+    } catch (error) {
+      console.error('Error fetching dose history:', error)
+    } finally {
+      setLoadingHistory(false)
     }
   }
 
@@ -397,49 +463,81 @@ export function PeptideTracker() {
     setShowCalculatorModal(true)
   }
 
-  const logDose = () => {
+  const logDose = async () => {
     if (!selectedProtocol) return
-    
+
     const now = new Date()
     const currentTime = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
-    
-    // Check if we're updating a specific scheduled dose
-    const scheduledDoseId = (selectedProtocol as any).scheduledDoseId
-    const existingDose = scheduledDoseId ? 
-      todaysDoses.find(dose => dose.id === scheduledDoseId) : 
-      todaysDoses.find(dose => 
-        dose.peptideId === selectedProtocol.id && 
-        !dose.completed &&
-        Math.abs(new Date(`1970-01-01 ${dose.scheduledTime}`).getTime() - new Date(`1970-01-01 ${currentTime}`).getTime()) < 3600000 // within 1 hour
-      )
-    
-    if (existingDose) {
-      // Update existing scheduled dose
-      setTodaysDoses(prev => prev.map(dose => 
-        dose.id === existingDose.id
-          ? { 
-              ...dose, 
-              completed: true, 
-              actualTime: now.toISOString(),
-              notes: doseNotes || undefined,
-              sideEffects: doseSideEffects.length > 0 ? doseSideEffects : undefined
-            }
-          : dose
-      ))
-    } else {
-      // Create new unscheduled dose entry
-      const newDose: DoseEntry = {
-        id: `${selectedProtocol.id}-unscheduled-${Date.now()}`,
-        peptideId: selectedProtocol.id,
-        scheduledTime: currentTime,
-        actualTime: now.toISOString(),
-        completed: true,
-        notes: doseNotes || undefined,
-        sideEffects: doseSideEffects.length > 0 ? doseSideEffects : undefined
+
+    // Save dose to database
+    try {
+      const response = await fetch('/api/peptides/doses', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          protocolId: selectedProtocol.id,
+          dosage: selectedProtocol.dosage,
+          time: currentTime,
+          notes: doseNotes || null,
+          sideEffects: doseSideEffects.length > 0 ? doseSideEffects.join(', ') : null,
+          doseDate: now.toISOString()
+        })
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        console.log('✅ Dose logged successfully')
+
+        // Check if we're updating a specific scheduled dose
+        const scheduledDoseId = (selectedProtocol as any).scheduledDoseId
+        const existingDose = scheduledDoseId ?
+          todaysDoses.find(dose => dose.id === scheduledDoseId) :
+          todaysDoses.find(dose =>
+            dose.peptideId === selectedProtocol.id &&
+            !dose.completed &&
+            Math.abs(new Date(`1970-01-01 ${dose.scheduledTime}`).getTime() - new Date(`1970-01-01 ${currentTime}`).getTime()) < 3600000 // within 1 hour
+          )
+
+        if (existingDose) {
+          // Update existing scheduled dose
+          setTodaysDoses(prev => prev.map(dose =>
+            dose.id === existingDose.id
+              ? {
+                  ...dose,
+                  completed: true,
+                  actualTime: now.toISOString(),
+                  notes: doseNotes || undefined,
+                  sideEffects: doseSideEffects.length > 0 ? doseSideEffects : undefined
+                }
+              : dose
+          ))
+        } else {
+          // Create new unscheduled dose entry
+          const newDose: DoseEntry = {
+            id: data.dose?.id || `${selectedProtocol.id}-unscheduled-${Date.now()}`,
+            peptideId: selectedProtocol.id,
+            scheduledTime: currentTime,
+            actualTime: now.toISOString(),
+            completed: true,
+            notes: doseNotes || undefined,
+            sideEffects: doseSideEffects.length > 0 ? doseSideEffects : undefined
+          }
+          setTodaysDoses(prev => [...prev, newDose])
+        }
+
+        // Refresh dose history
+        fetchDoseHistory()
+      } else {
+        console.error('Failed to save dose:', data.error)
+        alert('Failed to save dose. Please try again.')
       }
-      setTodaysDoses(prev => [...prev, newDose])
+    } catch (error) {
+      console.error('Error saving dose:', error)
+      alert('Failed to save dose. Please try again.')
     }
-    
+
     setShowDoseModal(false)
     setSelectedProtocol(null)
   }
@@ -721,13 +819,70 @@ export function PeptideTracker() {
           {/* History Tab */}
           {activeTab === 'history' && (
             <div className="max-w-4xl mx-auto">
-              <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-8 border border-primary-400/30 shadow-2xl text-center">
-                <TrendingUp className="w-16 h-16 text-primary-400 mx-auto mb-6" />
-                <h3 className="text-2xl font-bold text-white mb-4">Treatment History</h3>
-                <p className="text-gray-200 mb-8">Your completed protocols and progress data will appear here</p>
-                <div className="text-sm text-gray-300">
-                  Complete your first peptide cycle to start building your treatment history!
+              <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-8 border border-primary-400/30 shadow-2xl">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-3">
+                    <TrendingUp className="w-8 h-8 text-primary-400" />
+                    <h3 className="text-2xl font-bold text-white">Treatment History</h3>
+                  </div>
+                  <button
+                    onClick={fetchDoseHistory}
+                    className="bg-primary-600/20 hover:bg-primary-600/30 text-primary-300 px-4 py-2 rounded-lg transition-colors"
+                  >
+                    Refresh
+                  </button>
                 </div>
+
+                {loadingHistory ? (
+                  <div className="text-center py-8">
+                    <div className="animate-spin w-8 h-8 border-2 border-primary-400 border-t-transparent rounded-full mx-auto mb-3"></div>
+                    <p className="text-gray-300">Loading history...</p>
+                  </div>
+                ) : doseHistory.length === 0 ? (
+                  <div className="text-center py-8">
+                    <p className="text-gray-200 mb-4">No dose history yet</p>
+                    <p className="text-sm text-gray-400">Start logging doses to build your treatment history!</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3 max-h-96 overflow-y-auto">
+                    {doseHistory.map((dose: any) => {
+                      const doseDate = new Date(dose.doseDate)
+                      const protocol = dose.user_peptide_protocols
+                      return (
+                        <div key={dose.id} className="p-4 bg-gray-700/30 rounded-lg border border-gray-600/30">
+                          <div className="flex justify-between items-start mb-2">
+                            <div>
+                              <h4 className="font-semibold text-white">
+                                {protocol?.peptides?.name || 'Unknown Peptide'}
+                              </h4>
+                              <p className="text-sm text-gray-400">
+                                {dose.dosage} - {dose.time}
+                              </p>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-sm text-gray-300">
+                                {doseDate.toLocaleDateString()}
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                {doseDate.toLocaleTimeString()}
+                              </p>
+                            </div>
+                          </div>
+                          {dose.notes && (
+                            <p className="text-sm text-gray-300 mt-2 italic">
+                              Notes: {dose.notes}
+                            </p>
+                          )}
+                          {dose.sideEffects && (
+                            <p className="text-sm text-yellow-400 mt-1">
+                              Side Effects: {dose.sideEffects}
+                            </p>
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
               </div>
               
               {/* IRB Compliance Notice */}
