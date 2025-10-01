@@ -503,8 +503,11 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                 <option value="">{mode === 'addProtocol' ? 'Choose a peptide...' : 'Select a preset…'}</option>
                 {mode === 'addProtocol' && peptideLibrary
                   ? peptideLibrary.map((p) => {
-                      // Remove "- peptide" suffix from display name
-                      const displayName = p.name.replace(/\s*-\s*peptide\s*$/i, '').trim();
+                      // Remove "- peptide" and "Package" suffix from display name
+                      const displayName = p.name
+                        .replace(/\s*-\s*peptide\s*$/i, '')
+                        .replace(/\s+Package\s*$/i, '')
+                        .trim();
                       return (
                         <option key={p.id || p.name} value={p.name}>
                           {displayName}

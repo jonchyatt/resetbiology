@@ -593,8 +593,11 @@ export function PeptideTracker() {
   }
 
   const PeptideCard = ({ protocol }: { protocol: PeptideProtocol }) => {
-    // Remove "- peptide" suffix from display name
-    const displayName = protocol.name.replace(/\s*-\s*peptide\s*$/i, '').trim();
+    // Remove "- peptide" and "Package" suffix from display name
+    const displayName = protocol.name
+      .replace(/\s*-\s*peptide\s*$/i, '')
+      .replace(/\s+Package\s*$/i, '')
+      .trim();
 
     return (
       <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/30 rounded-lg p-6 border border-primary-400/30 backdrop-blur-sm shadow-xl hover:shadow-primary-400/20 transition-all duration-300">
