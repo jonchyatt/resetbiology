@@ -592,84 +592,79 @@ export function PeptideTracker() {
     }
   }
 
-  const PeptideCard = ({ protocol }: { protocol: PeptideProtocol }) => (
-    <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/30 rounded-lg p-6 border border-primary-400/30 backdrop-blur-sm shadow-xl hover:shadow-primary-400/20 transition-all duration-300">
-      <div className="flex items-start justify-between mb-4">
-        <div>
-          <h3 className="text-xl font-bold text-white">{protocol.name}</h3>
-          <span className="inline-block bg-primary-500/20 text-primary-300 text-sm px-2 py-1 rounded-full mt-1">
-            {protocol.purpose}
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className={`px-3 py-1 rounded-full text-sm font-semibold ${
-            protocol.isActive ? 'bg-green-500/20 text-green-300' : 'bg-gray-500/20 text-gray-300'
-          }`}>
-            {protocol.isActive ? 'Active' : 'Paused'}
+  const PeptideCard = ({ protocol }: { protocol: PeptideProtocol }) => {
+    // Remove "- peptide" suffix from display name
+    const displayName = protocol.name.replace(/\s*-\s*peptide\s*$/i, '').trim();
+
+    return (
+      <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/30 rounded-lg p-6 border border-primary-400/30 backdrop-blur-sm shadow-xl hover:shadow-primary-400/20 transition-all duration-300">
+        <div className="flex items-start justify-between mb-4">
+          <div>
+            <h3 className="text-xl font-bold text-white">{displayName}</h3>
+            <span className="inline-block bg-primary-500/20 text-primary-300 text-sm px-2 py-1 rounded-full mt-1">
+              {protocol.purpose}
+            </span>
           </div>
+          <div className="flex items-center gap-2">
+            <div className={`px-3 py-1 rounded-full text-sm font-semibold ${
+              protocol.isActive ? 'bg-green-500/20 text-green-300' : 'bg-gray-500/20 text-gray-300'
+            }`}>
+              {protocol.isActive ? 'Active' : 'Paused'}
+            </div>
+            <button
+              onClick={() => deleteProtocol(protocol.id)}
+              className="text-red-400 hover:text-red-300 transition-colors"
+              title="Delete Protocol"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+
+        <div className="space-y-3 text-sm">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <span className="text-gray-400">Dosage:</span>
+              <p className="text-white font-medium">{protocol.dosage}</p>
+            </div>
+            <div>
+              <span className="text-gray-400">Timing:</span>
+              <p className="text-white font-medium">{protocol.timing}</p>
+            </div>
+          </div>
+
+          <div className="border-t border-gray-600 pt-3">
+            <span className="text-gray-400">Preparation:</span>
+            <p className="text-gray-300 text-xs">
+              {protocol.vialAmount} vial + {protocol.reconstitution} BAC water = {protocol.syringeUnits} units per dose
+            </p>
+          </div>
+        </div>
+
+        <div className="flex gap-2 mt-4">
           <button
-            onClick={() => deleteProtocol(protocol.id)}
-            className="text-red-400 hover:text-red-300 transition-colors"
-            title="Delete Protocol"
+            onClick={() => openScheduleModal(protocol)}
+            className="flex-1 bg-primary-600/30 hover:bg-primary-600/50 text-primary-200 font-medium py-2 px-4 rounded-lg transition-colors text-sm"
           >
-            <X className="w-5 h-5" />
+            View Schedule
+          </button>
+          <button
+            onClick={() => openCalculatorModal(protocol)}
+            className="bg-amber-600/30 hover:bg-amber-600/50 text-amber-200 font-medium py-2 px-4 rounded-lg transition-colors text-sm flex items-center"
+          >
+            <Calculator className="w-4 h-4 mr-1" />
+            Calculate
+          </button>
+          <button
+            onClick={() => openDoseModal(protocol)}
+            className="bg-secondary-600/30 hover:bg-secondary-600/50 text-secondary-200 font-medium py-2 px-4 rounded-lg transition-colors text-sm"
+          >
+            Log Dose
           </button>
         </div>
       </div>
-
-      <div className="space-y-3 text-sm">
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <span className="text-gray-400">Dosage:</span>
-            <p className="text-white font-medium">{protocol.dosage}</p>
-          </div>
-          <div>
-            <span className="text-gray-400">Timing:</span>
-            <p className="text-white font-medium">{protocol.timing}</p>
-          </div>
-        </div>
-        
-        <div>
-          <span className="text-gray-400">Frequency:</span>
-          <p className="text-white font-medium">{protocol.frequency}</p>
-        </div>
-
-        <div>
-          <span className="text-gray-400">Duration:</span>
-          <p className="text-white font-medium">{protocol.duration}</p>
-        </div>
-
-        <div className="border-t border-gray-600 pt-3">
-          <span className="text-gray-400">Preparation:</span>
-          <p className="text-gray-300 text-xs">
-            {protocol.vialAmount} vial + {protocol.reconstitution} BAC water = {protocol.syringeUnits} units per dose
-          </p>
-        </div>
-      </div>
-
-      <div className="flex gap-2 mt-4">
-        <button
-          onClick={() => openScheduleModal(protocol)}
-          className="flex-1 bg-primary-600/30 hover:bg-primary-600/50 text-primary-200 font-medium py-2 px-4 rounded-lg transition-colors text-sm"
-        >
-          View Schedule
-        </button>
-        <button
-          onClick={() => openCalculatorModal(protocol)}
-          className="bg-amber-600/30 hover:bg-amber-600/50 text-amber-200 font-medium py-2 px-4 rounded-lg transition-colors text-sm flex items-center"
-        >
-          <Calculator className="w-4 h-4 mr-1" />
-          Calculate
-        </button>
-        <button
-          onClick={() => openDoseModal(protocol)}
-          className="bg-secondary-600/30 hover:bg-secondary-600/50 text-secondary-200 font-medium py-2 px-4 rounded-lg transition-colors text-sm"
-        >
-          Log Dose
-        </button>
-      </div>
-    </div>
-  )
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 relative"
