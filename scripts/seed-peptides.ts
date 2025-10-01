@@ -1,10 +1,11 @@
+import { PrismaClient } from '@prisma/client'
 import * as dotenv from 'dotenv'
 import path from 'path'
 
 // Load environment variables
 dotenv.config({ path: path.resolve(process.cwd(), '.env.local') })
 
-import { prisma } from '../src/lib/prisma'
+const prisma = new PrismaClient()
 
 async function seedPeptides() {
   const peptides = [

@@ -17,7 +17,9 @@
       "Bash(npm run dev:*)",
       "Bash(npx prisma generate:*)",
       "Bash(node:*)",
-      "Bash(npx tsx:*)"
+      "Bash(npx tsx:*)",
+      "Bash(claude mcp:*)",
+      "Bash(npx dotenv -e .env.local:*)"
     ],
     "deny": [],
     "ask": [],
