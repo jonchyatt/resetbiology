@@ -28,14 +28,8 @@ export function PortalHeader({
             <span className="text-lg text-gray-200 drop-shadow-sm">{section}</span>
           </div>
           <div className="flex items-center gap-4">
-            <a href="/breath" className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
-              Breath Training
-            </a>
             <a href="/order" className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
               Order Peptides
-            </a>
-            <a href="/education" className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
-              Education
             </a>
             <a href="/profile" className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
               Profile
