@@ -1,7 +1,7 @@
 "use client"
 
-import { useMemo, useState } from "react"
-import { Apple, PieChart, Target, Calendar, Plus, ShoppingCart, History, UtensilsCrossed, Clock, Droplet, NotebookPen } from "lucide-react"
+import { useMemo, useState, useEffect } from "react"
+import { Apple, PieChart, Target, Calendar, Plus, ShoppingCart, History, UtensilsCrossed, Clock, Droplet, NotebookPen, Upload, Check } from "lucide-react"
 import { FoodSearch } from "./FoodSearch"
 import { MealLogger, type MealCategory } from "./MealLogger"
 import { foodIndex } from "./FoodDatabase"
@@ -49,6 +49,99 @@ export function NutritionTracker() {
   const [activeTab, setActiveTab] = useState<'today' | 'history' | 'meal-plans'>('today')
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [notes, setNotes] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+
+  // Load today's entries on mount
+  useEffect(() => {
+    loadTodayEntries()
+  }, [])
+
+  const loadTodayEntries = async () => {
+    try {
+      setIsLoading(true)
+      const today = new Date().toISOString().split('T')[0]
+      const response = await fetch(`/api/nutrition/entries?date=${today}`)
+      const data = await response.json()
+
+      if (data.success && data.entries) {
+        // Transform database entries to match our interface
+        const formattedFoods = data.entries.map((entry: any) => ({
+          id: entry.id,
+          name: entry.name,
+          calories: entry.calories,
+          protein: entry.protein,
+          carbs: entry.carbs,
+          fats: entry.fats,
+          serving: entry.serving || '1 serving',
+          time: new Date(entry.loggedAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+          category: entry.mealType as MealCategory
+        }))
+
+        setCurrentDay(prev => ({
+          ...prev,
+          foods: formattedFoods
+        }))
+      }
+    } catch (error) {
+      console.error('Error loading nutrition entries:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const addFood = async (food: Omit<FoodEntry, 'id' | 'time'>, category: MealCategory) => {
+    const newEntry = {
+      ...food,
+      id: crypto.randomUUID(),
+      time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+      category
+    }
+
+    // Add to local state immediately
+    setCurrentDay(prev => ({
+      ...prev,
+      foods: [...prev.foods, newEntry]
+    }))
+
+    // Save to database
+    try {
+      setIsSaving(true)
+      const response = await fetch('/api/nutrition/entries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: food.name,
+          calories: food.calories,
+          protein: food.protein,
+          carbs: food.carbs,
+          fats: food.fats,
+          mealType: category,
+          serving: food.serving
+        })
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        // Update with real ID from database
+        setCurrentDay(prev => ({
+          ...prev,
+          foods: prev.foods.map(f => f.id === newEntry.id ? { ...f, id: data.entry.id } : f)
+        }))
+
+        if (data.pointsAwarded) {
+          console.log(`✅ Food logged! +${data.pointsAwarded} points earned!`)
+        }
+      } else {
+        console.error('Failed to save food entry:', data.error)
+      }
+    } catch (error) {
+      console.error('Error saving food entry:', error)
+    } finally {
+      setIsSaving(false)
+    }
+  }
 
   const currentMacros = useMemo(() => currentDay.foods.reduce((acc, food) => ({
     calories: acc.calories + food.calories,

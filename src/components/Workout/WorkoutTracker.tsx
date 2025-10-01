@@ -17,6 +17,37 @@ export function WorkoutTracker() {
   const [history, setHistory] = useState<WorkoutSession[]>([])
   const [isLibraryOpen, setLibraryOpen] = useState(false)
   const [startTs, setStartTs] = useState<number | null>(null)
+  const [isSaving, setIsSaving] = useState(false)
+  const [loadingHistory, setLoadingHistory] = useState(true)
+
+  // Load workout history on mount
+  useEffect(() => {
+    fetchWorkoutHistory()
+  }, [])
+
+  const fetchWorkoutHistory = async () => {
+    try {
+      setLoadingHistory(true)
+      const response = await fetch('/api/workout/sessions')
+      const data = await response.json()
+
+      if (data.success && data.sessions) {
+        // Transform the data to match our interface
+        const formattedSessions = data.sessions.map((session: any) => ({
+          id: session.id,
+          date: session.completedAt,
+          exercises: session.exercises,
+          duration: session.duration,
+          notes: session.notes
+        }))
+        setHistory(formattedSessions)
+      }
+    } catch (error) {
+      console.error('Error loading workout history:', error)
+    } finally {
+      setLoadingHistory(false)
+    }
+  }
 
   useEffect(() => {
     if (!current) return
@@ -35,11 +66,54 @@ export function WorkoutTracker() {
   }
   const pauseWorkout = () => setStartTs(null)
   const resumeWorkout = () => setStartTs(Date.now() - (current?.duration ?? 0) * 1000)
-  const endWorkout = () => {
+  const endWorkout = async () => {
     if (!current) return
-    setHistory(prev => [current, ...prev])
-    setCurrent(null)
-    setStartTs(null)
+
+    setIsSaving(true)
+    try {
+      // Save to database
+      const response = await fetch('/api/workout/sessions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          exercises: current.exercises,
+          duration: current.duration,
+          completedAt: new Date().toISOString()
+        })
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        // Add to history with the real ID from database
+        const savedSession = {
+          ...current,
+          id: data.session.id
+        }
+        setHistory(prev => [savedSession, ...prev])
+        setCurrent(null)
+        setStartTs(null)
+
+        // Show success message with points
+        if (data.pointsAwarded) {
+          console.log(`✅ Workout saved! +${data.pointsAwarded} points earned!`)
+        }
+      } else {
+        console.error('Failed to save workout:', data.error)
+        // Still add to local history even if save failed
+        setHistory(prev => [current, ...prev])
+        setCurrent(null)
+        setStartTs(null)
+      }
+    } catch (error) {
+      console.error('Error saving workout:', error)
+      // Still add to local history even if save failed
+      setHistory(prev => [current, ...prev])
+      setCurrent(null)
+      setStartTs(null)
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   const addExerciseFromDef = (def: ExerciseDef) => setCurrent(prev => prev ? ({
