@@ -155,8 +155,8 @@ export async function POST(request: Request) {
       const existingCustom = profileData?.customExercises || []
 
       // Add new exercises (avoid duplicates)
-      const newExercises = exercises.filter(newEx =>
-        !existingCustom.some(ex => ex.name === newEx.name)
+      const newExercises = exercises.filter((newEx: any) =>
+        !existingCustom.some((ex: any) => ex.name === newEx.name)
       )
 
       const updatedCustom = [...existingCustom, ...newExercises]
@@ -166,7 +166,7 @@ export async function POST(request: Request) {
         where: { id: user.id },
         data: {
           profileData: {
-            ...user.profileData,
+            ...(user.profileData as any || {}),
             customExercises: updatedCustom
           }
         }
@@ -201,7 +201,7 @@ export async function POST(request: Request) {
     const customExercises = profileData?.customExercises || []
 
     // Check for duplicate
-    if (customExercises.some(ex => ex.name === name)) {
+    if (customExercises.some((ex: any) => ex.name === name)) {
       return NextResponse.json({
         error: 'Exercise already exists'
       }, { status: 400 })
@@ -215,7 +215,7 @@ export async function POST(request: Request) {
       where: { id: user.id },
       data: {
         profileData: {
-          ...user.profileData,
+          ...(user.profileData as any || {}),
           customExercises
         }
       }
@@ -266,7 +266,7 @@ export async function DELETE(request: Request) {
     const customExercises = profileData?.customExercises || []
 
     // Remove the exercise
-    const filtered = customExercises.filter(ex => ex.name !== exerciseName)
+    const filtered = customExercises.filter((ex: any) => ex.name !== exerciseName)
 
     if (filtered.length === customExercises.length) {
       return NextResponse.json({
@@ -279,7 +279,7 @@ export async function DELETE(request: Request) {
       where: { id: user.id },
       data: {
         profileData: {
-          ...user.profileData,
+          ...(user.profileData as any || {}),
           customExercises: filtered
         }
       }

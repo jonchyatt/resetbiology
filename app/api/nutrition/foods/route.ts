@@ -141,8 +141,8 @@ export async function POST(request: Request) {
       const existingCustom = profileData?.customFoods || []
 
       // Add new foods (avoid duplicates by name)
-      const newFoods = foodsToImport.filter(newFood =>
-        !existingCustom.some(food => food.name === newFood.name)
+      const newFoods = foodsToImport.filter((newFood: any) =>
+        !existingCustom.some((food: any) => food.name === newFood.name)
       )
 
       const updatedCustom = [...existingCustom, ...newFoods]
@@ -152,7 +152,7 @@ export async function POST(request: Request) {
         where: { id: user.id },
         data: {
           profileData: {
-            ...user.profileData,
+            ...(user.profileData as any || {}),
             customFoods: updatedCustom
           }
         }
@@ -190,7 +190,7 @@ export async function POST(request: Request) {
     const customFoods = profileData?.customFoods || []
 
     // Check for duplicate
-    if (customFoods.some(food => food.name === name)) {
+    if (customFoods.some((food: any) => food.name === name)) {
       return NextResponse.json({
         error: 'Food already exists'
       }, { status: 400 })
@@ -204,7 +204,7 @@ export async function POST(request: Request) {
       where: { id: user.id },
       data: {
         profileData: {
-          ...user.profileData,
+          ...(user.profileData as any || {}),
           customFoods
         }
       }
@@ -255,7 +255,7 @@ export async function DELETE(request: Request) {
     const customFoods = profileData?.customFoods || []
 
     // Remove the food
-    const filtered = customFoods.filter(food => food.name !== foodName)
+    const filtered = customFoods.filter((food: any) => food.name !== foodName)
 
     if (filtered.length === customFoods.length) {
       return NextResponse.json({
@@ -268,7 +268,7 @@ export async function DELETE(request: Request) {
       where: { id: user.id },
       data: {
         profileData: {
-          ...user.profileData,
+          ...(user.profileData as any || {}),
           customFoods: filtered
         }
       }
