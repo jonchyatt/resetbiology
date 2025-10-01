@@ -23,6 +23,30 @@ export interface CalculatorOutputs {
 }
 
 export interface DosageCalculatorProps {
+  mode?: 'calculate' | 'addProtocol'; // New: determine behavior
+  peptideLibrary?: Array<{           // New: from MongoDB
+    id?: string;
+    name: string;
+    dosage?: string;
+    category?: string;
+    reconstitution?: string;
+    vialAmount?: string;
+  }>;
+  onSaveProtocol?: (protocol: {      // New: save protocol to DB
+    peptideId?: string;
+    peptideName: string;
+    dosage: string;
+    schedule: {
+      days: string[];
+      times: string[];
+      frequency: string; // formatted string like "Mon-Fri AM"
+    };
+    duration: string;
+    vialAmount: string;
+    reconstitution: string;
+    notes?: string;
+  }) => void;
+  onClose?: () => void;              // New: close modal callback
   importedPeptide?: {
     id: string;
     name: string;
@@ -228,6 +252,10 @@ const ReconstitutionGuide: React.FC<{ peptideAmount: number; volume: number; ins
  * Main Dosage Calculator Component
  *********************************/
 export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
+  mode = 'calculate',
+  peptideLibrary,
+  onSaveProtocol,
+  onClose,
   importedPeptide,
   onSaveToLog,
   userPresets = [],
@@ -247,9 +275,15 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
   const [selectedPreset, setSelectedPreset] = useState<PresetName | "">("");
   const [customMode, setCustomMode] = useState<boolean>(false);
   const [peptideName, setPeptideName] = useState<string>("BPC-157");
+  const [selectedPeptideId, setSelectedPeptideId] = useState<string>("");
   const [notes, setNotes] = useState<string>("");
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [errors, setErrors] = useState<string[]>([]);
+
+  // New state for scheduling (addProtocol mode)
+  const [selectedDays, setSelectedDays] = useState<string[]>(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']);
+  const [selectedTimes, setSelectedTimes] = useState<string[]>(['AM']);
+  const [duration, setDuration] = useState<string>('8 weeks');
 
   // Apply imported peptide defaults
   useEffect(() => {
@@ -330,6 +364,75 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
     onSavePreset({ name, settings: inputs });
   };
 
+  // Scheduling helpers (addProtocol mode)
+  const toggleDay = (day: string) => {
+    setSelectedDays(prev =>
+      prev.includes(day)
+        ? prev.filter(d => d !== day)
+        : [...prev, day]
+    );
+  };
+
+  const toggleTime = (time: string) => {
+    setSelectedTimes(prev =>
+      prev.includes(time)
+        ? prev.filter(t => t !== time)
+        : [...prev, time]
+    );
+  };
+
+  const formatScheduleString = (days: string[], times: string[]): string => {
+    const allDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const dayStr = days.length === 7
+      ? 'Daily'
+      : days.length === 5 && !days.includes('Sat') && !days.includes('Sun')
+      ? 'Mon-Fri'
+      : days.join('/');
+    const timeStr = times.join('/');
+    return `${dayStr} ${timeStr}`;
+  };
+
+  const handleProtocolSave = async () => {
+    if (!onSaveProtocol || mode !== 'addProtocol') return;
+
+    if (selectedDays.length === 0) {
+      alert('Please select at least one day of the week');
+      return;
+    }
+
+    if (selectedTimes.length === 0) {
+      alert('Please select AM, PM, or both');
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+      const formattedDosage = `${inputs.desiredDose}${inputs.doseUnit}`;
+
+      await onSaveProtocol({
+        peptideId: selectedPeptideId,
+        peptideName,
+        dosage: formattedDosage,
+        schedule: {
+          days: selectedDays,
+          times: selectedTimes,
+          frequency: formatScheduleString(selectedDays, selectedTimes)
+        },
+        duration,
+        vialAmount: `${inputs.peptideAmount}mg`,
+        reconstitution: `${inputs.totalVolume}ml`,
+        notes
+      });
+
+      if (onClose) onClose();
+    } catch (error) {
+      console.error('Error saving protocol:', error);
+      alert('Failed to save protocol. Please try again.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   // Keep display peptideConcentration synced (from vial + volume)
   const displayConcentration = useMemo(() => {
     const conc = inputs.totalVolume > 0 ? (inputs.peptideAmount * 1000) / inputs.totalVolume : 0;
@@ -367,46 +470,78 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
         <div className="space-y-4">
           {/* Preset selector */}
           <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30">
-            <label className="block mb-2 text-sm text-gray-300">Preset</label>
+            <label className="block mb-2 text-sm text-gray-300">
+              {mode === 'addProtocol' ? 'Select Peptide' : 'Preset'}
+            </label>
             <div className="flex gap-2">
               <select
-                aria-label="Peptide preset"
-                value={selectedPreset}
-                onChange={(e) => applyPreset(e.target.value as PresetName)}
+                aria-label={mode === 'addProtocol' ? 'Select Peptide' : 'Peptide preset'}
+                value={mode === 'addProtocol' ? peptideName : selectedPreset}
+                onChange={(e) => {
+                  if (mode === 'addProtocol' && peptideLibrary) {
+                    const selectedName = e.target.value;
+                    const peptide = peptideLibrary.find(p => p.name === selectedName);
+                    if (peptide) {
+                      setPeptideName(peptide.name);
+                      setSelectedPeptideId(peptide.id || '');
+                      // Auto-fill from library
+                      if (peptide.reconstitution) {
+                        const volumeMatch = peptide.reconstitution.match(/(\d+\.?\d*)ml/i);
+                        if (volumeMatch) setInputs(prev => ({ ...prev, totalVolume: parseFloat(volumeMatch[1]) }));
+                      }
+                      if (peptide.vialAmount) {
+                        const amountMatch = peptide.vialAmount.match(/(\d+\.?\d*)mg/i);
+                        if (amountMatch) setInputs(prev => ({ ...prev, peptideAmount: parseFloat(amountMatch[1]) }));
+                      }
+                    }
+                  } else {
+                    applyPreset(e.target.value as PresetName);
+                  }
+                }}
                 className="flex-1 bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-primary-400 focus:outline-none"
               >
-                <option value="">Select a preset…</option>
-                {PEPTIDE_PRESETS.map((p) => (
-                  <option key={p.name} value={p.name}>{p.name}</option>
-                ))}
+                <option value="">{mode === 'addProtocol' ? 'Choose a peptide...' : 'Select a preset…'}</option>
+                {mode === 'addProtocol' && peptideLibrary
+                  ? peptideLibrary.map((p) => (
+                      <option key={p.id || p.name} value={p.name}>
+                        {p.name} {p.category ? `- ${p.category}` : ''}
+                      </option>
+                    ))
+                  : PEPTIDE_PRESETS.map((p) => (
+                      <option key={p.name} value={p.name}>{p.name}</option>
+                    ))}
               </select>
-              <button
-                type="button"
-                onClick={handleImport}
-                className="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-3 rounded-lg transition-colors flex items-center gap-2"
-                aria-label="Import from product page"
-                title="Import from product page"
-              >
-                <Import className="w-4 h-4" /> Import
-              </button>
+              {mode !== 'addProtocol' && (
+                <button
+                  type="button"
+                  onClick={handleImport}
+                  className="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-3 rounded-lg transition-colors flex items-center gap-2"
+                  aria-label="Import from product page"
+                  title="Import from product page"
+                >
+                  <Import className="w-4 h-4" /> Import
+                </button>
+              )}
             </div>
-            {selectedPreset && (
+            {selectedPreset && mode !== 'addProtocol' && (
               <p className="mt-2 text-xs text-gray-400">
                 {PEPTIDE_PRESETS.find((p) => p.name === selectedPreset)?.instructions}
               </p>
             )}
           </div>
 
-          {/* Peptide name (editable) */}
-          <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30">
-            <label className="block mb-2 text-sm text-gray-300">Peptide name</label>
-            <input
-              aria-label="Peptide name"
-              value={peptideName}
-              onChange={(e) => setPeptideName(e.target.value)}
-              className="w-full bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-primary-400 focus:outline-none"
-            />
-          </div>
+          {/* Peptide name (editable in calculate mode, display only in addProtocol mode) */}
+          {mode !== 'addProtocol' && (
+            <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30">
+              <label className="block mb-2 text-sm text-gray-300">Peptide name</label>
+              <input
+                aria-label="Peptide name"
+                value={peptideName}
+                onChange={(e) => setPeptideName(e.target.value)}
+                className="w-full bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-primary-400 focus:outline-none"
+              />
+            </div>
+          )}
 
           {/* Dose + Unit */}
           <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30 space-y-3">
@@ -509,6 +644,92 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
             <div className="text-xs text-gray-400">Actual concentration: <span className="text-white font-medium">{displayConcentration} mcg/ml</span></div>
           </div>
 
+          {/* Scheduling Section - Only in addProtocol mode */}
+          {mode === 'addProtocol' && (
+            <>
+              {/* Days of Week */}
+              <div className="bg-gradient-to-br from-primary-900/20 to-secondary-900/20 backdrop-blur-sm rounded-xl p-4 border border-primary-400/40">
+                <label className="block mb-3 text-sm text-gray-300 font-medium">
+                  Days of Week <span className="text-primary-400">*</span>
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
+                    <button
+                      key={day}
+                      type="button"
+                      onClick={() => toggleDay(day)}
+                      className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                        selectedDays.includes(day)
+                          ? 'bg-primary-600 text-white shadow-lg shadow-primary-600/30'
+                          : 'bg-gray-700/50 text-gray-400 hover:bg-gray-600/50'
+                      }`}
+                    >
+                      {day}
+                    </button>
+                  ))}
+                </div>
+                <p className="mt-2 text-xs text-gray-400">
+                  Selected: {selectedDays.length === 7 ? 'Daily' : selectedDays.join(', ') || 'None'}
+                </p>
+              </div>
+
+              {/* Time of Day */}
+              <div className="bg-gradient-to-br from-primary-900/20 to-secondary-900/20 backdrop-blur-sm rounded-xl p-4 border border-primary-400/40">
+                <label className="block mb-3 text-sm text-gray-300 font-medium">
+                  Time of Day <span className="text-primary-400">*</span>
+                </label>
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => toggleTime('AM')}
+                    className={`flex-1 px-6 py-3 rounded-lg font-medium transition-all ${
+                      selectedTimes.includes('AM')
+                        ? 'bg-primary-600 text-white shadow-lg shadow-primary-600/30'
+                        : 'bg-gray-700/50 text-gray-400 hover:bg-gray-600/50'
+                    }`}
+                  >
+                    🌅 AM
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => toggleTime('PM')}
+                    className={`flex-1 px-6 py-3 rounded-lg font-medium transition-all ${
+                      selectedTimes.includes('PM')
+                        ? 'bg-primary-600 text-white shadow-lg shadow-primary-600/30'
+                        : 'bg-gray-700/50 text-gray-400 hover:bg-gray-600/50'
+                    }`}
+                  >
+                    🌙 PM
+                  </button>
+                </div>
+                <p className="mt-2 text-xs text-gray-400">
+                  {selectedTimes.length === 0
+                    ? 'Select at least one time'
+                    : selectedTimes.length === 2
+                    ? 'Twice daily (AM & PM)'
+                    : selectedTimes[0]}
+                </p>
+              </div>
+
+              {/* Duration */}
+              <div className="bg-gradient-to-br from-primary-900/20 to-secondary-900/20 backdrop-blur-sm rounded-xl p-4 border border-primary-400/40">
+                <label className="block mb-2 text-sm text-gray-300 font-medium">
+                  Protocol Duration <span className="text-primary-400">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={duration}
+                  onChange={(e) => setDuration(e.target.value)}
+                  placeholder="e.g., 8 weeks, 12 weeks, 6 months"
+                  className="w-full bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-primary-400 focus:outline-none"
+                />
+                <p className="mt-2 text-xs text-gray-400">
+                  Example: "8 weeks on, 8 weeks off" or "12 weeks continuous"
+                </p>
+              </div>
+            </>
+          )}
+
           {/* Notes */}
           <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30">
             <label className="block mb-2 text-sm text-gray-300">Notes (optional)</label>
@@ -558,23 +779,43 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
             </div>
             <div className="mt-3 text-xs text-gray-400">Formula: volume (ml) = dose (mcg) / concentration (mcg/ml)</div>
 
-            <div className="mt-4 flex flex-wrap gap-2">
-              <button
-                type="button"
-                onClick={handleSave}
-                disabled={!onSaveToLog || isSaving || errors.length > 0}
-                className="bg-primary-600 hover:bg-primary-700 disabled:opacity-40 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center gap-2"
-              >
-                <Save className="w-4 h-4" /> {isSaving ? "Saving…" : "Save to Log"}
-              </button>
-              <button
-                type="button"
-                onClick={handleSavePreset}
-                className="bg-gray-800/50 border border-gray-600/30 text-white font-medium py-2 px-4 rounded-lg transition-colors hover:border-primary-400"
-              >
-                Save Preset
-              </button>
-            </div>
+            {mode === 'addProtocol' ? (
+              <div className="mt-4 flex gap-3">
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleProtocolSave}
+                  disabled={!peptideName || isSaving || errors.length > 0 || selectedDays.length === 0 || selectedTimes.length === 0}
+                  className="flex-1 bg-primary-600 hover:bg-primary-700 disabled:bg-gray-600 disabled:opacity-50 text-white font-bold py-3 px-6 rounded-lg transition-colors"
+                >
+                  {isSaving ? "Adding Protocol..." : "Add Protocol"}
+                </button>
+              </div>
+            ) : (
+              <div className="mt-4 flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={handleSave}
+                  disabled={!onSaveToLog || isSaving || errors.length > 0}
+                  className="bg-primary-600 hover:bg-primary-700 disabled:opacity-40 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center gap-2"
+                >
+                  <Save className="w-4 h-4" /> {isSaving ? "Saving…" : "Save to Log"}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSavePreset}
+                  className="bg-gray-800/50 border border-gray-600/30 text-white font-medium py-2 px-4 rounded-lg transition-colors hover:border-primary-400"
+                >
+                  Save Preset
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

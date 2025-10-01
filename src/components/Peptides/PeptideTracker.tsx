@@ -219,19 +219,24 @@ export function PeptideTracker() {
     }
   ]
 
-  const confirmAddProtocol = async () => {
-    if (!selectedPeptideName) {
-      alert('Please select a peptide')
-      return
-    }
-
-    const peptide = peptideLibrary.find(p => p.name === selectedPeptideName)
-    if (!peptide) return
-
+  const handleSaveProtocol = async (protocolData: {
+    peptideId?: string;
+    peptideName: string;
+    dosage: string;
+    schedule: {
+      days: string[];
+      times: string[];
+      frequency: string;
+    };
+    duration: string;
+    vialAmount: string;
+    reconstitution: string;
+    notes?: string;
+  }) => {
     // Check if protocol already exists
-    const existingProtocol = currentProtocols.find(protocol => protocol.name === selectedPeptideName)
+    const existingProtocol = currentProtocols.find(protocol => protocol.name === protocolData.peptideName)
     if (existingProtocol) {
-      alert(`${selectedPeptideName} is already in your active protocols. Only one instance per peptide is allowed.`)
+      alert(`${protocolData.peptideName} is already in your active protocols. Only one instance per peptide is allowed.`)
       return
     }
 
@@ -242,24 +247,31 @@ export function PeptideTracker() {
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({
-          peptideName: selectedPeptideName,
-          dosage: customDosage || peptide.dosage,
-          frequency: customFrequency || peptide.frequency,
-          notes: `Timing: ${customTiming || peptide.timing}`
+          peptideName: protocolData.peptideName,
+          dosage: protocolData.dosage,
+          frequency: protocolData.schedule.frequency,
+          notes: protocolData.notes || `Schedule: ${protocolData.schedule.frequency}`
         })
       })
 
       const data = await response.json()
 
       if (data.success) {
+        // Find peptide details from library
+        const peptide = peptideLibrary.find(p => p.name === protocolData.peptideName)
+
         // Add to local state
         const newProtocol: PeptideProtocol = {
-          ...peptide,
-          dosage: customDosage || peptide.dosage,
-          frequency: customFrequency || peptide.frequency,
-          timing: customTiming || peptide.timing,
-          duration: customDuration || peptide.duration,
           id: data.protocol.id,
+          name: protocolData.peptideName,
+          purpose: peptide?.purpose || 'General',
+          dosage: protocolData.dosage,
+          timing: protocolData.schedule.times.join('/'),
+          frequency: protocolData.schedule.frequency,
+          duration: protocolData.duration,
+          vialAmount: protocolData.vialAmount,
+          reconstitution: protocolData.reconstitution,
+          syringeUnits: 10,
           startDate: new Date().toISOString().split('T')[0],
           currentCycle: 1,
           isActive: true
@@ -267,19 +279,15 @@ export function PeptideTracker() {
 
         setCurrentProtocols([...currentProtocols, newProtocol])
 
-        // Reset modal
-        setShowAddProtocolModal(false)
-        setSelectedPeptideName('')
-        setCustomDosage('')
-        setCustomFrequency('')
-        setCustomTiming('')
-        setCustomDuration('')
+        // Modal will be closed by DosageCalculator onClose callback
+        console.log(`✅ Protocol added: ${protocolData.peptideName}`)
       } else {
         alert(`Failed to add protocol: ${data.error || 'Unknown error'}`)
       }
     } catch (error) {
       console.error('Error adding protocol:', error)
       alert('Failed to add protocol. Please try again.')
+      throw error // Re-throw so DosageCalculator can handle it
     }
   }
 
@@ -1042,142 +1050,23 @@ export function PeptideTracker() {
           </div>
         )}
 
-        {/* Add Protocol Modal */}
+        {/* Add Protocol Modal - Now using Enhanced DosageCalculator */}
         {showAddProtocolModal && (
-          <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-gradient-to-br from-gray-800/95 to-gray-900/95 rounded-2xl p-8 max-w-2xl w-full shadow-2xl border border-primary-400/30">
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="text-2xl font-bold text-white">Add New Protocol</h3>
-                <button onClick={() => {
-                  setShowAddProtocolModal(false)
-                  setSelectedPeptideName('')
-                  setCustomDosage('')
-                  setCustomFrequency('')
-                  setCustomTiming('')
-                  setCustomDuration('')
-                }} className="text-gray-400 hover:text-white">
-                  <X className="w-6 h-6" />
-                </button>
-              </div>
-
-              <div className="space-y-6">
-                {/* Peptide Selection */}
-                <div>
-                  <label className="block text-white font-medium mb-2">Select Peptide</label>
-                  <select 
-                    value={selectedPeptideName}
-                    onChange={(e) => {
-                      const peptideName = e.target.value
-                      setSelectedPeptideName(peptideName)
-                      const peptide = peptideLibrary.find(p => p.name === peptideName)
-                      if (peptide) {
-                        setCustomDosage(peptide.dosage)
-                        setCustomFrequency(peptide.frequency)
-                        setCustomTiming(peptide.timing)
-                        setCustomDuration(peptide.duration)
-                      }
-                    }}
-                    className="w-full bg-gray-700/50 text-white border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:border-primary-400"
-                    disabled={loadingLibrary}
-                  >
-                    <option value="">
-                      {loadingLibrary ? 'Loading peptides...' : 'Choose a peptide...'}
-                    </option>
-                    {!loadingLibrary && peptideLibrary.map((peptide) => (
-                      <option key={peptide.name} value={peptide.name}>
-                        {peptide.name} - {peptide.purpose}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {selectedPeptideName && (
-                  <>
-                    {/* Dosage (Adjustable) */}
-                    <div>
-                      <label className="block text-white font-medium mb-2">
-                        Dosage <span className="text-gray-400 text-sm">(adjustable)</span>
-                      </label>
-                      <input
-                        type="text"
-                        value={customDosage}
-                        onChange={(e) => setCustomDosage(e.target.value)}
-                        placeholder="e.g., 0.5mg-2.5mg or 500mcg"
-                        className="w-full bg-gray-700/50 text-white border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:border-primary-400"
-                      />
-                      <p className="text-sm text-gray-400 mt-1">
-                        Example: Retatrutide can range from 0.5mg to 2.5mg
-                      </p>
-                    </div>
-
-                    {/* Frequency (Adjustable) */}
-                    <div>
-                      <label className="block text-white font-medium mb-2">
-                        Frequency <span className="text-gray-400 text-sm">(adjustable)</span>
-                      </label>
-                      <input
-                        type="text"
-                        value={customFrequency}
-                        onChange={(e) => setCustomFrequency(e.target.value)}
-                        placeholder="e.g., 3x per week, every other day, daily"
-                        className="w-full bg-gray-700/50 text-white border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:border-primary-400"
-                      />
-                    </div>
-
-                    {/* Timing (Adjustable) */}
-                    <div>
-                      <label className="block text-white font-medium mb-2">
-                        Timing <span className="text-gray-400 text-sm">(adjustable)</span>
-                      </label>
-                      <input
-                        type="text"
-                        value={customTiming}
-                        onChange={(e) => setCustomTiming(e.target.value)}
-                        placeholder="e.g., AM, PM, or twice daily"
-                        className="w-full bg-gray-700/50 text-white border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:border-primary-400"
-                      />
-                    </div>
-
-                    {/* Duration (Adjustable) */}
-                    <div>
-                      <label className="block text-white font-medium mb-2">
-                        Duration <span className="text-gray-400 text-sm">(adjustable)</span>
-                      </label>
-                      <input
-                        type="text"
-                        value={customDuration}
-                        onChange={(e) => setCustomDuration(e.target.value)}
-                        placeholder="e.g., 8 weeks on, 8 weeks off"
-                        className="w-full bg-gray-700/50 text-white border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:border-primary-400"
-                      />
-                    </div>
-                  </>
-                )}
-
-                {/* Action Buttons */}
-                <div className="flex gap-4 pt-4">
-                  <button
-                    onClick={() => {
-                      setShowAddProtocolModal(false)
-                      setSelectedPeptideName('')
-                      setCustomDosage('')
-                      setCustomFrequency('')
-                      setCustomTiming('')
-                      setCustomDuration('')
-                    }}
-                    className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg transition-colors"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={confirmAddProtocol}
-                    disabled={!selectedPeptideName}
-                    className="flex-1 bg-primary-600 hover:bg-primary-700 disabled:bg-gray-600 disabled:opacity-50 text-white font-bold py-3 px-6 rounded-lg transition-colors"
-                  >
-                    Add Protocol
-                  </button>
-                </div>
-              </div>
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-lg flex items-center justify-center z-50 p-4">
+            <div className="bg-gradient-to-br from-primary-900/95 via-gray-900/95 to-secondary-900/95 rounded-3xl max-w-7xl w-full max-h-[92vh] overflow-y-auto shadow-[0_0_100px_rgba(63,191,181,0.3)] border border-primary-400/40">
+              <DosageCalculator
+                mode="addProtocol"
+                peptideLibrary={peptideLibrary.map(p => ({
+                  id: p.id,
+                  name: p.name,
+                  dosage: p.dosage,
+                  category: p.purpose,
+                  reconstitution: p.reconstitution,
+                  vialAmount: p.vialAmount
+                }))}
+                onSaveProtocol={handleSaveProtocol}
+                onClose={() => setShowAddProtocolModal(false)}
+              />
             </div>
           </div>
         )}
