@@ -19,7 +19,8 @@
       "Bash(node:*)",
       "Bash(npx tsx:*)",
       "Bash(claude mcp:*)",
-      "Bash(npx dotenv -e .env.local:*)"
+      "Bash(npx dotenv -e .env.local:*)",
+      "Bash(dir:*)"
     ],
     "deny": [],
     "ask": [],

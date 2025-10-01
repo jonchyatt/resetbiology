@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
       ]
     });
 
-    return NextResponse.json({ peptides });
+    return NextResponse.json({ success: true, data: peptides });
   } catch (error) {
     console.error('Error fetching peptides:', error);
     return NextResponse.json({ error: 'Failed to fetch peptides' }, { status: 500 });
