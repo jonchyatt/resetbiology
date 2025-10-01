@@ -502,11 +502,15 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
               >
                 <option value="">{mode === 'addProtocol' ? 'Choose a peptide...' : 'Select a preset…'}</option>
                 {mode === 'addProtocol' && peptideLibrary
-                  ? peptideLibrary.map((p) => (
-                      <option key={p.id || p.name} value={p.name}>
-                        {p.name} {p.category ? `- ${p.category}` : ''}
-                      </option>
-                    ))
+                  ? peptideLibrary.map((p) => {
+                      // Remove "- peptide" suffix from display name
+                      const displayName = p.name.replace(/\s*-\s*peptide\s*$/i, '').trim();
+                      return (
+                        <option key={p.id || p.name} value={p.name}>
+                          {displayName}
+                        </option>
+                      );
+                    })
                   : PEPTIDE_PRESETS.map((p) => (
                       <option key={p.name} value={p.name}>{p.name}</option>
                     ))}
@@ -545,46 +549,44 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
 
           {/* Dose + Unit */}
           <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30 space-y-3">
-            <div className="flex items-end gap-3 max-w-md">
-              <label className="flex-1">
-                <span className="block mb-1 text-sm text-gray-300">Desired dose</span>
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    className="bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white hover:border-primary-400 transition-colors"
-                    onClick={() => setInputs((s) => ({ ...s, desiredDose: clamp(s.desiredDose - (inputs.doseUnit === "mg" ? 0.1 : 50), unitMinMax.min, unitMinMax.max) }))}
-                    aria-label="Decrease dose"
-                  >
-                    −
-                  </button>
-                  <input
-                    aria-label="Desired dose value"
-                    inputMode="decimal"
-                    value={inputs.desiredDose}
-                    onChange={(e) => setInputs((s) => ({ ...s, desiredDose: parseFloat(e.target.value) || 0 }))}
-                    onBlur={(e) => setInputs((s) => ({ ...s, desiredDose: clamp(parseFloat(e.target.value) || 0, unitMinMax.min, unitMinMax.max) }))}
-                    className="flex-1 bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-primary-400 focus:outline-none"
-                  />
-                  <button
-                    type="button"
-                    className="bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white hover:border-primary-400 transition-colors"
-                    onClick={() => setInputs((s) => ({ ...s, desiredDose: clamp(s.desiredDose + (inputs.doseUnit === "mg" ? 0.1 : 50), unitMinMax.min, unitMinMax.max) }))}
-                    aria-label="Increase dose"
-                  >
-                    +
-                  </button>
-                  <select
-                    aria-label="Dose unit"
-                    value={inputs.doseUnit}
-                    onChange={(e) => setInputs((s) => ({ ...s, doseUnit: e.target.value as "mg" | "mcg" }))}
-                    className="bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
-                  >
-                    <option value="mcg">mcg</option>
-                    <option value="mg">mg</option>
-                  </select>
-                </div>
-              </label>
-            </div>
+            <label>
+              <span className="block mb-1 text-sm text-gray-300">Desired dose</span>
+              <div className="flex items-center gap-2 max-w-xs">
+                <button
+                  type="button"
+                  className="bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white hover:border-primary-400 transition-colors"
+                  onClick={() => setInputs((s) => ({ ...s, desiredDose: clamp(s.desiredDose - (inputs.doseUnit === "mg" ? 0.1 : 50), unitMinMax.min, unitMinMax.max) }))}
+                  aria-label="Decrease dose"
+                >
+                  −
+                </button>
+                <input
+                  aria-label="Desired dose value"
+                  inputMode="decimal"
+                  value={inputs.desiredDose}
+                  onChange={(e) => setInputs((s) => ({ ...s, desiredDose: parseFloat(e.target.value) || 0 }))}
+                  onBlur={(e) => setInputs((s) => ({ ...s, desiredDose: clamp(parseFloat(e.target.value) || 0, unitMinMax.min, unitMinMax.max) }))}
+                  className="w-20 bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-primary-400 focus:outline-none text-center"
+                />
+                <button
+                  type="button"
+                  className="bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white hover:border-primary-400 transition-colors"
+                  onClick={() => setInputs((s) => ({ ...s, desiredDose: clamp(s.desiredDose + (inputs.doseUnit === "mg" ? 0.1 : 50), unitMinMax.min, unitMinMax.max) }))}
+                  aria-label="Increase dose"
+                >
+                  +
+                </button>
+                <select
+                  aria-label="Dose unit"
+                  value={inputs.doseUnit}
+                  onChange={(e) => setInputs((s) => ({ ...s, doseUnit: e.target.value as "mg" | "mcg" }))}
+                  className="bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
+                >
+                  <option value="mcg">mcg</option>
+                  <option value="mg">mg</option>
+                </select>
+              </div>
+            </label>
             <input
               aria-label="Dose range"
               type="range"
