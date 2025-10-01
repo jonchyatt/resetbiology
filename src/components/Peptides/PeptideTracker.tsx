@@ -145,8 +145,9 @@ export function PeptideTracker() {
       const data = await response.json()
 
       if (data.success && data.doses) {
-        // Transform doses from database to match our interface
-        const formattedDoses = data.doses.map((dose: any) => ({
+        // Store completed doses separately - don't merge into todaysDoses yet
+        // The generateTodaysDosesPreservingLogged function will handle merging
+        const completedToday = data.doses.map((dose: any) => ({
           id: dose.id,
           peptideId: dose.protocolId,
           scheduledTime: dose.time,
@@ -155,23 +156,11 @@ export function PeptideTracker() {
           notes: dose.notes || dose.sideEffects || ''
         }))
 
-        // Merge with any pending doses already generated
+        // Only update todaysDoses with completed doses, let protocols generate pending ones
         setTodaysDoses((currentDoses: DoseEntry[]) => {
+          // Remove old completed doses and add fresh ones from DB
           const pendingDoses = currentDoses.filter(d => !d.completed)
-          const mergedDoses = [...formattedDoses]
-
-          // Add pending doses that don't have a completed equivalent
-          pendingDoses.forEach(pending => {
-            const hasCompleted = formattedDoses.some((completed: DoseEntry) =>
-              completed.peptideId === pending.peptideId &&
-              completed.scheduledTime === pending.scheduledTime
-            )
-            if (!hasCompleted) {
-              mergedDoses.push(pending)
-            }
-          })
-
-          return mergedDoses
+          return [...completedToday, ...pendingDoses]
         })
       }
     } catch (error) {
@@ -397,19 +386,19 @@ export function PeptideTracker() {
   const markDoseCompleted = (doseId: string) => {
     const dose = todaysDoses.find(d => d.id === doseId)
     if (!dose) return
-    
+
     // Find the protocol for this dose
     const protocol = currentProtocols.find(p => p.id === dose.peptideId)
     if (!protocol) {
       // Just mark as completed if we can't find protocol
-      setTodaysDoses(prev => prev.map(d => 
-        d.id === doseId 
+      setTodaysDoses(prev => prev.map(d =>
+        d.id === doseId
           ? { ...d, completed: true, actualTime: new Date().toISOString() }
           : d
       ))
       return
     }
-    
+
     // Store the dose ID for updating the specific scheduled dose
     setSelectedProtocol({ ...protocol, scheduledDoseId: doseId } as any)
     setShowDoseModal(true)
@@ -708,13 +697,6 @@ export function PeptideTracker() {
                                   </div>
                                 </div>
                               </div>
-                              <button 
-                                onClick={() => markDoseCompleted(dose.id)}
-                                className="w-full bg-primary-600 hover:bg-primary-700 text-white text-sm py-2 px-3 rounded transition-colors flex items-center justify-center"
-                              >
-                                <div className="w-4 h-4 border border-white rounded mr-2"></div>
-                                Log Dose
-                              </button>
                             </div>
                           )
                         })}
