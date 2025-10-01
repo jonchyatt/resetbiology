@@ -22,7 +22,8 @@
       "Bash(npx dotenv -e .env.local:*)",
       "Bash(dir:*)",
       "Bash(npm install:*)",
-      "Bash(npx playwright install:*)"
+      "Bash(npx playwright install:*)",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": [],

@@ -61,7 +61,9 @@ export function NutritionTracker() {
     try {
       setIsLoading(true)
       const today = new Date().toISOString().split('T')[0]
-      const response = await fetch(`/api/nutrition/entries?date=${today}`)
+      const response = await fetch(`/api/nutrition/entries?date=${today}`, {
+        credentials: 'include'
+      })
       const data = await response.json()
 
       if (data.success && data.entries) {
@@ -110,6 +112,7 @@ export function NutritionTracker() {
       const response = await fetch('/api/nutrition/entries', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           name: food.name,
           calories: food.calories,

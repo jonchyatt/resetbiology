@@ -8,9 +8,10 @@ interface BreathOrbProps {
   isInhale: boolean
   progress: number
   motionReduced: boolean
+  currentHoldDuration?: number
 }
 
-export function BreathOrb({ state, isInhale, progress, motionReduced }: BreathOrbProps) {
+export function BreathOrb({ state, isInhale, progress, motionReduced, currentHoldDuration = 0 }: BreathOrbProps) {
   const getStateColor = () => {
     switch (state) {
       case 'breathing_active':
@@ -157,9 +158,9 @@ export function BreathOrb({ state, isInhale, progress, motionReduced }: BreathOr
           <div className="backdrop-blur-sm px-6 py-3 rounded-full text-base font-semibold border transition-all duration-300 bg-black/60 text-white border-white/20">
             {state === 'breathing_active' && (isInhale ? 'Inhale' : 'Exhale')}
             {state === 'exhale_hold_ready' && 'Ready for Exhale Hold'}
-            {state === 'exhale_hold_active' && 'Exhale Hold'}
+            {state === 'exhale_hold_active' && `Exhale Hold: ${(currentHoldDuration / 1000).toFixed(1)}s`}
             {state === 'inhale_hold_ready' && 'Ready for Inhale Hold'}
-            {state === 'inhale_hold_active' && 'Inhale Hold'}
+            {state === 'inhale_hold_active' && `Inhale Hold: ${(currentHoldDuration / 1000).toFixed(1)}s`}
             {state === 'cycle_complete' && 'Cycle Complete'}
             {state === 'paused' && 'Paused'}
             {state === 'session_complete' && 'Session Complete'}

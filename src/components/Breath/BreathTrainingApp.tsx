@@ -494,6 +494,7 @@ export function BreathTrainingApp({ onSessionComplete }: BreathTrainingAppProps)
                   isInhale={isInhale}
                   progress={getBreathProgress()}
                   motionReduced={settings.motionReduced}
+                  currentHoldDuration={currentHoldDuration}
                 />
               )}
 
@@ -505,16 +506,6 @@ export function BreathTrainingApp({ onSessionComplete }: BreathTrainingAppProps)
                   </div>
                 )}
               </div>
-
-              {/* Phase Timer - ONLY show during hold phases (not breathing) */}
-              {(state === 'exhale_hold_active' || state === 'inhale_hold_active') && (
-                <PhaseTimer
-                  timeMs={currentHoldDuration}
-                  phase={state === 'exhale_hold_active' ? 'exhale hold' : 'inhale hold'}
-                  isActive={true}
-                  className="mb-4"
-                />
-              )}
 
               {/* Start Session Controls - matching right side sizing and spacing */}
               <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 shadow-2xl border border-primary-400/30 mb-8">

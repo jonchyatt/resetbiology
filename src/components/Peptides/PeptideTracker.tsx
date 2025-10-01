@@ -62,7 +62,9 @@ export function PeptideTracker() {
 
   const fetchUserProtocols = async () => {
     try {
-      const response = await fetch('/api/peptides/protocols')
+      const response = await fetch('/api/peptides/protocols', {
+        credentials: 'include'
+      })
       const data = await response.json()
 
       if (data.success && data.protocols) {
@@ -97,7 +99,9 @@ export function PeptideTracker() {
   const fetchPeptideLibrary = async () => {
     try {
       setLoadingLibrary(true)
-      const response = await fetch('/api/peptides')
+      const response = await fetch('/api/peptides', {
+        credentials: 'include'
+      })
       const data = await response.json()
 
       if (data.success && data.data) {
@@ -175,6 +179,7 @@ export function PeptideTracker() {
       const response = await fetch('/api/peptides/protocols', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           peptideName: selectedPeptideName,
           dosage: customDosage || peptide.dosage,

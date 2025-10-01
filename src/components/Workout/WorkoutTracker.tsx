@@ -28,7 +28,9 @@ export function WorkoutTracker() {
   const fetchWorkoutHistory = async () => {
     try {
       setLoadingHistory(true)
-      const response = await fetch('/api/workout/sessions')
+      const response = await fetch('/api/workout/sessions', {
+        credentials: 'include'
+      })
       const data = await response.json()
 
       if (data.success && data.sessions) {
@@ -75,6 +77,7 @@ export function WorkoutTracker() {
       const response = await fetch('/api/workout/sessions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           exercises: current.exercises,
           duration: current.duration,

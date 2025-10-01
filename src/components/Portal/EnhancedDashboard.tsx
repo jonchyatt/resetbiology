@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { Trophy, Calendar, ChevronRight, Target, Dumbbell, Apple, Brain, Wind, BookOpen, ShoppingBag, Check } from "lucide-react"
 import { PortalHeader } from "@/components/Navigation/PortalHeader"
 import { useUser } from "@auth0/nextjs-auth0"
+import { useRouter } from "next/navigation"
 
 interface DailyJournalData {
   weight: number | null
@@ -19,6 +20,7 @@ interface DailyJournalData {
 
 export function EnhancedDashboard() {
   const { user } = useUser()
+  const router = useRouter()
   const [totalPoints] = useState(1250)
   const [currentStreak, setCurrentStreak] = useState(0)
   
@@ -231,11 +233,18 @@ export function EnhancedDashboard() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Left Side - Task Checkboxes */}
               <div className="space-y-3">
-                <label className="flex items-center p-4 bg-gray-800/30 rounded-lg border border-gray-600/30 hover:bg-gray-700/30 transition-colors cursor-pointer">
+                <div
+                  className="flex items-center p-4 bg-gray-800/30 rounded-lg border border-gray-600/30 hover:bg-gray-700/30 transition-colors cursor-pointer"
+                  onClick={() => router.push('/peptides')}
+                >
                   <input
                     type="checkbox"
                     checked={dailyTasks.peptides}
-                    onChange={() => handleTaskChange('peptides')}
+                    onChange={(e) => {
+                      e.stopPropagation()
+                      handleTaskChange('peptides')
+                    }}
+                    onClick={(e) => e.stopPropagation()}
                     className="w-5 h-5 text-primary-500 rounded border-gray-600 focus:ring-primary-500"
                   />
                   <div className="ml-4 flex-1">
@@ -246,13 +255,25 @@ export function EnhancedDashboard() {
                     <p className="text-sm text-gray-400">Track your peptide doses and timing</p>
                   </div>
                   <ChevronRight className="w-5 h-5 text-primary-400" />
-                </label>
+                </div>
 
-                <label className="flex items-center p-4 bg-gray-800/30 rounded-lg border border-gray-600/30 hover:bg-gray-700/30 transition-colors cursor-pointer">
+                <div
+                  className="flex items-center p-4 bg-gray-800/30 rounded-lg border border-gray-600/30 hover:bg-gray-700/30 transition-colors cursor-pointer"
+                  onClick={() => {
+                    const journalSection = document.querySelector('#journal')
+                    if (journalSection) {
+                      journalSection.scrollIntoView({ behavior: 'smooth' })
+                    }
+                  }}
+                >
                   <input
                     type="checkbox"
                     checked={dailyTasks.journal}
-                    onChange={() => handleTaskChange('journal')}
+                    onChange={(e) => {
+                      e.stopPropagation()
+                      handleTaskChange('journal')
+                    }}
+                    onClick={(e) => e.stopPropagation()}
                     className="w-5 h-5 text-primary-500 rounded border-gray-600 focus:ring-primary-500"
                   />
                   <div className="ml-4 flex-1">
@@ -263,13 +284,20 @@ export function EnhancedDashboard() {
                     <p className="text-sm text-gray-400">Reflect on your progress and mindset</p>
                   </div>
                   <ChevronRight className="w-5 h-5 text-primary-400" />
-                </label>
+                </div>
 
-                <label className="flex items-center p-4 bg-gray-800/30 rounded-lg border border-gray-600/30 hover:bg-gray-700/30 transition-colors cursor-pointer">
+                <div
+                  className="flex items-center p-4 bg-gray-800/30 rounded-lg border border-gray-600/30 hover:bg-gray-700/30 transition-colors cursor-pointer"
+                  onClick={() => router.push('/workout')}
+                >
                   <input
                     type="checkbox"
                     checked={dailyTasks.workout}
-                    onChange={() => handleTaskChange('workout')}
+                    onChange={(e) => {
+                      e.stopPropagation()
+                      handleTaskChange('workout')
+                    }}
+                    onClick={(e) => e.stopPropagation()}
                     className="w-5 h-5 text-primary-500 rounded border-gray-600 focus:ring-primary-500"
                   />
                   <div className="ml-4 flex-1">
@@ -280,13 +308,20 @@ export function EnhancedDashboard() {
                     <p className="text-sm text-gray-400">Track exercises, sets, and progress</p>
                   </div>
                   <ChevronRight className="w-5 h-5 text-primary-400" />
-                </label>
+                </div>
 
-                <label className="flex items-center p-4 bg-gray-800/30 rounded-lg border border-gray-600/30 hover:bg-gray-700/30 transition-colors cursor-pointer">
+                <div
+                  className="flex items-center p-4 bg-gray-800/30 rounded-lg border border-gray-600/30 hover:bg-gray-700/30 transition-colors cursor-pointer"
+                  onClick={() => router.push('/nutrition')}
+                >
                   <input
                     type="checkbox"
                     checked={dailyTasks.meals}
-                    onChange={() => handleTaskChange('meals')}
+                    onChange={(e) => {
+                      e.stopPropagation()
+                      handleTaskChange('meals')
+                    }}
+                    onClick={(e) => e.stopPropagation()}
                     className="w-5 h-5 text-primary-500 rounded border-gray-600 focus:ring-primary-500"
                   />
                   <div className="ml-4 flex-1">
@@ -297,13 +332,20 @@ export function EnhancedDashboard() {
                     <p className="text-sm text-gray-400">Track nutrition and macros</p>
                   </div>
                   <ChevronRight className="w-5 h-5 text-primary-400" />
-                </label>
+                </div>
 
-                <label className="flex items-center p-4 bg-gray-800/30 rounded-lg border border-gray-600/30 hover:bg-gray-700/30 transition-colors cursor-pointer">
+                <div
+                  className="flex items-center p-4 bg-gray-800/30 rounded-lg border border-gray-600/30 hover:bg-gray-700/30 transition-colors cursor-pointer"
+                  onClick={() => router.push('/modules')}
+                >
                   <input
                     type="checkbox"
                     checked={dailyTasks.module}
-                    onChange={() => handleTaskChange('module')}
+                    onChange={(e) => {
+                      e.stopPropagation()
+                      handleTaskChange('module')
+                    }}
+                    onClick={(e) => e.stopPropagation()}
                     className="w-5 h-5 text-primary-500 rounded border-gray-600 focus:ring-primary-500"
                   />
                   <div className="ml-4 flex-1">
@@ -314,13 +356,20 @@ export function EnhancedDashboard() {
                     <p className="text-sm text-gray-400">Listen to today's audio training</p>
                   </div>
                   <ChevronRight className="w-5 h-5 text-primary-400" />
-                </label>
+                </div>
 
-                <label className="flex items-center p-4 bg-gray-800/30 rounded-lg border border-gray-600/30 hover:bg-gray-700/30 transition-colors cursor-pointer">
+                <div
+                  className="flex items-center p-4 bg-gray-800/30 rounded-lg border border-gray-600/30 hover:bg-gray-700/30 transition-colors cursor-pointer"
+                  onClick={() => router.push('/breath')}
+                >
                   <input
                     type="checkbox"
                     checked={dailyTasks.breath}
-                    onChange={() => handleTaskChange('breath')}
+                    onChange={(e) => {
+                      e.stopPropagation()
+                      handleTaskChange('breath')
+                    }}
+                    onClick={(e) => e.stopPropagation()}
                     className="w-5 h-5 text-primary-500 rounded border-gray-600 focus:ring-primary-500"
                   />
                   <div className="ml-4 flex-1">
@@ -331,7 +380,7 @@ export function EnhancedDashboard() {
                     <p className="text-sm text-gray-400">Complete a breathing session</p>
                   </div>
                   <ChevronRight className="w-5 h-5 text-primary-400" />
-                </label>
+                </div>
               </div>
 
               {/* Right Side - Quick Access Cards (2x3 Grid) */}
