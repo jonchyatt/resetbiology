@@ -75,7 +75,8 @@ export async function GET(request: Request) {
       if (user) {
         // For now, store custom exercises in user's profileData JSON
         // In production, create a separate Exercise model
-        const customExercises = user.profileData?.customExercises || []
+        const profileData = user.profileData as any
+        const customExercises = profileData?.customExercises || []
         if (customOnly) {
           exercises = customExercises
         } else {
@@ -150,7 +151,8 @@ export async function POST(request: Request) {
     // Handle bulk import
     if (importType === 'bulk' && Array.isArray(exercises)) {
       // Get existing custom exercises
-      const existingCustom = user.profileData?.customExercises || []
+      const profileData = user.profileData as any
+      const existingCustom = profileData?.customExercises || []
 
       // Add new exercises (avoid duplicates)
       const newExercises = exercises.filter(newEx =>
@@ -195,7 +197,8 @@ export async function POST(request: Request) {
     }
 
     // Get existing custom exercises
-    const customExercises = user.profileData?.customExercises || []
+    const profileData = user.profileData as any
+    const customExercises = profileData?.customExercises || []
 
     // Check for duplicate
     if (customExercises.some(ex => ex.name === name)) {
@@ -259,7 +262,8 @@ export async function DELETE(request: Request) {
     }
 
     // Get existing custom exercises
-    const customExercises = user.profileData?.customExercises || []
+    const profileData = user.profileData as any
+    const customExercises = profileData?.customExercises || []
 
     // Remove the exercise
     const filtered = customExercises.filter(ex => ex.name !== exerciseName)

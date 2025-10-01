@@ -62,7 +62,8 @@ export async function GET(request: Request) {
 
       if (user) {
         // Get custom foods from user's profileData
-        const customFoods = user.profileData?.customFoods || []
+        const profileData = user.profileData as any
+        const customFoods = profileData?.customFoods || []
         if (customOnly) {
           foods = customFoods
         } else {
@@ -136,7 +137,8 @@ export async function POST(request: Request) {
     // Handle bulk import
     if (importType === 'bulk' && Array.isArray(foodsToImport)) {
       // Get existing custom foods
-      const existingCustom = user.profileData?.customFoods || []
+      const profileData = user.profileData as any
+      const existingCustom = profileData?.customFoods || []
 
       // Add new foods (avoid duplicates by name)
       const newFoods = foodsToImport.filter(newFood =>
@@ -184,7 +186,8 @@ export async function POST(request: Request) {
     }
 
     // Get existing custom foods
-    const customFoods = user.profileData?.customFoods || []
+    const profileData = user.profileData as any
+    const customFoods = profileData?.customFoods || []
 
     // Check for duplicate
     if (customFoods.some(food => food.name === name)) {
@@ -248,7 +251,8 @@ export async function DELETE(request: Request) {
     }
 
     // Get existing custom foods
-    const customFoods = user.profileData?.customFoods || []
+    const profileData = user.profileData as any
+    const customFoods = profileData?.customFoods || []
 
     // Remove the food
     const filtered = customFoods.filter(food => food.name !== foodName)

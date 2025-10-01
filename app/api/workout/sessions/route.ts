@@ -132,20 +132,21 @@ export async function POST(request: Request) {
     await prisma.gamificationPoint.create({
       data: {
         userId: user.id,
-        points: 50, // 50 points per workout
-        category: 'workout',
-        description: 'Completed workout session',
-        awardedAt: new Date()
+        amount: 50, // 50 points per workout
+        pointType: 'workout',
+        activitySource: 'Completed workout session',
+        earnedAt: new Date()
       }
     })
 
     // Update daily task if exists
     const today = new Date().toISOString().split('T')[0]
+    const todayDate = new Date(today + 'T00:00:00.000Z')
     const dailyTask = await prisma.dailyTask.findFirst({
       where: {
         userId: user.id,
-        date: today,
-        category: 'workout'
+        date: todayDate,
+        taskName: 'workout'
       }
     })
 

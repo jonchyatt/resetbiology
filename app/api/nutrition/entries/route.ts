@@ -176,20 +176,21 @@ export async function POST(request: Request) {
       await prisma.gamificationPoint.create({
         data: {
           userId: user.id,
-          points: 10,
-          category: 'nutrition',
-          description: 'Logged nutrition for today',
-          awardedAt: new Date()
+          amount: 10,
+          pointType: 'nutrition',
+          activitySource: 'Logged nutrition for today',
+          earnedAt: new Date()
         }
       })
       pointsAwarded = 10
 
       // Update daily task
+      const todayDate = new Date(today + 'T00:00:00.000Z')
       const dailyTask = await prisma.dailyTask.findFirst({
         where: {
           userId: user.id,
-          date: today,
-          category: 'nutrition'
+          date: todayDate,
+          taskName: 'meals'
         }
       })
 
