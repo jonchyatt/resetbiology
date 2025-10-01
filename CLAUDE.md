@@ -135,12 +135,31 @@ claude mcp list  # Should show: chrome-devtools: ✓ Connected
 - **Deployment**: Vercel (primary), Cloudflare Pages (backup)
 - **Styling**: Tailwind CSS with custom design system
 
-## Authentication System (Auth0)
+## Authentication System (Auth0) - CRITICAL INFO
+
+### How It Works Now (October 1, 2025 Fix):
+1. **User logs in via Auth0** → Google OAuth
+2. **Auth0 callback** (`app/auth/callback/route.ts`) automatically:
+   - Checks if user exists by Auth0 ID
+   - If not, checks by email (handles Auth0 ID changes)
+   - Creates new user if needed
+   - Updates Auth0 ID if user exists with email
+3. **All API endpoints** check user via:
+   - Auth0 session → get user.sub
+   - Find user by auth0Sub OR email
+   - Auto-link if needed
+
+### Key Files:
 - **Domain**: dev-4n4ucz3too5e3w5j.us.auth0.com
-- **Current Version**: v4.10.0 (working - don't change!)
-- **Login Redirect**: Add `?returnTo=/portal` to login links
-- **Routes**: `/api/auth/[...auth0]`
-- **Status**: WORKING - Do not modify unless specifically broken
+- **Version**: v4.10.0 (WORKING - DON'T CHANGE!)
+- **Callback**: `/app/auth/callback/route.ts` (handles user creation)
+- **Middleware**: `/middleware.ts` (handles Auth0 session)
+- **User Lookup**: APIs use email fallback if Auth0 ID not found
+
+### Common Issues & Fixes:
+- **"User not found"**: User exists but Auth0 ID changed → APIs now auto-link by email
+- **Protocols not persisting**: Fixed - PeptideTracker now calls `fetchUserProtocols()`
+- **New users can't save data**: Fixed - callback auto-creates users
 
 ## Common Development Commands
 
@@ -193,13 +212,15 @@ DATABASE_URL="file:./dev.db" npx prisma db push
 ## 🔴 CURRENT PRIORITIES (Work on These First)
 
 ### 1. **Workout Tracking Page** (`/workout`)
-- Link exists but page not implemented
-- Create workout logging interface
+- ✅ Component exists at `src/components/Workout/WorkoutTracker.tsx`
+- ⚠️ NOT connected to database
+- Need to create `/api/workout` endpoints
 - Connect to WorkoutSession table
 
-### 2. **Nutrition Tracking Page** (`/nutrition`)  
-- Link exists but page not implemented
-- Create meal logging interface
+### 2. **Nutrition Tracking Page** (`/nutrition`)
+- ✅ Component exists at `src/components/Nutrition/NutritionTracker.tsx`
+- ⚠️ NOT connected to database
+- Need to create `/api/nutrition` endpoints
 - Connect to FoodEntry table
 
 ## 🟡 NEXT UP (After Priorities)
@@ -233,9 +254,17 @@ DATABASE_URL="file:./dev.db" npx prisma db push
 - Goal tracking
 - Partner payouts
 
-## ✅ RECENTLY COMPLETED (September 2025)
+## ✅ RECENTLY COMPLETED (October 2025)
 
-### Completed This Session:
+### Completed This Session (October 1, 2025):
+- ✅ **CRITICAL FIX: Auto-create users on Auth0 login** (`app/auth/callback/route.ts`)
+- ✅ **CRITICAL FIX: PeptideTracker loads saved protocols** (added `fetchUserProtocols()`)
+- ✅ **Fixed API routes location** (moved from `src/app/api` to `app/api`)
+- ✅ **Seeded peptides database** (10 core peptides available)
+- ✅ **Fixed API response format** (peptides endpoint returns correct structure)
+- ✅ **User lookup by email fallback** (handles Auth0 ID changes)
+
+### Previous Session (September 30, 2025):
 - ✅ Migrated project from WSL2 to Windows environment
 - ✅ Login redirect fix (added `?returnTo=/portal` parameter)
 - ✅ Journal link fixed (changed `/journal` to `#journal` for same-page scroll)
@@ -291,11 +320,14 @@ model WorkoutSession {
 ## 🎯 API Endpoints Status
 
 ### ✅ Working:
-- `/api/auth/[...auth0]` - Authentication
+- `/api/auth/callback` - Auth0 callback with auto user creation
+- `/api/peptides` - Peptide library
+- `/api/peptides/protocols` - User protocols (save/load)
+- `/api/peptides/doses` - Dose logging
 - `/api/profile/update` - Profile updates
 - `/api/daily-tasks` - Task management
 - `/api/journal/entry` - Journal entries
-- `/api/products` - Peptide management
+- `/api/products` - Legacy peptide management
 
 ### 🔴 Need to Build:
 - `/api/workout/*` - Workout tracking
