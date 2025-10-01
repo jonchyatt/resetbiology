@@ -53,15 +53,21 @@ export function PeptideTracker() {
 
   // Fetch peptide library and user protocols from database
   useEffect(() => {
-    fetchPeptideLibrary()
-    fetchUserProtocols()
-    fetchTodaysDoses()
-    fetchDoseHistory()
+    const loadData = async () => {
+      fetchPeptideLibrary()
+      // Load doses first, then protocols (so doses are in state when protocols generate pending)
+      await fetchTodaysDoses()
+      await fetchUserProtocols()
+      fetchDoseHistory()
+    }
+    loadData()
   }, [])
 
   // Auto-generate today's doses when protocols change (preserve existing logged doses)
   useEffect(() => {
-    generateTodaysDosesPreservingLogged(currentProtocols)
+    if (currentProtocols.length > 0) {
+      generateTodaysDosesPreservingLogged(currentProtocols)
+    }
   }, [currentProtocols])
 
   const fetchUserProtocols = async () => {
