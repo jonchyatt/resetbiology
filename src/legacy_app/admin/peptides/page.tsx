@@ -551,15 +551,22 @@ export default function AdminPeptidesPage() {
             <h2 className="text-xl font-bold text-white mb-6">Peptide Library ({peptides.length})</h2>
             
             <div className="space-y-4 max-h-96 overflow-y-auto">
-              {peptides.map((peptide) => (
-                <div key={peptide.id} className="bg-gradient-to-br from-gray-700/60 to-gray-800/60 backdrop-blur-sm rounded-lg p-4 border border-primary-400/20 shadow-lg hover:shadow-primary-400/10 transition-all duration-300">
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <h3 className="font-bold text-white">{peptide.name}</h3>
-                      <span className="text-sm text-primary-300 bg-primary-500/20 px-2 py-1 rounded-full">
-                        {peptide.purpose}
-                      </span>
-                    </div>
+              {peptides.map((peptide) => {
+                // Remove "- peptide" and "Package" suffix from display name
+                const displayName = peptide.name
+                  .replace(/\s*-\s*peptide\s*$/i, '')
+                  .replace(/\s+Package\s*$/i, '')
+                  .trim();
+
+                return (
+                  <div key={peptide.id} className="bg-gradient-to-br from-gray-700/60 to-gray-800/60 backdrop-blur-sm rounded-lg p-4 border border-primary-400/20 shadow-lg hover:shadow-primary-400/10 transition-all duration-300">
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <h3 className="font-bold text-white">{displayName}</h3>
+                        <span className="text-sm text-primary-300 bg-primary-500/20 px-2 py-1 rounded-full">
+                          {peptide.purpose}
+                        </span>
+                      </div>
                     <div className="flex gap-2">
                       <button
                         onClick={() => editPeptide(peptide)}
@@ -586,8 +593,9 @@ export default function AdminPeptidesPage() {
                   {peptide.description && (
                     <p className="text-sm text-gray-400 mt-2">{peptide.description}</p>
                   )}
-                </div>
-              ))}
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
