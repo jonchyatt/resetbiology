@@ -46,7 +46,7 @@ export function PeptideTracker() {
   const [customFrequency, setCustomFrequency] = useState('')
   const [customTiming, setCustomTiming] = useState('')
   const [customDuration, setCustomDuration] = useState('')
-  const [peptideLibrary, setPeptideLibrary] = useState<Omit<PeptideProtocol, 'id' | 'startDate' | 'currentCycle' | 'isActive'>[]>([])
+  const [peptideLibrary, setPeptideLibrary] = useState<Omit<PeptideProtocol, 'startDate' | 'currentCycle' | 'isActive'>[]>([])
   const [loadingLibrary, setLoadingLibrary] = useState(true)
   const [doseHistory, setDoseHistory] = useState<any[]>([])
   const [loadingHistory, setLoadingHistory] = useState(false)
@@ -117,6 +117,7 @@ export function PeptideTracker() {
       if (data.success && data.data) {
         // Transform API data to match our interface
         const formattedLibrary = data.data.map((peptide: any) => ({
+          id: peptide.id,
           name: peptide.name,
           purpose: peptide.category || 'General',
           dosage: peptide.dosage || '250mcg',
