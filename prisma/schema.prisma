@@ -238,8 +238,8 @@ model peptide_orders {
 
 model user_peptide_protocols {
   id            String          @id @default(auto()) @map("_id") @db.ObjectId
-  userId        String
-  peptideId     String
+  userId        String          @db.ObjectId
+  peptideId     String          @db.ObjectId
   startDate     DateTime        @default(now())
   endDate       DateTime?
   dosage        String
