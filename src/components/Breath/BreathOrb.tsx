@@ -155,12 +155,12 @@ export function BreathOrb({ state, isInhale, progress, motionReduced, currentHol
       {/* State Label - Only show during active phases, hide "Ready to Begin" */}
       {state !== 'idle' && (
         <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
-          <div className="backdrop-blur-sm px-6 py-3 rounded-full text-base font-semibold border transition-all duration-300 bg-black/60 text-white border-white/20">
+          <div className="backdrop-blur-sm px-6 py-3 rounded-full text-base font-semibold border transition-all duration-300 bg-black/60 text-white border-white/20 text-center">
             {state === 'breathing_active' && (isInhale ? 'Inhale' : 'Exhale')}
             {state === 'exhale_hold_ready' && 'Ready for Exhale Hold'}
-            {state === 'exhale_hold_active' && `Exhale Hold: ${(currentHoldDuration / 1000).toFixed(1)}s`}
+            {state === 'exhale_hold_active' && `Exhale Hold: ${Math.floor(currentHoldDuration / 1000)}s`}
             {state === 'inhale_hold_ready' && 'Ready for Inhale Hold'}
-            {state === 'inhale_hold_active' && `Inhale Hold: ${(currentHoldDuration / 1000).toFixed(1)}s`}
+            {state === 'inhale_hold_active' && `Inhale Hold: ${Math.floor(currentHoldDuration / 1000)}s`}
             {state === 'cycle_complete' && 'Cycle Complete'}
             {state === 'paused' && 'Paused'}
             {state === 'session_complete' && 'Session Complete'}
