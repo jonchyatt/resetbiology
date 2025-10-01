@@ -11,10 +11,25 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Find user by Auth0 sub
-    const user = await prisma.user.findUnique({
+    // Find user by Auth0 sub OR email
+    let user = await prisma.user.findUnique({
       where: { auth0Sub: session.user.sub }
     })
+
+    // If not found by auth0Sub, try by email
+    if (!user && session.user.email) {
+      user = await prisma.user.findUnique({
+        where: { email: session.user.email }
+      })
+
+      // Update auth0Sub if found by email
+      if (user) {
+        user = await prisma.user.update({
+          where: { id: user.id },
+          data: { auth0Sub: session.user.sub }
+        })
+      }
+    }
 
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
@@ -116,10 +131,25 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Find user by Auth0 sub
-    const user = await prisma.user.findUnique({
+    // Find user by Auth0 sub OR email
+    let user = await prisma.user.findUnique({
       where: { auth0Sub: session.user.sub }
     })
+
+    // If not found by auth0Sub, try by email
+    if (!user && session.user.email) {
+      user = await prisma.user.findUnique({
+        where: { email: session.user.email }
+      })
+
+      // Update auth0Sub if found by email
+      if (user) {
+        user = await prisma.user.update({
+          where: { id: user.id },
+          data: { auth0Sub: session.user.sub }
+        })
+      }
+    }
 
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
