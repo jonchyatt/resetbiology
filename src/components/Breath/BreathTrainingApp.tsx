@@ -592,58 +592,58 @@ export function BreathTrainingApp({ onSessionComplete }: BreathTrainingAppProps)
 
       {/* Session Complete Modal */}
       {state === 'session_complete' && completedCycles.length > 0 && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50" onClick={() => setState('idle')}>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50" onClick={() => setState('idle')}>
           <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-3xl p-4">
-            <div className="bg-gradient-to-br from-gray-900/95 to-gray-800/95 backdrop-blur-md rounded-2xl shadow-2xl border border-primary-400/50 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-            <div className="p-8">
-              <div className="text-center mb-8">
-                <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-primary-400 to-secondary-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-2xl">🌬️</span>
+            <div className="bg-gradient-to-br from-slate-900/98 to-slate-800/98 backdrop-blur-md rounded-xl shadow-2xl border border-slate-700/50 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="p-6">
+              <div className="text-center mb-6">
+                <div className="w-16 h-16 mx-auto mb-3 bg-gradient-to-br from-primary-400 to-secondary-500 rounded-full flex items-center justify-center shadow-lg">
+                  <span className="text-white text-xl">🌬️</span>
                 </div>
-                <h2 className="text-3xl font-bold text-white mb-2 drop-shadow-lg">Session Complete!</h2>
-                <p className="text-lg text-gray-200 drop-shadow-sm">You've mastered another breathing session</p>
+                <h2 className="text-2xl font-bold text-white mb-1 drop-shadow-lg">Session Complete!</h2>
+                <p className="text-base text-gray-300">You've mastered another breathing session</p>
               </div>
               
               {/* Performance Summary */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 max-w-2xl mx-auto">
-                <div className="text-center p-4 bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl border border-amber-200">
-                  <div className="text-2xl font-bold text-amber-600">{(bestExhaleHold / 1000).toFixed(1)}s</div>
-                  <div className="text-sm text-amber-700 font-medium">Best Exhale Hold</div>
+              <div className="grid grid-cols-3 gap-3 mb-6">
+                <div className="text-center p-3 bg-gradient-to-br from-amber-900/40 to-amber-800/40 rounded-lg border border-amber-700/30">
+                  <div className="text-xl font-bold text-amber-400">{(bestExhaleHold / 1000).toFixed(1)}s</div>
+                  <div className="text-xs text-amber-300/80 font-medium">Best Exhale Hold</div>
                 </div>
-                <div className="text-center p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-xl border border-green-200">
-                  <div className="text-2xl font-bold text-green-600">{(bestInhaleHold / 1000).toFixed(1)}s</div>
-                  <div className="text-sm text-green-700 font-medium">Best Inhale Hold</div>
+                <div className="text-center p-3 bg-gradient-to-br from-green-900/40 to-green-800/40 rounded-lg border border-green-700/30">
+                  <div className="text-xl font-bold text-green-400">{(bestInhaleHold / 1000).toFixed(1)}s</div>
+                  <div className="text-xs text-green-300/80 font-medium">Best Inhale Hold</div>
                 </div>
-                <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl border border-blue-200">
-                  <div className="text-2xl font-bold text-blue-600">{completedCycles.length}</div>
-                  <div className="text-sm text-blue-700 font-medium">Cycles Completed</div>
+                <div className="text-center p-3 bg-gradient-to-br from-blue-900/40 to-blue-800/40 rounded-lg border border-blue-700/30">
+                  <div className="text-xl font-bold text-blue-400">{completedCycles.length}</div>
+                  <div className="text-xs text-blue-300/80 font-medium">Cycles Completed</div>
                 </div>
               </div>
 
               {/* Detailed Cycle Results */}
-              <div className="mb-8">
-                <h3 className="text-xl font-semibold text-white mb-4">Cycle Details</h3>
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold text-white mb-3">Cycle Details</h3>
                 <div className="overflow-x-auto">
-                  <table className="w-full text-sm border border-primary-400/30 rounded-lg overflow-hidden">
-                    <thead className="bg-gray-800/50">
+                  <table className="w-full text-sm border border-slate-700/50 rounded-lg overflow-hidden">
+                    <thead className="bg-slate-800/60">
                       <tr>
-                        <th className="text-left py-3 px-4 font-medium text-gray-200">Cycle</th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-200">Breaths</th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-200">Breathing Time</th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-200">Exhale Hold</th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-200">Inhale Hold</th>
+                        <th className="text-left py-2 px-3 font-medium text-gray-300 text-xs">Cycle</th>
+                        <th className="text-left py-2 px-3 font-medium text-gray-300 text-xs">Breaths</th>
+                        <th className="text-left py-2 px-3 font-medium text-gray-300 text-xs">Breathing Time</th>
+                        <th className="text-left py-2 px-3 font-medium text-gray-300 text-xs">Exhale Hold</th>
+                        <th className="text-left py-2 px-3 font-medium text-gray-300 text-xs">Inhale Hold</th>
                       </tr>
                     </thead>
                     <tbody>
                       {completedCycles.map((cycle, index) => (
-                        <tr key={index} className="border-t border-gray-700/30 bg-gray-800/30">
-                          <td className="py-3 px-4 font-medium text-white">{cycle.cycleIndex}</td>
-                          <td className="py-3 px-4 text-gray-200">{cycle.breathing.actualBreaths}</td>
-                          <td className="py-3 px-4 text-gray-200">{Math.round(cycle.breathing.actualDurationMs / 1000)}s</td>
-                          <td className="py-3 px-4 text-amber-400 font-medium">
+                        <tr key={index} className="border-t border-slate-700/30">
+                          <td className="py-2 px-3 font-medium text-white text-sm">{cycle.cycleIndex}</td>
+                          <td className="py-2 px-3 text-gray-300 text-sm">{cycle.breathing.actualBreaths}</td>
+                          <td className="py-2 px-3 text-gray-300 text-sm">{Math.round(cycle.breathing.actualDurationMs / 1000)}s</td>
+                          <td className="py-2 px-3 text-amber-400 font-medium text-sm">
                             {(cycle.exhaleHold.durationMs / 1000).toFixed(1)}s
                           </td>
-                          <td className="py-3 px-4 text-green-400 font-medium">
+                          <td className="py-2 px-3 text-green-400 font-medium text-sm">
                             {(cycle.inhaleHold.durationMs / 1000).toFixed(1)}s
                           </td>
                         </tr>
@@ -654,10 +654,10 @@ export function BreathTrainingApp({ onSessionComplete }: BreathTrainingAppProps)
               </div>
 
               {/* Primary Actions */}
-              <div className="flex gap-4 mb-4">
+              <div className="flex gap-3 mb-3">
                 <a
-                  href="/portal" 
-                  className="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-bold py-4 px-6 rounded-xl transition-colors text-center"
+                  href="/portal"
+                  className="flex-1 bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors text-center text-sm"
                 >
                   Continue to Portal →
                 </a>
@@ -666,14 +666,14 @@ export function BreathTrainingApp({ onSessionComplete }: BreathTrainingAppProps)
                     setState('idle')
                     setCompletedCycles([])
                   }}
-                  className="bg-secondary-500 hover:bg-secondary-600 text-white font-bold py-4 px-6 rounded-xl transition-colors"
+                  className="bg-secondary-600 hover:bg-secondary-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors text-sm"
                 >
                   New Session
                 </button>
               </div>
 
               {/* Secondary Actions */}
-              <div className="flex gap-3">
+              <div className="flex gap-2">
                 <button
                   onClick={async () => {
                     const sessions = await storage.getAllSessions(1)
@@ -690,7 +690,7 @@ export function BreathTrainingApp({ onSessionComplete }: BreathTrainingAppProps)
                       URL.revokeObjectURL(url)
                     }
                   }}
-                  className="flex-1 bg-gray-700/50 hover:bg-gray-600/50 text-gray-200 font-medium py-3 px-4 rounded-lg transition-colors text-sm border border-gray-600/30"
+                  className="flex-1 bg-slate-800/60 hover:bg-slate-700/60 text-gray-300 font-medium py-2.5 px-3 rounded-lg transition-colors text-xs border border-slate-600/40"
                 >
                   Export CSV
                 </button>
@@ -722,9 +722,9 @@ export function BreathTrainingApp({ onSessionComplete }: BreathTrainingAppProps)
                       alert('Export error: ' + error)
                     }
                   }}
-                  className="flex-1 bg-gray-700/50 hover:bg-gray-600/50 text-gray-200 font-medium py-3 px-4 rounded-lg transition-colors text-sm flex items-center justify-center gap-2 border border-gray-600/30"
+                  className="flex-1 bg-slate-800/60 hover:bg-slate-700/60 text-gray-300 font-medium py-2.5 px-3 rounded-lg transition-colors text-xs flex items-center justify-center gap-1.5 border border-slate-600/40"
                 >
-                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                  <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M19.35 10.04A7.49 7.49 0 0 0 12 4C9.11 4 6.6 5.64 5.35 8.04A5.994 5.994 0 0 0 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
                   </svg>
                   Export to Sheets
