@@ -15,7 +15,9 @@
       "Bash(npx vercel:*)",
       "Bash(git rm:*)",
       "Bash(npm run dev:*)",
-      "Bash(npx prisma generate:*)"
+      "Bash(npx prisma generate:*)",
+      "Bash(node:*)",
+      "Bash(npx tsx:*)"
     ],
     "deny": [],
     "ask": [],
