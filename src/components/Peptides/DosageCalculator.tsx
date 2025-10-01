@@ -621,16 +621,16 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
               </label>
               <label className="flex flex-col gap-1">
                 <span className="text-sm text-gray-300">Peptide in vial (mg)</span>
-                <select
+                <input
+                  type="number"
                   aria-label="Peptide amount in vial"
                   value={inputs.peptideAmount}
-                  onChange={(e) => setInputs((s) => ({ ...s, peptideAmount: parseFloat(e.target.value) }))}
-                  className="bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
-                >
-                  {[2, 5, 10, 15, 20].map((mg) => (
-                    <option key={mg} value={mg}>{mg} mg</option>
-                  ))}
-                </select>
+                  onChange={(e) => setInputs((s) => ({ ...s, peptideAmount: parseFloat(e.target.value) || 0 }))}
+                  placeholder="e.g., 10, 50, 100"
+                  min="0"
+                  step="1"
+                  className="bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-primary-400 focus:outline-none"
+                />
               </label>
             </div>
             <div className="flex items-center gap-2 pt-2">
@@ -728,12 +728,6 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
 
         {/* Results & Instructions */}
         <div className="space-y-4">
-          <ReconstitutionGuide
-            peptideAmount={inputs.peptideAmount}
-            volume={inputs.totalVolume}
-            instructions={PEPTIDE_PRESETS.find((p) => p.name === selectedPreset)?.instructions}
-          />
-
           <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30" role="status" aria-live="polite">
             <h3 className="text-lg font-semibold text-white mb-2">Results</h3>
             <div className="grid grid-cols-2 gap-3 text-sm">
@@ -752,6 +746,12 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
             </div>
             <div className="mt-3 text-xs text-gray-400">Formula: volume (ml) = dose (mcg) / concentration (mcg/ml)</div>
           </div>
+
+          <ReconstitutionGuide
+            peptideAmount={inputs.peptideAmount}
+            volume={inputs.totalVolume}
+            instructions={PEPTIDE_PRESETS.find((p) => p.name === selectedPreset)?.instructions}
+          />
 
           {/* Duration - Only in addProtocol mode */}
           {mode === 'addProtocol' && (

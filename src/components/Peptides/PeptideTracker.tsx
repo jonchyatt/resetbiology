@@ -601,9 +601,6 @@ export function PeptideTracker() {
         <div className="flex items-start justify-between mb-4">
           <div>
             <h3 className="text-xl font-bold text-white">{displayName}</h3>
-            <span className="inline-block bg-primary-500/20 text-primary-300 text-sm px-2 py-1 rounded-full mt-1">
-              {protocol.purpose}
-            </span>
           </div>
           <div className="flex items-center gap-2">
             <div className={`px-3 py-1 rounded-full text-sm font-semibold ${
@@ -649,15 +646,8 @@ export function PeptideTracker() {
             View Schedule
           </button>
           <button
-            onClick={() => openCalculatorModal(protocol)}
-            className="bg-amber-600/30 hover:bg-amber-600/50 text-amber-200 font-medium py-2 px-4 rounded-lg transition-colors text-sm flex items-center"
-          >
-            <Calculator className="w-4 h-4 mr-1" />
-            Calculate
-          </button>
-          <button
             onClick={() => openDoseModal(protocol)}
-            className="bg-secondary-600/30 hover:bg-secondary-600/50 text-secondary-200 font-medium py-2 px-4 rounded-lg transition-colors text-sm"
+            className="flex-1 bg-secondary-600/30 hover:bg-secondary-600/50 text-secondary-200 font-medium py-2 px-4 rounded-lg transition-colors text-sm"
           >
             Log Dose
           </button>
