@@ -195,8 +195,9 @@ export function PeptideTracker() {
   }
 
   // Fallback library in case API fails
-  const fallbackLibrary: Omit<PeptideProtocol, 'id' | 'startDate' | 'currentCycle' | 'isActive'>[] = [
+  const fallbackLibrary: Omit<PeptideProtocol, 'startDate' | 'currentCycle' | 'isActive'>[] = [
     {
+      id: 'fallback-1',
       name: "Semaglutide",
       purpose: "Fat Loss",
       dosage: "250mcg",
@@ -208,6 +209,7 @@ export function PeptideTracker() {
       syringeUnits: 17
     },
     {
+      id: 'fallback-2',
       name: "BPC-157",
       purpose: "Healing",
       dosage: "500mcg",
