@@ -205,19 +205,6 @@ export function NutritionTracker() {
     return groups
   }, [currentDay.foods])
 
-  const addFood = (f: Omit<FoodEntry, "id" | "time"> & { time?: string }) => {
-    setCurrentDay(prev => ({
-      ...prev,
-      foods: [
-        ...prev.foods,
-        {
-          ...f,
-          id: crypto.randomUUID(),
-          time: f.time ?? new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        }
-      ]
-    }))
-  }
 
   const removeFood = (id: string) => setCurrentDay(prev => ({
     ...prev,
@@ -400,7 +387,8 @@ export function NutritionTracker() {
           foods={foodIndex}
           onClose={() => setIsSearchOpen(false)}
           onAdd={(payload) => {
-            addFood(payload)
+            // FoodSearch returns the food data, we need to add a default category
+            addFood(payload, 'meal' as MealCategory)
             setIsSearchOpen(false)
           }}
         />
