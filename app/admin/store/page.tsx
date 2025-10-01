@@ -150,7 +150,7 @@ export default async function AdminStorePage() {
            backgroundAttachment: 'fixed'
          }}>
       {/* Admin Navigation Bar */}
-      <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm shadow-2xl border-b border-primary-400/30">
+      <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm shadow-2xl border-b border-primary-400/30 mt-16">
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
@@ -165,16 +165,10 @@ export default async function AdminStorePage() {
             </div>
             <div className="flex items-center gap-4">
               <Link href="/admin" className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
-                ← Dashboard
+                Dashboard
               </Link>
-              <Link href="/admin/peptides" className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
-                Peptides
-              </Link>
-              <Link href="/admin/store" className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
-                Store
-              </Link>
-              <Link href="/portal" className="text-gray-400 hover:text-gray-300 font-medium text-sm transition-colors drop-shadow-sm">
-                View Portal
+              <Link href="/portal" className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
+                Portal
               </Link>
             </div>
           </div>

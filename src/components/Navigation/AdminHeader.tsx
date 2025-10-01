@@ -10,7 +10,7 @@ export function AdminHeader({
   subtitle
 }: AdminHeaderProps) {
   return (
-    <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm shadow-2xl border-b border-primary-400/30">
+    <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm shadow-2xl border-b border-primary-400/30 mt-16">
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
@@ -25,16 +25,10 @@ export function AdminHeader({
           </div>
           <div className="flex items-center gap-4">
             <a href="/admin" className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
-              ← Dashboard
+              Dashboard
             </a>
-            <a href="/admin/peptides" className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
-              Peptides
-            </a>
-            <a href="/admin/store" className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
-              Store
-            </a>
-            <a href="/portal" className="text-gray-400 hover:text-gray-300 font-medium text-sm transition-colors drop-shadow-sm">
-              View Portal
+            <a href="/portal" className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
+              Portal
             </a>
           </div>
         </div>
