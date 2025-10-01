@@ -584,10 +584,19 @@ export function PeptideTracker() {
             {protocol.purpose}
           </span>
         </div>
-        <div className={`px-3 py-1 rounded-full text-sm font-semibold ${
-          protocol.isActive ? 'bg-green-500/20 text-green-300' : 'bg-gray-500/20 text-gray-300'
-        }`}>
-          {protocol.isActive ? 'Active' : 'Paused'}
+        <div className="flex items-center gap-2">
+          <div className={`px-3 py-1 rounded-full text-sm font-semibold ${
+            protocol.isActive ? 'bg-green-500/20 text-green-300' : 'bg-gray-500/20 text-gray-300'
+          }`}>
+            {protocol.isActive ? 'Active' : 'Paused'}
+          </div>
+          <button
+            onClick={() => deleteProtocol(protocol.id)}
+            className="text-red-400 hover:text-red-300 transition-colors"
+            title="Delete Protocol"
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
       </div>
 
@@ -640,13 +649,6 @@ export function PeptideTracker() {
           className="bg-secondary-600/30 hover:bg-secondary-600/50 text-secondary-200 font-medium py-2 px-4 rounded-lg transition-colors text-sm"
         >
           Log Dose
-        </button>
-        <button
-          onClick={() => deleteProtocol(protocol.id)}
-          className="bg-red-600/30 hover:bg-red-600/50 text-red-200 font-medium py-2 px-4 rounded-lg transition-colors text-sm"
-          title="Delete Protocol"
-        >
-          <X className="w-4 h-4" />
         </button>
       </div>
     </div>
