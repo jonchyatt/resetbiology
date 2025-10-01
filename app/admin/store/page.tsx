@@ -149,21 +149,44 @@ export default async function AdminStorePage() {
            backgroundPosition: 'center',
            backgroundAttachment: 'fixed'
          }}>
+      {/* Admin Navigation Bar */}
+      <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm shadow-2xl border-b border-primary-400/30">
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <img
+                src="/logo1.png"
+                alt="Reset Biology"
+                className="h-8 w-auto mr-3 rounded-lg drop-shadow-lg bg-white/10 backdrop-blur-sm p-1 border border-white/20"
+              />
+              <h1 className="text-xl font-bold text-white drop-shadow-lg">Admin</h1>
+              <span className="mx-2 text-primary-300">•</span>
+              <span className="text-lg text-gray-200 drop-shadow-sm">Store Management</span>
+            </div>
+            <div className="flex items-center gap-4">
+              <Link href="/admin" className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
+                ← Dashboard
+              </Link>
+              <Link href="/admin/peptides" className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
+                Peptides
+              </Link>
+              <Link href="/admin/store" className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
+                Store
+              </Link>
+              <Link href="/portal" className="text-gray-400 hover:text-gray-300 font-medium text-sm transition-colors drop-shadow-sm">
+                View Portal
+              </Link>
+            </div>
+          </div>
+          <p className="text-gray-300 text-sm mt-1">Manage your products, pricing, and Stripe integration</p>
+        </div>
+      </div>
       <div className="relative z-10">
         {/* Header */}
-        <div className="text-center pt-24 pb-8">
-          <div className="mb-4">
-            <Link href="/admin" className="inline-flex items-center text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
-              ← Back to Admin Dashboard
-            </Link>
-          </div>
-          <h1 className="text-2xl font-bold text-primary-300 mb-2">Admin Portal • Store Management</h1>
+        <div className="text-center pt-16 pb-8">
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 text-shadow-lg animate-fade-in">
             <span className="text-primary-400">Product</span> <span className="text-secondary-400">Catalog</span>
           </h2>
-          <p className="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto font-medium leading-relaxed drop-shadow-sm px-4">
-            Manage your products, pricing, and Stripe integration
-          </p>
         </div>
 
         <div className="container mx-auto px-4 pb-12">

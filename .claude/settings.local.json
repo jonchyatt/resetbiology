@@ -23,7 +23,8 @@
       "Bash(dir:*)",
       "Bash(npm install:*)",
       "Bash(npx playwright install:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(findstr:*)"
     ],
     "deny": [],
     "ask": [],

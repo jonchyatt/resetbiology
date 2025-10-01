@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Plus, Save, Trash2, Edit } from "lucide-react"
+import { AdminHeader } from "@/components/Navigation/AdminHeader"
 
 interface AdminPeptide {
   id?: string
@@ -685,15 +686,13 @@ export default function AdminPeptidesPage() {
            backgroundPosition: 'center',
            backgroundAttachment: 'fixed'
          }}>
+      <AdminHeader section="Peptide Management" subtitle="Add, edit, and manage peptides in the library" />
       <div className="relative z-10">
         <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 mb-8 shadow-xl hover:shadow-primary-400/20 transition-all duration-300">
           <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-2xl font-bold text-white">Admin: Peptide Management</h1>
-              <p className="text-gray-300 mt-1">Add, edit, and manage peptides in the library</p>
-            </div>
+            <div className="flex-1"></div>
             <div className="flex gap-3 flex-wrap">
               <button
                 onClick={importFromScreenshots}
