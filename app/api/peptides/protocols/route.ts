@@ -341,19 +341,14 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: 'Access denied' }, { status: 403 })
     }
 
-    // Delete all doses associated with this protocol first
-    await prisma.peptide_doses.deleteMany({
-      where: { protocolId }
-    })
-
-    // Delete the protocol
+    // Delete the protocol (keep dose history for historical record)
     await prisma.user_peptide_protocols.delete({
       where: { id: protocolId }
     })
 
     return NextResponse.json({
       success: true,
-      message: 'Protocol and associated doses deleted successfully'
+      message: 'Protocol deleted successfully. Dose history preserved.'
     })
 
   } catch (error) {

@@ -547,7 +547,7 @@ export function PeptideTracker() {
   }
 
   const deleteProtocol = async (protocolId: string) => {
-    if (!confirm('Are you sure you want to delete this protocol? This will also delete all associated doses.')) {
+    if (!confirm('Are you sure you want to delete this protocol? Your dose history will be preserved.')) {
       return
     }
 
