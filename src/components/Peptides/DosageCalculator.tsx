@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import { Calculator as CalcIcon, Beaker, Save, Import, AlertCircle } from "lucide-react";
+import { Calculator as CalcIcon, Save, Import, AlertCircle } from "lucide-react";
 
 /*********************************
  * Types
@@ -221,199 +221,8 @@ const ReconstitutionGuide: React.FC<{ peptideAmount: number; volume: number; ins
     );
   };
 
-/*********************************
- * Unit Converter Widget
- *********************************/
-const UnitConverter: React.FC = () => {
-  const [mg, setMg] = useState<string>("");
-  const [mcg, setMcg] = useState<string>("");
-  const [iu, setIu] = useState<string>("");
 
-  // Example IU helpers for common peptides (placeholder ratios)
-  // Note: IU conversions are peptide-specific and require known IU/mcg.
-  // Values below are examples only; adjust with clinical data.
-  const [iuPerMcg, setIuPerMcg] = useState<number>(0); // default no auto-conversion
 
-  useEffect(() => {
-    // mg ↔ mcg sync
-    const nMg = parseFloat(mg);
-    if (!isNaN(nMg)) setMcg((nMg * 1000).toString());
-    else if (!mcg) setMcg("");
-  }, [mg]);
-
-  useEffect(() => {
-    const nMcg = parseFloat(mcg);
-    if (!isNaN(nMcg)) setMg((nMcg / 1000).toString());
-    else if (!mg) setMg("");
-
-    if (iuPerMcg > 0 && !isNaN(nMcg)) setIu((nMcg * iuPerMcg).toString());
-    else if (!mcg) setIu("");
-  }, [mcg, iuPerMcg]);
-
-  return (
-    <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30 space-y-3">
-      <div className="flex items-center gap-2">
-        <Beaker className="w-5 h-5 text-primary-400" />
-        <h4 className="text-white font-semibold">Unit Converter</h4>
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <label className="flex flex-col gap-1">
-          <span className="text-gray-300 text-sm">mg</span>
-          <input
-            aria-label="Milligrams"
-            value={mg}
-            onChange={(e) => setMg(e.target.value)}
-            className="bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-primary-400 focus:outline-none"
-            placeholder="e.g., 0.5"
-            inputMode="decimal"
-          />
-        </label>
-        <label className="flex flex-col gap-1">
-          <span className="text-gray-300 text-sm">mcg</span>
-          <input
-            aria-label="Micrograms"
-            value={mcg}
-            onChange={(e) => setMcg(e.target.value)}
-            className="bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-primary-400 focus:outline-none"
-            placeholder="e.g., 500"
-            inputMode="decimal"
-          />
-        </label>
-        <label className="flex flex-col gap-1">
-          <span className="text-gray-300 text-sm">IU (optional mapping)</span>
-          <input
-            aria-label="International Units"
-            value={iu}
-            onChange={(e) => setIu(e.target.value)}
-            className="bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-primary-400 focus:outline-none"
-            placeholder="depends on peptide"
-            inputMode="decimal"
-          />
-        </label>
-      </div>
-      <div className="flex items-center gap-2 text-gray-300 text-xs">
-        <AlertCircle className="w-4 h-4 text-amber-300" />
-        <span>
-          IU conversion is peptide-specific. Set a ratio (IU per mcg) if known:
-        </span>
-      </div>
-      <div className="flex items-center gap-3">
-        <label className="text-gray-300 text-sm">IU per mcg</label>
-        <input
-          aria-label="IU per microgram"
-          value={iuPerMcg}
-          onChange={(e) => setIuPerMcg(parseFloat(e.target.value) || 0)}
-          className="bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-primary-400 focus:outline-none w-32"
-          placeholder="0"
-          inputMode="decimal"
-        />
-      </div>
-    </div>
-  );
-};
-
-/*********************************
- * Storage Calculator
- *********************************/
-const StorageCalculator: React.FC<{ reconstitutedDate?: Date }>
-  = ({ reconstitutedDate }) => {
-    const [date, setDate] = useState<string>(() => reconstitutedDate ? new Date(reconstitutedDate).toISOString().slice(0, 10) : "");
-
-    const { expiresOn, daysRemaining } = useMemo(() => {
-      if (!date) return { expiresOn: "", daysRemaining: NaN };
-      const base = new Date(date + "T00:00:00");
-      const expiry = new Date(base);
-      expiry.setDate(expiry.getDate() + 30);
-      const now = new Date();
-      const diffMs = expiry.getTime() - now.getTime();
-      const days = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-      return { expiresOn: expiry.toISOString().slice(0, 10), daysRemaining: days };
-    }, [date]);
-
-    return (
-      <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30 space-y-3">
-        <div className="flex items-center gap-2">
-          <Beaker className="w-5 h-5 text-primary-400" />
-          <h4 className="text-white font-semibold">Storage & Expiry</h4>
-        </div>
-        <label className="flex flex-col gap-1">
-          <span className="text-gray-300 text-sm">Reconstituted on</span>
-          <input
-            aria-label="Reconstitution date"
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            className="bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-primary-400 focus:outline-none w-56"
-          />
-        </label>
-        <div className="text-gray-300 text-sm">
-          <div>Expires on: <span className="text-white font-medium">{expiresOn || "—"}</span></div>
-          <div>
-            Days remaining: {Number.isFinite(daysRemaining) ? (
-              <span className={daysRemaining <= 7 ? "text-amber-300" : "text-secondary-600 font-semibold"}>{daysRemaining} day{daysRemaining === 1 ? "" : "s"}</span>
-            ) : "—"}
-          </div>
-          <ul className="mt-2 list-disc list-inside text-xs text-gray-400">
-            <li>Store at 2–8°C (refrigerated). Avoid freezing.</li>
-            <li>Minimize exposure to light. Use sterile technique.</li>
-          </ul>
-        </div>
-      </div>
-    );
-  };
-
-/*********************************
- * BAC Water Calculator
- *********************************/
-const BACWaterCalculator: React.FC<{ desiredConcentration: number; peptideAmount: number }>
-  = ({ desiredConcentration, peptideAmount }) => {
-    const [mcgPerMl, setMcgPerMl] = useState<number>(desiredConcentration);
-    const [mgInVial, setMgInVial] = useState<number>(peptideAmount);
-
-    const volumeNeeded = useMemo(() => {
-      if (mcgPerMl <= 0 || mgInVial <= 0) return 0;
-      const totalMcg = mgInVial * 1000;
-      return totalMcg / mcgPerMl; // ml
-    }, [mcgPerMl, mgInVial]);
-
-    return (
-      <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30 space-y-3">
-        <div className="flex items-center gap-2">
-          <Beaker className="w-5 h-5 text-primary-400" />
-          <h4 className="text-white font-semibold">BAC Water Calculator</h4>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <label className="flex flex-col gap-1">
-            <span className="text-gray-300 text-sm">Target concentration (mcg/ml)</span>
-            <input
-              aria-label="Target concentration in micrograms per milliliter"
-              value={mcgPerMl}
-              onChange={(e) => setMcgPerMl(parseFloat(e.target.value) || 0)}
-              className="bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-primary-400 focus:outline-none"
-              inputMode="decimal"
-            />
-          </label>
-          <label className="flex flex-col gap-1">
-            <span className="text-gray-300 text-sm">Peptide in vial (mg)</span>
-            <input
-              aria-label="Peptide amount in milligrams"
-              value={mgInVial}
-              onChange={(e) => setMgInVial(parseFloat(e.target.value) || 0)}
-              className="bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-primary-400 focus:outline-none"
-              inputMode="decimal"
-            />
-          </label>
-          <div className="flex flex-col gap-1">
-            <span className="text-gray-300 text-sm">BAC water to add (ml)</span>
-            <div className="px-3 py-2 rounded-lg border border-gray-600/30 bg-gray-800/40 text-white">
-              {formatNumber(volumeNeeded, 2)}
-            </div>
-          </div>
-        </div>
-        <p className="text-xs text-gray-400">This helps plan reconstitution to hit an exact concentration.</p>
-      </div>
-    );
-  };
 
 /*********************************
  * Main Dosage Calculator Component
@@ -662,26 +471,16 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <label className="flex flex-col gap-1">
                 <span className="text-sm text-gray-300">Total volume (ml)</span>
-                <div className="flex gap-2">
-                  <select
-                    aria-label="Common total volume options"
-                    onChange={(e) => setInputs((s) => ({ ...s, totalVolume: parseFloat(e.target.value) }))}
-                    value={inputs.totalVolume}
-                    className="bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
-                  >
-                    {[0.5, 1, 1.5, 2, 2.5, 3].map((v) => (
-                      <option key={v} value={v}>{v} ml</option>
-                    ))}
-                  </select>
-                  <input
-                    aria-label="Custom total volume"
-                    inputMode="decimal"
-                    placeholder="custom"
-                    className="flex-1 bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
-                    value={inputs.totalVolume}
-                    onChange={(e) => setInputs((s) => ({ ...s, totalVolume: parseFloat(e.target.value) || 0 }))}
-                  />
-                </div>
+                <select
+                  aria-label="Total volume"
+                  onChange={(e) => setInputs((s) => ({ ...s, totalVolume: parseFloat(e.target.value) }))}
+                  value={inputs.totalVolume}
+                  className="bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none w-full"
+                >
+                  {[0.5, 1, 1.5, 2, 2.5, 3].map((v) => (
+                    <option key={v} value={v}>{v} ml</option>
+                  ))}
+                </select>
               </label>
               <label className="flex flex-col gap-1">
                 <span className="text-sm text-gray-300">Peptide in vial (mg)</span>
@@ -776,13 +575,6 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                 Save Preset
               </button>
             </div>
-          </div>
-
-          {/* Tools */}
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-            <UnitConverter />
-            <StorageCalculator />
-            <BACWaterCalculator desiredConcentration={displayConcentration} peptideAmount={inputs.peptideAmount} />
           </div>
         </div>
       </div>
