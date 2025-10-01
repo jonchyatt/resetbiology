@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Plus, Save, Trash2, Edit } from "lucide-react"
 
 interface AdminPeptide {
@@ -20,7 +20,8 @@ interface AdminPeptide {
 }
 
 export default function AdminPeptidesPage() {
-  const [peptides, setPeptides] = useState<AdminPeptide[]>([
+  const [peptides, setPeptides] = useState<AdminPeptide[]>([])
+  const [initialPeptides] = useState<AdminPeptide[]>([
     {
       id: "admin-1",
       name: "Ipamorelin",
@@ -286,7 +287,42 @@ export default function AdminPeptidesPage() {
   const purposes = ["Fat Loss", "Muscle Building", "Recovery", "Anti-Aging", "Cognitive", "Healing", "Longevity", "Immunity", "Cognitive Enhancement", "Other"]
   const frequencies = ["Daily", "Every other day", "Every Day", "3x per week", "2x per week", "5 days on, 2 days off", "Once per week", "Custom cycle"]
   const timings = ["AM", "PM", "AM/PM", "Twice daily", "Before meals", "After meals", "Custom timing"]
-  
+
+  // Fetch peptides from database on mount
+  useEffect(() => {
+    const fetchPeptides = async () => {
+      try {
+        const response = await fetch('/api/peptides')
+        const data = await response.json()
+        if (data.success && data.data && data.data.length > 0) {
+          // Transform database format to admin format
+          const transformed = data.data.map((p: any) => ({
+            id: p.id,
+            name: p.name,
+            purpose: p.category || 'Other',
+            dosage: p.dosage || '',
+            timing: 'AM', // Default, not stored in DB
+            frequency: 'Daily', // Default, not stored in DB
+            duration: '', // Not stored in DB
+            vialAmount: '', // Not stored in DB
+            reconstitution: p.reconstitution || '',
+            syringeUnits: 0,
+            description: p.description || ''
+          }))
+          setPeptides(transformed)
+        } else {
+          // If database is empty, use initial hardcoded peptides
+          console.log('No peptides in database, using initial set')
+          setPeptides(initialPeptides)
+        }
+      } catch (error) {
+        console.error('Error fetching peptides:', error)
+        setPeptides(initialPeptides)
+      }
+    }
+    fetchPeptides()
+  }, [initialPeptides])
+
   // New peptides from PEPTIDEHUNT screenshots
   const peptidesFromScreenshots = [
     {
@@ -458,15 +494,15 @@ export default function AdminPeptidesPage() {
   }
 
   // Import peptides from screenshots
-  const importFromScreenshots = () => {
+  const importFromScreenshots = async () => {
     setImportMode(true)
     const newPeptides: AdminPeptide[] = []
-    
+
     peptidesFromScreenshots.forEach(peptide => {
       const duplicate = checkForDuplicates(peptide.name)
-      
+
       // Allow import if it's a different protocol or completely new
-      if (!duplicate.exists || 
+      if (!duplicate.exists ||
           !duplicate.protocols.includes(`${peptide.dosage} - ${peptide.frequency}`)) {
         newPeptides.push({
           ...peptide,
@@ -474,12 +510,39 @@ export default function AdminPeptidesPage() {
         })
       }
     })
-    
+
     if (newPeptides.length > 0) {
       if (confirm(`Import ${newPeptides.length} new peptide protocols?\n\nPeptides to import:\n${newPeptides.map(p => `• ${p.name} (${p.dosage})`).join('\n')}`)) {
         createBackup() // Auto-backup before import
-        setPeptides(prev => [...prev, ...newPeptides])
-        alert(`Successfully imported ${newPeptides.length} peptide protocols!`)
+
+        // Save each peptide to database
+        const savedPeptides: AdminPeptide[] = []
+        for (const peptide of newPeptides) {
+          try {
+            const response = await fetch('/api/peptides', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                name: peptide.name,
+                dosage: peptide.dosage,
+                reconstitution: peptide.reconstitution,
+                category: peptide.purpose,
+                purpose: peptide.purpose,
+                price: 0
+              })
+            })
+
+            if (response.ok) {
+              const data = await response.json()
+              savedPeptides.push({ ...peptide, id: data.peptide.id })
+            }
+          } catch (error) {
+            console.error(`Failed to import ${peptide.name}:`, error)
+          }
+        }
+
+        setPeptides(prev => [...prev, ...savedPeptides])
+        alert(`Successfully imported ${savedPeptides.length} peptide protocols to database!`)
       }
     } else {
       alert("All peptides from screenshots already exist with the same protocols!")
@@ -487,9 +550,9 @@ export default function AdminPeptidesPage() {
     setImportMode(false)
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     // Check for duplicates
     const duplicate = checkForDuplicates(formData.name)
     if (duplicate.exists && !editingPeptide) {
@@ -498,21 +561,64 @@ export default function AdminPeptidesPage() {
       )
       if (!proceed) return
     }
-    
-    if (editingPeptide) {
-      // Update existing peptide
-      setPeptides(prev => prev.map(p => 
-        p.id === editingPeptide.id ? { ...formData, id: editingPeptide.id } : p
-      ))
-    } else {
-      // Add new peptide
-      const newPeptide: AdminPeptide = {
-        ...formData,
-        id: `admin-${Date.now()}`
+
+    try {
+      if (editingPeptide) {
+        // Update existing peptide in database
+        const response = await fetch(`/api/peptides?id=${editingPeptide.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: formData.name,
+            dosage: formData.dosage,
+            reconstitution: formData.reconstitution,
+            category: formData.purpose,
+            price: 0
+          })
+        })
+
+        if (!response.ok) throw new Error('Failed to update peptide')
+
+        const data = await response.json()
+
+        // Update local state
+        setPeptides(prev => prev.map(p =>
+          p.id === editingPeptide.id ? { ...formData, id: editingPeptide.id } : p
+        ))
+        alert('Peptide updated successfully!')
+      } else {
+        // Add new peptide to database
+        const response = await fetch('/api/peptides', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: formData.name,
+            dosage: formData.dosage,
+            reconstitution: formData.reconstitution,
+            category: formData.purpose,
+            purpose: formData.purpose,
+            price: 0
+          })
+        })
+
+        if (!response.ok) throw new Error('Failed to create peptide')
+
+        const data = await response.json()
+
+        // Add to local state with database ID
+        const newPeptide: AdminPeptide = {
+          ...formData,
+          id: data.peptide.id
+        }
+        setPeptides(prev => [...prev, newPeptide])
+        alert('Peptide added successfully!')
       }
-      setPeptides(prev => [...prev, newPeptide])
+    } catch (error) {
+      console.error('Error saving peptide:', error)
+      alert('Failed to save peptide. Please try again.')
+      return
     }
-    
+
     resetForm()
   }
 
@@ -541,9 +647,22 @@ export default function AdminPeptidesPage() {
     setShowForm(true)
   }
 
-  const deletePeptide = (id: string) => {
-    if (confirm("Are you sure you want to delete this peptide?")) {
+  const deletePeptide = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this peptide?")) return
+
+    try {
+      const response = await fetch(`/api/peptides?id=${id}`, {
+        method: 'DELETE'
+      })
+
+      if (!response.ok) throw new Error('Failed to delete peptide')
+
+      // Remove from local state
       setPeptides(prev => prev.filter(p => p.id !== id))
+      alert('Peptide deleted successfully!')
+    } catch (error) {
+      console.error('Error deleting peptide:', error)
+      alert('Failed to delete peptide. Please try again.')
     }
   }
 
