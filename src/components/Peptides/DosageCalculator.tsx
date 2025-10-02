@@ -651,72 +651,56 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
 
           {/* Scheduling Section - Only in addProtocol mode */}
           {mode === 'addProtocol' && (
-            <>
-              {/* Days of Week */}
-              <div className="bg-gradient-to-br from-primary-900/20 to-secondary-900/20 backdrop-blur-sm rounded-xl p-4 border border-primary-400/40">
-                <label className="block mb-3 text-sm text-gray-300 font-medium">
-                  Days of Week <span className="text-primary-400">*</span>
+            <div className="bg-gradient-to-br from-primary-900/20 to-secondary-900/20 backdrop-blur-sm rounded-xl p-4 border border-primary-400/40">
+              <div className="flex flex-wrap items-center gap-2 pb-2">
+                <label className="text-sm text-gray-300 font-medium">
+                  Schedule <span className="text-primary-400">*</span>
                 </label>
-                <div className="flex flex-wrap gap-2">
-                  {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
+                <div className="ml-auto flex items-center gap-1.5">
+                  {['AM', 'PM'].map((time) => (
                     <button
-                      key={day}
+                      key={time}
                       type="button"
-                      onClick={() => toggleDay(day)}
-                      className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                        selectedDays.includes(day)
-                          ? 'bg-primary-600 text-white shadow-lg shadow-primary-600/30'
-                          : 'bg-gray-700/50 text-gray-400 hover:bg-gray-600/50'
+                      onClick={() => toggleTime(time)}
+                      className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
+                        selectedTimes.includes(time)
+                          ? 'bg-primary-600 text-white shadow-primary-600/30 shadow-sm'
+                          : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/60'
                       }`}
+                      aria-pressed={selectedTimes.includes(time)}
                     >
-                      {day}
+                      {time}
                     </button>
                   ))}
                 </div>
-                <p className="mt-2 text-xs text-gray-400">
-                  Selected: {selectedDays.length === 7 ? 'Daily' : selectedDays.join(', ') || 'None'}
-                </p>
               </div>
-
-              {/* Time of Day */}
-              <div className="bg-gradient-to-br from-primary-900/20 to-secondary-900/20 backdrop-blur-sm rounded-xl p-4 border border-primary-400/40">
-                <label className="block mb-3 text-sm text-gray-300 font-medium">
-                  Time of Day <span className="text-primary-400">*</span>
-                </label>
-                <div className="flex gap-3">
+              <div className="flex flex-wrap items-center gap-1.5">
+                {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
                   <button
+                    key={day}
                     type="button"
-                    onClick={() => toggleTime('AM')}
-                    className={`flex-1 px-6 py-3 rounded-lg font-medium transition-all ${
-                      selectedTimes.includes('AM')
-                        ? 'bg-primary-600 text-white shadow-lg shadow-primary-600/30'
-                        : 'bg-gray-700/50 text-gray-400 hover:bg-gray-600/50'
+                    onClick={() => toggleDay(day)}
+                    className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${
+                      selectedDays.includes(day)
+                        ? 'bg-primary-600 text-white shadow-sm shadow-primary-600/25'
+                        : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/60'
                     }`}
+                    aria-pressed={selectedDays.includes(day)}
                   >
-                    🌅 AM
+                    {day}
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => toggleTime('PM')}
-                    className={`flex-1 px-6 py-3 rounded-lg font-medium transition-all ${
-                      selectedTimes.includes('PM')
-                        ? 'bg-primary-600 text-white shadow-lg shadow-primary-600/30'
-                        : 'bg-gray-700/50 text-gray-400 hover:bg-gray-600/50'
-                    }`}
-                  >
-                    🌙 PM
-                  </button>
-                </div>
-                <p className="mt-2 text-xs text-gray-400">
-                  {selectedTimes.length === 0
-                    ? 'Select at least one time'
-                    : selectedTimes.length === 2
-                    ? 'Twice daily (AM & PM)'
-                    : selectedTimes[0]}
-                </p>
+                ))}
               </div>
-
-            </>
+              <p className="mt-2 text-xs text-gray-400 leading-snug">
+                {selectedDays.length === 7 ? 'Daily' : selectedDays.join(', ') || 'No days selected'} ·
+                {' '}
+                {selectedTimes.length === 0
+                  ? 'Select AM or PM'
+                  : selectedTimes.length === 2
+                  ? 'AM & PM'
+                  : selectedTimes[0]}
+              </p>
+            </div>
           )}
         </div>
 
