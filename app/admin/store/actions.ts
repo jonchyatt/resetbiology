@@ -303,3 +303,49 @@ export async function importPeptides() {
     throw new Error(`Import failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
+
+export async function fixProductImages() {
+  // Copy imageUrl from allImages array if imageUrl is missing
+  try {
+    console.log('🔍 Checking product images...')
+
+    const products = await prisma.product.findMany({
+      select: {
+        id: true,
+        name: true,
+        imageUrl: true,
+        allImages: true
+      }
+    })
+
+    let fixed = 0
+
+    for (const product of products) {
+      if (!product.imageUrl && product.allImages) {
+        const allImages = product.allImages as string[] | null
+        if (allImages && Array.isArray(allImages) && allImages.length > 0) {
+          console.log(`🔧 Fixing ${product.name}: ${allImages[0]}`)
+
+          await prisma.product.update({
+            where: { id: product.id },
+            data: { imageUrl: allImages[0] }
+          })
+
+          fixed++
+        }
+      }
+    }
+
+    console.log(`✅ Fixed ${fixed} product images`)
+    revalidateTag('products')
+
+    return {
+      success: true,
+      fixed: fixed,
+      total: products.length
+    }
+  } catch (error) {
+    console.error('Error fixing product images:', error)
+    return { success: false, error: String(error) }
+  }
+}
