@@ -692,8 +692,8 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                 ))}
               </div>
               <p className="mt-2 text-xs text-gray-400 leading-snug">
-                {selectedDays.length === 7 ? 'Daily' : selectedDays.join(', ') || 'No days selected'} ·
-                {' '}
+                {selectedDays.length === 7 ? 'Daily' : selectedDays.join(', ') || 'No days selected'}
+                {' - '}
                 {selectedTimes.length === 0
                   ? 'Select AM or PM'
                   : selectedTimes.length === 2
