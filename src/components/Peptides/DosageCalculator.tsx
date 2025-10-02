@@ -651,61 +651,79 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
 
           {/* Scheduling Section - Only in addProtocol mode */}
           {mode === 'addProtocol' && (
-            <div className="bg-gradient-to-br from-primary-900/20 to-secondary-900/20 backdrop-blur-sm rounded-xl p-4 border border-primary-400/40">
-              <div className="flex flex-wrap items-center gap-2 pb-2">
-                <label className="text-sm text-gray-300 font-medium">
-                  Schedule <span className="text-primary-400">*</span>
-                </label>
-                <div className="ml-auto flex items-center gap-1.5">
-                  {['AM', 'PM'].map((time) => (
+            <>
+              <div className="bg-gradient-to-br from-primary-900/20 to-secondary-900/20 backdrop-blur-sm rounded-xl p-4 border border-primary-400/40">
+                <div className="flex flex-wrap items-center gap-2 pb-2">
+                  <label className="text-sm text-gray-300 font-medium">
+                    Schedule <span className="text-primary-400">*</span>
+                  </label>
+                  <div className="ml-auto flex items-center gap-1.5">
+                    {['AM', 'PM'].map((time) => (
+                      <button
+                        key={time}
+                        type="button"
+                        onClick={() => toggleTime(time)}
+                        className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
+                          selectedTimes.includes(time)
+                            ? 'bg-primary-600 text-white shadow-primary-600/30 shadow-sm'
+                            : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/60'
+                        }`}
+                        aria-pressed={selectedTimes.includes(time)}
+                      >
+                        {time}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="flex flex-wrap items-center gap-1.5">
+                  {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
                     <button
-                      key={time}
+                      key={day}
                       type="button"
-                      onClick={() => toggleTime(time)}
-                      className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
-                        selectedTimes.includes(time)
-                          ? 'bg-primary-600 text-white shadow-primary-600/30 shadow-sm'
+                      onClick={() => toggleDay(day)}
+                      className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${
+                        selectedDays.includes(day)
+                          ? 'bg-primary-600 text-white shadow-sm shadow-primary-600/25'
                           : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/60'
                       }`}
-                      aria-pressed={selectedTimes.includes(time)}
+                      aria-pressed={selectedDays.includes(day)}
                     >
-                      {time}
+                      {day}
                     </button>
                   ))}
                 </div>
+                <p className="mt-2 text-xs text-gray-400 leading-snug">
+                  {selectedDays.length === 7 ? 'Daily' : selectedDays.join(', ') || 'No days selected'}
+                  {' - '}
+                  {selectedTimes.length === 0
+                    ? 'Select AM or PM'
+                    : selectedTimes.length === 2
+                    ? 'AM & PM'
+                    : selectedTimes[0]}
+                </p>
               </div>
-              <div className="flex flex-wrap items-center gap-1.5">
-                {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
-                  <button
-                    key={day}
-                    type="button"
-                    onClick={() => toggleDay(day)}
-                    className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${
-                      selectedDays.includes(day)
-                        ? 'bg-primary-600 text-white shadow-sm shadow-primary-600/25'
-                        : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/60'
-                    }`}
-                    aria-pressed={selectedDays.includes(day)}
-                  >
-                    {day}
-                  </button>
-                ))}
+
+              <div className="bg-gradient-to-br from-primary-900/20 to-secondary-900/20 backdrop-blur-sm rounded-xl p-4 border border-primary-400/40">
+                <label className="block mb-1.5 text-sm text-gray-300 font-medium">
+                  Protocol Duration <span className="text-primary-400">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={duration}
+                  onChange={(e) => setDuration(e.target.value)}
+                  placeholder="e.g., 8 weeks, 12 weeks, 6 months"
+                  className="w-full bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-primary-400 focus:outline-none text-sm"
+                />
+                <p className="mt-1.5 text-xs text-gray-400 leading-snug">
+                  Example: "8 weeks on, 8 weeks off" or "12 weeks continuous"
+                </p>
               </div>
-              <p className="mt-2 text-xs text-gray-400 leading-snug">
-                {selectedDays.length === 7 ? 'Daily' : selectedDays.join(', ') || 'No days selected'}
-                {' - '}
-                {selectedTimes.length === 0
-                  ? 'Select AM or PM'
-                  : selectedTimes.length === 2
-                  ? 'AM & PM'
-                  : selectedTimes[0]}
-              </p>
-            </div>
+            </>
           )}
         </div>
 
         {/* Visual Display */}
-        <div className="flex flex-col items-center justify-center">
+        <div className="flex flex-col items-center justify-start h-full">
           <SyringeVisual
             fillPercentage={fillPct}
             volumeInMl={results.volumeToDraw}
@@ -739,25 +757,6 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
             volume={inputs.totalVolume}
             instructions={PEPTIDE_PRESETS.find((p) => p.name === selectedPreset)?.instructions}
           />
-
-          {/* Duration - Only in addProtocol mode */}
-          {mode === 'addProtocol' && (
-            <div className="bg-gradient-to-br from-primary-900/20 to-secondary-900/20 backdrop-blur-sm rounded-xl p-4 border border-primary-400/40">
-              <label className="block mb-2 text-sm text-gray-300 font-medium">
-                Protocol Duration <span className="text-primary-400">*</span>
-              </label>
-              <input
-                type="text"
-                value={duration}
-                onChange={(e) => setDuration(e.target.value)}
-                placeholder="e.g., 8 weeks, 12 weeks, 6 months"
-                className="w-full bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-primary-400 focus:outline-none"
-              />
-              <p className="mt-2 text-xs text-gray-400">
-                Example: "8 weeks on, 8 weeks off" or "12 weeks continuous"
-              </p>
-            </div>
-          )}
 
           {/* Notes */}
           <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30">
