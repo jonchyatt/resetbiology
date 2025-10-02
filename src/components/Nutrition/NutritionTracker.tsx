@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react"
 import { Apple, Target, Plus, X, Calendar, TrendingUp, Utensils } from "lucide-react"
+import { FoodQuickAdd } from "./FoodQuickAdd"
+import RecentFoods from "@/components/Nutrition/RecentFoods"
 
 interface MealPlan {
   id: string
@@ -357,6 +359,9 @@ export function NutritionTracker() {
           <div className="max-w-6xl mx-auto grid gap-6 lg:grid-cols-3">
             {/* Main content */}
             <div className="lg:col-span-2 space-y-6">
+              <FoodQuickAdd onLogged={fetchTodaysFoods} />
+              <RecentFoods />
+
               {/* Today's Progress */}
               <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl hover:shadow-primary-400/20 transition-all duration-300">
                 <div className="flex items-center justify-between mb-4">
@@ -703,3 +708,5 @@ export function NutritionTracker() {
     </div>
   )
 }
+
+export default NutritionTracker
