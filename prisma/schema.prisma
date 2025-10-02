@@ -43,7 +43,9 @@ model User {
   user_peptide_protocols user_peptide_protocols[]
   dailyTasks             DailyTask[]
   foodEntries            FoodEntry[]
+  mealPlans              MealPlan[]
   workoutSessions        WorkoutSession[]
+  workoutPrograms        WorkoutProgram[]
   journalEntries         JournalEntry[]
 
   @@map("users")
@@ -303,6 +305,39 @@ model JournalEntry {
   user      User     @relation(fields: [userId], references: [id])
 
   @@map("journal_entries")
+}
+
+model MealPlan {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId        String   @db.ObjectId
+  name          String
+  planType      String   // Muscle Building, Fat Loss, Keto, etc.
+  dailyCalories Float
+  proteinTarget Float
+  carbsTarget   Float
+  fatsTarget    Float
+  description   String?
+  notes         String?
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  user          User     @relation(fields: [userId], references: [id])
+
+  @@map("meal_plans")
+}
+
+model WorkoutProgram {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @db.ObjectId
+  name        String
+  programType String   // Push, Pull, Legs, Full Body, etc.
+  template    Json     // Array of exercises with sets/reps
+  description String?
+  notes       String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@map("workout_programs")
 }
 
 // --- STRIPE CATALOG MODELS (Mongo) ---
