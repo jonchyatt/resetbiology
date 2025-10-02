@@ -198,7 +198,7 @@ export function NutritionTracker() {
     snack: todaysFoods.filter(f => f.mealType === 'snack')
   }
 
-  const setActivePlan = async (planId: string) => {
+  const handleSetActivePlan = async (planId: string) => {
     try {
       const response = await fetch('/api/nutrition/plans', {
         method: 'PUT',
@@ -239,7 +239,7 @@ export function NutritionTracker() {
           </span>
         ) : (
           <button
-            onClick={() => setActivePlan(plan.id)}
+            onClick={() => handleSetActivePlan(plan.id)}
             className="text-xs text-primary-300 bg-primary-500/20 px-3 py-1 rounded-full hover:bg-primary-500/30 transition-colors"
           >
             Set Active

@@ -1,31 +1,7 @@
 {
   "permissions": {
     "allow": [
-      "Read(//c/Users/jonch/Pictures/Screenshots/**)",
-      "Bash(npx tsc:*)",
-      "Bash(npm run build:*)",
-      "Bash(npm install)",
-      "Bash(for file in breath/sessions/route.ts journal/route.ts modules/complete/route.ts peptides/doses/route.ts peptides/protocols/route.ts)",
-      "Bash(do sed -i \"s/from ''@auth0\\/nextjs-auth0''/from ''@auth0\\/nextjs-auth0\\/edge''/g\" \"$file\")",
-      "Bash(done)",
-      "Bash(cat:*)",
-      "Bash(git add:*)",
-      "Bash(git commit:*)",
-      "Bash(git push:*)",
-      "Bash(npx vercel:*)",
-      "Bash(git rm:*)",
-      "Bash(npm run dev:*)",
-      "Bash(npx prisma generate:*)",
-      "Bash(node:*)",
-      "Bash(npx tsx:*)",
-      "Bash(claude mcp:*)",
-      "Bash(npx dotenv -e .env.local:*)",
-      "Bash(dir:*)",
-      "Bash(npm install:*)",
-      "Bash(npx playwright install:*)",
-      "Bash(curl:*)",
-      "Bash(findstr:*)",
-      "Bash(with no connections?\" - The connections are now real!\n\nStill TODO: Food search database system (next priority)\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
+      "Bash(come up with a way to pull in a food library\".\n\n**Food Search System:**\n- Created /api/nutrition/foods with 34 common foods\n- Searchable modal matching peptide library pattern\n- Click food → Auto-fills form → Quick add\n- Categories: Protein, Carbs, Fats, Vegetables, Restaurant\n\n**Simplified Food Entry:**\n- Only Name and Calories required (macros optional)\n- Clear \"Optional\" placeholders on P/C/F fields\n- Search button prominently placed at top\n- Manual entry still available below\n\n**Food Database Includes:**\n- 10 Protein sources (chicken, beef, salmon, eggs, etc)\n- 10 Carb sources (rice, potatoes, oats, pasta, etc)\n- 6 Fat sources (avocado, nuts, oils, etc)\n- 4 Vegetables\n- 4 Restaurant meals (Chipotle, Chick-fil-A, etc)\n\n**User Flow:**\n1. Click \"Add Food\"\n2. Click \"Search Food Database\" \n3. Type \"chicken\" or browse\n4. Click food → Form pre-fills\n5. Adjust meal type → Log\n\nThis matches the peptide tracker experience exactly. No more \ntyping macros manually for common foods!\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
     ],
     "deny": [],
     "ask": [],
