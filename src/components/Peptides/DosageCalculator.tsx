@@ -225,21 +225,21 @@ const SyringeVisual: React.FC<{
 const ReconstitutionGuide: React.FC<{ peptideAmount: number; volume: number; instructions?: string }>
   = ({ peptideAmount, volume, instructions }) => {
     return (
-      <div className="space-y-4 bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30">
-        <h3 className="text-lg font-bold text-white">Mixing Instructions</h3>
-        <ol className="space-y-2 text-gray-300 list-decimal list-inside">
+      <div className="space-y-3 bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30">
+        <h3 className="text-lg font-bold text-white mb-1">Mixing Instructions</h3>
+        <ol className="space-y-1.5 text-gray-300 list-decimal list-inside text-sm leading-snug">
           <li>Add {formatNumber(volume, 2)} ml of bacteriostatic water to {formatNumber(peptideAmount, 2)} mg vial</li>
           <li>Inject water slowly down the side of vial</li>
           <li>Gently swirl (do not shake) until dissolved</li>
           <li>Store in refrigerator after reconstitution</li>
         </ol>
         {instructions && (
-          <div className="text-sm text-gray-300">
+          <div className="text-sm text-gray-300 leading-snug">
             <span className="font-semibold text-primary-400">Note: </span>{instructions}
           </div>
         )}
-        <div className="bg-amber-600/20 border border-amber-400/30 rounded-lg p-3">
-          <p className="text-sm text-amber-300">⚠️ Use within 30 days after reconstitution</p>
+        <div className="bg-amber-600/20 border border-amber-400/30 rounded-lg p-2.5">
+          <p className="text-sm text-amber-300 leading-snug">⚠️ Use within 30 days after reconstitution</p>
         </div>
       </div>
     );
@@ -732,8 +732,8 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
         {/* Results & Instructions */}
         <div className="space-y-4">
           <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30" role="status" aria-live="polite">
-            <h3 className="text-lg font-semibold text-white mb-2">Results</h3>
-            <div className="grid grid-cols-2 gap-3 text-sm">
+            <h3 className="text-lg font-semibold text-white mb-1">Results</h3>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm leading-snug">
               <div className="text-gray-400">Volume to draw</div>
               <div className="text-white font-medium">{formatNumber(results.volumeToDraw, 2)} ml</div>
               {typeof results.insulinUnits === "number" && (
@@ -747,7 +747,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
               <div className="text-gray-400">Doses per vial</div>
               <div className="text-white font-medium">{results.dosesPerVial}</div>
             </div>
-            <div className="mt-3 text-xs text-gray-400">Formula: volume (ml) = dose (mcg) / concentration (mcg/ml)</div>
+            <div className="mt-2 text-xs text-gray-400 leading-snug">Formula: volume (ml) = dose (mcg) / concentration (mcg/ml)</div>
           </div>
 
           <ReconstitutionGuide

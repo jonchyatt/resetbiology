@@ -8,7 +8,6 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { Package, Plus, Upload, DollarSign, ImageIcon } from 'lucide-react';
 import { listProducts, createProduct, updateProduct, archiveProduct, upsertPrice, deletePrice, syncProductToStripe, importPeptides, fixProductImages } from './actions';
-import { ImportButton } from './ImportButton';
 export const revalidate = 0;
 
 export default async function AdminStorePage() {
@@ -137,6 +136,18 @@ export default async function AdminStorePage() {
     });
   };
 
+  const importPeptidesAction = async () => {
+    'use server';
+    const result = await importPeptides();
+    console.log('✅ Import completed:', result);
+  };
+
+  const fixImagesAction = async () => {
+    'use server';
+    const result = await fixProductImages();
+    console.log('✅ Fix images completed:', result);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 relative"
          style={{
@@ -185,17 +196,25 @@ export default async function AdminStorePage() {
             <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 shadow-2xl border border-primary-400/30 mb-8 hover:shadow-primary-400/20 transition-all duration-300">
               <div className="flex flex-wrap gap-4 items-center justify-between">
                 <div className="flex gap-4">
-                  <ImportButton
-                    action={async () => await importPeptides()}
-                    label="Import Peptides from Data"
-                    icon="upload"
-                  />
+                  <form action={importPeptidesAction}>
+                    <button
+                      type="submit"
+                      className="bg-gradient-to-r from-secondary-500 to-secondary-600 hover:from-secondary-600 hover:to-secondary-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:shadow-secondary-500/30 transition-all duration-200 flex items-center"
+                    >
+                      <Upload className="w-5 h-5 mr-2" />
+                      Import Peptides from Data
+                    </button>
+                  </form>
 
-                  <ImportButton
-                    action={async () => await fixProductImages()}
-                    label="Fix Missing Images"
-                    icon="image"
-                  />
+                  <form action={fixImagesAction}>
+                    <button
+                      type="submit"
+                      className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:shadow-blue-500/30 transition-all duration-200 flex items-center"
+                    >
+                      <ImageIcon className="w-5 h-5 mr-2" />
+                      Fix Missing Images
+                    </button>
+                  </form>
                 </div>
                 <div className="flex items-center gap-3">
                   <Package className="w-8 h-8 text-primary-400" />
