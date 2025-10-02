@@ -288,6 +288,7 @@ model WorkoutSession {
   exercises   Json     // Array of exercises with sets/reps/weight
   duration    Int      // in seconds
   programId   String?
+  notes       String?
   completedAt DateTime @default(now())
   user        User     @relation(fields: [userId], references: [id])
 
