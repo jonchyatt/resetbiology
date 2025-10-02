@@ -1,23 +1,15 @@
-import { HeroSection } from "@/components/Hero/HeroSection"
-import { ProblemSolution } from "@/components/Hero/ProblemSolution"
-import { MissionSection } from "@/components/Hero/MissionSection"
-import { SolutionSection } from "@/components/Hero/SolutionSection"
-import { ComparisonSection } from "@/components/Hero/ComparisonSection"
-import { PortalTeaser } from "@/components/Hero/PortalTeaser"
-import { ReferralSection } from "@/components/Hero/ReferralSection"
-import { FAQSection } from "@/components/Hero/FAQSection"
-
-export default function Home() {
+﻿export default function HomePage() {
   return (
-    <main>
-      <HeroSection />
-      <ProblemSolution />
-      <MissionSection />
-      <SolutionSection />
-      <ComparisonSection />
-      <PortalTeaser />
-      <ReferralSection />
-      <FAQSection />
+    <main className="max-w-6xl mx-auto px-4 py-12">
+      <section className="text-center py-16">
+        <h1 className="text-4xl font-bold">ResetBiology</h1>
+        <p className="text-gray-600 mt-3">Evidence-based peptides, nutrition, and performance protocols.</p>
+        <div className="mt-6 flex items-center justify-center gap-4">
+          <a href="/order" className="px-4 py-2 rounded bg-black text-white">Order Now</a>
+          <a href="/portal" className="px-4 py-2 rounded border">Go to Portal</a>
+        </div>
+      </section>
     </main>
-  )
+  );
 }
+

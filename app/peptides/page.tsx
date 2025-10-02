@@ -1,15 +1,9 @@
-import { PeptideTracker } from "@/components/Peptides/PeptideTracker"
-import { ProtectedRoute } from "@/components/Auth/ProtectedRoute"
-
-export default function PeptidesPage() {
+﻿export default function PeptidesPage() {
   return (
-    <ProtectedRoute>
-      <PeptideTracker />
-    </ProtectedRoute>
-  )
+    <main className="max-w-6xl mx-auto px-4 py-10">
+      <h1 className="text-2xl font-semibold">Peptides</h1>
+      <p className="text-gray-600 mt-2">Explore education and protocols.</p>
+    </main>
+  );
 }
 
-export const metadata = {
-  title: "Peptide Tracker - Reset Biology",
-  description: "Comprehensive peptide management system. Schedule doses, track progress, monitor side effects with IRB-compliant data sharing.",
-}
