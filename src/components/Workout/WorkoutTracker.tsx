@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { Dumbbell, Target, Plus, X, Calendar, TrendingUp, Clock, Play, Pause, StopCircle } from "lucide-react"
 
-interface WorkoutProgram {
+export interface WorkoutProgram {
   id: string
   name: string
   programType: string
@@ -13,7 +13,7 @@ interface WorkoutProgram {
   isActive: boolean
 }
 
-interface WorkoutSession {
+export interface WorkoutSession {
   id: string
   exercises: any // JSON
   duration: number
@@ -22,11 +22,17 @@ interface WorkoutSession {
   notes?: string
 }
 
-interface ExerciseEntry {
+export interface ExerciseEntry {
   id: string
   name: string
   category: string
   sets: { reps: number; weight: number; completed: boolean }[]
+}
+
+export interface SetEntry {
+  reps: number
+  weight: number
+  completed: boolean
 }
 
 export function WorkoutTracker() {
