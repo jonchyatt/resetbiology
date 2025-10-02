@@ -155,8 +155,12 @@ const SyringeVisual: React.FC<{
   fillPercentage: number;
   volumeInMl: number;
   insulinUnits?: number;
-}> = ({ fillPercentage, volumeInMl, insulinUnits }) => {
+  maxVolume?: number;
+}> = ({ fillPercentage, volumeInMl, insulinUnits, maxVolume = 1 }) => {
   const pct = clamp(fillPercentage, 0, 100);
+  const totalTicks = 10;
+  const tickSpacing = 18;
+  const baseY = 50;
 
   return (
     <div className="relative bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 w-full max-w-sm mx-auto">
@@ -165,10 +169,31 @@ const SyringeVisual: React.FC<{
           {/* Barrel */}
           <rect x="30" y="30" width="40" height="220" rx="6" ry="6" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.25)" strokeWidth="2" />
           {/* Measurement ticks */}
-          {Array.from({ length: 11 }).map((_, i) => {
-            const y = 50 + i * 18; // simple spacing
-            return <line key={i} x1="30" x2="70" y1={y} y2={y} stroke="rgba(255,255,255,0.18)" strokeWidth={i % 2 === 0 ? 1.6 : 1} />;
+          {Array.from({ length: totalTicks + 1 }).map((_, i) => {
+            const y = baseY + i * tickSpacing;
+            const isMajor = i % 2 === 0;
+            const value = ((totalTicks - i) / totalTicks) * maxVolume;
+            const label = value >= 1 ? value.toFixed(1) : value.toFixed(2);
+            return (
+              <g key={i}>
+                <line x1="30" x2="70" y1={y} y2={y} stroke="rgba(255,255,255,0.18)" strokeWidth={isMajor ? 1.6 : 1} />
+                {isMajor && (
+                  <text
+                    x="26"
+                    y={y + 4}
+                    textAnchor="end"
+                    fontSize="6"
+                    fill="rgba(255,255,255,0.45)"
+                  >
+                    {label}
+                  </text>
+                )}
+              </g>
+            );
           })}
+          <text x="24" y="38" textAnchor="end" fontSize="7" fill="rgba(255,255,255,0.55)">
+            ml
+          </text>
           {/* Fill */}
           <clipPath id="barrel-clip">
             <rect x="30" y="30" width="40" height="220" rx="6" ry="6" />
@@ -266,8 +291,8 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
     desiredDose: 250, // default in mcg for peptides like BPC-157
     doseUnit: "mcg",
     peptideConcentration: 0, // will be derived and displayed
-    totalVolume: 2,
-    peptideAmount: 5,
+    totalVolume: 1,
+    peptideAmount: 10,
     insulinSyringeUnits: true,
   };
 
@@ -440,66 +465,68 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
   }, [inputs.peptideAmount, inputs.totalVolume]);
 
   return (
-    <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-6 pt-8 border border-primary-400/30 shadow-2xl">
+    <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-3xl p-6 pt-8 border border-primary-400/30 shadow-2xl">
       {/* Header */}
-      <div className="mb-6 flex flex-col items-center gap-3">
-        <div className="flex flex-wrap items-center justify-center gap-3">
-          <div className="flex items-center gap-2">
+      <div className="mb-6 flex flex-col gap-3">
+        <div className="flex flex-wrap items-center gap-3 w-full">
+          <div className="flex items-center gap-2 flex-shrink-0 min-w-[200px]">
             <CalcIcon className="w-6 h-6 text-primary-400" />
-            <h2 className="text-2xl font-bold text-white text-center">Dosage Calculator</h2>
+            <h2 className="text-2xl font-bold text-white">Dosage Calculator</h2>
           </div>
-          <div className="flex flex-wrap items-center gap-2 text-sm">
-            <label className="text-gray-300 font-medium">
-              {mode === 'addProtocol' ? 'Select Peptide' : 'Preset'}
-            </label>
-            <select
-              aria-label={mode === 'addProtocol' ? 'Select Peptide' : 'Peptide preset'}
-              value={mode === 'addProtocol' ? peptideName : selectedPreset}
-              onChange={(e) => {
-                if (mode === 'addProtocol' && peptideLibrary) {
-                  const selectedName = e.target.value;
-                  const peptide = peptideLibrary.find(p => p.name === selectedName);
-                  if (peptide) {
-                    setPeptideName(peptide.name);
-                    setSelectedPeptideId(peptide.id || '');
-                    if (peptide.reconstitution) {
-                      const volumeMatch = peptide.reconstitution.match(/(\d+\.?\d*)ml/i);
-                      if (volumeMatch) setInputs(prev => ({ ...prev, totalVolume: parseFloat(volumeMatch[1]) }));
+          <div className="flex-1 flex justify-center min-w-[200px]">
+            <div className="flex items-center gap-2 text-sm">
+              <span className="text-gray-300 font-medium">
+                {mode === 'addProtocol' ? 'Select Peptide' : 'Preset'}
+              </span>
+              <select
+                aria-label={mode === 'addProtocol' ? 'Select Peptide' : 'Peptide preset'}
+                value={mode === 'addProtocol' ? peptideName : selectedPreset}
+                onChange={(e) => {
+                  if (mode === 'addProtocol' && peptideLibrary) {
+                    const selectedName = e.target.value;
+                    const peptide = peptideLibrary.find(p => p.name === selectedName);
+                    if (peptide) {
+                      setPeptideName(peptide.name);
+                      setSelectedPeptideId(peptide.id || '');
+                      if (peptide.reconstitution) {
+                        const volumeMatch = peptide.reconstitution.match(/(\d+\.?\d*)ml/i);
+                        if (volumeMatch) setInputs(prev => ({ ...prev, totalVolume: parseFloat(volumeMatch[1]) }));
+                      }
+                      if (peptide.vialAmount) {
+                        const amountMatch = peptide.vialAmount.match(/(\d+\.?\d*)mg/i);
+                        if (amountMatch) setInputs(prev => ({ ...prev, peptideAmount: parseFloat(amountMatch[1]) }));
+                      }
                     }
-                    if (peptide.vialAmount) {
-                      const amountMatch = peptide.vialAmount.match(/(\d+\.?\d*)mg/i);
-                      if (amountMatch) setInputs(prev => ({ ...prev, peptideAmount: parseFloat(amountMatch[1]) }));
-                    }
+                  } else {
+                    applyPreset(e.target.value as PresetName);
                   }
-                } else {
-                  applyPreset(e.target.value as PresetName);
-                }
-              }}
-              className="min-w-[180px] bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-primary-400 focus:outline-none"
-            >
-              <option value="">{mode === 'addProtocol' ? 'Choose a peptide...' : 'Select a preset…'}</option>
-              {mode === 'addProtocol' && peptideLibrary
-                ? peptideLibrary.map((p) => {
-                    const displayName = p.name
-                      .replace(/\s*-\s*peptide\s*$/i, '')
-                      .replace(/\s+Package\s*$/i, '')
-                      .trim();
-                    return (
-                      <option key={p.id || p.name} value={p.name}>
-                        {displayName}
-                      </option>
-                    );
-                  })
-                : PEPTIDE_PRESETS.map((p) => (
-                    <option key={p.name} value={p.name}>{p.name}</option>
-                  ))}
-            </select>
+                }}
+                className="min-w-[180px] bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-primary-400 focus:outline-none"
+              >
+                <option value="">{mode === 'addProtocol' ? 'Choose a peptide...' : 'Select a preset…'}</option>
+                {mode === 'addProtocol' && peptideLibrary
+                  ? peptideLibrary.map((p) => {
+                      const displayName = p.name
+                        .replace(/\s*-\s*peptide\s*$/i, '')
+                        .replace(/\s+Package\s*$/i, '')
+                        .trim();
+                      return (
+                        <option key={p.id || p.name} value={p.name}>
+                          {displayName}
+                        </option>
+                      );
+                    })
+                  : PEPTIDE_PRESETS.map((p) => (
+                      <option key={p.name} value={p.name}>{p.name}</option>
+                    ))}
+              </select>
+            </div>
           </div>
           {mode !== 'addProtocol' && (
             <button
               type="button"
               onClick={handleImport}
-              className="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-3 rounded-lg transition-colors flex items-center gap-2"
+              className="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-3 rounded-lg transition-colors flex items-center gap-2 flex-shrink-0"
               aria-label="Import from product page"
               title="Import from product page"
             >
@@ -507,11 +534,8 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
             </button>
           )}
         </div>
-        <div className="text-xs text-gray-400 text-center">
-          Professional tool - Not medical advice
-        </div>
         {selectedPreset && mode !== 'addProtocol' && (
-          <p className="text-xs text-gray-400 text-center max-w-xl">
+          <p className="text-xs text-gray-400 text-center max-w-xl mx-auto">
             {PEPTIDE_PRESETS.find((p) => p.name === selectedPreset)?.instructions}
           </p>
         )}
@@ -728,6 +752,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
             fillPercentage={fillPct}
             volumeInMl={results.volumeToDraw}
             insulinUnits={results.insulinUnits}
+            maxVolume={inputs.totalVolume}
           />
         </div>
 
