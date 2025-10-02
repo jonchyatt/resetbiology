@@ -164,6 +164,32 @@ export function NutritionTracker() {
     snack: todaysFoods.filter(f => f.mealType === 'snack')
   }
 
+  const setActivePlan = async (planId: string) => {
+    try {
+      const response = await fetch('/api/nutrition/plans', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          id: planId,
+          isActive: true
+        })
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        console.log('✅ Active plan updated!')
+        fetchMealPlans()
+      } else {
+        alert('Failed to set active plan')
+      }
+    } catch (error) {
+      console.error('Error setting active plan:', error)
+      alert('Failed to set active plan')
+    }
+  }
+
   const MealPlanCard = ({ plan }: { plan: MealPlan }) => (
     <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/30 rounded-lg p-6 border border-primary-400/30 backdrop-blur-sm shadow-xl hover:shadow-primary-400/20 transition-all duration-300">
       <div className="flex items-start justify-between mb-4">
@@ -173,10 +199,17 @@ export function NutritionTracker() {
             {plan.planType}
           </span>
         </div>
-        {plan.isActive && (
+        {plan.isActive ? (
           <span className="text-xs text-green-300 bg-green-500/20 px-3 py-1 rounded-full">
             Active
           </span>
+        ) : (
+          <button
+            onClick={() => setActivePlan(plan.id)}
+            className="text-xs text-primary-300 bg-primary-500/20 px-3 py-1 rounded-full hover:bg-primary-500/30 transition-colors"
+          >
+            Set Active
+          </button>
         )}
       </div>
 
@@ -459,7 +492,7 @@ export function NutritionTracker() {
                 <select
                   value={selectedMealType}
                   onChange={(e) => setSelectedMealType(e.target.value)}
-                  className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
+                  className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
                 >
                   <option value="breakfast">Breakfast</option>
                   <option value="lunch">Lunch</option>
@@ -474,7 +507,7 @@ export function NutritionTracker() {
                   type="text"
                   value={foodName}
                   onChange={(e) => setFoodName(e.target.value)}
-                  className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
+                  className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
                   placeholder="e.g., Chicken Breast"
                 />
               </div>
@@ -486,7 +519,7 @@ export function NutritionTracker() {
                     type="number"
                     value={calories}
                     onChange={(e) => setCalories(e.target.value)}
-                    className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
+                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
                   />
                 </div>
                 <div>
@@ -495,7 +528,7 @@ export function NutritionTracker() {
                     type="number"
                     value={protein}
                     onChange={(e) => setProtein(e.target.value)}
-                    className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
+                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
                   />
                 </div>
                 <div>
@@ -504,7 +537,7 @@ export function NutritionTracker() {
                     type="number"
                     value={carbs}
                     onChange={(e) => setCarbs(e.target.value)}
-                    className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
+                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
                   />
                 </div>
                 <div>
@@ -513,7 +546,7 @@ export function NutritionTracker() {
                     type="number"
                     value={fats}
                     onChange={(e) => setFats(e.target.value)}
-                    className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
+                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
                   />
                 </div>
               </div>

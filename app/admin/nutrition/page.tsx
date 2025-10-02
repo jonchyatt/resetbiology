@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Plus, Save, Trash2, Edit } from "lucide-react"
 
 interface AdminMealPlan {
@@ -13,55 +13,11 @@ interface AdminMealPlan {
   fatsTarget: number
   description?: string
   notes?: string
+  isActive?: boolean
 }
 
 export default function AdminNutritionPage() {
-  const [plans, setPlans] = useState<AdminMealPlan[]>([
-    {
-      id: "plan-1",
-      name: "Muscle Gain",
-      planType: "Muscle Building",
-      dailyCalories: 3000,
-      proteinTarget: 180,
-      carbsTarget: 350,
-      fatsTarget: 100,
-      description: "High-calorie plan designed for lean muscle growth with optimal protein distribution",
-      notes: "Increase calories by 200-300 every 2 weeks if weight stalls"
-    },
-    {
-      id: "plan-2",
-      name: "Fat Loss",
-      planType: "Fat Loss",
-      dailyCalories: 2000,
-      proteinTarget: 160,
-      carbsTarget: 150,
-      fatsTarget: 70,
-      description: "Caloric deficit plan with high protein to preserve muscle mass during fat loss",
-      notes: "Adjust calories based on weekly weight loss rate (aim for 0.5-1% bodyweight per week)"
-    },
-    {
-      id: "plan-3",
-      name: "Maintenance",
-      planType: "Maintenance",
-      dailyCalories: 2500,
-      proteinTarget: 150,
-      carbsTarget: 280,
-      fatsTarget: 80,
-      description: "Balanced macro distribution for weight maintenance and body composition",
-      notes: "Monitor weight weekly and adjust calories as needed to maintain"
-    },
-    {
-      id: "plan-4",
-      name: "Keto",
-      planType: "Ketogenic",
-      dailyCalories: 2200,
-      proteinTarget: 120,
-      carbsTarget: 30,
-      fatsTarget: 170,
-      description: "Low-carb, high-fat ketogenic approach for metabolic flexibility",
-      notes: "Keep carbs under 30g net daily to maintain ketosis"
-    }
-  ])
+  const [plans, setPlans] = useState<AdminMealPlan[]>([])
 
   const [editingPlan, setEditingPlan] = useState<AdminMealPlan | null>(null)
   const [showForm, setShowForm] = useState(false)
@@ -87,22 +43,74 @@ export default function AdminNutritionPage() {
     "Custom"
   ]
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Load plans from database on mount
+  useEffect(() => {
+    fetchPlans()
+  }, [])
+
+  const fetchPlans = async () => {
+    try {
+      const response = await fetch('/api/nutrition/plans', {
+        credentials: 'include'
+      })
+      const data = await response.json()
+
+      if (data.success && data.plans) {
+        setPlans(data.plans)
+      }
+    } catch (error) {
+      console.error('Error loading meal plans:', error)
+    }
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (editingPlan) {
-      setPlans(prev => prev.map(p =>
-        p.id === editingPlan.id ? { ...formData, id: editingPlan.id } : p
-      ))
-    } else {
-      const newPlan: AdminMealPlan = {
-        ...formData,
-        id: `plan-${Date.now()}`
-      }
-      setPlans(prev => [...prev, newPlan])
-    }
+    try {
+      if (editingPlan) {
+        // Update existing plan
+        const response = await fetch('/api/nutrition/plans', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            id: editingPlan.id,
+            ...formData
+          })
+        })
 
-    resetForm()
+        const data = await response.json()
+
+        if (data.success) {
+          console.log('✅ Meal plan updated!')
+          fetchPlans()
+        } else {
+          alert(`Failed to update plan: ${data.error}`)
+        }
+      } else {
+        // Create new plan
+        const response = await fetch('/api/nutrition/plans', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify(formData)
+        })
+
+        const data = await response.json()
+
+        if (data.success) {
+          console.log(`✅ Meal plan created! +${data.pointsAwarded} points`)
+          fetchPlans()
+        } else {
+          alert(`Failed to create plan: ${data.error}`)
+        }
+      }
+
+      resetForm()
+    } catch (error) {
+      console.error('Error saving meal plan:', error)
+      alert('Failed to save meal plan. Please try again.')
+    }
   }
 
   const resetForm = () => {
@@ -126,9 +134,26 @@ export default function AdminNutritionPage() {
     setShowForm(true)
   }
 
-  const deletePlan = (id: string) => {
-    if (confirm("Are you sure you want to delete this meal plan?")) {
-      setPlans(prev => prev.filter(p => p.id !== id))
+  const deletePlan = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this meal plan?")) return
+
+    try {
+      const response = await fetch(`/api/nutrition/plans?id=${id}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        console.log('✅ Meal plan deleted')
+        fetchPlans()
+      } else {
+        alert('Failed to delete plan')
+      }
+    } catch (error) {
+      console.error('Error deleting meal plan:', error)
+      alert('Failed to delete plan')
     }
   }
 
