@@ -24,7 +24,8 @@
       "Bash(npm install:*)",
       "Bash(npx playwright install:*)",
       "Bash(curl:*)",
-      "Bash(findstr:*)"
+      "Bash(findstr:*)",
+      "Bash(with no connections?\" - The connections are now real!\n\nStill TODO: Food search database system (next priority)\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
     ],
     "deny": [],
     "ask": [],

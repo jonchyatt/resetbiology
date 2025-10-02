@@ -33,7 +33,10 @@ export function NutritionTracker() {
   const [activePlan, setActivePlan] = useState<MealPlan | null>(null)
   const [todaysFoods, setTodaysFoods] = useState<FoodEntry[]>([])
   const [showAddFoodModal, setShowAddFoodModal] = useState(false)
+  const [showFoodSearchModal, setShowFoodSearchModal] = useState(false)
   const [selectedMealType, setSelectedMealType] = useState<string>('breakfast')
+  const [foodLibrary, setFoodLibrary] = useState<any[]>([])
+  const [searchQuery, setSearchQuery] = useState('')
 
   // Form state for adding food
   const [foodName, setFoodName] = useState('')
@@ -42,11 +45,42 @@ export function NutritionTracker() {
   const [carbs, setCarbs] = useState('')
   const [fats, setFats] = useState('')
 
-  // Load meal plans and today's foods
+  // Load meal plans, food library, and today's foods
   useEffect(() => {
     fetchMealPlans()
     fetchTodaysFoods()
+    fetchFoodLibrary()
   }, [])
+
+  const fetchFoodLibrary = async () => {
+    try {
+      const response = await fetch('/api/nutrition/foods', {
+        credentials: 'include'
+      })
+      const data = await response.json()
+
+      if (data.success && data.foods) {
+        setFoodLibrary(data.foods)
+      }
+    } catch (error) {
+      console.error('Error loading food library:', error)
+    }
+  }
+
+  const selectFoodFromLibrary = (food: any) => {
+    setFoodName(food.name)
+    setCalories(food.calories.toString())
+    setProtein(food.protein.toString())
+    setCarbs(food.carbs.toString())
+    setFats(food.fats.toString())
+    setShowFoodSearchModal(false)
+    setShowAddFoodModal(true)
+  }
+
+  const filteredFoods = foodLibrary.filter(food =>
+    food.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    food.category.toLowerCase().includes(searchQuery.toLowerCase())
+  )
 
   const fetchMealPlans = async () => {
     try {
@@ -81,8 +115,8 @@ export function NutritionTracker() {
   }
 
   const handleAddFood = async () => {
-    if (!foodName || !calories || !protein || !carbs || !fats) {
-      alert('Please fill in all fields')
+    if (!foodName || !calories) {
+      alert('Please enter at least food name and calories')
       return
     }
 
@@ -94,9 +128,9 @@ export function NutritionTracker() {
         body: JSON.stringify({
           name: foodName,
           calories: parseFloat(calories),
-          protein: parseFloat(protein),
-          carbs: parseFloat(carbs),
-          fats: parseFloat(fats),
+          protein: protein ? parseFloat(protein) : 0,
+          carbs: carbs ? parseFloat(carbs) : 0,
+          fats: fats ? parseFloat(fats) : 0,
           mealType: selectedMealType
         })
       })
@@ -501,10 +535,27 @@ export function NutritionTracker() {
                 </select>
               </div>
 
+              {/* Search Database Button */}
+              <div className="text-center">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowAddFoodModal(false)
+                    setShowFoodSearchModal(true)
+                  }}
+                  className="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center"
+                >
+                  <Apple className="w-4 h-4 mr-2" />
+                  Search Food Database
+                </button>
+                <p className="text-xs text-gray-400 mt-2">Or enter manually below:</p>
+              </div>
+
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Food Name</label>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Food Name *</label>
                 <input
                   type="text"
+                  required
                   value={foodName}
                   onChange={(e) => setFoodName(e.target.value)}
                   className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
@@ -514,12 +565,14 @@ export function NutritionTracker() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Calories</label>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Calories *</label>
                   <input
                     type="number"
+                    required
                     value={calories}
                     onChange={(e) => setCalories(e.target.value)}
                     className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
+                    placeholder="200"
                   />
                 </div>
                 <div>
@@ -529,6 +582,7 @@ export function NutritionTracker() {
                     value={protein}
                     onChange={(e) => setProtein(e.target.value)}
                     className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
+                    placeholder="Optional"
                   />
                 </div>
                 <div>
@@ -538,6 +592,7 @@ export function NutritionTracker() {
                     value={carbs}
                     onChange={(e) => setCarbs(e.target.value)}
                     className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
+                    placeholder="Optional"
                   />
                 </div>
                 <div>
@@ -547,6 +602,7 @@ export function NutritionTracker() {
                     value={fats}
                     onChange={(e) => setFats(e.target.value)}
                     className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
+                    placeholder="Optional"
                   />
                 </div>
               </div>
@@ -565,6 +621,81 @@ export function NutritionTracker() {
                   Log Food
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Food Search Modal */}
+      {showFoodSearchModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 max-w-2xl w-full border border-primary-400/30 shadow-2xl max-h-[80vh] flex flex-col">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-bold text-white">Food Database</h3>
+              <button
+                onClick={() => setShowFoodSearchModal(false)}
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Search Bar */}
+            <div className="mb-4">
+              <input
+                type="text"
+                placeholder="Search foods (e.g., chicken, rice, protein)..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-primary-400 focus:outline-none"
+                autoFocus
+              />
+              <p className="text-xs text-gray-400 mt-2">
+                Found {filteredFoods.length} foods • Click to auto-fill
+              </p>
+            </div>
+
+            {/* Food List */}
+            <div className="overflow-y-auto flex-1">
+              <div className="grid gap-3">
+                {filteredFoods.map((food) => (
+                  <button
+                    key={food.id}
+                    onClick={() => selectFoodFromLibrary(food)}
+                    className="bg-gradient-to-br from-primary-600/10 to-secondary-600/10 hover:from-primary-600/20 hover:to-secondary-600/20 rounded-lg p-4 border border-primary-400/20 hover:border-primary-400/40 transition-all duration-200 text-left"
+                  >
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <h4 className="font-bold text-white mb-1">{food.name}</h4>
+                        <div className="flex gap-4 text-sm text-gray-300">
+                          <span>{food.calories} cal</span>
+                          <span>P: {food.protein}g</span>
+                          <span>C: {food.carbs}g</span>
+                          <span>F: {food.fats}g</span>
+                        </div>
+                      </div>
+                      <span className="text-xs text-secondary-300 bg-secondary-500/20 px-2 py-1 rounded-full">
+                        {food.category}
+                      </span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+
+              {filteredFoods.length === 0 && (
+                <div className="text-center py-12">
+                  <p className="text-gray-400">No foods found matching "{searchQuery}"</p>
+                  <button
+                    onClick={() => {
+                      setShowFoodSearchModal(false)
+                      setShowAddFoodModal(true)
+                    }}
+                    className="mt-4 text-primary-300 hover:text-primary-200 underline"
+                  >
+                    Add manually instead
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
