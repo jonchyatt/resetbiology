@@ -176,13 +176,37 @@ export default function AdminNutritionPage() {
            backgroundPosition: 'center',
            backgroundAttachment: 'fixed'
          }}>
+      {/* Navigation Header */}
+      <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm shadow-2xl border-b border-primary-400/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <img src="/logo1.png" alt="Reset Biology" className="h-8 w-auto mr-3 drop-shadow-lg" />
+              <div className="flex items-center">
+                <h1 className="text-xl font-bold text-white drop-shadow-lg">Admin</h1>
+                <span className="mx-2 text-primary-300">•</span>
+                <span className="text-lg text-gray-200 drop-shadow-sm">Nutrition Management</span>
+              </div>
+            </div>
+            <div className="flex items-center gap-4">
+              <a href="/admin" className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
+                ← Back to Admin
+              </a>
+              <a href="/portal" className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
+                ← Back to Portal
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="relative z-10">
         <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 mb-8 shadow-xl hover:shadow-primary-400/20 transition-all duration-300">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-2xl font-bold text-white">Admin: Nutrition Management</h1>
+              <h1 className="text-2xl font-bold text-white">Meal Plan Library</h1>
               <p className="text-gray-300 mt-1">Create and manage meal plans for users</p>
             </div>
             <div className="flex gap-3">
