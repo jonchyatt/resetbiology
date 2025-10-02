@@ -1,10 +1,20 @@
 "use client"
 
-import { useMemo, useState, useEffect } from "react"
-import { Apple, PieChart, Target, Calendar, Plus, ShoppingCart, History, UtensilsCrossed, Clock, Droplet, NotebookPen, Upload, Check } from "lucide-react"
-import { FoodSearch } from "./FoodSearch"
-import { MealLogger, type MealCategory } from "./MealLogger"
-import { foodIndex } from "./FoodDatabase"
+import { useState, useEffect } from "react"
+import { Apple, Target, Plus, X, Calendar, TrendingUp, Utensils } from "lucide-react"
+
+interface MealPlan {
+  id: string
+  name: string
+  planType: string
+  dailyCalories: number
+  proteinTarget: number
+  carbsTarget: number
+  fatsTarget: number
+  description?: string
+  notes?: string
+  isActive: boolean
+}
 
 interface FoodEntry {
   id: string
@@ -13,211 +23,212 @@ interface FoodEntry {
   protein: number
   carbs: number
   fats: number
-  serving: string
-  time: string
-  category: MealCategory
-}
-
-interface DayEntry {
-  date: string
-  foods: FoodEntry[]
-  waterIntake: number
-  notes?: string
-}
-
-interface MacroTargets {
-  calories: number
-  protein: number
-  carbs: number
-  fats: number
+  mealType: string
+  loggedAt: string
 }
 
 export function NutritionTracker() {
-  const [currentDay, setCurrentDay] = useState<DayEntry>({
-    date: new Date().toISOString().split('T')[0],
-    foods: [],
-    waterIntake: 0
-  })
+  const [activeTab, setActiveTab] = useState<'today' | 'plans' | 'history'>('today')
+  const [mealPlans, setMealPlans] = useState<MealPlan[]>([])
+  const [activePlan, setActivePlan] = useState<MealPlan | null>(null)
+  const [todaysFoods, setTodaysFoods] = useState<FoodEntry[]>([])
+  const [showAddFoodModal, setShowAddFoodModal] = useState(false)
+  const [selectedMealType, setSelectedMealType] = useState<string>('breakfast')
 
-  const [macroTargets, setMacroTargets] = useState<MacroTargets>({
-    calories: 2000,
-    protein: 150,
-    carbs: 200,
-    fats: 67
-  })
+  // Form state for adding food
+  const [foodName, setFoodName] = useState('')
+  const [calories, setCalories] = useState('')
+  const [protein, setProtein] = useState('')
+  const [carbs, setCarbs] = useState('')
+  const [fats, setFats] = useState('')
 
-  const [activeTab, setActiveTab] = useState<'today' | 'history' | 'meal-plans'>('today')
-  const [isSearchOpen, setIsSearchOpen] = useState(false)
-  const [notes, setNotes] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const [isSaving, setIsSaving] = useState(false)
-
-  // Load today's entries on mount
+  // Load meal plans and today's foods
   useEffect(() => {
-    loadTodayEntries()
+    fetchMealPlans()
+    fetchTodaysFoods()
   }, [])
 
-  const loadTodayEntries = async () => {
+  const fetchMealPlans = async () => {
     try {
-      setIsLoading(true)
-      const today = new Date().toISOString().split('T')[0]
-      const response = await fetch(`/api/nutrition/entries?date=${today}`, {
+      const response = await fetch('/api/nutrition/plans', {
+        credentials: 'include'
+      })
+      const data = await response.json()
+
+      if (data.success && data.plans) {
+        setMealPlans(data.plans)
+        const active = data.plans.find((p: MealPlan) => p.isActive)
+        if (active) setActivePlan(active)
+      }
+    } catch (error) {
+      console.error('Error loading meal plans:', error)
+    }
+  }
+
+  const fetchTodaysFoods = async () => {
+    try {
+      const response = await fetch('/api/nutrition/entries', {
         credentials: 'include'
       })
       const data = await response.json()
 
       if (data.success && data.entries) {
-        // Transform database entries to match our interface
-        const formattedFoods = data.entries.map((entry: any) => ({
-          id: entry.id,
-          name: entry.name,
-          calories: entry.calories,
-          protein: entry.protein,
-          carbs: entry.carbs,
-          fats: entry.fats,
-          serving: entry.serving || '1 serving',
-          time: new Date(entry.loggedAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
-          category: entry.mealType as MealCategory
-        }))
-
-        setCurrentDay(prev => ({
-          ...prev,
-          foods: formattedFoods
-        }))
+        setTodaysFoods(data.entries)
       }
     } catch (error) {
-      console.error('Error loading nutrition entries:', error)
-    } finally {
-      setIsLoading(false)
+      console.error('Error loading food entries:', error)
     }
   }
 
-  const addFood = async (food: Omit<FoodEntry, 'id' | 'time'>, category: MealCategory) => {
-    const newEntry = {
-      ...food,
-      id: crypto.randomUUID(),
-      time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
-      category
+  const handleAddFood = async () => {
+    if (!foodName || !calories || !protein || !carbs || !fats) {
+      alert('Please fill in all fields')
+      return
     }
 
-    // Add to local state immediately
-    setCurrentDay(prev => ({
-      ...prev,
-      foods: [...prev.foods, newEntry]
-    }))
-
-    // Save to database
     try {
-      setIsSaving(true)
       const response = await fetch('/api/nutrition/entries', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({
-          name: food.name,
-          calories: food.calories,
-          protein: food.protein,
-          carbs: food.carbs,
-          fats: food.fats,
-          mealType: category,
-          serving: food.serving
+          name: foodName,
+          calories: parseFloat(calories),
+          protein: parseFloat(protein),
+          carbs: parseFloat(carbs),
+          fats: parseFloat(fats),
+          mealType: selectedMealType
         })
       })
 
       const data = await response.json()
 
       if (data.success) {
-        // Update with real ID from database
-        setCurrentDay(prev => ({
-          ...prev,
-          foods: prev.foods.map(f => f.id === newEntry.id ? { ...f, id: data.entry.id } : f)
-        }))
-
-        if (data.pointsAwarded) {
-          console.log(`✅ Food logged! +${data.pointsAwarded} points earned!`)
-        }
+        console.log(`✅ Food logged! +${data.pointsAwarded} points`)
+        fetchTodaysFoods()
+        // Reset form
+        setFoodName('')
+        setCalories('')
+        setProtein('')
+        setCarbs('')
+        setFats('')
+        setShowAddFoodModal(false)
       } else {
-        console.error('Failed to save food entry:', data.error)
+        alert(`Failed to log food: ${data.error}`)
       }
     } catch (error) {
-      console.error('Error saving food entry:', error)
-    } finally {
-      setIsSaving(false)
+      console.error('Error logging food:', error)
+      alert('Failed to log food. Please try again.')
     }
   }
 
-  const currentMacros = useMemo(() => currentDay.foods.reduce((acc, food) => ({
-    calories: acc.calories + food.calories,
-    protein: acc.protein + food.protein,
-    carbs: acc.carbs + food.carbs,
-    fats: acc.fats + food.fats
-  }), { calories: 0, protein: 0, carbs: 0, fats: 0 }), [currentDay.foods])
+  const deleteFood = async (entryId: string) => {
+    if (!confirm('Delete this food entry?')) return
 
-  // KEEP THIS SAMPLE DATA - shows peptide integration
-  const sampleMealPlans = [
-    {
-      name: "Peptide Optimization Protocol",
-      description: "Optimized for maximum peptide absorption and effectiveness",
-      calories: 1800,
-      protein: 140,
-      meals: ["High-protein breakfast", "Pre-peptide snack", "Post-workout meal", "Light dinner"],
-      peptideSupport: true
-    },
-    {
-      name: "Metabolic Reset Plan",
-      description: "Balanced nutrition for metabolic restoration",
-      calories: 2200,
-      protein: 120,
-      meals: ["Nutrient-dense breakfast", "Balanced lunch", "Healthy snack", "Lean dinner"],
-      peptideSupport: false
-    },
-    {
-      name: "Performance Enhancement",
-      description: "High-protein plan for active clients",
-      calories: 2500,
-      protein: 180,
-      meals: ["Power breakfast", "Pre-workout fuel", "Post-workout recovery", "Balanced dinner"],
-      peptideSupport: true
+    try {
+      const response = await fetch(`/api/nutrition/entries?id=${entryId}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        console.log('✅ Food entry deleted')
+        fetchTodaysFoods()
+      } else {
+        alert('Failed to delete entry')
+      }
+    } catch (error) {
+      console.error('Error deleting food:', error)
+      alert('Failed to delete entry')
     }
-  ]
+  }
 
-  // PRESERVE THIS COMPONENT - it's the macro display bars
-  const MacroCard = ({ label, current, target, color }: { 
-    label: string, current: number, target: number, color: string 
-  }) => {
-    const percentage = Math.min((current / target) * 100, 100)
-    return (
-      <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/30 p-4 rounded-lg hover:shadow-secondary-400/20 transition-all duration-300 backdrop-blur-sm border border-secondary-400/30 shadow-xl">
-        <div className="flex justify-between items-center mb-2">
-          <span className="text-sm font-medium text-gray-200">{label}</span>
-          <span className="text-sm text-gray-300">{current.toFixed(0)}/{target}</span>
+  // Calculate today's totals
+  const todaysTotals = todaysFoods.reduce(
+    (acc, food) => ({
+      calories: acc.calories + food.calories,
+      protein: acc.protein + food.protein,
+      carbs: acc.carbs + food.carbs,
+      fats: acc.fats + food.fats
+    }),
+    { calories: 0, protein: 0, carbs: 0, fats: 0 }
+  )
+
+  // Group foods by meal type
+  const foodsByMeal = {
+    breakfast: todaysFoods.filter(f => f.mealType === 'breakfast'),
+    lunch: todaysFoods.filter(f => f.mealType === 'lunch'),
+    dinner: todaysFoods.filter(f => f.mealType === 'dinner'),
+    snack: todaysFoods.filter(f => f.mealType === 'snack')
+  }
+
+  const MealPlanCard = ({ plan }: { plan: MealPlan }) => (
+    <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/30 rounded-lg p-6 border border-primary-400/30 backdrop-blur-sm shadow-xl hover:shadow-primary-400/20 transition-all duration-300">
+      <div className="flex items-start justify-between mb-4">
+        <div>
+          <h3 className="text-xl font-bold text-white">{plan.name}</h3>
+          <span className="text-xs text-secondary-300 bg-secondary-500/20 px-2 py-1 rounded-full mt-2 inline-block">
+            {plan.planType}
+          </span>
         </div>
-        <div className="w-full bg-gray-900/50 rounded-full h-2 backdrop-blur-sm border border-gray-600/30">
-          <div 
-            className={`h-2 rounded-full transition-all duration-500 ${color}`}
+        {plan.isActive && (
+          <span className="text-xs text-green-300 bg-green-500/20 px-3 py-1 rounded-full">
+            Active
+          </span>
+        )}
+      </div>
+
+      <div className="flex gap-4">
+        <div className="flex-1 space-y-3 text-sm">
+          <div className="space-y-2">
+            <div>
+              <span className="text-gray-400">Daily Calories:</span>
+              <span className="text-white font-medium ml-2">{plan.dailyCalories}</span>
+            </div>
+            <div>
+              <span className="text-gray-400">Protein:</span>
+              <span className="text-white font-medium ml-2">{plan.proteinTarget}g</span>
+            </div>
+            <div>
+              <span className="text-gray-400">Carbs:</span>
+              <span className="text-white font-medium ml-2">{plan.carbsTarget}g</span>
+            </div>
+            <div>
+              <span className="text-gray-400">Fats:</span>
+              <span className="text-white font-medium ml-2">{plan.fatsTarget}g</span>
+            </div>
+          </div>
+
+          {plan.description && (
+            <div className="border-t border-gray-600 pt-3">
+              <p className="text-gray-300 text-xs">{plan.description}</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+
+  const MacroProgressBar = ({ label, current, target, color }: { label: string; current: number; target: number; color: string }) => {
+    const percentage = Math.min((current / target) * 100, 100)
+
+    return (
+      <div className="space-y-2">
+        <div className="flex justify-between text-sm">
+          <span className="text-gray-300">{label}</span>
+          <span className="text-white font-medium">{current} / {target}g</span>
+        </div>
+        <div className="w-full bg-gray-700/50 rounded-full h-3 overflow-hidden">
+          <div
+            className={`h-full rounded-full transition-all duration-500 ${color}`}
             style={{ width: `${percentage}%` }}
-          ></div>
+          />
         </div>
       </div>
     )
   }
-
-  const groupedFoods = useMemo(() => {
-    const groups: Record<MealCategory, FoodEntry[]> = { breakfast: [], lunch: [], dinner: [], snack: [] }
-    currentDay.foods.forEach(f => groups[f.category].push(f))
-    return groups
-  }, [currentDay.foods])
-
-
-  const removeFood = (id: string) => setCurrentDay(prev => ({
-    ...prev,
-    foods: prev.foods.filter(f => f.id !== id)
-  }))
-
-  const updateWater = (delta: number) => setCurrentDay(prev => ({
-    ...prev,
-    waterIntake: Math.max(0, prev.waterIntake + delta)
-  }))
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 relative"
@@ -227,174 +238,303 @@ export function NutritionTracker() {
            backgroundPosition: 'center',
            backgroundAttachment: 'fixed'
          }}>
-      <div className="relative z-10">
-        {/* PRESERVE THIS HEADER PATTERN */}
-        <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm shadow-2xl border-b border-primary-400/30 mt-16">
-          <div className="container mx-auto px-4 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <img src="/logo1.png" alt="Reset Biology" className="h-8 w-auto mr-3 drop-shadow-lg" />
-                <div>
-                  <h1 className="text-xl font-bold text-white drop-shadow-lg">Portal</h1>
-                  <span className="text-lg text-gray-200 drop-shadow-sm">• Nutrition Tracker</span>
-                </div>
+      {/* Header - matching PeptideTracker pattern */}
+      <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm shadow-2xl border-b border-primary-400/30 mt-16">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <img src="/logo1.png" alt="Reset Biology" className="h-8 w-auto mr-3 drop-shadow-lg" />
+              <div>
+                <h1 className="text-xl font-bold text-white drop-shadow-lg">Portal</h1>
+                <span className="text-lg text-gray-200 drop-shadow-sm">• Nutrition Tracker</span>
               </div>
-              <a href="/portal" className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
-                ← Back to Portal
-              </a>
             </div>
+            <a href="/portal" className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
+              ← Back to Portal
+            </a>
           </div>
-        </div>
-
-        {/* PRESERVE THIS TITLE SECTION */}
-        <div className="text-center py-8">
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 text-shadow-lg animate-fade-in">
-            <span className="text-secondary-400">Nutrition</span> Tracker
-          </h2>
-          <p className="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto font-medium leading-relaxed drop-shadow-sm">
-            Automated meal plans optimized for peptide effectiveness. Track macros with peptide-specific recommendations.
-          </p>
-        </div>
-
-        <div className="container mx-auto px-4 pb-8">
-          {/* PRESERVE THIS TAB NAVIGATION */}
-          <div className="flex justify-center mb-8">
-            <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-1 border border-primary-400/30 hover:shadow-primary-400/20 transition-all duration-300">
-              {(['today', 'history', 'meal-plans'] as const).map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`px-6 py-3 rounded-lg font-medium transition-all capitalize ${
-                    activeTab === tab 
-                      ? 'bg-secondary-500 text-white shadow-lg' 
-                      : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
-                  }`}
-                >
-                  {tab === 'meal-plans' ? 'Meal Plans' : tab}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* TODAY TAB */}
-          {activeTab === 'today' && (
-            <div className="max-w-6xl mx-auto">
-              <div className="grid gap-6 lg:grid-cols-3">
-                {/* KEEP THIS ENTIRE MACRO OVERVIEW SECTION */}
-                <div className="space-y-6">
-                  <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl hover:shadow-primary-400/20 transition-all duration-300">
-                    <h3 className="text-xl font-bold text-white mb-4 flex items-center">
-                      <PieChart className="w-5 h-5 mr-2 text-secondary-400" />
-                      Daily Macros
-                    </h3>
-                    <div className="space-y-4">
-                      <MacroCard label="Calories" current={currentMacros.calories} target={macroTargets.calories} color="bg-gradient-to-r from-blue-500 to-blue-600" />
-                      <MacroCard label="Protein (g)" current={currentMacros.protein} target={macroTargets.protein} color="bg-gradient-to-r from-red-500 to-red-600" />
-                      <MacroCard label="Carbs (g)" current={currentMacros.carbs} target={macroTargets.carbs} color="bg-gradient-to-r from-green-500 to-green-600" />
-                      <MacroCard label="Fats (g)" current={currentMacros.fats} target={macroTargets.fats} color="bg-gradient-to-r from-yellow-500 to-yellow-600" />
-                    </div>
-                  </div>
-
-                  {/* KEEP THIS PEPTIDE OPTIMIZATION TIP */}
-                  <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-4 border border-primary-400/50">
-                    <h4 className="font-semibold text-primary-300 mb-2">🧬 Peptide Optimization</h4>
-                    <p className="text-sm text-gray-200">
-                      Next peptide dose in 2 hours. Consider a light protein snack 30 minutes before.
-                    </p>
-                  </div>
-
-                  {/* WATER + NOTES */}
-                  <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl hover:shadow-secondary-400/20 transition-all duration-300">
-                    <h3 className="text-white font-semibold mb-3 flex items-center"><Droplet className="mr-2 h-5 w-5 text-secondary-400"/>Hydration</h3>
-                    <div className="flex items-center gap-3">
-                      <button onClick={() => updateWater(8)} className="bg-secondary-600 hover:bg-secondary-700 text-white font-medium py-2 px-3 rounded-lg">+ 8 oz</button>
-                      <button onClick={() => updateWater(-8)} className="bg-gray-700 hover:bg-gray-600 text-white font-medium py-2 px-3 rounded-lg">- 8 oz</button>
-                      <span className="text-gray-200 ml-auto">{currentDay.waterIntake} oz</span>
-                    </div>
-                  </div>
-
-                  <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl hover:shadow-secondary-400/20 transition-all duration-300">
-                    <h3 className="text-white font-semibold mb-3 flex items-center"><NotebookPen className="mr-2 h-5 w-5 text-secondary-400"/>Notes</h3>
-                    <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="How do you feel today? Peptide timing effects, appetite, etc." className="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-secondary-500"></textarea>
-                  </div>
-                </div>
-
-                {/* FOOD LOGGING */}
-                <div className="lg:col-span-2">
-                  <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl hover:shadow-secondary-400/20 transition-all duration-300">
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-xl font-bold text-white flex items-center">
-                        <Apple className="w-5 h-5 mr-2 text-secondary-400" />
-                        Today's Meals
-                      </h3>
-                      {/* ENHANCED BUTTON opens food search/log modal */}
-                      <button onClick={() => setIsSearchOpen(true)} className="bg-secondary-600 hover:bg-secondary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center">
-                        <Plus className="w-4 h-4 mr-2" />
-                        Add Food
-                      </button>
-                    </div>
-
-                    <MealLogger groups={groupedFoods} onRemove={removeFood} />
-
-                    {currentDay.foods.length === 0 && (
-                      <div className="text-center py-8">
-                        <Apple className="w-16 h-16 text-gray-500 mx-auto mb-4" />
-                        <p className="text-gray-300 mb-4">No foods logged today</p>
-                        <p className="text-sm text-gray-400">Start tracking your nutrition for optimal peptide results</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* HISTORY TAB */}
-          {activeTab === 'history' && (
-            <div className="max-w-5xl mx-auto">
-              <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl hover:shadow-secondary-400/20 transition-all duration-300">
-                <h3 className="text-xl font-bold text-white mb-4 flex items-center"><History className="h-5 w-5 mr-2 text-secondary-400"/>Meal History</h3>
-                <p className="text-gray-300">Coming soon: persist days to localStorage or backend and browse past logs with peptide timing overlays.</p>
-              </div>
-            </div>
-          )}
-
-          {/* MEAL PLANS TAB (preserved) */}
-          {activeTab === 'meal-plans' && (
-            <div className="max-w-5xl mx-auto grid gap-6 md:grid-cols-2">
-              {sampleMealPlans.map(mp => (
-                <div key={mp.name} className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl hover:shadow-secondary-400/20 transition-all duration-300">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="text-white font-semibold text-lg">{mp.name}</h4>
-                      <p className="text-gray-300 text-sm">{mp.description}</p>
-                    </div>
-                    {mp.peptideSupport && <span className="text-xs px-2 py-1 rounded bg-secondary-600 text-white">Peptide Support</span>}
-                  </div>
-                  <div className="mt-4 text-gray-300 text-sm">
-                    <p className="mb-2">Target: {mp.calories} kcal • {mp.protein} g protein</p>
-                    <ul className="list-disc list-inside space-y-1">
-                      {mp.meals.map(m => <li key={m}>{m}</li>)}
-                    </ul>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
       </div>
 
-      {/* SEARCH MODAL */}
-      {isSearchOpen && (
-        <FoodSearch
-          foods={foodIndex}
-          onClose={() => setIsSearchOpen(false)}
-          onAdd={(payload) => {
-            // FoodSearch returns the food data, we need to add a default category
-            addFood(payload, 'meal' as MealCategory)
-            setIsSearchOpen(false)
-          }}
-        />
+      {/* Title */}
+      <div className="text-center py-8">
+        <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
+          <span className="text-secondary-400">Nutrition</span> Tracker
+        </h2>
+        <p className="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto">
+          Track macros, manage meal plans, optimize for peptide effectiveness
+        </p>
+      </div>
+
+      {/* Tabs */}
+      <div className="container mx-auto px-4 pb-8">
+        <div className="flex justify-center mb-8">
+          <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-1 border border-primary-400/30 hover:shadow-primary-400/20 transition-all duration-300">
+            {(['today', 'plans', 'history'] as const).map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`px-6 py-3 rounded-lg font-medium transition-all capitalize ${
+                  activeTab === tab
+                    ? 'bg-secondary-500 text-white shadow-lg'
+                    : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                }`}
+              >
+                {tab === 'today' ? 'Today' : tab === 'plans' ? 'Meal Plans' : 'History'}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {activeTab === 'today' && (
+          <div className="max-w-6xl mx-auto grid gap-6 lg:grid-cols-3">
+            {/* Main content */}
+            <div className="lg:col-span-2 space-y-6">
+              {/* Today's Progress */}
+              <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl hover:shadow-primary-400/20 transition-all duration-300">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-xl font-bold text-white flex items-center">
+                    <Target className="h-5 w-5 mr-2 text-secondary-400"/>Today's Macros
+                  </h3>
+                  <button
+                    onClick={() => setShowAddFoodModal(true)}
+                    className="bg-secondary-600 hover:bg-secondary-700 text-white font-medium py-2 px-4 rounded-lg flex items-center"
+                  >
+                    <Plus className="h-4 w-4 mr-1"/>Add Food
+                  </button>
+                </div>
+
+                {activePlan && (
+                  <div className="space-y-4">
+                    <div className="bg-gray-800/50 rounded-lg p-4">
+                      <div className="flex justify-between text-sm mb-2">
+                        <span className="text-gray-300">Calories</span>
+                        <span className="text-white font-bold text-lg">{todaysTotals.calories} / {activePlan.dailyCalories}</span>
+                      </div>
+                      <div className="w-full bg-gray-700/50 rounded-full h-4 overflow-hidden">
+                        <div
+                          className="h-full bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full transition-all duration-500"
+                          style={{ width: `${Math.min((todaysTotals.calories / activePlan.dailyCalories) * 100, 100)}%` }}
+                        />
+                      </div>
+                    </div>
+
+                    <MacroProgressBar
+                      label="Protein"
+                      current={todaysTotals.protein}
+                      target={activePlan.proteinTarget}
+                      color="bg-gradient-to-r from-blue-500 to-blue-400"
+                    />
+                    <MacroProgressBar
+                      label="Carbs"
+                      current={todaysTotals.carbs}
+                      target={activePlan.carbsTarget}
+                      color="bg-gradient-to-r from-green-500 to-green-400"
+                    />
+                    <MacroProgressBar
+                      label="Fats"
+                      current={todaysTotals.fats}
+                      target={activePlan.fatsTarget}
+                      color="bg-gradient-to-r from-amber-500 to-amber-400"
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Today's Meals */}
+              <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl hover:shadow-primary-400/20 transition-all duration-300">
+                <h3 className="text-xl font-bold text-white mb-4 flex items-center">
+                  <Utensils className="h-5 w-5 mr-2 text-secondary-400"/>Today's Meals
+                </h3>
+
+                {['breakfast', 'lunch', 'dinner', 'snack'].map((mealType) => (
+                  <div key={mealType} className="mb-6 last:mb-0">
+                    <h4 className="text-primary-300 font-semibold mb-2 capitalize">{mealType}</h4>
+                    {foodsByMeal[mealType as keyof typeof foodsByMeal].length === 0 ? (
+                      <p className="text-gray-400 text-sm italic">Nothing logged</p>
+                    ) : (
+                      <div className="space-y-2">
+                        {foodsByMeal[mealType as keyof typeof foodsByMeal].map((food) => (
+                          <div key={food.id} className="bg-gray-700/30 rounded-lg p-3 flex justify-between items-center">
+                            <div>
+                              <p className="text-white font-medium">{food.name}</p>
+                              <p className="text-gray-400 text-xs">
+                                {food.calories}cal • P:{food.protein}g C:{food.carbs}g F:{food.fats}g
+                              </p>
+                            </div>
+                            <button
+                              onClick={() => deleteFood(food.id)}
+                              className="text-red-400 hover:text-red-300 transition-colors"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Sidebar */}
+            <div className="space-y-6">
+              <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl hover:shadow-secondary-400/20 transition-all duration-300">
+                <h4 className="text-white font-semibold mb-2 flex items-center">
+                  <Calendar className="h-5 w-5 mr-2 text-secondary-400"/>Current Plan
+                </h4>
+                {activePlan ? (
+                  <div>
+                    <p className="text-primary-300 font-bold text-lg">{activePlan.name}</p>
+                    <p className="text-gray-400 text-sm">{activePlan.planType}</p>
+                  </div>
+                ) : (
+                  <p className="text-gray-400 text-sm">No active plan</p>
+                )}
+              </div>
+
+              <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl hover:shadow-secondary-400/20 transition-all duration-300">
+                <h4 className="text-white font-semibold mb-2 flex items-center">
+                  <TrendingUp className="h-5 w-5 mr-2 text-secondary-400"/>Progress
+                </h4>
+                <p className="text-gray-300 text-sm">Weekly trends and analytics coming soon.</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'plans' && (
+          <div className="max-w-5xl mx-auto">
+            <div className="mb-6 flex justify-between items-center">
+              <h3 className="text-2xl font-bold text-white">Meal Plans</h3>
+              <a
+                href="/admin/nutrition"
+                className="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+              >
+                <Plus className="inline h-4 w-4 mr-1"/>Create Plan
+              </a>
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-2">
+              {mealPlans.map((plan) => (
+                <MealPlanCard key={plan.id} plan={plan} />
+              ))}
+            </div>
+
+            {mealPlans.length === 0 && (
+              <div className="text-center py-12">
+                <p className="text-gray-400">No meal plans yet. Create one to get started!</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'history' && (
+          <div className="max-w-5xl mx-auto">
+            <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl hover:shadow-secondary-400/20 transition-all duration-300">
+              <h3 className="text-xl font-bold text-white mb-4">History</h3>
+              <p className="text-gray-300">Nutrition history coming soon.</p>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Add Food Modal */}
+      {showAddFoodModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 max-w-md w-full border border-primary-400/30 shadow-2xl">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-bold text-white">Log Food</h3>
+              <button
+                onClick={() => setShowAddFoodModal(false)}
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Meal Type</label>
+                <select
+                  value={selectedMealType}
+                  onChange={(e) => setSelectedMealType(e.target.value)}
+                  className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
+                >
+                  <option value="breakfast">Breakfast</option>
+                  <option value="lunch">Lunch</option>
+                  <option value="dinner">Dinner</option>
+                  <option value="snack">Snack</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Food Name</label>
+                <input
+                  type="text"
+                  value={foodName}
+                  onChange={(e) => setFoodName(e.target.value)}
+                  className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
+                  placeholder="e.g., Chicken Breast"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Calories</label>
+                  <input
+                    type="number"
+                    value={calories}
+                    onChange={(e) => setCalories(e.target.value)}
+                    className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Protein (g)</label>
+                  <input
+                    type="number"
+                    value={protein}
+                    onChange={(e) => setProtein(e.target.value)}
+                    className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Carbs (g)</label>
+                  <input
+                    type="number"
+                    value={carbs}
+                    onChange={(e) => setCarbs(e.target.value)}
+                    className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Fats (g)</label>
+                  <input
+                    type="number"
+                    value={fats}
+                    onChange={(e) => setFats(e.target.value)}
+                    className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <button
+                  onClick={() => setShowAddFoodModal(false)}
+                  className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleAddFood}
+                  className="flex-1 bg-secondary-600 hover:bg-secondary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                >
+                  Log Food
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )
