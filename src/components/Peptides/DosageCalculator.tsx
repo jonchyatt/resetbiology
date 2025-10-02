@@ -442,12 +442,79 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
   return (
     <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-6 pt-8 border border-primary-400/30 shadow-2xl">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center">
-          <CalcIcon className="w-6 h-6 text-primary-400 mr-2" />
-          <h2 className="text-2xl font-bold text-white">Peptide Dosage Calculator</h2>
+      <div className="mb-6 flex flex-col items-center gap-3">
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          <div className="flex items-center gap-2">
+            <CalcIcon className="w-6 h-6 text-primary-400" />
+            <h2 className="text-2xl font-bold text-white text-center">Dosage Calculator</h2>
+          </div>
+          <div className="flex flex-wrap items-center gap-2 text-sm">
+            <label className="text-gray-300 font-medium">
+              {mode === 'addProtocol' ? 'Select Peptide' : 'Preset'}
+            </label>
+            <select
+              aria-label={mode === 'addProtocol' ? 'Select Peptide' : 'Peptide preset'}
+              value={mode === 'addProtocol' ? peptideName : selectedPreset}
+              onChange={(e) => {
+                if (mode === 'addProtocol' && peptideLibrary) {
+                  const selectedName = e.target.value;
+                  const peptide = peptideLibrary.find(p => p.name === selectedName);
+                  if (peptide) {
+                    setPeptideName(peptide.name);
+                    setSelectedPeptideId(peptide.id || '');
+                    if (peptide.reconstitution) {
+                      const volumeMatch = peptide.reconstitution.match(/(\d+\.?\d*)ml/i);
+                      if (volumeMatch) setInputs(prev => ({ ...prev, totalVolume: parseFloat(volumeMatch[1]) }));
+                    }
+                    if (peptide.vialAmount) {
+                      const amountMatch = peptide.vialAmount.match(/(\d+\.?\d*)mg/i);
+                      if (amountMatch) setInputs(prev => ({ ...prev, peptideAmount: parseFloat(amountMatch[1]) }));
+                    }
+                  }
+                } else {
+                  applyPreset(e.target.value as PresetName);
+                }
+              }}
+              className="min-w-[180px] bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-primary-400 focus:outline-none"
+            >
+              <option value="">{mode === 'addProtocol' ? 'Choose a peptide...' : 'Select a preset…'}</option>
+              {mode === 'addProtocol' && peptideLibrary
+                ? peptideLibrary.map((p) => {
+                    const displayName = p.name
+                      .replace(/\s*-\s*peptide\s*$/i, '')
+                      .replace(/\s+Package\s*$/i, '')
+                      .trim();
+                    return (
+                      <option key={p.id || p.name} value={p.name}>
+                        {displayName}
+                      </option>
+                    );
+                  })
+                : PEPTIDE_PRESETS.map((p) => (
+                    <option key={p.name} value={p.name}>{p.name}</option>
+                  ))}
+            </select>
+          </div>
+          {mode !== 'addProtocol' && (
+            <button
+              type="button"
+              onClick={handleImport}
+              className="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-3 rounded-lg transition-colors flex items-center gap-2"
+              aria-label="Import from product page"
+              title="Import from product page"
+            >
+              <Import className="w-4 h-4" /> Import
+            </button>
+          )}
         </div>
-        <div className="text-xs text-gray-400">Professional tool • Not medical advice</div>
+        <div className="text-xs text-gray-400 text-center">
+          Professional tool - Not medical advice
+        </div>
+        {selectedPreset && mode !== 'addProtocol' && (
+          <p className="text-xs text-gray-400 text-center max-w-xl">
+            {PEPTIDE_PRESETS.find((p) => p.name === selectedPreset)?.instructions}
+          </p>
+        )}
       </div>
 
       {/* Alerts */}
@@ -468,75 +535,6 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Input Panel */}
         <div className="space-y-4">
-          {/* Preset selector */}
-          <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30">
-            <label className="block mb-2 text-sm text-gray-300">
-              {mode === 'addProtocol' ? 'Select Peptide' : 'Preset'}
-            </label>
-            <div className="flex gap-2 max-w-md">
-              <select
-                aria-label={mode === 'addProtocol' ? 'Select Peptide' : 'Peptide preset'}
-                value={mode === 'addProtocol' ? peptideName : selectedPreset}
-                onChange={(e) => {
-                  if (mode === 'addProtocol' && peptideLibrary) {
-                    const selectedName = e.target.value;
-                    const peptide = peptideLibrary.find(p => p.name === selectedName);
-                    if (peptide) {
-                      setPeptideName(peptide.name);
-                      setSelectedPeptideId(peptide.id || '');
-                      // Auto-fill from library
-                      if (peptide.reconstitution) {
-                        const volumeMatch = peptide.reconstitution.match(/(\d+\.?\d*)ml/i);
-                        if (volumeMatch) setInputs(prev => ({ ...prev, totalVolume: parseFloat(volumeMatch[1]) }));
-                      }
-                      if (peptide.vialAmount) {
-                        const amountMatch = peptide.vialAmount.match(/(\d+\.?\d*)mg/i);
-                        if (amountMatch) setInputs(prev => ({ ...prev, peptideAmount: parseFloat(amountMatch[1]) }));
-                      }
-                    }
-                  } else {
-                    applyPreset(e.target.value as PresetName);
-                  }
-                }}
-                className="flex-1 bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-primary-400 focus:outline-none"
-              >
-                <option value="">{mode === 'addProtocol' ? 'Choose a peptide...' : 'Select a preset…'}</option>
-                {mode === 'addProtocol' && peptideLibrary
-                  ? peptideLibrary.map((p) => {
-                      // Remove "- peptide" and "Package" suffix from display name
-                      const displayName = p.name
-                        .replace(/\s*-\s*peptide\s*$/i, '')
-                        .replace(/\s+Package\s*$/i, '')
-                        .trim();
-                      return (
-                        <option key={p.id || p.name} value={p.name}>
-                          {displayName}
-                        </option>
-                      );
-                    })
-                  : PEPTIDE_PRESETS.map((p) => (
-                      <option key={p.name} value={p.name}>{p.name}</option>
-                    ))}
-              </select>
-              {mode !== 'addProtocol' && (
-                <button
-                  type="button"
-                  onClick={handleImport}
-                  className="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-3 rounded-lg transition-colors flex items-center gap-2"
-                  aria-label="Import from product page"
-                  title="Import from product page"
-                >
-                  <Import className="w-4 h-4" /> Import
-                </button>
-              )}
-            </div>
-            {selectedPreset && mode !== 'addProtocol' && (
-              <p className="mt-2 text-xs text-gray-400">
-                {PEPTIDE_PRESETS.find((p) => p.name === selectedPreset)?.instructions}
-              </p>
-            )}
-          </div>
-
           {/* Peptide name (editable in calculate mode, display only in addProtocol mode) */}
           {mode !== 'addProtocol' && (
             <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30">
@@ -549,62 +547,6 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
               />
             </div>
           )}
-
-          {/* Dose + Unit */}
-          <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30 space-y-3">
-            <label>
-              <span className="block mb-1 text-sm text-gray-300">Desired dose</span>
-              <div className="flex items-center gap-2 max-w-xs">
-                <button
-                  type="button"
-                  className="bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white hover:border-primary-400 transition-colors"
-                  onClick={() => setInputs((s) => ({ ...s, desiredDose: clamp(s.desiredDose - (inputs.doseUnit === "mg" ? 0.1 : 50), unitMinMax.min, unitMinMax.max) }))}
-                  aria-label="Decrease dose"
-                >
-                  −
-                </button>
-                <input
-                  aria-label="Desired dose value"
-                  inputMode="decimal"
-                  value={inputs.desiredDose}
-                  onChange={(e) => setInputs((s) => ({ ...s, desiredDose: parseFloat(e.target.value) || 0 }))}
-                  onBlur={(e) => setInputs((s) => ({ ...s, desiredDose: clamp(parseFloat(e.target.value) || 0, unitMinMax.min, unitMinMax.max) }))}
-                  className="w-20 bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-primary-400 focus:outline-none text-center"
-                />
-                <button
-                  type="button"
-                  className="bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white hover:border-primary-400 transition-colors"
-                  onClick={() => setInputs((s) => ({ ...s, desiredDose: clamp(s.desiredDose + (inputs.doseUnit === "mg" ? 0.1 : 50), unitMinMax.min, unitMinMax.max) }))}
-                  aria-label="Increase dose"
-                >
-                  +
-                </button>
-                <select
-                  aria-label="Dose unit"
-                  value={inputs.doseUnit}
-                  onChange={(e) => setInputs((s) => ({ ...s, doseUnit: e.target.value as "mg" | "mcg" }))}
-                  className="bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
-                >
-                  <option value="mcg">mcg</option>
-                  <option value="mg">mg</option>
-                </select>
-              </div>
-            </label>
-            <input
-              aria-label="Dose range"
-              type="range"
-              min={unitMinMax.min}
-              max={unitMinMax.max}
-              step={unitMinMax.step}
-              value={inputs.desiredDose}
-              onChange={(e) => setInputs((s) => ({ ...s, desiredDose: parseFloat(e.target.value) }))}
-              className="w-full accent-primary-600"
-            />
-            <div className="flex justify-between text-xs text-gray-400">
-              <span>{unitMinMax.min} {inputs.doseUnit}</span>
-              <span>{unitMinMax.max} {inputs.doseUnit}</span>
-            </div>
-          </div>
 
           {/* Volume & Vial size */}
           <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30 space-y-3">
@@ -647,6 +589,62 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
               <label htmlFor="insulin-toggle" className="text-sm text-gray-300">Show insulin syringe units (100u = 1 ml)</label>
             </div>
             <div className="text-xs text-gray-400">Actual concentration: <span className="text-white font-medium">{displayConcentration} mcg/ml</span></div>
+          </div>
+
+          {/* Dose + Unit */}
+          <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30 space-y-3">
+            <label>
+              <span className="block mb-1 text-sm text-gray-300">Desired dose</span>
+              <div className="flex items-center gap-2 max-w-xs">
+                <button
+                  type="button"
+                  className="bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white hover:border-primary-400 transition-colors"
+                  onClick={() => setInputs((s) => ({ ...s, desiredDose: clamp(s.desiredDose - (inputs.doseUnit === "mg" ? 0.1 : 50), unitMinMax.min, unitMinMax.max) }))}
+                  aria-label="Decrease dose"
+                >
+                  -
+                </button>
+                <input
+                  aria-label="Desired dose value"
+                  inputMode="decimal"
+                  value={inputs.desiredDose}
+                  onChange={(e) => setInputs((s) => ({ ...s, desiredDose: parseFloat(e.target.value) || 0 }))}
+                  onBlur={(e) => setInputs((s) => ({ ...s, desiredDose: clamp(parseFloat(e.target.value) || 0, unitMinMax.min, unitMinMax.max) }))}
+                  className="w-20 bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-primary-400 focus:outline-none text-center"
+                />
+                <button
+                  type="button"
+                  className="bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white hover:border-primary-400 transition-colors"
+                  onClick={() => setInputs((s) => ({ ...s, desiredDose: clamp(s.desiredDose + (inputs.doseUnit === "mg" ? 0.1 : 50), unitMinMax.min, unitMinMax.max) }))}
+                  aria-label="Increase dose"
+                >
+                  +
+                </button>
+                <select
+                  aria-label="Dose unit"
+                  value={inputs.doseUnit}
+                  onChange={(e) => setInputs((s) => ({ ...s, doseUnit: e.target.value as "mg" | "mcg" }))}
+                  className="bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
+                >
+                  <option value="mcg">mcg</option>
+                  <option value="mg">mg</option>
+                </select>
+              </div>
+            </label>
+            <input
+              aria-label="Dose range"
+              type="range"
+              min={unitMinMax.min}
+              max={unitMinMax.max}
+              step={unitMinMax.step}
+              value={inputs.desiredDose}
+              onChange={(e) => setInputs((s) => ({ ...s, desiredDose: parseFloat(e.target.value) }))}
+              className="w-full accent-primary-600"
+            />
+            <div className="flex justify-between text-xs text-gray-400">
+              <span>{unitMinMax.min} {inputs.doseUnit}</span>
+              <span>{unitMinMax.max} {inputs.doseUnit}</span>
+            </div>
           </div>
 
           {/* Scheduling Section - Only in addProtocol mode */}
@@ -704,17 +702,19 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
               </div>
 
               <div className="bg-gradient-to-br from-primary-900/20 to-secondary-900/20 backdrop-blur-sm rounded-xl p-4 border border-primary-400/40">
-                <label className="block mb-1.5 text-sm text-gray-300 font-medium">
-                  Protocol Duration <span className="text-primary-400">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={duration}
-                  onChange={(e) => setDuration(e.target.value)}
-                  placeholder="e.g., 8 weeks, 12 weeks, 6 months"
-                  className="w-full bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-primary-400 focus:outline-none text-sm"
-                />
-                <p className="mt-1.5 text-xs text-gray-400 leading-snug">
+                <div className="flex flex-wrap items-center gap-3">
+                  <label className="text-sm text-gray-300 font-medium">
+                    Protocol Duration <span className="text-primary-400">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={duration}
+                    onChange={(e) => setDuration(e.target.value)}
+                    placeholder="e.g., 8 weeks, 12 weeks, 6 months"
+                    className="bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-primary-400 focus:outline-none text-sm min-w-[180px]"
+                  />
+                </div>
+                <p className="mt-1 text-xs text-gray-400 leading-snug">
                   Example: "8 weeks on, 8 weeks off" or "12 weeks continuous"
                 </p>
               </div>
