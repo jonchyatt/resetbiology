@@ -15,7 +15,7 @@ export interface WorkoutProgram {
 
 export interface WorkoutSession {
   id: string
-  exercises: any // JSON
+  exercises: ExerciseEntry[] // Array of exercises
   duration: number
   programId?: string
   completedAt: string
