@@ -1,19 +1,21 @@
-import type { ReactNode } from 'react';
-import { Header } from '@/components/Navigation/Header';
-import { ClientAuth0Provider } from '@/components/Auth/ClientAuth0Provider';
-import './globals.css';
+﻿import './globals.css';
+import Header from '@/components/Layout/Header';
+import Footer from '@/components/Layout/Footer';
 
-export const metadata = { title: 'ResetBiology' };
+export const metadata = {
+  title: 'ResetBiology',
+  description: 'Peptides, protocols, nutrition & performance.',
+};
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body>
-        <ClientAuth0Provider>
-          <Header />
-          {children}
-        </ClientAuth0Provider>
+        <Header />
+        {children}
+        <Footer />
       </body>
     </html>
   );
 }
+
