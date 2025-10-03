@@ -56,6 +56,51 @@ export function PeptideTracker() {
   const [historyMonth, setHistoryMonth] = useState<Date>(() => new Date())
   const bootstrapped = useRef(false)
 
+  const fetchTodaysDoses = useCallback(async (dayKey: string = todayKey) => {
+    try {
+      const response = await fetch(`/api/peptides/doses?date=${dayKey}`, {
+        credentials: 'include'
+      })
+      const data = await response.json()
+
+      if (data.success && data.doses) {
+        const completedToday = data.doses
+          .map((dose: any) => {
+            const doseDateKey = dose.doseDate
+              ? new Date(dose.doseDate).toISOString().split('T')[0]
+              : dayKey
+            if (doseDateKey !== dayKey) return null
+
+            return {
+              id: dose.id,
+              peptideId: dose.protocolId,
+              scheduledTime: dose.time,
+              completed: true,
+              actualTime: dose.doseDate,
+              notes: dose.notes || dose.sideEffects || '',
+              sideEffects: dose.sideEffects ? String(dose.sideEffects).split(',').map((s: string) => s.trim()).filter(Boolean) : undefined,
+              dateKey: doseDateKey,
+            } as DoseEntry | null
+          })
+          .filter(Boolean) as DoseEntry[]
+
+        setTodaysDoses((currentDoses: DoseEntry[]) => {
+          const relevantPending = currentDoses.filter(
+            (dose) => !dose.completed && dose.dateKey === dayKey
+          )
+
+          const merged = new Map<string, DoseEntry>()
+          for (const dose of [...completedToday, ...relevantPending]) {
+            merged.set(dose.id, dose)
+          }
+          return Array.from(merged.values())
+        })
+      }
+    } catch (error) {
+      console.error('Error fetching today\'s doses:', error)
+    }
+  }, [todayKey])
+
   const todaysDoseBuckets = useMemo(() => {
     const pending = todaysDoses
       .filter((dose) => !dose.completed)
@@ -272,51 +317,6 @@ export function PeptideTracker() {
       setLoadingLibrary(false)
     }
   }
-
-  const fetchTodaysDoses = useCallback(async (dayKey: string = todayKey) => {
-    try {
-      const response = await fetch(`/api/peptides/doses?date=${dayKey}`, {
-        credentials: 'include'
-      })
-      const data = await response.json()
-
-      if (data.success && data.doses) {
-        const completedToday = data.doses
-          .map((dose: any) => {
-            const doseDateKey = dose.doseDate
-              ? new Date(dose.doseDate).toISOString().split('T')[0]
-              : dayKey
-            if (doseDateKey !== dayKey) return null
-
-            return {
-              id: dose.id,
-              peptideId: dose.protocolId,
-              scheduledTime: dose.time,
-              completed: true,
-              actualTime: dose.doseDate,
-              notes: dose.notes || dose.sideEffects || '',
-              sideEffects: dose.sideEffects ? String(dose.sideEffects).split(',').map((s: string) => s.trim()).filter(Boolean) : undefined,
-              dateKey: doseDateKey,
-            } as DoseEntry | null
-          })
-          .filter(Boolean) as DoseEntry[]
-
-        setTodaysDoses((currentDoses: DoseEntry[]) => {
-          const relevantPending = currentDoses.filter(
-            (dose) => !dose.completed && dose.dateKey === dayKey
-          )
-
-          const merged = new Map<string, DoseEntry>()
-          for (const dose of [...completedToday, ...relevantPending]) {
-            merged.set(dose.id, dose)
-          }
-          return Array.from(merged.values())
-        })
-      }
-    } catch (error) {
-      console.error('Error fetching today\'s doses:', error)
-    }
-  }, [todayKey])
 
   const fetchDoseHistory = async () => {
     try {
