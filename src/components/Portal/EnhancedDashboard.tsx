@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { useState, useEffect } from "react"
 import { Trophy, Calendar, ChevronRight, Target, Dumbbell, Apple, Brain, Wind, BookOpen, ShoppingBag, Check } from "lucide-react"
 import { PortalHeader } from "@/components/Navigation/PortalHeader"
@@ -139,6 +140,67 @@ export function EnhancedDashboard() {
     loadTasks()
   }, [])
 
+  useEffect(() => {
+    const loadJournalPrefill = async () => {
+      try {
+        const response = await fetch('/api/journal/entry', { cache: 'no-store' })
+        if (!response.ok) return
+        const data = await response.json()
+        if (!data) return
+        const entry = data.entry || {}
+        setJournalData((prev) => ({
+          ...prev,
+          weight: typeof data.weight === 'number' ? data.weight : prev.weight,
+          mood: typeof data.mood === 'string' ? data.mood : prev.mood,
+          reasonsValidation: entry.reasonsValidation ?? prev.reasonsValidation,
+          affirmationGoal: entry.affirmationGoal ?? prev.affirmationGoal,
+          affirmationBecause: entry.affirmationBecause ?? prev.affirmationBecause,
+          affirmationMeans: entry.affirmationMeans ?? prev.affirmationMeans,
+          peptideNotes: entry.peptideNotes ?? prev.peptideNotes,
+          workoutNotes: entry.workoutNotes ?? prev.workoutNotes,
+          nutritionNotes: entry.nutritionNotes ?? prev.nutritionNotes,
+        }))
+      } catch (error) {
+        console.error('Failed to load journal entry:', error)
+      }
+    }
+
+    loadJournalPrefill()
+  }, [])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    const handler = (event: Event) => {
+      const detail = (event as CustomEvent<{
+        pointsAwarded?: number
+        journalNote?: string
+        dailyTaskCompleted?: boolean
+      }>).detail
+
+      if (!detail) return
+
+      if (detail.dailyTaskCompleted) {
+        setDailyTasks((prev) => (prev.meals ? prev : { ...prev, meals: true }))
+      }
+
+      if (detail.journalNote) {
+        const note = detail.journalNote
+        setJournalData((prev) => ({
+          ...prev,
+          nutritionNotes: prev.nutritionNotes
+            ? `${prev.nutritionNotes}\n${note}`
+            : note,
+        }))
+      }
+    }
+
+    window.addEventListener('nutrition:log-success', handler)
+    return () => {
+      window.removeEventListener('nutrition:log-success', handler)
+    }
+  }, [])
+
   const TaskRow = ({ 
     icon, 
     title, 
@@ -176,13 +238,12 @@ export function EnhancedDashboard() {
       </label>
       
       {/* Integrated card button on the right */}
-      <a 
-        href={linkTo} 
+      <Link href={linkTo} 
         className={`p-4 ${cardColor} rounded-lg border hover:scale-105 transition-all flex flex-col items-center justify-center min-w-[100px] group-hover:shadow-lg`}
       >
         <CardIcon className="w-8 h-8 text-white mb-2" />
         <span className="text-xs text-white font-medium">{title.split(' ')[1] || title}</span>
-      </a>
+      </Link>
     </div>
   )
 
@@ -385,54 +446,53 @@ export function EnhancedDashboard() {
 
               {/* Right Side - Quick Access Cards (2x3 Grid) */}
               <div className="grid grid-cols-2 gap-4">
-                <a href="/peptides" className="group">
+                <Link href="/peptides" className="group">
                   <div className="p-6 bg-gradient-to-br from-teal-600/30 to-teal-700/30 border border-teal-400/30 rounded-lg hover:scale-105 transition-all text-center">
                     <Target className="w-8 h-8 text-teal-300 mx-auto mb-2" />
                     <span className="text-white font-medium">Peptides</span>
                   </div>
-                </a>
+                </Link>
                 
-                <a href="/workout" className="group">
+                <Link href="/workout" className="group">
                   <div className="p-6 bg-gradient-to-br from-green-600/30 to-green-700/30 border border-green-400/30 rounded-lg hover:scale-105 transition-all text-center">
                     <Dumbbell className="w-8 h-8 text-green-300 mx-auto mb-2" />
                     <span className="text-white font-medium">Workout</span>
                   </div>
-                </a>
+                </Link>
                 
-                <a href="/nutrition" className="group">
+                <Link href="/nutrition" className="group">
                   <div className="p-6 bg-gradient-to-br from-amber-600/30 to-amber-700/30 border border-amber-400/30 rounded-lg hover:scale-105 transition-all text-center">
                     <Apple className="w-8 h-8 text-amber-300 mx-auto mb-2" />
                     <span className="text-white font-medium">Nutrition</span>
                   </div>
-                </a>
+                </Link>
                 
-                <a href="/modules" className="group">
+                <Link href="/modules" className="group">
                   <div className="p-6 bg-gradient-to-br from-purple-600/30 to-purple-700/30 border border-purple-400/30 rounded-lg hover:scale-105 transition-all text-center">
                     <Brain className="w-8 h-8 text-purple-300 mx-auto mb-2" />
                     <span className="text-white font-medium">Modules</span>
                   </div>
-                </a>
+                </Link>
                 
-                <a href="/breath" className="group">
+                <Link href="/breath" className="group">
                   <div className="p-6 bg-gradient-to-br from-blue-600/30 to-blue-700/30 border border-blue-400/30 rounded-lg hover:scale-105 transition-all text-center">
                     <Wind className="w-8 h-8 text-blue-300 mx-auto mb-2" />
                     <span className="text-white font-medium">Breathe</span>
                   </div>
-                </a>
+                </Link>
                 
-                <a href="#journal" className="group">
+                <Link href="#journal" className="group">
                   <div className="p-6 bg-gradient-to-br from-secondary-600/30 to-secondary-700/30 border border-secondary-400/30 rounded-lg hover:scale-105 transition-all text-center">
                     <BookOpen className="w-8 h-8 text-secondary-300 mx-auto mb-2" />
                     <span className="text-white font-medium">Journal</span>
                   </div>
-                </a>
+                </Link>
               </div>
             </div>
 
             {/* Secondary Action */}
             <div className="mt-6 pt-6 border-t border-gray-600/30">
-              <a 
-                href="/store" 
+              <Link href="/store" 
                 className="flex items-center p-4 bg-purple-600/20 rounded-lg border border-purple-400/30 hover:bg-purple-600/30 transition-colors"
               >
                 <ShoppingBag className="w-5 h-5 text-purple-300 mr-3" />
@@ -441,7 +501,7 @@ export function EnhancedDashboard() {
                   <p className="text-sm text-gray-300">Browse and order wellness peptides</p>
                 </div>
                 <ChevronRight className="w-5 h-5 text-purple-300" />
-              </a>
+              </Link>
             </div>
             
             {/* Progress bar */}

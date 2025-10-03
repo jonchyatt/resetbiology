@@ -1,8 +1,8 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { Apple, Target, Plus, X, Calendar, TrendingUp, Utensils } from "lucide-react"
-import { FoodQuickAdd } from "./FoodQuickAdd"
+import { FoodQuickAdd, FoodQuickAddResult } from "./FoodQuickAdd"
 import { RecentFoods } from "./RecentFoods"
 
 interface MealPlan {
@@ -29,6 +29,23 @@ interface FoodEntry {
   loggedAt: string
 }
 
+interface FoodHistoryEntry {
+  id: string
+  itemName: string
+  brand?: string | null
+  gramWeight?: number | null
+  quantity: number
+  unit: string
+  nutrients?: {
+    kcal?: number | null
+    protein_g?: number | null
+    carb_g?: number | null
+    fat_g?: number | null
+  } | null
+  mealType?: string | null
+  loggedAt: string
+}
+
 export function NutritionTracker() {
   const [activeTab, setActiveTab] = useState<'today' | 'plans' | 'history'>('today')
   const [mealPlans, setMealPlans] = useState<MealPlan[]>([])
@@ -39,6 +56,12 @@ export function NutritionTracker() {
   const [selectedMealType, setSelectedMealType] = useState<string>('breakfast')
   const [foodLibrary, setFoodLibrary] = useState<any[]>([])
   const [searchQuery, setSearchQuery] = useState('')
+  const [logSuccess, setLogSuccess] = useState<FoodQuickAddResult | null>(null)
+  const [recentRefresh, setRecentRefresh] = useState(0)
+  const [historyRefresh, setHistoryRefresh] = useState(0)
+  const [historyItems, setHistoryItems] = useState<FoodHistoryEntry[] | null>(null)
+  const [historyLoading, setHistoryLoading] = useState(false)
+  const [historyError, setHistoryError] = useState<string | null>(null)
 
   // Form state for adding food
   const [foodName, setFoodName] = useState('')
@@ -53,6 +76,95 @@ export function NutritionTracker() {
     fetchTodaysFoods()
     fetchFoodLibrary()
   }, [])
+
+  useEffect(() => {
+    if (!logSuccess) return
+    const timer = setTimeout(() => setLogSuccess(null), 5000)
+    return () => clearTimeout(timer)
+  }, [logSuccess])
+
+  useEffect(() => {
+    if (activeTab !== 'history') return
+
+    const controller = new AbortController()
+
+    const loadHistory = async () => {
+      try {
+        setHistoryLoading(true)
+        setHistoryError(null)
+        const response = await fetch('/api/foods/recent?limit=200', {
+          cache: 'no-store',
+          signal: controller.signal,
+        })
+        const data = await response.json()
+        if (!response.ok || !data?.ok) {
+          throw new Error(data?.error || 'Failed to load nutrition history')
+        }
+        setHistoryItems(Array.isArray(data.items) ? data.items : [])
+      } catch (error: any) {
+        if (error?.name === 'AbortError') return
+        console.error('Error loading nutrition history:', error)
+        setHistoryError(error?.message || 'Unable to load nutrition history')
+      } finally {
+        setHistoryLoading(false)
+      }
+    }
+
+    loadHistory()
+    return () => {
+      controller.abort()
+    }
+  }, [activeTab, historyRefresh])
+
+  const groupedHistory = useMemo(() => {
+    if (!historyItems || historyItems.length === 0) return []
+
+    const groups = new Map<string, {
+      date: Date
+      label: string
+      entries: FoodHistoryEntry[]
+      totals: { calories: number; protein: number; carbs: number; fats: number }
+    }>()
+
+    historyItems.forEach((entry) => {
+      const date = new Date(entry.loggedAt)
+      const key = date.toISOString().split('T')[0]
+      if (!groups.has(key)) {
+        groups.set(key, {
+          date,
+          label: date.toLocaleDateString(undefined, {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric',
+          }),
+          entries: [],
+          totals: { calories: 0, protein: 0, carbs: 0, fats: 0 },
+        })
+      }
+      const group = groups.get(key)!
+      group.entries.push(entry)
+      const kcal = typeof entry.nutrients?.kcal === 'number' ? entry.nutrients.kcal : 0
+      const protein = typeof entry.nutrients?.protein_g === 'number' ? entry.nutrients.protein_g : 0
+      const carbs = typeof entry.nutrients?.carb_g === 'number' ? entry.nutrients.carb_g : 0
+      const fats = typeof entry.nutrients?.fat_g === 'number' ? entry.nutrients.fat_g : 0
+      group.totals.calories += kcal
+      group.totals.protein += protein
+      group.totals.carbs += carbs
+      group.totals.fats += fats
+    })
+
+    return Array.from(groups.entries())
+      .sort((a, b) => (a[0] < b[0] ? 1 : -1))
+      .map(([key, group]) => ({
+        key,
+        date: group.date,
+        label: group.label,
+        totals: group.totals,
+        entries: group.entries.sort(
+          (a, b) => new Date(b.loggedAt).getTime() - new Date(a.loggedAt).getTime(),
+        ),
+      }))
+  }, [historyItems])
 
   const fetchFoodLibrary = async () => {
     try {
@@ -197,6 +309,8 @@ export function NutritionTracker() {
       if (data.ok) {
         console.log('✅ Food entry deleted')
         fetchTodaysFoods()
+        setRecentRefresh((prev) => prev + 1)
+        setHistoryRefresh((prev) => prev + 1)
       } else {
         alert('Failed to delete entry')
       }
@@ -332,6 +446,18 @@ export function NutritionTracker() {
            backgroundPosition: 'center',
            backgroundAttachment: 'fixed'
          }}>
+      {logSuccess && (
+        <div className="fixed right-6 top-24 z-40 max-w-sm rounded-xl border border-emerald-400/40 bg-emerald-500/20 px-4 py-3 text-sm text-emerald-100 shadow-2xl backdrop-blur">
+          <p className="font-semibold">Nutrition log saved!</p>
+          {logSuccess.pointsAwarded > 0 && (
+            <p className="mt-1 text-emerald-200">+{logSuccess.pointsAwarded} points added today.</p>
+          )}
+          {logSuccess.journalNote && (
+            <p className="mt-1 text-emerald-100/80">Journal updated: {logSuccess.journalNote}</p>
+          )}
+        </div>
+      )}
+
       {/* Header - matching PeptideTracker pattern */}
       <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm shadow-2xl border-b border-primary-400/30 mt-16">
         <div className="container mx-auto px-4 py-4">
@@ -384,8 +510,16 @@ export function NutritionTracker() {
           <div className="max-w-6xl mx-auto grid gap-6 lg:grid-cols-3">
             {/* Main content */}
             <div className="lg:col-span-2 space-y-6">
-              <FoodQuickAdd onLogged={fetchTodaysFoods} />
-              <RecentFoods />
+              <FoodQuickAdd
+                onLogged={(result) => {
+                  fetchTodaysFoods()
+                  setRecentRefresh((prev) => prev + 1)
+                  setHistoryRefresh((prev) => prev + 1)
+                  setLogSuccess(result)
+                }}
+              />
+
+              <RecentFoods refreshToken={recentRefresh} />
 
               {/* Today's Progress */}
               <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl hover:shadow-primary-400/20 transition-all duration-300">
@@ -527,10 +661,86 @@ export function NutritionTracker() {
         )}
 
         {activeTab === 'history' && (
-          <div className="max-w-5xl mx-auto">
+          <div className="max-w-5xl mx-auto space-y-6">
             <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl hover:shadow-secondary-400/20 transition-all duration-300">
-              <h3 className="text-xl font-bold text-white mb-4">History</h3>
-              <p className="text-gray-300">Nutrition history coming soon.</p>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <TrendingUp className="h-6 w-6 text-secondary-300" />
+                  <h3 className="text-xl font-bold text-white">Nutrition History</h3>
+                </div>
+                <button
+                  onClick={() => setHistoryRefresh((prev) => prev + 1)}
+                  className="rounded-lg border border-secondary-400/40 bg-secondary-500/10 px-4 py-2 text-sm font-medium text-secondary-200 transition hover:border-secondary-400/60 hover:bg-secondary-500/20"
+                >
+                  Refresh
+                </button>
+              </div>
+
+              {historyLoading ? (
+                <div className="py-8 text-center text-sm text-gray-300">
+                  <div className="mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-2 border-secondary-300 border-t-transparent" />
+                  Loading nutrition history...
+                </div>
+              ) : historyError ? (
+                <div className="rounded-lg border border-rose-500/40 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
+                  {historyError}
+                </div>
+              ) : groupedHistory.length === 0 ? (
+                <div className="py-10 text-center text-gray-300">
+                  <p>No nutrition logs yet.</p>
+                  <p className="text-sm text-gray-400">Log meals to start building your history.</p>
+                </div>
+              ) : (
+                <div className="space-y-4 max-h-[480px] overflow-y-auto pr-1">
+                  {groupedHistory.map((group) => {
+                    const totals = group.totals
+                    return (
+                      <div key={group.key} className="rounded-xl border border-secondary-400/30 bg-gray-900/50 p-4 shadow-lg">
+                        <div className="flex items-center justify-between gap-4 border-b border-secondary-400/20 pb-3">
+                          <div>
+                            <p className="text-lg font-semibold text-white">{group.label}</p>
+                            <p className="text-xs text-gray-400">{group.date.toLocaleDateString()}</p>
+                          </div>
+                          <div className="text-right text-sm text-gray-300">
+                            <p className="text-white font-semibold">{Math.round(totals.calories)} kcal</p>
+                            <p className="text-xs text-gray-400">
+                              P {Math.round(totals.protein)}g • C {Math.round(totals.carbs)}g • F {Math.round(totals.fats)}g
+                            </p>
+                          </div>
+                        </div>
+                        <ul className="mt-3 space-y-2">
+                          {group.entries.map((entry) => {
+                            const loggedDate = new Date(entry.loggedAt)
+                            const kcal = Math.round(typeof entry.nutrients?.kcal === 'number' ? entry.nutrients.kcal : 0)
+                            const protein = Math.round(typeof entry.nutrients?.protein_g === 'number' ? entry.nutrients.protein_g : 0)
+                            const carbs = Math.round(typeof entry.nutrients?.carb_g === 'number' ? entry.nutrients.carb_g : 0)
+                            const fats = Math.round(typeof entry.nutrients?.fat_g === 'number' ? entry.nutrients.fat_g : 0)
+                            return (
+                              <li key={entry.id} className="flex items-start justify-between gap-4 rounded-lg border border-gray-700/40 bg-gray-800/40 px-3 py-2 text-sm text-gray-100">
+                                <div>
+                                  <p className="font-medium text-white">
+                                    {entry.itemName}
+                                    {entry.brand ? <span className="ml-1 text-xs text-gray-400">({entry.brand})</span> : null}
+                                  </p>
+                                  <p className="text-xs text-gray-400">
+                                    {(entry.mealType || 'meal').toUpperCase()} • {entry.quantity} {entry.unit}
+                                    {entry.gramWeight ? ` • ${Math.round(entry.gramWeight)} g` : ''}
+                                  </p>
+                                </div>
+                                <div className="text-right text-xs text-gray-400">
+                                  <p className="text-sm font-semibold text-white">{kcal} kcal</p>
+                                  <p>P {protein}g • C {carbs}g • F {fats}g</p>
+                                  <p>{loggedDate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</p>
+                                </div>
+                              </li>
+                            )
+                          })}
+                        </ul>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
             </div>
           </div>
         )}

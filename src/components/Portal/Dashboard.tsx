@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { useState, useEffect } from "react"
 import { Trophy, Target, Calendar, TrendingUp, ChevronRight, Dumbbell, Apple, Brain, Wind, ShoppingBag, BookOpen } from "lucide-react"
 import { PortalHeader } from "@/components/Navigation/PortalHeader"
@@ -123,9 +124,9 @@ export function Dashboard() {
                   </div>
                   <p className="text-sm text-gray-400">Track your peptide doses and timing</p>
                 </div>
-                <a href="/peptides" className="ml-4 text-primary-400 hover:text-primary-300 transition-colors">
+                <Link href="/peptides" className="ml-4 text-primary-400 hover:text-primary-300 transition-colors">
                   <ChevronRight className="w-5 h-5" />
-                </a>
+                </Link>
               </label>
 
               {/* Daily Journal */}
@@ -143,9 +144,9 @@ export function Dashboard() {
                   </div>
                   <p className="text-sm text-gray-400">Reflect on your progress and mindset</p>
                 </div>
-                <a href="/journal" className="ml-4 text-primary-400 hover:text-primary-300 transition-colors">
+                <Link href="/journal" className="ml-4 text-primary-400 hover:text-primary-300 transition-colors">
                   <ChevronRight className="w-5 h-5" />
-                </a>
+                </Link>
               </label>
 
               {/* Log Workout */}
@@ -163,9 +164,9 @@ export function Dashboard() {
                   </div>
                   <p className="text-sm text-gray-400">Track exercises, sets, and progress</p>
                 </div>
-                <a href="/workout" className="ml-4 text-primary-400 hover:text-primary-300 transition-colors">
+                <Link href="/workout" className="ml-4 text-primary-400 hover:text-primary-300 transition-colors">
                   <ChevronRight className="w-5 h-5" />
-                </a>
+                </Link>
               </label>
 
               {/* Log Meals */}
@@ -183,9 +184,9 @@ export function Dashboard() {
                   </div>
                   <p className="text-sm text-gray-400">Track nutrition and macros</p>
                 </div>
-                <a href="/nutrition" className="ml-4 text-primary-400 hover:text-primary-300 transition-colors">
+                <Link href="/nutrition" className="ml-4 text-primary-400 hover:text-primary-300 transition-colors">
                   <ChevronRight className="w-5 h-5" />
-                </a>
+                </Link>
               </label>
 
               {/* Complete Mental Mastery Module */}
@@ -203,9 +204,9 @@ export function Dashboard() {
                   </div>
                   <p className="text-sm text-gray-400">Listen to today's audio training</p>
                 </div>
-                <a href="/modules" className="ml-4 text-primary-400 hover:text-primary-300 transition-colors">
+                <Link href="/modules" className="ml-4 text-primary-400 hover:text-primary-300 transition-colors">
                   <ChevronRight className="w-5 h-5" />
-                </a>
+                </Link>
               </label>
 
               {/* Launch Breath Training */}
@@ -223,9 +224,9 @@ export function Dashboard() {
                   </div>
                   <p className="text-sm text-gray-400">Complete a breathing session</p>
                 </div>
-                <a href="/breath" className="ml-4 text-primary-400 hover:text-primary-300 transition-colors">
+                <Link href="/breath" className="ml-4 text-primary-400 hover:text-primary-300 transition-colors">
                   <ChevronRight className="w-5 h-5" />
-                </a>
+                </Link>
               </label>
             </div>
             
@@ -251,61 +252,61 @@ export function Dashboard() {
             <div className="card-hover-secondary">
               <h3 className="text-lg font-bold text-white mb-4">🛒 Secondary Actions</h3>
               <div className="space-y-3">
-                <a href="/store" className="flex items-center p-4 bg-purple-600/20 rounded-lg border border-purple-400/30 hover:bg-purple-600/30 transition-colors">
+                <Link href="/store" className="flex items-center p-4 bg-purple-600/20 rounded-lg border border-purple-400/30 hover:bg-purple-600/30 transition-colors">
                   <ShoppingBag className="w-5 h-5 text-purple-300 mr-3" />
                   <div className="flex-1">
                     <span className="font-medium text-white">Order Peptides</span>
                     <p className="text-sm text-gray-300">Browse and order wellness peptides</p>
                   </div>
                   <ChevronRight className="w-5 h-5 text-purple-300" />
-                </a>
+                </Link>
               </div>
             </div>
           </div>
 
           {/* Quick Access Grid */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            <a href="/peptides" className="quick-access-card">
+            <Link href="/peptides" className="quick-access-card">
               <div className="p-4 bg-primary-600/20 rounded-lg border border-primary-400/30 hover:bg-primary-600/30 transition-colors text-center">
                 <Target className="w-8 h-8 text-primary-300 mx-auto mb-2" />
                 <span className="text-sm text-white">Peptides</span>
               </div>
-            </a>
+            </Link>
             
-            <a href="/workout" className="quick-access-card">
+            <Link href="/workout" className="quick-access-card">
               <div className="p-4 bg-green-600/20 rounded-lg border border-green-400/30 hover:bg-green-600/30 transition-colors text-center">
                 <Dumbbell className="w-8 h-8 text-green-300 mx-auto mb-2" />
                 <span className="text-sm text-white">Workout</span>
               </div>
-            </a>
+            </Link>
             
-            <a href="/nutrition" className="quick-access-card">
+            <Link href="/nutrition" className="quick-access-card">
               <div className="p-4 bg-amber-600/20 rounded-lg border border-amber-400/30 hover:bg-amber-600/30 transition-colors text-center">
                 <Apple className="w-8 h-8 text-amber-300 mx-auto mb-2" />
                 <span className="text-sm text-white">Nutrition</span>
               </div>
-            </a>
+            </Link>
             
-            <a href="/modules" className="quick-access-card">
+            <Link href="/modules" className="quick-access-card">
               <div className="p-4 bg-purple-600/20 rounded-lg border border-purple-400/30 hover:bg-purple-600/30 transition-colors text-center">
                 <Brain className="w-8 h-8 text-purple-300 mx-auto mb-2" />
                 <span className="text-sm text-white">Modules</span>
               </div>
-            </a>
+            </Link>
             
-            <a href="/breath" className="quick-access-card">
+            <Link href="/breath" className="quick-access-card">
               <div className="p-4 bg-blue-600/20 rounded-lg border border-blue-400/30 hover:bg-blue-600/30 transition-colors text-center">
                 <Wind className="w-8 h-8 text-blue-300 mx-auto mb-2" />
                 <span className="text-sm text-white">Breathe</span>
               </div>
-            </a>
+            </Link>
             
-            <a href="/journal" className="quick-access-card">
+            <Link href="/journal" className="quick-access-card">
               <div className="p-4 bg-secondary-600/20 rounded-lg border border-secondary-400/30 hover:bg-secondary-600/30 transition-colors text-center">
                 <BookOpen className="w-8 h-8 text-secondary-300 mx-auto mb-2" />
                 <span className="text-sm text-white">Journal</span>
               </div>
-            </a>
+            </Link>
           </div>
         </div>
       </div>

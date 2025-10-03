@@ -48,7 +48,13 @@ const scaleNutrients = (nutrients: Nutrients | null, factor: number): Nutrients 
 const formatNumber = (value: number | null, digits = 1): string =>
   typeof value === "number" && Number.isFinite(value) ? value.toFixed(digits) : "--";
 
-export function FoodQuickAdd({ onLogged }: { onLogged?: () => void }) {
+export type FoodQuickAddResult = {
+  pointsAwarded: number;
+  journalNote?: string;
+  dailyTaskCompleted?: boolean;
+};
+
+export function FoodQuickAdd({ onLogged }: { onLogged?: (result: FoodQuickAddResult) => void }) {
   const [term, setTerm] = useState("");
   const [results, setResults] = useState<Result[]>([]);
   const [loading, setLoading] = useState(false);
@@ -146,13 +152,37 @@ export function FoodQuickAdd({ onLogged }: { onLogged?: () => void }) {
         body: JSON.stringify(payload),
       });
 
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
+      const data = await res.json();
+
+      if (!res.ok || !data?.ok) {
         throw new Error(data?.error ?? "Unable to log food");
       }
 
       setStatus("success");
-      if (onLogged) onLogged();
+      setSelected(null);
+      setResults([]);
+      setTerm("");
+
+      if (onLogged) {
+        onLogged({
+          pointsAwarded: data.pointsAwarded ?? 0,
+          journalNote: data.journalNote,
+          dailyTaskCompleted: Boolean(data.dailyTaskCompleted),
+        });
+      }
+
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(
+          new CustomEvent("nutrition:log-success", {
+            detail: {
+              pointsAwarded: data.pointsAwarded ?? 0,
+              journalNote: data.journalNote,
+              dailyTaskCompleted: Boolean(data.dailyTaskCompleted),
+            },
+          })
+        );
+      }
+
       setTimeout(() => setStatus("idle"), 2000);
     } catch (err: any) {
       console.error("Log food error", err);

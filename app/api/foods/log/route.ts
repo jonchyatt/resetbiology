@@ -43,6 +43,22 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: false, error: 'Missing itemName or nutrients' }, { status: 400 });
     }
 
+    const logTimestamp = loggedAt ? new Date(loggedAt) : new Date();
+    const startOfDay = new Date(logTimestamp);
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(startOfDay);
+    endOfDay.setDate(endOfDay.getDate() + 1);
+
+    const existingCountToday = await prisma.foodLog.count({
+      where: {
+        userId: user.id,
+        loggedAt: {
+          gte: startOfDay,
+          lt: endOfDay,
+        },
+      },
+    });
+
     const log = await prisma.foodLog.create({
       data: {
         userId: user.id,
@@ -56,13 +72,110 @@ export async function POST(req: Request) {
         nutrients,
         photoUrl,
         notes,
-        loggedAt: loggedAt ? new Date(loggedAt) : undefined,
+        loggedAt: logTimestamp,
         mealType,
       },
       select: { id: true },
     });
 
-    return NextResponse.json({ ok: true, logId: log.id });
+    // Mark daily task as complete
+    await prisma.dailyTask.upsert({
+      where: {
+        userId_date_taskName: {
+          userId: user.id,
+          date: startOfDay,
+          taskName: 'meals',
+        },
+      },
+      update: { completed: true },
+      create: {
+        userId: user.id,
+        date: startOfDay,
+        taskName: 'meals',
+        completed: true,
+      },
+    });
+
+    let pointsAwarded = 0;
+    if (existingCountToday === 0) {
+      await prisma.gamificationPoint.create({
+        data: {
+          userId: user.id,
+          amount: 10,
+          pointType: 'nutrition',
+          activitySource: 'Logged nutrition for today',
+          earnedAt: logTimestamp,
+        },
+      });
+      pointsAwarded = 10;
+    }
+
+    const timestamp = logTimestamp.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+    });
+    const nutritionNote = `Nutrition tracked at ${timestamp}`;
+
+    const existingJournal = await prisma.journalEntry.findFirst({
+      where: {
+        userId: user.id,
+        date: {
+          gte: startOfDay,
+          lt: endOfDay,
+        },
+      },
+    });
+
+    if (existingJournal) {
+      let entryData: any = {};
+      try {
+        entryData = existingJournal.entry ? JSON.parse(existingJournal.entry as string) : {};
+      } catch (err) {
+        entryData = {};
+      }
+
+      const previous = entryData.nutritionNotes ? `${entryData.nutritionNotes}\n` : '';
+      entryData.nutritionNotes = `${previous}${nutritionNote}`;
+      const tasksCompleted = entryData.tasksCompleted || {};
+      tasksCompleted.meals = true;
+      entryData.tasksCompleted = tasksCompleted;
+
+      await prisma.journalEntry.update({
+        where: { id: existingJournal.id },
+        data: {
+          entry: JSON.stringify(entryData),
+        },
+      });
+    } else {
+      const entryData = {
+        reasonsValidation: '',
+        affirmationGoal: '',
+        affirmationBecause: '',
+        affirmationMeans: '',
+        peptideNotes: '',
+        workoutNotes: '',
+        nutritionNotes: nutritionNote,
+        tasksCompleted: { meals: true },
+      };
+
+      await prisma.journalEntry.create({
+        data: {
+          userId: user.id,
+          entry: JSON.stringify(entryData),
+          mood: null,
+          weight: null,
+          date: logTimestamp,
+        },
+      });
+    }
+
+    return NextResponse.json({
+      ok: true,
+      logId: log.id,
+      pointsAwarded,
+      journalNote: nutritionNote,
+      dailyTaskCompleted: true,
+    });
   } catch (error: any) {
     console.error('POST /api/foods/log error', error);
     return NextResponse.json({ ok: false, error: error?.message ?? 'Unable to log food' }, { status: 500 });

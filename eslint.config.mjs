@@ -29,6 +29,20 @@ const eslintConfig = [
       "react/jsx-no-undef": "error"
     },
   },
+  {
+    files: ['**/*.js'],
+    rules: {
+      '@typescript-eslint/no-require-imports': 'off',
+    },
+  },
+
+  {
+    files: ['next-env.d.ts'],
+    rules: {
+      '@typescript-eslint/triple-slash-reference': 'off',
+    },
+  },
+
 ];
 
 export default eslintConfig;

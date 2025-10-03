@@ -2,7 +2,7 @@ import type { NormalizedFood, Nutrients } from './types';
 
 export function mapOffProduct(barcode: string, product: any): NormalizedFood {
   const nutriments = product?.nutriments ?? {};
-  const per: '100g' = '100g';
+  const per = '100g' as const;
 
   const sodiumFromSalt = typeof nutriments['salt_100g'] === 'number'
     ? nutriments['salt_100g'] * 400

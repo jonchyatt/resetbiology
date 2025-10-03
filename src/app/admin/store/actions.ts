@@ -1,6 +1,8 @@
 'use server';
 
 import { revalidateTag } from 'next/cache';
+import path from 'path';
+import { promises as fs } from 'fs';
 import { prisma } from '@/lib/prisma';
 import { requireAdmin } from '@/lib/adminGuard';
 import { ensureStripeSync } from '@/lib/stripeSync';
@@ -134,8 +136,6 @@ export async function importPeptides() {
   
   try {
     // Import peptide data from cellularpeptide-final-data.json
-    const fs = require('fs').promises;
-    const path = require('path');
     
     const dataPath = path.join(process.cwd(), 'cellularpeptide-final-data.json');
     const rawData = await fs.readFile(dataPath, 'utf-8');

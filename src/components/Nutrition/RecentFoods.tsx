@@ -16,7 +16,7 @@ type RecentItem = {
   loggedAt: string;
 };
 
-export function RecentFoods() {
+export function RecentFoods({ refreshToken = 0 }: { refreshToken?: number }) {
   const [items, setItems] = useState<RecentItem[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -31,7 +31,7 @@ export function RecentFoods() {
         setError(err?.message || 'Unable to load recent foods');
       }
     })();
-  }, []);
+  }, [refreshToken]);
 
   if (error) {
     return <div className="rounded-lg border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-300">Recent load error: {error}</div>;
