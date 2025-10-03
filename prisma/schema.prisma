@@ -44,6 +44,7 @@ model User {
   dailyTasks             DailyTask[]
   foodEntries            FoodEntry[]
   mealPlans              MealPlan[]
+  foodLogs               FoodLog[]
   workoutSessions        WorkoutSession[]
   workoutPrograms        WorkoutProgram[]
   journalEntries         JournalEntry[]
@@ -444,4 +445,40 @@ model ProductPage {
   
   @@unique([productId, pageType])
   @@map("product_pages")
+}
+
+model FoodRef {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  source        String
+  sourceId      String
+  description   String
+  brand         String?
+  servingGram   Float?
+  per           String   @default("100g")
+  nutrientsJson Json
+  createdAt     DateTime @default(now())
+
+  @@map("food_refs")
+  @@unique([source, sourceId], map: "foodref_source_sourceId")
+}
+
+model FoodLog {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String   @db.ObjectId
+  user       User     @relation(fields: [userId], references: [id])
+  loggedAt   DateTime @default(now())
+  source     String
+  sourceId   String?
+  itemName   String
+  brand      String?
+  quantity   Float    @default(1)
+  unit       String   @default("serving")
+  gramWeight Float?
+  nutrients  Json
+  photoUrl   String?
+  notes      String?
+  mealType   String   @default("snack")
+
+  @@map("food_logs")
+  @@index([userId, loggedAt], map: "foodlog_user_loggedAt")
 }

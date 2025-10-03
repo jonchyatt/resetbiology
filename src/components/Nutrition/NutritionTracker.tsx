@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react"
 import { Apple, Target, Plus, X, Calendar, TrendingUp, Utensils } from "lucide-react"
+import { FoodQuickAdd } from "./FoodQuickAdd"
+import { RecentFoods } from "./RecentFoods"
 
 interface MealPlan {
   id: string
@@ -101,13 +103,33 @@ export function NutritionTracker() {
 
   const fetchTodaysFoods = async () => {
     try {
-      const response = await fetch('/api/nutrition/entries', {
-        credentials: 'include'
+      const response = await fetch('/api/foods/recent?limit=100', {
+        cache: 'no-store'
       })
       const data = await response.json()
 
-      if (data.success && data.entries) {
-        setTodaysFoods(data.entries)
+      if (data.ok && Array.isArray(data.items)) {
+        const today = new Date().toDateString()
+        const filtered = data.items
+          .filter((entry: any) => new Date(entry.loggedAt).toDateString() === today)
+
+        const mapped: FoodEntry[] = filtered
+          .map((entry: any) => ({
+            id: entry.id,
+            name: entry.itemName,
+            calories: Math.round(entry.nutrients?.kcal ?? 0),
+            protein: Math.round(((entry.nutrients?.protein_g ?? 0) + Number.EPSILON) * 10) / 10,
+            carbs: Math.round(((entry.nutrients?.carb_g ?? 0) + Number.EPSILON) * 10) / 10,
+            fats: Math.round(((entry.nutrients?.fat_g ?? 0) + Number.EPSILON) * 10) / 10,
+            mealType: (entry.mealType ?? 'snack').toLowerCase(),
+            loggedAt: entry.loggedAt,
+          }))
+
+        mapped.sort((a, b) => new Date(b.loggedAt).getTime() - new Date(a.loggedAt).getTime())
+
+        setTodaysFoods(mapped)
+      } else {
+        setTodaysFoods([])
       }
     } catch (error) {
       console.error('Error loading food entries:', error)
@@ -121,24 +143,30 @@ export function NutritionTracker() {
     }
 
     try {
-      const response = await fetch('/api/nutrition/entries', {
+      const response = await fetch('/api/foods/log', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
         body: JSON.stringify({
-          name: foodName,
-          calories: parseFloat(calories),
-          protein: protein ? parseFloat(protein) : 0,
-          carbs: carbs ? parseFloat(carbs) : 0,
-          fats: fats ? parseFloat(fats) : 0,
-          mealType: selectedMealType
+          source: 'manual',
+          itemName: foodName,
+          brand: null,
+          quantity: 1,
+          unit: 'serving',
+          gramWeight: null,
+          mealType: selectedMealType,
+          nutrients: {
+            kcal: parseFloat(calories),
+            protein_g: protein ? parseFloat(protein) : 0,
+            carb_g: carbs ? parseFloat(carbs) : 0,
+            fat_g: fats ? parseFloat(fats) : 0,
+          }
         })
       })
 
       const data = await response.json()
 
-      if (data.success) {
-        console.log(`✅ Food logged! +${data.pointsAwarded} points`)
+      if (data.ok) {
+        console.log('✅ Food logged!')
         fetchTodaysFoods()
         // Reset form
         setFoodName('')
@@ -160,14 +188,13 @@ export function NutritionTracker() {
     if (!confirm('Delete this food entry?')) return
 
     try {
-      const response = await fetch(`/api/nutrition/entries?id=${entryId}`, {
+      const response = await fetch(`/api/foods/log?id=${entryId}`, {
         method: 'DELETE',
-        credentials: 'include'
       })
 
       const data = await response.json()
 
-      if (data.success) {
+      if (data.ok) {
         console.log('✅ Food entry deleted')
         fetchTodaysFoods()
       } else {
@@ -357,6 +384,9 @@ export function NutritionTracker() {
           <div className="max-w-6xl mx-auto grid gap-6 lg:grid-cols-3">
             {/* Main content */}
             <div className="lg:col-span-2 space-y-6">
+              <FoodQuickAdd onLogged={fetchTodaysFoods} />
+              <RecentFoods />
+
               {/* Today's Progress */}
               <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl hover:shadow-primary-400/20 transition-all duration-300">
                 <div className="flex items-center justify-between mb-4">
