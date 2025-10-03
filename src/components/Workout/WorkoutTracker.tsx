@@ -56,7 +56,7 @@ export function WorkoutTracker() {
       const todays = data.items
         .filter((session: any) => new Date(session.completedAt).toDateString() === todayKey)
         .map(transformSession)
-        .sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime());
+        .sort((a: WorkoutEntry, b: WorkoutEntry) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime());
 
       setTodaysWorkouts(todays);
     } catch (error) {
@@ -76,7 +76,7 @@ export function WorkoutTracker() {
 
       const entries = data.items
         .map(transformSession)
-        .sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime());
+        .sort((a: WorkoutEntry, b: WorkoutEntry) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime());
       setHistoryItems(entries);
     } catch (error: any) {
       console.error('History error', error);
@@ -147,7 +147,7 @@ export function WorkoutTracker() {
       .sort((a, b) => b.date.getTime() - a.date.getTime())
       .map((group) => ({
         ...group,
-        entries: group.entries.sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime()),
+        entries: group.entries.sort((a: WorkoutEntry, b: WorkoutEntry) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime()),
       }));
   }, [historyItems]);
 
