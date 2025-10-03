@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Calculator as CalcIcon, Save, Import, AlertCircle } from "lucide-react";
 
 /*********************************
@@ -173,7 +173,7 @@ const SyringeVisual: React.FC<{
             const y = baseY + i * tickSpacing;
             const isMajor = i % 2 === 0;
             const value = ((totalTicks - i) / totalTicks) * maxVolume;
-            const label = value >= 1 ? value.toFixed(1) : value.toFixed(2);
+            const label = value === 0 ? '0' : value >= 1 ? value.toFixed(1) : value.toFixed(2);
             return (
               <g key={i}>
                 <line x1="30" x2="70" y1={y} y2={y} stroke="rgba(255,255,255,0.18)" strokeWidth={isMajor ? 1.6 : 1} />
@@ -304,6 +304,12 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
   const [notes, setNotes] = useState<string>("");
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [errors, setErrors] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (mode === 'addProtocol') {
+      setSelectedPreset("");
+    }
+  }, [mode]);
 
   // New state for scheduling (addProtocol mode)
   const [selectedDays, setSelectedDays] = useState<string[]>(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']);
@@ -458,6 +464,47 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
     }
   };
 
+  const loadPeptideFromLibrary = useCallback((peptideName: string) => {
+    if (!peptideLibrary) return;
+    const peptide = peptideLibrary.find((item) => item.name === peptideName || item.id === peptideName);
+    if (!peptide) return;
+
+    setPeptideName(peptide.name);
+    if (peptide.id) setSelectedPeptideId(peptide.id);
+
+    setInputs((prev) => {
+      let totalVolume = prev.totalVolume;
+      if (peptide.reconstitution) {
+        const volumeMatch = peptide.reconstitution.match(/(\d+\.?\d*)/);
+        if (volumeMatch) {
+          const parsed = Number.parseFloat(volumeMatch[1]);
+          if (Number.isFinite(parsed)) totalVolume = parsed;
+        }
+      }
+
+      let peptideAmount = prev.peptideAmount;
+      if (peptide.vialAmount) {
+        const amountMatch = peptide.vialAmount.match(/(\d+\.?\d*)/);
+        if (amountMatch) {
+          const parsed = Number.parseFloat(amountMatch[1]);
+          if (Number.isFinite(parsed)) peptideAmount = parsed;
+        }
+      }
+
+      return {
+        ...prev,
+        totalVolume,
+        peptideAmount,
+      };
+    });
+  }, [peptideLibrary]);
+
+  useEffect(() => {
+    if (mode !== 'addProtocol' || !peptideLibrary || peptideLibrary.length === 0) return;
+    if (selectedPeptideId) return;
+    loadPeptideFromLibrary(peptideLibrary[0].name);
+  }, [mode, peptideLibrary, loadPeptideFromLibrary, selectedPeptideId]);
+
   // Keep display peptideConcentration synced (from vial + volume)
   const displayConcentration = useMemo(() => {
     const conc = inputs.totalVolume > 0 ? (inputs.peptideAmount * 1000) / inputs.totalVolume : 0;
@@ -469,69 +516,40 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
       {/* Header */}
       <div className="mb-6 flex flex-col gap-3">
         <div className="flex flex-wrap items-center gap-3 w-full">
-          <div className="flex items-center gap-2 flex-shrink-0 min-w-[200px]">
+          <div className="flex items-center gap-2 flex-shrink-0">
             <CalcIcon className="w-6 h-6 text-primary-400" />
-            <h2 className="text-2xl font-bold text-white">Dosage Calculator</h2>
-          </div>
-          <div className="flex-1 flex justify-center min-w-[200px]">
-            <div className="flex items-center gap-2 text-sm">
-              <span className="text-gray-300 font-medium">
-                {mode === 'addProtocol' ? 'Select Peptide' : 'Preset'}
-              </span>
-              <select
-                aria-label={mode === 'addProtocol' ? 'Select Peptide' : 'Peptide preset'}
-                value={mode === 'addProtocol' ? peptideName : selectedPreset}
-                onChange={(e) => {
-                  if (mode === 'addProtocol' && peptideLibrary) {
-                    const selectedName = e.target.value;
-                    const peptide = peptideLibrary.find(p => p.name === selectedName);
-                    if (peptide) {
-                      setPeptideName(peptide.name);
-                      setSelectedPeptideId(peptide.id || '');
-                      if (peptide.reconstitution) {
-                        const volumeMatch = peptide.reconstitution.match(/(\d+\.?\d*)ml/i);
-                        if (volumeMatch) setInputs(prev => ({ ...prev, totalVolume: parseFloat(volumeMatch[1]) }));
-                      }
-                      if (peptide.vialAmount) {
-                        const amountMatch = peptide.vialAmount.match(/(\d+\.?\d*)mg/i);
-                        if (amountMatch) setInputs(prev => ({ ...prev, peptideAmount: parseFloat(amountMatch[1]) }));
-                      }
-                    }
-                  } else {
-                    applyPreset(e.target.value as PresetName);
-                  }
-                }}
-                className="min-w-[180px] bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-primary-400 focus:outline-none"
-              >
-                <option value="">{mode === 'addProtocol' ? 'Choose a peptide...' : 'Select a preset…'}</option>
-                {mode === 'addProtocol' && peptideLibrary
-                  ? peptideLibrary.map((p) => {
-                      const displayName = p.name
-                        .replace(/\s*-\s*peptide\s*$/i, '')
-                        .replace(/\s+Package\s*$/i, '')
-                        .trim();
-                      return (
-                        <option key={p.id || p.name} value={p.name}>
-                          {displayName}
-                        </option>
-                      );
-                    })
-                  : PEPTIDE_PRESETS.map((p) => (
-                      <option key={p.name} value={p.name}>{p.name}</option>
-                    ))}
-              </select>
-            </div>
+            <h2 className="text-2xl font-bold text-white">
+              {mode === 'addProtocol' ? 'Add Research Protocol' : 'Dosage Calculator'}
+            </h2>
           </div>
           {mode !== 'addProtocol' && (
-            <button
-              type="button"
-              onClick={handleImport}
-              className="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-3 rounded-lg transition-colors flex items-center gap-2 flex-shrink-0"
-              aria-label="Import from product page"
-              title="Import from product page"
-            >
-              <Import className="w-4 h-4" /> Import
-            </button>
+            <>
+              <div className="flex-1 flex justify-center min-w-[200px]">
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="text-gray-300 font-medium">Preset</span>
+                  <select
+                    aria-label="Peptide preset"
+                    value={selectedPreset}
+                    onChange={(e) => applyPreset(e.target.value as PresetName)}
+                    className="min-w-[180px] bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-primary-400 focus:outline-none"
+                  >
+                    <option value="">Select a preset…</option>
+                    {PEPTIDE_PRESETS.map((p) => (
+                      <option key={p.name} value={p.name}>{p.name}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={handleImport}
+                className="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-3 rounded-lg transition-colors flex items-center gap-2 flex-shrink-0"
+                aria-label="Import from product page"
+                title="Import from product page"
+              >
+                <Import className="w-4 h-4" /> Import
+              </button>
+            </>
           )}
         </div>
         {selectedPreset && mode !== 'addProtocol' && (
@@ -559,8 +577,40 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Input Panel */}
         <div className="space-y-4">
-          {/* Peptide name (editable in calculate mode, display only in addProtocol mode) */}
-          {mode !== 'addProtocol' && (
+          {/* Peptide selection */}
+          {mode === 'addProtocol' ? (
+            peptideLibrary && peptideLibrary.length > 0 ? (
+              <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30 space-y-2">
+                <label className="block text-sm text-gray-300 font-medium">Choose peptide from research library</label>
+                <select
+                  aria-label="Select peptide"
+                  value={selectedPeptideId || peptideName}
+                  onChange={(event) => loadPeptideFromLibrary(event.target.value)}
+                  className="bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
+                >
+                  {peptideLibrary.map((peptide) => {
+                    const optionValue = peptide.id || peptide.name;
+                    const displayName = peptide.name
+                      .replace(/\s*-\s*peptide\s*$/i, '')
+                      .replace(/\s+Package\s*$/i, '')
+                      .trim();
+                    return (
+                      <option key={optionValue} value={optionValue}>
+                        {displayName}
+                      </option>
+                    );
+                  })}
+                </select>
+                <p className="text-xs text-gray-400">
+                  Selected peptide: <span className="text-primary-200 font-semibold">{peptideName}</span>
+                </p>
+              </div>
+            ) : (
+              <div className="bg-gradient-to-br from-rose-900/20 to-rose-900/10 backdrop-blur-sm rounded-xl p-4 border border-rose-400/30 text-sm text-rose-200">
+                Peptide library unavailable. Please close and try again.
+              </div>
+            )
+          ) : (
             <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30">
               <label className="block mb-2 text-sm text-gray-300">Peptide name</label>
               <input
@@ -811,7 +861,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                   type="button"
                   onClick={handleProtocolSave}
                   disabled={!peptideName || isSaving || errors.length > 0 || selectedDays.length === 0 || selectedTimes.length === 0}
-                  className="flex-1 bg-primary-600 hover:bg-primary-700 disabled:bg-gray-600 disabled:opacity-50 text-white font-bold py-3 px-6 rounded-lg transition-colors"
+                  className="flex-1 bg-amber-500 hover:bg-amber-400 disabled:bg-gray-600 disabled:text-gray-300 disabled:opacity-60 text-gray-900 font-bold py-3 px-6 rounded-lg transition-colors shadow-[0_0_20px_rgba(245,193,92,0.35)]"
                 >
                   {isSaving ? "Adding Protocol..." : "Add Protocol"}
                 </button>

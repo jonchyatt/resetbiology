@@ -101,21 +101,31 @@ export function PeptideTracker() {
     }
   }, [todayKey])
 
+  const parseTimeToMinutes = useCallback((time: string) => {
+    const [hoursStr, minutesStr] = time.split(':')
+    const hours = Number.parseInt(hoursStr, 10)
+    const minutes = Number.parseInt(minutesStr ?? '0', 10)
+    if (!Number.isFinite(hours)) return 24 * 60
+    return hours * 60 + (Number.isFinite(minutes) ? minutes : 0)
+  }, [])
+
   const todaysDoseBuckets = useMemo(() => {
     const pending = todaysDoses
       .filter((dose) => !dose.completed)
-      .sort((a, b) => a.scheduledTime.localeCompare(b.scheduledTime))
+      .sort((a, b) => parseTimeToMinutes(a.scheduledTime) - parseTimeToMinutes(b.scheduledTime))
 
     const completed = todaysDoses
       .filter((dose) => dose.completed)
       .sort((a, b) => {
-        const timeA = a.actualTime ? new Date(a.actualTime).getTime() : 0
-        const timeB = b.actualTime ? new Date(b.actualTime).getTime() : 0
+        const fallbackA = parseTimeToMinutes(a.scheduledTime) * 60 * 1000
+        const fallbackB = parseTimeToMinutes(b.scheduledTime) * 60 * 1000
+        const timeA = a.actualTime ? new Date(a.actualTime).getTime() : fallbackA
+        const timeB = b.actualTime ? new Date(b.actualTime).getTime() : fallbackB
         return timeB - timeA
       })
 
     return { pending, completed }
-  }, [todaysDoses])
+  }, [todaysDoses, parseTimeToMinutes])
 
   const doseHistoryByDate = useMemo(() => {
     const map = new Map<string, { count: number; labels: Set<string> }>()
@@ -704,7 +714,7 @@ export function PeptideTracker() {
   const SyringeScale = ({ units }: { units: number }) => {
     const numericUnits = Number(units)
     const normalizedUnits = Number.isFinite(numericUnits) ? Math.max(0, Math.min(numericUnits, 100)) : 0
-    const fillPercent = Math.min(100, (normalizedUnits / 100) * 100)
+    const fillPercent = Math.min(100, Math.max(0, (normalizedUnits / 100) * 100))
     const volumeMl = normalizedUnits / 100
 
     return (
@@ -716,11 +726,16 @@ export function PeptideTracker() {
         <div className="relative mt-1 h-2 rounded-full bg-gray-700/40 overflow-hidden">
           <div className="absolute inset-y-0 left-0 bg-primary-500/70" style={{ width: `${fillPercent}%` }} />
           <div
-            className="absolute top-1/2 -translate-y-1/2"
-            style={{ left: `calc(${fillPercent}% - 4px)` }}
-          >
-            <div className="h-4 w-[2px] bg-primary-200" />
-          </div>
+            className="absolute top-1/2 h-4 w-[2px] bg-primary-200"
+            style={{ left: `${fillPercent}%`, transform: 'translate(-50%, -50%)' }}
+          />
+          {[0, 25, 50, 75, 100].map((tick) => (
+            <div
+              key={tick}
+              className="absolute inset-y-0 w-px bg-white/20"
+              style={{ left: `${tick}%` }}
+            />
+          ))}
         </div>
         <p className="mt-2 text-xs text-gray-400">
           Draw {Math.round(normalizedUnits)} units ({volumeMl.toFixed(2)} ml)
@@ -790,7 +805,7 @@ export function PeptideTracker() {
             </button>
             <button
               onClick={() => openCalculatorModal(protocol)}
-              className="bg-gray-700/40 hover:bg-gray-700/60 text-gray-200 font-medium py-2 px-4 rounded-lg transition-colors text-sm whitespace-nowrap"
+              className="bg-amber-500/90 hover:bg-amber-400 text-gray-900 font-semibold py-2 px-4 rounded-lg transition-all text-sm whitespace-nowrap shadow-[0_0_15px_rgba(245,193,92,0.35)]"
             >
               Dose Calculator
             </button>
@@ -878,10 +893,52 @@ export function PeptideTracker() {
                       </div>
                     ) : (
                       <div className="space-y-4">
+                        {todaysDoseBuckets.pending.length > 0 && (
+                          <div className="space-y-2">
+                            <p className="text-xs uppercase tracking-wide text-gray-400/80">
+                              Due soon
+                            </p>
+                            {todaysDoseBuckets.pending.map((dose, index) => {
+                              const protocol = currentProtocols.find(p => p.id === dose.peptideId)
+                              const isNext = index === 0
+                              return (
+                                <div
+                                  key={dose.id}
+                                  className={`p-3 rounded-lg border transition-all ${
+                                    isNext
+                                      ? 'bg-primary-900/30 border-primary-500/40 shadow-lg'
+                                      : 'bg-gray-700/30 border-gray-600/30 hover:bg-gray-700/50'
+                                  }`}
+                                >
+                                  <div className="flex justify-between items-start mb-2">
+                                    <div>
+                                      <span className="font-medium text-white">{protocol?.name || 'Unknown Protocol'}</span>
+                                      <p className="text-xs text-gray-400">{protocol?.dosage}</p>
+                                    </div>
+                                    <div className="text-right">
+                                      <span className="text-sm text-gray-100 font-semibold">
+                                        {dose.scheduledTime}
+                                      </span>
+                                      <div className="flex items-center justify-end mt-1 text-xs">
+                                        <div className={`w-4 h-4 rounded mr-1 flex items-center justify-center ${isNext ? 'bg-primary-500/80' : 'border border-gray-400'}`}>
+                                          {isNext && <div className="w-2 h-2 bg-white rounded" />}
+                                        </div>
+                                        <span className={isNext ? 'text-primary-200 font-semibold uppercase tracking-wide' : 'text-gray-400'}>
+                                          {isNext ? 'Next dose' : 'Scheduled'}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              )
+                            })}
+                          </div>
+                        )}
+
                         {todaysDoseBuckets.completed.length > 0 && (
                           <div className="space-y-2">
                             <p className="text-xs uppercase tracking-wide text-green-400/80">
-                              Completed today
+                              Logged today
                             </p>
                             {todaysDoseBuckets.completed.map((dose) => {
                               const protocol = currentProtocols.find(p => p.id === dose.peptideId)
@@ -930,34 +987,6 @@ export function PeptideTracker() {
                                       )}
                                     </div>
                                   )}
-                                </div>
-                              )
-                            })}
-                          </div>
-                        )}
-
-                        {todaysDoseBuckets.pending.length > 0 && (
-                          <div className="space-y-2">
-                            <p className="text-xs uppercase tracking-wide text-gray-400/80">
-                              Scheduled doses
-                            </p>
-                            {todaysDoseBuckets.pending.map((dose) => {
-                              const protocol = currentProtocols.find(p => p.id === dose.peptideId)
-                              return (
-                                <div key={dose.id} className="p-3 rounded-lg border transition-all bg-gray-700/30 border-gray-600/30 hover:bg-gray-700/50">
-                                  <div className="flex justify-between items-start mb-2">
-                                    <div>
-                                      <span className="font-medium text-white">{protocol?.name || 'Unknown Protocol'}</span>
-                                      <p className="text-xs text-gray-400">{protocol?.dosage}</p>
-                                    </div>
-                                    <div className="text-right">
-                                      <span className="text-sm text-gray-300">{dose.scheduledTime}</span>
-                                      <div className="flex items-center justify-end mt-1">
-                                        <div className="w-4 h-4 border border-gray-400 rounded mr-1"></div>
-                                        <span className="text-xs text-gray-400">Due Soon</span>
-                                      </div>
-                                    </div>
-                                  </div>
                                 </div>
                               )
                             })}
