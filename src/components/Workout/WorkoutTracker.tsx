@@ -1,246 +1,165 @@
-"use client"
+﻿"use client";
 
-import { useState, useEffect } from "react"
-import { Dumbbell, Target, Plus, X, Calendar, TrendingUp, Clock, Play, Pause, StopCircle } from "lucide-react"
+import { useState, useEffect, useMemo } from "react";
+import type { ReactNode } from "react";
+import { Dumbbell, Activity, Flame, Clock, Calendar, TrendingUp } from "lucide-react";
+import { WorkoutQuickAdd, WorkoutQuickAddResult } from "./WorkoutQuickAdd";
+import { RecentWorkouts } from "./RecentWorkouts";
 
-export interface WorkoutProgram {
-  id: string
-  name: string
-  programType: string
-  template: any // JSON
-  description?: string
-  notes?: string
-  isActive: boolean
-}
-
-export interface WorkoutSession {
-  id: string
-  exercises: ExerciseEntry[] // Array of exercises
-  duration: number
-  programId?: string
-  completedAt: string
-  notes?: string
-}
-
-export interface ExerciseEntry {
-  id: string
-  name: string
-  category: string
-  sets: { reps: number; weight: number; completed: boolean }[]
-}
-
-export interface SetEntry {
-  reps: number
-  weight: number
-  completed: boolean
+interface WorkoutEntry {
+  id: string;
+  name: string;
+  category: string;
+  intensity?: string | null;
+  totalSets: number;
+  totalReps: number;
+  totalWeight: number;
+  durationSeconds: number;
+  completedAt: string;
+  notes?: string | null;
 }
 
 export function WorkoutTracker() {
-  const [activeTab, setActiveTab] = useState<'current' | 'programs' | 'history'>('current')
-  const [workoutPrograms, setWorkoutPrograms] = useState<WorkoutProgram[]>([])
-  const [currentSession, setCurrentSession] = useState<WorkoutSession | null>(null)
-  const [sessionExercises, setSessionExercises] = useState<ExerciseEntry[]>([])
-  const [history, setHistory] = useState<WorkoutSession[]>([])
-  const [isTimerRunning, setIsTimerRunning] = useState(false)
-  const [elapsedTime, setElapsedTime] = useState(0)
-  const [timerStartTime, setTimerStartTime] = useState<number | null>(null)
-
-  // Form state for adding exercise
-  const [showAddExerciseModal, setShowAddExerciseModal] = useState(false)
-  const [exerciseName, setExerciseName] = useState('')
-  const [exerciseCategory, setExerciseCategory] = useState('Chest')
+  const [activeTab, setActiveTab] = useState<'today' | 'history'>('today');
+  const [todaysWorkouts, setTodaysWorkouts] = useState<WorkoutEntry[]>([]);
+  const [logSuccess, setLogSuccess] = useState<WorkoutQuickAddResult | null>(null);
+  const [recentRefresh, setRecentRefresh] = useState(0);
+  const [historyRefresh, setHistoryRefresh] = useState(0);
+  const [historyItems, setHistoryItems] = useState<WorkoutEntry[] | null>(null);
+  const [historyLoading, setHistoryLoading] = useState(false);
+  const [historyError, setHistoryError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchPrograms()
-    fetchHistory()
-  }, [])
+    fetchTodaysWorkouts();
+  }, []);
 
-  // Timer logic
   useEffect(() => {
-    let interval: NodeJS.Timeout
+    if (activeTab !== 'history') return;
+    fetchHistory();
+  }, [activeTab, historyRefresh]);
 
-    if (isTimerRunning && timerStartTime) {
-      interval = setInterval(() => {
-        setElapsedTime(Math.floor((Date.now() - timerStartTime) / 1000))
-      }, 1000)
-    }
+  useEffect(() => {
+    if (!logSuccess) return;
+    const timer = setTimeout(() => setLogSuccess(null), 5000);
+    return () => clearTimeout(timer);
+  }, [logSuccess]);
 
-    return () => clearInterval(interval)
-  }, [isTimerRunning, timerStartTime])
-
-  const fetchPrograms = async () => {
+  const fetchTodaysWorkouts = async () => {
     try {
-      const response = await fetch('/api/workout/programs', {
-        credentials: 'include'
-      })
-      const data = await response.json()
-
-      if (data.success && data.programs) {
-        setWorkoutPrograms(data.programs)
+      const response = await fetch('/api/workouts/recent?limit=100', { cache: 'no-store' });
+      const data = await response.json();
+      if (!data?.ok || !Array.isArray(data.items)) {
+        throw new Error(data?.error || 'Failed to load workouts');
       }
+
+      const todayKey = new Date().toDateString();
+      const todays = data.items
+        .filter((session: any) => new Date(session.completedAt).toDateString() === todayKey)
+        .map(transformSession)
+        .sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime());
+
+      setTodaysWorkouts(todays);
     } catch (error) {
-      console.error('Error loading programs:', error)
+      console.error('Error loading today\'s workouts:', error);
     }
-  }
+  };
 
   const fetchHistory = async () => {
     try {
-      const response = await fetch('/api/workout/sessions', {
-        credentials: 'include'
-      })
-      const data = await response.json()
-
-      if (data.success && data.sessions) {
-        setHistory(data.sessions)
+      setHistoryLoading(true);
+      setHistoryError(null);
+      const response = await fetch('/api/workouts/recent?limit=200', { cache: 'no-store' });
+      const data = await response.json();
+      if (!data?.ok || !Array.isArray(data.items)) {
+        throw new Error(data?.error || 'Failed to load workout history');
       }
-    } catch (error) {
-      console.error('Error loading history:', error)
+
+      const entries = data.items
+        .map(transformSession)
+        .sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime());
+      setHistoryItems(entries);
+    } catch (error: any) {
+      console.error('History error', error);
+      setHistoryError(error?.message || 'Unable to load workout history');
+    } finally {
+      setHistoryLoading(false);
     }
-  }
+  };
 
-  const startWorkout = () => {
-    const now = Date.now()
-    setTimerStartTime(now)
-    setIsTimerRunning(true)
-    setSessionExercises([])
-  }
+  const todaysTotals = useMemo(() => {
+    return todaysWorkouts.reduce(
+      (acc, workout) => ({
+        sets: acc.sets + workout.totalSets,
+        reps: acc.reps + workout.totalReps,
+        weight: acc.weight + workout.totalWeight,
+        duration: acc.duration + workout.durationSeconds,
+      }),
+      { sets: 0, reps: 0, weight: 0, duration: 0 }
+    );
+  }, [todaysWorkouts]);
 
-  const pauseWorkout = () => {
-    setIsTimerRunning(false)
-  }
+  const workoutsByCategory = useMemo(() => {
+    const groups: Record<string, WorkoutEntry[]> = {};
+    todaysWorkouts.forEach((workout) => {
+      const key = workout.category?.toLowerCase() || 'general';
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(workout);
+    });
+    return groups;
+  }, [todaysWorkouts]);
 
-  const resumeWorkout = () => {
-    if (timerStartTime) {
-      const now = Date.now()
-      setTimerStartTime(now - elapsedTime * 1000)
-      setIsTimerRunning(true)
-    }
-  }
+  const groupedHistory = useMemo(() => {
+    if (!historyItems || historyItems.length === 0) return [];
 
-  const endWorkout = async () => {
-    if (sessionExercises.length === 0) {
-      alert('Add at least one exercise before ending workout')
-      return
-    }
+    const groups = new Map<string, {
+      key: string;
+      date: Date;
+      label: string;
+      totals: { sets: number; reps: number; weight: number; duration: number };
+      entries: WorkoutEntry[];
+    }>();
 
-    try {
-      const response = await fetch('/api/workout/sessions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({
-          exercises: sessionExercises,
-          duration: elapsedTime,
-          completedAt: new Date().toISOString()
-        })
-      })
-
-      const data = await response.json()
-
-      if (data.success) {
-        console.log(`✅ Workout saved! +${data.pointsAwarded} points`)
-        setSessionExercises([])
-        setElapsedTime(0)
-        setIsTimerRunning(false)
-        setTimerStartTime(null)
-        fetchHistory()
-      } else {
-        alert(`Failed to save workout: ${data.error}`)
+    historyItems.forEach((entry) => {
+      const date = new Date(entry.completedAt);
+      const key = date.toISOString().split('T')[0];
+      if (!groups.has(key)) {
+        groups.set(key, {
+          key,
+          date,
+          label: date.toLocaleDateString(undefined, {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric',
+          }),
+          totals: { sets: 0, reps: 0, weight: 0, duration: 0 },
+          entries: [],
+        });
       }
-    } catch (error) {
-      console.error('Error saving workout:', error)
-      alert('Failed to save workout')
-    }
-  }
+      const group = groups.get(key)!;
+      group.entries.push(entry);
+      group.totals.sets += entry.totalSets;
+      group.totals.reps += entry.totalReps;
+      group.totals.weight += entry.totalWeight;
+      group.totals.duration += entry.durationSeconds;
+    });
 
-  const addExercise = () => {
-    if (!exerciseName) {
-      alert('Enter exercise name')
-      return
-    }
+    return Array.from(groups.values())
+      .sort((a, b) => b.date.getTime() - a.date.getTime())
+      .map((group) => ({
+        ...group,
+        entries: group.entries.sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime()),
+      }));
+  }, [historyItems]);
 
-    const newExercise: ExerciseEntry = {
-      id: crypto.randomUUID(),
-      name: exerciseName,
-      category: exerciseCategory,
-      sets: [{ reps: 8, weight: 0, completed: false }]
-    }
-
-    setSessionExercises([...sessionExercises, newExercise])
-    setExerciseName('')
-    setShowAddExerciseModal(false)
-  }
-
-  const addSet = (exerciseId: string) => {
-    setSessionExercises(prev => prev.map(ex =>
-      ex.id === exerciseId
-        ? { ...ex, sets: [...ex.sets, { reps: 8, weight: 0, completed: false }] }
-        : ex
-    ))
-  }
-
-  const updateSet = (exerciseId: string, setIndex: number, field: 'reps' | 'weight' | 'completed', value: any) => {
-    setSessionExercises(prev => prev.map(ex =>
-      ex.id === exerciseId
-        ? {
-            ...ex,
-            sets: ex.sets.map((set, idx) =>
-              idx === setIndex ? { ...set, [field]: value } : set
-            )
-          }
-        : ex
-    ))
-  }
-
-  const removeExercise = (exerciseId: string) => {
-    setSessionExercises(prev => prev.filter(ex => ex.id !== exerciseId))
-  }
-
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60)
-    const secs = seconds % 60
-    return `${mins}:${secs.toString().padStart(2, '0')}`
-  }
-
-  const ProgramCard = ({ program }: { program: WorkoutProgram }) => (
-    <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/30 rounded-lg p-6 border border-primary-400/30 backdrop-blur-sm shadow-xl hover:shadow-primary-400/20 transition-all duration-300">
-      <div className="flex items-start justify-between mb-4">
-        <div>
-          <h3 className="text-xl font-bold text-white">{program.name}</h3>
-          <span className="text-xs text-secondary-300 bg-secondary-500/20 px-2 py-1 rounded-full mt-2 inline-block">
-            {program.programType}
-          </span>
-        </div>
-        {program.isActive && (
-          <span className="text-xs text-green-300 bg-green-500/20 px-3 py-1 rounded-full">
-            Active
-          </span>
-        )}
-      </div>
-
-      <div className="space-y-3 text-sm">
-        {program.description && (
-          <p className="text-gray-300">{program.description}</p>
-        )}
-
-        {program.notes && (
-          <div className="border-t border-gray-600 pt-3">
-            <p className="text-gray-400 text-xs italic">{program.notes}</p>
-          </div>
-        )}
-
-        <button
-          onClick={() => {
-            // Load program exercises into current session
-            startWorkout()
-          }}
-          className="w-full bg-secondary-600/30 hover:bg-secondary-600/50 text-secondary-200 font-medium py-2 px-4 rounded-lg transition-colors"
-        >
-          Start This Program
-        </button>
-      </div>
-    </div>
-  )
+  const formatDuration = (seconds: number) => {
+    if (!seconds || seconds <= 0) return '—';
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 1) return '<1 min';
+    const hours = Math.floor(minutes / 60);
+    const remaining = minutes % 60;
+    if (hours > 0) return `${hours}h ${remaining}m`;
+    return `${minutes} min`;
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 relative"
@@ -250,7 +169,18 @@ export function WorkoutTracker() {
            backgroundPosition: 'center',
            backgroundAttachment: 'fixed'
          }}>
-      {/* Header */}
+      {logSuccess && (
+        <div className="fixed right-6 top-24 z-40 max-w-sm rounded-xl border border-secondary-400/40 bg-secondary-500/20 px-4 py-3 text-sm text-secondary-100 shadow-2xl backdrop-blur">
+          <p className="font-semibold">Workout logged!</p>
+          {logSuccess.pointsAwarded > 0 && (
+            <p className="mt-1 text-secondary-200">+{logSuccess.pointsAwarded} points added today.</p>
+          )}
+          {logSuccess.journalNote && (
+            <p className="mt-1 text-secondary-100/80">Journal updated: {logSuccess.journalNote}</p>
+          )}
+        </div>
+      )}
+
       <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm shadow-2xl border-b border-primary-400/30 mt-16">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
@@ -261,215 +191,178 @@ export function WorkoutTracker() {
                 <span className="text-lg text-gray-200 drop-shadow-sm">• Workout Tracker</span>
               </div>
             </div>
-            <a href="/portal" className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
+            <a href="/portal" className="text-secondary-300 hover:text-secondary-200 font-medium text-sm transition-colors drop-shadow-sm">
               ← Back to Portal
             </a>
           </div>
         </div>
       </div>
 
-      {/* Title */}
       <div className="text-center py-8">
         <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
           <span className="text-secondary-400">Workout</span> Tracker
         </h2>
         <p className="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto">
-          Program-based sessions, timers, and progress for peptide-optimized training
+          Log strength and cardio sessions, visualize progress, and keep your daily streak alive.
         </p>
       </div>
 
-      {/* Tabs */}
       <div className="container mx-auto px-4 pb-8">
         <div className="flex justify-center mb-8">
-          <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-1 border border-primary-400/30 hover:shadow-primary-400/20 transition-all duration-300">
-            {(['current', 'programs', 'history'] as const).map((tab) => (
+          <div className="bg-gradient-to-r from-secondary-600/20 to-secondary-700/20 backdrop-blur-sm rounded-xl p-1 border border-secondary-400/30 hover:shadow-secondary-400/20 transition-all duration-300">
+            {(['today', 'history'] as const).map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
                 className={`px-6 py-3 rounded-lg font-medium transition-all capitalize ${
-                  activeTab === tab
-                    ? 'bg-secondary-500 text-white shadow-lg'
-                    : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                  activeTab === tab ? 'bg-secondary-500 text-white shadow-lg' : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
                 }`}
               >
-                {tab}
+                {tab === 'today' ? 'Today' : 'History'}
               </button>
             ))}
           </div>
         </div>
 
-        {activeTab === 'current' && (
+        {activeTab === 'today' && (
           <div className="max-w-6xl mx-auto grid gap-6 lg:grid-cols-3">
-            {/* Main content */}
-            <div className="lg:col-span-2">
-              <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl hover:shadow-primary-400/20 transition-all duration-300">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xl font-bold text-white flex items-center">
-                    <Dumbbell className="h-5 w-5 mr-2 text-secondary-400"/>Current Session
-                  </h3>
-                  <div className="flex gap-2">
-                    {!isTimerRunning && elapsedTime === 0 && (
-                      <button
-                        onClick={startWorkout}
-                        className="bg-secondary-600 hover:bg-secondary-700 text-white font-medium py-2 px-4 rounded-lg flex items-center"
-                      >
-                        <Play className="h-4 w-4 mr-1"/>Start
-                      </button>
-                    )}
-                    {isTimerRunning && (
-                      <button
-                        onClick={pauseWorkout}
-                        className="bg-gray-700 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg flex items-center"
-                      >
-                        <Pause className="h-4 w-4 mr-1"/>Pause
-                      </button>
-                    )}
-                    {!isTimerRunning && elapsedTime > 0 && (
-                      <button
-                        onClick={resumeWorkout}
-                        className="bg-secondary-600 hover:bg-secondary-700 text-white font-medium py-2 px-4 rounded-lg flex items-center"
-                      >
-                        <Play className="h-4 w-4 mr-1"/>Resume
-                      </button>
-                    )}
-                    {elapsedTime > 0 && (
-                      <button
-                        onClick={endWorkout}
-                        className="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg flex items-center"
-                      >
-                        <StopCircle className="h-4 w-4 mr-1"/>End
-                      </button>
-                    )}
-                  </div>
+            <div className="lg:col-span-2 space-y-6">
+              <WorkoutQuickAdd
+                onLogged={(result) => {
+                  fetchTodaysWorkouts();
+                  setRecentRefresh((prev) => prev + 1);
+                  setHistoryRefresh((prev) => prev + 1);
+                  setLogSuccess(result);
+                }}
+              />
+              <RecentWorkouts refreshToken={recentRefresh} />
+
+              <div className="bg-gradient-to-br from-secondary-600/20 to-primary-600/20 backdrop-blur-sm rounded-xl p-6 border border-secondary-400/30 shadow-2xl">
+                <div className="grid gap-4 md:grid-cols-4">
+                  <SummaryCard icon={<Dumbbell className="h-5 w-5" />} label="Total Sets" value={todaysTotals.sets} />
+                  <SummaryCard icon={<Activity className="h-5 w-5" />} label="Total Reps" value={todaysTotals.reps} />
+                  <SummaryCard icon={<Flame className="h-5 w-5" />} label="Total Volume" value={todaysTotals.weight > 0 ? `${Math.round(todaysTotals.weight)} lbs` : 'Bodyweight'} />
+                  <SummaryCard icon={<Clock className="h-5 w-5" />} label="Active Time" value={formatDuration(todaysTotals.duration)} />
                 </div>
+              </div>
 
-                {elapsedTime === 0 ? (
-                  <p className="text-gray-300">No active workout. Start a session to begin tracking.</p>
+              <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl">
+                <h3 className="text-xl font-bold text-white mb-4 flex items-center">
+                  <Dumbbell className="h-5 w-5 mr-2 text-secondary-400"/>Today\'s Sessions
+                </h3>
+
+                {Object.keys(workoutsByCategory).length === 0 ? (
+                  <p className="text-gray-400 text-sm italic">No workouts logged yet.</p>
                 ) : (
-                  <div className="space-y-4">
-                    <button
-                      onClick={() => setShowAddExerciseModal(true)}
-                      className="w-full bg-primary-600/30 hover:bg-primary-600/50 text-primary-200 font-medium py-2 px-4 rounded-lg transition-colors"
-                    >
-                      <Plus className="inline h-4 w-4 mr-1"/>Add Exercise
-                    </button>
-
-                    {sessionExercises.map((exercise) => (
-                      <div key={exercise.id} className="bg-gray-700/30 rounded-lg p-4">
-                        <div className="flex justify-between items-start mb-3">
-                          <div>
-                            <h4 className="text-white font-bold">{exercise.name}</h4>
-                            <p className="text-gray-400 text-xs">{exercise.category}</p>
-                          </div>
-                          <button
-                            onClick={() => removeExercise(exercise.id)}
-                            className="text-red-400 hover:text-red-300"
-                          >
-                            <X className="w-4 h-4" />
-                          </button>
-                        </div>
-
-                        <div className="space-y-2">
-                          {exercise.sets.map((set, idx) => (
-                            <div key={idx} className="flex gap-2 items-center">
-                              <span className="text-gray-400 text-sm w-12">Set {idx + 1}</span>
-                              <input
-                                type="number"
-                                value={set.reps}
-                                onChange={(e) => updateSet(exercise.id, idx, 'reps', parseInt(e.target.value))}
-                                className="w-16 bg-gray-800 border border-gray-600 rounded px-2 py-1 text-white text-sm"
-                                placeholder="Reps"
-                              />
-                              <span className="text-gray-500 text-xs">reps</span>
-                              <input
-                                type="number"
-                                value={set.weight}
-                                onChange={(e) => updateSet(exercise.id, idx, 'weight', parseInt(e.target.value))}
-                                className="w-20 bg-gray-800 border border-gray-600 rounded px-2 py-1 text-white text-sm"
-                                placeholder="Weight"
-                              />
-                              <span className="text-gray-500 text-xs">lbs</span>
-                              <input
-                                type="checkbox"
-                                checked={set.completed}
-                                onChange={(e) => updateSet(exercise.id, idx, 'completed', e.target.checked)}
-                                className="ml-auto"
-                              />
+                  Object.entries(workoutsByCategory).map(([category, workouts]) => (
+                    <div key={category} className="mb-6 last:mb-0">
+                      <h4 className="text-secondary-300 font-semibold mb-2 capitalize">{category}</h4>
+                      <div className="space-y-2">
+                        {workouts.map((workout) => (
+                          <div key={workout.id} className="bg-gray-700/30 rounded-lg p-3 flex justify-between items-start">
+                            <div>
+                              <p className="text-white font-medium">{workout.name}</p>
+                              <p className="text-gray-400 text-xs">
+                                {workout.totalSets} sets • {workout.totalReps} reps
+                                {workout.totalWeight > 0 ? ` • ${Math.round(workout.totalWeight)} lbs` : ''}
+                              </p>
+                              <p className="text-gray-500 text-xs">{new Date(workout.completedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</p>
                             </div>
-                          ))}
-                          <button
-                            onClick={() => addSet(exercise.id)}
-                            className="text-primary-400 hover:text-primary-300 text-sm"
-                          >
-                            + Add Set
-                          </button>
-                        </div>
+                            {workout.notes && (
+                              <p className="text-xs text-gray-400 max-w-xs line-clamp-3">{workout.notes}</p>
+                            )}
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
+                    </div>
+                  ))
                 )}
               </div>
             </div>
 
-            {/* Sidebar */}
             <div className="space-y-6">
-              <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl hover:shadow-secondary-400/20 transition-all duration-300">
+              <div className="bg-gradient-to-br from-secondary-600/20 to-primary-600/20 backdrop-blur-sm rounded-xl p-6 border border-secondary-400/30 shadow-2xl">
                 <h4 className="text-white font-semibold mb-2 flex items-center">
-                  <Clock className="h-5 w-5 mr-2 text-secondary-400"/>Timer
+                  <Calendar className="h-5 w-5 mr-2 text-secondary-400"/>Daily Goal
                 </h4>
-                <p className="text-white text-4xl font-bold">{formatTime(elapsedTime)}</p>
+                <p className="text-gray-300 text-sm">Log at least one workout to keep your streak alive.</p>
+                <div className="mt-3 rounded-lg border border-secondary-400/20 bg-secondary-500/10 px-3 py-2 text-sm text-secondary-100">
+                  {todaysWorkouts.length > 0 ? 'Goal completed' : 'No workout yet today'}
+                </div>
               </div>
 
-              <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl hover:shadow-secondary-400/20 transition-all duration-300">
+              <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl">
                 <h4 className="text-white font-semibold mb-2 flex items-center">
                   <TrendingUp className="h-5 w-5 mr-2 text-secondary-400"/>Progress
                 </h4>
-                <p className="text-gray-300 text-sm">Personal records and graphs coming soon.</p>
+                <p className="text-gray-300 text-sm">Weekly charts and PR tracking coming soon.</p>
               </div>
             </div>
-          </div>
-        )}
-
-        {activeTab === 'programs' && (
-          <div className="max-w-5xl mx-auto">
-            <div className="mb-6 flex justify-between items-center">
-              <h3 className="text-2xl font-bold text-white">Workout Programs</h3>
-              <a
-                href="/admin/workouts"
-                className="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
-              >
-                <Plus className="inline h-4 w-4 mr-1"/>Create Program
-              </a>
-            </div>
-
-            <div className="grid gap-6 md:grid-cols-2">
-              {workoutPrograms.map((program) => (
-                <ProgramCard key={program.id} program={program} />
-              ))}
-            </div>
-
-            {workoutPrograms.length === 0 && (
-              <div className="text-center py-12">
-                <p className="text-gray-400">No programs yet. Create one to get started!</p>
-              </div>
-            )}
           </div>
         )}
 
         {activeTab === 'history' && (
-          <div className="max-w-5xl mx-auto">
-            <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl hover:shadow-secondary-400/20 transition-all duration-300">
-              <h3 className="text-xl font-bold text-white mb-4">History</h3>
-              {history.length === 0 ? (
-                <p className="text-gray-300">No workouts yet.</p>
+          <div className="max-w-5xl mx-auto space-y-6">
+            <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <TrendingUp className="h-6 w-6 text-secondary-300" />
+                  <h3 className="text-xl font-bold text-white">Workout History</h3>
+                </div>
+                <button
+                  onClick={() => setHistoryRefresh((prev) => prev + 1)}
+                  className="rounded-lg border border-secondary-400/40 bg-secondary-500/10 px-4 py-2 text-sm font-medium text-secondary-200 transition hover:border-secondary-400/60 hover:bg-secondary-500/20"
+                >
+                  Refresh
+                </button>
+              </div>
+
+              {historyLoading ? (
+                <div className="py-8 text-center text-sm text-gray-300">
+                  <div className="mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-2 border-secondary-300 border-t-transparent" />
+                  Loading workout history...
+                </div>
+              ) : historyError ? (
+                <div className="rounded-lg border border-rose-500/40 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
+                  {historyError}
+                </div>
+              ) : groupedHistory.length === 0 ? (
+                <div className="py-10 text-center text-gray-300">
+                  <p>No workouts logged yet.</p>
+                  <p className="text-sm text-gray-400">Log workouts to build your history.</p>
+                </div>
               ) : (
-                <div className="space-y-3">
-                  {history.map((session) => (
-                    <div key={session.id} className="bg-gray-700/30 rounded-lg p-4">
-                      <p className="text-white font-medium">{new Date(session.completedAt).toLocaleString()}</p>
-                      <p className="text-gray-400 text-sm">
-                        {session.exercises.length} exercises • {formatTime(session.duration)}
-                      </p>
+                <div className="space-y-4 max-h-[480px] overflow-y-auto pr-1">
+                  {groupedHistory.map((group) => (
+                    <div key={group.key} className="rounded-xl border border-secondary-400/30 bg-gray-900/50 p-4 shadow-lg">
+                      <div className="flex items-center justify-between gap-4 border-b border-secondary-400/20 pb-3">
+                        <div>
+                          <p className="text-lg font-semibold text-white">{group.label}</p>
+                          <p className="text-xs text-gray-400">{group.date.toLocaleDateString()}</p>
+                        </div>
+                        <div className="text-right text-sm text-gray-300">
+                          <p className="text-white font-semibold">{group.entries.length} session{group.entries.length === 1 ? '' : 's'}</p>
+                          <p className="text-xs text-gray-400">
+                            {group.totals.sets} sets • {group.totals.reps} reps • {group.totals.weight > 0 ? `${Math.round(group.totals.weight)} lbs` : 'Bodyweight'}
+                          </p>
+                        </div>
+                      </div>
+                      <ul className="mt-3 space-y-2">
+                        {group.entries.map((entry) => (
+                          <li key={entry.id} className="flex items-start justify-between gap-4 rounded-lg border border-gray-700/40 bg-gray-800/40 px-3 py-2 text-sm text-gray-100">
+                            <div>
+                              <p className="font-medium text-white">{entry.name}</p>
+                              <p className="text-xs text-gray-400">
+                                {entry.totalSets} sets • {entry.totalReps} reps • {formatDuration(entry.durationSeconds)}
+                              </p>
+                              {entry.notes && <p className="text-xs text-gray-400 mt-1 line-clamp-2">{entry.notes}</p>}
+                            </div>
+                            <div className="text-right text-xs text-gray-400">
+                              <p>{new Date(entry.completedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</p>
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
                   ))}
                 </div>
@@ -478,67 +371,43 @@ export function WorkoutTracker() {
           </div>
         )}
       </div>
-
-      {/* Add Exercise Modal */}
-      {showAddExerciseModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 max-w-md w-full border border-primary-400/30 shadow-2xl">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-bold text-white">Add Exercise</h3>
-              <button
-                onClick={() => setShowAddExerciseModal(false)}
-                className="text-gray-400 hover:text-white transition-colors"
-              >
-                ✕
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Exercise Name</label>
-                <input
-                  type="text"
-                  value={exerciseName}
-                  onChange={(e) => setExerciseName(e.target.value)}
-                  className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
-                  placeholder="e.g., Bench Press"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Category</label>
-                <select
-                  value={exerciseCategory}
-                  onChange={(e) => setExerciseCategory(e.target.value)}
-                  className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
-                >
-                  <option value="Chest">Chest</option>
-                  <option value="Back">Back</option>
-                  <option value="Legs">Legs</option>
-                  <option value="Shoulders">Shoulders</option>
-                  <option value="Arms">Arms</option>
-                  <option value="Core">Core</option>
-                </select>
-              </div>
-
-              <div className="flex gap-3 pt-4">
-                <button
-                  onClick={() => setShowAddExerciseModal(false)}
-                  className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={addExercise}
-                  className="flex-1 bg-secondary-600 hover:bg-secondary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
-                >
-                  Add Exercise
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
-  )
+  );
+}
+
+const SummaryCard = ({ icon, label, value }: { icon: ReactNode; label: string; value: string | number }) => (
+  <div className="rounded-lg border border-secondary-400/30 bg-gray-900/50 p-4 flex flex-col gap-2">
+    <div className="flex items-center gap-2 text-secondary-200">
+      <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-secondary-500/20">{icon}</span>
+      <span className="text-xs uppercase tracking-wide text-secondary-200">{label}</span>
+    </div>
+    <p className="text-2xl font-semibold text-white">{value}</p>
+  </div>
+);
+
+function transformSession(session: any): WorkoutEntry {
+  const exercises = Array.isArray(session?.exercises) ? session.exercises : [];
+  const primary = exercises[0] ?? {};
+
+  const totalSets = exercises.reduce((acc: number, ex: any) => acc + (Array.isArray(ex?.sets) ? ex.sets.length : 0), 0);
+  const totalReps = exercises.reduce((acc: number, ex: any) => acc + (Array.isArray(ex?.sets)
+    ? ex.sets.reduce((setSum: number, set: any) => setSum + (Number(set?.reps) || 0), 0)
+    : 0), 0);
+  const totalWeight = exercises.reduce((acc: number, ex: any) => acc + (Array.isArray(ex?.sets)
+    ? ex.sets.reduce((setSum: number, set: any) =>
+        setSum + ((Number(set?.reps) || 0) * (Number(set?.weight) || 0)), 0)
+    : 0), 0);
+
+  return {
+    id: session?.id,
+    name: primary?.name || 'Workout session',
+    category: primary?.category || 'General',
+    intensity: primary?.intensity ?? session?.notes ?? null,
+    totalSets,
+    totalReps,
+    totalWeight,
+    durationSeconds: Number(session?.duration) || 0,
+    completedAt: session?.completedAt || new Date().toISOString(),
+    notes: session?.notes ?? primary?.notes ?? null,
+  };
 }
