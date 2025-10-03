@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Calculator as CalcIcon, Save, Import, AlertCircle } from "lucide-react";
+import { Save, Import, AlertCircle } from "lucide-react";
 
 /*********************************
  * Types
@@ -174,13 +174,14 @@ const SyringeVisual: React.FC<{
             const isMajor = i % 2 === 0;
             const value = ((totalTicks - i) / totalTicks) * maxVolume;
             const label = value === 0 ? '0' : value >= 1 ? value.toFixed(1) : value.toFixed(2);
+            const textOffset = i === totalTicks ? 2 : 4;
             return (
               <g key={i}>
                 <line x1="30" x2="70" y1={y} y2={y} stroke="rgba(255,255,255,0.18)" strokeWidth={isMajor ? 1.6 : 1} />
                 {isMajor && (
                   <text
                     x="26"
-                    y={y + 4}
+                    y={y + textOffset}
                     textAnchor="end"
                     fontSize="6"
                     fill="rgba(255,255,255,0.45)"
@@ -298,7 +299,6 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
 
   const [inputs, setInputs] = useState<CalculatorInputs>(defaultInputs);
   const [selectedPreset, setSelectedPreset] = useState<PresetName | "">("");
-  const [customMode, setCustomMode] = useState<boolean>(false);
   const [peptideName, setPeptideName] = useState<string>("BPC-157");
   const [selectedPeptideId, setSelectedPeptideId] = useState<string>("");
   const [notes, setNotes] = useState<string>("");
@@ -512,53 +512,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
   }, [inputs.peptideAmount, inputs.totalVolume]);
 
   return (
-    <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-3xl p-6 pt-8 border border-primary-400/30 shadow-2xl">
-      {/* Header */}
-      <div className="mb-6 flex flex-col gap-3">
-        <div className="flex flex-wrap items-center gap-3 w-full">
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <CalcIcon className="w-6 h-6 text-primary-400" />
-            <h2 className="text-2xl font-bold text-white">
-              {mode === 'addProtocol' ? 'Add Research Protocol' : 'Dosage Calculator'}
-            </h2>
-          </div>
-          {mode !== 'addProtocol' && (
-            <>
-              <div className="flex-1 flex justify-center min-w-[200px]">
-                <div className="flex items-center gap-2 text-sm">
-                  <span className="text-gray-300 font-medium">Preset</span>
-                  <select
-                    aria-label="Peptide preset"
-                    value={selectedPreset}
-                    onChange={(e) => applyPreset(e.target.value as PresetName)}
-                    className="min-w-[180px] bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-primary-400 focus:outline-none"
-                  >
-                    <option value="">Select a preset…</option>
-                    {PEPTIDE_PRESETS.map((p) => (
-                      <option key={p.name} value={p.name}>{p.name}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={handleImport}
-                className="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-3 rounded-lg transition-colors flex items-center gap-2 flex-shrink-0"
-                aria-label="Import from product page"
-                title="Import from product page"
-              >
-                <Import className="w-4 h-4" /> Import
-              </button>
-            </>
-          )}
-        </div>
-        {selectedPreset && mode !== 'addProtocol' && (
-          <p className="text-xs text-gray-400 text-center max-w-xl mx-auto">
-            {PEPTIDE_PRESETS.find((p) => p.name === selectedPreset)?.instructions}
-          </p>
-        )}
-      </div>
-
+    <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-3xl p-6 pt-6 border border-primary-400/30 shadow-2xl">
       {/* Alerts */}
       {errors.length > 0 && (
         <div className="mb-4 bg-red-500/10 border border-red-400/30 text-red-200 rounded-lg p-3 flex items-start gap-2" role="alert">
@@ -611,7 +565,37 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
               </div>
             )
           ) : (
-            <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30">
+              <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30">
+                <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+                  <label className="text-xs uppercase tracking-wide text-gray-400">
+                    Preset
+                    <select
+                    aria-label="Peptide preset"
+                    value={selectedPreset}
+                    onChange={(e) => applyPreset(e.target.value as PresetName)}
+                    className="ml-2 bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
+                  >
+                    <option value="">Select…</option>
+                    {PEPTIDE_PRESETS.map((p) => (
+                      <option key={p.name} value={p.name}>{p.name}</option>
+                    ))}
+                  </select>
+                </label>
+                <button
+                  type="button"
+                  onClick={handleImport}
+                  className="bg-primary-600/30 hover:bg-primary-600/50 text-primary-100 font-medium py-2 px-3 rounded-lg border border-primary-400/40 backdrop-blur-sm transition-colors flex items-center gap-2"
+                  aria-label="Import from product page"
+                  title="Import from product page"
+                >
+                  <Import className="w-4 h-4" /> Import
+                </button>
+              </div>
+              {selectedPreset && (
+                <p className="text-xs text-gray-400 mb-3">
+                  {PEPTIDE_PRESETS.find((p) => p.name === selectedPreset)?.instructions}
+                </p>
+              )}
               <label className="block mb-2 text-sm text-gray-300">Peptide name</label>
               <input
                 aria-label="Peptide name"
@@ -861,7 +845,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                   type="button"
                   onClick={handleProtocolSave}
                   disabled={!peptideName || isSaving || errors.length > 0 || selectedDays.length === 0 || selectedTimes.length === 0}
-                  className="flex-1 bg-amber-500 hover:bg-amber-400 disabled:bg-gray-600 disabled:text-gray-300 disabled:opacity-60 text-gray-900 font-bold py-3 px-6 rounded-lg transition-colors shadow-[0_0_20px_rgba(245,193,92,0.35)]"
+                  className="flex-1 bg-amber-300/30 hover:bg-amber-300/50 disabled:bg-gray-600 disabled:text-gray-300 disabled:opacity-60 text-amber-100 font-bold py-3 px-6 rounded-lg border border-amber-200/40 backdrop-blur-sm transition-all shadow-[0_0_20px_rgba(245,193,92,0.35)]"
                 >
                   {isSaving ? "Adding Protocol..." : "Add Protocol"}
                 </button>

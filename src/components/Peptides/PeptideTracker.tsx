@@ -717,24 +717,35 @@ export function PeptideTracker() {
     const fillPercent = Math.min(100, Math.max(0, (normalizedUnits / 100) * 100))
     const volumeMl = normalizedUnits / 100
 
+    const pointerPosition = Math.min(Math.max(fillPercent, 0), 100)
+    const pointerStyle =
+      pointerPosition <= 0
+        ? { left: '0%', transform: 'translateY(-50%)' }
+        : pointerPosition >= 100
+          ? { left: '100%', transform: 'translate(-100%, -50%)' }
+          : { left: `${pointerPosition}%`, transform: 'translate(-50%, -50%)' }
+
+    const ticks = [0, 25, 50, 75, 100]
+
     return (
       <div className="mt-3">
-        <div className="flex justify-between text-[10px] uppercase tracking-wide text-gray-500">
-          <span>0u</span>
-          <span>100u</span>
-        </div>
         <div className="relative mt-1 h-2 rounded-full bg-gray-700/40 overflow-hidden">
           <div className="absolute inset-y-0 left-0 bg-primary-500/70" style={{ width: `${fillPercent}%` }} />
           <div
             className="absolute top-1/2 h-4 w-[2px] bg-primary-200"
-            style={{ left: `${fillPercent}%`, transform: 'translate(-50%, -50%)' }}
+            style={pointerStyle}
           />
-          {[0, 25, 50, 75, 100].map((tick) => (
+          {ticks.map((tick) => (
             <div
               key={tick}
               className="absolute inset-y-0 w-px bg-white/20"
               style={{ left: `${tick}%` }}
             />
+          ))}
+        </div>
+        <div className="mt-1 flex justify-between text-[9px] uppercase tracking-wide text-gray-500">
+          {ticks.map((tick) => (
+            <span key={tick}>{tick}u</span>
           ))}
         </div>
         <p className="mt-2 text-xs text-gray-400">
@@ -805,7 +816,7 @@ export function PeptideTracker() {
             </button>
             <button
               onClick={() => openCalculatorModal(protocol)}
-              className="bg-amber-500/90 hover:bg-amber-400 text-gray-900 font-semibold py-2 px-4 rounded-lg transition-all text-sm whitespace-nowrap shadow-[0_0_15px_rgba(245,193,92,0.35)]"
+              className="bg-amber-300/30 hover:bg-amber-300/50 text-amber-100 font-semibold py-2 px-4 rounded-lg border border-amber-200/40 backdrop-blur-sm transition-all text-sm whitespace-nowrap shadow-[0_0_20px_rgba(245,193,92,0.35)]"
             >
               Dose Calculator
             </button>
@@ -1286,20 +1297,38 @@ export function PeptideTracker() {
         {/* Add Protocol Modal - Now using Enhanced DosageCalculator */}
         {showAddProtocolModal && (
           <div className="fixed inset-0 bg-black/80 backdrop-blur-lg flex items-center justify-center z-50 p-4">
-            <div className="bg-gradient-to-br from-primary-900/95 via-gray-900/95 to-secondary-900/95 rounded-3xl max-w-7xl w-full max-h-[92vh] overflow-y-auto shadow-[0_0_100px_rgba(63,191,181,0.3)] border border-primary-400/40">
-              <DosageCalculator
-                mode="addProtocol"
-                peptideLibrary={peptideLibrary.map(p => ({
-                  id: p.id,
-                  name: p.name,
-                  dosage: p.dosage,
-                  category: p.purpose,
-                  reconstitution: p.reconstitution,
-                  vialAmount: p.vialAmount
-                }))}
-                onSaveProtocol={handleSaveProtocol}
-                onClose={() => setShowAddProtocolModal(false)}
-              />
+            <div className="bg-gradient-to-br from-primary-900/95 via-gray-900/95 to-secondary-900/95 rounded-3xl max-w-7xl w-full max-h-[92vh] overflow-hidden shadow-[0_0_100px_rgba(63,191,181,0.3)] border border-primary-400/40">
+              <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-md border-b border-primary-400/30 px-8 py-6">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h2 className="text-3xl font-bold bg-gradient-to-r from-primary-300 to-secondary-300 bg-clip-text text-transparent">
+                      Add Research Protocol
+                    </h2>
+                    <p className="text-primary-200 mt-1">Select a peptide and scheduling details for tracking</p>
+                  </div>
+                  <button
+                    onClick={() => setShowAddProtocolModal(false)}
+                    className="bg-red-500/20 hover:bg-red-500/30 text-red-300 hover:text-red-200 rounded-full p-3 transition-all duration-300 hover:scale-110"
+                  >
+                    <X className="w-6 h-6" />
+                  </button>
+                </div>
+              </div>
+              <div className="overflow-y-auto max-h-[calc(92vh-100px)] custom-scrollbar p-8">
+                <DosageCalculator
+                  mode="addProtocol"
+                  peptideLibrary={peptideLibrary.map(p => ({
+                    id: p.id,
+                    name: p.name,
+                    dosage: p.dosage,
+                    category: p.purpose,
+                    reconstitution: p.reconstitution,
+                    vialAmount: p.vialAmount
+                  }))}
+                  onSaveProtocol={handleSaveProtocol}
+                  onClose={() => setShowAddProtocolModal(false)}
+                />
+              </div>
             </div>
           </div>
         )}
@@ -1313,7 +1342,7 @@ export function PeptideTracker() {
                 <div className="flex justify-between items-center">
                   <div>
                     <h2 className="text-3xl font-bold bg-gradient-to-r from-primary-300 to-secondary-300 bg-clip-text text-transparent">
-                      Professional Dosage Calculator
+                      Dosage Calculator
                     </h2>
                     <p className="text-primary-200 mt-1">
                       {selectedProtocol.name} • {selectedProtocol.purpose} Protocol
