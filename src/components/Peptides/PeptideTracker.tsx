@@ -307,9 +307,9 @@ export function PeptideTracker() {
           )
 
           const merged = new Map<string, DoseEntry>()
-          [...completedToday, ...relevantPending].forEach((dose) => {
+          for (const dose of [...completedToday, ...relevantPending]) {
             merged.set(dose.id, dose)
-          })
+          }
           return Array.from(merged.values())
         })
       }
