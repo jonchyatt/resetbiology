@@ -130,14 +130,19 @@ const calculateDosage = (inputs: CalculatorInputs): CalculatorOutputs => {
   // Calculate doses per vial
   const dosesPerVial = Math.floor((safePeptideAmount * 1000) / doseInMcg);
 
+  // Rounded outputs for display
+  const roundedVolume = Number(volumeToDraw.toFixed(volumeToDraw < 1 ? 3 : 2));
+  const roundedUnits = typeof insulinUnits === "number"
+    ? Number(insulinUnits.toFixed(insulinUnits < 10 ? 1 : 0))
+    : undefined;
+
   return {
-    volumeToDraw: Number(volumeToDraw.toFixed(2)),
-    insulinUnits: typeof insulinUnits === "number" ? Number(insulinUnits.toFixed(1)) : undefined,
+    volumeToDraw: roundedVolume,
+    insulinUnits: roundedUnits,
     actualConcentration,
     dosesPerVial,
   };
 };
-
 /*********************************
  * Utility helpers
  *********************************/
@@ -668,8 +673,8 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                         onClick={() => toggleTime(time)}
                         className={`px-3 py-1.5 text-xs font-medium rounded-md border transition-all ${
                           selectedTimes.includes(time)
-                            ? 'bg-primary-600/45 text-primary-50 border-primary-300/60 shadow-[0_0_12px_rgba(63,191,181,0.4)]'
-                            : 'bg-primary-600/20 text-primary-200 border-primary-400/40 hover:bg-primary-600/30'
+                            ? 'bg-amber-300/45 text-amber-50 border-amber-200/70 shadow-[0_0_14px_rgba(245,193,92,0.45)]'
+                            : 'bg-amber-300/15 text-amber-200 border-amber-200/40 hover:bg-amber-300/25'
                         }`}
                         aria-pressed={selectedTimes.includes(time)}
                       >
@@ -686,8 +691,8 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                       onClick={() => toggleDay(day)}
                       className={`px-3 py-1.5 text-xs font-semibold rounded-md border transition-all whitespace-nowrap ${
                         selectedDays.includes(day)
-                          ? 'bg-primary-600/50 text-primary-50 border-primary-300/60 shadow-[0_0_16px_rgba(63,191,181,0.45)]'
-                          : 'bg-primary-600/20 text-primary-200 border-primary-400/40 hover:bg-primary-600/30'
+                          ? 'bg-amber-300/50 text-amber-50 border-amber-200/70 shadow-[0_0_18px_rgba(245,193,92,0.5)]'
+                          : 'bg-amber-300/15 text-amber-200 border-amber-200/40 hover:bg-amber-300/25'
                       }`}
                       aria-pressed={selectedDays.includes(day)}
                     >
