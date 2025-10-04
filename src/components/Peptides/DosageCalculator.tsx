@@ -500,15 +500,6 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
 
   return (
     <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-3xl p-6 pt-6 border border-primary-400/30 shadow-2xl">
-      {mode !== 'addProtocol' && (
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold text-white">Dosage Calculator</h2>
-          <p className="text-sm text-gray-300 mt-1">
-            Peptide: <span className="text-primary-200 font-semibold">{peptideName || 'Unknown'}</span>
-          </p>
-        </div>
-      )}
-
       {/* Alerts */}
       {errors.length > 0 && (
         <div className="mb-4 bg-red-500/10 border border-red-400/30 text-red-200 rounded-lg p-3 flex items-start gap-2" role="alert">
