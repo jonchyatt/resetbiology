@@ -46,7 +46,8 @@ export async function GET(request: Request) {
     // Load active protocols with their doses
     const protocols = await prisma.user_peptide_protocols.findMany({
       where: {
-        userId: user.id
+        userId: user.id,
+        isActive: true
       },
       include: {
         peptides: true,
@@ -341,14 +342,18 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: 'Access denied' }, { status: 403 })
     }
 
-    // Delete the protocol (keep dose history for historical record)
-    await prisma.user_peptide_protocols.delete({
-      where: { id: protocolId }
+    // Set protocol to inactive instead of deleting to preserve dose history
+    await prisma.user_peptide_protocols.update({
+      where: { id: protocolId },
+      data: {
+        isActive: false,
+        updatedAt: new Date()
+      }
     })
 
     return NextResponse.json({
       success: true,
-      message: 'Protocol deleted successfully. Dose history preserved.'
+      message: 'Protocol archived successfully. Dose history preserved.'
     })
 
   } catch (error) {
