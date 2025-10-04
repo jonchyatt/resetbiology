@@ -149,26 +149,30 @@ const formatNumber = (n: number, digits = 2) =>
 /*********************************
  * Visual Syringe Component
  *********************************/
-const TOTAL_INSULIN_UNITS = 50; // 0.5 ml syringe
+const TOTAL_INSULIN_UNITS = 50; // standard 0.5 ml insulin syringe scale
 const UNITS_PER_LABEL = 5;
 
 const SyringeVisual: React.FC<{
   volumeInMl: number;
   insulinUnits?: number;
 }> = ({ volumeInMl, insulinUnits }) => {
-  const barrelTop = 40;
+  const barrelTop = 32;
   const barrelHeight = 210;
   const barrelBottom = barrelTop + barrelHeight;
   const units = clamp(volumeInMl * 100, 0, TOTAL_INSULIN_UNITS);
   const fillHeight = barrelHeight * (units / TOTAL_INSULIN_UNITS);
-  const stopperY = barrelTop + fillHeight;
+  const stopperY = barrelBottom - fillHeight;
 
   return (
-    <div className="relative bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-2xl p-6 border border-primary-400/30 shadow-2xl w-full max-w-sm mx-auto">
+    <div className="relative bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-2xl p-5 border border-primary-400/30 shadow-2xl w-full max-w-sm mx-auto">
       <div className="flex flex-col items-center">
-        <svg viewBox="0 0 140 320" className="w-48 drop-shadow-xl" aria-label="Insulin syringe fill visualization">
+        <svg viewBox="0 0 140 310" className="w-44 drop-shadow-xl" aria-label="Insulin syringe fill visualization">
           {/* Barrel */}
-          <rect x="40" y={barrelTop} width="42" height={barrelHeight} rx="6" ry="6" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.28)" strokeWidth="2" />
+          <path
+            d={`M48 ${barrelTop - 8}h26c3.3 0 6 2.7 6 6v6h-38v-6c0-3.3 2.7-6 6-6z`}
+            fill="rgba(255,255,255,0.18)"
+          />
+          <rect x="40" y={barrelTop} width="40" height={barrelHeight} rx="6" ry="6" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.24)" strokeWidth="1.8" />
 
           {/* Tick marks */}
           {Array.from({ length: TOTAL_INSULIN_UNITS / UNITS_PER_LABEL + 1 }).map((_, index) => {
@@ -176,14 +180,14 @@ const SyringeVisual: React.FC<{
             const labelValue = TOTAL_INSULIN_UNITS - index * UNITS_PER_LABEL;
             return (
               <g key={index}>
-                <line x1="40" x2="82" y1={y} y2={y} stroke="rgba(255,255,255,0.25)" strokeWidth={index % 2 === 0 ? 1.6 : 1} />
+                <line x1="40" x2="78" y1={y} y2={y} stroke="rgba(255,255,255,0.22)" strokeWidth={index % 2 === 0 ? 1.6 : 1} />
                 <text
                   x="36"
                   y={y + 4}
                   textAnchor="end"
                   fontSize="7"
                   fontWeight={index % 2 === 0 ? 'bold' : 'normal'}
-                  fill="rgba(255,255,255,0.65)"
+                  fill="rgba(255,255,255,0.6)"
                 >
                   {labelValue}
                 </text>
@@ -191,27 +195,23 @@ const SyringeVisual: React.FC<{
             );
           })}
 
-          <text x="88" y={barrelTop - 10} fontSize="8" fill="rgba(255,255,255,0.7)" letterSpacing="1.5">
-            UNITS
-          </text>
-
           {/* Fill */}
           <clipPath id="insulin-barrel">
-            <rect x="40" y={barrelTop} width="42" height={barrelHeight} rx="6" ry="6" />
+            <rect x="40" y={barrelTop} width="40" height={barrelHeight} rx="6" ry="6" />
           </clipPath>
           <g clipPath="url(#insulin-barrel)">
             <rect
               x="40"
-              y={barrelTop}
-              width="42"
-              height={fillHeight}
+              y={stopperY}
+              width="40"
+              height={barrelBottom - stopperY}
               fill="url(#insulin-fill)"
               className="transition-all duration-500 ease-out"
             />
           </g>
 
           {/* Stopper */}
-          <rect x="38" y={Math.max(barrelTop, Math.min(stopperY - 6, barrelBottom - 10))} width="46" height="10" rx="3" fill="rgba(0,0,0,0.55)" />
+          <rect x="38" y={Math.min(Math.max(stopperY - 6, barrelTop), barrelBottom - 10)} width="44" height="10" rx="3" fill="rgba(0,0,0,0.55)" />
 
           <defs>
             <linearGradient id="insulin-fill" x1="0" x2="0" y1="0" y2="1">
@@ -221,9 +221,13 @@ const SyringeVisual: React.FC<{
           </defs>
 
           {/* Needle and cap */}
-          <rect x="60" y="15" width="8" height="18" rx="3" fill="rgba(255,255,255,0.2)" />
-          <rect x="60" y="250" width="2" height="35" fill="rgba(255,255,255,0.65)" />
-          <rect x="50" y="250" width="12" height="35" rx="2" fill="rgba(255,120,60,0.45)" />
+          <rect x="58" y="14" width="8" height="18" rx="3" fill="rgba(255,255,255,0.2)" />
+          <rect x="58" y="250" width="2" height="32" fill="rgba(255,255,255,0.65)" />
+          <rect x="50" y="250" width="12" height="32" rx="2" fill="rgba(255,120,60,0.45)" />
+
+          <text x="86" y={barrelTop - 12} fontSize="8" fill="rgba(255,255,255,0.7)" letterSpacing="1.4">
+            UNITS
+          </text>
         </svg>
 
         <div className="text-center mt-4">
@@ -502,7 +506,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-[320px_minmax(340px,1fr)_minmax(280px,1fr)] gap-6">
         {/* Input Panel */}
         <div className="space-y-4">
           {/* Peptide selection */}
@@ -530,7 +534,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                   })}
                 </select>
                 <p className="text-xs text-gray-400">
-                  Selected peptide: <span className="text-primary-200 font-semibold">{peptideName}</span>
+                  {(peptideLibrary?.length ?? 0)} research peptides available.
                 </p>
               </div>
             ) : (
@@ -643,7 +647,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
           {mode === 'addProtocol' && (
             <>
               <div className="bg-gradient-to-br from-primary-900/20 to-secondary-900/20 backdrop-blur-sm rounded-xl p-4 border border-primary-400/40">
-                <div className="flex flex-wrap items-center gap-2 pb-2">
+                <div className="flex items-center gap-2 pb-2">
                   <label className="text-sm text-gray-300 font-medium">
                     Schedule <span className="text-primary-400">*</span>
                   </label>
@@ -665,13 +669,13 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                     ))}
                   </div>
                 </div>
-                <div className="flex flex-wrap items-center gap-1.5">
+                <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
                   {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
                     <button
                       key={day}
                       type="button"
                       onClick={() => toggleDay(day)}
-                      className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${
+                      className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all whitespace-nowrap ${
                         selectedDays.includes(day)
                           ? 'bg-primary-600 text-white shadow-sm shadow-primary-600/25'
                           : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/60'
@@ -737,12 +741,9 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                   <div className="text-white font-medium">{results.insulinUnits} u</div>
                 </>
               )}
-              <div className="text-gray-400">Actual concentration</div>
-              <div className="text-white font-medium">{formatNumber(results.actualConcentration, 2)} mcg/ml</div>
               <div className="text-gray-400">Doses per vial</div>
               <div className="text-white font-medium">{results.dosesPerVial}</div>
             </div>
-            <div className="mt-2 text-xs text-gray-400 leading-snug">Formula: volume (ml) = dose (mcg) / concentration (mcg/ml)</div>
           </div>
 
           <ReconstitutionGuide
@@ -758,7 +759,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
               aria-label="Notes"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              rows={3}
+              rows={2}
               className="w-full bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-primary-400 focus:outline-none"
               placeholder="Timing, site, symptoms, etc."
             />
