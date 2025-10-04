@@ -143,6 +143,26 @@ export async function syncProductToStripe(productId: string) {
   return result;
 }
 
+export async function syncAllProductsToStripe() {
+  // Admin check already done in page component
+  const products = await prisma.product.findMany({
+    where: { active: true, storefront: true },
+  });
+
+  const results = [];
+  for (const product of products) {
+    try {
+      const result = await ensureStripeSync(product.id);
+      results.push({ productId: product.id, name: product.name, success: true, result });
+    } catch (error: any) {
+      results.push({ productId: product.id, name: product.name, success: false, error: error.message });
+    }
+  }
+
+  revalidateTag('products');
+  return results;
+}
+
 export async function importPeptides() {
   // Admin check already done in page component
   

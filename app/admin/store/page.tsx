@@ -6,8 +6,8 @@ import { auth0 } from '@/lib/auth0';
 import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { Package, Plus, Upload, DollarSign, ImageIcon } from 'lucide-react';
-import { listProducts, createProduct, updateProduct, archiveProduct, upsertPrice, deletePrice, syncProductToStripe, importPeptides, fixProductImages } from './actions';
+import { Package, Plus, Upload, DollarSign, ImageIcon, RefreshCw } from 'lucide-react';
+import { listProducts, createProduct, updateProduct, archiveProduct, upsertPrice, deletePrice, syncProductToStripe, syncAllProductsToStripe, importPeptides, fixProductImages } from './actions';
 export const revalidate = 0;
 
 export default async function AdminStorePage() {
@@ -148,6 +148,12 @@ export default async function AdminStorePage() {
     console.log('✅ Fix images completed:', result);
   };
 
+  const syncAllStripeAction = async () => {
+    'use server';
+    const result = await syncAllProductsToStripe();
+    console.log('✅ Sync all to Stripe completed:', result);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 relative"
          style={{
@@ -213,6 +219,16 @@ export default async function AdminStorePage() {
                     >
                       <ImageIcon className="w-5 h-5 mr-2" />
                       Fix Missing Images
+                    </button>
+                  </form>
+
+                  <form action={syncAllStripeAction}>
+                    <button
+                      type="submit"
+                      className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:shadow-purple-500/30 transition-all duration-200 flex items-center"
+                    >
+                      <RefreshCw className="w-5 h-5 mr-2" />
+                      Sync All to Stripe
                     </button>
                   </form>
                 </div>
