@@ -162,11 +162,19 @@ const SyringeVisual: React.FC<{
   const units = clamp(volumeInMl * 100, 0, TOTAL_INSULIN_UNITS);
   const fillHeight = barrelHeight * (units / TOTAL_INSULIN_UNITS);
   const stopperY = barrelBottom - fillHeight;
+  const needleWidth = 2;
+  const needleHeight = 32;
+  const needleX = 58;
+  const needleY = barrelBottom;
+  const capWidth = 14;
+  const capHeight = 34;
+  const capX = needleX + needleWidth / 2 - capWidth / 2;
+  const capY = barrelBottom - 0.5;
 
   return (
-    <div className="relative bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-2xl p-5 border border-primary-400/30 shadow-2xl w-full max-w-sm mx-auto">
+    <div className="relative bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-2xl p-5 border border-primary-400/30 shadow-2xl w-full max-w-[240px] lg:max-w-[200px] mx-auto">
       <div className="flex flex-col items-center">
-        <svg viewBox="0 0 140 310" className="w-44 drop-shadow-xl" aria-label="Insulin syringe fill visualization">
+        <svg viewBox="0 0 140 310" className="w-40 lg:w-32 drop-shadow-xl" aria-label="Insulin syringe fill visualization">
           {/* Barrel */}
           <path
             d={`M48 ${barrelTop - 8}h26c3.3 0 6 2.7 6 6v6h-38v-6c0-3.3 2.7-6 6-6z`}
@@ -222,8 +230,15 @@ const SyringeVisual: React.FC<{
 
           {/* Needle and cap */}
           <rect x="58" y="14" width="8" height="18" rx="3" fill="rgba(255,255,255,0.2)" />
-          <rect x="58" y="250" width="2" height="32" fill="rgba(255,255,255,0.65)" />
-          <rect x="50" y="250" width="12" height="32" rx="2" fill="rgba(255,120,60,0.45)" />
+          <rect x={needleX} y={needleY} width={needleWidth} height={needleHeight} fill="rgba(255,255,255,0.65)" />
+          <rect
+            x={capX}
+            y={capY}
+            width={capWidth}
+            height={capHeight}
+            rx="2.5"
+            fill="rgba(255,120,60,0.45)"
+          />
 
           <text x="86" y={barrelTop - 12} fontSize="8" fill="rgba(255,255,255,0.7)" letterSpacing="1.4">
             UNITS
@@ -506,7 +521,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-[320px_minmax(340px,1fr)_minmax(280px,1fr)] gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(280px,1fr)_minmax(220px,0.8fr)_minmax(280px,1fr)] gap-6">
         {/* Input Panel */}
         <div className="space-y-4">
           {/* Peptide selection */}
@@ -817,3 +832,4 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
 };
 
 export default DosageCalculator;
+
