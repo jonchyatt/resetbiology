@@ -772,7 +772,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
           <ReconstitutionGuide
             peptideAmount={inputs.peptideAmount}
             volume={inputs.totalVolume}
-            instructions={presetInstructions}
+            instructions={presetInstructions ?? undefined}
           />
 
           {/* Notes */}
