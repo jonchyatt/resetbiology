@@ -149,43 +149,47 @@ const formatNumber = (n: number, digits = 2) =>
 /*********************************
  * Visual Syringe Component
  *********************************/
+const UNIT_STEP_ML = 0.025;
+
 const SyringeVisual: React.FC<{
-  fillPercentage: number;
   volumeInMl: number;
   insulinUnits?: number;
   maxVolume?: number;
-}> = ({ fillPercentage, volumeInMl, insulinUnits, maxVolume = 1 }) => {
-  const pct = clamp(fillPercentage, 0, 100);
-  const totalTicks = 10;
-  const tickSpacing = 18;
-  const baseY = 50;
+}> = ({ volumeInMl, insulinUnits, maxVolume = 0.25 }) => {
+  const layoutSteps = Math.max(1, Math.ceil(maxVolume / UNIT_STEP_ML));
+  const layoutMax = layoutSteps * UNIT_STEP_ML;
+  const clampedVolume = clamp(volumeInMl, 0, layoutMax);
+
+  const barrelHeight = 220;
+  const barrelTop = 30;
+  const barrelBottom = barrelTop + barrelHeight;
+  const ratio = layoutMax > 0 ? clampedVolume / layoutMax : 0;
+  const fillHeight = barrelHeight * ratio;
+  const fillTop = barrelBottom - fillHeight;
 
   return (
     <div className="relative bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 w-full max-w-sm mx-auto">
       <div className="flex flex-col items-center">
         <svg viewBox="0 0 100 300" className="w-40 drop-shadow-lg" aria-label="Syringe visual">
           {/* Barrel */}
-          <rect x="30" y="30" width="40" height="220" rx="6" ry="6" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.25)" strokeWidth="2" />
+          <rect x="30" y={barrelTop} width="40" height={barrelHeight} rx="6" ry="6" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.25)" strokeWidth="2" />
           {/* Measurement ticks */}
-          {Array.from({ length: totalTicks + 1 }).map((_, i) => {
-            const y = baseY + i * tickSpacing;
-            const isMajor = i % 2 === 0;
-            const value = ((totalTicks - i) / totalTicks) * maxVolume;
-            const label = value === 0
+          {Array.from({ length: layoutSteps + 1 }).map((_, index) => {
+            const y = barrelTop + index * (barrelHeight / layoutSteps);
+            const value = layoutMax - index * UNIT_STEP_ML;
+            const label = value <= 0
               ? '0'
-              : value >= 1
-                ? value.toFixed(1)
-                : value >= 0.1
-                  ? value.toFixed(2)
-                  : value.toFixed(3);
-            const textOffset = i === totalTicks ? 2 : 4;
+              : value >= 0.1
+                ? value.toFixed(2)
+                : value.toFixed(3);
+
             return (
-              <g key={i}>
-                <line x1="30" x2="70" y1={y} y2={y} stroke="rgba(255,255,255,0.18)" strokeWidth={isMajor ? 1.6 : 1} />
-                {isMajor && (
+              <g key={index}>
+                <line x1="30" x2="70" y1={y} y2={y} stroke="rgba(255,255,255,0.18)" strokeWidth={index % 2 === 0 ? 1.6 : 1} />
+                {index % 2 === 0 && (
                   <text
                     x="26"
-                    y={y + textOffset}
+                    y={y + (index === layoutSteps ? 2 : 4)}
                     textAnchor="end"
                     fontSize="6"
                     fill="rgba(255,255,255,0.45)"
@@ -201,14 +205,14 @@ const SyringeVisual: React.FC<{
           </text>
           {/* Fill */}
           <clipPath id="barrel-clip">
-            <rect x="30" y="30" width="40" height="220" rx="6" ry="6" />
+            <rect x="30" y={barrelTop} width="40" height={barrelHeight} rx="6" ry="6" />
           </clipPath>
           <g clipPath="url(#barrel-clip)">
             <rect
               x="30"
-              y={30 + (220 * (100 - pct)) / 100}
+              y={fillTop}
               width="40"
-              height={(220 * pct) / 100}
+              height={fillHeight}
               fill="url(#grad)"
               className="transition-all duration-500 ease-out"
             />
