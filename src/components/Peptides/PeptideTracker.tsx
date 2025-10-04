@@ -716,6 +716,8 @@ export function PeptideTracker() {
     const normalizedUnits = Number.isFinite(numericUnits) ? Math.max(0, Math.min(numericUnits, 100)) : 0
     const fillPercent = Math.min(100, Math.max(0, (normalizedUnits / 100) * 100))
     const volumeMl = normalizedUnits / 100
+    const displayUnits = Number(normalizedUnits.toFixed(1))
+    const displayVolume = Number(volumeMl.toFixed(2))
 
     const pointerPosition = Math.min(Math.max(fillPercent, 0), 100)
     const pointerStyle =
@@ -749,7 +751,7 @@ export function PeptideTracker() {
           ))}
         </div>
         <p className="mt-2 text-xs text-gray-400">
-          Draw {Math.round(normalizedUnits)} units ({volumeMl.toFixed(2)} ml)
+          Draw {displayUnits} units ({displayVolume} ml)
         </p>
       </div>
     )
