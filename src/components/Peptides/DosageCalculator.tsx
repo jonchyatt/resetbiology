@@ -163,20 +163,20 @@ const SyringeVisual: React.FC<{
   const fillHeight = barrelHeight * (units / TOTAL_INSULIN_UNITS);
   const stopperY = barrelBottom - fillHeight;
   const needleWidth = 2;
-  const needleHeight = 40;
+  const needleHeight = 44;
   const needleX = 58;
-  const needleY = barrelBottom - 2;
+  const needleY = barrelBottom - 4;
   const needleRadius = needleWidth / 2;
   const capWidth = 16;
-  const capHeight = 38;
+  const capHeight = 40;
   const capX = needleX + needleWidth / 2 - capWidth / 2;
-  const capY = barrelBottom - 2;
-  const capRadius = 5;
+  const capY = barrelBottom;
+  const capRadius = 6;
 
   return (
-    <div className="relative bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-2xl p-5 border border-primary-400/30 shadow-2xl w-full max-w-sm mx-auto">
+    <div className="relative bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-2xl p-5 border border-primary-400/30 shadow-2xl w-full max-w-[260px] lg:max-w-[240px] mx-auto">
       <div className="flex flex-col items-center">
-        <svg viewBox="0 0 140 310" className="w-44 drop-shadow-xl" aria-label="Insulin syringe fill visualization">
+        <svg viewBox="0 0 140 310" className="w-40 drop-shadow-xl" aria-label="Insulin syringe fill visualization">
           {/* Barrel */}
           <path
             d={`M48 ${barrelTop - 8}h26c3.3 0 6 2.7 6 6v6h-38v-6c0-3.3 2.7-6 6-6z`}
@@ -240,7 +240,7 @@ const SyringeVisual: React.FC<{
             height={capHeight}
             rx={capRadius}
             ry={capRadius}
-            fill="rgba(255,120,60,0.5)"
+            fill="rgba(255,120,60,0.55)"
           />
 
           <text x="86" y={barrelTop - 12} fontSize="8" fill="rgba(255,255,255,0.7)" letterSpacing="1.4">
@@ -253,7 +253,7 @@ const SyringeVisual: React.FC<{
             {formatNumber(units, 1)} u
           </p>
           <p className="mt-1 text-sm text-gray-300" aria-live="polite">
-            {formatNumber(volumeInMl, volumeInMl < 0.1 ? 3 : 2)} ml drawn
+            {formatNumber(volumeInMl, volumeInMl < 1 ? 3 : 2)} ml drawn
           </p>
         </div>
 
@@ -517,7 +517,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-[minmax(320px,1fr)_minmax(260px,0.9fr)_minmax(320px,1fr)] gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(360px,1.15fr)_minmax(240px,0.85fr)_minmax(320px,1fr)] gap-6">
         {/* Input Panel */}
         <div className="space-y-4">
           {/* Peptide selection */}
@@ -659,19 +659,17 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
             <>
               <div className="bg-gradient-to-br from-primary-900/20 to-secondary-900/20 backdrop-blur-sm rounded-xl p-4 border border-primary-400/40">
                 <div className="flex items-center gap-2 pb-2">
-                  <label className="text-sm text-gray-300 font-medium">
-                    Schedule <span className="text-primary-400">*</span>
-                  </label>
+                  <span className="text-sm text-gray-300 font-medium">Schedule</span>
                   <div className="ml-auto flex items-center gap-1.5">
                     {['AM', 'PM'].map((time) => (
                       <button
                         key={time}
                         type="button"
                         onClick={() => toggleTime(time)}
-                        className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
+                        className={`px-3 py-1.5 text-xs font-medium rounded-md border transition-all ${
                           selectedTimes.includes(time)
-                            ? 'bg-primary-600 text-white shadow-primary-600/30 shadow-sm'
-                            : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/60'
+                            ? 'bg-primary-600/45 text-primary-50 border-primary-300/60 shadow-[0_0_12px_rgba(63,191,181,0.4)]'
+                            : 'bg-primary-600/20 text-primary-200 border-primary-400/40 hover:bg-primary-600/30'
                         }`}
                         aria-pressed={selectedTimes.includes(time)}
                       >
@@ -686,10 +684,10 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                       key={day}
                       type="button"
                       onClick={() => toggleDay(day)}
-                      className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all whitespace-nowrap ${
+                      className={`px-3 py-1.5 text-xs font-semibold rounded-md border transition-all whitespace-nowrap ${
                         selectedDays.includes(day)
-                          ? 'bg-primary-600 text-white shadow-sm shadow-primary-600/25'
-                          : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/60'
+                          ? 'bg-primary-600/50 text-primary-50 border-primary-300/60 shadow-[0_0_16px_rgba(63,191,181,0.45)]'
+                          : 'bg-primary-600/20 text-primary-200 border-primary-400/40 hover:bg-primary-600/30'
                       }`}
                       aria-pressed={selectedDays.includes(day)}
                     >
@@ -722,10 +720,11 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
           {mode === 'addProtocol' && (
             <div className="w-full bg-gradient-to-br from-primary-900/20 to-secondary-900/20 backdrop-blur-sm rounded-xl p-4 border border-primary-400/40">
               <div className="flex flex-col gap-3">
-                <label className="text-sm text-gray-300 font-medium">
-                  Protocol Duration <span className="text-primary-400">*</span>
+                <label className="text-sm text-gray-300 font-medium" htmlFor="protocol-duration">
+                  Protocol Duration
                 </label>
                 <input
+                  id="protocol-duration"
                   type="text"
                   value={duration}
                   onChange={(e) => setDuration(e.target.value)}
@@ -748,7 +747,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
               <div className="text-gray-400">Peptide</div>
               <div className="text-white font-medium">{peptideName || '—'}</div>
               <div className="text-gray-400">Volume to draw</div>
-              <div className="text-white font-medium">{formatNumber(results.volumeToDraw, results.volumeToDraw < 0.1 ? 3 : 2)} ml</div>
+              <div className="text-white font-medium">{formatNumber(results.volumeToDraw, results.volumeToDraw < 1 ? 3 : 2)} ml</div>
               {typeof results.insulinUnits === "number" && (
                 <>
                   <div className="text-gray-400">Insulin units</div>
@@ -786,7 +785,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                 <button
                   type="button"
                   onClick={onClose}
-                  className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg transition-colors"
+                  className="flex-1 bg-red-500/20 hover:bg-red-500/35 text-red-200 font-bold py-3 px-6 rounded-lg transition-colors border border-red-400/40"
                 >
                   Cancel
                 </button>
@@ -831,14 +830,4 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
 };
 
 export default DosageCalculator;
-
-
-
-
-
-
-
-
-
-
 

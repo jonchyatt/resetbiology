@@ -717,7 +717,7 @@ export function PeptideTracker() {
     const fillPercent = Math.min(100, Math.max(0, (normalizedUnits / 100) * 100))
     const volumeMl = normalizedUnits / 100
     const displayUnits = Number(normalizedUnits.toFixed(1))
-    const displayVolume = Number(volumeMl.toFixed(2))
+    const displayVolume = Number(volumeMl.toFixed(volumeMl < 1 ? 3 : 2))
 
     const pointerPosition = Math.min(Math.max(fillPercent, 0), 100)
     const pointerStyle =
@@ -1458,3 +1458,4 @@ export function PeptideTracker() {
     </div>
   )
 }
+
