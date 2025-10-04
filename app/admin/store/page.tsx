@@ -600,17 +600,15 @@ export default async function AdminStorePage() {
                           </form>
                           
                           {/* Sync to Stripe */}
-                          {!product.stripeProductId && (
-                            <form action={syncStripeAction}>
-                              <input type="hidden" name="productId" value={product.id} />
-                              <button 
-                                type="submit" 
-                                className="px-4 py-2 bg-purple-500/20 text-purple-400 border border-purple-400/30 rounded-lg font-medium hover:bg-purple-500/30 hover:shadow-purple-400/20 transition-all backdrop-blur-sm"
-                              >
-                                Sync to Stripe
-                              </button>
-                            </form>
-                          )}
+                          <form action={syncStripeAction}>
+                            <input type="hidden" name="productId" value={product.id} />
+                            <button
+                              type="submit"
+                              className="px-4 py-2 bg-purple-500/20 text-purple-400 border border-purple-400/30 rounded-lg font-medium hover:bg-purple-500/30 hover:shadow-purple-400/20 transition-all backdrop-blur-sm"
+                            >
+                              {product.stripeProductId ? 'Re-sync Stripe' : 'Sync to Stripe'}
+                            </button>
+                          </form>
                           
                           {/* Archive */}
                           {product.active && (
