@@ -81,11 +81,12 @@ export default function FoundationModulesPage() {
            backgroundAttachment: 'fixed'
          }}>
       <div className="relative z-10">
-        <PortalHeader 
+        <PortalHeader
           section="Foundation Series"
           subtitle="30 core modules for metabolic awakening"
-          backLink="/modules"
-          backText="← Back to All Modules"
+          secondaryBackLink="/modules"
+          secondaryBackText="Back to Mental Mastery Modules"
+          showOrderPeptides={false}
         />
         
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

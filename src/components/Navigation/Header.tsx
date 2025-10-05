@@ -63,7 +63,8 @@ export function Header() {
                 <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium transition-colors">
                   Order
                 </Link>
-                <Link href="/profile" className="text-gray-700 hover:text-teal-600 font-medium transition-colors">
+                <Link href="/profile" className="text-gray-700 hover:text-teal-600 font-medium transition-colors flex items-center">
+                  <Settings className="w-4 h-4 mr-1" />
                   Profile
                 </Link>
 
@@ -80,21 +81,12 @@ export function Header() {
                     <span>{user.name || user.email || 'Account'}</span>
                     <ChevronDown className={`w-4 h-4 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
                   </button>
-                  
+
                   {isUserMenuOpen && (
                     <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2">
-                      <Link 
-                        href="/profile" 
-                        className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors"
-                        onClick={() => setIsUserMenuOpen(false)}
-                      >
-                        <Settings className="w-4 h-4 mr-2" />
-                        Profile Settings
-                      </Link>
-                      
                       {isAdmin && (
-                        <Link 
-                          href="/admin" 
+                        <Link
+                          href="/admin"
                           className="flex items-center px-4 py-2 text-orange-600 hover:bg-orange-50 transition-colors"
                           onClick={() => setIsUserMenuOpen(false)}
                         >

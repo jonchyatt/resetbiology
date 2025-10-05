@@ -341,16 +341,24 @@ export function NutritionTracker() {
       <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm shadow-2xl border-b border-primary-400/30 mt-16">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <img src="/logo1.png" alt="Reset Biology" className="h-8 w-auto mr-3 drop-shadow-lg" />
+            <div className="flex items-center gap-3">
+              <img src="/logo1.png" alt="Reset Biology" className="h-10 w-auto rounded-lg drop-shadow-lg bg-white/10 backdrop-blur-sm p-1 border border-white/20" />
               <div>
-                <h1 className="text-xl font-bold text-white drop-shadow-lg">Portal</h1>
-                <span className="text-lg text-gray-200 drop-shadow-sm">• Nutrition Tracker</span>
+                <div className="flex items-center">
+                  <h1 className="text-xl font-bold text-white drop-shadow-lg">Portal</h1>
+                  <span className="mx-2 text-primary-300">&gt;</span>
+                  <span className="text-lg text-gray-200 drop-shadow-sm">Nutrition Tracker</span>
+                </div>
               </div>
             </div>
-            <a href="/portal" className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
-              ← Back to Portal
-            </a>
+            <div className="flex items-center gap-4">
+              <a href="/daily-history" className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
+                Daily History
+              </a>
+              <a href="/portal" className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
+                ← Back to Portal
+              </a>
+            </div>
           </div>
         </div>
       </div>
@@ -386,8 +394,8 @@ export function NutritionTracker() {
         </div>
 
         {activeTab === 'today' && (
-          <div className="max-w-7xl mx-auto grid gap-6 lg:grid-cols-3">
-            <div className="space-y-6 lg:max-w-sm">
+          <div className="max-w-6xl mx-auto grid gap-6 lg:grid-cols-3">
+            <div className="lg:col-span-2 space-y-6">
               <FoodQuickAdd
                 onLogged={(result) => {
                   fetchTodaysFoods()
@@ -398,6 +406,43 @@ export function NutritionTracker() {
               />
 
               <RecentFoods refreshToken={recentRefresh} />
+
+              <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl hover:shadow-primary-400/20 transition-all duration-300">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-xl font-bold text-white flex items-center">
+                    <Target className="h-5 w-5 mr-2 text-secondary-400"/>Today's Macros
+                  </h3>
+                  <button
+                    onClick={() => setShowAddFoodModal(true)}
+                    className="bg-secondary-600 hover:bg-secondary-700 text-white font-medium py-2 px-4 rounded-lg flex items-center"
+                  >
+                    <Plus className="h-4 w-4 mr-1"/>Add Food
+                  </button>
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="bg-gray-800/50 rounded-lg p-4">
+                    <p className="text-gray-300 text-sm">Calories logged</p>
+                    <p className="text-3xl font-bold text-white">{Math.round(todaysTotals.calories)}</p>
+                    <p className="text-xs text-gray-500 mt-1">kcal so far today</p>
+                  </div>
+                  <div className="bg-gray-800/50 rounded-lg p-4">
+                    <p className="text-gray-300 text-sm">Protein</p>
+                    <p className="text-3xl font-bold text-white">{Math.round(todaysTotals.protein)}g</p>
+                    <p className="text-xs text-gray-500 mt-1">Support lean muscle and recovery</p>
+                  </div>
+                  <div className="bg-gray-800/50 rounded-lg p-4">
+                    <p className="text-gray-300 text-sm">Carbs</p>
+                    <p className="text-3xl font-bold text-white">{Math.round(todaysTotals.carbs)}g</p>
+                    <p className="text-xs text-gray-500 mt-1">Time carbs around intense sessions</p>
+                  </div>
+                  <div className="bg-gray-800/50 rounded-lg p-4">
+                    <p className="text-gray-300 text-sm">Fats</p>
+                    <p className="text-3xl font-bold text-white">{Math.round(todaysTotals.fats)}g</p>
+                    <p className="text-xs text-gray-500 mt-1">Keep hormones happy with essential fats</p>
+                  </div>
+                </div>
+              </div>
 
               <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl hover:shadow-primary-400/20 transition-all duration-300">
                 <h3 className="text-xl font-bold text-white mb-4 flex items-center">
@@ -434,7 +479,7 @@ export function NutritionTracker() {
               </div>
             </div>
 
-            <div className="lg:col-span-2 space-y-6">
+            <div className="space-y-6">
               <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl hover:shadow-secondary-400/20 transition-all duration-300">
                 <h4 className="text-white font-semibold mb-2 flex items-center">
                   <Calendar className="h-5 w-5 mr-2 text-secondary-400"/>Daily Snapshot
@@ -463,48 +508,11 @@ export function NutritionTracker() {
                   Review your daily trendlines across peptides, workouts, meals, breath work, and journal entries in one timeline.
                 </p>
                 <Link
-                  href="/daily-history"
+                  href="/journal"
                   className="inline-flex items-center justify-center rounded-lg border border-secondary-400/40 bg-secondary-500/20 px-4 py-2 text-sm font-medium text-secondary-200 transition hover:border-secondary-300 hover:bg-secondary-500/30"
                 >
                   Open Daily History
                 </Link>
-              </div>
-
-              <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30 shadow-2xl hover:shadow-primary-400/20 transition-all duration-300">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-lg font-bold text-white flex items-center">
-                    <Target className="h-5 w-5 mr-2 text-secondary-400"/>Today's Macros
-                  </h3>
-                  <button
-                    onClick={() => setShowAddFoodModal(true)}
-                    className="bg-secondary-600 hover:bg-secondary-700 text-white text-sm font-medium py-1 px-3 rounded-lg flex items-center"
-                  >
-                    <Plus className="h-3 w-3 mr-1"/>Add Food
-                  </button>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="bg-gray-800/50 rounded-lg p-2">
-                    <p className="text-gray-300 text-xs">Calories logged</p>
-                    <p className="text-xl font-bold text-white">{Math.round(todaysTotals.calories)}</p>
-                    <p className="text-xs text-gray-500">kcal so far today</p>
-                  </div>
-                  <div className="bg-gray-800/50 rounded-lg p-2">
-                    <p className="text-gray-300 text-xs">Protein</p>
-                    <p className="text-xl font-bold text-white">{Math.round(todaysTotals.protein)}g</p>
-                    <p className="text-xs text-gray-500">Support lean muscle and recovery</p>
-                  </div>
-                  <div className="bg-gray-800/50 rounded-lg p-2">
-                    <p className="text-gray-300 text-xs">Carbs</p>
-                    <p className="text-xl font-bold text-white">{Math.round(todaysTotals.carbs)}g</p>
-                    <p className="text-xs text-gray-500">Time carbs around intense sessions</p>
-                  </div>
-                  <div className="bg-gray-800/50 rounded-lg p-2">
-                    <p className="text-gray-300 text-xs">Fats</p>
-                    <p className="text-xl font-bold text-white">{Math.round(todaysTotals.fats)}g</p>
-                    <p className="text-xs text-gray-500">Keep hormones happy with essential fats</p>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -715,42 +723,77 @@ export function NutritionTracker() {
         </div>
       )}
 
-      {/* Enhanced Food Search Modal with Professional API */}
+      {/* Food Search Modal */}
       {showFoodSearchModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 max-w-2xl w-full border border-primary-400/30 shadow-2xl max-h-[80vh] flex flex-col">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold text-white">Search Food Database</h3>
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-bold text-white">Food Database</h3>
               <button
-                onClick={() => {
-                  setShowFoodSearchModal(false)
-                  setSearchQuery('')
-                }}
-                className="text-gray-400 hover:text-white transition-colors p-2"
+                onClick={() => setShowFoodSearchModal(false)}
+                className="text-gray-400 hover:text-white transition-colors"
               >
-                <X className="w-5 h-5" />
+                ✕
               </button>
             </div>
 
-            {/* Integrated Professional Food Search */}
-            <FoodQuickAdd
-              onLogged={(result) => {
-                fetchTodaysFoods()
-                setRecentRefresh((prev) => prev + 1)
-                setHistoryRefresh((prev) => prev + 1)
-                setLogSuccess(result)
-                setShowFoodSearchModal(false)
+            {/* Search Bar */}
+            <div className="mb-4">
+              <input
+                type="text"
+                placeholder="Search foods (e.g., chicken, rice, protein)..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-primary-400 focus:outline-none"
+                autoFocus
+              />
+              <p className="text-xs text-gray-400 mt-2">
+                Found {filteredFoods.length} foods • Click to auto-fill
+              </p>
+            </div>
 
-                // Show success notification
-                if (result.pointsAwarded) {
-                  window.dispatchEvent(
-                    new CustomEvent('nutrition:log-success', {
-                      detail: result
-                    })
-                  )
-                }
-              }}
-            />
+            {/* Food List */}
+            <div className="overflow-y-auto flex-1">
+              <div className="grid gap-3">
+                {filteredFoods.map((food) => (
+                  <button
+                    key={food.id}
+                    onClick={() => selectFoodFromLibrary(food)}
+                    className="bg-gradient-to-br from-primary-600/10 to-secondary-600/10 hover:from-primary-600/20 hover:to-secondary-600/20 rounded-lg p-4 border border-primary-400/20 hover:border-primary-400/40 transition-all duration-200 text-left"
+                  >
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <h4 className="font-bold text-white mb-1">{food.name}</h4>
+                        <div className="flex gap-4 text-sm text-gray-300">
+                          <span>{food.calories} cal</span>
+                          <span>P: {food.protein}g</span>
+                          <span>C: {food.carbs}g</span>
+                          <span>F: {food.fats}g</span>
+                        </div>
+                      </div>
+                      <span className="text-xs text-secondary-300 bg-secondary-500/20 px-2 py-1 rounded-full">
+                        {food.category}
+                      </span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+
+              {filteredFoods.length === 0 && (
+                <div className="text-center py-12">
+                  <p className="text-gray-400">No foods found matching "{searchQuery}"</p>
+                  <button
+                    onClick={() => {
+                      setShowFoodSearchModal(false)
+                      setShowAddFoodModal(true)
+                    }}
+                    className="mt-4 text-primary-300 hover:text-primary-200 underline"
+                  >
+                    Add manually instead
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}

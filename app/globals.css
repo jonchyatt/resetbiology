@@ -190,7 +190,7 @@ body {
 
 /* Secondary Card Hover - for smaller content cards */
 .card-hover-secondary {
-  @apply bg-gradient-to-br from-primary-600/20 to-primary-700/30 backdrop-blur-sm rounded-xl border border-primary-400/30 shadow-xl hover:shadow-primary-400/20 transition-all duration-300 hover:scale-[1.01];
+  @apply bg-gradient-to-br from-primary-600/20 to-primary-700/30 backdrop-blur-sm rounded-xl border border-primary-400/30 shadow-xl hover:shadow-primary-400/20 transition-all duration-300 hover:scale-[1.01] px-6 py-6;
 }
 
 /* Interactive Section Hover - for clickable sections */

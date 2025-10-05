@@ -13,6 +13,7 @@ export default function ModulesPage() {
         <PortalHeader
           section="Mental Mastery Modules"
           subtitle="Transform your mindset and metabolic health"
+          showOrderPeptides={false}
         />
 
         {/* Title Section - Matching Tracker Pages */}

@@ -5,13 +5,19 @@ interface PortalHeaderProps {
   subtitle?: string
   backLink?: string
   backText?: string
+  secondaryBackLink?: string
+  secondaryBackText?: string
+  showOrderPeptides?: boolean
 }
 
-export function PortalHeader({ 
-  section, 
-  subtitle, 
-  backLink = "/portal", 
-  backText = "Back to Portal" 
+export function PortalHeader({
+  section,
+  subtitle,
+  backLink = "/portal",
+  backText = "Back to Portal",
+  secondaryBackLink,
+  secondaryBackText,
+  showOrderPeptides = true
 }: PortalHeaderProps) {
   return (
     <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm shadow-2xl border-b border-primary-400/30 mt-16">
@@ -35,11 +41,21 @@ export function PortalHeader({
           </div>
         </div>
           <div className="flex items-center gap-4">
-            <a href="/order" className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
-              Order Peptides
-            </a>
+            {showOrderPeptides && (
+              <a href="/order" className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
+                Order Peptides
+              </a>
+            )}
             <a href="/daily-history" className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
               Daily History
+            </a>
+            {secondaryBackLink && (
+              <a href={secondaryBackLink} className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
+                ← {secondaryBackText}
+              </a>
+            )}
+            <a href={backLink} className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
+              ← {backText}
             </a>
           </div>
         </div>
