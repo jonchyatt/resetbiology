@@ -906,46 +906,64 @@ function DayDetail({ day }: { day: JournalHistoryDay }) {
         )}
       </section>
 
-      <section className="rounded-2xl border border-primary-400/30 bg-slate-900/70 backdrop-blur-md shadow-2xl shadow-black/30 p-6 space-y-4">
-        <h3 className="flex items-center text-sm font-semibold uppercase tracking-wide text-primary-200"><Utensils className="mr-2 h-4 w-4" />Nutrition</h3>
-        {day.nutrition.logs.length === 0 ? (
-          <p className="text-sm text-slate-400">No meals logged.</p>
-        ) : (
-          <div className="space-y-3">
-            {day.nutrition.logs.map((item: any) => {
-              const nutrients = item.nutrients as any
-              return (
-                <div key={item.id} className="rounded-xl border border-slate-700/40 bg-slate-800/50 px-4 py-3 text-sm text-slate-200 group hover:border-slate-600/60 transition-colors">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-semibold text-white">{item.itemName}</p>
-                          <p className="text-xs text-slate-400">{new Date(item.loggedAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })} • {item.mealType ?? 'meal'}</p>
+      <section className="grid gap-6 md:grid-cols-2">
+        <div className="rounded-2xl border border-primary-400/30 bg-slate-900/70 backdrop-blur-md shadow-2xl shadow-black/30 p-6 space-y-4">
+          <h3 className="flex items-center text-sm font-semibold uppercase tracking-wide text-primary-200"><Utensils className="mr-2 h-4 w-4" />Nutrition</h3>
+          {day.nutrition.logs.length === 0 ? (
+            <p className="text-sm text-slate-400">No meals logged.</p>
+          ) : (
+            <div className="space-y-3">
+              {[...day.nutrition.logs].sort((a: any, b: any) => new Date(b.loggedAt).getTime() - new Date(a.loggedAt).getTime()).map((item: any) => {
+                const nutrients = item.nutrients as any
+                return (
+                  <div key={item.id} className="rounded-xl border border-slate-700/40 bg-slate-800/50 px-4 py-3 text-sm text-slate-200 group hover:border-slate-600/60 transition-colors">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="font-semibold text-white">{item.itemName}</p>
+                            <p className="text-xs text-slate-400">{new Date(item.loggedAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })} • {item.mealType ?? 'meal'}</p>
+                          </div>
+                          <span className="text-amber-300 font-semibold">{Math.round(typeof nutrients?.kcal === 'number' ? nutrients.kcal : 0)} kcal</span>
                         </div>
-                        <span className="text-amber-300 font-semibold">{Math.round(typeof nutrients?.kcal === 'number' ? nutrients.kcal : 0)} kcal</span>
+                        <p className="mt-2 text-xs text-slate-400">
+                          P {Math.round(typeof nutrients?.protein_g === 'number' ? nutrients.protein_g : 0)}g •
+                          C {Math.round(typeof nutrients?.carb_g === 'number' ? nutrients.carb_g : 0)}g •
+                          F {Math.round(typeof nutrients?.fat_g === 'number' ? nutrients.fat_g : 0)}g
+                        </p>
                       </div>
-                      <p className="mt-2 text-xs text-slate-400">
-                        P {Math.round(typeof nutrients?.protein_g === 'number' ? nutrients.protein_g : 0)}g •
-                        C {Math.round(typeof nutrients?.carb_g === 'number' ? nutrients.carb_g : 0)}g •
-                        F {Math.round(typeof nutrients?.fat_g === 'number' ? nutrients.fat_g : 0)}g
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2 ml-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button
-                        onClick={() => setEditModal({ type: 'nutrition', data: item })}
-                        className="p-1 rounded-lg bg-primary-500/20 hover:bg-primary-500/30 text-primary-300 transition-colors"
-                        title="Edit"
-                      >
-                        <Edit2 className="h-4 w-4" />
-                      </button>
+                      <div className="flex items-center gap-2 ml-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button
+                          onClick={() => setEditModal({ type: 'nutrition', data: item })}
+                          className="p-1 rounded-lg bg-primary-500/20 hover:bg-primary-500/30 text-primary-300 transition-colors"
+                          title="Edit"
+                        >
+                          <Edit2 className="h-4 w-4" />
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              )
-            })}
-          </div>
-        )}
+                )
+              })}
+            </div>
+          )}
+        </div>
+
+        <ActivityList
+          title="Peptide Doses"
+          icon={<Droplets className="h-4 w-4" />}
+          colorClass="text-emerald-300"
+          borderClass="border-emerald-400/30"
+          items={[...day.peptideDoses].sort((a: any, b: any) => new Date(b.doseDate).getTime() - new Date(a.doseDate).getTime()).map((dose: any) => ({
+            id: dose.id,
+            primary: dose.user_peptide_protocols?.peptides?.name || 'Peptide dose',
+            secondary: dose.dosage,
+            meta: `${dose.time || ''} ${new Date(dose.doseDate).toLocaleDateString()}`.trim(),
+            data: dose
+          }))}
+          onViewDetails={(item) => setDetailsModal({ type: 'peptide', data: item.data })}
+          onEdit={(item) => setEditModal({ type: 'peptide', data: item.data })}
+        />
       </section>
 
       <section className="grid gap-6 md:grid-cols-2">
@@ -982,22 +1000,6 @@ function DayDetail({ day }: { day: JournalHistoryDay }) {
       </section>
 
       <section className="grid gap-6 md:grid-cols-2">
-        <ActivityList
-          title="Peptide Doses"
-          icon={<Droplets className="h-4 w-4" />}
-          colorClass="text-emerald-300"
-          borderClass="border-emerald-400/30"
-          items={day.peptideDoses.map((dose: any) => ({
-            id: dose.id,
-            primary: dose.user_peptide_protocols?.peptides?.name || 'Peptide dose',
-            secondary: dose.dosage,
-            meta: `${dose.time || ''} ${new Date(dose.doseDate).toLocaleDateString()}`.trim(),
-            data: dose
-          }))}
-          onViewDetails={(item) => setDetailsModal({ type: 'peptide', data: item.data })}
-          onEdit={(item) => setEditModal({ type: 'peptide', data: item.data })}
-        />
-
         <ActivityList
           title="Mental Modules"
           icon={<BrainCircuit className="h-4 w-4" />}
