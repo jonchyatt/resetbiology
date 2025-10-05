@@ -1,0 +1,460 @@
+/**
+ * Reset Biology WooCommerce PREMIUM Styling
+ * Matches resetbiology.com/order EXACTLY
+ * Dark background image + glass-morphism + massive shadows
+ */
+
+/* ========================================
+   TAILWIND-STYLE VARIABLES
+   ======================================== */
+:root {
+  --primary-400: #3FBFB5;
+  --primary-600: #2da89f;
+  --primary-900: #1a5b56;
+  --secondary-400: #72C247;
+  --secondary-600: #5fa838;
+  --secondary-900: #3d6b26;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+}
+
+/* ========================================
+   BODY - BACKGROUND IMAGE WITH OVERLAY
+   ======================================== */
+body {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.8)),
+                    linear-gradient(135deg, var(--gray-900) 0%, var(--gray-800) 100%) !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-attachment: fixed !important;
+  color: #ffffff !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+  min-height: 100vh !important;
+}
+
+/* Header with backdrop blur */
+.site-header,
+.main-header-bar {
+  background: rgba(31, 41, 55, 0.8) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border-bottom: 1px solid rgba(63, 191, 181, 0.3) !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* ========================================
+   SITE TITLE - GRADIENT TEXT
+   ======================================== */
+.site-title,
+.site-title a,
+.site-branding .site-title a {
+  background: linear-gradient(135deg, var(--primary-400) 0%, var(--secondary-400) 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  font-weight: 700 !important;
+  font-size: 32px !important;
+  letter-spacing: -0.02em !important;
+}
+
+/* Navigation links */
+.main-header-menu a,
+.main-navigation a {
+  color: rgba(255, 255, 255, 0.9) !important;
+  transition: all 0.3s ease !important;
+  font-weight: 500 !important;
+}
+
+.main-header-menu a:hover,
+.main-navigation a:hover {
+  color: var(--primary-400) !important;
+  text-shadow: 0 0 20px rgba(63, 191, 181, 0.5) !important;
+}
+
+/* ========================================
+   PRODUCT GRID - EXACTLY LIKE MAIN SITE
+   ======================================== */
+.woocommerce ul.products {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)) !important;
+  gap: 1.5rem !important;
+  padding: 0 !important;
+  list-style: none !important;
+}
+
+/* PRODUCT CARDS - PREMIUM GLASS EFFECT */
+.woocommerce ul.products li.product,
+.woocommerce-page ul.products li.product {
+  /* Glass-morphism background */
+  background: linear-gradient(135deg, rgba(63, 191, 181, 0.2) 0%, rgba(114, 194, 71, 0.2) 100%) !important;
+  backdrop-filter: blur(4px) !important;
+  -webkit-backdrop-filter: blur(4px) !important;
+
+  /* Border and shadow */
+  border-radius: 0.75rem !important;
+  border: 1px solid rgba(63, 191, 181, 0.3) !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+
+  /* Reset padding */
+  padding: 0 !important;
+  overflow: hidden !important;
+
+  /* Transition */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  transform: scale(1) !important;
+}
+
+/* HOVER EFFECT - SCALE UP + GLOW */
+.woocommerce ul.products li.product:hover {
+  transform: scale(1.02) translateY(-4px) !important;
+  box-shadow: 0 25px 50px -12px rgba(63, 191, 181, 0.4),
+              0 0 40px rgba(63, 191, 181, 0.2) !important;
+  border-color: var(--primary-400) !important;
+}
+
+/* Product Image Container */
+.woocommerce ul.products li.product .woocommerce-LoopProduct-link {
+  display: block !important;
+}
+
+.woocommerce ul.products li.product img {
+  width: 100% !important;
+  height: 200px !important;
+  object-fit: cover !important;
+  opacity: 0.9 !important;
+  transition: all 0.3s ease !important;
+  border-radius: 0.75rem 0.75rem 0 0 !important;
+}
+
+.woocommerce ul.products li.product:hover img {
+  opacity: 1 !important;
+  transform: scale(1.05) !important;
+}
+
+/* Category badge */
+.woocommerce ul.products li.product .product-category {
+  color: rgba(255, 255, 255, 0.7) !important;
+  font-size: 0.875rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  padding: 0 1.5rem !important;
+  padding-top: 1rem !important;
+}
+
+/* Product Title */
+.woocommerce ul.products li.product .woocommerce-loop-product__title,
+.woocommerce ul.products li.product h2 {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  font-size: 1.25rem !important;
+  margin: 0.5rem 1.5rem !important;
+  line-height: 1.4 !important;
+  transition: all 0.3s ease !important;
+}
+
+.woocommerce ul.products li.product:hover .woocommerce-loop-product__title,
+.woocommerce ul.products li.product:hover h2 {
+  color: var(--primary-400) !important;
+}
+
+/* PRODUCT PRICE - GRADIENT TEXT LIKE MAIN SITE */
+.woocommerce ul.products li.product .price,
+.woocommerce ul.products li.product .price .amount {
+  background: linear-gradient(135deg, var(--primary-400) 0%, var(--secondary-400) 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  font-size: 2rem !important;
+  font-weight: 700 !important;
+  display: inline-block !important;
+  margin: 0.5rem 1.5rem !important;
+}
+
+/* ========================================
+   BUTTONS - GRADIENT WITH GLOW
+   ======================================== */
+.woocommerce a.button,
+.woocommerce button.button,
+.woocommerce input.button,
+.woocommerce #respond input#submit,
+.woocommerce a.button.alt,
+.woocommerce button.button.alt,
+.woocommerce input.button.alt,
+.woocommerce .cart .button,
+.woocommerce .cart input.button {
+  /* Gradient background */
+  background: linear-gradient(135deg, var(--primary-400) 0%, var(--secondary-400) 100%) !important;
+
+  /* Styling */
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 0.5rem !important;
+  padding: 0.75rem 2rem !important;
+  font-weight: 600 !important;
+  font-size: 1rem !important;
+
+  /* Shadow with glow */
+  box-shadow: 0 4px 14px 0 rgba(63, 191, 181, 0.4) !important;
+
+  /* Transition */
+  transition: all 0.3s ease !important;
+  text-transform: none !important;
+
+  /* Arrow icon spacing */
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+}
+
+.woocommerce a.button:hover,
+.woocommerce button.button:hover,
+.woocommerce input.button:hover {
+  /* Reverse gradient */
+  background: linear-gradient(135deg, var(--secondary-400) 0%, var(--primary-400) 100%) !important;
+
+  /* Bigger glow */
+  box-shadow: 0 8px 24px 0 rgba(63, 191, 181, 0.6) !important;
+
+  /* Lift up */
+  transform: translateY(-2px) !important;
+}
+
+/* Add to Cart button in product loop */
+.woocommerce ul.products li.product .button {
+  width: calc(100% - 3rem) !important;
+  margin: 1rem 1.5rem 1.5rem !important;
+}
+
+/* ========================================
+   SINGLE PRODUCT PAGE
+   ======================================== */
+.woocommerce div.product {
+  background: linear-gradient(135deg, rgba(63, 191, 181, 0.1) 0%, rgba(114, 194, 71, 0.1) 100%) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  border-radius: 1.5rem !important;
+  border: 1px solid rgba(63, 191, 181, 0.3) !important;
+  padding: 3rem !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+}
+
+.woocommerce div.product .product_title {
+  color: #ffffff !important;
+  font-size: 3rem !important;
+  font-weight: 700 !important;
+  margin-bottom: 1.5rem !important;
+  letter-spacing: -0.02em !important;
+}
+
+.woocommerce div.product .woocommerce-product-details__short-description {
+  color: rgba(255, 255, 255, 0.8) !important;
+  font-size: 1.125rem !important;
+  line-height: 1.75 !important;
+}
+
+/* Product price on single page - gradient text */
+.woocommerce div.product p.price,
+.woocommerce div.product span.price {
+  background: linear-gradient(135deg, var(--primary-400) 0%, var(--secondary-400) 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  font-size: 3rem !important;
+  font-weight: 700 !important;
+}
+
+/* Product gallery */
+.woocommerce div.product div.images {
+  border-radius: 1rem !important;
+  overflow: hidden !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* ========================================
+   CART & CHECKOUT - GLASS PANELS
+   ======================================== */
+.woocommerce-cart table.cart,
+.woocommerce-checkout table {
+  background: rgba(31, 41, 55, 0.6) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border-radius: 1rem !important;
+  border: 1px solid rgba(63, 191, 181, 0.2) !important;
+  color: #ffffff !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3) !important;
+}
+
+.woocommerce-cart table.cart td,
+.woocommerce-cart table.cart th,
+.woocommerce-checkout table td,
+.woocommerce-checkout table th {
+  color: rgba(255, 255, 255, 0.9) !important;
+  border-color: rgba(63, 191, 181, 0.1) !important;
+  padding: 1rem !important;
+}
+
+/* Cart totals box */
+.cart-collaterals .cart_totals,
+.woocommerce-checkout-review-order {
+  background: linear-gradient(135deg, rgba(63, 191, 181, 0.2) 0%, rgba(114, 194, 71, 0.2) 100%) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  border-radius: 1rem !important;
+  border: 1px solid rgba(63, 191, 181, 0.3) !important;
+  padding: 2rem !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+}
+
+.cart-collaterals .cart_totals h2,
+.woocommerce-checkout-review-order h3 {
+  background: linear-gradient(135deg, var(--primary-400) 0%, var(--secondary-400) 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  font-weight: 700 !important;
+  font-size: 1.5rem !important;
+}
+
+/* ========================================
+   FORMS & INPUTS - GLASS STYLE
+   ======================================== */
+.woocommerce form .form-row input.input-text,
+.woocommerce form .form-row textarea,
+.woocommerce form .form-row select {
+  background: rgba(31, 41, 55, 0.6) !important;
+  border: 1px solid rgba(63, 191, 181, 0.3) !important;
+  border-radius: 0.5rem !important;
+  color: #ffffff !important;
+  padding: 0.75rem !important;
+  transition: all 0.3s ease !important;
+  backdrop-filter: blur(4px) !important;
+  -webkit-backdrop-filter: blur(4px) !important;
+}
+
+.woocommerce form .form-row input.input-text:focus,
+.woocommerce form .form-row textarea:focus,
+.woocommerce form .form-row select:focus {
+  border-color: var(--primary-400) !important;
+  box-shadow: 0 0 0 3px rgba(63, 191, 181, 0.2) !important;
+  outline: none !important;
+  background: rgba(31, 41, 55, 0.8) !important;
+}
+
+.woocommerce form .form-row label {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-weight: 500 !important;
+}
+
+/* ========================================
+   NOTICES - GLASS PANELS
+   ======================================== */
+.woocommerce-message,
+.woocommerce-info,
+.woocommerce-error {
+  background: linear-gradient(135deg, rgba(63, 191, 181, 0.2) 0%, rgba(114, 194, 71, 0.2) 100%) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  border-left: 4px solid var(--primary-400) !important;
+  border-radius: 0.5rem !important;
+  color: #ffffff !important;
+  padding: 1rem !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* ========================================
+   FOOTER
+   ======================================== */
+.site-footer {
+  background: rgba(17, 24, 39, 0.9) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border-top: 1px solid rgba(63, 191, 181, 0.2) !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+  padding: 3rem 0 !important;
+}
+
+.site-footer a {
+  color: var(--primary-400) !important;
+  transition: color 0.3s ease !important;
+}
+
+.site-footer a:hover {
+  color: var(--secondary-400) !important;
+}
+
+/* ========================================
+   ANIMATIONS - FADE IN UP
+   ======================================== */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.woocommerce ul.products li.product {
+  animation: fadeInUp 0.6s ease forwards !important;
+  opacity: 0 !important;
+}
+
+/* Stagger delays */
+.woocommerce ul.products li.product:nth-child(1) { animation-delay: 0.05s !important; }
+.woocommerce ul.products li.product:nth-child(2) { animation-delay: 0.1s !important; }
+.woocommerce ul.products li.product:nth-child(3) { animation-delay: 0.15s !important; }
+.woocommerce ul.products li.product:nth-child(4) { animation-delay: 0.2s !important; }
+.woocommerce ul.products li.product:nth-child(5) { animation-delay: 0.25s !important; }
+.woocommerce ul.products li.product:nth-child(6) { animation-delay: 0.3s !important; }
+.woocommerce ul.products li.product:nth-child(7) { animation-delay: 0.35s !important; }
+.woocommerce ul.products li.product:nth-child(8) { animation-delay: 0.4s !important; }
+.woocommerce ul.products li.product:nth-child(9) { animation-delay: 0.45s !important; }
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+@media (max-width: 768px) {
+  .woocommerce ul.products {
+    grid-template-columns: 1fr !important;
+  }
+
+  .site-title,
+  .site-title a {
+    font-size: 24px !important;
+  }
+
+  .woocommerce div.product .product_title {
+    font-size: 2rem !important;
+  }
+}
+
+/* ========================================
+   SCROLLBAR - GRADIENT
+   ======================================== */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--gray-900);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, var(--primary-400) 0%, var(--secondary-400) 100%);
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, var(--secondary-400) 0%, var(--primary-400) 100%);
+}
+
+/* ========================================
+   LOADING STATES
+   ======================================== */
+.woocommerce .blockUI.blockOverlay {
+  background: rgba(0, 0, 0, 0.5) !important;
+  backdrop-filter: blur(4px) !important;
+  -webkit-backdrop-filter: blur(4px) !important;
+}
