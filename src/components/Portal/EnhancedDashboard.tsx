@@ -616,7 +616,7 @@ export function EnhancedDashboard() {
 
             {/* Secondary Action */}
             <div className="mt-6 pt-6 border-t border-gray-600/30">
-              <Link href="/store" 
+              <Link href="/order"
                 className="flex items-center p-4 bg-purple-600/20 rounded-lg border border-purple-400/30 hover:bg-purple-600/30 transition-colors"
               >
                 <ShoppingBag className="w-5 h-5 text-purple-300 mr-3" />

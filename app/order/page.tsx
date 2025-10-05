@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { PortalHeader } from '@/components/Navigation/PortalHeader';
 
 interface Price {
   id: string;
@@ -80,8 +81,12 @@ export default function OrderPage() {
            backgroundAttachment: 'fixed'
          }}>
       <div className="relative z-10">
-        {/* Header with proper styling */}
-        <div className="text-center pt-24 pb-12">
+        <PortalHeader
+          section="Order Peptides"
+          subtitle="Premium quality peptides for your wellness journey"
+        />
+
+        <div className="text-center pt-8 pb-12">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 text-shadow-lg animate-fade-in">
             <span className="text-primary-400">Order</span> <span className="text-secondary-400">Peptides</span>
           </h1>
