@@ -26,9 +26,23 @@ if (!supportsWebBluetooth) {
   disconnectButton.disabled = true;
 }
 
-connectSpotButton?.addEventListener('click', () => connectAndSubscribe('spot'));
-connectContinuousButton?.addEventListener('click', () => connectAndSubscribe('continuous'));
-disconnectButton?.addEventListener('click', () => disconnect('Manual disconnect'));
+if (connectSpotButton) {
+  connectSpotButton.addEventListener('click', function () {
+    connectAndSubscribe('spot');
+  });
+}
+
+if (connectContinuousButton) {
+  connectContinuousButton.addEventListener('click', function () {
+    connectAndSubscribe('continuous');
+  });
+}
+
+if (disconnectButton) {
+  disconnectButton.addEventListener('click', function () {
+    disconnect('Manual disconnect');
+  });
+}
 
 async function connectAndSubscribe(mode) {
   if (!supportsWebBluetooth) {
@@ -40,15 +54,16 @@ async function connectAndSubscribe(mode) {
     disableConnectButtons(true);
     setStatus('Requesting Zacurate device…');
 
-    const requestedCharacteristic =
-      mode === 'continuous' ? CONTINUOUS_MEASUREMENT_CHAR_UUID : SPOT_CHECK_MEASUREMENT_CHAR_UUID;
+    const requestedCharacteristic = mode === 'continuous'
+      ? CONTINUOUS_MEASUREMENT_CHAR_UUID
+      : SPOT_CHECK_MEASUREMENT_CHAR_UUID;
 
     bluetoothDevice = await navigator.bluetooth.requestDevice({
       filters: [{ services: [PLX_SERVICE_UUID] }],
       optionalServices: [PLX_SERVICE_UUID],
     });
 
-    bluetoothDevice.addEventListener('gattserverdisconnected', () => {
+    bluetoothDevice.addEventListener('gattserverdisconnected', function () {
       appendLog('Device disconnected');
       disableConnectButtons(false);
       disconnectButton.disabled = true;
@@ -62,7 +77,7 @@ async function connectAndSubscribe(mode) {
     try {
       const features = await service.getCharacteristic(PLX_FEATURES_CHAR_UUID);
       const value = await features.readValue();
-      appendLog();
+      appendLog('PLX Features: ' + bufferToHex(value));
     } catch (err) {
       appendLog('PLX Features characteristic not available (continuing).');
     }
@@ -73,10 +88,12 @@ async function connectAndSubscribe(mode) {
     measurementCharacteristic.addEventListener('characteristicvaluechanged', handleMeasurement);
 
     disconnectButton.disabled = false;
-    setStatus();
+    const modeLabel = mode === 'continuous' ? 'continuous' : 'spot-check';
+    setStatus('Subscribed to ' + modeLabel + ' measurement notifications.');
     appendLog('Listening for measurements…');
   } catch (err) {
-    appendLog();
+    const message = err && err.message ? err.message : String(err);
+    appendLog('Error: ' + message);
     setStatus('Failed to connect. See log.');
     disableConnectButtons(false);
     await disconnect();
@@ -88,13 +105,14 @@ async function disconnect(reason = 'Disconnected') {
     try {
       await measurementCharacteristic.stopNotifications();
     } catch (err) {
-      appendLog();
+      const message = err && err.message ? err.message : String(err);
+      appendLog('stopNotifications failed: ' + message);
     }
     measurementCharacteristic.removeEventListener('characteristicvaluechanged', handleMeasurement);
     measurementCharacteristic = null;
   }
 
-  if (bluetoothDevice?.gatt?.connected) {
+  if (bluetoothDevice && bluetoothDevice.gatt && bluetoothDevice.gatt.connected) {
     bluetoothDevice.gatt.disconnect();
   }
   bluetoothDevice = null;
@@ -108,9 +126,12 @@ function handleMeasurement(event) {
   const dataView = event.target.value;
   let parsed;
   try {
-    parsed = currentMode === 'continuous' ? parseContinuousMeasurement(dataView) : parseSpotMeasurement(dataView);
+    parsed = currentMode === 'continuous'
+      ? parseContinuousMeasurement(dataView)
+      : parseSpotMeasurement(dataView);
   } catch (err) {
-    appendLog();
+    const message = err && err.message ? err.message : String(err);
+    appendLog('Parse error: ' + message);
     return;
   }
 
@@ -157,12 +178,12 @@ function parseContinuousMeasurement(dataView) {
 
   return {
     mode: 'continuous',
-    flags,
-    spo2,
-    pulseRate,
-    measurementStatus,
-    deviceAndSensorStatus,
-    pulseAmplitudeIndex,
+    flags: flags,
+    spo2: spo2,
+    pulseRate: pulseRate,
+    measurementStatus: measurementStatus,
+    deviceAndSensorStatus: deviceAndSensorStatus,
+    pulseAmplitudeIndex: pulseAmplitudeIndex,
     timestamp: new Date(),
   };
 }
@@ -203,13 +224,13 @@ function parseSpotMeasurement(dataView) {
 
   return {
     mode: 'spot',
-    flags,
-    spo2,
-    pulseRate,
-    measurementStatus,
-    deviceAndSensorStatus,
-    pulseAmplitudeIndex,
-    timestamp,
+    flags: flags,
+    spo2: spo2,
+    pulseRate: pulseRate,
+    measurementStatus: measurementStatus,
+    deviceAndSensorStatus: deviceAndSensorStatus,
+    pulseAmplitudeIndex: pulseAmplitudeIndex,
+    timestamp: timestamp,
   };
 }
 
@@ -230,7 +251,9 @@ function readSFloat(dataView, offset) {
 }
 
 function readUint24(dataView, offset) {
-  return dataView.getUint8(offset) | (dataView.getUint8(offset + 1) << 8) | (dataView.getUint8(offset + 2) << 16);
+  return dataView.getUint8(offset)
+    | (dataView.getUint8(offset + 1) << 8)
+    | (dataView.getUint8(offset + 2) << 16);
 }
 
 function readDateTime(dataView, offset) {
@@ -245,31 +268,34 @@ function readDateTime(dataView, offset) {
 
 function formatMeasurementLog(measurement) {
   const parts = [];
-  parts.push();
+  const label = measurement.mode === 'continuous' ? 'Continuous' : 'Spot';
+  parts.push('[' + new Date().toLocaleTimeString() + '] ' + label + ' measurement');
   if (isFinite(measurement.spo2)) {
-    parts.push();
+    parts.push('  SpO2: ' + measurement.spo2.toFixed(1) + ' %');
   }
   if (isFinite(measurement.pulseRate)) {
-    parts.push();
+    parts.push('  Pulse: ' + measurement.pulseRate.toFixed(1) + ' bpm');
   }
   if (isFinite(measurement.pulseAmplitudeIndex)) {
-    parts.push();
+    parts.push('  Pulse Amp Index: ' + measurement.pulseAmplitudeIndex.toFixed(1));
   }
   if (measurement.measurementStatus !== undefined) {
-    parts.push();
+    parts.push('  Measurement Status: 0x' + measurement.measurementStatus.toString(16).padStart(4, '0'));
   }
   if (measurement.deviceAndSensorStatus !== undefined) {
-    parts.push();
+    parts.push('  Device/Sensor Status: 0x' + measurement.deviceAndSensorStatus.toString(16).padStart(6, '0'));
   }
   if (measurement.timestamp) {
-    parts.push();
+    parts.push('  Sample Time: ' + measurement.timestamp.toLocaleString());
   }
   return parts.join('\n');
 }
 
 function appendLog(message) {
   const time = new Date().toLocaleTimeString();
-  logEl.textContent = ;
+  const prefix = time + ' | ';
+  const current = logEl.textContent ? logEl.textContent : '';
+  logEl.textContent = prefix + message + '\n' + current;
 }
 
 function setStatus(message) {
@@ -286,11 +312,11 @@ function bufferToHex(dataView) {
   for (let i = 0; i < dataView.byteLength; i += 1) {
     arr.push(dataView.getUint8(i).toString(16).padStart(2, '0'));
   }
-  return ;
+  return '0x' + arr.join(' ');
 }
 
-window.addEventListener('beforeunload', () => {
-  if (bluetoothDevice?.gatt?.connected) {
+window.addEventListener('beforeunload', function () {
+  if (bluetoothDevice && bluetoothDevice.gatt && bluetoothDevice.gatt.connected) {
     bluetoothDevice.gatt.disconnect();
   }
 });
