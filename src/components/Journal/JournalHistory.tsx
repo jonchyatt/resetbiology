@@ -1,8 +1,8 @@
-﻿"use client"
+"use client"
 
 import { useState, useEffect, useMemo } from "react"
 import Link from "next/link"
-import { ChevronsLeft, ChevronsRight, Flame, NotebookPen, Utensils, Droplets, Activity, BrainCircuit, Wind } from "lucide-react"
+import { ChevronsLeft, ChevronsRight, Flame, NotebookPen, Utensils, Droplets, Activity, BrainCircuit, Wind, Dumbbell } from "lucide-react"
 
 interface JournalHistoryDay {
   date: string
@@ -130,7 +130,7 @@ export function JournalHistory() {
             <div>
               <h1 className="text-4xl font-bold text-white">Daily History</h1>
               <p className="text-gray-300 mt-2 max-w-2xl">
-                Review everything you completed in a dayâ€”peptides, nutrition, workouts, breath practice, mindset modulesâ€”and your journal notes.
+                Review everything you completed in a day—peptides, nutrition, workouts, breath practice, mindset modules—and your journal notes.
               </p>
             </div>
             <Link
@@ -317,13 +317,13 @@ function DayDetail({ day }: { day: JournalHistoryDay }) {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="font-semibold text-white">{item.itemName}</p>
-                      <p className="text-xs text-gray-400">{new Date(item.loggedAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })} â€¢ {item.mealType ?? 'meal'}</p>
+                      <p className="text-xs text-gray-400">{new Date(item.loggedAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })} • {item.mealType ?? 'meal'}</p>
                     </div>
                     <span className="text-amber-300 font-semibold">{Math.round(typeof nutrients?.kcal === 'number' ? nutrients.kcal : 0)} kcal</span>
                   </div>
                   <p className="mt-2 text-xs text-gray-400">
-                    P {Math.round(typeof nutrients?.protein_g === 'number' ? nutrients.protein_g : 0)}g â€¢
-                    C {Math.round(typeof nutrients?.carb_g === 'number' ? nutrients.carb_g : 0)}g â€¢
+                    P {Math.round(typeof nutrients?.protein_g === 'number' ? nutrients.protein_g : 0)}g •
+                    C {Math.round(typeof nutrients?.carb_g === 'number' ? nutrients.carb_g : 0)}g •
                     F {Math.round(typeof nutrients?.fat_g === 'number' ? nutrients.fat_g : 0)}g
                   </p>
                 </div>
@@ -342,7 +342,7 @@ function DayDetail({ day }: { day: JournalHistoryDay }) {
           items={day.workouts.map((workout: any) => ({
             id: workout.id,
             primary: workout.exercises?.[0]?.name || 'Workout session',
-            secondary: `${Math.round((workout.duration ?? 0) / 60)} min â€¢ ${new Date(workout.completedAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`,
+            secondary: `${Math.round((workout.duration ?? 0) / 60)} min • ${new Date(workout.completedAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`,
             meta: workout.notes || ''
           }))}
         />
@@ -355,7 +355,7 @@ function DayDetail({ day }: { day: JournalHistoryDay }) {
           items={day.breathSessions.map((session: any) => ({
             id: session.id,
             primary: session.sessionType,
-            secondary: `${Math.round((session.duration ?? 0) / 60)} min â€¢ ${session.cycles ?? 0} cycles`,
+            secondary: `${Math.round((session.duration ?? 0) / 60)} min • ${session.cycles ?? 0} cycles`,
             meta: new Date(session.createdAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
           }))}
         />
@@ -383,7 +383,7 @@ function DayDetail({ day }: { day: JournalHistoryDay }) {
           items={day.modules.map((module: any) => ({
             id: module.id,
             primary: module.moduleId,
-            secondary: `${module.fullCompletion ? 'Completed' : 'Partial'}${module.audioDuration ? ` â€¢ ${Math.round(module.audioDuration / 60)} min audio` : ''}`,
+            secondary: `${module.fullCompletion ? 'Completed' : 'Partial'}${module.audioDuration ? ` • ${Math.round(module.audioDuration / 60)} min audio` : ''}`,
             meta: new Date(module.completedAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
           }))}
         />
@@ -438,3 +438,4 @@ function ActivityList({ title, icon, colorClass, borderClass, items }: { title: 
     </div>
   )
 }
+
