@@ -599,6 +599,27 @@ function DayDetail({ day }: { day: JournalHistoryDay }) {
                   <button type="submit" disabled={saving} className="px-4 py-2 bg-primary-500 hover:bg-primary-600 disabled:bg-primary-700 text-white rounded-lg transition-colors">
                     {saving ? 'Saving...' : 'Save Changes'}
                   </button>
+                  <button type="button" onClick={async () => {
+                    if (!confirm('Are you sure you want to delete this nutrition entry?')) return
+                    setSaving(true)
+                    try {
+                      const response = await fetch(`/api/nutrition/entries/${editModal.data.id}`, {
+                        method: 'DELETE'
+                      })
+                      if (response.ok) {
+                        alert('Nutrition entry deleted successfully!')
+                        window.location.reload()
+                      } else {
+                        throw new Error('Failed to delete')
+                      }
+                    } catch (error) {
+                      alert('Failed to delete nutrition entry')
+                    } finally {
+                      setSaving(false)
+                    }
+                  }} disabled={saving} className="px-4 py-2 bg-red-600 hover:bg-red-700 disabled:bg-red-800 text-white rounded-lg transition-colors">
+                    {saving ? 'Deleting...' : 'Delete'}
+                  </button>
                   <button type="button" onClick={() => { setEditModal(null); setEditForm({}); }} className="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-lg transition-colors">
                     Cancel
                   </button>
@@ -697,6 +718,27 @@ function DayDetail({ day }: { day: JournalHistoryDay }) {
                 <div className="flex gap-3">
                   <button type="submit" disabled={saving} className="px-4 py-2 bg-primary-500 hover:bg-primary-600 disabled:bg-primary-700 text-white rounded-lg transition-colors">
                     {saving ? 'Saving...' : 'Save Changes'}
+                  </button>
+                  <button type="button" onClick={async () => {
+                    if (!confirm('Are you sure you want to delete this workout?')) return
+                    setSaving(true)
+                    try {
+                      const response = await fetch(`/api/workout/sessions/${editModal.data.id}`, {
+                        method: 'DELETE'
+                      })
+                      if (response.ok) {
+                        alert('Workout deleted successfully!')
+                        window.location.reload()
+                      } else {
+                        throw new Error('Failed to delete')
+                      }
+                    } catch (error) {
+                      alert('Failed to delete workout')
+                    } finally {
+                      setSaving(false)
+                    }
+                  }} disabled={saving} className="px-4 py-2 bg-red-600 hover:bg-red-700 disabled:bg-red-800 text-white rounded-lg transition-colors">
+                    {saving ? 'Deleting...' : 'Delete'}
                   </button>
                   <button type="button" onClick={() => { setEditModal(null); setEditForm({}); }} className="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-lg transition-colors">
                     Cancel

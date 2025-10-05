@@ -15,6 +15,9 @@ interface FoodEntry {
   fats: number
   mealType: string
   loggedAt: string
+  quantity?: number
+  unit?: string
+  gramWeight?: number | null
 }
 
 interface FoodHistoryEntry {
@@ -203,6 +206,9 @@ export function NutritionTracker() {
             fats: Math.round(((entry.nutrients?.fat_g ?? 0) + Number.EPSILON) * 10) / 10,
             mealType: (entry.mealType ?? 'snack').toLowerCase(),
             loggedAt: entry.loggedAt,
+            quantity: entry.quantity,
+            unit: entry.unit,
+            gramWeight: entry.gramWeight,
           }))
 
         mapped.sort((a, b) => new Date(b.loggedAt).getTime() - new Date(a.loggedAt).getTime())
@@ -459,7 +465,12 @@ export function NutritionTracker() {
                         {foodsByMeal[mealType].map((food) => (
                           <div key={food.id} className="bg-gray-700/30 rounded-lg p-3 flex justify-between items-center">
                             <div>
-                              <p className="text-white font-medium">{food.name}</p>
+                              <p className="text-white font-medium">
+                                {food.name}
+                                {food.quantity && food.unit && (
+                                  <span className="text-gray-400 text-sm ml-2">({food.quantity}{food.unit})</span>
+                                )}
+                              </p>
                               <p className="text-gray-400 text-xs">
                                 {food.calories}cal • P:{food.protein}g C:{food.carbs}g F:{food.fats}g
                               </p>

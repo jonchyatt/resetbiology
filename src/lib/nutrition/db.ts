@@ -27,11 +27,33 @@ export async function cacheFoods(items: NormalizedFood[]): Promise<void> {
 }
 
 export async function searchCacheByText(query: string, take = 15) {
-  return prisma.foodRef.findMany({
+  // Get all matching foods
+  const foods = await prisma.foodRef.findMany({
     where: { description: { contains: query, mode: 'insensitive' } },
-    orderBy: { createdAt: 'desc' },
-    take,
   });
+
+  // Get usage counts for each food
+  const foodsWithCounts = await Promise.all(
+    foods.map(async (food) => {
+      const count = await prisma.foodLog.count({
+        where: {
+          source: food.source,
+          sourceId: food.sourceId,
+        },
+      });
+      return { ...food, usageCount: count };
+    })
+  );
+
+  // Sort by usage count (most popular first), then by createdAt
+  const sorted = foodsWithCounts.sort((a, b) => {
+    if (b.usageCount !== a.usageCount) {
+      return b.usageCount - a.usageCount;
+    }
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
+
+  return sorted.slice(0, take);
 }
 
 export async function getCached(source: string, sourceId: string) {
