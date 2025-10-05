@@ -24,7 +24,9 @@
       "Bash(npm run build:*)",
       "Bash(git log:*)",
       "Bash(python:*)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Read(//c/Users/jonch/Pictures/**)",
+      "Bash(1142 \")"
     ],
     "deny": [],
     "ask": [],

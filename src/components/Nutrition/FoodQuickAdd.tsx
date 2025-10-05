@@ -193,12 +193,8 @@ export function FoodQuickAdd({ onLogged }: { onLogged?: (result: FoodQuickAddRes
 
   return (
     <section className="rounded-2xl bg-gradient-to-br from-emerald-500/10 via-slate-900/40 to-slate-900/60 border border-emerald-400/30 shadow-lg p-6">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p className="text-xs uppercase tracking-widest text-emerald-300">Quick Add</p>
-          <h2 className="text-lg font-semibold text-white">Professional food lookup</h2>
-          <p className="text-sm text-slate-300">Search USDA and Open Food Facts, adjust a portion, log instantly.</p>
-        </div>
+      <div className="mb-4">
+        <h2 className="text-xl font-bold text-white">Add Nutrition</h2>
       </div>
 
       <div className="relative mt-5">
