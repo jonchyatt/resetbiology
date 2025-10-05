@@ -35,9 +35,10 @@ async function resolveUser(auth0User: any) {
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
+    const params = await context.params
     const session = await auth0.getSession(request)
 
     if (!session?.user) {
