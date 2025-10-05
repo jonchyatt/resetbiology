@@ -69,7 +69,7 @@ export default function ModulesPage() {
                 <h2 className="text-2xl font-bold text-white mb-2">Integration Series</h2>
                 <p className="text-gray-300">Advanced real-world application modules</p>
               </div>
-              
+
               <div className="space-y-3 mb-6">
                 <div className="flex items-center justify-between p-3 rounded-lg bg-blue-600/20 border border-blue-400/30">
                   <span className="text-gray-400 font-medium">Module 31: Real-World Application</span>
@@ -88,12 +88,10 @@ export default function ModulesPage() {
                   <span className="text-gray-500">🔒</span>
                 </div>
               </div>
-              
-              <div className="text-center p-4 bg-amber-600/20 rounded-lg border border-amber-400/30">
-                <p className="text-amber-200 text-sm">
-                  Complete Foundation Series to unlock
-                </p>
-              </div>
+
+              <a href="/modules/integration" className="action-btn-primary w-full py-3 px-6 text-center block">
+                🎧 Start Audio Training
+              </a>
             </div>
 
             {/* Mastery Series */}
@@ -103,7 +101,7 @@ export default function ModulesPage() {
                 <h2 className="text-2xl font-bold text-white mb-2">Mastery Series</h2>
                 <p className="text-gray-300">Peptide independence & maintenance</p>
               </div>
-              
+
               <div className="space-y-3 mb-6">
                 <div className="flex items-center justify-between p-3 rounded-lg bg-purple-600/20 border border-purple-400/30">
                   <span className="text-gray-400 font-medium">Module 61: Peptide Tapering</span>
@@ -122,12 +120,10 @@ export default function ModulesPage() {
                   <span className="text-gray-500">🔒</span>
                 </div>
               </div>
-              
-              <div className="text-center p-4 bg-amber-600/20 rounded-lg border border-amber-400/30">
-                <p className="text-amber-200 text-sm">
-                  Complete Integration Series to unlock
-                </p>
-              </div>
+
+              <a href="/modules/mastery" className="action-btn-primary w-full py-3 px-6 text-center block">
+                🎧 Start Audio Training
+              </a>
             </div>
           </div>
 
