@@ -402,9 +402,8 @@ export function EnhancedDashboard() {
               Welcome back, <span className="text-primary-400">{user?.name || user?.email || "Wellness Warrior"}</span>
             </h1>
             {currentStreak > 0 && (
-              <div className="mt-3 inline-flex items-center px-4 py-2 bg-secondary-600 rounded-lg border border-secondary-400">
-                <Flame className="w-5 h-5 mr-2 text-white" />
-                <span className="text-white font-medium">Current streak: {currentStreak} days</span>
+              <div className="mt-3 inline-flex items-center px-4 py-2 bg-secondary-600/20 rounded-full border border-secondary-400/30">
+                <span className="text-secondary-300 font-medium">🔥 Current streak: {currentStreak} days</span>
               </div>
             )}
           </div>
