@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useState, useEffect } from "react"
-import { Trophy, Calendar, ChevronRight, Target, Dumbbell, Apple, Brain, Wind, BookOpen, ShoppingBag, Check } from "lucide-react"
+import { Trophy, Calendar, ChevronRight, Target, Dumbbell, Apple, Brain, Wind, BookOpen, ShoppingBag, Check, Flame } from "lucide-react"
 import { PortalHeader } from "@/components/Navigation/PortalHeader"
 import { useUser } from "@auth0/nextjs-auth0"
 import { useRouter } from "next/navigation"
@@ -401,28 +401,19 @@ export function EnhancedDashboard() {
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 text-shadow-lg animate-fade-in">
               Welcome back, <span className="text-primary-400">{user?.name || user?.email || "Wellness Warrior"}</span>
             </h1>
-            <div className="flex items-center justify-center gap-8 text-lg text-gray-200">
-              <div className="flex items-center gap-2">
-                <Trophy className="w-5 h-5 text-primary-400" />
-                <span className="font-medium">{totalPoints.toLocaleString()} points</span>
+            {currentStreak > 0 && (
+              <div className="mt-3 inline-flex items-center px-4 py-2 bg-secondary-600 rounded-lg border border-secondary-400">
+                <Flame className="w-5 h-5 mr-2 text-white" />
+                <span className="text-white font-medium">Current streak: {currentStreak} days</span>
               </div>
-              <div className="flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-secondary-400" />
-                <span className="font-medium">{currentStreak} day streak</span>
-              </div>
-            </div>
+            )}
           </div>
 
           {/* Main Portal Section - Matching Portalview.png */}
           <div className="card-hover-primary mb-8">
             <div className="text-center mb-6">
-              <h2 className="text-2xl font-bold text-white mb-2">📋 Daily Check-in</h2>
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">📋 Daily Check-in</h2>
               <p className="text-gray-300">Complete your daily activities to maximize progress and earn rewards</p>
-              {currentStreak > 0 && (
-                <div className="mt-3 inline-flex items-center px-4 py-2 bg-secondary-600/20 rounded-full border border-secondary-400/30">
-                  <span className="text-secondary-300 font-medium">🔥 Current streak: {currentStreak} days</span>
-                </div>
-              )}
             </div>
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

@@ -411,45 +411,6 @@ export function NutritionTracker() {
                 }}
               />
 
-              <RecentFoods refreshToken={recentRefresh} />
-
-              <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl hover:shadow-primary-400/20 transition-all duration-300">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xl font-bold text-white flex items-center">
-                    <Target className="h-5 w-5 mr-2 text-secondary-400"/>Today's Macros
-                  </h3>
-                  <button
-                    onClick={() => setShowAddFoodModal(true)}
-                    className="bg-secondary-600 hover:bg-secondary-700 text-white font-medium py-2 px-4 rounded-lg flex items-center"
-                  >
-                    <Plus className="h-4 w-4 mr-1"/>Add Food
-                  </button>
-                </div>
-
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="bg-gray-800/50 rounded-lg p-4">
-                    <p className="text-gray-300 text-sm">Calories logged</p>
-                    <p className="text-3xl font-bold text-white">{Math.round(todaysTotals.calories)}</p>
-                    <p className="text-xs text-gray-500 mt-1">kcal so far today</p>
-                  </div>
-                  <div className="bg-gray-800/50 rounded-lg p-4">
-                    <p className="text-gray-300 text-sm">Protein</p>
-                    <p className="text-3xl font-bold text-white">{Math.round(todaysTotals.protein)}g</p>
-                    <p className="text-xs text-gray-500 mt-1">Support lean muscle and recovery</p>
-                  </div>
-                  <div className="bg-gray-800/50 rounded-lg p-4">
-                    <p className="text-gray-300 text-sm">Carbs</p>
-                    <p className="text-3xl font-bold text-white">{Math.round(todaysTotals.carbs)}g</p>
-                    <p className="text-xs text-gray-500 mt-1">Time carbs around intense sessions</p>
-                  </div>
-                  <div className="bg-gray-800/50 rounded-lg p-4">
-                    <p className="text-gray-300 text-sm">Fats</p>
-                    <p className="text-3xl font-bold text-white">{Math.round(todaysTotals.fats)}g</p>
-                    <p className="text-xs text-gray-500 mt-1">Keep hormones happy with essential fats</p>
-                  </div>
-                </div>
-              </div>
-
               <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl hover:shadow-primary-400/20 transition-all duration-300">
                 <h3 className="text-xl font-bold text-white mb-4 flex items-center">
                   <Utensils className="h-5 w-5 mr-2 text-secondary-400"/>Today's Meals
@@ -488,9 +449,38 @@ export function NutritionTracker() {
                   </div>
                 ))}
               </div>
+
+              <RecentFoods refreshToken={recentRefresh} />
             </div>
 
             <div className="space-y-6">
+              <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30 shadow-2xl hover:shadow-primary-400/20 transition-all duration-300">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-lg font-bold text-white flex items-center">
+                    <Target className="h-4 w-4 mr-2 text-secondary-400"/>Today's Macros
+                  </h3>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="bg-gray-800/50 rounded-lg p-2">
+                    <p className="text-gray-300 text-xs">Calories</p>
+                    <p className="text-xl font-bold text-white">{Math.round(todaysTotals.calories)}</p>
+                  </div>
+                  <div className="bg-gray-800/50 rounded-lg p-2">
+                    <p className="text-gray-300 text-xs">Protein</p>
+                    <p className="text-xl font-bold text-white">{Math.round(todaysTotals.protein)}g</p>
+                  </div>
+                  <div className="bg-gray-800/50 rounded-lg p-2">
+                    <p className="text-gray-300 text-xs">Carbs</p>
+                    <p className="text-xl font-bold text-white">{Math.round(todaysTotals.carbs)}g</p>
+                  </div>
+                  <div className="bg-gray-800/50 rounded-lg p-2">
+                    <p className="text-gray-300 text-xs">Fats</p>
+                    <p className="text-xl font-bold text-white">{Math.round(todaysTotals.fats)}g</p>
+                  </div>
+                </div>
+              </div>
+
               <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl hover:shadow-secondary-400/20 transition-all duration-300">
                 <h4 className="text-white font-semibold mb-2 flex items-center">
                   <Calendar className="h-5 w-5 mr-2 text-secondary-400"/>Daily Snapshot
