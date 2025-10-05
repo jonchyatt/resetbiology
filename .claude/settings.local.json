@@ -1,32 +1,7 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npm run stripe:doctor:*)",
-      "Bash(npx tsx:*)",
-      "Bash(npm run dev:*)",
-      "Bash(npm run stripe:doctor:check:*)",
-      "Bash(npx vercel env:*)",
-      "Bash(claude mcp:*)",
-      "Bash(curl -s \"https://resetbiology.com/api/checkout\" -X POST -H \"Content-Type: application/json\" -d \"{\"\"productId\"\":\"\"test\"\",\"\"priceId\"\":\"\"test\"\"}\")",
-      "Read(//c/Users/jonch/Pictures/Screenshots/**)",
-      "Bash(git add:*)",
-      "Bash(git commit:*)",
-      "Bash(git push:*)",
-      "Bash(curl:*)",
-      "Bash(grep:*)",
-      "Bash(npx vercel:*)",
-      "Bash(docker:*)",
-      "Bash(docker-compose up:*)",
-      "Bash(docker-compose:*)",
-      "Bash(bash:*)",
-      "Bash(node:*)",
-      "Bash(git reset:*)",
-      "Bash(npm run build:*)",
-      "Bash(git log:*)",
-      "Bash(python:*)",
-      "Bash(git checkout:*)",
-      "Read(//c/Users/jonch/Pictures/**)",
-      "Bash(1142 \")"
+      "Bash(ls \"C:\\Users\\jonch\\Pictures\\Screenshots\"\" 2>&1 | grep \"114 \")"
     ],
     "deny": [],
     "ask": [],

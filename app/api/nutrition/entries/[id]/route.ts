@@ -106,3 +106,55 @@ export async function PATCH(
     )
   }
 }
+
+export async function DELETE(
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
+) {
+  try {
+    const params = await context.params
+    const session = await auth0.getSession(request)
+
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const user = await resolveUser(session.user)
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    }
+
+    // Find the food log and verify ownership
+    const existingLog = await prisma.foodLog.findFirst({
+      where: {
+        id: params.id,
+        userId: user.id
+      }
+    })
+
+    if (!existingLog) {
+      return NextResponse.json(
+        { error: 'Food log not found or unauthorized' },
+        { status: 404 }
+      )
+    }
+
+    // Delete the food log
+    await prisma.foodLog.delete({
+      where: { id: params.id }
+    })
+
+    return NextResponse.json({
+      success: true,
+      message: 'Food entry deleted successfully'
+    })
+
+  } catch (error: any) {
+    console.error('Error deleting food entry:', error)
+    return NextResponse.json(
+      { error: 'Failed to delete food entry' },
+      { status: 500 }
+    )
+  }
+}
