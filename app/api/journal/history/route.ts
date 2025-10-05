@@ -152,7 +152,12 @@ export async function GET(request: NextRequest) {
     const days = new Map<string, DaySummary>()
 
     const ensureDay = (date: Date) => {
-      const key = date.toISOString().split('T')[0]
+      // Use local date components instead of UTC to avoid timezone issues
+      const year = date.getFullYear()
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      const day = String(date.getDate()).padStart(2, '0')
+      const key = `${year}-${month}-${day}`
+
       if (!days.has(key)) {
         const entryDate = new Date(date)
         entryDate.setHours(0, 0, 0, 0)
@@ -237,7 +242,12 @@ export async function GET(request: NextRequest) {
     const calendar: Array<{ date: string; iso: string; count: number }> = []
     const cursor = new Date(start)
     while (cursor < end) {
-      const key = cursor.toISOString().split('T')[0]
+      // Use local date components instead of UTC
+      const year = cursor.getFullYear()
+      const month = String(cursor.getMonth() + 1).padStart(2, '0')
+      const day = String(cursor.getDate()).padStart(2, '0')
+      const key = `${year}-${month}-${day}`
+
       calendar.push({
         date: key,
         iso: cursor.toISOString(),
