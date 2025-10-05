@@ -1,5 +1,4 @@
-import { ProtectedRoute } from "@/components/Auth/ProtectedRoute"
-import { JournalHistory } from "@/components/Journal/JournalHistory"
+import { redirect } from "next/navigation"
 
 export const metadata = {
   title: "Daily History - Reset Biology",
@@ -7,9 +6,5 @@ export const metadata = {
 }
 
 export default function JournalPage() {
-  return (
-    <ProtectedRoute>
-      <JournalHistory />
-    </ProtectedRoute>
-  )
+  redirect('/daily-history')
 }

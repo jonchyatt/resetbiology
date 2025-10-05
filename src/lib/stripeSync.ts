@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma';
-import { stripe } from '@/lib/stripe';
+import { getStripe } from '@/lib/stripe';
 
 type SyncResult = {
   productId: string;
@@ -8,7 +8,9 @@ type SyncResult = {
 };
 
 export async function ensureStripeSync(productId: string): Promise<SyncResult> {
+  const stripe = getStripe();
   if (!stripe) throw new Error('Stripe not configured');
+
   const product = await prisma.product.findUnique({
     where: { id: productId },
     include: { prices: true },

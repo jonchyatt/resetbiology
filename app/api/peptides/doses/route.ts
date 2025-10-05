@@ -2,6 +2,77 @@ import { NextResponse } from 'next/server'
 import { auth0 } from '@/lib/auth0'
 import { prisma } from '@/lib/prisma'
 
+function startOfDay(date: Date) {
+  const d = new Date(date)
+  d.setHours(0, 0, 0, 0)
+  return d
+}
+
+async function appendPeptideDoseToJournal(userId: string, timestamp: Date, payload: { peptideName: string; dosage: string; timeLabel: string }) {
+  const dayStart = startOfDay(timestamp)
+  const dayEnd = new Date(dayStart)
+  dayEnd.setDate(dayEnd.getDate() + 1)
+
+  const existing = await prisma.journalEntry.findFirst({
+    where: {
+      userId,
+      date: {
+        gte: dayStart,
+        lt: dayEnd,
+      },
+    },
+  })
+
+  const note = `${payload.peptideName} dose ${payload.dosage} at ${payload.timeLabel}`
+
+  if (existing) {
+    let entryData: any = {}
+    try {
+      entryData = existing.entry ? JSON.parse(existing.entry as string) : {}
+    } catch {
+      entryData = {}
+    }
+
+    const previous = typeof entryData.peptideNotes === 'string' && entryData.peptideNotes.length > 0 ? `${entryData.peptideNotes}
+` : ''
+    entryData.peptideNotes = `${previous}${note}`
+
+    const tasksCompleted = typeof entryData.tasksCompleted === 'object' && entryData.tasksCompleted !== null
+      ? { ...entryData.tasksCompleted }
+      : {}
+    tasksCompleted.peptides = true
+    entryData.tasksCompleted = tasksCompleted
+
+    await prisma.journalEntry.update({
+      where: { id: existing.id },
+      data: { entry: JSON.stringify(entryData) },
+    })
+  } else {
+    const entryData = {
+      reasonsValidation: '',
+      affirmationGoal: '',
+      affirmationBecause: '',
+      affirmationMeans: '',
+      peptideNotes: note,
+      workoutNotes: '',
+      nutritionNotes: '',
+      breathNotes: '',
+      moduleNotes: '',
+      tasksCompleted: { peptides: true },
+    }
+
+    await prisma.journalEntry.create({
+      data: {
+        userId,
+        entry: JSON.stringify(entryData),
+        mood: null,
+        weight: null,
+        date: timestamp,
+      },
+    })
+  }
+}
+
 // POST: Log a peptide dose
 export async function POST(request: Request) {
   try {
@@ -76,8 +147,7 @@ export async function POST(request: Request) {
     })
 
     // Mark 'peptides' daily task as completed
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
+    const today = startOfDay(new Date())
 
     await prisma.dailyTask.upsert({
       where: {

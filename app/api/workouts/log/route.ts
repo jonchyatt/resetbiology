@@ -165,6 +165,8 @@ export async function POST(request: Request) {
         peptideNotes: '',
         workoutNotes: workoutNote,
         nutritionNotes: '',
+        breathNotes: '',
+        moduleNotes: '',
         tasksCompleted: { workout: true },
       };
 

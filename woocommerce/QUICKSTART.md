@@ -17,14 +17,14 @@ You should see WordPress installation screen.
 ### 2. Install WordPress (2 mins)
 - Language: English
 - Site Title: **Reset Biology Store**
-- Username: **admin**
+- Username: **ResetBiology**
 - Password: **ResetBiology2024!**
 - Email: **jon@resetbiology.com**
 - Click **Install WordPress**
 
 ### 3. Login (1 min)
 - Go to: `http://localhost:8080/wp-admin`
-- Username: `admin`
+- Username: `ResetBiology`
 - Password: `ResetBiology2024!`
 
 ### 4. Install WooCommerce (3 mins)

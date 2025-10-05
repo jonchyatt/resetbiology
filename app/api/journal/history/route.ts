@@ -48,7 +48,7 @@ function getMonthRange(param?: string | null) {
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await auth0.getSession()
+    const session = await auth0.getSession(request)
 
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -266,3 +266,4 @@ export async function GET(request: NextRequest) {
     }, { status: 500 })
   }
 }
+

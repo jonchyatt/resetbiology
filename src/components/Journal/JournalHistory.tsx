@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react"
 import Link from "next/link"
+import { PortalHeader } from "@/components/Navigation/PortalHeader"
 import { ChevronsLeft, ChevronsRight, Flame, NotebookPen, Utensils, Droplets, Activity, BrainCircuit, Wind, Dumbbell } from "lucide-react"
 
 interface JournalHistoryDay {
@@ -123,104 +124,235 @@ export function JournalHistory() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-gray-100">
-      <div className="container mx-auto px-4 py-12">
-        <header className="mb-10">
-          <div className="flex items-center justify-between flex-wrap gap-4">
-            <div>
-              <h1 className="text-4xl font-bold text-white">Daily History</h1>
-              <p className="text-gray-300 mt-2 max-w-2xl">
-                Review everything you completed in a day—peptides, nutrition, workouts, breath practice, mindset modules—and your journal notes.
-              </p>
+
+    <div className="relative min-h-screen overflow-hidden">
+
+      <div className="absolute inset-0 bg-[url('/hero-background.jpg')] bg-cover bg-center opacity-40" />
+
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-950/95 via-slate-900/92 to-slate-950/95" />
+
+      <div className="relative z-10 min-h-screen flex flex-col text-slate-100">
+
+        <PortalHeader
+
+          section="Daily History"
+
+          subtitle="Review your peptides, nutrition, workouts, breath, mindset, and notes in one place"
+
+        />
+
+        <div className="flex-1 overflow-y-auto">
+
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+
+            <div className="rounded-2xl border border-primary-400/30 bg-slate-900/70 backdrop-blur-md shadow-2xl shadow-black/40 px-6 py-6 flex flex-wrap items-center justify-between gap-6">
+
+              <div>
+
+                <p className="text-sm uppercase tracking-[0.25em] text-primary-200/80">Daily History</p>
+
+                <h1 className="text-3xl font-bold text-white mt-2">Track your holistic protocol</h1>
+
+                <p className="text-sm text-slate-300 mt-2 max-w-2xl">
+
+                  Review everything you completed in a day - peptides, nutrition, workouts, breath practice, mindset modules, and your journal reflections.
+
+                </p>
+
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3">
+
+                <Link
+
+                  href="/portal"
+
+                  className="inline-flex items-center gap-2 rounded-xl border border-primary-400/40 bg-primary-500/10 px-4 py-2 text-sm font-medium text-primary-200 transition hover:border-primary-300 hover:bg-primary-500/20 hover:text-white focus:outline-none focus:ring-2 focus:ring-primary-300/60"
+
+                >
+
+                  Back to Portal
+
+                </Link>
+
+                <Link
+                  href="/portal#journal"
+                  className="inline-flex items-center gap-2 rounded-xl border border-secondary-400/40 bg-secondary-500/10 px-4 py-2 text-sm font-medium text-secondary-200 transition hover:border-secondary-300 hover:bg-secondary-500/20 hover:text-white focus:outline-none focus:ring-2 focus:ring-secondary-300/60"
+                >
+                  Open Today's Journal
+                </Link>
+              </div>
+
             </div>
-            <Link
-              href="/portal"
-              className="inline-flex items-center gap-2 rounded-lg border border-secondary-400/40 bg-secondary-500/10 px-4 py-2 text-sm font-medium text-secondary-200 transition hover:border-secondary-300 hover:bg-secondary-500/20"
-            >
-              Back to Portal
-            </Link>
-          </div>
-        </header>
 
-        <div className="grid gap-6 lg:grid-cols-[320px,1fr]">
-          <div className="bg-gradient-to-br from-primary-600/10 to-secondary-600/10 rounded-xl border border-primary-400/20 shadow-xl p-5">
-            <div className="flex items-center justify-between mb-4">
-              <button
-                onClick={handlePrevMonth}
-                className="rounded-lg border border-primary-400/30 bg-primary-500/10 p-2 text-primary-200 transition hover:border-primary-400/50 hover:bg-primary-500/20"
-                aria-label="Previous month"
-              >
-                <ChevronsLeft className="h-5 w-5" />
-              </button>
-              <div className="text-center">
-                <p className="text-sm text-gray-400">Month</p>
-                <p className="text-lg font-semibold text-white">{formatMonth(currentMonth)}</p>
+
+
+            <div className="grid gap-6 lg:grid-cols-[360px,1fr] items-start">
+
+              <div className="rounded-2xl border border-primary-400/30 bg-slate-900/70 backdrop-blur-md shadow-2xl shadow-black/40 overflow-hidden">
+
+                <div className="flex items-center justify-between gap-4 px-6 pt-6">
+
+                  <button
+
+                    onClick={handlePrevMonth}
+
+                    className="rounded-xl border border-primary-400/40 bg-primary-500/10 p-2 text-primary-100 transition hover:border-primary-300 hover:bg-primary-500/20 hover:text-white focus:outline-none focus:ring-2 focus:ring-primary-300/60"
+
+                    aria-label="Previous month"
+
+                  >
+
+                    <ChevronsLeft className="h-5 w-5" />
+
+                  </button>
+
+                  <div className="text-center">
+
+                    <p className="text-xs uppercase tracking-[0.25em] text-primary-200/80">Month</p>
+
+                    <p className="text-lg font-semibold text-white">{formatMonth(currentMonth)}</p>
+
+                  </div>
+
+                  <button
+
+                    onClick={handleNextMonth}
+
+                    className="rounded-xl border border-primary-400/40 bg-primary-500/10 p-2 text-primary-100 transition hover:border-primary-300 hover:bg-primary-500/20 hover:text-white focus:outline-none focus:ring-2 focus:ring-primary-300/60"
+
+                    aria-label="Next month"
+
+                  >
+
+                    <ChevronsRight className="h-5 w-5" />
+
+                  </button>
+
+                </div>
+
+
+
+                <div className="px-6 pt-5">
+
+                  <div className="grid grid-cols-7 text-center text-[11px] font-semibold uppercase tracking-wide text-slate-400 mb-3">
+
+                    {weekdayLabels.map((label) => (
+
+                      <span key={label}>{label}</span>
+
+                    ))}
+
+                  </div>
+
+
+
+                  {loading ? (
+
+                    <div className="flex flex-col items-center justify-center py-12 text-sm text-slate-300">
+
+                      <div className="h-10 w-10 animate-spin rounded-full border-2 border-secondary-300 border-t-transparent mb-3" />
+
+                      Loading history...
+
+                    </div>
+
+                  ) : error ? (
+
+                    <div className="rounded-xl border border-rose-500/40 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
+
+                      {error}
+
+                    </div>
+
+                  ) : (
+
+                    <div className="grid grid-cols-7 gap-2 pb-6">
+
+                      {calendarCells.map((cell, idx) => {
+
+                        if (!cell.inMonth) {
+
+                          return <div key={`blank-${idx}`} className="h-16 rounded-xl bg-slate-800/40" />
+
+                        }
+
+
+
+                        const isSelected = selectedDayKey === cell.date
+
+                        const density = cell.count ?? 0
+
+                        let intensity = 'bg-slate-800/50 border-transparent text-slate-300'
+
+                        if (density > 0 && density <= 2) intensity = 'bg-secondary-500/20 border-secondary-400/30 text-secondary-100'
+
+                        if (density > 2 && density <= 5) intensity = 'bg-secondary-500/40 border-secondary-400/40 text-secondary-50'
+
+                        if (density > 5) intensity = 'bg-secondary-500/60 border-secondary-400/60 text-white'
+
+
+
+                        return (
+
+                          <button
+
+                            key={cell.date}
+
+                            onClick={() => setSelectedDayKey(cell.date as string)}
+
+                            className={`h-16 rounded-xl border px-2 py-1 text-left transition-all duration-200 flex flex-col justify-between backdrop-blur-sm hover:-translate-y-0.5 hover:border-secondary-300/60 hover:shadow-lg hover:shadow-secondary-500/20 ${intensity} ${isSelected ? 'ring-2 ring-offset-2 ring-secondary-300 ring-offset-slate-900' : ''}`}
+
+                          >
+
+                            <span className="text-sm font-semibold">{new Date(cell.iso ?? '').getDate()}</span>
+
+                            <span className="text-[11px] opacity-80">{density} entries</span>
+
+                          </button>
+
+                        )
+
+                      })}
+
+                    </div>
+
+                  )}
+
+                </div>
+
               </div>
-              <button
-                onClick={handleNextMonth}
-                className="rounded-lg border border-primary-400/30 bg-primary-500/10 p-2 text-primary-200 transition hover:border-primary-400/50 hover:bg-primary-500/20"
-                aria-label="Next month"
-              >
-                <ChevronsRight className="h-5 w-5" />
-              </button>
+
+
+
+              <div className="space-y-6">
+
+                {selectedDay ? (
+
+                  <DayDetail day={selectedDay} />
+
+                ) : (
+
+                  <div className="rounded-2xl border border-primary-400/30 bg-primary-500/10 backdrop-blur-md p-10 text-center text-slate-300 shadow-xl shadow-black/30">
+
+                    Select a day on the calendar to view the full history.
+
+                  </div>
+
+                )}
+
+              </div>
+
             </div>
 
-            <div className="grid grid-cols-7 text-center text-xs font-medium text-gray-400 mb-2">
-              {weekdayLabels.map((label) => (
-                <span key={label}>{label}</span>
-              ))}
-            </div>
-
-            {loading ? (
-              <div className="flex flex-col items-center justify-center py-12 text-sm text-gray-300">
-                <div className="h-10 w-10 animate-spin rounded-full border-2 border-secondary-300 border-t-transparent mb-3" />
-                Loading history...
-              </div>
-            ) : error ? (
-              <div className="rounded-lg border border-rose-500/40 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
-                {error}
-              </div>
-            ) : (
-              <div className="grid grid-cols-7 gap-2">
-                {calendarCells.map((cell, idx) => {
-                  if (!cell.inMonth) {
-                    return <div key={`blank-${idx}`} className="h-16 rounded-lg bg-gray-800/40" />
-                  }
-
-                  const isSelected = selectedDayKey === cell.date
-                  const density = cell.count ?? 0
-                  let intensity = 'bg-gray-800/40 border-transparent'
-                  if (density > 0 && density <= 2) intensity = 'bg-secondary-500/20 border-secondary-400/30'
-                  if (density > 2 && density <= 5) intensity = 'bg-secondary-500/40 border-secondary-400/40'
-                  if (density > 5) intensity = 'bg-secondary-500/60 border-secondary-400/60'
-
-                  return (
-                    <button
-                      key={cell.date}
-                      onClick={() => setSelectedDayKey(cell.date as string)}
-                      className={`h-16 rounded-lg border text-left transition flex flex-col justify-between px-2 py-1 ${intensity} ${isSelected ? 'ring-2 ring-secondary-300' : ''}`}
-                    >
-                      <span className="text-sm font-semibold text-white">{new Date(cell.iso ?? '').getDate()}</span>
-                      <span className="text-[11px] text-gray-300">{density} entries</span>
-                    </button>
-                  )
-                })}
-              </div>
-            )}
           </div>
 
-          <div className="space-y-6">
-            {selectedDay ? (
-              <DayDetail day={selectedDay} />
-            ) : (
-              <div className="rounded-xl border border-primary-400/20 bg-primary-500/10 p-8 text-center text-gray-300">
-                Select a day on the calendar to view the full history.
-              </div>
-            )}
-          </div>
         </div>
+
       </div>
+
     </div>
+
   )
 }
 
@@ -237,23 +369,23 @@ function DayDetail({ day }: { day: JournalHistoryDay }) {
 
   return (
     <div className="space-y-6">
-      <section className="rounded-xl border border-secondary-400/30 bg-gray-900/70 shadow-xl p-6">
-        <header className="flex items-center justify-between mb-4">
+      <section className="rounded-2xl border border-secondary-400/30 bg-slate-900/70 backdrop-blur-md shadow-2xl shadow-black/30 p-6">
+        <header className="flex items-center justify-between mb-6">
           <div>
-            <p className="text-sm text-gray-400">Selected Day</p>
+            <p className="text-sm uppercase tracking-wide text-slate-300/80">Selected Day</p>
             <h2 className="text-2xl font-bold text-white">{displayDate.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</h2>
           </div>
-          <div className="text-right text-secondary-200">
-            <p className="text-xs uppercase tracking-wide">Total Logged</p>
+          <div className="text-right text-secondary-200/90">
+            <p className="text-xs uppercase tracking-[0.3em] text-secondary-200/70">Total Logged</p>
             <p className="text-xl font-semibold">{day.eventCount}</p>
           </div>
         </header>
 
         {day.journalEntry ? (
           <div className="grid gap-4 md:grid-cols-2">
-            <div className="rounded-lg border border-primary-400/20 bg-primary-500/10 p-4">
+            <div className="rounded-xl border border-primary-400/30 bg-primary-500/15 p-4 shadow-inner shadow-primary-900/30">
               <h3 className="flex items-center text-sm font-semibold text-primary-200 uppercase tracking-wide"><NotebookPen className="mr-2 h-4 w-4" />Journal</h3>
-              <ul className="mt-3 space-y-2 text-sm text-gray-200">
+              <ul className="mt-3 space-y-2 text-sm text-slate-200">
                 {entry.reasonsValidation && <li><strong>Success Today:</strong> {entry.reasonsValidation}</li>}
                 {entry.affirmationGoal && <li><strong>I am:</strong> {entry.affirmationGoal}</li>}
                 {entry.affirmationBecause && <li><strong>Because:</strong> {entry.affirmationBecause}</li>}
@@ -267,61 +399,61 @@ function DayDetail({ day }: { day: JournalHistoryDay }) {
               </ul>
             </div>
 
-            <div className="rounded-lg border border-secondary-400/20 bg-secondary-500/10 p-4">
+            <div className="rounded-xl border border-secondary-400/30 bg-secondary-500/15 p-4 shadow-inner shadow-secondary-900/30">
               <h3 className="flex items-center text-sm font-semibold text-secondary-200 uppercase tracking-wide"><Activity className="mr-2 h-4 w-4" />Activity Snapshot</h3>
               <dl className="mt-3 grid grid-cols-2 gap-3 text-sm">
                 <div>
-                  <dt className="text-gray-400">Meals Logged</dt>
+                  <dt className="text-slate-400">Meals Logged</dt>
                   <dd className="text-white font-semibold">{day.nutrition.logs.length}</dd>
                 </div>
                 <div>
-                  <dt className="text-gray-400">Peptide Doses</dt>
+                  <dt className="text-slate-400">Peptide Doses</dt>
                   <dd className="text-white font-semibold">{day.peptideDoses.length}</dd>
                 </div>
                 <div>
-                  <dt className="text-gray-400">Workouts</dt>
+                  <dt className="text-slate-400">Workouts</dt>
                   <dd className="text-white font-semibold">{day.workouts.length}</dd>
                 </div>
                 <div>
-                  <dt className="text-gray-400">Breath Sessions</dt>
+                  <dt className="text-slate-400">Breath Sessions</dt>
                   <dd className="text-white font-semibold">{day.breathSessions.length}</dd>
                 </div>
                 <div>
-                  <dt className="text-gray-400">Modules</dt>
+                  <dt className="text-slate-400">Modules</dt>
                   <dd className="text-white font-semibold">{day.modules.length}</dd>
                 </div>
                 <div>
-                  <dt className="text-gray-400">Calories</dt>
+                  <dt className="text-slate-400">Calories</dt>
                   <dd className="text-white font-semibold">{Math.round(day.nutrition.totals.calories)} kcal</dd>
                 </div>
               </dl>
             </div>
           </div>
         ) : (
-          <div className="rounded-lg border border-gray-700/40 bg-gray-800/40 p-4 text-sm text-gray-300">
+          <div className="rounded-xl border border-slate-700/40 bg-slate-800/50 p-4 text-sm text-slate-300">
             No journal entry saved for this day.
           </div>
         )}
       </section>
 
-      <section className="rounded-xl border border-primary-400/30 bg-gray-900/70 shadow-xl p-6 space-y-4">
+      <section className="rounded-2xl border border-primary-400/30 bg-slate-900/70 backdrop-blur-md shadow-2xl shadow-black/30 p-6 space-y-4">
         <h3 className="flex items-center text-sm font-semibold uppercase tracking-wide text-primary-200"><Utensils className="mr-2 h-4 w-4" />Nutrition</h3>
         {day.nutrition.logs.length === 0 ? (
-          <p className="text-sm text-gray-400">No meals logged.</p>
+          <p className="text-sm text-slate-400">No meals logged.</p>
         ) : (
           <div className="space-y-3">
             {day.nutrition.logs.map((item: any) => {
               const nutrients = item.nutrients as any
               return (
-                <div key={item.id} className="rounded-lg border border-gray-700/40 bg-gray-800/40 px-4 py-3 text-sm text-gray-200">
+                <div key={item.id} className="rounded-xl border border-slate-700/40 bg-slate-800/50 px-4 py-3 text-sm text-slate-200">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="font-semibold text-white">{item.itemName}</p>
-                      <p className="text-xs text-gray-400">{new Date(item.loggedAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })} • {item.mealType ?? 'meal'}</p>
+                      <p className="text-xs text-slate-400">{new Date(item.loggedAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })} • {item.mealType ?? 'meal'}</p>
                     </div>
                     <span className="text-amber-300 font-semibold">{Math.round(typeof nutrients?.kcal === 'number' ? nutrients.kcal : 0)} kcal</span>
                   </div>
-                  <p className="mt-2 text-xs text-gray-400">
+                  <p className="mt-2 text-xs text-slate-400">
                     P {Math.round(typeof nutrients?.protein_g === 'number' ? nutrients.protein_g : 0)}g •
                     C {Math.round(typeof nutrients?.carb_g === 'number' ? nutrients.carb_g : 0)}g •
                     F {Math.round(typeof nutrients?.fat_g === 'number' ? nutrients.fat_g : 0)}g
@@ -389,9 +521,9 @@ function DayDetail({ day }: { day: JournalHistoryDay }) {
         />
       </section>
 
-      <section className="rounded-xl border border-secondary-400/30 bg-gray-900/70 shadow-xl p-6">
+      <section className="rounded-2xl border border-secondary-400/30 bg-slate-900/70 backdrop-blur-md shadow-2xl shadow-black/30 p-6">
         <h3 className="flex items-center text-sm font-semibold uppercase tracking-wide text-secondary-200 mb-3"><Flame className="mr-2 h-4 w-4" />Journal Notes</h3>
-        <div className="space-y-2 text-sm text-gray-200">
+        <div className="space-y-2 text-sm text-slate-200">
           {entry.peptideNotes && (
             <p><strong>Peptides:</strong> {entry.peptideNotes}</p>
           )}
@@ -408,7 +540,7 @@ function DayDetail({ day }: { day: JournalHistoryDay }) {
             <p><strong>Mental Modules:</strong> {entry.moduleNotes}</p>
           )}
           {!entry.peptideNotes && !entry.workoutNotes && !entry.nutritionNotes && !entry.breathNotes && !entry.moduleNotes && (
-            <p className="text-gray-400">No activity notes logged yet. Entries will appear here automatically as you complete tasks.</p>
+            <p className="text-slate-400">No activity notes logged yet. Entries will appear here automatically as you complete tasks.</p>
           )}
         </div>
       </section>
@@ -418,19 +550,19 @@ function DayDetail({ day }: { day: JournalHistoryDay }) {
 
 function ActivityList({ title, icon, colorClass, borderClass, items }: { title: string; icon: React.ReactNode; colorClass: string; borderClass: string; items: Array<{ id: string; primary: string; secondary?: string; meta?: string }> }) {
   return (
-    <div className={`rounded-xl border ${borderClass} bg-gray-900/70 shadow-xl p-6`}>
+    <div className={`rounded-2xl border ${borderClass} bg-slate-900/70 backdrop-blur-md shadow-2xl shadow-black/30 p-6`}>
       <h3 className={`flex items-center text-sm font-semibold uppercase tracking-wide ${colorClass}`}>
         <span className="mr-2">{icon}</span>{title}
       </h3>
       {items.length === 0 ? (
-        <p className="mt-3 text-sm text-gray-400">No entries logged.</p>
+        <p className="mt-3 text-sm text-slate-400">No entries logged.</p>
       ) : (
         <ul className="mt-3 space-y-3">
           {items.map((item) => (
-            <li key={item.id} className="rounded-lg border border-gray-700/40 bg-gray-800/40 px-4 py-3 text-sm text-gray-200">
+            <li key={item.id} className="rounded-xl border border-slate-700/40 bg-slate-800/50 px-4 py-3 text-sm text-slate-200">
               <p className="font-semibold text-white">{item.primary}</p>
-              {item.secondary && <p className="text-xs text-gray-400 mt-1">{item.secondary}</p>}
-              {item.meta && <p className="text-[11px] text-gray-500 mt-1 uppercase tracking-wide">{item.meta}</p>}
+              {item.secondary && <p className="text-xs text-slate-400 mt-1">{item.secondary}</p>}
+              {item.meta && <p className="text-[11px] text-slate-500 mt-1 uppercase tracking-wide">{item.meta}</p>}
             </li>
           ))}
         </ul>

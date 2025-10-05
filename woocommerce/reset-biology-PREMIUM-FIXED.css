@@ -1,0 +1,445 @@
+/**
+ * Reset Biology Premium WooCommerce Styling - FIXED VERSION
+ * Matches the quality and design of resetbiology.com/order
+ * FIXED: Removed opacity animation causing black screen
+ */
+
+:root {
+  /* Reset Biology Brand Colors */
+  --primary-400: #3FBFB5;
+  --primary-500: #2DA89E;
+  --primary-600: #258B82;
+  --primary-900: #0D3834;
+  --secondary-400: #72C247;
+  --secondary-500: #5DAE34;
+  --secondary-600: #4A9428;
+  --secondary-900: #1E3D11;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+}
+
+/* Global Background - ACTUAL IMAGE WITH OVERLAY */
+body.woocommerce-shop,
+body.archive.tax-product_cat,
+body.single-product {
+  background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url('/wp-content/uploads/hero-background.jpg') !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-attachment: fixed !important;
+  min-height: 100vh !important;
+}
+
+/* Fallback if image doesn't exist */
+body.woocommerce-shop:not([style*="background-image"]),
+body.archive.tax-product_cat:not([style*="background-image"]),
+body.single-product:not([style*="background-image"]) {
+  background: linear-gradient(135deg, var(--gray-900) 0%, var(--gray-800) 100%) !important;
+}
+
+/* Main Content Area */
+.woocommerce {
+  position: relative !important;
+  z-index: 10 !important;
+  padding: 2rem 0 !important;
+}
+
+/* Page Title Styling */
+.woocommerce-products-header h1.page-title,
+.woocommerce h1.entry-title {
+  text-align: center !important;
+  font-size: 3.75rem !important;
+  font-weight: 700 !important;
+  color: white !important;
+  margin-bottom: 3rem !important;
+  text-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
+  line-height: 1.2 !important;
+}
+
+.woocommerce-products-header h1.page-title .primary-text,
+.woocommerce h1.entry-title .primary-text {
+  color: var(--primary-400) !important;
+}
+
+.woocommerce-products-header h1.page-title .secondary-text,
+.woocommerce h1.entry-title .secondary-text {
+  color: var(--secondary-400) !important;
+}
+
+/* Products Grid Container */
+.woocommerce ul.products {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)) !important;
+  gap: 1.5rem !important;
+  padding: 0 1rem !important;
+  list-style: none !important;
+  max-width: 1400px !important;
+  margin: 0 auto !important;
+}
+
+/* Individual Product Card */
+.woocommerce ul.products li.product {
+  background: linear-gradient(135deg, rgba(63, 191, 181, 0.2) 0%, rgba(114, 194, 71, 0.2) 100%) !important;
+  backdrop-filter: blur(4px) !important;
+  -webkit-backdrop-filter: blur(4px) !important;
+  border-radius: 0.75rem !important;
+  border: 1px solid rgba(63, 191, 181, 0.3) !important;
+  overflow: hidden !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  position: relative !important;
+  /* FIXED: Removed opacity: 0 and animation that was causing black screen */
+}
+
+.woocommerce ul.products li.product:hover {
+  transform: scale(1.02) translateY(-4px) !important;
+  box-shadow: 0 30px 60px -15px rgba(63, 191, 181, 0.3) !important;
+  border-color: rgba(63, 191, 181, 0.5) !important;
+}
+
+/* Product Image */
+.woocommerce ul.products li.product img {
+  width: 100% !important;
+  height: 240px !important;
+  object-fit: cover !important;
+  opacity: 0.9 !important;
+  transition: opacity 0.3s ease !important;
+  border-bottom: 1px solid rgba(63, 191, 181, 0.2) !important;
+}
+
+.woocommerce ul.products li.product:hover img {
+  opacity: 1 !important;
+}
+
+/* Product Image Overlay */
+.woocommerce ul.products li.product a.woocommerce-LoopProduct-link {
+  position: relative !important;
+  display: block !important;
+}
+
+.woocommerce ul.products li.product a.woocommerce-LoopProduct-link::after {
+  content: '' !important;
+  position: absolute !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 60% !important;
+  background: linear-gradient(to top, rgba(17, 24, 39, 0.6), transparent) !important;
+  pointer-events: none !important;
+}
+
+/* Product Title */
+.woocommerce ul.products li.product h2,
+.woocommerce ul.products li.product .woocommerce-loop-product__title {
+  font-size: 1.25rem !important;
+  font-weight: 700 !important;
+  color: white !important;
+  margin: 1rem 1.5rem 0.5rem !important;
+  transition: color 0.3s ease !important;
+  line-height: 1.4 !important;
+}
+
+.woocommerce ul.products li.product:hover h2,
+.woocommerce ul.products li.product:hover .woocommerce-loop-product__title {
+  color: var(--primary-400) !important;
+}
+
+/* Product Description */
+.woocommerce ul.products li.product .woocommerce-loop-product__description {
+  color: rgba(209, 213, 219, 0.9) !important;
+  font-size: 0.875rem !important;
+  margin: 0 1.5rem 1rem !important;
+  line-height: 1.6 !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 3 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+}
+
+/* Price - GRADIENT TEXT like resetbiology.com */
+.woocommerce ul.products li.product .price {
+  font-size: 2rem !important;
+  font-weight: 700 !important;
+  margin: 0 1.5rem 1rem !important;
+  background: linear-gradient(135deg, var(--primary-400) 0%, var(--secondary-400) 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  line-height: 1.2 !important;
+}
+
+.woocommerce ul.products li.product .price del {
+  opacity: 0.6 !important;
+  font-size: 1.25rem !important;
+  margin-right: 0.5rem !important;
+}
+
+.woocommerce ul.products li.product .price ins {
+  text-decoration: none !important;
+}
+
+/* Add to Cart Button - GRADIENT like resetbiology.com */
+.woocommerce ul.products li.product .button,
+.woocommerce ul.products li.product a.add_to_cart_button,
+.woocommerce ul.products li.product a.product_type_simple,
+.woocommerce ul.products li.product a.product_type_variable {
+  background: linear-gradient(135deg, var(--primary-500) 0%, var(--secondary-500) 100%) !important;
+  color: white !important;
+  font-weight: 700 !important;
+  padding: 0.75rem 1.5rem !important;
+  border-radius: 0.5rem !important;
+  border: none !important;
+  box-shadow: 0 10px 25px -5px rgba(63, 191, 181, 0.3) !important;
+  transition: all 0.2s ease !important;
+  margin: 0 1.5rem 1.5rem !important;
+  width: calc(100% - 3rem) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.5rem !important;
+  text-align: center !important;
+}
+
+.woocommerce ul.products li.product .button:hover,
+.woocommerce ul.products li.product a.add_to_cart_button:hover,
+.woocommerce ul.products li.product a.product_type_simple:hover,
+.woocommerce ul.products li.product a.product_type_variable:hover {
+  background: linear-gradient(135deg, var(--primary-600) 0%, var(--secondary-600) 100%) !important;
+  box-shadow: 0 15px 30px -5px rgba(63, 191, 181, 0.4) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Sale Badge */
+.woocommerce span.onsale {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+  color: white !important;
+  padding: 0.5rem 1rem !important;
+  border-radius: 9999px !important;
+  font-weight: 700 !important;
+  font-size: 0.75rem !important;
+  position: absolute !important;
+  top: 1rem !important;
+  right: 1rem !important;
+  z-index: 10 !important;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4) !important;
+}
+
+/* Pagination */
+.woocommerce nav.woocommerce-pagination {
+  text-align: center !important;
+  margin: 3rem 0 2rem !important;
+}
+
+.woocommerce nav.woocommerce-pagination ul {
+  border: none !important;
+  display: inline-flex !important;
+  gap: 0.5rem !important;
+}
+
+.woocommerce nav.woocommerce-pagination ul li {
+  border: none !important;
+  background: rgba(63, 191, 181, 0.2) !important;
+  backdrop-filter: blur(4px) !important;
+  border-radius: 0.5rem !important;
+  overflow: hidden !important;
+}
+
+.woocommerce nav.woocommerce-pagination ul li a,
+.woocommerce nav.woocommerce-pagination ul li span {
+  color: white !important;
+  background: transparent !important;
+  border: none !important;
+  padding: 0.75rem 1rem !important;
+  font-weight: 600 !important;
+  transition: all 0.2s ease !important;
+}
+
+.woocommerce nav.woocommerce-pagination ul li a:hover,
+.woocommerce nav.woocommerce-pagination ul li span.current {
+  background: linear-gradient(135deg, var(--primary-500) 0%, var(--secondary-500) 100%) !important;
+  color: white !important;
+}
+
+/* Single Product Page */
+.woocommerce div.product {
+  background: linear-gradient(135deg, rgba(63, 191, 181, 0.2) 0%, rgba(114, 194, 71, 0.2) 100%) !important;
+  backdrop-filter: blur(4px) !important;
+  border-radius: 1rem !important;
+  border: 1px solid rgba(63, 191, 181, 0.3) !important;
+  padding: 2rem !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+  margin: 2rem auto !important;
+  max-width: 1200px !important;
+}
+
+.woocommerce div.product .product_title {
+  color: white !important;
+  font-size: 2.5rem !important;
+  font-weight: 700 !important;
+  margin-bottom: 1rem !important;
+}
+
+.woocommerce div.product .woocommerce-product-details__short-description,
+.woocommerce div.product .woocommerce-Tabs-panel {
+  color: rgba(209, 213, 219, 0.9) !important;
+  line-height: 1.8 !important;
+}
+
+.woocommerce div.product p.price {
+  background: linear-gradient(135deg, var(--primary-400) 0%, var(--secondary-400) 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  font-size: 2.5rem !important;
+  font-weight: 700 !important;
+}
+
+.woocommerce div.product form.cart .button {
+  background: linear-gradient(135deg, var(--primary-500) 0%, var(--secondary-500) 100%) !important;
+  color: white !important;
+  font-weight: 700 !important;
+  padding: 1rem 2rem !important;
+  border-radius: 0.5rem !important;
+  border: none !important;
+  box-shadow: 0 10px 25px -5px rgba(63, 191, 181, 0.3) !important;
+  transition: all 0.2s ease !important;
+}
+
+.woocommerce div.product form.cart .button:hover {
+  background: linear-gradient(135deg, var(--primary-600) 0%, var(--secondary-600) 100%) !important;
+  box-shadow: 0 15px 30px -5px rgba(63, 191, 181, 0.4) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* Tabs */
+.woocommerce div.product .woocommerce-tabs ul.tabs {
+  background: rgba(63, 191, 181, 0.1) !important;
+  border-radius: 0.5rem !important;
+  padding: 0.5rem !important;
+  margin-bottom: 2rem !important;
+}
+
+.woocommerce div.product .woocommerce-tabs ul.tabs li {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0.375rem !important;
+}
+
+.woocommerce div.product .woocommerce-tabs ul.tabs li a {
+  color: rgba(255, 255, 255, 0.7) !important;
+  font-weight: 600 !important;
+  padding: 0.75rem 1.5rem !important;
+}
+
+.woocommerce div.product .woocommerce-tabs ul.tabs li.active {
+  background: linear-gradient(135deg, var(--primary-500) 0%, var(--secondary-500) 100%) !important;
+}
+
+.woocommerce div.product .woocommerce-tabs ul.tabs li.active a {
+  color: white !important;
+}
+
+/* Cart & Checkout Pages */
+.woocommerce-cart table.cart,
+.woocommerce-checkout #order_review {
+  background: linear-gradient(135deg, rgba(63, 191, 181, 0.2) 0%, rgba(114, 194, 71, 0.2) 100%) !important;
+  backdrop-filter: blur(4px) !important;
+  border-radius: 1rem !important;
+  border: 1px solid rgba(63, 191, 181, 0.3) !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+}
+
+.woocommerce-cart table.cart th,
+.woocommerce-cart table.cart td,
+.woocommerce-checkout #order_review th,
+.woocommerce-checkout #order_review td {
+  color: white !important;
+  border-color: rgba(63, 191, 181, 0.2) !important;
+}
+
+.woocommerce-cart .cart-collaterals .cart_totals,
+.woocommerce-checkout .woocommerce-checkout-review-order {
+  background: linear-gradient(135deg, rgba(63, 191, 181, 0.2) 0%, rgba(114, 194, 71, 0.2) 100%) !important;
+  backdrop-filter: blur(4px) !important;
+  border-radius: 1rem !important;
+  border: 1px solid rgba(63, 191, 181, 0.3) !important;
+  padding: 2rem !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+}
+
+.woocommerce-cart .cart-collaterals .cart_totals h2,
+.woocommerce-checkout .woocommerce-checkout-review-order h3 {
+  color: white !important;
+}
+
+/* Buttons on Cart/Checkout */
+.woocommerce #respond input#submit,
+.woocommerce a.button,
+.woocommerce button.button,
+.woocommerce input.button {
+  background: linear-gradient(135deg, var(--primary-500) 0%, var(--secondary-500) 100%) !important;
+  color: white !important;
+  font-weight: 700 !important;
+  padding: 0.75rem 1.5rem !important;
+  border-radius: 0.5rem !important;
+  border: none !important;
+  box-shadow: 0 10px 25px -5px rgba(63, 191, 181, 0.3) !important;
+  transition: all 0.2s ease !important;
+}
+
+.woocommerce #respond input#submit:hover,
+.woocommerce a.button:hover,
+.woocommerce button.button:hover,
+.woocommerce input.button:hover {
+  background: linear-gradient(135deg, var(--primary-600) 0%, var(--secondary-600) 100%) !important;
+  box-shadow: 0 15px 30px -5px rgba(63, 191, 181, 0.4) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* Forms */
+.woocommerce form .form-row input.input-text,
+.woocommerce form .form-row textarea,
+.woocommerce form .form-row select {
+  background: rgba(31, 41, 55, 0.8) !important;
+  border: 1px solid rgba(63, 191, 181, 0.3) !important;
+  border-radius: 0.5rem !important;
+  color: white !important;
+  padding: 0.75rem !important;
+}
+
+.woocommerce form .form-row label {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Messages */
+.woocommerce-message,
+.woocommerce-info,
+.woocommerce-error {
+  background: linear-gradient(135deg, rgba(63, 191, 181, 0.2) 0%, rgba(114, 194, 71, 0.2) 100%) !important;
+  backdrop-filter: blur(4px) !important;
+  border-radius: 0.5rem !important;
+  border-left: 4px solid var(--primary-400) !important;
+  color: white !important;
+  padding: 1rem 1.5rem !important;
+}
+
+.woocommerce-error {
+  border-left-color: #ef4444 !important;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .woocommerce ul.products {
+    grid-template-columns: 1fr !important;
+    padding: 0 0.5rem !important;
+  }
+
+  .woocommerce-products-header h1.page-title,
+  .woocommerce h1.entry-title {
+    font-size: 2rem !important;
+    margin-bottom: 2rem !important;
+  }
+
+  .woocommerce div.product {
+    padding: 1rem !important;
+  }
+}

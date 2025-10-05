@@ -67,6 +67,7 @@ export function BreathTrainingApp({ onSessionComplete }: BreathTrainingAppProps)
   const isInhaleRef = useRef(true)
   const breathCountRef = useRef(0)
   const settingsRef = useRef(settings)
+  const completedCyclesRef = useRef<CycleData[]>([])
   const exhaleHoldStartRef = useRef(0)
   const inhaleHoldStartRef = useRef(0)
   const storage = BreathStorage.getInstance()
@@ -116,7 +117,11 @@ export function BreathTrainingApp({ onSessionComplete }: BreathTrainingAppProps)
   useEffect(() => {
     breathStartTimeRef.current = breathStartTime
   }, [breathStartTime])
-  
+
+  useEffect(() => {
+    completedCyclesRef.current = completedCycles
+  }, [completedCycles])
+
   useEffect(() => {
     cycleBreathingStartRef.current = cycleBreathingStart
   }, [cycleBreathingStart])
@@ -202,6 +207,7 @@ export function BreathTrainingApp({ onSessionComplete }: BreathTrainingAppProps)
     setBreathStartTime(now)
     setCurrentCycle(1)
     setBreathCount(0)
+    completedCyclesRef.current = []
     setCompletedCycles([])
     setIsInhale(true)
     setBestExhaleHold(0)
@@ -299,7 +305,9 @@ export function BreathTrainingApp({ onSessionComplete }: BreathTrainingAppProps)
       }
     }
 
-    setCompletedCycles(prev => [...prev, cycleData])
+    const updatedCycles = [...completedCyclesRef.current, cycleData]
+    completedCyclesRef.current = updatedCycles
+    setCompletedCycles(updatedCycles)
     
     // Automatically continue to next cycle or end session
     if (currentCycle < settingsRef.current.cyclesTarget) {
@@ -316,7 +324,7 @@ export function BreathTrainingApp({ onSessionComplete }: BreathTrainingAppProps)
       rafRef.current = requestAnimationFrame(animationLoop)
     } else {
       // Session complete
-      finishSession()
+      finishSession(updatedCycles)
     }
   }
 
@@ -333,7 +341,8 @@ export function BreathTrainingApp({ onSessionComplete }: BreathTrainingAppProps)
     }
   }
 
-  const finishSession = async () => {
+  const finishSession = async (cyclesOverride?: CycleData[]) => {
+    const cycles = cyclesOverride ?? completedCyclesRef.current
     setState('session_complete')
 
     const sessionData: SessionData = {
@@ -341,8 +350,8 @@ export function BreathTrainingApp({ onSessionComplete }: BreathTrainingAppProps)
       startedAt: new Date(sessionStartTime).toISOString(),
       endedAt: new Date().toISOString(),
       settings,
-      cycles: completedCycles,
-      cyclesCompleted: completedCycles.length
+      cycles,
+      cyclesCompleted: cycles.length
     }
 
     // Save to local IndexedDB
@@ -350,16 +359,24 @@ export function BreathTrainingApp({ onSessionComplete }: BreathTrainingAppProps)
 
     // ALSO save to MongoDB database for persistence across devices
     try {
+      console.log('Saving breath session to database:', sessionData)
       const response = await fetch('/api/breath/sessions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sessionData })
       })
-      const data = await response.json().catch(() => null)
+      console.log('Breath session save response status:', response.status)
+      const data = await response.json().catch((e) => {
+        console.error('Failed to parse breath session response:', e)
+        return null
+      })
+      console.log('Breath session save result:', data)
+
       if (!response.ok || !data?.success) {
         throw new Error(data?.error || 'Failed to save breath session')
       }
 
+      console.log('Dispatching breath:session-complete event with:', data)
       if (typeof window !== 'undefined') {
         window.dispatchEvent(new CustomEvent('breath:session-complete', {
           detail: {
@@ -371,6 +388,7 @@ export function BreathTrainingApp({ onSessionComplete }: BreathTrainingAppProps)
       }
     } catch (error) {
       console.error('Failed to save breath session to database:', error)
+      alert(`Breath session saved locally, but failed to sync to server: ${error instanceof Error ? error.message : 'Unknown error'}`)
       // Continue anyway - data is still saved locally
     }
 
@@ -774,6 +792,7 @@ export function BreathTrainingApp({ onSessionComplete }: BreathTrainingAppProps)
                 <button
                   onClick={() => {
                     setState('idle')
+                    completedCyclesRef.current = []
                     setCompletedCycles([])
                   }}
                   className="bg-secondary-600 hover:bg-secondary-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors text-sm"

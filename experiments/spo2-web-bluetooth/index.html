@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SpO₂ Web Bluetooth Probe</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>Zacurate SpO₂ Web Bluetooth Probe</h1>
+        <p class="lead">
+          Prototype: Connect to a Zacurate pulse oximeter over Web Bluetooth. Desktop Chrome/Edge/Opera and Android Chrome are supported; iOS browsers are not.
+        </p>
+      </header>
+
+      <section class="card">
+        <h2>Device Connection</h2>
+        <p class="hint">Ensure the oximeter is on and in range, then choose the mode you want to try.</p>
+        <div class="controls">
+          <button id="connect-spot">Connect &amp; Listen (Spot-Check)</button>
+          <button id="connect-continuous">Connect &amp; Listen (Continuous)</button>
+          <button id="disconnect" disabled>Disconnect</button>
+        </div>
+        <div id="status" class="status" role="status">Idle</div>
+      </section>
+
+      <section class="card">
+        <h2>Latest Reading</h2>
+        <dl class="reading" id="reading">
+          <div><dt>SpO₂ (%)</dt><dd id="spo2-value">–</dd></div>
+          <div><dt>Pulse (bpm)</dt><dd id="pulse-value">–</dd></div>
+          <div><dt>Pulse Amplitude Index</dt><dd id="pvi-value">–</dd></div>
+          <div><dt>Sample Time</dt><dd id="timestamp-value">–</dd></div>
+        </dl>
+      </section>
+
+      <section class="card">
+        <h2>Event Log</h2>
+        <pre id="log" class="log" aria-live="polite"></pre>
+      </section>
+
+      <section class="card warnings">
+        <h2>Limitations</h2>
+        <ul>
+          <li>Requires HTTPS or localhost.</li>
+          <li>Browsers must support Web Bluetooth (Chrome/Edge/Opera desktop, Chrome/Samsung Internet on Android).</li>
+          <li>Zacurate must expose the Pulse Oximeter Service (0x1822). If not, update <code>serviceUUID</code> and characteristic IDs in <code>main.js</code>.</li>
+        </ul>
+      </section>
+    </main>
+    <noscript>You need JavaScript enabled for this prototype.</noscript>
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

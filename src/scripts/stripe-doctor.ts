@@ -1,23 +1,24 @@
 // src/scripts/stripe-doctor.ts
-// Run with: node --env-file=.env.local -r ts-node/register src/scripts/stripe-doctor.ts
+// Run with: npx tsx --env-file=.env.local src/scripts/stripe-doctor.ts
 import Stripe from 'stripe';
+import { getStripeSecretKey, getStripeWebhookSecret, getPreferredAppBaseUrl } from '@/lib/stripeEnv';
 
 function out(label: string, value: unknown) {
   console.log(`${label}:`, value ?? '(missing)');
 }
 
 (async () => {
-  const secret = process.env.STRIPE_SECRET_KEY;
-  const whsec  = process.env.STRIPE_WEBHOOK_SECRET;
-  const base   = process.env.APP_BASE_URL;
+  const secret = getStripeSecretKey();
+  const whsec = getStripeWebhookSecret();
+  const base = getPreferredAppBaseUrl();
 
   console.log('--- Stripe Doctor ---');
-  out('STRIPE_SECRET_KEY present', !!secret);
-  out('STRIPE_WEBHOOK_SECRET present', !!whsec);
+  out('STRIPE_SECRET_KEY present', Boolean(secret));
+  out('STRIPE_WEBHOOK_SECRET present', Boolean(whsec));
   out('APP_BASE_URL', base || '(using runtime host fallback)');
 
   if (!secret) {
-    console.error('✖ No STRIPE_SECRET_KEY. Doctor cannot continue.');
+    console.error('[!] No STRIPE_SECRET_KEY. Doctor cannot continue.');
     process.exit(1);
   }
 
@@ -27,11 +28,11 @@ function out(label: string, value: unknown) {
     const account = await stripe.accounts.retrieve();
     out('Stripe Account', `${account.id} (${account.email ?? 'no-email'})`);
   } catch (err: any) {
-    console.error('✖ Secret key invalid or network error:', err?.message);
+    console.error('[!] Secret key invalid or network error:', err?.message);
     process.exit(1);
   }
 
-  console.log('✓ Secret key OK');
+  console.log('[ok] Secret key OK');
 
-  console.log('\nTip: Ensure your Stripe Dashboard → Webhooks uses the matching mode (Test vs Live) and the signing secret matches this environment.');
+  console.log('\nTip: Ensure your Stripe Dashboard -> Webhooks uses the matching mode (Test vs Live) and the signing secret matches this environment.');
 })();

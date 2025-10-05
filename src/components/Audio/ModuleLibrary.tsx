@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Play, Lock, CheckCircle, Star, Clock } from "lucide-react"
 import { AudioPlayer } from "./AudioPlayer"
 import type { MentalMasteryModule } from "@/types"
@@ -12,6 +12,51 @@ interface ModuleLibraryProps {
 export function ModuleLibrary({ userId }: ModuleLibraryProps) {
   const [selectedModule, setSelectedModule] = useState<MentalMasteryModule | null>(null)
   const [completedModules, setCompletedModules] = useState<string[]>([])
+  const [isSaving, setIsSaving] = useState(false)
+  const [loadError, setLoadError] = useState<string | null>(null)
+
+  useEffect(() => {
+    let active = true
+
+    const loadCompletions = async () => {
+      try {
+        setLoadError(null)
+        const response = await fetch('/api/modules/complete?limit=200', { cache: 'no-store' })
+        const data = await response.json().catch(() => null)
+
+        if (!response.ok || !data?.success) {
+          throw new Error(data?.error || 'Failed to load module history')
+        }
+
+        if (!active) return
+
+        const completedIds = Array.isArray(data.completions)
+          ? data.completions
+              .map((item: any) => item?.moduleId)
+              .filter((value: unknown): value is string => typeof value === 'string')
+          : []
+
+        if (completedIds.length) {
+          setCompletedModules(prev => {
+            const merged = new Set(prev)
+            completedIds.forEach((id: string) => merged.add(id))
+            return Array.from(merged)
+          })
+        }
+      } catch (error: any) {
+        console.error('Failed to load module completions:', error)
+        if (active) {
+          setLoadError(error?.message || 'Failed to load module completions')
+        }
+      }
+    }
+
+    loadCompletions()
+
+    return () => {
+      active = false
+    }
+  }, [])
 
   // Mock Mental Mastery modules with psychological progression
   const modules: MentalMasteryModule[] = [
@@ -92,15 +137,60 @@ export function ModuleLibrary({ userId }: ModuleLibraryProps) {
     // TODO: Save progress to database/Google Drive
   }
 
-  const handleModuleComplete = (moduleId: string) => {
-    setCompletedModules(prev => [...prev, moduleId])
-    setSelectedModule(null)
-    
-    // TODO: Award points and update deposit progress
-    console.log(`Module ${moduleId} completed - awarding points`)
-    
-    // Celebration psychology
-    alert('🎉 Module Complete! +100 points earned. Your partner stake is more secure!')
+  const handleModuleComplete = async (moduleId: string) => {
+    if (isSaving) return
+
+    setIsSaving(true)
+    try {
+      const moduleMeta = modules.find(m => m.id === moduleId)
+      const payload = {
+        moduleId,
+        audioDuration: moduleMeta?.duration ? Math.round(moduleMeta.duration) : undefined,
+        fullCompletion: true,
+      }
+      console.log('Saving module completion:', payload)
+
+      const response = await fetch('/api/modules/complete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+
+      console.log('Module completion response status:', response.status)
+      const data = await response.json().catch((e) => {
+        console.error('Failed to parse module completion response:', e)
+        return null
+      })
+      console.log('Module completion result:', data)
+
+      if (!response.ok || !data?.success) {
+        throw new Error(data?.error || 'Failed to record module completion')
+      }
+
+      setCompletedModules(prev => (prev.includes(moduleId) ? prev : [...prev, moduleId]))
+
+      console.log('Dispatching module:completion event with:', data)
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('module:completion', {
+          detail: {
+            moduleId,
+            pointsAwarded: data?.pointsAwarded ?? 0,
+            journalNote: data?.journalNote,
+            dailyTaskCompleted: Boolean(data?.dailyTaskCompleted),
+          },
+        }))
+      }
+
+      setSelectedModule(null)
+
+      const bonus = data?.pointsAwarded ? ` +${data.pointsAwarded} pts` : ''
+      alert(`Module completion saved!${bonus}`)
+    } catch (error: any) {
+      console.error('Module completion failed:', error)
+      alert(`Failed to record module completion: ${error?.message || 'Please try again.'}`)
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   const isModuleAccessible = (module: MentalMasteryModule) => {
@@ -144,11 +234,11 @@ export function ModuleLibrary({ userId }: ModuleLibraryProps) {
           </div>
         </div>
         
-        <AudioPlayer 
-          module={selectedModule}
-          onProgress={(progress) => handleModuleProgress(selectedModule.id, progress)}
-          onComplete={() => handleModuleComplete(selectedModule.id)}
-        />
+              <AudioPlayer 
+                module={selectedModule}
+                onProgress={(progress) => handleModuleProgress(selectedModule.id, progress)}
+                onComplete={() => void handleModuleComplete(selectedModule.id)}
+              />
       </div>
     )
   }
@@ -163,6 +253,12 @@ export function ModuleLibrary({ userId }: ModuleLibraryProps) {
           Complete modules to secure your partner stake and unlock advanced protocols.
         </p>
       </div>
+
+      {loadError && (
+        <div className="rounded-lg border border-red-400/40 bg-red-500/10 px-4 py-3 text-sm text-red-600">
+          {loadError}
+        </div>
+      )}
 
       {/* Progress Overview */}
       <div className="bg-gradient-to-r from-primary-50 to-secondary-50 rounded-lg p-6 border border-primary-200">

@@ -1,7 +1,27 @@
 {
   "permissions": {
     "allow": [
-      "Bash(come up with a way to pull in a food library\".\n\n**Food Search System:**\n- Created /api/nutrition/foods with 34 common foods\n- Searchable modal matching peptide library pattern\n- Click food → Auto-fills form → Quick add\n- Categories: Protein, Carbs, Fats, Vegetables, Restaurant\n\n**Simplified Food Entry:**\n- Only Name and Calories required (macros optional)\n- Clear \"Optional\" placeholders on P/C/F fields\n- Search button prominently placed at top\n- Manual entry still available below\n\n**Food Database Includes:**\n- 10 Protein sources (chicken, beef, salmon, eggs, etc)\n- 10 Carb sources (rice, potatoes, oats, pasta, etc)\n- 6 Fat sources (avocado, nuts, oils, etc)\n- 4 Vegetables\n- 4 Restaurant meals (Chipotle, Chick-fil-A, etc)\n\n**User Flow:**\n1. Click \"Add Food\"\n2. Click \"Search Food Database\" \n3. Type \"chicken\" or browse\n4. Click food → Form pre-fills\n5. Adjust meal type → Log\n\nThis matches the peptide tracker experience exactly. No more \ntyping macros manually for common foods!\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
+      "Bash(npm run stripe:doctor:*)",
+      "Bash(npx tsx:*)",
+      "Bash(npm run dev:*)",
+      "Bash(npm run stripe:doctor:check:*)",
+      "Bash(npx vercel env:*)",
+      "Bash(claude mcp:*)",
+      "Bash(curl -s \"https://resetbiology.com/api/checkout\" -X POST -H \"Content-Type: application/json\" -d \"{\"\"productId\"\":\"\"test\"\",\"\"priceId\"\":\"\"test\"\"}\")",
+      "Read(//c/Users/jonch/Pictures/Screenshots/**)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(curl:*)",
+      "Bash(grep:*)",
+      "Bash(npx vercel:*)",
+      "Bash(docker:*)",
+      "Bash(docker-compose up:*)",
+      "Bash(docker-compose:*)",
+      "Bash(bash:*)",
+      "Bash(node:*)",
+      "Bash(git reset:*)",
+      "Bash(npm run build:*)"
     ],
     "deny": [],
     "ask": [],

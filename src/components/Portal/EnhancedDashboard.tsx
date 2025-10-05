@@ -119,17 +119,25 @@ export function EnhancedDashboard() {
   // Save journal data
   const saveJournalEntry = async () => {
     try {
+      const payload = {
+        ...journalData,
+        date: new Date().toISOString(),
+        tasksCompleted: dailyTasks
+      }
+      console.log('Saving journal entry:', payload)
+
       const response = await fetch('/api/journal/entry', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...journalData,
-          date: new Date().toISOString(),
-          tasksCompleted: dailyTasks
-        })
+        body: JSON.stringify(payload)
       })
 
-      const result = await response.json().catch(() => null)
+      console.log('Journal save response status:', response.status)
+      const result = await response.json().catch((e) => {
+        console.error('Failed to parse JSON response:', e)
+        return null
+      })
+      console.log('Journal save result:', result)
 
       if (response.ok && result?.success) {
         setDailyTasks(prev => ({ ...prev, journal: true }))
@@ -137,11 +145,12 @@ export function EnhancedDashboard() {
         alert(`Daily journal entry saved!${bonus}`)
       } else {
         const message = result?.error || 'Unknown error'
+        console.error('Journal save failed:', { status: response.status, result })
         alert(`Failed to save journal: ${message}`)
       }
     } catch (error) {
-      console.error('Failed to save journal:', error)
-      alert('Failed to save journal entry. Please try again.')
+      console.error('Failed to save journal - exception:', error)
+      alert(`Failed to save journal entry: ${error instanceof Error ? error.message : 'Please try again.'}`)
     }
   }
 
@@ -295,6 +304,36 @@ export function EnhancedDashboard() {
     }
   }, [])
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    const handler = (event: Event) => {
+      const detail = (event as CustomEvent<{
+        moduleId?: string
+        pointsAwarded?: number
+        journalNote?: string
+        dailyTaskCompleted?: boolean
+      }>).detail
+
+      if (!detail) return
+
+      setDailyTasks((prev) => (prev.module ? prev : { ...prev, module: true }))
+
+      if (detail.journalNote) {
+        const note = detail.journalNote
+        setJournalData((prev) => ({
+          ...prev,
+          moduleNotes: appendNote(prev.moduleNotes, note),
+        }))
+      }
+    }
+
+    window.addEventListener('module:completion', handler)
+    return () => {
+      window.removeEventListener('module:completion', handler)
+    }
+  }, [])
+
   const TaskRow = ({ 
     icon, 
     title, 
@@ -333,7 +372,7 @@ export function EnhancedDashboard() {
       
       {/* Integrated card button on the right */}
       <Link href={linkTo} 
-        className={`p-4 ${cardColor} rounded-lg border hover:scale-105 transition-all flex flex-col items-center justify-center min-w-[100px] group-hover:shadow-lg`}
+        className={`px-3 py-3 ${cardColor} rounded-lg border transform transition duration-200 flex flex-col items-center justify-center min-w-[96px] group-hover:shadow-lg hover:-translate-y-1 hover:shadow-primary-500/20`}
       >
         <CardIcon className="w-8 h-8 text-white mb-2" />
         <span className="text-xs text-white font-medium">{title.split(' ')[1] || title}</span>
@@ -541,42 +580,42 @@ export function EnhancedDashboard() {
               {/* Right Side - Quick Access Cards (2x3 Grid) */}
               <div className="grid grid-cols-2 gap-4">
                 <Link href="/peptides" className="group">
-                  <div className="p-6 bg-gradient-to-br from-teal-600/30 to-teal-700/30 border border-teal-400/30 rounded-lg hover:scale-105 transition-all text-center">
+                  <div className="p-6 bg-gradient-to-br from-teal-600/30 to-teal-700/30 border border-teal-400/30 rounded-lg hover:scale-[1.02] hover:shadow-lg hover:shadow-teal-500/20 transition-all text-center">
                     <Target className="w-8 h-8 text-teal-300 mx-auto mb-2" />
                     <span className="text-white font-medium">Peptides</span>
                   </div>
                 </Link>
-                
+
                 <Link href="/workout" className="group">
-                  <div className="p-6 bg-gradient-to-br from-green-600/30 to-green-700/30 border border-green-400/30 rounded-lg hover:scale-105 transition-all text-center">
+                  <div className="p-6 bg-gradient-to-br from-green-600/30 to-green-700/30 border border-green-400/30 rounded-lg hover:scale-[1.02] hover:shadow-lg hover:shadow-green-500/20 transition-all text-center">
                     <Dumbbell className="w-8 h-8 text-green-300 mx-auto mb-2" />
                     <span className="text-white font-medium">Workout</span>
                   </div>
                 </Link>
-                
+
                 <Link href="/nutrition" className="group">
-                  <div className="p-6 bg-gradient-to-br from-amber-600/30 to-amber-700/30 border border-amber-400/30 rounded-lg hover:scale-105 transition-all text-center">
+                  <div className="p-6 bg-gradient-to-br from-amber-600/30 to-amber-700/30 border border-amber-400/30 rounded-lg hover:scale-[1.02] hover:shadow-lg hover:shadow-amber-500/20 transition-all text-center">
                     <Apple className="w-8 h-8 text-amber-300 mx-auto mb-2" />
                     <span className="text-white font-medium">Nutrition</span>
                   </div>
                 </Link>
-                
+
                 <Link href="/modules" className="group">
-                  <div className="p-6 bg-gradient-to-br from-purple-600/30 to-purple-700/30 border border-purple-400/30 rounded-lg hover:scale-105 transition-all text-center">
+                  <div className="p-6 bg-gradient-to-br from-purple-600/30 to-purple-700/30 border border-purple-400/30 rounded-lg hover:scale-[1.02] hover:shadow-lg hover:shadow-purple-500/20 transition-all text-center">
                     <Brain className="w-8 h-8 text-purple-300 mx-auto mb-2" />
                     <span className="text-white font-medium">Modules</span>
                   </div>
                 </Link>
                 
                 <Link href="/breath" className="group">
-                  <div className="p-6 bg-gradient-to-br from-blue-600/30 to-blue-700/30 border border-blue-400/30 rounded-lg hover:scale-105 transition-all text-center">
+                  <div className="p-6 bg-gradient-to-br from-blue-600/30 to-blue-700/30 border border-blue-400/30 rounded-lg hover:scale-[1.02] hover:shadow-lg hover:shadow-blue-500/20 transition-all text-center">
                     <Wind className="w-8 h-8 text-blue-300 mx-auto mb-2" />
                     <span className="text-white font-medium">Breathe</span>
                   </div>
                 </Link>
-                
+
                 <Link href="#journal" className="group">
-                  <div className="p-6 bg-gradient-to-br from-secondary-600/30 to-secondary-700/30 border border-secondary-400/30 rounded-lg hover:scale-105 transition-all text-center">
+                  <div className="p-6 bg-gradient-to-br from-secondary-600/30 to-secondary-700/30 border border-secondary-400/30 rounded-lg hover:scale-[1.02] hover:shadow-lg hover:shadow-secondary-500/20 transition-all text-center">
                     <BookOpen className="w-8 h-8 text-secondary-300 mx-auto mb-2" />
                     <span className="text-white font-medium">Journal</span>
                   </div>
@@ -772,3 +811,4 @@ export function EnhancedDashboard() {
     </div>
   )
 }
+

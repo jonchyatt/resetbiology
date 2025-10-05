@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
-import { stripe } from '@/lib/stripe';
+import { getStripe } from '@/lib/stripe';
 import { prisma } from '@/lib/prisma';
+import { getStripeWebhookSecret } from '@/lib/stripeEnv';
 import type Stripe from 'stripe';
 
 export const runtime = 'nodejs';
@@ -8,12 +9,17 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(req: Request) {
   console.log('[webhook] received', new Date().toISOString());
-  
-  if (!stripe) return NextResponse.json({ ok: true, note: 'Stripe not configured' }, { status: 200 });
+
+  const stripe = getStripe();
+  if (!stripe) {
+    return NextResponse.json({ ok: true, note: 'Stripe not configured' }, { status: 200 });
+  }
 
   const sig = req.headers.get('stripe-signature');
-  const secret = process.env.STRIPE_WEBHOOK_SECRET;
-  if (!sig || !secret) return NextResponse.json({ ok: true, note: 'Missing signature or secret' }, { status: 200 });
+  const secret = getStripeWebhookSecret();
+  if (!sig || !secret) {
+    return NextResponse.json({ ok: true, note: 'Missing signature or secret' }, { status: 200 });
+  }
 
   const payload = await req.text();
   let event: Stripe.Event;
@@ -22,7 +28,10 @@ export async function POST(req: Request) {
     event = stripe.webhooks.constructEvent(payload, sig, secret);
     console.log('[webhook] event type:', event.type);
   } catch (err: any) {
-    return NextResponse.json({ ok: false, error: `Webhook signature verification failed: ${err.message}` }, { status: 400 });
+    return NextResponse.json(
+      { ok: false, error: `Webhook signature verification failed: ${err.message}` },
+      { status: 400 },
+    );
   }
 
   if (event.type === 'checkout.session.completed') {
@@ -39,7 +48,7 @@ export async function POST(req: Request) {
         currency: session.currency ?? null,
         email: session.customer_details?.email ?? null,
         status: 'paid',
-      }
+      },
     });
   }
 

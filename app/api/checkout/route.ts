@@ -1,121 +1,127 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { stripe } from '@/lib/stripe';
+import { getStripe } from '@/lib/stripe';
 import { ensureStripeSync } from '@/lib/stripeSync';
+import { getPreferredAppBaseUrl } from '@/lib/stripeEnv';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 export async function POST(req: Request) {
   try {
-    // Check if Stripe is configured
+    const stripe = getStripe();
+
     if (!stripe) {
-      console.error('Stripe is not configured. Please set STRIPE_SECRET_KEY in environment variables.');
-      
-      // Return a user-friendly error page
+      console.error('[checkout] Stripe is not configured. Set STRIPE_SECRET_KEY in your environment.');
+
       const errorHtml = `
         <!DOCTYPE html>
-        <html>
+        <html lang="en">
           <head>
-            <title>Payment System Not Configured</title>
+            <meta charset="utf-8" />
+            <title>Stripe Not Configured</title>
             <style>
+              :root { color-scheme: light dark; }
               body {
-                font-family: system-ui, -apple-system, sans-serif;
+                font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 min-height: 100vh;
                 margin: 0;
                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                padding: 2rem;
               }
-              .error-container {
-                background: white;
-                padding: 3rem;
-                border-radius: 12px;
-                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-                max-width: 500px;
+              .error {
+                background: #fff;
+                max-width: 520px;
+                width: 100%;
+                border-radius: 16px;
+                padding: 2.5rem;
+                box-shadow: 0 20px 50px -20px rgba(15, 23, 42, 0.4);
                 text-align: center;
               }
               h1 {
                 color: #ef4444;
-                font-size: 1.5rem;
+                font-size: 1.75rem;
                 margin-bottom: 1rem;
               }
               p {
-                color: #6b7280;
-                margin-bottom: 2rem;
+                color: #475569;
+                margin-bottom: 1.25rem;
                 line-height: 1.6;
               }
-              .back-button {
+              code {
+                font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+                background: #f8fafc;
+                padding: 0.25rem 0.5rem;
+                border-radius: 6px;
+              }
+              a.button {
                 display: inline-block;
-                padding: 0.75rem 2rem;
+                margin-top: 1rem;
+                padding: 0.75rem 1.75rem;
+                border-radius: 9999px;
                 background: #3b82f6;
-                color: white;
+                color: #fff;
                 text-decoration: none;
-                border-radius: 6px;
-                font-weight: 500;
-                transition: background 0.2s;
+                font-weight: 600;
+                transition: background 0.2s ease;
               }
-              .back-button:hover {
-                background: #2563eb;
-              }
-              .details {
-                margin-top: 2rem;
-                padding: 1rem;
-                background: #f3f4f6;
-                border-radius: 6px;
+              a.button:hover { background: #2563eb; }
+              .hint {
+                margin-top: 1.5rem;
                 font-size: 0.875rem;
-                color: #6b7280;
-                font-family: monospace;
+                color: #64748b;
+                border-top: 1px solid #e2e8f0;
+                padding-top: 1rem;
               }
             </style>
           </head>
           <body>
-            <div class="error-container">
-              <h1>⚠️ Payment System Not Available</h1>
+            <main class="error">
+              <h1>Checkout Temporarily Unavailable</h1>
               <p>
-                The payment system is currently not configured. 
-                This is likely because Stripe API keys have not been set up yet.
+                Stripe is not currently configured for this deployment. To enable payments,
+                set the <code>STRIPE_SECRET_KEY</code> environment variable (and matching publishable key)
+                in your hosting provider, then redeploy.
               </p>
               <p>
-                <strong>For testing:</strong> Products need to be synced with Stripe 
-                and payment keys must be configured in the environment.
+                Once the key is present, the checkout flow will automatically provision the
+                required Stripe products and prices on first purchase.
               </p>
-              <a href="/order" class="back-button">← Back to Store</a>
-              <div class="details">
-                Error: STRIPE_SECRET_KEY not configured
+              <a href="/order" class="button">Back to Store</a>
+              <div class="hint">
+                Tip: On Vercel, add the key under <strong>Project &gt; Settings &gt; Environment Variables</strong>
+                and mark it for <em>Build &amp; Runtime</em>.
               </div>
-            </div>
+            </main>
           </body>
         </html>
       `;
-      
+
       return new NextResponse(errorHtml, {
         status: 503,
-        headers: { 'Content-Type': 'text/html' }
+        headers: { 'Content-Type': 'text/html' },
       });
     }
-    
-    // Handle both JSON and form data
+
     let productId: string;
     let priceId: string;
-    
     const contentType = req.headers.get('content-type');
-    
+
     if (contentType?.includes('application/json')) {
-      // Handle JSON request (from API calls)
       const data = await req.json();
       productId = data.productId;
       priceId = data.priceId;
     } else {
-      // Handle form submission (from order page)
       const formData = await req.formData();
       productId = formData.get('productId') as string;
       priceId = formData.get('priceId') as string;
     }
 
     console.log('[checkout] creating session for product/price', { productId, priceId });
-    
+
     const product = await prisma.product.findUnique({
       where: { id: String(productId) },
       include: { prices: true },
@@ -124,20 +130,26 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: false, error: 'Product not purchasable' }, { status: 400 });
     }
 
-    let price = product.prices.find(p => p.id === priceId) || product.prices.find(p => p.isPrimary) || product.prices[0];
-    if (!price) return NextResponse.json({ ok: false, error: 'No price configured' }, { status: 400 });
+    let price =
+      product.prices.find((p) => p.id === priceId) ||
+      product.prices.find((p) => p.isPrimary) ||
+      product.prices[0];
+    if (!price) {
+      return NextResponse.json({ ok: false, error: 'No price configured' }, { status: 400 });
+    }
 
-    // JIT publish if needed
     if (!product.stripeProductId || !price.stripePriceId) {
       await ensureStripeSync(product.id);
       const refreshed = await prisma.price.findUnique({ where: { id: price.id } });
-      if (!refreshed?.stripePriceId) return NextResponse.json({ ok: false, error: 'Stripe price missing after sync' }, { status: 500 });
+      if (!refreshed?.stripePriceId) {
+        return NextResponse.json({ ok: false, error: 'Stripe price missing after sync' }, { status: 500 });
+      }
       price = refreshed;
     }
 
-    const baseUrl = process.env.APP_BASE_URL || process.env.AUTH0_BASE_URL || 'https://resetbiology.com';
+    const baseUrl = (getPreferredAppBaseUrl() ?? 'https://resetbiology.com').replace(/\/+$/, '');
     const success = `${baseUrl}/order/success?session_id={CHECKOUT_SESSION_ID}`;
-    const cancel  = `${baseUrl}/order`;
+    const cancel = `${baseUrl}/order`;
 
     const session = await stripe.checkout.sessions.create({
       mode: price.interval ? 'subscription' : 'payment',
@@ -151,12 +163,10 @@ export async function POST(req: Request) {
       },
     });
 
-    // If form submission, redirect to Stripe checkout
     if (!contentType?.includes('application/json')) {
       return NextResponse.redirect(session.url!);
     }
-    
-    // If JSON request, return the URL
+
     return NextResponse.json({ ok: true, url: session.url }, { status: 200 });
   } catch (err: any) {
     console.error('Checkout error:', err);

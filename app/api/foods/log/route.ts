@@ -155,6 +155,8 @@ export async function POST(req: Request) {
         peptideNotes: '',
         workoutNotes: '',
         nutritionNotes: nutritionNote,
+        breathNotes: '',
+        moduleNotes: '',
         tasksCompleted: { meals: true },
       };
 
