@@ -17,6 +17,8 @@ interface DailyJournalData {
   peptideNotes: string
   workoutNotes: string
   nutritionNotes: string
+  breathNotes: string
+  moduleNotes: string
 }
 
 export function EnhancedDashboard() {
@@ -45,11 +47,20 @@ export function EnhancedDashboard() {
     affirmationMeans: "",
     peptideNotes: "",
     workoutNotes: "",
-    nutritionNotes: ""
+    nutritionNotes: "",
+    breathNotes: "",
+    moduleNotes: "",
   })
 
   // Mood options
   const moodOptions = ["Amazing 🚀", "Great 😊", "Good 👍", "Okay 😐", "Challenging 😔", "Tough 😟"]
+  const appendNote = (current: string, note: string) => {
+    if (!note) {
+      return current
+    }
+    return current ? `${current}\n${note}` : note
+  }
+
 
   // Handle task checkbox change
   const handleTaskChange = async (taskName: keyof typeof dailyTasks) => {
@@ -67,21 +78,36 @@ export function EnhancedDashboard() {
       // Auto-update journal when task is completed
       if (newState[taskName]) {
         const timestamp = new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
-        
+
         if (taskName === 'peptides') {
+          const note = `Completed peptide protocol at ${timestamp}`
           setJournalData(prev => ({
             ...prev,
-            peptideNotes: `Completed peptide protocol at ${timestamp}`
+            peptideNotes: appendNote(prev.peptideNotes, note),
           }))
         } else if (taskName === 'workout') {
+          const note = `Workout session completed at ${timestamp}`
           setJournalData(prev => ({
             ...prev,
-            workoutNotes: `Workout session completed at ${timestamp}`
+            workoutNotes: appendNote(prev.workoutNotes, note),
           }))
         } else if (taskName === 'meals') {
+          const note = `Nutrition tracked at ${timestamp}`
           setJournalData(prev => ({
             ...prev,
-            nutritionNotes: `Nutrition tracked at ${timestamp}`
+            nutritionNotes: appendNote(prev.nutritionNotes, note),
+          }))
+        } else if (taskName === 'breath') {
+          const note = `Breath practice logged at ${timestamp}`
+          setJournalData(prev => ({
+            ...prev,
+            breathNotes: appendNote(prev.breathNotes, note),
+          }))
+        } else if (taskName === 'module') {
+          const note = `Mental mastery module completed at ${timestamp}`
+          setJournalData(prev => ({
+            ...prev,
+            moduleNotes: appendNote(prev.moduleNotes, note),
           }))
         }
       }
@@ -93,7 +119,7 @@ export function EnhancedDashboard() {
   // Save journal data
   const saveJournalEntry = async () => {
     try {
-      const response = await fetch('/api/journal', {
+      const response = await fetch('/api/journal/entry', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -103,11 +129,15 @@ export function EnhancedDashboard() {
         })
       })
 
-      if (response.ok) {
-        alert('Daily journal entry saved!')
+      const result = await response.json().catch(() => null)
+
+      if (response.ok && result?.success) {
+        setDailyTasks(prev => ({ ...prev, journal: true }))
+        const bonus = result?.pointsAwarded ? ` +${result.pointsAwarded} pts` : ''
+        alert(`Daily journal entry saved!${bonus}`)
       } else {
-        const error = await response.json()
-        alert(`Failed to save journal: ${error.error || 'Unknown error'}`)
+        const message = result?.error || 'Unknown error'
+        alert(`Failed to save journal: ${message}`)
       }
     } catch (error) {
       console.error('Failed to save journal:', error)
@@ -159,6 +189,8 @@ export function EnhancedDashboard() {
           peptideNotes: entry.peptideNotes ?? prev.peptideNotes,
           workoutNotes: entry.workoutNotes ?? prev.workoutNotes,
           nutritionNotes: entry.nutritionNotes ?? prev.nutritionNotes,
+          breathNotes: entry.breathNotes ?? prev.breathNotes,
+          moduleNotes: entry.moduleNotes ?? prev.moduleNotes,
         }))
       } catch (error) {
         console.error('Failed to load journal entry:', error)
@@ -198,6 +230,68 @@ export function EnhancedDashboard() {
     window.addEventListener('nutrition:log-success', handler)
     return () => {
       window.removeEventListener('nutrition:log-success', handler)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    const handler = (event: Event) => {
+      const detail = (event as CustomEvent<{
+        pointsAwarded?: number
+        journalNote?: string
+        dailyTaskCompleted?: boolean
+      }>).detail
+
+      if (!detail) return
+
+      if (detail.dailyTaskCompleted) {
+        setDailyTasks((prev) => (prev.workout ? prev : { ...prev, workout: true }))
+      }
+
+      if (detail.journalNote) {
+        const note = detail.journalNote
+        setJournalData((prev) => ({
+          ...prev,
+          workoutNotes: appendNote(prev.workoutNotes, note),
+        }))
+      }
+    }
+
+    window.addEventListener('workout:log-success', handler)
+    return () => {
+      window.removeEventListener('workout:log-success', handler)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    const handler = (event: Event) => {
+      const detail = (event as CustomEvent<{
+        pointsAwarded?: number
+        journalNote?: string
+        dailyTaskCompleted?: boolean
+      }>).detail
+
+      if (!detail) return
+
+      if (detail.dailyTaskCompleted) {
+        setDailyTasks((prev) => (prev.breath ? prev : { ...prev, breath: true }))
+      }
+
+      if (detail.journalNote) {
+        const note = detail.journalNote
+        setJournalData((prev) => ({
+          ...prev,
+          breathNotes: appendNote(prev.breathNotes, note),
+        }))
+      }
+    }
+
+    window.addEventListener('breath:session-complete', handler)
+    return () => {
+      window.removeEventListener('breath:session-complete', handler)
     }
   }, [])
 
@@ -523,7 +617,12 @@ export function EnhancedDashboard() {
 
           {/* Journal Section Below Portal Layout */}
           <div className="card-hover-secondary" id="journal">
-            <h3 className="text-xl font-bold text-white mb-4">📔 Daily Journal Entry</h3>
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+              <h3 className="text-xl font-bold text-white">Daily Journal Entry</h3>
+              <Link href="/journal" className="text-sm text-primary-300 hover:text-primary-200 font-semibold mt-2 md:mt-0">
+                View History
+              </Link>
+            </div>
             
             {/* Weight and Mood */}
             <div className="grid grid-cols-2 gap-4 mb-4">
@@ -623,6 +722,18 @@ export function EnhancedDashboard() {
                 <div className="text-sm text-gray-300 p-2 bg-amber-600/10 rounded">
                   <Check className="w-4 h-4 inline mr-2 text-amber-400" />
                   {journalData.nutritionNotes}
+                </div>
+              )}
+              {journalData.breathNotes && (
+                <div className="text-sm text-gray-300 p-2 bg-blue-600/10 rounded">
+                  <Check className="w-4 h-4 inline mr-2 text-blue-400" />
+                  {journalData.breathNotes}
+                </div>
+              )}
+              {journalData.moduleNotes && (
+                <div className="text-sm text-gray-300 p-2 bg-purple-600/10 rounded">
+                  <Check className="w-4 h-4 inline mr-2 text-purple-400" />
+                  {journalData.moduleNotes}
                 </div>
               )}
             </div>

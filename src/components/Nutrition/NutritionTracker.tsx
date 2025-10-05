@@ -1,22 +1,10 @@
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
+import Link from "next/link"
 import { Apple, Target, Plus, X, Calendar, TrendingUp, Utensils } from "lucide-react"
 import { FoodQuickAdd, FoodQuickAddResult } from "./FoodQuickAdd"
 import { RecentFoods } from "./RecentFoods"
-
-interface MealPlan {
-  id: string
-  name: string
-  planType: string
-  dailyCalories: number
-  proteinTarget: number
-  carbsTarget: number
-  fatsTarget: number
-  description?: string
-  notes?: string
-  isActive: boolean
-}
 
 interface FoodEntry {
   id: string
@@ -47,9 +35,7 @@ interface FoodHistoryEntry {
 }
 
 export function NutritionTracker() {
-  const [activeTab, setActiveTab] = useState<'today' | 'plans' | 'history'>('today')
-  const [mealPlans, setMealPlans] = useState<MealPlan[]>([])
-  const [activePlan, setActivePlan] = useState<MealPlan | null>(null)
+  const [activeTab, setActiveTab] = useState<'today' | 'history'>('today')
   const [todaysFoods, setTodaysFoods] = useState<FoodEntry[]>([])
   const [showAddFoodModal, setShowAddFoodModal] = useState(false)
   const [showFoodSearchModal, setShowFoodSearchModal] = useState(false)
@@ -70,9 +56,8 @@ export function NutritionTracker() {
   const [carbs, setCarbs] = useState('')
   const [fats, setFats] = useState('')
 
-  // Load meal plans, food library, and today's foods
+  // Load food library and today's foods
   useEffect(() => {
-    fetchMealPlans()
     fetchTodaysFoods()
     fetchFoodLibrary()
   }, [])
@@ -195,23 +180,6 @@ export function NutritionTracker() {
     food.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     food.category.toLowerCase().includes(searchQuery.toLowerCase())
   )
-
-  const fetchMealPlans = async () => {
-    try {
-      const response = await fetch('/api/nutrition/plans', {
-        credentials: 'include'
-      })
-      const data = await response.json()
-
-      if (data.success && data.plans) {
-        setMealPlans(data.plans)
-        const active = data.plans.find((p: MealPlan) => p.isActive)
-        if (active) setActivePlan(active)
-      }
-    } catch (error) {
-      console.error('Error loading meal plans:', error)
-    }
-  }
 
   const fetchTodaysFoods = async () => {
     try {
@@ -339,105 +307,16 @@ export function NutritionTracker() {
     snack: todaysFoods.filter(f => f.mealType === 'snack')
   }
 
-  const handleSetActivePlan = async (planId: string) => {
-    try {
-      const response = await fetch('/api/nutrition/plans', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({
-          id: planId,
-          isActive: true
-        })
-      })
-
-      const data = await response.json()
-
-      if (data.success) {
-        console.log('✅ Active plan updated!')
-        fetchMealPlans()
-      } else {
-        alert('Failed to set active plan')
+  const lastLoggedAt = useMemo(() => {
+    let latest: Date | null = null
+    for (const food of todaysFoods) {
+      const logged = new Date(food.loggedAt)
+      if (!latest || logged.getTime() > latest.getTime()) {
+        latest = logged
       }
-    } catch (error) {
-      console.error('Error setting active plan:', error)
-      alert('Failed to set active plan')
     }
-  }
-
-  const MealPlanCard = ({ plan }: { plan: MealPlan }) => (
-    <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/30 rounded-lg p-6 border border-primary-400/30 backdrop-blur-sm shadow-xl hover:shadow-primary-400/20 transition-all duration-300">
-      <div className="flex items-start justify-between mb-4">
-        <div>
-          <h3 className="text-xl font-bold text-white">{plan.name}</h3>
-          <span className="text-xs text-secondary-300 bg-secondary-500/20 px-2 py-1 rounded-full mt-2 inline-block">
-            {plan.planType}
-          </span>
-        </div>
-        {plan.isActive ? (
-          <span className="text-xs text-green-300 bg-green-500/20 px-3 py-1 rounded-full">
-            Active
-          </span>
-        ) : (
-          <button
-            onClick={() => handleSetActivePlan(plan.id)}
-            className="text-xs text-primary-300 bg-primary-500/20 px-3 py-1 rounded-full hover:bg-primary-500/30 transition-colors"
-          >
-            Set Active
-          </button>
-        )}
-      </div>
-
-      <div className="flex gap-4">
-        <div className="flex-1 space-y-3 text-sm">
-          <div className="space-y-2">
-            <div>
-              <span className="text-gray-400">Daily Calories:</span>
-              <span className="text-white font-medium ml-2">{plan.dailyCalories}</span>
-            </div>
-            <div>
-              <span className="text-gray-400">Protein:</span>
-              <span className="text-white font-medium ml-2">{plan.proteinTarget}g</span>
-            </div>
-            <div>
-              <span className="text-gray-400">Carbs:</span>
-              <span className="text-white font-medium ml-2">{plan.carbsTarget}g</span>
-            </div>
-            <div>
-              <span className="text-gray-400">Fats:</span>
-              <span className="text-white font-medium ml-2">{plan.fatsTarget}g</span>
-            </div>
-          </div>
-
-          {plan.description && (
-            <div className="border-t border-gray-600 pt-3">
-              <p className="text-gray-300 text-xs">{plan.description}</p>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  )
-
-  const MacroProgressBar = ({ label, current, target, color }: { label: string; current: number; target: number; color: string }) => {
-    const percentage = Math.min((current / target) * 100, 100)
-
-    return (
-      <div className="space-y-2">
-        <div className="flex justify-between text-sm">
-          <span className="text-gray-300">{label}</span>
-          <span className="text-white font-medium">{current} / {target}g</span>
-        </div>
-        <div className="w-full bg-gray-700/50 rounded-full h-3 overflow-hidden">
-          <div
-            className={`h-full rounded-full transition-all duration-500 ${color}`}
-            style={{ width: `${percentage}%` }}
-          />
-        </div>
-      </div>
-    )
-  }
-
+    return latest
+  }, [todaysFoods])
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 relative"
          style={{
@@ -482,7 +361,7 @@ export function NutritionTracker() {
           <span className="text-secondary-400">Nutrition</span> Tracker
         </h2>
         <p className="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto">
-          Track macros, manage meal plans, optimize for peptide effectiveness
+          Track macros, fuel your protocols, optimize for peptide effectiveness
         </p>
       </div>
 
@@ -490,7 +369,7 @@ export function NutritionTracker() {
       <div className="container mx-auto px-4 pb-8">
         <div className="flex justify-center mb-8">
           <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-1 border border-primary-400/30 hover:shadow-primary-400/20 transition-all duration-300">
-            {(['today', 'plans', 'history'] as const).map((tab) => (
+            {(['today', 'history'] as const).map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -500,7 +379,7 @@ export function NutritionTracker() {
                     : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
                 }`}
               >
-                {tab === 'today' ? 'Today' : tab === 'plans' ? 'Meal Plans' : 'History'}
+                {tab === 'today' ? 'Today' : 'History'}
               </button>
             ))}
           </div>
@@ -508,7 +387,6 @@ export function NutritionTracker() {
 
         {activeTab === 'today' && (
           <div className="max-w-6xl mx-auto grid gap-6 lg:grid-cols-3">
-            {/* Main content */}
             <div className="lg:col-span-2 space-y-6">
               <FoodQuickAdd
                 onLogged={(result) => {
@@ -521,7 +399,6 @@ export function NutritionTracker() {
 
               <RecentFoods refreshToken={recentRefresh} />
 
-              {/* Today's Progress */}
               <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl hover:shadow-primary-400/20 transition-all duration-300">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-xl font-bold text-white flex items-center">
@@ -535,57 +412,43 @@ export function NutritionTracker() {
                   </button>
                 </div>
 
-                {activePlan && (
-                  <div className="space-y-4">
-                    <div className="bg-gray-800/50 rounded-lg p-4">
-                      <div className="flex justify-between text-sm mb-2">
-                        <span className="text-gray-300">Calories</span>
-                        <span className="text-white font-bold text-lg">{todaysTotals.calories} / {activePlan.dailyCalories}</span>
-                      </div>
-                      <div className="w-full bg-gray-700/50 rounded-full h-4 overflow-hidden">
-                        <div
-                          className="h-full bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full transition-all duration-500"
-                          style={{ width: `${Math.min((todaysTotals.calories / activePlan.dailyCalories) * 100, 100)}%` }}
-                        />
-                      </div>
-                    </div>
-
-                    <MacroProgressBar
-                      label="Protein"
-                      current={todaysTotals.protein}
-                      target={activePlan.proteinTarget}
-                      color="bg-gradient-to-r from-blue-500 to-blue-400"
-                    />
-                    <MacroProgressBar
-                      label="Carbs"
-                      current={todaysTotals.carbs}
-                      target={activePlan.carbsTarget}
-                      color="bg-gradient-to-r from-green-500 to-green-400"
-                    />
-                    <MacroProgressBar
-                      label="Fats"
-                      current={todaysTotals.fats}
-                      target={activePlan.fatsTarget}
-                      color="bg-gradient-to-r from-amber-500 to-amber-400"
-                    />
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="bg-gray-800/50 rounded-lg p-4">
+                    <p className="text-gray-300 text-sm">Calories logged</p>
+                    <p className="text-3xl font-bold text-white">{Math.round(todaysTotals.calories)}</p>
+                    <p className="text-xs text-gray-500 mt-1">kcal so far today</p>
                   </div>
-                )}
+                  <div className="bg-gray-800/50 rounded-lg p-4">
+                    <p className="text-gray-300 text-sm">Protein</p>
+                    <p className="text-3xl font-bold text-white">{Math.round(todaysTotals.protein)}g</p>
+                    <p className="text-xs text-gray-500 mt-1">Support lean muscle and recovery</p>
+                  </div>
+                  <div className="bg-gray-800/50 rounded-lg p-4">
+                    <p className="text-gray-300 text-sm">Carbs</p>
+                    <p className="text-3xl font-bold text-white">{Math.round(todaysTotals.carbs)}g</p>
+                    <p className="text-xs text-gray-500 mt-1">Time carbs around intense sessions</p>
+                  </div>
+                  <div className="bg-gray-800/50 rounded-lg p-4">
+                    <p className="text-gray-300 text-sm">Fats</p>
+                    <p className="text-3xl font-bold text-white">{Math.round(todaysTotals.fats)}g</p>
+                    <p className="text-xs text-gray-500 mt-1">Keep hormones happy with essential fats</p>
+                  </div>
+                </div>
               </div>
 
-              {/* Today's Meals */}
               <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl hover:shadow-primary-400/20 transition-all duration-300">
                 <h3 className="text-xl font-bold text-white mb-4 flex items-center">
                   <Utensils className="h-5 w-5 mr-2 text-secondary-400"/>Today's Meals
                 </h3>
 
-                {['breakfast', 'lunch', 'dinner', 'snack'].map((mealType) => (
+                {(['breakfast', 'lunch', 'dinner', 'snack'] as const).map((mealType) => (
                   <div key={mealType} className="mb-6 last:mb-0">
                     <h4 className="text-primary-300 font-semibold mb-2 capitalize">{mealType}</h4>
-                    {foodsByMeal[mealType as keyof typeof foodsByMeal].length === 0 ? (
+                    {foodsByMeal[mealType].length === 0 ? (
                       <p className="text-gray-400 text-sm italic">Nothing logged</p>
                     ) : (
                       <div className="space-y-2">
-                        {foodsByMeal[mealType as keyof typeof foodsByMeal].map((food) => (
+                        {foodsByMeal[mealType].map((food) => (
                           <div key={food.id} className="bg-gray-700/30 rounded-lg p-3 flex justify-between items-center">
                             <div>
                               <p className="text-white font-medium">{food.name}</p>
@@ -608,55 +471,42 @@ export function NutritionTracker() {
               </div>
             </div>
 
-            {/* Sidebar */}
             <div className="space-y-6">
               <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl hover:shadow-secondary-400/20 transition-all duration-300">
                 <h4 className="text-white font-semibold mb-2 flex items-center">
-                  <Calendar className="h-5 w-5 mr-2 text-secondary-400"/>Current Plan
+                  <Calendar className="h-5 w-5 mr-2 text-secondary-400"/>Daily Snapshot
                 </h4>
-                {activePlan ? (
-                  <div>
-                    <p className="text-primary-300 font-bold text-lg">{activePlan.name}</p>
-                    <p className="text-gray-400 text-sm">{activePlan.planType}</p>
-                  </div>
-                ) : (
-                  <p className="text-gray-400 text-sm">No active plan</p>
-                )}
+                <ul className="space-y-2 text-sm text-gray-300">
+                  <li className="flex items-center justify-between">
+                    <span>Meals logged</span>
+                    <span className="font-semibold text-white">{todaysFoods.length}</span>
+                  </li>
+                  <li className="flex items-center justify-between">
+                    <span>Last entry</span>
+                    <span className="font-semibold text-white">{lastLoggedAt ? lastLoggedAt.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) : '—'}</span>
+                  </li>
+                  <li className="flex items-center justify-between">
+                    <span>Total calories</span>
+                    <span className="font-semibold text-white">{Math.round(todaysTotals.calories)} kcal</span>
+                  </li>
+                </ul>
               </div>
 
               <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl hover:shadow-secondary-400/20 transition-all duration-300">
-                <h4 className="text-white font-semibold mb-2 flex items-center">
-                  <TrendingUp className="h-5 w-5 mr-2 text-secondary-400"/>Progress
+                <h4 className="text-white font-semibold mb-3 flex items-center">
+                  <TrendingUp className="h-5 w-5 mr-2 text-secondary-400"/>History &amp; Insights
                 </h4>
-                <p className="text-gray-300 text-sm">Weekly trends and analytics coming soon.</p>
+                <p className="text-gray-300 text-sm mb-3">
+                  Review your daily trendlines across peptides, workouts, meals, breath work, and journal entries in one timeline.
+                </p>
+                <Link
+                  href="/journal"
+                  className="inline-flex items-center justify-center rounded-lg border border-secondary-400/40 bg-secondary-500/20 px-4 py-2 text-sm font-medium text-secondary-200 transition hover:border-secondary-300 hover:bg-secondary-500/30"
+                >
+                  Open Daily History
+                </Link>
               </div>
             </div>
-          </div>
-        )}
-
-        {activeTab === 'plans' && (
-          <div className="max-w-5xl mx-auto">
-            <div className="mb-6 flex justify-between items-center">
-              <h3 className="text-2xl font-bold text-white">Meal Plans</h3>
-              <a
-                href="/admin/nutrition"
-                className="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
-              >
-                <Plus className="inline h-4 w-4 mr-1"/>Create Plan
-              </a>
-            </div>
-
-            <div className="grid gap-6 md:grid-cols-2">
-              {mealPlans.map((plan) => (
-                <MealPlanCard key={plan.id} plan={plan} />
-              ))}
-            </div>
-
-            {mealPlans.length === 0 && (
-              <div className="text-center py-12">
-                <p className="text-gray-400">No meal plans yet. Create one to get started!</p>
-              </div>
-            )}
           </div>
         )}
 
@@ -745,7 +595,6 @@ export function NutritionTracker() {
           </div>
         )}
       </div>
-
       {/* Add Food Modal */}
       {showAddFoodModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
@@ -943,3 +792,6 @@ export function NutritionTracker() {
     </div>
   )
 }
+
+
+

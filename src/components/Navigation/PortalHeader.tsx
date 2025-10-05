@@ -31,6 +31,9 @@ export function PortalHeader({
             <a href="/order" className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
               Order Peptides
             </a>
+            <a href="/journal" className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
+              Daily History
+            </a>
             <a href="/profile" className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
               Profile
             </a>

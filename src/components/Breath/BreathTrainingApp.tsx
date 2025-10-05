@@ -71,6 +71,43 @@ export function BreathTrainingApp({ onSessionComplete }: BreathTrainingAppProps)
   const inhaleHoldStartRef = useRef(0)
   const storage = BreathStorage.getInstance()
 
+  const [history, setHistory] = useState<any[]>([])
+  const [historyLoading, setHistoryLoading] = useState(false)
+  const [historyError, setHistoryError] = useState<string | null>(null)
+
+  const loadHistory = useCallback(
+    async (signal?: AbortSignal) => {
+      try {
+        setHistoryLoading(true)
+        setHistoryError(null)
+        const response = await fetch('/api/breath/sessions?limit=20', {
+          cache: 'no-store',
+          signal,
+        })
+        const data = await response.json()
+        if (!response.ok || !data?.success) {
+          throw new Error(data?.error || 'Failed to load breath history')
+        }
+        setHistory(Array.isArray(data.sessions) ? data.sessions : [])
+      } catch (error: any) {
+        if (error?.name === 'AbortError') return
+        console.error('Failed to load breath session history:', error)
+        setHistoryError(error?.message || 'Unable to load breath history')
+      } finally {
+        if (!signal?.aborted) {
+          setHistoryLoading(false)
+        }
+      }
+    },
+    [],
+  )
+
+  useEffect(() => {
+    const controller = new AbortController()
+    loadHistory(controller.signal)
+    return () => controller.abort()
+  }, [loadHistory])
+
   // Keep refs updated
   useEffect(() => {
     stateRef.current = state
@@ -313,15 +350,31 @@ export function BreathTrainingApp({ onSessionComplete }: BreathTrainingAppProps)
 
     // ALSO save to MongoDB database for persistence across devices
     try {
-      await fetch('/api/breath/sessions', {
+      const response = await fetch('/api/breath/sessions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sessionData })
       })
+      const data = await response.json().catch(() => null)
+      if (!response.ok || !data?.success) {
+        throw new Error(data?.error || 'Failed to save breath session')
+      }
+
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('breath:session-complete', {
+          detail: {
+            pointsAwarded: data.pointsAwarded ?? 0,
+            journalNote: data.journalNote,
+            dailyTaskCompleted: Boolean(data.dailyTaskCompleted),
+          },
+        }))
+      }
     } catch (error) {
       console.error('Failed to save breath session to database:', error)
       // Continue anyway - data is still saved locally
     }
+
+    loadHistory().catch(() => {})
 
     onSessionComplete?.(sessionData)
 
@@ -580,6 +633,72 @@ export function BreathTrainingApp({ onSessionComplete }: BreathTrainingAppProps)
           </div>
         </div>
       </div>
+
+
+      <section className="mt-12">
+        <div className="bg-gray-900/60 border border-secondary-500/30 rounded-2xl p-6 shadow-xl">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-white">Recent Breath Sessions</h3>
+            <button
+              type="button"
+              onClick={() => loadHistory().catch(() => {})}
+              className="text-xs text-primary-300 hover:text-primary-200 font-medium transition-colors"
+            >
+              Refresh
+            </button>
+          </div>
+
+          {historyLoading ? (
+            <div className="py-6 text-center text-sm text-gray-300">
+              <div className="mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-2 border-secondary-300 border-t-transparent" />
+              Loading session history...
+            </div>
+          ) : historyError ? (
+            <div className="rounded-lg border border-rose-500/40 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
+              {historyError}
+            </div>
+          ) : history.length === 0 ? (
+            <div className="py-6 text-center text-sm text-gray-400">
+              No breath sessions logged yet. Complete a breathing session to see it here.
+            </div>
+          ) : (
+            <ul className="grid gap-3 md:grid-cols-2">
+              {history.slice(0, 6).map((session: any) => {
+                const createdAt = session.createdAt ? new Date(session.createdAt) : null
+                const dateLabel = createdAt ? createdAt.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : 'N/A'
+                const timeLabel = createdAt ? createdAt.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) : ''
+                const longestExhale = typeof session.progressScore === 'number' ? session.progressScore : null
+
+                return (
+                  <li key={session.id ?? `${dateLabel}-${timeLabel}`} className="rounded-lg border border-gray-700/40 bg-gray-800/40 px-4 py-3 text-sm text-gray-200 flex flex-col gap-2">
+                    <div className="flex items-center justify-between">
+                      <p className="font-semibold text-white">{session.sessionType || 'Breath session'}</p>
+                      <span className="text-xs text-gray-400">{dateLabel}</span>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-3 text-xs text-gray-400">
+                      <span>{session.cycles ?? 0} cycles</span>
+                      <span className="text-gray-500">|</span>
+                      <span>{Math.max(1, Math.round((session.duration ?? 0) / 60))} min</span>
+                      {longestExhale !== null && (
+                        <>
+                          <span className="text-gray-500">|</span>
+                          <span>Longest exhale {longestExhale.toFixed(1)}s</span>
+                        </>
+                      )}
+                      {timeLabel && (
+                        <>
+                          <span className="text-gray-500">|</span>
+                          <span>{timeLabel}</span>
+                        </>
+                      )}
+                    </div>
+                  </li>
+                )
+              })}
+            </ul>
+          )}
+        </div>
+      </section>
 
       {/* Session Complete Modal */}
       {state === 'session_complete' && completedCycles.length > 0 && (
