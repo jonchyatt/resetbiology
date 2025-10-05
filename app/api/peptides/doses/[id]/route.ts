@@ -54,14 +54,21 @@ export async function PATCH(
     const data = await request.json()
 
     // Find the peptide dose and verify ownership
-    const existingDose = await prisma.peptideDoses.findFirst({
+    // Note: peptide_doses doesn't have a userId field directly, need to check through protocol
+    const existingDose = await prisma.peptide_doses.findFirst({
       where: {
-        id: params.id,
-        userId: user.id
+        id: params.id
+      },
+      include: {
+        user_peptide_protocols: {
+          include: {
+            users: true
+          }
+        }
       }
     })
 
-    if (!existingDose) {
+    if (!existingDose || existingDose.user_peptide_protocols.userId !== user.id) {
       return NextResponse.json(
         { error: 'Peptide dose not found or unauthorized' },
         { status: 404 }
@@ -79,7 +86,7 @@ export async function PATCH(
     if (data.doseDate !== undefined) updateData.doseDate = new Date(data.doseDate)
 
     // Update the peptide dose
-    const updatedDose = await prisma.peptideDoses.update({
+    const updatedDose = await prisma.peptide_doses.update({
       where: { id: params.id },
       data: updateData
     })
