@@ -1,0 +1,24 @@
+# Environment variables (contains Stripe keys)
+.env
+
+# WordPress core files
+wp-content/
+database.sql
+backup.sql
+
+# Docker volumes
+db_data/
+
+# Backup files
+*.sql
+wp-content-backup/
+woocommerce-export.zip
+
+# Logs
+*.log
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
