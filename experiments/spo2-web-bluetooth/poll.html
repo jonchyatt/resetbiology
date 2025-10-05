@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zacurate Polling Reader</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main>
+    <header>
+      <h1>🔄 Zacurate Polling Reader</h1>
+      <p class="lead">
+        Reads all available characteristics repeatedly to find SpO₂ and HR data.
+      </p>
+    </header>
+
+    <section class="card">
+      <h2>Connection</h2>
+      <p class="hint"><strong>Put your finger in the Zacurate and keep it there!</strong></p>
+      <button id="connect-btn">Connect & Start Polling</button>
+      <button id="disconnect-btn" disabled>Stop & Disconnect</button>
+      <div id="status" class="status">Ready...</div>
+    </section>
+
+    <section class="card">
+      <h2>Live Readings</h2>
+      <div class="reading">
+        <div>
+          <dt>SpO₂ (%)</dt>
+          <dd id="spo2" style="font-size: 3rem; color: #0071e3; font-weight: bold;">--</dd>
+        </div>
+        <div>
+          <dt>Heart Rate (bpm)</dt>
+          <dd id="hr" style="font-size: 3rem; color: #ff3b30; font-weight: bold;">--</dd>
+        </div>
+        <div>
+          <dt>Battery</dt>
+          <dd id="battery" style="font-size: 2rem; color: #34c759;">100%</dd>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>All Characteristic Values (Live Polling)</h2>
+      <pre id="chars" class="log" style="max-height: 300px;">Waiting for connection...</pre>
+    </section>
+
+    <section class="card">
+      <h2>Event Log</h2>
+      <pre id="log" class="log">Ready to connect...</pre>
+    </section>
+  </main>
+
+  <script type="module">
+    const connectBtn = document.getElementById('connect-btn');
+    const disconnectBtn = document.getElementById('disconnect-btn');
+    const statusEl = document.getElementById('status');
+    const logEl = document.getElementById('log');
+    const charsEl = document.getElementById('chars');
+    const spo2El = document.getElementById('spo2');
+    const hrEl = document.getElementById('hr');
+    const batteryEl = document.getElementById('battery');
+
+    let device = null;
+    let server = null;
+    let readableChars = [];
+    let pollingInterval = null;
+
+    const KNOWN_UUIDS = {
+      '00002a00': 'Device Name',
+      '00002a01': 'Appearance',
+      '00002a02': 'Peripheral Privacy Flag',
+      '00002a04': 'Peripheral Preferred Connection Parameters',
+      '00002a19': 'Battery Level',
+      '00002a24': 'Model Number',
+      '00002a28': 'Software Revision',
+      '00002a29': 'Manufacturer Name',
+    };
+
+    connectBtn.addEventListener('click', async () => {
+      try {
+        log('🔍 Opening Bluetooth picker...');
+
+        device = await navigator.bluetooth.requestDevice({
+          acceptAllDevices: true,
+          optionalServices: [
+            0x180F, 0x180A, 0x1822, 0x1810, 0x181D,
+            'generic_access', 'generic_attribute',
+          ]
+        });
+
+        log(`✅ Selected: ${device.name || 'Unknown'}`);
+        statusEl.textContent = 'Connecting...';
+
+        server = await device.gatt.connect();
+        log('✅ Connected!');
+
+        // Find all readable characteristics
+        const services = await server.getPrimaryServices();
+        log(`Found ${services.length} service(s)`);
+
+        for (const service of services) {
+          try {
+            const chars = await service.getCharacteristics();
+            for (const char of chars) {
+              if (char.properties.read) {
+                readableChars.push({
+                  char: char,
+                  uuid: char.uuid,
+                  shortUuid: char.uuid.substring(4, 8),
+                  name: KNOWN_UUIDS[char.uuid.substring(4, 8)] || 'Unknown'
+                });
+              }
+            }
+          } catch (e) {
+            // Skip if can't read
+          }
+        }
+
+        log(`✅ Found ${readableChars.length} readable characteristics`);
+
+        // Start polling
+        statusEl.textContent = 'Connected! Polling every 500ms...';
+        connectBtn.disabled = true;
+        disconnectBtn.disabled = false;
+
+        startPolling();
+
+        device.addEventListener('gattserverdisconnected', () => {
+          log('❌ Device disconnected');
+          stopPolling();
+          resetUI();
+        });
+
+      } catch (err) {
+        log(`❌ Error: ${err.message}`);
+        statusEl.textContent = `Error: ${err.message}`;
+      }
+    });
+
+    disconnectBtn.addEventListener('click', () => {
+      stopPolling();
+      if (device && device.gatt.connected) {
+        device.gatt.disconnect();
+      }
+      resetUI();
+    });
+
+    function startPolling() {
+      pollingInterval = setInterval(async () => {
+        await pollAllCharacteristics();
+      }, 500); // Poll twice per second
+    }
+
+    function stopPolling() {
+      if (pollingInterval) {
+        clearInterval(pollingInterval);
+        pollingInterval = null;
+      }
+    }
+
+    async function pollAllCharacteristics() {
+      const results = [];
+      let foundSpO2 = false;
+      let foundHR = false;
+
+      for (const item of readableChars) {
+        try {
+          const value = await item.char.readValue();
+          const bytes = new Uint8Array(value.buffer);
+          const hex = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join(' ');
+
+          results.push(`[${item.shortUuid}] ${item.name}: ${hex}`);
+
+          // Battery level
+          if (item.shortUuid === '2a19' && bytes.length === 1) {
+            batteryEl.textContent = `${bytes[0]}%`;
+          }
+
+          // Try to detect SpO2 and HR from any characteristic
+          for (let i = 0; i < bytes.length; i++) {
+            const val = bytes[i];
+
+            // SpO2 is typically 70-100
+            if (!foundSpO2 && val >= 70 && val <= 100) {
+              spo2El.textContent = val;
+              results.push(`   💙 → Possible SpO₂: ${val}%`);
+              foundSpO2 = true;
+            }
+
+            // Heart rate is typically 30-220
+            if (!foundHR && val >= 30 && val <= 220 && val !== bytes[i-1]) {
+              hrEl.textContent = val;
+              results.push(`   ❤️  → Possible HR: ${val} bpm`);
+              foundHR = true;
+            }
+          }
+
+        } catch (e) {
+          results.push(`[${item.shortUuid}] ${item.name}: [error reading]`);
+        }
+      }
+
+      charsEl.textContent = results.join('\n');
+    }
+
+    function resetUI() {
+      statusEl.textContent = 'Not connected';
+      connectBtn.disabled = false;
+      disconnectBtn.disabled = true;
+      spo2El.textContent = '--';
+      hrEl.textContent = '--';
+      batteryEl.textContent = '--';
+      charsEl.textContent = 'Waiting for connection...';
+      readableChars = [];
+    }
+
+    function log(message) {
+      const time = new Date().toLocaleTimeString();
+      logEl.textContent = `[${time}] ${message}\n` + logEl.textContent;
+
+      const lines = logEl.textContent.split('\n');
+      if (lines.length > 50) {
+        logEl.textContent = lines.slice(0, 50).join('\n');
+      }
+    }
+  </script>
+</body>
+</html>

@@ -707,7 +707,7 @@ export function EnhancedDashboard() {
 
             {/* David Snyder Affirmation Format */}
             <div className="space-y-3 p-4 bg-primary-600/10 rounded-lg border border-primary-400/30 mb-4">
-              <h4 className="font-medium text-primary-300">Daily Affirmation (David Snyder Method)</h4>
+              <h4 className="font-medium text-primary-300">Daily Affirmation</h4>
               
               <div>
                 <label className="block text-sm text-gray-300 mb-1">I am...</label>

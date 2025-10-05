@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aggressive Service Discovery</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main>
+    <header>
+      <h1>🔥 AGGRESSIVE Service Discovery</h1>
+      <p class="lead">
+        Requesting access to EVERY possible Bluetooth service to find SpO₂!
+      </p>
+    </header>
+
+    <section class="card">
+      <h2>Discovery</h2>
+      <p class="hint"><strong>Put finger in device first!</strong></p>
+      <button id="discover-btn">Discover ALL Services</button>
+      <div id="status" class="status">Ready...</div>
+    </section>
+
+    <section class="card">
+      <h2>Discovery Results</h2>
+      <pre id="results" class="log">Services will appear here...</pre>
+    </section>
+  </main>
+
+  <script type="module">
+    const discoverBtn = document.getElementById('discover-btn');
+    const statusEl = document.getElementById('status');
+    const resultsEl = document.getElementById('results');
+
+    discoverBtn.addEventListener('click', async () => {
+      try {
+        statusEl.textContent = 'Opening Bluetooth picker...';
+        resultsEl.textContent = '';
+
+        // Request with MASSIVE list of optional services
+        const device = await navigator.bluetooth.requestDevice({
+          acceptAllDevices: true,
+          optionalServices: [
+            // Standard services
+            0x1800, 0x1801, 0x180A, 0x180F, 0x1822, 0x1810, 0x181D,
+            // Every possible custom service pattern
+            'b31e89de-da01-4784-b19c-61b7baa5f8b4',
+            'b31e89de-da02-4784-b19c-61b7baa5f8b4',
+            'b31e89de-da03-4784-b19c-61b7baa5f8b4',
+            'b31e89de-da04-4784-b19c-61b7baa5f8b4',
+            'b31e89de-da05-4784-b19c-61b7baa5f8b4',
+            // Common proprietary services
+            '49535343-fe7d-4ae5-8fa9-9fafd205e455',
+            '0000ffe0-0000-1000-8000-00805f9b34fb',
+            '0000ffe1-0000-1000-8000-00805f9b34fb',
+            '6e400001-b5a3-f393-e0a9-e50e24dcca9e',
+            '6e400002-b5a3-f393-e0a9-e50e24dcca9e',
+            '6e400003-b5a3-f393-e0a9-e50e24dcca9e',
+            // Try every service in the 0x18XX range
+            0x1800, 0x1801, 0x1802, 0x1803, 0x1804, 0x1805, 0x1806, 0x1807,
+            0x1808, 0x1809, 0x180A, 0x180D, 0x180E, 0x180F, 0x1810, 0x1811,
+            0x1812, 0x1813, 0x1814, 0x1815, 0x1816, 0x1817, 0x1818, 0x1819,
+            0x181A, 0x181B, 0x181C, 0x181D, 0x181E, 0x181F, 0x1820, 0x1821,
+            0x1822, 0x1823, 0x1824, 0x1825, 0x1826, 0x1827, 0x1828,
+          ]
+        });
+
+        log(`📱 Device: ${device.name || 'Unknown'}`);
+        log(`📱 ID: ${device.id}\n`);
+
+        const server = await device.gatt.connect();
+        log(`✅ Connected!\n`);
+
+        const services = await server.getPrimaryServices();
+        log(`Found ${services.length} service(s):\n`);
+        log(`${'='.repeat(80)}\n`);
+
+        for (const service of services) {
+          log(`\n📦 SERVICE: ${service.uuid}`);
+
+          try {
+            const chars = await service.getCharacteristics();
+            log(`   ${chars.length} characteristic(s):\n`);
+
+            for (const char of chars) {
+              const props = [];
+              if (char.properties.read) props.push('READ');
+              if (char.properties.write) props.push('WRITE');
+              if (char.properties.notify) props.push('NOTIFY');
+              if (char.properties.indicate) props.push('INDICATE');
+
+              log(`     ${char.uuid} [${props.join(', ')}]`);
+
+              // Try to read ALL readable characteristics
+              if (char.properties.read) {
+                try {
+                  const value = await char.readValue();
+                  const bytes = new Uint8Array(value.buffer);
+                  const hex = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join(' ');
+
+                  log(`       HEX: ${hex}`);
+
+                  // Look for SpO2 values (70-100 range)
+                  for (let i = 0; i < bytes.length; i++) {
+                    const val = bytes[i];
+                    if (val >= 70 && val <= 100) {
+                      log(`       🎯 BYTE ${i}: ${val} (possible SpO₂!)`);
+                    }
+                    if (val >= 40 && val <= 180) {
+                      log(`       ❤️  BYTE ${i}: ${val} (possible HR!)`);
+                    }
+                  }
+
+                } catch (e) {
+                  log(`       ⚠️ Read failed: ${e.message}`);
+                }
+              }
+
+              // Subscribe to ALL NOTIFY characteristics
+              if (char.properties.notify) {
+                try {
+                  await char.startNotifications();
+                  char.addEventListener('characteristicvaluechanged', (e) => {
+                    const bytes = new Uint8Array(e.target.value.buffer);
+                    const hex = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join(' ');
+                    log(`\n🔔 NOTIFY [${char.uuid.substring(4,8)}]: ${hex}`);
+
+                    // Check for SpO2/HR values
+                    for (let i = 0; i < bytes.length; i++) {
+                      const val = bytes[i];
+                      if (val >= 70 && val <= 100) {
+                        log(`   🎯 BYTE ${i}: ${val} (SpO₂?)`);
+                      }
+                      if (val >= 40 && val <= 180) {
+                        log(`   ❤️  BYTE ${i}: ${val} (HR?)`);
+                      }
+                    }
+                  });
+                  log(`       ✅ Subscribed to notifications!`);
+                } catch (e) {
+                  log(`       ⚠️ Subscribe failed: ${e.message}`);
+                }
+              }
+
+              log('');
+            }
+          } catch (err) {
+            log(`   ❌ Could not read characteristics: ${err.message}\n`);
+          }
+        }
+
+        log(`\n${'='.repeat(80)}`);
+        log(`\n✅ DISCOVERY COMPLETE!`);
+        log(`\nNow monitoring for notifications... Keep finger in device!`);
+        statusEl.textContent = 'Discovery complete! Monitoring notifications...';
+
+      } catch (err) {
+        log(`\n❌ ERROR: ${err.message}`);
+        statusEl.textContent = `Error: ${err.message}`;
+      }
+    });
+
+    function log(message) {
+      resultsEl.textContent += message + '\n';
+    }
+  </script>
+</body>
+</html>

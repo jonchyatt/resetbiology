@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from "react"
 import Link from "next/link"
 import { PortalHeader } from "@/components/Navigation/PortalHeader"
-import { ChevronsLeft, ChevronsRight, Flame, NotebookPen, Utensils, Droplets, Activity, BrainCircuit, Wind, Dumbbell } from "lucide-react"
+import { ChevronsLeft, ChevronsRight, Flame, NotebookPen, Utensils, Droplets, Activity, BrainCircuit, Wind, Dumbbell, X, Edit2, Eye } from "lucide-react"
 
 interface JournalHistoryDay {
   date: string
@@ -141,49 +141,33 @@ export function JournalHistory() {
 
         />
 
+        {/* Title Section - Matching Tracker Pages */}
+        <div className="text-center py-8">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 text-shadow-lg animate-fade-in">
+            <span className="text-primary-400">Holistic Research</span> Protocol Tracker
+          </h2>
+          <p className="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto font-medium leading-relaxed drop-shadow-sm mb-4">
+            Review everything you completed - peptides, nutrition, workouts, breath practice, mindset modules, and journal reflections.
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-3 mt-6">
+            <Link
+              href="/portal"
+              className="inline-flex items-center gap-2 rounded-xl border border-primary-400/40 bg-primary-500/10 px-4 py-2 text-sm font-medium text-primary-200 transition hover:border-primary-300 hover:bg-primary-500/20 hover:text-white focus:outline-none focus:ring-2 focus:ring-primary-300/60"
+            >
+              Back to Portal
+            </Link>
+            <Link
+              href="/portal#journal"
+              className="inline-flex items-center gap-2 rounded-xl border border-secondary-400/40 bg-secondary-500/10 px-4 py-2 text-sm font-medium text-secondary-200 transition hover:border-secondary-300 hover:bg-secondary-500/20 hover:text-white focus:outline-none focus:ring-2 focus:ring-secondary-300/60"
+            >
+              Open Today's Journal
+            </Link>
+          </div>
+        </div>
+
         <div className="flex-1 overflow-y-auto">
 
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
-
-            <div className="rounded-2xl border border-primary-400/30 bg-slate-900/70 backdrop-blur-md shadow-2xl shadow-black/40 px-6 py-6 flex flex-wrap items-center justify-between gap-6">
-
-              <div>
-
-                <p className="text-sm uppercase tracking-[0.25em] text-primary-200/80">Daily History</p>
-
-                <h1 className="text-3xl font-bold text-white mt-2">Track your holistic protocol</h1>
-
-                <p className="text-sm text-slate-300 mt-2 max-w-2xl">
-
-                  Review everything you completed in a day - peptides, nutrition, workouts, breath practice, mindset modules, and your journal reflections.
-
-                </p>
-
-              </div>
-
-              <div className="flex flex-wrap items-center gap-3">
-
-                <Link
-
-                  href="/portal"
-
-                  className="inline-flex items-center gap-2 rounded-xl border border-primary-400/40 bg-primary-500/10 px-4 py-2 text-sm font-medium text-primary-200 transition hover:border-primary-300 hover:bg-primary-500/20 hover:text-white focus:outline-none focus:ring-2 focus:ring-primary-300/60"
-
-                >
-
-                  Back to Portal
-
-                </Link>
-
-                <Link
-                  href="/portal#journal"
-                  className="inline-flex items-center gap-2 rounded-xl border border-secondary-400/40 bg-secondary-500/10 px-4 py-2 text-sm font-medium text-secondary-200 transition hover:border-secondary-300 hover:bg-secondary-500/20 hover:text-white focus:outline-none focus:ring-2 focus:ring-secondary-300/60"
-                >
-                  Open Today's Journal
-                </Link>
-              </div>
-
-            </div>
 
 
 
@@ -366,9 +350,446 @@ function startOfMonth(date: Date) {
 function DayDetail({ day }: { day: JournalHistoryDay }) {
   const displayDate = useMemo(() => new Date(day.iso), [day.iso])
   const entry = day.journalEntry?.entry ?? {}
+  const [detailsModal, setDetailsModal] = useState<{ type: string; data: any } | null>(null)
+  const [editModal, setEditModal] = useState<{ type: string; data: any } | null>(null)
+  const [editForm, setEditForm] = useState<any>({})
+  const [saving, setSaving] = useState(false)
 
   return (
     <div className="space-y-6">
+      {/* Modals */}
+      {detailsModal && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setDetailsModal(null)}>
+          <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl border border-primary-400/30 max-w-2xl w-full max-h-[80vh] overflow-y-auto p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-2xl font-bold text-white">
+                {detailsModal.type === 'workout' && 'Workout Details'}
+                {detailsModal.type === 'breath' && 'Breath Session Details'}
+                {detailsModal.type === 'peptide' && 'Peptide Dose Details'}
+                {detailsModal.type === 'module' && 'Mental Module Details'}
+              </h3>
+              <button onClick={() => setDetailsModal(null)} className="p-2 rounded-lg hover:bg-slate-700/50 transition-colors">
+                <X className="h-5 w-5 text-slate-300" />
+              </button>
+            </div>
+            <div className="text-slate-200 space-y-3">
+              {detailsModal.type === 'workout' && (
+                <>
+                  <p><strong className="text-primary-300">Exercises:</strong> {detailsModal.data.exercises?.map((e: any) => e.name).join(', ') || 'N/A'}</p>
+                  <p><strong className="text-primary-300">Duration:</strong> {Math.round((detailsModal.data.duration ?? 0) / 60)} minutes</p>
+                  <p><strong className="text-primary-300">Completed:</strong> {new Date(detailsModal.data.completedAt).toLocaleString()}</p>
+                  {detailsModal.data.notes && <p><strong className="text-primary-300">Notes:</strong> {detailsModal.data.notes}</p>}
+                  {detailsModal.data.exercises && detailsModal.data.exercises.length > 0 && (
+                    <div className="mt-4">
+                      <strong className="text-primary-300 block mb-2">Exercise Details:</strong>
+                      <ul className="space-y-2">
+                        {detailsModal.data.exercises.map((ex: any, idx: number) => (
+                          <li key={idx} className="bg-slate-800/50 p-3 rounded-lg">
+                            <p className="font-semibold">{ex.name}</p>
+                            {ex.sets && <p className="text-sm text-slate-400">Sets: {ex.sets}</p>}
+                            {ex.reps && <p className="text-sm text-slate-400">Reps: {ex.reps}</p>}
+                            {ex.weight && <p className="text-sm text-slate-400">Weight: {ex.weight}</p>}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </>
+              )}
+              {detailsModal.type === 'breath' && (
+                <>
+                  <p><strong className="text-primary-300">Session Type:</strong> {detailsModal.data.sessionType}</p>
+                  <p><strong className="text-primary-300">Duration:</strong> {Math.round((detailsModal.data.duration ?? 0) / 60)} minutes</p>
+                  <p><strong className="text-primary-300">Cycles:</strong> {detailsModal.data.cycles ?? 'N/A'}</p>
+                  <p><strong className="text-primary-300">Created:</strong> {new Date(detailsModal.data.createdAt).toLocaleString()}</p>
+                </>
+              )}
+              {detailsModal.type === 'peptide' && (
+                <>
+                  <p><strong className="text-primary-300">Peptide:</strong> {detailsModal.data.user_peptide_protocols?.peptides?.name || 'N/A'}</p>
+                  <p><strong className="text-primary-300">Dosage:</strong> {detailsModal.data.dosage}</p>
+                  <p><strong className="text-primary-300">Time:</strong> {detailsModal.data.time || 'N/A'}</p>
+                  <p><strong className="text-primary-300">Date:</strong> {new Date(detailsModal.data.doseDate).toLocaleDateString()}</p>
+                  {detailsModal.data.notes && <p><strong className="text-primary-300">Notes:</strong> {detailsModal.data.notes}</p>}
+                  {detailsModal.data.sideEffects && <p><strong className="text-primary-300">Side Effects:</strong> {detailsModal.data.sideEffects}</p>}
+                </>
+              )}
+              {detailsModal.type === 'module' && (
+                <>
+                  <p><strong className="text-primary-300">Module ID:</strong> {detailsModal.data.moduleId}</p>
+                  <p><strong className="text-primary-300">Status:</strong> {detailsModal.data.fullCompletion ? 'Fully Completed' : 'Partially Completed'}</p>
+                  {detailsModal.data.audioDuration && <p><strong className="text-primary-300">Audio Duration:</strong> {Math.round(detailsModal.data.audioDuration / 60)} minutes</p>}
+                  <p><strong className="text-primary-300">Completed At:</strong> {new Date(detailsModal.data.completedAt).toLocaleString()}</p>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {editModal && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setEditModal(null)}>
+          <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl border border-primary-400/30 max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-2xl font-bold text-white">
+                Edit {editModal.type === 'workout' ? 'Workout' : editModal.type === 'peptide' ? 'Peptide Dose' : editModal.type === 'nutrition' ? 'Nutrition Entry' : 'Journal Entry'}
+              </h3>
+              <button onClick={() => { setEditModal(null); setEditForm({}); }} className="p-2 rounded-lg hover:bg-slate-700/50 transition-colors">
+                <X className="h-5 w-5 text-slate-300" />
+              </button>
+            </div>
+
+            {/* Journal Edit Form */}
+            {editModal.type === 'journal' && (
+              <form onSubmit={async (e) => {
+                e.preventDefault()
+                setSaving(true)
+                try {
+                  const response = await fetch(`/api/journal/entry/${editModal.data.id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(editForm)
+                  })
+                  if (response.ok) {
+                    alert('Journal entry updated successfully!')
+                    window.location.reload()
+                  } else {
+                    throw new Error('Failed to update')
+                  }
+                } catch (error) {
+                  alert('Failed to update journal entry')
+                } finally {
+                  setSaving(false)
+                }
+              }} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-1">Mood</label>
+                  <select
+                    value={editForm.mood || editModal.data.mood || ''}
+                    onChange={(e) => setEditForm({ ...editForm, mood: e.target.value })}
+                    className="w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-white"
+                  >
+                    <option value="">Select mood...</option>
+                    <option value="Amazing 🚀">Amazing 🚀</option>
+                    <option value="Great 😊">Great 😊</option>
+                    <option value="Good 👍">Good 👍</option>
+                    <option value="Okay 😐">Okay 😐</option>
+                    <option value="Challenging 😔">Challenging 😔</option>
+                    <option value="Tough 😟">Tough 😟</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-1">Weight</label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    value={editForm.weight ?? editModal.data.weight ?? ''}
+                    onChange={(e) => setEditForm({ ...editForm, weight: parseFloat(e.target.value) })}
+                    className="w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-1">Success Today</label>
+                  <textarea
+                    value={editForm.reasonsValidation ?? editModal.data.entry?.reasonsValidation ?? ''}
+                    onChange={(e) => setEditForm({ ...editForm, reasonsValidation: e.target.value })}
+                    className="w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-white"
+                    rows={2}
+                  />
+                </div>
+                <div className="flex gap-3">
+                  <button type="submit" disabled={saving} className="px-4 py-2 bg-primary-500 hover:bg-primary-600 disabled:bg-primary-700 text-white rounded-lg transition-colors">
+                    {saving ? 'Saving...' : 'Save Changes'}
+                  </button>
+                  <button type="button" onClick={() => { setEditModal(null); setEditForm({}); }} className="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-lg transition-colors">
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {/* Nutrition Edit Form */}
+            {editModal.type === 'nutrition' && (
+              <form onSubmit={async (e) => {
+                e.preventDefault()
+                setSaving(true)
+                try {
+                  const response = await fetch(`/api/nutrition/entries/${editModal.data.id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(editForm)
+                  })
+                  if (response.ok) {
+                    alert('Nutrition entry updated successfully!')
+                    window.location.reload()
+                  } else {
+                    throw new Error('Failed to update')
+                  }
+                } catch (error) {
+                  alert('Failed to update nutrition entry')
+                } finally {
+                  setSaving(false)
+                }
+              }} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-1">Food Name</label>
+                  <input
+                    type="text"
+                    value={editForm.itemName ?? editModal.data.itemName ?? ''}
+                    onChange={(e) => setEditForm({ ...editForm, itemName: e.target.value })}
+                    className="w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-white"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-1">Meal Type</label>
+                  <select
+                    value={editForm.mealType ?? editModal.data.mealType ?? ''}
+                    onChange={(e) => setEditForm({ ...editForm, mealType: e.target.value })}
+                    className="w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-white"
+                  >
+                    <option value="breakfast">Breakfast</option>
+                    <option value="lunch">Lunch</option>
+                    <option value="dinner">Dinner</option>
+                    <option value="snack">Snack</option>
+                  </select>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-1">Calories</label>
+                    <input
+                      type="number"
+                      value={editForm.nutrients?.kcal ?? editModal.data.nutrients?.kcal ?? ''}
+                      onChange={(e) => setEditForm({ ...editForm, nutrients: { ...editForm.nutrients, kcal: parseFloat(e.target.value) } })}
+                      className="w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-1">Protein (g)</label>
+                    <input
+                      type="number"
+                      step="0.1"
+                      value={editForm.nutrients?.protein_g ?? editModal.data.nutrients?.protein_g ?? ''}
+                      onChange={(e) => setEditForm({ ...editForm, nutrients: { ...editForm.nutrients, protein_g: parseFloat(e.target.value) } })}
+                      className="w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-1">Carbs (g)</label>
+                    <input
+                      type="number"
+                      step="0.1"
+                      value={editForm.nutrients?.carb_g ?? editModal.data.nutrients?.carb_g ?? ''}
+                      onChange={(e) => setEditForm({ ...editForm, nutrients: { ...editForm.nutrients, carb_g: parseFloat(e.target.value) } })}
+                      className="w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-1">Fat (g)</label>
+                    <input
+                      type="number"
+                      step="0.1"
+                      value={editForm.nutrients?.fat_g ?? editModal.data.nutrients?.fat_g ?? ''}
+                      onChange={(e) => setEditForm({ ...editForm, nutrients: { ...editForm.nutrients, fat_g: parseFloat(e.target.value) } })}
+                      className="w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-white"
+                    />
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <button type="submit" disabled={saving} className="px-4 py-2 bg-primary-500 hover:bg-primary-600 disabled:bg-primary-700 text-white rounded-lg transition-colors">
+                    {saving ? 'Saving...' : 'Save Changes'}
+                  </button>
+                  <button type="button" onClick={() => { setEditModal(null); setEditForm({}); }} className="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-lg transition-colors">
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {/* Workout Edit Form */}
+            {editModal.type === 'workout' && (
+              <form onSubmit={async (e) => {
+                e.preventDefault()
+                setSaving(true)
+                try {
+                  const response = await fetch(`/api/workout/sessions/${editModal.data.id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(editForm)
+                  })
+                  if (response.ok) {
+                    alert('Workout updated successfully!')
+                    window.location.reload()
+                  } else {
+                    throw new Error('Failed to update')
+                  }
+                } catch (error) {
+                  alert('Failed to update workout')
+                } finally {
+                  setSaving(false)
+                }
+              }} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-1">Duration (minutes)</label>
+                  <input
+                    type="number"
+                    value={Math.round((editForm.duration ?? editModal.data.duration ?? 0) / 60)}
+                    onChange={(e) => setEditForm({ ...editForm, duration: parseInt(e.target.value) * 60 })}
+                    className="w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-1">Notes</label>
+                  <textarea
+                    value={editForm.notes ?? editModal.data.notes ?? ''}
+                    onChange={(e) => setEditForm({ ...editForm, notes: e.target.value })}
+                    className="w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-white"
+                    rows={3}
+                  />
+                </div>
+                {editModal.data.exercises && editModal.data.exercises.length > 0 && (
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">Exercises</label>
+                    <div className="space-y-2">
+                      {editModal.data.exercises.map((ex: any, idx: number) => (
+                        <div key={idx} className="bg-slate-800/50 p-3 rounded-lg">
+                          <p className="font-semibold text-white">{ex.name}</p>
+                          <div className="grid grid-cols-3 gap-2 mt-2">
+                            <input
+                              type="number"
+                              placeholder="Sets"
+                              value={editForm.exercises?.[idx]?.sets ?? ex.sets ?? ''}
+                              onChange={(e) => {
+                                const exercises = editForm.exercises || [...editModal.data.exercises]
+                                exercises[idx] = { ...exercises[idx], sets: parseInt(e.target.value) }
+                                setEditForm({ ...editForm, exercises })
+                              }}
+                              className="px-2 py-1 bg-slate-700 border border-slate-600 rounded text-white text-sm"
+                            />
+                            <input
+                              type="number"
+                              placeholder="Reps"
+                              value={editForm.exercises?.[idx]?.reps ?? ex.reps ?? ''}
+                              onChange={(e) => {
+                                const exercises = editForm.exercises || [...editModal.data.exercises]
+                                exercises[idx] = { ...exercises[idx], reps: parseInt(e.target.value) }
+                                setEditForm({ ...editForm, exercises })
+                              }}
+                              className="px-2 py-1 bg-slate-700 border border-slate-600 rounded text-white text-sm"
+                            />
+                            <input
+                              type="text"
+                              placeholder="Weight"
+                              value={editForm.exercises?.[idx]?.weight ?? ex.weight ?? ''}
+                              onChange={(e) => {
+                                const exercises = editForm.exercises || [...editModal.data.exercises]
+                                exercises[idx] = { ...exercises[idx], weight: e.target.value }
+                                setEditForm({ ...editForm, exercises })
+                              }}
+                              className="px-2 py-1 bg-slate-700 border border-slate-600 rounded text-white text-sm"
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                <div className="flex gap-3">
+                  <button type="submit" disabled={saving} className="px-4 py-2 bg-primary-500 hover:bg-primary-600 disabled:bg-primary-700 text-white rounded-lg transition-colors">
+                    {saving ? 'Saving...' : 'Save Changes'}
+                  </button>
+                  <button type="button" onClick={() => { setEditModal(null); setEditForm({}); }} className="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-lg transition-colors">
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {/* Peptide Edit Form */}
+            {editModal.type === 'peptide' && (
+              <form onSubmit={async (e) => {
+                e.preventDefault()
+                setSaving(true)
+                try {
+                  const response = await fetch(`/api/peptides/doses/${editModal.data.id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(editForm)
+                  })
+                  if (response.ok) {
+                    alert('Peptide dose updated successfully!')
+                    window.location.reload()
+                  } else {
+                    throw new Error('Failed to update')
+                  }
+                } catch (error) {
+                  alert('Failed to update peptide dose')
+                } finally {
+                  setSaving(false)
+                }
+              }} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-1">Peptide Name</label>
+                  <input
+                    type="text"
+                    value={editModal.data.user_peptide_protocols?.peptides?.name || 'Peptide'}
+                    disabled
+                    className="w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-slate-400"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-1">Dosage</label>
+                  <input
+                    type="text"
+                    value={editForm.dosage ?? editModal.data.dosage ?? ''}
+                    onChange={(e) => setEditForm({ ...editForm, dosage: e.target.value })}
+                    className="w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-white"
+                    placeholder="e.g., 250mcg"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-1">Time</label>
+                  <input
+                    type="text"
+                    value={editForm.time ?? editModal.data.time ?? ''}
+                    onChange={(e) => setEditForm({ ...editForm, time: e.target.value })}
+                    className="w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-white"
+                    placeholder="e.g., 8:00 AM"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-1">Notes</label>
+                  <textarea
+                    value={editForm.notes ?? editModal.data.notes ?? ''}
+                    onChange={(e) => setEditForm({ ...editForm, notes: e.target.value })}
+                    className="w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-white"
+                    rows={2}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-1">Side Effects</label>
+                  <input
+                    type="text"
+                    value={editForm.sideEffects ?? editModal.data.sideEffects ?? ''}
+                    onChange={(e) => setEditForm({ ...editForm, sideEffects: e.target.value })}
+                    className="w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-white"
+                    placeholder="Any side effects noted"
+                  />
+                </div>
+                <div className="flex gap-3">
+                  <button type="submit" disabled={saving} className="px-4 py-2 bg-primary-500 hover:bg-primary-600 disabled:bg-primary-700 text-white rounded-lg transition-colors">
+                    {saving ? 'Saving...' : 'Save Changes'}
+                  </button>
+                  <button type="button" onClick={() => { setEditModal(null); setEditForm({}); }} className="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-lg transition-colors">
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
       <section className="rounded-2xl border border-secondary-400/30 bg-slate-900/70 backdrop-blur-md shadow-2xl shadow-black/30 p-6">
         <header className="flex items-center justify-between mb-6">
           <div>
@@ -383,8 +804,17 @@ function DayDetail({ day }: { day: JournalHistoryDay }) {
 
         {day.journalEntry ? (
           <div className="grid gap-4 md:grid-cols-2">
-            <div className="rounded-xl border border-primary-400/30 bg-primary-500/15 p-4 shadow-inner shadow-primary-900/30">
-              <h3 className="flex items-center text-sm font-semibold text-primary-200 uppercase tracking-wide"><NotebookPen className="mr-2 h-4 w-4" />Journal</h3>
+            <div className="rounded-xl border border-primary-400/30 bg-primary-500/15 p-4 shadow-inner shadow-primary-900/30 group relative">
+              <div className="flex items-center justify-between">
+                <h3 className="flex items-center text-sm font-semibold text-primary-200 uppercase tracking-wide"><NotebookPen className="mr-2 h-4 w-4" />Journal</h3>
+                <button
+                  onClick={() => setEditModal({ type: 'journal', data: day.journalEntry })}
+                  className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded-lg bg-primary-500/20 hover:bg-primary-500/30 text-primary-300"
+                  title="Edit Journal"
+                >
+                  <Edit2 className="h-4 w-4" />
+                </button>
+              </div>
               <ul className="mt-3 space-y-2 text-sm text-slate-200">
                 {entry.reasonsValidation && <li><strong>Success Today:</strong> {entry.reasonsValidation}</li>}
                 {entry.affirmationGoal && <li><strong>I am:</strong> {entry.affirmationGoal}</li>}
@@ -445,19 +875,32 @@ function DayDetail({ day }: { day: JournalHistoryDay }) {
             {day.nutrition.logs.map((item: any) => {
               const nutrients = item.nutrients as any
               return (
-                <div key={item.id} className="rounded-xl border border-slate-700/40 bg-slate-800/50 px-4 py-3 text-sm text-slate-200">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-semibold text-white">{item.itemName}</p>
-                      <p className="text-xs text-slate-400">{new Date(item.loggedAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })} • {item.mealType ?? 'meal'}</p>
+                <div key={item.id} className="rounded-xl border border-slate-700/40 bg-slate-800/50 px-4 py-3 text-sm text-slate-200 group hover:border-slate-600/60 transition-colors">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-semibold text-white">{item.itemName}</p>
+                          <p className="text-xs text-slate-400">{new Date(item.loggedAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })} • {item.mealType ?? 'meal'}</p>
+                        </div>
+                        <span className="text-amber-300 font-semibold">{Math.round(typeof nutrients?.kcal === 'number' ? nutrients.kcal : 0)} kcal</span>
+                      </div>
+                      <p className="mt-2 text-xs text-slate-400">
+                        P {Math.round(typeof nutrients?.protein_g === 'number' ? nutrients.protein_g : 0)}g •
+                        C {Math.round(typeof nutrients?.carb_g === 'number' ? nutrients.carb_g : 0)}g •
+                        F {Math.round(typeof nutrients?.fat_g === 'number' ? nutrients.fat_g : 0)}g
+                      </p>
                     </div>
-                    <span className="text-amber-300 font-semibold">{Math.round(typeof nutrients?.kcal === 'number' ? nutrients.kcal : 0)} kcal</span>
+                    <div className="flex items-center gap-2 ml-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button
+                        onClick={() => setEditModal({ type: 'nutrition', data: item })}
+                        className="p-1 rounded-lg bg-primary-500/20 hover:bg-primary-500/30 text-primary-300 transition-colors"
+                        title="Edit"
+                      >
+                        <Edit2 className="h-4 w-4" />
+                      </button>
+                    </div>
                   </div>
-                  <p className="mt-2 text-xs text-slate-400">
-                    P {Math.round(typeof nutrients?.protein_g === 'number' ? nutrients.protein_g : 0)}g •
-                    C {Math.round(typeof nutrients?.carb_g === 'number' ? nutrients.carb_g : 0)}g •
-                    F {Math.round(typeof nutrients?.fat_g === 'number' ? nutrients.fat_g : 0)}g
-                  </p>
                 </div>
               )
             })}
@@ -475,8 +918,11 @@ function DayDetail({ day }: { day: JournalHistoryDay }) {
             id: workout.id,
             primary: workout.exercises?.[0]?.name || 'Workout session',
             secondary: `${Math.round((workout.duration ?? 0) / 60)} min • ${new Date(workout.completedAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`,
-            meta: workout.notes || ''
+            meta: workout.notes || '',
+            data: workout
           }))}
+          onViewDetails={(item) => setDetailsModal({ type: 'workout', data: item.data })}
+          onEdit={(item) => setEditModal({ type: 'workout', data: item.data })}
         />
 
         <ActivityList
@@ -488,8 +934,10 @@ function DayDetail({ day }: { day: JournalHistoryDay }) {
             id: session.id,
             primary: session.sessionType,
             secondary: `${Math.round((session.duration ?? 0) / 60)} min • ${session.cycles ?? 0} cycles`,
-            meta: new Date(session.createdAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+            meta: new Date(session.createdAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
+            data: session
           }))}
+          onViewDetails={(item) => setDetailsModal({ type: 'breath', data: item.data })}
         />
       </section>
 
@@ -503,8 +951,11 @@ function DayDetail({ day }: { day: JournalHistoryDay }) {
             id: dose.id,
             primary: dose.user_peptide_protocols?.peptides?.name || 'Peptide dose',
             secondary: dose.dosage,
-            meta: `${dose.time || ''} ${new Date(dose.doseDate).toLocaleDateString()}`.trim()
+            meta: `${dose.time || ''} ${new Date(dose.doseDate).toLocaleDateString()}`.trim(),
+            data: dose
           }))}
+          onViewDetails={(item) => setDetailsModal({ type: 'peptide', data: item.data })}
+          onEdit={(item) => setEditModal({ type: 'peptide', data: item.data })}
         />
 
         <ActivityList
@@ -516,13 +967,15 @@ function DayDetail({ day }: { day: JournalHistoryDay }) {
             id: module.id,
             primary: module.moduleId,
             secondary: `${module.fullCompletion ? 'Completed' : 'Partial'}${module.audioDuration ? ` • ${Math.round(module.audioDuration / 60)} min audio` : ''}`,
-            meta: new Date(module.completedAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+            meta: new Date(module.completedAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
+            data: module
           }))}
+          onViewDetails={(item) => setDetailsModal({ type: 'module', data: item.data })}
         />
       </section>
 
       <section className="rounded-2xl border border-secondary-400/30 bg-slate-900/70 backdrop-blur-md shadow-2xl shadow-black/30 p-6">
-        <h3 className="flex items-center text-sm font-semibold uppercase tracking-wide text-secondary-200 mb-3"><Flame className="mr-2 h-4 w-4" />Journal Notes</h3>
+        <h3 className="flex items-center text-sm font-semibold uppercase tracking-wide text-secondary-200 mb-3"><Flame className="mr-2 h-4 w-4" />Notes</h3>
         <div className="space-y-2 text-sm text-slate-200">
           {entry.peptideNotes && (
             <p><strong>Peptides:</strong> {entry.peptideNotes}</p>
@@ -548,7 +1001,23 @@ function DayDetail({ day }: { day: JournalHistoryDay }) {
   )
 }
 
-function ActivityList({ title, icon, colorClass, borderClass, items }: { title: string; icon: React.ReactNode; colorClass: string; borderClass: string; items: Array<{ id: string; primary: string; secondary?: string; meta?: string }> }) {
+function ActivityList({
+  title,
+  icon,
+  colorClass,
+  borderClass,
+  items,
+  onViewDetails,
+  onEdit
+}: {
+  title: string;
+  icon: React.ReactNode;
+  colorClass: string;
+  borderClass: string;
+  items: Array<{ id: string; primary: string; secondary?: string; meta?: string; data?: any }>
+  onViewDetails?: (item: any) => void
+  onEdit?: (item: any) => void
+}) {
   return (
     <div className={`rounded-2xl border ${borderClass} bg-slate-900/70 backdrop-blur-md shadow-2xl shadow-black/30 p-6`}>
       <h3 className={`flex items-center text-sm font-semibold uppercase tracking-wide ${colorClass}`}>
@@ -559,10 +1028,34 @@ function ActivityList({ title, icon, colorClass, borderClass, items }: { title: 
       ) : (
         <ul className="mt-3 space-y-3">
           {items.map((item) => (
-            <li key={item.id} className="rounded-xl border border-slate-700/40 bg-slate-800/50 px-4 py-3 text-sm text-slate-200">
-              <p className="font-semibold text-white">{item.primary}</p>
-              {item.secondary && <p className="text-xs text-slate-400 mt-1">{item.secondary}</p>}
-              {item.meta && <p className="text-[11px] text-slate-500 mt-1 uppercase tracking-wide">{item.meta}</p>}
+            <li key={item.id} className="rounded-xl border border-slate-700/40 bg-slate-800/50 px-4 py-3 text-sm text-slate-200 group hover:border-slate-600/60 transition-colors">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <p className="font-semibold text-white">{item.primary}</p>
+                  {item.secondary && <p className="text-xs text-slate-400 mt-1">{item.secondary}</p>}
+                  {item.meta && <p className="text-[11px] text-slate-500 mt-1 uppercase tracking-wide">{item.meta}</p>}
+                </div>
+                <div className="flex items-center gap-2 ml-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                  {onViewDetails && (
+                    <button
+                      onClick={() => onViewDetails(item)}
+                      className="p-1 rounded-lg bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 transition-colors"
+                      title="View Details"
+                    >
+                      <Eye className="h-4 w-4" />
+                    </button>
+                  )}
+                  {onEdit && (
+                    <button
+                      onClick={() => onEdit(item)}
+                      className="p-1 rounded-lg bg-primary-500/20 hover:bg-primary-500/30 text-primary-300 transition-colors"
+                      title="Edit"
+                    >
+                      <Edit2 className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
+              </div>
             </li>
           ))}
         </ul>

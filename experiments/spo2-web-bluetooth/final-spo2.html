@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zacurate SpO₂ Final</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main>
+    <header>
+      <h1>💙 Zacurate SpO₂ Monitor (Nordic UART Service)</h1>
+      <p class="lead">Monitoring characteristic 0xFFF1 for SpO₂ data</p>
+    </header>
+
+    <section class="card">
+      <h2>Connection</h2>
+      <p class="hint"><strong>Put finger in device and keep it there!</strong></p>
+      <button id="connect-btn">Connect & Monitor</button>
+      <button id="disconnect-btn" disabled>Disconnect</button>
+      <div id="status" class="status">Ready...</div>
+    </section>
+
+    <section class="card">
+      <h2>Live Readings</h2>
+      <div class="reading">
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 2rem; border-radius: 12px;">
+          <dt style="color: white; opacity: 0.9;">SpO₂ (%)</dt>
+          <dd id="spo2" style="font-size: 4rem; color: white; font-weight: bold;">--</dd>
+        </div>
+        <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 2rem; border-radius: 12px;">
+          <dt style="color: white; opacity: 0.9;">Heart Rate</dt>
+          <dd id="hr" style="font-size: 4rem; color: white; font-weight: bold;">--</dd>
+        </div>
+        <div style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); padding: 2rem; border-radius: 12px;">
+          <dt style="color: white; opacity: 0.9;">Updates</dt>
+          <dd id="updates" style="font-size: 4rem; color: white; font-weight: bold;">0</dd>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Live Data Stream (Nordic UART 0xFFF1)</h2>
+      <pre id="log" class="log" style="max-height: 400px;">Waiting for connection...</pre>
+    </section>
+  </main>
+
+  <script type="module">
+    const connectBtn = document.getElementById('connect-btn');
+    const disconnectBtn = document.getElementById('disconnect-btn');
+    const statusEl = document.getElementById('status');
+    const logEl = document.getElementById('log');
+    const spo2El = document.getElementById('spo2');
+    const hrEl = document.getElementById('hr');
+    const updatesEl = document.getElementById('updates');
+
+    let device = null;
+    let server = null;
+    let notifyChar = null;
+    let hrChar = null;
+    let updateCount = 0;
+
+    const NORDIC_UART_SERVICE = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
+    const NORDIC_UART_RX = '0000fff1-0000-1000-8000-00805f9b34fb';
+    const HR_CHAR = '00002a19-0000-1000-8000-00805f9b34fb';
+
+    connectBtn.addEventListener('click', async () => {
+      try {
+        log('🔍 Requesting device...');
+
+        device = await navigator.bluetooth.requestDevice({
+          acceptAllDevices: true,
+          optionalServices: [
+            NORDIC_UART_SERVICE,
+            0x180F,
+            0x180A,
+          ]
+        });
+
+        log(`✅ Selected: ${device.name || 'Unknown'}`);
+        server = await device.gatt.connect();
+        log('✅ Connected!');
+
+        // Get Nordic UART service for SpO2
+        try {
+          const nordicService = await server.getPrimaryService(NORDIC_UART_SERVICE);
+          notifyChar = await nordicService.getCharacteristic(NORDIC_UART_RX);
+
+          // Subscribe to notifications
+          await notifyChar.startNotifications();
+          notifyChar.addEventListener('characteristicvaluechanged', handleNotification);
+
+          log('✅ Subscribed to Nordic UART (0xFFF1) for SpO₂ notifications');
+        } catch (err) {
+          log(`⚠️ Could not subscribe to Nordic UART: ${err.message}`);
+        }
+
+        // Get HR characteristic
+        try {
+          const batteryService = await server.getPrimaryService(0x180F);
+          hrChar = await batteryService.getCharacteristic(HR_CHAR);
+          log('✅ Found HR characteristic (0x2A19)');
+
+          // Start polling HR
+          startHRPolling();
+        } catch (err) {
+          log(`⚠️ Could not get HR: ${err.message}`);
+        }
+
+        statusEl.textContent = 'Connected! Monitoring for data...';
+        connectBtn.disabled = true;
+        disconnectBtn.disabled = false;
+
+        device.addEventListener('gattserverdisconnected', () => {
+          log('❌ Device disconnected');
+          stopHRPolling();
+          resetUI();
+        });
+
+      } catch (err) {
+        log(`❌ Error: ${err.message}`);
+        statusEl.textContent = `Error: ${err.message}`;
+      }
+    });
+
+    disconnectBtn.addEventListener('click', () => {
+      stopHRPolling();
+      if (device && device.gatt.connected) {
+        device.gatt.disconnect();
+      }
+      resetUI();
+    });
+
+    let hrInterval = null;
+    function startHRPolling() {
+      hrInterval = setInterval(async () => {
+        try {
+          const value = await hrChar.readValue();
+          const hr = value.getUint8(0);
+          hrEl.textContent = hr;
+          log(`❤️  HR: ${hr} bpm`);
+        } catch (err) {
+          // Skip errors
+        }
+      }, 1000);
+    }
+
+    function stopHRPolling() {
+      if (hrInterval) {
+        clearInterval(hrInterval);
+        hrInterval = null;
+      }
+    }
+
+    function handleNotification(event) {
+      const value = event.target.value;
+      const bytes = new Uint8Array(value.buffer);
+
+      updateCount++;
+      updatesEl.textContent = updateCount;
+
+      log(`\n🔔 DATA RECEIVED [${new Date().toLocaleTimeString()}]`);
+      log(`   BYTES (${bytes.length}): ${Array.from(bytes).join(', ')}`);
+
+      // Look for SpO2 (70-100 range)
+      for (let i = 0; i < bytes.length; i++) {
+        if (bytes[i] >= 70 && bytes[i] <= 100) {
+          log(`   → BYTE[${i}] = ${bytes[i]} ← POSSIBLE SpO₂!`);
+          spo2El.textContent = `${bytes[i]}%`;
+        }
+      }
+
+      log('');
+    }
+
+    function resetUI() {
+      statusEl.textContent = 'Not connected';
+      connectBtn.disabled = false;
+      disconnectBtn.disabled = true;
+      spo2El.textContent = '--';
+      hrEl.textContent = '--';
+      updatesEl.textContent = '0';
+      updateCount = 0;
+    }
+
+    function log(message) {
+      logEl.textContent += message + '\n';
+      const lines = logEl.textContent.split('\n');
+      if (lines.length > 200) {
+        logEl.textContent = lines.slice(0, 200).join('\n');
+      }
+      // Auto-scroll to bottom
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+  </script>
+</body>
+</html>

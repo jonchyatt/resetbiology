@@ -12,6 +12,7 @@ const spo2El = document.getElementById('spo2-value');
 const pulseEl = document.getElementById('pulse-value');
 const pviEl = document.getElementById('pvi-value');
 const timestampEl = document.getElementById('timestamp-value');
+const rawEl = document.getElementById('raw-value');
 
 let bluetoothDevice;
 let measurementCharacteristic;
@@ -27,20 +28,23 @@ if (!supportsWebBluetooth) {
 }
 
 if (connectSpotButton) {
-  connectSpotButton.addEventListener('click', function () {
-    connectAndSubscribe('spot');
+  connectSpotButton.addEventListener('click', async function (e) {
+    e.preventDefault();
+    await connectAndSubscribe('spot');
   });
 }
 
 if (connectContinuousButton) {
-  connectContinuousButton.addEventListener('click', function () {
-    connectAndSubscribe('continuous');
+  connectContinuousButton.addEventListener('click', async function (e) {
+    e.preventDefault();
+    await connectAndSubscribe('continuous');
   });
 }
 
 if (disconnectButton) {
-  disconnectButton.addEventListener('click', function () {
-    disconnect('Manual disconnect');
+  disconnectButton.addEventListener('click', async function (e) {
+    e.preventDefault();
+    await disconnect('Manual disconnect');
   });
 }
 
@@ -49,7 +53,6 @@ async function connectAndSubscribe(mode) {
     return;
   }
   try {
-    await disconnect();
     currentMode = mode;
     disableConnectButtons(true);
     setStatus('Requesting Zacurate device…');
@@ -58,10 +61,19 @@ async function connectAndSubscribe(mode) {
       ? CONTINUOUS_MEASUREMENT_CHAR_UUID
       : SPOT_CHECK_MEASUREMENT_CHAR_UUID;
 
-    bluetoothDevice = await navigator.bluetooth.requestDevice({
-      filters: [{ services: [PLX_SERVICE_UUID] }],
+    // Request device FIRST before any await to maintain user gesture context
+    // Try with acceptAllDevices directly to avoid the fallback issue
+    let device;
+    appendLog('Opening Bluetooth device picker...');
+    device = await navigator.bluetooth.requestDevice({
+      acceptAllDevices: true,
       optionalServices: [PLX_SERVICE_UUID],
     });
+
+    // Disconnect any previous connection AFTER device selection
+    await disconnect();
+
+    bluetoothDevice = device;
 
     bluetoothDevice.addEventListener('gattserverdisconnected', function () {
       appendLog('Device disconnected');
@@ -120,6 +132,7 @@ async function disconnect(reason = 'Disconnected') {
   setStatus(reason);
   disconnectButton.disabled = true;
   disableConnectButtons(false);
+  resetDisplay();
 }
 
 function handleMeasurement(event) {
@@ -144,6 +157,7 @@ function handleMeasurement(event) {
   pulseEl.textContent = pulseDisplay;
   pviEl.textContent = paiDisplay;
   timestampEl.textContent = timestampDisplay;
+  rawEl.textContent = bufferToHex(dataView);
 
   appendLog(formatMeasurementLog(parsed));
 }
@@ -305,6 +319,14 @@ function setStatus(message) {
 function disableConnectButtons(disabled) {
   connectSpotButton.disabled = disabled;
   connectContinuousButton.disabled = disabled;
+}
+
+function resetDisplay() {
+  spo2El.textContent = '–';
+  pulseEl.textContent = '–';
+  pviEl.textContent = '–';
+  timestampEl.textContent = '–';
+  rawEl.textContent = '–';
 }
 
 function bufferToHex(dataView) {

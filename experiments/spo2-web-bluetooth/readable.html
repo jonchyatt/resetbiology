@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Zacurate Readable</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main>
+    <header>
+      <h1>💙 Zacurate READABLE Monitor</h1>
+      <p class="lead">Clean, readable display - updates in place (no scrolling!)</p>
+    </header>
+
+    <section class="card">
+      <h2>Connection</h2>
+      <button id="connect-btn">Connect</button>
+      <button id="disconnect-btn" disabled>Disconnect</button>
+      <div id="status" class="status">Ready...</div>
+    </section>
+
+    <section class="card">
+      <h2>LIVE VITALS</h2>
+      <div class="reading">
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 3rem; border-radius: 12px; text-align: center;">
+          <dt style="color: white; opacity: 0.9; font-size: 1.2rem;">SpO₂</dt>
+          <dd id="spo2" style="font-size: 5rem; color: white; font-weight: bold; margin: 1rem 0;">--</dd>
+          <div id="spo2-source" style="color: white; opacity: 0.7; font-size: 0.9rem;">waiting...</div>
+        </div>
+        <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 3rem; border-radius: 12px; text-align: center;">
+          <dt style="color: white; opacity: 0.9; font-size: 1.2rem;">Heart Rate</dt>
+          <dd id="hr" style="font-size: 5rem; color: white; font-weight: bold; margin: 1rem 0;">--</dd>
+          <div id="hr-source" style="color: white; opacity: 0.7; font-size: 0.9rem;">waiting...</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Latest Packet (Updates in place - no scroll!)</h2>
+      <div style="background: #0f172a; color: #d9e3f0; padding: 1.5rem; border-radius: 8px; font-family: monospace;">
+        <div id="latest" style="white-space: pre-wrap; font-size: 1.1rem;">Waiting for data...</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Stats</h2>
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; text-align: center;">
+        <div style="background: #f0f4ff; padding: 1rem; border-radius: 8px;">
+          <div style="font-size: 0.9rem; color: #666;">Total Updates</div>
+          <div id="count" style="font-size: 2rem; font-weight: bold; color: #0071e3;">0</div>
+        </div>
+        <div style="background: #f0f4ff; padding: 1rem; border-radius: 8px;">
+          <div style="font-size: 0.9rem; color: #666;">Updates/sec</div>
+          <div id="rate" style="font-size: 2rem; font-weight: bold; color: #0071e3;">0</div>
+        </div>
+        <div style="background: #f0f4ff; padding: 1rem; border-radius: 8px;">
+          <div style="font-size: 0.9rem; color: #666;">Last Update</div>
+          <div id="last-time" style="font-size: 1.5rem; font-weight: bold; color: #0071e3;">--</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script type="module">
+    const connectBtn = document.getElementById('connect-btn');
+    const disconnectBtn = document.getElementById('disconnect-btn');
+    const statusEl = document.getElementById('status');
+    const latestEl = document.getElementById('latest');
+    const spo2El = document.getElementById('spo2');
+    const hrEl = document.getElementById('hr');
+    const spo2SourceEl = document.getElementById('spo2-source');
+    const hrSourceEl = document.getElementById('hr-source');
+    const countEl = document.getElementById('count');
+    const rateEl = document.getElementById('rate');
+    const lastTimeEl = document.getElementById('last-time');
+
+    let device = null;
+    let updateCount = 0;
+    let startTime = null;
+
+    connectBtn.addEventListener('click', async () => {
+      try {
+        device = await navigator.bluetooth.requestDevice({
+          acceptAllDevices: true,
+          optionalServices: ['6e400001-b5a3-f393-e0a9-e50e24dcca9e', 0x180F, 0x180A, 0x1800]
+        });
+
+        const server = await device.gatt.connect();
+        startTime = Date.now();
+
+        const services = await server.getPrimaryServices();
+
+        for (const service of services) {
+          try {
+            const chars = await service.getCharacteristics();
+
+            for (const char of chars) {
+              if (char.properties.notify || char.properties.indicate) {
+                const shortUuid = char.uuid.substring(4, 8);
+
+                await char.startNotifications();
+
+                char.addEventListener('characteristicvaluechanged', (e) => {
+                  const bytes = new Uint8Array(e.target.value.buffer);
+
+                  updateCount++;
+                  countEl.textContent = updateCount;
+
+                  const elapsed = (Date.now() - startTime) / 1000;
+                  rateEl.textContent = (updateCount / elapsed).toFixed(1);
+                  lastTimeEl.textContent = new Date().toLocaleTimeString();
+
+                  // Build display (REPLACES content - no scrolling!)
+                  let display = `Source: Characteristic 0x${shortUuid}\n`;
+                  display += `Packet #${updateCount}\n`;
+                  display += `─`.repeat(50) + '\n\n';
+                  display += `RAW BYTES (${bytes.length}): ${Array.from(bytes).join(', ')}\n\n`;
+
+                  // Parse each byte
+                  for (let i = 0; i < bytes.length; i++) {
+                    const val = bytes[i];
+                    display += `  [${i}] = ${val}`;
+
+                    if (val >= 70 && val <= 100) {
+                      display += ` ← LIKELY SpO₂`;
+                      spo2El.textContent = `${val}%`;
+                      spo2SourceEl.textContent = `from 0x${shortUuid} byte[${i}]`;
+                    }
+
+                    if (val >= 40 && val <= 180) {
+                      display += ` ← LIKELY HR`;
+                      hrEl.textContent = val;
+                      hrSourceEl.textContent = `from 0x${shortUuid} byte[${i}]`;
+                    }
+
+                    display += '\n';
+                  }
+
+                  // REPLACE the content (no scrolling!)
+                  latestEl.textContent = display;
+                });
+              }
+            }
+          } catch (err) {
+            // Skip
+          }
+        }
+
+        statusEl.textContent = 'Connected! Monitoring...';
+        connectBtn.disabled = true;
+        disconnectBtn.disabled = false;
+
+        device.addEventListener('gattserverdisconnected', () => {
+          statusEl.textContent = 'Disconnected';
+          connectBtn.disabled = false;
+          disconnectBtn.disabled = true;
+        });
+
+      } catch (err) {
+        statusEl.textContent = `Error: ${err.message}`;
+      }
+    });
+
+    disconnectBtn.addEventListener('click', () => {
+      if (device && device.gatt.connected) {
+        device.gatt.disconnect();
+      }
+    });
+  </script>
+</body>
+</html>

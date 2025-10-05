@@ -10,11 +10,21 @@ export default function ModulesPage() {
            backgroundAttachment: 'fixed'
          }}>
       <div className="relative z-10">
-        <PortalHeader 
+        <PortalHeader
           section="Mental Mastery Modules"
           subtitle="Transform your mindset and metabolic health"
         />
-        
+
+        {/* Title Section - Matching Tracker Pages */}
+        <div className="text-center py-8">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 text-shadow-lg animate-fade-in">
+            <span className="text-primary-400">Mental Mastery</span> Modules
+          </h2>
+          <p className="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto font-medium leading-relaxed drop-shadow-sm">
+            Transform your mindset and achieve metabolic mastery through comprehensive audio training
+          </p>
+        </div>
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Module Series */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

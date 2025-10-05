@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Zacurate Just Listen</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main>
+    <header>
+      <h1>👂 Zacurate Listener (No Write)</h1>
+      <p class="lead">Just subscribing to ALL notify characteristics and waiting...</p>
+    </header>
+
+    <section class="card">
+      <h2>Connection</h2>
+      <button id="connect-btn">Connect & Listen</button>
+      <div id="status" class="status">Ready...</div>
+    </section>
+
+    <section class="card">
+      <h2>Live Data</h2>
+      <div class="reading">
+        <div><dt>SpO₂</dt><dd id="spo2" style="font-size: 3rem; font-weight: bold; color: #0071e3;">--</dd></div>
+        <div><dt>Heart Rate</dt><dd id="hr" style="font-size: 3rem; font-weight: bold; color: #ff3b30;">--</dd></div>
+        <div><dt>Updates</dt><dd id="count" style="font-size: 3rem; font-weight: bold; color: #34c759;">0</dd></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>All Notifications</h2>
+      <pre id="log" class="log" style="max-height: 500px;">Waiting for connection...</pre>
+    </section>
+  </main>
+
+  <script type="module">
+    const connectBtn = document.getElementById('connect-btn');
+    const statusEl = document.getElementById('status');
+    const logEl = document.getElementById('log');
+    const spo2El = document.getElementById('spo2');
+    const hrEl = document.getElementById('hr');
+    const countEl = document.getElementById('count');
+
+    let updateCount = 0;
+
+    connectBtn.addEventListener('click', async () => {
+      try {
+        log('🔍 Requesting device...');
+
+        const device = await navigator.bluetooth.requestDevice({
+          acceptAllDevices: true,
+          optionalServices: ['6e400001-b5a3-f393-e0a9-e50e24dcca9e', 0x180F, 0x180A, 0x1800]
+        });
+
+        log(`✅ Selected: ${device.name || 'Unknown'}`);
+
+        const server = await device.gatt.connect();
+        log('✅ Connected!\n');
+
+        // Scan ALL services for NOTIFY characteristics
+        const services = await server.getPrimaryServices();
+        log(`Found ${services.length} services\n`);
+
+        for (const service of services) {
+          log(`📦 Service: ${service.uuid}`);
+
+          try {
+            const chars = await service.getCharacteristics();
+
+            for (const char of chars) {
+              const uuid = char.uuid;
+              const shortUuid = uuid.substring(4, 8);
+
+              if (char.properties.notify || char.properties.indicate) {
+                log(`   🔔 ${shortUuid} has NOTIFY/INDICATE - subscribing...`);
+
+                try {
+                  await char.startNotifications();
+
+                  char.addEventListener('characteristicvaluechanged', (e) => {
+                    const bytes = new Uint8Array(e.target.value.buffer);
+                    const dec = Array.from(bytes).join(', ');
+
+                    updateCount++;
+                    countEl.textContent = updateCount;
+
+                    log(`\n📊 [${shortUuid}] UPDATE #${updateCount}:`);
+                    log(`   ${bytes.length} bytes: ${dec}`);
+
+                    // Parse data
+                    for (let i = 0; i < bytes.length; i++) {
+                      const val = bytes[i];
+
+                      if (val >= 70 && val <= 100) {
+                        log(`   🫁 BYTE[${i}] = ${val} ← SpO₂!`);
+                        spo2El.textContent = `${val}%`;
+                      }
+
+                      if (val >= 40 && val <= 180) {
+                        log(`   ❤️  BYTE[${i}] = ${val} ← HR!`);
+                        hrEl.textContent = val;
+                      }
+                    }
+                  });
+
+                  log(`   ✅ Subscribed!\n`);
+                } catch (err) {
+                  log(`   ❌ Subscribe failed: ${err.message}\n`);
+                }
+              }
+            }
+          } catch (err) {
+            log(`   ⚠️ Could not read characteristics\n`);
+          }
+        }
+
+        log('\n✅ LISTENING TO ALL NOTIFY CHARACTERISTICS!');
+        log('⏳ Waiting for data... (keep finger in device!)');
+        log('   Try removing and re-inserting your finger...\n');
+
+        statusEl.textContent = 'Listening for notifications...';
+        connectBtn.disabled = true;
+
+      } catch (err) {
+        log(`\n❌ ERROR: ${err.message}`);
+        statusEl.textContent = `Error: ${err.message}`;
+      }
+    });
+
+    function log(msg) {
+      const time = new Date().toLocaleTimeString();
+      logEl.textContent += `[${time}] ${msg}\n`;
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+  </script>
+</body>
+</html>

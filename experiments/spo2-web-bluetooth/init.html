@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zacurate Init Commands</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main>
+    <header>
+      <h1>🔓 Zacurate Initialization Tester</h1>
+      <p class="lead">
+        Try sending initialization commands to unlock data streaming.
+      </p>
+    </header>
+
+    <section class="card">
+      <h2>Connection</h2>
+      <button id="connect-btn">Connect to Device</button>
+      <button id="disconnect-btn" disabled>Disconnect</button>
+      <div id="status" class="status">Not connected</div>
+    </section>
+
+    <section class="card">
+      <h2>Try These Commands</h2>
+      <p class="hint"><strong>IMPORTANT: Put your finger in the device FIRST, then try these commands!</strong></p>
+      <div class="controls">
+        <button id="cmd-start" disabled>Send START (0x01)</button>
+        <button id="cmd-enable" disabled>Send ENABLE (0xFF)</button>
+        <button id="cmd-getdata" disabled>Send GET DATA (0x02)</button>
+        <button id="cmd-discover" disabled>Re-Discover Services</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Event Log</h2>
+      <pre id="log" class="log">Events will appear here...</pre>
+    </section>
+  </main>
+
+  <script type="module">
+    const connectBtn = document.getElementById('connect-btn');
+    const disconnectBtn = document.getElementById('disconnect-btn');
+    const cmdStartBtn = document.getElementById('cmd-start');
+    const cmdEnableBtn = document.getElementById('cmd-enable');
+    const cmdGetDataBtn = document.getElementById('cmd-getdata');
+    const cmdDiscoverBtn = document.getElementById('cmd-discover');
+    const statusEl = document.getElementById('status');
+    const logEl = document.getElementById('log');
+
+    let device = null;
+    let server = null;
+    let writeChar = null;
+
+    const WRITE_CHAR_UUID = 'b31e89de-da03-4784-b19c-61b7baa5f8b4';
+    const SERVICE_UUID = '0000180a-0000-1000-8000-00805f9b34fb';
+
+    connectBtn.addEventListener('click', async () => {
+      try {
+        log('🔍 Opening Bluetooth picker...');
+
+        device = await navigator.bluetooth.requestDevice({
+          acceptAllDevices: true,
+          optionalServices: [
+            SERVICE_UUID,
+            'b31e89de-da01-4784-b19c-61b7baa5f8b4',
+            'b31e89de-da02-4784-b19c-61b7baa5f8b4',
+            'b31e89de-da03-4784-b19c-61b7baa5f8b4',
+            'b31e89de-da04-4784-b19c-61b7baa5f8b4',
+          ]
+        });
+
+        log(`✅ Selected: ${device.name || 'Unknown'}`);
+
+        server = await device.gatt.connect();
+        log('✅ Connected to GATT server');
+
+        const service = await server.getPrimaryService(SERVICE_UUID);
+        log('✅ Got Device Information service');
+
+        writeChar = await service.getCharacteristic(WRITE_CHAR_UUID);
+        log('✅ Got WRITE characteristic');
+
+        statusEl.textContent = 'Connected! Try commands below.';
+        connectBtn.disabled = true;
+        disconnectBtn.disabled = false;
+        cmdStartBtn.disabled = false;
+        cmdEnableBtn.disabled = false;
+        cmdGetDataBtn.disabled = false;
+        cmdDiscoverBtn.disabled = false;
+
+        device.addEventListener('gattserverdisconnected', () => {
+          log('❌ Device disconnected');
+          resetUI();
+        });
+
+      } catch (err) {
+        log(`❌ Error: ${err.message}`);
+        statusEl.textContent = `Error: ${err.message}`;
+      }
+    });
+
+    disconnectBtn.addEventListener('click', async () => {
+      if (device && device.gatt.connected) {
+        device.gatt.disconnect();
+      }
+      resetUI();
+    });
+
+    cmdStartBtn.addEventListener('click', async () => {
+      await sendCommand(new Uint8Array([0x01]), 'START (0x01)');
+      await rediscoverServices();
+    });
+
+    cmdEnableBtn.addEventListener('click', async () => {
+      await sendCommand(new Uint8Array([0xFF]), 'ENABLE (0xFF)');
+      await rediscoverServices();
+    });
+
+    cmdGetDataBtn.addEventListener('click', async () => {
+      await sendCommand(new Uint8Array([0x02]), 'GET DATA (0x02)');
+      await rediscoverServices();
+    });
+
+    cmdDiscoverBtn.addEventListener('click', async () => {
+      await rediscoverServices();
+    });
+
+    async function sendCommand(bytes, name) {
+      try {
+        log(`📤 Sending ${name}...`);
+        await writeChar.writeValue(bytes);
+        log(`✅ Sent: ${Array.from(bytes).map(b => '0x' + b.toString(16).padStart(2, '0')).join(' ')}`);
+      } catch (err) {
+        log(`❌ Failed to send ${name}: ${err.message}`);
+      }
+    }
+
+    async function rediscoverServices() {
+      try {
+        log('🔎 Re-discovering services...');
+        const services = await server.getPrimaryServices();
+        log(`Found ${services.length} service(s):`);
+
+        for (const service of services) {
+          log(`  📦 ${service.uuid}`);
+          try {
+            const chars = await service.getCharacteristics();
+            for (const char of chars) {
+              const props = [];
+              if (char.properties.read) props.push('READ');
+              if (char.properties.write) props.push('WRITE');
+              if (char.properties.notify) props.push('NOTIFY');
+              if (char.properties.indicate) props.push('INDICATE');
+
+              log(`     → ${char.uuid} [${props.join(', ')}]`);
+
+              // If we find a NOTIFY characteristic, try to subscribe!
+              if (char.properties.notify) {
+                log(`     🎯 FOUND NOTIFY! Subscribing...`);
+                try {
+                  await char.startNotifications();
+                  char.addEventListener('characteristicvaluechanged', (e) => {
+                    const value = e.target.value;
+                    const hex = Array.from(new Uint8Array(value.buffer))
+                      .map(b => b.toString(16).padStart(2, '0'))
+                      .join(' ');
+                    log(`📊 DATA: ${hex}`);
+                  });
+                  log(`     ✅ Subscribed to notifications!`);
+                } catch (err) {
+                  log(`     ❌ Subscribe failed: ${err.message}`);
+                }
+              }
+            }
+          } catch (err) {
+            log(`     ❌ Could not read characteristics`);
+          }
+        }
+      } catch (err) {
+        log(`❌ Discovery failed: ${err.message}`);
+      }
+    }
+
+    function resetUI() {
+      statusEl.textContent = 'Not connected';
+      connectBtn.disabled = false;
+      disconnectBtn.disabled = true;
+      cmdStartBtn.disabled = true;
+      cmdEnableBtn.disabled = true;
+      cmdGetDataBtn.disabled = true;
+      cmdDiscoverBtn.disabled = true;
+    }
+
+    function log(message) {
+      const time = new Date().toLocaleTimeString();
+      logEl.textContent = `[${time}] ${message}\n` + logEl.textContent;
+    }
+  </script>
+</body>
+</html>

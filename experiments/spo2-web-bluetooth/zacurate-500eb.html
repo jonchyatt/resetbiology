@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zacurate 500E-B Monitor</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main>
+    <header>
+      <h1>💙 Zacurate 500E-B SpO₂ Monitor</h1>
+      <p class="lead">
+        Live SpO₂ and Heart Rate monitoring via Bluetooth.
+      </p>
+    </header>
+
+    <section class="card">
+      <h2>Connection</h2>
+      <p class="hint"><strong>Insert your finger and wait for stable readings before connecting.</strong></p>
+      <div class="controls">
+        <button id="connect-btn">Connect to 500E-B</button>
+        <button id="disconnect-btn" disabled>Disconnect</button>
+      </div>
+      <div id="status" class="status">Ready to connect...</div>
+    </section>
+
+    <section class="card">
+      <h2>Live Vital Signs</h2>
+      <div class="reading">
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 2rem; border-radius: 12px;">
+          <dt style="color: white; opacity: 0.9;">Blood Oxygen (SpO₂)</dt>
+          <dd id="spo2" style="font-size: 4rem; color: white; font-weight: bold; margin: 0.5rem 0;">--</dd>
+          <div style="color: white; opacity: 0.8; font-size: 0.9rem;">Normal: 95-100%</div>
+        </div>
+        <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 2rem; border-radius: 12px;">
+          <dt style="color: white; opacity: 0.9;">Heart Rate</dt>
+          <dd id="hr" style="font-size: 4rem; color: white; font-weight: bold; margin: 0.5rem 0;">--</dd>
+          <div style="color: white; opacity: 0.8; font-size: 0.9rem;">Resting: 60-100 bpm</div>
+        </div>
+        <div style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); padding: 2rem; border-radius: 12px;">
+          <dt style="color: white; opacity: 0.9;">Battery Level</dt>
+          <dd id="battery" style="font-size: 4rem; color: white; font-weight: bold; margin: 0.5rem 0;">--</dd>
+          <div style="color: white; opacity: 0.8; font-size: 0.9rem;" id="battery-status">Unknown</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Session Data</h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+        <div style="background: #f8f9fb; padding: 1rem; border-radius: 8px; text-align: center;">
+          <div style="font-size: 0.85rem; color: #666; margin-bottom: 0.5rem;">Updates</div>
+          <div id="update-count" style="font-size: 1.8rem; font-weight: bold; color: #0071e3;">0</div>
+        </div>
+        <div style="background: #f8f9fb; padding: 1rem; border-radius: 8px; text-align: center;">
+          <div style="font-size: 0.85rem; color: #666; margin-bottom: 0.5rem;">Avg SpO₂</div>
+          <div id="avg-spo2" style="font-size: 1.8rem; font-weight: bold; color: #667eea;">--</div>
+        </div>
+        <div style="background: #f8f9fb; padding: 1rem; border-radius: 8px; text-align: center;">
+          <div style="font-size: 0.85rem; color: #666; margin-bottom: 0.5rem;">Avg HR</div>
+          <div id="avg-hr" style="font-size: 1.8rem; font-weight: bold; color: #f5576c;">--</div>
+        </div>
+        <div style="background: #f8f9fb; padding: 1rem; border-radius: 8px; text-align: center;">
+          <div style="font-size: 0.85rem; color: #666; margin-bottom: 0.5rem;">Duration</div>
+          <div id="duration" style="font-size: 1.8rem; font-weight: bold; color: #34c759;">0:00</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Raw Data Stream</h2>
+      <pre id="log" class="log" style="max-height: 200px;">Waiting for data...</pre>
+    </section>
+  </main>
+
+  <script type="module">
+    const connectBtn = document.getElementById('connect-btn');
+    const disconnectBtn = document.getElementById('disconnect-btn');
+    const statusEl = document.getElementById('status');
+    const logEl = document.getElementById('log');
+    const spo2El = document.getElementById('spo2');
+    const hrEl = document.getElementById('hr');
+    const batteryEl = document.getElementById('battery');
+    const batteryStatusEl = document.getElementById('battery-status');
+    const updateCountEl = document.getElementById('update-count');
+    const avgSpo2El = document.getElementById('avg-spo2');
+    const avgHrEl = document.getElementById('avg-hr');
+    const durationEl = document.getElementById('duration');
+
+    let device = null;
+    let server = null;
+    let dataChar = null;
+    let pollingInterval = null;
+    let durationInterval = null;
+
+    let updateCount = 0;
+    let spo2Readings = [];
+    let hrReadings = [];
+    let startTime = null;
+
+    const DATA_CHAR_UUID = '00002a19-0000-1000-8000-00805f9b34fb';
+
+    connectBtn.addEventListener('click', async () => {
+      try {
+        log('🔍 Requesting Zacurate 500E-B...');
+
+        device = await navigator.bluetooth.requestDevice({
+          filters: [{ name: '500E-B' }],
+          optionalServices: [0x180F, 0x180A]
+        });
+
+        log(`✅ Selected: ${device.name}`);
+        server = await device.gatt.connect();
+        log('✅ Connected!');
+
+        const batteryService = await server.getPrimaryService(0x180F);
+        dataChar = await batteryService.getCharacteristic(DATA_CHAR_UUID);
+        log('✅ Found data characteristic');
+
+        statusEl.textContent = 'Connected! Reading data...';
+        connectBtn.disabled = true;
+        disconnectBtn.disabled = false;
+
+        startTime = Date.now();
+        startPolling();
+        startDurationTimer();
+
+        device.addEventListener('gattserverdisconnected', () => {
+          log('❌ Device disconnected');
+          stopPolling();
+          resetUI();
+        });
+
+      } catch (err) {
+        log(`❌ Error: ${err.message}`);
+        statusEl.textContent = `Error: ${err.message}`;
+      }
+    });
+
+    disconnectBtn.addEventListener('click', () => {
+      stopPolling();
+      if (device && device.gatt.connected) {
+        device.gatt.disconnect();
+      }
+      resetUI();
+    });
+
+    function startPolling() {
+      pollingInterval = setInterval(async () => {
+        try {
+          const value = await dataChar.readValue();
+          const bytes = new Uint8Array(value.buffer);
+
+          // Zacurate 500E-B format from characteristic 0x2a19:
+          // Byte 0: SpO₂ (%)
+          // Byte 1: Heart Rate (bpm)
+          // Rest: various status/metadata
+
+          if (bytes.length >= 2) {
+            const spo2 = bytes[0];
+            const hr = bytes[1];
+
+            if (spo2 >= 70 && spo2 <= 100) {
+              spo2El.textContent = `${spo2}%`;
+              spo2Readings.push(spo2);
+              if (spo2Readings.length > 20) spo2Readings.shift();
+            }
+
+            if (hr >= 30 && hr <= 220) {
+              hrEl.textContent = `${hr}`;
+              hrReadings.push(hr);
+              if (hrReadings.length > 20) hrReadings.shift();
+            }
+
+            updateCount++;
+            updateCountEl.textContent = updateCount;
+
+            // Calculate averages
+            if (spo2Readings.length > 0) {
+              const avgSpo2 = Math.round(spo2Readings.reduce((a, b) => a + b) / spo2Readings.length);
+              avgSpo2El.textContent = `${avgSpo2}%`;
+            }
+
+            if (hrReadings.length > 0) {
+              const avgHr = Math.round(hrReadings.reduce((a, b) => a + b) / hrReadings.length);
+              avgHrEl.textContent = avgHr;
+            }
+
+            const hex = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join(' ');
+            log(`SpO₂: ${spo2}% | HR: ${hr} bpm | Raw: ${hex}`);
+          }
+
+          // Battery is typically last byte or separate read
+          if (bytes.length > 2) {
+            const battery = bytes[bytes.length - 1];
+            if (battery >= 0 && battery <= 100) {
+              batteryEl.textContent = `${battery}%`;
+              if (battery > 80) batteryStatusEl.textContent = 'Excellent';
+              else if (battery > 50) batteryStatusEl.textContent = 'Good';
+              else if (battery > 20) batteryStatusEl.textContent = 'Low';
+              else batteryStatusEl.textContent = 'Very Low';
+            }
+          }
+
+        } catch (err) {
+          log(`⚠️ Read error: ${err.message}`);
+        }
+      }, 500);
+    }
+
+    function startDurationTimer() {
+      durationInterval = setInterval(() => {
+        const elapsed = Math.floor((Date.now() - startTime) / 1000);
+        const minutes = Math.floor(elapsed / 60);
+        const seconds = elapsed % 60;
+        durationEl.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+      }, 1000);
+    }
+
+    function stopPolling() {
+      if (pollingInterval) {
+        clearInterval(pollingInterval);
+        pollingInterval = null;
+      }
+      if (durationInterval) {
+        clearInterval(durationInterval);
+        durationInterval = null;
+      }
+    }
+
+    function resetUI() {
+      statusEl.textContent = 'Not connected';
+      connectBtn.disabled = false;
+      disconnectBtn.disabled = true;
+      spo2El.textContent = '--';
+      hrEl.textContent = '--';
+      batteryEl.textContent = '--';
+      batteryStatusEl.textContent = 'Unknown';
+      updateCountEl.textContent = '0';
+      avgSpo2El.textContent = '--';
+      avgHrEl.textContent = '--';
+      durationEl.textContent = '0:00';
+      updateCount = 0;
+      spo2Readings = [];
+      hrReadings = [];
+      startTime = null;
+    }
+
+    function log(message) {
+      const time = new Date().toLocaleTimeString();
+      logEl.textContent = `[${time}] ${message}\n` + logEl.textContent;
+      const lines = logEl.textContent.split('\n');
+      if (lines.length > 30) {
+        logEl.textContent = lines.slice(0, 30).join('\n');
+      }
+    }
+  </script>
+</body>
+</html>

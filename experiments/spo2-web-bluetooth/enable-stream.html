@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Zacurate Enable Stream</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main>
+    <header>
+      <h1>💙 Zacurate Stream Enabler</h1>
+      <p class="lead">Enabling 0xFFF1 notifications with 0xFFF2 commands</p>
+    </header>
+
+    <section class="card">
+      <h2>Connection</h2>
+      <button id="connect-btn">Connect & Enable Stream</button>
+      <div id="status" class="status">Ready...</div>
+    </section>
+
+    <section class="card">
+      <h2>Live Readings</h2>
+      <div class="reading">
+        <div><dt>SpO₂</dt><dd id="spo2" style="font-size: 3rem; font-weight: bold; color: #0071e3;">--</dd></div>
+        <div><dt>Heart Rate</dt><dd id="hr" style="font-size: 3rem; font-weight: bold; color: #ff3b30;">--</dd></div>
+        <div><dt>Notifications</dt><dd id="count" style="font-size: 3rem; font-weight: bold; color: #34c759;">0</dd></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Raw Notification Stream</h2>
+      <pre id="log" class="log" style="max-height: 500px;">Waiting...</pre>
+    </section>
+  </main>
+
+  <script type="module">
+    const connectBtn = document.getElementById('connect-btn');
+    const statusEl = document.getElementById('status');
+    const logEl = document.getElementById('log');
+    const spo2El = document.getElementById('spo2');
+    const hrEl = document.getElementById('hr');
+    const countEl = document.getElementById('count');
+
+    let notifyCount = 0;
+
+    connectBtn.addEventListener('click', async () => {
+      try {
+        log('🔍 Requesting device...');
+
+        const device = await navigator.bluetooth.requestDevice({
+          acceptAllDevices: true,
+          optionalServices: ['6e400001-b5a3-f393-e0a9-e50e24dcca9e', 0x180F]
+        });
+
+        log(`✅ Selected: ${device.name || 'Unknown'}`);
+
+        const server = await device.gatt.connect();
+        log('✅ Connected!');
+
+        // Get Nordic UART service
+        const service = await server.getPrimaryService('6e400001-b5a3-f393-e0a9-e50e24dcca9e');
+        log('✅ Got Nordic UART service');
+
+        // Get RX (notify) characteristic
+        const rx = await service.getCharacteristic('0000fff1-0000-1000-8000-00805f9b34fb');
+        log('✅ Got RX characteristic (0xFFF1)');
+
+        // Subscribe to notifications
+        await rx.startNotifications();
+        rx.addEventListener('characteristicvaluechanged', (e) => {
+          const dv = e.target.value;
+          const bytes = new Uint8Array(dv.buffer);
+          const dec = Array.from(bytes).join(', ');
+
+          notifyCount++;
+          countEl.textContent = notifyCount;
+
+          log(`\n📊 NOTIFICATION #${notifyCount}:`);
+          log(`   BYTES (${bytes.length}): ${dec}`);
+
+          // Look for SpO2 and HR
+          for (let i = 0; i < bytes.length; i++) {
+            if (bytes[i] >= 70 && bytes[i] <= 100) {
+              log(`   → BYTE[${i}] = ${bytes[i]} (SpO₂?)`);
+              spo2El.textContent = bytes[i];
+            }
+            if (bytes[i] >= 40 && bytes[i] <= 180 && bytes[i] !== spo2El.textContent) {
+              log(`   → BYTE[${i}] = ${bytes[i]} (HR?)`);
+              hrEl.textContent = bytes[i];
+            }
+          }
+        });
+        log('✅ Subscribed to notifications on 0xFFF1');
+
+        // Get TX (write) characteristic
+        const tx = await service.getCharacteristic('0000fff2-0000-1000-8000-00805f9b34fb');
+        log('✅ Got TX characteristic (0xFFF2)');
+
+        // Try enable commands
+        log('\n📤 Sending enable commands...');
+
+        await tx.writeValue(new Uint8Array([0x01]));
+        log('   Sent: 0x01');
+        await sleep(300);
+
+        await tx.writeValue(new Uint8Array([0xAA]));
+        log('   Sent: 0xAA');
+        await sleep(300);
+
+        await tx.writeValue(new Uint8Array([0xFF]));
+        log('   Sent: 0xFF');
+        await sleep(300);
+
+        await tx.writeValue(new Uint8Array([0x43, 0x00, 0x20, 0x00, 0x24, 0x08, 0x00]));
+        log('   Sent: 67, 0, 32, 0, 36, 8, 0 (read value)');
+
+        log('\n✅ ALL ENABLE COMMANDS SENT!');
+        log('⏳ Waiting for notifications... (keep finger in device!)');
+
+        statusEl.textContent = 'Connected! Waiting for data...';
+        connectBtn.disabled = true;
+
+      } catch (err) {
+        log(`\n❌ ERROR: ${err.message}`);
+        statusEl.textContent = `Error: ${err.message}`;
+      }
+    });
+
+    function sleep(ms) {
+      return new Promise(r => setTimeout(r, ms));
+    }
+
+    function log(msg) {
+      const time = new Date().toLocaleTimeString();
+      logEl.textContent += `[${time}] ${msg}\n`;
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+  </script>
+</body>
+</html>

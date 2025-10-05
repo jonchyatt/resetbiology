@@ -42,9 +42,6 @@ export function Header() {
             {/* Public/Logged Out Navigation */}
             {!user && (
               <>
-                <Link href="/process" className="text-gray-700 hover:text-teal-600 font-medium transition-colors">
-                  How It Works
-                </Link>
                 <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium transition-colors">
                   Order
                 </Link>
@@ -66,7 +63,10 @@ export function Header() {
                 <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium transition-colors">
                   Order
                 </Link>
-                
+                <Link href="/profile" className="text-gray-700 hover:text-teal-600 font-medium transition-colors">
+                  Profile
+                </Link>
+
                 {/* User Menu Dropdown */}
                 <div className="relative user-menu-container">
                   <button
@@ -133,9 +133,6 @@ export function Header() {
             <nav className="flex flex-col space-y-4">
               {!user ? (
                 <>
-                  <Link href="/process" className="text-gray-700 hover:text-teal-600 font-medium">
-                    How It Works
-                  </Link>
                   <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium">
                     Order
                   </Link>
@@ -155,7 +152,7 @@ export function Header() {
                     Order
                   </Link>
                   <Link href="/profile" className="text-gray-700 hover:text-teal-600 font-medium">
-                    Profile Settings
+                    Profile
                   </Link>
                   {isAdmin && (
                     <Link href="/admin" className="text-orange-600 hover:text-orange-700 font-medium">

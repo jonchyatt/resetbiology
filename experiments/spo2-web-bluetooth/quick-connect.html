@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zacurate Quick Connect</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main>
+    <header>
+      <h1>⚡ Zacurate Quick Connect</h1>
+      <p class="lead">
+        Fast connection that subscribes to ALL notify characteristics immediately.
+      </p>
+    </header>
+
+    <section class="card">
+      <h2>Connection</h2>
+      <p class="hint"><strong>IMPORTANT: Put your finger in the Zacurate BEFORE clicking connect!</strong></p>
+      <button id="connect-btn">⚡ Quick Connect</button>
+      <button id="disconnect-btn" disabled>Disconnect</button>
+      <div id="status" class="status">Ready to connect...</div>
+    </section>
+
+    <section class="card">
+      <h2>Live Data Stream</h2>
+      <div class="reading">
+        <div>
+          <dt>SpO₂ (%)</dt>
+          <dd id="spo2" style="font-size: 2.5rem; color: #0071e3;">--</dd>
+        </div>
+        <div>
+          <dt>Heart Rate (bpm)</dt>
+          <dd id="hr" style="font-size: 2.5rem; color: #ff3b30;">--</dd>
+        </div>
+        <div>
+          <dt>Battery</dt>
+          <dd id="battery" style="font-size: 2.5rem; color: #34c759;">--</dd>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Raw Data Stream</h2>
+      <pre id="log" class="log">Waiting for data...</pre>
+    </section>
+  </main>
+
+  <script type="module">
+    const connectBtn = document.getElementById('connect-btn');
+    const disconnectBtn = document.getElementById('disconnect-btn');
+    const statusEl = document.getElementById('status');
+    const logEl = document.getElementById('log');
+    const spo2El = document.getElementById('spo2');
+    const hrEl = document.getElementById('hr');
+    const batteryEl = document.getElementById('battery');
+
+    let device = null;
+    let server = null;
+    let activeChars = [];
+
+    connectBtn.addEventListener('click', async () => {
+      try {
+        log('🔍 Opening Bluetooth picker...');
+
+        // Request with ALL possible services
+        device = await navigator.bluetooth.requestDevice({
+          acceptAllDevices: true,
+          optionalServices: [
+            0x180F, // Battery
+            0x180A, // Device Info
+            0x1822, // Pulse Oximeter
+            0x1810, // Blood Pressure
+            0x181D, // Weight Scale
+            'generic_access',
+            'generic_attribute',
+          ]
+        });
+
+        log(`✅ Selected: ${device.name || 'Unknown Device'}`);
+        statusEl.textContent = 'Connecting...';
+
+        server = await device.gatt.connect();
+        log('✅ Connected to GATT server!');
+
+        // Quickly get ALL services and subscribe to ALL notify characteristics
+        log('🔎 Scanning all services...');
+        const services = await server.getPrimaryServices();
+        log(`Found ${services.length} service(s)`);
+
+        for (const service of services) {
+          log(`📦 Service: ${service.uuid}`);
+
+          try {
+            const chars = await service.getCharacteristics();
+
+            for (const char of chars) {
+              const props = [];
+              if (char.properties.read) props.push('READ');
+              if (char.properties.write) props.push('WRITE');
+              if (char.properties.notify) props.push('NOTIFY');
+
+              log(`   → Char: ${char.uuid} [${props.join(', ')}]`);
+
+              // Try to read battery if available
+              if (char.uuid === '00002a19-0000-1000-8000-00805f9b34fb') {
+                try {
+                  const value = await char.readValue();
+                  const battery = value.getUint8(0);
+                  batteryEl.textContent = `${battery}%`;
+                  log(`   🔋 Battery: ${battery}%`);
+                } catch (e) {
+                  log(`   ⚠️ Could not read battery`);
+                }
+              }
+
+              // Subscribe to ALL NOTIFY characteristics
+              if (char.properties.notify) {
+                log(`   🎯 Subscribing to notifications...`);
+                try {
+                  await char.startNotifications();
+                  activeChars.push(char);
+
+                  char.addEventListener('characteristicvaluechanged', (event) => {
+                    handleData(event.target.uuid, event.target.value);
+                  });
+
+                  log(`   ✅ Subscribed!`);
+                } catch (err) {
+                  log(`   ❌ Subscribe failed: ${err.message}`);
+                }
+              }
+            }
+          } catch (err) {
+            log(`   ⚠️ Could not scan characteristics: ${err.message}`);
+          }
+        }
+
+        statusEl.textContent = `Connected! Listening for data...`;
+        connectBtn.disabled = true;
+        disconnectBtn.disabled = false;
+
+        device.addEventListener('gattserverdisconnected', () => {
+          log('❌ Device disconnected');
+          resetUI();
+        });
+
+      } catch (err) {
+        log(`❌ Error: ${err.message}`);
+        statusEl.textContent = `Error: ${err.message}`;
+      }
+    });
+
+    disconnectBtn.addEventListener('click', () => {
+      if (device && device.gatt.connected) {
+        device.gatt.disconnect();
+      }
+      resetUI();
+    });
+
+    function handleData(uuid, dataView) {
+      const bytes = new Uint8Array(dataView.buffer);
+      const hex = Array.from(bytes)
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join(' ');
+
+      log(`📊 [${uuid.substring(4, 8)}] ${hex}`);
+
+      // Try to parse common patterns
+      if (bytes.length >= 2) {
+        // Common pulse oximeter format: byte 0 = SpO2, byte 1 = HR
+        const possibleSpO2 = bytes[0];
+        const possibleHR = bytes[1];
+
+        if (possibleSpO2 >= 70 && possibleSpO2 <= 100) {
+          spo2El.textContent = possibleSpO2;
+          log(`   💙 Possible SpO₂: ${possibleSpO2}%`);
+        }
+
+        if (possibleHR >= 30 && possibleHR <= 220) {
+          hrEl.textContent = possibleHR;
+          log(`   ❤️  Possible HR: ${possibleHR} bpm`);
+        }
+      }
+
+      // Also try other byte positions
+      if (bytes.length >= 4) {
+        const alt1 = bytes[2];
+        const alt2 = bytes[3];
+
+        if (alt1 >= 70 && alt1 <= 100) {
+          log(`   💙 Alt SpO₂: ${alt1}%`);
+        }
+        if (alt2 >= 30 && alt2 <= 220) {
+          log(`   ❤️  Alt HR: ${alt2} bpm`);
+        }
+      }
+    }
+
+    function resetUI() {
+      statusEl.textContent = 'Not connected';
+      connectBtn.disabled = false;
+      disconnectBtn.disabled = true;
+      spo2El.textContent = '--';
+      hrEl.textContent = '--';
+      batteryEl.textContent = '--';
+      activeChars = [];
+    }
+
+    function log(message) {
+      const time = new Date().toLocaleTimeString();
+      logEl.textContent = `[${time}] ${message}\n` + logEl.textContent;
+
+      // Keep only last 100 lines
+      const lines = logEl.textContent.split('\n');
+      if (lines.length > 100) {
+        logEl.textContent = lines.slice(0, 100).join('\n');
+      }
+    }
+  </script>
+</body>
+</html>
