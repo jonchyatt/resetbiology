@@ -134,11 +134,9 @@ export function JournalHistory() {
       <div className="relative z-10 min-h-screen flex flex-col text-slate-100">
 
         <PortalHeader
-
           section="Daily History"
-
           subtitle="Review your peptides, nutrition, workouts, breath, mindset, and notes in one place"
-
+          showOrderPeptides={false}
         />
 
         {/* Title Section - Matching Tracker Pages */}
