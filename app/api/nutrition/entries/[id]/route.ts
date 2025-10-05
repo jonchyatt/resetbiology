@@ -53,17 +53,17 @@ export async function PATCH(
 
     const data = await request.json()
 
-    // Find the food entry and verify ownership
-    const existingEntry = await prisma.foodEntry.findFirst({
+    // Find the food log and verify ownership
+    const existingLog = await prisma.foodLog.findFirst({
       where: {
         id: params.id,
         userId: user.id
       }
     })
 
-    if (!existingEntry) {
+    if (!existingLog) {
       return NextResponse.json(
-        { error: 'Food entry not found or unauthorized' },
+        { error: 'Food log not found or unauthorized' },
         { status: 404 }
       )
     }
@@ -74,26 +74,28 @@ export async function PATCH(
     // Update basic fields
     if (data.itemName !== undefined) updateData.itemName = data.itemName
     if (data.mealType !== undefined) updateData.mealType = data.mealType
+    if (data.brand !== undefined) updateData.brand = data.brand
     if (data.quantity !== undefined) updateData.quantity = data.quantity
     if (data.unit !== undefined) updateData.unit = data.unit
 
-    // Update nutrients if provided
+    // Update nutrients if provided (merge with existing)
     if (data.nutrients) {
+      const existingNutrients = (existingLog.nutrients as any) || {}
       updateData.nutrients = {
-        ...(existingEntry.nutrients as any || {}),
+        ...existingNutrients,
         ...data.nutrients
       }
     }
 
-    // Update the food entry
-    const updatedEntry = await prisma.foodEntry.update({
+    // Update the food log
+    const updatedLog = await prisma.foodLog.update({
       where: { id: params.id },
       data: updateData
     })
 
     return NextResponse.json({
       success: true,
-      data: updatedEntry
+      data: updatedLog
     })
 
   } catch (error: any) {
