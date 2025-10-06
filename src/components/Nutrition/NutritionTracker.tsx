@@ -413,10 +413,10 @@ export function NutritionTracker() {
                   }}
                 />
 
-                <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30 shadow-2xl hover:shadow-primary-400/20 transition-all duration-300">
+                <div className="bg-gradient-to-br from-amber-600/20 to-amber-700/20 backdrop-blur-sm rounded-xl p-4 border border-amber-400/30 shadow-2xl hover:shadow-amber-500/20 transition-all duration-300">
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="text-lg font-bold text-white flex items-center">
-                      <Target className="h-4 w-4 mr-2 text-secondary-400"/>Today's Macros
+                      <Target className="h-4 w-4 mr-2 text-amber-400"/>Today's Macros
                     </h3>
                   </div>
 

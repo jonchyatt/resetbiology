@@ -192,7 +192,7 @@ export function FoodQuickAdd({ onLogged }: { onLogged?: (result: FoodQuickAddRes
   };
 
   return (
-    <section className="rounded-2xl bg-gradient-to-br from-amber-600/20 to-amber-700/20 border border-amber-400/30 backdrop-blur-sm shadow-2xl hover:shadow-amber-500/20 transition-all duration-300 p-6">
+    <section className="rounded-2xl bg-gradient-to-br from-emerald-500/10 via-slate-900/40 to-slate-900/60 border border-emerald-400/30 shadow-lg p-6">
       <div className="mb-4">
         <h2 className="text-xl font-bold text-white">Add Nutrition</h2>
       </div>
@@ -351,7 +351,7 @@ export function FoodQuickAdd({ onLogged }: { onLogged?: (result: FoodQuickAddRes
           <button
             onClick={handleLog}
             disabled={!selected || !selected.nutrients || factor === 0 || status === "logging"}
-            className="w-full flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 px-4 py-2 text-sm font-medium text-white transition shadow-lg hover:shadow-amber-500/30 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-300 disabled:from-slate-700 disabled:to-slate-700"
+            className="w-full flex items-center justify-center gap-2 rounded-lg bg-emerald-500 px-4 py-2 text-sm font-medium text-white transition enabled:hover:bg-emerald-600 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-300"
           >
             {status === "logging" ? <Loader2 className="h-4 w-4 animate-spin" /> : <PlusCircle className="h-4 w-4" />}
             {status === "logging" ? "Logging..." : "Log this food"}
