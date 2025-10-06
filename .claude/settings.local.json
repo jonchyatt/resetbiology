@@ -1,7 +1,7 @@
 {
   "permissions": {
     "allow": [
-      "Bash(ls \"C:\\Users\\jonch\\Pictures\\Screenshots\"\" 2>&1 | grep \"114 \")"
+      "Bash(npx prisma generate:*)"
     ],
     "deny": [],
     "ask": [],

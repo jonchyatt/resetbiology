@@ -37,6 +37,8 @@ export async function POST(req: Request) {
       photoUrl = null,
       notes = null,
       loggedAt = null,
+      localDate = null,
+      localTime = null,
     } = body ?? {};
 
     if (!itemName || typeof nutrients !== 'object' || nutrients === null) {
@@ -72,6 +74,8 @@ export async function POST(req: Request) {
         nutrients,
         photoUrl,
         notes,
+        localDate, // User's local date YYYY-MM-DD
+        localTime, // User's local time HH:MM:SS
         loggedAt: logTimestamp,
         mealType,
       },

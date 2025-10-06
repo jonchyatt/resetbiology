@@ -151,15 +151,15 @@ export async function GET(request: NextRequest) {
 
     const days = new Map<string, DaySummary>()
 
-    const ensureDay = (date: Date) => {
-      // Extract UTC date components and treat them as local date
-      // This works because our server (Vercel) runs in UTC, and when users log food
-      // at "8:32 AM local", it gets stored as "8:32 AM UTC" in the database.
-      // So we just extract the UTC components directly without timezone conversion.
-      const year = date.getUTCFullYear()
-      const month = String(date.getUTCMonth() + 1).padStart(2, '0')
-      const day = String(date.getUTCDate()).padStart(2, '0')
-      const key = `${year}-${month}-${day}`
+    const ensureDay = (date: Date, localDate?: string) => {
+      // Prefer localDate string if available (timezone-safe)
+      // Otherwise fall back to UTC date extraction for old entries
+      const key = localDate || (() => {
+        const year = date.getUTCFullYear()
+        const month = String(date.getUTCMonth() + 1).padStart(2, '0')
+        const day = String(date.getUTCDate()).padStart(2, '0')
+        return `${year}-${month}-${day}`
+      })()
 
       if (!days.has(key)) {
         const entryDate = new Date(date)
@@ -198,9 +198,9 @@ export async function GET(request: NextRequest) {
       bucket.eventCount += 1
     })
 
-    foodLogs.forEach((log) => {
+    foodLogs.forEach((log: any) => {
       const date = log.loggedAt instanceof Date ? log.loggedAt : new Date(log.loggedAt)
-      const bucket = ensureDay(date)
+      const bucket = ensureDay(date, log.localDate)
       bucket.nutrition.logs.push(log)
       const nutrients = log.nutrients as any
       const kcal = typeof nutrients?.kcal === 'number' ? nutrients.kcal : 0

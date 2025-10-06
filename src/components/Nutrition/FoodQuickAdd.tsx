@@ -134,6 +134,15 @@ export function FoodQuickAdd({ onLogged }: { onLogged?: (result: FoodQuickAddRes
     try {
       setStatus("logging");
       setError(null);
+      // Get user's local date components
+      const now = new Date()
+      const year = now.getFullYear()
+      const month = String(now.getMonth() + 1).padStart(2, '0')
+      const day = String(now.getDate()).padStart(2, '0')
+      const hours = String(now.getHours()).padStart(2, '0')
+      const minutes = String(now.getMinutes()).padStart(2, '0')
+      const seconds = String(now.getSeconds()).padStart(2, '0')
+
       const payload = {
         source: selected.source,
         sourceId: selected.sourceId,
@@ -144,7 +153,10 @@ export function FoodQuickAdd({ onLogged }: { onLogged?: (result: FoodQuickAddRes
         gramWeight,
         nutrients: scaled,
         mealType,
-        loggedAt: new Date().toISOString(), // Send user's current local time as ISO string
+        // Send both ISO timestamp and local date string for bucketing
+        loggedAt: now.toISOString(),
+        localDate: `${year}-${month}-${day}`,
+        localTime: `${hours}:${minutes}:${seconds}`,
       };
 
       const res = await fetch("/api/foods/log", {

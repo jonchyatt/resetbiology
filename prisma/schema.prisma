@@ -467,6 +467,8 @@ model FoodLog {
   userId     String   @db.ObjectId
   user       User     @relation(fields: [userId], references: [id])
   loggedAt   DateTime @default(now())
+  localDate  String?  // User's local date as YYYY-MM-DD for timezone-safe bucketing
+  localTime  String?  // User's local time as HH:MM:SS
   source     String
   sourceId   String?
   itemName   String
@@ -481,4 +483,5 @@ model FoodLog {
 
   @@map("food_logs")
   @@index([userId, loggedAt], map: "foodlog_user_loggedAt")
+  @@index([userId, localDate], map: "foodlog_user_localDate")
 }
