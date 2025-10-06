@@ -152,11 +152,13 @@ export async function GET(request: NextRequest) {
     const days = new Map<string, DaySummary>()
 
     const ensureDay = (date: Date) => {
-      // Convert UTC timestamp to local date by creating new date from local string
-      const localDate = new Date(date.toLocaleString('en-US', { timeZone: 'America/New_York' }))
-      const year = localDate.getFullYear()
-      const month = String(localDate.getMonth() + 1).padStart(2, '0')
-      const day = String(localDate.getDate()).padStart(2, '0')
+      // Extract UTC date components and treat them as local date
+      // This works because our server (Vercel) runs in UTC, and when users log food
+      // at "8:32 AM local", it gets stored as "8:32 AM UTC" in the database.
+      // So we just extract the UTC components directly without timezone conversion.
+      const year = date.getUTCFullYear()
+      const month = String(date.getUTCMonth() + 1).padStart(2, '0')
+      const day = String(date.getUTCDate()).padStart(2, '0')
       const key = `${year}-${month}-${day}`
 
       if (!days.has(key)) {

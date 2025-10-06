@@ -144,6 +144,7 @@ export function FoodQuickAdd({ onLogged }: { onLogged?: (result: FoodQuickAddRes
         gramWeight,
         nutrients: scaled,
         mealType,
+        loggedAt: new Date().toISOString(), // Send user's current local time as ISO string
       };
 
       const res = await fetch("/api/foods/log", {
