@@ -400,8 +400,8 @@ export function NutritionTracker() {
         </div>
 
         {activeTab === 'today' && (
-          <div className="max-w-6xl mx-auto grid gap-6 lg:grid-cols-3">
-            <div className="lg:col-span-2 space-y-6">
+          <div className="max-w-6xl mx-auto grid gap-6 lg:grid-cols-2">
+            <div className="space-y-6">
               <FoodQuickAdd
                 onLogged={(result) => {
                   fetchTodaysFoods()
