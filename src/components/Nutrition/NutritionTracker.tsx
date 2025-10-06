@@ -483,10 +483,8 @@ export function NutritionTracker() {
                 </div>
               </div>
 
-              {/* Column 3 - Recent Activity & Insights */}
+              {/* Column 3 - Insights */}
               <div className="space-y-6">
-                <RecentFoods refreshToken={recentRefresh} />
-
                 <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl hover:shadow-secondary-400/20 transition-all duration-300">
                   <h4 className="text-white font-semibold mb-2 flex items-center">
                     <Calendar className="h-5 w-5 mr-2 text-secondary-400"/>Daily Snapshot
