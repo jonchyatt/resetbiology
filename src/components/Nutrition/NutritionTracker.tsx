@@ -402,7 +402,7 @@ export function NutritionTracker() {
         {activeTab === 'today' && (
           <div className="max-w-6xl mx-auto">
             <div className="grid gap-6 lg:grid-cols-3">
-              {/* Left Column - 1/3 width */}
+              {/* Column 1 - Add Nutrition */}
               <div className="space-y-6">
                 <FoodQuickAdd
                   onLogged={(result) => {
@@ -413,6 +413,36 @@ export function NutritionTracker() {
                   }}
                 />
 
+                <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30 shadow-2xl hover:shadow-primary-400/20 transition-all duration-300">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-lg font-bold text-white flex items-center">
+                      <Target className="h-4 w-4 mr-2 text-secondary-400"/>Today's Macros
+                    </h3>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="bg-gray-800/50 rounded-lg p-2">
+                      <p className="text-gray-300 text-xs">Calories</p>
+                      <p className="text-xl font-bold text-white">{Math.round(todaysTotals.calories)}</p>
+                    </div>
+                    <div className="bg-gray-800/50 rounded-lg p-2">
+                      <p className="text-gray-300 text-xs">Protein</p>
+                      <p className="text-xl font-bold text-white">{Math.round(todaysTotals.protein)}g</p>
+                    </div>
+                    <div className="bg-gray-800/50 rounded-lg p-2">
+                      <p className="text-gray-300 text-xs">Carbs</p>
+                      <p className="text-xl font-bold text-white">{Math.round(todaysTotals.carbs)}g</p>
+                    </div>
+                    <div className="bg-gray-800/50 rounded-lg p-2">
+                      <p className="text-gray-300 text-xs">Fats</p>
+                      <p className="text-xl font-bold text-white">{Math.round(todaysTotals.fats)}g</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Column 2 - Today's Meals */}
+              <div className="space-y-6">
                 <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl hover:shadow-primary-400/20 transition-all duration-300">
                   <h3 className="text-xl font-bold text-white mb-4 flex items-center">
                     <Utensils className="h-5 w-5 mr-2 text-secondary-400"/>Today's Meals
@@ -451,73 +481,46 @@ export function NutritionTracker() {
                     </div>
                   ))}
                 </div>
+              </div>
 
+              {/* Column 3 - Recent Activity & Insights */}
+              <div className="space-y-6">
                 <RecentFoods refreshToken={recentRefresh} />
-              </div>
 
-              {/* Right Column - 2/3 width */}
-              <div className="lg:col-span-2 space-y-6">
-              <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30 shadow-2xl hover:shadow-primary-400/20 transition-all duration-300">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-lg font-bold text-white flex items-center">
-                    <Target className="h-4 w-4 mr-2 text-secondary-400"/>Today's Macros
-                  </h3>
+                <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl hover:shadow-secondary-400/20 transition-all duration-300">
+                  <h4 className="text-white font-semibold mb-2 flex items-center">
+                    <Calendar className="h-5 w-5 mr-2 text-secondary-400"/>Daily Snapshot
+                  </h4>
+                  <ul className="space-y-2 text-sm text-gray-300">
+                    <li className="flex items-center justify-between">
+                      <span>Meals logged</span>
+                      <span className="font-semibold text-white">{todaysFoods.length}</span>
+                    </li>
+                    <li className="flex items-center justify-between">
+                      <span>Last entry</span>
+                      <span className="font-semibold text-white">{lastLoggedAt ? lastLoggedAt.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) : '—'}</span>
+                    </li>
+                    <li className="flex items-center justify-between">
+                      <span>Total calories</span>
+                      <span className="font-semibold text-white">{Math.round(todaysTotals.calories)} kcal</span>
+                    </li>
+                  </ul>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="bg-gray-800/50 rounded-lg p-2">
-                    <p className="text-gray-300 text-xs">Calories</p>
-                    <p className="text-xl font-bold text-white">{Math.round(todaysTotals.calories)}</p>
-                  </div>
-                  <div className="bg-gray-800/50 rounded-lg p-2">
-                    <p className="text-gray-300 text-xs">Protein</p>
-                    <p className="text-xl font-bold text-white">{Math.round(todaysTotals.protein)}g</p>
-                  </div>
-                  <div className="bg-gray-800/50 rounded-lg p-2">
-                    <p className="text-gray-300 text-xs">Carbs</p>
-                    <p className="text-xl font-bold text-white">{Math.round(todaysTotals.carbs)}g</p>
-                  </div>
-                  <div className="bg-gray-800/50 rounded-lg p-2">
-                    <p className="text-gray-300 text-xs">Fats</p>
-                    <p className="text-xl font-bold text-white">{Math.round(todaysTotals.fats)}g</p>
-                  </div>
+                <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl hover:shadow-secondary-400/20 transition-all duration-300">
+                  <h4 className="text-white font-semibold mb-3 flex items-center">
+                    <TrendingUp className="h-5 w-5 mr-2 text-secondary-400"/>History &amp; Insights
+                  </h4>
+                  <p className="text-gray-300 text-sm mb-3">
+                    Review your daily trendlines across peptides, workouts, meals, breath work, and journal entries in one timeline.
+                  </p>
+                  <Link
+                    href="/journal"
+                    className="inline-flex items-center justify-center rounded-lg border border-secondary-400/40 bg-secondary-500/20 px-4 py-2 text-sm font-medium text-secondary-200 transition hover:border-secondary-300 hover:bg-secondary-500/30"
+                  >
+                    Open Daily History
+                  </Link>
                 </div>
-              </div>
-
-              <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl hover:shadow-secondary-400/20 transition-all duration-300">
-                <h4 className="text-white font-semibold mb-2 flex items-center">
-                  <Calendar className="h-5 w-5 mr-2 text-secondary-400"/>Daily Snapshot
-                </h4>
-                <ul className="space-y-2 text-sm text-gray-300">
-                  <li className="flex items-center justify-between">
-                    <span>Meals logged</span>
-                    <span className="font-semibold text-white">{todaysFoods.length}</span>
-                  </li>
-                  <li className="flex items-center justify-between">
-                    <span>Last entry</span>
-                    <span className="font-semibold text-white">{lastLoggedAt ? lastLoggedAt.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) : '—'}</span>
-                  </li>
-                  <li className="flex items-center justify-between">
-                    <span>Total calories</span>
-                    <span className="font-semibold text-white">{Math.round(todaysTotals.calories)} kcal</span>
-                  </li>
-                </ul>
-              </div>
-
-              <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl hover:shadow-secondary-400/20 transition-all duration-300">
-                <h4 className="text-white font-semibold mb-3 flex items-center">
-                  <TrendingUp className="h-5 w-5 mr-2 text-secondary-400"/>History &amp; Insights
-                </h4>
-                <p className="text-gray-300 text-sm mb-3">
-                  Review your daily trendlines across peptides, workouts, meals, breath work, and journal entries in one timeline.
-                </p>
-                <Link
-                  href="/journal"
-                  className="inline-flex items-center justify-center rounded-lg border border-secondary-400/40 bg-secondary-500/20 px-4 py-2 text-sm font-medium text-secondary-200 transition hover:border-secondary-300 hover:bg-secondary-500/30"
-                >
-                  Open Daily History
-                </Link>
-              </div>
               </div>
             </div>
           </div>
