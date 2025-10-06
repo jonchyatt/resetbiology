@@ -247,10 +247,11 @@ export async function GET(request: NextRequest) {
     const calendar: Array<{ date: string; iso: string; count: number }> = []
     const cursor = new Date(start)
     while (cursor < end) {
-      // Use local date components instead of UTC
-      const year = cursor.getFullYear()
-      const month = String(cursor.getMonth() + 1).padStart(2, '0')
-      const day = String(cursor.getDate()).padStart(2, '0')
+      // Convert to EDT (UTC-4) to match entry bucketing
+      const edtTime = new Date(cursor.getTime() - (4 * 60 * 60 * 1000))
+      const year = edtTime.getUTCFullYear()
+      const month = String(edtTime.getUTCMonth() + 1).padStart(2, '0')
+      const day = String(edtTime.getUTCDate()).padStart(2, '0')
       const key = `${year}-${month}-${day}`
 
       calendar.push({
