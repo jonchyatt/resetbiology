@@ -84,6 +84,7 @@ export default function OrderPage() {
         <PortalHeader
           section="Order Peptides"
           subtitle="Premium quality peptides for your wellness journey"
+          showOrderPeptides={false}
         />
 
         <div className="text-center pt-8 pb-12">
