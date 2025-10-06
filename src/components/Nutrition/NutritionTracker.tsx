@@ -400,60 +400,63 @@ export function NutritionTracker() {
         </div>
 
         {activeTab === 'today' && (
-          <div className="max-w-6xl mx-auto grid gap-6 lg:grid-cols-2">
-            <div className="space-y-6">
-              <FoodQuickAdd
-                onLogged={(result) => {
-                  fetchTodaysFoods()
-                  setRecentRefresh((prev) => prev + 1)
-                  setHistoryRefresh((prev) => prev + 1)
-                  setLogSuccess(result)
-                }}
-              />
+          <div className="max-w-6xl mx-auto">
+            <div className="grid gap-6 lg:grid-cols-3">
+              {/* Left Column - 1/3 width */}
+              <div className="space-y-6">
+                <FoodQuickAdd
+                  onLogged={(result) => {
+                    fetchTodaysFoods()
+                    setRecentRefresh((prev) => prev + 1)
+                    setHistoryRefresh((prev) => prev + 1)
+                    setLogSuccess(result)
+                  }}
+                />
 
-              <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl hover:shadow-primary-400/20 transition-all duration-300">
-                <h3 className="text-xl font-bold text-white mb-4 flex items-center">
-                  <Utensils className="h-5 w-5 mr-2 text-secondary-400"/>Today's Meals
-                </h3>
+                <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl hover:shadow-primary-400/20 transition-all duration-300">
+                  <h3 className="text-xl font-bold text-white mb-4 flex items-center">
+                    <Utensils className="h-5 w-5 mr-2 text-secondary-400"/>Today's Meals
+                  </h3>
 
-                {(['breakfast', 'lunch', 'dinner', 'snack'] as const).map((mealType) => (
-                  <div key={mealType} className="mb-6 last:mb-0">
-                    <h4 className="text-primary-300 font-semibold mb-2 capitalize">{mealType}</h4>
-                    {foodsByMeal[mealType].length === 0 ? (
-                      <p className="text-gray-400 text-sm italic">Nothing logged</p>
-                    ) : (
-                      <div className="space-y-2">
-                        {foodsByMeal[mealType].map((food) => (
-                          <div key={food.id} className="bg-gray-700/30 rounded-lg p-3 flex justify-between items-center">
-                            <div>
-                              <p className="text-white font-medium">
-                                {food.name}
-                                {food.quantity && food.unit && (
-                                  <span className="text-gray-400 text-sm ml-2">({food.quantity}{food.unit})</span>
-                                )}
-                              </p>
-                              <p className="text-gray-400 text-xs">
-                                {food.calories}cal • P:{food.protein}g C:{food.carbs}g F:{food.fats}g
-                              </p>
+                  {(['breakfast', 'lunch', 'dinner', 'snack'] as const).map((mealType) => (
+                    <div key={mealType} className="mb-6 last:mb-0">
+                      <h4 className="text-primary-300 font-semibold mb-2 capitalize">{mealType}</h4>
+                      {foodsByMeal[mealType].length === 0 ? (
+                        <p className="text-gray-400 text-sm italic">Nothing logged</p>
+                      ) : (
+                        <div className="space-y-2">
+                          {foodsByMeal[mealType].map((food) => (
+                            <div key={food.id} className="bg-gray-700/30 rounded-lg p-3 flex justify-between items-center">
+                              <div>
+                                <p className="text-white font-medium">
+                                  {food.name}
+                                  {food.quantity && food.unit && (
+                                    <span className="text-gray-400 text-sm ml-2">({food.quantity}{food.unit})</span>
+                                  )}
+                                </p>
+                                <p className="text-gray-400 text-xs">
+                                  {food.calories}cal • P:{food.protein}g C:{food.carbs}g F:{food.fats}g
+                                </p>
+                              </div>
+                              <button
+                                onClick={() => deleteFood(food.id)}
+                                className="text-red-400 hover:text-red-300 transition-colors"
+                              >
+                                <X className="w-4 h-4" />
+                              </button>
                             </div>
-                            <button
-                              onClick={() => deleteFood(food.id)}
-                              className="text-red-400 hover:text-red-300 transition-colors"
-                            >
-                              <X className="w-4 h-4" />
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ))}
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                <RecentFoods refreshToken={recentRefresh} />
               </div>
 
-              <RecentFoods refreshToken={recentRefresh} />
-            </div>
-
-            <div className="space-y-6">
+              {/* Right Column - 2/3 width */}
+              <div className="lg:col-span-2 space-y-6">
               <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30 shadow-2xl hover:shadow-primary-400/20 transition-all duration-300">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-lg font-bold text-white flex items-center">
@@ -514,6 +517,7 @@ export function NutritionTracker() {
                 >
                   Open Daily History
                 </Link>
+              </div>
               </div>
             </div>
           </div>
