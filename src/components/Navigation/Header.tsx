@@ -3,15 +3,13 @@
 import Link from "next/link"
 import { useState, useEffect } from "react"
 import { Menu, X, ChevronDown, User, Settings, Shield } from "lucide-react"
-// Temporarily removed Auth0 useUser due to Next.js 15 compatibility
+import { useUser } from '@auth0/nextjs-auth0/client'
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
-  // Temporarily simplified due to Auth0 Next.js 15 compatibility issues
-  const user = null as any; // Will be replaced with proper Auth0 once compatibility is resolved
-  const isLoading = false;
-  const isAdmin = false; // Will be determined by user.role === 'admin'
+  const { user, isLoading } = useUser()
+  const isAdmin = user?.role === 'admin'
 
   // Close menus when clicking outside
   useEffect(() => {
