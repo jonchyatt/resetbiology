@@ -413,31 +413,19 @@ export function NutritionTracker() {
                   }}
                 />
 
-                <div className="bg-gradient-to-br from-amber-600/20 to-amber-700/20 backdrop-blur-sm rounded-xl p-4 border border-amber-400/30 shadow-2xl hover:shadow-amber-500/20 transition-all duration-300">
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-lg font-bold text-white flex items-center">
-                      <Target className="h-4 w-4 mr-2 text-amber-400"/>Today's Macros
-                    </h3>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="bg-gray-800/50 rounded-lg p-2">
-                      <p className="text-gray-300 text-xs">Calories</p>
-                      <p className="text-xl font-bold text-white">{Math.round(todaysTotals.calories)}</p>
-                    </div>
-                    <div className="bg-gray-800/50 rounded-lg p-2">
-                      <p className="text-gray-300 text-xs">Protein</p>
-                      <p className="text-xl font-bold text-white">{Math.round(todaysTotals.protein)}g</p>
-                    </div>
-                    <div className="bg-gray-800/50 rounded-lg p-2">
-                      <p className="text-gray-300 text-xs">Carbs</p>
-                      <p className="text-xl font-bold text-white">{Math.round(todaysTotals.carbs)}g</p>
-                    </div>
-                    <div className="bg-gray-800/50 rounded-lg p-2">
-                      <p className="text-gray-300 text-xs">Fats</p>
-                      <p className="text-xl font-bold text-white">{Math.round(todaysTotals.fats)}g</p>
-                    </div>
-                  </div>
+                <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl hover:shadow-secondary-400/20 transition-all duration-300">
+                  <h4 className="text-white font-semibold mb-3 flex items-center">
+                    <TrendingUp className="h-5 w-5 mr-2 text-secondary-400"/>History &amp; Insights
+                  </h4>
+                  <p className="text-gray-300 text-sm mb-3">
+                    Review your daily trendlines across peptides, workouts, meals, breath work, and journal entries in one timeline.
+                  </p>
+                  <Link
+                    href="/journal"
+                    className="inline-flex items-center justify-center rounded-lg border border-secondary-400/40 bg-secondary-500/20 px-4 py-2 text-sm font-medium text-secondary-200 transition hover:border-secondary-300 hover:bg-secondary-500/30"
+                  >
+                    Open Daily History
+                  </Link>
                 </div>
               </div>
 
@@ -483,8 +471,35 @@ export function NutritionTracker() {
                 </div>
               </div>
 
-              {/* Column 3 - Insights */}
+              {/* Column 3 - Today's Macros & Daily Snapshot */}
               <div className="space-y-6">
+                <div className="bg-gradient-to-br from-amber-600/20 to-amber-700/20 backdrop-blur-sm rounded-xl p-4 border border-amber-400/30 shadow-2xl hover:shadow-amber-500/20 transition-all duration-300">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-lg font-bold text-white flex items-center">
+                      <Target className="h-4 w-4 mr-2 text-amber-400"/>Today's Macros
+                    </h3>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="bg-gray-800/50 rounded-lg p-2">
+                      <p className="text-gray-300 text-xs">Calories</p>
+                      <p className="text-xl font-bold text-white">{Math.round(todaysTotals.calories)}</p>
+                    </div>
+                    <div className="bg-gray-800/50 rounded-lg p-2">
+                      <p className="text-gray-300 text-xs">Protein</p>
+                      <p className="text-xl font-bold text-white">{Math.round(todaysTotals.protein)}g</p>
+                    </div>
+                    <div className="bg-gray-800/50 rounded-lg p-2">
+                      <p className="text-gray-300 text-xs">Carbs</p>
+                      <p className="text-xl font-bold text-white">{Math.round(todaysTotals.carbs)}g</p>
+                    </div>
+                    <div className="bg-gray-800/50 rounded-lg p-2">
+                      <p className="text-gray-300 text-xs">Fats</p>
+                      <p className="text-xl font-bold text-white">{Math.round(todaysTotals.fats)}g</p>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl hover:shadow-secondary-400/20 transition-all duration-300">
                   <h4 className="text-white font-semibold mb-2 flex items-center">
                     <Calendar className="h-5 w-5 mr-2 text-secondary-400"/>Daily Snapshot
@@ -503,21 +518,6 @@ export function NutritionTracker() {
                       <span className="font-semibold text-white">{Math.round(todaysTotals.calories)} kcal</span>
                     </li>
                   </ul>
-                </div>
-
-                <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl hover:shadow-secondary-400/20 transition-all duration-300">
-                  <h4 className="text-white font-semibold mb-3 flex items-center">
-                    <TrendingUp className="h-5 w-5 mr-2 text-secondary-400"/>History &amp; Insights
-                  </h4>
-                  <p className="text-gray-300 text-sm mb-3">
-                    Review your daily trendlines across peptides, workouts, meals, breath work, and journal entries in one timeline.
-                  </p>
-                  <Link
-                    href="/journal"
-                    className="inline-flex items-center justify-center rounded-lg border border-secondary-400/40 bg-secondary-500/20 px-4 py-2 text-sm font-medium text-secondary-200 transition hover:border-secondary-300 hover:bg-secondary-500/30"
-                  >
-                    Open Daily History
-                  </Link>
                 </div>
               </div>
             </div>

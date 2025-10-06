@@ -226,37 +226,6 @@ export function FoodQuickAdd({ onLogged }: { onLogged?: (result: FoodQuickAddRes
 
       {error && <p className="mt-2 text-sm text-rose-300">{error}</p>}
 
-      <div className="mt-4 max-h-48 overflow-y-auto space-y-2">
-        {loading && (
-          <div className="flex items-center gap-2 text-sm text-slate-300">
-            <Loader2 className="h-4 w-4 animate-spin" /> Searching foods...
-          </div>
-        )}
-        {!loading && results.length === 0 && term.trim() && (
-          <p className="text-sm text-slate-400">No matches yet. Keep typing or refine your search.</p>
-        )}
-        {results.map((item) => (
-          <button
-            key={item.source + ":" + item.sourceId}
-            onClick={() => setSelected(item)}
-            className={`w-full rounded-lg border px-3 py-2 text-left transition ${
-              selected?.source === item.source && selected?.sourceId === item.sourceId
-                ? "border-emerald-400/60 bg-emerald-500/10"
-                : "border-slate-700/50 bg-slate-800/40 hover:border-emerald-400/40"
-            }`}
-          >
-            <div className="flex items-center justify-between">
-              <p className="text-sm font-medium text-white line-clamp-1">{item.description}</p>
-              <span className="text-[10px] uppercase tracking-wider text-emerald-300">{item.source}</span>
-            </div>
-            <div className="mt-1 flex flex-wrap gap-3 text-[11px] text-slate-300">
-              {item.brand && <span>{item.brand}</span>}
-              <span>Per {item.per === "100g" ? "100 g" : "serving"}</span>
-            </div>
-          </button>
-        ))}
-      </div>
-
       {selected && (
         <div className="mt-4 rounded-xl border border-slate-700/60 bg-slate-900/60 p-4 space-y-4">
           <div>
@@ -362,6 +331,37 @@ export function FoodQuickAdd({ onLogged }: { onLogged?: (result: FoodQuickAddRes
           )}
         </div>
       )}
+
+      <div className="mt-4 max-h-48 overflow-y-auto space-y-2">
+        {loading && (
+          <div className="flex items-center gap-2 text-sm text-slate-300">
+            <Loader2 className="h-4 w-4 animate-spin" /> Searching foods...
+          </div>
+        )}
+        {!loading && results.length === 0 && term.trim() && (
+          <p className="text-sm text-slate-400">No matches yet. Keep typing or refine your search.</p>
+        )}
+        {results.map((item) => (
+          <button
+            key={item.source + ":" + item.sourceId}
+            onClick={() => setSelected(item)}
+            className={`w-full rounded-lg border px-3 py-2 text-left transition ${
+              selected?.source === item.source && selected?.sourceId === item.sourceId
+                ? "border-emerald-400/60 bg-emerald-500/10"
+                : "border-slate-700/50 bg-slate-800/40 hover:border-emerald-400/40"
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-medium text-white line-clamp-1">{item.description}</p>
+              <span className="text-[10px] uppercase tracking-wider text-emerald-300">{item.source}</span>
+            </div>
+            <div className="mt-1 flex flex-wrap gap-3 text-[11px] text-slate-300">
+              {item.brand && <span>{item.brand}</span>}
+              <span>Per {item.per === "100g" ? "100 g" : "serving"}</span>
+            </div>
+          </button>
+        ))}
+      </div>
     </section>
   );
 }
