@@ -907,40 +907,42 @@ function DayDetail({ day }: { day: JournalHistoryDay }) {
         )}
       </section>
 
-      <ActivityList
-        title="Nutrition"
-        icon={<Utensils className="h-4 w-4" />}
-        colorClass="text-amber-300"
-        borderClass="border-amber-400/30"
-        items={[...day.nutrition.logs].sort((a: any, b: any) => new Date(b.loggedAt).getTime() - new Date(a.loggedAt).getTime()).map((item: any) => {
-          const nutrients = item.nutrients as any
-          return {
-            id: item.id,
-            primary: item.itemName,
-            secondary: `${Math.round(typeof nutrients?.kcal === 'number' ? nutrients.kcal : 0)} kcal • P ${Math.round(typeof nutrients?.protein_g === 'number' ? nutrients.protein_g : 0)}g C ${Math.round(typeof nutrients?.carb_g === 'number' ? nutrients.carb_g : 0)}g F ${Math.round(typeof nutrients?.fat_g === 'number' ? nutrients.fat_g : 0)}g`,
-            meta: `${new Date(item.loggedAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })} • ${item.mealType ?? 'meal'}`,
-            data: item
-          }
-        })}
-        onViewDetails={(item) => setDetailsModal({ type: 'nutrition', data: item.data })}
-        onEdit={(item) => setEditModal({ type: 'nutrition', data: item.data })}
-      />
+      <section className="grid gap-6 md:grid-cols-2">
+        <ActivityList
+          title="Nutrition"
+          icon={<Utensils className="h-4 w-4" />}
+          colorClass="text-amber-300"
+          borderClass="border-amber-400/30"
+          items={[...day.nutrition.logs].sort((a: any, b: any) => new Date(b.loggedAt).getTime() - new Date(a.loggedAt).getTime()).map((item: any) => {
+            const nutrients = item.nutrients as any
+            return {
+              id: item.id,
+              primary: item.itemName,
+              secondary: `${Math.round(typeof nutrients?.kcal === 'number' ? nutrients.kcal : 0)} kcal • P ${Math.round(typeof nutrients?.protein_g === 'number' ? nutrients.protein_g : 0)}g C ${Math.round(typeof nutrients?.carb_g === 'number' ? nutrients.carb_g : 0)}g F ${Math.round(typeof nutrients?.fat_g === 'number' ? nutrients.fat_g : 0)}g`,
+              meta: `${new Date(item.loggedAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })} • ${item.mealType ?? 'meal'}`,
+              data: item
+            }
+          })}
+          onViewDetails={(item) => setDetailsModal({ type: 'nutrition', data: item.data })}
+          onEdit={(item) => setEditModal({ type: 'nutrition', data: item.data })}
+        />
 
-      <ActivityList
-        title="Peptide Doses"
-        icon={<Droplets className="h-4 w-4" />}
-        colorClass="text-emerald-300"
-        borderClass="border-emerald-400/30"
-        items={[...day.peptideDoses].sort((a: any, b: any) => new Date(b.doseDate).getTime() - new Date(a.doseDate).getTime()).map((dose: any) => ({
-          id: dose.id,
-          primary: dose.user_peptide_protocols?.peptides?.name || 'Peptide dose',
-          secondary: dose.dosage,
-          meta: `${dose.time || ''} ${new Date(dose.doseDate).toLocaleDateString()}`.trim(),
-          data: dose
-        }))}
-        onViewDetails={(item) => setDetailsModal({ type: 'peptide', data: item.data })}
-        onEdit={(item) => setEditModal({ type: 'peptide', data: item.data })}
-      />
+        <ActivityList
+          title="Peptide Doses"
+          icon={<Droplets className="h-4 w-4" />}
+          colorClass="text-emerald-300"
+          borderClass="border-emerald-400/30"
+          items={[...day.peptideDoses].sort((a: any, b: any) => new Date(b.doseDate).getTime() - new Date(a.doseDate).getTime()).map((dose: any) => ({
+            id: dose.id,
+            primary: dose.user_peptide_protocols?.peptides?.name || 'Peptide dose',
+            secondary: dose.dosage,
+            meta: `${dose.time || ''} ${new Date(dose.doseDate).toLocaleDateString()}`.trim(),
+            data: dose
+          }))}
+          onViewDetails={(item) => setDetailsModal({ type: 'peptide', data: item.data })}
+          onEdit={(item) => setEditModal({ type: 'peptide', data: item.data })}
+        />
+      </section>
 
       <section className="grid gap-6 md:grid-cols-2">
         <ActivityList
