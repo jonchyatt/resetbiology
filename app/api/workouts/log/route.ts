@@ -40,6 +40,8 @@ export async function POST(request: Request) {
     const durationMinutes = log?.durationMinutes !== undefined && log?.durationMinutes !== null ? Math.max(0, Number(log.durationMinutes)) : null;
     const notes: string | null = log?.notes ? String(log.notes) : null;
     const intensity = log?.intensity ? String(log.intensity) : null;
+    const localDate = log?.localDate || null;
+    const localTime = log?.localTime || null;
 
     const sets = Array.from({ length: setsCount }).map(() => ({
       reps,
@@ -68,6 +70,8 @@ export async function POST(request: Request) {
         duration: durationSeconds,
         notes,
         completedAt: now,
+        localDate,
+        localTime,
       },
     });
 

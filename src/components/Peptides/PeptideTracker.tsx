@@ -593,6 +593,14 @@ export function PeptideTracker() {
     const now = new Date()
     const currentTime = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
 
+    // Get user's local date components
+    const year = now.getFullYear()
+    const month = String(now.getMonth() + 1).padStart(2, '0')
+    const day = String(now.getDate()).padStart(2, '0')
+    const hours = String(now.getHours()).padStart(2, '0')
+    const minutes = String(now.getMinutes()).padStart(2, '0')
+    const seconds = String(now.getSeconds()).padStart(2, '0')
+
     // Save dose to database
     try {
       const response = await fetch('/api/peptides/doses', {
@@ -605,7 +613,9 @@ export function PeptideTracker() {
           time: currentTime,
           notes: doseNotes || null,
           sideEffects: doseSideEffects.length > 0 ? doseSideEffects.join(', ') : null,
-          doseDate: now.toISOString()
+          doseDate: now.toISOString(),
+          localDate: `${year}-${month}-${day}`,
+          localTime: `${hours}:${minutes}:${seconds}`,
         })
       })
 

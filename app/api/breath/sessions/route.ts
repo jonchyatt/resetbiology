@@ -138,7 +138,9 @@ export async function POST(request: NextRequest) {
         sessionType: `${sessionData.settings?.breathsPerCycle || 30} breaths x ${sessionData.cyclesCompleted} cycles`,
         duration: Math.round(totalDuration / 1000), // Convert ms to seconds
         cycles: sessionData.cyclesCompleted,
-        progressScore: longestExhaleHold / 1000 // Use longest exhale as progress metric (in seconds)
+        progressScore: longestExhaleHold / 1000, // Use longest exhale as progress metric (in seconds)
+        localDate: sessionData.localDate || null,
+        localTime: sessionData.localTime || null,
       }
     })
 

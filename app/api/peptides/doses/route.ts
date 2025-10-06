@@ -113,7 +113,9 @@ export async function POST(request: Request) {
       time,
       notes,
       sideEffects,
-      doseDate
+      doseDate,
+      localDate,
+      localTime
     } = body
 
     if (!protocolId || !dosage) {
@@ -142,7 +144,9 @@ export async function POST(request: Request) {
         time: time || new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
         notes: notes || null,
         sideEffects: sideEffects || null,
-        doseDate: doseDate ? new Date(doseDate) : new Date()
+        doseDate: doseDate ? new Date(doseDate) : new Date(),
+        localDate: localDate || null,
+        localTime: localTime || null,
       }
     })
 

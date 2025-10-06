@@ -216,30 +216,30 @@ export async function GET(request: NextRequest) {
       bucket.eventCount += 1
     })
 
-    workouts.forEach((session) => {
+    workouts.forEach((session: any) => {
       const date = session.completedAt instanceof Date ? session.completedAt : new Date(session.completedAt)
-      const bucket = ensureDay(date)
+      const bucket = ensureDay(date, session.localDate)
       bucket.workouts.push(session)
       bucket.eventCount += 1
     })
 
-    breathSessions.forEach((session) => {
+    breathSessions.forEach((session: any) => {
       const date = session.createdAt instanceof Date ? session.createdAt : new Date(session.createdAt)
-      const bucket = ensureDay(date)
+      const bucket = ensureDay(date, session.localDate)
       bucket.breathSessions.push(session)
       bucket.eventCount += 1
     })
 
-    peptideDoses.forEach((dose) => {
+    peptideDoses.forEach((dose: any) => {
       const date = dose.doseDate instanceof Date ? dose.doseDate : new Date(dose.doseDate)
-      const bucket = ensureDay(date)
+      const bucket = ensureDay(date, dose.localDate)
       bucket.peptideDoses.push(dose)
       bucket.eventCount += 1
     })
 
-    moduleCompletions.forEach((completion) => {
+    moduleCompletions.forEach((completion: any) => {
       const date = completion.completedAt instanceof Date ? completion.completedAt : new Date(completion.completedAt)
-      const bucket = ensureDay(date)
+      const bucket = ensureDay(date, completion.localDate)
       bucket.modules.push(completion)
       bucket.eventCount += 1
     })

@@ -112,7 +112,9 @@ export async function POST(request: NextRequest) {
     const {
       moduleId,
       audioDuration,
-      fullCompletion = true
+      fullCompletion = true,
+      localDate,
+      localTime
     } = body
 
     if (!moduleId) {
@@ -151,7 +153,9 @@ export async function POST(request: NextRequest) {
         userId: user.id,
         moduleId,
         audioDuration: audioDuration || null,
-        fullCompletion
+        fullCompletion,
+        localDate: localDate || null,
+        localTime: localTime || null,
       }
     })
 

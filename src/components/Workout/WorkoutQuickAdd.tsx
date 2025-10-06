@@ -105,6 +105,15 @@ export function WorkoutQuickAdd({ onLogged }: { onLogged?: (result: WorkoutQuick
       setStatus("logging");
       setError(null);
 
+      // Get user's local date components
+      const now = new Date()
+      const year = now.getFullYear()
+      const month = String(now.getMonth() + 1).padStart(2, '0')
+      const day = String(now.getDate()).padStart(2, '0')
+      const hours = String(now.getHours()).padStart(2, '0')
+      const minutes = String(now.getMinutes()).padStart(2, '0')
+      const seconds = String(now.getSeconds()).padStart(2, '0')
+
       const payload = {
         exercise: selected,
         log: {
@@ -115,6 +124,8 @@ export function WorkoutQuickAdd({ onLogged }: { onLogged?: (result: WorkoutQuick
           notes: notes.trim() || null,
           sessionType,
           intensity: intensity.trim() || null,
+          localDate: `${year}-${month}-${day}`,
+          localTime: `${hours}:${minutes}:${seconds}`,
         },
       };
 

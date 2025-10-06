@@ -55,6 +55,8 @@ export interface SessionData {
   settings: BreathSettings
   cycles: CycleData[]
   cyclesCompleted: number
+  localDate?: string
+  localTime?: string
 }
 
 export interface SessionSummary {

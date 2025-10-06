@@ -69,6 +69,8 @@ model ModuleCompletion {
   userId         String  @db.ObjectId
   moduleId       String
   completedAt    DateTime @default(now())
+  localDate      String?  // User's local date YYYY-MM-DD for timezone-safe bucketing
+  localTime      String?  // User's local time HH:MM:SS
   audioDuration  Int?
   fullCompletion Boolean  @default(false)
   user           User     @relation(fields: [userId], references: [id])
@@ -110,6 +112,8 @@ model BreathSession {
   cycles        Int?
   progressScore Float?
   createdAt     DateTime @default(now())
+  localDate     String?  // User's local date YYYY-MM-DD for timezone-safe bucketing
+  localTime     String?  // User's local time HH:MM:SS
   user          User     @relation(fields: [userId], references: [id])
 
   @@map("breath_sessions")
@@ -208,6 +212,8 @@ model peptide_doses {
   notes                  String?
   sideEffects            String?
   createdAt              DateTime               @default(now())
+  localDate              String?                // User's local date YYYY-MM-DD for timezone-safe bucketing
+  localTime              String?                // User's local time HH:MM:SS
   user_peptide_protocols user_peptide_protocols @relation(fields: [protocolId], references: [id])
 }
 
@@ -291,6 +297,8 @@ model WorkoutSession {
   programId   String?
   notes       String?
   completedAt DateTime @default(now())
+  localDate   String?  // User's local date YYYY-MM-DD for timezone-safe bucketing
+  localTime   String?  // User's local time HH:MM:SS
   user        User     @relation(fields: [userId], references: [id])
 
   @@map("workout_sessions")
