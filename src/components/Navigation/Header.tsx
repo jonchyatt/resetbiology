@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { useState, useEffect } from "react"
 import { Menu, X, ChevronDown, User, Settings, Shield } from "lucide-react"
-import { useUser } from '@auth0/nextjs-auth0/client'
+import { useUser } from '@auth0/nextjs-auth0'
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
