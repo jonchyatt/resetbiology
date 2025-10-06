@@ -153,11 +153,13 @@ export async function GET(request: NextRequest) {
 
     const ensureDay = (date: Date, localDate?: string) => {
       // Prefer localDate string if available (timezone-safe)
-      // Otherwise fall back to UTC date extraction for old entries
+      // For old entries without localDate, convert UTC to EDT (UTC-4)
       const key = localDate || (() => {
-        const year = date.getUTCFullYear()
-        const month = String(date.getUTCMonth() + 1).padStart(2, '0')
-        const day = String(date.getUTCDate()).padStart(2, '0')
+        // Subtract 4 hours to convert from UTC to EDT
+        const edtTime = new Date(date.getTime() - (4 * 60 * 60 * 1000))
+        const year = edtTime.getUTCFullYear()
+        const month = String(edtTime.getUTCMonth() + 1).padStart(2, '0')
+        const day = String(edtTime.getUTCDate()).padStart(2, '0')
         return `${year}-${month}-${day}`
       })()
 
