@@ -152,10 +152,11 @@ export async function GET(request: NextRequest) {
     const days = new Map<string, DaySummary>()
 
     const ensureDay = (date: Date) => {
-      // Use local date components instead of UTC to avoid timezone issues
-      const year = date.getFullYear()
-      const month = String(date.getMonth() + 1).padStart(2, '0')
-      const day = String(date.getDate()).padStart(2, '0')
+      // Convert UTC timestamp to local date by creating new date from local string
+      const localDate = new Date(date.toLocaleString('en-US', { timeZone: 'America/New_York' }))
+      const year = localDate.getFullYear()
+      const month = String(localDate.getMonth() + 1).padStart(2, '0')
+      const day = String(localDate.getDate()).padStart(2, '0')
       const key = `${year}-${month}-${day}`
 
       if (!days.has(key)) {
