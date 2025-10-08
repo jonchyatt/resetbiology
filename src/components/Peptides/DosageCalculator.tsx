@@ -617,6 +617,8 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                   -
                 </button>
                 <input
+                  type="number"
+                  step="any"
                   aria-label="Desired dose value"
                   inputMode="decimal"
                   value={inputs.desiredDose}

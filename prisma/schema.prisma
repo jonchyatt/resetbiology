@@ -206,6 +206,8 @@ model peptide_categories {
 model peptide_doses {
   id                     String                 @id @default(auto()) @map("_id") @db.ObjectId
   protocolId             String  @db.ObjectId
+  protocolName           String?                // Peptide name at time of logging (preserved even if protocol deleted)
+  protocolSnapshot       Json?                  // Full protocol details at time of logging (dosage, frequency, timing)
   doseDate               DateTime
   dosage                 String
   time                   String?

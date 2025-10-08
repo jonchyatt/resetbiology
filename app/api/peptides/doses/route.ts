@@ -136,10 +136,17 @@ export async function POST(request: Request) {
       }, { status: 404 })
     }
 
-    // Create dose entry
+    // Create dose entry with protocol metadata for history preservation
     const dose = await prisma.peptide_doses.create({
       data: {
         protocolId,
+        protocolName: protocol.peptides.name,  // Store name for history preservation
+        protocolSnapshot: {                     // Store full snapshot
+          peptideName: protocol.peptides.name,
+          dosage: protocol.dosage,
+          frequency: protocol.frequency,
+          notes: protocol.notes
+        },
         dosage,
         time: time || new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
         notes: notes || null,

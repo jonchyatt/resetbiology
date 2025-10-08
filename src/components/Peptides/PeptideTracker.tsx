@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useMemo, useCallback, useRef } from "react"
-import { Syringe, Calendar, AlertCircle, TrendingUp, Plus, Clock, X } from "lucide-react"
+import { Syringe, Calendar, AlertCircle, TrendingUp, Plus, Clock, X, Edit } from "lucide-react"
 import { DosageCalculator } from './DosageCalculator'
 
 interface PeptideProtocol {
@@ -42,6 +42,8 @@ export function PeptideTracker() {
   const [showDoseModal, setShowDoseModal] = useState(false)
   const [showCalculatorModal, setShowCalculatorModal] = useState(false)
   const [showAddProtocolModal, setShowAddProtocolModal] = useState(false)
+  const [showEditProtocolModal, setShowEditProtocolModal] = useState(false)
+  const [editingProtocol, setEditingProtocol] = useState<PeptideProtocol | null>(null)
   const [doseNotes, setDoseNotes] = useState('')
   const [doseSideEffects, setDoseSideEffects] = useState<string[]>([])
   const [selectedPeptideName, setSelectedPeptideName] = useState('')
@@ -587,6 +589,50 @@ export function PeptideTracker() {
     setShowCalculatorModal(true)
   }
 
+  const openEditModal = (protocol: PeptideProtocol) => {
+    setEditingProtocol(protocol)
+    setCustomDosage(protocol.dosage)
+    setCustomFrequency(protocol.frequency)
+    setCustomTiming(protocol.timing)
+    setCustomDuration(protocol.duration)
+    setShowEditProtocolModal(true)
+  }
+
+  const saveProtocolEdits = async () => {
+    if (!editingProtocol) return
+
+    try {
+      const response = await fetch('/api/peptides/protocols', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          protocolId: editingProtocol.id,
+          dosage: customDosage,
+          frequency: customFrequency,
+          notes: `${customTiming} | ${customDuration}`
+        }),
+        credentials: 'include'
+      })
+
+      if (response.ok) {
+        // Update local state
+        setCurrentProtocols(prev => prev.map(p =>
+          p.id === editingProtocol.id
+            ? { ...p, dosage: customDosage, frequency: customFrequency, timing: customTiming, duration: customDuration }
+            : p
+        ))
+        setShowEditProtocolModal(false)
+        setEditingProtocol(null)
+        alert('Protocol updated successfully!')
+      } else {
+        alert('Failed to update protocol')
+      }
+    } catch (error) {
+      console.error('Error updating protocol:', error)
+      alert('Error updating protocol')
+    }
+  }
+
   const logDose = async () => {
     if (!selectedProtocol) return
 
@@ -780,13 +826,22 @@ export function PeptideTracker() {
           <div>
             <h3 className="text-xl font-bold text-white">{displayName}</h3>
           </div>
-          <button
-            onClick={() => deleteProtocol(protocol.id)}
-            className="text-red-400 hover:text-red-300 transition-colors"
-            title="Delete Protocol"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => openEditModal(protocol)}
+              className="text-blue-400 hover:text-blue-300 transition-colors"
+              title="Edit Protocol"
+            >
+              <Edit className="w-5 h-5" />
+            </button>
+            <button
+              onClick={() => deleteProtocol(protocol.id)}
+              className="text-red-400 hover:text-red-300 transition-colors"
+              title="Delete Protocol"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         <div className="flex gap-4">
@@ -1043,12 +1098,12 @@ export function PeptideTracker() {
                 <div className="lg:col-span-2">
                   <div className="flex items-center justify-between mb-6">
                     <h3 className="text-2xl font-bold text-white">Active Protocols</h3>
-                    <button 
+                    <button
                       onClick={() => setShowAddProtocolModal(true)}
                       className="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center"
                     >
                       <Plus className="w-4 h-4 mr-2" />
-                      Add Protocol
+                      Add Research Protocol
                     </button>
                   </div>
 
@@ -1174,7 +1229,7 @@ export function PeptideTracker() {
                             <div className="flex justify-between items-start mb-2">
                               <div className="flex-1">
                                 <h4 className="font-semibold text-white">
-                                  {protocol?.peptides?.name || 'Unknown Peptide'}
+                                  {dose.protocolName || protocol?.peptides?.name || 'Unknown Protocol'}
                                 </h4>
                                 <p className="text-sm text-gray-400">
                                   {dose.dosage} - {dose.time}
@@ -1271,25 +1326,61 @@ export function PeptideTracker() {
                 </div>
 
                 <div className="bg-secondary-600/20 rounded-lg p-4">
-                  <h4 className="font-semibold text-secondary-300 mb-2">Weekly Schedule</h4>
+                  <h4 className="font-semibold text-secondary-300 mb-3">Weekly Schedule</h4>
                   <div className="grid grid-cols-7 gap-2">
-                    {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, index) => (
-                      <div key={day} className="text-center">
-                        <div className="text-xs text-gray-400 mb-1">{day}</div>
-                        <div className={`h-8 rounded flex items-center justify-center text-xs ${ 
-                          selectedProtocol.frequency.includes('Every day') || 
-                          (selectedProtocol.frequency.includes('5 days') && index >= 1 && index <= 5) ||
-                          (selectedProtocol.frequency.includes('3x per week') && [1, 3, 5].includes(index))
-                            ? 'bg-primary-500/20 text-primary-300' 
-                            : 'bg-gray-700/30 text-gray-500'
-                        }`}>
-                          {selectedProtocol.frequency.includes('Every day') || 
-                          (selectedProtocol.frequency.includes('5 days') && index >= 1 && index <= 5) ||
-                          (selectedProtocol.frequency.includes('3x per week') && [1, 3, 5].includes(index))
-                            ? '✓' : '—'}
+                    {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, index) => {
+                      // Determine if this day is active based on frequency
+                      const isActiveDay =
+                        selectedProtocol.frequency.toLowerCase().includes('daily') ||
+                        selectedProtocol.frequency.toLowerCase().includes('every day') ||
+                        (selectedProtocol.frequency.includes('5 days') && index >= 1 && index <= 5) ||
+                        (selectedProtocol.frequency.includes('3x per week') && [1, 3, 5].includes(index)) ||
+                        (selectedProtocol.frequency.includes('2x per week') && [1, 4].includes(index)) ||
+                        (selectedProtocol.frequency.toLowerCase().includes('every other day') && index % 2 === 1);
+
+                      // Determine dose times based on timing
+                      const doseTimes: string[] = [];
+                      if (isActiveDay) {
+                        const timing = selectedProtocol.timing.toLowerCase();
+                        if (timing.includes('am/pm') || timing.includes('twice')) {
+                          doseTimes.push('8:00 AM', '8:00 PM');
+                        } else if (timing.includes('am')) {
+                          doseTimes.push('8:00 AM');
+                        } else if (timing.includes('pm')) {
+                          doseTimes.push('8:00 PM');
+                        } else if (timing.includes('before meals')) {
+                          doseTimes.push('7:00 AM', '12:00 PM', '6:00 PM');
+                        } else if (timing.includes('after meals')) {
+                          doseTimes.push('9:00 AM', '2:00 PM', '8:00 PM');
+                        } else {
+                          doseTimes.push('Scheduled');
+                        }
+                      }
+
+                      return (
+                        <div key={day} className="text-center">
+                          <div className="text-xs font-semibold text-gray-300 mb-2">{day}</div>
+                          <div className={`min-h-[60px] rounded-lg p-2 flex flex-col items-center justify-center text-[10px] leading-tight ${
+                            isActiveDay
+                              ? 'bg-gradient-to-br from-primary-500/20 to-secondary-500/20 border border-primary-400/30 text-primary-200'
+                              : 'bg-gray-700/20 border border-gray-600/20 text-gray-500'
+                          }`}>
+                            {doseTimes.length > 0 ? (
+                              doseTimes.map((time, idx) => (
+                                <div key={idx} className="font-medium whitespace-nowrap">
+                                  {time}
+                                </div>
+                              ))
+                            ) : (
+                              <div className="text-gray-500">—</div>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
+                  </div>
+                  <div className="mt-3 text-xs text-gray-400 text-center">
+                    Times shown are suggested based on your protocol timing ({selectedProtocol.timing})
                   </div>
                 </div>
 
@@ -1467,6 +1558,113 @@ export function PeptideTracker() {
                   className="flex-1 bg-secondary-600 hover:bg-secondary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
                 >
                   Log Dose
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Edit Protocol Modal */}
+        {showEditProtocolModal && editingProtocol && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 max-w-md w-full border border-primary-400/30 shadow-2xl">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-xl font-bold text-white">Edit Protocol</h3>
+                <button
+                  onClick={() => setShowEditProtocolModal(false)}
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <h4 className="font-semibold text-primary-300 mb-4">{editingProtocol.name}</h4>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Dosage *
+                  </label>
+                  <input
+                    type="text"
+                    value={customDosage}
+                    onChange={(e) => setCustomDosage(e.target.value)}
+                    className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-primary-400 focus:outline-none"
+                    placeholder="e.g., 250mcg, 0.5mg"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Frequency *
+                  </label>
+                  <select
+                    value={customFrequency}
+                    onChange={(e) => setCustomFrequency(e.target.value)}
+                    className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
+                  >
+                    <option value="">Select frequency...</option>
+                    <option value="Daily">Daily</option>
+                    <option value="Every other day">Every other day</option>
+                    <option value="3x per week">3x per week</option>
+                    <option value="2x per week">2x per week</option>
+                    <option value="5 days on, 2 days off">5 days on, 2 days off</option>
+                    <option value="Once per week">Once per week</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Timing *
+                  </label>
+                  <select
+                    value={customTiming}
+                    onChange={(e) => setCustomTiming(e.target.value)}
+                    className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
+                  >
+                    <option value="">Select timing...</option>
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                    <option value="AM/PM">Twice daily (AM/PM)</option>
+                    <option value="Before meals">Before meals</option>
+                    <option value="After meals">After meals</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Duration
+                  </label>
+                  <input
+                    type="text"
+                    value={customDuration}
+                    onChange={(e) => setCustomDuration(e.target.value)}
+                    className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-primary-400 focus:outline-none"
+                    placeholder="e.g., 8 weeks, 30 days"
+                  />
+                </div>
+
+                <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3 mt-4">
+                  <p className="text-xs text-amber-300">
+                    <strong>Note:</strong> Editing this protocol will only update YOUR schedule. Your past logged doses remain unchanged for accurate history tracking.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-3 mt-6">
+                <button
+                  onClick={() => setShowEditProtocolModal(false)}
+                  className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={saveProtocolEdits}
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                >
+                  Save Changes
                 </button>
               </div>
             </div>

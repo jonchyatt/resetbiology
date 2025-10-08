@@ -7,7 +7,7 @@ import { AdminHeader } from "@/components/Navigation/AdminHeader"
 interface AdminPeptide {
   id?: string
   name: string
-  purpose: string
+  purpose: string | string[]  // Support both for backwards compatibility
   dosage: string
   timing: string
   frequency: string
@@ -272,7 +272,7 @@ export default function AdminPeptidesPage() {
   const [importMode, setImportMode] = useState(false)
   const [formData, setFormData] = useState<AdminPeptide>({
     name: "",
-    purpose: "",
+    purpose: [],
     dosage: "",
     timing: "",
     frequency: "",
@@ -554,6 +554,13 @@ export default function AdminPeptidesPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
+    // Validate that at least one purpose is selected
+    const purposeArray = Array.isArray(formData.purpose) ? formData.purpose : [formData.purpose].filter(Boolean);
+    if (purposeArray.length === 0) {
+      alert('Please select at least one purpose for the peptide');
+      return;
+    }
+
     // Check for duplicates
     const duplicate = checkForDuplicates(formData.name)
     if (duplicate.exists && !editingPeptide) {
@@ -562,6 +569,10 @@ export default function AdminPeptidesPage() {
       )
       if (!proceed) return
     }
+
+    // Convert purpose array to string for database (use first purpose as primary category)
+    const primaryPurpose = purposeArray[0];
+    const allPurposes = purposeArray.join(', ');
 
     try {
       if (editingPeptide) {
@@ -573,7 +584,7 @@ export default function AdminPeptidesPage() {
             name: formData.name,
             dosage: formData.dosage,
             reconstitution: formData.reconstitution,
-            category: formData.purpose,
+            category: primaryPurpose,
             price: 0
           })
         })
@@ -582,7 +593,7 @@ export default function AdminPeptidesPage() {
 
         const data = await response.json()
 
-        // Update local state
+        // Update local state (keep purposes as array)
         setPeptides(prev => prev.map(p =>
           p.id === editingPeptide.id ? { ...formData, id: editingPeptide.id } : p
         ))
@@ -596,8 +607,8 @@ export default function AdminPeptidesPage() {
             name: formData.name,
             dosage: formData.dosage,
             reconstitution: formData.reconstitution,
-            category: formData.purpose,
-            purpose: formData.purpose,
+            category: primaryPurpose,
+            purpose: primaryPurpose,
             price: 0
           })
         })
@@ -606,7 +617,7 @@ export default function AdminPeptidesPage() {
 
         const data = await response.json()
 
-        // Add to local state with database ID
+        // Add to local state with database ID (keep purposes as array)
         const newPeptide: AdminPeptide = {
           ...formData,
           id: data.peptide.id
@@ -626,7 +637,7 @@ export default function AdminPeptidesPage() {
   const resetForm = () => {
     setFormData({
       name: "",
-      purpose: "",
+      purpose: [],
       dosage: "",
       timing: "",
       frequency: "",
@@ -643,7 +654,12 @@ export default function AdminPeptidesPage() {
   }
 
   const editPeptide = (peptide: AdminPeptide) => {
-    setFormData({ ...peptide })
+    // Ensure purpose is an array for editing
+    const editData = {
+      ...peptide,
+      purpose: Array.isArray(peptide.purpose) ? peptide.purpose : [peptide.purpose].filter(Boolean)
+    };
+    setFormData(editData)
     setEditingPeptide(peptide)
     setShowForm(true)
   }
@@ -761,18 +777,35 @@ export default function AdminPeptidesPage() {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Purpose *</label>
-                    <select
-                      required
-                      value={formData.purpose}
-                      onChange={(e) => setFormData({...formData, purpose: e.target.value})}
-                      className="w-full bg-primary-600/10 backdrop-blur-sm border border-primary-400/30 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none placeholder-gray-400"
-                    >
-                      <option value="">Select purpose...</option>
-                      {purposes.map(purpose => (
-                        <option key={purpose} value={purpose}>{purpose}</option>
-                      ))}
-                    </select>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Purpose * (select all that apply)</label>
+                    <div className="bg-gray-900 border border-primary-400/30 rounded-lg px-3 py-2 max-h-48 overflow-y-auto">
+                      <div className="grid grid-cols-2 gap-2">
+                        {purposes.map(purpose => {
+                          const purposeArray = Array.isArray(formData.purpose) ? formData.purpose : [formData.purpose].filter(Boolean);
+                          return (
+                            <label key={purpose} className="flex items-center cursor-pointer hover:bg-primary-500/10 rounded px-2 py-1">
+                              <input
+                                type="checkbox"
+                                checked={purposeArray.includes(purpose)}
+                                onChange={(e) => {
+                                  const currentPurposes = Array.isArray(formData.purpose) ? formData.purpose : [formData.purpose].filter(Boolean);
+                                  if (e.target.checked) {
+                                    setFormData({...formData, purpose: [...currentPurposes, purpose]});
+                                  } else {
+                                    setFormData({...formData, purpose: currentPurposes.filter(p => p !== purpose)});
+                                  }
+                                }}
+                                className="mr-2 rounded border-gray-600 bg-gray-800 text-primary-600 focus:ring-primary-400"
+                              />
+                              <span className="text-white text-sm">{purpose}</span>
+                            </label>
+                          );
+                        })}
+                      </div>
+                    </div>
+                    {Array.isArray(formData.purpose) && formData.purpose.length === 0 && (
+                      <p className="text-xs text-red-400 mt-1">Please select at least one purpose</p>
+                    )}
                   </div>
                 </div>
 
@@ -795,9 +828,9 @@ export default function AdminPeptidesPage() {
                       required
                       value={formData.timing}
                       onChange={(e) => setFormData({...formData, timing: e.target.value})}
-                      className="w-full bg-primary-600/10 backdrop-blur-sm border border-primary-400/30 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none placeholder-gray-400"
+                      className="w-full bg-gray-900 border border-primary-400/30 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none [&>option]:bg-gray-900 [&>option]:text-white"
                     >
-                      <option value="">Select timing...</option>
+                      <option value="" className="text-gray-400">Select timing...</option>
                       {timings.map(timing => (
                         <option key={timing} value={timing}>{timing}</option>
                       ))}
@@ -812,9 +845,9 @@ export default function AdminPeptidesPage() {
                       required
                       value={formData.frequency}
                       onChange={(e) => setFormData({...formData, frequency: e.target.value})}
-                      className="w-full bg-primary-600/10 backdrop-blur-sm border border-primary-400/30 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none placeholder-gray-400"
+                      className="w-full bg-gray-900 border border-primary-400/30 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none [&>option]:bg-gray-900 [&>option]:text-white"
                     >
-                      <option value="">Select frequency...</option>
+                      <option value="" className="text-gray-400">Select frequency...</option>
                       {frequencies.map(freq => (
                         <option key={freq} value={freq}>{freq}</option>
                       ))}
@@ -939,9 +972,13 @@ export default function AdminPeptidesPage() {
                             </span>
                           )}
                         </h3>
-                        <span className="text-sm text-primary-300 bg-primary-500/20 px-2 py-1 rounded-full">
-                          {peptide.purpose}
-                        </span>
+                        <div className="flex flex-wrap gap-1 mt-1">
+                          {(Array.isArray(peptide.purpose) ? peptide.purpose : [peptide.purpose]).map((purpose, idx) => (
+                            <span key={idx} className="text-xs text-primary-300 bg-primary-500/20 px-2 py-1 rounded-full">
+                              {purpose}
+                            </span>
+                          ))}
+                        </div>
                       </div>
                     <div className="flex gap-2">
                       <button
