@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Plus, Save, Trash2, Edit } from "lucide-react"
+import { Plus, Save, Trash2, Edit, Copy } from "lucide-react"
 import { AdminHeader } from "@/components/Navigation/AdminHeader"
 
 interface AdminPeptide {
@@ -683,6 +683,17 @@ export default function AdminPeptidesPage() {
     }
   }
 
+  const copyPeptide = (peptide: AdminPeptide) => {
+    const copy: AdminPeptide = {
+      ...peptide,
+      id: undefined,
+      name: `${peptide.name} (Copy)`
+    }
+    setFormData(copy)
+    setEditingPeptide(null)
+    setShowForm(true)
+  }
+
   const exportPeptides = () => {
     const dataStr = JSON.stringify(peptides, null, 2)
     const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr)
@@ -761,110 +772,110 @@ export default function AdminPeptidesPage() {
               <h2 className="text-xl font-bold text-white mb-6">
                 {editingPeptide ? 'Edit Peptide' : 'Add New Peptide'}
               </h2>
-              
+
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Name *</label>
-                    <input
-                      type="text"
-                      required
-                      value={formData.name}
-                      onChange={(e) => setFormData({...formData, name: e.target.value})}
-                      className="w-full bg-primary-600/10 backdrop-blur-sm border border-primary-400/30 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none placeholder-gray-400"
-                      placeholder="e.g., Ipamorelin"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Purpose * (select all that apply)</label>
-                    <div className="bg-gray-900 border border-primary-400/30 rounded-lg px-3 py-2 max-h-48 overflow-y-auto">
-                      <div className="grid grid-cols-2 gap-2">
-                        {purposes.map(purpose => {
-                          const purposeArray = Array.isArray(formData.purpose) ? formData.purpose : [formData.purpose].filter(Boolean);
-                          return (
-                            <label key={purpose} className="flex items-center cursor-pointer hover:bg-primary-500/10 rounded px-2 py-1">
-                              <input
-                                type="checkbox"
-                                checked={purposeArray.includes(purpose)}
-                                onChange={(e) => {
-                                  const currentPurposes = Array.isArray(formData.purpose) ? formData.purpose : [formData.purpose].filter(Boolean);
-                                  if (e.target.checked) {
-                                    setFormData({...formData, purpose: [...currentPurposes, purpose]});
-                                  } else {
-                                    setFormData({...formData, purpose: currentPurposes.filter(p => p !== purpose)});
-                                  }
-                                }}
-                                className="mr-2 rounded border-gray-600 bg-gray-800 text-primary-600 focus:ring-primary-400"
-                              />
-                              <span className="text-white text-sm">{purpose}</span>
-                            </label>
-                          );
-                        })}
-                      </div>
+                {/* Name field - full width */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Name *</label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.name}
+                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                    className="w-full bg-primary-600/10 backdrop-blur-sm border border-primary-400/30 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none placeholder-gray-400"
+                    placeholder="e.g., Ipamorelin"
+                  />
+                </div>
+
+                {/* Purpose field - full width with custom scrollbar */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Purpose * (select all that apply)</label>
+                  <div className="bg-gray-900 border border-primary-400/30 rounded-lg px-3 py-2 max-h-48 overflow-y-auto custom-scrollbar">
+                    <div className="grid grid-cols-2 gap-2">
+                      {purposes.map(purpose => {
+                        const purposeArray = Array.isArray(formData.purpose) ? formData.purpose : [formData.purpose].filter(Boolean);
+                        return (
+                          <label key={purpose} className="flex items-center cursor-pointer hover:bg-primary-500/10 rounded px-2 py-1">
+                            <input
+                              type="checkbox"
+                              checked={purposeArray.includes(purpose)}
+                              onChange={(e) => {
+                                const currentPurposes = Array.isArray(formData.purpose) ? formData.purpose : [formData.purpose].filter(Boolean);
+                                if (e.target.checked) {
+                                  setFormData({...formData, purpose: [...currentPurposes, purpose]});
+                                } else {
+                                  setFormData({...formData, purpose: currentPurposes.filter(p => p !== purpose)});
+                                }
+                              }}
+                              className="mr-2 rounded border-gray-600 bg-gray-800 text-primary-600 focus:ring-primary-400"
+                            />
+                            <span className="text-white text-sm">{purpose}</span>
+                          </label>
+                        );
+                      })}
                     </div>
-                    {Array.isArray(formData.purpose) && formData.purpose.length === 0 && (
-                      <p className="text-xs text-red-400 mt-1">Please select at least one purpose</p>
-                    )}
                   </div>
+                  {Array.isArray(formData.purpose) && formData.purpose.length === 0 && (
+                    <p className="text-xs text-red-400 mt-1">Please select at least one purpose</p>
+                  )}
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Dosage *</label>
-                    <input
-                      type="text"
-                      required
-                      value={formData.dosage}
-                      onChange={(e) => setFormData({...formData, dosage: e.target.value})}
-                      className="w-full bg-primary-600/10 backdrop-blur-sm border border-primary-400/30 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none placeholder-gray-400"
-                      placeholder="e.g., 300mcg"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Timing *</label>
-                    <select
-                      required
-                      value={formData.timing}
-                      onChange={(e) => setFormData({...formData, timing: e.target.value})}
-                      className="w-full bg-gray-900 border border-primary-400/30 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none [&>option]:bg-gray-900 [&>option]:text-white"
-                    >
-                      <option value="" className="text-gray-400">Select timing...</option>
-                      {timings.map(timing => (
-                        <option key={timing} value={timing}>{timing}</option>
-                      ))}
-                    </select>
-                  </div>
+                {/* Dosage field - full width */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Dosage *</label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.dosage}
+                    onChange={(e) => setFormData({...formData, dosage: e.target.value})}
+                    className="w-full bg-primary-600/10 backdrop-blur-sm border border-primary-400/30 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none placeholder-gray-400"
+                    placeholder="e.g., 300mcg"
+                  />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Frequency *</label>
-                    <select
-                      required
-                      value={formData.frequency}
-                      onChange={(e) => setFormData({...formData, frequency: e.target.value})}
-                      className="w-full bg-gray-900 border border-primary-400/30 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none [&>option]:bg-gray-900 [&>option]:text-white"
-                    >
-                      <option value="" className="text-gray-400">Select frequency...</option>
-                      {frequencies.map(freq => (
-                        <option key={freq} value={freq}>{freq}</option>
-                      ))}
-                    </select>
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Duration *</label>
-                    <input
-                      type="text"
-                      required
-                      value={formData.duration}
-                      onChange={(e) => setFormData({...formData, duration: e.target.value})}
-                      className="w-full bg-primary-600/10 backdrop-blur-sm border border-primary-400/30 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none placeholder-gray-400"
-                      placeholder="e.g., 8-12 weeks"
-                    />
-                  </div>
+                {/* Timing field - full width */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Timing *</label>
+                  <select
+                    required
+                    value={formData.timing}
+                    onChange={(e) => setFormData({...formData, timing: e.target.value})}
+                    className="w-full bg-gray-900 border border-primary-400/30 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none [&>option]:bg-gray-900 [&>option]:text-white"
+                  >
+                    <option value="" className="text-gray-400">Select timing...</option>
+                    {timings.map(timing => (
+                      <option key={timing} value={timing}>{timing}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Frequency field - full width */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Frequency *</label>
+                  <select
+                    required
+                    value={formData.frequency}
+                    onChange={(e) => setFormData({...formData, frequency: e.target.value})}
+                    className="w-full bg-gray-900 border border-primary-400/30 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none [&>option]:bg-gray-900 [&>option]:text-white"
+                  >
+                    <option value="" className="text-gray-400">Select frequency...</option>
+                    {frequencies.map(freq => (
+                      <option key={freq} value={freq}>{freq}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Duration field - full width */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Duration *</label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.duration}
+                    onChange={(e) => setFormData({...formData, duration: e.target.value})}
+                    className="w-full bg-primary-600/10 backdrop-blur-sm border border-primary-400/30 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none placeholder-gray-400"
+                    placeholder="e.g., 8-12 weeks"
+                  />
                 </div>
 
                 <div className="grid grid-cols-3 gap-4">
@@ -936,11 +947,11 @@ export default function AdminPeptidesPage() {
           )}
 
           {/* Peptides List */}
-          <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-blue-500/30 shadow-xl hover:shadow-blue-400/20 transition-all duration-300">
+          <div className={`bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-blue-500/30 shadow-xl hover:shadow-blue-400/20 transition-all duration-300 flex flex-col ${showForm ? '' : 'col-span-2'}`}>
             <h2 className="text-xl font-bold text-white mb-6">
               Peptide Library ({peptides.length} protocols)
             </h2>
-            
+
             {/* Stats */}
             <div className="grid grid-cols-3 gap-2 mb-4 text-sm">
               <div className="bg-primary-600/20 rounded-lg p-2 text-center">
@@ -956,8 +967,8 @@ export default function AdminPeptidesPage() {
                 <div className="text-gray-400 text-xs">Backup</div>
               </div>
             </div>
-            
-            <div className="space-y-4 max-h-96 overflow-y-auto">
+
+            <div className="space-y-4 flex-1 overflow-y-auto custom-scrollbar">
               {peptides.map((peptide) => {
                 const duplicateCount = peptides.filter(p => p.name === peptide.name).length
                 return (
@@ -982,27 +993,36 @@ export default function AdminPeptidesPage() {
                       </div>
                     <div className="flex gap-2">
                       <button
+                        onClick={() => copyPeptide(peptide)}
+                        className="text-green-400 hover:text-green-300 p-1"
+                        title="Copy peptide"
+                      >
+                        <Copy className="w-4 h-4" />
+                      </button>
+                      <button
                         onClick={() => editPeptide(peptide)}
                         className="text-blue-400 hover:text-blue-300 p-1"
+                        title="Edit peptide"
                       >
                         <Edit className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => deletePeptide(peptide.id!)}
                         className="text-red-400 hover:text-red-300 p-1"
+                        title="Delete peptide"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
-                  
+
                   <div className="grid grid-cols-2 gap-2 text-sm text-gray-300">
                     <div><strong>Dosage:</strong> {peptide.dosage}</div>
                     <div><strong>Timing:</strong> {peptide.timing}</div>
                     <div><strong>Frequency:</strong> {peptide.frequency}</div>
                     <div><strong>Duration:</strong> {peptide.duration}</div>
                   </div>
-                  
+
                   {peptide.description && (
                     <p className="text-sm text-gray-400 mt-2">{peptide.description}</p>
                   )}
