@@ -17,13 +17,13 @@ export function HeroSection() {
          }}>
 
       {/* Hero Section */}
-      <section className="min-h-screen flex items-center justify-center px-4 pt-20 pb-16">
+      <section className="min-h-screen flex items-center justify-center px-4 pt-32 pb-16">
         <div className="max-w-7xl mx-auto w-full space-y-12">
 
           {/* Three Column Layout: STOP | Quiz CTA | When to Start */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
             {/* Left: STOP Warning - Sidebar with top padding */}
-            <div className="lg:col-span-3 lg:pt-16">
+            <div className="lg:col-span-3 lg:pt-24">
               <MuscleWarning />
             </div>
 
@@ -33,7 +33,7 @@ export function HeroSection() {
             </div>
 
             {/* Right: When to Start - Sidebar with top padding */}
-            <div className="lg:col-span-3 lg:pt-16">
+            <div className="lg:col-span-3 lg:pt-24">
               <WhenToStart />
             </div>
           </div>
