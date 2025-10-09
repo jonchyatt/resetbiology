@@ -19,12 +19,14 @@ export function MuscleWarning() {
   ]
 
   return (
-    <div className="relative">
+    <div
+      className="relative"
+      onMouseEnter={() => { setShowTooltip(true); setShowTicker(true); }}
+      onMouseLeave={() => { setShowTooltip(false); setShowTicker(false); }}
+    >
       {/* Glass Rectangle Container - matches WhenToStart styling */}
       <div
         className="relative overflow-visible rounded-xl bg-gradient-to-br from-red-900/70 to-red-800/70 backdrop-blur-sm border border-red-500/50 p-6 min-h-[280px] flex items-center justify-center cursor-help group transition-all duration-300 hover:shadow-[0_0_30px_rgba(239,68,68,0.5)] hover:border-red-400"
-        onMouseEnter={() => { setShowTooltip(true); setShowTicker(true); }}
-        onMouseLeave={() => { setShowTooltip(false); setShowTicker(false); }}
       >
         {/* Content */}
         <div className="relative z-10 text-center">
@@ -42,15 +44,13 @@ export function MuscleWarning() {
         </div>
       </div>
 
-      {/* Streaming Ticker with Clinical Evidence - Always visible when hovering */}
+      {/* Streaming Ticker with Clinical Evidence - Stays visible when hovering over container or ticker */}
       <div
         className={`absolute left-0 top-full mt-2 w-full max-w-2xl z-50 transition-all duration-300 ${
           showTicker
             ? 'opacity-100 transform translate-y-0 pointer-events-auto'
             : 'opacity-0 transform -translate-y-2 pointer-events-none'
         }`}
-        onMouseEnter={() => setShowTicker(true)}
-        onMouseLeave={() => setShowTicker(false)}
       >
         <div className="bg-green-500/10 backdrop-blur-sm border border-green-500/30 rounded-lg overflow-hidden">
           {/* Ticker Container */}
