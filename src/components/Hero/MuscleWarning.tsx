@@ -22,7 +22,7 @@ export function MuscleWarning() {
     <div className="relative">
       {/* Glass Rectangle Container - matches WhenToStart styling */}
       <div
-        className="relative overflow-visible rounded-xl bg-gradient-to-br from-red-900/70 to-red-800/70 backdrop-blur-sm border border-red-500/50 p-6 min-h-[280px] flex items-center justify-center cursor-help group"
+        className="relative overflow-visible rounded-xl bg-gradient-to-br from-red-900/70 to-red-800/70 backdrop-blur-sm border border-red-500/50 p-6 min-h-[280px] flex items-center justify-center cursor-help group transition-all duration-300 hover:shadow-[0_0_30px_rgba(239,68,68,0.5)] hover:border-red-400"
         onMouseEnter={() => { setShowTooltip(true); setShowTicker(true); }}
         onMouseLeave={() => { setShowTooltip(false); setShowTicker(false); }}
       >

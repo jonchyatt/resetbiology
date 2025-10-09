@@ -22,8 +22,8 @@ export function HeroSection() {
 
           {/* Three Column Layout: STOP | Quiz CTA | When to Start */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
-            {/* Left: STOP Warning - Sidebar */}
-            <div className="lg:col-span-3">
+            {/* Left: STOP Warning - Sidebar with top padding */}
+            <div className="lg:col-span-3 lg:pt-16">
               <MuscleWarning />
             </div>
 
@@ -32,8 +32,8 @@ export function HeroSection() {
               <QuizCTA />
             </div>
 
-            {/* Right: When to Start - Sidebar */}
-            <div className="lg:col-span-3">
+            {/* Right: When to Start - Sidebar with top padding */}
+            <div className="lg:col-span-3 lg:pt-16">
               <WhenToStart />
             </div>
           </div>

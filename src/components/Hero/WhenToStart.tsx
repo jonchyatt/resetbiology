@@ -2,7 +2,7 @@
 
 export function WhenToStart() {
   return (
-    <div className="relative overflow-visible rounded-xl bg-gradient-to-br from-gray-900/70 to-black/70 backdrop-blur-sm border border-gray-700/50 p-6 min-h-[280px] flex items-center justify-center">
+    <div className="relative overflow-visible rounded-xl bg-gradient-to-br from-gray-900/70 to-black/70 backdrop-blur-sm border border-gray-700/50 p-6 min-h-[280px] flex items-center justify-center transition-all duration-300 hover:shadow-[0_0_30px_rgba(134,239,172,0.4)] hover:border-green-400/50">
       {/* Glowing "NOW" background watermark - softer green-yellow glow */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-visible">
         <span className="text-[140px] md:text-[160px] lg:text-[180px] font-black text-white/20 select-none drop-shadow-[0_0_60px_rgba(167,243,208,0.4)]" style={{ lineHeight: '1', textShadow: '0 0 80px rgba(253,224,71,0.3), 0 0 40px rgba(134,239,172,0.4)' }}>
