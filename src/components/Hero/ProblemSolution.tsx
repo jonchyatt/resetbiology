@@ -108,8 +108,8 @@ export function ProblemSolution() {
               
               {/* Primary CTA */}
               <div className="mb-6">
-                <a href="/assessment" className="inline-block bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white text-xl md:text-2xl font-bold px-12 py-6 rounded-2xl transition-all duration-300 hover:scale-105 shadow-2xl hover:shadow-primary-400/30 border-2 border-primary-300/50 backdrop-blur-sm">
-                  🎯 Take the 60-Second Reset Assessment
+                <a href="/quiz" className="inline-block bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white text-xl md:text-2xl font-bold px-12 py-6 rounded-2xl transition-all duration-300 hover:scale-105 shadow-2xl hover:shadow-primary-400/30 border-2 border-primary-300/50 backdrop-blur-sm">
+                  🎯 Take 60 seconds to Discover what matches up with your needs
                 </a>
               </div>
               
@@ -146,8 +146,8 @@ export function ProblemSolution() {
               </div>
             </div>
             
-            <a href="/assessment" className="inline-block bg-primary-400 hover:bg-primary-500 text-white text-lg font-bold px-8 py-4 rounded-xl transition-all duration-300 hover:scale-105 shadow-2xl hover:shadow-primary-400/25">
-              See Your Personalized Path
+            <a href="/quiz" className="inline-block bg-primary-400 hover:bg-primary-500 text-white text-lg font-bold px-8 py-4 rounded-xl transition-all duration-300 hover:scale-105 shadow-2xl hover:shadow-primary-400/25">
+              Find Your Personalized Path
             </a>
           </div>
         </div>

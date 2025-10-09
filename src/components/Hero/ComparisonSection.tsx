@@ -111,8 +111,8 @@ export function ComparisonSection() {
             <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-8 max-w-2xl mx-auto shadow-xl border border-teal-400/30">
               <h3 className="text-2xl font-bold mb-4 text-white">Ready to Experience the Difference?</h3>
               <p className="text-gray-300 mb-6">Join thousands who've already made the switch to science-backed metabolic freedom.</p>
-              <Link href="/assessment" className="bg-gradient-to-r from-teal-500 to-green-500 hover:from-teal-600 hover:to-green-600 text-white text-lg px-10 py-4 rounded-lg inline-block font-bold transition-all hover:scale-105 shadow-lg border border-teal-400/30 backdrop-blur-sm">
-                Start Your Free Assessment
+              <Link href="/quiz" className="bg-gradient-to-r from-teal-500 to-green-500 hover:from-teal-600 hover:to-green-600 text-white text-lg px-10 py-4 rounded-lg inline-block font-bold transition-all hover:scale-105 shadow-lg border border-teal-400/30 backdrop-blur-sm">
+                Tell us What WORKS for You
               </Link>
               <p className="text-sm text-gray-400 mt-3">
                 <em>Most people are surprised</em> by their personalized results
