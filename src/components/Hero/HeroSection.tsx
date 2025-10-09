@@ -29,23 +29,30 @@ export function HeroSection() {
             />
           </div>
 
-          {/* Two-column layout */}
-          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-start">
-            {/* Left Column */}
-            <div className="space-y-8">
-              {/* Muscle Warning (smaller, with tooltip) */}
-              <MuscleWarning />
-
-              {/* When to Start graphic */}
-              <WhenToStart />
+          {/* Main content layout */}
+          <div className="space-y-8">
+            {/* Top: Muscle Warning Sidebar */}
+            <div className="flex justify-start">
+              <div className="w-full max-w-sm">
+                <MuscleWarning />
+              </div>
             </div>
 
-            {/* Right Column */}
-            <div className="space-y-8">
-              {/* Quiz CTA (prominent, glowing) */}
-              <QuizCTA />
+            {/* Center: Quiz CTA with smaller WhenToStart beside it */}
+            <div className="flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-8">
+              {/* Main Quiz CTA - Centered */}
+              <div className="w-full lg:w-auto lg:flex-shrink-0">
+                <QuizCTA />
+              </div>
 
-              {/* Testimonials Carousel */}
+              {/* Smaller WhenToStart beside it */}
+              <div className="w-full lg:w-80 lg:flex-shrink-0">
+                <WhenToStart />
+              </div>
+            </div>
+
+            {/* Bottom: Testimonials Carousel */}
+            <div className="max-w-4xl mx-auto">
               <TestimonialCarousel />
             </div>
           </div>
