@@ -1,0 +1,41 @@
+{
+  "title": "More Protocol Information",
+  "price": "",
+  "duration": "",
+  "images": {
+    "product": [],
+    "certificates": [
+      {
+        "src": "https://cellularpeptide.com/cdn/shop/files/Epitalon_CofA.webp?v=8647999983528953212",
+        "alt": "Certificate of Analysis for N-Acetyl Selank peptide, detailing specifications and results."
+      },
+      {
+        "src": "https://cellularpeptide.com/cdn/shop/files/Kisspeptin_CofA.webp?v=3534867336005953010",
+        "alt": "Certificate of Analysis for Semax with molecular formula and storage instructions."
+      }
+    ]
+  },
+  "videos": [
+    {
+      "url": "https://youtu.be/bHto1-fgDlA?si=xmSBhSK1wJN__QFU",
+      "type": "youtube",
+      "title": "Go to Video"
+    },
+    {
+      "url": "https://youtube.com/playlist?list=PL9lnC-6Qc1zq-mufQlhsLz48Y_WHoW9E_&si=vIGkV_tC3-Ac1290",
+      "type": "youtube",
+      "title": "Watch Video"
+    }
+  ],
+  "packageIncludes": [],
+  "dosingInstructions": {
+    "reconstitution": "",
+    "dosage": "",
+    "timing": "",
+    "notes": []
+  },
+  "description": "",
+  "bestResults": [],
+  "testimonials": [],
+  "rawSections": []
+}

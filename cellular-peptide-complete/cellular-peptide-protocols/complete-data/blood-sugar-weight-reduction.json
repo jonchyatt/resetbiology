@@ -1,0 +1,41 @@
+{
+  "title": "More Protocol Information",
+  "price": "",
+  "duration": "",
+  "images": {
+    "product": [],
+    "certificates": [
+      {
+        "src": "https://cellularpeptide.com/cdn/shop/files/Semaglutide_CofA.webp?v=188050945325171539",
+        "alt": "Certificate of Analysis for N-Acetyl Selank peptide, detailing specifications and results."
+      },
+      {
+        "src": "https://cellularpeptide.com/cdn/shop/files/?709",
+        "alt": "Certificate of Analysis for Semax with molecular formula and storage instructions."
+      }
+    ]
+  },
+  "videos": [
+    {
+      "url": "https://youtu.be/qEvcniJ10VI?si=VfebFdykhIF-ApTm",
+      "type": "youtube",
+      "title": "Go to Video"
+    },
+    {
+      "url": "https://youtube.com/playlist?list=PL9lnC-6Qc1zq-mufQlhsLz48Y_WHoW9E_&si=vIGkV_tC3-Ac1290",
+      "type": "youtube",
+      "title": "Watch Video"
+    }
+  ],
+  "packageIncludes": [],
+  "dosingInstructions": {
+    "reconstitution": "",
+    "dosage": "",
+    "timing": "",
+    "notes": []
+  },
+  "description": "",
+  "bestResults": [],
+  "testimonials": [],
+  "rawSections": []
+}

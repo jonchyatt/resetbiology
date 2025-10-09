@@ -1,0 +1,45 @@
+================================================================================
+CELLULAR PEPTIDE SCRAPE COMPLETE - TRANSFER GUIDE
+================================================================================
+
+Location: /home/jonch/reset-biology-website/
+
+FILES TO TRANSFER:
+├── public/images/cellular-peptide-products/     (16 images - 5.5 MB total)
+│   ├── 13 product images (.png)
+│   └── 3 certificate images (.png, .jpg, .webp)
+├── cellular-peptide-protocols/                   (Complete protocol data)
+│   ├── complete-data/           (13 JSON files with all data)
+│   ├── scraped-html/            (13 HTML pages)
+│   ├── screenshots/             (2 screenshots)
+│   └── 13 markdown files + README
+├── src/data/cellular-peptide-products.json       (Product catalog)
+└── CELLULAR-PEPTIDE-FILES-README.md              (THIS DOCUMENT)
+
+QUICK COPY COMMAND:
+cd /home/jonch/reset-biology-website
+tar -czf cellular-peptide-complete.tar.gz \
+  public/images/cellular-peptide-products \
+  cellular-peptide-protocols \
+  src/data/cellular-peptide-products.json \
+  CELLULAR-PEPTIDE-FILES-README.md
+
+Then copy to Windows:
+cp cellular-peptide-complete.tar.gz /mnt/c/Users/YOUR_USERNAME/
+
+WHAT YOU HAVE:
+✅ All 13 protocol product images
+✅ 3 Certificate of Analysis images (3rd party testing proof)
+✅ Complete protocol data in JSON format
+✅ Protocol information in Markdown
+✅ Screenshots of actual Cellular Peptide pages
+✅ Full HTML copies of information pages
+
+WHAT'S NEXT:
+1. Transfer files to Windows ClaudeCode environment
+2. Build comparison page matching Cellular Peptide design
+3. Display protocols with images, certificates, videos
+4. Allow clients to select (no checkout - you handle IRB)
+
+Read CELLULAR-PEPTIDE-FILES-README.md for complete details!
+================================================================================

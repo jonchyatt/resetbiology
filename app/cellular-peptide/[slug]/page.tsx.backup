@@ -1,0 +1,276 @@
+'use client';
+
+import React, { use } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { protocols } from '@/data/cellular-peptide/protocols';
+import { notFound } from 'next/navigation';
+
+export default function ProtocolDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = use(params);
+  const protocol = protocols.find((p) => p.slug === slug);
+
+  if (!protocol) {
+    notFound();
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+      {/* Back Button */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="container mx-auto px-4 py-4">
+          <Link
+            href="/cellular-peptide"
+            className="inline-flex items-center text-[#3FBFB5] hover:text-[#2da89e] font-semibold"
+          >
+            <svg
+              className="w-5 h-5 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+            Back to All Protocols
+          </Link>
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4 py-12">
+        <div className="max-w-6xl mx-auto">
+          {/* Header Section */}
+          <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-8">
+            <div className="grid md:grid-cols-2 gap-8 p-8">
+              {/* Image Column */}
+              <div className="space-y-4">
+                <div className="relative h-96 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl overflow-hidden">
+                  <Image
+                    src={protocol.productImage}
+                    alt={protocol.title}
+                    fill
+                    className="object-contain p-8"
+                  />
+                </div>
+
+                {/* Certificates */}
+                {protocol.certificates.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
+                      <svg
+                        className="w-5 h-5 text-green-500 mr-2"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      3rd Party Certificates of Analysis
+                    </h3>
+                    <div className="grid grid-cols-2 gap-3">
+                      {protocol.certificates.map((cert, idx) => (
+                        <a
+                          key={idx}
+                          href={cert}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="relative h-32 bg-white border-2 border-gray-200 rounded-lg hover:border-[#3FBFB5] transition-colors overflow-hidden group"
+                        >
+                          <Image
+                            src={cert}
+                            alt={`Certificate ${idx + 1}`}
+                            fill
+                            className="object-cover group-hover:scale-105 transition-transform"
+                          />
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Info Column */}
+              <div>
+                <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                  {protocol.title}
+                </h1>
+
+                {/* Price & Duration */}
+                <div className="bg-gradient-to-r from-[#3FBFB5]/10 to-[#72C247]/10 rounded-xl p-6 mb-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <div className="text-sm text-gray-600 mb-1">Retail Price</div>
+                      <div className="text-4xl font-bold text-[#3FBFB5]">
+                        ${protocol.price}
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm text-gray-600 mb-1">Duration</div>
+                      <div className="text-2xl font-bold text-gray-900">
+                        {protocol.duration}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Peptides Included */}
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                    Peptides Included:
+                  </h3>
+                  <div className="space-y-2">
+                    {protocol.peptidesIncluded.map((peptide, idx) => (
+                      <div
+                        key={idx}
+                        className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-gray-700"
+                      >
+                        {peptide}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Package Includes */}
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                    Package Includes:
+                  </h3>
+                  <ul className="space-y-2">
+                    {protocol.packageIncludes.map((item, idx) => (
+                      <li key={idx} className="flex items-start text-gray-700">
+                        <svg
+                          className="w-5 h-5 text-[#72C247] mr-3 mt-0.5 flex-shrink-0"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* What It Helps With */}
+          <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+              <span className="bg-[#3FBFB5] text-white w-8 h-8 rounded-full flex items-center justify-center mr-3">
+                1
+              </span>
+              What does the protocol help with?
+            </h2>
+            <div className="grid md:grid-cols-2 gap-4">
+              {protocol.whatItHelps.map((benefit, idx) => (
+                <div
+                  key={idx}
+                  className="flex items-start bg-gradient-to-r from-[#3FBFB5]/5 to-transparent rounded-lg p-4 border-l-4 border-[#3FBFB5]"
+                >
+                  <svg
+                    className="w-6 h-6 text-[#3FBFB5] mr-3 mt-0.5 flex-shrink-0"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <span className="text-gray-700 font-medium">{benefit}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* How It Works */}
+          <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+              <span className="bg-[#72C247] text-white w-8 h-8 rounded-full flex items-center justify-center mr-3">
+                2
+              </span>
+              How does the protocol work?
+            </h2>
+            <div className="prose max-w-none text-gray-700 leading-relaxed">
+              {protocol.howItWorks}
+            </div>
+          </div>
+
+          {/* Dosing Instructions */}
+          <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+              <span className="bg-[#3FBFB5] text-white w-8 h-8 rounded-full flex items-center justify-center mr-3">
+                3
+              </span>
+              Protocol Instructions
+            </h2>
+            <div className="space-y-6">
+              <div className="border-l-4 border-[#3FBFB5] pl-6">
+                <h3 className="font-semibold text-gray-900 mb-2">Dosing:</h3>
+                <p className="text-gray-700">{protocol.dosing}</p>
+              </div>
+              <div className="border-l-4 border-[#72C247] pl-6">
+                <h3 className="font-semibold text-gray-900 mb-2">Timing:</h3>
+                <p className="text-gray-700">{protocol.timing}</p>
+              </div>
+              <div className="border-l-4 border-yellow-500 pl-6">
+                <h3 className="font-semibold text-gray-900 mb-2">Storage & Reconstitution:</h3>
+                <p className="text-gray-700">{protocol.reconstitution}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Testimonials */}
+          {protocol.testimonials && (
+            <div className="bg-gradient-to-r from-[#3FBFB5]/10 to-[#72C247]/10 rounded-2xl p-8 mb-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                Patient Testimonials
+              </h2>
+              <blockquote className="text-lg text-gray-700 italic border-l-4 border-[#3FBFB5] pl-6">
+                {protocol.testimonials}
+              </blockquote>
+            </div>
+          )}
+
+          {/* CTA */}
+          <div className="bg-gradient-to-r from-[#3FBFB5] to-[#72C247] rounded-2xl shadow-xl p-8 text-white text-center">
+            <h2 className="text-2xl font-bold mb-4">
+              Interested in This Protocol?
+            </h2>
+            <p className="text-white/90 mb-6 max-w-2xl mx-auto">
+              This protocol is available through Cellular Peptide's IRB enrollment process.
+              Contact us to learn more about how to get started.
+            </p>
+            <div className="flex gap-4 justify-center flex-wrap">
+              <Link
+                href="/contact"
+                className="bg-white text-[#3FBFB5] px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+              >
+                Contact Us
+              </Link>
+              <Link
+                href="/cellular-peptide"
+                className="bg-white/10 backdrop-blur-sm text-white px-8 py-3 rounded-lg font-semibold hover:bg-white/20 transition-colors border border-white/30"
+              >
+                View All Protocols
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -33,6 +33,8 @@ model User {
   profileData            Json?
   irbApprovalStatus      String?
   irbSubmissionDate      DateTime?
+  quizResponses          Json?
+  onboardingComplete     Boolean                  @default(false)
   affiliateTracking      AffiliateTracking[]
   breathSessions         BreathSession[]
   progress               ClientProgress[]

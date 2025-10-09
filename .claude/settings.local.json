@@ -1,7 +1,29 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx prisma generate:*)"
+      "Bash(npx prisma generate:*)",
+      "Bash(claude mcp:*)",
+      "Bash(docker:*)",
+      "Bash(npx tsx:*)",
+      "Bash(npx playwright install:*)",
+      "Bash(node:*)",
+      "Bash(where playwright)",
+      "Bash(npm install:*)",
+      "Bash(node_modules/.bin/playwright:*)",
+      "Bash(npx:*)",
+      "Bash(find:*)",
+      "Bash(ls:*)",
+      "Bash(echo:*)",
+      "Read(//c/Users/jonch/**)",
+      "Bash(npm run dev:*)",
+      "Bash(for file in C:/Users/jonch/reset-biology-website/cellular-peptide-complete/cellular-peptide-protocols/complete-data/*.json)",
+      "Bash(done)",
+      "Bash(while read file)",
+      "Bash(do echo \"=== $file ===\")",
+      "Bash(cat:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nfeat: Complete peptide protocol editing and tracking enhancements\n\n## Protocol Management System\n- Changed \"Add Protocol\" button to \"Add Research Protocol\" for clarity\n- Added Edit Protocol functionality with modal interface\n  - Edit dosage, frequency, timing, and duration\n  - User-specific protocol instances (isolated by userId)\n  - Past logged doses remain unchanged for accurate history\n\n## Dose History Preservation\n- Updated Prisma schema: added protocolName and protocolSnapshot to peptide_doses\n- Dose entries now store protocol metadata at time of logging\n- Fixed \"Unknown Protocol\" issue - deleted protocols still show original name\n- Implemented immutable history tracking\n\n## UI/UX Improvements\n- Fixed admin dropdown contrast (changed to solid dark backgrounds)\n- Enabled decimal input for mg doses (e.g., 1.7mg) in DosageCalculator\n- Added multiple purpose selection for peptides (checkboxes instead of single select)\n- Enhanced Weekly Schedule display with actual dose times\n  - Shows specific times (8:00 AM, 8:00 PM) based on timing\n  - Supports all frequency patterns (Daily, 3x/week, Every other day, etc.)\n  - Visual gradient styling for active vs inactive days\n\n## Database Changes\n- Schema update: peptide_doses now includes protocolName and protocolSnapshot\n- API enhancement: dose logging saves full protocol context\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git push:*)"
     ],
     "deny": [],
     "ask": [],

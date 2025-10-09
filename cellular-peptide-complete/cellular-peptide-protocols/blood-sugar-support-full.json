@@ -1,0 +1,48 @@
+{
+  "id": "blood-sugar-support",
+  "title": "Blood Sugar Support & Craving Reduction Package",
+  "price": "$720.00",
+  "duration": "16 Week Protocol",
+  "productImage": "/images/cellular-peptide-products/semaglutide.png",
+  "certificateImage": "/images/cellular-peptide-products/semaglutide-certificate.webp",
+
+  "packageIncludes": [
+    "3 Vials of Semaglutide 10mg",
+    "20 Injection Syringes + 3 Reconstitution Syringes",
+    "30 Alcohol Wipes",
+    "3 Vials of Bacteriostatic Water"
+  ],
+
+  "videoLinks": [
+    {
+      "text": "Go to Video",
+      "url": "https://youtu.be/qEvcniJ10VI?si=VfebFdykhIF-ApTm",
+      "description": "Dr. Marc Harris, ND, and Doug Grant, CEO of Optimal Health Systems presentation"
+    },
+    {
+      "text": "Watch Video",
+      "url": "https://youtube.com/playlist?list=PL9lnC-6Qc1zq-mufQlhsLz48Y_WHoW9E_&si=vIGkV_tC3-Ac1290",
+      "description": "Protocol Instructions Video"
+    }
+  ],
+
+  "learnMoreLink": "https://cellularpeptide.com/pages/blood-sugar-support-craving-reduction-protocol",
+
+  "instructions": {
+    "reconstitution": "Add 100 units of bacteriostatic water to each vial, when ready use.",
+    "protocolLength": "16 Weeks",
+    "dosage": "Dosage differs per individual. If individual weighs under 150lbs, begin protocol by dosing 250mcg (2.5 units), once weekly. If over 150lbs, begin protocol by dosing 500mcg (5 units), once weekly. Each week, if additional glycemic control and/or appetite suppression is needed, double the original dose, until desired effect is reached. At the end of the 16 week protocol, slowly decrease weekly dose for an additional 4 weeks.",
+    "timing": "All doses should be taken on an empty stomach, 2 hours prior to and/or after eating.",
+    "note": "Please note: Semaglutide has been known to cause nausea in some cases. If nausea occurs, decrease the following doses by 250mcg (2.5 units)."
+  },
+
+  "description": "The Blood Sugar Support & Craving Reduction Protocol is a 16 week protocol that utilizes the peptide Semaglutide to help individuals control their blood sugar levels, while enhancing insulin secretion. It's also been shown to significantly decrease appetite, aiding in weight loss efforts.",
+
+  "bestResults": [
+    "Store reconstituted peptide vials in the refrigerator (for up to 6 months) and non-reconstituted peptide vials in the freezer (up to 2 years).",
+    "Avoid reconstituting each peptide vial until you are ready to begin dosing with that vial.",
+    "Ensure your body has the nutrients needed for optimal results by supplementing with Optimal Health System's Peptide Support Pak."
+  ],
+
+  "purchaseUrl": "https://cellularpeptide.com/products/blood-sugar-weight-reduction-package"
+}
