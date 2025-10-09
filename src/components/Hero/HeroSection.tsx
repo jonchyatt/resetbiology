@@ -1,6 +1,5 @@
 "use client"
 
-import Link from "next/link"
 import { ChevronDown } from "lucide-react"
 import { MuscleWarning } from "./MuscleWarning"
 import { QuizCTA } from "./QuizCTA"
@@ -18,43 +17,30 @@ export function HeroSection() {
          }}>
 
       {/* Hero Section */}
-      <section className="min-h-screen flex items-center justify-center px-4 pt-20">
-        <div className="max-w-7xl mx-auto w-full">
-          {/* Logo */}
-          <div className="mb-12 text-center">
-            <img
-              src="/logo1.png"
-              alt="Reset Biology - DNA Reset Science"
-              className="h-24 md:h-32 lg:h-36 w-auto mx-auto rounded-2xl drop-shadow-2xl hover:drop-shadow-[0_0_40px_rgba(63,191,181,0.3)] transition-all duration-500 bg-white/5 backdrop-blur-sm p-4 border border-white/10"
-            />
+      <section className="min-h-screen flex items-center justify-center px-4 pt-20 pb-16">
+        <div className="max-w-7xl mx-auto w-full space-y-12">
+
+          {/* Three Column Layout: STOP | Quiz CTA | When to Start */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+            {/* Left: STOP Warning - Sidebar */}
+            <div className="lg:col-span-2">
+              <MuscleWarning />
+            </div>
+
+            {/* Center: Main Quiz CTA with Logo - Takes most space */}
+            <div className="lg:col-span-7">
+              <QuizCTA />
+            </div>
+
+            {/* Right: When to Start - Sidebar */}
+            <div className="lg:col-span-3">
+              <WhenToStart />
+            </div>
           </div>
 
-          {/* Main content layout */}
-          <div className="space-y-8">
-            {/* Top: Muscle Warning Sidebar */}
-            <div className="flex justify-start">
-              <div className="w-full max-w-sm">
-                <MuscleWarning />
-              </div>
-            </div>
-
-            {/* Center: Quiz CTA with smaller WhenToStart beside it */}
-            <div className="flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-8">
-              {/* Main Quiz CTA - Centered */}
-              <div className="w-full lg:w-auto lg:flex-shrink-0">
-                <QuizCTA />
-              </div>
-
-              {/* Smaller WhenToStart beside it */}
-              <div className="w-full lg:w-80 lg:flex-shrink-0">
-                <WhenToStart />
-              </div>
-            </div>
-
-            {/* Bottom: Testimonials Carousel */}
-            <div className="max-w-4xl mx-auto">
-              <TestimonialCarousel />
-            </div>
+          {/* Bottom: Testimonials Carousel */}
+          <div className="max-w-5xl mx-auto">
+            <TestimonialCarousel />
           </div>
         </div>
 
