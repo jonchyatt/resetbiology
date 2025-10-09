@@ -46,7 +46,7 @@ export function MuscleWarning() {
 
       {/* Streaming Ticker with Clinical Evidence - Stays visible when hovering over container or ticker */}
       <div
-        className={`absolute left-0 top-full mt-2 w-full max-w-2xl z-50 transition-all duration-300 ${
+        className={`absolute left-0 top-full w-full max-w-2xl z-50 transition-all duration-300 ${
           showTicker
             ? 'opacity-100 transform translate-y-0 pointer-events-auto'
             : 'opacity-0 transform -translate-y-2 pointer-events-none'
