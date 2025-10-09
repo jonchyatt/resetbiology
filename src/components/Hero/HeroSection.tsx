@@ -23,12 +23,12 @@ export function HeroSection() {
           {/* Three Column Layout: STOP | Quiz CTA | When to Start */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
             {/* Left: STOP Warning - Sidebar */}
-            <div className="lg:col-span-2">
+            <div className="lg:col-span-3">
               <MuscleWarning />
             </div>
 
             {/* Center: Main Quiz CTA with Logo - Takes most space */}
-            <div className="lg:col-span-7">
+            <div className="lg:col-span-6">
               <QuizCTA />
             </div>
 

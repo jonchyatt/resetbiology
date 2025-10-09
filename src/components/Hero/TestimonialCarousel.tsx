@@ -136,14 +136,14 @@ export function TestimonialCarousel() {
           >
             <video
               ref={videoRef}
-              key={`/ugc raw/${current.videoPath}`}
+              key={`/testimonials/${current.videoPath}`}
               className="w-full h-full object-cover"
               muted
               loop
               playsInline
             >
-              <source src={`/ugc raw/${current.videoPath}`} type="video/mp4" />
-              <source src={`/ugc raw/${current.videoPath}`} type="video/quicktime" />
+              <source src={`/testimonials/${current.videoPath}`} type="video/mp4" />
+              <source src={`/testimonials/${current.videoPath}`} type="video/quicktime" />
             </video>
 
             {/* Play icon overlay - shows when not hovering */}
