@@ -10,8 +10,8 @@ export function QuizCTA() {
         {/* Animated gradient border effect */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#72C247] via-[#3FBFB5] to-[#2a9d8f] opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"></div>
 
-        {/* Main content box */}
-        <div className="relative bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl p-6 md:p-8">
+        {/* Main content box with glassmorphism */}
+        <div className="relative bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/10">
           {/* Decorative sparkle icons */}
           <div className="absolute top-6 right-6 text-primary-300/30 animate-pulse">
             <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
