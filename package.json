@@ -8,7 +8,7 @@
     "prebuild": "npx tsx scripts/verify-auth-env.ts",
     "build": "next build",
     "prevercel-build": "npx tsx scripts/verify-auth-env.ts",
-    "vercel-build": "next build",
+    "vercel-build": "prisma generate && next build",
     "postinstall": "prisma generate",
     "prisma:generate": "prisma generate",
     "build:worker": "npx @opennextjs/cloudflare build",
