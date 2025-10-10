@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
+import { useUser } from '@auth0/nextjs-auth0'
 import {
   QuizResponses,
   loadQuizFromStorage,
@@ -12,24 +13,61 @@ import {
 
 export default function QuizResultsPage() {
   const router = useRouter()
+  const { user, isLoading } = useUser()
   const [quiz, setQuiz] = useState<QuizResponses | null>(null)
   const [outcome, setOutcome] = useState<QuizOutcome | null>(null)
+  const [syncComplete, setSyncComplete] = useState(false)
 
+  // Sync quiz data to database after Auth0 login
   useEffect(() => {
-    const savedQuiz = loadQuizFromStorage()
-    if (!savedQuiz || !savedQuiz.completedAt) {
-      // No quiz found or not completed - redirect to start
-      router.push('/quiz')
-      return
+    const syncQuizData = async () => {
+      const savedQuiz = loadQuizFromStorage()
+
+      if (!savedQuiz || !savedQuiz.completedAt) {
+        // No quiz found or not completed - redirect to start
+        router.push('/quiz')
+        return
+      }
+
+      setQuiz(savedQuiz)
+      setOutcome(determineQuizOutcome(savedQuiz))
+
+      // If user is logged in and we haven't synced yet
+      if (user && !syncComplete) {
+        try {
+          const response = await fetch('/api/quiz/sync', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ quizResponses: savedQuiz }),
+          })
+
+          if (response.ok) {
+            console.log('Quiz data synced to user profile')
+            setSyncComplete(true)
+            // Optionally clear localStorage after successful sync
+            // clearQuizFromStorage()
+          }
+        } catch (error) {
+          console.error('Failed to sync quiz data:', error)
+        }
+      }
     }
 
-    setQuiz(savedQuiz)
-    setOutcome(determineQuizOutcome(savedQuiz))
-  }, [router])
+    if (!isLoading) {
+      syncQuizData()
+    }
+  }, [user, isLoading, syncComplete, router])
 
   const handleCreateAccount = () => {
     // Redirect to Auth0 login which will create account
     router.push('/api/auth/login?returnTo=/portal')
+  }
+
+  const handleAccessIRB = () => {
+    // Direct access to Cellular Peptide IRB protocols
+    router.push('/cellular-peptide')
   }
 
   if (!quiz || !outcome) {
@@ -181,18 +219,18 @@ export default function QuizResultsPage() {
 
               <div className="bg-primary-500/10 border border-primary-400/30 rounded-lg p-6 mb-6">
                 <p className="text-white font-semibold text-xl mb-2 text-center">
-                  Ready to see your personalized results?
+                  Ready to access IRB-backed protocols?
                 </p>
                 <p className="text-gray-300 text-sm text-center">
-                  Create your free account to access your custom dashboard and all our tools
+                  View our Cellular Peptide protocol packages with full IRB research backing
                 </p>
               </div>
 
               <button
-                onClick={handleCreateAccount}
+                onClick={handleAccessIRB}
                 className="w-full bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-400 hover:to-secondary-400 text-white font-bold py-4 px-6 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-primary-400/20 text-lg"
               >
-                Create Free Account →
+                Access IRB Protocols with Cellular Peptide →
               </button>
             </div>
           )}
