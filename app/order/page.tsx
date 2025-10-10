@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { PortalHeader } from '@/components/Navigation/PortalHeader';
 
 interface Price {
@@ -15,12 +16,14 @@ interface Price {
 interface Product {
   id: string;
   name: string;
+  slug: string;
   description: string | null;
   imageUrl: string | null;
   prices: Price[];
 }
 
 export default function OrderPage() {
+  const router = useRouter();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
@@ -132,15 +135,25 @@ export default function OrderPage() {
 
                         {/* Product Content */}
                         <div className="p-6">
-                          <h3 className="text-xl font-bold text-white mb-2 group-hover:text-primary-400 transition-colors">
-                            {p.name}
-                          </h3>
+                          {/* Clickable area for product name and description */}
+                          <div
+                            onClick={() => router.push(`/product/${p.slug}`)}
+                            className="cursor-pointer mb-4"
+                          >
+                            <h3 className="text-xl font-bold text-white mb-2 group-hover:text-primary-400 transition-colors">
+                              {p.name}
+                            </h3>
 
-                          {p.description && (
-                            <p className="text-gray-300 text-sm mb-4 line-clamp-3">
-                              {p.description}
+                            {p.description && (
+                              <p className="text-gray-300 text-sm mb-2 line-clamp-3">
+                                {p.description}
+                              </p>
+                            )}
+
+                            <p className="text-primary-400 text-sm font-medium hover:text-primary-300 transition-colors">
+                              View Details →
                             </p>
-                          )}
+                          </div>
 
                           {primary ? (
                             <>
