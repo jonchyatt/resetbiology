@@ -11,7 +11,10 @@ import peptidesData from '../../../src/data/peptides-merged.json';
 export async function listProducts() {
   // Admin check already done in page component
   const products = await prisma.product.findMany({
-    orderBy: { updatedAt: 'desc' },
+    orderBy: [
+      { active: 'desc' },  // Active products first
+      { name: 'asc' }      // Then alphabetically by name
+    ],
     include: { prices: true },
   });
   return products;
