@@ -78,7 +78,10 @@ export async function archiveProduct(productId: string) {
 
   const product = await prisma.product.update({
     where: { id: productId },
-    data: { active: false },
+    data: {
+      active: false,
+      storefront: false  // Also hide from storefront when archiving
+    },
   });
   revalidateTag('products');
   return product;
