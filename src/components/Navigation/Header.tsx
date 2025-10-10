@@ -43,8 +43,11 @@ export function Header() {
                 <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium transition-colors">
                   Order
                 </Link>
-                <a 
-                  href="/auth/login?returnTo=/portal" 
+                <Link href="/cellular-peptide" className="text-gray-700 hover:text-primary-600 font-medium transition-colors">
+                  IRB Protocols
+                </Link>
+                <a
+                  href="/auth/login?returnTo=/portal"
                   className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors"
                 >
                   Login / Sign Up
@@ -60,6 +63,9 @@ export function Header() {
                 </Link>
                 <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium transition-colors">
                   Order
+                </Link>
+                <Link href="/cellular-peptide" className="text-gray-700 hover:text-primary-600 font-medium transition-colors">
+                  IRB Protocols
                 </Link>
                 <Link href="/profile" className="text-gray-700 hover:text-teal-600 font-medium transition-colors flex items-center">
                   <Settings className="w-4 h-4 mr-1" />
@@ -126,8 +132,11 @@ export function Header() {
                   <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium">
                     Order
                   </Link>
-                  <a 
-                    href="/auth/login?returnTo=/portal" 
+                  <Link href="/cellular-peptide" className="text-gray-700 hover:text-primary-600 font-medium">
+                    IRB Protocols
+                  </Link>
+                  <a
+                    href="/auth/login?returnTo=/portal"
                     className="block px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors text-center"
                   >
                     Login / Sign Up
@@ -140,6 +149,9 @@ export function Header() {
                   </Link>
                   <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium">
                     Order
+                  </Link>
+                  <Link href="/cellular-peptide" className="text-gray-700 hover:text-primary-600 font-medium">
+                    IRB Protocols
                   </Link>
                   <Link href="/profile" className="text-gray-700 hover:text-teal-600 font-medium">
                     Profile
