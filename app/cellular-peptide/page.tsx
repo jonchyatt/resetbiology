@@ -23,9 +23,9 @@ export default function CellularPeptideProtocolsPage() {
       <div className="relative z-10">
         {/* Header */}
         <div className="bg-gradient-to-r from-[#3FBFB5]/90 to-[#72C247]/90 backdrop-blur-md border-b border-white/10">
-          <div className="container mx-auto px-4 py-16">
+          <div className="container mx-auto px-4 py-12">
             <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white">
-              Protocol Packages
+              IRB Protocol Packages
             </h1>
             <p className="text-xl text-white/95 max-w-3xl">
               Professionally designed peptide protocols backed by research and 3rd party testing.
