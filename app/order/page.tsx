@@ -120,7 +120,10 @@ export default function OrderPage() {
                   const isLoading = checkoutLoading === p.id;
                   return (
                     <div key={p.id} className="group">
-                      <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl shadow-2xl border border-primary-400/30 overflow-hidden hover:shadow-primary-400/20 group-hover:scale-[1.02] transition-all duration-300">
+                      <div
+                        onClick={() => router.push(`/product/${p.slug}`)}
+                        className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl shadow-2xl border border-primary-400/30 overflow-hidden hover:shadow-primary-400/20 group-hover:scale-[1.02] transition-all duration-300 cursor-pointer"
+                      >
                         {/* Product Image */}
                         {p.imageUrl && (
                           <div className="relative h-48 bg-gradient-to-br from-primary-900/30 to-secondary-900/30">
@@ -135,25 +138,19 @@ export default function OrderPage() {
 
                         {/* Product Content */}
                         <div className="p-6">
-                          {/* Clickable area for product name and description */}
-                          <div
-                            onClick={() => router.push(`/product/${p.slug}`)}
-                            className="cursor-pointer mb-4"
-                          >
-                            <h3 className="text-xl font-bold text-white mb-2 group-hover:text-primary-400 transition-colors">
-                              {p.name}
-                            </h3>
+                          <h3 className="text-xl font-bold text-white mb-2 group-hover:text-primary-400 transition-colors">
+                            {p.name}
+                          </h3>
 
-                            {p.description && (
-                              <p className="text-gray-300 text-sm mb-2 line-clamp-3">
-                                {p.description}
-                              </p>
-                            )}
-
-                            <p className="text-primary-400 text-sm font-medium hover:text-primary-300 transition-colors">
-                              View Details →
+                          {p.description && (
+                            <p className="text-gray-300 text-sm mb-2 line-clamp-3">
+                              {p.description}
                             </p>
-                          </div>
+                          )}
+
+                          <p className="text-primary-400 text-sm font-medium mb-4 group-hover:text-primary-300 transition-colors">
+                            View Details →
+                          </p>
 
                           {primary ? (
                             <>
@@ -175,9 +172,12 @@ export default function OrderPage() {
                               {/* Buy Button with gradient and glow */}
                               <button
                                 type="button"
-                                onClick={() => handleCheckout(p.id, primary.id)}
+                                onClick={(e) => {
+                                  e.stopPropagation(); // Prevent card click
+                                  handleCheckout(p.id, primary.id);
+                                }}
                                 disabled={isLoading}
-                                className="w-full bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:shadow-primary-500/30 transition-all duration-200 flex items-center justify-center group backdrop-blur-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="w-full bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:shadow-primary-500/30 transition-all duration-200 flex items-center justify-center group backdrop-blur-sm disabled:opacity-50 disabled:cursor-not-allowed relative z-10"
                               >
                                 <span>{isLoading ? 'Processing...' : 'Buy Now'}</span>
                                 {!isLoading && (
