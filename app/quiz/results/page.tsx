@@ -62,7 +62,7 @@ export default function QuizResultsPage() {
 
   const handleCreateAccount = () => {
     // Redirect to Auth0 login which will create account
-    router.push('/api/auth/login?returnTo=/portal')
+    router.push('/auth/login?returnTo=/portal')
   }
 
   const handleAccessIRB = () => {

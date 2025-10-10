@@ -130,7 +130,7 @@ export default function QuizPage() {
         // Quiz complete - save completion and redirect to Auth0 login
         updateQuiz({ completedAt: new Date().toISOString() })
         // After Auth0 login, user will be redirected to results page
-        router.push('/api/auth/login?returnTo=/quiz/results')
+        router.push('/auth/login?returnTo=/quiz/results')
       }
     }
   }
@@ -815,8 +815,8 @@ export default function QuizPage() {
 
                 <div className="space-y-4">
                   <div className="flex justify-between text-sm text-gray-400 mb-2">
-                    <span>No, not for me</span>
                     <span>Yes, absolutely!</span>
+                    <span>No, I prefer to go it alone</span>
                   </div>
 
                   <input
@@ -842,14 +842,14 @@ export default function QuizPage() {
                         Partnership Level: {quiz.partnershipInterest || 5}/10
                       </div>
                       <div className="text-gray-300 text-sm">
-                        {quiz.partnershipInterest && quiz.partnershipInterest >= 8 && (
-                          "I prefer to go it alone"
+                        {quiz.partnershipInterest && quiz.partnershipInterest <= 3 && (
+                          "Yes absolutely! - Ready to partner for success"
                         )}
                         {quiz.partnershipInterest && quiz.partnershipInterest >= 4 && quiz.partnershipInterest <= 7 && (
                           "Open to partnership with the right support"
                         )}
-                        {quiz.partnershipInterest && quiz.partnershipInterest <= 3 && (
-                          "Yes absolutely! - Ready to partner for success"
+                        {quiz.partnershipInterest && quiz.partnershipInterest >= 8 && (
+                          "I prefer to go it alone"
                         )}
                       </div>
                     </div>
