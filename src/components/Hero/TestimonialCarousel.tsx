@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from 'react'
-import { ChevronLeft, ChevronRight, Play } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Play, Volume2, VolumeX } from 'lucide-react'
 
 // Real client testimonials with detailed written testimonials
 const testimonials = [
@@ -51,6 +51,7 @@ export function TestimonialCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isAutoPlaying, setIsAutoPlaying] = useState(true)
   const [isHovering, setIsHovering] = useState(false)
+  const [isMuted, setIsMuted] = useState(true)
   const videoRef = useRef<HTMLVideoElement>(null)
 
   // Auto-advance carousel
@@ -84,6 +85,13 @@ export function TestimonialCarousel() {
   const handleNext = () => {
     setIsAutoPlaying(false)
     setCurrentIndex((prev) => (prev + 1) % testimonials.length)
+  }
+
+  const toggleMute = () => {
+    setIsMuted(!isMuted)
+    if (videoRef.current) {
+      videoRef.current.muted = !isMuted
+    }
   }
 
   const current = testimonials[currentIndex]
@@ -147,7 +155,7 @@ export function TestimonialCarousel() {
                 ref={videoRef}
                 key={`/testimonials/${current.videoPath}`}
                 className="w-full h-full object-cover"
-                muted
+                muted={isMuted}
                 loop
                 playsInline
               >
@@ -168,6 +176,21 @@ export function TestimonialCarousel() {
                 <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full">
                   <p className="text-white text-sm font-medium">Hover to play</p>
                 </div>
+              )}
+
+              {/* Volume control button - appears when hovering */}
+              {isHovering && (
+                <button
+                  onClick={toggleMute}
+                  className="absolute top-4 right-4 bg-black/60 backdrop-blur-sm hover:bg-black/80 text-white p-3 rounded-full transition-all z-10"
+                  aria-label={isMuted ? "Unmute video" : "Mute video"}
+                >
+                  {isMuted ? (
+                    <VolumeX className="w-5 h-5" />
+                  ) : (
+                    <Volume2 className="w-5 h-5" />
+                  )}
+                </button>
               )}
 
               {/* Client info overlay */}
