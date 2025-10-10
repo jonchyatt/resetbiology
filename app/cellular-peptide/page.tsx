@@ -20,7 +20,7 @@ export default function CellularPeptideProtocolsPage() {
       </div>
 
       {/* Content */}
-      <div className="relative z-10">
+      <div className="relative z-10 pt-16">
         {/* Header */}
         <div className="bg-gradient-to-r from-[#3FBFB5]/90 to-[#72C247]/90 backdrop-blur-md border-b border-white/10">
           <div className="container mx-auto px-4 py-12">
