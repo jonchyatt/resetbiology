@@ -108,9 +108,10 @@ export default async function AdminStorePage() {
     'use server';
     const id = String(fd.get('productId') || '');
     const name = String(fd.get('name') || '').trim();
+    const slug = String(fd.get('slug') || '').trim();
     const description = (fd.get('description')?.toString() || '').trim() || null;
     const imageUrl = (fd.get('imageUrl')?.toString() || '').trim() || null;
-    
+
     // Protocol fields
     const isTrackable = String(fd.get('isTrackable') || 'false') === 'true';
     const protocolPurpose = (fd.get('protocolPurpose')?.toString() || '').trim() || null;
@@ -122,10 +123,11 @@ export default async function AdminStorePage() {
     const reconstitutionInstructions = (fd.get('reconstitutionInstructions')?.toString() || '').trim() || null;
     const syringeUnitsValue = fd.get('syringeUnits')?.toString() || '';
     const syringeUnits = syringeUnitsValue ? parseFloat(syringeUnitsValue) : null;
-    
-    await updateProduct(id, { 
-      name, 
-      description, 
+
+    await updateProduct(id, {
+      name,
+      slug,
+      description,
       imageUrl,
       isTrackable,
       protocolPurpose,
