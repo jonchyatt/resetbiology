@@ -33,6 +33,7 @@ export async function GET(request: NextRequest) {
       ];
     }
 
+    // Fetch peptides from Peptide table
     const peptides = await prisma.peptide.findMany({
       where,
       orderBy: [
@@ -41,7 +42,48 @@ export async function GET(request: NextRequest) {
       ]
     });
 
-    return NextResponse.json({ success: true, data: peptides });
+    // Also fetch products from Product table that are on storefront
+    const storefrontProducts = await prisma.product.findMany({
+      where: {
+        active: true,
+        storefront: true,
+        isTrackable: true  // Only show trackable products in peptide dropdown
+      },
+      select: {
+        id: true,
+        slug: true,
+        name: true,
+        category: true,
+        protocolPurpose: true,
+        protocolDosageRange: true,
+        vialAmount: true,
+        reconstitutionInstructions: true,
+        featured: true
+      },
+      orderBy: { name: 'asc' }
+    });
+
+    // Transform products to match peptide format
+    const productsAsPeptides = storefrontProducts.map(p => ({
+      id: p.id,
+      slug: p.slug,
+      name: p.name,
+      category: p.protocolPurpose || p.category || 'General',
+      dosage: p.protocolDosageRange || '250mcg',
+      reconstitution: p.reconstitutionInstructions || '2ml',
+      vialAmount: p.vialAmount || '10mg',
+      featured: p.featured || false,
+      inStock: true,
+      isStorefrontProduct: true // Flag to indicate it's from storefront
+    }));
+
+    // Combine and sort: storefront products first, then peptides
+    const combinedList = [
+      ...productsAsPeptides,
+      ...peptides.map(p => ({ ...p, isStorefrontProduct: false }))
+    ];
+
+    return NextResponse.json({ success: true, data: combinedList });
   } catch (error) {
     console.error('Error fetching peptides:', error);
     return NextResponse.json({ error: 'Failed to fetch peptides' }, { status: 500 });

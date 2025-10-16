@@ -8,6 +8,7 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { Package, Plus, Upload, DollarSign, ImageIcon, RefreshCw } from 'lucide-react';
 import { listProducts, createProduct, updateProduct, archiveProduct, upsertPrice, deletePrice, syncProductToStripe, syncAllProductsToStripe, importPeptides, fixProductImages } from './actions';
+import { ImageField } from '@/components/Admin/ImageField';
 export const revalidate = 0;
 
 export default async function AdminStorePage() {
@@ -407,16 +408,11 @@ export default async function AdminStorePage() {
                                       />
                                     </div>
                                     
-                                    <div>
-                                      <label className="text-xs text-gray-400">Image URL</label>
-                                      <input 
-                                        name="imageUrl" 
-                                        type="url"
-                                        defaultValue={product.imageUrl || ''}
-                                        placeholder="https://example.com/image.jpg"
-                                        className="w-full px-3 py-2 bg-gray-800 text-white border border-gray-600 rounded text-sm"
-                                      />
-                                    </div>
+                                    <ImageField
+                                      name="imageUrl"
+                                      defaultValue={product.imageUrl}
+                                      productId={product.id}
+                                    />
                                   </div>
                                 </div>
                                 
