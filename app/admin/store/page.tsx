@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { Package, Plus, Upload, DollarSign, ImageIcon, RefreshCw } from 'lucide-react';
 import { listProducts, createProduct, updateProduct, archiveProduct, upsertPrice, deletePrice, syncProductToStripe, syncAllProductsToStripe, importPeptides, fixProductImages } from './actions';
 import { ImageField } from '@/components/Admin/ImageField';
+import { PurposeCheckboxes } from '@/components/Admin/PurposeCheckboxes';
 export const revalidate = 0;
 
 export default async function AdminStorePage() {
@@ -436,28 +437,19 @@ export default async function AdminStorePage() {
                                       </label>
                                     </div>
                                     
+                                    {/* Purpose Checkboxes - Full Width */}
+                                    <div className="mb-3">
+                                      <PurposeCheckboxes
+                                        defaultValue={product.protocolPurpose}
+                                        productId={product.id}
+                                      />
+                                    </div>
+
                                     {/* Protocol Fields - Grid Layout */}
                                     <div className="grid grid-cols-2 gap-3">
                                       <div>
-                                        <label className="text-xs text-gray-400">Purpose</label>
-                                        <select 
-                                          name="protocolPurpose"
-                                          defaultValue={product.protocolPurpose || ''}
-                                          className="w-full px-3 py-2 bg-gray-800 text-white border border-gray-600 rounded text-sm"
-                                        >
-                                          <option value="">Select...</option>
-                                          <option value="Fat Loss">Fat Loss</option>
-                                          <option value="Healing">Healing</option>
-                                          <option value="Performance">Performance</option>
-                                          <option value="Longevity">Longevity</option>
-                                          <option value="Sleep">Sleep</option>
-                                          <option value="Immunity">Immunity</option>
-                                        </select>
-                                      </div>
-                                      
-                                      <div>
                                         <label className="text-xs text-gray-400">Dosage Range</label>
-                                        <input 
+                                        <input
                                           name="protocolDosageRange"
                                           placeholder="e.g., 0.5mg-2.5mg"
                                           defaultValue={product.protocolDosageRange || ''}
