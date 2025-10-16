@@ -10,6 +10,7 @@ import { Package, Plus, Upload, DollarSign, ImageIcon, RefreshCw } from 'lucide-
 import { listProducts, createProduct, updateProduct, archiveProduct, upsertPrice, deletePrice, syncProductToStripe, syncAllProductsToStripe, importPeptides, fixProductImages } from './actions';
 import { ImageField } from '@/components/Admin/ImageField';
 import { PurposeCheckboxes } from '@/components/Admin/PurposeCheckboxes';
+import { SlugGenerator } from '@/components/Admin/SlugGenerator';
 export const revalidate = 0;
 
 export default async function AdminStorePage() {
@@ -252,6 +253,9 @@ export default async function AdminStorePage() {
               </div>
               
               <form action={createProductAction} className="space-y-6">
+                {/* Auto-generate slug from product name */}
+                <SlugGenerator />
+
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
                     <label htmlFor="name" className="block text-sm font-medium text-primary-300 mb-2">
