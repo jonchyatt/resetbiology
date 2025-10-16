@@ -10,9 +10,13 @@ export async function GET(
   try {
     const { slug } = await params;
 
-    const product = await prisma.product.findUnique({
+    // Case-insensitive slug lookup
+    const product = await prisma.product.findFirst({
       where: {
-        slug,
+        slug: {
+          equals: slug,
+          mode: 'insensitive'
+        },
         active: true,
         storefront: true
       },
