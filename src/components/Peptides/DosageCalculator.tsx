@@ -332,6 +332,8 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
   const [notes, setNotes] = useState<string>("");
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [errors, setErrors] = useState<string[]>([]);
+  const [isCustomPeptide, setIsCustomPeptide] = useState<boolean>(false);
+  const [customPeptideName, setCustomPeptideName] = useState<string>("");
 
   // New state for scheduling (addProtocol mode)
   const [selectedDays, setSelectedDays] = useState<string[]>(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']);
@@ -432,13 +434,22 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
       return;
     }
 
+    // Validate custom peptide name
+    if (isCustomPeptide && !customPeptideName.trim()) {
+      alert('Please enter a name for your custom peptide');
+      return;
+    }
+
     try {
       setIsSaving(true);
       const formattedDosage = `${inputs.desiredDose}${inputs.doseUnit}`;
 
+      // Use custom name if custom peptide selected, otherwise use library peptide name
+      const finalPeptideName = isCustomPeptide ? customPeptideName.trim() : peptideName;
+
       await onSaveProtocol({
-        peptideId: selectedPeptideId,
-        peptideName,
+        peptideId: isCustomPeptide ? undefined : selectedPeptideId,
+        peptideName: finalPeptideName,
         dosage: formattedDosage,
         schedule: {
           days: selectedDays,
@@ -465,8 +476,18 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
     const peptide = peptideLibrary.find((item) => item.name === peptideName || item.id === peptideName);
     if (!peptide) return;
 
-    setPeptideName(peptide.name);
-    if (peptide.id) setSelectedPeptideId(peptide.id);
+    // Check if "Other (Custom)" is selected
+    if (peptide.id === 'custom' || peptide.name === 'Other (Custom)') {
+      setIsCustomPeptide(true);
+      setPeptideName('Other (Custom)');
+      setSelectedPeptideId('custom');
+      setCustomPeptideName(''); // Reset custom name
+    } else {
+      setIsCustomPeptide(false);
+      setPeptideName(peptide.name);
+      if (peptide.id) setSelectedPeptideId(peptide.id);
+      setCustomPeptideName('');
+    }
 
     setInputs((prev) => {
       let totalVolume = 1;
@@ -528,13 +549,13 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
           {/* Peptide selection */}
           {mode === 'addProtocol' && (
             peptideLibrary && peptideLibrary.length > 0 ? (
-              <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30 space-y-2">
-                <label className="block text-sm text-gray-300 font-medium">Choose peptide from research library</label>
+              <div className="bg-gradient-to-br from-primary-600/20 to-primary-700/15 backdrop-blur-sm rounded-xl p-4 border border-primary-400/40 space-y-3">
+                <label className="block text-sm text-amber-300 font-semibold">Choose from Order Peptides or Custom</label>
                 <select
                   aria-label="Select peptide"
                   value={selectedPeptideId || peptideName}
                   onChange={(event) => loadPeptideFromLibrary(event.target.value)}
-                  className="bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
+                  className="w-full bg-primary-600/25 border border-amber-400/40 rounded-lg px-3 py-2.5 text-amber-100 placeholder-amber-300/50 focus:border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-400/30 transition-all"
                 >
                   {peptideLibrary.map((peptide) => {
                     const optionValue = peptide.id || peptide.name;
@@ -543,14 +564,32 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                       .replace(/\s+Package\s*$/i, '')
                       .trim();
                     return (
-                      <option key={optionValue} value={optionValue}>
+                      <option key={optionValue} value={optionValue} className="bg-gray-800 text-amber-100">
                         {displayName}
                       </option>
                     );
                   })}
                 </select>
-                <p className="text-xs text-gray-400">
-                  {(peptideLibrary?.length ?? 0)} research peptides available.
+
+                {/* Custom Peptide Name Input */}
+                {isCustomPeptide && (
+                  <div className="space-y-2 animate-fade-in">
+                    <label className="block text-sm text-amber-300 font-medium">Custom Peptide/Supplement Name</label>
+                    <input
+                      type="text"
+                      value={customPeptideName}
+                      onChange={(e) => setCustomPeptideName(e.target.value)}
+                      placeholder="e.g., Vitamin D3, Magnesium, NAD+, Custom Blend"
+                      className="w-full bg-primary-600/25 border border-amber-400/40 rounded-lg px-3 py-2.5 text-amber-100 placeholder-amber-300/50 focus:border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-400/30 transition-all"
+                    />
+                    <p className="text-xs text-amber-200/70">
+                      Enter any vitamin, mineral, or custom compound you want to track
+                    </p>
+                  </div>
+                )}
+
+                <p className="text-xs text-amber-300/70">
+                  {(peptideLibrary?.length ?? 0) - 1} products from store + Custom option available
                 </p>
               </div>
             ) : (
@@ -752,7 +791,9 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
             <h3 className="text-lg font-semibold text-white mb-1">Results</h3>
             <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm leading-snug">
               <div className="text-gray-400">Peptide</div>
-              <div className="text-white font-medium">{peptideName || '—'}</div>
+              <div className="text-white font-medium">
+                {isCustomPeptide ? (customPeptideName || 'Custom (not named)') : (peptideName || '—')}
+              </div>
               <div className="text-gray-400">Volume to draw</div>
               <div className="text-white font-medium">{formatNumber(results.volumeToDraw, results.volumeToDraw < 1 ? 3 : 2)} ml</div>
               {typeof results.insulinUnits === "number" && (

@@ -296,28 +296,44 @@ export function PeptideTracker() {
   const fetchPeptideLibrary = async () => {
     try {
       setLoadingLibrary(true)
-      const response = await fetch('/api/peptides', {
+      const response = await fetch('/api/products/storefront', {
         credentials: 'include'
       })
-      const data = await response.json()
+      const products = await response.json()
 
-      if (data.success && data.data) {
-        // Transform API data to match our interface
-        const formattedLibrary = data.data.map((peptide: any) => ({
-          id: peptide.id,
-          name: peptide.name,
-          purpose: peptide.category || 'General',
-          dosage: peptide.dosage || '250mcg',
+      if (products && Array.isArray(products)) {
+        // Transform storefront products to match our interface
+        const formattedLibrary = products.map((product: any) => ({
+          id: product.id,
+          name: product.name,
+          purpose: product.description?.substring(0, 50) || 'General',
+          dosage: '250mcg', // Default dosage
           timing: 'AM',
           frequency: 'Daily',
           duration: '8 weeks',
           vialAmount: '10mg',
-          reconstitution: peptide.reconstitution || '2ml',
+          reconstitution: '2ml',
           syringeUnits: 10
         }))
+
+        // Add "Other (Custom)" option at the end
+        formattedLibrary.push({
+          id: 'custom',
+          name: 'Other (Custom)',
+          purpose: 'Custom',
+          dosage: '100mcg',
+          timing: 'AM',
+          frequency: 'Daily',
+          duration: '4 weeks',
+          vialAmount: '5mg',
+          reconstitution: '1ml',
+          syringeUnits: 10
+        })
+
         setPeptideLibrary(formattedLibrary)
+        console.log(`✅ Loaded ${formattedLibrary.length} products from storefront (${products.length} products + 1 custom option)`)
       } else {
-        console.error('Failed to fetch peptide library:', data.error)
+        console.error('Failed to fetch storefront products')
         // Fallback to hardcoded library if API fails
         setPeptideLibrary(fallbackLibrary)
       }
