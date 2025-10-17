@@ -56,6 +56,7 @@ export function PeptideTracker() {
   const [doseHistory, setDoseHistory] = useState<any[]>([])
   const [loadingHistory, setLoadingHistory] = useState(false)
   const [historyMonth, setHistoryMonth] = useState<Date>(() => new Date())
+  const [selectedCalendarDay, setSelectedCalendarDay] = useState<string | null>(null)
   const bootstrapped = useRef(false)
 
   const fetchTodaysDoses = useCallback(async (dayKey: string = todayKey) => {
@@ -1328,27 +1329,59 @@ export function PeptideTracker() {
                           const densityClass = calendarDensityClass(cell.completed, cell.pending, isToday, isPast)
 
                           return (
-                            <div
+                            <button
                               key={cell.key}
-                              className={`min-h-[68px] rounded-lg border px-2 py-2 text-center transition-all duration-300 ${densityClass}`}
+                              onClick={() => cell.count > 0 ? setSelectedCalendarDay(cell.key) : null}
+                              className={`min-h-[68px] rounded-lg border px-2 py-2 text-center transition-all duration-300 ${densityClass} ${cell.count > 0 ? 'cursor-pointer hover:scale-105 hover:shadow-lg' : 'cursor-default'}`}
                             >
                               <div className="text-sm font-semibold">{cell.label}</div>
-                              <div className="mt-1 text-[10px] uppercase tracking-wide opacity-80">
-                                {cell.count > 0 ? `${cell.count} dose${cell.count === 1 ? '' : 's'}` : '—'}
-                              </div>
-                              {cell.items.length > 0 && (
-                                <div className="mt-1 text-[10px] text-primary-50 leading-tight overflow-hidden text-ellipsis">
-                                  {cell.items.join(', ')}
+                              {cell.count > 0 && (
+                                <div className="mt-2">
+                                  <div className="text-2xl font-bold">{cell.count}</div>
+                                  <div className="text-[10px] uppercase tracking-wide opacity-80">
+                                    dose{cell.count === 1 ? '' : 's'}
+                                  </div>
                                 </div>
                               )}
-                            </div>
+                            </button>
                           )
                         })}
                       </div>
                     </div>
+                  </>
+                )}
+              </div>
 
-                    <div className="space-y-3 max-h-96 overflow-y-auto">
-                      {doseHistory.map((dose: any) => {
+              {/* Day Detail Modal */}
+              {selectedCalendarDay && (
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                  <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 max-w-2xl w-full border border-primary-400/30 shadow-2xl max-h-[80vh] overflow-y-auto">
+                    <div className="flex justify-between items-center mb-6">
+                      <div>
+                        <h3 className="text-2xl font-bold text-white">
+                          {new Date(selectedCalendarDay).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                        </h3>
+                        <p className="text-gray-400 text-sm mt-1">
+                          {doseHistoryByDate.get(selectedCalendarDay)?.completed || 0} completed • {doseHistoryByDate.get(selectedCalendarDay)?.pending || 0} scheduled
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => setSelectedCalendarDay(null)}
+                        className="text-gray-400 hover:text-white transition-colors"
+                      >
+                        <X className="w-6 h-6" />
+                      </button>
+                    </div>
+
+                    <div className="space-y-3">
+                      {doseHistory
+                        .filter((dose: any) => {
+                          const doseDateSource = dose?.doseDate || dose?.createdAt || dose?.updatedAt
+                          if (!doseDateSource) return false
+                          const doseDateKey = new Date(doseDateSource).toISOString().split('T')[0]
+                          return doseDateKey === selectedCalendarDay
+                        })
+                        .map((dose: any) => {
                         const doseDateSource = dose?.doseDate || dose?.createdAt || dose?.updatedAt || new Date().toISOString()
                         const doseDate = new Date(doseDateSource)
                         const protocol = dose.user_peptide_protocols
@@ -1394,11 +1427,50 @@ export function PeptideTracker() {
                           </div>
                         )
                       })}
+
+                      {/* Show future scheduled doses for this day */}
+                      {doseHistoryByDate.get(selectedCalendarDay)?.labels &&
+                        Array.from(doseHistoryByDate.get(selectedCalendarDay)!.labels)
+                          .filter(label => {
+                            // Only show labels that don't have a completed dose
+                            return !doseHistory.some((dose: any) => {
+                              const doseDateSource = dose?.doseDate || dose?.createdAt || dose?.updatedAt
+                              if (!doseDateSource) return false
+                              const doseDateKey = new Date(doseDateSource).toISOString().split('T')[0]
+                              const doseName = dose?.user_peptide_protocols?.peptides?.name ?? dose?.protocolName ?? ''
+                              return doseDateKey === selectedCalendarDay && doseName === label
+                            })
+                          })
+                          .map((label, idx) => (
+                            <div key={`future-${idx}`} className="p-4 bg-blue-900/20 rounded-lg border border-blue-600/30">
+                              <div className="flex justify-between items-start">
+                                <div className="flex-1">
+                                  <h4 className="font-semibold text-blue-200">{label}</h4>
+                                  <p className="text-sm text-blue-300 mt-1">Scheduled</p>
+                                </div>
+                                <span className="text-xs font-semibold px-2 py-1 rounded bg-blue-500/20 text-blue-300 border border-blue-400/40">
+                                  Pending
+                                </span>
+                              </div>
+                            </div>
+                          ))
+                      }
+
+                      {doseHistory.filter((dose: any) => {
+                        const doseDateSource = dose?.doseDate || dose?.createdAt || dose?.updatedAt
+                        if (!doseDateSource) return false
+                        const doseDateKey = new Date(doseDateSource).toISOString().split('T')[0]
+                        return doseDateKey === selectedCalendarDay
+                      }).length === 0 && (
+                        <div className="text-center py-8 text-gray-400">
+                          No doses logged for this day
+                        </div>
+                      )}
                     </div>
-                  </>
-                )}
-              </div>
-              
+                  </div>
+                </div>
+              )}
+
               {/* IRB Compliance Notice */}
               <div className="mt-8">
                 <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30 shadow-xl hover:shadow-primary-400/20 transition-all duration-300 flex items-start">
