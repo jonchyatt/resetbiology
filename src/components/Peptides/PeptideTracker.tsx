@@ -1290,11 +1290,7 @@ export function PeptideTracker() {
                 ) : (
                   <>
                     <div className="mb-6 rounded-xl border border-primary-400/30 bg-gray-900/40 p-4 shadow-inner">
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-2">
-                          <Calendar className="w-5 h-5 text-primary-300" />
-                          <h4 className="text-lg font-semibold text-white">Calendar overview</h4>
-                        </div>
+                      <div className="flex items-center justify-center mb-3">
                         <div className="flex items-center gap-2 text-sm text-gray-300">
                           <button
                             onClick={goToPreviousMonth}
@@ -1303,7 +1299,7 @@ export function PeptideTracker() {
                           >
                             ‹
                           </button>
-                          <span className="font-medium text-primary-100">{historyMonthLabel}</span>
+                          <span className="font-medium text-primary-100 min-w-[150px] text-center">{historyMonthLabel}</span>
                           <button
                             onClick={goToNextMonth}
                             className="h-8 w-8 rounded-full border border-primary-400/40 text-primary-200 hover:bg-primary-500/20 transition"
@@ -1332,13 +1328,13 @@ export function PeptideTracker() {
                             <button
                               key={cell.key}
                               onClick={() => cell.count > 0 ? setSelectedCalendarDay(cell.key) : null}
-                              className={`min-h-[68px] rounded-lg border px-2 py-2 text-center transition-all duration-300 ${densityClass} ${cell.count > 0 ? 'cursor-pointer hover:scale-105 hover:shadow-lg' : 'cursor-default'}`}
+                              className={`min-h-[68px] rounded-lg border px-2 py-1 text-center transition-all duration-300 flex flex-col ${densityClass} ${cell.count > 0 ? 'cursor-pointer hover:scale-105 hover:shadow-lg' : 'cursor-default'}`}
                             >
                               <div className="text-base font-semibold">{cell.label}</div>
                               {cell.count > 0 && (
-                                <div className="mt-1">
+                                <div className="flex-1 flex flex-col items-center justify-center">
                                   <div className="text-lg font-semibold">{cell.count}</div>
-                                  <div className="text-xs uppercase tracking-tight opacity-80">
+                                  <div className="text-[8px] uppercase tracking-tight opacity-80 leading-none">
                                     dose{cell.count === 1 ? '' : 's'}
                                   </div>
                                 </div>
