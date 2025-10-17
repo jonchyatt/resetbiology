@@ -32,7 +32,7 @@ interface DoseEntry {
 }
 
 export function PeptideTracker() {
-  const [activeTab, setActiveTab] = useState<'current' | 'history'>('current')
+  const [activeTab, setActiveTab] = useState<'current' | 'calendar'>('current')
   const [currentProtocols, setCurrentProtocols] = useState<PeptideProtocol[]>([])
   const [todaysDoses, setTodaysDoses] = useState<DoseEntry[]>([])
   const getTodayKey = () => new Date().toISOString().split('T')[0]
@@ -129,28 +129,113 @@ export function PeptideTracker() {
     return { pending, completed }
   }, [todaysDoses, parseTimeToMinutes])
 
-  const doseHistoryByDate = useMemo(() => {
-    const map = new Map<string, { count: number; labels: Set<string> }>()
+  // Generate future doses based on active protocols
+  const generateFutureDoses = useCallback((protocols: PeptideProtocol[], endDate: Date) => {
+    const futureDoses: Array<{ date: string; protocolName: string; completed: boolean }> = []
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
 
+    protocols.filter(p => p.isActive).forEach((protocol) => {
+      const startDate = protocol.startDate ? new Date(protocol.startDate) : new Date()
+      startDate.setHours(0, 0, 0, 0)
+
+      const frequency = protocol.frequency.toLowerCase()
+      let currentDate = new Date(Math.max(today.getTime(), startDate.getTime()))
+
+      // Generate doses until endDate
+      while (currentDate <= endDate) {
+        let shouldSchedule = false
+
+        // Determine if dose should be scheduled based on frequency
+        if (frequency.includes('daily') || frequency.includes('every day')) {
+          shouldSchedule = true
+        } else if (frequency.includes('every other day')) {
+          const daysSinceStart = Math.floor((currentDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))
+          shouldSchedule = daysSinceStart % 2 === 0
+        } else if (frequency.includes('3x per week')) {
+          const dayOfWeek = currentDate.getDay()
+          shouldSchedule = [1, 3, 5].includes(dayOfWeek) // Mon, Wed, Fri
+        } else if (frequency.includes('2x per week')) {
+          const dayOfWeek = currentDate.getDay()
+          shouldSchedule = [1, 4].includes(dayOfWeek) // Mon, Thu
+        } else if (frequency.includes('5 days on')) {
+          const dayOfWeek = currentDate.getDay()
+          shouldSchedule = dayOfWeek >= 1 && dayOfWeek <= 5 // Mon-Fri
+        } else if (frequency.includes('once per week')) {
+          const dayOfWeek = currentDate.getDay()
+          shouldSchedule = dayOfWeek === 1 // Monday
+        }
+
+        if (shouldSchedule) {
+          futureDoses.push({
+            date: currentDate.toISOString().split('T')[0],
+            protocolName: protocol.name,
+            completed: false
+          })
+        }
+
+        // Move to next day
+        currentDate = new Date(currentDate.getTime() + 24 * 60 * 60 * 1000)
+      }
+    })
+
+    return futureDoses
+  }, [])
+
+  const doseHistoryByDate = useMemo(() => {
+    const map = new Map<string, { count: number; labels: Set<string>; completed: number; pending: number }>()
+
+    // Add completed/historical doses
     doseHistory.forEach((dose: any) => {
       const rawDate = dose?.doseDate || dose?.createdAt || dose?.updatedAt
       if (!rawDate) return
 
       const key = new Date(rawDate).toISOString().split('T')[0]
       if (!map.has(key)) {
-        map.set(key, { count: 0, labels: new Set<string>() })
+        map.set(key, { count: 0, labels: new Set<string>(), completed: 0, pending: 0 })
       }
 
       const entry = map.get(key)!
       entry.count += 1
+      entry.completed += 1
       const protocolName = dose?.user_peptide_protocols?.peptides?.name ?? dose?.protocolName ?? ''
       if (protocolName) {
         entry.labels.add(protocolName)
       }
     })
 
+    // Add future scheduled doses (60 days ahead)
+    const futureEndDate = new Date()
+    futureEndDate.setDate(futureEndDate.getDate() + 60)
+    const futureDoses = generateFutureDoses(currentProtocols, futureEndDate)
+
+    futureDoses.forEach((futureDose) => {
+      const key = futureDose.date
+
+      if (!map.has(key)) {
+        map.set(key, { count: 0, labels: new Set<string>(), completed: 0, pending: 0 })
+      }
+
+      const entry = map.get(key)!
+
+      // Check if this dose is already completed
+      const alreadyCompleted = doseHistory.some((dose: any) => {
+        const doseDate = dose?.doseDate || dose?.createdAt || dose?.updatedAt
+        if (!doseDate) return false
+        const doseDateKey = new Date(doseDate).toISOString().split('T')[0]
+        const doseName = dose?.user_peptide_protocols?.peptides?.name ?? dose?.protocolName ?? ''
+        return doseDateKey === key && doseName === futureDose.protocolName
+      })
+
+      if (!alreadyCompleted) {
+        entry.count += 1
+        entry.pending += 1
+        entry.labels.add(futureDose.protocolName)
+      }
+    })
+
     return map
-  }, [doseHistory])
+  }, [doseHistory, currentProtocols, generateFutureDoses])
 
   const historyCalendar = useMemo(() => {
     const year = historyMonth.getFullYear()
@@ -162,6 +247,8 @@ export function PeptideTracker() {
       key: string
       label: string
       count: number
+      completed: number
+      pending: number
       items: string[]
       date: Date
     } | null> = []
@@ -179,6 +266,8 @@ export function PeptideTracker() {
         key,
         label: String(day),
         count: summary?.count ?? 0,
+        completed: summary?.completed ?? 0,
+        pending: summary?.pending ?? 0,
         items: summary ? Array.from(summary.labels) : [],
         date,
       })
@@ -191,16 +280,33 @@ export function PeptideTracker() {
     return cells
   }, [historyMonth, doseHistoryByDate])
 
-  const calendarDensityClass = (count: number, isToday: boolean) => {
-    if (count <= 0) {
+  const calendarDensityClass = (completed: number, pending: number, isToday: boolean, isPast: boolean) => {
+    const total = completed + pending
+
+    if (total <= 0) {
       return isToday
         ? 'border-primary-400/50 text-primary-200 bg-gray-800/40'
         : 'border-gray-700/40 text-gray-500 bg-gray-800/30'
     }
 
-    if (count === 1) return 'bg-primary-500/15 border-primary-400/40 text-primary-100'
-    if (count === 2) return 'bg-primary-500/30 border-primary-400/60 text-primary-50'
-    return 'bg-primary-500/50 border-primary-300 text-white shadow-inner'
+    // Past/completed doses - green
+    if (isPast || (completed > 0 && pending === 0)) {
+      if (completed === 1) return 'bg-green-500/15 border-green-400/40 text-green-100'
+      if (completed === 2) return 'bg-green-500/30 border-green-400/60 text-green-50'
+      return 'bg-green-500/50 border-green-300 text-white shadow-inner'
+    }
+
+    // Future scheduled doses - blue/amber
+    if (pending > 0 && completed === 0) {
+      if (pending === 1) return 'bg-blue-500/15 border-blue-400/40 text-blue-100'
+      if (pending === 2) return 'bg-blue-500/30 border-blue-400/60 text-blue-50'
+      return 'bg-blue-500/50 border-blue-300 text-white shadow-inner'
+    }
+
+    // Mix of completed and pending - purple
+    if (completed >= 1) return 'bg-purple-500/15 border-purple-400/40 text-purple-100'
+    if (completed >= 2) return 'bg-purple-500/30 border-purple-400/60 text-purple-50'
+    return 'bg-purple-500/50 border-purple-300 text-white shadow-inner'
   }
 
   const goToPreviousMonth = () => {
@@ -971,7 +1077,7 @@ export function PeptideTracker() {
           {/* Navigation Tabs */}
           <div className="flex justify-center mb-8">
             <div className="bg-gradient-to-r from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-1 border border-primary-400/30">
-              {(['current', 'history'] as const).map((tab) => (
+              {(['current', 'calendar'] as const).map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
@@ -981,7 +1087,7 @@ export function PeptideTracker() {
                       : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
                   }`}
                 >
-                  {tab === 'current' ? 'Current Protocols' : 'History'}
+                  {tab === 'current' ? 'Current Protocols' : 'Dosing Calendar'}
                 </button>
               ))}
             </div>
@@ -1160,14 +1266,14 @@ export function PeptideTracker() {
           )}
 
 
-          {/* History Tab */}
-          {activeTab === 'history' && (
+          {/* Dosing Calendar Tab */}
+          {activeTab === 'calendar' && (
             <div className="max-w-4xl mx-auto">
               <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-8 border border-primary-400/30 shadow-2xl">
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-3">
                     <TrendingUp className="w-8 h-8 text-primary-400" />
-                    <h3 className="text-2xl font-bold text-white">Treatment History</h3>
+                    <h3 className="text-2xl font-bold text-white">Dosing Calendar</h3>
                   </div>
                   <button
                     onClick={fetchDoseHistory}
@@ -1225,7 +1331,8 @@ export function PeptideTracker() {
                           }
 
                           const isToday = cell.key === todayKey
-                          const densityClass = calendarDensityClass(cell.count, isToday)
+                          const isPast = new Date(cell.key) < new Date(todayKey)
+                          const densityClass = calendarDensityClass(cell.completed, cell.pending, isToday, isPast)
 
                           return (
                             <div
