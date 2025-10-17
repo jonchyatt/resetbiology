@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useMemo, useCallback, useRef } from "react"
-import { Syringe, Calendar, AlertCircle, TrendingUp, Plus, Clock, X, Edit } from "lucide-react"
+import { Syringe, Calendar, AlertCircle, TrendingUp, Plus, Clock, X, Edit, ChevronDown } from "lucide-react"
 import { DosageCalculator } from './DosageCalculator'
 
 interface PeptideProtocol {
@@ -830,6 +830,8 @@ export function PeptideTracker() {
   }
 
   const PeptideCard = ({ protocol }: { protocol: PeptideProtocol }) => {
+    const [isExpanded, setIsExpanded] = useState(false);
+
     // Remove "- peptide" and "Package" suffix from display name
     const displayName = protocol.name
       .replace(/\s*-\s*peptide\s*$/i, '')
@@ -838,10 +840,17 @@ export function PeptideTracker() {
 
     return (
       <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/30 rounded-lg p-6 border border-primary-400/30 backdrop-blur-sm shadow-xl hover:shadow-primary-400/20 transition-all duration-300">
-        <div className="flex items-start justify-between mb-4">
-          <div>
-            <h3 className="text-xl font-bold text-white">{displayName}</h3>
-          </div>
+        {/* Header - Always visible */}
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="flex items-center gap-2 flex-1 text-left group"
+          >
+            <ChevronDown
+              className={`w-5 h-5 text-primary-400 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
+            />
+            <h3 className="text-xl font-bold text-white group-hover:text-primary-300 transition-colors">{displayName}</h3>
+          </button>
           <div className="flex gap-2">
             <button
               onClick={() => openEditModal(protocol)}
@@ -860,51 +869,54 @@ export function PeptideTracker() {
           </div>
         </div>
 
-        <div className="flex gap-4">
-          {/* Left side - Protocol details */}
-          <div className="flex-1 space-y-3 text-sm">
-            <div className="space-y-2">
-              <div>
-                <span className="text-gray-400">Dosage:</span>
-                <span className="text-white font-medium ml-2">{protocol.dosage}</span>
+        {/* Expandable Details */}
+        {isExpanded && (
+          <div className="mt-4 flex gap-4 animate-fade-in">
+            {/* Left side - Protocol details */}
+            <div className="flex-1 space-y-3 text-sm">
+              <div className="space-y-2">
+                <div>
+                  <span className="text-gray-400">Dosage:</span>
+                  <span className="text-white font-medium ml-2">{protocol.dosage}</span>
+                </div>
+                <div>
+                  <span className="text-gray-400">Timing:</span>
+                  <span className="text-white font-medium ml-2">{protocol.timing}</span>
+                </div>
               </div>
-              <div>
-                <span className="text-gray-400">Timing:</span>
-                <span className="text-white font-medium ml-2">{protocol.timing}</span>
+
+              <div className="border-t border-gray-600 pt-3">
+                <span className="text-gray-400">Preparation:</span>
+                <p className="text-gray-300 text-xs mt-1">
+                  {protocol.vialAmount} vial + {protocol.reconstitution} BAC water = {protocol.syringeUnits} units per dose
+                </p>
+                <SyringeScale units={protocol.syringeUnits} />
               </div>
             </div>
 
-            <div className="border-t border-gray-600 pt-3">
-              <span className="text-gray-400">Preparation:</span>
-              <p className="text-gray-300 text-xs mt-1">
-                {protocol.vialAmount} vial + {protocol.reconstitution} BAC water = {protocol.syringeUnits} units per dose
-              </p>
-              <SyringeScale units={protocol.syringeUnits} />
+            {/* Right side - Action buttons */}
+            <div className="flex flex-col gap-2 justify-center">
+              <button
+                onClick={() => openScheduleModal(protocol)}
+                className="bg-primary-600/30 hover:bg-primary-600/50 text-primary-200 font-medium py-2 px-4 rounded-lg transition-colors text-sm whitespace-nowrap"
+              >
+                View Schedule
+              </button>
+              <button
+                onClick={() => openDoseModal(protocol)}
+                className="bg-secondary-600/30 hover:bg-secondary-600/50 text-secondary-200 font-medium py-2 px-4 rounded-lg transition-colors text-sm whitespace-nowrap"
+              >
+                Log Dose
+              </button>
+              <button
+                onClick={() => openCalculatorModal(protocol)}
+                className="bg-amber-300/30 hover:bg-amber-300/50 text-amber-100 font-semibold py-2 px-4 rounded-lg border border-amber-200/40 backdrop-blur-sm transition-all text-sm whitespace-nowrap shadow-[0_0_20px_rgba(245,193,92,0.35)]"
+              >
+                Dose Calculator
+              </button>
             </div>
           </div>
-
-          {/* Right side - Action buttons */}
-          <div className="flex flex-col gap-2 justify-center">
-            <button
-              onClick={() => openScheduleModal(protocol)}
-              className="bg-primary-600/30 hover:bg-primary-600/50 text-primary-200 font-medium py-2 px-4 rounded-lg transition-colors text-sm whitespace-nowrap"
-            >
-              View Schedule
-            </button>
-            <button
-              onClick={() => openDoseModal(protocol)}
-              className="bg-secondary-600/30 hover:bg-secondary-600/50 text-secondary-200 font-medium py-2 px-4 rounded-lg transition-colors text-sm whitespace-nowrap"
-            >
-              Log Dose
-            </button>
-            <button
-              onClick={() => openCalculatorModal(protocol)}
-              className="bg-amber-300/30 hover:bg-amber-300/50 text-amber-100 font-semibold py-2 px-4 rounded-lg border border-amber-200/40 backdrop-blur-sm transition-all text-sm whitespace-nowrap shadow-[0_0_20px_rgba(245,193,92,0.35)]"
-            >
-              Dose Calculator
-            </button>
-          </div>
-        </div>
+        )}
       </div>
     );
   }
