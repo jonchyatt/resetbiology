@@ -129,42 +129,43 @@ export function Header() {
             <nav className="flex flex-col space-y-4">
               {!user ? (
                 <>
-                  <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium">
+                  <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium" onClick={() => setIsMenuOpen(false)}>
                     Order
                   </Link>
-                  <Link href="/cellular-peptide" className="text-gray-700 hover:text-primary-600 font-medium">
+                  <Link href="/cellular-peptide" className="text-gray-700 hover:text-primary-600 font-medium" onClick={() => setIsMenuOpen(false)}>
                     IRB Protocols
                   </Link>
                   <a
                     href="/auth/login?returnTo=/portal"
                     className="block px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors text-center"
+                    onClick={() => setIsMenuOpen(false)}
                   >
                     Login / Sign Up
                   </a>
                 </>
               ) : (
                 <>
-                  <Link href="/portal" className="text-gray-700 hover:text-teal-600 font-medium">
+                  <Link href="/portal" className="text-gray-700 hover:text-teal-600 font-medium" onClick={() => setIsMenuOpen(false)}>
                     Portal
                   </Link>
-                  <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium">
+                  <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium" onClick={() => setIsMenuOpen(false)}>
                     Order
                   </Link>
-                  <Link href="/cellular-peptide" className="text-gray-700 hover:text-primary-600 font-medium">
+                  <Link href="/cellular-peptide" className="text-gray-700 hover:text-primary-600 font-medium" onClick={() => setIsMenuOpen(false)}>
                     IRB Protocols
                   </Link>
-                  <Link href="/profile" className="text-gray-700 hover:text-teal-600 font-medium">
+                  <Link href="/profile" className="text-gray-700 hover:text-teal-600 font-medium" onClick={() => setIsMenuOpen(false)}>
                     Profile
                   </Link>
                   {isAdmin && (
-                    <Link href="/admin" className="text-orange-600 hover:text-orange-700 font-medium">
+                    <Link href="/admin" className="text-orange-600 hover:text-orange-700 font-medium" onClick={() => setIsMenuOpen(false)}>
                       Admin Dashboard
                     </Link>
                   )}
                   <div className="pt-2 space-y-2">
                     <div className="text-gray-700">Hello, {user.name || user.email}</div>
-                    <a 
-                      href="/auth/logout" 
+                    <a
+                      href="/auth/logout"
                       className="block px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors text-center"
                     >
                       Logout
