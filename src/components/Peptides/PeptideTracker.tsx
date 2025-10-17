@@ -309,6 +309,82 @@ export function PeptideTracker() {
     return 'bg-purple-500/50 border-purple-300 text-white shadow-inner'
   }
 
+  // Calculate next dose date for a protocol
+  const getNextDoseDate = useCallback((protocol: PeptideProtocol): Date | null => {
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+
+    const startDate = protocol.startDate ? new Date(protocol.startDate) : new Date()
+    startDate.setHours(0, 0, 0, 0)
+
+    const frequency = protocol.frequency.toLowerCase()
+
+    // Check if already completed today
+    const todayKey = today.toISOString().split('T')[0]
+    const completedToday = doseHistory.some((dose: any) => {
+      const doseDate = dose?.doseDate || dose?.createdAt || dose?.updatedAt
+      if (!doseDate) return false
+      const doseDateKey = new Date(doseDate).toISOString().split('T')[0]
+      const doseName = dose?.user_peptide_protocols?.peptides?.name ?? dose?.protocolName ?? ''
+      return doseDateKey === todayKey && doseName === protocol.name
+    })
+
+    // Start from today if not completed, otherwise start from tomorrow
+    let currentDate = completedToday
+      ? new Date(today.getTime() + 24 * 60 * 60 * 1000)
+      : new Date(today.getTime())
+
+    // Look ahead up to 30 days to find next scheduled dose
+    const maxDays = 30
+    let daysChecked = 0
+
+    while (daysChecked < maxDays) {
+      let shouldSchedule = false
+
+      if (frequency.includes('daily') || frequency.includes('every day')) {
+        shouldSchedule = true
+      } else if (frequency.includes('every other day')) {
+        const daysSinceStart = Math.floor((currentDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))
+        shouldSchedule = daysSinceStart % 2 === 0
+      } else if (frequency.includes('3x per week')) {
+        const dayOfWeek = currentDate.getDay()
+        shouldSchedule = [1, 3, 5].includes(dayOfWeek) // Mon, Wed, Fri
+      } else if (frequency.includes('2x per week')) {
+        const dayOfWeek = currentDate.getDay()
+        shouldSchedule = [1, 4].includes(dayOfWeek) // Mon, Thu
+      } else if (frequency.includes('5 days on')) {
+        const dayOfWeek = currentDate.getDay()
+        shouldSchedule = dayOfWeek >= 1 && dayOfWeek <= 5 // Mon-Fri
+      } else if (frequency.includes('once per week')) {
+        const dayOfWeek = currentDate.getDay()
+        shouldSchedule = dayOfWeek === 1 // Monday
+      }
+
+      if (shouldSchedule) {
+        return currentDate
+      }
+
+      currentDate = new Date(currentDate.getTime() + 24 * 60 * 60 * 1000)
+      daysChecked++
+    }
+
+    return null
+  }, [doseHistory])
+
+  // Sort protocols by next dose date (soonest first)
+  const sortedProtocols = useMemo(() => {
+    return [...currentProtocols].sort((a, b) => {
+      const nextA = getNextDoseDate(a)
+      const nextB = getNextDoseDate(b)
+
+      if (!nextA && !nextB) return 0
+      if (!nextA) return 1
+      if (!nextB) return -1
+
+      return nextA.getTime() - nextB.getTime()
+    })
+  }, [currentProtocols, getNextDoseDate])
+
   const goToPreviousMonth = () => {
     setHistoryMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1))
   }
@@ -944,10 +1020,51 @@ export function PeptideTracker() {
       .replace(/\s+Package\s*$/i, '')
       .trim();
 
+    // Get next dose date and status
+    const nextDoseDate = getNextDoseDate(protocol)
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const todayKey = today.toISOString().split('T')[0]
+
+    const isCompletedToday = doseHistory.some((dose: any) => {
+      const doseDate = dose?.doseDate || dose?.createdAt || dose?.updatedAt
+      if (!doseDate) return false
+      const doseDateKey = new Date(doseDate).toISOString().split('T')[0]
+      const doseName = dose?.user_peptide_protocols?.peptides?.name ?? dose?.protocolName ?? ''
+      return doseDateKey === todayKey && doseName === protocol.name
+    })
+
+    // Determine status badge
+    let statusBadge: { text: string; className: string } | null = null
+    if (isCompletedToday) {
+      statusBadge = {
+        text: 'Completed',
+        className: 'bg-green-500/20 text-green-300 border-green-400/40'
+      }
+    } else if (nextDoseDate) {
+      const daysUntil = Math.floor((nextDoseDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
+      if (daysUntil === 0) {
+        statusBadge = {
+          text: 'Coming Due Today',
+          className: 'bg-amber-500/20 text-amber-300 border-amber-400/40'
+        }
+      } else if (daysUntil === 1) {
+        statusBadge = {
+          text: 'Coming Due Tomorrow',
+          className: 'bg-blue-500/20 text-blue-300 border-blue-400/40'
+        }
+      } else if (daysUntil <= 3) {
+        statusBadge = {
+          text: `Due in ${daysUntil} days`,
+          className: 'bg-blue-500/20 text-blue-300 border-blue-400/40'
+        }
+      }
+    }
+
     return (
       <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/30 rounded-lg p-6 border border-primary-400/30 backdrop-blur-sm shadow-xl hover:shadow-primary-400/20 transition-all duration-300">
         {/* Header - Always visible */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mb-2">
           <button
             onClick={() => setIsExpanded(!isExpanded)}
             className="flex items-center gap-2 flex-1 text-left group"
@@ -955,7 +1072,14 @@ export function PeptideTracker() {
             <ChevronDown
               className={`w-5 h-5 text-primary-400 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
             />
-            <h3 className="text-xl font-bold text-white group-hover:text-primary-300 transition-colors">{displayName}</h3>
+            <div className="flex flex-col">
+              <h3 className="text-xl font-bold text-white group-hover:text-primary-300 transition-colors">{displayName}</h3>
+              {statusBadge && (
+                <span className={`text-xs font-semibold px-2 py-1 rounded border ${statusBadge.className} inline-block w-fit mt-1`}>
+                  {statusBadge.text}
+                </span>
+              )}
+            </div>
           </button>
           <div className="flex gap-2">
             <button
@@ -1096,140 +1220,9 @@ export function PeptideTracker() {
           {/* Current Protocols Tab */}
           {activeTab === 'current' && (
             <div className="max-w-6xl mx-auto">
-              <div className="grid gap-6 lg:grid-cols-3">
-                {/* Left Column - Today's Schedule */}
-                <div className="space-y-6">
-                  <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl">
-                    <h3 className="text-xl font-bold text-white mb-4 flex items-center">
-                      <Clock className="w-5 h-5 mr-2 text-primary-400" />
-                      Today's Doses
-                    </h3>
-                    
-                    {todaysDoses.length === 0 ? (
-                      <div className="text-center py-4">
-                        <Syringe className="w-12 h-12 text-gray-500 mx-auto mb-3" />
-                        <p className="text-gray-300">No doses scheduled</p>
-                        <p className="text-sm text-gray-400 mt-1">Add a peptide protocol to get started</p>
-                      </div>
-                    ) : (
-                      <div className="space-y-4">
-                        {todaysDoseBuckets.pending.length > 0 && (
-                          <div className="space-y-2">
-                            <p className="text-xs uppercase tracking-wide text-gray-400/80">
-                              Due soon
-                            </p>
-                            {todaysDoseBuckets.pending.map((dose, index) => {
-                              const protocol = currentProtocols.find(p => p.id === dose.peptideId)
-                              const isNext = index === 0
-                              return (
-                                <div
-                                  key={dose.id}
-                                  className={`p-3 rounded-lg border transition-all ${
-                                    isNext
-                                      ? 'bg-primary-900/30 border-primary-500/40 shadow-lg'
-                                      : 'bg-gray-700/30 border-gray-600/30 hover:bg-gray-700/50'
-                                  }`}
-                                >
-                                  <div className="flex justify-between items-start mb-2">
-                                    <div>
-                                      <span className="font-medium text-white">{protocol?.name || 'Unknown Protocol'}</span>
-                                      <p className="text-xs text-gray-400">{protocol?.dosage}</p>
-                                    </div>
-                                    <div className="text-right">
-                                      <span className="text-sm text-gray-100 font-semibold">
-                                        {dose.scheduledTime}
-                                      </span>
-                                      <div className="flex items-center justify-end mt-1 text-xs">
-                                        <div className={`w-4 h-4 rounded mr-1 flex items-center justify-center ${isNext ? 'bg-primary-500/80' : 'border border-gray-400'}`}>
-                                          {isNext && <div className="w-2 h-2 bg-white rounded" />}
-                                        </div>
-                                        <span className={isNext ? 'text-primary-200 font-semibold uppercase tracking-wide' : 'text-gray-400'}>
-                                          {isNext ? 'Next dose' : 'Scheduled'}
-                                        </span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              )
-                            })}
-                          </div>
-                        )}
-
-                        {todaysDoseBuckets.completed.length > 0 && (
-                          <div className="space-y-2">
-                            <p className="text-xs uppercase tracking-wide text-green-400/80">
-                              Logged today
-                            </p>
-                            {todaysDoseBuckets.completed.map((dose) => {
-                              const protocol = currentProtocols.find(p => p.id === dose.peptideId)
-                              return (
-                                <div key={dose.id} className="p-3 rounded-lg border transition-all bg-green-900/20 border-green-600/30">
-                                  <div className="flex justify-between items-start mb-2">
-                                    <div className="flex-1">
-                                      <span className="font-medium text-white">{protocol?.name || 'Unknown Protocol'}</span>
-                                      <p className="text-xs text-gray-400">{protocol?.dosage}</p>
-                                    </div>
-                                    <div className="text-right flex items-start gap-2">
-                                      <div>
-                                        <span className="text-sm text-green-300">
-                                          {dose.actualTime ? new Date(dose.actualTime).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : dose.scheduledTime}
-                                        </span>
-                                        <div className="flex items-center justify-end mt-1">
-                                          <div className="w-4 h-4 bg-green-500 rounded mr-1 flex items-center justify-center">
-                                            <div className="w-2 h-2 bg-white rounded"></div>
-                                          </div>
-                                          <span className="text-xs text-green-400">Logged</span>
-                                        </div>
-                                      </div>
-                                      <button
-                                        onClick={() => deleteDose(dose.id)}
-                                        className="text-red-400 hover:text-red-300 transition-colors"
-                                        title="Delete dose"
-                                      >
-                                        <X className="w-4 h-4" />
-                                      </button>
-                                    </div>
-                                  </div>
-
-                                  {(dose.notes || dose.sideEffects) && (
-                                    <div className="mt-2 pt-2 border-t border-green-600/20">
-                                      {dose.notes && (
-                                        <div className="mb-2">
-                                          <span className="text-xs text-green-400 font-medium">Notes:</span>
-                                          <p className="text-sm text-gray-300 mt-1">{dose.notes}</p>
-                                        </div>
-                                      )}
-                                      {dose.sideEffects && dose.sideEffects.length > 0 && (
-                                        <div>
-                                          <span className="text-xs text-green-400 font-medium">Side Effects:</span>
-                                          <p className="text-sm text-gray-300 mt-1">{dose.sideEffects.join(', ')}</p>
-                                        </div>
-                                      )}
-                                    </div>
-                                  )}
-                                </div>
-                              )
-                            })}
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Safety Alerts */}
-                  <div className="bg-gradient-to-r from-red-600/20 to-orange-600/20 backdrop-blur-sm rounded-xl p-4 border border-red-400/50">
-                    <h4 className="font-semibold text-red-300 mb-2 flex items-center">
-                      <AlertCircle className="w-4 h-4 mr-2" />
-                      Safety Monitor
-                    </h4>
-                    <p className="text-red-200 text-sm">
-                      All protocols within safe parameters. Next check-in with medical provider due in 2 weeks.
-                    </p>
-                  </div>
-                </div>
-
-                {/* Right Column - Active Protocols */}
-                <div className="lg:col-span-2">
+              <div className="grid gap-6">
+                {/* Active Protocols - Full Width */}
+                <div>
                   <div className="flex items-center justify-between mb-6">
                     <h3 className="text-2xl font-bold text-white">Active Protocols</h3>
                     <button
@@ -1255,7 +1248,7 @@ export function PeptideTracker() {
                     </div>
                   ) : (
                     <div className="grid gap-6 md:grid-cols-2">
-                      {currentProtocols.map((protocol) => (
+                      {sortedProtocols.map((protocol) => (
                         <PeptideCard key={protocol.id} protocol={protocol} />
                       ))}
                     </div>
