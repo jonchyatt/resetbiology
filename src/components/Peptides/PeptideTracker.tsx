@@ -1334,11 +1334,11 @@ export function PeptideTracker() {
                               onClick={() => cell.count > 0 ? setSelectedCalendarDay(cell.key) : null}
                               className={`min-h-[68px] rounded-lg border px-2 py-2 text-center transition-all duration-300 ${densityClass} ${cell.count > 0 ? 'cursor-pointer hover:scale-105 hover:shadow-lg' : 'cursor-default'}`}
                             >
-                              <div className="text-sm font-semibold">{cell.label}</div>
+                              <div className="text-base font-semibold">{cell.label}</div>
                               {cell.count > 0 && (
-                                <div className="mt-2">
-                                  <div className="text-2xl font-bold">{cell.count}</div>
-                                  <div className="text-[10px] uppercase tracking-wide opacity-80">
+                                <div className="mt-1">
+                                  <div className="text-lg font-semibold">{cell.count}</div>
+                                  <div className="text-xs uppercase tracking-tight opacity-80">
                                     dose{cell.count === 1 ? '' : 's'}
                                   </div>
                                 </div>
