@@ -8,14 +8,14 @@ export function MuscleWarning() {
 
   // Clinical evidence data for streaming ticker
   const evidenceItems = [
-    { text: "STEP-1 Trial: Semaglutide patients lost 40% muscle (6.9 kg of 17.3 kg total)", link: "https://www.nejm.org/doi/full/10.1056/NEJMoa2032183" },
-    { text: "Equivalent to 20 YEARS of normal age-related muscle decline", link: "https://www.drugs.com/medical-answers/ozempic-cause-muscle-loss-3575614/" },
-    { text: "SURMOUNT-1: Tirzepatide - 25% of weight lost was lean muscle mass", link: "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10751837/" },
-    { text: "Sarcopenia increases mortality risk by 1.9× in older adults", link: "https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2815525" },
-    { text: "2× higher hospitalization rates with muscle loss", link: "https://newsinhealth.nih.gov/2020/09/understanding-sarcopenia" },
-    { text: "Older adults regain only ~80% of lost muscle after loss", link: "https://www.frontiersin.org/articles/10.3389/fphys.2022.908658/full" },
-    { text: "Anabolic resistance: Older muscles respond 50% less to protein", link: "https://academic.oup.com/biomedgerontology/article/51A/5/B267/586025" },
-    { text: "Prevention is FAR easier than reversal of muscle loss", link: "https://www.frontiersin.org/journals/cell-and-developmental-biology/articles/10.3389/fcell.2024.1510542/full" }
+    { text: "STEP-1 Trial: Semaglutide patients lost 40% muscle (6.9 kg of 17.3 kg total)", link: "https://pubmed.ncbi.nlm.nih.gov/33567185/" },
+    { text: "Equivalent to 20 YEARS of normal age-related muscle decline", link: "https://pubmed.ncbi.nlm.nih.gov/36923269/" },
+    { text: "SURMOUNT-1: Tirzepatide - 25% of weight lost was lean muscle mass", link: "https://pmc.ncbi.nlm.nih.gov/articles/PMC10751837/" },
+    { text: "Sarcopenia increases mortality risk by 1.9× in older adults", link: "https://pubmed.ncbi.nlm.nih.gov/33001410/" },
+    { text: "2× higher hospitalization rates with muscle loss", link: "https://newsinhealth.nih.gov/2025/04/slowing-sarcopenia" },
+    { text: "Older adults cannot fully recover muscle after loss", link: "https://pmc.ncbi.nlm.nih.gov/articles/PMC10854791/" },
+    { text: "Anabolic resistance: Older muscles have reduced recovery capacity", link: "https://pmc.ncbi.nlm.nih.gov/articles/PMC6202460/" },
+    { text: "Prevention is FAR easier than reversal of muscle loss", link: "https://pmc.ncbi.nlm.nih.gov/articles/PMC11050002/" }
   ]
 
   return (
