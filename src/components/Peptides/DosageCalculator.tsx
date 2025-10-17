@@ -550,7 +550,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
           {mode === 'addProtocol' && (
             peptideLibrary && peptideLibrary.length > 0 ? (
               <div className="bg-gradient-to-br from-primary-600/20 to-primary-700/15 backdrop-blur-sm rounded-xl p-4 border border-primary-400/40 space-y-3">
-                <label className="block text-sm text-amber-300 font-semibold">Choose from Order Peptides or Custom</label>
+                <label className="block text-sm text-amber-300 font-semibold">Select Peptide</label>
                 <select
                   aria-label="Select peptide"
                   value={selectedPeptideId || peptideName}

@@ -141,13 +141,14 @@ export async function POST(request: Request) {
       }, { status: 400 })
     }
 
-    // Find peptide by ID or name
+    // Find or create peptide by ID or name
     let peptide
     if (peptideId) {
       peptide = await prisma.peptide.findUnique({
         where: { id: peptideId }
       })
     } else if (peptideName) {
+      // Try to find existing peptide by name
       peptide = await prisma.peptide.findFirst({
         where: {
           name: {
@@ -156,11 +157,25 @@ export async function POST(request: Request) {
           }
         }
       })
+
+      // If not found, create a new peptide entry (for storefront products or custom peptides)
+      if (!peptide) {
+        console.log(`📝 Creating new peptide entry for: ${peptideName}`)
+        peptide = await prisma.peptide.create({
+          data: {
+            name: peptideName,
+            category: 'Custom',
+            dosage: dosage || '250mcg',
+            description: `Custom/Storefront peptide: ${peptideName}`,
+            updatedAt: new Date()
+          }
+        })
+      }
     }
 
     if (!peptide) {
       return NextResponse.json({
-        error: 'Peptide not found'
+        error: 'Peptide not found and unable to create'
       }, { status: 404 })
     }
 
