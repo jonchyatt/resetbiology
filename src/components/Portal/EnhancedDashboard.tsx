@@ -413,9 +413,8 @@ export function EnhancedDashboard() {
           <div className="card-hover-primary mb-8">
             <div className="text-center mb-6">
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">📋 Daily Check-in</h2>
-              <p className="text-gray-300">Complete your daily activities to maximize progress and earn rewards</p>
             </div>
-            
+
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Left Side - Task Checkboxes */}
               <div className="space-y-3">
@@ -434,11 +433,7 @@ export function EnhancedDashboard() {
                     className="w-5 h-5 text-primary-500 rounded border-gray-600 focus:ring-primary-500"
                   />
                   <div className="ml-4 flex-1">
-                    <div className="flex items-center">
-                      <span className="font-medium text-white">Log Peptides</span>
-                      <span className="ml-2 text-xs text-primary-300 px-2 py-1 bg-primary-600/20 rounded">+25 points</span>
-                    </div>
-                    <p className="text-sm text-gray-400">Track your peptide doses and timing</p>
+                    <span className="font-medium text-white">Log Peptides</span>
                   </div>
                   <ChevronRight className="w-5 h-5 text-primary-400" />
                 </div>
@@ -463,11 +458,7 @@ export function EnhancedDashboard() {
                     className="w-5 h-5 text-primary-500 rounded border-gray-600 focus:ring-primary-500"
                   />
                   <div className="ml-4 flex-1">
-                    <div className="flex items-center">
-                      <span className="font-medium text-white">Daily Journal</span>
-                      <span className="ml-2 text-xs text-primary-300 px-2 py-1 bg-primary-600/20 rounded">+20 points</span>
-                    </div>
-                    <p className="text-sm text-gray-400">Reflect on your progress and mindset</p>
+                    <span className="font-medium text-white">Daily Journal</span>
                   </div>
                   <ChevronRight className="w-5 h-5 text-primary-400" />
                 </div>
@@ -487,11 +478,7 @@ export function EnhancedDashboard() {
                     className="w-5 h-5 text-primary-500 rounded border-gray-600 focus:ring-primary-500"
                   />
                   <div className="ml-4 flex-1">
-                    <div className="flex items-center">
-                      <span className="font-medium text-white">Log Workout</span>
-                      <span className="ml-2 text-xs text-primary-300 px-2 py-1 bg-primary-600/20 rounded">+30 points</span>
-                    </div>
-                    <p className="text-sm text-gray-400">Track exercises, sets, and progress</p>
+                    <span className="font-medium text-white">Log Workout</span>
                   </div>
                   <ChevronRight className="w-5 h-5 text-primary-400" />
                 </div>
@@ -511,11 +498,7 @@ export function EnhancedDashboard() {
                     className="w-5 h-5 text-primary-500 rounded border-gray-600 focus:ring-primary-500"
                   />
                   <div className="ml-4 flex-1">
-                    <div className="flex items-center">
-                      <span className="font-medium text-white">Log Meals</span>
-                      <span className="ml-2 text-xs text-primary-300 px-2 py-1 bg-primary-600/20 rounded">+20 points</span>
-                    </div>
-                    <p className="text-sm text-gray-400">Track nutrition and macros</p>
+                    <span className="font-medium text-white">Log Meals</span>
                   </div>
                   <ChevronRight className="w-5 h-5 text-primary-400" />
                 </div>
@@ -535,11 +518,7 @@ export function EnhancedDashboard() {
                     className="w-5 h-5 text-primary-500 rounded border-gray-600 focus:ring-primary-500"
                   />
                   <div className="ml-4 flex-1">
-                    <div className="flex items-center">
-                      <span className="font-medium text-white">Complete Mental Mastery Module</span>
-                      <span className="ml-2 text-xs text-primary-300 px-2 py-1 bg-primary-600/20 rounded">+50 points</span>
-                    </div>
-                    <p className="text-sm text-gray-400">Listen to today's audio training</p>
+                    <span className="font-medium text-white">Complete Mental Mastery Module</span>
                   </div>
                   <ChevronRight className="w-5 h-5 text-primary-400" />
                 </div>
@@ -559,11 +538,7 @@ export function EnhancedDashboard() {
                     className="w-5 h-5 text-primary-500 rounded border-gray-600 focus:ring-primary-500"
                   />
                   <div className="ml-4 flex-1">
-                    <div className="flex items-center">
-                      <span className="font-medium text-white">Launch Breath Training</span>
-                      <span className="ml-2 text-xs text-primary-300 px-2 py-1 bg-primary-600/20 rounded">+25 points</span>
-                    </div>
-                    <p className="text-sm text-gray-400">Complete a breathing session</p>
+                    <span className="font-medium text-white">Launch Breath Training</span>
                   </div>
                   <ChevronRight className="w-5 h-5 text-primary-400" />
                 </div>
