@@ -575,7 +575,7 @@ export function BreathTrainingApp({ onSessionComplete }: BreathTrainingAppProps)
             </div>
 
             {/* Center: Breath Orb */}
-            <div className="flex flex-col items-center space-y-8">
+            <div className="flex flex-col items-center space-y-8 relative z-10">
               {/* Breath Orb - hide during session complete */}
               {state !== 'session_complete' && (
                 <BreathOrb
