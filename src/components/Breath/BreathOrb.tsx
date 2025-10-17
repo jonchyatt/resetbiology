@@ -58,7 +58,7 @@ export function BreathOrb({ state, isInhale, progress, motionReduced, currentHol
   }
 
   return (
-    <div className="relative flex items-center justify-center">
+    <div className="relative flex items-center justify-center z-0">
       {/* Progress Ring */}
       <svg
         className="absolute w-80 h-80 transform -rotate-90"
