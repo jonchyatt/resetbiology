@@ -603,15 +603,15 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
           <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30 space-y-3">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <label className="flex flex-col gap-1">
-                <span className="text-sm text-gray-300">Total volume (ml)</span>
+                <span className="text-sm text-amber-300 font-medium">Total volume (ml)</span>
                 <select
                   aria-label="Total volume"
                   onChange={(e) => setInputs((s) => ({ ...s, totalVolume: parseFloat(e.target.value) }))}
                   value={inputs.totalVolume}
-                  className="bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none w-full"
+                  className="bg-primary-600/25 border border-amber-400/40 rounded-lg px-3 py-2.5 text-amber-100 focus:border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-400/30 transition-all w-full"
                 >
                   {[1, 0.5, 1.5, 2, 2.5, 3].map((v) => (
-                    <option key={v} value={v}>{v} ml</option>
+                    <option key={v} value={v} className="bg-gray-800 text-amber-100">{v} ml</option>
                   ))}
                 </select>
               </label>
