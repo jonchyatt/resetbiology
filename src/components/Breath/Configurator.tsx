@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { createPortal } from "react-dom"
 import { Settings, Volume, VolumeX, Eye, EyeOff } from "lucide-react"
 import { BreathSettings, DEFAULT_PACES, PaceType } from "@/types/breath"
 
@@ -51,7 +52,7 @@ export function Configurator({ settings, onSettingsChange, isSessionActive }: Co
     )
   }
 
-  return (
+  const modalContent = (
     <>
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100]" onClick={() => setIsOpen(false)} />
       <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[101] w-full max-w-lg min-w-[400px] p-4">
@@ -220,4 +221,7 @@ export function Configurator({ settings, onSettingsChange, isSessionActive }: Co
       </div>
     </>
   )
+
+  // Use React Portal to render modal outside of parent stacking context
+  return typeof window !== 'undefined' ? createPortal(modalContent, document.body) : null
 }
