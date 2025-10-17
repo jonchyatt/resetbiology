@@ -415,137 +415,8 @@ export function EnhancedDashboard() {
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">📋 Daily Check-in</h2>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Left Side - Task Checkboxes */}
-              <div className="space-y-3">
-                <div
-                  className="flex items-center p-4 bg-gray-800/30 rounded-lg border border-gray-600/30 hover:bg-gray-700/30 transition-colors cursor-pointer"
-                  onClick={() => router.push('/peptides')}
-                >
-                  <input
-                    type="checkbox"
-                    checked={dailyTasks.peptides}
-                    onChange={(e) => {
-                      e.stopPropagation()
-                      handleTaskChange('peptides')
-                    }}
-                    onClick={(e) => e.stopPropagation()}
-                    className="w-5 h-5 text-primary-500 rounded border-gray-600 focus:ring-primary-500"
-                  />
-                  <div className="ml-4 flex-1">
-                    <span className="font-medium text-white">Log Peptides</span>
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-primary-400" />
-                </div>
-
-                <div
-                  className="flex items-center p-4 bg-gray-800/30 rounded-lg border border-gray-600/30 hover:bg-gray-700/30 transition-colors cursor-pointer"
-                  onClick={() => {
-                    const journalSection = document.querySelector('#journal')
-                    if (journalSection) {
-                      journalSection.scrollIntoView({ behavior: 'smooth' })
-                    }
-                  }}
-                >
-                  <input
-                    type="checkbox"
-                    checked={dailyTasks.journal}
-                    onChange={(e) => {
-                      e.stopPropagation()
-                      handleTaskChange('journal')
-                    }}
-                    onClick={(e) => e.stopPropagation()}
-                    className="w-5 h-5 text-primary-500 rounded border-gray-600 focus:ring-primary-500"
-                  />
-                  <div className="ml-4 flex-1">
-                    <span className="font-medium text-white">Daily Journal</span>
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-primary-400" />
-                </div>
-
-                <div
-                  className="flex items-center p-4 bg-gray-800/30 rounded-lg border border-gray-600/30 hover:bg-gray-700/30 transition-colors cursor-pointer"
-                  onClick={() => router.push('/workout')}
-                >
-                  <input
-                    type="checkbox"
-                    checked={dailyTasks.workout}
-                    onChange={(e) => {
-                      e.stopPropagation()
-                      handleTaskChange('workout')
-                    }}
-                    onClick={(e) => e.stopPropagation()}
-                    className="w-5 h-5 text-primary-500 rounded border-gray-600 focus:ring-primary-500"
-                  />
-                  <div className="ml-4 flex-1">
-                    <span className="font-medium text-white">Log Workout</span>
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-primary-400" />
-                </div>
-
-                <div
-                  className="flex items-center p-4 bg-gray-800/30 rounded-lg border border-gray-600/30 hover:bg-gray-700/30 transition-colors cursor-pointer"
-                  onClick={() => router.push('/nutrition')}
-                >
-                  <input
-                    type="checkbox"
-                    checked={dailyTasks.meals}
-                    onChange={(e) => {
-                      e.stopPropagation()
-                      handleTaskChange('meals')
-                    }}
-                    onClick={(e) => e.stopPropagation()}
-                    className="w-5 h-5 text-primary-500 rounded border-gray-600 focus:ring-primary-500"
-                  />
-                  <div className="ml-4 flex-1">
-                    <span className="font-medium text-white">Log Meals</span>
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-primary-400" />
-                </div>
-
-                <div
-                  className="flex items-center p-4 bg-gray-800/30 rounded-lg border border-gray-600/30 hover:bg-gray-700/30 transition-colors cursor-pointer"
-                  onClick={() => router.push('/modules')}
-                >
-                  <input
-                    type="checkbox"
-                    checked={dailyTasks.module}
-                    onChange={(e) => {
-                      e.stopPropagation()
-                      handleTaskChange('module')
-                    }}
-                    onClick={(e) => e.stopPropagation()}
-                    className="w-5 h-5 text-primary-500 rounded border-gray-600 focus:ring-primary-500"
-                  />
-                  <div className="ml-4 flex-1">
-                    <span className="font-medium text-white">Complete Mental Mastery Module</span>
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-primary-400" />
-                </div>
-
-                <div
-                  className="flex items-center p-4 bg-gray-800/30 rounded-lg border border-gray-600/30 hover:bg-gray-700/30 transition-colors cursor-pointer"
-                  onClick={() => router.push('/breath')}
-                >
-                  <input
-                    type="checkbox"
-                    checked={dailyTasks.breath}
-                    onChange={(e) => {
-                      e.stopPropagation()
-                      handleTaskChange('breath')
-                    }}
-                    onClick={(e) => e.stopPropagation()}
-                    className="w-5 h-5 text-primary-500 rounded border-gray-600 focus:ring-primary-500"
-                  />
-                  <div className="ml-4 flex-1">
-                    <span className="font-medium text-white">Launch Breath Training</span>
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-primary-400" />
-                </div>
-              </div>
-
-              {/* Right Side - Quick Access Cards (2x3 Grid) */}
-              <div className="grid grid-cols-2 gap-4">
+            {/* Quick Access Cards (2x3 Grid) */}
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
                 <Link href="/peptides" className="group">
                   <div className="p-6 bg-gradient-to-br from-teal-600/30 to-teal-700/30 border border-teal-400/30 rounded-lg hover:scale-[1.02] hover:shadow-lg hover:shadow-teal-500/20 transition-all text-center">
                     <Target className="w-8 h-8 text-teal-300 mx-auto mb-2" />
@@ -588,7 +459,6 @@ export function EnhancedDashboard() {
                   </div>
                 </Link>
               </div>
-            </div>
 
             {/* Secondary Action */}
             <div className="mt-6 pt-6 border-t border-gray-600/30">
