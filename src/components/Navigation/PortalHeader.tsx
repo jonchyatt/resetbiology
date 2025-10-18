@@ -33,7 +33,9 @@ export function PortalHeader({
           />
           <div>
             <div className="flex items-center">
-              <h1 className="text-xl font-bold text-white drop-shadow-lg">Portal</h1>
+              <a href="/portal" className="text-xl font-bold text-white drop-shadow-lg hover:text-primary-300 transition-colors">
+                Portal
+              </a>
               <span className="mx-2 text-primary-300">&gt;</span>
               <span className="text-lg text-gray-200 drop-shadow-sm">{section}</span>
             </div>
