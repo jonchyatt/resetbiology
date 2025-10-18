@@ -1459,14 +1459,9 @@ export function PeptideTracker() {
                                 </button>
                               </div>
                             </div>
-                            {dose.notes && (
+                            {(dose.notes || dose.sideEffects) && (
                               <p className="text-sm text-gray-300 mt-2 italic">
-                                Notes: {dose.notes}
-                              </p>
-                            )}
-                            {dose.sideEffects && (
-                              <p className="text-sm text-yellow-400 mt-1">
-                                Side Effects: {dose.sideEffects}
+                                Notes/Side Effects: {dose.notes || dose.sideEffects}
                               </p>
                             )}
                           </div>
@@ -1754,40 +1749,15 @@ export function PeptideTracker() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Notes (optional)
+                    Notes or Side Effects
                   </label>
                   <textarea
                     value={doseNotes}
                     onChange={(e) => setDoseNotes(e.target.value)}
                     className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-primary-400 focus:outline-none"
-                    placeholder="How are you feeling? Any observations?"
-                    rows={3}
+                    placeholder="How are you feeling? Any observations or side effects?"
+                    rows={4}
                   />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Side Effects (check all that apply)
-                  </label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {['Nausea', 'Headache', 'Fatigue', 'Injection site pain', 'Dizziness', 'Other'].map((effect) => (
-                      <label key={effect} className="flex items-center">
-                        <input
-                          type="checkbox"
-                          checked={doseSideEffects.includes(effect)}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              setDoseSideEffects([...doseSideEffects, effect])
-                            } else {
-                              setDoseSideEffects(doseSideEffects.filter(se => se !== effect))
-                            }
-                          }}
-                          className="mr-2 rounded border-gray-600 bg-gray-700"
-                        />
-                        <span className="text-sm text-gray-300">{effect}</span>
-                      </label>
-                    ))}
-                  </div>
                 </div>
               </div>
 
