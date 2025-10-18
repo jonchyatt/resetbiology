@@ -34,7 +34,18 @@ export default function OrderPage() {
       try {
         const res = await fetch('/api/products/storefront');
         const data = await res.json();
-        setProducts(data);
+
+        // Sort products: Bacteriostatic Water at the bottom
+        const sorted = data.sort((a: Product, b: Product) => {
+          const aIsBacteriostatic = a.name.toLowerCase().includes('bacteriostatic');
+          const bIsBacteriostatic = b.name.toLowerCase().includes('bacteriostatic');
+
+          if (aIsBacteriostatic && !bIsBacteriostatic) return 1; // a goes to bottom
+          if (!aIsBacteriostatic && bIsBacteriostatic) return -1; // b goes to bottom
+          return 0; // keep original order
+        });
+
+        setProducts(sorted);
       } catch (err) {
         console.error('Failed to load products:', err);
       } finally {
