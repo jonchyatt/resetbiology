@@ -1116,7 +1116,7 @@ export function PeptideTracker() {
               className={`transition-all duration-300 ${
                 protocolNotifications[protocol.id]
                   ? 'text-amber-400 hover:text-amber-300 drop-shadow-[0_0_8px_rgba(251,191,36,0.8)] hover:drop-shadow-[0_0_12px_rgba(251,191,36,1)]'
-                  : 'text-gray-500 hover:text-gray-400'
+                  : 'text-gray-300 hover:text-gray-200 drop-shadow-[0_0_4px_rgba(209,213,219,0.4)] hover:drop-shadow-[0_0_6px_rgba(209,213,219,0.6)]'
               }`}
               title={protocolNotifications[protocol.id] ? 'Reminders Enabled' : 'Set Reminder'}
             >
