@@ -1113,9 +1113,9 @@ export function PeptideTracker() {
                 setSelectedProtocolForNotif(protocol.id)
                 setShowNotificationModal(true)
               }}
-              className={`transition-colors ${
+              className={`transition-all duration-300 ${
                 protocolNotifications[protocol.id]
-                  ? 'text-primary-400 hover:text-primary-300'
+                  ? 'text-amber-400 hover:text-amber-300 drop-shadow-[0_0_8px_rgba(251,191,36,0.8)] hover:drop-shadow-[0_0_12px_rgba(251,191,36,1)]'
                   : 'text-gray-500 hover:text-gray-400'
               }`}
               title={protocolNotifications[protocol.id] ? 'Reminders Enabled' : 'Set Reminder'}
