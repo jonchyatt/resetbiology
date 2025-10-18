@@ -1,8 +1,9 @@
 "use client"
 
 import { useState, useEffect, useMemo, useCallback, useRef } from "react"
-import { Syringe, Calendar, AlertCircle, TrendingUp, Plus, Clock, X, Edit, ChevronDown } from "lucide-react"
+import { Syringe, Calendar, AlertCircle, TrendingUp, Plus, Clock, X, Edit, ChevronDown, Bell } from "lucide-react"
 import { DosageCalculator } from './DosageCalculator'
+import NotificationPreferences from '@/components/Notifications/NotificationPreferences'
 
 interface PeptideProtocol {
   id: string
@@ -57,6 +58,9 @@ export function PeptideTracker() {
   const [loadingHistory, setLoadingHistory] = useState(false)
   const [historyMonth, setHistoryMonth] = useState<Date>(() => new Date())
   const [selectedCalendarDay, setSelectedCalendarDay] = useState<string | null>(null)
+  const [showNotificationModal, setShowNotificationModal] = useState(false)
+  const [selectedProtocolForNotif, setSelectedProtocolForNotif] = useState<string | null>(null)
+  const [protocolNotifications, setProtocolNotifications] = useState<Record<string, boolean>>({})
   const bootstrapped = useRef(false)
 
   const fetchTodaysDoses = useCallback(async (dayKey: string = todayKey) => {
@@ -410,6 +414,7 @@ export function PeptideTracker() {
       await fetchTodaysDoses()
       await fetchUserProtocols()
       fetchDoseHistory()
+      fetchNotificationPreferences()
     }
     loadData()
   }, [fetchTodaysDoses])
@@ -473,6 +478,26 @@ export function PeptideTracker() {
       }
     } catch (error) {
       console.error('Error fetching user protocols:', error)
+    }
+  }
+
+  const fetchNotificationPreferences = async () => {
+    try {
+      const response = await fetch('/api/notifications/preferences', {
+        credentials: 'include'
+      })
+      const data = await response.json()
+
+      if (data.success && data.preferences) {
+        const prefsMap: Record<string, boolean> = {}
+        data.preferences.forEach((pref: any) => {
+          prefsMap[pref.protocolId] = pref.pushEnabled
+        })
+        setProtocolNotifications(prefsMap)
+        console.log(`✅ Loaded notification preferences for ${data.preferences.length} protocols`)
+      }
+    } catch (error) {
+      console.error('Error fetching notification preferences:', error)
     }
   }
 
@@ -1084,6 +1109,20 @@ export function PeptideTracker() {
           </button>
           <div className="flex gap-2">
             <button
+              onClick={() => {
+                setSelectedProtocolForNotif(protocol.id)
+                setShowNotificationModal(true)
+              }}
+              className={`transition-colors ${
+                protocolNotifications[protocol.id]
+                  ? 'text-primary-400 hover:text-primary-300'
+                  : 'text-gray-500 hover:text-gray-400'
+              }`}
+              title={protocolNotifications[protocol.id] ? 'Reminders Enabled' : 'Set Reminder'}
+            >
+              <Bell className="w-5 h-5" />
+            </button>
+            <button
               onClick={() => openEditModal(protocol)}
               className="text-blue-400 hover:text-blue-300 transition-colors"
               title="Edit Protocol"
@@ -1144,6 +1183,16 @@ export function PeptideTracker() {
                 className="bg-amber-300/30 hover:bg-amber-300/50 text-amber-100 font-semibold py-2 px-4 rounded-lg border border-amber-200/40 backdrop-blur-sm transition-all text-sm whitespace-nowrap shadow-[0_0_20px_rgba(245,193,92,0.35)]"
               >
                 Dose Calculator
+              </button>
+              <button
+                onClick={() => {
+                  setSelectedProtocolForNotif(protocol.id)
+                  setShowNotificationModal(true)
+                }}
+                className="bg-primary-600/30 hover:bg-primary-600/50 text-primary-200 font-medium py-2 px-4 rounded-lg transition-colors text-sm whitespace-nowrap flex items-center justify-center gap-2"
+              >
+                <Bell className="w-4 h-4" />
+                Remind Me
               </button>
             </div>
           </div>
@@ -1865,6 +1914,20 @@ export function PeptideTracker() {
               </div>
             </div>
           </div>
+        )}
+
+        {/* Notification Preferences Modal */}
+        {showNotificationModal && selectedProtocolForNotif && (
+          <NotificationPreferences
+            protocolId={selectedProtocolForNotif}
+            protocolName={currentProtocols.find(p => p.id === selectedProtocolForNotif)?.name || 'Protocol'}
+            onClose={() => {
+              setShowNotificationModal(false)
+              setSelectedProtocolForNotif(null)
+              // Refresh notification preferences to update icon state
+              fetchNotificationPreferences()
+            }}
+          />
         )}
       </div>
     </div>

@@ -50,6 +50,9 @@ model User {
   workoutSessions        WorkoutSession[]
   workoutPrograms        WorkoutProgram[]
   journalEntries         JournalEntry[]
+  notificationPreferences NotificationPreference[]
+  scheduledNotifications  ScheduledNotification[]
+  pushSubscriptions       PushSubscription[]
 
   @@map("users")
 }
@@ -496,4 +499,48 @@ model FoodLog {
   @@map("food_logs")
   @@index([userId, loggedAt], map: "foodlog_user_loggedAt")
   @@index([userId, localDate], map: "foodlog_user_localDate")
+}
+
+// --- PWA NOTIFICATION MODELS ---
+model NotificationPreference {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String   @db.ObjectId
+  protocolId      String   @db.ObjectId
+  pushEnabled     Boolean  @default(true)
+  emailEnabled    Boolean  @default(false)
+  reminderMinutes Int      @default(15)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  user            User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, protocolId])
+  @@map("notification_preferences")
+}
+
+model ScheduledNotification {
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String    @db.ObjectId
+  protocolId   String    @db.ObjectId
+  doseTime     DateTime
+  reminderTime DateTime
+  type         String    // "push" | "email"
+  sent         Boolean   @default(false)
+  sentAt       DateTime?
+  createdAt    DateTime  @default(now())
+  user         User      @relation(fields: [userId], references: [id])
+
+  @@index([reminderTime, sent])
+  @@map("scheduled_notifications")
+}
+
+model PushSubscription {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  endpoint  String
+  keys      Json     // {p256dh, auth}
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, endpoint])
+  @@map("push_subscriptions")
 }
