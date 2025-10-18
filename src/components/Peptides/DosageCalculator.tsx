@@ -646,15 +646,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
           <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30 space-y-3">
             <label>
               <span className="block mb-1 text-sm text-amber-300 font-medium">Desired dose</span>
-              <div className="flex items-center gap-2 max-w-xs">
-                <button
-                  type="button"
-                  className="bg-primary-600/25 border border-amber-400/40 rounded-lg px-3 py-2 text-amber-100 hover:border-amber-300 transition-colors"
-                  onClick={() => setInputs((s) => ({ ...s, desiredDose: clamp(s.desiredDose - (inputs.doseUnit === "mg" ? 0.1 : 50), unitMinMax.min, unitMinMax.max) }))}
-                  aria-label="Decrease dose"
-                >
-                  -
-                </button>
+              <div className="flex items-center gap-2">
                 <input
                   type="number"
                   step="any"
@@ -663,16 +655,8 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                   value={inputs.desiredDose}
                   onChange={(e) => setInputs((s) => ({ ...s, desiredDose: parseFloat(e.target.value) || 0 }))}
                   onBlur={(e) => setInputs((s) => ({ ...s, desiredDose: clamp(parseFloat(e.target.value) || 0, unitMinMax.min, unitMinMax.max) }))}
-                  className="w-20 bg-primary-600/25 border border-amber-400/40 rounded-lg px-3 py-2 text-amber-100 placeholder-amber-300/50 focus:border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-400/30 transition-all text-center"
+                  className="flex-1 bg-primary-600/25 border border-amber-400/40 rounded-lg px-3 py-2 text-amber-100 placeholder-amber-300/50 focus:border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-400/30 transition-all"
                 />
-                <button
-                  type="button"
-                  className="bg-primary-600/25 border border-amber-400/40 rounded-lg px-3 py-2 text-amber-100 hover:border-amber-300 transition-colors"
-                  onClick={() => setInputs((s) => ({ ...s, desiredDose: clamp(s.desiredDose + (inputs.doseUnit === "mg" ? 0.1 : 50), unitMinMax.min, unitMinMax.max) }))}
-                  aria-label="Increase dose"
-                >
-                  +
-                </button>
                 <select
                   aria-label="Dose unit"
                   value={inputs.doseUnit}
@@ -724,7 +708,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                     ))}
                   </div>
                 </div>
-                <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
+                <div className="flex flex-wrap items-center gap-1.5 pb-1">
                   {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
                     <button
                       key={day}
