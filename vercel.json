@@ -4,5 +4,6 @@
       "path": "/api/notifications/send",
       "schedule": "*/5 * * * *"
     }
-  ]
+  ],
+  "buildCommand": "npm run build"
 }
