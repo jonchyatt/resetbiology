@@ -118,6 +118,15 @@ export default async function AdminStorePage() {
     const variantOrderValue = fd.get('variantOrder')?.toString() || '';
     const variantOrder = variantOrderValue ? parseInt(variantOrderValue) : null;
 
+    // Inventory fields
+    const trackInventory = String(fd.get('trackInventory') || 'false') === 'true';
+    const quantityAvailableValue = fd.get('quantityAvailable')?.toString() || '';
+    const quantityAvailable = quantityAvailableValue ? parseInt(quantityAvailableValue) : null;
+    const lowStockThresholdValue = fd.get('lowStockThreshold')?.toString() || '';
+    const lowStockThreshold = lowStockThresholdValue ? parseInt(lowStockThresholdValue) : 5;
+    const allowBackorder = String(fd.get('allowBackorder') || 'false') === 'true';
+    const isBundle = String(fd.get('isBundle') || 'false') === 'true';
+
     // Protocol fields
     const isTrackable = String(fd.get('isTrackable') || 'false') === 'true';
     const protocolPurpose = (fd.get('protocolPurpose')?.toString() || '').trim() || null;
@@ -138,6 +147,11 @@ export default async function AdminStorePage() {
       baseProductName,
       variantLabel,
       variantOrder,
+      trackInventory,
+      quantityAvailable,
+      lowStockThreshold,
+      allowBackorder,
+      isBundle,
       isTrackable,
       protocolPurpose,
       protocolDosageRange,
@@ -501,6 +515,107 @@ export default async function AdminStorePage() {
                                         <p className="text-xs text-amber-300">
                                           ✓ Will display as: <strong>{product.baseProductName}</strong> with variant "<strong>{product.variantLabel}</strong>"
                                         </p>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+
+                                {/* Inventory Management Section */}
+                                <div className="border-b border-gray-700 pb-3 mb-3">
+                                  <h4 className="text-sm font-semibold text-blue-300 mb-3">📦 Inventory Management</h4>
+
+                                  <div className="space-y-3">
+                                    {/* Enable Inventory Tracking */}
+                                    <div className="flex items-center gap-2 p-3 bg-blue-900/20 border border-blue-400/30 rounded">
+                                      <input
+                                        type="checkbox"
+                                        name="trackInventory"
+                                        id={`track-inventory-${product.id}`}
+                                        defaultChecked={product.trackInventory}
+                                        value="true"
+                                        className="rounded border-gray-600 bg-gray-800 text-blue-500 focus:ring-blue-500"
+                                      />
+                                      <label htmlFor={`track-inventory-${product.id}`} className="text-sm text-white font-medium">
+                                        Enable Inventory Tracking
+                                      </label>
+                                    </div>
+
+                                    {product.trackInventory && (
+                                      <div className="space-y-3 p-3 bg-gray-800/50 rounded border border-gray-700">
+                                        <div className="grid grid-cols-2 gap-3">
+                                          <div>
+                                            <label className="text-xs text-gray-400 flex items-center gap-2">
+                                              Current Stock
+                                              {product.quantityAvailable !== null && product.quantityAvailable <= (product.lowStockThreshold || 5) && (
+                                                <span className="text-xs px-2 py-0.5 bg-red-900/30 text-red-400 border border-red-400/30 rounded-full">
+                                                  ⚠ Low Stock
+                                                </span>
+                                              )}
+                                            </label>
+                                            <input
+                                              name="quantityAvailable"
+                                              type="number"
+                                              min="0"
+                                              placeholder="0"
+                                              defaultValue={product.quantityAvailable ?? 0}
+                                              className="w-full px-3 py-2 bg-gray-800 text-white border border-gray-600 rounded text-sm font-bold text-lg"
+                                            />
+                                            <p className="text-xs text-gray-500 mt-1">
+                                              {product.quantityAvailable === 0 ? '🚫 Out of Stock' : `${product.quantityAvailable || 0} vials available`}
+                                            </p>
+                                          </div>
+
+                                          <div>
+                                            <label className="text-xs text-gray-400">Low Stock Alert At</label>
+                                            <input
+                                              name="lowStockThreshold"
+                                              type="number"
+                                              min="1"
+                                              placeholder="5"
+                                              defaultValue={product.lowStockThreshold || 5}
+                                              className="w-full px-3 py-2 bg-gray-800 text-white border border-gray-600 rounded text-sm"
+                                            />
+                                            <p className="text-xs text-gray-500 mt-1">
+                                              Alert when below this number
+                                            </p>
+                                          </div>
+                                        </div>
+
+                                        <div className="flex items-center gap-2">
+                                          <input
+                                            type="checkbox"
+                                            name="allowBackorder"
+                                            id={`backorder-${product.id}`}
+                                            defaultChecked={product.allowBackorder}
+                                            value="true"
+                                            className="rounded border-gray-600 bg-gray-800 text-blue-500"
+                                          />
+                                          <label htmlFor={`backorder-${product.id}`} className="text-xs text-gray-300">
+                                            Allow customers to order when out of stock (backorder)
+                                          </label>
+                                        </div>
+
+                                        <div className="flex items-center gap-2">
+                                          <input
+                                            type="checkbox"
+                                            name="isBundle"
+                                            id={`bundle-${product.id}`}
+                                            defaultChecked={product.isBundle}
+                                            value="true"
+                                            className="rounded border-gray-600 bg-gray-800 text-purple-500"
+                                          />
+                                          <label htmlFor={`bundle-${product.id}`} className="text-xs text-gray-300">
+                                            This is a bundle/package product (contains multiple items)
+                                          </label>
+                                        </div>
+
+                                        {product.isBundle && (
+                                          <div className="p-2 bg-purple-900/20 border border-purple-400/30 rounded">
+                                            <p className="text-xs text-purple-300">
+                                              💡 Bundle products reduce component inventory when sold. Configure components below after saving.
+                                            </p>
+                                          </div>
+                                        )}
                                       </div>
                                     )}
                                   </div>
