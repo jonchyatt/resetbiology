@@ -1,7 +1,35 @@
+import { getStripe } from '@/lib/stripe';
+import { reduceInventory } from '@/lib/inventory';
+
 export default async function SuccessPage({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
   const params = await searchParams;
   const sessionId = params['session_id'];
-  
+
+  // Process inventory reduction for successful checkout
+  if (sessionId) {
+    try {
+      const stripe = getStripe();
+      if (stripe) {
+        const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+        if (session.payment_status === 'paid' && session.metadata?.productId) {
+          const productId = session.metadata.productId;
+
+          // Reduce inventory
+          const result = await reduceInventory(productId, 1, sessionId);
+
+          if (!result.success) {
+            console.error('[order/success] Inventory reduction failed:', result.message);
+          } else {
+            console.log('[order/success] Inventory reduced successfully for product:', productId);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('[order/success] Error processing order:', error);
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 relative"
          style={{
