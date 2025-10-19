@@ -23,6 +23,11 @@ interface Product {
   baseProductName: string | null;
   variantLabel: string | null;
   variantOrder: number | null;
+  trackInventory: boolean;
+  quantityAvailable: number | null;
+  lowStockThreshold: number | null;
+  allowBackorder: boolean;
+  isBundle: boolean;
 }
 
 interface ProductGroup {
@@ -120,6 +125,26 @@ export default function OrderPage() {
     }
   };
 
+  // Get stock status for a product
+  const getStockStatus = (product: Product): 'in_stock' | 'low_stock' | 'out_of_stock' | 'no_tracking' => {
+    if (!product.trackInventory) return 'no_tracking';
+
+    const qty = product.quantityAvailable ?? 0;
+    const threshold = product.lowStockThreshold ?? 5;
+
+    if (qty === 0) return 'out_of_stock';
+    if (qty <= threshold) return 'low_stock';
+    return 'in_stock';
+  };
+
+  // Check if product is purchasable
+  const canPurchase = (product: Product): boolean => {
+    if (!product.trackInventory) return true; // No inventory tracking = always available
+
+    const qty = product.quantityAvailable ?? 0;
+    return qty > 0 || product.allowBackorder;
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center">
@@ -197,9 +222,39 @@ export default function OrderPage() {
 
                         {/* Product Content */}
                         <div className="p-6">
-                          <h3 className="text-xl font-bold text-white mb-2 group-hover:text-primary-400 transition-colors">
-                            {group.baseName}
-                          </h3>
+                          <div className="flex items-center justify-between mb-2">
+                            <h3 className="text-xl font-bold text-white group-hover:text-primary-400 transition-colors">
+                              {group.baseName}
+                            </h3>
+
+                            {/* Stock Badge */}
+                            {(() => {
+                              const stockStatus = getStockStatus(selectedProduct);
+                              if (stockStatus === 'no_tracking') return null;
+
+                              const badges = {
+                                in_stock: {
+                                  text: 'In Stock',
+                                  className: 'bg-green-500/20 text-green-400 border-green-400/30'
+                                },
+                                low_stock: {
+                                  text: `Only ${selectedProduct.quantityAvailable} left`,
+                                  className: 'bg-yellow-500/20 text-yellow-400 border-yellow-400/30 animate-pulse'
+                                },
+                                out_of_stock: {
+                                  text: 'Out of Stock',
+                                  className: 'bg-red-500/20 text-red-400 border-red-400/30'
+                                }
+                              };
+
+                              const badge = badges[stockStatus];
+                              return (
+                                <span className={`text-xs px-2 py-1 rounded-full border font-medium ${badge.className}`}>
+                                  {badge.text}
+                                </span>
+                              );
+                            })()}
+                          </div>
 
                           {group.description && (
                             <p className="text-gray-300 text-sm mb-2 line-clamp-3">
@@ -271,23 +326,40 @@ export default function OrderPage() {
                                 </p>
                               </div>
 
-                              {/* Buy Button with gradient and glow */}
-                              <button
-                                type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation(); // Prevent card click
-                                  handleCheckout(selectedProduct.id, primary.id);
-                                }}
-                                disabled={isLoading}
-                                className="w-full bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:shadow-primary-500/30 transition-all duration-200 flex items-center justify-center group backdrop-blur-sm disabled:opacity-50 disabled:cursor-not-allowed relative z-10"
-                              >
-                                <span>{isLoading ? 'Processing...' : 'Buy Now'}</span>
-                                {!isLoading && (
-                                  <svg className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                              {/* Buy Button or Waitlist Button */}
+                              {canPurchase(selectedProduct) ? (
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation(); // Prevent card click
+                                    handleCheckout(selectedProduct.id, primary.id);
+                                  }}
+                                  disabled={isLoading}
+                                  className="w-full bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:shadow-primary-500/30 transition-all duration-200 flex items-center justify-center group backdrop-blur-sm disabled:opacity-50 disabled:cursor-not-allowed relative z-10"
+                                >
+                                  <span>{isLoading ? 'Processing...' : 'Buy Now'}</span>
+                                  {!isLoading && (
+                                    <svg className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                    </svg>
+                                  )}
+                                </button>
+                              ) : (
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    // TODO: Open waitlist modal
+                                    alert('Waitlist feature coming soon! We will notify you when this item is back in stock.');
+                                  }}
+                                  className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:shadow-blue-500/30 transition-all duration-200 flex items-center justify-center group backdrop-blur-sm relative z-10"
+                                >
+                                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                                   </svg>
-                                )}
-                              </button>
+                                  <span>Join Waitlist</span>
+                                </button>
+                              )}
                             </>
                           ) : (
                             <div className="bg-red-500/20 border border-red-400/30 rounded-lg p-3 backdrop-blur-sm">
