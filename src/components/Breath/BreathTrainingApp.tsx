@@ -584,6 +584,8 @@ export function BreathTrainingApp({ onSessionComplete }: BreathTrainingAppProps)
                   progress={getBreathProgress()}
                   motionReduced={settings.motionReduced}
                   currentHoldDuration={currentHoldDuration}
+                  inhaleMs={settings.pace.inhaleMs}
+                  exhaleMs={settings.pace.exhaleMs}
                 />
               )}
 

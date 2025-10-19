@@ -9,9 +9,11 @@ interface BreathOrbProps {
   progress: number
   motionReduced: boolean
   currentHoldDuration?: number
+  inhaleMs?: number
+  exhaleMs?: number
 }
 
-export function BreathOrb({ state, isInhale, progress, motionReduced, currentHoldDuration = 0 }: BreathOrbProps) {
+export function BreathOrb({ state, isInhale, progress, motionReduced, currentHoldDuration = 0, inhaleMs = 3000, exhaleMs = 3000 }: BreathOrbProps) {
   const getStateColor = () => {
     switch (state) {
       case 'breathing_active':
@@ -113,8 +115,8 @@ export function BreathOrb({ state, isInhale, progress, motionReduced, currentHol
           }}
           transition={{
             scale: {
-              duration: state === 'breathing_active' ? 
-                (isInhale ? 3 : 3) : 0.5,
+              duration: state === 'breathing_active' ?
+                (isInhale ? inhaleMs / 1000 : exhaleMs / 1000) : 0.5,
               ease: "easeInOut",
               repeat: state === 'breathing_active' ? Infinity : 0,
               repeatType: "reverse"
