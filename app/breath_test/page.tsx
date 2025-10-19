@@ -1,4 +1,4 @@
-import { BreathTrainingApp } from "@/components/Breath/BreathTrainingApp"
+import { BreathTrainingApp } from "@/components/Breath/BreathTrainingAppTest"
 
 export default function BreathTestPage() {
   return <BreathTrainingApp />
