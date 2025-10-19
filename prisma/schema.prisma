@@ -395,6 +395,13 @@ model Product {
   variantLabel     String?   // Variant identifier (e.g., "50mg", "100mg", "5mg")
   variantOrder     Int?      @default(0) // Display order for variants (lower = first)
 
+  // Inventory management
+  trackInventory      Boolean   @default(false)  // Enable inventory tracking for this product
+  quantityAvailable   Int?      @default(0)      // Current stock level
+  lowStockThreshold   Int?      @default(5)      // Alert when stock falls below this number
+  allowBackorder      Boolean   @default(false)  // Allow purchases when out of stock
+  isBundle            Boolean   @default(false)  // Is this a bundle/package product
+
   // Product flags
   active           Boolean   @default(true)
   storefront       Boolean   @default(false)
@@ -412,8 +419,12 @@ model Product {
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
 
-  prices           Price[]
-  productPages     ProductPage[]
+  prices              Price[]
+  productPages        ProductPage[]
+  bundleItems         BundleItem[]  @relation("BundleProduct")
+  bundleComponents    BundleItem[]  @relation("ComponentProduct")
+  waitlistEntries     WaitlistEntry[]
+  inventoryTransactions InventoryTransaction[]
 }
 
 model Price {
@@ -548,4 +559,57 @@ model PushSubscription {
 
   @@unique([userId, endpoint])
   @@map("push_subscriptions")
+}
+
+// --- INVENTORY & BUNDLE MANAGEMENT ---
+
+// Defines which products are in a bundle (e.g., "Glow Protocol" contains TB-500, BPC-157, GHK-Cu)
+model BundleItem {
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  bundleProductId  String   @db.ObjectId  // The bundle product (e.g., "Glow Protocol")
+  componentProductId String @db.ObjectId  // The component product (e.g., "TB-500")
+  quantity         Int      @default(1)   // How many of this component in the bundle
+
+  bundleProduct    Product  @relation("BundleProduct", fields: [bundleProductId], references: [id])
+  componentProduct Product  @relation("ComponentProduct", fields: [componentProductId], references: [id])
+
+  createdAt        DateTime @default(now())
+
+  @@unique([bundleProductId, componentProductId])
+  @@map("bundle_items")
+}
+
+// Tracks customer waitlist for out-of-stock products
+model WaitlistEntry {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  productId   String    @db.ObjectId
+  email       String
+  name        String?
+  notified    Boolean   @default(false)
+  notifiedAt  DateTime?
+  createdAt   DateTime  @default(now())
+
+  product     Product   @relation(fields: [productId], references: [id])
+
+  @@index([productId, notified])
+  @@map("waitlist_entries")
+}
+
+// Audit trail for all inventory changes
+model InventoryTransaction {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  productId   String   @db.ObjectId
+  type        String   // "purchase", "restock", "adjustment", "bundle_sale"
+  quantity    Int      // Positive for additions, negative for reductions
+  previousQty Int      // Quantity before transaction
+  newQty      Int      // Quantity after transaction
+  reason      String?  // Optional explanation
+  orderId     String?  // Reference to order if applicable
+  createdBy   String?  // Admin user who made the change
+  createdAt   DateTime @default(now())
+
+  product     Product  @relation(fields: [productId], references: [id])
+
+  @@index([productId, createdAt])
+  @@map("inventory_transactions")
 }
