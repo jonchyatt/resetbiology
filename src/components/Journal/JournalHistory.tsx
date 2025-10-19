@@ -92,6 +92,19 @@ export function JournalHistory() {
 
   const selectedDay = selectedDayKey ? dayLookup.get(selectedDayKey) ?? null : null
 
+  // Weight tracking data
+  const weightData = useMemo(() => {
+    if (!history?.days) return []
+    return history.days
+      .filter(day => day.journalEntry && typeof day.journalEntry.weight === 'number')
+      .map(day => ({
+        date: day.date,
+        weight: day.journalEntry.weight,
+        iso: day.iso
+      }))
+      .sort((a, b) => new Date(a.iso).getTime() - new Date(b.iso).getTime())
+  }, [history])
+
   const calendarCells = useMemo(() => {
     if (!history) return []
     const start = new Date(history.range.start)
@@ -309,6 +322,17 @@ export function JournalHistory() {
 
 
               <div className="space-y-6">
+
+                {/* Weight Trend Graph */}
+                {weightData.length > 0 && (
+                  <div className="rounded-2xl border border-amber-400/30 bg-slate-900/70 backdrop-blur-md shadow-2xl shadow-black/30 p-6">
+                    <h3 className="text-lg font-semibold text-amber-300 mb-4 flex items-center gap-2">
+                      <Activity className="h-5 w-5" />
+                      Weight Trend
+                    </h3>
+                    <WeightChart data={weightData} />
+                  </div>
+                )}
 
                 {selectedDay ? (
 
@@ -1017,6 +1041,90 @@ function DayDetail({ day }: { day: JournalHistoryDay }) {
           )}
         </div>
       </section>
+    </div>
+  )
+}
+
+function WeightChart({ data }: { data: Array<{ date: string; weight: number; iso: string }> }) {
+  if (data.length === 0) return null
+
+  const weights = data.map(d => d.weight)
+  const minWeight = Math.min(...weights)
+  const maxWeight = Math.max(...weights)
+  const range = maxWeight - minWeight || 1
+  const chartHeight = 200
+  const chartWidth = 600
+  const padding = 40
+
+  const points = data.map((d, i) => {
+    const x = padding + (i / (data.length - 1 || 1)) * (chartWidth - 2 * padding)
+    const y = chartHeight - padding - ((d.weight - minWeight) / range) * (chartHeight - 2 * padding)
+    return { x, y, ...d }
+  })
+
+  const pathD = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ')
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between text-sm">
+        <span className="text-slate-400">Range: {minWeight.toFixed(1)} - {maxWeight.toFixed(1)} lbs</span>
+        <span className="text-slate-400">{data.length} entries</span>
+      </div>
+      <svg viewBox={`0 0 ${chartWidth} ${chartHeight}`} className="w-full h-auto">
+        {/* Grid lines */}
+        {[0, 0.25, 0.5, 0.75, 1].map((ratio, i) => {
+          const y = chartHeight - padding - ratio * (chartHeight - 2 * padding)
+          const weight = minWeight + ratio * range
+          return (
+            <g key={i}>
+              <line
+                x1={padding}
+                y1={y}
+                x2={chartWidth - padding}
+                y2={y}
+                stroke="#334155"
+                strokeWidth="1"
+                strokeDasharray="4 4"
+              />
+              <text x={padding - 10} y={y + 4} fill="#94a3b8" fontSize="12" textAnchor="end">
+                {weight.toFixed(1)}
+              </text>
+            </g>
+          )
+        })}
+
+        {/* Line */}
+        <path
+          d={pathD}
+          fill="none"
+          stroke="#f59e0b"
+          strokeWidth="3"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+
+        {/* Points */}
+        {points.map((p, i) => (
+          <g key={i}>
+            <circle cx={p.x} cy={p.y} r="5" fill="#f59e0b" stroke="#1e293b" strokeWidth="2" />
+            <title>{`${new Date(p.iso).toLocaleDateString()}: ${p.weight} lbs`}</title>
+          </g>
+        ))}
+
+        {/* Date labels */}
+        {points.filter((_, i) => i === 0 || i === points.length - 1).map((p, i) => (
+          <text
+            key={i}
+            x={p.x}
+            y={chartHeight - 10}
+            fill="#94a3b8"
+            fontSize="11"
+            textAnchor="middle"
+          >
+            {new Date(p.iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+          </text>
+        ))}
+      </svg>
     </div>
   )
 }
