@@ -337,8 +337,9 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
 
   // New state for scheduling (addProtocol mode)
   const [selectedDays, setSelectedDays] = useState<string[]>(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']);
-  const [selectedTimes, setSelectedTimes] = useState<string[]>(['AM']);
+  const [selectedTimes, setSelectedTimes] = useState<string[]>(['08:00']);
   const [duration, setDuration] = useState<string>('8 weeks');
+  const [newTimeInput, setNewTimeInput] = useState<string>('08:00');
 
   // Apply imported peptide defaults
   useEffect(() => {
@@ -402,12 +403,13 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
     );
   };
 
-  const toggleTime = (time: string) => {
-    setSelectedTimes(prev =>
-      prev.includes(time)
-        ? prev.filter(t => t !== time)
-        : [...prev, time]
-    );
+  const addTime = () => {
+    if (!newTimeInput || selectedTimes.includes(newTimeInput)) return;
+    setSelectedTimes(prev => [...prev, newTimeInput].sort());
+  };
+
+  const removeTime = (time: string) => {
+    setSelectedTimes(prev => prev.filter(t => t !== time));
   };
 
   const formatScheduleString = (days: string[], times: string[]): string => {
@@ -430,7 +432,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
     }
 
     if (selectedTimes.length === 0) {
-      alert('Please select AM, PM, or both');
+      alert('Please add at least one dose time');
       return;
     }
 
@@ -688,26 +690,53 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
           {mode === 'addProtocol' && (
             <>
               <div className="bg-gradient-to-br from-primary-900/20 to-secondary-900/20 backdrop-blur-sm rounded-xl p-4 border border-primary-400/40">
-                <div className="flex items-center gap-2 pb-2">
-                  <span className="text-sm text-gray-300 font-medium">Schedule</span>
-                  <div className="ml-auto flex items-center gap-1.5">
-                    {['AM', 'PM'].map((time) => (
-                      <button
-                        key={time}
-                        type="button"
-                        onClick={() => toggleTime(time)}
-                        className={`px-3 py-1.5 text-xs font-medium rounded-md border transition-all ${
-                          selectedTimes.includes(time)
-                            ? 'bg-amber-300/45 text-amber-50 border-amber-200/70 shadow-[0_0_14px_rgba(245,193,92,0.45)]'
-                            : 'bg-amber-300/15 text-amber-200 border-amber-200/40 hover:bg-amber-300/25'
-                        }`}
-                        aria-pressed={selectedTimes.includes(time)}
-                      >
-                        {time}
-                      </button>
-                    ))}
-                  </div>
+                <div className="flex items-center gap-2 pb-3">
+                  <span className="text-sm text-gray-300 font-medium">Dose Times</span>
                 </div>
+
+                {/* Display selected times */}
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {selectedTimes.map((time) => (
+                    <div
+                      key={time}
+                      className="flex items-center gap-2 bg-amber-300/45 text-amber-50 border border-amber-200/70 shadow-[0_0_14px_rgba(245,193,92,0.45)] px-3 py-1.5 text-sm font-medium rounded-md"
+                    >
+                      <span>{time}</span>
+                      <button
+                        type="button"
+                        onClick={() => removeTime(time)}
+                        className="text-amber-200 hover:text-white transition-colors"
+                        aria-label={`Remove ${time}`}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                  {selectedTimes.length === 0 && (
+                    <p className="text-xs text-gray-400">No dose times selected</p>
+                  )}
+                </div>
+
+                {/* Add new time */}
+                <div className="flex items-center gap-2">
+                  <input
+                    type="time"
+                    value={newTimeInput}
+                    onChange={(e) => setNewTimeInput(e.target.value)}
+                    className="flex-1 bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white focus:border-amber-400 focus:outline-none text-sm"
+                  />
+                  <button
+                    type="button"
+                    onClick={addTime}
+                    className="bg-amber-300/30 hover:bg-amber-300/45 text-amber-100 border border-amber-200/40 px-4 py-2 rounded-lg text-sm font-medium transition-all"
+                  >
+                    + Add Time
+                  </button>
+                </div>
+
+                <p className="text-xs text-gray-400 mt-2">
+                  Add specific times for your doses (e.g., 8:00 AM, 8:00 PM)
+                </p>
                 <div className="flex flex-wrap items-center gap-1.5 pb-1">
                   {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
                     <button
@@ -725,14 +754,12 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                     </button>
                   ))}
                 </div>
-                <p className="mt-2 text-xs text-gray-400 leading-snug">
-                  {selectedDays.length === 7 ? 'Daily' : selectedDays.join(', ') || 'No days selected'}
-                  {' - '}
+                <p className="mt-3 text-xs text-gray-400 leading-snug">
+                  <span className="font-medium text-gray-300">Schedule:</span> {selectedDays.length === 7 ? 'Daily' : selectedDays.join(', ') || 'No days selected'}
+                  {' at '}
                   {selectedTimes.length === 0
-                    ? 'Select AM or PM'
-                    : selectedTimes.length === 2
-                    ? 'AM & PM'
-                    : selectedTimes[0]}
+                    ? 'no specific times'
+                    : selectedTimes.join(', ')}
                 </p>
               </div>
 
