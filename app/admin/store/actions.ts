@@ -53,6 +53,16 @@ export async function updateProduct(id: string, patch: Partial<{
   imageUrl: string | null;
   active: boolean;
   storefront: boolean;
+  // Variant fields
+  baseProductName: string | null;
+  variantLabel: string | null;
+  variantOrder: number | null;
+  // Inventory fields
+  trackInventory: boolean;
+  quantityAvailable: number | null;
+  lowStockThreshold: number | null;
+  allowBackorder: boolean;
+  isBundle: boolean;
   // Protocol fields for peptide tracker
   isTrackable: boolean;
   protocolPurpose: string | null;
