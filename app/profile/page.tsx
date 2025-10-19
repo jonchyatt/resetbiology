@@ -361,7 +361,7 @@ export default function ProfilePage() {
                   <a href="/education" className="block text-primary-400 hover:text-primary-300 transition-colors">
                     📚 Help Center
                   </a>
-                  <a href="mailto:support@resetbiology.com" className="block text-primary-400 hover:text-primary-300 transition-colors">
+                  <a href="/contact" className="block text-primary-400 hover:text-primary-300 transition-colors">
                     📧 Contact Support
                   </a>
                   <a href="/education" className="block text-primary-400 hover:text-primary-300 transition-colors">
