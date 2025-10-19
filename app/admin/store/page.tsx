@@ -112,6 +112,12 @@ export default async function AdminStorePage() {
     const description = (fd.get('description')?.toString() || '').trim() || null;
     const imageUrl = (fd.get('imageUrl')?.toString() || '').trim() || null;
 
+    // Variant fields
+    const baseProductName = (fd.get('baseProductName')?.toString() || '').trim() || null;
+    const variantLabel = (fd.get('variantLabel')?.toString() || '').trim() || null;
+    const variantOrderValue = fd.get('variantOrder')?.toString() || '';
+    const variantOrder = variantOrderValue ? parseInt(variantOrderValue) : null;
+
     // Protocol fields
     const isTrackable = String(fd.get('isTrackable') || 'false') === 'true';
     const protocolPurpose = (fd.get('protocolPurpose')?.toString() || '').trim() || null;
@@ -129,6 +135,9 @@ export default async function AdminStorePage() {
       slug,
       description,
       imageUrl,
+      baseProductName,
+      variantLabel,
+      variantOrder,
       isTrackable,
       protocolPurpose,
       protocolDosageRange,
@@ -436,7 +445,67 @@ export default async function AdminStorePage() {
                                     />
                                   </div>
                                 </div>
-                                
+
+                                {/* Product Variant Section */}
+                                <div className="border-b border-gray-700 pb-3 mb-3">
+                                  <h4 className="text-sm font-semibold text-amber-300 mb-3">Product Variants (Optional)</h4>
+                                  <p className="text-xs text-gray-400 mb-3">
+                                    Group multiple vial sizes together (e.g., GHK-Cu 50mg and 100mg)
+                                  </p>
+
+                                  <div className="space-y-3">
+                                    <div className="grid grid-cols-2 gap-3">
+                                      <div>
+                                        <label className="text-xs text-gray-400">Base Product Name</label>
+                                        <input
+                                          name="baseProductName"
+                                          placeholder="e.g., GHK-Cu"
+                                          defaultValue={product.baseProductName || ''}
+                                          className="w-full px-3 py-2 bg-gray-800 text-white border border-gray-600 rounded text-sm"
+                                        />
+                                        <p className="text-xs text-gray-500 mt-1">
+                                          Leave empty if no variants
+                                        </p>
+                                      </div>
+
+                                      <div>
+                                        <label className="text-xs text-gray-400">Variant Label</label>
+                                        <input
+                                          name="variantLabel"
+                                          placeholder="e.g., 50mg or 100mg"
+                                          defaultValue={product.variantLabel || ''}
+                                          className="w-full px-3 py-2 bg-gray-800 text-white border border-gray-600 rounded text-sm"
+                                        />
+                                        <p className="text-xs text-gray-500 mt-1">
+                                          Size/vial amount identifier
+                                        </p>
+                                      </div>
+                                    </div>
+
+                                    <div>
+                                      <label className="text-xs text-gray-400">Display Order</label>
+                                      <input
+                                        name="variantOrder"
+                                        type="number"
+                                        placeholder="0"
+                                        defaultValue={product.variantOrder || 0}
+                                        className="w-full px-3 py-2 bg-gray-800 text-white border border-gray-600 rounded text-sm"
+                                      />
+                                      <p className="text-xs text-gray-500 mt-1">
+                                        Lower numbers appear first (0, 1, 2...)
+                                      </p>
+                                    </div>
+
+                                    {product.baseProductName && product.variantLabel && (
+                                      <div className="p-2 bg-amber-900/20 border border-amber-400/30 rounded">
+                                        <p className="text-xs text-amber-300">
+                                          ✓ Will display as: <strong>{product.baseProductName}</strong> with variant "<strong>{product.variantLabel}</strong>"
+                                        </p>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+
                                 {/* Protocol Management Section */}
                                 <div className="border-b border-gray-700 pb-3 mb-3">
                                   <h4 className="text-sm font-semibold text-secondary-300 mb-3">Peptide Protocol Settings</h4>

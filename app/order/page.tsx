@@ -20,6 +20,16 @@ interface Product {
   description: string | null;
   imageUrl: string | null;
   prices: Price[];
+  baseProductName: string | null;
+  variantLabel: string | null;
+  variantOrder: number | null;
+}
+
+interface ProductGroup {
+  baseName: string;
+  variants: Product[];
+  imageUrl: string | null;
+  description: string | null;
 }
 
 export default function OrderPage() {
@@ -27,6 +37,7 @@ export default function OrderPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
+  const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>({});
 
   // Fetch products on mount
   useEffect(() => {
@@ -54,6 +65,37 @@ export default function OrderPage() {
     }
     loadProducts();
   }, []);
+
+  // Group products by baseProductName or treat as individual products
+  const productGroups: ProductGroup[] = (() => {
+    const groups: Map<string, ProductGroup> = new Map();
+
+    products.forEach((product) => {
+      const baseName = product.baseProductName || product.name;
+
+      if (!groups.has(baseName)) {
+        groups.set(baseName, {
+          baseName,
+          variants: [],
+          imageUrl: product.imageUrl,
+          description: product.description,
+        });
+      }
+
+      groups.get(baseName)!.variants.push(product);
+    });
+
+    // Sort variants within each group by variantOrder
+    groups.forEach((group) => {
+      group.variants.sort((a, b) => {
+        const orderA = a.variantOrder ?? 0;
+        const orderB = b.variantOrder ?? 0;
+        return orderA - orderB;
+      });
+    });
+
+    return Array.from(groups.values());
+  })();
 
   const handleCheckout = async (productId: string, priceId: string) => {
     setCheckoutLoading(productId);
@@ -113,7 +155,7 @@ export default function OrderPage() {
         {/* Products Grid */}
         <div className="container mx-auto px-4 pb-12">
           <div className="max-w-7xl mx-auto">
-            {products.length === 0 ? (
+            {productGroups.length === 0 ? (
               <div className="text-center py-16">
                 <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-12 shadow-2xl border border-primary-400/30 max-w-2xl mx-auto hover:shadow-primary-400/20 transition-all duration-300">
                   <svg className="w-20 h-20 mx-auto text-primary-400 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -126,21 +168,27 @@ export default function OrderPage() {
               </div>
             ) : (
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {products.map((p) => {
-                  const primary = p.prices.find(x => x.isPrimary) || p.prices[0];
-                  const isLoading = checkoutLoading === p.id;
+                {productGroups.map((group) => {
+                  // If only one variant, use first variant's selected state, otherwise use group's baseName
+                  const groupKey = group.variants.length === 1 ? group.variants[0].id : group.baseName;
+                  const selectedVariantId = selectedVariants[groupKey] || group.variants[0].id;
+                  const selectedProduct = group.variants.find(v => v.id === selectedVariantId) || group.variants[0];
+                  const primary = selectedProduct.prices.find(x => x.isPrimary) || selectedProduct.prices[0];
+                  const isLoading = checkoutLoading === selectedProduct.id;
+                  const hasVariants = group.variants.length > 1;
+
                   return (
-                    <div key={p.id} className="group">
+                    <div key={groupKey} className="group">
                       <div
-                        onClick={() => router.push(`/product/${p.slug}`)}
+                        onClick={() => router.push(`/product/${selectedProduct.slug}`)}
                         className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl shadow-2xl border border-primary-400/30 overflow-hidden hover:shadow-primary-400/20 group-hover:scale-[1.02] transition-all duration-300 cursor-pointer"
                       >
                         {/* Product Image */}
-                        {p.imageUrl && (
+                        {group.imageUrl && (
                           <div className="relative h-48 bg-gradient-to-br from-primary-900/30 to-secondary-900/30">
                             <img
-                              src={p.imageUrl}
-                              alt={p.name}
+                              src={group.imageUrl}
+                              alt={group.baseName}
                               className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-gray-900/60 to-transparent"></div>
@@ -150,18 +198,61 @@ export default function OrderPage() {
                         {/* Product Content */}
                         <div className="p-6">
                           <h3 className="text-xl font-bold text-white mb-2 group-hover:text-primary-400 transition-colors">
-                            {p.name}
+                            {group.baseName}
                           </h3>
 
-                          {p.description && (
+                          {group.description && (
                             <p className="text-gray-300 text-sm mb-2 line-clamp-3">
-                              {p.description}
+                              {group.description}
                             </p>
                           )}
 
                           <p className="text-primary-400 text-sm font-medium mb-4 group-hover:text-primary-300 transition-colors">
                             View Details →
                           </p>
+
+                          {/* Variant Selector - Only show if multiple variants */}
+                          {hasVariants && (
+                            <div className="mb-4" onClick={(e) => e.stopPropagation()}>
+                              <label className="block text-sm font-medium text-gray-300 mb-2">
+                                Size:
+                              </label>
+                              <div className="flex flex-wrap gap-2">
+                                {group.variants.map((variant) => {
+                                  const variantPrice = variant.prices.find(x => x.isPrimary) || variant.prices[0];
+                                  const isSelected = selectedProduct.id === variant.id;
+
+                                  return (
+                                    <button
+                                      key={variant.id}
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setSelectedVariants({
+                                          ...selectedVariants,
+                                          [groupKey]: variant.id
+                                        });
+                                      }}
+                                      className={`flex-1 min-w-[120px] px-4 py-2 rounded-lg border-2 transition-all duration-200 ${
+                                        isSelected
+                                          ? 'bg-primary-500/30 border-primary-400 text-white shadow-[0_0_12px_rgba(63,191,181,0.4)]'
+                                          : 'bg-gray-700/30 border-gray-600 text-gray-300 hover:border-primary-400/50 hover:bg-gray-700/50'
+                                      }`}
+                                    >
+                                      <div className="text-sm font-semibold">
+                                        {variant.variantLabel || variant.name}
+                                      </div>
+                                      {variantPrice && (
+                                        <div className="text-xs mt-1">
+                                          ${(variantPrice.unitAmount / 100).toFixed(2)}
+                                        </div>
+                                      )}
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          )}
 
                           {primary ? (
                             <>
@@ -185,7 +276,7 @@ export default function OrderPage() {
                                 type="button"
                                 onClick={(e) => {
                                   e.stopPropagation(); // Prevent card click
-                                  handleCheckout(p.id, primary.id);
+                                  handleCheckout(selectedProduct.id, primary.id);
                                 }}
                                 disabled={isLoading}
                                 className="w-full bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:shadow-primary-500/30 transition-all duration-200 flex items-center justify-center group backdrop-blur-sm disabled:opacity-50 disabled:cursor-not-allowed relative z-10"

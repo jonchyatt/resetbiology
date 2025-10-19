@@ -390,6 +390,11 @@ model Product {
   reconstitutionInstructions String? // e.g., "2ml BAC water"
   syringeUnits     Float?    // For dosage calculator
   
+  // Product variant fields
+  baseProductName  String?   // Base name for grouping variants (e.g., "GHK-Cu")
+  variantLabel     String?   // Variant identifier (e.g., "50mg", "100mg", "5mg")
+  variantOrder     Int?      @default(0) // Display order for variants (lower = first)
+
   // Product flags
   active           Boolean   @default(true)
   storefront       Boolean   @default(false)
