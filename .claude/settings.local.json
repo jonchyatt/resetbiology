@@ -45,7 +45,10 @@
       "Bash(if ! grep -q \"getUserFromSession\" \"$file\")",
       "Bash(then)",
       "Bash(echo:*)",
-      "Bash(fi)"
+      "Bash(fi)",
+      "Bash(curl:*)",
+      "Bash(git log:*)",
+      "Read(//c/Users/jonch/Desktop/WAC bigball/WAC bigball/Assets/Prefabs/**)"
     ],
     "deny": [],
     "ask": [],

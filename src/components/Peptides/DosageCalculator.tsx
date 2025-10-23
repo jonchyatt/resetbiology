@@ -657,13 +657,13 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                   value={inputs.desiredDose}
                   onChange={(e) => setInputs((s) => ({ ...s, desiredDose: parseFloat(e.target.value) || 0 }))}
                   onBlur={(e) => setInputs((s) => ({ ...s, desiredDose: clamp(parseFloat(e.target.value) || 0, unitMinMax.min, unitMinMax.max) }))}
-                  className="flex-1 bg-primary-600/25 border border-amber-400/40 rounded-lg px-3 py-2 text-amber-100 placeholder-amber-300/50 focus:border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-400/30 transition-all"
+                  className="w-20 sm:w-24 bg-primary-600/25 border border-amber-400/40 rounded-lg px-3 py-2 text-amber-100 placeholder-amber-300/50 focus:border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-400/30 transition-all"
                 />
                 <select
                   aria-label="Dose unit"
                   value={inputs.doseUnit}
                   onChange={(e) => setInputs((s) => ({ ...s, doseUnit: e.target.value as "mg" | "mcg" }))}
-                  className="bg-primary-600/25 border border-amber-400/40 rounded-lg px-3 py-2 text-amber-100 focus:border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-400/30 transition-all"
+                  className="w-20 bg-primary-600/25 border border-amber-400/40 rounded-lg px-3 py-2 text-amber-100 focus:border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-400/30 transition-all"
                 >
                   <option value="mcg" className="bg-gray-800 text-amber-100">mcg</option>
                   <option value="mg" className="bg-gray-800 text-amber-100">mg</option>
@@ -737,13 +737,13 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                 <p className="text-xs text-gray-400 mt-2">
                   Add specific times for your doses (e.g., 8:00 AM, 8:00 PM)
                 </p>
-                <div className="flex flex-wrap items-center gap-1.5 pb-1">
+                <div className="flex flex-wrap items-center gap-1.5 pb-1 mt-3">
                   {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
                     <button
                       key={day}
                       type="button"
                       onClick={() => toggleDay(day)}
-                      className={`px-3 py-1.5 text-xs font-semibold rounded-md border transition-all whitespace-nowrap ${
+                      className={`flex-shrink-0 px-2.5 sm:px-3 py-1.5 text-xs font-semibold rounded-md border transition-all whitespace-nowrap ${
                         selectedDays.includes(day)
                           ? 'bg-amber-300/50 text-amber-50 border-amber-200/70 shadow-[0_0_18px_rgba(245,193,92,0.5)]'
                           : 'bg-amber-300/15 text-amber-200 border-amber-200/40 hover:bg-amber-300/25'
