@@ -1,22 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { auth0 } from '@/lib/auth0'
+import { getUserFromSession } from '@/lib/getUserFromSession'
 
 export async function GET(request: NextRequest) {
   try {
     const session = await auth0.getSession(request)
-    
-    if (!session?.user?.sub) {
-      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
-    }
-    
-    // Get user from database
-    const user = await prisma.user.findUnique({
-      where: { auth0Sub: session.user.sub }
-    })
-    
+    const user = await getUserFromSession(session)
+
     if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
     
     // Get today's tasks
@@ -55,18 +48,10 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const session = await auth0.getSession(request)
-    
-    if (!session?.user?.sub) {
-      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
-    }
-    
-    // Get user from database
-    const user = await prisma.user.findUnique({
-      where: { auth0Sub: session.user.sub }
-    })
-    
+    const user = await getUserFromSession(session)
+
     if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
     
     const body = await request.json()

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { auth0 } from '@/lib/auth0'
+import { getUserFromSession } from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma'
 
 // GET: Load user's food entries

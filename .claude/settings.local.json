@@ -39,7 +39,13 @@
       "Bash(cat:*)",
       "Bash(if not exist \"src\\lib\" mkdir \"src\\lib\")",
       "Bash(git rm:*)",
-      "Bash(del \"app\\api\\auth\\[auth0]\\route.ts\")"
+      "Bash(del \"app\\api\\auth\\[auth0]\\route.ts\")",
+      "Bash(curl -s https://resetbiology.com)",
+      "Bash(do)",
+      "Bash(if ! grep -q \"getUserFromSession\" \"$file\")",
+      "Bash(then)",
+      "Bash(echo:*)",
+      "Bash(fi)"
     ],
     "deny": [],
     "ask": [],

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth0 } from '@/lib/auth0'
+import { getUserFromSession} from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma'
 
 export async function GET(req: NextRequest) {
