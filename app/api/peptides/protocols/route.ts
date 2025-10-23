@@ -1,46 +1,16 @@
 import { NextResponse } from 'next/server'
 import { auth0 } from '@/lib/auth0'
 import { prisma } from '@/lib/prisma'
+import { getUserFromSession } from '@/lib/getUserFromSession'
 
 // GET: Load user's active peptide protocols
 export async function GET(request: Request) {
   try {
     const session = await auth0.getSession()
-
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    console.log('🔍 Auth0 Session User:', {
-      sub: session.user.sub,
-      email: session.user.email,
-      name: session.user.name
-    })
-
-    // Find user by Auth0 sub OR email
-    let user = await prisma.user.findUnique({
-      where: { auth0Sub: session.user.sub }
-    })
-
-    // If not found by auth0Sub, try by email
-    if (!user && session.user.email) {
-      user = await prisma.user.findUnique({
-        where: { email: session.user.email }
-      })
-
-      // Update auth0Sub if found by email
-      if (user) {
-        console.log('📝 Updating user auth0Sub from session')
-        user = await prisma.user.update({
-          where: { id: user.id },
-          data: { auth0Sub: session.user.sub }
-        })
-      }
-    }
+    const user = await getUserFromSession(session)
 
     if (!user) {
-      console.log('❌ User not found. Auth0 sub:', session.user.sub, 'Email:', session.user.email)
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     // Load active protocols with their doses
@@ -81,41 +51,10 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const session = await auth0.getSession()
-
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    console.log('🔍 Auth0 Session User:', {
-      sub: session.user.sub,
-      email: session.user.email,
-      name: session.user.name
-    })
-
-    // Find user by Auth0 sub OR email
-    let user = await prisma.user.findUnique({
-      where: { auth0Sub: session.user.sub }
-    })
-
-    // If not found by auth0Sub, try by email
-    if (!user && session.user.email) {
-      user = await prisma.user.findUnique({
-        where: { email: session.user.email }
-      })
-
-      // Update auth0Sub if found by email
-      if (user) {
-        console.log('📝 Updating user auth0Sub from session')
-        user = await prisma.user.update({
-          where: { id: user.id },
-          data: { auth0Sub: session.user.sub }
-        })
-      }
-    }
+    const user = await getUserFromSession(session)
 
     if (!user) {
-      console.log('❌ User not found. Auth0 sub:', session.user.sub, 'Email:', session.user.email)
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const body = await request.json()
@@ -220,41 +159,10 @@ export async function POST(request: Request) {
 export async function PATCH(request: Request) {
   try {
     const session = await auth0.getSession()
-
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    console.log('🔍 Auth0 Session User:', {
-      sub: session.user.sub,
-      email: session.user.email,
-      name: session.user.name
-    })
-
-    // Find user by Auth0 sub OR email
-    let user = await prisma.user.findUnique({
-      where: { auth0Sub: session.user.sub }
-    })
-
-    // If not found by auth0Sub, try by email
-    if (!user && session.user.email) {
-      user = await prisma.user.findUnique({
-        where: { email: session.user.email }
-      })
-
-      // Update auth0Sub if found by email
-      if (user) {
-        console.log('📝 Updating user auth0Sub from session')
-        user = await prisma.user.update({
-          where: { id: user.id },
-          data: { auth0Sub: session.user.sub }
-        })
-      }
-    }
+    const user = await getUserFromSession(session)
 
     if (!user) {
-      console.log('❌ User not found. Auth0 sub:', session.user.sub, 'Email:', session.user.email)
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const body = await request.json()
@@ -315,31 +223,10 @@ export async function PATCH(request: Request) {
 export async function DELETE(request: Request) {
   try {
     const session = await auth0.getSession()
-
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    // Find user
-    let user = await prisma.user.findUnique({
-      where: { auth0Sub: session.user.sub }
-    })
-
-    if (!user && session.user.email) {
-      user = await prisma.user.findUnique({
-        where: { email: session.user.email }
-      })
-
-      if (user) {
-        user = await prisma.user.update({
-          where: { id: user.id },
-          data: { auth0Sub: session.user.sub }
-        })
-      }
-    }
+    const user = await getUserFromSession(session)
 
     if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const { searchParams } = new URL(request.url)
