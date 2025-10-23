@@ -30,7 +30,7 @@ interface Particle {
 export function BreathOrbTest({ state, isInhale, progress, motionReduced, currentHoldDuration = 0, inhaleMs = 3000, exhaleMs = 3000 }: BreathOrbTestProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const particlesRef = useRef<Particle[]>([])
-  const animationFrameRef = useRef<number>()
+  const animationFrameRef = useRef<number | undefined>(undefined)
 
   // Get rainbow color palette based on state
   const getColorHues = () => {
