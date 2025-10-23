@@ -66,6 +66,7 @@ export async function getUserFromSession(session: SessionData | null | undefined
           email: auth0User.email || '',
           name: auth0User.name || auth0User.email?.split('@')[0] || 'User',
           emailVerified: auth0User.email_verified ? new Date() : null,
+          rbClientId: `rb_${Date.now()}_${Math.random().toString(36).substring(7)}`, // Generate unique ID
         }
       });
       console.log(`[getUserFromSession] ✅ User created successfully! ID: ${user.id}, Email: ${user.email}`);
