@@ -1,6 +1,5 @@
 // src/lib/auth0.ts
 import { Auth0Client } from '@auth0/nextjs-auth0/server';
-import { prisma } from '@/lib/prisma';
 
 // Auth0 v4 SDK uses standard environment variable names
 // No need to pass them explicitly if they follow the naming convention
@@ -11,6 +10,9 @@ export const auth0 = new Auth0Client({
       const auth0User = session.user;
 
       try {
+        // Lazy-load Prisma to avoid edge runtime issues
+        const { prisma } = await import('@/lib/prisma');
+
         // Check if user exists by Auth0 ID
         let user = await prisma.user.findUnique({
           where: { auth0Sub: auth0User.sub }
