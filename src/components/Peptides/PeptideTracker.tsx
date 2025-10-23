@@ -52,6 +52,8 @@ export function PeptideTracker() {
   const [customFrequency, setCustomFrequency] = useState('')
   const [customTiming, setCustomTiming] = useState('')
   const [customDuration, setCustomDuration] = useState('')
+  const [customTimesArray, setCustomTimesArray] = useState<string[]>([])
+  const [newCustomTimeInput, setNewCustomTimeInput] = useState<string>('08:00')
   const [peptideLibrary, setPeptideLibrary] = useState<Omit<PeptideProtocol, 'startDate' | 'currentCycle' | 'isActive'>[]>([])
   const [loadingLibrary, setLoadingLibrary] = useState(true)
   const [doseHistory, setDoseHistory] = useState<any[]>([])
@@ -819,11 +821,34 @@ export function PeptideTracker() {
     setCustomFrequency(protocol.frequency)
     setCustomTiming(protocol.timing)
     setCustomDuration(protocol.duration)
+
+    // Parse existing timing into times array
+    // protocol.timing might be like "08:00/20:00" or "AM" or "PM"
+    const timesArray: string[] = []
+    if (protocol.timing.includes('/')) {
+      // Already has specific times like "08:00/20:00"
+      timesArray.push(...protocol.timing.split('/').map(t => t.trim()))
+    } else if (protocol.timing.toLowerCase().includes('am')) {
+      timesArray.push('08:00')
+    } else if (protocol.timing.toLowerCase().includes('pm')) {
+      timesArray.push('20:00')
+    }
+    setCustomTimesArray(timesArray.length > 0 ? timesArray : ['08:00'])
+
     setShowEditProtocolModal(true)
   }
 
   const saveProtocolEdits = async () => {
     if (!editingProtocol) return
+
+    // Validate that at least one time is selected
+    if (customTimesArray.length === 0) {
+      alert('Please add at least one dose time')
+      return
+    }
+
+    // Join times array into string for storage
+    const timingString = customTimesArray.join('/')
 
     try {
       const response = await fetch('/api/peptides/protocols', {
@@ -833,7 +858,7 @@ export function PeptideTracker() {
           protocolId: editingProtocol.id,
           dosage: customDosage,
           frequency: customFrequency,
-          notes: `${customTiming} | ${customDuration}`
+          notes: `${timingString} | ${customDuration}`
         }),
         credentials: 'include'
       })
@@ -842,7 +867,7 @@ export function PeptideTracker() {
         // Update local state
         setCurrentProtocols(prev => prev.map(p =>
           p.id === editingProtocol.id
-            ? { ...p, dosage: customDosage, frequency: customFrequency, timing: customTiming, duration: customDuration }
+            ? { ...p, dosage: customDosage, frequency: customFrequency, timing: timingString, duration: customDuration }
             : p
         ))
         setShowEditProtocolModal(false)
@@ -1806,7 +1831,7 @@ export function PeptideTracker() {
                     type="text"
                     value={customDosage}
                     onChange={(e) => setCustomDosage(e.target.value)}
-                    className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-primary-400 focus:outline-none"
+                    className="w-full bg-primary-600/20 border border-primary-400/40 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-primary-400 focus:outline-none"
                     placeholder="e.g., 250mcg, 0.5mg"
                   />
                 </div>
@@ -1818,7 +1843,7 @@ export function PeptideTracker() {
                   <select
                     value={customFrequency}
                     onChange={(e) => setCustomFrequency(e.target.value)}
-                    className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
+                    className="w-full bg-primary-600/20 border border-primary-400/40 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
                   >
                     <option value="">Select frequency...</option>
                     <option value="Daily">Daily</option>
@@ -1832,20 +1857,56 @@ export function PeptideTracker() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Timing *
+                    Dose Times *
                   </label>
-                  <select
-                    value={customTiming}
-                    onChange={(e) => setCustomTiming(e.target.value)}
-                    className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
-                  >
-                    <option value="">Select timing...</option>
-                    <option value="AM">AM</option>
-                    <option value="PM">PM</option>
-                    <option value="AM/PM">Twice daily (AM/PM)</option>
-                    <option value="Before meals">Before meals</option>
-                    <option value="After meals">After meals</option>
-                  </select>
+
+                  {/* Display selected times */}
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {customTimesArray.map((time) => (
+                      <div
+                        key={time}
+                        className="flex items-center gap-2 bg-primary-500/30 text-primary-100 border border-primary-400/50 px-3 py-1.5 text-sm font-medium rounded-md"
+                      >
+                        <span>{time}</span>
+                        <button
+                          type="button"
+                          onClick={() => setCustomTimesArray(prev => prev.filter(t => t !== time))}
+                          className="text-primary-200 hover:text-white transition-colors"
+                          aria-label={`Remove ${time}`}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                    {customTimesArray.length === 0 && (
+                      <p className="text-xs text-gray-400">No dose times selected</p>
+                    )}
+                  </div>
+
+                  {/* Add new time */}
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="time"
+                      value={newCustomTimeInput}
+                      onChange={(e) => setNewCustomTimeInput(e.target.value)}
+                      className="flex-1 bg-primary-600/20 border border-primary-400/40 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none text-sm"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (newCustomTimeInput && !customTimesArray.includes(newCustomTimeInput)) {
+                          setCustomTimesArray(prev => [...prev, newCustomTimeInput].sort())
+                        }
+                      }}
+                      className="bg-primary-600/30 hover:bg-primary-600/50 text-primary-200 border border-primary-400/40 px-4 py-2 rounded-lg text-sm font-medium transition-all"
+                    >
+                      + Add Time
+                    </button>
+                  </div>
+
+                  <p className="text-xs text-gray-400 mt-2">
+                    Add specific times for your doses (e.g., 8:00 AM, 8:00 PM)
+                  </p>
                 </div>
 
                 <div>
@@ -1856,7 +1917,7 @@ export function PeptideTracker() {
                     type="text"
                     value={customDuration}
                     onChange={(e) => setCustomDuration(e.target.value)}
-                    className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-primary-400 focus:outline-none"
+                    className="w-full bg-primary-600/20 border border-primary-400/40 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-primary-400 focus:outline-none"
                     placeholder="e.g., 8 weeks, 30 days"
                   />
                 </div>
