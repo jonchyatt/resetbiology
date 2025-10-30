@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth0 } from '@/lib/auth0'
 import { getUserFromSession} from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma'
+import { scheduleNotificationsForProtocol, cancelNotificationsForProtocol } from '@/lib/scheduleNotifications'
 
 export async function GET(req: NextRequest) {
   const session = await auth0.getSession()
@@ -65,6 +66,23 @@ export async function POST(req: NextRequest) {
       reminderMinutes
     }
   })
+
+  // Schedule or cancel notifications based on pushEnabled
+  try {
+    if (pushEnabled) {
+      // Reschedule notifications with new preferences
+      await scheduleNotificationsForProtocol(user.id, protocolId, {
+        daysAhead: 30,
+        forceReschedule: true // Delete old notifications and create new ones
+      })
+    } else {
+      // Cancel all future notifications
+      await cancelNotificationsForProtocol(user.id, protocolId)
+    }
+  } catch (error) {
+    console.error('Error scheduling notifications:', error)
+    // Don't fail the request if scheduling fails
+  }
 
   return NextResponse.json({ success: true, preference })
 }

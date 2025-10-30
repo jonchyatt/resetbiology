@@ -336,6 +336,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
   const [customPeptideName, setCustomPeptideName] = useState<string>("");
 
   // New state for scheduling (addProtocol mode)
+  const [scheduleType, setScheduleType] = useState<string>('daily');
   const [selectedDays, setSelectedDays] = useState<string[]>(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']);
   const [selectedTimes, setSelectedTimes] = useState<string[]>(['08:00']);
   const [duration, setDuration] = useState<string>('8 weeks');
@@ -412,13 +413,30 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
     setSelectedTimes(prev => prev.filter(t => t !== time));
   };
 
-  const formatScheduleString = (days: string[], times: string[]): string => {
-    const allDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    const dayStr = days.length === 7
-      ? 'Daily'
-      : days.length === 5 && !days.includes('Sat') && !days.includes('Sun')
-      ? 'Mon-Fri'
-      : days.join('/');
+  const formatScheduleString = (type: string, days: string[], times: string[]): string => {
+    let dayStr: string;
+
+    switch (type) {
+      case 'daily':
+        dayStr = 'Daily';
+        break;
+      case 'everyOtherDay':
+        dayStr = 'Every other day';
+        break;
+      case 'monFri':
+        dayStr = 'Mon-Fri';
+        break;
+      case 'custom':
+        dayStr = days.length === 7
+          ? 'Daily'
+          : days.length === 5 && !days.includes('Sat') && !days.includes('Sun')
+          ? 'Mon-Fri'
+          : days.join('/');
+        break;
+      default:
+        dayStr = 'Daily';
+    }
+
     const timeStr = times.join('/');
     return `${dayStr} ${timeStr}`;
   };
@@ -426,7 +444,8 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
   const handleProtocolSave = async () => {
     if (!onSaveProtocol || mode !== 'addProtocol') return;
 
-    if (selectedDays.length === 0) {
+    // Validation: custom schedule requires selected days
+    if (scheduleType === 'custom' && selectedDays.length === 0) {
       alert('Please select at least one day of the week');
       return;
     }
@@ -449,14 +468,26 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
       // Use custom name if custom peptide selected, otherwise use library peptide name
       const finalPeptideName = isCustomPeptide ? customPeptideName.trim() : peptideName;
 
+      // Set days based on schedule type
+      let daysToSave: string[];
+      if (scheduleType === 'daily') {
+        daysToSave = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+      } else if (scheduleType === 'monFri') {
+        daysToSave = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+      } else if (scheduleType === 'everyOtherDay') {
+        daysToSave = []; // Empty for every other day (backend uses startDate instead)
+      } else {
+        daysToSave = selectedDays;
+      }
+
       await onSaveProtocol({
         peptideId: isCustomPeptide ? undefined : selectedPeptideId,
         peptideName: finalPeptideName,
         dosage: formattedDosage,
         schedule: {
-          days: selectedDays,
+          days: daysToSave,
           times: selectedTimes,
-          frequency: formatScheduleString(selectedDays, selectedTimes)
+          frequency: formatScheduleString(scheduleType, daysToSave, selectedTimes)
         },
         duration,
         vialAmount: `${inputs.peptideAmount}mg`,
@@ -689,78 +720,111 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
           {/* Scheduling Section - Only in addProtocol mode */}
           {mode === 'addProtocol' && (
             <>
-              <div className="bg-gradient-to-br from-primary-900/20 to-secondary-900/20 backdrop-blur-sm rounded-xl p-4 border border-primary-400/40">
-                <div className="flex items-center gap-2 pb-3">
-                  <span className="text-sm text-gray-300 font-medium">Dose Times</span>
-                </div>
-
-                {/* Display selected times */}
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {selectedTimes.map((time) => (
-                    <div
-                      key={time}
-                      className="flex items-center gap-2 bg-amber-300/45 text-amber-50 border border-amber-200/70 shadow-[0_0_14px_rgba(245,193,92,0.45)] px-3 py-1.5 text-sm font-medium rounded-md"
-                    >
-                      <span>{time}</span>
-                      <button
-                        type="button"
-                        onClick={() => removeTime(time)}
-                        className="text-amber-200 hover:text-white transition-colors"
-                        aria-label={`Remove ${time}`}
-                      >
-                        ×
-                      </button>
-                    </div>
-                  ))}
-                  {selectedTimes.length === 0 && (
-                    <p className="text-xs text-gray-400">No dose times selected</p>
+              <div className="bg-gradient-to-br from-primary-900/20 to-secondary-900/20 backdrop-blur-sm rounded-xl p-4 border border-primary-400/40 space-y-4">
+                {/* Frequency Selector */}
+                <div>
+                  <label className="block text-sm text-gray-300 font-medium mb-2">Dosing Frequency</label>
+                  <select
+                    value={scheduleType}
+                    onChange={(e) => setScheduleType(e.target.value)}
+                    className="w-full bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white focus:border-amber-400 focus:outline-none text-sm"
+                  >
+                    <option value="daily">Daily (Every Day)</option>
+                    <option value="everyOtherDay">Every Other Day</option>
+                    <option value="monFri">Mon-Fri (5 days/week)</option>
+                    <option value="custom">Custom Days</option>
+                  </select>
+                  {scheduleType === 'everyOtherDay' && (
+                    <p className="text-xs text-amber-300/80 mt-2 bg-amber-500/10 border border-amber-400/30 rounded px-2 py-1.5">
+                      <span className="font-semibold">Note:</span> Every other day alternates from your start date, so the day of week will shift. First dose starts today.
+                    </p>
                   )}
                 </div>
 
-                {/* Add new time */}
-                <div className="flex items-center gap-2">
-                  <input
-                    type="time"
-                    value={newTimeInput}
-                    onChange={(e) => setNewTimeInput(e.target.value)}
-                    className="flex-1 bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white focus:border-amber-400 focus:outline-none text-sm"
-                  />
-                  <button
-                    type="button"
-                    onClick={addTime}
-                    className="bg-amber-300/30 hover:bg-amber-300/45 text-amber-100 border border-amber-200/40 px-4 py-2 rounded-lg text-sm font-medium transition-all"
-                  >
-                    + Add Time
-                  </button>
+                {/* Day Picker - Only show for custom schedule */}
+                {scheduleType === 'custom' && (
+                  <div>
+                    <label className="block text-sm text-gray-300 font-medium mb-2">Select Days</label>
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
+                        <button
+                          key={day}
+                          type="button"
+                          onClick={() => toggleDay(day)}
+                          className={`flex-shrink-0 px-2.5 sm:px-3 py-1.5 text-xs font-semibold rounded-md border transition-all whitespace-nowrap ${
+                            selectedDays.includes(day)
+                              ? 'bg-amber-300/50 text-amber-50 border-amber-200/70 shadow-[0_0_18px_rgba(245,193,92,0.5)]'
+                              : 'bg-amber-300/15 text-amber-200 border-amber-200/40 hover:bg-amber-300/25'
+                          }`}
+                          aria-pressed={selectedDays.includes(day)}
+                        >
+                          {day}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Dose Times */}
+                <div>
+                  <label className="block text-sm text-gray-300 font-medium mb-2">Dose Times</label>
+
+                  {/* Display selected times */}
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {selectedTimes.map((time) => (
+                      <div
+                        key={time}
+                        className="flex items-center gap-2 bg-amber-300/45 text-amber-50 border border-amber-200/70 shadow-[0_0_14px_rgba(245,193,92,0.45)] px-3 py-1.5 text-sm font-medium rounded-md"
+                      >
+                        <span>{time}</span>
+                        <button
+                          type="button"
+                          onClick={() => removeTime(time)}
+                          className="text-amber-200 hover:text-white transition-colors"
+                          aria-label={`Remove ${time}`}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                    {selectedTimes.length === 0 && (
+                      <p className="text-xs text-gray-400">No dose times selected</p>
+                    )}
+                  </div>
+
+                  {/* Add new time */}
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="time"
+                      value={newTimeInput}
+                      onChange={(e) => setNewTimeInput(e.target.value)}
+                      className="flex-1 bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white focus:border-amber-400 focus:outline-none text-sm"
+                    />
+                    <button
+                      type="button"
+                      onClick={addTime}
+                      className="bg-amber-300/30 hover:bg-amber-300/45 text-amber-100 border border-amber-200/40 px-4 py-2 rounded-lg text-sm font-medium transition-all"
+                    >
+                      + Add Time
+                    </button>
+                  </div>
+
+                  <p className="text-xs text-gray-400 mt-2">
+                    Add specific times for your doses (e.g., 8:00 AM, 8:00 PM)
+                  </p>
                 </div>
 
-                <p className="text-xs text-gray-400 mt-2">
-                  Add specific times for your doses (e.g., 8:00 AM, 8:00 PM)
-                </p>
-                <div className="flex flex-wrap items-center gap-1.5 pb-1 mt-3">
-                  {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
-                    <button
-                      key={day}
-                      type="button"
-                      onClick={() => toggleDay(day)}
-                      className={`flex-shrink-0 px-2.5 sm:px-3 py-1.5 text-xs font-semibold rounded-md border transition-all whitespace-nowrap ${
-                        selectedDays.includes(day)
-                          ? 'bg-amber-300/50 text-amber-50 border-amber-200/70 shadow-[0_0_18px_rgba(245,193,92,0.5)]'
-                          : 'bg-amber-300/15 text-amber-200 border-amber-200/40 hover:bg-amber-300/25'
-                      }`}
-                      aria-pressed={selectedDays.includes(day)}
-                    >
-                      {day}
-                    </button>
-                  ))}
+                {/* Schedule Summary */}
+                <div className="bg-gray-800/30 rounded-lg px-3 py-2 border border-gray-600/20">
+                  <p className="text-xs text-gray-400 leading-snug">
+                    <span className="font-medium text-gray-300">Schedule:</span>{' '}
+                    {formatScheduleString(
+                      scheduleType,
+                      scheduleType === 'custom' ? selectedDays : [],
+                      selectedTimes
+                    )}
+                  </p>
                 </div>
-                <p className="mt-3 text-xs text-gray-400 leading-snug">
-                  <span className="font-medium text-gray-300">Schedule:</span> {selectedDays.length === 7 ? 'Daily' : selectedDays.join(', ') || 'No days selected'}
-                  {' at '}
-                  {selectedTimes.length === 0
-                    ? 'no specific times'
-                    : selectedTimes.join(', ')}
-                </p>
               </div>
 
             </>

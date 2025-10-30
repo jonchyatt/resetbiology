@@ -33,10 +33,19 @@ interface DoseEntry {
 }
 
 export function PeptideTracker() {
+  // Helper function to convert Date to local YYYY-MM-DD (not UTC)
+  const dateToLocalKey = (date: Date): string => {
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  }
+
   const [activeTab, setActiveTab] = useState<'current' | 'calendar'>('current')
   const [currentProtocols, setCurrentProtocols] = useState<PeptideProtocol[]>([])
   const [todaysDoses, setTodaysDoses] = useState<DoseEntry[]>([])
-  const getTodayKey = () => new Date().toISOString().split('T')[0]
+  // Get today's date in user's local timezone (not UTC)
+  const getTodayKey = () => dateToLocalKey(new Date())
   const [todayKey, setTodayKey] = useState<string>(getTodayKey)
   const [showScheduleModal, setShowScheduleModal] = useState(false)
   const [selectedProtocol, setSelectedProtocol] = useState<(PeptideProtocol & { scheduledDoseId?: string }) | null>(null)
@@ -75,9 +84,10 @@ export function PeptideTracker() {
       if (data.success && data.doses) {
         const completedToday = data.doses
           .map((dose: any) => {
-            const doseDateKey = dose.doseDate
+            // Use localDate if available (timezone-safe), otherwise fall back to doseDate conversion
+            const doseDateKey = dose.localDate || (dose.doseDate
               ? new Date(dose.doseDate).toISOString().split('T')[0]
-              : dayKey
+              : dayKey)
             if (doseDateKey !== dayKey) return null
 
             return {
@@ -175,7 +185,7 @@ export function PeptideTracker() {
 
         if (shouldSchedule) {
           futureDoses.push({
-            date: currentDate.toISOString().split('T')[0],
+            date: dateToLocalKey(currentDate),
             protocolName: protocol.name,
             completed: false
           })
@@ -194,10 +204,16 @@ export function PeptideTracker() {
 
     // Add completed/historical doses
     doseHistory.forEach((dose: any) => {
-      const rawDate = dose?.doseDate || dose?.createdAt || dose?.updatedAt
-      if (!rawDate) return
+      // Use localDate if available (timezone-safe), otherwise fall back to date conversion
+      let key: string;
+      if (dose?.localDate) {
+        key = dose.localDate;
+      } else {
+        const rawDate = dose?.doseDate || dose?.createdAt || dose?.updatedAt
+        if (!rawDate) return
+        key = new Date(rawDate).toISOString().split('T')[0]
+      }
 
-      const key = new Date(rawDate).toISOString().split('T')[0]
       if (!map.has(key)) {
         map.set(key, { count: 0, labels: new Set<string>(), completed: 0, pending: 0 })
       }
@@ -227,9 +243,15 @@ export function PeptideTracker() {
 
       // Check if this dose is already completed
       const alreadyCompleted = doseHistory.some((dose: any) => {
-        const doseDate = dose?.doseDate || dose?.createdAt || dose?.updatedAt
-        if (!doseDate) return false
-        const doseDateKey = new Date(doseDate).toISOString().split('T')[0]
+        // Use localDate if available, otherwise convert doseDate
+        let doseDateKey: string;
+        if (dose?.localDate) {
+          doseDateKey = dose.localDate;
+        } else {
+          const doseDate = dose?.doseDate || dose?.createdAt || dose?.updatedAt
+          if (!doseDate) return false
+          doseDateKey = new Date(doseDate).toISOString().split('T')[0]
+        }
         const doseName = dose?.user_peptide_protocols?.peptides?.name ?? dose?.protocolName ?? ''
         return doseDateKey === key && doseName === futureDose.protocolName
       })
@@ -266,7 +288,7 @@ export function PeptideTracker() {
 
     for (let day = 1; day <= daysInMonth; day += 1) {
       const date = new Date(year, month, day)
-      const key = date.toISOString().split('T')[0]
+      const key = dateToLocalKey(date)
       const summary = doseHistoryByDate.get(key)
 
       cells.push({
@@ -326,12 +348,18 @@ export function PeptideTracker() {
 
     const frequency = protocol.frequency.toLowerCase()
 
-    // Check if already completed today
-    const todayKey = today.toISOString().split('T')[0]
+    // Check if already completed today - use local date
+    const todayKey = getTodayKey()
     const completedToday = doseHistory.some((dose: any) => {
-      const doseDate = dose?.doseDate || dose?.createdAt || dose?.updatedAt
-      if (!doseDate) return false
-      const doseDateKey = new Date(doseDate).toISOString().split('T')[0]
+      // Use localDate if available, otherwise convert doseDate
+      let doseDateKey: string;
+      if (dose?.localDate) {
+        doseDateKey = dose.localDate;
+      } else {
+        const doseDate = dose?.doseDate || dose?.createdAt || dose?.updatedAt
+        if (!doseDate) return false
+        doseDateKey = new Date(doseDate).toISOString().split('T')[0]
+      }
       const doseName = dose?.user_peptide_protocols?.peptides?.name ?? dose?.protocolName ?? ''
       return doseDateKey === todayKey && doseName === protocol.name
     })
@@ -920,7 +948,8 @@ export function PeptideTracker() {
         console.log('✅ Dose logged successfully')
 
         // Create the completed dose entry
-        const doseKey = now.toISOString().split('T')[0]
+        // Use the same localDate we sent to the API (timezone-safe)
+        const doseKey = `${year}-${month}-${day}`
 
         const newDose: DoseEntry = {
           id: data.dose?.id || `${selectedProtocol.id}-logged-${Date.now()}`,

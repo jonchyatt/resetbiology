@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { auth0 } from '@/lib/auth0'
 import { prisma } from '@/lib/prisma'
 import { getUserFromSession } from '@/lib/getUserFromSession'
+import { scheduleNotificationsForProtocol, cancelNotificationsForProtocol } from '@/lib/scheduleNotifications'
 
 // GET: Load user's active peptide protocols
 export async function GET(request: Request) {
@@ -141,6 +142,27 @@ export async function POST(request: Request) {
       }
     })
 
+    // Create default notification preferences (enabled by default)
+    try {
+      await prisma.notificationPreference.create({
+        data: {
+          userId: user.id,
+          protocolId: protocol.id,
+          pushEnabled: true,
+          emailEnabled: false,
+          reminderMinutes: 15
+        }
+      })
+
+      // Schedule notifications for the next 30 days
+      await scheduleNotificationsForProtocol(user.id, protocol.id, {
+        daysAhead: 30
+      })
+    } catch (error) {
+      console.error('Error setting up notifications for new protocol:', error)
+      // Don't fail the request if notification setup fails
+    }
+
     return NextResponse.json({
       success: true,
       protocol
@@ -205,6 +227,25 @@ export async function PATCH(request: Request) {
       }
     })
 
+    // Handle notification scheduling when protocol is activated/deactivated
+    if (typeof isActive === 'boolean') {
+      try {
+        if (isActive) {
+          // Protocol reactivated - reschedule notifications
+          await scheduleNotificationsForProtocol(user.id, protocolId, {
+            daysAhead: 30,
+            forceReschedule: true
+          })
+        } else {
+          // Protocol paused - cancel future notifications
+          await cancelNotificationsForProtocol(user.id, protocolId)
+        }
+      } catch (error) {
+        console.error('Error updating notifications after protocol change:', error)
+        // Don't fail the request if notification update fails
+      }
+    }
+
     return NextResponse.json({
       success: true,
       protocol: updatedProtocol
@@ -257,6 +298,14 @@ export async function DELETE(request: Request) {
         updatedAt: new Date()
       }
     })
+
+    // Cancel all future notifications for this protocol
+    try {
+      await cancelNotificationsForProtocol(user.id, protocolId)
+    } catch (error) {
+      console.error('Error canceling notifications:', error)
+      // Don't fail the request if cancellation fails
+    }
 
     return NextResponse.json({
       success: true,
