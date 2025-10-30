@@ -723,16 +723,16 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
               <div className="bg-gradient-to-br from-primary-900/20 to-secondary-900/20 backdrop-blur-sm rounded-xl p-4 border border-primary-400/40 space-y-4">
                 {/* Frequency Selector */}
                 <div>
-                  <label className="block text-sm text-gray-300 font-medium mb-2">Dosing Frequency</label>
+                  <label className="block text-sm text-amber-300 font-medium mb-2">Dosing Frequency</label>
                   <select
                     value={scheduleType}
                     onChange={(e) => setScheduleType(e.target.value)}
-                    className="w-full bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white focus:border-amber-400 focus:outline-none text-sm"
+                    className="w-full bg-primary-600/25 border border-amber-400/40 rounded-lg px-3 py-2.5 text-amber-100 focus:border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-400/30 transition-all"
                   >
-                    <option value="daily">Daily (Every Day)</option>
-                    <option value="everyOtherDay">Every Other Day</option>
-                    <option value="monFri">Mon-Fri (5 days/week)</option>
-                    <option value="custom">Custom Days</option>
+                    <option value="daily" className="bg-gray-800 text-amber-100">Daily (Every Day)</option>
+                    <option value="everyOtherDay" className="bg-gray-800 text-amber-100">Every Other Day</option>
+                    <option value="monFri" className="bg-gray-800 text-amber-100">Mon-Fri (5 days/week)</option>
+                    <option value="custom" className="bg-gray-800 text-amber-100">Custom Days</option>
                   </select>
                   {scheduleType === 'everyOtherDay' && (
                     <p className="text-xs text-amber-300/80 mt-2 bg-amber-500/10 border border-amber-400/30 rounded px-2 py-1.5">
@@ -744,7 +744,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                 {/* Day Picker - Only show for custom schedule */}
                 {scheduleType === 'custom' && (
                   <div>
-                    <label className="block text-sm text-gray-300 font-medium mb-2">Select Days</label>
+                    <label className="block text-sm text-amber-300 font-medium mb-2">Select Days</label>
                     <div className="flex flex-wrap items-center gap-1.5">
                       {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
                         <button
@@ -767,7 +767,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
 
                 {/* Dose Times */}
                 <div>
-                  <label className="block text-sm text-gray-300 font-medium mb-2">Dose Times</label>
+                  <label className="block text-sm text-amber-300 font-medium mb-2">Dose Times</label>
 
                   {/* Display selected times */}
                   <div className="flex flex-wrap gap-2 mb-3">
