@@ -694,7 +694,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                   aria-label="Dose unit"
                   value={inputs.doseUnit}
                   onChange={(e) => setInputs((s) => ({ ...s, doseUnit: e.target.value as "mg" | "mcg" }))}
-                  className="w-20 bg-primary-600/25 border border-amber-400/40 rounded-lg px-3 py-2 text-amber-100 focus:border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-400/30 transition-all"
+                  className="w-24 bg-primary-600/25 border border-amber-400/40 rounded-lg px-3 py-2 text-amber-100 focus:border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-400/30 transition-all"
                 >
                   <option value="mcg" className="bg-gray-800 text-amber-100">mcg</option>
                   <option value="mg" className="bg-gray-800 text-amber-100">mg</option>
