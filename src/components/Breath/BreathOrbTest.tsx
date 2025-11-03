@@ -31,6 +31,12 @@ export function BreathOrbTest({ state, isInhale, progress, motionReduced, curren
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const particlesRef = useRef<Particle[]>([])
   const animationFrameRef = useRef<number | undefined>(undefined)
+  const stateRef = useRef({ state, isInhale }) // Track current state for animation loop
+
+  // Update state ref whenever props change
+  useEffect(() => {
+    stateRef.current = { state, isInhale }
+  }, [state, isInhale])
 
   // Get rainbow color palette based on state
   const getColorHues = () => {
@@ -117,19 +123,19 @@ export function BreathOrbTest({ state, isInhale, progress, motionReduced, curren
     const centerY = height / 2
     const maxRadius = 204 // Increased from 120 to 204 (1.7x) - particles reach edge
 
-    // Particle emission settings - INCREASED for fuller nebula effect
-    const emissionRate = 80 // particles per second (4x Unity for denser effect)
+    // Particle emission settings - ROLLBACK to working values
+    const emissionRate = 120 // particles per second (balanced performance)
     let lastEmitTime = Date.now()
     const particleLifetime = 8000 // 8 seconds - MUCH longer life (3x-4x longer spread)
 
     // ONE-TIME initialization with gentle mist of particles
     // These particles PERSIST across all breath cycles
     if (particlesRef.current.length === 0) {
-      // Pre-populate with particles as a glowing mist throughout orb
-      for (let i = 0; i < 150; i++) {
+      // Pre-populate with balanced number of particles
+      for (let i = 0; i < 200; i++) {
         const angle = Math.random() * Math.PI * 2
         const distance = Math.random() * 119 // Spread throughout orb (70 * 1.7)
-        const speed = 0.08 + Math.random() * 0.12 // Faster initial speed
+        const speed = 0.15 + Math.random() * 0.25 // Original working speed
 
         // Use current state's colors
         const colorHues = getColorHues()
@@ -141,7 +147,7 @@ export function BreathOrbTest({ state, isInhale, progress, motionReduced, curren
           y: centerY + Math.sin(angle) * distance,
           vx: Math.cos(angle) * speed,
           vy: Math.sin(angle) * speed,
-          size: 1.5 + Math.random() * 1,
+          size: 0.8 + Math.random() * 0.8, // Smaller: 0.8-1.6px (was 1.5-2.5px)
           baseSize: 2,
           life: 1.0, // Full life - won't fade until breathing starts
           hue: randomHue,
@@ -162,7 +168,7 @@ export function BreathOrbTest({ state, isInhale, progress, motionReduced, curren
       const spawnRadius = Math.random() * 2 // Very small spawn area
 
       // Moderate outward velocity - same as initial particles
-      const speed = 0.08 + Math.random() * 0.12 // Match initial particle speed
+      const speed = 0.15 + Math.random() * 0.25 // Match initial particle speed
       const velocityAngle = spawnAngle + (Math.random() - 0.5) * 0.3
 
       const particle: Particle = {
@@ -170,7 +176,7 @@ export function BreathOrbTest({ state, isInhale, progress, motionReduced, curren
         y: centerY + Math.sin(spawnAngle) * spawnRadius,
         vx: Math.cos(velocityAngle) * speed,
         vy: Math.sin(velocityAngle) * speed,
-        size: 1.5 + Math.random() * 1, // Smaller particles (1.5-2.5px)
+        size: 0.8 + Math.random() * 0.8, // Smaller: 0.8-1.6px (was 1.5-2.5px)
         baseSize: 2,
         life: 1.0,
         hue: randomHue,
@@ -212,14 +218,21 @@ export function BreathOrbTest({ state, isInhale, progress, motionReduced, curren
         const distFromCenter = Math.sqrt(dx * dx + dy * dy)
 
         // BREATHING-REACTIVE MOVEMENT
+        // Exhale: Full speed outward
+        // Inhale: Half speed inward (net outward movement over time)
         let velocityMultiplier = 1 // Default: always moving outward
 
-        if (state === 'breathing_active') {
-          if (isInhale) {
-            // INHALE: Reverse direction (particles flow INWARD)
-            velocityMultiplier = -1
+        // Use stateRef to get CURRENT state (not stale closure)
+        const currentState = stateRef.current.state
+        const currentIsInhale = stateRef.current.isInhale
+
+        if (currentState === 'breathing_active') {
+          if (currentIsInhale) {
+            // INHALE: Reverse direction at HALF SPEED (particles flow INWARD slower)
+            // This creates net outward movement: out at 1x, in at 0.5x = net 0.5x outward
+            velocityMultiplier = -0.5
           } else {
-            // EXHALE: Normal direction (particles flow OUTWARD)
+            // EXHALE: Full speed outward
             velocityMultiplier = 1
           }
         }
@@ -265,6 +278,92 @@ export function BreathOrbTest({ state, isInhale, progress, motionReduced, curren
 
   return (
     <div className="relative flex items-center justify-center z-0">
+      {/* Static yellow glow behind everything for differentiation */}
+      <div
+        className="absolute w-64 h-64 rounded-full pointer-events-none"
+        style={{
+          background: 'radial-gradient(circle, rgba(251, 191, 36, 0.25) 0%, rgba(251, 191, 36, 0.12) 50%, transparent 100%)',
+          filter: 'blur(50px)'
+        }}
+      />
+
+      {/* Breathing-reactive glow - OUTSIDE motion.div so it doesn't scale */}
+      <motion.div
+        className="absolute w-64 h-64 rounded-full pointer-events-none"
+        style={{
+          background: `radial-gradient(circle, ${
+            // Center: Full intensity - reaches all the way to edge
+            state === 'breathing_active'
+              ? (isInhale ? 'rgba(59, 130, 246, 0.7)' : 'rgba(251, 146, 60, 0.7)')
+              : state === 'exhale_hold_active'
+              ? 'rgba(251, 146, 60, 0.84)'
+              : state === 'inhale_hold_active'
+              ? 'rgba(52, 211, 153, 0.84)'
+              : 'rgba(139, 92, 246, 0.7)'
+          } 0%, ${
+            // 20%: 80% intensity
+            state === 'breathing_active'
+              ? (isInhale ? 'rgba(59, 130, 246, 0.56)' : 'rgba(251, 146, 60, 0.56)')
+              : state === 'exhale_hold_active'
+              ? 'rgba(251, 146, 60, 0.67)'
+              : state === 'inhale_hold_active'
+              ? 'rgba(52, 211, 153, 0.67)'
+              : 'rgba(139, 92, 246, 0.56)'
+          } 20%, ${
+            // 35%: 60% intensity
+            state === 'breathing_active'
+              ? (isInhale ? 'rgba(59, 130, 246, 0.42)' : 'rgba(251, 146, 60, 0.42)')
+              : state === 'exhale_hold_active'
+              ? 'rgba(251, 146, 60, 0.5)'
+              : state === 'inhale_hold_active'
+              ? 'rgba(52, 211, 153, 0.5)'
+              : 'rgba(139, 92, 246, 0.42)'
+          } 35%, ${
+            // 50%: 40% intensity
+            state === 'breathing_active'
+              ? (isInhale ? 'rgba(59, 130, 246, 0.28)' : 'rgba(251, 146, 60, 0.28)')
+              : state === 'exhale_hold_active'
+              ? 'rgba(251, 146, 60, 0.34)'
+              : state === 'inhale_hold_active'
+              ? 'rgba(52, 211, 153, 0.34)'
+              : 'rgba(139, 92, 246, 0.28)'
+          } 50%, ${
+            // 70%: 15% intensity
+            state === 'breathing_active'
+              ? (isInhale ? 'rgba(59, 130, 246, 0.11)' : 'rgba(251, 146, 60, 0.11)')
+              : state === 'exhale_hold_active'
+              ? 'rgba(251, 146, 60, 0.13)'
+              : state === 'inhale_hold_active'
+              ? 'rgba(52, 211, 153, 0.13)'
+              : 'rgba(139, 92, 246, 0.11)'
+          } 70%, ${
+            // 85%: 5% intensity
+            state === 'breathing_active'
+              ? (isInhale ? 'rgba(59, 130, 246, 0.04)' : 'rgba(251, 146, 60, 0.04)')
+              : state === 'exhale_hold_active'
+              ? 'rgba(251, 146, 60, 0.05)'
+              : state === 'inhale_hold_active'
+              ? 'rgba(52, 211, 153, 0.05)'
+              : 'rgba(139, 92, 246, 0.04)'
+          } 85%, ${
+            // 100%: Still visible at edge (2% intensity)
+            state === 'breathing_active'
+              ? (isInhale ? 'rgba(59, 130, 246, 0.02)' : 'rgba(251, 146, 60, 0.02)')
+              : state === 'exhale_hold_active'
+              ? 'rgba(251, 146, 60, 0.03)'
+              : state === 'inhale_hold_active'
+              ? 'rgba(52, 211, 153, 0.03)'
+              : 'rgba(139, 92, 246, 0.02)'
+          } 100%)`,
+          filter: 'blur(60px)'
+        }}
+        initial={false}
+        animate={{
+          opacity: state === 'idle' ? 0 : 1
+        }}
+        transition={{ duration: 0.5 }}
+      />
+
       {/* Progress Ring */}
       <svg
         className="absolute w-80 h-80 transform -rotate-90"
@@ -335,23 +434,6 @@ export function BreathOrbTest({ state, isInhale, progress, motionReduced, curren
             style={{
               filter: 'blur(1px)',
               mixBlendMode: 'screen'
-            }}
-          />
-
-          {/* Strong radial gradient glow (4x brighter) - fills entire orb */}
-          <div
-            className="absolute inset-0 w-full h-full rounded-full pointer-events-none"
-            style={{
-              background: `radial-gradient(circle, ${
-                state === 'breathing_active'
-                  ? (isInhale ? 'rgba(59, 130, 246, 0.2)' : 'rgba(251, 146, 60, 0.2)')
-                  : state === 'exhale_hold_active'
-                  ? 'rgba(251, 146, 60, 0.24)'
-                  : state === 'inhale_hold_active'
-                  ? 'rgba(52, 211, 153, 0.24)'
-                  : 'rgba(139, 92, 246, 0.2)'
-              } 0%, transparent 100%)`,
-              filter: 'blur(40px)'
             }}
           />
         </motion.div>

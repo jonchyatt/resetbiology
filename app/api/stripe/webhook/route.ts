@@ -33,13 +33,15 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true, note: 'Missing signature or secret' }, { status: 200 });
   }
 
-  const payload = await req.text();
-  console.log('[webhook] Payload length:', payload.length);
+  // Read as buffer to preserve exact bytes for signature verification
+  const buf = await req.arrayBuffer();
+  const rawBody = Buffer.from(buf);
+  console.log('[webhook] Payload length:', rawBody.length);
 
   let event: Stripe.Event;
 
   try {
-    event = stripe.webhooks.constructEvent(payload, sig, secret);
+    event = stripe.webhooks.constructEvent(rawBody, sig, secret);
     console.log('[webhook] event type:', event.type);
   } catch (err: any) {
     console.error('[webhook] Verification failed:', err.message);
