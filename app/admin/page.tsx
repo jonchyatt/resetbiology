@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Database, Dumbbell, Apple, Syringe, Settings, Package } from "lucide-react"
+import { Database, Dumbbell, Apple, Syringe, Settings, Package, ShoppingCart } from "lucide-react"
 
 export default function AdminDashboard() {
   return (
@@ -145,6 +145,22 @@ export default function AdminDashboard() {
                 </p>
                 <div className="text-purple-300 font-medium group-hover:text-purple-200 transition-colors">
                   Manage Store →
+                </div>
+              </div>
+            </Link>
+
+            {/* Order Management */}
+            <Link href="/admin/orders" className="group">
+              <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-amber-400/30 shadow-2xl hover:shadow-amber-400/20 group-hover:scale-105 transition-all duration-300">
+                <div className="flex items-center mb-4">
+                  <ShoppingCart className="w-8 h-8 text-amber-400 mr-3" />
+                  <h3 className="text-xl font-bold text-white">Orders</h3>
+                </div>
+                <p className="text-gray-300 mb-4">
+                  View and fulfill customer orders. Update shipping status and add tracking numbers.
+                </p>
+                <div className="text-amber-300 font-medium group-hover:text-amber-200 transition-colors">
+                  Manage Orders →
                 </div>
               </div>
             </Link>
