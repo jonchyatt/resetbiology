@@ -13,22 +13,37 @@ export async function POST(req: Request) {
 
   const stripe = getStripe();
   if (!stripe) {
+    console.error('[webhook] Stripe not configured');
     return NextResponse.json({ ok: true, note: 'Stripe not configured' }, { status: 200 });
   }
 
   const sig = req.headers.get('stripe-signature');
   const secret = getStripeWebhookSecret();
+
+  // Enhanced debugging
+  console.log('[webhook] Has signature:', !!sig);
+  console.log('[webhook] Has secret:', !!secret);
+  if (secret) {
+    console.log('[webhook] Secret starts with:', secret.substring(0, 10));
+    console.log('[webhook] Secret length:', secret.length);
+  }
+
   if (!sig || !secret) {
+    console.error('[webhook] Missing signature or secret');
     return NextResponse.json({ ok: true, note: 'Missing signature or secret' }, { status: 200 });
   }
 
   const payload = await req.text();
+  console.log('[webhook] Payload length:', payload.length);
+
   let event: Stripe.Event;
 
   try {
     event = stripe.webhooks.constructEvent(payload, sig, secret);
     console.log('[webhook] event type:', event.type);
   } catch (err: any) {
+    console.error('[webhook] Verification failed:', err.message);
+    console.error('[webhook] Error details:', err);
     return NextResponse.json(
       { ok: false, error: `Webhook signature verification failed: ${err.message}` },
       { status: 400 },
