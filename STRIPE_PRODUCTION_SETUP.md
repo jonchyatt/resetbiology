@@ -2,6 +2,8 @@
 
 This guide walks you through moving from test mode to production for your Reset Biology checkout system.
 
+**Last Updated:** November 3, 2025
+
 ## What Was Fixed
 
 ✅ **Shipping Address Collection** - Checkout now collects customer shipping addresses
