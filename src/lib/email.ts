@@ -1,0 +1,348 @@
+import { Resend } from 'resend';
+
+// Initialize Resend with API key from environment variables
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+
+interface OrderEmailData {
+  orderId: string;
+  orderNumber: string;
+  email: string;
+  shippingName: string;
+  shippingLine1: string;
+  shippingLine2?: string;
+  shippingCity: string;
+  shippingState: string;
+  shippingPostalCode: string;
+  shippingCountry: string;
+  productName: string;
+  amountTotal: number;
+  currency: string;
+}
+
+interface ShippingNotificationData {
+  email: string;
+  orderId: string;
+  orderNumber: string;
+  trackingNumber?: string;
+  trackingUrl?: string;
+  productName: string;
+}
+
+/**
+ * Send order confirmation email to customer
+ */
+export async function sendOrderConfirmationEmail(data: OrderEmailData) {
+  if (!resend) {
+    console.warn('[email] Resend not configured, skipping order confirmation email');
+    return { success: false, error: 'Email service not configured' };
+  }
+
+  try {
+    const amount = (data.amountTotal / 100).toFixed(2);
+
+    const emailHtml = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Order Confirmation - Reset Biology</title>
+        </head>
+        <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f3f4f6;">
+          <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f3f4f6; padding: 40px 20px;">
+            <tr>
+              <td align="center">
+                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                  <!-- Header -->
+                  <tr>
+                    <td style="background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%); padding: 40px; text-align: center; border-radius: 8px 8px 0 0;">
+                      <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 600;">Order Confirmed!</h1>
+                    </td>
+                  </tr>
+
+                  <!-- Content -->
+                  <tr>
+                    <td style="padding: 40px;">
+                      <p style="margin: 0 0 20px; font-size: 16px; color: #374151; line-height: 1.6;">
+                        Hi <strong>${data.shippingName}</strong>,
+                      </p>
+
+                      <p style="margin: 0 0 30px; font-size: 16px; color: #374151; line-height: 1.6;">
+                        Thank you for your order! We've received your payment and will process your order shortly.
+                      </p>
+
+                      <!-- Order Details -->
+                      <div style="background-color: #f9fafb; border-radius: 6px; padding: 20px; margin-bottom: 30px;">
+                        <h2 style="margin: 0 0 15px; font-size: 18px; color: #111827; font-weight: 600;">Order Details</h2>
+                        <table width="100%" cellpadding="5" cellspacing="0">
+                          <tr>
+                            <td style="color: #6b7280; font-size: 14px;">Order Number:</td>
+                            <td style="color: #111827; font-size: 14px; font-weight: 600; text-align: right;">${data.orderNumber}</td>
+                          </tr>
+                          <tr>
+                            <td style="color: #6b7280; font-size: 14px;">Product:</td>
+                            <td style="color: #111827; font-size: 14px; text-align: right;">${data.productName}</td>
+                          </tr>
+                          <tr>
+                            <td style="color: #6b7280; font-size: 14px;">Total:</td>
+                            <td style="color: #111827; font-size: 16px; font-weight: 700; text-align: right;">$${amount} ${data.currency.toUpperCase()}</td>
+                          </tr>
+                        </table>
+                      </div>
+
+                      <!-- Shipping Address -->
+                      <div style="background-color: #f9fafb; border-radius: 6px; padding: 20px; margin-bottom: 30px;">
+                        <h2 style="margin: 0 0 15px; font-size: 18px; color: #111827; font-weight: 600;">Shipping Address</h2>
+                        <p style="margin: 0; font-size: 14px; color: #374151; line-height: 1.6;">
+                          ${data.shippingName}<br>
+                          ${data.shippingLine1}<br>
+                          ${data.shippingLine2 ? `${data.shippingLine2}<br>` : ''}
+                          ${data.shippingCity}, ${data.shippingState} ${data.shippingPostalCode}<br>
+                          ${data.shippingCountry}
+                        </p>
+                      </div>
+
+                      <p style="margin: 0 0 20px; font-size: 14px; color: #6b7280; line-height: 1.6;">
+                        You'll receive another email with tracking information once your order ships.
+                      </p>
+
+                      <p style="margin: 0; font-size: 14px; color: #6b7280; line-height: 1.6;">
+                        If you have any questions, reply to this email or visit our support page.
+                      </p>
+                    </td>
+                  </tr>
+
+                  <!-- Footer -->
+                  <tr>
+                    <td style="background-color: #f9fafb; padding: 30px; text-align: center; border-radius: 0 0 8px 8px; border-top: 1px solid #e5e7eb;">
+                      <p style="margin: 0 0 10px; font-size: 12px; color: #9ca3af;">
+                        Reset Biology<br>
+                        © ${new Date().getFullYear()} All rights reserved
+                      </p>
+                      <p style="margin: 0; font-size: 12px; color: #9ca3af;">
+                        <a href="https://resetbiology.com" style="color: #0d9488; text-decoration: none;">Visit our website</a>
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </body>
+      </html>
+    `;
+
+    const result = await resend.emails.send({
+      from: 'Reset Biology <orders@resetbiology.com>',
+      to: data.email,
+      subject: `Order Confirmation - ${data.orderNumber}`,
+      html: emailHtml,
+    });
+
+    console.log('[email] Order confirmation sent to', data.email, result);
+    return { success: true, data: result };
+  } catch (error) {
+    console.error('[email] Failed to send order confirmation:', error);
+    return { success: false, error };
+  }
+}
+
+/**
+ * Send new order notification to seller
+ */
+export async function sendSellerOrderNotification(data: OrderEmailData) {
+  if (!resend) {
+    console.warn('[email] Resend not configured, skipping seller notification');
+    return { success: false, error: 'Email service not configured' };
+  }
+
+  try {
+    const amount = (data.amountTotal / 100).toFixed(2);
+    const sellerEmail = process.env.SELLER_EMAIL || 'jonchyatt@gmail.com';
+
+    const emailHtml = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <title>New Order - Reset Biology</title>
+        </head>
+        <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f3f4f6;">
+          <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f3f4f6; padding: 40px 20px;">
+            <tr>
+              <td align="center">
+                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                  <tr>
+                    <td style="background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%); padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
+                      <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 600;">🎉 New Order Received!</h1>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="padding: 30px;">
+                      <h2 style="margin: 0 0 20px; font-size: 18px; color: #111827;">Order #${data.orderNumber}</h2>
+
+                      <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin-bottom: 20px;">
+                        <p style="margin: 0; font-size: 14px; color: #78350f; font-weight: 600;">
+                          Action Required: Process and fulfill this order
+                        </p>
+                      </div>
+
+                      <table width="100%" cellpadding="8" cellspacing="0" style="border: 1px solid #e5e7eb; border-radius: 6px;">
+                        <tr style="background-color: #f9fafb;">
+                          <td colspan="2" style="padding: 12px; font-size: 14px; font-weight: 600; color: #111827; border-bottom: 1px solid #e5e7eb;">
+                            Order Details
+                          </td>
+                        </tr>
+                        <tr>
+                          <td style="padding: 8px 12px; font-size: 13px; color: #6b7280;">Product:</td>
+                          <td style="padding: 8px 12px; font-size: 13px; color: #111827; font-weight: 600;">${data.productName}</td>
+                        </tr>
+                        <tr style="background-color: #f9fafb;">
+                          <td style="padding: 8px 12px; font-size: 13px; color: #6b7280;">Amount:</td>
+                          <td style="padding: 8px 12px; font-size: 14px; color: #111827; font-weight: 700;">$${amount} ${data.currency.toUpperCase()}</td>
+                        </tr>
+                        <tr>
+                          <td style="padding: 8px 12px; font-size: 13px; color: #6b7280;">Customer Email:</td>
+                          <td style="padding: 8px 12px; font-size: 13px; color: #111827;">${data.email}</td>
+                        </tr>
+                      </table>
+
+                      <h3 style="margin: 25px 0 10px; font-size: 16px; color: #111827;">Shipping Address</h3>
+                      <div style="background-color: #f9fafb; border-radius: 6px; padding: 15px;">
+                        <p style="margin: 0; font-size: 14px; color: #374151; line-height: 1.6;">
+                          <strong>${data.shippingName}</strong><br>
+                          ${data.shippingLine1}<br>
+                          ${data.shippingLine2 ? `${data.shippingLine2}<br>` : ''}
+                          ${data.shippingCity}, ${data.shippingState} ${data.shippingPostalCode}<br>
+                          ${data.shippingCountry}
+                        </p>
+                      </div>
+
+                      <div style="margin-top: 30px; text-align: center;">
+                        <a href="https://resetbiology.com/admin/orders" style="display: inline-block; background-color: #0d9488; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 14px;">
+                          View Order in Admin Panel
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="background-color: #f9fafb; padding: 20px; text-align: center; border-radius: 0 0 8px 8px; border-top: 1px solid #e5e7eb;">
+                      <p style="margin: 0; font-size: 12px; color: #9ca3af;">
+                        This is an automated notification from Reset Biology
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </body>
+      </html>
+    `;
+
+    const result = await resend.emails.send({
+      from: 'Reset Biology Orders <orders@resetbiology.com>',
+      to: sellerEmail,
+      subject: `🎉 New Order #${data.orderNumber}`,
+      html: emailHtml,
+    });
+
+    console.log('[email] Seller notification sent to', sellerEmail, result);
+    return { success: true, data: result };
+  } catch (error) {
+    console.error('[email] Failed to send seller notification:', error);
+    return { success: false, error };
+  }
+}
+
+/**
+ * Send shipping confirmation email to customer
+ */
+export async function sendShippingConfirmationEmail(data: ShippingNotificationData) {
+  if (!resend) {
+    console.warn('[email] Resend not configured, skipping shipping confirmation email');
+    return { success: false, error: 'Email service not configured' };
+  }
+
+  try {
+    const trackingInfo = data.trackingUrl
+      ? `<p style="margin: 20px 0; text-align: center;">
+           <a href="${data.trackingUrl}" style="display: inline-block; background-color: #0d9488; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+             Track Your Package
+           </a>
+         </p>`
+      : data.trackingNumber
+      ? `<p style="margin: 20px 0; font-size: 14px; color: #374151;">
+           <strong>Tracking Number:</strong> ${data.trackingNumber}
+         </p>`
+      : '';
+
+    const emailHtml = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <title>Order Shipped - Reset Biology</title>
+        </head>
+        <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f3f4f6;">
+          <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f3f4f6; padding: 40px 20px;">
+            <tr>
+              <td align="center">
+                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                  <tr>
+                    <td style="background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%); padding: 40px; text-align: center; border-radius: 8px 8px 0 0;">
+                      <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 600;">📦 Your Order Has Shipped!</h1>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="padding: 40px;">
+                      <p style="margin: 0 0 20px; font-size: 16px; color: #374151; line-height: 1.6;">
+                        Great news! Your order has been shipped and is on its way to you.
+                      </p>
+
+                      <div style="background-color: #f0fdfa; border-radius: 6px; padding: 20px; margin-bottom: 30px; border: 1px solid #99f6e4;">
+                        <p style="margin: 0 0 8px; font-size: 12px; color: #0f766e; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Order Number</p>
+                        <p style="margin: 0; font-size: 18px; color: #115e59; font-weight: 700;">${data.orderNumber}</p>
+                      </div>
+
+                      ${trackingInfo}
+
+                      <p style="margin: 30px 0 0; font-size: 14px; color: #6b7280; line-height: 1.6;">
+                        If you have any questions about your order, please don't hesitate to contact us.
+                      </p>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="background-color: #f9fafb; padding: 30px; text-align: center; border-radius: 0 0 8px 8px; border-top: 1px solid #e5e7eb;">
+                      <p style="margin: 0 0 10px; font-size: 12px; color: #9ca3af;">
+                        Reset Biology<br>
+                        © ${new Date().getFullYear()} All rights reserved
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </body>
+      </html>
+    `;
+
+    const result = await resend.emails.send({
+      from: 'Reset Biology <orders@resetbiology.com>',
+      to: data.email,
+      subject: `Your Order Has Shipped - ${data.orderNumber}`,
+      html: emailHtml,
+    });
+
+    console.log('[email] Shipping confirmation sent to', data.email, result);
+    return { success: true, data: result };
+  } catch (error) {
+    console.error('[email] Failed to send shipping confirmation:', error);
+    return { success: false, error };
+  }
+}

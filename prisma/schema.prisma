@@ -455,8 +455,28 @@ model Order {
   amountTotal           Int?
   currency              String?
   email                 String?
-  status                String   @default("pending")
+  status                String   @default("pending") // pending | paid | failed | refunded
+
+  // Shipping Information
+  shippingName          String?
+  shippingLine1         String?
+  shippingLine2         String?
+  shippingCity          String?
+  shippingState         String?
+  shippingPostalCode    String?
+  shippingCountry       String?
+  shippingPhone         String?
+
+  // Fulfillment
+  fulfillmentStatus     String   @default("unfulfilled") // unfulfilled | processing | shipped | delivered
+  trackingNumber        String?
+  trackingUrl           String?
+  shippedAt             DateTime?
+  deliveredAt           DateTime?
+  notes                 String?
+
   createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
 }
 
 // Store full HTML content for product pages

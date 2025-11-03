@@ -157,6 +157,12 @@ export async function POST(req: Request) {
       success_url: success,
       cancel_url: cancel,
       allow_promotion_codes: true,
+      shipping_address_collection: {
+        allowed_countries: ['US', 'CA', 'GB', 'AU', 'NZ'], // Add/remove countries as needed
+      },
+      phone_number_collection: {
+        enabled: true,
+      },
       metadata: {
         productId: product.id,
         priceId: price.id,
