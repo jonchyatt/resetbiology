@@ -20,7 +20,10 @@ export async function GET(req: NextRequest) {
     }
   })
 
-  return NextResponse.json(user?.notificationPreferences || [])
+  return NextResponse.json({
+    success: true,
+    preferences: user?.notificationPreferences || []
+  })
 }
 
 export async function POST(req: NextRequest) {

@@ -1,11 +1,27 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { Bell, Mail, X } from 'lucide-react'
+import { Bell, Mail, AlertCircle, CheckCircle } from 'lucide-react'
 
 interface Props {
   protocolId: string
   protocolName: string
   onClose: () => void
+}
+
+// Convert base64 VAPID key to Uint8Array format required by Push API
+function urlBase64ToUint8Array(base64String: string): Uint8Array {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4)
+  const base64 = (base64String + padding)
+    .replace(/\-/g, '+')
+    .replace(/_/g, '/')
+
+  const rawData = window.atob(base64)
+  const outputArray = new Uint8Array(rawData.length)
+
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i)
+  }
+  return outputArray
 }
 
 export default function NotificationPreferences({ protocolId, protocolName, onClose }: Props) {
@@ -14,6 +30,8 @@ export default function NotificationPreferences({ protocolId, protocolName, onCl
   const [reminderMinutes, setReminderMinutes] = useState(15)
   const [pushPermission, setPushPermission] = useState<NotificationPermission>('default')
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState<string | null>(null)
 
   useEffect(() => {
     if ('Notification' in window) {
@@ -22,39 +40,82 @@ export default function NotificationPreferences({ protocolId, protocolName, onCl
   }, [])
 
   const requestPushPermission = async () => {
-    if ('Notification' in window && 'serviceWorker' in navigator) {
+    setLoading(true)
+    setError(null)
+    setSuccess(null)
+
+    try {
+      if (!('Notification' in window)) {
+        throw new Error('This browser does not support notifications')
+      }
+
+      if (!('serviceWorker' in navigator)) {
+        throw new Error('This browser does not support service workers')
+      }
+
+      console.log('🔔 Requesting notification permission...')
       const permission = await Notification.requestPermission()
       setPushPermission(permission)
 
-      if (permission === 'granted') {
-        // Subscribe to push
-        const registration = await navigator.serviceWorker.ready
-
-        // Convert VAPID key from base64 to Uint8Array
-        const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!
-        const convertedKey = Uint8Array.from(
-          atob(vapidPublicKey.replace(/-/g, '+').replace(/_/g, '/')),
-          c => c.charCodeAt(0)
-        )
-
-        const subscription = await registration.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: convertedKey
-        })
-
-        // Send to server
-        await fetch('/api/notifications/subscribe', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ subscription })
-        })
+      if (permission !== 'granted') {
+        throw new Error('Notification permission denied')
       }
+
+      console.log('✅ Permission granted, registering push subscription...')
+
+      // Wait for service worker to be ready
+      const registration = await navigator.serviceWorker.ready
+      console.log('✅ Service worker ready:', registration)
+
+      // Get VAPID public key and convert to Uint8Array
+      const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
+      if (!vapidKey) {
+        throw new Error('VAPID public key not configured')
+      }
+
+      const applicationServerKey = urlBase64ToUint8Array(vapidKey)
+      console.log('✅ VAPID key converted to Uint8Array')
+
+      // Subscribe to push notifications
+      const subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey
+      })
+      console.log('✅ Push subscription created:', subscription.endpoint)
+
+      // Send subscription to server (properly serialized)
+      const response = await fetch('/api/notifications/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          subscription: subscription.toJSON() // Properly serialize subscription
+        })
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || 'Failed to save subscription')
+      }
+
+      console.log('✅ Subscription saved to server')
+      setSuccess('Push notifications enabled successfully!')
+
+    } catch (err) {
+      console.error('❌ Error setting up push notifications:', err)
+      setError(err instanceof Error ? err.message : 'Failed to enable push notifications')
+    } finally {
+      setLoading(false)
     }
   }
 
   const savePreferences = async () => {
     setLoading(true)
+    setError(null)
+    setSuccess(null)
+
     try {
+      console.log('💾 Saving notification preferences...')
+
       const response = await fetch('/api/notifications/preferences', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -66,38 +127,50 @@ export default function NotificationPreferences({ protocolId, protocolName, onCl
         })
       })
 
-      if (response.ok) {
-        alert('Notification preferences saved!')
-        onClose()
-      } else {
-        alert('Failed to save preferences')
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || 'Failed to save preferences')
       }
-    } catch (error) {
-      console.error('Error saving preferences:', error)
-      alert('Failed to save preferences')
+
+      console.log('✅ Preferences saved successfully')
+      setSuccess(`Reminders set for ${protocolName}!`)
+
+      // Close modal after brief success message
+      setTimeout(() => {
+        onClose()
+      }, 1500)
+
+    } catch (err) {
+      console.error('❌ Error saving preferences:', err)
+      setError(err instanceof Error ? err.message : 'Failed to save preferences')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 max-w-md w-full border border-primary-400/30 shadow-2xl">
-        <div className="flex justify-between items-center mb-6">
-          <h3 className="text-xl font-bold text-white">Dose Reminders</h3>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-white transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="bg-gray-800 rounded-lg p-6 max-w-md w-full">
+        <h3 className="text-xl font-bold text-white mb-4">
+          Notification Preferences
+          <div className="text-sm font-normal text-gray-400 mt-1">{protocolName}</div>
+        </h3>
 
-        <div className="mb-4">
-          <p className="text-gray-300 text-sm">
-            Set reminders for: <span className="font-semibold text-primary-300">{protocolName}</span>
-          </p>
-        </div>
+        {/* Error Message */}
+        {error && (
+          <div className="mb-4 p-3 bg-red-500/20 border border-red-500/50 rounded-lg flex items-start gap-2">
+            <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+            <span className="text-red-200 text-sm">{error}</span>
+          </div>
+        )}
+
+        {/* Success Message */}
+        {success && (
+          <div className="mb-4 p-3 bg-green-500/20 border border-green-500/50 rounded-lg flex items-start gap-2">
+            <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+            <span className="text-green-200 text-sm">{success}</span>
+          </div>
+        )}
 
         {/* Push Notifications */}
         <div className="mb-4 p-4 bg-gray-700/50 rounded-lg">
@@ -110,22 +183,23 @@ export default function NotificationPreferences({ protocolId, protocolName, onCl
               type="checkbox"
               checked={pushEnabled}
               onChange={(e) => setPushEnabled(e.target.checked)}
-              disabled={pushPermission !== 'granted'}
-              className="w-5 h-5 rounded"
+              disabled={pushPermission !== 'granted' || loading}
+              className="w-5 h-5"
             />
           </div>
 
           {pushPermission !== 'granted' && (
             <button
               onClick={requestPushPermission}
-              className="text-sm text-primary-400 hover:text-primary-300 transition-colors"
+              disabled={loading}
+              className="text-sm text-primary-400 hover:text-primary-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Enable push notifications →
+              {loading ? 'Setting up...' : 'Enable push notifications →'}
             </button>
           )}
 
           {pushPermission === 'granted' && (
-            <p className="text-xs text-gray-400 mt-1">Get reminders even when the app is closed</p>
+            <p className="text-xs text-green-400 mt-2">✓ Push notifications enabled</p>
           )}
         </div>
 
@@ -140,10 +214,10 @@ export default function NotificationPreferences({ protocolId, protocolName, onCl
               type="checkbox"
               checked={emailEnabled}
               onChange={(e) => setEmailEnabled(e.target.checked)}
-              className="w-5 h-5 rounded"
+              disabled={loading}
+              className="w-5 h-5"
             />
           </div>
-          <p className="text-xs text-gray-400 mt-1">Receive email reminders as backup</p>
         </div>
 
         {/* Reminder Timing */}
@@ -154,7 +228,8 @@ export default function NotificationPreferences({ protocolId, protocolName, onCl
           <select
             value={reminderMinutes}
             onChange={(e) => setReminderMinutes(Number(e.target.value))}
-            className="w-full bg-gray-700 text-white px-4 py-2 rounded-lg border border-gray-600 focus:border-primary-400 focus:outline-none"
+            disabled={loading}
+            className="w-full bg-gray-700 text-white px-4 py-2 rounded-lg disabled:opacity-50"
           >
             <option value={5}>5 minutes</option>
             <option value={15}>15 minutes</option>
@@ -167,14 +242,15 @@ export default function NotificationPreferences({ protocolId, protocolName, onCl
         <div className="flex gap-3">
           <button
             onClick={savePreferences}
-            disabled={loading}
-            className="flex-1 bg-primary-500 hover:bg-primary-600 text-white py-3 px-4 rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={loading || (pushEnabled && pushPermission !== 'granted')}
+            className="flex-1 bg-primary-500 hover:bg-primary-600 text-white py-2 px-4 rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? 'Saving...' : 'Save Preferences'}
           </button>
           <button
             onClick={onClose}
-            className="px-4 py-3 text-gray-400 hover:text-white transition-colors"
+            disabled={loading}
+            className="px-4 py-2 text-gray-400 hover:text-white disabled:opacity-50"
           >
             Cancel
           </button>
