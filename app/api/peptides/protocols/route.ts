@@ -64,6 +64,7 @@ export async function POST(request: Request) {
       peptideName, // May provide name instead of ID
       dosage,
       frequency,
+      timing,
       notes,
       startDate,
       endDate
@@ -131,6 +132,7 @@ export async function POST(request: Request) {
         peptideId: peptide.id,
         dosage,
         frequency,
+        timing: timing || null,
         notes: notes || null,
         startDate: startDate ? new Date(startDate) : new Date(),
         endDate: endDate ? new Date(endDate) : null,
@@ -188,7 +190,7 @@ export async function PATCH(request: Request) {
     }
 
     const body = await request.json()
-    const { protocolId, isActive, dosage, frequency, notes, endDate } = body
+    const { protocolId, isActive, dosage, frequency, timing, notes, endDate } = body
 
     if (!protocolId) {
       return NextResponse.json({
@@ -215,6 +217,7 @@ export async function PATCH(request: Request) {
     if (typeof isActive === 'boolean') updateData.isActive = isActive
     if (dosage) updateData.dosage = dosage
     if (frequency) updateData.frequency = frequency
+    if (timing !== undefined) updateData.timing = timing
     if (notes !== undefined) updateData.notes = notes
     if (endDate !== undefined) updateData.endDate = endDate ? new Date(endDate) : null
 

@@ -489,7 +489,7 @@ export function PeptideTracker() {
           name: protocol.peptides?.name || 'Unknown',
           purpose: protocol.peptides?.category || 'General',
           dosage: protocol.dosage,
-          timing: protocol.notes?.replace('Timing: ', '') || 'AM',
+          timing: protocol.timing || 'AM',
           frequency: protocol.frequency,
           duration: '8 weeks',
           vialAmount: '10mg',
@@ -886,7 +886,7 @@ export function PeptideTracker() {
           protocolId: editingProtocol.id,
           dosage: customDosage,
           frequency: customFrequency,
-          notes: `${timingString} | ${customDuration}`
+          timing: timingString
         }),
         credentials: 'include'
       })

@@ -260,6 +260,7 @@ model user_peptide_protocols {
   endDate       DateTime?
   dosage        String
   frequency     String
+  timing        String?         // Dose times (e.g., "08:00" or "08:00/20:00" for multiple times)
   notes         String?
   isActive      Boolean         @default(true)
   createdAt     DateTime        @default(now())
