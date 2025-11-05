@@ -60,7 +60,7 @@ export async function scheduleNotificationsForProtocol(
 
     // Parse dose times from protocol.timing or notes
     // Expected format: "08:00" or "08:00/20:00" (multiple times separated by /)
-    const doseTimes = parseDoseTimes(protocol.notes || protocol.frequency)
+    const doseTimes = parseDoseTimes(protocol.timing || '')
 
     if (doseTimes.length === 0) {
       console.log(`No dose times found for protocol ${protocolId}`)

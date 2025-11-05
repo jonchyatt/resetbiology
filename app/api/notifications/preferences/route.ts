@@ -74,8 +74,8 @@ export async function POST(req: NextRequest) {
         }
       })
 
-      // Parse timing from notes (e.g., "Timing: AM" -> "AM")
-      const timing = protocol.notes?.replace('Timing: ', '') || 'AM'
+      // Parse timing from protocol.timing field (e.g., "08:00" or "08:00/20:00")
+      const timing = protocol.timing || 'AM'
       const frequency = protocol.frequency.toLowerCase()
 
       // Calculate dose times for the next 7 days

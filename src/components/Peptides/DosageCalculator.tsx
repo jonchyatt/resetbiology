@@ -727,12 +727,12 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                   <select
                     value={scheduleType}
                     onChange={(e) => setScheduleType(e.target.value)}
-                    className="w-full bg-primary-600/25 border border-amber-400/40 rounded-lg px-3 py-2.5 text-amber-100 focus:border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-400/30 transition-all"
+                    className="w-full bg-gray-800 text-white border border-gray-700 rounded-lg px-4 py-2 focus:border-primary-400 focus:outline-none focus:ring-1 focus:ring-primary-400"
                   >
-                    <option value="daily" className="bg-gray-800 text-amber-100">Daily (Every Day)</option>
-                    <option value="everyOtherDay" className="bg-gray-800 text-amber-100">Every Other Day</option>
-                    <option value="monFri" className="bg-gray-800 text-amber-100">Mon-Fri (5 days/week)</option>
-                    <option value="custom" className="bg-gray-800 text-amber-100">Custom Days</option>
+                    <option value="daily" className="bg-gray-900 text-white">Daily (Every Day)</option>
+                    <option value="everyOtherDay" className="bg-gray-900 text-white">Every Other Day</option>
+                    <option value="monFri" className="bg-gray-900 text-white">Mon-Fri (5 days/week)</option>
+                    <option value="custom" className="bg-gray-900 text-white">Custom Days</option>
                   </select>
                   {scheduleType === 'everyOtherDay' && (
                     <p className="text-xs text-amber-300/80 mt-2 bg-amber-500/10 border border-amber-400/30 rounded px-2 py-1.5">
@@ -798,7 +798,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                       type="time"
                       value={newTimeInput}
                       onChange={(e) => setNewTimeInput(e.target.value)}
-                      className="flex-1 bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white focus:border-amber-400 focus:outline-none text-sm"
+                      className="flex-1 bg-gray-800 text-white border border-gray-700 rounded-lg px-4 py-2 focus:border-primary-400 focus:outline-none focus:ring-1 focus:ring-primary-400"
                     />
                     <button
                       type="button"

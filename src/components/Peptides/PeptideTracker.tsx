@@ -662,6 +662,7 @@ export function PeptideTracker() {
           peptideName: protocolData.peptideName,
           dosage: protocolData.dosage,
           frequency: protocolData.schedule.frequency,
+          timing: protocolData.schedule.times.join('/'),
           notes: protocolData.notes || `Schedule: ${protocolData.schedule.frequency}`
         })
       })
@@ -1878,15 +1879,15 @@ export function PeptideTracker() {
                   <select
                     value={customFrequency}
                     onChange={(e) => setCustomFrequency(e.target.value)}
-                    className="w-full bg-primary-600/20 border border-primary-400/40 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
+                    className="w-full bg-gray-800 text-white border border-gray-700 rounded-lg px-4 py-2 focus:border-primary-400 focus:outline-none focus:ring-1 focus:ring-primary-400"
                   >
-                    <option value="">Select frequency...</option>
-                    <option value="Daily">Daily</option>
-                    <option value="Every other day">Every other day</option>
-                    <option value="3x per week">3x per week</option>
-                    <option value="2x per week">2x per week</option>
-                    <option value="5 days on, 2 days off">5 days on, 2 days off</option>
-                    <option value="Once per week">Once per week</option>
+                    <option className="bg-gray-900 text-white" value="">Select frequency...</option>
+                    <option className="bg-gray-900 text-white" value="Daily">Daily</option>
+                    <option className="bg-gray-900 text-white" value="Every other day">Every other day</option>
+                    <option className="bg-gray-900 text-white" value="3x per week">3x per week</option>
+                    <option className="bg-gray-900 text-white" value="2x per week">2x per week</option>
+                    <option className="bg-gray-900 text-white" value="5 days on, 2 days off">5 days on, 2 days off</option>
+                    <option className="bg-gray-900 text-white" value="Once per week">Once per week</option>
                   </select>
                 </div>
 
@@ -1924,7 +1925,7 @@ export function PeptideTracker() {
                       type="time"
                       value={newCustomTimeInput}
                       onChange={(e) => setNewCustomTimeInput(e.target.value)}
-                      className="flex-1 bg-primary-600/20 border border-primary-400/40 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none text-sm"
+                      className="flex-1 bg-gray-800 text-white border border-gray-700 rounded-lg px-4 py-2 focus:border-primary-400 focus:outline-none focus:ring-1 focus:ring-primary-400"
                     />
                     <button
                       type="button"

@@ -132,7 +132,7 @@ export async function POST(request: Request) {
         peptideId: peptide.id,
         dosage,
         frequency,
-        timing: timing || null,
+        timing: timing || 'AM',
         notes: notes || null,
         startDate: startDate ? new Date(startDate) : new Date(),
         endDate: endDate ? new Date(endDate) : null,
@@ -221,6 +221,9 @@ export async function PATCH(request: Request) {
     if (notes !== undefined) updateData.notes = notes
     if (endDate !== undefined) updateData.endDate = endDate ? new Date(endDate) : null
 
+    // Track if timing changed
+    const timingChanged = timing !== undefined && protocol.timing !== timing
+
     // Update protocol
     const updatedProtocol = await prisma.user_peptide_protocols.update({
       where: { id: protocolId },
@@ -230,18 +233,18 @@ export async function PATCH(request: Request) {
       }
     })
 
-    // Handle notification scheduling when protocol is activated/deactivated
-    if (typeof isActive === 'boolean') {
+    // Handle notification scheduling when protocol is activated/deactivated or timing changed
+    if (typeof isActive === 'boolean' || timingChanged) {
       try {
-        if (isActive) {
-          // Protocol reactivated - reschedule notifications
+        if (isActive === false) {
+          // Protocol paused - cancel future notifications
+          await cancelNotificationsForProtocol(user.id, protocolId)
+        } else if (isActive === true || timingChanged) {
+          // Protocol reactivated or timing changed - reschedule notifications
           await scheduleNotificationsForProtocol(user.id, protocolId, {
             daysAhead: 30,
             forceReschedule: true
           })
-        } else {
-          // Protocol paused - cancel future notifications
-          await cancelNotificationsForProtocol(user.id, protocolId)
         }
       } catch (error) {
         console.error('Error updating notifications after protocol change:', error)
