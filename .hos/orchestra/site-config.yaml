@@ -1,0 +1,386 @@
+# Reset Biology - HOS Configuration
+# Generated: November 4, 2025
+
+site:
+  name: "Reset Biology"
+  url: "https://resetbiology.com"
+  environment: "production"
+
+mission:
+  statement: "We built Reset Biology to fix what's broken: people trying to make change but trapped on health damaging meds, by providers who really should know better."
+  vision: "Bridge users from pharmaceutical dependency to metabolic independence using IRB-approved protocols"
+  values:
+    - "Medical rigor over profit-driven care"
+    - "Muscle preservation during weight loss"
+    - "Psychological integration, not just symptom treatment"
+    - "Community accountability and gamification"
+    - "Independence from lifetime drug dependency"
+
+tech_stack:
+  frontend:
+    framework: "Next.js 15.5.2"
+    react_version: "19.1.0"
+    language: "TypeScript 5"
+    styling: "Tailwind CSS 4"
+    state_management: "React Hooks"
+    animations: "Framer Motion 12.23.12"
+    icons: "Lucide React 0.542.0"
+
+  backend:
+    hosting:
+      primary: "Vercel"
+      backup: "Cloudflare Pages"
+    database: "MongoDB Atlas"
+    orm: "Prisma 6.15.0"
+    auth: "Auth0 v4.10.0"
+    payments: "Stripe 18.5.0"
+    email: "Resend 6.4.0"
+    push_notifications: "web-push 3.6.7"
+
+  integrations:
+    - name: "WGER Exercise API"
+      purpose: "Exercise library for workout tracking"
+    - name: "Food Database API"
+      purpose: "Nutrition data source"
+    - name: "Stripe Webhooks"
+      purpose: "Order processing and fulfillment"
+    - name: "Google OAuth"
+      purpose: "Social authentication via Auth0"
+
+branding:
+  colors:
+    primary:
+      name: "Teal"
+      hex: "#3FBFB5"
+      usage: "CTAs, brand identity, medical trust"
+    secondary:
+      name: "Green"
+      hex: "#72C247"
+      usage: "Growth, health, success states"
+    dark:
+      base: "from-gray-900 to-gray-800"
+      overlays: "rgba(0,0,0,0.7-0.8)"
+
+  typography:
+    primary_font: "Inter"
+    features:
+      - "OpenType stylistic sets (cv11, ss01)"
+      - "Optical sizing (opsz 32)"
+      - "Variable font"
+    fallback: "ui-sans-serif, system-ui, sans-serif"
+
+  design_system:
+    style: "Glassmorphism"
+    patterns:
+      - "Frosted glass overlays with backdrop blur"
+      - "20-30% opacity backgrounds"
+      - "Subtle borders with transparency"
+      - "Layered shadows for depth"
+    animations:
+      - "fade-in (0.8s)"
+      - "slide-up (0.6s)"
+      - "scale-in (0.5s)"
+      - "bounce-subtle (2s infinite)"
+
+features:
+  authentication:
+    provider: "Auth0"
+    methods:
+      - "Google OAuth"
+    domain: "dev-4n4ucz3too5e3w5j.us.auth0.com"
+    auto_create_users: true
+
+  portal:
+    sections:
+      - name: "Dashboard"
+        path: "/portal"
+        description: "Daily check-in with 6 trackable activities"
+      - name: "Peptide Tracker"
+        path: "/peptides"
+        status: "production"
+      - name: "Workout Tracker"
+        path: "/workout"
+        status: "production"
+      - name: "Nutrition Tracker"
+        path: "/nutrition"
+        status: "production"
+      - name: "Breath Training"
+        path: "/breath"
+        status: "production"
+      - name: "Journal"
+        path: "/journal"
+        status: "basic"
+      - name: "Mental Mastery"
+        path: "/modules"
+        status: "audio_only"
+
+  gamification:
+    enabled: true
+    mechanics:
+      - "Points system (50 per workout, 10 per meal log)"
+      - "Streak counter (daily completion)"
+      - "Achievement tiers (planned)"
+      - "Variable rewards (deposit system)"
+    database_model: "GamificationPoint"
+
+  ecommerce:
+    enabled: true
+    provider: "Stripe"
+    features:
+      - "Product catalog with variants"
+      - "Bundle support"
+      - "Inventory tracking"
+      - "Waitlist for OOS items"
+      - "Order fulfillment dashboard"
+    admin_path: "/admin/orders"
+
+  notifications:
+    pwa_ready: true
+    push_enabled: false  # Schema exists, cron not active
+    email_enabled: true
+    models:
+      - "NotificationPreference"
+      - "ScheduledNotification"
+      - "PushSubscription"
+
+database:
+  provider: "MongoDB Atlas"
+  models_count: 37
+  key_models:
+    users:
+      - "User"
+      - "ClientProgress"
+    peptides:
+      - "Peptide"
+      - "user_peptide_protocols"
+      - "peptide_doses"
+    fitness:
+      - "WorkoutSession"
+      - "WorkoutProgram"
+      - "FoodEntry"
+      - "FoodLog"
+      - "MealPlan"
+    engagement:
+      - "BreathSession"
+      - "ModuleCompletion"
+      - "JournalEntry"
+      - "DailyTask"
+      - "GamificationPoint"
+    commerce:
+      - "Product"
+      - "Price"
+      - "Order"
+      - "BundleItem"
+      - "InventoryTransaction"
+    notifications:
+      - "NotificationPreference"
+      - "ScheduledNotification"
+      - "PushSubscription"
+  timezone_strategy: "Store localDate and localTime strings, never convert to UTC"
+
+user_journey:
+  phases:
+    - name: "Discovery"
+      steps:
+        - "Landing page (muscle loss warning)"
+        - "Readiness quiz"
+        - "IRB explanation"
+        - "CTA: Get Started"
+
+    - name: "Onboarding"
+      steps:
+        - "Auth0 Google login"
+        - "Quiz sync to database"
+        - "Portal access"
+        - "14-day trial start"
+
+    - name: "Engagement (Daily Loop)"
+      steps:
+        - "Portal dashboard"
+        - "Track activities (6 types)"
+        - "Earn points"
+        - "Build streak"
+        - "Return tomorrow"
+
+    - name: "Retention"
+      steps:
+        - "Weekly progress review"
+        - "Module progression"
+        - "Community features (future)"
+        - "Referral rewards"
+
+    - name: "Conversion"
+      steps:
+        - "Trial end decision"
+        - "Subscription purchase"
+        - "Ongoing membership"
+        - "Peptide orders"
+
+    - name: "Advocacy"
+      steps:
+        - "Success milestone"
+        - "Referral generation"
+        - "Commission earnings"
+        - "Testimonials"
+
+api_structure:
+  pattern: "/api/[feature]/[action]"
+  authentication: "Auth0 session via getSession()"
+  user_lookup: "auth0Sub OR email (fallback)"
+  response_format:
+    success: "{ success: true, data: any }"
+    error: "{ error: string, details?: any }"
+  methods:
+    - "GET: List or fetch"
+    - "POST: Create or complex query"
+    - "PATCH: Update"
+    - "DELETE: Remove"
+
+development:
+  local_setup:
+    database: "SQLite (file:./dev.db)"
+    command: "npm run dev"
+    port: 3000
+
+  production_setup:
+    database: "MongoDB Atlas"
+    hosting: "Vercel"
+    deployment: "Git push to master"
+
+  testing:
+    e2e: "Playwright 1.56.0"
+    manual: "ChromeMCP on production"
+    unit: "None (TODO)"
+
+  build_process:
+    prebuild: "Verify Auth0 environment variables"
+    postinstall: "Prisma generate"
+    build: "next build"
+
+priorities:
+  immediate:
+    - "Deploy PWA notification system"
+    - "Add global error handling"
+    - "Build Success Deposit UI"
+    - "Create affiliate dashboard"
+    - "Rich text journal editor"
+
+  short_term:
+    - "Unified activity timeline"
+    - "Weekly progress charts"
+    - "Mental Mastery library UI"
+    - "Onboarding tutorial"
+    - "Achievement badges"
+
+  long_term:
+    - "Community forums/challenges"
+    - "AI coaching/recommendations"
+    - "Wearable integrations"
+    - "Telehealth integration"
+    - "Advanced analytics"
+
+issues:
+  high_priority:
+    - "PWA notifications not fully deployed (cron missing)"
+    - "Rich text journal editor needed"
+    - "Success Deposit UI incomplete"
+    - "Weekly charts showing 'coming soon'"
+    - "Affiliate dashboard not user-facing"
+
+  medium_priority:
+    - "No global error boundary"
+    - "Incomplete gamification (no badges/tiers)"
+    - "Timeline integration missing"
+    - "Mental Mastery library not visible"
+    - "Bundle inventory deduction unverified"
+
+  technical_debt:
+    - "No TypeScript strict mode"
+    - "Duplicate API routes (app/api and src/app/api)"
+    - "Unused legacy code (wp-content, src/legacy_app)"
+    - "No unit tests"
+    - "No caching strategy"
+    - "No rate limiting on API routes"
+
+personas:
+  primary:
+    name: "The Ozempic Escapee"
+    demographics: "Adults 30-55, on or considering GLP-1 drugs"
+    pain_points:
+      - "Muscle loss from weight loss drugs"
+      - "Pharmaceutical dependency"
+      - "Loose skin"
+      - "Lack of holistic support"
+    goals:
+      - "Lose weight without muscle loss"
+      - "Achieve metabolic health"
+      - "Build sustainable habits"
+
+  secondary:
+    name: "The Biohacker"
+    demographics: "25-45, tech-savvy, self-optimization focused"
+    pain_points:
+      - "Information overload"
+      - "Lack of structured protocols"
+      - "No IRB oversight"
+    goals:
+      - "Optimize cellular health"
+      - "Access research-grade peptides"
+      - "Medical backing"
+
+  tertiary:
+    name: "The Accountability Seeker"
+    demographics: "35-60, previous failed lifestyle attempts"
+    pain_points:
+      - "Low willpower"
+      - "Lack of consistency"
+      - "Needs psychological support"
+    goals:
+      - "Build streaks"
+      - "Earn rewards"
+      - "Feel supported"
+
+brand_voice:
+  tone:
+    - "Urgent but authoritative"
+    - "Skeptical of conventional medicine"
+    - "Empowering"
+    - "Research-focused"
+    - "Community-oriented"
+
+  messaging_patterns:
+    - "Problem-Agitate-Solution framework"
+    - "Social proof (testimonials, IRB)"
+    - "Loss aversion (deposits, streaks)"
+    - "Aspirational identity (Wellness Warrior)"
+
+  copy_style:
+    - "Short, punchy sentences"
+    - "Bullet points for scanability"
+    - "Bold emphasis on key claims"
+    - "Questions to engage"
+    - "Direct address (You're losing MUSCLE)"
+
+competitive_advantages:
+  - "IRB oversight (legitimacy)"
+  - "Muscle preservation focus (vs Ozempic)"
+  - "Psychological integration"
+  - "Holistic 6-feature tracking suite"
+  - "Gamification engine"
+  - "Bridge narrative (independence vs dependency)"
+  - "Breath training for autophagy/skin tightening"
+
+analytics_opportunities:
+  - "Correlation analysis (breath training → workout performance)"
+  - "Predictive modeling (adherence risk)"
+  - "A/B testing (gamification mechanics)"
+  - "Cohort analysis (trial → subscription conversion)"
+  - "Referral attribution tracking"
+
+# Meta
+hos_system:
+  version: "1.0"
+  initialized: "2025-11-04"
+  last_analysis: "2025-11-04"
+  analysis_source: "Production site scan + codebase review"
+  discovery_depth: "Comprehensive (homepage, portal, 6 features, database, APIs)"
