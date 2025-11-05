@@ -883,6 +883,7 @@ export function PeptideTracker() {
 
     // Join times array into string for storage
     const timingString = customTimesArray.join('/')
+    console.log(`💾 Saving protocol: timing="${timingString}"`)
 
     try {
       const response = await fetch('/api/peptides/protocols', {
