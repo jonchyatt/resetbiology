@@ -1,28 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth0 } from '@/lib/auth0'
-import { getUserFromSession} from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma'
+import { getUserFromSession } from '@/lib/getUserFromSession'
 
 export async function POST(req: NextRequest) {
   const session = await auth0.getSession()
-  if (!session?.user) {
+  const user = await getUserFromSession(session)
+
+  if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
   const { subscription } = await req.json()
-
-  const user = await prisma.user.findFirst({
-    where: {
-      OR: [
-        { auth0Sub: session.user.sub },
-        { email: session.user.email }
-      ]
-    }
-  })
-
-  if (!user) {
-    return NextResponse.json({ error: 'User not found' }, { status: 404 })
-  }
 
   await prisma.pushSubscription.upsert({
     where: {

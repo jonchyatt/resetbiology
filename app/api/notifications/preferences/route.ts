@@ -1,19 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getSession } from '@auth0/nextjs-auth0'
-import prisma from '@/lib/prisma'
+import { auth0 } from '@/lib/auth0'
+import { prisma } from '@/lib/prisma'
+import { getUserFromSession } from '@/lib/getUserFromSession'
 
 export async function GET(req: NextRequest) {
-  const session = await getSession()
-  if (!session?.user) {
+  const session = await auth0.getSession()
+  const user = await getUserFromSession(session)
+
+  if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const user = await prisma.user.findFirst({
+  const userWithPreferences = await prisma.user.findUnique({
     where: {
-      OR: [
-        { auth0Sub: session.user.sub },
-        { email: session.user.email }
-      ]
+      id: user.id
     },
     include: {
       notificationPreferences: true
@@ -22,30 +22,19 @@ export async function GET(req: NextRequest) {
 
   return NextResponse.json({
     success: true,
-    preferences: user?.notificationPreferences || []
+    preferences: userWithPreferences?.notificationPreferences || []
   })
 }
 
 export async function POST(req: NextRequest) {
-  const session = await getSession()
-  if (!session?.user) {
+  const session = await auth0.getSession()
+  const user = await getUserFromSession(session)
+
+  if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
   const { protocolId, pushEnabled, emailEnabled, reminderMinutes } = await req.json()
-
-  const user = await prisma.user.findFirst({
-    where: {
-      OR: [
-        { auth0Sub: session.user.sub },
-        { email: session.user.email }
-      ]
-    }
-  })
-
-  if (!user) {
-    return NextResponse.json({ error: 'User not found' }, { status: 404 })
-  }
 
   const preference = await prisma.notificationPreference.upsert({
     where: {

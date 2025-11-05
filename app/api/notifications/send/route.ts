@@ -2,14 +2,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import webpush from 'web-push'
 
-// Set VAPID keys (will be configured in environment variables)
-if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
-  webpush.setVapidDetails(
-    'mailto:admin@resetbiology.com',
-    process.env.VAPID_PUBLIC_KEY,
-    process.env.VAPID_PRIVATE_KEY
-  )
-}
+// Set VAPID keys (will be configured in .env)
+webpush.setVapidDetails(
+  'mailto:admin@resetbiology.com',
+  process.env.VAPID_PUBLIC_KEY!,
+  process.env.VAPID_PRIVATE_KEY!
+)
 
 export async function POST(req: NextRequest) {
   // Verify cron secret
@@ -59,7 +57,7 @@ export async function POST(req: NextRequest) {
           results.push({ id: notification.id, status: 'sent' })
         } catch (error) {
           console.error('Push notification failed:', error)
-          results.push({ id: notification.id, status: 'failed', error: String(error) })
+          results.push({ id: notification.id, status: 'failed' })
         }
       }
     }
