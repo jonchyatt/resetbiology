@@ -873,6 +873,7 @@ export function PeptideTracker() {
   }
 
   const saveProtocolEdits = async () => {
+    console.log('🔧 saveProtocolEdits called')
     if (!editingProtocol) return
 
     // Validate that at least one time is selected
