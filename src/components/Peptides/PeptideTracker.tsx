@@ -491,7 +491,7 @@ export function PeptideTracker() {
             name: protocol.peptides?.name || 'Unknown',
             purpose: protocol.peptides?.category || 'General',
             dosage: protocol.dosage,
-            timing: protocol.timing || 'AM',
+            timing: protocol.timing ?? 'AM',
             frequency: protocol.frequency,
             duration: '8 weeks',
             vialAmount: '10mg',
@@ -854,7 +854,7 @@ export function PeptideTracker() {
     setCustomDuration(protocol.duration)
 
     // Parse existing timing into times array
-    // protocol.timing might be like "08:00/20:00" or "AM" or "PM"
+    // protocol.timing might be like "08:00/20:00" or "AM" or "PM" or "15:50"
     const timesArray: string[] = []
     if (protocol.timing.includes('/')) {
       // Already has specific times like "08:00/20:00"
@@ -863,6 +863,9 @@ export function PeptideTracker() {
       timesArray.push('08:00')
     } else if (protocol.timing.toLowerCase().includes('pm')) {
       timesArray.push('20:00')
+    } else if (protocol.timing.match(/^\d{2}:\d{2}$/)) {
+      // Single time like "15:50"
+      timesArray.push(protocol.timing)
     }
     setCustomTimesArray(timesArray.length > 0 ? timesArray : ['08:00'])
 
