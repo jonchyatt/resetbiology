@@ -479,40 +479,37 @@ export function PeptideTracker() {
     try {
       const response = await fetch('/api/peptides/protocols', {
         credentials: 'include'
-      })
-      const data = await response.json()
+      });
+      const data = await response.json();
 
       if (data.success && data.protocols) {
         // Transform API data to match our interface
-        const formattedProtocols = data.protocols.map((protocol: any) => {
-          console.log(`📋 Loading protocol ${protocol.peptides?.name}: timing="${protocol.timing}"`)
-          return {
-            id: protocol.id,
-            name: protocol.peptides?.name || 'Unknown',
-            purpose: protocol.peptides?.category || 'General',
-            dosage: protocol.dosage,
-            timing: protocol.timing ?? 'AM',
-            frequency: protocol.frequency,
-            duration: '8 weeks',
-            vialAmount: '10mg',
-            reconstitution: protocol.peptides?.reconstitution || '2ml',
-            syringeUnits: 10,
-            startDate: protocol.startDate ? new Date(protocol.startDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
-            currentCycle: 1,
-            isActive: protocol.isActive
-          }
-        }))
-        setCurrentProtocols(formattedProtocols)
-        console.log(`✅ Loaded ${formattedProtocols.length} protocols from database`)
+        const formattedProtocols = data.protocols.map((protocol: any) => ({
+          id: protocol.id,
+          name: protocol.peptides?.name || 'Unknown',
+          purpose: protocol.peptides?.category || 'General',
+          dosage: protocol.dosage,
+          timing: protocol.timing ?? 'AM',
+          frequency: protocol.frequency,
+          duration: '8 weeks',
+          vialAmount: '10mg',
+          reconstitution: protocol.peptides?.reconstitution || '2ml',
+          syringeUnits: 10,
+          startDate: protocol.startDate ? new Date(protocol.startDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+          currentCycle: 1,
+          isActive: protocol.isActive
+        }));
+        setCurrentProtocols(formattedProtocols);
+        console.log(`✅ Loaded ${formattedProtocols.length} protocols from database`);
       } else if (response.status === 401) {
-        console.log('⚠️ User not logged in - cannot load protocols')
+        console.log('⚠️ User not logged in - cannot load protocols');
       } else {
-        console.error('Failed to fetch protocols:', data.error)
+        console.error('Failed to fetch protocols:', data.error);
       }
     } catch (error) {
-      console.error('Error fetching user protocols:', error)
+      console.error('Error fetching user protocols:', error);
     }
-  }
+  };
 
   const fetchNotificationPreferences = async () => {
     try {
