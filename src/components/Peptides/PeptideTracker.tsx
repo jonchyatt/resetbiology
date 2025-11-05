@@ -484,20 +484,23 @@ export function PeptideTracker() {
 
       if (data.success && data.protocols) {
         // Transform API data to match our interface
-        const formattedProtocols = data.protocols.map((protocol: any) => ({
-          id: protocol.id,
-          name: protocol.peptides?.name || 'Unknown',
-          purpose: protocol.peptides?.category || 'General',
-          dosage: protocol.dosage,
-          timing: protocol.timing || 'AM',
-          frequency: protocol.frequency,
-          duration: '8 weeks',
-          vialAmount: '10mg',
-          reconstitution: protocol.peptides?.reconstitution || '2ml',
-          syringeUnits: 10,
-          startDate: protocol.startDate ? new Date(protocol.startDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
-          currentCycle: 1,
-          isActive: protocol.isActive
+        const formattedProtocols = data.protocols.map((protocol: any) => {
+          console.log(`📋 Loading protocol ${protocol.peptides?.name}: timing="${protocol.timing}"`)
+          return {
+            id: protocol.id,
+            name: protocol.peptides?.name || 'Unknown',
+            purpose: protocol.peptides?.category || 'General',
+            dosage: protocol.dosage,
+            timing: protocol.timing || 'AM',
+            frequency: protocol.frequency,
+            duration: '8 weeks',
+            vialAmount: '10mg',
+            reconstitution: protocol.peptides?.reconstitution || '2ml',
+            syringeUnits: 10,
+            startDate: protocol.startDate ? new Date(protocol.startDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+            currentCycle: 1,
+            isActive: protocol.isActive
+          }
         }))
         setCurrentProtocols(formattedProtocols)
         console.log(`✅ Loaded ${formattedProtocols.length} protocols from database`)
@@ -892,17 +895,18 @@ export function PeptideTracker() {
       })
 
       if (response.ok) {
-        // Update local state
-        setCurrentProtocols(prev => prev.map(p =>
-          p.id === editingProtocol.id
-            ? { ...p, dosage: customDosage, frequency: customFrequency, timing: timingString, duration: customDuration }
-            : p
-        ))
+        console.log('✅ Protocol saved successfully, timing:', timingString)
+
+        // Re-fetch protocols from database to ensure we have the saved data
+        await fetchUserProtocols()
+
         setShowEditProtocolModal(false)
         setEditingProtocol(null)
         alert('Protocol updated successfully!')
       } else {
-        alert('Failed to update protocol')
+        const errorData = await response.json()
+        console.error('Failed to update protocol:', errorData)
+        alert('Failed to update protocol: ' + (errorData.error || 'Unknown error'))
       }
     } catch (error) {
       console.error('Error updating protocol:', error)
