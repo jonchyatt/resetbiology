@@ -79,7 +79,7 @@ export default function NotificationPreferences({ protocolId, protocolName, onCl
       // Subscribe to push notifications
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey
+        applicationServerKey: applicationServerKey as BufferSource
       })
       console.log('✅ Push subscription created:', subscription.endpoint)
 
