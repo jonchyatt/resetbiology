@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { Bell, Mail, AlertCircle, CheckCircle } from 'lucide-react'
+import { Bell, Mail, AlertCircle, CheckCircle, Zap } from 'lucide-react'
 
 interface Props {
   protocolId: string
@@ -33,11 +33,112 @@ export default function NotificationPreferences({ protocolId, protocolName, onCl
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
 
+  // Hidden test button state
+  const [clickCount, setClickCount] = useState(0)
+  const [showTestButton, setShowTestButton] = useState(false)
+  const [testLoading, setTestLoading] = useState(false)
+  const [testCountdown, setTestCountdown] = useState<number | null>(null)
+
   useEffect(() => {
     if ('Notification' in window) {
       setPushPermission(Notification.permission)
     }
   }, [])
+
+  // Triple-click detection for test button
+  useEffect(() => {
+    if (clickCount >= 3) {
+      setShowTestButton(prev => !prev) // Toggle test mode
+      console.log(showTestButton ? '🚫 Test mode deactivated' : '🧪 Test mode activated!')
+    }
+    const timer = setTimeout(() => setClickCount(0), 1000) // Reset after 1 second
+    return () => clearTimeout(timer)
+  }, [clickCount, showTestButton])
+
+  // Countdown timer for test notification
+  useEffect(() => {
+    if (testCountdown === null || testCountdown <= 0) return
+
+    const timer = setInterval(() => {
+      setTestCountdown(prev => {
+        if (prev === null || prev <= 1) {
+          return null
+        }
+        return prev - 1
+      })
+    }, 1000)
+
+    return () => clearInterval(timer)
+  }, [testCountdown])
+
+  const sendTestNotification = async () => {
+    setTestLoading(true)
+    setError(null)
+    setSuccess(null)
+
+    try {
+      console.log('🧪 Creating test notification...')
+
+      const response = await fetch('/api/notifications/test', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ delaySeconds: 60 })
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || 'Failed to create test notification')
+      }
+
+      const data = await response.json()
+      console.log('✅ Test notification created:', data)
+
+      setSuccess(`Test notification scheduled! Will arrive in 60 seconds...`)
+      setTestCountdown(60)
+
+    } catch (err) {
+      console.error('❌ Error creating test notification:', err)
+      setError(err instanceof Error ? err.message : 'Failed to create test notification')
+    } finally {
+      setTestLoading(false)
+    }
+  }
+
+  const sendNow = async () => {
+    setTestLoading(true)
+    setError(null)
+    setSuccess(null)
+
+    try {
+      console.log('⚡ Triggering immediate send...')
+
+      const response = await fetch('/api/notifications/send-now', {
+        method: 'POST'
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || 'Failed to send notifications')
+      }
+
+      const data = await response.json()
+      console.log('✅ Send triggered:', data)
+
+      if (data.sent > 0) {
+        setSuccess(`Sent ${data.sent} notification(s) immediately!`)
+      } else {
+        setSuccess('No pending notifications to send')
+      }
+
+      setTestCountdown(null)
+
+    } catch (err) {
+      console.error('❌ Error sending notifications:', err)
+      setError(err instanceof Error ? err.message : 'Failed to send notifications')
+    } finally {
+      setTestLoading(false)
+    }
+  }
 
   const requestPushPermission = async () => {
     setLoading(true)
@@ -151,7 +252,10 @@ export default function NotificationPreferences({ protocolId, protocolName, onCl
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <div className="bg-gray-800 rounded-lg p-6 max-w-md w-full">
-        <h3 className="text-xl font-bold text-white mb-4">
+        <h3
+          className="text-xl font-bold text-white mb-4 cursor-default"
+          onClick={() => setClickCount(prev => prev + 1)}
+        >
           Notification Preferences
           <div className="text-sm font-normal text-gray-400 mt-1">{protocolName}</div>
         </h3>
@@ -237,6 +341,44 @@ export default function NotificationPreferences({ protocolId, protocolName, onCl
             <option value={60}>1 hour</option>
           </select>
         </div>
+
+        {/* Hidden Test Section */}
+        {showTestButton && (
+          <div className="mb-6 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+            <div className="flex items-center gap-2 mb-3">
+              <Zap className="w-5 h-5 text-yellow-400" />
+              <span className="text-yellow-400 font-semibold">Test Mode</span>
+            </div>
+
+            {testCountdown !== null && (
+              <div className="mb-3 p-2 bg-gray-700/50 rounded text-center">
+                <div className="text-2xl font-mono text-white">{testCountdown}s</div>
+                <div className="text-xs text-gray-400">until test notification</div>
+              </div>
+            )}
+
+            <div className="flex gap-2">
+              <button
+                onClick={sendTestNotification}
+                disabled={testLoading || loading || testCountdown !== null}
+                className="flex-1 bg-yellow-500 hover:bg-yellow-600 text-black py-2 px-3 rounded-lg font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {testLoading ? 'Creating...' : 'Test (60s)'}
+              </button>
+              <button
+                onClick={sendNow}
+                disabled={testLoading || loading || testCountdown === null}
+                className="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 px-3 rounded-lg font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {testLoading ? 'Sending...' : 'Send Now'}
+              </button>
+            </div>
+
+            <p className="text-xs text-gray-400 mt-2">
+              Triple-click title to hide test mode
+            </p>
+          </div>
+        )}
 
         {/* Actions */}
         <div className="flex gap-3">
