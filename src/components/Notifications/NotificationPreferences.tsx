@@ -48,12 +48,16 @@ export default function NotificationPreferences({ protocolId, protocolName, onCl
   // Triple-click detection for test button
   useEffect(() => {
     if (clickCount >= 3) {
-      setShowTestButton(prev => !prev) // Toggle test mode
-      console.log(showTestButton ? '🚫 Test mode deactivated' : '🧪 Test mode activated!')
+      setShowTestButton(prev => {
+        const newValue = !prev
+        console.log(newValue ? '🧪 Test mode activated!' : '🚫 Test mode deactivated')
+        return newValue
+      })
+      setClickCount(0) // Reset immediately after toggle
     }
-    const timer = setTimeout(() => setClickCount(0), 1000) // Reset after 1 second
+    const timer = setTimeout(() => setClickCount(0), 1000) // Reset after 1 second if not triggered
     return () => clearTimeout(timer)
-  }, [clickCount, showTestButton])
+  }, [clickCount])
 
   // Countdown timer for test notification
   useEffect(() => {

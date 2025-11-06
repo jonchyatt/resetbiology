@@ -9,13 +9,7 @@ webpush.setVapidDetails(
   process.env.VAPID_PRIVATE_KEY!
 )
 
-export async function POST(req: NextRequest) {
-  // Verify cron secret
-  const authHeader = req.headers.get('authorization')
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
-
+async function sendNotifications() {
   const now = new Date()
 
   // Find notifications to send
@@ -69,5 +63,31 @@ export async function POST(req: NextRequest) {
     })
   }
 
-  return NextResponse.json({ sent: results.length, results })
+  return { sent: results.length, results }
+}
+
+// GET handler for Vercel Cron (crons use GET by default)
+export async function GET(req: NextRequest) {
+  // Verify cron secret
+  const authHeader = req.headers.get('authorization')
+  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  console.log('🔔 Cron job triggered notification send')
+  const result = await sendNotifications()
+  return NextResponse.json(result)
+}
+
+// POST handler for manual/testing
+export async function POST(req: NextRequest) {
+  // Verify cron secret
+  const authHeader = req.headers.get('authorization')
+  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  console.log('🔔 Manual notification send triggered')
+  const result = await sendNotifications()
+  return NextResponse.json(result)
 }
