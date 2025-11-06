@@ -61,12 +61,13 @@ export default function NotificationPreferences({ protocolId, protocolName, onCl
 
   // Countdown timer for test notification
   useEffect(() => {
-    if (testCountdown === null || testCountdown <= 0) return
+    if (testCountdown === null || testCountdown < 0) return
+    if (testCountdown === 0) return // Stop at 0, don't go to null
 
     const timer = setInterval(() => {
       setTestCountdown(prev => {
-        if (prev === null || prev <= 1) {
-          return null
+        if (prev === null || prev <= 0) {
+          return 0 // Stay at 0 instead of going to null
         }
         return prev - 1
       })
@@ -357,7 +358,9 @@ export default function NotificationPreferences({ protocolId, protocolName, onCl
             {testCountdown !== null && (
               <div className="mb-3 p-2 bg-gray-700/50 rounded text-center">
                 <div className="text-2xl font-mono text-white">{testCountdown}s</div>
-                <div className="text-xs text-gray-400">until test notification</div>
+                <div className="text-xs text-gray-400">
+                  {testCountdown === 0 ? 'Ready to send!' : 'until test notification is ready'}
+                </div>
               </div>
             )}
 
@@ -371,15 +374,18 @@ export default function NotificationPreferences({ protocolId, protocolName, onCl
               </button>
               <button
                 onClick={sendNow}
-                disabled={testLoading || loading || testCountdown === null}
+                disabled={testLoading || loading || testCountdown === null || testCountdown > 0}
                 className="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 px-3 rounded-lg font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {testLoading ? 'Sending...' : 'Send Now'}
+                {testLoading ? 'Sending...' : testCountdown === 0 ? '✓ Send Now' : 'Send Now'}
               </button>
             </div>
 
             <p className="text-xs text-gray-400 mt-2">
-              Triple-click title to hide test mode
+              {testCountdown === 0
+                ? 'Notification ready! Click "Send Now" to trigger immediately.'
+                : 'Triple-click title to hide test mode'
+              }
             </p>
           </div>
         )}
