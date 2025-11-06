@@ -29,13 +29,33 @@ async function sendNotifications() {
     }
   })
 
+  console.log(`📬 Found ${notifications.length} pending notifications to send`)
+
   const results = []
+  const errors = []
 
   for (const notification of notifications) {
+    console.log('📤 Processing notification:', {
+      id: notification.id,
+      userId: notification.userId,
+      reminderTime: notification.reminderTime,
+      subscriptions: notification.user.pushSubscriptions.length
+    })
+
     // Send push notifications
     if (notification.type === 'push') {
+      if (notification.user.pushSubscriptions.length === 0) {
+        console.warn('⚠️  No push subscriptions found for user:', notification.userId)
+        errors.push({ id: notification.id, error: 'No push subscriptions' })
+        continue
+      }
+
       for (const sub of notification.user.pushSubscriptions) {
         try {
+          const endpointPreview = sub?.endpoint ? sub.endpoint.substring(0, 50) + '...' : 'unknown'
+          console.log('📱 Sending to endpoint:', endpointPreview)
+          console.log('📱 Subscription structure:', { hasEndpoint: !!sub?.endpoint, hasKeys: !!sub?.keys })
+
           await webpush.sendNotification(
             {
               endpoint: sub.endpoint,
@@ -48,10 +68,18 @@ async function sendNotifications() {
               tag: `dose-${notification.id}`
             })
           )
+          console.log('✅ Notification sent successfully')
           results.push({ id: notification.id, status: 'sent' })
-        } catch (error) {
-          console.error('Push notification failed:', error)
-          results.push({ id: notification.id, status: 'failed' })
+        } catch (error: any) {
+          console.error('❌ Push notification failed:', {
+            error: error.message,
+            statusCode: error.statusCode
+          })
+          errors.push({
+            id: notification.id,
+            status: 'failed',
+            error: error.message
+          })
         }
       }
     }
@@ -63,7 +91,19 @@ async function sendNotifications() {
     })
   }
 
-  return { sent: results.length, results }
+  console.log('📊 Send complete:', {
+    found: notifications.length,
+    sent: results.length,
+    failed: errors.length
+  })
+
+  return {
+    found: notifications.length,
+    sent: results.length,
+    failed: errors.length,
+    results,
+    errors
+  }
 }
 
 // GET handler for Vercel Cron (crons use GET by default)
