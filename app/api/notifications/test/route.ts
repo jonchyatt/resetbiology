@@ -33,10 +33,11 @@ export async function POST(req: NextRequest) {
     })
 
     // Create a test scheduled notification
+    // Use a valid MongoDB ObjectId format (24 hex chars) for test
     const testNotification = await prisma.scheduledNotification.create({
       data: {
         userId: user.id,
-        protocolId: 'test-protocol-id', // Dummy protocol ID for test
+        protocolId: '000000000000000000000000', // Valid ObjectId for test mode
         doseTime,
         reminderTime,
         type: 'push',
@@ -83,7 +84,7 @@ export async function GET(req: NextRequest) {
     const testNotifications = await prisma.scheduledNotification.findMany({
       where: {
         userId: user.id,
-        protocolId: 'test-protocol-id',
+        protocolId: '000000000000000000000000', // Match test mode ObjectId
         reminderTime: {
           gte: oneHourAgo
         }
