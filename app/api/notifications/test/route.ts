@@ -20,6 +20,20 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     const { delaySeconds = 60 } = body
 
+    // Check if push subscription exists
+    const pushSubs = await prisma.pushSubscription.count({
+      where: { userId: user.id }
+    })
+
+    console.log('🧪 Push subscriptions for user:', pushSubs)
+
+    if (pushSubs === 0) {
+      return NextResponse.json({
+        error: 'No push subscription found',
+        details: 'Please enable push notifications first by clicking "Enable push notifications" in the notification preferences modal.'
+      }, { status: 400 })
+    }
+
     // Create test notification times
     const now = new Date()
     const reminderTime = new Date(now.getTime() + delaySeconds * 1000)
