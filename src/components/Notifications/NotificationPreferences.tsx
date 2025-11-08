@@ -129,6 +129,11 @@ export default function NotificationPreferences({ protocolId, protocolName, onCl
     setSuccess(null)
 
     try {
+      // Check if push notifications are enabled first
+      if (pushPermission !== 'granted') {
+        throw new Error('Please enable push notifications first (click "Enable push notifications" above)')
+      }
+
       console.log('🧪 Creating test notification...')
 
       const response = await fetch('/api/notifications/test', {
@@ -140,7 +145,7 @@ export default function NotificationPreferences({ protocolId, protocolName, onCl
 
       if (!response.ok) {
         const data = await response.json()
-        throw new Error(data.error || 'Failed to create test notification')
+        throw new Error(data.details || data.error || 'Failed to create test notification')
       }
 
       const data = await response.json()
@@ -163,6 +168,11 @@ export default function NotificationPreferences({ protocolId, protocolName, onCl
     setSuccess(null)
 
     try {
+      // Check if push notifications are enabled first
+      if (pushPermission !== 'granted') {
+        throw new Error('Please enable push notifications first (click "Enable push notifications" above)')
+      }
+
       console.log('⚡ Triggering immediate send...')
 
       const response = await fetch('/api/notifications/send-now', {
@@ -172,7 +182,7 @@ export default function NotificationPreferences({ protocolId, protocolName, onCl
 
       if (!response.ok) {
         const data = await response.json()
-        throw new Error(data.error || 'Failed to send notifications')
+        throw new Error(data.details || data.error || 'Failed to send notifications')
       }
 
       const data = await response.json()
@@ -181,7 +191,7 @@ export default function NotificationPreferences({ protocolId, protocolName, onCl
       if (data.sent > 0) {
         setSuccess(`Sent ${data.sent} notification(s) immediately!`)
       } else {
-        setSuccess('No pending notifications to send')
+        setSuccess('No pending notifications to send (create a test notification first)')
       }
 
       setTestCountdown(null)

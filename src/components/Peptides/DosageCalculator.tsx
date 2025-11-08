@@ -657,7 +657,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                   onChange={(e) => setInputs((s) => ({ ...s, peptideAmount: parseFloat(e.target.value) || 0 }))}
                   placeholder="e.g., 10, 50, 100"
                   min="0"
-                  step="1"
+                  step="any"
                   className="bg-primary-600/25 border border-amber-400/40 rounded-lg px-3 py-2.5 text-amber-100 placeholder-amber-300/50 focus:border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-400/30 transition-all"
                 />
               </label>

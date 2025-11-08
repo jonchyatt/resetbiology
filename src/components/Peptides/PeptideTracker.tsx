@@ -665,6 +665,7 @@ export function PeptideTracker() {
           frequency: protocolData.schedule.frequency,
           timing: protocolData.schedule.times.join('/'),
           notes: protocolData.notes || `Schedule: ${protocolData.schedule.frequency}`,
+          startDate: new Date().toISOString().split('T')[0], // Send user's local date
           timezone: getClientTimezone()
         })
       })
