@@ -645,6 +645,11 @@ export function PeptideTracker() {
     vialAmount: string;
     reconstitution: string;
     notes?: string;
+    notifications?: {
+      pushEnabled: boolean;
+      emailEnabled: boolean;
+      reminderMinutes: number;
+    };
   }) => {
     // Check if protocol already exists
     const existingProtocol = currentProtocols.find(protocol => protocol.name === protocolData.peptideName)
@@ -673,12 +678,58 @@ export function PeptideTracker() {
       const data = await response.json()
 
       if (data.success) {
+        const protocolId = data.protocol.id
+
+        // Set up notifications if enabled
+        if (protocolData.notifications && (protocolData.notifications.pushEnabled || protocolData.notifications.emailEnabled)) {
+          try {
+            // Request push permission if push is enabled
+            if (protocolData.notifications.pushEnabled && 'Notification' in window) {
+              const permission = await Notification.requestPermission()
+              if (permission === 'granted' && 'serviceWorker' in navigator) {
+                // Subscribe to push
+                const registration = await navigator.serviceWorker.ready
+                const subscription = await registration.pushManager.subscribe({
+                  userVisibleOnly: true,
+                  applicationServerKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
+                })
+
+                // Save subscription
+                await fetch('/api/notifications/subscribe', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ subscription: subscription.toJSON() })
+                })
+              }
+            }
+
+            // Save notification preferences
+            await fetch('/api/notifications/preferences', {
+              method: 'POST',
+              credentials: 'include',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                protocolId,
+                pushEnabled: protocolData.notifications.pushEnabled,
+                emailEnabled: protocolData.notifications.emailEnabled,
+                reminderMinutes: protocolData.notifications.reminderMinutes,
+                timezone: getClientTimezone()
+              })
+            })
+
+            console.log(`✅ Notification preferences saved for protocol`)
+          } catch (notifError) {
+            console.error('Failed to setup notifications:', notifError)
+            // Don't fail the whole protocol creation if notifications fail
+          }
+        }
+
         // Find peptide details from library
         const peptide = peptideLibrary.find(p => p.name === protocolData.peptideName)
 
         // Add to local state
         const newProtocol: PeptideProtocol = {
-          id: data.protocol.id,
+          id: protocolId,
           name: protocolData.peptideName,
           purpose: peptide?.purpose || 'General',
           dosage: protocolData.dosage,

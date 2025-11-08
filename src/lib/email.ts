@@ -443,7 +443,7 @@ export async function sendDoseReminderEmail(data: DoseReminderEmailData) {
 
   try {
     await resend.emails.send({
-      from: 'Reset Biology <notifications@resetbiology.com>',
+      from: 'Reset Biology <orders@resetbiology.com>', // Use verified sender (same as order emails)
       to: data.email,
       subject: `Peptide reminder – ${data.peptideName}`,
       html,
