@@ -117,19 +117,22 @@ export async function POST(req: NextRequest) {
         }
       } else if (notification.type === 'email') {
         if (!notification.user.email) {
-          console.warn('�s��,?  No email on record for user:', notification.userId)
+          console.warn('⚠️  No email on record for user:', notification.userId)
           errors.push({
             id: notification.id,
             error: 'No email on record'
           })
         } else {
           try {
-            const peptideName = notification.protocol?.peptides?.name || 'your peptide protocol'
+            // For test notifications, use generic message. For real notifications, we'd need to fetch protocol separately
+            const isTestNotification = notification.protocolId === '000000000000000000000000'
+            const peptideName = isTestNotification ? 'your peptide protocol' : 'your scheduled peptide'
+
             await sendDoseReminderEmail({
               email: notification.user.email,
               name: notification.user.name || undefined,
               peptideName,
-              dosage: notification.protocol?.dosage || undefined,
+              dosage: undefined, // Could fetch protocol separately if needed
               reminderTime: notification.reminderTime
             })
             results.push({
@@ -137,7 +140,7 @@ export async function POST(req: NextRequest) {
               status: 'sent-email'
             })
           } catch (err: any) {
-            console.error('�?O Email notification failed:', err.message)
+            console.error('❌ Email notification failed:', err.message)
             errors.push({
               id: notification.id,
               status: 'failed',

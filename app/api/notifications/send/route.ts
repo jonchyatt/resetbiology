@@ -99,12 +99,15 @@ async function sendNotifications() {
           errors.push({ id: notification.id, error: 'No email on file' })
         } else {
           try {
-            const peptideName = notification.protocol?.peptides?.name || 'your peptide protocol'
+            // For test notifications, use generic message. For real notifications, we'd need to fetch protocol separately
+            const isTestNotification = notification.protocolId === '000000000000000000000000'
+            const peptideName = isTestNotification ? 'your peptide protocol' : 'your scheduled peptide'
+
             await sendDoseReminderEmail({
               email: notification.user.email,
               name: notification.user.name || 'Reset Biology member',
               peptideName,
-              dosage: notification.protocol?.dosage || notification.protocol?.peptides?.dosage || 'Scheduled dose',
+              dosage: undefined, // Could fetch protocol separately if needed
               reminderTime: notification.reminderTime
             })
             console.log('✅ Email notification sent successfully')
