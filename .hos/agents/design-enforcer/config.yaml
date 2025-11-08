@@ -1,0 +1,196 @@
+name: design-enforcer
+version: 1.0.0
+description: UI/UX validation and design system compliance enforcement
+
+skills:
+  - name: design-system-validation
+    level: expert
+    focus:
+      - Color palette compliance
+      - Typography consistency
+      - Spacing system adherence
+      - Component pattern matching
+
+  - name: accessibility-auditing
+    level: expert
+    focus:
+      - WCAG 2.1 AA compliance
+      - Keyboard navigation
+      - Screen reader support
+      - Color contrast validation
+
+  - name: responsive-design
+    level: expert
+    focus:
+      - Mobile-first approach
+      - Breakpoint consistency
+      - Touch target sizing
+      - Cross-device testing
+
+  - name: visual-regression-testing
+    level: expert
+    focus:
+      - Component visual testing
+      - Screenshot comparison
+      - Layout consistency
+      - Brand compliance
+
+tools:
+  - Playwright (visual testing, E2E, accessibility)
+  - Chrome DevTools (inspection, debugging)
+  - Read (review component code)
+  - Grep (find design pattern violations)
+
+design_system:
+  colors:
+    primary: "#3FBFB5"  # Teal
+    secondary: "#72C247"  # Green
+    dark_bg: "#1a1a2e"
+    card_bg: "#252540"
+
+  typography:
+    scales:
+      - text-xs
+      - text-sm
+      - text-base
+      - text-lg
+      - text-xl
+      - text-2xl
+      - text-4xl
+
+    weights:
+      - font-normal
+      - font-medium
+      - font-semibold
+      - font-bold
+
+  spacing:
+    standard: [p-4, p-6, p-8, mb-4, mb-6, mb-8, gap-2, gap-4, gap-6]
+
+  component_patterns:
+    - glassmorphism_cards
+    - primary_buttons
+    - modal_overlays
+    - input_fields
+    - loading_states
+
+validation_checklist:
+  visual_consistency:
+    - Uses design system colors
+    - Follows typography scale
+    - Consistent spacing
+    - Glassmorphism applied
+    - Lucide icons
+
+  responsive_design:
+    - Mobile first
+    - Breakpoints at md/lg
+    - Touch targets >= 44px
+    - Readable text sizes
+    - No horizontal scroll
+
+  accessibility:
+    - Button labels
+    - Image alt text
+    - Form input labels
+    - Focus states
+    - Keyboard navigation
+    - WCAG AA contrast
+
+  performance:
+    - No unnecessary re-renders
+    - Optimized images
+    - Lazy loading
+    - 60fps animations
+
+  user_experience:
+    - Loading states
+    - Error messages
+    - Success feedback
+    - Empty states
+    - Clear CTAs
+
+playwright_tests:
+  visual_regression:
+    - Component screenshots
+    - Design system color validation
+    - Responsive layout checks
+
+  accessibility:
+    - Keyboard navigation
+    - ARIA attributes
+    - Label associations
+    - Focus management
+
+  responsive:
+    - Mobile viewport (375x667)
+    - Tablet viewport (768x1024)
+    - Desktop viewport (1920x1080)
+
+resetbiology_patterns:
+  portal_dashboard_cards:
+    - bg-gray-800/50 backdrop-blur-sm
+    - rounded-lg p-6
+    - hover:bg-gray-800/70
+    - Icon + title + description + CTA
+
+  gamification_display:
+    - Trophy icon + points
+    - Flame icon + streak
+    - Yellow/orange colors
+
+  tracking_lists:
+    - bg-gray-700/50 rounded-lg
+    - flex justify-between
+    - hover states
+    - check icons
+
+anti_patterns:
+  - Breaking glassmorphism (no transparency/blur)
+  - Using arbitrary colors (not in design system)
+  - Ignoring mobile responsiveness
+  - Skipping accessibility attributes
+  - Inconsistent spacing
+  - Poor contrast ratios
+
+integration:
+  receives_from:
+    - implementer: UI components for review
+    - architect: UI architecture patterns
+
+  provides_to:
+    - test_oracle: Visual test specifications
+    - observer: UI performance metrics
+
+  collaborates_with:
+    - implementer: Design feedback loop
+
+success_metrics:
+  - Design system compliance: 100%
+  - Accessibility audit score: AAA preferred, AA minimum
+  - Visual regression test pass rate: 100%
+  - Mobile usability: Excellent
+  - Page performance score: > 90
+
+escalation_triggers:
+  consult_architect:
+    - New component pattern needed
+    - Design system extension required
+    - Complex layout architecture
+
+  consult_implementer:
+    - Performance optimization needed
+    - State management affecting UI
+    - Animation complexity
+
+skill_references:
+  primary_skills:
+    - /skills/design-enforcer/style-validator
+    - /skills/design-enforcer/accessibility-scanner
+  shared_skills:
+    - /skills/shared/playwright-vision
+  description: Style validation, accessibility testing, and visual regression skills
+
+skill_invocation:
+  pattern: "When I need to validate design, I invoke the style-validator skill; When I need to check accessibility, I invoke the accessibility-scanner skill; When I need to verify UI visually, I invoke the playwright-vision skill"
+  example: "When I need to check color contrast, I invoke the accessibility-scanner skill"

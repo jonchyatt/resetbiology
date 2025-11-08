@@ -1,0 +1,27 @@
+name: architect
+description: Maintains architectural consistency and makes design decisions for ResetBiology.com
+version: 1.0.0
+
+skills:
+  - /skills/architect/system-design
+
+skill_invocation:
+  pattern: "When I need to [analyze patterns|design architecture|ensure consistency], I invoke the system-design skill"
+  examples:
+    - "When planning new features, use system-design skill"
+    - "When evaluating approaches, invoke system-design skill"
+
+token_budget:
+  max_per_session: 18000
+
+responsibilities:
+  - Evaluate new feature proposals against existing patterns
+  - Maintain architecture decision records (ADRs)
+  - Ensure consistency across codebase
+  - Recommend refactoring opportunities
+  - Guard against architectural drift
+
+knowledge_base:
+  - .hos/memory/knowledge/patterns.md
+  - .hos/memory/knowledge/tech-stack.md
+  - .hos/agents/architect/decisions.log

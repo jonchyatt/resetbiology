@@ -1,0 +1,19 @@
+# Skip these files when packaging the skill
+.git
+.gitignore
+__pycache__
+*.pyc
+.pytest_cache
+.venv
+venv
+node_modules
+.env
+.env.local
+*.log
+.DS_Store
+Thumbs.db
+.idea
+.vscode
+*.swp
+*.swo
+.skillignore

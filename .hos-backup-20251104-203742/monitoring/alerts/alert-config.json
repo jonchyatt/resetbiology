@@ -1,0 +1,77 @@
+{
+  "alerts": {
+    "uptime": {
+      "critical": {
+        "enabled": true,
+        "threshold": 0,
+        "message": "Site is DOWN - immediate action required"
+      },
+      "warning": {
+        "enabled": true,
+        "threshold": 95,
+        "message": "Site uptime below 95%"
+      }
+    },
+    "performance": {
+      "critical": {
+        "enabled": true,
+        "threshold": 50,
+        "message": "Performance score critically low"
+      },
+      "warning": {
+        "enabled": true,
+        "threshold": 70,
+        "message": "Performance score below acceptable threshold"
+      }
+    },
+    "errors": {
+      "critical": {
+        "enabled": true,
+        "threshold": 10,
+        "message": "High error rate detected"
+      },
+      "warning": {
+        "enabled": true,
+        "threshold": 5,
+        "message": "Elevated error rate"
+      }
+    },
+    "responseTime": {
+      "critical": {
+        "enabled": true,
+        "threshold": 3000,
+        "message": "Response time critically slow"
+      },
+      "warning": {
+        "enabled": true,
+        "threshold": 1000,
+        "message": "Response time slower than expected"
+      }
+    },
+    "pageHealth": {
+      "critical": {
+        "enabled": true,
+        "threshold": 50,
+        "message": "Multiple page health checks failing"
+      },
+      "warning": {
+        "enabled": true,
+        "threshold": 80,
+        "message": "Some page health checks failing"
+      }
+    }
+  },
+  "channels": {
+    "console": {
+      "enabled": true
+    },
+    "email": {
+      "enabled": false,
+      "recipients": []
+    },
+    "slack": {
+      "enabled": false,
+      "webhookUrl": ""
+    }
+  }
+}

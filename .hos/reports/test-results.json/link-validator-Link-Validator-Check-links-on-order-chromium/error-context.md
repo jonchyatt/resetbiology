@@ -1,0 +1,166 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e4]:
+      - link "Reset Biology" [ref=e5] [cursor=pointer]:
+        - /url: /
+        - img "Reset Biology" [ref=e6]
+      - navigation [ref=e7]:
+        - link "Order" [ref=e8] [cursor=pointer]:
+          - /url: /order
+        - link "IRB Protocols" [ref=e9] [cursor=pointer]:
+          - /url: /cellular-peptide
+        - link "Login / Sign Up" [ref=e10] [cursor=pointer]:
+          - /url: /auth/login?returnTo=/portal
+  - generic [ref=e12]:
+    - generic [ref=e15]:
+      - generic [ref=e16]:
+        - img "Reset Biology" [ref=e17]
+        - generic [ref=e18]:
+          - generic [ref=e19]:
+            - link "Portal" [ref=e20] [cursor=pointer]:
+              - /url: /portal
+            - generic [ref=e21]: ">"
+            - generic [ref=e22]: Order Peptides
+          - paragraph [ref=e23]: Premium quality peptides for your wellness journey
+      - generic [ref=e24]:
+        - link "Daily History" [ref=e25] [cursor=pointer]:
+          - /url: /daily-history
+        - link "← Back to Portal" [ref=e26] [cursor=pointer]:
+          - /url: /portal
+    - generic [ref=e27]:
+      - heading "Order Peptides" [level=1] [ref=e28]
+      - paragraph [ref=e29]: Premium quality peptides for your wellness journey
+    - generic [ref=e32]:
+      - generic [ref=e34] [cursor=pointer]:
+        - img "5-amino-1MQ" [ref=e36]
+        - generic [ref=e38]:
+          - heading "5-amino-1MQ" [level=3] [ref=e40]
+          - paragraph [ref=e41]: 5-Amino-1MQ amplifies NAD+ levels, which enhances energy, improves insulin sensitivity, reduces inflammation, and promotes fat burning and metabolic health.
+          - paragraph [ref=e42]: View Details →
+          - paragraph [ref=e44]: $64.00
+          - button "Buy Now" [ref=e45]:
+            - generic [ref=e46]: Buy Now
+            - img [ref=e47]
+      - generic [ref=e50] [cursor=pointer]:
+        - img "BPC-157" [ref=e52]
+        - generic [ref=e54]:
+          - generic [ref=e55]:
+            - heading "BPC-157" [level=3] [ref=e56]
+            - generic [ref=e57]: Out of Stock
+          - paragraph [ref=e58]: BPC-157 is a restorative peptide found in gastric juices that functions as a "universal compound" and "living breathing handyman" to accelerate tissue recovery and repair everywhere—including the gut lining, joints, and nerves—by promoting angiogenesis, increasing growth hormone receptors on fibroblasts, modulating actin for structural integrity, and reducing systemic inflammation and fibrosis
+          - paragraph [ref=e59]: View Details →
+          - paragraph [ref=e61]: $79.00
+          - button "Join Waitlist" [ref=e62]:
+            - img [ref=e63]
+            - generic [ref=e65]: Join Waitlist
+      - generic [ref=e67] [cursor=pointer]:
+        - img "CJC-1295" [ref=e69]
+        - generic [ref=e71]:
+          - generic [ref=e72]:
+            - heading "CJC-1295" [level=3] [ref=e73]
+            - generic [ref=e74]: Out of Stock
+          - paragraph [ref=e75]: CJC 1295, a Growth Hormone-Releasing Peptide (GHRP), stimulates the pituitary gland to increase the natural, pulsatile release of growth hormone (GH) and Insulin-like Growth Factor-1 (IGF-1), leading to improved recovery, enhanced fat loss (lipolysis), better sleep quality (by setting the stage for deep sleep and GH pulsing), increased muscle strength and potential hypertrophy, and anti-aging/rebuilding effects on connective tissues and the body overall
+          - paragraph [ref=e76]: View Details →
+          - paragraph [ref=e78]: $195.00
+          - button "Join Waitlist" [ref=e79]:
+            - img [ref=e80]
+            - generic [ref=e82]: Join Waitlist
+      - generic [ref=e84] [cursor=pointer]:
+        - img "DSIP 10mg - Single Vial" [ref=e86]
+        - generic [ref=e88]:
+          - generic [ref=e89]:
+            - heading "DSIP 10mg - Single Vial" [level=3] [ref=e90]
+            - generic [ref=e91]: In Stock
+          - paragraph [ref=e92]: Delta Sleep Inducing Peptide (DSIP) improves sleep quality by increasing slow-wave sleep and efficiency, resetting the circadian rhythm, reducing stress via HPA axis dampening, supporting hormonal release (GH, testosterone), and providing neuroprotective, anti-inflammatory, and potentially increasing lifespan
+          - paragraph [ref=e93]: View Details →
+          - paragraph [ref=e95]: $54.00
+          - button "Buy Now" [ref=e96]:
+            - generic [ref=e97]: Buy Now
+            - img [ref=e98]
+      - generic [ref=e101] [cursor=pointer]:
+        - img "GHK-Cu" [ref=e103]
+        - generic [ref=e105]:
+          - generic [ref=e106]:
+            - heading "GHK-Cu" [level=3] [ref=e107]
+            - generic [ref=e108]: Only 1 left
+          - paragraph [ref=e109]: GHK-Cu (Copper Peptide) is a master regenerator and regulator of approximately 4,000 genes, shifting them from an aged, inflammatory state to a youthful, hyper-repairative one by boosting collagen and elastin production, increasing neurogenesis, reducing systemic inflammation and oxidative damage, and aiding in the rebuilding of skin, liver, lungs, and nerves.
+          - paragraph [ref=e110]: View Details →
+          - paragraph [ref=e112]: $42.00
+          - button "Buy Now" [ref=e113]:
+            - generic [ref=e114]: Buy Now
+            - img [ref=e115]
+      - generic [ref=e119] [cursor=pointer]:
+        - generic [ref=e120]:
+          - heading "GLOW" [level=3] [ref=e121]
+          - generic [ref=e122]: Only 4 left
+        - paragraph [ref=e123]: "GLOW single vial 50 mg GHK-Cu, 10 mg BPC-157, 10 mg TB-500: The combination of GHK-CU, TB500, and BPC-157—often called the \"glow combo\"—offers synergistic benefits centered on tissue repair, accelerated recovery, and anti-aging by enhancing wound healing, promoting flexibility, and regulating gene expression"
+        - paragraph [ref=e124]: View Details →
+        - paragraph [ref=e126]: $239.00
+        - button "Buy Now" [ref=e127]:
+          - generic [ref=e128]: Buy Now
+          - img [ref=e129]
+      - generic [ref=e132] [cursor=pointer]:
+        - img "Ipamorelin" [ref=e134]
+        - generic [ref=e136]:
+          - generic [ref=e137]:
+            - heading "Ipamorelin" [level=3] [ref=e138]
+            - generic [ref=e139]: In Stock
+          - paragraph [ref=e140]: Ipamorelin, functioning as a Growth Hormone-Releasing Peptide (GHRP), stimulates the natural and pulsatile release of growth hormone (GH) and IGF-1, leading to significantly improved recovery and accelerated healing (muscle, connective tissue, and bone mineral density), enhanced fat loss via lipolysis, and better sleep quality (by increasing Stage 2 sleep), all while notably avoiding increases in undesirable hormones like cortisol or prolactin
+          - paragraph [ref=e141]: View Details →
+          - paragraph [ref=e143]: $63.00
+          - button "Buy Now" [ref=e144]:
+            - generic [ref=e145]: Buy Now
+            - img [ref=e146]
+      - generic [ref=e149] [cursor=pointer]:
+        - img "MOTS-C" [ref=e151]
+        - generic [ref=e153]:
+          - generic [ref=e154]:
+            - heading "MOTS-C" [level=3] [ref=e155]
+            - generic [ref=e156]: Out of Stock
+          - paragraph [ref=e157]: MOTS-C (mitochondrial open reading frame of the 12S RNA type-C) is an exercise-mimetic peptide that functions to increase energy (ATP) production by promoting mitochondrial biogenesis and enhancing fat oxidation, improves physical endurance, insulin sensitivity, stress resilience, and overall metabolic health, including potential benefits for bone mineral density and reducing fatigue related to chronic illness
+          - paragraph [ref=e158]: View Details →
+          - paragraph [ref=e160]: $71.00
+          - button "Join Waitlist" [ref=e161]:
+            - img [ref=e162]
+            - generic [ref=e164]: Join Waitlist
+      - generic [ref=e166] [cursor=pointer]:
+        - img "Retatrutide" [ref=e168]
+        - generic [ref=e170]:
+          - generic [ref=e171]:
+            - heading "Retatrutide" [level=3] [ref=e172]
+            - generic [ref=e173]: In Stock
+          - paragraph [ref=e174]: Retatrutide is the most potent compound for weight reduction, operating as a triple agonist (GLP-1, GIP, and Glucagon) that demonstrated superior fat loss in trials, achieving up to a 24.2% reduction in body weight over 48 weeks, significantly surpassing Semaglutide and Tirzepatide. Its unique activation of the glucagon receptor promotes efficient fat oxidation and metabolic remodeling, establishing it as a systemic "biological operating system upgrade" that helps restore hormone balance and reverses biological markers of aging and metabolic dysfunction.
+          - paragraph [ref=e175]: View Details →
+          - paragraph [ref=e177]: $149.00
+          - button "Buy Now" [ref=e178]:
+            - generic [ref=e179]: Buy Now
+            - img [ref=e180]
+      - generic [ref=e183] [cursor=pointer]:
+        - img "TB-500 10mg - Single Vial" [ref=e185]
+        - generic [ref=e187]:
+          - generic [ref=e188]:
+            - heading "TB-500 10mg - Single Vial" [level=3] [ref=e189]
+            - generic [ref=e190]: In Stock
+          - paragraph [ref=e191]: TB-500 dramatically accelerates healing and recovery by promoting angiogenesis (new blood vessel formation), modulating actin for tissue repair, increasing cell migration to injured areas, reducing inflammation and scarring (anti-fibrosis), slightly increasing muscle growth and mobility, and offering cardioprotective effects for the heart and brain
+          - paragraph [ref=e192]: View Details →
+          - paragraph [ref=e194]: $180.00
+          - button "Buy Now" [ref=e195]:
+            - generic [ref=e196]: Buy Now
+            - img [ref=e197]
+      - generic [ref=e200] [cursor=pointer]:
+        - img "Bacteriostatic Water" [ref=e202]
+        - generic [ref=e204]:
+          - generic [ref=e205]:
+            - heading "Bacteriostatic Water" [level=3] [ref=e206]
+            - generic [ref=e207]: Out of Stock
+          - paragraph [ref=e208]: 3 ml vial of bacteriostatic water for reconstitution.
+          - paragraph [ref=e209]: View Details →
+          - paragraph [ref=e211]: $7.00
+          - button "Join Waitlist" [ref=e212]:
+            - img [ref=e213]
+            - generic [ref=e215]: Join Waitlist
+  - alert [ref=e216]
+```

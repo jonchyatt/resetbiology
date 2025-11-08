@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Bell, Mail, AlertCircle, CheckCircle, Zap } from 'lucide-react'
 
 interface Props {
@@ -29,20 +29,67 @@ export default function NotificationPreferences({ protocolId, protocolName, onCl
   const [emailEnabled, setEmailEnabled] = useState(false)
   const [reminderMinutes, setReminderMinutes] = useState(15)
   const [pushPermission, setPushPermission] = useState<NotificationPermission>('default')
+  const [timezone, setTimezone] = useState(() => {
+    if (typeof window === 'undefined') return 'UTC'
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
+  })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
+  const [initializing, setInitializing] = useState(true)
 
   // Hidden test button state
   const [clickCount, setClickCount] = useState(0)
   const [showTestButton, setShowTestButton] = useState(false)
   const [testLoading, setTestLoading] = useState(false)
   const [testCountdown, setTestCountdown] = useState<number | null>(null)
+  const deviceHints = useMemo(() => {
+    if (typeof window === 'undefined') {
+      return { isIOS: false, isStandalone: false }
+    }
+    const ua = navigator.userAgent || ''
+    const isIOS = /iPad|iPhone|iPod/.test(ua)
+    const isStandalone =
+      window.matchMedia('(display-mode: standalone)').matches ||
+      // @ts-expect-error navigator.standalone exists on iOS Safari when installed to home screen
+      window.navigator?.standalone === true
+    return { isIOS, isStandalone }
+  }, [])
+  const needsStandaloneHint = deviceHints.isIOS && !deviceHints.isStandalone
+  const refreshTimezone = () => {
+    if (typeof window === 'undefined') return
+    setTimezone(Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC')
+  }
 
   useEffect(() => {
     if ('Notification' in window) {
       setPushPermission(Notification.permission)
     }
+    const controller = new AbortController()
+    const loadPreference = async () => {
+      try {
+        const response = await fetch(`/api/notifications/preferences?protocolId=${protocolId}`, {
+          signal: controller.signal,
+          credentials: 'include'
+        })
+        if (!response.ok) return
+        const data = await response.json()
+        if (data.preference) {
+          setPushEnabled(data.preference.pushEnabled)
+          setEmailEnabled(data.preference.emailEnabled)
+          setReminderMinutes(data.preference.reminderMinutes ?? 15)
+          if (data.preference.timezone) {
+            setTimezone(data.preference.timezone)
+          }
+        }
+      } catch (err) {
+        console.warn('�s��,? Failed to load notification preference', err)
+      } finally {
+        setInitializing(false)
+      }
+    }
+    loadPreference()
+    return () => controller.abort()
   }, [])
 
   // Triple-click detection for test button
@@ -86,6 +133,7 @@ export default function NotificationPreferences({ protocolId, protocolName, onCl
 
       const response = await fetch('/api/notifications/test', {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ delaySeconds: 60 })
       })
@@ -118,7 +166,8 @@ export default function NotificationPreferences({ protocolId, protocolName, onCl
       console.log('⚡ Triggering immediate send...')
 
       const response = await fetch('/api/notifications/send-now', {
-        method: 'POST'
+        method: 'POST',
+        credentials: 'include'
       })
 
       if (!response.ok) {
@@ -224,12 +273,14 @@ export default function NotificationPreferences({ protocolId, protocolName, onCl
 
       const response = await fetch('/api/notifications/preferences', {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           protocolId,
           pushEnabled,
           emailEnabled,
-          reminderMinutes
+          reminderMinutes,
+          timezone
         })
       })
 
@@ -265,6 +316,10 @@ export default function NotificationPreferences({ protocolId, protocolName, onCl
           <div className="text-sm font-normal text-gray-400 mt-1">{protocolName}</div>
         </h3>
 
+        {initializing && (
+          <p className="text-xs text-gray-400 mb-3">Loading your existing reminder settings…</p>
+        )}
+
         {/* Error Message */}
         {error && (
           <div className="mb-4 p-3 bg-red-500/20 border border-red-500/50 rounded-lg flex items-start gap-2">
@@ -292,7 +347,7 @@ export default function NotificationPreferences({ protocolId, protocolName, onCl
               type="checkbox"
               checked={pushEnabled}
               onChange={(e) => setPushEnabled(e.target.checked)}
-              disabled={pushPermission !== 'granted' || loading}
+              disabled={initializing || pushPermission !== 'granted' || loading}
               className="w-5 h-5"
             />
           </div>
@@ -300,7 +355,7 @@ export default function NotificationPreferences({ protocolId, protocolName, onCl
           {pushPermission !== 'granted' && (
             <button
               onClick={requestPushPermission}
-              disabled={loading}
+              disabled={loading || initializing}
               className="text-sm text-primary-400 hover:text-primary-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Setting up...' : 'Enable push notifications →'}
@@ -308,8 +363,30 @@ export default function NotificationPreferences({ protocolId, protocolName, onCl
           )}
 
           {pushPermission === 'granted' && (
-            <p className="text-xs text-green-400 mt-2">✓ Push notifications enabled</p>
+            <p className="text-xs text-green-400 mt-2">� Push notifications enabled</p>
           )}
+
+          {pushPermission === 'denied' && (
+            <p className="text-xs text-red-400 mt-2">
+              Notifications are blocked by your browser. Enable them in Settings to use push reminders.
+            </p>
+          )}
+
+          {needsStandaloneHint && (
+            <p className="text-xs text-amber-300 mt-3">Add Reset Biology to your home screen to allow notifications on iOS.</p>
+          )}
+
+          <p className="text-xs text-gray-400 mt-3">
+            Reminders use your timezone: <span className="font-semibold text-gray-200">{timezone}</span>
+          </p>
+          <button
+            onClick={refreshTimezone}
+            className="text-[11px] text-primary-300 underline mt-1 disabled:opacity-50"
+            type="button"
+            disabled={loading}
+          >
+            Use current device timezone
+          </button>
         </div>
 
         {/* Email Notifications */}
@@ -323,7 +400,7 @@ export default function NotificationPreferences({ protocolId, protocolName, onCl
               type="checkbox"
               checked={emailEnabled}
               onChange={(e) => setEmailEnabled(e.target.checked)}
-              disabled={loading}
+              disabled={loading || initializing}
               className="w-5 h-5"
             />
           </div>
@@ -337,7 +414,7 @@ export default function NotificationPreferences({ protocolId, protocolName, onCl
           <select
             value={reminderMinutes}
             onChange={(e) => setReminderMinutes(Number(e.target.value))}
-            disabled={loading}
+            disabled={loading || initializing}
             className="w-full bg-gray-700 text-white px-4 py-2 rounded-lg disabled:opacity-50"
           >
             <option value={5}>5 minutes</option>
@@ -367,14 +444,14 @@ export default function NotificationPreferences({ protocolId, protocolName, onCl
             <div className="flex gap-2">
               <button
                 onClick={sendTestNotification}
-                disabled={testLoading || loading || testCountdown !== null}
+                disabled={testLoading || loading || initializing || testCountdown !== null}
                 className="flex-1 bg-yellow-500 hover:bg-yellow-600 text-black py-2 px-3 rounded-lg font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {testLoading ? 'Creating...' : 'Test (60s)'}
               </button>
               <button
                 onClick={sendNow}
-                disabled={testLoading || loading || testCountdown === null || testCountdown > 0}
+                disabled={testLoading || loading || initializing || testCountdown === null || testCountdown > 0}
                 className="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 px-3 rounded-lg font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {testLoading ? 'Sending...' : testCountdown === 0 ? '✓ Send Now' : 'Send Now'}
@@ -393,8 +470,8 @@ export default function NotificationPreferences({ protocolId, protocolName, onCl
         {/* Actions */}
         <div className="flex gap-3">
           <button
-            onClick={savePreferences}
-            disabled={loading || (pushEnabled && pushPermission !== 'granted')}
+          onClick={savePreferences}
+          disabled={loading || initializing || (pushEnabled && pushPermission !== 'granted')}
             className="flex-1 bg-primary-500 hover:bg-primary-600 text-white py-2 px-4 rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? 'Saving...' : 'Save Preferences'}
@@ -411,3 +488,4 @@ export default function NotificationPreferences({ protocolId, protocolName, onCl
     </div>
   )
 }
+

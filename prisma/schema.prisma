@@ -53,6 +53,7 @@ model User {
   notificationPreferences NotificationPreference[]
   scheduledNotifications  ScheduledNotification[]
   pushSubscriptions       PushSubscription[]
+  pushSubscriptionHealth  PushSubscriptionHealth[]
 
   @@map("users")
 }
@@ -253,21 +254,22 @@ model peptide_orders {
 }
 
 model user_peptide_protocols {
-  id            String          @id @default(auto()) @map("_id") @db.ObjectId
-  userId        String          @db.ObjectId
-  peptideId     String          @db.ObjectId
-  startDate     DateTime        @default(now())
-  endDate       DateTime?
-  dosage        String
-  frequency     String
-  timing        String?         // Dose times (e.g., "08:00" or "08:00/20:00" for multiple times)
-  notes         String?
-  isActive      Boolean         @default(true)
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime
-  peptide_doses peptide_doses[]
-  peptides      Peptide         @relation(fields: [peptideId], references: [id])
-  users         User            @relation(fields: [userId], references: [id])
+  id                     String                  @id @default(auto()) @map("_id") @db.ObjectId
+  userId                 String                  @db.ObjectId
+  peptideId              String                  @db.ObjectId
+  startDate              DateTime                @default(now())
+  endDate                DateTime?
+  dosage                 String
+  frequency              String
+  timing                 String?                 // Dose times (e.g., "08:00" or "08:00/20:00" for multiple times)
+  notes                  String?
+  isActive               Boolean                 @default(true)
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime
+  peptide_doses          peptide_doses[]
+  scheduledNotifications ScheduledNotification[]
+  peptides               Peptide                 @relation(fields: [peptideId], references: [id])
+  users                  User                    @relation(fields: [userId], references: [id])
 }
 
 model DailyTask {
@@ -546,6 +548,7 @@ model NotificationPreference {
   pushEnabled     Boolean  @default(true)
   emailEnabled    Boolean  @default(false)
   reminderMinutes Int      @default(15)
+  timezone        String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   user            User     @relation(fields: [userId], references: [id])
@@ -565,6 +568,7 @@ model ScheduledNotification {
   sentAt       DateTime?
   createdAt    DateTime  @default(now())
   user         User      @relation(fields: [userId], references: [id])
+  protocol     user_peptide_protocols @relation(fields: [protocolId], references: [id])
 
   @@index([reminderTime, sent])
   @@map("scheduled_notifications")
@@ -580,6 +584,66 @@ model PushSubscription {
 
   @@unique([userId, endpoint])
   @@map("push_subscriptions")
+}
+
+// --- NOTIFICATION MONITORING MODELS ---
+
+// Tracks every cron job execution for health monitoring
+model CronHealthCheck {
+  id                  String    @id @default(auto()) @map("_id") @db.ObjectId
+  cronType            String    // "notification-send"
+  status              String    // "started" | "completed" | "failed"
+  startedAt           DateTime  @default(now())
+  completedAt         DateTime?
+  duration            Int?      // milliseconds
+  notificationsFound  Int?
+  notificationsSent   Int?
+  notificationsFailed Int?
+  errorMessage        String?   // If failed
+  errorStack          String?   // Full stack trace
+  metadata            Json?     // Additional context
+
+  @@index([cronType, startedAt])
+  @@index([status, startedAt])
+  @@map("cron_health_checks")
+}
+
+// Logs all email send failures for debugging
+model EmailFailureLog {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  emailType    String   // "dose-reminder" | "order-confirmation" | "seller-notification" | "shipping-confirmation"
+  recipient    String   // Email address
+  userId       String?  @db.ObjectId  // If applicable
+  errorMessage String
+  errorCode    String?  // Resend error code
+  errorStack   String?  // Full stack trace
+  payload      Json?    // Email data that failed
+  attemptedAt  DateTime @default(now())
+  retryCount   Int      @default(0)
+  retrySuccess Boolean  @default(false)
+
+  @@index([emailType, attemptedAt])
+  @@index([recipient, attemptedAt])
+  @@map("email_failure_logs")
+}
+
+// Tracks push notification subscription health per user
+model PushSubscriptionHealth {
+  id                   String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId               String   @db.ObjectId
+  subscriptionId       String   @db.ObjectId  // Reference to PushSubscription
+  lastSuccessSendAt    DateTime?
+  lastFailureSendAt    DateTime?
+  lastFailureReason    String?
+  consecutiveFailures  Int      @default(0)
+  isHealthy            Boolean  @default(true)
+  checkedAt            DateTime @default(now())
+
+  user                 User     @relation(fields: [userId], references: [id])
+
+  @@index([userId, isHealthy])
+  @@index([consecutiveFailures])
+  @@map("push_subscription_health")
 }
 
 // --- INVENTORY & BUNDLE MANAGEMENT ---
@@ -634,3 +698,5 @@ model InventoryTransaction {
   @@index([productId, createdAt])
   @@map("inventory_transactions")
 }
+
+

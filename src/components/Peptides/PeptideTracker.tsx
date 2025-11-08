@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, useCallback, useRef } from "react"
 import { Syringe, Calendar, AlertCircle, TrendingUp, Plus, Clock, X, Edit, ChevronDown, Bell } from "lucide-react"
 import { DosageCalculator } from './DosageCalculator'
 import NotificationPreferences from '@/components/Notifications/NotificationPreferences'
+import PushUnavailableWarning from '@/components/Notifications/PushUnavailableWarning'
 
 interface PeptideProtocol {
   id: string
@@ -663,7 +664,8 @@ export function PeptideTracker() {
           dosage: protocolData.dosage,
           frequency: protocolData.schedule.frequency,
           timing: protocolData.schedule.times.join('/'),
-          notes: protocolData.notes || `Schedule: ${protocolData.schedule.frequency}`
+          notes: protocolData.notes || `Schedule: ${protocolData.schedule.frequency}`,
+          timezone: getClientTimezone()
         })
       })
 
@@ -892,7 +894,8 @@ export function PeptideTracker() {
           protocolId: editingProtocol.id,
           dosage: customDosage,
           frequency: customFrequency,
-          timing: timingString
+          timing: timingString,
+          timezone: getClientTimezone()
         }),
         credentials: 'include'
       })
@@ -1271,6 +1274,7 @@ export function PeptideTracker() {
            backgroundAttachment: 'fixed'
          }}>
       <div className="relative z-10">
+        <PushUnavailableWarning />
         {/* Header - Added mt-16 to create proper space below fixed nav (nav is h-16 = 64px) */}
         <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm shadow-2xl border-b border-primary-400/30 mt-16">
           <div className="container mx-auto px-4 py-4">
@@ -2001,3 +2005,7 @@ export function PeptideTracker() {
   )
 }
 
+const getClientTimezone = () => {
+  if (typeof window === 'undefined') return 'UTC'
+  return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
+}

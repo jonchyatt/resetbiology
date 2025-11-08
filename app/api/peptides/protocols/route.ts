@@ -67,7 +67,8 @@ export async function POST(request: Request) {
       timing,
       notes,
       startDate,
-      endDate
+      endDate,
+      timezone
     } = body
 
     if (!peptideId && !peptideName) {
@@ -145,6 +146,8 @@ export async function POST(request: Request) {
     })
 
     // Create default notification preferences (enabled by default)
+    const userTimezone = timezone || body?.clientTimezone || null
+
     try {
       await prisma.notificationPreference.create({
         data: {
@@ -152,13 +155,15 @@ export async function POST(request: Request) {
           protocolId: protocol.id,
           pushEnabled: true,
           emailEnabled: false,
-          reminderMinutes: 15
+          reminderMinutes: 15,
+          timezone: userTimezone
         }
       })
 
       // Schedule notifications for the next 30 days
       await scheduleNotificationsForProtocol(user.id, protocol.id, {
-        daysAhead: 30
+        daysAhead: 30,
+        timezone: userTimezone ?? undefined
       })
     } catch (error) {
       console.error('Error setting up notifications for new protocol:', error)

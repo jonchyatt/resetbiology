@@ -1,0 +1,119 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e4]:
+      - link "Reset Biology" [ref=e5] [cursor=pointer]:
+        - /url: /
+        - img "Reset Biology" [ref=e6]
+      - button [ref=e7]:
+        - img [ref=e8]
+  - generic [ref=e11]:
+    - generic [ref=e14]:
+      - generic [ref=e15]:
+        - img "Reset Biology" [ref=e16]
+        - generic [ref=e18]:
+          - link "Portal" [ref=e19] [cursor=pointer]:
+            - /url: /portal
+          - generic [ref=e20]: ">"
+          - generic [ref=e21]: Breath Training
+      - generic [ref=e22]:
+        - link "Daily History" [ref=e23] [cursor=pointer]:
+          - /url: /daily-history
+        - link "← Back to Portal" [ref=e24] [cursor=pointer]:
+          - /url: /portal
+    - generic [ref=e25]:
+      - heading "Guided Breath Training" [level=2] [ref=e26]
+      - paragraph [ref=e27]: Master your nervous system through conscious breathing. Enhance your metabolic reset with precision breathing techniques.
+    - generic [ref=e29]:
+      - generic [ref=e30]:
+        - generic [ref=e31]:
+          - generic [ref=e33]:
+            - generic [ref=e34]:
+              - generic [ref=e35]: Space
+              - generic [ref=e36]: advance
+            - generic [ref=e37]: •
+            - generic [ref=e38]:
+              - generic [ref=e39]: P
+              - generic [ref=e40]: pause
+            - generic [ref=e41]: •
+            - generic [ref=e42]:
+              - generic [ref=e43]: Esc
+              - generic [ref=e44]: end
+          - generic [ref=e45]:
+            - generic [ref=e46]:
+              - heading "Breath Count" [level=3] [ref=e47]
+              - generic [ref=e48]:
+                - generic [ref=e49]: "0"
+                - generic [ref=e50]: of 40
+              - generic [ref=e52]: Cycle 1 of 3
+            - generic [ref=e53]:
+              - generic [ref=e54]:
+                - heading "Settings" [level=3] [ref=e55]
+                - button "Session Settings" [ref=e57]:
+                  - img [ref=e58]
+              - generic [ref=e61]:
+                - generic [ref=e62]: "Pace: Medium"
+                - generic [ref=e63]: 3s in • 3s out
+        - generic [ref=e64]:
+          - img [ref=e66]
+          - button "Start Session" [ref=e74]:
+            - img [ref=e75]
+            - text: Start Session
+        - generic [ref=e78]:
+          - heading "How It Works" [level=3] [ref=e79]
+          - list [ref=e80]:
+            - listitem [ref=e81]:
+              - generic [ref=e82]: "1"
+              - generic [ref=e83]:
+                - strong [ref=e84]: "Breathing Phase:"
+                - text: Follow the orb rhythm for 40 breaths at your selected pace
+            - listitem [ref=e85]:
+              - generic [ref=e86]: "2"
+              - generic [ref=e87]:
+                - strong [ref=e88]: "Exhale Hold:"
+                - text: After the final exhale, press Space to start your exhale hold
+            - listitem [ref=e89]:
+              - generic [ref=e90]: "3"
+              - generic [ref=e91]:
+                - strong [ref=e92]: "Inhale Hold:"
+                - text: When ready, press Space to inhale and hold as long as possible
+            - listitem [ref=e93]:
+              - generic [ref=e94]: "4"
+              - generic [ref=e95]:
+                - strong [ref=e96]: "Complete Cycle:"
+                - text: Press Space to exhale and finish the cycle
+          - generic [ref=e99]:
+            - link "*nerd stuff - studies and research papers" [ref=e100] [cursor=pointer]:
+              - /url: /education
+            - generic:
+              - paragraph:
+                - strong: Low oxygen practice
+                - text: stimulates autophagy better than HIIT, while
+                - strong: hypercarbia
+                - text: stimulates growth hormone - both crucial for reducing loose skin during weight loss.
+      - generic [ref=e103]:
+        - generic [ref=e104]:
+          - generic [ref=e105]: "1"
+          - generic [ref=e106]: Cycle
+          - generic [ref=e107]: of 3
+        - generic [ref=e108]:
+          - generic [ref=e109]: "0"
+          - generic [ref=e110]: Breaths
+          - generic [ref=e111]: of 40
+        - generic [ref=e112]:
+          - generic [ref=e113]: 0s
+          - generic [ref=e114]: Best Exhale
+          - generic [ref=e115]: Hold
+        - generic [ref=e116]:
+          - generic [ref=e117]: 0s
+          - generic [ref=e118]: Best Inhale
+          - generic [ref=e119]: Hold
+    - generic [ref=e121]:
+      - generic [ref=e122]:
+        - heading "Recent Breath Sessions" [level=3] [ref=e123]
+        - button "Refresh" [ref=e124]
+      - generic [ref=e125]: Unauthorized
+  - alert [ref=e126]
+```

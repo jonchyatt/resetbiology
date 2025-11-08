@@ -1,0 +1,414 @@
+{
+  "version": "1.0",
+  "capturedAt": "2025-11-04T04:31:51.838Z",
+  "baseUrl": "http://localhost:3000",
+  "totalPages": 11,
+  "totalViewports": 3,
+  "totalScreenshots": 33,
+  "pages": [
+    {
+      "name": "home",
+      "path": "/",
+      "requiresAuth": false
+    },
+    {
+      "name": "about",
+      "path": "/about",
+      "requiresAuth": false
+    },
+    {
+      "name": "peptides",
+      "path": "/peptides",
+      "requiresAuth": false
+    },
+    {
+      "name": "breathing",
+      "path": "/breathing",
+      "requiresAuth": false
+    },
+    {
+      "name": "journal",
+      "path": "/journal",
+      "requiresAuth": false
+    },
+    {
+      "name": "portal",
+      "path": "/portal",
+      "requiresAuth": true
+    },
+    {
+      "name": "tracker",
+      "path": "/tracker",
+      "requiresAuth": true
+    },
+    {
+      "name": "peptide-tracker",
+      "path": "/peptide-tracker",
+      "requiresAuth": true
+    },
+    {
+      "name": "workout",
+      "path": "/workout",
+      "requiresAuth": true
+    },
+    {
+      "name": "nutrition",
+      "path": "/nutrition",
+      "requiresAuth": true
+    },
+    {
+      "name": "admin",
+      "path": "/admin",
+      "requiresAuth": true
+    }
+  ],
+  "viewports": [
+    {
+      "name": "mobile",
+      "width": 375,
+      "height": 667
+    },
+    {
+      "name": "tablet",
+      "width": 768,
+      "height": 1024
+    },
+    {
+      "name": "desktop",
+      "width": 1920,
+      "height": 1080
+    }
+  ],
+  "screenshots": [
+    {
+      "page": "home",
+      "path": "/",
+      "viewport": "mobile",
+      "width": 375,
+      "height": 667,
+      "filename": "home_mobile.png",
+      "timestamp": "2025-11-04T04:30:21.019Z",
+      "requiresAuth": false
+    },
+    {
+      "page": "home",
+      "path": "/",
+      "viewport": "tablet",
+      "width": 768,
+      "height": 1024,
+      "filename": "home_tablet.png",
+      "timestamp": "2025-11-04T04:30:23.328Z",
+      "requiresAuth": false
+    },
+    {
+      "page": "home",
+      "path": "/",
+      "viewport": "desktop",
+      "width": 1920,
+      "height": 1080,
+      "filename": "home_desktop.png",
+      "timestamp": "2025-11-04T04:30:25.911Z",
+      "requiresAuth": false
+    },
+    {
+      "page": "about",
+      "path": "/about",
+      "viewport": "mobile",
+      "width": 375,
+      "height": 667,
+      "filename": "about_mobile.png",
+      "timestamp": "2025-11-04T04:30:28.090Z",
+      "requiresAuth": false
+    },
+    {
+      "page": "about",
+      "path": "/about",
+      "viewport": "tablet",
+      "width": 768,
+      "height": 1024,
+      "filename": "about_tablet.png",
+      "timestamp": "2025-11-04T04:30:29.992Z",
+      "requiresAuth": false
+    },
+    {
+      "page": "about",
+      "path": "/about",
+      "viewport": "desktop",
+      "width": 1920,
+      "height": 1080,
+      "filename": "about_desktop.png",
+      "timestamp": "2025-11-04T04:30:31.906Z",
+      "requiresAuth": false
+    },
+    {
+      "page": "peptides",
+      "path": "/peptides",
+      "viewport": "mobile",
+      "width": 375,
+      "height": 667,
+      "filename": "peptides_mobile.png",
+      "timestamp": "2025-11-04T04:30:36.886Z",
+      "requiresAuth": false
+    },
+    {
+      "page": "peptides",
+      "path": "/peptides",
+      "viewport": "tablet",
+      "width": 768,
+      "height": 1024,
+      "filename": "peptides_tablet.png",
+      "timestamp": "2025-11-04T04:30:43.138Z",
+      "requiresAuth": false
+    },
+    {
+      "page": "peptides",
+      "path": "/peptides",
+      "viewport": "desktop",
+      "width": 1920,
+      "height": 1080,
+      "filename": "peptides_desktop.png",
+      "timestamp": "2025-11-04T04:30:50.610Z",
+      "requiresAuth": false
+    },
+    {
+      "page": "breathing",
+      "path": "/breathing",
+      "viewport": "mobile",
+      "width": 375,
+      "height": 667,
+      "filename": "breathing_mobile.png",
+      "timestamp": "2025-11-04T04:30:52.480Z",
+      "requiresAuth": false
+    },
+    {
+      "page": "breathing",
+      "path": "/breathing",
+      "viewport": "tablet",
+      "width": 768,
+      "height": 1024,
+      "filename": "breathing_tablet.png",
+      "timestamp": "2025-11-04T04:30:54.359Z",
+      "requiresAuth": false
+    },
+    {
+      "page": "breathing",
+      "path": "/breathing",
+      "viewport": "desktop",
+      "width": 1920,
+      "height": 1080,
+      "filename": "breathing_desktop.png",
+      "timestamp": "2025-11-04T04:30:56.241Z",
+      "requiresAuth": false
+    },
+    {
+      "page": "journal",
+      "path": "/journal",
+      "viewport": "mobile",
+      "width": 375,
+      "height": 667,
+      "filename": "journal_mobile.png",
+      "timestamp": "2025-11-04T04:30:59.793Z",
+      "requiresAuth": false
+    },
+    {
+      "page": "journal",
+      "path": "/journal",
+      "viewport": "tablet",
+      "width": 768,
+      "height": 1024,
+      "filename": "journal_tablet.png",
+      "timestamp": "2025-11-04T04:31:02.407Z",
+      "requiresAuth": false
+    },
+    {
+      "page": "journal",
+      "path": "/journal",
+      "viewport": "desktop",
+      "width": 1920,
+      "height": 1080,
+      "filename": "journal_desktop.png",
+      "timestamp": "2025-11-04T04:31:05.281Z",
+      "requiresAuth": false
+    },
+    {
+      "page": "portal",
+      "path": "/portal",
+      "viewport": "mobile",
+      "width": 375,
+      "height": 667,
+      "filename": "portal_mobile.png",
+      "timestamp": "2025-11-04T04:31:12.041Z",
+      "requiresAuth": true
+    },
+    {
+      "page": "portal",
+      "path": "/portal",
+      "viewport": "tablet",
+      "width": 768,
+      "height": 1024,
+      "filename": "portal_tablet.png",
+      "timestamp": "2025-11-04T04:31:15.116Z",
+      "requiresAuth": true
+    },
+    {
+      "page": "portal",
+      "path": "/portal",
+      "viewport": "desktop",
+      "width": 1920,
+      "height": 1080,
+      "filename": "portal_desktop.png",
+      "timestamp": "2025-11-04T04:31:18.531Z",
+      "requiresAuth": true
+    },
+    {
+      "page": "tracker",
+      "path": "/tracker",
+      "viewport": "mobile",
+      "width": 375,
+      "height": 667,
+      "filename": "tracker_mobile.png",
+      "timestamp": "2025-11-04T04:31:20.356Z",
+      "requiresAuth": true
+    },
+    {
+      "page": "tracker",
+      "path": "/tracker",
+      "viewport": "tablet",
+      "width": 768,
+      "height": 1024,
+      "filename": "tracker_tablet.png",
+      "timestamp": "2025-11-04T04:31:22.233Z",
+      "requiresAuth": true
+    },
+    {
+      "page": "tracker",
+      "path": "/tracker",
+      "viewport": "desktop",
+      "width": 1920,
+      "height": 1080,
+      "filename": "tracker_desktop.png",
+      "timestamp": "2025-11-04T04:31:24.127Z",
+      "requiresAuth": true
+    },
+    {
+      "page": "peptide-tracker",
+      "path": "/peptide-tracker",
+      "viewport": "mobile",
+      "width": 375,
+      "height": 667,
+      "filename": "peptide-tracker_mobile.png",
+      "timestamp": "2025-11-04T04:31:25.975Z",
+      "requiresAuth": true
+    },
+    {
+      "page": "peptide-tracker",
+      "path": "/peptide-tracker",
+      "viewport": "tablet",
+      "width": 768,
+      "height": 1024,
+      "filename": "peptide-tracker_tablet.png",
+      "timestamp": "2025-11-04T04:31:27.833Z",
+      "requiresAuth": true
+    },
+    {
+      "page": "peptide-tracker",
+      "path": "/peptide-tracker",
+      "viewport": "desktop",
+      "width": 1920,
+      "height": 1080,
+      "filename": "peptide-tracker_desktop.png",
+      "timestamp": "2025-11-04T04:31:29.712Z",
+      "requiresAuth": true
+    },
+    {
+      "page": "workout",
+      "path": "/workout",
+      "viewport": "mobile",
+      "width": 375,
+      "height": 667,
+      "filename": "workout_mobile.png",
+      "timestamp": "2025-11-04T04:31:32.391Z",
+      "requiresAuth": true
+    },
+    {
+      "page": "workout",
+      "path": "/workout",
+      "viewport": "tablet",
+      "width": 768,
+      "height": 1024,
+      "filename": "workout_tablet.png",
+      "timestamp": "2025-11-04T04:31:34.785Z",
+      "requiresAuth": true
+    },
+    {
+      "page": "workout",
+      "path": "/workout",
+      "viewport": "desktop",
+      "width": 1920,
+      "height": 1080,
+      "filename": "workout_desktop.png",
+      "timestamp": "2025-11-04T04:31:37.462Z",
+      "requiresAuth": true
+    },
+    {
+      "page": "nutrition",
+      "path": "/nutrition",
+      "viewport": "mobile",
+      "width": 375,
+      "height": 667,
+      "filename": "nutrition_mobile.png",
+      "timestamp": "2025-11-04T04:31:40.125Z",
+      "requiresAuth": true
+    },
+    {
+      "page": "nutrition",
+      "path": "/nutrition",
+      "viewport": "tablet",
+      "width": 768,
+      "height": 1024,
+      "filename": "nutrition_tablet.png",
+      "timestamp": "2025-11-04T04:31:42.537Z",
+      "requiresAuth": true
+    },
+    {
+      "page": "nutrition",
+      "path": "/nutrition",
+      "viewport": "desktop",
+      "width": 1920,
+      "height": 1080,
+      "filename": "nutrition_desktop.png",
+      "timestamp": "2025-11-04T04:31:45.246Z",
+      "requiresAuth": true
+    },
+    {
+      "page": "admin",
+      "path": "/admin",
+      "viewport": "mobile",
+      "width": 375,
+      "height": 667,
+      "filename": "admin_mobile.png",
+      "timestamp": "2025-11-04T04:31:47.393Z",
+      "requiresAuth": true
+    },
+    {
+      "page": "admin",
+      "path": "/admin",
+      "viewport": "tablet",
+      "width": 768,
+      "height": 1024,
+      "filename": "admin_tablet.png",
+      "timestamp": "2025-11-04T04:31:49.486Z",
+      "requiresAuth": true
+    },
+    {
+      "page": "admin",
+      "path": "/admin",
+      "viewport": "desktop",
+      "width": 1920,
+      "height": 1080,
+      "filename": "admin_desktop.png",
+      "timestamp": "2025-11-04T04:31:51.835Z",
+      "requiresAuth": true
+    }
+  ]
+}

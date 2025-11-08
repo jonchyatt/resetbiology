@@ -1,0 +1,280 @@
+# Auto-Fix Protocol Configuration
+# Defines common issues and their automatic remediation strategies
+
+version: "1.0.0"
+last_updated: "2025-11-04"
+
+auto_fix_enabled: true
+dry_run: false  # Set to true to test fixes without applying them
+
+# Link Validation & Auto-Correction
+link_validator:
+  enabled: true
+  rules:
+    broken_internal_links:
+      auto_fix: true
+      strategy: "redirect_to_closest_match"
+      examples:
+        - from: "/old-portal"
+          to: "/portal"
+        - from: "/breath-app"
+          to: "/breath"
+        - from: "/peptide-tracker"
+          to: "/peptides"
+
+    external_link_failures:
+      auto_fix: false
+      strategy: "log_only"
+      notification: true
+
+    anchor_links:
+      auto_fix: true
+      strategy: "add_id_if_missing"
+      examples:
+        - href: "#journal"
+          ensure_element: "section#journal"
+
+# Style Consistency Enforcement
+style_checker:
+  enabled: true
+  design_system:
+    colors:
+      primary_teal: "#3FBFB5"
+      secondary_green: "#72C247"
+      background_dark: "#1a1a2e"
+      text_primary: "#ffffff"
+      text_secondary: "#cbd5e0"
+
+    transparency_levels:
+      - "/10"  # 10% opacity
+      - "/20"  # 20% opacity
+      - "/30"  # 30% opacity
+
+    backdrop_blur:
+      standard: "backdrop-blur-sm"
+
+  auto_fixes:
+    incorrect_color_usage:
+      enabled: true
+      action: "replace_with_design_system_color"
+      examples:
+        - from: "#3fc0b6"
+          to: "#3FBFB5"
+          reason: "Non-standard teal variant"
+
+    missing_backdrop_blur:
+      enabled: true
+      action: "add_backdrop_blur_sm"
+      selector: ".modal, .dropdown, .overlay"
+
+    inconsistent_spacing:
+      enabled: true
+      action: "apply_tailwind_spacing"
+      reference_page: "/order"
+
+# Performance Optimization
+performance_optimizer:
+  enabled: true
+
+  image_optimization:
+    auto_compress: true
+    max_file_size_kb: 500
+    formats:
+      - webp  # First choice
+      - jpg   # Fallback
+    quality: 85
+    lazy_loading: true
+
+  bundle_size:
+    auto_split: true
+    max_chunk_size_kb: 250
+    strategy: "dynamic_imports"
+
+  database_queries:
+    auto_add_indexes: true
+    log_slow_queries: true
+    threshold_ms: 100
+
+# Mobile Responsiveness
+mobile_fixes:
+  enabled: true
+
+  horizontal_scroll:
+    auto_fix: true
+    action: "add_overflow_hidden"
+    selector: "body, html, #__next"
+
+  viewport_issues:
+    auto_fix: true
+    action: "add_meta_viewport"
+    content: "width=device-width, initial-scale=1, maximum-scale=1"
+
+  touch_targets:
+    auto_fix: true
+    min_size_px: 44
+    action: "increase_padding"
+
+# API & Database Issues
+api_health:
+  enabled: true
+
+  timeout_issues:
+    auto_retry: true
+    max_retries: 3
+    backoff_ms: [1000, 2000, 4000]
+
+  database_connection:
+    auto_reconnect: true
+    connection_pool_min: 2
+    connection_pool_max: 10
+
+  rate_limiting:
+    enabled: true
+    requests_per_minute: 60
+
+# Authentication Issues
+auth_fixes:
+  enabled: true
+
+  session_expiration:
+    auto_redirect: true
+    destination: "/api/auth/login"
+    preserve_return_url: true
+
+  user_not_found:
+    auto_create: true  # Already implemented in callback
+    fallback_email_lookup: true
+
+  auth0_id_mismatch:
+    auto_link_by_email: true  # Already implemented
+
+# Checkout Flow
+checkout_monitoring:
+  enabled: true
+
+  stripe_integration:
+    auto_reconnect: true
+    test_mode_detection: true
+    alert_on_failure: true
+
+  abandoned_cart:
+    reminder_enabled: false  # Future feature
+    reminder_delay_hours: 24
+
+# Accessibility
+accessibility_fixes:
+  enabled: true
+  wcag_level: "AA"
+
+  missing_alt_text:
+    auto_fix: true
+    action: "generate_descriptive_alt"
+
+  color_contrast:
+    auto_fix: true
+    min_ratio: 4.5  # WCAG AA standard
+
+  keyboard_navigation:
+    auto_fix: true
+    action: "add_focus_indicators"
+
+# Content Issues
+content_fixes:
+  enabled: true
+
+  typos:
+    auto_fix: false  # Too risky
+    suggestion_only: true
+
+  broken_images:
+    auto_fix: true
+    fallback_image: "/images/placeholder.png"
+
+# Build & Deployment
+build_fixes:
+  enabled: true
+
+  typescript_errors:
+    auto_fix: false
+    halt_deployment: true
+
+  lint_errors:
+    auto_fix: true
+    run_prettier: true
+    run_eslint_fix: true
+
+  test_failures:
+    auto_fix: false
+    halt_deployment: true
+
+# Notification Rules
+notifications:
+  critical_fixes_applied:
+    enabled: true
+    channels:
+      - dashboard
+      - log_file
+
+  auto_fix_failures:
+    enabled: true
+    channels:
+      - dashboard
+      - alert_file
+
+  weekly_summary:
+    enabled: true
+    day: "Monday"
+    time: "09:00"
+
+# Rollback Strategy
+rollback:
+  enabled: true
+
+  trigger_conditions:
+    - error_rate_increase: 10%  # 10% increase in errors
+    - performance_degradation: 50%  # 50% slower
+    - critical_feature_broken: true
+
+  actions:
+    - revert_to_previous_deployment
+    - notify_admin
+    - log_rollback_reason
+
+# Excluded Paths (Never Auto-Fix)
+exclusions:
+  paths:
+    - ".git/"
+    - "node_modules/"
+    - ".next/"
+    - "dist/"
+    - "build/"
+
+  files:
+    - ".env*"
+    - "*.md"  # Documentation requires human review
+    - "CLAUDE.md"
+
+# Safety Limits
+safety:
+  max_auto_fixes_per_hour: 50
+  max_file_modifications_per_fix: 10
+  require_confirmation_for:
+    - database_schema_changes
+    - auth_config_changes
+    - payment_integration_changes
+    - deployment_config_changes
+
+# Testing Before Deploy
+pre_deploy_checks:
+  enabled: true
+  required_tests:
+    - typescript_check
+    - build_succeeds
+    - critical_paths_working
+
+# Logging
+logging:
+  enabled: true
+  path: ".hos/monitoring/logs/auto-fix.log"
+  level: "info"  # debug | info | warn | error
+  retention_days: 30

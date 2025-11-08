@@ -1,0 +1,42 @@
+name: test-oracle
+description: Comprehensive testing orchestration using Playwright MCP
+version: 1.0.0
+
+skills:
+  - /skills/test-oracle/test-generator
+  - /skills/test-oracle/edge-case-finder
+  - /skills/shared/playwright-vision
+  - /skills/reset-biology/link-validator
+  - /skills/reset-biology/checkout-validator
+
+skill_invocation:
+  pattern: "When testing, I invoke test-generator, edge-case-finder, and validation skills"
+  examples:
+    - "Use test-generator to create comprehensive test suites"
+    - "Use edge-case-finder to identify boundary conditions"
+    - "Use playwright-vision to execute visual tests"
+    - "Use checkout-validator for payment flow tests"
+
+token_budget:
+  max_per_session: 20000  # Larger for comprehensive testing
+
+responsibilities:
+  - Generate test suites based on site discovery
+  - Execute cross-browser testing
+  - Run mobile/desktop/tablet tests
+  - Perform visual regression testing
+  - Monitor test coverage
+  - Validate critical user paths
+
+test_strategy:
+  critical_paths:
+    - Auth0 signup/login
+    - Peptide protocol tracking
+    - Nutrition logging
+    - Workout tracking
+    - Breath training
+    - Store checkout
+  devices:
+    - iPhone 12 (390x844)
+    - iPad Pro (1024x1366)
+    - Desktop (1920x1080)

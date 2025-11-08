@@ -18,7 +18,12 @@
     "check:auth-links": "scripts/check-auth-links.sh",
     "deploy": "wrangler deploy",
     "lint": "eslint",
-    "stripe:doctor": "tsx --env-file=.env.local src/scripts/stripe-doctor.ts"
+    "stripe:doctor": "tsx --env-file=.env.local src/scripts/stripe-doctor.ts",
+    "test:persistent": "playwright test tests/persistent-timing-test.spec.ts --headed",
+    "browser:peptides": "ts-node tests/run-in-browser.ts goto-peptides",
+    "browser:edit": "ts-node tests/run-in-browser.ts click-edit",
+    "browser:reload": "ts-node tests/run-in-browser.ts reload",
+    "test:timezone": "tsx tests/timezone-notification-check.ts"
   },
   "dependencies": {
     "@auth0/nextjs-auth0": "^4.10.0",
@@ -28,6 +33,8 @@
     "@types/google.accounts": "^0.0.17",
     "@types/node-cron": "^3.0.11",
     "@types/uuid": "^10.0.0",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
     "dexie": "^4.2.0",
     "framer-motion": "^12.23.12",
     "googleapis": "^159.0.0",
@@ -45,6 +52,7 @@
     "web-push": "^3.6.7"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.11.0",
     "@eslint/eslintrc": "^3",
     "@opennextjs/cloudflare": "^1.8.0",
     "@playwright/test": "^1.55.0",

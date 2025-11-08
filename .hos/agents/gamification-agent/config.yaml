@@ -1,0 +1,181 @@
+name: gamification-agent
+version: 1.0.0
+description: Design and manage gamification mechanics, points, achievements, and engagement
+
+gamification_pillars:
+  - Points system (progressive rewards)
+  - Streak mechanics (daily commitment)
+  - Achievement badges (milestone celebrations)
+  - Tier system (status progression)
+  - Variable rewards (unpredictable bonuses)
+
+point_structure:
+  current:
+    peptide_dose: 10
+    workout: 50
+    nutrition_daily: 10
+    breath_session: 20
+    journal_entry: 15
+    module_complete: 30
+
+  planned_bonuses:
+    perfect_week: 100
+    monthly_streak: 500
+    perfect_month: 1000
+    first_protocol: 25
+    first_workout: 75
+    fifty_doses: 200
+    hundred_workouts: 500
+    referral_signup: 100
+    referral_conversion: 500
+
+streak_rules:
+  daily_requirement: 1 of 6 activities
+  break_conditions:
+    - No activity by midnight (user timezone)
+    - User explicit reset
+  streak_freeze: 1 per month (future)
+
+achievement_badges:
+  consistency:
+    iron_will: 30-day streak (200 pts)
+    unstoppable: 90-day streak (500 pts)
+    legend: 365-day streak (2000 pts)
+
+  feature_mastery:
+    peptide_pioneer: 50 doses (100 pts)
+    workout_warrior: 50 workouts (200 pts)
+    nutrition_ninja: 100 meals (150 pts)
+    breath_master: 50 sessions (100 pts)
+    journal_sage: 30 entries (150 pts)
+    mind_master: All modules (500 pts)
+
+  special:
+    early_adopter: Join in first month (100 pts)
+    perfect_week: All activities 7 days (300 pts)
+    influencer: 10 referrals (1000 pts)
+    benefactor: Paid referral (500 pts)
+
+tier_system:
+  bronze:
+    points: 0
+    color: '#CD7F32'
+    benefits: [Basic access, Standard support]
+
+  silver:
+    points: 1000
+    color: '#C0C0C0'
+    benefits: [Priority support, Early features, Exclusive content]
+
+  gold:
+    points: 5000
+    color: '#FFD700'
+    benefits: [1-on-1 coaching, Custom protocols, VIP community]
+
+  platinum:
+    points: 20000
+    color: '#E5E4E2'
+    benefits: [Lifetime discount, Founder access, Beta testing, Custom protocols]
+
+variable_rewards:
+  surprise_bonus:
+    frequency: 5-10% of actions
+    multipliers: [2x, 3x]
+    display: "🎉 Lucky bonus!"
+
+  daily_spinner:
+    frequency: Once per day
+    rewards:
+      - {points: 10, chance: 40%}
+      - {points: 25, chance: 30%}
+      - {points: 50, chance: 20%}
+      - {points: 100, chance: 8%}
+      - {points: 500, chance: 2%}
+
+  success_deposit:
+    stakes: $50-$500
+    on_success: Refund + bonus points
+    on_failure: Forfeit to partner
+
+api_endpoints:
+  - POST /api/gamification/points
+  - GET /api/gamification/stats
+  - GET /api/gamification/leaderboard
+  - GET /api/gamification/achievements
+  - POST /api/gamification/unlock-badge
+
+integration_points:
+  point_awards:
+    - After peptide dose logged
+    - After workout completed
+    - After meal logged
+    - After breath session
+    - After journal entry
+    - After module completed
+
+  streak_updates:
+    - Midnight check (user timezone)
+    - Activity verification
+    - Streak continuation or break
+    - Notification triggers
+
+  achievement_checks:
+    - After point award
+    - Check milestone thresholds
+    - Unlock animation trigger
+    - Badge assignment
+
+psychology_principles:
+  - Variable ratio reinforcement (random bonuses)
+  - Loss aversion (streaks)
+  - Progress visualization (tier bars)
+  - Social proof (leaderboards)
+  - Endowed progress (start at Bronze)
+  - Sunk cost fallacy (deposits)
+
+ui_components:
+  points_display:
+    - Trophy icon
+    - Point total
+    - Current tier
+    - Color coded
+
+  streak_display:
+    - Flame icon
+    - Day count
+    - Encouragement message
+    - Milestone indicators
+
+  achievement_modal:
+    - Full screen overlay
+    - Icon (large)
+    - Achievement name
+    - Points awarded
+    - Celebration animation
+
+success_metrics:
+  - Daily active user rate
+  - Streak continuation > 70%
+  - Points earning frequency
+  - Achievement unlock rate
+  - Tier progression velocity
+  - Feature engagement increase
+
+integration:
+  receives_from:
+    - All feature agents: Activity triggers
+    - observer: Engagement metrics
+    - architect: Schema design
+
+  provides_to:
+    - All feature agents: Point award confirmation
+    - design_enforcer: Visual feedback specs
+    - observer: Gamification metrics
+
+future_enhancements:
+  - Social challenges (group goals)
+  - Seasonal events (2x points weeks)
+  - Custom per-user challenges
+  - Point gifting
+  - Redemption store (swag, discounts)
+  - Clan/team system

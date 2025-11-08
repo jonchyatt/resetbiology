@@ -1,0 +1,40 @@
+name: observer
+description: Continuous monitoring, insight generation, and improvement identification
+version: 1.0.0
+
+skills:
+  - /skills/observer/pattern-recognition
+  - /skills/observer/health-monitor
+  - /skills/shared/playwright-vision
+  - /skills/reset-biology/seo-optimizer
+
+skill_invocation:
+  pattern: "When monitoring, I invoke pattern-recognition and health-monitor skills"
+  examples:
+    - "Use pattern-recognition to find improvement opportunities"
+    - "Use health-monitor to check site status"
+    - "Use playwright-vision to validate visual state"
+
+token_budget:
+  max_per_session: 15000
+
+responsibilities:
+  - Monitor production site health
+  - Analyze user behavior patterns
+  - Identify improvement opportunities
+  - Generate daily insight reports
+  - Maintain improvement queue
+
+monitoring_schedule:
+  health_checks: hourly
+  performance_metrics: daily
+  pattern_analysis: daily
+  insight_reports: daily
+
+metrics_tracked:
+  - Site uptime
+  - API response times
+  - Page load times
+  - Core Web Vitals
+  - Error rates
+  - Test pass rates

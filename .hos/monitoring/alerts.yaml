@@ -1,0 +1,424 @@
+# Alert System Configuration
+# Defines severity levels and notification rules for monitoring alerts
+
+version: "1.0.0"
+last_updated: "2025-11-04"
+
+# Alert Severity Levels
+severity_levels:
+  critical:
+    priority: 1
+    response_time: "immediate"
+    escalation_delay: "5 minutes"
+    notification_channels:
+      - dashboard
+      - log_file
+      - admin_notification
+    auto_action: true
+
+  high:
+    priority: 2
+    response_time: "15 minutes"
+    escalation_delay: "30 minutes"
+    notification_channels:
+      - dashboard
+      - log_file
+    auto_action: true
+
+  medium:
+    priority: 3
+    response_time: "1 hour"
+    escalation_delay: "4 hours"
+    notification_channels:
+      - dashboard
+      - log_file
+    auto_action: false
+
+  low:
+    priority: 4
+    response_time: "24 hours"
+    escalation_delay: "never"
+    notification_channels:
+      - dashboard
+    auto_action: false
+
+# Critical Alerts (MUST FIX IMMEDIATELY)
+critical_alerts:
+  - name: "auth0_down"
+    description: "Auth0 authentication system not responding"
+    check: "GET /api/auth/login returns 5xx"
+    severity: critical
+    auto_fix:
+      enabled: false
+      reason: "Requires manual intervention"
+    actions:
+      - log_error
+      - notify_admin
+      - display_maintenance_page
+
+  - name: "database_connection_lost"
+    description: "MongoDB Atlas connection failed"
+    check: "Prisma client connection error"
+    severity: critical
+    auto_fix:
+      enabled: true
+      strategy: "reconnect_with_backoff"
+    actions:
+      - attempt_reconnection
+      - log_error
+      - notify_admin
+
+  - name: "checkout_broken"
+    description: "Stripe checkout flow not working"
+    check: "/order page fails to load Stripe or checkout returns error"
+    severity: critical
+    auto_fix:
+      enabled: false
+      reason: "Payment issues require manual review"
+    actions:
+      - log_error
+      - notify_admin
+      - disable_checkout_temporarily
+
+  - name: "portal_inaccessible"
+    description: "Client portal not loading for authenticated users"
+    check: "/portal returns 5xx or infinite redirect"
+    severity: critical
+    auto_fix:
+      enabled: true
+      strategy: "rollback_to_previous_deployment"
+    actions:
+      - check_auth0_status
+      - check_database_status
+      - attempt_rollback
+      - notify_admin
+
+  - name: "api_total_failure"
+    description: "All API endpoints returning errors"
+    check: ">50% of API routes returning 5xx"
+    severity: critical
+    auto_fix:
+      enabled: true
+      strategy: "restart_application"
+    actions:
+      - restart_vercel_deployment
+      - notify_admin
+      - log_all_errors
+
+  - name: "data_loss_detected"
+    description: "User data not persisting to database"
+    check: "POST requests succeeding but data not in database"
+    severity: critical
+    auto_fix:
+      enabled: false
+      reason: "Data integrity issue requires investigation"
+    actions:
+      - halt_write_operations
+      - log_error
+      - notify_admin
+      - investigate_database_state
+
+# High Priority Alerts (FIX WITHIN 15 MIN)
+high_alerts:
+  - name: "broken_links_main_pages"
+    description: "Broken links on critical pages (/, /portal, /order)"
+    check: "404 errors on main navigation links"
+    severity: high
+    auto_fix:
+      enabled: true
+      strategy: "redirect_to_closest_match"
+    actions:
+      - update_links
+      - log_changes
+      - verify_fix
+
+  - name: "mobile_rendering_broken"
+    description: "Pages not rendering correctly on mobile devices"
+    check: "Horizontal scroll or layout overflow on mobile viewport"
+    severity: high
+    auto_fix:
+      enabled: true
+      strategy: "add_overflow_hidden_and_max_width"
+    actions:
+      - fix_css
+      - test_on_mobile
+      - log_changes
+
+  - name: "peptide_tracker_not_saving"
+    description: "Peptide protocols or doses not persisting"
+    check: "POST /api/peptides/protocols returns success but data not saved"
+    severity: high
+    auto_fix:
+      enabled: true
+      strategy: "check_user_id_lookup"
+    actions:
+      - verify_user_exists
+      - check_database_connection
+      - test_save_flow
+      - log_error
+
+  - name: "slow_page_load"
+    description: "Critical pages loading >5 seconds"
+    check: "Load time >5000ms on /, /portal, /peptides, /order"
+    severity: high
+    auto_fix:
+      enabled: true
+      strategy: "enable_caching_and_compression"
+    actions:
+      - analyze_bundle_size
+      - optimize_images
+      - add_caching_headers
+      - test_performance
+
+  - name: "console_errors_blocking_functionality"
+    description: "JavaScript errors preventing feature usage"
+    check: ">10 console errors on page load"
+    severity: high
+    auto_fix:
+      enabled: false
+      reason: "JS errors require code review"
+    actions:
+      - log_error_details
+      - identify_error_source
+      - notify_admin
+
+  - name: "gamification_points_not_awarded"
+    description: "Points not being credited for activities"
+    check: "Workout/nutrition logged but no points awarded"
+    severity: high
+    auto_fix:
+      enabled: true
+      strategy: "check_gamification_endpoint"
+    actions:
+      - verify_api_endpoint
+      - check_user_id_linking
+      - test_points_flow
+
+# Medium Priority Alerts (FIX WITHIN 1 HOUR)
+medium_alerts:
+  - name: "style_inconsistencies"
+    description: "Pages not following design system colors/spacing"
+    check: "Colors outside brand palette or inconsistent spacing"
+    severity: medium
+    auto_fix:
+      enabled: true
+      strategy: "apply_design_system_tokens"
+    actions:
+      - scan_for_non_standard_colors
+      - replace_with_design_tokens
+      - verify_visual_consistency
+
+  - name: "slow_api_response"
+    description: "API endpoints responding >1 second"
+    check: "API response time >1000ms"
+    severity: medium
+    auto_fix:
+      enabled: true
+      strategy: "add_database_indexes"
+    actions:
+      - profile_slow_queries
+      - add_missing_indexes
+      - optimize_query_logic
+      - test_performance
+
+  - name: "image_not_optimized"
+    description: "Large uncompressed images slowing page load"
+    check: "Images >500KB"
+    severity: medium
+    auto_fix:
+      enabled: true
+      strategy: "compress_and_convert_to_webp"
+    actions:
+      - compress_images
+      - convert_to_webp
+      - add_lazy_loading
+      - verify_quality
+
+  - name: "accessibility_violation"
+    description: "WCAG AA violations detected"
+    check: "Missing alt text, poor contrast, no keyboard nav"
+    severity: medium
+    auto_fix:
+      enabled: true
+      strategy: "add_accessibility_attributes"
+    actions:
+      - add_alt_text
+      - fix_color_contrast
+      - add_aria_labels
+      - test_keyboard_nav
+
+  - name: "bundle_size_increase"
+    description: "JavaScript bundle size increased >10%"
+    check: "Bundle size >500KB or >10% increase from baseline"
+    severity: medium
+    auto_fix:
+      enabled: true
+      strategy: "code_splitting_and_tree_shaking"
+    actions:
+      - analyze_bundle
+      - identify_large_dependencies
+      - implement_dynamic_imports
+      - verify_bundle_size
+
+  - name: "missing_error_handling"
+    description: "API routes without try/catch blocks"
+    check: "Unhandled promise rejections in API routes"
+    severity: medium
+    auto_fix:
+      enabled: false
+      reason: "Requires code review"
+    actions:
+      - identify_missing_handlers
+      - log_locations
+      - create_fix_task
+
+# Low Priority Alerts (FIX WITHIN 24 HOURS)
+low_alerts:
+  - name: "minor_accessibility_issues"
+    description: "Non-critical accessibility improvements"
+    check: "Focus indicators could be clearer"
+    severity: low
+    auto_fix:
+      enabled: true
+      strategy: "enhance_focus_styles"
+    actions:
+      - improve_focus_indicators
+      - log_changes
+
+  - name: "outdated_dependencies"
+    description: "npm packages with available updates"
+    check: "npm outdated shows available updates"
+    severity: low
+    auto_fix:
+      enabled: false
+      reason: "Updates require testing"
+    actions:
+      - log_outdated_packages
+      - create_update_task
+
+  - name: "unused_code"
+    description: "Dead code or unused imports detected"
+    check: "ESLint reports unused variables/imports"
+    severity: low
+    auto_fix:
+      enabled: true
+      strategy: "remove_unused_code"
+    actions:
+      - run_eslint_fix
+      - remove_unused_imports
+      - verify_build
+
+  - name: "inconsistent_formatting"
+    description: "Code formatting inconsistencies"
+    check: "Prettier reports formatting issues"
+    severity: low
+    auto_fix:
+      enabled: true
+      strategy: "run_prettier"
+    actions:
+      - run_prettier_write
+      - verify_formatting
+
+  - name: "missing_loading_states"
+    description: "Components without loading indicators"
+    check: "Data fetching without loading UI"
+    severity: low
+    auto_fix:
+      enabled: false
+      reason: "UX improvement requires design"
+    actions:
+      - identify_missing_loaders
+      - create_improvement_task
+
+# Alert Aggregation Rules
+aggregation:
+  enabled: true
+  rules:
+    - name: "multiple_broken_links"
+      condition: ">5 broken links in 1 hour"
+      aggregate_to: "critical"
+      reason: "Indicates systematic link issue"
+
+    - name: "repeated_api_failures"
+      condition: "Same API endpoint fails >10 times in 1 hour"
+      aggregate_to: "critical"
+      reason: "Persistent API issue"
+
+    - name: "mobile_issues_multiple_pages"
+      condition: ">3 pages with mobile issues"
+      aggregate_to: "high"
+      reason: "Widespread mobile problem"
+
+# Notification Channels
+notification_channels:
+  dashboard:
+    enabled: true
+    path: ".hos/dashboard/health.md"
+    update_frequency: "real-time"
+
+  log_file:
+    enabled: true
+    path: ".hos/monitoring/logs/alerts.log"
+    rotation: "daily"
+    retention_days: 30
+
+  admin_notification:
+    enabled: false  # Future: could be email/SMS
+    method: "console_log"
+
+# Auto-Recovery Strategies
+auto_recovery:
+  enabled: true
+
+  strategies:
+    reconnect_with_backoff:
+      description: "Retry connection with exponential backoff"
+      max_retries: 5
+      backoff_ms: [1000, 2000, 4000, 8000, 16000]
+
+    rollback_to_previous_deployment:
+      description: "Revert to last known good deployment"
+      requires_git: true
+      verify_before_rollback: true
+
+    restart_application:
+      description: "Trigger Vercel redeployment"
+      method: "vercel_deploy_hook"
+
+    redirect_to_closest_match:
+      description: "Update broken links to closest matching page"
+      requires_confirmation: false
+
+    add_overflow_hidden_and_max_width:
+      description: "Fix mobile horizontal scroll"
+      css_rules:
+        - "overflow-x: hidden"
+        - "max-width: 100vw"
+
+# Alert History
+history:
+  enabled: true
+  path: ".hos/monitoring/logs/alert-history.json"
+  retention_days: 90
+  metrics:
+    - alert_name
+    - timestamp
+    - severity
+    - auto_fixed
+    - resolution_time
+    - recurrence_count
+
+# Success Metrics
+success_criteria:
+  - zero_critical_alerts_per_week: true
+  - high_alerts_resolved_within_15min: 95%
+  - medium_alerts_resolved_within_1hour: 90%
+  - auto_fix_success_rate: 80%
+
+# Maintenance Windows
+maintenance_windows:
+  - day: "Sunday"
+    start_time: "02:00"
+    end_time: "04:00"
+    suspend_alerts: ["low", "medium"]
+    reason: "Weekly maintenance window"

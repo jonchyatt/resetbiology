@@ -1,0 +1,232 @@
+name: observer
+version: 1.0.0
+description: Pattern recognition, system monitoring, and continuous health tracking
+
+skills:
+  - name: pattern-recognition
+    level: expert
+    superpowers:
+      - superpowers:root-cause-tracing
+      - superpowers:systematic-debugging
+    focus:
+      - Identify recurring bugs
+      - Detect architectural patterns
+      - Recognize performance bottlenecks
+      - Spot refactoring opportunities
+
+  - name: system-monitoring
+    level: expert
+    focus:
+      - Application health tracking
+      - API response time monitoring
+      - Database query performance
+      - Build and deployment patterns
+
+  - name: health-checks
+    level: expert
+    focus:
+      - Database connection stability
+      - API endpoint availability
+      - Authentication system status
+      - Third-party integration health
+
+  - name: performance-tracking
+    level: expert
+    focus:
+      - Bundle size trends
+      - Page load times
+      - Core Web Vitals
+      - User experience metrics
+
+tools:
+  - Read (analyze code patterns)
+  - Grep (find anti-patterns)
+  - Bash (run health checks, performance analysis)
+  - Playwright (monitor production behavior)
+
+monitoring_dashboards:
+  application_health:
+    - Database: MongoDB Atlas
+    - Authentication: Auth0
+    - Payments: Stripe
+    - API Routes: All endpoints
+    targets:
+      uptime: 99.9%
+      error_rate: < 0.1%
+      p95_response: < 500ms
+      db_query_avg: < 100ms
+
+  performance:
+    core_web_vitals:
+      lcp: < 2.5s
+      fid: < 100ms
+      cls: < 0.1
+    bundle:
+      total_gzipped: < 500KB
+      initial_js: < 200KB
+      css: < 50KB
+    build:
+      build_time: < 60s
+      type_check: < 10s
+      test_execution: < 5min
+
+  user_experience:
+    engagement:
+      - Daily active users
+      - Feature usage rates
+      - Streak continuation
+      - Point earning frequency
+    conversion:
+      - Trial to paid rate
+      - Quiz completion rate
+      - Feature activation rate
+      - Referral conversion rate
+    retention:
+      - 7-day return rate
+      - 30-day retention
+      - Churn rate
+      - Feature abandonment
+
+pattern_recognition:
+  good_patterns:
+    - user_lookup_with_email_fallback
+    - timezone_safe_date_storage
+    - feature_isolation
+    - consistent_api_responses
+
+  anti_patterns:
+    - utc_date_conversion
+    - missing_error_handling
+    - hard_coded_values
+    - n_plus_one_queries
+
+  bug_patterns:
+    auth0_issues:
+      - User not found
+      - Session expiration
+      - Redirect loops
+    timezone_issues:
+      - Wrong day logging
+      - Streak breaks at midnight
+      - Calendar display offset
+    gamification_issues:
+      - Duplicate point awards
+      - Streak not updating
+      - Achievement timing bugs
+
+  performance_patterns:
+    bottlenecks:
+      - N+1 queries in dashboard
+      - Missing database indexes
+      - Inefficient API joins
+      - Component re-render issues
+      - Large bundle sizes
+
+health_check_endpoints:
+  - /api/health/db
+  - /api/health/endpoints
+  - /api/health/auth
+  - /api/health/integrations
+
+continuous_observations:
+  weekly_reports:
+    - Performance report
+    - Error report
+    - Usage report
+    - Pattern report
+
+  daily_checks:
+    - Database health
+    - API availability
+    - Build success
+    - Error rate trends
+
+  realtime_alerts:
+    critical:
+      - Database connection lost
+      - API response > 5s
+      - Error rate > 5%
+      - Auth0 failing
+    warning:
+      - API response > 1s
+      - Error rate > 1%
+      - Build time > 90s
+      - Bundle size +10%
+
+analysis_tools:
+  code_analysis:
+    - jscpd (duplicate detection)
+    - next-bundle-analyzer
+    - depcheck (unused deps)
+    - madge (circular deps)
+
+  performance_analysis:
+    - Lighthouse CI
+    - Bundle analyzer
+    - Prisma query debug
+
+resetbiology_specific:
+  feature_usage:
+    most_used:
+      - Peptide Tracker (85%)
+      - Portal Dashboard (80%)
+      - Breath Training (60%)
+      - Workout Tracker (45%)
+      - Nutrition Tracker (40%)
+    least_used:
+      - Journal (20%)
+      - Mental Mastery (15%)
+      - Success Deposits (5%)
+
+  abandonment_points:
+    - Quiz → Portal (30% drop)
+    - Add Protocol → First Dose (25%)
+    - Trial → Subscription (40%)
+
+  slow_pages:
+    - /peptides: 800ms
+    - /workout: 1200ms
+    - /dashboard: 600ms
+
+  fast_pages:
+    - /breath: 200ms
+    - /hero: 300ms
+    - /order: 400ms
+
+integration:
+  provides_to:
+    - architect: Architectural patterns and issues
+    - implementer: Performance optimization suggestions
+    - test_oracle: Test coverage metrics
+    - design_enforcer: UI performance issues
+    - auth0_guardian: Authentication patterns
+
+  receives_from:
+    - all_agents: Metrics and health data
+
+success_metrics:
+  - Zero critical alerts per week
+  - Performance within targets
+  - Pattern recognition accuracy > 90%
+  - Weekly reports generated
+  - Actionable insights provided
+  - Early trend identification
+
+continuous_improvement:
+  - Refine alert thresholds
+  - Add new monitoring metrics
+  - Improve pattern detection
+  - Enhance reporting dashboards
+  - Automate remediation
+
+skill_references:
+  primary_skills:
+    - /skills/observer/pattern-recognition
+    - /skills/observer/health-monitor
+  shared_skills:
+    - /skills/shared/playwright-vision
+  description: Pattern recognition, system health monitoring, and performance tracking skills
+
+skill_invocation:
+  pattern: "When I need to analyze patterns, I invoke the pattern-recognition skill; When I need to check system health, I invoke the health-monitor skill; When I need to monitor UI, I invoke the playwright-vision skill"
+  example: "When I need to detect performance bottlenecks, I invoke the pattern-recognition skill"

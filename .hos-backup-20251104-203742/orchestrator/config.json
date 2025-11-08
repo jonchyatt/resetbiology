@@ -1,0 +1,90 @@
+{
+  "version": "1.0.0",
+  "created": "2025-11-03",
+  "project": {
+    "name": "ResetBiology.com",
+    "path": "C:\\Users\\jonch\\reset-biology-website",
+    "repository": "git",
+    "urls": {
+      "production": "https://resetbiology.com",
+      "local": "http://localhost:3000"
+    }
+  },
+  "orchestrator": {
+    "tokenBudget": {
+      "max": 100000,
+      "orchestrator": 10000,
+      "perAgent": 20000
+    },
+    "contextTarget": "5-10%",
+    "updateInterval": 3600000,
+    "priority": ["critical-paths", "security", "performance", "ux"]
+  },
+  "agents": {
+    "architect": {
+      "enabled": true,
+      "autoDiscover": true,
+      "silentByDefault": true,
+      "contexts": ["patterns", "principles", "architecture"]
+    },
+    "implementer": {
+      "enabled": true,
+      "requiresApproval": true,
+      "testFirst": true,
+      "silentByDefault": true
+    },
+    "designEnforcer": {
+      "enabled": true,
+      "autoFix": false,
+      "strictMode": true,
+      "silentByDefault": true,
+      "playwrightRequired": true
+    },
+    "testOracle": {
+      "enabled": true,
+      "silentByDefault": true,
+      "coverage": {
+        "mobile": true,
+        "desktop": true,
+        "tablet": true
+      },
+      "playwright": {
+        "headless": true,
+        "screenshots": "on-failure"
+      }
+    },
+    "observer": {
+      "enabled": true,
+      "monitoring": "continuous",
+      "insights": "daily",
+      "silentByDefault": false,
+      "reportBack": true
+    }
+  },
+  "features": {
+    "visualMemory": true,
+    "continuousMonitoring": true,
+    "autoTesting": true,
+    "improvementQueue": true,
+    "silentSubAgents": true
+  },
+  "playwright": {
+    "installed": true,
+    "baseURL": "http://localhost:3000",
+    "devices": [
+      "iPhone 12",
+      "iPad Pro",
+      "Desktop Chrome"
+    ]
+  },
+  "testing": {
+    "criticalPaths": [
+      "auth-flow",
+      "peptide-tracking",
+      "nutrition-logging",
+      "workout-tracking",
+      "breath-training",
+      "checkout-flow"
+    ]
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "name": "observer-agent",
+  "version": "1.0.0",
+  "description": "Continuous monitoring and health tracking for Reset Biology",
+  "type": "module",
+  "scripts": {
+    "monitor": "tsx monitor.ts",
+    "monitor:watch": "tsx watch monitor.ts",
+    "schedule": "node -e \"require('child_process').exec('schtasks /create /tn ResetBioMonitor /tr \\'npx tsx C:\\\\Users\\\\jonch\\\\reset-biology-website\\\\.hos\\\\agents\\\\observer\\\\monitor.ts\\' /sc hourly /st 00:00', (err, stdout) => console.log(stdout || err))\"",
+    "unschedule": "node -e \"require('child_process').exec('schtasks /delete /tn ResetBioMonitor /f', (err, stdout) => console.log(stdout || err))\"",
+    "view-dashboard": "type ..\\..\\dashboard\\health.md",
+    "view-logs": "type ..\\..\\monitoring\\logs\\latest.json"
+  },
+  "keywords": [
+    "monitoring",
+    "health-check",
+    "continuous-improvement",
+    "playwright",
+    "observer"
+  ],
+  "author": "Reset Biology",
+  "license": "MIT"
+}

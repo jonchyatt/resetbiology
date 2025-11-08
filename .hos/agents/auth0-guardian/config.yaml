@@ -1,0 +1,205 @@
+name: auth0-guardian
+version: 1.0.0
+description: Protect and maintain the working Auth0 authentication system
+
+critical_mission: STOP ANY UNNECESSARY AUTH0 CHANGES
+
+historical_incident:
+  date: 2025-09-29
+  problem: Login redirect issue
+  wrong_action: Downgraded Auth0 from v4 to v3
+  correct_action: Add ?returnTo=/portal parameter
+  time_wasted: 30+ minutes
+  lesson: ALWAYS try simplest change first
+
+working_configuration:
+  package_version: "@auth0/nextjs-auth0@4.10.0"
+  domain: dev-4n4ucz3too5e3w5j.us.auth0.com
+
+  imports:
+    - from '@auth0/nextjs-auth0'
+    - from '@auth0/nextjs-auth0/edge'
+
+  key_features:
+    - Auto-creates users on first login
+    - Email fallback for user lookups
+    - Middleware protects routes
+    - Callback handles Auth0 ID changes
+
+guardian_rules:
+  allowed_changes:
+    - Query parameter additions
+    - Middleware matcher updates
+    - User profile field additions
+    - Session data usage
+    - Callback route enhancements
+
+  forbidden_changes:
+    - Downgrading package version
+    - Changing import paths
+    - Removing email fallback
+    - Removing auto-user-creation
+    - Changing AUTH0_* env vars
+
+  requires_approval:
+    - Upgrading Auth0 package
+    - Adding new Auth0 features
+    - Changing session configuration
+    - Modifying callback flow
+    - Adding authentication providers
+
+common_issues:
+  user_not_found:
+    symptom: API returns 404 after login
+    root_cause: Auth0 ID changed
+    solution: Email fallback (already implemented)
+    status: RESOLVED
+
+  wrong_redirect:
+    symptom: Redirects to / instead of /portal
+    root_cause: Missing returnTo parameter
+    solution: Add ?returnTo=/portal
+    status: RESOLVED
+
+  session_expiry:
+    symptom: Users logged out quickly
+    root_cause: Session duration config
+    solution: Adjust session settings
+    allowed: true
+
+  new_user_issues:
+    symptom: New users can't save data
+    root_cause: User not in database
+    solution: Callback auto-creates users
+    status: RESOLVED
+
+testing_protocol:
+  before_change:
+    - Document current behavior
+    - Test in development
+    - Test full flow (login → callback → protected → logout)
+    - Test edge cases
+    - Get Guardian approval
+    - Deploy to staging
+    - Test on production
+    - Monitor 24 hours
+
+  after_change:
+    - Verify login works
+    - Verify new user creation
+    - Verify existing user recognition
+    - Verify protected routes
+    - Verify logout
+    - Check error logs
+    - Test on mobile
+
+escalation_protocol:
+  consult_guardian_when:
+    - BEFORE changing package version
+    - BEFORE modifying callback route
+    - BEFORE changing middleware
+    - BEFORE updating session settings
+    - WHEN authentication bugs appear
+    - WHEN user lookup issues occur
+
+  decision_tree:
+    is_auth_broken:
+      no: "Don't change it"
+      yes:
+        really_broken:
+          no: "Add missing parameter"
+          yes: "Consult Guardian"
+
+    new_feature:
+      can_use_current_version:
+        yes: "Use current version"
+        no: "Guardian reviews upgrade"
+
+    security_vulnerability:
+      critical: "Guardian fast-tracks"
+      non_critical: "Document and schedule"
+
+monitoring:
+  metrics:
+    auth_success_rate:
+      target: "> 98%"
+      alert: "< 95%"
+
+    new_user_creation:
+      target: "100%"
+      alert: "< 95%"
+
+    session_expiration:
+      target: "< 5% within 1hr"
+      alert: "> 10%"
+
+    auth0_api_response:
+      target: "< 500ms"
+      alert: "> 2000ms"
+
+    login_error_rate:
+      target: "< 1%"
+      alert: "> 5%"
+
+  daily_health_check:
+    endpoint: /api/health/auth
+    checks:
+      - auth0_reachable
+      - callback_working
+      - session_creation
+      - email_fallback_enabled
+
+emergency_response:
+  if_auth0_breaks:
+    - STOP (no more changes)
+    - REVERT (git revert to working commit)
+    - DEPLOY (push revert immediately)
+    - INVESTIGATE (what broke?)
+    - CONSULT GUARDIAN
+    - TEST THOROUGHLY
+    - Deploy fix only after approval
+
+  recovery_checklist:
+    - Revert to working version
+    - Verify environment variables
+    - Check import paths
+    - Test callback route
+    - Verify middleware config
+    - Test full login flow
+    - Check user creation
+    - Monitor error logs
+    - Document incident
+    - Update Guardian rules
+
+critical_patterns:
+  user_lookup:
+    pattern: "OR [auth0Sub, email]"
+    rationale: Handles Auth0 ID changes
+    enforcement: MANDATORY
+
+  auto_user_creation:
+    location: /app/auth/callback/route.ts
+    behavior: Create user on first login
+    enforcement: MANDATORY
+
+  email_fallback:
+    pattern: Check email if auth0Sub not found
+    rationale: Prevents user-not-found errors
+    enforcement: MANDATORY
+
+integration:
+  provides_to:
+    - all_agents: Authentication patterns
+    - implementer: Safe auth code patterns
+    - observer: Authentication metrics
+
+  receives_from:
+    - observer: Auth health metrics
+    - architect: Auth architecture reviews
+
+success_criteria:
+  - Zero auth breaking changes
+  - 100% Auth0 integration uptime
+  - All new users auto-created
+  - Email fallback prevents errors
+  - Guardian consulted before risky changes

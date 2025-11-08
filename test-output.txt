@@ -1,0 +1,81 @@
+
+Running 1 test using 1 worker
+
+[1A[2K[1/1] [chromium] › tests\test-timing-with-auth.spec.ts:5:5 › Test protocol timing with saved auth
+[1A[2K[chromium] › tests\test-timing-with-auth.spec.ts:5:5 › Test protocol timing with saved auth
+🌐 Going to peptides page (using saved auth)
+
+[1A[2KBrowser: SW registered: ServiceWorkerRegistration
+
+[1A[2KBrowser: ✅ Loaded 12 products from storefront (11 products + 1 custom option)
+
+[1A[2KBrowser: ✅ Loaded 9 protocols from database
+
+[1A[2KBrowser: ✅ Loaded notification preferences for 6 protocols
+
+[1A[2KBrowser: ✅ Loaded 31 historical doses
+
+[1A[2K🖱️  Clicking Edit button
+
+[1A[2K🗑️  Removing existing times
+
+[1A[2K⏰ Adding time: 15:50
+
+[1A[2K➕ Clicking Add Time
+
+[1A[2K💾 Saving changes
+
+[1A[2KFound 1 "Save Changes" buttons
+
+[1A[2K
+📊 ALL CONSOLE LOGS AFTER SAVE:
+
+
+[1A[2KTotal logs: [33m5[39m
+
+[1A[2K  0: SW registered: ServiceWorkerRegistration
+
+[1A[2K  1: ✅ Loaded 12 products from storefront (11 products + 1 custom option)
+
+[1A[2K  2: ✅ Loaded 9 protocols from database
+
+[1A[2K  3: ✅ Loaded notification preferences for 6 protocols
+
+[1A[2K  4: ✅ Loaded 31 historical doses
+
+[1A[2K
+🔄 Refreshing page...
+
+
+[1A[2KBrowser: SW registered: ServiceWorkerRegistration
+
+[1A[2KBrowser: ✅ Loaded 12 products from storefront (11 products + 1 custom option)
+
+[1A[2KBrowser: ✅ Loaded 9 protocols from database
+
+[1A[2KBrowser: ✅ Loaded notification preferences for 6 protocols
+
+[1A[2KBrowser: ✅ Loaded 31 historical doses
+
+[1A[2K📊 CONSOLE LOGS AFTER RELOAD:
+
+
+[1A[2KAll logs after reload: [33m5[39m
+
+[1A[2K1: ✅ Loaded 12 products from storefront (11 products + 1 custom option)
+
+[1A[2K2: ✅ Loaded 9 protocols from database
+
+[1A[2K3: ✅ Loaded notification preferences for 6 protocols
+
+[1A[2K4: ✅ Loaded 31 historical doses
+
+[1A[2K
+⏸️  Leaving browser open for inspection...
+
+[1A[2K  1 passed (1.3m)
+
+To open last HTML report run:
+[36m[39m
+[36m  npx playwright show-report[39m
+[36m[39m

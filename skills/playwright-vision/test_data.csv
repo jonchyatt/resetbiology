@@ -1,0 +1,11 @@
+test_name,url,selector,expected_visible,device
+homepage_hero,https://resetbiology.com,.hero-section,true,Desktop
+mobile_nav,https://resetbiology.com,.mobile-menu,true,iPhone 12
+checkout_button,https://resetbiology.com/store,.checkout-btn,true,Desktop
+peptide_calculator,https://resetbiology.com/peptides,.dosage-calculator,true,Desktop
+mobile_form,https://resetbiology.com/assessment,form,true,iPhone 12
+product_grid,https://resetbiology.com/products,.product-card,true,Desktop
+mobile_product_grid,https://resetbiology.com/products,.product-card,true,iPhone 12
+footer_links,https://resetbiology.com,.footer-nav,true,Desktop
+search_bar,https://resetbiology.com,.search-input,true,Desktop
+cart_icon,https://resetbiology.com/store,.cart-icon,true,Desktop

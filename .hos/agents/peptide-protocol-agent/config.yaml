@@ -1,0 +1,194 @@
+name: peptide-protocol-agent
+version: 1.0.0
+description: Domain expert for peptide tracking, dosing calculations, and protocol management
+
+domain_expertise:
+  peptides:
+    - BPC-157
+    - TB-500
+    - GHK-Cu
+    - CJC-1295
+    - Ipamorelin
+    - MOTS-c
+    - Epitalon
+    - Thymosin Alpha-1
+    - Selank
+    - Semax
+
+  dosage_units:
+    - mg (milligrams)
+    - mcg (micrograms)
+    - IU (International Units)
+
+  frequency_patterns:
+    - daily
+    - every-other-day
+    - 3x-per-week
+    - custom
+
+  timing_patterns:
+    - AM
+    - PM
+    - twice-daily
+    - custom
+
+responsibilities:
+  protocol_management:
+    - Validate configurations
+    - Calculate next dose times
+    - Handle archiving/reactivation
+    - Manage editing/updates
+
+  dosage_calculator:
+    - Vial reconstitution math
+    - Syringe unit conversions
+    - Dose accuracy validation
+    - Unit conversion support
+
+  dose_logging:
+    - Timezone-safe storage
+    - Side effect tracking
+    - Notes and observations
+    - Completion verification
+
+  history_calendar:
+    - Monthly calendar view
+    - Completion visualization
+    - History by protocol
+    - Export functionality
+
+business_logic:
+  next_dose_calculation:
+    daily: Add 1 day
+    every_other_day: Add 2 days
+    three_per_week: M/W/F pattern
+    custom: User-defined interval
+
+  reconstitution_formula:
+    - Convert to mcg
+    - Calculate concentration (mcg/ml)
+    - Calculate required volume
+    - Convert to syringe units (0.01ml per unit)
+
+validation_rules:
+  peptideName:
+    required: true
+    minLength: 2
+    maxLength: 100
+
+  dosage:
+    required: true
+    min: 0.001
+    max: 10000
+
+  unit:
+    required: true
+    enum: [mg, mcg, IU]
+
+  frequency:
+    required: true
+    enum: [daily, every-other-day, 3x-per-week, custom]
+
+  timing:
+    required: true
+    enum: [AM, PM, twice-daily, custom]
+
+integration_points:
+  gamification:
+    - Award 10 points per dose logged
+    - Check streak milestones
+    - Award badges (7-day, 30-day, 90-day)
+
+  timeline:
+    - Add activity feed items
+    - Cross-feature timeline support
+
+  notifications:
+    - Schedule dose reminders
+    - Push notifications
+    - Email fallback
+
+api_endpoints:
+  - GET /api/peptides (library)
+  - GET /api/peptides/protocols (user protocols)
+  - POST /api/peptides/protocols (create/update)
+  - GET /api/peptides/doses?date=YYYY-MM-DD
+  - POST /api/peptides/doses (log dose)
+  - PATCH /api/peptides/doses/[id] (update dose)
+  - DELETE /api/peptides/doses/[id] (remove dose)
+
+common_flows:
+  protocol_creation:
+    - Select peptide
+    - Enter dosage/unit
+    - Select frequency
+    - Select timing
+    - Optional: reconstitution details
+    - Validate
+    - Calculate next dose
+    - Save
+    - Schedule notification
+
+  dose_logging:
+    - Click "Log Dose"
+    - Pre-fill date/time
+    - Add notes/side effects
+    - Complete
+    - Award points
+    - Calculate next dose
+    - Schedule notification
+    - Update calendar
+
+  calculator_usage:
+    - Click "Calculate"
+    - Enter vial details
+    - Enter reconstitution volume
+    - Enter target dose
+    - Calculate syringe units
+    - Copy to protocol
+
+edge_cases:
+  timezone:
+    - Travel across timezones
+    - Midnight dose logging
+    - Device timezone changes
+    - DST transitions
+
+  protocol:
+    - Deletion with history
+    - Mid-cycle editing
+    - Conflicting schedules
+    - Invalid frequencies
+
+  calculation:
+    - Zero/negative inputs
+    - Extremely large doses
+    - Decimal precision
+    - Unit mismatches
+
+integration:
+  receives_from:
+    - architect: System architecture
+    - gamification_agent: Point award coordination
+
+  provides_to:
+    - implementer: Business logic specifications
+    - test_oracle: Edge case definitions
+
+  collaborates_with:
+    - observer: Usage pattern reporting
+
+success_criteria:
+  - Accurate dose calculations
+  - Correct reconstitution math
+  - Timezone-safe handling
+  - No lost history
+  - Reliable notifications
+  - Intuitive UX
+
+domain_validations:
+  - Peptide names valid
+  - Dosages within safe ranges
+  - Reconstitution volumes realistic
+  - Frequency patterns consistent
+  - Timing schedules feasible

@@ -1,0 +1,36 @@
+name: design-enforcer
+description: Ensures visual and UX consistency across ResetBiology.com
+version: 1.0.0
+
+skills:
+  - /skills/design-enforcer/style-validator
+  - /skills/design-enforcer/accessibility-scanner
+  - /skills/shared/playwright-vision
+  - /skills/shared/responsive-tester
+
+skill_invocation:
+  pattern: "When validating design, I invoke style-validator, accessibility-scanner, and playwright-vision"
+  examples:
+    - "Use style-validator to check component compliance"
+    - "Use accessibility-scanner for WCAG validation"
+    - "Use playwright-vision to see actual rendering"
+
+token_budget:
+  max_per_session: 18000
+
+responsibilities:
+  - Validate design system compliance
+  - Enforce Tailwind conventions
+  - Check accessibility (WCAG 2.1 AA)
+  - Verify responsive behavior
+  - Monitor brand consistency
+
+design_rules:
+  colors:
+    primary: "#3FBFB5"
+    secondary: "#72C247"
+    dark: ["#1F2937", "#111827"]
+  accessibility:
+    min_contrast: 4.5
+    focus_visible: true
+    aria_labels: required

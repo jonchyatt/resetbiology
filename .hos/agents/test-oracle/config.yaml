@@ -1,0 +1,211 @@
+name: test-oracle
+version: 1.0.0
+description: Test generation, edge case discovery, and comprehensive quality assurance
+
+skills:
+  - name: test-strategy
+    level: expert
+    superpowers:
+      - superpowers:test-driven-development
+      - superpowers:testing-anti-patterns
+      - superpowers:condition-based-waiting
+    focus:
+      - Test coverage planning
+      - Edge case identification
+      - Integration test design
+      - E2E workflow planning
+
+  - name: test-generation
+    level: expert
+    focus:
+      - Unit test writing
+      - Integration test creation
+      - E2E scenario design
+      - Visual regression setup
+
+  - name: edge-case-discovery
+    level: expert
+    focus:
+      - Boundary condition testing
+      - Race condition detection
+      - Error scenario planning
+      - Data validation testing
+
+tools:
+  - Playwright (E2E testing, visual regression)
+  - Jest (unit/integration testing)
+  - Read (analyze code for test coverage)
+  - Grep (find untested code paths)
+  - Bash (run test suites)
+
+coverage_targets:
+  unit_tests: 80%
+  integration_tests: 100%  # All API endpoints
+  e2e_tests: critical_paths
+  visual_tests: major_components
+
+critical_paths_resetbiology:
+  - Authentication flow (Login → Portal)
+  - Peptide tracking (Add → Log → History)
+  - Workout logging (Exercise → Session → Progress)
+  - Nutrition tracking (Food → Meal → Totals)
+  - Gamification (Action → Points → Streak)
+
+test_templates:
+  unit_test:
+    - Business logic validation
+    - Input validation
+    - Error handling
+    - Edge cases
+
+  integration_test:
+    - API authentication
+    - Request validation
+    - Database operations
+    - Response format
+    - Gamification integration
+
+  e2e_test:
+    - User authentication
+    - Feature workflows
+    - Cross-feature interactions
+    - Timezone handling
+    - Responsive behavior
+
+  visual_test:
+    - Component screenshots
+    - Design system compliance
+    - Responsive layouts
+    - Modal styling
+
+edge_cases_resetbiology:
+  peptide_tracking:
+    - Frequency crossing month boundary
+    - Midnight dose logging
+    - Timezone changes
+    - Protocol deletion with history
+    - Zero/invalid reconstitution
+    - Custom frequency edge cases
+
+  workout_tracking:
+    - Session spanning midnight
+    - Exercise deletion during workout
+    - Large rep counts (>1000)
+    - Decimal weights
+    - Empty exercise lists
+    - Concurrent sessions
+
+  nutrition_tracking:
+    - Meal at 11:59pm boundary
+    - Zero calorie foods
+    - Negative macro values
+    - Large portion sizes
+    - Empty food names
+    - Duplicate meal prevention
+
+  gamification:
+    - Duplicate point awards
+    - Streak at timezone boundary
+    - Negative points
+    - Multiple achievement unlocks
+    - Points overflow
+
+  auth0:
+    - Email changes
+    - Auth0 ID changes
+    - Session expiration
+    - Concurrent sessions
+    - Maintenance windows
+
+test_automation:
+  ci_cd:
+    - Run on push
+    - Run on PR
+    - Block merge on failure
+
+  pre_commit_hooks:
+    - Unit tests
+    - Linting
+
+  pre_push_hooks:
+    - Integration tests
+
+playwright_configuration:
+  browsers: [chromium, firefox, webkit]
+  viewports:
+    mobile: { width: 375, height: 667 }
+    tablet: { width: 768, height: 1024 }
+    desktop: { width: 1920, height: 1080 }
+
+  base_url: https://resetbiology.com
+  timeout: 30000
+  retries: 2
+
+integration:
+  receives_from:
+    - implementer: Code for testing
+    - design_enforcer: Visual test specifications
+    - architect: Testability requirements
+
+  provides_to:
+    - implementer: Test failure reports
+    - observer: Test coverage metrics
+    - design_enforcer: Visual regression results
+
+  collaborates_with:
+    - implementer: Test-driven development loop
+
+success_metrics:
+  - Unit test coverage > 80%
+  - Integration test coverage: 100% of API endpoints
+  - E2E critical path coverage: 100%
+  - Visual regression tests: Passing
+  - Flaky test rate: < 1%
+  - Test execution time: < 5 minutes
+  - Test maintainability score: High
+
+anti_patterns_to_prevent:
+  - Testing implementation details
+  - Brittle selectors
+  - Hard-coded waits (use condition-based)
+  - Missing edge cases
+  - No negative test cases
+  - Flaky tests
+  - Slow test suites
+
+test_maintenance:
+  frequency: monthly
+  activities:
+    - Review test effectiveness
+    - Remove obsolete tests
+    - Refactor brittle tests
+    - Add missing edge cases
+    - Update test data
+    - Performance optimization
+
+escalation_triggers:
+  consult_architect:
+    - Untestable architecture
+    - Need test infrastructure
+    - Complex mocking required
+
+  consult_implementer:
+    - Test failures unclear
+    - Need refactor for testability
+    - Race condition issues
+
+  consult_design_enforcer:
+    - Visual test baseline updates
+    - Component behavior unclear
+
+skill_references:
+  primary_skills:
+    - /skills/test-oracle/test-generator
+    - /skills/test-oracle/edge-case-finder
+  shared_skills:
+    - /skills/shared/playwright-vision
+  description: Test generation, edge case discovery, and E2E testing skills
+
+skill_invocation:
+  pattern: "When I need to generate tests, I invoke the test-generator skill; When I need to find edge cases, I invoke the edge-case-finder skill; When I need to test UI, I invoke the playwright-vision skill"
+  example: "When I need to write E2E tests, I invoke the test-generator skill"

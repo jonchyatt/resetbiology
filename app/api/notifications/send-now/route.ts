@@ -3,6 +3,7 @@ import { auth0 } from '@/lib/auth0'
 import { prisma } from '@/lib/prisma'
 import { getUserFromSession } from '@/lib/getUserFromSession'
 import webpush from 'web-push'
+import { sendDoseReminderEmail } from '@/lib/email'
 
 // Set VAPID keys (will be configured in .env)
 webpush.setVapidDetails(
@@ -44,6 +45,11 @@ export async function POST(req: NextRequest) {
           include: {
             pushSubscriptions: true
           }
+        },
+        protocol: {
+          include: {
+            peptides: true
+          }
         }
       }
     })
@@ -60,7 +66,6 @@ export async function POST(req: NextRequest) {
         subscriptions: notification.user.pushSubscriptions.length
       })
 
-      // Send push notifications
       if (notification.type === 'push') {
         if (notification.user.pushSubscriptions.length === 0) {
           console.warn('⚠️  No push subscriptions found for user:', notification.userId)
@@ -107,6 +112,36 @@ export async function POST(req: NextRequest) {
               status: 'failed',
               error: error.message,
               statusCode: error.statusCode
+            })
+          }
+        }
+      } else if (notification.type === 'email') {
+        if (!notification.user.email) {
+          console.warn('�s��,?  No email on record for user:', notification.userId)
+          errors.push({
+            id: notification.id,
+            error: 'No email on record'
+          })
+        } else {
+          try {
+            const peptideName = notification.protocol?.peptides?.name || 'your peptide protocol'
+            await sendDoseReminderEmail({
+              email: notification.user.email,
+              name: notification.user.name || undefined,
+              peptideName,
+              dosage: notification.protocol?.dosage || undefined,
+              reminderTime: notification.reminderTime
+            })
+            results.push({
+              id: notification.id,
+              status: 'sent-email'
+            })
+          } catch (err: any) {
+            console.error('�?O Email notification failed:', err.message)
+            errors.push({
+              id: notification.id,
+              status: 'failed',
+              error: err.message
             })
           }
         }

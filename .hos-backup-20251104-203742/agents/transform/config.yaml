@@ -1,0 +1,19 @@
+name: transform
+type: specialist
+purpose: Transform captured content to ResetBiology branding
+skills:
+  - rebrand-skill
+  - style-mapper
+context_window: 8000
+model: claude-3-haiku
+triggers:
+  - "rebrand this content"
+  - "transform to ResetBiology style"
+  - "apply our branding"
+  - "convert StemRegen to ResetBiology"
+dependencies:
+  - content-capture
+outputs:
+  - transformed_content.json
+  - style_mappings.css
+  - brand_replacements.md

@@ -8,8 +8,12 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
   use: {
-    baseURL: 'http://localhost:3003',
+    baseURL: 'https://resetbiology.com',
     trace: 'on-first-retry',
+    headless: false,
+    launchOptions: {
+      slowMo: 500
+    }
   },
   projects: [
     {
@@ -17,9 +21,4 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
   ],
-  webServer: {
-    command: 'npm run dev:test',
-    port: 3003,
-    reuseExistingServer: !process.env.CI,
-  },
 });

@@ -1,4 +1,5 @@
 import { prisma } from './prisma'
+import { fromZonedTime } from 'date-fns-tz'
 
 /**
  * Schedules push notifications for a protocol based on user preferences
@@ -7,15 +8,19 @@ import { prisma } from './prisma'
  * - Notification preferences are updated
  * - A protocol is resumed/reactivated
  */
+type NotificationChannel = 'push' | 'email'
+
 export async function scheduleNotificationsForProtocol(
   userId: string,
   protocolId: string,
   options?: {
     daysAhead?: number // How many days ahead to schedule (default: 30)
     forceReschedule?: boolean // Delete existing and reschedule
+    timezone?: string
+    reminderMinutes?: number
   }
 ) {
-  const { daysAhead = 30, forceReschedule = false } = options || {}
+  const { daysAhead = 30, forceReschedule = false, timezone: overrideTimezone, reminderMinutes: overrideReminder } = options || {}
 
   try {
     // Get protocol details
@@ -38,10 +43,24 @@ export async function scheduleNotificationsForProtocol(
       }
     })
 
-    // If no preferences or push is disabled, don't schedule
-    if (!prefs || !prefs.pushEnabled) {
-      console.log(`Push notifications disabled for protocol ${protocolId}`)
-      return { scheduled: 0, message: 'Push notifications disabled' }
+    if (!prefs) {
+      console.log(`No notification preferences found for protocol ${protocolId}`)
+      return { scheduled: 0, message: 'No preferences' }
+    }
+
+    const channels: NotificationChannel[] = []
+    if (prefs.pushEnabled) channels.push('push')
+    if (prefs.emailEnabled) channels.push('email')
+
+    if (channels.length === 0) {
+      console.log(`No notification channels enabled for protocol ${protocolId}`)
+      await prisma.scheduledNotification.deleteMany({
+        where: {
+          userId,
+          protocolId
+        }
+      })
+      return { scheduled: 0, message: 'No channels enabled' }
     }
 
     // Delete existing future notifications if forceReschedule
@@ -70,28 +89,35 @@ export async function scheduleNotificationsForProtocol(
     // Generate dose dates based on frequency
     const doseDates = generateDoseDates(protocol, daysAhead)
 
+    const timezone = overrideTimezone || prefs.timezone || 'UTC'
+    const reminderMinutes = overrideReminder ?? prefs.reminderMinutes ?? 15
+
+    const now = new Date()
     // Create scheduled notifications
-    const notifications = []
+    const notifications: Array<{
+      userId: string
+      protocolId: string
+      doseTime: Date
+      reminderTime: Date
+      type: NotificationChannel
+      sent: boolean
+    }> = []
     for (const doseDate of doseDates) {
       for (const doseTime of doseTimes) {
-        // Combine date and time
-        const [hours, minutes] = doseTime.split(':').map(Number)
-        const doseDateTime = new Date(doseDate)
-        doseDateTime.setHours(hours, minutes, 0, 0)
-
-        // Calculate reminder time (subtract reminderMinutes)
-        const reminderTime = new Date(doseDateTime)
-        reminderTime.setMinutes(reminderTime.getMinutes() - prefs.reminderMinutes)
+        const doseDateTime = toUtcFromLocal(doseDate, doseTime, timezone)
+        const reminderTime = new Date(doseDateTime.getTime() - reminderMinutes * 60 * 1000)
 
         // Only schedule if reminder time is in the future
-        if (reminderTime > new Date()) {
-          notifications.push({
-            userId,
-            protocolId,
-            doseTime: doseDateTime,
-            reminderTime,
-            type: 'push',
-            sent: false
+        if (reminderTime > now) {
+          channels.forEach((type) => {
+            notifications.push({
+              userId,
+              protocolId,
+              doseTime: doseDateTime,
+              reminderTime,
+              type,
+              sent: false
+            })
           })
         }
       }
@@ -131,6 +157,15 @@ function parseDoseTimes(text: string): string[] {
   }
 
   return [...new Set(times)] // Remove duplicates
+}
+
+/**
+ * Convert a local date + time within a timezone to an absolute UTC Date
+ */
+export function toUtcFromLocal(date: Date, time: string, timeZone: string): Date {
+  const pad = (value: number) => value.toString().padStart(2, '0')
+  const localDate = `${date.getUTCFullYear()}-${pad(date.getUTCMonth() + 1)}-${pad(date.getUTCDate())}T${time}:00`
+  return fromZonedTime(localDate, timeZone)
 }
 
 /**

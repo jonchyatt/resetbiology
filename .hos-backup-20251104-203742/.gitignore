@@ -1,0 +1,20 @@
+# Logs
+logs/
+*.log
+
+# Screenshots (too large for git)
+memory/visual/screenshots/
+
+# Test results
+tests/results/
+
+# Temporary files
+*.tmp
+*.temp
+
+# State files (regenerated)
+orchestrator/state.json
+
+# Keep structure, ignore content
+memory/conversations/sessions/*
+!memory/conversations/sessions/.gitkeep

@@ -1,7 +1,22 @@
 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-**Last Updated:** September 30, 2025
+**Last Updated:** November 5, 2025
+
+# ⚡ FIRST ACTION EVERY SESSION
+
+**READ THIS FILE IMMEDIATELY:** `.hos/SESSION-INIT.md`
+
+This file contains:
+- HOS sub-agent rules (silent, no report back)
+- Playwright MCP location
+- Project structure and existing analysis
+- Common tasks and commands
+- What NOT to recreate
+
+**DO NOT START ANY WORK until you've read SESSION-INIT.md**
+
+---
 
 # 🚨 CRITICAL: Change Protocol - MUST FOLLOW BEFORE ANY CODE CHANGES
 
@@ -61,10 +76,60 @@ Before making ANY code changes, you MUST follow these steps:
 Building a complex medical/wellness platform with public marketing site, secure client portal, gamification system, and integrated breath training application.
 
 ## Current Session Status (Update This When Ending Session)
-- **Date:** October 17, 2025
-- **Last Action:** Fixed Peptide auto-create bug (removed invalid description field)
-- **Next Priority:** PWA Notification System (see detailed plan below)
-- **Watch Out For:** Tendency to overcomplicate simple fixes
+- **Date:** November 5, 2025
+- **Last Action:** Fixed protocol timing persistence + PWA notification system work
+- **Deployment:** Fixed syntax error (PeptideTracker line 504) - deployed successfully
+- **Testing Setup:** Created persistent Playwright browser system with auth state
+- **Next Priority:** Continue PWA notification testing with persistent browser
+- **Watch Out For:** Timing test shows save/reload works but need to verify console logs show correct timing value
+
+## 🎯 Session Progress (November 5, 2025)
+
+### ✅ Completed This Session:
+1. **Protocol Timing Fix** - Added handling for single HH:MM format in PeptideTracker (line 866-868)
+2. **Auth State Persistence** - Created `auth-state.json` for reusable Playwright sessions
+3. **Persistent Browser Tests** - Built system for keeping Chromium browser open between tests
+4. **Test Files Created:**
+   - `tests/save-auth-state.spec.ts` - Captures login session
+   - `tests/test-timing-with-auth.spec.ts` - Tests timing with saved auth
+   - `tests/persistent-browser.ts` - Reusable browser session manager
+   - `tests/persistent-timing-test.spec.ts` - Persistent browser test
+   - `tests/open-persistent-browser.spec.ts` - Opens browser indefinitely
+   - `tests/PERSISTENT-BROWSER.md` - Documentation
+
+### 🔧 Technical Details:
+**Auth State System:**
+- Saves cookies/session to `auth-state.json`
+- Reuses across multiple test runs
+- No repeated logins needed
+
+**Persistent Browser:**
+- Chromium window stays open
+- Can dispatch sub-agents to interact with same window
+- User watches automation in real-time
+- Timeout set to `999999999` (~11 days)
+
+**How to Use Next Session:**
+```bash
+# Open persistent browser with auth
+npx playwright test tests/open-persistent-browser.spec.ts --headed --project=chromium
+
+# Browser will open at resetbiology.com/peptides
+# Already logged in with saved auth
+# Stays open until Ctrl+C
+```
+
+### 📋 Files Modified This Session:
+- `src/components/Peptides/PeptideTracker.tsx` - Fixed timing parsing (line 866-868, 494)
+- `src/components/Notifications/NotificationPreferences.tsx` - Added console logs
+- `app/api/peptides/protocols/route.ts` - Timing field handling
+- `prisma/schema.prisma` - Added `timing` field to protocols
+- Created 8+ new test files in `tests/` directory
+
+### ⚠️ Known Issues:
+1. **Timing Console Logs Not Appearing** - Save/reload works but `timing="15:50"` logs not showing in browser console
+2. **PWA Notifications** - Push notification setup complete but not yet verified working on mobile
+3. **Multiple Background Processes** - Several old test processes still running (can be cleaned up)
 
 ## ⚠️ CRITICAL PERFORMANCE REMINDERS
 - **CHECK AVAILABLE TOOLS FIRST** - Run `claude mcp list` to see what's connected
@@ -182,6 +247,18 @@ DATABASE_URL="mongodb+srv://..." npm run dev
 
 # Local SQLite
 DATABASE_URL="file:./dev.db" npx prisma db push
+```
+
+### Playwright Testing:
+```bash
+# Save auth state (one time)
+npx playwright test tests/save-auth-state.spec.ts --headed --project=chromium
+
+# Open persistent browser (stays open)
+npx playwright test tests/open-persistent-browser.spec.ts --headed --project=chromium
+
+# Run timing test with auth
+npx playwright test tests/test-timing-with-auth.spec.ts --headed --project=chromium
 ```
 
 ## Deployment Guidelines

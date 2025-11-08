@@ -1,0 +1,21 @@
+name: builder
+type: specialist
+purpose: Reconstruct transformed content into Next.js pages
+skills:
+  - component-generator
+  - test-driven-dev
+context_window: 12000
+model: claude-3-sonnet
+triggers:
+  - "build page from captured content"
+  - "create Next.js components"
+  - "reconstruct as ResetBiology page"
+  - "generate reseller product pages"
+dependencies:
+  - transform
+  - content-capture
+outputs:
+  - app/stemregen/*.tsx
+  - components/stemregen/*.tsx
+  - tests/stemregen/*.spec.ts
+  - lib/stemregen-data.ts

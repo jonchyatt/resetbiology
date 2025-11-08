@@ -1,4 +1,5 @@
 import { Resend } from 'resend';
+import { EmailFailureLogger } from './emailFailureLogger';
 
 // Initialize Resend with API key from environment variables
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
@@ -26,6 +27,14 @@ interface ShippingNotificationData {
   trackingNumber?: string;
   trackingUrl?: string;
   productName: string;
+}
+
+interface DoseReminderEmailData {
+  email: string;
+  name?: string;
+  peptideName: string;
+  dosage?: string;
+  reminderTime: Date;
 }
 
 /**
@@ -141,7 +150,22 @@ export async function sendOrderConfirmationEmail(data: OrderEmailData) {
 
     console.log('[email] Order confirmation sent to', data.email, result);
     return { success: true, data: result };
-  } catch (error) {
+  } catch (error: any) {
+    // Log failure to database
+    await EmailFailureLogger.logFailure({
+      emailType: 'order-confirmation',
+      recipient: data.email,
+      errorMessage: error.message,
+      errorCode: error.code,
+      errorStack: error.stack,
+      payload: {
+        orderId: data.orderId,
+        orderNumber: data.orderNumber,
+        productName: data.productName,
+        amountTotal: data.amountTotal
+      }
+    });
+
     console.error('[email] Failed to send order confirmation:', error);
     return { success: false, error };
   }
@@ -251,7 +275,24 @@ export async function sendSellerOrderNotification(data: OrderEmailData) {
 
     console.log('[email] Seller notification sent to', sellerEmail, result);
     return { success: true, data: result };
-  } catch (error) {
+  } catch (error: any) {
+    const sellerEmail = process.env.SELLER_EMAIL || 'jonchyatt@gmail.com';
+
+    // Log failure to database
+    await EmailFailureLogger.logFailure({
+      emailType: 'seller-notification',
+      recipient: sellerEmail,
+      errorMessage: error.message,
+      errorCode: error.code,
+      errorStack: error.stack,
+      payload: {
+        orderId: data.orderId,
+        orderNumber: data.orderNumber,
+        productName: data.productName,
+        amountTotal: data.amountTotal
+      }
+    });
+
     console.error('[email] Failed to send seller notification:', error);
     return { success: false, error };
   }
@@ -341,8 +382,90 @@ export async function sendShippingConfirmationEmail(data: ShippingNotificationDa
 
     console.log('[email] Shipping confirmation sent to', data.email, result);
     return { success: true, data: result };
-  } catch (error) {
+  } catch (error: any) {
+    // Log failure to database
+    await EmailFailureLogger.logFailure({
+      emailType: 'shipping-confirmation',
+      recipient: data.email,
+      errorMessage: error.message,
+      errorCode: error.code,
+      errorStack: error.stack,
+      payload: {
+        orderId: data.orderId,
+        orderNumber: data.orderNumber,
+        productName: data.productName,
+        trackingNumber: data.trackingNumber,
+        trackingUrl: data.trackingUrl
+      }
+    });
+
     console.error('[email] Failed to send shipping confirmation:', error);
+    return { success: false, error };
+  }
+}
+
+export async function sendDoseReminderEmail(data: DoseReminderEmailData) {
+  if (!resend) {
+    console.warn('[email] Resend not configured, skipping dose reminder email');
+    return { success: false, error: 'Email service not configured' };
+  }
+
+  const localTime = data.reminderTime.toLocaleString(undefined, {
+    weekday: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+
+  const html = `
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; padding: 24px; background: #f7f9fb;">
+      <div style="max-width: 520px; margin: 0 auto; background: #ffffff; border-radius: 12px; padding: 28px; box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);">
+        <p style="font-size: 15px; color: #0f172a; margin: 0 0 20px;">Hi ${data.name || 'Reset Biology member'},</p>
+        <p style="font-size: 15px; color: #0f172a; line-height: 1.6;">
+          This is your reminder to take your <strong>${data.peptideName}</strong>${data.dosage ? ` (${data.dosage})` : ''}.
+          Staying consistent keeps your protocol on track.
+        </p>
+        <div style="margin: 24px 0; padding: 16px; border-radius: 10px; background: #ecfeff; border: 1px solid #06b6d4;">
+          <strong style="display: block; color: #0f172a; font-size: 15px;">Scheduled Dose</strong>
+          <div style="font-size: 24px; font-weight: 600; color: #0f172a; margin-top: 6px;">${localTime}</div>
+        </div>
+        <p style="font-size: 14px; color: #475569; line-height: 1.6;">
+          Need to update your reminders or timing? Open the peptide tracker inside Reset Biology to edit your protocol.
+        </p>
+        <div style="text-align: center; margin-top: 32px;">
+          <a href="https://resetbiology.com/peptides" style="display: inline-block; padding: 12px 28px; background: linear-gradient(135deg, #0ea5e9, #22d3ee); color: #ffffff; text-decoration: none; border-radius: 999px; font-weight: 600;">Open Peptide Tracker</a>
+        </div>
+      </div>
+      <p style="font-size: 12px; color: #94a3b8; text-align: center; margin-top: 24px;">
+        You receive these reminders because notifications are enabled inside your Reset Biology peptide protocol.
+      </p>
+    </div>
+  `;
+
+  try {
+    await resend.emails.send({
+      from: 'Reset Biology <notifications@resetbiology.com>',
+      to: data.email,
+      subject: `Peptide reminder – ${data.peptideName}`,
+      html,
+    });
+
+    return { success: true };
+  } catch (error: any) {
+    // Log failure to database
+    await EmailFailureLogger.logFailure({
+      emailType: 'dose-reminder',
+      recipient: data.email,
+      errorMessage: error.message,
+      errorCode: error.code,
+      errorStack: error.stack,
+      payload: {
+        peptideName: data.peptideName,
+        dosage: data.dosage,
+        reminderTime: data.reminderTime
+      }
+    });
+
+    console.error('[email] Dose reminder failed:', error);
     return { success: false, error };
   }
 }
