@@ -45,11 +45,6 @@ export async function POST(req: NextRequest) {
           include: {
             pushSubscriptions: true
           }
-        },
-        protocol: {
-          include: {
-            peptides: true
-          }
         }
       }
     })
@@ -76,6 +71,9 @@ export async function POST(req: NextRequest) {
           continue
         }
 
+        // Check if this is a test notification (fake protocolId)
+        const isTestNotification = notification.protocolId === '000000000000000000000000'
+
         for (const sub of notification.user.pushSubscriptions) {
           try {
             console.log('📱 Sending push notification to endpoint:', sub.endpoint.substring(0, 50) + '...')
@@ -86,8 +84,10 @@ export async function POST(req: NextRequest) {
                 keys: sub.keys as any
               },
               JSON.stringify({
-                title: '🧪 Test Notification',
-                body: 'Test notification sent successfully! Your notification system is working.',
+                title: isTestNotification ? '🧪 Test Notification' : '💊 Dose Reminder',
+                body: isTestNotification
+                  ? 'Test notification sent successfully! Your notification system is working.'
+                  : 'Time for your peptide dose!',
                 url: '/peptides',
                 tag: `dose-${notification.id}`,
                 timestamp: Date.now()

@@ -32,11 +32,6 @@ async function sendNotifications() {
           include: {
             pushSubscriptions: true
           }
-        },
-        protocol: {
-          include: {
-            peptides: true
-          }
         }
       }
     })
@@ -61,6 +56,9 @@ async function sendNotifications() {
           continue
         }
 
+        // Check if this is a test notification (fake protocolId)
+        const isTestNotification = notification.protocolId === '000000000000000000000000'
+
         for (const sub of notification.user.pushSubscriptions) {
           try {
             const endpointPreview = sub?.endpoint ? sub.endpoint.substring(0, 50) + '...' : 'unknown'
@@ -73,8 +71,10 @@ async function sendNotifications() {
                 keys: sub.keys as any
               },
               JSON.stringify({
-                title: 'Dose Reminder',
-                body: 'Time for your peptide dose!',
+                title: isTestNotification ? '🧪 Test Notification' : '💊 Dose Reminder',
+                body: isTestNotification
+                  ? 'Test notification sent successfully! Your notification system is working.'
+                  : 'Time for your peptide dose!',
                 url: '/peptides',
                 tag: `dose-${notification.id}`
               })
