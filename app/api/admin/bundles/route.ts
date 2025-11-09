@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
  */
 export async function POST(req: NextRequest) {
   try {
-    const { name, slug, description, imageUrl } = await req.json()
+    const { name, slug, description, imageUrl, showInStore } = await req.json()
 
     if (!name || !slug) {
       return NextResponse.json(
@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
         imageUrl,
         isBundle: true,
         active: true,
-        storefront: false,
+        storefront: showInStore !== undefined ? showInStore : false,
         trackInventory: false // Bundles track via components
       },
       include: {

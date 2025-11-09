@@ -4,6 +4,7 @@ import React, { useState, useEffect, use } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { notFound, useRouter } from 'next/navigation';
+import BundleDetailPage from '@/components/Store/BundleDetailPage';
 
 interface Price {
   id: string;
@@ -14,6 +15,19 @@ interface Price {
   stripePriceId: string | null;
 }
 
+interface BundleItem {
+  id: string;
+  quantity: number;
+  isOptional: boolean;
+  displayOrder: number;
+  componentProduct: {
+    id: string;
+    name: string;
+    imageUrl: string | null;
+    prices: Price[];
+  };
+}
+
 interface Product {
   id: string;
   name: string;
@@ -21,6 +35,8 @@ interface Product {
   description: string | null;
   imageUrl: string | null;
   prices: Price[];
+  isBundle?: boolean;
+  bundleItems?: BundleItem[];
   protocolPurpose?: string | null;
   protocolDosageRange?: string | null;
   protocolFrequency?: string | null;
@@ -91,6 +107,11 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
 
   if (!product) {
     notFound();
+  }
+
+  // If this is a bundle, render the BundleDetailPage component
+  if (product.isBundle && product.bundleItems) {
+    return <BundleDetailPage bundle={product as any} />;
   }
 
   const primaryPrice = product.prices.find(p => p.isPrimary) || product.prices[0];

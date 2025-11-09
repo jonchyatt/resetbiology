@@ -61,6 +61,9 @@ export default function PackageBuilderPage() {
   const [showNewBundleForm, setShowNewBundleForm] = useState(false)
   const [newBundleName, setNewBundleName] = useState('')
   const [newBundleSlug, setNewBundleSlug] = useState('')
+  const [newBundleImageUrl, setNewBundleImageUrl] = useState('')
+  const [newBundleDescription, setNewBundleDescription] = useState('')
+  const [newBundleShowInStore, setNewBundleShowInStore] = useState(true)
   const [priceOverrideEnabled, setPriceOverrideEnabled] = useState(false)
   const [priceOverrideValue, setPriceOverrideValue] = useState<number>(0)
 
@@ -107,7 +110,9 @@ export default function PackageBuilderPage() {
         body: JSON.stringify({
           name: newBundleName,
           slug: newBundleSlug,
-          description: ''
+          imageUrl: newBundleImageUrl || null,
+          description: newBundleDescription || '',
+          showInStore: newBundleShowInStore
         })
       })
 
@@ -117,6 +122,9 @@ export default function PackageBuilderPage() {
         setSelectedBundleId(data.bundle.id)
         setNewBundleName('')
         setNewBundleSlug('')
+        setNewBundleImageUrl('')
+        setNewBundleDescription('')
+        setNewBundleShowInStore(true)
         setShowNewBundleForm(false)
       }
     } catch (error) {
@@ -389,6 +397,29 @@ export default function PackageBuilderPage() {
                     onChange={(e) => setNewBundleSlug(e.target.value)}
                     className="w-full px-3 py-2 bg-gray-700 text-white rounded border border-gray-600 focus:border-primary-400 focus:outline-none"
                   />
+                  <input
+                    type="text"
+                    placeholder="Image URL (e.g., https://i.imgur.com/...)"
+                    value={newBundleImageUrl}
+                    onChange={(e) => setNewBundleImageUrl(e.target.value)}
+                    className="w-full px-3 py-2 bg-gray-700 text-white rounded border border-gray-600 focus:border-primary-400 focus:outline-none"
+                  />
+                  <textarea
+                    placeholder="Description (optional)"
+                    value={newBundleDescription}
+                    onChange={(e) => setNewBundleDescription(e.target.value)}
+                    rows={3}
+                    className="w-full px-3 py-2 bg-gray-700 text-white rounded border border-gray-600 focus:border-primary-400 focus:outline-none resize-none"
+                  />
+                  <label className="flex items-center gap-2 text-white cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={newBundleShowInStore}
+                      onChange={(e) => setNewBundleShowInStore(e.target.checked)}
+                      className="w-4 h-4"
+                    />
+                    <span>Show in store</span>
+                  </label>
                   <div className="flex gap-2">
                     <button
                       onClick={createBundle}

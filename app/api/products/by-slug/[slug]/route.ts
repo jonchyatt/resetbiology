@@ -24,6 +24,18 @@ export async function GET(
         prices: {
           where: { active: true },
           orderBy: { unitAmount: 'asc' }
+        },
+        bundleItems: {
+          include: {
+            componentProduct: {
+              include: {
+                prices: {
+                  where: { active: true }
+                }
+              }
+            }
+          },
+          orderBy: { displayOrder: 'asc' }
         }
       },
     });

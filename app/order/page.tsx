@@ -43,6 +43,7 @@ export default function OrderPage() {
   const [loading, setLoading] = useState(true);
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
   const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>({});
+  const [filter, setFilter] = useState<'all' | 'peptides' | 'packages'>('all');
 
   // Fetch products on mount
   useEffect(() => {
@@ -71,11 +72,19 @@ export default function OrderPage() {
     loadProducts();
   }, []);
 
+  // Filter products based on selected filter
+  const filteredProducts = products.filter(product => {
+    if (filter === 'all') return true;
+    if (filter === 'packages') return product.isBundle;
+    if (filter === 'peptides') return !product.isBundle;
+    return true;
+  });
+
   // Group products by baseProductName or treat as individual products
   const productGroups: ProductGroup[] = (() => {
     const groups: Map<string, ProductGroup> = new Map();
 
-    products.forEach((product) => {
+    filteredProducts.forEach((product) => {
       const baseName = product.baseProductName || product.name;
 
       if (!groups.has(baseName)) {
@@ -168,13 +177,49 @@ export default function OrderPage() {
           showOrderPeptides={false}
         />
 
-        <div className="text-center pt-8 pb-12">
+        <div className="text-center pt-8 pb-6">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 text-shadow-lg animate-fade-in">
             <span className="text-primary-400">Order</span> <span className="text-secondary-400">Peptides</span>
           </h1>
           <p className="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto font-medium leading-relaxed drop-shadow-sm px-4">
             Premium quality peptides for your wellness journey
           </p>
+        </div>
+
+        {/* Filter Tabs */}
+        <div className="container mx-auto px-4 pb-6">
+          <div className="max-w-7xl mx-auto flex justify-center gap-3">
+            <button
+              onClick={() => setFilter('all')}
+              className={`px-6 py-2 rounded-full font-semibold transition-all ${
+                filter === 'all'
+                  ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/30'
+                  : 'bg-gray-800/50 text-gray-300 hover:bg-gray-700/50 border border-gray-700'
+              }`}
+            >
+              All Products
+            </button>
+            <button
+              onClick={() => setFilter('peptides')}
+              className={`px-6 py-2 rounded-full font-semibold transition-all ${
+                filter === 'peptides'
+                  ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/30'
+                  : 'bg-gray-800/50 text-gray-300 hover:bg-gray-700/50 border border-gray-700'
+              }`}
+            >
+              Single Vials
+            </button>
+            <button
+              onClick={() => setFilter('packages')}
+              className={`px-6 py-2 rounded-full font-semibold transition-all ${
+                filter === 'packages'
+                  ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/30'
+                  : 'bg-gray-800/50 text-gray-300 hover:bg-gray-700/50 border border-gray-700'
+              }`}
+            >
+              Package Deals
+            </button>
+          </div>
         </div>
 
         {/* Products Grid */}
