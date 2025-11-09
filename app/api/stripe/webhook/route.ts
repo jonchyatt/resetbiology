@@ -133,80 +133,200 @@ export async function POST(req: Request) {
     }
   }
 
+  // Handle checkout.session.completed event
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as Stripe.Checkout.Session;
     const shipping = (session as any).shipping_details;
 
-    const order = await prisma.order.create({
-      data: {
-        stripeSessionId: session.id,
-        stripePaymentIntentId: (session.payment_intent as string) || null,
-        stripeCustomerId: (session.customer as string) || null,
-        productId: session.metadata?.productId || null,
-        priceId: session.metadata?.priceId || null,
-        amountTotal: session.amount_total ?? null,
-        currency: session.currency ?? null,
-        email: session.customer_details?.email ?? null,
-        status: 'paid',
+    // Check if this is a subscription checkout
+    if (session.mode === 'subscription' && session.subscription) {
+      console.log('[webhook] Subscription checkout completed:', session.subscription);
 
-        // Shipping Information
-        shippingName: shipping?.name || null,
-        shippingLine1: shipping?.address?.line1 || null,
-        shippingLine2: shipping?.address?.line2 || null,
-        shippingCity: shipping?.address?.city || null,
-        shippingState: shipping?.address?.state || null,
-        shippingPostalCode: shipping?.address?.postal_code || null,
-        shippingCountry: shipping?.address?.country || null,
-        shippingPhone: session.customer_details?.phone || null,
+      // Find user by email
+      const userEmail = session.customer_details?.email;
+      if (userEmail) {
+        const user = await prisma.user.findFirst({
+          where: {
+            OR: [
+              { email: userEmail },
+              { auth0Sub: session.client_reference_id || undefined }
+            ]
+          }
+        });
 
-        fulfillmentStatus: 'unfulfilled',
-      },
-    });
+        if (user) {
+          // Fetch subscription details from Stripe to get current period end
+          const subscriptionId = typeof session.subscription === 'string'
+            ? session.subscription
+            : session.subscription.id;
 
-    console.log('[webhook] order created:', order.id);
+          const subscription = await stripe.subscriptions.retrieve(subscriptionId);
 
-    // Get product details for email
-    const product = await prisma.product.findUnique({
-      where: { id: order.productId! },
-      select: { name: true },
-    });
+          await prisma.user.update({
+            where: { id: user.id },
+            data: {
+              subscriptionStatus: 'active',
+              subscriptionExpiry: new Date((subscription as any).current_period_end * 1000)
+            }
+          });
 
-    // Send confirmation email to customer
-    if (order.email && product) {
-      const orderNumber = order.id.slice(-8).toUpperCase();
+          console.log('[webhook] User subscription activated:', user.id);
+        }
+      }
+    } else {
+      // Handle one-time payment (existing order logic)
+      const order = await prisma.order.create({
+        data: {
+          stripeSessionId: session.id,
+          stripePaymentIntentId: (session.payment_intent as string) || null,
+          stripeCustomerId: (session.customer as string) || null,
+          productId: session.metadata?.productId || null,
+          priceId: session.metadata?.priceId || null,
+          amountTotal: session.amount_total ?? null,
+          currency: session.currency ?? null,
+          email: session.customer_details?.email ?? null,
+          status: 'paid',
 
-      await sendOrderConfirmationEmail({
-        orderId: order.id,
-        orderNumber,
-        email: order.email,
-        shippingName: order.shippingName!,
-        shippingLine1: order.shippingLine1!,
-        shippingLine2: order.shippingLine2 || undefined,
-        shippingCity: order.shippingCity!,
-        shippingState: order.shippingState!,
-        shippingPostalCode: order.shippingPostalCode!,
-        shippingCountry: order.shippingCountry!,
-        productName: product.name,
-        amountTotal: order.amountTotal!,
-        currency: order.currency!,
+          // Shipping Information
+          shippingName: shipping?.name || null,
+          shippingLine1: shipping?.address?.line1 || null,
+          shippingLine2: shipping?.address?.line2 || null,
+          shippingCity: shipping?.address?.city || null,
+          shippingState: shipping?.address?.state || null,
+          shippingPostalCode: shipping?.address?.postal_code || null,
+          shippingCountry: shipping?.address?.country || null,
+          shippingPhone: session.customer_details?.phone || null,
+
+          fulfillmentStatus: 'unfulfilled',
+        },
       });
 
-      // Send notification to seller
-      await sendSellerOrderNotification({
-        orderId: order.id,
-        orderNumber,
-        email: order.email,
-        shippingName: order.shippingName!,
-        shippingLine1: order.shippingLine1!,
-        shippingLine2: order.shippingLine2 || undefined,
-        shippingCity: order.shippingCity!,
-        shippingState: order.shippingState!,
-        shippingPostalCode: order.shippingPostalCode!,
-        shippingCountry: order.shippingCountry!,
-        productName: product.name,
-        amountTotal: order.amountTotal!,
-        currency: order.currency!,
+      console.log('[webhook] order created:', order.id);
+
+      // Get product details for email
+      const product = await prisma.product.findUnique({
+        where: { id: order.productId! },
+        select: { name: true },
       });
+
+      // Send confirmation email to customer
+      if (order.email && product) {
+        const orderNumber = order.id.slice(-8).toUpperCase();
+
+        await sendOrderConfirmationEmail({
+          orderId: order.id,
+          orderNumber,
+          email: order.email,
+          shippingName: order.shippingName!,
+          shippingLine1: order.shippingLine1!,
+          shippingLine2: order.shippingLine2 || undefined,
+          shippingCity: order.shippingCity!,
+          shippingState: order.shippingState!,
+          shippingPostalCode: order.shippingPostalCode!,
+          shippingCountry: order.shippingCountry!,
+          productName: product.name,
+          amountTotal: order.amountTotal!,
+          currency: order.currency!,
+        });
+
+        // Send notification to seller
+        await sendSellerOrderNotification({
+          orderId: order.id,
+          orderNumber,
+          email: order.email,
+          shippingName: order.shippingName!,
+          shippingLine1: order.shippingLine1!,
+          shippingLine2: order.shippingLine2 || undefined,
+          shippingCity: order.shippingCity!,
+          shippingState: order.shippingState!,
+          shippingPostalCode: order.shippingPostalCode!,
+          shippingCountry: order.shippingCountry!,
+          productName: product.name,
+          amountTotal: order.amountTotal!,
+          currency: order.currency!,
+        });
+      }
+    }
+  }
+
+  // Handle subscription created event
+  if (event.type === 'customer.subscription.created') {
+    const subscription = event.data.object as Stripe.Subscription;
+    console.log('[webhook] Subscription created:', subscription.id);
+
+    // Get customer email from Stripe
+    const customer = await stripe.customers.retrieve(subscription.customer as string);
+    const customerEmail = (customer as Stripe.Customer).email;
+
+    if (customerEmail) {
+      const user = await prisma.user.findFirst({
+        where: { email: customerEmail }
+      });
+
+      if (user) {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: {
+            subscriptionStatus: subscription.status === 'active' ? 'active' : 'none',
+            subscriptionExpiry: new Date((subscription as any).current_period_end * 1000)
+          }
+        });
+        console.log('[webhook] User subscription status updated:', user.id);
+      }
+    }
+  }
+
+  // Handle subscription updated event
+  if (event.type === 'customer.subscription.updated') {
+    const subscription = event.data.object as Stripe.Subscription;
+    console.log('[webhook] Subscription updated:', subscription.id);
+
+    // Get customer email from Stripe
+    const customer = await stripe.customers.retrieve(subscription.customer as string);
+    const customerEmail = (customer as Stripe.Customer).email;
+
+    if (customerEmail) {
+      const user = await prisma.user.findFirst({
+        where: { email: customerEmail }
+      });
+
+      if (user) {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: {
+            subscriptionStatus: subscription.status === 'active' ? 'active' : subscription.status === 'canceled' ? 'expired' : 'none',
+            subscriptionExpiry: new Date((subscription as any).current_period_end * 1000)
+          }
+        });
+        console.log('[webhook] User subscription status updated:', user.id);
+      }
+    }
+  }
+
+  // Handle subscription deleted event
+  if (event.type === 'customer.subscription.deleted') {
+    const subscription = event.data.object as Stripe.Subscription;
+    console.log('[webhook] Subscription deleted:', subscription.id);
+
+    // Get customer email from Stripe
+    const customer = await stripe.customers.retrieve(subscription.customer as string);
+    const customerEmail = (customer as Stripe.Customer).email;
+
+    if (customerEmail) {
+      const user = await prisma.user.findFirst({
+        where: { email: customerEmail }
+      });
+
+      if (user) {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: {
+            subscriptionStatus: 'expired',
+            subscriptionExpiry: new Date((subscription as any).current_period_end * 1000)
+          }
+        });
+        console.log('[webhook] User subscription marked as expired:', user.id);
+      }
     }
   }
 

@@ -133,11 +133,27 @@ export default function AdminDashboard() {
               </div>
             </div>
 
+            {/* Package Builder */}
+            <Link href="/admin/packages" className="group">
+              <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-orange-400/30 shadow-2xl hover:shadow-orange-400/20 group-hover:scale-105 transition-all duration-300">
+                <div className="flex items-center mb-4">
+                  <Package className="w-8 h-8 text-orange-400 mr-3" />
+                  <h3 className="text-xl font-bold text-white">Package Builder</h3>
+                </div>
+                <p className="text-gray-300 mb-4">
+                  Create peptide bundles by combining multiple products with custom pricing.
+                </p>
+                <div className="text-orange-300 font-medium group-hover:text-orange-200 transition-colors">
+                  Build Packages →
+                </div>
+              </div>
+            </Link>
+
             {/* Store Management */}
             <Link href="/admin/store" className="group">
               <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-purple-400/30 shadow-2xl hover:shadow-purple-400/20 group-hover:scale-105 transition-all duration-300">
                 <div className="flex items-center mb-4">
-                  <Package className="w-8 h-8 text-purple-400 mr-3" />
+                  <ShoppingCart className="w-8 h-8 text-purple-400 mr-3" />
                   <h3 className="text-xl font-bold text-white">Store Management</h3>
                 </div>
                 <p className="text-gray-300 mb-4">
@@ -153,7 +169,7 @@ export default function AdminDashboard() {
             <Link href="/admin/orders" className="group">
               <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-amber-400/30 shadow-2xl hover:shadow-amber-400/20 group-hover:scale-105 transition-all duration-300">
                 <div className="flex items-center mb-4">
-                  <ShoppingCart className="w-8 h-8 text-amber-400 mr-3" />
+                  <Package className="w-8 h-8 text-amber-400 mr-3" />
                   <h3 className="text-xl font-bold text-white">Orders</h3>
                 </div>
                 <p className="text-gray-300 mb-4">

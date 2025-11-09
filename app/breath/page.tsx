@@ -1,10 +1,12 @@
+"use client"
+
 import { BreathTrainingApp } from "@/components/Breath/BreathTrainingApp"
+import SubscriptionGate from "@/components/Subscriptions/SubscriptionGate"
 
 export default function BreathPage() {
-  return <BreathTrainingApp />
-}
-
-export const metadata = {
-  title: "Breath Training - Reset Biology",
-  description: "Master your nervous system through guided breathing exercises. Enhance your metabolic reset with precision breath training.",
+  return (
+    <SubscriptionGate featureName="Breathing App">
+      <BreathTrainingApp />
+    </SubscriptionGate>
+  )
 }

@@ -3,8 +3,17 @@
 import { useState, useRef, useEffect } from "react"
 import { PortalHeader } from "@/components/Navigation/PortalHeader"
 import { Play, Pause, RotateCcw, Volume2, CheckCircle } from "lucide-react"
+import SubscriptionGate from "@/components/Subscriptions/SubscriptionGate"
 
 export default function MasteryModulesPage() {
+  return (
+    <SubscriptionGate featureName="Mastery Series Modules">
+      <MasteryContent />
+    </SubscriptionGate>
+  )
+}
+
+function MasteryContent() {
   const [currentModule, setCurrentModule] = useState(61)
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)

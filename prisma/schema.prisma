@@ -404,6 +404,7 @@ model Product {
   lowStockThreshold   Int?      @default(5)      // Alert when stock falls below this number
   allowBackorder      Boolean   @default(false)  // Allow purchases when out of stock
   isBundle            Boolean   @default(false)  // Is this a bundle/package product
+  bundlePriceOverride Int?                       // Manual price override for bundles (in cents)
 
   // Product flags
   active           Boolean   @default(true)
@@ -654,6 +655,8 @@ model BundleItem {
   bundleProductId  String   @db.ObjectId  // The bundle product (e.g., "Glow Protocol")
   componentProductId String @db.ObjectId  // The component product (e.g., "TB-500")
   quantity         Int      @default(1)   // How many of this component in the bundle
+  isOptional       Boolean  @default(false) // Optional add-on component
+  displayOrder     Int      @default(0)     // Order in which components are displayed
 
   bundleProduct    Product  @relation("BundleProduct", fields: [bundleProductId], references: [id])
   componentProduct Product  @relation("ComponentProduct", fields: [componentProductId], references: [id])

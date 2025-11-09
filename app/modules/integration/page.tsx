@@ -3,8 +3,17 @@
 import { useState, useRef, useEffect } from "react"
 import { PortalHeader } from "@/components/Navigation/PortalHeader"
 import { Play, Pause, RotateCcw, Volume2, CheckCircle } from "lucide-react"
+import SubscriptionGate from "@/components/Subscriptions/SubscriptionGate"
 
 export default function IntegrationModulesPage() {
+  return (
+    <SubscriptionGate featureName="Integration Series Modules">
+      <IntegrationContent />
+    </SubscriptionGate>
+  )
+}
+
+function IntegrationContent() {
   const [currentModule, setCurrentModule] = useState(31)
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
