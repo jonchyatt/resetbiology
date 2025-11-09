@@ -86,9 +86,10 @@ export default function PackageBuilderPage() {
       setBundles(bundlesData.bundles || [])
 
       // Fetch all products (non-bundles)
-      const productsRes = await fetch('/api/products')
+      const productsRes = await fetch('/api/products?excludeBundles=true&includeInactive=true')
       const productsData = await productsRes.json()
-      setProducts((productsData.products || []).filter((p: Product) => !p.isBundle))
+
+      setProducts(productsData.products || [])
     } catch (error) {
       console.error('Error fetching data:', error)
     } finally {
