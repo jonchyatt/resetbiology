@@ -428,15 +428,32 @@ export async function sendDoseReminderEmail(data: DoseReminderEmailData) {
           <strong style="display: block; color: #0f172a; font-size: 15px;">Scheduled Dose</strong>
           <div style="font-size: 24px; font-weight: 600; color: #0f172a; margin-top: 6px;">${localTime}</div>
         </div>
-        <p style="font-size: 14px; color: #475569; line-height: 1.6;">
-          Need to update your reminders or timing? Open the peptide tracker inside Reset Biology to edit your protocol.
+
+        <!-- PWA App Instructions -->
+        <div style="margin: 24px 0; padding: 16px; border-radius: 10px; background: #f0f9ff; border: 1px solid #0ea5e9;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+            <span style="font-size: 20px;">📱</span>
+            <strong style="color: #0f172a; font-size: 14px;">Open in App</strong>
+          </div>
+          <p style="font-size: 13px; color: #475569; line-height: 1.5; margin: 0;">
+            For the best experience, <strong>open the Reset Biology app from your home screen</strong> instead of clicking the link below. You'll stay logged in and get faster access to your protocols.
+          </p>
+        </div>
+
+        <p style="font-size: 13px; color: #64748b; line-height: 1.6; margin: 16px 0;">
+          Don't have the app on your home screen yet? Visit <a href="https://resetbiology.com" style="color: #0ea5e9; text-decoration: none;">resetbiology.com</a> and tap "Add to Home Screen" (iOS) or "Install" (Android).
         </p>
-        <div style="text-align: center; margin-top: 32px;">
-          <a href="https://resetbiology.com/peptides" style="display: inline-block; padding: 12px 28px; background: linear-gradient(135deg, #0ea5e9, #22d3ee); color: #ffffff; text-decoration: none; border-radius: 999px; font-weight: 600;">Open Peptide Tracker</a>
+
+        <div style="text-align: center; margin-top: 24px; padding-top: 24px; border-top: 1px solid #e2e8f0;">
+          <p style="font-size: 12px; color: #94a3b8; margin: 0 0 12px;">
+            Or open in browser (you may need to log in again):
+          </p>
+          <a href="https://resetbiology.com/peptides" style="display: inline-block; padding: 10px 24px; background: #e2e8f0; color: #475569; text-decoration: none; border-radius: 8px; font-size: 13px; font-weight: 500;">Open in Browser</a>
         </div>
       </div>
-      <p style="font-size: 12px; color: #94a3b8; text-align: center; margin-top: 24px;">
-        You receive these reminders because notifications are enabled inside your Reset Biology peptide protocol.
+      <p style="font-size: 11px; color: #94a3b8; text-align: center; margin-top: 24px; line-height: 1.5;">
+        You receive these reminders because notifications are enabled in your Reset Biology peptide protocol.<br>
+        To change notification settings, open the app and tap "Remind Me" on your protocol.
       </p>
     </div>
   `;
