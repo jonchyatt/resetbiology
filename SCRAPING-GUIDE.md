@@ -102,12 +102,52 @@ The scraper may not always capture the correct price due to:
 
 ## Next Steps
 
-1. ✅ Scraper created
-2. ⏳ Find correct product URLs for both sites
-3. ⏳ Scrape all products
+1. ✅ Scraper created (Playwright-based)
+2. ✅ Found correct product URLs for both sites
+3. ✅ Scraped all products
+   - **StemRegen**: 9 unique products (17 total including variants)
+   - **EnergyBits**: 23 products (21 algae products + 2 tote bags)
 4. ⏳ Manually add to admin store with correct pricing
 5. ⏳ Set up proper product categories/collections
 6. ⏳ Configure Stripe integration for each product
+
+## Scraped Data Summary (Completed November 11, 2025)
+
+### StemRegen Products (9 unique)
+**Core Products:**
+- Release - $189
+- Signal - $134
+- Mobilize - $164
+- Sport - $189
+
+**Book:**
+- Cracking The STEM Cell Code - $25
+
+**Protocol Bundles:**
+- Daily Maintenance Protocol - $487
+- Accelerated Repair Protocol - $865
+- Daily Recovery Protocol - $487
+- Accelerated Recovery Protocol - $865
+
+**Data File**: `stemregen-complete-scraped-data.json`
+
+### EnergyBits Products (23 total)
+**ENERGYbits® (Spirulina)**: 6 products
+- Large Bag, Large Canister, Small Canister, Small Bag, Large Box (x2)
+
+**RECOVERYbits® (Chlorella)**: 5 products
+- Large Bag, Large Canister, Small Canister, Small Bag, Large Box
+
+**BEAUTYbits® (Spirulina)**: 5 products
+- Large Bag, Large Canister, Small Canister, Small Bag, Large Box
+
+**VITALITYbits® (Spirulina/Chlorella)**: 5 products
+- Large Bag, Large Canister, Small Canister, Small Bag, Large Box
+
+**Merchandise**: 2 tote bags
+
+**Note**: All EnergyBits products show $500 price - requires manual verification
+**Data File**: `energybits-complete-scraped-data.json`
 
 ## Troubleshooting
 
