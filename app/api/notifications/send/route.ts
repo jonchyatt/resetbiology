@@ -4,12 +4,24 @@ import { sendDoseReminderEmail } from '@/lib/email'
 import { CronHealthMonitor } from '@/lib/cronHealthMonitoring'
 import webpush from 'web-push'
 
+// Validate required environment variables
+function validateEnvVars(): { valid: boolean; missing: string[] } {
+  const required = ['VAPID_PUBLIC_KEY', 'VAPID_PRIVATE_KEY', 'CRON_SECRET', 'RESEND_API_KEY']
+  const missing = required.filter(key => !process.env[key])
+  return { valid: missing.length === 0, missing }
+}
+
 // Set VAPID keys (will be configured in .env)
-webpush.setVapidDetails(
-  'mailto:admin@resetbiology.com',
-  process.env.VAPID_PUBLIC_KEY!,
-  process.env.VAPID_PRIVATE_KEY!
-)
+const envCheck = validateEnvVars()
+if (envCheck.valid) {
+  webpush.setVapidDetails(
+    'mailto:admin@resetbiology.com',
+    process.env.VAPID_PUBLIC_KEY!,
+    process.env.VAPID_PRIVATE_KEY!
+  )
+} else {
+  console.error('❌ Missing required environment variables:', envCheck.missing)
+}
 
 async function sendNotifications() {
   const monitor = new CronHealthMonitor()
@@ -49,6 +61,9 @@ async function sendNotifications() {
         subscriptions: notification.user.pushSubscriptions.length
       })
 
+      let notificationSent = false
+      let subscriptionsToDelete: string[] = []
+
       if (notification.type === 'push') {
         if (notification.user.pushSubscriptions.length === 0) {
           console.warn('⚠️  No push subscriptions found for user:', notification.userId)
@@ -81,17 +96,38 @@ async function sendNotifications() {
             )
             console.log('✅ Notification sent successfully')
             results.push({ id: notification.id, status: 'sent' })
+            notificationSent = true
           } catch (error: any) {
             console.error('❌ Push notification failed:', {
               error: error.message,
               statusCode: error.statusCode
             })
+
+            // Check if subscription is expired/invalid (410 Gone or 404 Not Found)
+            if (error.statusCode === 410 || error.statusCode === 404) {
+              console.warn('🗑️  Marking subscription for deletion:', sub.id)
+              subscriptionsToDelete.push(sub.id)
+            }
+
             errors.push({
               id: notification.id,
               status: 'failed',
-              error: error.message
+              error: error.message,
+              statusCode: error.statusCode
             })
           }
+        }
+
+        // Clean up expired subscriptions
+        if (subscriptionsToDelete.length > 0) {
+          await prisma.pushSubscription.deleteMany({
+            where: {
+              id: {
+                in: subscriptionsToDelete
+              }
+            }
+          })
+          console.log(`🗑️  Deleted ${subscriptionsToDelete.length} expired push subscriptions`)
         }
       } else if (notification.type === 'email') {
         if (!notification.user.email) {
@@ -112,6 +148,7 @@ async function sendNotifications() {
             })
             console.log('✅ Email notification sent successfully')
             results.push({ id: notification.id, status: 'sent-email' })
+            notificationSent = true
           } catch (error: any) {
             console.error('❌ Email notification failed:', error.message)
             errors.push({ id: notification.id, error: error.message })
@@ -120,11 +157,13 @@ async function sendNotifications() {
         }
       }
 
-      // Mark as sent
-      await prisma.scheduledNotification.update({
-        where: { id: notification.id },
-        data: { sent: true, sentAt: new Date() }
-      })
+      // ONLY mark as sent if at least one notification was delivered successfully
+      if (notificationSent) {
+        await prisma.scheduledNotification.update({
+          where: { id: notification.id },
+          data: { sent: true, sentAt: new Date() }
+        })
+      }
     }
 
     console.log('📊 Send complete:', {
@@ -161,6 +200,16 @@ async function sendNotifications() {
 
 // GET handler for Vercel Cron (crons use GET by default)
 export async function GET(req: NextRequest) {
+  // Check environment variables
+  if (!envCheck.valid) {
+    console.error('❌ Cannot send notifications: Missing environment variables:', envCheck.missing)
+    return NextResponse.json({
+      error: 'Server configuration error',
+      missing: envCheck.missing,
+      message: 'Required environment variables are not configured. Please set: ' + envCheck.missing.join(', ')
+    }, { status: 500 })
+  }
+
   // Verify cron secret
   const authHeader = req.headers.get('authorization')
   const querySecret = req.nextUrl.searchParams.get('secret')

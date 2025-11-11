@@ -142,11 +142,12 @@ export async function scheduleNotificationsForProtocol(
 /**
  * Parse dose times from protocol notes/frequency string
  * Examples: "08:00", "08:00/20:00", "Daily 08:00", "Mon-Fri 08:00/20:00"
+ * Also handles: "AM & PM (twice daily)", "AM", "PM", "twice daily"
  */
 function parseDoseTimes(text: string): string[] {
   const times: string[] = []
 
-  // Match time patterns like 08:00, 8:00 AM, etc.
+  // First, try to match explicit time patterns like 08:00, 8:00 AM, etc.
   const timeRegex = /\b(\d{1,2}):(\d{2})\b/g
   let match
 
@@ -154,6 +155,28 @@ function parseDoseTimes(text: string): string[] {
     const hours = match[1].padStart(2, '0')
     const minutes = match[2]
     times.push(`${hours}:${minutes}`)
+  }
+
+  // If no explicit times found, parse keywords
+  if (times.length === 0) {
+    const lowerText = text.toLowerCase()
+
+    // Check for "twice daily" or variations
+    if (lowerText.includes('twice') || (lowerText.includes('am') && lowerText.includes('pm'))) {
+      times.push('08:00', '20:00') // Morning and evening
+    }
+    // Check for AM only
+    else if (lowerText.includes('am') || lowerText.includes('morning')) {
+      times.push('08:00')
+    }
+    // Check for PM only
+    else if (lowerText.includes('pm') || lowerText.includes('evening')) {
+      times.push('20:00')
+    }
+    // Default to midday if nothing else matches
+    else if (lowerText.includes('daily') || lowerText.includes('once')) {
+      times.push('12:00')
+    }
   }
 
   return [...new Set(times)] // Remove duplicates

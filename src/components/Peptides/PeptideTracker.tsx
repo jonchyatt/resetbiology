@@ -6,6 +6,22 @@ import { DosageCalculator } from './DosageCalculator'
 import NotificationPreferences from '@/components/Notifications/NotificationPreferences'
 import PushUnavailableWarning from '@/components/Notifications/PushUnavailableWarning'
 
+// Convert base64 VAPID key to Uint8Array format required by Push API
+function urlBase64ToUint8Array(base64String: string): Uint8Array {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4)
+  const base64 = (base64String + padding)
+    .replace(/\-/g, '+')
+    .replace(/_/g, '/')
+
+  const rawData = window.atob(base64)
+  const outputArray = new Uint8Array(rawData.length)
+
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i)
+  }
+  return outputArray
+}
+
 interface PeptideProtocol {
   id: string
   name: string
@@ -40,6 +56,19 @@ export function PeptideTracker() {
     const month = String(date.getMonth() + 1).padStart(2, '0')
     const day = String(date.getDate()).padStart(2, '0')
     return `${year}-${month}-${day}`
+  }
+
+  // Parse a YYYY-MM-DD string into a Date in the user's local timezone
+  // Returns date at midnight (00:00:00.000) in local timezone
+  const parseLocalDateKey = (key: string): Date => {
+    const parts = key.trim().split('-')
+    const year = parseInt(parts[0] || '1970', 10)
+    const month = parseInt(parts[1] || '1', 10) - 1 // JavaScript months are 0-indexed
+    const day = parseInt(parts[2] || '1', 10)
+
+    // Create date at midnight in local timezone
+    const date = new Date(year, month, day, 0, 0, 0, 0)
+    return date
   }
 
   const [activeTab, setActiveTab] = useState<'current' | 'calendar'>('current')
@@ -87,7 +116,7 @@ export function PeptideTracker() {
           .map((dose: any) => {
             // Use localDate if available (timezone-safe), otherwise fall back to doseDate conversion
             const doseDateKey = dose.localDate || (dose.doseDate
-              ? new Date(dose.doseDate).toISOString().split('T')[0]
+              ? dateToLocalKey(new Date(dose.doseDate))
               : dayKey)
             if (doseDateKey !== dayKey) return null
 
@@ -154,11 +183,24 @@ export function PeptideTracker() {
     today.setHours(0, 0, 0, 0)
 
     protocols.filter(p => p.isActive).forEach((protocol) => {
-      const startDate = protocol.startDate ? new Date(protocol.startDate) : new Date()
-      startDate.setHours(0, 0, 0, 0)
+      // Parse startDate properly as local date (not UTC)
+      let startDate: Date
+      if (protocol.startDate) {
+        if (typeof protocol.startDate === 'string') {
+          // If it's a YYYY-MM-DD string, parse it as local date
+          startDate = parseLocalDateKey(protocol.startDate)
+        } else {
+          startDate = new Date(protocol.startDate)
+          startDate.setHours(0, 0, 0, 0)
+        }
+      } else {
+        startDate = new Date()
+        startDate.setHours(0, 0, 0, 0)
+      }
 
       const frequency = protocol.frequency.toLowerCase()
       let currentDate = new Date(Math.max(today.getTime(), startDate.getTime()))
+      currentDate.setHours(0, 0, 0, 0) // Ensure midnight
 
       // Generate doses until endDate
       while (currentDate <= endDate) {
@@ -192,8 +234,8 @@ export function PeptideTracker() {
           })
         }
 
-        // Move to next day
-        currentDate = new Date(currentDate.getTime() + 24 * 60 * 60 * 1000)
+        // Move to next day using proper date arithmetic (handles DST correctly)
+        currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() + 1, 0, 0, 0, 0)
       }
     })
 
@@ -212,7 +254,7 @@ export function PeptideTracker() {
       } else {
         const rawDate = dose?.doseDate || dose?.createdAt || dose?.updatedAt
         if (!rawDate) return
-        key = new Date(rawDate).toISOString().split('T')[0]
+        key = dateToLocalKey(new Date(rawDate))
       }
 
       if (!map.has(key)) {
@@ -251,7 +293,7 @@ export function PeptideTracker() {
         } else {
           const doseDate = dose?.doseDate || dose?.createdAt || dose?.updatedAt
           if (!doseDate) return false
-          doseDateKey = new Date(doseDate).toISOString().split('T')[0]
+          doseDateKey = dateToLocalKey(new Date(doseDate))
         }
         const doseName = dose?.user_peptide_protocols?.peptides?.name ?? dose?.protocolName ?? ''
         return doseDateKey === key && doseName === futureDose.protocolName
@@ -288,7 +330,8 @@ export function PeptideTracker() {
     }
 
     for (let day = 1; day <= daysInMonth; day += 1) {
-      const date = new Date(year, month, day)
+      // Create date at midnight (00:00:00.000) in local timezone
+      const date = new Date(year, month, day, 0, 0, 0, 0)
       const key = dateToLocalKey(date)
       const summary = doseHistoryByDate.get(key)
 
@@ -344,8 +387,19 @@ export function PeptideTracker() {
     const today = new Date()
     today.setHours(0, 0, 0, 0)
 
-    const startDate = protocol.startDate ? new Date(protocol.startDate) : new Date()
-    startDate.setHours(0, 0, 0, 0)
+    // Parse startDate properly as local date (not UTC)
+    let startDate: Date
+    if (protocol.startDate) {
+      if (typeof protocol.startDate === 'string') {
+        startDate = parseLocalDateKey(protocol.startDate)
+      } else {
+        startDate = new Date(protocol.startDate)
+        startDate.setHours(0, 0, 0, 0)
+      }
+    } else {
+      startDate = new Date()
+      startDate.setHours(0, 0, 0, 0)
+    }
 
     const frequency = protocol.frequency.toLowerCase()
 
@@ -359,16 +413,20 @@ export function PeptideTracker() {
       } else {
         const doseDate = dose?.doseDate || dose?.createdAt || dose?.updatedAt
         if (!doseDate) return false
-        doseDateKey = new Date(doseDate).toISOString().split('T')[0]
+        doseDateKey = dateToLocalKey(new Date(doseDate))
       }
       const doseName = dose?.user_peptide_protocols?.peptides?.name ?? dose?.protocolName ?? ''
       return doseDateKey === todayKey && doseName === protocol.name
     })
 
     // Start from today if not completed, otherwise start from tomorrow
-    let currentDate = completedToday
-      ? new Date(today.getTime() + 24 * 60 * 60 * 1000)
-      : new Date(today.getTime())
+    // Use proper date arithmetic (handles DST correctly)
+    let currentDate: Date
+    if (completedToday) {
+      currentDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1, 0, 0, 0, 0)
+    } else {
+      currentDate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0, 0)
+    }
 
     // Look ahead up to 30 days to find next scheduled dose
     const maxDays = 30
@@ -400,7 +458,8 @@ export function PeptideTracker() {
         return currentDate
       }
 
-      currentDate = new Date(currentDate.getTime() + 24 * 60 * 60 * 1000)
+      // Move to next day using proper date arithmetic (handles DST correctly)
+      currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() + 1, 0, 0, 0, 0)
       daysChecked++
     }
 
@@ -496,7 +555,7 @@ export function PeptideTracker() {
           vialAmount: '10mg',
           reconstitution: protocol.peptides?.reconstitution || '2ml',
           syringeUnits: 10,
-          startDate: protocol.startDate ? new Date(protocol.startDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+          startDate: protocol.startDate ? dateToLocalKey(new Date(protocol.startDate)) : dateToLocalKey(new Date()),
           currentCycle: 1,
           isActive: protocol.isActive
         }));
@@ -670,7 +729,7 @@ export function PeptideTracker() {
           frequency: protocolData.schedule.frequency,
           timing: protocolData.schedule.times.join('/'),
           notes: protocolData.notes || `Schedule: ${protocolData.schedule.frequency}`,
-          startDate: new Date().toISOString().split('T')[0], // Send user's local date
+          startDate: dateToLocalKey(new Date()), // Send user's local date
           timezone: getClientTimezone()
         })
       })
@@ -689,9 +748,18 @@ export function PeptideTracker() {
               if (permission === 'granted' && 'serviceWorker' in navigator) {
                 // Subscribe to push
                 const registration = await navigator.serviceWorker.ready
+
+                // Convert VAPID key to proper format
+                const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
+                if (!vapidKey) {
+                  console.error('❌ VAPID public key not configured')
+                  return
+                }
+                const applicationServerKey = urlBase64ToUint8Array(vapidKey)
+
                 const subscription = await registration.pushManager.subscribe({
                   userVisibleOnly: true,
-                  applicationServerKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
+                  applicationServerKey: applicationServerKey as BufferSource
                 })
 
                 // Save subscription
@@ -739,7 +807,7 @@ export function PeptideTracker() {
           vialAmount: protocolData.vialAmount,
           reconstitution: protocolData.reconstitution,
           syringeUnits: 10,
-          startDate: new Date().toISOString().split('T')[0],
+          startDate: dateToLocalKey(new Date()),
           currentCycle: 1,
           isActive: true
         }
@@ -760,13 +828,35 @@ export function PeptideTracker() {
 
   const generateTodaysDosesPreservingLogged = (protocols: PeptideProtocol[], dayKey: string) => {
     const slotsForProtocol = (protocol: PeptideProtocol) => {
-      if (protocol.timing.toLowerCase().includes('twice daily')) {
+      const lowerTiming = protocol.timing.toLowerCase()
+
+      // Check for explicit slash-separated times first (e.g., "08:00/20:00")
+      if (protocol.timing.includes('/')) {
+        const times = protocol.timing.split('/').map(t => t.trim())
+        return times.map((time, idx) => ({
+          id: `slot-${idx}`,
+          time: time,
+          period: 'any' as const
+        }))
+      }
+
+      // Check for "twice daily" or "AM & PM"
+      if (lowerTiming.includes('twice') || (lowerTiming.includes('am') && lowerTiming.includes('pm'))) {
         return [
           { id: 'am', time: '08:00', period: 'am' as const },
           { id: 'pm', time: '20:00', period: 'pm' as const },
         ]
       }
 
+      // Check for single time in HH:MM format
+      const timeMatch = protocol.timing.match(/\b(\d{1,2}):(\d{2})\b/)
+      if (timeMatch) {
+        const hours = timeMatch[1].padStart(2, '0')
+        const minutes = timeMatch[2]
+        return [{ id: '0', time: `${hours}:${minutes}`, period: 'any' as const }]
+      }
+
+      // Fall back to AM/PM keywords
       const defaultTime = protocol.timing.includes('AM')
         ? '08:00'
         : protocol.timing.includes('PM')
@@ -906,14 +996,19 @@ export function PeptideTracker() {
     setCustomDuration(protocol.duration)
 
     // Parse existing timing into times array
-    // protocol.timing might be like "08:00/20:00" or "AM" or "PM" or "15:50"
+    // protocol.timing might be like "08:00/20:00" or "AM" or "PM" or "15:50" or "AM & PM (twice daily)"
     const timesArray: string[] = []
+    const lowerTiming = protocol.timing.toLowerCase()
+
     if (protocol.timing.includes('/')) {
       // Already has specific times like "08:00/20:00"
       timesArray.push(...protocol.timing.split('/').map(t => t.trim()))
-    } else if (protocol.timing.toLowerCase().includes('am')) {
+    } else if (lowerTiming.includes('twice') || (lowerTiming.includes('am') && lowerTiming.includes('pm'))) {
+      // Check for "twice daily" or both AM & PM FIRST (before individual checks)
+      timesArray.push('08:00', '20:00')
+    } else if (lowerTiming.includes('am')) {
       timesArray.push('08:00')
-    } else if (protocol.timing.toLowerCase().includes('pm')) {
+    } else if (lowerTiming.includes('pm')) {
       timesArray.push('20:00')
     } else if (protocol.timing.match(/^\d{2}:\d{2}$/)) {
       // Single time like "15:50"
@@ -1166,12 +1261,12 @@ export function PeptideTracker() {
     const nextDoseDate = getNextDoseDate(protocol)
     const today = new Date()
     today.setHours(0, 0, 0, 0)
-    const todayKey = today.toISOString().split('T')[0]
+    const todayKey = dateToLocalKey(today)
 
     const isCompletedToday = doseHistory.some((dose: any) => {
       const doseDate = dose?.doseDate || dose?.createdAt || dose?.updatedAt
       if (!doseDate) return false
-      const doseDateKey = new Date(doseDate).toISOString().split('T')[0]
+      const doseDateKey = dose?.localDate || dateToLocalKey(new Date(doseDate))
       const doseName = dose?.user_peptide_protocols?.peptides?.name ?? dose?.protocolName ?? ''
       return doseDateKey === todayKey && doseName === protocol.name
     })
@@ -1487,7 +1582,7 @@ export function PeptideTracker() {
                           }
 
                           const isToday = cell.key === todayKey
-                          const isPast = new Date(cell.key) < new Date(todayKey)
+                          const isPast = parseLocalDateKey(cell.key) < parseLocalDateKey(todayKey)
                           const densityClass = calendarDensityClass(cell.completed, cell.pending, isToday, isPast)
 
                           return (
@@ -1521,7 +1616,7 @@ export function PeptideTracker() {
                     <div className="flex justify-between items-center mb-6">
                       <div>
                         <h3 className="text-2xl font-bold text-white">
-                          {new Date(selectedCalendarDay).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                          {parseLocalDateKey(selectedCalendarDay).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                         </h3>
                         <p className="text-gray-400 text-sm mt-1">
                           {doseHistoryByDate.get(selectedCalendarDay)?.completed || 0} completed • {doseHistoryByDate.get(selectedCalendarDay)?.pending || 0} scheduled
@@ -1540,7 +1635,7 @@ export function PeptideTracker() {
                         .filter((dose: any) => {
                           const doseDateSource = dose?.doseDate || dose?.createdAt || dose?.updatedAt
                           if (!doseDateSource) return false
-                          const doseDateKey = new Date(doseDateSource).toISOString().split('T')[0]
+                          const doseDateKey = dose?.localDate || dateToLocalKey(new Date(doseDateSource))
                           return doseDateKey === selectedCalendarDay
                         })
                         .map((dose: any) => {
@@ -1590,13 +1685,13 @@ export function PeptideTracker() {
                         Array.from(doseHistoryByDate.get(selectedCalendarDay)!.labels)
                           .filter(label => {
                             // Only show labels that don't have a completed dose
-                            return !doseHistory.some((dose: any) => {
-                              const doseDateSource = dose?.doseDate || dose?.createdAt || dose?.updatedAt
-                              if (!doseDateSource) return false
-                              const doseDateKey = new Date(doseDateSource).toISOString().split('T')[0]
-                              const doseName = dose?.user_peptide_protocols?.peptides?.name ?? dose?.protocolName ?? ''
-                              return doseDateKey === selectedCalendarDay && doseName === label
-                            })
+                              return !doseHistory.some((dose: any) => {
+                                const doseDateSource = dose?.doseDate || dose?.createdAt || dose?.updatedAt
+                                if (!doseDateSource) return false
+                                const doseDateKey = dose?.localDate || dateToLocalKey(new Date(doseDateSource))
+                                const doseName = dose?.user_peptide_protocols?.peptides?.name ?? dose?.protocolName ?? ''
+                                return doseDateKey === selectedCalendarDay && doseName === label
+                              })
                           })
                           .map((label, idx) => (
                             <div key={`future-${idx}`} className="p-4 bg-blue-900/20 rounded-lg border border-blue-600/30">
@@ -1616,7 +1711,7 @@ export function PeptideTracker() {
                       {doseHistory.filter((dose: any) => {
                         const doseDateSource = dose?.doseDate || dose?.createdAt || dose?.updatedAt
                         if (!doseDateSource) return false
-                        const doseDateKey = new Date(doseDateSource).toISOString().split('T')[0]
+                        const doseDateKey = dose?.localDate || dateToLocalKey(new Date(doseDateSource))
                         return doseDateKey === selectedCalendarDay
                       }).length === 0 && (
                         <div className="text-center py-8 text-gray-400">
