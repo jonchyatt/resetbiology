@@ -702,4 +702,61 @@ model InventoryTransaction {
   @@map("inventory_transactions")
 }
 
+// --- ASSESSMENT FUNNEL ---
+model AssessmentResponse {
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+
+  // Contact Information
+  name              String
+  email             String
+  phone             String?
+  location          String?   // IP-based location
+
+  // Quiz Responses (Q5-Q19)
+  q5_protein_tracking         String
+  q6_stem_cell_support        String
+  q7_unified_tracking         String
+  q8_breathwork               String
+  q9_sleep_tracking           String
+  q10_detox_protocols         String
+  q11_journaling              String
+  q12_workout_program         String
+  q13_accountability          String
+  q14_peptide_knowledge       String
+  q15_current_situation       String
+  q16_desired_outcome         String
+  q17_biggest_obstacle        String
+  q18_ideal_solution          String
+  q19_additional_info         String?
+
+  // Calculated Fields
+  score                       Int       // 0-100 based on Q5-Q14
+  scoreCategory               String    // "master", "strong", "gaps", "fresh"
+  recommendedTier             String    // "diy", "guided", "done-with-you", "concierge"
+
+  // Engagement Tracking
+  timeToComplete              Int?      // Seconds
+  completedAt                 DateTime  @default(now())
+  viewedResults               Boolean   @default(false)
+  clickedCTA                  Boolean   @default(false)
+  bookedCall                  Boolean   @default(false)
+  convertedToCustomer         Boolean   @default(false)
+  conversionDate              DateTime?
+
+  // UTM & Source Tracking
+  utmSource                   String?
+  utmMedium                   String?
+  utmCampaign                 String?
+  referrer                    String?
+
+  // A/B Test Variant
+  variant                     String?   // "control" or "funnel-v1"
+
+  @@index([email])
+  @@index([score])
+  @@index([completedAt])
+  @@index([recommendedTier])
+  @@map("assessment_responses")
+}
+
 
