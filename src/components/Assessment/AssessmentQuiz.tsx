@@ -23,16 +23,16 @@ interface QuizData {
   name: string
   email: string
   phone: string
-  q5_protein_tracking: string
-  q6_stem_cell_support: string
-  q7_unified_tracking: string
-  q8_breathwork: string
-  q9_sleep_tracking: string
-  q10_detox_protocols: string
-  q11_journaling: string
-  q12_workout_program: string
-  q13_accountability: string
-  q14_peptide_knowledge: string
+  q5_protein_tracking: string | string[] // Support both single and multi-select
+  q6_stem_cell_support: string | string[]
+  q7_unified_tracking: string | string[]
+  q8_breathwork: string | string[]
+  q9_sleep_tracking: string | string[]
+  q10_detox_protocols: string | string[]
+  q11_journaling: string | string[]
+  q12_workout_program: string | string[]
+  q13_accountability: string | string[]
+  q14_peptide_knowledge: string | string[]
   q15_current_situation: string
   q16_desired_outcome: string
   q17_biggest_obstacle: string
@@ -51,16 +51,16 @@ export function AssessmentQuiz({ onComplete }: AssessmentQuizProps) {
     name: "",
     email: "",
     phone: "",
-    q5_protein_tracking: "",
-    q6_stem_cell_support: "",
-    q7_unified_tracking: "",
-    q8_breathwork: "",
-    q9_sleep_tracking: "",
-    q10_detox_protocols: "",
-    q11_journaling: "",
-    q12_workout_program: "",
-    q13_accountability: "",
-    q14_peptide_knowledge: "",
+    q5_protein_tracking: [], // Initialize as array for multi-select
+    q6_stem_cell_support: [],
+    q7_unified_tracking: [],
+    q8_breathwork: [],
+    q9_sleep_tracking: [],
+    q10_detox_protocols: [],
+    q11_journaling: [],
+    q12_workout_program: [],
+    q13_accountability: [],
+    q14_peptide_knowledge: [],
     q15_current_situation: "",
     q16_desired_outcome: "",
     q17_biggest_obstacle: "",
@@ -264,6 +264,9 @@ export function AssessmentQuiz({ onComplete }: AssessmentQuizProps) {
   const currentQuestion = questions[currentStep]
   const progress = ((currentStep + 1) / questions.length) * 100
 
+  // Determine if current question allows multi-select (best practices questions Q5-Q14)
+  const isMultiSelect = currentStep >= 3 && currentStep <= 12
+
   const handleInputChange = (value: string) => {
     setFormData(prev => ({
       ...prev,
@@ -271,10 +274,60 @@ export function AssessmentQuiz({ onComplete }: AssessmentQuizProps) {
     }))
   }
 
+  const handleMultiSelectToggle = (value: string) => {
+    setFormData(prev => {
+      const currentValue = prev[currentQuestion.id as keyof QuizData]
+      const currentArray = Array.isArray(currentValue) ? currentValue : []
+
+      // If already selected, remove it (and others move up automatically)
+      if (currentArray.includes(value)) {
+        return {
+          ...prev,
+          [currentQuestion.id]: currentArray.filter(v => v !== value)
+        }
+      }
+
+      // If not selected and less than 4 choices, add it
+      if (currentArray.length < 4) {
+        return {
+          ...prev,
+          [currentQuestion.id]: [...currentArray, value]
+        }
+      }
+
+      // Already have 4 choices, don't add more
+      return prev
+    })
+  }
+
   const canProceed = () => {
     const currentValue = formData[currentQuestion.id as keyof QuizData]
     if (!currentQuestion.required) return true
-    return currentValue && currentValue.trim() !== ""
+
+    // For arrays (multi-select), check if at least one option selected
+    if (Array.isArray(currentValue)) {
+      return currentValue.length > 0
+    }
+
+    // For strings (single-select), check if not empty
+    return currentValue && currentValue.toString().trim() !== ""
+  }
+
+  // Get rank labels
+  const getRankLabel = (index: number): string => {
+    const labels = ["1st", "2nd", "3rd", "4th"]
+    return labels[index] || ""
+  }
+
+  // Get rank color
+  const getRankColor = (index: number): string => {
+    const colors = [
+      "bg-yellow-500 text-yellow-900", // 1st - gold
+      "bg-gray-400 text-gray-900",      // 2nd - silver
+      "bg-orange-600 text-orange-100",  // 3rd - bronze
+      "bg-gray-600 text-gray-200"       // 4th - gray
+    ]
+    return colors[index] || colors[3]
   }
 
   const handleNext = () => {
@@ -295,15 +348,31 @@ export function AssessmentQuiz({ onComplete }: AssessmentQuizProps) {
     let totalScore = 0
     const scoringQuestions = questions.slice(3, 13) // Q5-Q14
 
+    // Ranking weights: 1st = 100%, 2nd = 75%, 3rd = 50%, 4th = 25%
+    const rankWeights = [1.0, 0.75, 0.5, 0.25]
+
     scoringQuestions.forEach(q => {
       const answer = formData[q.id as keyof QuizData]
-      const selectedOption = q.options?.find(opt => opt.value === answer)
-      if (selectedOption?.score !== undefined) {
-        totalScore += selectedOption.score
+
+      if (Array.isArray(answer)) {
+        // Multi-select: Calculate weighted score
+        answer.forEach((value, index) => {
+          const selectedOption = q.options?.find(opt => opt.value === value)
+          if (selectedOption?.score !== undefined) {
+            const weight = rankWeights[index] || 0
+            totalScore += selectedOption.score * weight
+          }
+        })
+      } else {
+        // Single-select (backward compatibility)
+        const selectedOption = q.options?.find(opt => opt.value === answer)
+        if (selectedOption?.score !== undefined) {
+          totalScore += selectedOption.score
+        }
       }
     })
 
-    return totalScore
+    return Math.round(totalScore) // Round to nearest whole number
   }
 
   const getScoreCategory = (score: number): string => {
@@ -395,23 +464,64 @@ export function AssessmentQuiz({ onComplete }: AssessmentQuizProps) {
                 autoFocus
               />
             ) : currentQuestion.type === "choice" ? (
-              <div className="space-y-3">
-                {currentQuestion.options?.map((option) => (
-                  <button
-                    key={option.value}
-                    onClick={() => handleInputChange(option.value)}
-                    className={`w-full text-left px-6 py-4 rounded-xl border-2 transition-all duration-300 ${
-                      formData[currentQuestion.id as keyof QuizData] === option.value
-                        ? 'bg-gradient-to-r from-primary-500/20 to-secondary-500/20 border-primary-500 shadow-lg shadow-primary-500/20'
-                        : 'bg-gray-700/30 border-gray-600 hover:border-primary-500/50 hover:bg-gray-700/50'
-                    }`}
-                  >
-                    <span className="text-white font-semibold text-lg">
-                      {option.label}
+              <>
+                {isMultiSelect && (
+                  <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-3 mb-4">
+                    <p className="text-blue-300 text-sm text-center">
+                      💡 Select up to 4 options that apply to you (click to rank, click again to remove)
+                    </p>
+                  </div>
+                )}
+
+                <div className="space-y-3">
+                  {currentQuestion.options?.map((option) => {
+                    const currentValue = formData[currentQuestion.id as keyof QuizData]
+                    let isSelected = false
+                    let rankIndex = -1
+
+                    if (isMultiSelect && Array.isArray(currentValue)) {
+                      rankIndex = currentValue.indexOf(option.value)
+                      isSelected = rankIndex !== -1
+                    } else {
+                      isSelected = currentValue === option.value
+                    }
+
+                    return (
+                      <button
+                        key={option.value}
+                        onClick={() => isMultiSelect ? handleMultiSelectToggle(option.value) : handleInputChange(option.value)}
+                        className={`w-full text-left px-6 py-4 rounded-xl border-2 transition-all duration-300 relative ${
+                          isSelected
+                            ? 'bg-gradient-to-r from-primary-500/20 to-secondary-500/20 border-primary-500 shadow-lg shadow-primary-500/20'
+                            : 'bg-gray-700/30 border-gray-600 hover:border-primary-500/50 hover:bg-gray-700/50'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="text-white font-semibold text-lg flex-1">
+                            {option.label}
+                          </span>
+
+                          {/* Rank Badge for Multi-Select */}
+                          {isMultiSelect && isSelected && rankIndex !== -1 && (
+                            <span className={`ml-3 px-3 py-1 rounded-full text-sm font-bold flex-shrink-0 ${getRankColor(rankIndex)}`}>
+                              {getRankLabel(rankIndex)} choice
+                            </span>
+                          )}
+                        </div>
+                      </button>
+                    )
+                  })}
+                </div>
+
+                {/* Selected Count for Multi-Select */}
+                {isMultiSelect && Array.isArray(formData[currentQuestion.id as keyof QuizData]) && (
+                  <div className="mt-4 text-center">
+                    <span className="text-gray-400 text-sm">
+                      {(formData[currentQuestion.id as keyof QuizData] as string[]).length} of 4 choices selected
                     </span>
-                  </button>
-                ))}
-              </div>
+                  </div>
+                )}
+              </>
             ) : null}
           </div>
 

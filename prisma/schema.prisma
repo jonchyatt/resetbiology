@@ -713,16 +713,19 @@ model AssessmentResponse {
   location          String?   // IP-based location
 
   // Quiz Responses (Q5-Q19)
-  q5_protein_tracking         String
-  q6_stem_cell_support        String
-  q7_unified_tracking         String
-  q8_breathwork               String
-  q9_sleep_tracking           String
-  q10_detox_protocols         String
-  q11_journaling              String
-  q12_workout_program         String
-  q13_accountability          String
-  q14_peptide_knowledge       String
+  // Best Practices (Q5-Q14): Support ranked multi-select (stored as JSON arrays)
+  q5_protein_tracking         Json      // String[] for ranked answers
+  q6_stem_cell_support        Json
+  q7_unified_tracking         Json
+  q8_breathwork               Json
+  q9_sleep_tracking           Json
+  q10_detox_protocols         Json
+  q11_journaling              Json
+  q12_workout_program         Json
+  q13_accountability          Json
+  q14_peptide_knowledge       Json
+
+  // Qualifying Questions (Q15-Q19): Single-select only
   q15_current_situation       String
   q16_desired_outcome         String
   q17_biggest_obstacle        String

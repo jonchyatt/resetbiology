@@ -1,7 +1,7 @@
 "use client"
 
-import { useState } from "react"
-import { TrendingUp, Zap, Target, AlertTriangle, CheckCircle2, Calendar, BookOpen, Phone } from "lucide-react"
+import { useState, useEffect } from "react"
+import { TrendingUp, Zap, Target, AlertTriangle, CheckCircle2, Calendar, BookOpen, Phone, Gift, Star, Unlock } from "lucide-react"
 import Link from "next/link"
 
 interface ResultsData {
@@ -21,6 +21,23 @@ interface AssessmentResultsProps {
 
 export function AssessmentResults({ results, onBookCall }: AssessmentResultsProps) {
   const { name, score, scoreCategory, recommendedTier } = results
+  const [showExitModal, setShowExitModal] = useState(false)
+
+  // Exit-intent detection
+  useEffect(() => {
+    let hasShownModal = false
+
+    const handleMouseLeave = (e: MouseEvent) => {
+      // Only trigger if mouse is leaving at the top of the page (likely closing tab)
+      if (e.clientY <= 0 && !hasShownModal) {
+        setShowExitModal(true)
+        hasShownModal = true
+      }
+    }
+
+    document.addEventListener('mouseleave', handleMouseLeave)
+    return () => document.removeEventListener('mouseleave', handleMouseLeave)
+  }, [])
 
   // Score category copy
   const scoreCopy = {
@@ -335,6 +352,73 @@ export function AssessmentResults({ results, onBookCall }: AssessmentResultsProp
           </div>
         </div>
 
+        {/* LIMITED TIME VALUE OFFER */}
+        <div className="bg-gradient-to-br from-yellow-500/20 via-orange-500/20 to-red-500/20 backdrop-blur-xl rounded-3xl p-8 md:p-10 border-2 border-yellow-500/40 shadow-2xl shadow-yellow-500/20">
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <Gift className="w-8 h-8 text-yellow-400 animate-bounce" />
+            <h3 className="text-2xl md:text-3xl font-black text-white text-center">
+              🎁 Exclusive Assessment Completion Offer
+            </h3>
+          </div>
+
+          <div className="text-center mb-6">
+            <p className="text-xl text-white font-semibold mb-2">
+              Because you took the time to complete this assessment...
+            </p>
+            <p className="text-gray-200 text-lg">
+              We want to prove we're invested in YOUR success!
+            </p>
+          </div>
+
+          <div className="bg-gray-900/60 rounded-2xl p-6 mb-6 border border-yellow-500/30">
+            <div className="flex items-start gap-4 mb-4">
+              <Star className="w-6 h-6 text-yellow-400 flex-shrink-0 mt-1" />
+              <div>
+                <h4 className="text-xl font-bold text-white mb-3">
+                  Purchase ANY Peptide Protocol Today →
+                </h4>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0" />
+                    <span className="text-gray-200"><strong className="text-white">FREE 2-Month Portal Access</strong> (Breathwork App + MMM Module 1)</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Unlock className="w-5 h-5 text-green-400 flex-shrink-0" />
+                    <span className="text-gray-200"><strong className="text-white">Unlock Additional Rewards</strong> as you complete modules</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Target className="w-5 h-5 text-green-400 flex-shrink-0" />
+                    <span className="text-gray-200"><strong className="text-white">Personal Success Tracking</strong> to optimize your results</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-primary-500/20 rounded-xl p-4 border border-primary-500/30 mt-4">
+              <p className="text-center text-white font-semibold text-lg mb-2">
+                💪 We're committed to making this work for YOU!
+              </p>
+              <p className="text-center text-gray-300 text-sm">
+                If you're actually committed to your transformation, we'll give you the tools AND support to succeed.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex justify-center">
+            <Link
+              href="/store"
+              className="inline-flex items-center gap-3 bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500 text-white px-10 py-5 rounded-2xl font-black text-xl hover:shadow-2xl hover:shadow-yellow-500/50 transform hover:scale-105 transition-all"
+            >
+              <Gift className="w-6 h-6" />
+              Claim My Bonus & Browse Protocols
+            </Link>
+          </div>
+
+          <p className="text-center text-gray-400 text-sm mt-4">
+            This offer is available for the next 24 hours
+          </p>
+        </div>
+
         {/* Social Proof / Contact */}
         <div className="text-center space-y-4">
           <p className="text-gray-400">
@@ -353,6 +437,92 @@ export function AssessmentResults({ results, onBookCall }: AssessmentResultsProp
           </div>
         </div>
       </div>
+
+      {/* EXIT-INTENT MODAL */}
+      {showExitModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-8 max-w-2xl w-full border-2 border-primary-500/50 shadow-2xl shadow-primary-500/30 relative">
+            {/* Close Button */}
+            <button
+              onClick={() => setShowExitModal(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            {/* Modal Content */}
+            <div className="text-center mb-6">
+              <h3 className="text-3xl font-black text-white mb-3">
+                ⚡ Wait! Don't Leave Yet...
+              </h3>
+              <p className="text-xl text-gray-200">
+                Try our system <span className="text-primary-400 font-bold">FREE for 2 weeks</span> and see the difference!
+              </p>
+            </div>
+
+            <div className="bg-gradient-to-br from-primary-500/20 to-secondary-500/20 rounded-xl p-6 mb-6 border border-primary-500/30">
+              <h4 className="text-2xl font-bold text-white mb-4 text-center">
+                🎯 Free 2-Week Trial: Peptide Tracker + Portal Access
+              </h4>
+
+              <div className="space-y-3 mb-6">
+                <div className="flex items-start gap-3">
+                  <Zap className="w-5 h-5 text-yellow-400 flex-shrink-0 mt-1" />
+                  <div>
+                    <p className="text-white font-semibold">Track Your Protocol</p>
+                    <p className="text-gray-300 text-sm">Set up your peptide tracking system in minutes</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <Unlock className="w-5 h-5 text-green-400 flex-shrink-0 mt-1" />
+                  <div>
+                    <p className="text-white font-semibold">Unlock Breathwork App & MMM Module 1</p>
+                    <p className="text-gray-300 text-sm">Complete setup to access our proven breathwork exercises</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <Star className="w-5 h-5 text-primary-400 flex-shrink-0 mt-1" />
+                  <div>
+                    <p className="text-white font-semibold">Earn Rewards & Discounts</p>
+                    <p className="text-gray-300 text-sm">Complete modules to unlock discounts on peptide packages and coaching</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-gray-900/60 rounded-lg p-4 border border-primary-500/20">
+                <p className="text-center text-gray-200 mb-2">
+                  <strong className="text-white">The Goal:</strong> Create a habit of success 💪
+                </p>
+                <p className="text-center text-gray-400 text-sm">
+                  Each completed module gives you a dopamine hit of progress and unlocks more tools for your transformation.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Link
+                href="/portal"
+                className="flex-1 inline-flex items-center justify-center gap-2 bg-gradient-to-r from-primary-500 to-secondary-500 text-white px-8 py-4 rounded-xl font-bold text-lg hover:shadow-lg hover:shadow-primary-500/50 transform hover:scale-105 transition-all"
+              >
+                <Zap className="w-5 h-5" />
+                Start My Free Trial
+              </Link>
+              <button
+                onClick={() => setShowExitModal(false)}
+                className="sm:w-auto px-6 py-4 text-gray-400 hover:text-white transition-colors text-sm"
+              >
+                No thanks, I'll pass on this offer
+              </button>
+            </div>
+
+            <p className="text-center text-gray-500 text-xs mt-4">
+              No credit card required • Cancel anytime • Keep your progress
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

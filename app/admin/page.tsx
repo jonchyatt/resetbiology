@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Database, Dumbbell, Apple, Syringe, Settings, Package, ShoppingCart } from "lucide-react"
+import { Database, Dumbbell, Apple, Syringe, Settings, Package, ShoppingCart, ClipboardList } from "lucide-react"
 
 export default function AdminDashboard() {
   return (
@@ -77,6 +77,22 @@ export default function AdminDashboard() {
                 </p>
                 <div className="text-green-300 font-medium group-hover:text-green-200 transition-colors">
                   Manage Foods →
+                </div>
+              </div>
+            </Link>
+
+            {/* Assessment Funnel */}
+            <Link href="/admin/assessments" className="group">
+              <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-cyan-400/30 shadow-2xl hover:shadow-cyan-400/20 group-hover:scale-105 transition-all duration-300">
+                <div className="flex items-center mb-4">
+                  <ClipboardList className="w-8 h-8 text-cyan-400 mr-3" />
+                  <h3 className="text-xl font-bold text-white">Assessment Funnel</h3>
+                </div>
+                <p className="text-gray-300 mb-4">
+                  View submissions, edit questions, and manage the cellular weight loss assessment quiz.
+                </p>
+                <div className="text-cyan-300 font-medium group-hover:text-cyan-200 transition-colors">
+                  Manage Assessments →
                 </div>
               </div>
             </Link>

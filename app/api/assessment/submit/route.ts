@@ -15,6 +15,23 @@ export async function POST(req: NextRequest) {
     const utmCampaign = body.utmCampaign || req.headers.get('utm_campaign') || null
     const referrer = req.headers.get('referer') || null
 
+    // Check if user exists, if not create them
+    let user = await prisma.user.findFirst({
+      where: { email: body.email }
+    })
+
+    if (!user) {
+      // Create new user from assessment data
+      user = await prisma.user.create({
+        data: {
+          email: body.email,
+          name: body.name,
+          // Note: auth0Sub will be added when they actually log in via Auth0
+          // For now they have an account but need to complete Auth0 login
+        }
+      })
+    }
+
     // Create assessment response
     const assessment = await prisma.assessmentResponse.create({
       data: {
@@ -66,7 +83,10 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      assessmentId: assessment.id
+      assessmentId: assessment.id,
+      userId: user.id,
+      userCreated: !user, // True if we just created the user
+      message: !user ? 'Account created! Check your email for portal access.' : 'Assessment saved successfully.'
     })
   } catch (error) {
     console.error('Assessment submission error:', error)
