@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Search, Loader2, CheckCircle2, PlusCircle } from "lucide-react";
+import { Search, Loader2, CheckCircle2, PlusCircle, Star } from "lucide-react";
 import type { CachedFoodResult, Nutrients } from "@/lib/nutrition/types";
 
 type Result = CachedFoodResult & { nutrients: Nutrients | null };
@@ -64,6 +64,71 @@ export function FoodQuickAdd({ onLogged }: { onLogged?: (result: FoodQuickAddRes
   const [grams, setGrams] = useState<number>(100);
   const [servings, setServings] = useState<number>(1);
   const [mealType, setMealType] = useState<MealOption>("snack");
+
+  // Favorites state
+  const [activeTab, setActiveTab] = useState<'search' | 'favorites'>('search');
+  const [favorites, setFavorites] = useState<Result[]>([]);
+  const [favoritesLoading, setFavoritesLoading] = useState(false);
+
+  // Load favorites on mount
+  useEffect(() => {
+    const loadFavorites = async () => {
+      try {
+        setFavoritesLoading(true);
+        const res = await fetch('/api/nutrition/favorites');
+        if (res.ok) {
+          const data = await res.json();
+          setFavorites(data.favorites || []);
+        }
+      } catch (err) {
+        console.error('Failed to load favorites:', err);
+      } finally {
+        setFavoritesLoading(false);
+      }
+    };
+    loadFavorites();
+  }, []);
+
+  // Check if food is favorited
+  const isFavorited = (item: Result): boolean => {
+    return favorites.some(
+      (f) => f.source === item.source && f.sourceId === item.sourceId
+    );
+  };
+
+  // Toggle favorite
+  const toggleFavorite = async (item: Result, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent selecting the food
+
+    const action = isFavorited(item) ? 'remove' : 'add';
+
+    try {
+      const res = await fetch('/api/nutrition/favorites', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          food: {
+            source: item.source,
+            sourceId: item.sourceId,
+            description: item.description,
+            brand: item.brand,
+            per: item.per,
+            nutrients: item.nutrients,
+            defaultGrams: 100,
+            defaultServings: 1
+          },
+          action
+        })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setFavorites(data.favorites || []);
+      }
+    } catch (err) {
+      console.error('Failed to toggle favorite:', err);
+    }
+  };
 
   useEffect(() => {
     if (!term.trim()) {
@@ -206,19 +271,47 @@ export function FoodQuickAdd({ onLogged }: { onLogged?: (result: FoodQuickAddRes
 
   return (
     <section className="rounded-2xl bg-gradient-to-br from-emerald-500/10 via-slate-900/40 to-slate-900/60 border border-emerald-400/30 shadow-lg p-6">
-      <div className="mb-4">
+      <div className="mb-4 flex items-center justify-between">
         <h2 className="text-xl font-bold text-white">Add Nutrition</h2>
+
+        {/* Tab Buttons */}
+        <div className="flex gap-2">
+          <button
+            onClick={() => setActiveTab('search')}
+            className={`px-4 py-1.5 rounded-lg text-sm font-medium transition ${
+              activeTab === 'search'
+                ? 'bg-emerald-500 text-white'
+                : 'bg-slate-700/50 text-slate-300 hover:bg-slate-700'
+            }`}
+          >
+            Search
+          </button>
+          <button
+            onClick={() => setActiveTab('favorites')}
+            className={`px-4 py-1.5 rounded-lg text-sm font-medium transition flex items-center gap-1 ${
+              activeTab === 'favorites'
+                ? 'bg-yellow-500 text-white'
+                : 'bg-slate-700/50 text-slate-300 hover:bg-slate-700'
+            }`}
+          >
+            <Star className="w-3.5 h-3.5" fill={activeTab === 'favorites' ? 'currentColor' : 'none'} />
+            Favorites ({favorites.length})
+          </button>
+        </div>
       </div>
 
-      <div className="relative mt-5">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-        <input
-          value={term}
-          onChange={(event) => setTerm(event.target.value)}
-          placeholder="Search foods, brands, or enter a UPC"
-          className="w-full rounded-lg border border-slate-600/40 bg-slate-900/60 pl-10 pr-3 py-2 text-sm text-slate-100 placeholder:text-slate-400 focus:border-emerald-400 focus:outline-none"
-        />
-      </div>
+      {/* Search Input - Only show on Search tab */}
+      {activeTab === 'search' && (
+        <div className="relative mt-5">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+          <input
+            value={term}
+            onChange={(event) => setTerm(event.target.value)}
+            placeholder="Search foods, brands, or enter a UPC"
+            className="w-full rounded-lg border border-slate-600/40 bg-slate-900/60 pl-10 pr-3 py-2 text-sm text-slate-100 placeholder:text-slate-400 focus:border-emerald-400 focus:outline-none"
+          />
+        </div>
+      )}
 
       <div className="mt-3 flex flex-col gap-2 text-xs text-slate-300 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-2">
@@ -345,36 +438,103 @@ export function FoodQuickAdd({ onLogged }: { onLogged?: (result: FoodQuickAddRes
         </div>
       )}
 
-      <div className="mt-4 max-h-48 overflow-y-auto space-y-2">
-        {loading && (
-          <div className="flex items-center gap-2 text-sm text-slate-300">
-            <Loader2 className="h-4 w-4 animate-spin" /> Searching foods...
-          </div>
-        )}
-        {!loading && results.length === 0 && term.trim() && (
-          <p className="text-sm text-slate-400">No matches yet. Keep typing or refine your search.</p>
-        )}
-        {results.map((item) => (
-          <button
-            key={item.source + ":" + item.sourceId}
-            onClick={() => setSelected(item)}
-            className={`w-full rounded-lg border px-3 py-2 text-left transition ${
-              selected?.source === item.source && selected?.sourceId === item.sourceId
-                ? "border-emerald-400/60 bg-emerald-500/10"
-                : "border-slate-700/50 bg-slate-800/40 hover:border-emerald-400/40"
-            }`}
-          >
-            <div className="flex items-center justify-between">
-              <p className="text-sm font-medium text-white line-clamp-1">{item.description}</p>
-              <span className="text-[10px] uppercase tracking-wider text-emerald-300">{item.source}</span>
+      {/* Search Results */}
+      {activeTab === 'search' && (
+        <div className="mt-4 max-h-48 overflow-y-auto space-y-2">
+          {loading && (
+            <div className="flex items-center gap-2 text-sm text-slate-300">
+              <Loader2 className="h-4 w-4 animate-spin" /> Searching foods...
             </div>
-            <div className="mt-1 flex flex-wrap gap-3 text-[11px] text-slate-300">
-              {item.brand && <span>{item.brand}</span>}
-              <span>Per {item.per === "100g" ? "100 g" : "serving"}</span>
+          )}
+          {!loading && results.length === 0 && term.trim() && (
+            <p className="text-sm text-slate-400">No matches yet. Keep typing or refine your search.</p>
+          )}
+          {results.map((item) => (
+            <button
+              key={item.source + ":" + item.sourceId}
+              onClick={() => setSelected(item)}
+              className={`w-full rounded-lg border px-3 py-2 text-left transition ${
+                selected?.source === item.source && selected?.sourceId === item.sourceId
+                  ? "border-emerald-400/60 bg-emerald-500/10"
+                  : "border-slate-700/50 bg-slate-800/40 hover:border-emerald-400/40"
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-medium text-white line-clamp-1">{item.description}</p>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] uppercase tracking-wider text-emerald-300">{item.source}</span>
+                  {/* Star Icon for Favorites */}
+                  <button
+                    onClick={(e) => toggleFavorite(item, e)}
+                    className="p-1 hover:scale-110 transition-transform"
+                  >
+                    <Star
+                      className="w-4 h-4"
+                      fill={isFavorited(item) ? '#eab308' : 'none'}
+                      stroke={isFavorited(item) ? '#eab308' : '#94a3b8'}
+                    />
+                  </button>
+                </div>
+              </div>
+              <div className="mt-1 flex flex-wrap gap-3 text-[11px] text-slate-300">
+                {item.brand && <span>{item.brand}</span>}
+                <span>Per {item.per === "100g" ? "100 g" : "serving"}</span>
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Favorites List */}
+      {activeTab === 'favorites' && (
+        <div className="mt-4 max-h-96 overflow-y-auto space-y-2">
+          {favoritesLoading && (
+            <div className="flex items-center gap-2 text-sm text-slate-300">
+              <Loader2 className="h-4 w-4 animate-spin" /> Loading favorites...
             </div>
-          </button>
-        ))}
-      </div>
+          )}
+          {!favoritesLoading && favorites.length === 0 && (
+            <div className="text-center py-8 text-slate-400">
+              <Star className="w-12 h-12 mx-auto mb-3 opacity-30" />
+              <p className="text-sm">No favorites yet</p>
+              <p className="text-xs mt-1">Click the star icon on search results to save favorites</p>
+            </div>
+          )}
+          {favorites.map((item) => (
+            <button
+              key={item.source + ":" + item.sourceId}
+              onClick={() => setSelected(item)}
+              className={`w-full rounded-lg border px-3 py-2 text-left transition ${
+                selected?.source === item.source && selected?.sourceId === item.sourceId
+                  ? "border-yellow-400/60 bg-yellow-500/10"
+                  : "border-slate-700/50 bg-slate-800/40 hover:border-yellow-400/40"
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-medium text-white line-clamp-1">{item.description}</p>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] uppercase tracking-wider text-yellow-300">{item.source}</span>
+                  {/* Remove from Favorites */}
+                  <button
+                    onClick={(e) => toggleFavorite(item, e)}
+                    className="p-1 hover:scale-110 transition-transform"
+                  >
+                    <Star
+                      className="w-4 h-4"
+                      fill="#eab308"
+                      stroke="#eab308"
+                    />
+                  </button>
+                </div>
+              </div>
+              <div className="mt-1 flex flex-wrap gap-3 text-[11px] text-slate-300">
+                {item.brand && <span>{item.brand}</span>}
+                <span>Per {item.per === "100g" ? "100 g" : "serving"}</span>
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
     </section>
   );
 }

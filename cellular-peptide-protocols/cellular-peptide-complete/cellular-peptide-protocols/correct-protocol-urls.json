@@ -1,0 +1,69 @@
+{
+  "protocols": [
+    {
+      "id": "anxiety-depression",
+      "infoUrl": "https://cellularpeptide.com/pages/anxiety-and-depression-protocol",
+      "productUrl": "https://cellularpeptide.com/products/anxiety-depression-protocol-package"
+    },
+    {
+      "id": "blood-sugar-support",
+      "infoUrl": "https://cellularpeptide.com/pages/blood-sugar-support-craving-reduction-protocol",
+      "productUrl": "https://cellularpeptide.com/products/blood-sugar-weight-reduction-package"
+    },
+    {
+      "id": "body-recomposition",
+      "infoUrl": "https://cellularpeptide.com/pages/body-recomposition-metabolic-health-protocol",
+      "productUrl": "https://cellularpeptide.com/products/body-recomposition-metabolic-health-package"
+    },
+    {
+      "id": "growth-hormone",
+      "infoUrl": "https://cellularpeptide.com/pages/growth-hormone-and-anti-aging-protocol",
+      "productUrl": "https://cellularpeptide.com/products/growth-hormone-anti-aging-protocol-package"
+    },
+    {
+      "id": "hair-growth",
+      "infoUrl": "https://cellularpeptide.com/pages/hair-growth-and-skin-health-protocol",
+      "productUrl": "https://cellularpeptide.com/products/hair-growth-skin-health-protocol"
+    },
+    {
+      "id": "hormone-balancing",
+      "infoUrl": "https://cellularpeptide.com/pages/hormone-balancing-protocol",
+      "productUrl": "https://cellularpeptide.com/products/hormone-balancing-protocol-package"
+    },
+    {
+      "id": "joint-wound-healing",
+      "infoUrl": "https://cellularpeptide.com/pages/joint-and-wound-healing-protocol",
+      "productUrl": "https://cellularpeptide.com/products/joint-wound-healing-protocol-package"
+    },
+    {
+      "id": "natural-energy",
+      "infoUrl": "https://cellularpeptide.com/pages/nad-disp-protocol",
+      "productUrl": "https://cellularpeptide.com/products/natural-energy-reset-protocol-package"
+    },
+    {
+      "id": "oral-bpc-157",
+      "infoUrl": "https://cellularpeptide.com/pages/oral-bpc-157-protocol",
+      "productUrl": "https://cellularpeptide.com/products/oral-bpc-157"
+    },
+    {
+      "id": "organ-health",
+      "infoUrl": "https://cellularpeptide.com/pages/organ-health-and-anti-aging-protocol",
+      "productUrl": "https://cellularpeptide.com/products/organ-health-anti-aging-protocol-package"
+    },
+    {
+      "id": "prostate-support",
+      "infoUrl": "https://cellularpeptide.com/pages/prostate-support-protocol-1",
+      "productUrl": "https://cellularpeptide.com/products/prostate-support-package"
+    },
+    {
+      "id": "sexual-enhancement",
+      "infoUrl": "https://cellularpeptide.com/pages/sexual-enhancement-protocol",
+      "productUrl": "https://cellularpeptide.com/products/sexual-enhancement-protocol-package"
+    },
+    {
+      "id": "tanning-sexual",
+      "infoUrl": "https://cellularpeptide.com/pages/tanning-and-sexual-benefits-protocol",
+      "productUrl": "https://cellularpeptide.com/products/tanning-sexual-benefits"
+    }
+  ]
+}

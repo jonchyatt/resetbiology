@@ -12,7 +12,8 @@
       "Bash(cat:*)",
       "Bash(chmod:*)",
       "Bash(./batch-scrape-all-stemregen.sh)",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "WebSearch"
     ],
     "deny": [],
     "ask": [],

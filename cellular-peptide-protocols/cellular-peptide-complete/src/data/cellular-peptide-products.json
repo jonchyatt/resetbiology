@@ -1,0 +1,119 @@
+[
+  {
+    "id": "blood-sugar-support",
+    "title": "Blood Sugar Support & Craving Reduction Package",
+    "slug": "blood-sugar-weight-reduction-package",
+    "url": "https://cellularpeptide.com/products/blood-sugar-weight-reduction-package",
+    "price": "$720.00",
+    "image": "/images/cellular-peptide-products/semaglutide.png",
+    "description": "Semaglutide protocol for blood sugar control and craving reduction"
+  },
+  {
+    "id": "oral-bpc-157",
+    "title": "Oral BPC-157",
+    "slug": "oral-bpc-157",
+    "url": "https://cellularpeptide.com/products/oral-bpc-157",
+    "price": "$150.00",
+    "image": "/images/cellular-peptide-products/oral-bpc-157.png",
+    "description": "Oral BPC-157 for gut health and inflammation"
+  },
+  {
+    "id": "joint-wound-healing",
+    "title": "Joint & Wound Healing Protocol Package",
+    "slug": "joint-wound-healing-protocol-package",
+    "url": "https://cellularpeptide.com/products/joint-wound-healing-protocol-package",
+    "price": "$1,050.00",
+    "image": "/images/cellular-peptide-products/bpc-tb500.png",
+    "description": "BPC-157 & TB-500 combination for joint and wound healing"
+  },
+  {
+    "id": "hormone-balancing",
+    "title": "Hormone Balancing Protocol Package",
+    "slug": "hormone-balancing-protocol-package",
+    "url": "https://cellularpeptide.com/products/hormone-balancing-protocol-package",
+    "price": "$360.00",
+    "image": "/images/cellular-peptide-products/hormone-balancing.png",
+    "description": "Kisspeptin for hormonal balance and reproductive health"
+  },
+  {
+    "id": "anxiety-depression",
+    "title": "Anxiety & Depression Protocol Package",
+    "slug": "anxiety-depression-protocol-package",
+    "url": "https://cellularpeptide.com/products/anxiety-depression-protocol-package",
+    "price": "$550.00",
+    "image": "/images/cellular-peptide-products/anxiety-depression.png",
+    "description": "Semax & Selank for mental health and cognitive function"
+  },
+  {
+    "id": "growth-hormone-anti-aging",
+    "title": "Growth Hormone & Anti-Aging Protocol Package",
+    "slug": "growth-hormone-anti-aging-protocol-package",
+    "url": "https://cellularpeptide.com/products/growth-hormone-anti-aging-protocol-package",
+    "price": "$1,300.00",
+    "image": "/images/cellular-peptide-products/growth-hormone.png",
+    "description": "CJC-1295 & Ipamorelin for growth hormone and anti-aging"
+  },
+  {
+    "id": "hair-growth-skin-health",
+    "title": "Hair Growth & Skin Health Package",
+    "slug": "hair-growth-skin-health-package",
+    "url": "https://cellularpeptide.com/products/hair-growth-skin-health-package",
+    "price": "$340.00",
+    "image": "/images/cellular-peptide-products/hair-growth.png",
+    "description": "GHK-Cu for hair growth and skin health"
+  },
+  {
+    "id": "tanning-sexual-benefits",
+    "title": "Tanning & Sexual Benefits Protocol Package",
+    "slug": "tanning-sexual-benefits",
+    "url": "https://cellularpeptide.com/products/tanning-sexual-benefits",
+    "price": "$340.00",
+    "image": "/images/cellular-peptide-products/tanning-sexual.png",
+    "description": "MT-2 for skin tanning and sexual enhancement"
+  },
+  {
+    "id": "organ-health-anti-aging",
+    "title": "Organ Health & Anti-Aging Protocol Package",
+    "slug": "organ-health-anti-aging-protocol-package",
+    "url": "https://cellularpeptide.com/products/organ-health-anti-aging-protocol-package",
+    "price": "$360.00",
+    "image": "/images/cellular-peptide-products/organ-health.png",
+    "description": "Epitalon & Kisspeptin for organ health and longevity"
+  },
+  {
+    "id": "body-recomposition",
+    "title": "Body Recomposition & Metabolic Health Package",
+    "slug": "body-recomposition-metabolic-health-package",
+    "url": "https://cellularpeptide.com/products/body-recomposition-metabolic-health-package",
+    "price": "$980.00",
+    "image": "/images/cellular-peptide-products/body-recomposition.png",
+    "description": "Retatrutide for body recomposition and metabolic health"
+  },
+  {
+    "id": "natural-energy-reset",
+    "title": "Natural Energy Reset Protocol Package",
+    "slug": "natural-energy-reset-protocol-package",
+    "url": "https://cellularpeptide.com/products/natural-energy-reset-protocol-package",
+    "price": "$650.00",
+    "image": "/images/cellular-peptide-products/natural-energy.png",
+    "description": "DSIP & NAD+ for sleep and energy restoration"
+  },
+  {
+    "id": "sexual-enhancement",
+    "title": "Sexual Enhancement Protocol Package",
+    "slug": "sexual-enhancement-protocol-package",
+    "url": "https://cellularpeptide.com/products/sexual-enhancement-protocol-package",
+    "price": "$420.00",
+    "image": "/images/cellular-peptide-products/sexual-enhancement.png",
+    "description": "PT-141 for sexual function enhancement"
+  },
+  {
+    "id": "prostate-support",
+    "title": "Prostate Support Package",
+    "slug": "prostate-support-package",
+    "url": "https://cellularpeptide.com/products/prostate-support-package",
+    "price": "$790.00",
+    "image": "/images/cellular-peptide-products/prostate-support.png",
+    "description": "Prostamax for prostate health support"
+  }
+]
