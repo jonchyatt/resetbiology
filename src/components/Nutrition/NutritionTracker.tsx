@@ -5,6 +5,7 @@ import Link from "next/link"
 import { Apple, Target, Plus, X, Calendar, TrendingUp, Utensils } from "lucide-react"
 import { FoodQuickAdd, FoodQuickAddResult } from "./FoodQuickAdd"
 import { RecentFoods } from "./RecentFoods"
+import { MacroGoals } from "./MacroGoals"
 
 interface FoodEntry {
   id: string
@@ -480,34 +481,9 @@ export function NutritionTracker() {
                 </div>
               </div>
 
-              {/* Column 3 - Today's Macros & Daily Snapshot */}
+              {/* Column 3 - Macro Goals & Daily Snapshot */}
               <div className="space-y-6">
-                <div className="bg-gradient-to-br from-amber-600/20 to-amber-700/20 backdrop-blur-sm rounded-xl p-4 border border-amber-400/30 shadow-2xl hover:shadow-amber-500/20 transition-all duration-300">
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-lg font-bold text-white flex items-center">
-                      <Target className="h-4 w-4 mr-2 text-amber-400"/>Today's Macros
-                    </h3>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="bg-gray-800/50 rounded-lg p-2">
-                      <p className="text-gray-300 text-xs">Calories</p>
-                      <p className="text-xl font-bold text-white">{Math.round(todaysTotals.calories)}</p>
-                    </div>
-                    <div className="bg-gray-800/50 rounded-lg p-2">
-                      <p className="text-gray-300 text-xs">Protein</p>
-                      <p className="text-xl font-bold text-white">{Math.round(todaysTotals.protein)}g</p>
-                    </div>
-                    <div className="bg-gray-800/50 rounded-lg p-2">
-                      <p className="text-gray-300 text-xs">Carbs</p>
-                      <p className="text-xl font-bold text-white">{Math.round(todaysTotals.carbs)}g</p>
-                    </div>
-                    <div className="bg-gray-800/50 rounded-lg p-2">
-                      <p className="text-gray-300 text-xs">Fats</p>
-                      <p className="text-xl font-bold text-white">{Math.round(todaysTotals.fats)}g</p>
-                    </div>
-                  </div>
-                </div>
+                <MacroGoals todaysTotals={todaysTotals} />
 
                 <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl hover:shadow-secondary-400/20 transition-all duration-300">
                   <h4 className="text-white font-semibold mb-2 flex items-center">
