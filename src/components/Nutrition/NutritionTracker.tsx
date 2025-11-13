@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react"
 import Link from "next/link"
-import { Apple, Target, Plus, X, Calendar, TrendingUp, Utensils } from "lucide-react"
+import { Apple, Target, Plus, X, Calendar, TrendingUp, Utensils, Copy } from "lucide-react"
 import { FoodQuickAdd, FoodQuickAddResult } from "./FoodQuickAdd"
 import { RecentFoods } from "./RecentFoods"
 import { MacroGoals } from "./MacroGoals"
@@ -52,6 +52,7 @@ export function NutritionTracker() {
   const [historyItems, setHistoryItems] = useState<FoodHistoryEntry[] | null>(null)
   const [historyLoading, setHistoryLoading] = useState(false)
   const [historyError, setHistoryError] = useState<string | null>(null)
+  const [copyingDay, setCopyingDay] = useState(false)
 
   // Form state for adding food
   const [foodName, setFoodName] = useState('')
@@ -295,6 +296,36 @@ export function NutritionTracker() {
     }
   }
 
+  const copyPreviousDay = async () => {
+    if (!confirm('Copy all meals from yesterday to today?')) return
+
+    try {
+      setCopyingDay(true)
+
+      const response = await fetch('/api/nutrition/copy-day', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ daysAgo: 1 })
+      })
+
+      const data = await response.json()
+
+      if (data.ok) {
+        alert(`✅ Copied ${data.count} meals from yesterday!`)
+        fetchTodaysFoods()
+        setRecentRefresh((prev) => prev + 1)
+        setHistoryRefresh((prev) => prev + 1)
+      } else {
+        alert(`Failed: ${data.error || 'Unknown error'}`)
+      }
+    } catch (error) {
+      console.error('Error copying day:', error)
+      alert('Failed to copy meals')
+    } finally {
+      setCopyingDay(false)
+    }
+  }
+
   // Calculate today's totals
   const todaysTotals = todaysFoods.reduce(
     (acc, food) => ({
@@ -442,9 +473,20 @@ export function NutritionTracker() {
               {/* Column 2 - Today's Meals */}
               <div className="space-y-6">
                 <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl hover:shadow-primary-400/20 transition-all duration-300">
-                  <h3 className="text-xl font-bold text-white mb-4 flex items-center">
-                    <Utensils className="h-5 w-5 mr-2 text-secondary-400"/>Today's Meals
-                  </h3>
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-xl font-bold text-white flex items-center">
+                      <Utensils className="h-5 w-5 mr-2 text-secondary-400"/>Today's Meals
+                    </h3>
+                    <button
+                      onClick={copyPreviousDay}
+                      disabled={copyingDay}
+                      className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-500/20 hover:bg-blue-500/30 border border-blue-400/30 rounded-lg text-xs font-medium text-blue-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      title="Copy yesterday's meals"
+                    >
+                      <Copy className="w-3.5 h-3.5" />
+                      {copyingDay ? 'Copying...' : 'Copy Yesterday'}
+                    </button>
+                  </div>
 
                   {(['breakfast', 'lunch', 'dinner', 'snack'] as const).map((mealType) => (
                     <div key={mealType} className="mb-6 last:mb-0">
