@@ -1,0 +1,1243 @@
+{
+  "name": "WhatsApp Nutritionist",
+  "nodes": [
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [1360, -700],
+      "id": "9c00b13b-6a9c-4848-9d49-7845b3973e41",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "62iYArwPKYmGMyCK",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "629996113528965",
+        "recipientPhoneNumber": "={{ $('WhatsApp Message Received').item.json.contacts[0].wa_id }}",
+        "textBody": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [2180, -920],
+      "id": "cdaa2a0b-b7ff-4e71-aa24-87020fa325d0",
+      "name": "Send WhatsApp Message",
+      "webhookId": "c5576f76-ce67-4285-b7cc-0d822c74a271",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "DupjcAKAxFTmOE6y",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": ["messages"],
+        "options": {
+          "messageStatusUpdates": []
+        }
+      },
+      "type": "n8n-nodes-base.whatsAppTrigger",
+      "typeVersion": 1,
+      "position": [-880, -320],
+      "id": "33e9c7a2-8652-4f5b-801b-3a10e1ec61cb",
+      "name": "WhatsApp Message Received",
+      "webhookId": "0b062f8e-c9b4-422e-b1ec-01d8b5d4260d",
+      "credentials": {
+        "whatsAppTriggerApi": {
+          "id": "H0h2SOHrdhqc5la7",
+          "name": "WhatsApp OAuth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "options": {}
+      },
+      "id": "53e08066-4bfa-476e-83b1-cc7f42b4c604",
+      "name": "Download Image",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [-120, -840],
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "HP9wfnstu9sEO58j",
+          "name": "WhatsApp Header Auth"
+        },
+        "whatsAppApi": {
+          "id": "DupjcAKAxFTmOE6y",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "media",
+        "operation": "mediaUrlGet",
+        "mediaGetId": "={{ $('WhatsApp Message Received').item.json.messages[0].image.id }}"
+      },
+      "id": "ac174465-6e24-4f35-987f-567a3d94ecb5",
+      "name": "Get Image Url",
+      "type": "n8n-nodes-base.whatsApp",
+      "position": [-320, -840],
+      "webhookId": "280bd5de-32d7-4d8f-93d2-e91e3b0bc161",
+      "typeVersion": 1,
+      "credentials": {
+        "whatsAppApi": {
+          "id": "DupjcAKAxFTmOE6y",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Food Calorie Calculator",
+        "height": 220,
+        "width": 460,
+        "color": 5
+      },
+      "id": "3d81522b-879c-4b65-9645-3d120fc0784b",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [0, -980],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "225bdef7-e592-45e2-9434-c5691978b9ce",
+              "name": "Generated Image Url",
+              "value": "={{ $('Upload Image').item.json.webViewLink }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [280, -720],
+      "id": "b9b33392-9277-4389-be23-1d45bdd0900d",
+      "name": "Image Url"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [560, -920],
+      "id": "fc4be4cf-50d0-487c-bdf6-be99442e3946",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "67552183-de2e-494a-878e-c2948e8cb6bb",
+              "name": "text",
+              "type": "object",
+              "value": "={{ JSON.parse(\n  $json[\"choices\"][0][\"message\"][\"content\"]\n    .replace(/```(?:json)?\\s*/g, '')\n    .replace(/```/g, '')\n    .trim()\n) }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0abaf408-fac4-4597-9d4f-29e15e836b8b",
+      "name": "Calories",
+      "type": "n8n-nodes-base.set",
+      "position": [280, -920],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "version": 2,
+                  "leftValue": "",
+                  "caseSensitive": true,
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "id": "202af928-a324-411a-bf15-68a349e7bf9e",
+                    "operator": {
+                      "type": "object",
+                      "operation": "exists",
+                      "singleValue": true
+                    },
+                    "leftValue": "={{ $json.messages[0].image }}",
+                    "rightValue": ""
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Image"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "version": 2,
+                  "leftValue": "",
+                  "caseSensitive": true,
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "id": "08fd0c80-307e-4f45-b1de-35192ee4ec5e",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    },
+                    "leftValue": "={{ $json.messages[0].text.body }}",
+                    "rightValue": ""
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Text"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "version": 2,
+                  "leftValue": "",
+                  "caseSensitive": true,
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "id": "b7b64446-f1ea-4622-990c-22f3999a8269",
+                    "operator": {
+                      "type": "object",
+                      "operation": "exists",
+                      "singleValue": true
+                    },
+                    "leftValue": "={{ $json.messages[0].audio }}",
+                    "rightValue": ""
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Voice"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "id": "0269a870-4b6f-4693-8935-874b34f29798",
+      "name": "Message Type",
+      "type": "n8n-nodes-base.switch",
+      "position": [-640, -340],
+      "typeVersion": 3.2
+    },
+    {
+      "parameters": {
+        "name": "={{ $('WhatsApp Message Received').item.json.contacts[0].profile.name }} {{ $now.format('yyyy-MM-dd HH:mm:ss') }}.png",
+        "driveId": {
+          "__rl": true,
+          "value": "0ANUUSDTNHGVGUk9PVA",
+          "mode": "list",
+          "cachedResultName": "Tutorial",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/0ANUUSDTNHGVGUk9PVA"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1hTQtugjsNtXrCZME2Z35F8nMBu3eFdvS",
+          "mode": "list",
+          "cachedResultName": "Meal Agent",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1hTQtugjsNtXrCZME2Z35F8nMBu3eFdvS"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [60, -720],
+      "id": "66948d52-5b8a-4d31-afcd-4073ad60c840",
+      "name": "Upload Image",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "9XqR2u1VRon7UJ7X",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "10aaMZZYrwUZtkjuKFeoDnANjnLabPF97lIdewqB_z8M",
+          "mode": "list",
+          "cachedResultName": "YT Meal Nutrition Agent",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10aaMZZYrwUZtkjuKFeoDnANjnLabPF97lIdewqB_z8M/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Meal Tracker",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1oYV-c0QYiZTjzTBgZ80SZviwDfOBiJ5zB6XEeOT9BcE/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ $now.format('yyyy-MM-dd') }}",
+            "Time": "={{ $now.format('HH:mm:ss') }}",
+            "Client": "={{ $('WhatsApp Message Received').item.json.contacts[0].profile.name }}",
+            "Food": "={{ $json.text.short_name }}",
+            "Calories": "={{ ($json.text.total_calories_kcal.high + $json.text.total_calories_kcal.low) / 2 }}",
+            "Picture": "={{ $json['Generated Image Url'] }}",
+            "Proteins": "={{ ($json.text.total_macros.proteins.high + $json.text.total_macros.proteins.low) / 2 }}",
+            "Carbs": "={{ ($json.text.total_macros.carbs.high + $json.text.total_macros.carbs.low) / 2  }}",
+            "Fat": "={{ ($json.text.total_macros.fat.high + $json.text.total_macros.fat.low) / 2 }}",
+            "ID": "="
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Time",
+              "displayName": "Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Client",
+              "displayName": "Client",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Food",
+              "displayName": "Food",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Calories",
+              "displayName": "Calories",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Proteins",
+              "displayName": "Proteins",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Carbs",
+              "displayName": "Carbs",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Fat",
+              "displayName": "Fat",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Picture",
+              "displayName": "Picture",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [820, -920],
+      "id": "5bd60a39-7cee-4193-b7fd-26ba3b200088",
+      "name": "Add to Row",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CmkNlxEDVL6W8cD2",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "o3-mini",
+          "mode": "list",
+          "cachedResultName": "o3-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [1340, -160],
+      "id": "3e25ff1e-331d-4ac2-9372-e71f29d2a110",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "62iYArwPKYmGMyCK",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "id": "f161a303-a408-4e69-b773-69f3e3b20ee2",
+      "name": "Transcribe Audio",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [60, -140],
+      "typeVersion": 1.8,
+      "credentials": {
+        "openAiApi": {
+          "id": "62iYArwPKYmGMyCK",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "media",
+        "operation": "mediaUrlGet",
+        "mediaGetId": "={{ $('WhatsApp Message Received').item.json.messages[0].audio.id }}"
+      },
+      "id": "3528055c-d953-45dc-9d48-f44565275c39",
+      "name": "Get Audio URL",
+      "type": "n8n-nodes-base.whatsApp",
+      "position": [-320, -140],
+      "webhookId": "87caa300-7204-47b5-959a-94f4a8fbf8cf",
+      "typeVersion": 1,
+      "credentials": {
+        "whatsAppApi": {
+          "id": "DupjcAKAxFTmOE6y",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "629996113528965",
+        "recipientPhoneNumber": "={{ $('WhatsApp Message Received').item.json.messages[0].from }}",
+        "textBody": "=You can only send text messages, images and voice messages.",
+        "additionalFields": {}
+      },
+      "id": "ed5e3275-ea18-4d89-bd2b-97bf10428197",
+      "name": "Not supported",
+      "type": "n8n-nodes-base.whatsApp",
+      "position": [-320, 120],
+      "webhookId": "23834751-5066-48ba-8e19-549680df2b27",
+      "typeVersion": 1,
+      "credentials": {
+        "whatsAppApi": {
+          "id": "DupjcAKAxFTmOE6y",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('WhatsApp Message Received').item.json.contacts[0].wa_id }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [1500, -160],
+      "id": "3e3d422f-21b0-44b1-b95d-b1a6f743a0fd",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "content": "## Nutrition Specialist",
+        "height": 480,
+        "width": 880,
+        "color": 5
+      },
+      "id": "5bb459b5-f6cc-4d24-b490-0dd64790dee4",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [1220, -520],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "text": "=You are a professional nutrition analyst. Your goal is to Analyze this food photo for each visible item and output a structured JSON with clear calorie and macro estimates.\n\nCORE FUNCTIONALITY\n• When shown a food image, identify each item and its main components (protein, carb, fat, etc.)\n•Assume a standard reference (e.g. 26 cm dinner plate, 250 ml cup, standard fork) for scale  \n*  Note if it looks like a restaurant-prepared dish—if so, assume extra cooking fat: sauté or sauce fat up by ~1 Tbsp (14 g) per portion\n\n* Estimate portion sizes in grams. Use reference cues in the image (cups, standard glass size, bread size, common utensils) to scale portions.\n* Make assumptions realistic. Prefer common serving sizes.\n• List any assumptions (shape, density, coverage %) you use to estimate size   \n• Estimate calories & macros per item using trusted databases (USDA FoodData Central, European equivalents), adjusting for added restaurant fat\n• Note visible cooking methods or add-ins (oil, sauce, butter)\n• Calculate calories for each item, giving a plausible range\n• Sum to a total calories range\n\nJSON OUTPUT SCHEMA\n\n{\n  \"overview\": \"Brief sentence about the full plate or spread\",\n  \"short_name\": \"burger with fries\",\n  \"items\": [\n    {\n      \"name\": \"Item name\",\n      \"type\": \"protein | carb | fat | beverage | etc.\",\n      \"portion_size\": \"e.g. 1 cup, 2 slices\",\n      \"cooking_method\": \"if obvious\",\n      \"macros_g\": {\n        \"protein\": 0,\n        \"carbs\": 0,\n        \"fat\": 0\n      },\n      \"calories_kcal\": {\n        \"low\": 0,\n        \"high\": 0\n      },\n      \"assumptions\": \"Any guesses you made\"\n    }\n  ],\n  \"total_calories_kcal\": {\n    \"low\": 0,\n    \"high\": 0\n  },\n  \"total_macros\": {\n      \"proteins\": {\n        \"low\": 0,\n        \"high\": 0\n      },\n      \"carbs\": {\n        \"low\": 0,\n        \"high\": 0\n      },\n      \"fat\": {\n        \"low\": 0,\n        \"high\": 0\n      },\n    },\n  \"notes\": \"Any limitations or “estimate may vary” warnings\"\n}\n\nFOOD ANALYSIS GUIDELINES\n• Start with “overview” for the whole meal\n• For each item, fill every field in the schema\n• Give calories as a low–high range\n• Explain assumptions in the “assumptions” field\n• If unsure or image is unclear, add warnings in “notes”\n* If the user is writing Additional notes regarding the food, incorporate this (This is Voluntary):\n\n{{ $('WhatsApp Message Received').item.json.messages[0].image.caption || ''}}",
+        "inputType": "base64",
+        "simplify": false,
+        "options": {
+          "maxTokens": 2000
+        }
+      },
+      "id": "f9e47572-ae13-482e-acc3-3741729584e0",
+      "name": "Estimate Calories with AI",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [60, -920],
+      "typeVersion": 1.8,
+      "credentials": {
+        "openAiApi": {
+          "id": "62iYArwPKYmGMyCK",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Analyze the food history from the last 7 days (or y days if fewer).\nMy name is {{ $('WhatsApp Message Received').item.json.contacts[0].profile.name }}\nRequest: {{ $('Text Request').item.json['User Request'] }}\nToday is {{ $now }}\nMy goal is {{ $json.Goal }}\nDaily goal: {{ $json['Daily Goal [kcal]'] }} kcal\n\n\n* In your answer write out numbers e.g. instead of 1000 you write one thousand and round off to the next 100.\nIf the requested item is a drink (cocktail, beer, etc.), calculate how many standard servings I can have until I hit my allowed calories.  \n• If the requested item is a single-portion food (pizza, burger with fries, etc.), assume only one serving and tell me if I can have it or should skip it.  \n\n\n* Sum calories consumed over the last seven days (including today)  \n• Compute total allowed calories for those days (daily goal × days)  \n• Subtract to find remaining “allowed calories”  \n• Look up calories per one standard serving of the requested item  \n• If it’s a drink, calculate max servings until allowed calories reaches zero; if it’s single-portion food, just compare one serving to allowed calories  \n\nOutput in simple language (sixth–eighth grade level), no more than one short sentence: You have so much calories left, so you can eat/drink (request) and maintain your last-y-day deficit.”\n\nOr: You have so much calories left, so you can't eat/drink (request) and maintain your last-y-day deficit.\n\nHere is my Meal history:\n\n{{ JSON.stringify($('Aggregate').item.json.data, null, 2) }}\n\n\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [1440, -340],
+      "id": "e5442e30-9fe8-45f0-aa6b-113f63cbc62d",
+      "name": "Nutrient Specialist"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "10aaMZZYrwUZtkjuKFeoDnANjnLabPF97lIdewqB_z8M",
+          "mode": "list",
+          "cachedResultName": "YT Meal Nutrition Agent",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10aaMZZYrwUZtkjuKFeoDnANjnLabPF97lIdewqB_z8M/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 953279760,
+          "mode": "list",
+          "cachedResultName": "Goals",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1oYV-c0QYiZTjzTBgZ80SZviwDfOBiJ5zB6XEeOT9BcE/edit#gid=953279760"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Client",
+              "lookupValue": "={{ $('WhatsApp Message Received').item.json.contacts[0].profile.name }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [560, -240],
+      "id": "f7b6489c-bd07-4b60-9a90-b51689b80c7f",
+      "name": "Goal",
+      "executeOnce": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CmkNlxEDVL6W8cD2",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "219577d5-b028-48fc-90be-980f4171ab68",
+              "name": "User Request",
+              "type": "string",
+              "value": "={{\n  $('WhatsApp Message Received').item.json.messages \n    && $('WhatsApp Message Received').item.json.messages[0]?.text?.body \n      ? $('WhatsApp Message Received').item.json.messages[0].text.body \n      : $('Transcribe Audio').item.json.text\n}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "6cda2fbf-b2cd-4241-ad65-1aa5c13c137c",
+      "name": "Text Request",
+      "type": "n8n-nodes-base.set",
+      "position": [280, -340],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "10aaMZZYrwUZtkjuKFeoDnANjnLabPF97lIdewqB_z8M",
+          "mode": "list",
+          "cachedResultName": "YT Meal Nutrition Agent",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10aaMZZYrwUZtkjuKFeoDnANjnLabPF97lIdewqB_z8M/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Meal Tracker",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1oYV-c0QYiZTjzTBgZ80SZviwDfOBiJ5zB6XEeOT9BcE/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Client",
+              "lookupValue": "={{ $('WhatsApp Message Received').item.json.contacts[0].profile.name }}"
+            }
+          ]
+        },
+        "combineFilters": "AND",
+        "options": {
+          "returnAllMatches": "returnAllMatches"
+        }
+      },
+      "id": "279f3994-f5f4-44b1-a5c6-0bc2d5120f91",
+      "name": "Meal History",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 3,
+      "position": [560, -460],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CmkNlxEDVL6W8cD2",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [820, -460],
+      "id": "b8e9faf9-f3a0-4f7f-9eab-4b26ee760a17",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [1060, -340],
+      "id": "01d0fc38-5d87-4a02-94ba-39a37b29f0fc",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "629996113528965",
+        "recipientPhoneNumber": "={{ $('WhatsApp Message Received').item.json.contacts[0].wa_id }}",
+        "messageType": "audio",
+        "mediaPath": "useMedian8n",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [2180, -340],
+      "id": "0659b60d-b4e1-42db-96a7-4e2153fb751e",
+      "name": "WhatsApp Business Cloud",
+      "webhookId": "42ded5b4-a063-4fbe-a329-6e0f0daabb1b",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "DupjcAKAxFTmOE6y",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.elevenlabs.io/v1/text-to-speech/yl2ZDV1MzN4HbQJbMihG?output_format=mp3_44100_128",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "xi-api-key",
+              "value": "[YOUR API KEY]"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model_id",
+              "value": "eleven_multilingual_v2"
+            },
+            {
+              "name": "text",
+              "value": "={{ $json.output }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1780, -340],
+      "id": "36743f83-cd24-4c0c-a0a4-d98ecada6921",
+      "name": "Text-to-Speech"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "$input.item.binary.data.fileName = 'response.mp3'\n\nreturn $input.item;"
+      },
+      "id": "244fb2d4-6c09-4d49-b807-f96db249cc53",
+      "name": "Rename file",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [1960, -340]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Here are information about the food in the picture (you don't need the picture):\n\n{{ JSON.stringify($('Merge').item.json.text) }}\n\nGive a answer like the following to the user:\n\nCalories: *1000 kcal*\nProteins: *50g*\nCarbs: *100g*\nFat: *15g*\n\nMeal: Burger with fries\n\nAdd max 2 short coach sentences (≤120 chars) in total!!!!\n • If it fits lose-fat/gain-muscle goals, praise and urge consistency\n • If it’s from a restaurant, comment if it is good for your goals or not and call out the hidden extras and urge cooking at home\n • If it’s unhealthy, be firm and remind me how to stay on track\n\nReference unhealthy-food warning:\n• High in trans or saturated fats: avoid fried snacks, pastries & processed meats\n• Excess added sugars: steer clear of candy, sodas & sweetened cereals\n• Refined carbs: limit white bread, white rice & pastries\n• High sodium: watch processed, canned & cured foods\n• Low nutrient density: skip empty-calorie foods with little vitamins or fiber\n\n • The goal of the user is: {{ $json.Goal }}\n • Daily target goal:  {{ $json['Daily Goal [kcal]'] }} kcal\n • Daily deficit: {{ $json['Target Deficit [kcal]'] }} kcal\n • Maintain calorie: {{ $json['Maintain [kcal]'] }} kcal",
+        "options": {
+          "passthroughBinaryImages": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [1440, -920],
+      "id": "f0d52993-e791-4d06-811e-447a4a9f2903",
+      "name": "Motivation Coach",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "10aaMZZYrwUZtkjuKFeoDnANjnLabPF97lIdewqB_z8M",
+          "mode": "list",
+          "cachedResultName": "YT Meal Nutrition Agent",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10aaMZZYrwUZtkjuKFeoDnANjnLabPF97lIdewqB_z8M/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 953279760,
+          "mode": "list",
+          "cachedResultName": "Goals",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1oYV-c0QYiZTjzTBgZ80SZviwDfOBiJ5zB6XEeOT9BcE/edit#gid=953279760"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Client",
+              "lookupValue": "={{ $('WhatsApp Message Received').item.json.contacts[0].profile.name }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [1060, -920],
+      "id": "6ced7213-1353-4144-af8d-7b96be83987f",
+      "name": "Goal1",
+      "executeOnce": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CmkNlxEDVL6W8cD2",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Nutrition Specialist",
+        "height": 420,
+        "width": 880,
+        "color": 5
+      },
+      "id": "0acac17c-f216-4a8e-bea2-6f110311bcf5",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [1220, -980],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Meal Tracking",
+        "height": 420,
+        "width": 500,
+        "color": 4
+      },
+      "id": "dd80ae3b-533e-43e9-ac95-fcfd7167dbec",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [500, -980],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Get Meal History and Goals",
+        "height": 480,
+        "width": 500
+      },
+      "id": "5096da8f-ee54-41a2-9322-777afa1b957d",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [500, -520],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Get Goals",
+        "height": 420,
+        "width": 180
+      },
+      "id": "5b7c370e-cc71-42a0-bc71-8368f98988f5",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [1020, -980],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "options": {}
+      },
+      "id": "4f8b1237-c1d5-4fa3-95ef-90b4dffae805",
+      "name": "Download Audio",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [-120, -140],
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "HP9wfnstu9sEO58j",
+          "name": "WhatsApp Header Auth"
+        },
+        "whatsAppApi": {
+          "id": "DupjcAKAxFTmOE6y",
+          "name": "WhatsApp account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Motivation Coach",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send WhatsApp Message": {
+      "main": [[]]
+    },
+    "WhatsApp Message Received": {
+      "main": [
+        [
+          {
+            "node": "Message Type",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Image": {
+      "main": [
+        [
+          {
+            "node": "Estimate Calories with AI",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Upload Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Image Url": {
+      "main": [
+        [
+          {
+            "node": "Download Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Image Url": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Add to Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calories": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message Type": {
+      "main": [
+        [
+          {
+            "node": "Get Image Url",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Text Request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Audio URL",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Not supported",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Image": {
+      "main": [
+        [
+          {
+            "node": "Image Url",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add to Row": {
+      "main": [
+        [
+          {
+            "node": "Goal1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Nutrient Specialist",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe Audio": {
+      "main": [
+        [
+          {
+            "node": "Text Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Audio URL": {
+      "main": [
+        [
+          {
+            "node": "Download Audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Nutrient Specialist",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Estimate Calories with AI": {
+      "main": [
+        [
+          {
+            "node": "Calories",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Nutrient Specialist": {
+      "main": [
+        [
+          {
+            "node": "Text-to-Speech",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Goal": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Text Request": {
+      "main": [
+        [
+          {
+            "node": "Meal History",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Goal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Meal History": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Nutrient Specialist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text-to-Speech": {
+      "main": [
+        [
+          {
+            "node": "Rename file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rename file": {
+      "main": [
+        [
+          {
+            "node": "WhatsApp Business Cloud",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Motivation Coach": {
+      "main": [
+        [
+          {
+            "node": "Send WhatsApp Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Goal1": {
+      "main": [
+        [
+          {
+            "node": "Motivation Coach",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Audio": {
+      "main": [
+        [
+          {
+            "node": "Transcribe Audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f9760840-a599-44c3-ae00-7a2b79ed5e8d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "174f90e5c5e962799807802a3ab96d36b1625a1feee59dc97f35bf5854d1bd8a"
+  },
+  "id": "UcXSDxQ3u33N7HK2",
+  "tags": []
+}

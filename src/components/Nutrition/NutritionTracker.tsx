@@ -413,6 +413,15 @@ export function NutritionTracker() {
                   }}
                 />
 
+                <RecentFoods
+                  refreshToken={recentRefresh}
+                  onQuickAddSuccess={() => {
+                    fetchTodaysFoods()
+                    setRecentRefresh((prev) => prev + 1)
+                    setHistoryRefresh((prev) => prev + 1)
+                  }}
+                />
+
                 <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl hover:shadow-secondary-400/20 transition-all duration-300">
                   <h4 className="text-white font-semibold mb-3 flex items-center">
                     <TrendingUp className="h-5 w-5 mr-2 text-secondary-400"/>History &amp; Insights
