@@ -518,23 +518,28 @@ model FoodRef {
 }
 
 model FoodLog {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId     String   @db.ObjectId
-  user       User     @relation(fields: [userId], references: [id])
-  loggedAt   DateTime @default(now())
-  localDate  String?  // User's local date as YYYY-MM-DD for timezone-safe bucketing
-  localTime  String?  // User's local time as HH:MM:SS
-  source     String
-  sourceId   String?
-  itemName   String
-  brand      String?
-  quantity   Float    @default(1)
-  unit       String   @default("serving")
-  gramWeight Float?
-  nutrients  Json
-  photoUrl   String?
-  notes      String?
-  mealType   String   @default("snack")
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @db.ObjectId
+  user        User     @relation(fields: [userId], references: [id])
+  loggedAt    DateTime @default(now())
+  localDate   String?  // User's local date as YYYY-MM-DD for timezone-safe bucketing
+  localTime   String?  // User's local time as HH:MM:SS
+  source      String
+  sourceId    String?
+  itemName    String
+  brand       String?
+  quantity    Float    @default(1)
+  unit        String   @default("serving")
+  gramWeight  Float?
+  nutrients   Json
+  photoUrl    String?
+  notes       String?
+  mealType    String   @default("snack")
+
+  // AI Analysis Fields
+  aiMetadata  Json?    // Full AI analysis (items breakdown, assumptions, ranges)
+  confidence  Float?   // AI confidence score (0-1)
+  aiSource    String?  // "vision" | "voice" | "chat" | null
 
   @@map("food_logs")
   @@index([userId, loggedAt], map: "foodlog_user_loggedAt")
@@ -760,6 +765,26 @@ model AssessmentResponse {
   @@index([completedAt])
   @@index([recommendedTier])
   @@map("assessment_responses")
+}
+
+// --- AI USAGE TRACKING ---
+
+// Tracks all AI API usage for cost monitoring and rate limiting
+model AIUsage {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @db.ObjectId
+  type        String   // "image" | "chat" | "voice"
+  model       String   // "gpt-4o-mini", "whisper-1", etc.
+  tokensUsed  Int      // Total tokens consumed
+  cost        Float    // Estimated cost in USD
+  success     Boolean  @default(true)
+  errorMsg    String?  // If failed
+  metadata    Json?    // Additional context (image size, etc.)
+  createdAt   DateTime @default(now())
+
+  @@index([userId, type, createdAt])
+  @@index([createdAt])
+  @@map("ai_usage")
 }
 
 

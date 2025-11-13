@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Search, Loader2, CheckCircle2, PlusCircle, Star } from "lucide-react";
+import { Search, Loader2, CheckCircle2, PlusCircle, Star, Camera } from "lucide-react";
 import type { CachedFoodResult, Nutrients } from "@/lib/nutrition/types";
+import { CameraUpload } from "./CameraUpload";
 
 type Result = CachedFoodResult & { nutrients: Nutrients | null };
 type Status = "idle" | "logging" | "success" | "error";
@@ -69,6 +70,9 @@ export function FoodQuickAdd({ onLogged }: { onLogged?: (result: FoodQuickAddRes
   const [activeTab, setActiveTab] = useState<'search' | 'favorites'>('search');
   const [favorites, setFavorites] = useState<Result[]>([]);
   const [favoritesLoading, setFavoritesLoading] = useState(false);
+
+  // Camera upload state
+  const [showCameraModal, setShowCameraModal] = useState(false);
 
   // Load favorites on mount
   useEffect(() => {
@@ -269,10 +273,96 @@ export function FoodQuickAdd({ onLogged }: { onLogged?: (result: FoodQuickAddRes
     }
   };
 
+  const handleCameraAnalysis = async (result: any) => {
+    // Auto-log the AI analyzed food
+    const { foodEntry, analysis } = result;
+
+    try {
+      setStatus("logging");
+      setError(null);
+
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+
+      const payload = {
+        source: 'ai_vision',
+        sourceId: null,
+        itemName: foodEntry.itemName,
+        brand: foodEntry.brand,
+        quantity: foodEntry.quantity,
+        unit: foodEntry.unit,
+        gramWeight: foodEntry.gramWeight,
+        nutrients: foodEntry.nutrients,
+        mealType: foodEntry.mealType,
+        aiMetadata: foodEntry.aiMetadata,
+        confidence: foodEntry.confidence,
+        aiSource: foodEntry.aiSource,
+        loggedAt: now.toISOString(),
+        localDate: `${year}-${month}-${day}`,
+        localTime: `${hours}:${minutes}:${seconds}`,
+      };
+
+      const res = await fetch("/api/foods/log", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data?.ok) {
+        throw new Error(data?.error ?? "Unable to log food");
+      }
+
+      setStatus("success");
+
+      if (onLogged) {
+        onLogged({
+          pointsAwarded: data.pointsAwarded ?? 0,
+          journalNote: data.journalNote,
+          dailyTaskCompleted: Boolean(data.dailyTaskCompleted),
+        });
+      }
+
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(
+          new CustomEvent("nutrition:log-success", {
+            detail: {
+              pointsAwarded: data.pointsAwarded ?? 0,
+              journalNote: data.journalNote,
+              dailyTaskCompleted: Boolean(data.dailyTaskCompleted),
+            },
+          })
+        );
+      }
+
+      setTimeout(() => setStatus("idle"), 2000);
+    } catch (err: any) {
+      console.error("Log AI food error", err);
+      setError(err?.message ?? "Unable to log AI analyzed food");
+      setStatus("error");
+    }
+  };
+
   return (
     <section className="rounded-2xl bg-gradient-to-br from-emerald-500/10 via-slate-900/40 to-slate-900/60 border border-emerald-400/30 shadow-lg p-6">
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-xl font-bold text-white">Add Nutrition</h2>
+        <div className="flex items-center gap-3">
+          <h2 className="text-xl font-bold text-white">Add Nutrition</h2>
+          {/* Camera Button */}
+          <button
+            onClick={() => setShowCameraModal(true)}
+            className="p-2 rounded-lg bg-primary-500/20 hover:bg-primary-500/30 border border-primary-400/30 transition-colors"
+            title="Snap food photo with AI"
+          >
+            <Camera className="w-4 h-4 text-primary-300" />
+          </button>
+        </div>
 
         {/* Tab Buttons */}
         <div className="flex gap-2">
@@ -534,6 +624,15 @@ export function FoodQuickAdd({ onLogged }: { onLogged?: (result: FoodQuickAddRes
             </button>
           ))}
         </div>
+      )}
+
+      {/* Camera Upload Modal */}
+      {showCameraModal && (
+        <CameraUpload
+          onAnalysisComplete={handleCameraAnalysis}
+          onClose={() => setShowCameraModal(false)}
+          mealType={mealType}
+        />
       )}
     </section>
   );
