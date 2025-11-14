@@ -1,249 +1,319 @@
-"use client"
+"use client";
 
-import { useState, useEffect, useMemo, useCallback, useRef } from "react"
-import { Syringe, Calendar, AlertCircle, TrendingUp, Plus, Clock, X, Edit, ChevronDown, Bell } from "lucide-react"
-import { DosageCalculator } from './DosageCalculator'
-import NotificationPreferences from '@/components/Notifications/NotificationPreferences'
-import PushUnavailableWarning from '@/components/Notifications/PushUnavailableWarning'
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import {
+  Syringe,
+  Calendar,
+  AlertCircle,
+  TrendingUp,
+  Plus,
+  Clock,
+  X,
+  Edit,
+  ChevronDown,
+  Bell,
+} from "lucide-react";
+import { DosageCalculator } from "./DosageCalculator";
+import NotificationPreferences from "@/components/Notifications/NotificationPreferences";
+import PushUnavailableWarning from "@/components/Notifications/PushUnavailableWarning";
 
 // Convert base64 VAPID key to Uint8Array format required by Push API
 function urlBase64ToUint8Array(base64String: string): Uint8Array {
-  const padding = '='.repeat((4 - base64String.length % 4) % 4)
+  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
   const base64 = (base64String + padding)
-    .replace(/\-/g, '+')
-    .replace(/_/g, '/')
+    .replace(/\-/g, "+")
+    .replace(/_/g, "/");
 
-  const rawData = window.atob(base64)
-  const outputArray = new Uint8Array(rawData.length)
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
 
   for (let i = 0; i < rawData.length; ++i) {
-    outputArray[i] = rawData.charCodeAt(i)
+    outputArray[i] = rawData.charCodeAt(i);
   }
-  return outputArray
+  return outputArray;
 }
 
 interface PeptideProtocol {
-  id: string
-  name: string
-  purpose: string
-  dosage: string
-  timing: string
-  frequency: string
-  duration: string
-  vialAmount: string
-  reconstitution: string
-  syringeUnits: number
-  startDate?: string
-  currentCycle?: number
-  isActive: boolean
+  id: string;
+  name: string;
+  purpose: string;
+  dosage: string;
+  timing: string;
+  frequency: string;
+  duration: string;
+  vialAmount: string;
+  reconstitution: string;
+  syringeUnits: number;
+  startDate?: string;
+  currentCycle?: number;
+  isActive: boolean;
 }
 
 interface DoseEntry {
-  id: string
-  peptideId: string
-  scheduledTime: string
-  actualTime?: string
-  completed: boolean
-  notes?: string
-  sideEffects?: string[]
-  dateKey: string
+  id: string;
+  peptideId: string;
+  scheduledTime: string;
+  actualTime?: string;
+  completed: boolean;
+  notes?: string;
+  sideEffects?: string[];
+  dateKey: string;
 }
 
 export function PeptideTracker() {
   // Helper function to convert Date to local YYYY-MM-DD (not UTC)
   const dateToLocalKey = (date: Date): string => {
-    const year = date.getFullYear()
-    const month = String(date.getMonth() + 1).padStart(2, '0')
-    const day = String(date.getDate()).padStart(2, '0')
-    return `${year}-${month}-${day}`
-  }
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
 
   // Parse a YYYY-MM-DD string into a Date in the user's local timezone
   // Returns date at midnight (00:00:00.000) in local timezone
   const parseLocalDateKey = (key: string): Date => {
-    const parts = key.trim().split('-')
-    const year = parseInt(parts[0] || '1970', 10)
-    const month = parseInt(parts[1] || '1', 10) - 1 // JavaScript months are 0-indexed
-    const day = parseInt(parts[2] || '1', 10)
+    const parts = key.trim().split("-");
+    const year = parseInt(parts[0] || "1970", 10);
+    const month = parseInt(parts[1] || "1", 10) - 1; // JavaScript months are 0-indexed
+    const day = parseInt(parts[2] || "1", 10);
 
     // Create date at midnight in local timezone
-    const date = new Date(year, month, day, 0, 0, 0, 0)
-    return date
-  }
+    const date = new Date(year, month, day, 0, 0, 0, 0);
+    return date;
+  };
 
-  const [activeTab, setActiveTab] = useState<'current' | 'calendar'>('current')
-  const [currentProtocols, setCurrentProtocols] = useState<PeptideProtocol[]>([])
-  const [todaysDoses, setTodaysDoses] = useState<DoseEntry[]>([])
+  const [activeTab, setActiveTab] = useState<"current" | "calendar">("current");
+  const [currentProtocols, setCurrentProtocols] = useState<PeptideProtocol[]>(
+    [],
+  );
+  const [todaysDoses, setTodaysDoses] = useState<DoseEntry[]>([]);
   // Get today's date in user's local timezone (not UTC)
-  const getTodayKey = () => dateToLocalKey(new Date())
-  const [todayKey, setTodayKey] = useState<string>(getTodayKey)
-  const [showScheduleModal, setShowScheduleModal] = useState(false)
-  const [selectedProtocol, setSelectedProtocol] = useState<(PeptideProtocol & { scheduledDoseId?: string }) | null>(null)
-  const [showDoseModal, setShowDoseModal] = useState(false)
-  const [showCalculatorModal, setShowCalculatorModal] = useState(false)
-  const [showAddProtocolModal, setShowAddProtocolModal] = useState(false)
-  const [showEditProtocolModal, setShowEditProtocolModal] = useState(false)
-  const [editingProtocol, setEditingProtocol] = useState<PeptideProtocol | null>(null)
-  const [doseNotes, setDoseNotes] = useState('')
-  const [doseSideEffects, setDoseSideEffects] = useState<string[]>([])
-  const [selectedPeptideName, setSelectedPeptideName] = useState('')
-  const [customDosage, setCustomDosage] = useState('')
-  const [customFrequency, setCustomFrequency] = useState('')
-  const [customTiming, setCustomTiming] = useState('')
-  const [customDuration, setCustomDuration] = useState('')
-  const [customTimesArray, setCustomTimesArray] = useState<string[]>([])
-  const [newCustomTimeInput, setNewCustomTimeInput] = useState<string>('08:00')
-  const [peptideLibrary, setPeptideLibrary] = useState<Omit<PeptideProtocol, 'startDate' | 'currentCycle' | 'isActive'>[]>([])
-  const [loadingLibrary, setLoadingLibrary] = useState(true)
-  const [doseHistory, setDoseHistory] = useState<any[]>([])
-  const [loadingHistory, setLoadingHistory] = useState(false)
-  const [historyMonth, setHistoryMonth] = useState<Date>(() => new Date())
-  const [selectedCalendarDay, setSelectedCalendarDay] = useState<string | null>(null)
-  const [showNotificationModal, setShowNotificationModal] = useState(false)
-  const [selectedProtocolForNotif, setSelectedProtocolForNotif] = useState<string | null>(null)
-  const [protocolNotifications, setProtocolNotifications] = useState<Record<string, boolean>>({})
-  const bootstrapped = useRef(false)
+  const getTodayKey = () => dateToLocalKey(new Date());
+  const [todayKey, setTodayKey] = useState<string>(getTodayKey);
+  const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [selectedProtocol, setSelectedProtocol] = useState<
+    (PeptideProtocol & { scheduledDoseId?: string }) | null
+  >(null);
+  const [showDoseModal, setShowDoseModal] = useState(false);
+  const [showCalculatorModal, setShowCalculatorModal] = useState(false);
+  const [showAddProtocolModal, setShowAddProtocolModal] = useState(false);
+  const [showEditProtocolModal, setShowEditProtocolModal] = useState(false);
+  const [editingProtocol, setEditingProtocol] =
+    useState<PeptideProtocol | null>(null);
+  const [doseNotes, setDoseNotes] = useState("");
+  const [doseSideEffects, setDoseSideEffects] = useState<string[]>([]);
+  const [selectedPeptideName, setSelectedPeptideName] = useState("");
+  const [customDosage, setCustomDosage] = useState("");
+  const [customFrequency, setCustomFrequency] = useState("");
+  const [customTiming, setCustomTiming] = useState("");
+  const [customDuration, setCustomDuration] = useState("");
+  const [customTimesArray, setCustomTimesArray] = useState<string[]>([]);
+  const [newCustomTimeInput, setNewCustomTimeInput] = useState<string>("08:00");
+  const [peptideLibrary, setPeptideLibrary] = useState<
+    Omit<PeptideProtocol, "startDate" | "currentCycle" | "isActive">[]
+  >([]);
+  const [loadingLibrary, setLoadingLibrary] = useState(true);
+  const [doseHistory, setDoseHistory] = useState<any[]>([]);
+  const [loadingHistory, setLoadingHistory] = useState(false);
+  const [historyMonth, setHistoryMonth] = useState<Date>(() => new Date());
+  const [selectedCalendarDay, setSelectedCalendarDay] = useState<string | null>(
+    null,
+  );
+  const [showNotificationModal, setShowNotificationModal] = useState(false);
+  const [selectedProtocolForNotif, setSelectedProtocolForNotif] = useState<
+    string | null
+  >(null);
+  const [protocolNotifications, setProtocolNotifications] = useState<
+    Record<string, boolean>
+  >({});
+  const bootstrapped = useRef(false);
 
-  const fetchTodaysDoses = useCallback(async (dayKey: string = todayKey) => {
-    try {
-      const response = await fetch(`/api/peptides/doses?date=${dayKey}`, {
-        credentials: 'include'
-      })
-      const data = await response.json()
+  const fetchTodaysDoses = useCallback(
+    async (dayKey: string = todayKey) => {
+      try {
+        const response = await fetch(`/api/peptides/doses?date=${dayKey}`, {
+          credentials: "include",
+        });
+        const data = await response.json();
 
-      if (data.success && data.doses) {
-        const completedToday = data.doses
-          .map((dose: any) => {
-            // Use localDate if available (timezone-safe), otherwise fall back to doseDate conversion
-            const doseDateKey = dose.localDate || (dose.doseDate
-              ? dateToLocalKey(new Date(dose.doseDate))
-              : dayKey)
-            if (doseDateKey !== dayKey) return null
+        if (data.success && data.doses) {
+          const completedToday = data.doses
+            .map((dose: any) => {
+              // Use localDate if available (timezone-safe), otherwise fall back to doseDate conversion
+              const doseDateKey =
+                dose.localDate ||
+                (dose.doseDate
+                  ? dateToLocalKey(new Date(dose.doseDate))
+                  : dayKey);
+              if (doseDateKey !== dayKey) return null;
 
-            return {
-              id: dose.id,
-              peptideId: dose.protocolId,
-              scheduledTime: dose.time,
-              completed: true,
-              actualTime: dose.doseDate,
-              notes: dose.notes || dose.sideEffects || '',
-              sideEffects: dose.sideEffects ? String(dose.sideEffects).split(',').map((s: string) => s.trim()).filter(Boolean) : undefined,
-              dateKey: doseDateKey,
-            } as DoseEntry | null
-          })
-          .filter(Boolean) as DoseEntry[]
+              return {
+                id: dose.id,
+                peptideId: dose.protocolId,
+                scheduledTime: dose.time,
+                completed: true,
+                actualTime: dose.doseDate,
+                notes: dose.notes || dose.sideEffects || "",
+                sideEffects: dose.sideEffects
+                  ? String(dose.sideEffects)
+                      .split(",")
+                      .map((s: string) => s.trim())
+                      .filter(Boolean)
+                  : undefined,
+                dateKey: doseDateKey,
+              } as DoseEntry | null;
+            })
+            .filter(Boolean) as DoseEntry[];
 
-        setTodaysDoses((currentDoses: DoseEntry[]) => {
-          const relevantPending = currentDoses.filter(
-            (dose) => !dose.completed && dose.dateKey === dayKey
-          )
+          setTodaysDoses((currentDoses: DoseEntry[]) => {
+            const relevantPending = currentDoses.filter(
+              (dose) => !dose.completed && dose.dateKey === dayKey,
+            );
 
-          const merged = new Map<string, DoseEntry>()
-          for (const dose of [...completedToday, ...relevantPending]) {
-            merged.set(dose.id, dose)
-          }
-          return Array.from(merged.values())
-        })
+            const merged = new Map<string, DoseEntry>();
+            for (const dose of [...completedToday, ...relevantPending]) {
+              merged.set(dose.id, dose);
+            }
+            return Array.from(merged.values());
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching today's doses:", error);
       }
-    } catch (error) {
-      console.error('Error fetching today\'s doses:', error)
-    }
-  }, [todayKey])
+    },
+    [todayKey],
+  );
 
   const parseTimeToMinutes = useCallback((time: string) => {
-    const [hoursStr, minutesStr] = time.split(':')
-    const hours = Number.parseInt(hoursStr, 10)
-    const minutes = Number.parseInt(minutesStr ?? '0', 10)
-    if (!Number.isFinite(hours)) return 24 * 60
-    return hours * 60 + (Number.isFinite(minutes) ? minutes : 0)
-  }, [])
+    const [hoursStr, minutesStr] = time.split(":");
+    const hours = Number.parseInt(hoursStr, 10);
+    const minutes = Number.parseInt(minutesStr ?? "0", 10);
+    if (!Number.isFinite(hours)) return 24 * 60;
+    return hours * 60 + (Number.isFinite(minutes) ? minutes : 0);
+  }, []);
 
   const todaysDoseBuckets = useMemo(() => {
     const pending = todaysDoses
       .filter((dose) => !dose.completed)
-      .sort((a, b) => parseTimeToMinutes(a.scheduledTime) - parseTimeToMinutes(b.scheduledTime))
+      .sort(
+        (a, b) =>
+          parseTimeToMinutes(a.scheduledTime) -
+          parseTimeToMinutes(b.scheduledTime),
+      );
 
     const completed = todaysDoses
       .filter((dose) => dose.completed)
       .sort((a, b) => {
-        const fallbackA = parseTimeToMinutes(a.scheduledTime) * 60 * 1000
-        const fallbackB = parseTimeToMinutes(b.scheduledTime) * 60 * 1000
-        const timeA = a.actualTime ? new Date(a.actualTime).getTime() : fallbackA
-        const timeB = b.actualTime ? new Date(b.actualTime).getTime() : fallbackB
-        return timeB - timeA
-      })
+        const fallbackA = parseTimeToMinutes(a.scheduledTime) * 60 * 1000;
+        const fallbackB = parseTimeToMinutes(b.scheduledTime) * 60 * 1000;
+        const timeA = a.actualTime
+          ? new Date(a.actualTime).getTime()
+          : fallbackA;
+        const timeB = b.actualTime
+          ? new Date(b.actualTime).getTime()
+          : fallbackB;
+        return timeB - timeA;
+      });
 
-    return { pending, completed }
-  }, [todaysDoses, parseTimeToMinutes])
+    return { pending, completed };
+  }, [todaysDoses, parseTimeToMinutes]);
 
   // Generate future doses based on active protocols
-  const generateFutureDoses = useCallback((protocols: PeptideProtocol[], endDate: Date) => {
-    const futureDoses: Array<{ date: string; protocolName: string; completed: boolean }> = []
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
+  const generateFutureDoses = useCallback(
+    (protocols: PeptideProtocol[], endDate: Date) => {
+      const futureDoses: Array<{
+        date: string;
+        protocolName: string;
+        completed: boolean;
+      }> = [];
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
 
-    protocols.filter(p => p.isActive).forEach((protocol) => {
-      // Parse startDate properly as local date (not UTC)
-      let startDate: Date
-      if (protocol.startDate) {
-        if (typeof protocol.startDate === 'string') {
-          // If it's a YYYY-MM-DD string, parse it as local date
-          startDate = parseLocalDateKey(protocol.startDate)
-        } else {
-          startDate = new Date(protocol.startDate)
-          startDate.setHours(0, 0, 0, 0)
-        }
-      } else {
-        startDate = new Date()
-        startDate.setHours(0, 0, 0, 0)
-      }
+      protocols
+        .filter((p) => p.isActive)
+        .forEach((protocol) => {
+          // Parse startDate properly as local date (not UTC)
+          let startDate: Date;
+          if (protocol.startDate) {
+            if (typeof protocol.startDate === "string") {
+              // If it's a YYYY-MM-DD string, parse it as local date
+              startDate = parseLocalDateKey(protocol.startDate);
+            } else {
+              startDate = new Date(protocol.startDate);
+              startDate.setHours(0, 0, 0, 0);
+            }
+          } else {
+            startDate = new Date();
+            startDate.setHours(0, 0, 0, 0);
+          }
 
-      const frequency = protocol.frequency.toLowerCase()
-      let currentDate = new Date(Math.max(today.getTime(), startDate.getTime()))
-      currentDate.setHours(0, 0, 0, 0) // Ensure midnight
+          const frequency = protocol.frequency.toLowerCase();
+          let currentDate = new Date(
+            Math.max(today.getTime(), startDate.getTime()),
+          );
+          currentDate.setHours(0, 0, 0, 0); // Ensure midnight
 
-      // Generate doses until endDate
-      while (currentDate <= endDate) {
-        let shouldSchedule = false
+          // Generate doses until endDate
+          while (currentDate <= endDate) {
+            let shouldSchedule = false;
 
-        // Determine if dose should be scheduled based on frequency
-        if (frequency.includes('daily') || frequency.includes('every day')) {
-          shouldSchedule = true
-        } else if (frequency.includes('every other day')) {
-          const daysSinceStart = Math.floor((currentDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))
-          shouldSchedule = daysSinceStart % 2 === 0
-        } else if (frequency.includes('3x per week')) {
-          const dayOfWeek = currentDate.getDay()
-          shouldSchedule = [1, 3, 5].includes(dayOfWeek) // Mon, Wed, Fri
-        } else if (frequency.includes('2x per week')) {
-          const dayOfWeek = currentDate.getDay()
-          shouldSchedule = [1, 4].includes(dayOfWeek) // Mon, Thu
-        } else if (frequency.includes('5 days on')) {
-          const dayOfWeek = currentDate.getDay()
-          shouldSchedule = dayOfWeek >= 1 && dayOfWeek <= 5 // Mon-Fri
-        } else if (frequency.includes('once per week')) {
-          const dayOfWeek = currentDate.getDay()
-          shouldSchedule = dayOfWeek === 1 // Monday
-        }
+            // Determine if dose should be scheduled based on frequency
+            if (
+              frequency.includes("daily") ||
+              frequency.includes("every day")
+            ) {
+              shouldSchedule = true;
+            } else if (frequency.includes("every other day")) {
+              const daysSinceStart = Math.floor(
+                (currentDate.getTime() - startDate.getTime()) /
+                  (1000 * 60 * 60 * 24),
+              );
+              shouldSchedule = daysSinceStart % 2 === 0;
+            } else if (frequency.includes("3x per week")) {
+              const dayOfWeek = currentDate.getDay();
+              shouldSchedule = [1, 3, 5].includes(dayOfWeek); // Mon, Wed, Fri
+            } else if (frequency.includes("2x per week")) {
+              const dayOfWeek = currentDate.getDay();
+              shouldSchedule = [1, 4].includes(dayOfWeek); // Mon, Thu
+            } else if (frequency.includes("5 days on")) {
+              const dayOfWeek = currentDate.getDay();
+              shouldSchedule = dayOfWeek >= 1 && dayOfWeek <= 5; // Mon-Fri
+            } else if (frequency.includes("once per week")) {
+              const dayOfWeek = currentDate.getDay();
+              shouldSchedule = dayOfWeek === 1; // Monday
+            }
 
-        if (shouldSchedule) {
-          futureDoses.push({
-            date: dateToLocalKey(currentDate),
-            protocolName: protocol.name,
-            completed: false
-          })
-        }
+            if (shouldSchedule) {
+              futureDoses.push({
+                date: dateToLocalKey(currentDate),
+                protocolName: protocol.name,
+                completed: false,
+              });
+            }
 
-        // Move to next day using proper date arithmetic (handles DST correctly)
-        currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() + 1, 0, 0, 0, 0)
-      }
-    })
+            // Move to next day using proper date arithmetic (handles DST correctly)
+            currentDate = new Date(
+              currentDate.getFullYear(),
+              currentDate.getMonth(),
+              currentDate.getDate() + 1,
+              0,
+              0,
+              0,
+              0,
+            );
+          }
+        });
 
-    return futureDoses
-  }, [])
+      return futureDoses;
+    },
+    [],
+  );
 
   const doseHistoryByDate = useMemo(() => {
-    const map = new Map<string, { count: number; labels: Set<string>; completed: number; pending: number }>()
+    const map = new Map<
+      string,
+      { count: number; labels: Set<string>; completed: number; pending: number }
+    >();
 
     // Add completed/historical doses
     doseHistory.forEach((dose: any) => {
@@ -252,37 +322,50 @@ export function PeptideTracker() {
       if (dose?.localDate) {
         key = dose.localDate;
       } else {
-        const rawDate = dose?.doseDate || dose?.createdAt || dose?.updatedAt
-        if (!rawDate) return
-        key = dateToLocalKey(new Date(rawDate))
+        const rawDate = dose?.doseDate || dose?.createdAt || dose?.updatedAt;
+        if (!rawDate) return;
+        key = dateToLocalKey(new Date(rawDate));
       }
 
       if (!map.has(key)) {
-        map.set(key, { count: 0, labels: new Set<string>(), completed: 0, pending: 0 })
+        map.set(key, {
+          count: 0,
+          labels: new Set<string>(),
+          completed: 0,
+          pending: 0,
+        });
       }
 
-      const entry = map.get(key)!
-      entry.count += 1
-      entry.completed += 1
-      const protocolName = dose?.user_peptide_protocols?.peptides?.name ?? dose?.protocolName ?? ''
+      const entry = map.get(key)!;
+      entry.count += 1;
+      entry.completed += 1;
+      const protocolName =
+        dose?.user_peptide_protocols?.peptides?.name ??
+        dose?.protocolName ??
+        "";
       if (protocolName) {
-        entry.labels.add(protocolName)
+        entry.labels.add(protocolName);
       }
-    })
+    });
 
     // Add future scheduled doses (60 days ahead)
-    const futureEndDate = new Date()
-    futureEndDate.setDate(futureEndDate.getDate() + 60)
-    const futureDoses = generateFutureDoses(currentProtocols, futureEndDate)
+    const futureEndDate = new Date();
+    futureEndDate.setDate(futureEndDate.getDate() + 60);
+    const futureDoses = generateFutureDoses(currentProtocols, futureEndDate);
 
     futureDoses.forEach((futureDose) => {
-      const key = futureDose.date
+      const key = futureDose.date;
 
       if (!map.has(key)) {
-        map.set(key, { count: 0, labels: new Set<string>(), completed: 0, pending: 0 })
+        map.set(key, {
+          count: 0,
+          labels: new Set<string>(),
+          completed: 0,
+          pending: 0,
+        });
       }
 
-      const entry = map.get(key)!
+      const entry = map.get(key)!;
 
       // Check if this dose is already completed
       const alreadyCompleted = doseHistory.some((dose: any) => {
@@ -291,49 +374,52 @@ export function PeptideTracker() {
         if (dose?.localDate) {
           doseDateKey = dose.localDate;
         } else {
-          const doseDate = dose?.doseDate || dose?.createdAt || dose?.updatedAt
-          if (!doseDate) return false
-          doseDateKey = dateToLocalKey(new Date(doseDate))
+          const doseDate = dose?.doseDate || dose?.createdAt || dose?.updatedAt;
+          if (!doseDate) return false;
+          doseDateKey = dateToLocalKey(new Date(doseDate));
         }
-        const doseName = dose?.user_peptide_protocols?.peptides?.name ?? dose?.protocolName ?? ''
-        return doseDateKey === key && doseName === futureDose.protocolName
-      })
+        const doseName =
+          dose?.user_peptide_protocols?.peptides?.name ??
+          dose?.protocolName ??
+          "";
+        return doseDateKey === key && doseName === futureDose.protocolName;
+      });
 
       if (!alreadyCompleted) {
-        entry.count += 1
-        entry.pending += 1
-        entry.labels.add(futureDose.protocolName)
+        entry.count += 1;
+        entry.pending += 1;
+        entry.labels.add(futureDose.protocolName);
       }
-    })
+    });
 
-    return map
-  }, [doseHistory, currentProtocols, generateFutureDoses])
+    return map;
+  }, [doseHistory, currentProtocols, generateFutureDoses]);
 
   const historyCalendar = useMemo(() => {
-    const year = historyMonth.getFullYear()
-    const month = historyMonth.getMonth()
-    const firstOfMonth = new Date(year, month, 1)
-    const daysInMonth = new Date(year, month + 1, 0).getDate()
-    const leadingBlanks = firstOfMonth.getDay()
+    const year = historyMonth.getFullYear();
+    const month = historyMonth.getMonth();
+    const firstOfMonth = new Date(year, month, 1);
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const leadingBlanks = firstOfMonth.getDay();
     const cells: Array<{
-      key: string
-      label: string
-      count: number
-      completed: number
-      pending: number
-      items: string[]
-      date: Date
-    } | null> = []
+      key: string;
+      label: string;
+      count: number;
+      completed: number;
+      pending: number;
+      items: string[];
+      date: Date;
+    } | null> = [];
 
     for (let i = 0; i < leadingBlanks; i += 1) {
-      cells.push(null)
+      cells.push(null);
     }
 
     for (let day = 1; day <= daysInMonth; day += 1) {
       // Create date at midnight (00:00:00.000) in local timezone
-      const date = new Date(year, month, day, 0, 0, 0, 0)
-      const key = dateToLocalKey(date)
-      const summary = doseHistoryByDate.get(key)
+      const date = new Date(year, month, day, 0, 0, 0, 0);
+      const key = dateToLocalKey(date);
+      const summary = doseHistoryByDate.get(key);
 
       cells.push({
         key,
@@ -343,202 +429,252 @@ export function PeptideTracker() {
         pending: summary?.pending ?? 0,
         items: summary ? Array.from(summary.labels) : [],
         date,
-      })
+      });
     }
 
     while (cells.length % 7 !== 0) {
-      cells.push(null)
+      cells.push(null);
     }
 
-    return cells
-  }, [historyMonth, doseHistoryByDate])
+    return cells;
+  }, [historyMonth, doseHistoryByDate]);
 
-  const calendarDensityClass = (completed: number, pending: number, isToday: boolean, isPast: boolean) => {
-    const total = completed + pending
+  const calendarDensityClass = (
+    completed: number,
+    pending: number,
+    isToday: boolean,
+    isPast: boolean,
+  ) => {
+    const total = completed + pending;
 
     if (total <= 0) {
       return isToday
-        ? 'border-primary-400/50 text-primary-200 bg-gray-800/40'
-        : 'border-gray-700/40 text-gray-500 bg-gray-800/30'
+        ? "border-primary-400/50 text-primary-200 bg-gray-800/40"
+        : "border-gray-700/40 text-gray-500 bg-gray-800/30";
     }
 
     // Past/completed doses - green
     if (isPast || (completed > 0 && pending === 0)) {
-      if (completed === 1) return 'bg-green-500/15 border-green-400/40 text-green-100'
-      if (completed === 2) return 'bg-green-500/30 border-green-400/60 text-green-50'
-      return 'bg-green-500/50 border-green-300 text-white shadow-inner'
+      if (completed === 1)
+        return "bg-green-500/15 border-green-400/40 text-green-100";
+      if (completed === 2)
+        return "bg-green-500/30 border-green-400/60 text-green-50";
+      return "bg-green-500/50 border-green-300 text-white shadow-inner";
     }
 
     // Future scheduled doses - blue/amber
     if (pending > 0 && completed === 0) {
-      if (pending === 1) return 'bg-blue-500/15 border-blue-400/40 text-blue-100'
-      if (pending === 2) return 'bg-blue-500/30 border-blue-400/60 text-blue-50'
-      return 'bg-blue-500/50 border-blue-300 text-white shadow-inner'
+      if (pending === 1)
+        return "bg-blue-500/15 border-blue-400/40 text-blue-100";
+      if (pending === 2)
+        return "bg-blue-500/30 border-blue-400/60 text-blue-50";
+      return "bg-blue-500/50 border-blue-300 text-white shadow-inner";
     }
 
     // Mix of completed and pending - purple
-    if (completed >= 1) return 'bg-purple-500/15 border-purple-400/40 text-purple-100'
-    if (completed >= 2) return 'bg-purple-500/30 border-purple-400/60 text-purple-50'
-    return 'bg-purple-500/50 border-purple-300 text-white shadow-inner'
-  }
+    if (completed >= 1)
+      return "bg-purple-500/15 border-purple-400/40 text-purple-100";
+    if (completed >= 2)
+      return "bg-purple-500/30 border-purple-400/60 text-purple-50";
+    return "bg-purple-500/50 border-purple-300 text-white shadow-inner";
+  };
 
   // Calculate next dose date for a protocol
-  const getNextDoseDate = useCallback((protocol: PeptideProtocol): Date | null => {
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
+  const getNextDoseDate = useCallback(
+    (protocol: PeptideProtocol): Date | null => {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
 
-    // Parse startDate properly as local date (not UTC)
-    let startDate: Date
-    if (protocol.startDate) {
-      if (typeof protocol.startDate === 'string') {
-        startDate = parseLocalDateKey(protocol.startDate)
+      // Parse startDate properly as local date (not UTC)
+      let startDate: Date;
+      if (protocol.startDate) {
+        if (typeof protocol.startDate === "string") {
+          startDate = parseLocalDateKey(protocol.startDate);
+        } else {
+          startDate = new Date(protocol.startDate);
+          startDate.setHours(0, 0, 0, 0);
+        }
       } else {
-        startDate = new Date(protocol.startDate)
-        startDate.setHours(0, 0, 0, 0)
+        startDate = new Date();
+        startDate.setHours(0, 0, 0, 0);
       }
-    } else {
-      startDate = new Date()
-      startDate.setHours(0, 0, 0, 0)
-    }
 
-    const frequency = protocol.frequency.toLowerCase()
+      const frequency = protocol.frequency.toLowerCase();
 
-    // Check if already completed today - use local date
-    const todayKey = getTodayKey()
-    const completedToday = doseHistory.some((dose: any) => {
-      // Use localDate if available, otherwise convert doseDate
-      let doseDateKey: string;
-      if (dose?.localDate) {
-        doseDateKey = dose.localDate;
+      // Check if already completed today - use local date
+      const todayKey = getTodayKey();
+      const completedToday = doseHistory.some((dose: any) => {
+        // Use localDate if available, otherwise convert doseDate
+        let doseDateKey: string;
+        if (dose?.localDate) {
+          doseDateKey = dose.localDate;
+        } else {
+          const doseDate = dose?.doseDate || dose?.createdAt || dose?.updatedAt;
+          if (!doseDate) return false;
+          doseDateKey = dateToLocalKey(new Date(doseDate));
+        }
+        const doseName =
+          dose?.user_peptide_protocols?.peptides?.name ??
+          dose?.protocolName ??
+          "";
+        return doseDateKey === todayKey && doseName === protocol.name;
+      });
+
+      // Start from today if not completed, otherwise start from tomorrow
+      // Use proper date arithmetic (handles DST correctly)
+      let currentDate: Date;
+      if (completedToday) {
+        currentDate = new Date(
+          today.getFullYear(),
+          today.getMonth(),
+          today.getDate() + 1,
+          0,
+          0,
+          0,
+          0,
+        );
       } else {
-        const doseDate = dose?.doseDate || dose?.createdAt || dose?.updatedAt
-        if (!doseDate) return false
-        doseDateKey = dateToLocalKey(new Date(doseDate))
-      }
-      const doseName = dose?.user_peptide_protocols?.peptides?.name ?? dose?.protocolName ?? ''
-      return doseDateKey === todayKey && doseName === protocol.name
-    })
-
-    // Start from today if not completed, otherwise start from tomorrow
-    // Use proper date arithmetic (handles DST correctly)
-    let currentDate: Date
-    if (completedToday) {
-      currentDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1, 0, 0, 0, 0)
-    } else {
-      currentDate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0, 0)
-    }
-
-    // Look ahead up to 30 days to find next scheduled dose
-    const maxDays = 30
-    let daysChecked = 0
-
-    while (daysChecked < maxDays) {
-      let shouldSchedule = false
-
-      if (frequency.includes('daily') || frequency.includes('every day')) {
-        shouldSchedule = true
-      } else if (frequency.includes('every other day')) {
-        const daysSinceStart = Math.floor((currentDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))
-        shouldSchedule = daysSinceStart % 2 === 0
-      } else if (frequency.includes('3x per week')) {
-        const dayOfWeek = currentDate.getDay()
-        shouldSchedule = [1, 3, 5].includes(dayOfWeek) // Mon, Wed, Fri
-      } else if (frequency.includes('2x per week')) {
-        const dayOfWeek = currentDate.getDay()
-        shouldSchedule = [1, 4].includes(dayOfWeek) // Mon, Thu
-      } else if (frequency.includes('5 days on')) {
-        const dayOfWeek = currentDate.getDay()
-        shouldSchedule = dayOfWeek >= 1 && dayOfWeek <= 5 // Mon-Fri
-      } else if (frequency.includes('once per week')) {
-        const dayOfWeek = currentDate.getDay()
-        shouldSchedule = dayOfWeek === 1 // Monday
+        currentDate = new Date(
+          today.getFullYear(),
+          today.getMonth(),
+          today.getDate(),
+          0,
+          0,
+          0,
+          0,
+        );
       }
 
-      if (shouldSchedule) {
-        return currentDate
+      // Look ahead up to 30 days to find next scheduled dose
+      const maxDays = 30;
+      let daysChecked = 0;
+
+      while (daysChecked < maxDays) {
+        let shouldSchedule = false;
+
+        if (frequency.includes("daily") || frequency.includes("every day")) {
+          shouldSchedule = true;
+        } else if (frequency.includes("every other day")) {
+          const daysSinceStart = Math.floor(
+            (currentDate.getTime() - startDate.getTime()) /
+              (1000 * 60 * 60 * 24),
+          );
+          shouldSchedule = daysSinceStart % 2 === 0;
+        } else if (frequency.includes("3x per week")) {
+          const dayOfWeek = currentDate.getDay();
+          shouldSchedule = [1, 3, 5].includes(dayOfWeek); // Mon, Wed, Fri
+        } else if (frequency.includes("2x per week")) {
+          const dayOfWeek = currentDate.getDay();
+          shouldSchedule = [1, 4].includes(dayOfWeek); // Mon, Thu
+        } else if (frequency.includes("5 days on")) {
+          const dayOfWeek = currentDate.getDay();
+          shouldSchedule = dayOfWeek >= 1 && dayOfWeek <= 5; // Mon-Fri
+        } else if (frequency.includes("once per week")) {
+          const dayOfWeek = currentDate.getDay();
+          shouldSchedule = dayOfWeek === 1; // Monday
+        }
+
+        if (shouldSchedule) {
+          return currentDate;
+        }
+
+        // Move to next day using proper date arithmetic (handles DST correctly)
+        currentDate = new Date(
+          currentDate.getFullYear(),
+          currentDate.getMonth(),
+          currentDate.getDate() + 1,
+          0,
+          0,
+          0,
+          0,
+        );
+        daysChecked++;
       }
 
-      // Move to next day using proper date arithmetic (handles DST correctly)
-      currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() + 1, 0, 0, 0, 0)
-      daysChecked++
-    }
-
-    return null
-  }, [doseHistory])
+      return null;
+    },
+    [doseHistory],
+  );
 
   // Sort protocols by next dose date (soonest first)
   const sortedProtocols = useMemo(() => {
     return [...currentProtocols].sort((a, b) => {
-      const nextA = getNextDoseDate(a)
-      const nextB = getNextDoseDate(b)
+      const nextA = getNextDoseDate(a);
+      const nextB = getNextDoseDate(b);
 
-      if (!nextA && !nextB) return 0
-      if (!nextA) return 1
-      if (!nextB) return -1
+      if (!nextA && !nextB) return 0;
+      if (!nextA) return 1;
+      if (!nextB) return -1;
 
-      return nextA.getTime() - nextB.getTime()
-    })
-  }, [currentProtocols, getNextDoseDate])
+      return nextA.getTime() - nextB.getTime();
+    });
+  }, [currentProtocols, getNextDoseDate]);
 
   const goToPreviousMonth = () => {
-    setHistoryMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1))
-  }
+    setHistoryMonth(
+      (prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1),
+    );
+  };
 
   const goToNextMonth = () => {
-    setHistoryMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1))
-  }
+    setHistoryMonth(
+      (prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1),
+    );
+  };
 
   const historyMonthLabel = historyMonth.toLocaleDateString(undefined, {
-    month: 'long',
-    year: 'numeric',
-  })
+    month: "long",
+    year: "numeric",
+  });
 
   // Fetch peptide library and user protocols from database
   useEffect(() => {
-    if (bootstrapped.current) return
-    bootstrapped.current = true
+    if (bootstrapped.current) return;
+    bootstrapped.current = true;
 
     const loadData = async () => {
-      fetchPeptideLibrary()
+      fetchPeptideLibrary();
       // Load doses first, then protocols (so doses are in state when protocols generate pending)
-      await fetchTodaysDoses()
-      await fetchUserProtocols()
-      fetchDoseHistory()
-      fetchNotificationPreferences()
-    }
-    loadData()
-  }, [fetchTodaysDoses])
+      await fetchTodaysDoses();
+      await fetchUserProtocols();
+      fetchDoseHistory();
+      fetchNotificationPreferences();
+    };
+    loadData();
+  }, [fetchTodaysDoses]);
 
   // Auto-generate today's doses when protocols change (preserve existing logged doses)
   useEffect(() => {
     if (currentProtocols.length === 0) {
-      setTodaysDoses((current) => current.filter((dose) => dose.completed && dose.dateKey === todayKey))
-      return
+      setTodaysDoses((current) =>
+        current.filter((dose) => dose.completed && dose.dateKey === todayKey),
+      );
+      return;
     }
 
-    generateTodaysDosesPreservingLogged(currentProtocols, todayKey)
-  }, [currentProtocols, todayKey])
+    generateTodaysDosesPreservingLogged(currentProtocols, todayKey);
+  }, [currentProtocols, todayKey]);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const key = getTodayKey()
+      const key = getTodayKey();
       if (key !== todayKey) {
-        setTodaysDoses([])
-        setTodayKey(key)
+        setTodaysDoses([]);
+        setTodayKey(key);
       }
-    }, 60_000)
+    }, 60_000);
 
-    return () => clearInterval(interval)
-  }, [todayKey])
+    return () => clearInterval(interval);
+  }, [todayKey]);
 
   useEffect(() => {
-    fetchTodaysDoses(todayKey)
-  }, [todayKey, fetchTodaysDoses])
+    fetchTodaysDoses(todayKey);
+  }, [todayKey, fetchTodaysDoses]);
 
   const fetchUserProtocols = async () => {
     try {
-      const response = await fetch('/api/peptides/protocols', {
-        credentials: 'include'
+      const response = await fetch("/api/peptides/protocols", {
+        credentials: "include",
       });
       const data = await response.json();
 
@@ -546,127 +682,138 @@ export function PeptideTracker() {
         // Transform API data to match our interface
         const formattedProtocols = data.protocols.map((protocol: any) => ({
           id: protocol.id,
-          name: protocol.peptides?.name || 'Unknown',
-          purpose: protocol.peptides?.category || 'General',
+          name: protocol.peptides?.name || "Unknown",
+          purpose: protocol.peptides?.category || "General",
           dosage: protocol.dosage,
-          timing: protocol.timing ?? 'AM',
+          timing: protocol.timing ?? "AM",
           frequency: protocol.frequency,
-          duration: '8 weeks',
-          vialAmount: '10mg',
-          reconstitution: protocol.peptides?.reconstitution || '2ml',
+          duration: "8 weeks",
+          vialAmount: "10mg",
+          reconstitution: protocol.peptides?.reconstitution || "2ml",
           syringeUnits: 10,
-          startDate: protocol.startDate ? dateToLocalKey(new Date(protocol.startDate)) : dateToLocalKey(new Date()),
+          startDate: protocol.startDate
+            ? dateToLocalKey(new Date(protocol.startDate))
+            : dateToLocalKey(new Date()),
           currentCycle: 1,
-          isActive: protocol.isActive
+          isActive: protocol.isActive,
         }));
         setCurrentProtocols(formattedProtocols);
-        console.log(`✅ Loaded ${formattedProtocols.length} protocols from database`);
+        console.log(
+          `✅ Loaded ${formattedProtocols.length} protocols from database`,
+        );
       } else if (response.status === 401) {
-        console.log('⚠️ User not logged in - cannot load protocols');
+        console.log("⚠️ User not logged in - cannot load protocols");
       } else {
-        console.error('Failed to fetch protocols:', data.error);
+        console.error("Failed to fetch protocols:", data.error);
       }
     } catch (error) {
-      console.error('Error fetching user protocols:', error);
+      console.error("Error fetching user protocols:", error);
     }
   };
 
   const fetchNotificationPreferences = async () => {
     try {
-      const response = await fetch('/api/notifications/preferences', {
-        credentials: 'include'
-      })
-      const data = await response.json()
+      const response = await fetch("/api/notifications/preferences", {
+        credentials: "include",
+      });
+      const data = await response.json();
 
       if (data.success && data.preferences) {
-        const prefsMap: Record<string, boolean> = {}
+        const prefsMap: Record<string, boolean> = {};
         data.preferences.forEach((pref: any) => {
-          prefsMap[pref.protocolId] = pref.pushEnabled
-        })
-        setProtocolNotifications(prefsMap)
-        console.log(`✅ Loaded notification preferences for ${data.preferences.length} protocols`)
+          prefsMap[pref.protocolId] = pref.pushEnabled;
+        });
+        setProtocolNotifications(prefsMap);
+        console.log(
+          `✅ Loaded notification preferences for ${data.preferences.length} protocols`,
+        );
       }
     } catch (error) {
-      console.error('Error fetching notification preferences:', error)
+      console.error("Error fetching notification preferences:", error);
     }
-  }
+  };
 
   const fetchPeptideLibrary = async () => {
     try {
-      setLoadingLibrary(true)
-      const response = await fetch('/api/products/storefront', {
-        credentials: 'include'
-      })
-      const products = await response.json()
+      setLoadingLibrary(true);
+      const response = await fetch("/api/products/storefront", {
+        credentials: "include",
+      });
+      const products = await response.json();
 
       if (products && Array.isArray(products)) {
         // Transform storefront products to match our interface
         const formattedLibrary = products.map((product: any) => ({
           id: product.id,
           name: product.name,
-          purpose: product.description?.substring(0, 50) || 'General',
-          dosage: '250mcg', // Default dosage
-          timing: 'AM',
-          frequency: 'Daily',
-          duration: '8 weeks',
-          vialAmount: '10mg',
-          reconstitution: '2ml',
-          syringeUnits: 10
-        }))
+          purpose: product.description?.substring(0, 50) || "General",
+          dosage: "250mcg", // Default dosage
+          timing: "AM",
+          frequency: "Daily",
+          duration: "8 weeks",
+          vialAmount: "10mg",
+          reconstitution: "2ml",
+          syringeUnits: 10,
+        }));
 
         // Add "Other (Custom)" option at the end
         formattedLibrary.push({
-          id: 'custom',
-          name: 'Other (Custom)',
-          purpose: 'Custom',
-          dosage: '100mcg',
-          timing: 'AM',
-          frequency: 'Daily',
-          duration: '4 weeks',
-          vialAmount: '5mg',
-          reconstitution: '1ml',
-          syringeUnits: 10
-        })
+          id: "custom",
+          name: "Other (Custom)",
+          purpose: "Custom",
+          dosage: "100mcg",
+          timing: "AM",
+          frequency: "Daily",
+          duration: "4 weeks",
+          vialAmount: "5mg",
+          reconstitution: "1ml",
+          syringeUnits: 10,
+        });
 
-        setPeptideLibrary(formattedLibrary)
-        console.log(`✅ Loaded ${formattedLibrary.length} products from storefront (${products.length} products + 1 custom option)`)
+        setPeptideLibrary(formattedLibrary);
+        console.log(
+          `✅ Loaded ${formattedLibrary.length} products from storefront (${products.length} products + 1 custom option)`,
+        );
       } else {
-        console.error('Failed to fetch storefront products')
+        console.error("Failed to fetch storefront products");
         // Fallback to hardcoded library if API fails
-        setPeptideLibrary(fallbackLibrary)
+        setPeptideLibrary(fallbackLibrary);
       }
     } catch (error) {
-      console.error('Error fetching peptide library:', error)
+      console.error("Error fetching peptide library:", error);
       // Fallback to hardcoded library if API fails
-      setPeptideLibrary(fallbackLibrary)
+      setPeptideLibrary(fallbackLibrary);
     } finally {
-      setLoadingLibrary(false)
+      setLoadingLibrary(false);
     }
-  }
+  };
 
   const fetchDoseHistory = async () => {
     try {
-      setLoadingHistory(true)
-      const response = await fetch('/api/peptides/doses?limit=50', {
-        credentials: 'include'
-      })
-      const data = await response.json()
+      setLoadingHistory(true);
+      const response = await fetch("/api/peptides/doses?limit=50", {
+        credentials: "include",
+      });
+      const data = await response.json();
 
       if (data.success && data.doses) {
-        setDoseHistory(data.doses)
-        console.log(`✅ Loaded ${data.doses.length} historical doses`)
+        setDoseHistory(data.doses);
+        console.log(`✅ Loaded ${data.doses.length} historical doses`);
       }
     } catch (error) {
-      console.error('Error fetching dose history:', error)
+      console.error("Error fetching dose history:", error);
     } finally {
-      setLoadingHistory(false)
+      setLoadingHistory(false);
     }
-  }
+  };
 
   // Fallback library in case API fails
-  const fallbackLibrary: Omit<PeptideProtocol, 'startDate' | 'currentCycle' | 'isActive'>[] = [
+  const fallbackLibrary: Omit<
+    PeptideProtocol,
+    "startDate" | "currentCycle" | "isActive"
+  >[] = [
     {
-      id: 'fallback-1',
+      id: "fallback-1",
       name: "Semaglutide",
       purpose: "Fat Loss",
       dosage: "250mcg",
@@ -675,10 +822,10 @@ export function PeptideTracker() {
       duration: "8 weeks on, 8 weeks off",
       vialAmount: "3mg",
       reconstitution: "2ml",
-      syringeUnits: 17
+      syringeUnits: 17,
     },
     {
-      id: 'fallback-2',
+      id: "fallback-2",
       name: "BPC-157",
       purpose: "Healing",
       dosage: "500mcg",
@@ -687,9 +834,9 @@ export function PeptideTracker() {
       duration: "4-6 weeks",
       vialAmount: "10mg",
       reconstitution: "3ml",
-      syringeUnits: 10
-    }
-  ]
+      syringeUnits: 10,
+    },
+  ];
 
   const handleSaveProtocol = async (protocolData: {
     peptideId?: string;
@@ -711,97 +858,112 @@ export function PeptideTracker() {
     };
   }) => {
     // Check if protocol already exists
-    const existingProtocol = currentProtocols.find(protocol => protocol.name === protocolData.peptideName)
+    const existingProtocol = currentProtocols.find(
+      (protocol) => protocol.name === protocolData.peptideName,
+    );
     if (existingProtocol) {
-      alert(`${protocolData.peptideName} is already in your active protocols. Only one instance per peptide is allowed.`)
-      return
+      alert(
+        `${protocolData.peptideName} is already in your active protocols. Only one instance per peptide is allowed.`,
+      );
+      return;
     }
 
     // Save to database
     try {
-      const response = await fetch('/api/peptides/protocols', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+      const response = await fetch("/api/peptides/protocols", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({
           peptideName: protocolData.peptideName,
           dosage: protocolData.dosage,
           frequency: protocolData.schedule.frequency,
-          timing: protocolData.schedule.times.join('/'),
-          notes: protocolData.notes || `Schedule: ${protocolData.schedule.frequency}`,
+          timing: protocolData.schedule.times.join("/"),
+          notes:
+            protocolData.notes ||
+            `Schedule: ${protocolData.schedule.frequency}`,
           startDate: dateToLocalKey(new Date()), // Send user's local date
-          timezone: getClientTimezone()
-        })
-      })
+          timezone: getClientTimezone(),
+        }),
+      });
 
-      const data = await response.json()
+      const data = await response.json();
 
       if (data.success) {
-        const protocolId = data.protocol.id
+        const protocolId = data.protocol.id;
 
         // Set up notifications if enabled
-        if (protocolData.notifications && (protocolData.notifications.pushEnabled || protocolData.notifications.emailEnabled)) {
+        if (
+          protocolData.notifications &&
+          (protocolData.notifications.pushEnabled ||
+            protocolData.notifications.emailEnabled)
+        ) {
           try {
             // Request push permission if push is enabled
-            if (protocolData.notifications.pushEnabled && 'Notification' in window) {
-              const permission = await Notification.requestPermission()
-              if (permission === 'granted' && 'serviceWorker' in navigator) {
+            if (
+              protocolData.notifications.pushEnabled &&
+              "Notification" in window
+            ) {
+              const permission = await Notification.requestPermission();
+              if (permission === "granted" && "serviceWorker" in navigator) {
                 // Subscribe to push
-                const registration = await navigator.serviceWorker.ready
+                const registration = await navigator.serviceWorker.ready;
 
                 // Convert VAPID key to proper format
-                const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
+                const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
                 if (!vapidKey) {
-                  console.error('❌ VAPID public key not configured')
-                  return
+                  console.error("❌ VAPID public key not configured");
+                  return;
                 }
-                const applicationServerKey = urlBase64ToUint8Array(vapidKey)
+                const applicationServerKey = urlBase64ToUint8Array(vapidKey);
 
                 const subscription = await registration.pushManager.subscribe({
                   userVisibleOnly: true,
-                  applicationServerKey: applicationServerKey as BufferSource
-                })
+                  applicationServerKey: applicationServerKey as BufferSource,
+                });
 
                 // Save subscription
-                await fetch('/api/notifications/subscribe', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ subscription: subscription.toJSON() })
-                })
+                await fetch("/api/notifications/subscribe", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ subscription: subscription.toJSON() }),
+                });
               }
             }
 
             // Save notification preferences
-            await fetch('/api/notifications/preferences', {
-              method: 'POST',
-              credentials: 'include',
-              headers: { 'Content-Type': 'application/json' },
+            await fetch("/api/notifications/preferences", {
+              method: "POST",
+              credentials: "include",
+              headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 protocolId,
                 pushEnabled: protocolData.notifications.pushEnabled,
                 emailEnabled: protocolData.notifications.emailEnabled,
                 reminderMinutes: protocolData.notifications.reminderMinutes,
-                timezone: getClientTimezone()
-              })
-            })
+                timezone: getClientTimezone(),
+              }),
+            });
 
-            console.log(`✅ Notification preferences saved for protocol`)
+            console.log(`✅ Notification preferences saved for protocol`);
           } catch (notifError) {
-            console.error('Failed to setup notifications:', notifError)
+            console.error("Failed to setup notifications:", notifError);
             // Don't fail the whole protocol creation if notifications fail
           }
         }
 
         // Find peptide details from library
-        const peptide = peptideLibrary.find(p => p.name === protocolData.peptideName)
+        const peptide = peptideLibrary.find(
+          (p) => p.name === protocolData.peptideName,
+        );
 
         // Add to local state
         const newProtocol: PeptideProtocol = {
           id: protocolId,
           name: protocolData.peptideName,
-          purpose: peptide?.purpose || 'General',
+          purpose: peptide?.purpose || "General",
           dosage: protocolData.dosage,
-          timing: protocolData.schedule.times.join('/'),
+          timing: protocolData.schedule.times.join("/"),
           frequency: protocolData.schedule.frequency,
           duration: protocolData.duration,
           vialAmount: protocolData.vialAmount,
@@ -809,96 +971,113 @@ export function PeptideTracker() {
           syringeUnits: 10,
           startDate: dateToLocalKey(new Date()),
           currentCycle: 1,
-          isActive: true
-        }
+          isActive: true,
+        };
 
-        setCurrentProtocols([...currentProtocols, newProtocol])
+        setCurrentProtocols([...currentProtocols, newProtocol]);
 
         // Modal will be closed by DosageCalculator onClose callback
-        console.log(`✅ Protocol added: ${protocolData.peptideName}`)
+        console.log(`✅ Protocol added: ${protocolData.peptideName}`);
       } else {
-        alert(`Failed to add protocol: ${data.error || 'Unknown error'}`)
+        alert(`Failed to add protocol: ${data.error || "Unknown error"}`);
       }
     } catch (error) {
-      console.error('Error adding protocol:', error)
-      alert('Failed to add protocol. Please try again.')
-      throw error // Re-throw so DosageCalculator can handle it
+      console.error("Error adding protocol:", error);
+      alert("Failed to add protocol. Please try again.");
+      throw error; // Re-throw so DosageCalculator can handle it
     }
-  }
+  };
 
-  const generateTodaysDosesPreservingLogged = (protocols: PeptideProtocol[], dayKey: string) => {
+  const generateTodaysDosesPreservingLogged = (
+    protocols: PeptideProtocol[],
+    dayKey: string,
+  ) => {
     const slotsForProtocol = (protocol: PeptideProtocol) => {
-      const lowerTiming = protocol.timing.toLowerCase()
+      const lowerTiming = protocol.timing.toLowerCase();
 
       // Check for explicit slash-separated times first (e.g., "08:00/20:00")
-      if (protocol.timing.includes('/')) {
-        const times = protocol.timing.split('/').map(t => t.trim())
+      if (protocol.timing.includes("/")) {
+        const times = protocol.timing.split("/").map((t) => t.trim());
         return times.map((time, idx) => ({
           id: `slot-${idx}`,
           time: time,
-          period: 'any' as const
-        }))
+          period: "any" as const,
+        }));
       }
 
       // Check for "twice daily" or "AM & PM"
-      if (lowerTiming.includes('twice') || (lowerTiming.includes('am') && lowerTiming.includes('pm'))) {
+      if (
+        lowerTiming.includes("twice") ||
+        (lowerTiming.includes("am") && lowerTiming.includes("pm"))
+      ) {
         return [
-          { id: 'am', time: '08:00', period: 'am' as const },
-          { id: 'pm', time: '20:00', period: 'pm' as const },
-        ]
+          { id: "am", time: "08:00", period: "am" as const },
+          { id: "pm", time: "20:00", period: "pm" as const },
+        ];
       }
 
       // Check for single time in HH:MM format
-      const timeMatch = protocol.timing.match(/\b(\d{1,2}):(\d{2})\b/)
+      const timeMatch = protocol.timing.match(/\b(\d{1,2}):(\d{2})\b/);
       if (timeMatch) {
-        const hours = timeMatch[1].padStart(2, '0')
-        const minutes = timeMatch[2]
-        return [{ id: '0', time: `${hours}:${minutes}`, period: 'any' as const }]
+        const hours = timeMatch[1].padStart(2, "0");
+        const minutes = timeMatch[2];
+        return [
+          { id: "0", time: `${hours}:${minutes}`, period: "any" as const },
+        ];
       }
 
       // Fall back to AM/PM keywords
-      const defaultTime = protocol.timing.includes('AM')
-        ? '08:00'
-        : protocol.timing.includes('PM')
-          ? '20:00'
-          : '12:00'
+      const defaultTime = protocol.timing.includes("AM")
+        ? "08:00"
+        : protocol.timing.includes("PM")
+          ? "20:00"
+          : "12:00";
 
-      return [{ id: '0', time: defaultTime, period: 'any' as const }]
-    }
+      return [{ id: "0", time: defaultTime, period: "any" as const }];
+    };
 
     setTodaysDoses((current) => {
-      const activeProtocols = protocols.filter((protocol) => protocol.isActive)
-      const activeIds = new Set(activeProtocols.map((protocol) => protocol.id))
+      const activeProtocols = protocols.filter((protocol) => protocol.isActive);
+      const activeIds = new Set(activeProtocols.map((protocol) => protocol.id));
 
       const logged = current.filter(
-        (dose) => dose.completed && dose.dateKey === dayKey && activeIds.has(dose.peptideId)
-      )
+        (dose) =>
+          dose.completed &&
+          dose.dateKey === dayKey &&
+          activeIds.has(dose.peptideId),
+      );
 
       const pendingMap = new Map(
         current
           .filter(
-            (dose) => !dose.completed && dose.dateKey === dayKey && activeIds.has(dose.peptideId)
+            (dose) =>
+              !dose.completed &&
+              dose.dateKey === dayKey &&
+              activeIds.has(dose.peptideId),
           )
-          .map((dose) => [dose.id, dose])
-      )
+          .map((dose) => [dose.id, dose]),
+      );
 
-      const hasLoggedForSlot = (protocolId: string, slot: { period: 'am' | 'pm' | 'any'; time: string }) => {
+      const hasLoggedForSlot = (
+        protocolId: string,
+        slot: { period: "am" | "pm" | "any"; time: string },
+      ) => {
         return logged.some((dose) => {
-          if (dose.peptideId !== protocolId) return false
-          if (!dose.actualTime) return slot.period === 'any'
+          if (dose.peptideId !== protocolId) return false;
+          if (!dose.actualTime) return slot.period === "any";
 
-          const loggedHour = new Date(dose.actualTime).getHours()
-          if (slot.period === 'am') return loggedHour < 12
-          if (slot.period === 'pm') return loggedHour >= 12
-          return true
-        })
-      }
+          const loggedHour = new Date(dose.actualTime).getHours();
+          if (slot.period === "am") return loggedHour < 12;
+          if (slot.period === "pm") return loggedHour >= 12;
+          return true;
+        });
+      };
 
       activeProtocols.forEach((protocol) => {
         slotsForProtocol(protocol).forEach((slot) => {
-          const pendingId = `${protocol.id}-${dayKey}-${slot.id}`
-          const alreadyLogged = hasLoggedForSlot(protocol.id, slot)
-          const alreadyPending = pendingMap.has(pendingId)
+          const pendingId = `${protocol.id}-${dayKey}-${slot.id}`;
+          const alreadyLogged = hasLoggedForSlot(protocol.id, slot);
+          const alreadyPending = pendingMap.has(pendingId);
 
           if (!alreadyLogged && !alreadyPending) {
             pendingMap.set(pendingId, {
@@ -907,206 +1086,221 @@ export function PeptideTracker() {
               scheduledTime: slot.time,
               completed: false,
               dateKey: dayKey,
-            })
+            });
           }
-        })
-      })
+        });
+      });
 
-      const pending = Array.from(pendingMap.values())
-        .filter((dose) => activeIds.has(dose.peptideId))
+      const pending = Array.from(pendingMap.values()).filter((dose) =>
+        activeIds.has(dose.peptideId),
+      );
 
-      return [...logged, ...pending]
-    })
-  }
+      return [...logged, ...pending];
+    });
+  };
 
   const markDoseCompleted = (doseId: string) => {
-    const dose = todaysDoses.find(d => d.id === doseId)
-    if (!dose) return
+    const dose = todaysDoses.find((d) => d.id === doseId);
+    if (!dose) return;
 
     // Find the protocol for this dose
-    const protocol = currentProtocols.find(p => p.id === dose.peptideId)
+    const protocol = currentProtocols.find((p) => p.id === dose.peptideId);
     if (!protocol) {
       // Just mark as completed if we can't find protocol
-      setTodaysDoses(prev => prev.map(d =>
-        d.id === doseId
-          ? { ...d, completed: true, actualTime: new Date().toISOString() }
-          : d
-      ))
-      return
+      setTodaysDoses((prev) =>
+        prev.map((d) =>
+          d.id === doseId
+            ? { ...d, completed: true, actualTime: new Date().toISOString() }
+            : d,
+        ),
+      );
+      return;
     }
 
     // Store the dose ID for updating the specific scheduled dose
-    setSelectedProtocol({ ...protocol, scheduledDoseId: doseId })
-    setShowDoseModal(true)
-    setDoseNotes('')
-    setDoseSideEffects([])
-  }
+    setSelectedProtocol({ ...protocol, scheduledDoseId: doseId });
+    setShowDoseModal(true);
+    setDoseNotes("");
+    setDoseSideEffects([]);
+  };
 
   const openScheduleModal = (protocol: PeptideProtocol) => {
-    setSelectedProtocol(protocol)
-    setShowScheduleModal(true)
-  }
+    setSelectedProtocol(protocol);
+    setShowScheduleModal(true);
+  };
 
   const openDoseModal = (protocol: PeptideProtocol) => {
     // Check if there are any scheduled doses for this protocol today
-    const todaysScheduledDoses = todaysDoses.filter(dose => 
-      dose.peptideId === protocol.id && 
-      !dose.id.includes('unscheduled')
-    )
-    
+    const todaysScheduledDoses = todaysDoses.filter(
+      (dose) =>
+        dose.peptideId === protocol.id && !dose.id.includes("unscheduled"),
+    );
+
     if (todaysScheduledDoses.length === 0) {
       // No scheduled dose - show override warning
       const shouldProceed = confirm(
         `⚠️ OVERRIDE WARNING\n\n` +
-        `${protocol.name} is not scheduled for today according to your protocol.\n\n` +
-        `Frequency: ${protocol.frequency}\n` +
-        `Timing: ${protocol.timing}\n\n` +
-        `Do you want to proceed with an unscheduled dose? This will be logged in your journal with an override flag.`
-      )
-      if (!shouldProceed) return
+          `${protocol.name} is not scheduled for today according to your protocol.\n\n` +
+          `Frequency: ${protocol.frequency}\n` +
+          `Timing: ${protocol.timing}\n\n` +
+          `Do you want to proceed with an unscheduled dose? This will be logged in your journal with an override flag.`,
+      );
+      if (!shouldProceed) return;
     }
     // Check if this protocol already has completed doses today
-    const todaysCompletedDoses = todaysDoses.filter(dose => 
-      dose.peptideId === protocol.id && 
-      dose.completed &&
-      new Date(dose.actualTime!).toDateString() === new Date().toDateString()
-    )
-    
+    const todaysCompletedDoses = todaysDoses.filter(
+      (dose) =>
+        dose.peptideId === protocol.id &&
+        dose.completed &&
+        new Date(dose.actualTime!).toDateString() === new Date().toDateString(),
+    );
+
     if (todaysCompletedDoses.length > 0) {
-      alert(`${protocol.name} already logged today. Check completed doses in your history.`)
-      return
+      alert(
+        `${protocol.name} already logged today. Check completed doses in your history.`,
+      );
+      return;
     }
-    
-    setSelectedProtocol(protocol)
-    setShowDoseModal(true)
-    setDoseNotes('')
-    setDoseSideEffects([])
-  }
+
+    setSelectedProtocol(protocol);
+    setShowDoseModal(true);
+    setDoseNotes("");
+    setDoseSideEffects([]);
+  };
 
   const openCalculatorModal = (protocol: PeptideProtocol) => {
-    setSelectedProtocol(protocol)
-    setShowCalculatorModal(true)
-  }
+    setSelectedProtocol(protocol);
+    setShowCalculatorModal(true);
+  };
 
   const openEditModal = (protocol: PeptideProtocol) => {
-    setEditingProtocol(protocol)
-    setCustomDosage(protocol.dosage)
-    setCustomFrequency(protocol.frequency)
-    setCustomTiming(protocol.timing)
-    setCustomDuration(protocol.duration)
+    setEditingProtocol(protocol);
+    setCustomDosage(protocol.dosage);
+    setCustomFrequency(protocol.frequency);
+    setCustomTiming(protocol.timing);
+    setCustomDuration(protocol.duration);
 
     // Parse existing timing into times array
     // protocol.timing might be like "08:00/20:00" or "AM" or "PM" or "15:50" or "AM & PM (twice daily)"
-    const timesArray: string[] = []
-    const lowerTiming = protocol.timing.toLowerCase()
+    const timesArray: string[] = [];
+    const lowerTiming = protocol.timing.toLowerCase();
 
-    if (protocol.timing.includes('/')) {
+    if (protocol.timing.includes("/")) {
       // Already has specific times like "08:00/20:00"
-      timesArray.push(...protocol.timing.split('/').map(t => t.trim()))
-    } else if (lowerTiming.includes('twice') || (lowerTiming.includes('am') && lowerTiming.includes('pm'))) {
+      timesArray.push(...protocol.timing.split("/").map((t) => t.trim()));
+    } else if (
+      lowerTiming.includes("twice") ||
+      (lowerTiming.includes("am") && lowerTiming.includes("pm"))
+    ) {
       // Check for "twice daily" or both AM & PM FIRST (before individual checks)
-      timesArray.push('08:00', '20:00')
-    } else if (lowerTiming.includes('am')) {
-      timesArray.push('08:00')
-    } else if (lowerTiming.includes('pm')) {
-      timesArray.push('20:00')
+      timesArray.push("08:00", "20:00");
+    } else if (lowerTiming.includes("am")) {
+      timesArray.push("08:00");
+    } else if (lowerTiming.includes("pm")) {
+      timesArray.push("20:00");
     } else if (protocol.timing.match(/^\d{2}:\d{2}$/)) {
       // Single time like "15:50"
-      timesArray.push(protocol.timing)
+      timesArray.push(protocol.timing);
     }
-    setCustomTimesArray(timesArray.length > 0 ? timesArray : ['08:00'])
+    setCustomTimesArray(timesArray.length > 0 ? timesArray : ["08:00"]);
 
-    setShowEditProtocolModal(true)
-  }
+    setShowEditProtocolModal(true);
+  };
 
   const saveProtocolEdits = async () => {
-    console.log('🔧 saveProtocolEdits called')
-    if (!editingProtocol) return
+    console.log("🔧 saveProtocolEdits called");
+    if (!editingProtocol) return;
 
     // Validate that at least one time is selected
     if (customTimesArray.length === 0) {
-      alert('Please add at least one dose time')
-      return
+      alert("Please add at least one dose time");
+      return;
     }
 
     // Join times array into string for storage
-    const timingString = customTimesArray.join('/')
-    console.log(`💾 Saving protocol: timing="${timingString}"`)
+    const timingString = customTimesArray.join("/");
+    console.log(`💾 Saving protocol: timing="${timingString}"`);
 
     try {
-      const response = await fetch('/api/peptides/protocols', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/peptides/protocols", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           protocolId: editingProtocol.id,
           dosage: customDosage,
           frequency: customFrequency,
           timing: timingString,
-          timezone: getClientTimezone()
+          timezone: getClientTimezone(),
         }),
-        credentials: 'include'
-      })
+        credentials: "include",
+      });
 
       if (response.ok) {
-        console.log('✅ Protocol saved successfully, timing:', timingString)
+        console.log("✅ Protocol saved successfully, timing:", timingString);
 
         // Re-fetch protocols from database to ensure we have the saved data
-        await fetchUserProtocols()
+        await fetchUserProtocols();
 
-        setShowEditProtocolModal(false)
-        setEditingProtocol(null)
-        alert('Protocol updated successfully!')
+        setShowEditProtocolModal(false);
+        setEditingProtocol(null);
+        alert("Protocol updated successfully!");
       } else {
-        const errorData = await response.json()
-        console.error('Failed to update protocol:', errorData)
-        alert('Failed to update protocol: ' + (errorData.error || 'Unknown error'))
+        const errorData = await response.json();
+        console.error("Failed to update protocol:", errorData);
+        alert(
+          "Failed to update protocol: " + (errorData.error || "Unknown error"),
+        );
       }
     } catch (error) {
-      console.error('Error updating protocol:', error)
-      alert('Error updating protocol')
+      console.error("Error updating protocol:", error);
+      alert("Error updating protocol");
     }
-  }
+  };
 
   const logDose = async () => {
-    if (!selectedProtocol) return
+    if (!selectedProtocol) return;
 
-    const now = new Date()
-    const currentTime = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+    const now = new Date();
+    const currentTime = now.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
 
     // Get user's local date components
-    const year = now.getFullYear()
-    const month = String(now.getMonth() + 1).padStart(2, '0')
-    const day = String(now.getDate()).padStart(2, '0')
-    const hours = String(now.getHours()).padStart(2, '0')
-    const minutes = String(now.getMinutes()).padStart(2, '0')
-    const seconds = String(now.getSeconds()).padStart(2, '0')
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    const hours = String(now.getHours()).padStart(2, "0");
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+    const seconds = String(now.getSeconds()).padStart(2, "0");
 
     // Save dose to database
     try {
-      const response = await fetch('/api/peptides/doses', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+      const response = await fetch("/api/peptides/doses", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({
           protocolId: selectedProtocol.id,
           dosage: selectedProtocol.dosage,
           time: currentTime,
           notes: doseNotes || null,
-          sideEffects: doseSideEffects.length > 0 ? doseSideEffects.join(', ') : null,
+          sideEffects:
+            doseSideEffects.length > 0 ? doseSideEffects.join(", ") : null,
           doseDate: now.toISOString(),
           localDate: `${year}-${month}-${day}`,
           localTime: `${hours}:${minutes}:${seconds}`,
-        })
-      })
+        }),
+      });
 
-      const data = await response.json()
+      const data = await response.json();
 
       if (data.success) {
-        console.log('✅ Dose logged successfully')
+        console.log("✅ Dose logged successfully");
 
         // Create the completed dose entry
         // Use the same localDate we sent to the API (timezone-safe)
-        const doseKey = `${year}-${month}-${day}`
+        const doseKey = `${year}-${month}-${day}`;
 
         const newDose: DoseEntry = {
           id: data.dose?.id || `${selectedProtocol.id}-logged-${Date.now()}`,
@@ -1117,113 +1311,129 @@ export function PeptideTracker() {
           notes: doseNotes || undefined,
           sideEffects: doseSideEffects.length > 0 ? doseSideEffects : undefined,
           dateKey: doseKey,
-        }
+        };
 
         // Remove ALL pending doses for this protocol and add the completed dose
-        setTodaysDoses(prev => {
+        setTodaysDoses((prev) => {
           // Filter out any pending doses for this protocol
-          const withoutPending = prev.filter(dose =>
-            !(dose.peptideId === selectedProtocol.id && !dose.completed)
-          )
+          const withoutPending = prev.filter(
+            (dose) =>
+              !(dose.peptideId === selectedProtocol.id && !dose.completed),
+          );
           // Add the new completed dose
-          return [...withoutPending.filter((dose) => dose.dateKey === doseKey), newDose]
-        })
+          return [
+            ...withoutPending.filter((dose) => dose.dateKey === doseKey),
+            newDose,
+          ];
+        });
 
         // Refresh dose history
-        fetchDoseHistory()
+        fetchDoseHistory();
       } else {
-        console.error('Failed to save dose:', data.error)
-        alert('Failed to save dose. Please try again.')
+        console.error("Failed to save dose:", data.error);
+        alert("Failed to save dose. Please try again.");
       }
     } catch (error) {
-      console.error('Error saving dose:', error)
-      alert('Failed to save dose. Please try again.')
+      console.error("Error saving dose:", error);
+      alert("Failed to save dose. Please try again.");
     }
 
-    setShowDoseModal(false)
-    setSelectedProtocol(null)
-  }
+    setShowDoseModal(false);
+    setSelectedProtocol(null);
+  };
 
   const deleteDose = async (doseId: string) => {
-    if (!confirm('Are you sure you want to delete this dose?')) {
-      return
+    if (!confirm("Are you sure you want to delete this dose?")) {
+      return;
     }
 
     try {
       const response = await fetch(`/api/peptides/doses?id=${doseId}`, {
-        method: 'DELETE',
-        credentials: 'include'
-      })
+        method: "DELETE",
+        credentials: "include",
+      });
 
-      const data = await response.json()
+      const data = await response.json();
 
       if (data.success) {
-        console.log('✅ Dose deleted successfully')
+        console.log("✅ Dose deleted successfully");
         // Remove from local state
-        setTodaysDoses(prev => prev.filter(d => d.id !== doseId))
+        setTodaysDoses((prev) => prev.filter((d) => d.id !== doseId));
         // Refresh history
-        fetchDoseHistory()
+        fetchDoseHistory();
       } else {
-        console.error('Failed to delete dose:', data.error)
-        alert('Failed to delete dose. Please try again.')
+        console.error("Failed to delete dose:", data.error);
+        alert("Failed to delete dose. Please try again.");
       }
     } catch (error) {
-      console.error('Error deleting dose:', error)
-      alert('Failed to delete dose. Please try again.')
+      console.error("Error deleting dose:", error);
+      alert("Failed to delete dose. Please try again.");
     }
-  }
+  };
 
   const deleteProtocol = async (protocolId: string) => {
-    if (!confirm('Are you sure you want to delete this protocol? Your dose history will be preserved.')) {
-      return
+    if (
+      !confirm(
+        "Are you sure you want to delete this protocol? Your dose history will be preserved.",
+      )
+    ) {
+      return;
     }
 
     try {
       const response = await fetch(`/api/peptides/protocols?id=${protocolId}`, {
-        method: 'DELETE',
-        credentials: 'include'
-      })
+        method: "DELETE",
+        credentials: "include",
+      });
 
-      const data = await response.json()
+      const data = await response.json();
 
       if (data.success) {
-        console.log('✅ Protocol deleted successfully')
+        console.log("✅ Protocol deleted successfully");
         // Refresh protocols and doses
-        fetchUserProtocols()
-        fetchTodaysDoses()
-        fetchDoseHistory()
+        fetchUserProtocols();
+        fetchTodaysDoses();
+        fetchDoseHistory();
       } else {
-        console.error('Failed to delete protocol:', data.error)
-        alert('Failed to delete protocol. Please try again.')
+        console.error("Failed to delete protocol:", data.error);
+        alert("Failed to delete protocol. Please try again.");
       }
     } catch (error) {
-      console.error('Error deleting protocol:', error)
-      alert('Failed to delete protocol. Please try again.')
+      console.error("Error deleting protocol:", error);
+      alert("Failed to delete protocol. Please try again.");
     }
-  }
+  };
 
   const SyringeScale = ({ units }: { units: number }) => {
-    const numericUnits = Number(units)
-    const normalizedUnits = Number.isFinite(numericUnits) ? Math.max(0, Math.min(numericUnits, 100)) : 0
-    const fillPercent = Math.min(100, Math.max(0, (normalizedUnits / 100) * 100))
-    const volumeMl = normalizedUnits / 100
-    const displayUnits = Number(normalizedUnits.toFixed(1))
-    const displayVolume = Number(volumeMl.toFixed(volumeMl < 1 ? 3 : 2))
+    const numericUnits = Number(units);
+    const normalizedUnits = Number.isFinite(numericUnits)
+      ? Math.max(0, Math.min(numericUnits, 100))
+      : 0;
+    const fillPercent = Math.min(
+      100,
+      Math.max(0, (normalizedUnits / 100) * 100),
+    );
+    const volumeMl = normalizedUnits / 100;
+    const displayUnits = Number(normalizedUnits.toFixed(1));
+    const displayVolume = Number(volumeMl.toFixed(volumeMl < 1 ? 3 : 2));
 
-    const pointerPosition = Math.min(Math.max(fillPercent, 0), 100)
+    const pointerPosition = Math.min(Math.max(fillPercent, 0), 100);
     const pointerStyle =
       pointerPosition <= 0
-        ? { left: '0%', transform: 'translateY(-50%)' }
+        ? { left: "0%", transform: "translateY(-50%)" }
         : pointerPosition >= 100
-          ? { left: '100%', transform: 'translate(-100%, -50%)' }
-          : { left: `${pointerPosition}%`, transform: 'translate(-50%, -50%)' }
+          ? { left: "100%", transform: "translate(-100%, -50%)" }
+          : { left: `${pointerPosition}%`, transform: "translate(-50%, -50%)" };
 
-    const ticks = [0, 25, 50, 75, 100]
+    const ticks = [0, 25, 50, 75, 100];
 
     return (
       <div className="mt-3">
         <div className="relative mt-1 h-2 rounded-full bg-gray-700/40 overflow-hidden">
-          <div className="absolute inset-y-0 left-0 bg-primary-500/70" style={{ width: `${fillPercent}%` }} />
+          <div
+            className="absolute inset-y-0 left-0 bg-primary-500/70"
+            style={{ width: `${fillPercent}%` }}
+          />
           <div
             className="absolute top-1/2 h-4 w-[2px] bg-primary-200"
             style={pointerStyle}
@@ -1245,79 +1455,86 @@ export function PeptideTracker() {
           Draw {displayUnits} units ({displayVolume} ml)
         </p>
       </div>
-    )
-  }
+    );
+  };
 
   const PeptideCard = ({ protocol }: { protocol: PeptideProtocol }) => {
     const [isExpanded, setIsExpanded] = useState(false);
 
     // Remove "- peptide" and "Package" suffix from display name
     const displayName = protocol.name
-      .replace(/\s*-\s*peptide\s*$/i, '')
-      .replace(/\s+Package\s*$/i, '')
+      .replace(/\s*-\s*peptide\s*$/i, "")
+      .replace(/\s+Package\s*$/i, "")
       .trim();
 
     // Get next dose date and status
-    const nextDoseDate = getNextDoseDate(protocol)
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    const todayKey = dateToLocalKey(today)
+    const nextDoseDate = getNextDoseDate(protocol);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayKey = dateToLocalKey(today);
 
     const isCompletedToday = doseHistory.some((dose: any) => {
-      const doseDate = dose?.doseDate || dose?.createdAt || dose?.updatedAt
-      if (!doseDate) return false
-      const doseDateKey = dose?.localDate || dateToLocalKey(new Date(doseDate))
-      const doseName = dose?.user_peptide_protocols?.peptides?.name ?? dose?.protocolName ?? ''
-      return doseDateKey === todayKey && doseName === protocol.name
-    })
+      const doseDate = dose?.doseDate || dose?.createdAt || dose?.updatedAt;
+      if (!doseDate) return false;
+      const doseDateKey = dose?.localDate || dateToLocalKey(new Date(doseDate));
+      const doseName =
+        dose?.user_peptide_protocols?.peptides?.name ??
+        dose?.protocolName ??
+        "";
+      return doseDateKey === todayKey && doseName === protocol.name;
+    });
 
     // Extract next dose time from protocol timing
     const getNextDoseTime = () => {
-      const timing = protocol.timing.toLowerCase()
-      if (timing.includes('/')) {
+      const timing = protocol.timing.toLowerCase();
+      if (timing.includes("/")) {
         // Has specific times like "08:00/20:00"
-        const times = timing.split('/').map(t => t.trim())
+        const times = timing.split("/").map((t) => t.trim());
         // Return the first time (could be enhanced to show next upcoming time)
-        return times[0]
+        return times[0];
       } else if (timing.match(/^\d{2}:\d{2}$/)) {
         // Single time like "15:50"
-        return timing
-      } else if (timing.includes('am') && !timing.includes('pm')) {
-        return '08:00'
-      } else if (timing.includes('pm') && !timing.includes('am')) {
-        return '20:00'
-      } else if (timing.includes('am') && timing.includes('pm')) {
-        return '08:00' // Show first dose of the day
+        return timing;
+      } else if (timing.includes("am") && !timing.includes("pm")) {
+        return "08:00";
+      } else if (timing.includes("pm") && !timing.includes("am")) {
+        return "20:00";
+      } else if (timing.includes("am") && timing.includes("pm")) {
+        return "08:00"; // Show first dose of the day
       }
-      return null
-    }
+      return null;
+    };
 
-    const nextDoseTime = getNextDoseTime()
+    const nextDoseTime = getNextDoseTime();
 
     // Determine status badge
-    let statusBadge: { text: string; className: string } | null = null
+    let statusBadge: { text: string; className: string } | null = null;
     if (isCompletedToday) {
       statusBadge = {
-        text: 'Completed',
-        className: 'bg-green-500/20 text-green-300 border-green-400/40'
-      }
+        text: "Completed",
+        className: "bg-green-500/20 text-green-300 border-green-400/40",
+      };
     } else if (nextDoseDate) {
-      const daysUntil = Math.floor((nextDoseDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
+      const daysUntil = Math.floor(
+        (nextDoseDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
+      );
       if (daysUntil === 0) {
         statusBadge = {
-          text: nextDoseTime ? `Coming Due: ${nextDoseTime}` : 'Coming Due Today',
-          className: 'bg-amber-500/20 text-amber-300 border-amber-400/40'
-        }
+          text: nextDoseTime
+            ? `Coming Due: ${nextDoseTime}`
+            : "Coming Due Today",
+          className: "bg-amber-500/20 text-amber-300 border-amber-400/40",
+        };
       } else if (daysUntil === 1) {
         statusBadge = {
-          text: 'Coming Due Tomorrow',
-          className: 'bg-blue-500/20 text-blue-300 border-blue-400/40'
-        }
+          text: "Coming Due Tomorrow",
+          className: "bg-blue-500/20 text-blue-300 border-blue-400/40",
+        };
       } else if (daysUntil <= 3) {
         statusBadge = {
           text: `Due in ${daysUntil} days`,
-          className: 'bg-blue-500/20 text-blue-300 border-blue-400/40'
-        }
+          className: "bg-blue-500/20 text-blue-300 border-blue-400/40",
+        };
       }
     }
 
@@ -1330,12 +1547,16 @@ export function PeptideTracker() {
             className="flex items-center gap-2 flex-1 text-left group"
           >
             <ChevronDown
-              className={`w-5 h-5 text-primary-400 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
+              className={`w-5 h-5 text-primary-400 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}
             />
             <div className="flex flex-col">
-              <h3 className="text-xl font-bold text-white group-hover:text-primary-300 transition-colors">{displayName}</h3>
+              <h3 className="text-xl font-bold text-white group-hover:text-primary-300 transition-colors">
+                {displayName}
+              </h3>
               {statusBadge && (
-                <span className={`text-xs font-semibold px-2 py-1 rounded border ${statusBadge.className} inline-block w-fit mt-1`}>
+                <span
+                  className={`text-xs font-semibold px-2 py-1 rounded border ${statusBadge.className} inline-block w-fit mt-1`}
+                >
                   {statusBadge.text}
                 </span>
               )}
@@ -1351,15 +1572,19 @@ export function PeptideTracker() {
             </button>
             <button
               onClick={() => {
-                setSelectedProtocolForNotif(protocol.id)
-                setShowNotificationModal(true)
+                setSelectedProtocolForNotif(protocol.id);
+                setShowNotificationModal(true);
               }}
               className={`transition-all duration-300 ${
                 protocolNotifications[protocol.id]
-                  ? 'text-amber-400 hover:text-amber-300 drop-shadow-[0_0_8px_rgba(251,191,36,0.8)] hover:drop-shadow-[0_0_12px_rgba(251,191,36,1)]'
-                  : 'text-gray-300 hover:text-gray-200 drop-shadow-[0_0_4px_rgba(209,213,219,0.4)] hover:drop-shadow-[0_0_6px_rgba(209,213,219,0.6)]'
+                  ? "text-amber-400 hover:text-amber-300 drop-shadow-[0_0_8px_rgba(251,191,36,0.8)] hover:drop-shadow-[0_0_12px_rgba(251,191,36,1)]"
+                  : "text-gray-300 hover:text-gray-200 drop-shadow-[0_0_4px_rgba(209,213,219,0.4)] hover:drop-shadow-[0_0_6px_rgba(209,213,219,0.6)]"
               }`}
-              title={protocolNotifications[protocol.id] ? 'Reminders Enabled' : 'Set Reminder'}
+              title={
+                protocolNotifications[protocol.id]
+                  ? "Reminders Enabled"
+                  : "Set Reminder"
+              }
             >
               <Bell className="w-5 h-5" />
             </button>
@@ -1388,18 +1613,23 @@ export function PeptideTracker() {
               <div className="space-y-2">
                 <div>
                   <span className="text-gray-400">Dosage:</span>
-                  <span className="text-white font-medium ml-2">{protocol.dosage}</span>
+                  <span className="text-white font-medium ml-2">
+                    {protocol.dosage}
+                  </span>
                 </div>
                 <div>
                   <span className="text-gray-400">Timing:</span>
-                  <span className="text-white font-medium ml-2">{protocol.timing}</span>
+                  <span className="text-white font-medium ml-2">
+                    {protocol.timing}
+                  </span>
                 </div>
               </div>
 
               <div className="border-t border-gray-600 pt-3">
                 <span className="text-gray-400">Preparation:</span>
                 <p className="text-gray-300 text-xs mt-1">
-                  {protocol.vialAmount} vial + {protocol.reconstitution} BAC water = {protocol.syringeUnits} units per dose
+                  {protocol.vialAmount} vial + {protocol.reconstitution} BAC
+                  water = {protocol.syringeUnits} units per dose
                 </p>
                 <SyringeScale units={protocol.syringeUnits} />
               </div>
@@ -1427,8 +1657,8 @@ export function PeptideTracker() {
               </button>
               <button
                 onClick={() => {
-                  setSelectedProtocolForNotif(protocol.id)
-                  setShowNotificationModal(true)
+                  setSelectedProtocolForNotif(protocol.id);
+                  setShowNotificationModal(true);
                 }}
                 className="bg-primary-600/30 hover:bg-primary-600/50 text-primary-200 font-medium py-2 px-4 rounded-lg transition-colors text-sm whitespace-nowrap flex items-center justify-center gap-2"
               >
@@ -1440,16 +1670,19 @@ export function PeptideTracker() {
         )}
       </div>
     );
-  }
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 relative"
-         style={{
-           backgroundImage: 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url(/hero-background.jpg)',
-           backgroundSize: 'cover',
-           backgroundPosition: 'center',
-           backgroundAttachment: 'fixed'
-         }}>
+    <div
+      className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 relative"
+      style={{
+        backgroundImage:
+          "linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url(/hero-background.jpg)",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundAttachment: "fixed",
+      }}
+    >
       <div className="relative z-10">
         <PushUnavailableWarning />
         {/* Header - Added mt-16 to create proper space below fixed nav (nav is h-16 = 64px) */}
@@ -1457,20 +1690,37 @@ export function PeptideTracker() {
           <div className="container mx-auto px-4 py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <img src="/logo1.png" alt="Reset Biology" className="h-10 w-auto rounded-lg drop-shadow-lg bg-white/10 backdrop-blur-sm p-1 border border-white/20" />
+                <img
+                  src="/logo1.png"
+                  alt="Reset Biology"
+                  className="h-10 w-auto rounded-lg drop-shadow-lg bg-white/10 backdrop-blur-sm p-1 border border-white/20"
+                />
                 <div>
                   <div className="flex items-center">
-                    <a href="/portal" className="text-xl font-bold text-white drop-shadow-lg hover:text-primary-300 transition-colors">Portal</a>
+                    <a
+                      href="/portal"
+                      className="text-xl font-bold text-white drop-shadow-lg hover:text-primary-300 transition-colors"
+                    >
+                      Portal
+                    </a>
                     <span className="mx-2 text-primary-300">&gt;</span>
-                    <span className="text-lg text-gray-200 drop-shadow-sm">Peptide Tracker</span>
+                    <span className="text-lg text-gray-200 drop-shadow-sm">
+                      Peptide Tracker
+                    </span>
                   </div>
                 </div>
               </div>
               <div className="flex items-center gap-4">
-                <a href="/daily-history" className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
+                <a
+                  href="/daily-history"
+                  className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm"
+                >
                   Daily History
                 </a>
-                <a href="/portal" className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
+                <a
+                  href="/portal"
+                  className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm"
+                >
                   ← Back to Portal
                 </a>
               </div>
@@ -1484,39 +1734,41 @@ export function PeptideTracker() {
             <span className="text-primary-400">Peptide</span> Tracker
           </h2>
           <p className="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto font-medium leading-relaxed drop-shadow-sm">
-            Comprehensive peptide management system. Schedule doses, track progress, monitor side effects with IRB-compliant data sharing.
+            Comprehensive peptide management system. Schedule doses, track
+            progress, monitor side effects with IRB-compliant data sharing.
           </p>
         </div>
 
         <div className="container mx-auto px-4 pb-8">
-
           {/* Navigation Tabs */}
           <div className="flex justify-center mb-8">
             <div className="bg-gradient-to-r from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-1 border border-primary-400/30">
-              {(['current', 'calendar'] as const).map((tab) => (
+              {(["current", "calendar"] as const).map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
                   className={`px-6 py-3 rounded-lg font-medium transition-all capitalize ${
-                    activeTab === tab 
-                      ? 'bg-primary-500 text-white shadow-lg' 
-                      : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                    activeTab === tab
+                      ? "bg-primary-500 text-white shadow-lg"
+                      : "text-gray-300 hover:text-white hover:bg-gray-700/50"
                   }`}
                 >
-                  {tab === 'current' ? 'Current Protocols' : 'Dosing Calendar'}
+                  {tab === "current" ? "Current Protocols" : "Dosing Calendar"}
                 </button>
               ))}
             </div>
           </div>
 
           {/* Current Protocols Tab */}
-          {activeTab === 'current' && (
+          {activeTab === "current" && (
             <div className="max-w-6xl mx-auto">
               <div className="grid gap-6">
                 {/* Active Protocols - Full Width */}
                 <div>
                   <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-2xl font-bold text-white">Active Protocols</h3>
+                    <h3 className="text-2xl font-bold text-white">
+                      Active Protocols
+                    </h3>
                     <button
                       onClick={() => setShowAddProtocolModal(true)}
                       className="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center"
@@ -1529,9 +1781,14 @@ export function PeptideTracker() {
                   {currentProtocols.length === 0 ? (
                     <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-8 border border-primary-400/30 shadow-2xl text-center">
                       <Syringe className="w-16 h-16 text-primary-400 mx-auto mb-6" />
-                      <h3 className="text-2xl font-bold text-white mb-4">Start Your First Protocol</h3>
-                      <p className="text-gray-200 mb-8">Choose from our curated peptide library to begin tracking your peptide therapy journey.</p>
-                      <button 
+                      <h3 className="text-2xl font-bold text-white mb-4">
+                        Start Your First Protocol
+                      </h3>
+                      <p className="text-gray-200 mb-8">
+                        Choose from our curated peptide library to begin
+                        tracking your peptide therapy journey.
+                      </p>
+                      <button
                         onClick={() => setShowAddProtocolModal(true)}
                         className="bg-primary-500 hover:bg-primary-600 text-white font-bold py-3 px-6 rounded-xl transition-all duration-300 hover:scale-105 shadow-2xl"
                       >
@@ -1550,15 +1807,16 @@ export function PeptideTracker() {
             </div>
           )}
 
-
           {/* Dosing Calendar Tab */}
-          {activeTab === 'calendar' && (
+          {activeTab === "calendar" && (
             <div className="max-w-4xl mx-auto">
               <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-8 border border-primary-400/30 shadow-2xl">
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-3">
                     <TrendingUp className="w-8 h-8 text-primary-400" />
-                    <h3 className="text-2xl font-bold text-white">Dosing Calendar</h3>
+                    <h3 className="text-2xl font-bold text-white">
+                      Dosing Calendar
+                    </h3>
                   </div>
                   <button
                     onClick={fetchDoseHistory}
@@ -1576,7 +1834,9 @@ export function PeptideTracker() {
                 ) : doseHistory.length === 0 ? (
                   <div className="text-center py-8">
                     <p className="text-gray-200 mb-4">No dose history yet</p>
-                    <p className="text-sm text-gray-400">Start logging doses to build your treatment history!</p>
+                    <p className="text-sm text-gray-400">
+                      Start logging doses to build your treatment history!
+                    </p>
                   </div>
                 ) : (
                   <>
@@ -1590,7 +1850,9 @@ export function PeptideTracker() {
                           >
                             ‹
                           </button>
-                          <span className="font-medium text-primary-100 min-w-[150px] text-center">{historyMonthLabel}</span>
+                          <span className="font-medium text-primary-100 min-w-[150px] text-center">
+                            {historyMonthLabel}
+                          </span>
                           <button
                             onClick={goToNextMonth}
                             className="h-8 w-8 rounded-full border border-primary-400/40 text-primary-200 hover:bg-primary-500/20 transition"
@@ -1601,37 +1863,61 @@ export function PeptideTracker() {
                         </div>
                       </div>
                       <div className="grid grid-cols-7 gap-2 text-[11px] uppercase tracking-wide text-gray-500 mb-2">
-                        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-                          <div key={day} className="text-center font-medium">{day}</div>
-                        ))}
+                        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(
+                          (day) => (
+                            <div key={day} className="text-center font-medium">
+                              {day}
+                            </div>
+                          ),
+                        )}
                       </div>
                       <div className="grid grid-cols-7 gap-2">
                         {historyCalendar.map((cell, index) => {
                           if (!cell) {
-                            return <div key={`empty-${index}`} className="h-16 rounded-lg border border-transparent" />
+                            return (
+                              <div
+                                key={`empty-${index}`}
+                                className="h-16 rounded-lg border border-transparent"
+                              />
+                            );
                           }
 
-                          const isToday = cell.key === todayKey
-                          const isPast = parseLocalDateKey(cell.key) < parseLocalDateKey(todayKey)
-                          const densityClass = calendarDensityClass(cell.completed, cell.pending, isToday, isPast)
+                          const isToday = cell.key === todayKey;
+                          const isPast =
+                            parseLocalDateKey(cell.key) <
+                            parseLocalDateKey(todayKey);
+                          const densityClass = calendarDensityClass(
+                            cell.completed,
+                            cell.pending,
+                            isToday,
+                            isPast,
+                          );
 
                           return (
                             <button
                               key={cell.key}
-                              onClick={() => cell.count > 0 ? setSelectedCalendarDay(cell.key) : null}
-                              className={`min-h-[68px] rounded-lg border px-2 py-1 text-center transition-all duration-300 flex flex-col ${densityClass} ${cell.count > 0 ? 'cursor-pointer hover:scale-105 hover:shadow-lg' : 'cursor-default'}`}
+                              onClick={() =>
+                                cell.count > 0
+                                  ? setSelectedCalendarDay(cell.key)
+                                  : null
+                              }
+                              className={`min-h-[68px] rounded-lg border px-2 py-1 text-center transition-all duration-300 flex flex-col ${densityClass} ${cell.count > 0 ? "cursor-pointer hover:scale-105 hover:shadow-lg" : "cursor-default"}`}
                             >
-                              <div className="text-base font-semibold">{cell.label}</div>
+                              <div className="text-base font-semibold">
+                                {cell.label}
+                              </div>
                               {cell.count > 0 && (
                                 <div className="flex-1 flex flex-col items-center justify-center">
-                                  <div className="text-lg font-semibold">{cell.count}</div>
+                                  <div className="text-lg font-semibold">
+                                    {cell.count}
+                                  </div>
                                   <div className="text-[8px] uppercase tracking-tight opacity-80 leading-none">
-                                    dose{cell.count === 1 ? '' : 's'}
+                                    dose{cell.count === 1 ? "" : "s"}
                                   </div>
                                 </div>
                               )}
                             </button>
-                          )
+                          );
                         })}
                       </div>
                     </div>
@@ -1646,10 +1932,22 @@ export function PeptideTracker() {
                     <div className="flex justify-between items-center mb-6">
                       <div>
                         <h3 className="text-2xl font-bold text-white">
-                          {parseLocalDateKey(selectedCalendarDay).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                          {parseLocalDateKey(
+                            selectedCalendarDay,
+                          ).toLocaleDateString("en-US", {
+                            weekday: "long",
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          })}
                         </h3>
                         <p className="text-gray-400 text-sm mt-1">
-                          {doseHistoryByDate.get(selectedCalendarDay)?.completed || 0} completed • {doseHistoryByDate.get(selectedCalendarDay)?.pending || 0} scheduled
+                          {doseHistoryByDate.get(selectedCalendarDay)
+                            ?.completed || 0}{" "}
+                          completed •{" "}
+                          {doseHistoryByDate.get(selectedCalendarDay)
+                            ?.pending || 0}{" "}
+                          scheduled
                         </p>
                       </div>
                       <button
@@ -1663,86 +1961,123 @@ export function PeptideTracker() {
                     <div className="space-y-3">
                       {doseHistory
                         .filter((dose: any) => {
-                          const doseDateSource = dose?.doseDate || dose?.createdAt || dose?.updatedAt
-                          if (!doseDateSource) return false
-                          const doseDateKey = dose?.localDate || dateToLocalKey(new Date(doseDateSource))
-                          return doseDateKey === selectedCalendarDay
+                          const doseDateSource =
+                            dose?.doseDate ||
+                            dose?.createdAt ||
+                            dose?.updatedAt;
+                          if (!doseDateSource) return false;
+                          const doseDateKey =
+                            dose?.localDate ||
+                            dateToLocalKey(new Date(doseDateSource));
+                          return doseDateKey === selectedCalendarDay;
                         })
                         .map((dose: any) => {
-                        const doseDateSource = dose?.doseDate || dose?.createdAt || dose?.updatedAt || new Date().toISOString()
-                        const doseDate = new Date(doseDateSource)
-                        const protocol = dose.user_peptide_protocols
-                        return (
-                          <div key={dose.id} className="p-4 bg-gray-700/30 rounded-lg border border-gray-600/30">
-                            <div className="flex justify-between items-start mb-2">
-                              <div className="flex-1">
-                                <h4 className="font-semibold text-white">
-                                  {dose.protocolName || protocol?.peptides?.name || 'Unknown Protocol'}
-                                </h4>
-                                <p className="text-sm text-gray-400">
-                                  {dose.dosage} - {dose.time}
-                                </p>
-                              </div>
-                              <div className="text-right flex items-start gap-2">
-                                <div>
-                                  <p className="text-sm text-gray-300">
-                                    {doseDate.toLocaleDateString()}
-                                  </p>
-                                  <p className="text-xs text-gray-500">
-                                    {doseDate.toLocaleTimeString()}
+                          const doseDateSource =
+                            dose?.doseDate ||
+                            dose?.createdAt ||
+                            dose?.updatedAt ||
+                            new Date().toISOString();
+                          const doseDate = new Date(doseDateSource);
+                          const protocol = dose.user_peptide_protocols;
+                          return (
+                            <div
+                              key={dose.id}
+                              className="p-4 bg-gray-700/30 rounded-lg border border-gray-600/30"
+                            >
+                              <div className="flex justify-between items-start mb-2">
+                                <div className="flex-1">
+                                  <h4 className="font-semibold text-white">
+                                    {dose.protocolName ||
+                                      protocol?.peptides?.name ||
+                                      "Unknown Protocol"}
+                                  </h4>
+                                  <p className="text-sm text-gray-400">
+                                    {dose.dosage} - {dose.time}
                                   </p>
                                 </div>
-                                <button
-                                  onClick={() => deleteDose(dose.id)}
-                                  className="text-red-400 hover:text-red-300 transition-colors"
-                                  title="Delete dose"
-                                >
-                                  <X className="w-4 h-4" />
-                                </button>
+                                <div className="text-right flex items-start gap-2">
+                                  <div>
+                                    <p className="text-sm text-gray-300">
+                                      {doseDate.toLocaleDateString()}
+                                    </p>
+                                    <p className="text-xs text-gray-500">
+                                      {doseDate.toLocaleTimeString()}
+                                    </p>
+                                  </div>
+                                  <button
+                                    onClick={() => deleteDose(dose.id)}
+                                    className="text-red-400 hover:text-red-300 transition-colors"
+                                    title="Delete dose"
+                                  >
+                                    <X className="w-4 h-4" />
+                                  </button>
+                                </div>
                               </div>
+                              {(dose.notes || dose.sideEffects) && (
+                                <p className="text-sm text-gray-300 mt-2 italic">
+                                  Notes/Side Effects:{" "}
+                                  {dose.notes || dose.sideEffects}
+                                </p>
+                              )}
                             </div>
-                            {(dose.notes || dose.sideEffects) && (
-                              <p className="text-sm text-gray-300 mt-2 italic">
-                                Notes/Side Effects: {dose.notes || dose.sideEffects}
-                              </p>
-                            )}
-                          </div>
-                        )
-                      })}
+                          );
+                        })}
 
                       {/* Show future scheduled doses for this day */}
                       {doseHistoryByDate.get(selectedCalendarDay)?.labels &&
-                        Array.from(doseHistoryByDate.get(selectedCalendarDay)!.labels)
-                          .filter(label => {
+                        Array.from(
+                          doseHistoryByDate.get(selectedCalendarDay)!.labels,
+                        )
+                          .filter((label) => {
                             // Only show labels that don't have a completed dose
-                              return !doseHistory.some((dose: any) => {
-                                const doseDateSource = dose?.doseDate || dose?.createdAt || dose?.updatedAt
-                                if (!doseDateSource) return false
-                                const doseDateKey = dose?.localDate || dateToLocalKey(new Date(doseDateSource))
-                                const doseName = dose?.user_peptide_protocols?.peptides?.name ?? dose?.protocolName ?? ''
-                                return doseDateKey === selectedCalendarDay && doseName === label
-                              })
+                            return !doseHistory.some((dose: any) => {
+                              const doseDateSource =
+                                dose?.doseDate ||
+                                dose?.createdAt ||
+                                dose?.updatedAt;
+                              if (!doseDateSource) return false;
+                              const doseDateKey =
+                                dose?.localDate ||
+                                dateToLocalKey(new Date(doseDateSource));
+                              const doseName =
+                                dose?.user_peptide_protocols?.peptides?.name ??
+                                dose?.protocolName ??
+                                "";
+                              return (
+                                doseDateKey === selectedCalendarDay &&
+                                doseName === label
+                              );
+                            });
                           })
                           .map((label, idx) => (
-                            <div key={`future-${idx}`} className="p-4 bg-blue-900/20 rounded-lg border border-blue-600/30">
+                            <div
+                              key={`future-${idx}`}
+                              className="p-4 bg-blue-900/20 rounded-lg border border-blue-600/30"
+                            >
                               <div className="flex justify-between items-start">
                                 <div className="flex-1">
-                                  <h4 className="font-semibold text-blue-200">{label}</h4>
-                                  <p className="text-sm text-blue-300 mt-1">Scheduled</p>
+                                  <h4 className="font-semibold text-blue-200">
+                                    {label}
+                                  </h4>
+                                  <p className="text-sm text-blue-300 mt-1">
+                                    Scheduled
+                                  </p>
                                 </div>
                                 <span className="text-xs font-semibold px-2 py-1 rounded bg-blue-500/20 text-blue-300 border border-blue-400/40">
                                   Pending
                                 </span>
                               </div>
                             </div>
-                          ))
-                      }
+                          ))}
 
                       {doseHistory.filter((dose: any) => {
-                        const doseDateSource = dose?.doseDate || dose?.createdAt || dose?.updatedAt
-                        if (!doseDateSource) return false
-                        const doseDateKey = dose?.localDate || dateToLocalKey(new Date(doseDateSource))
-                        return doseDateKey === selectedCalendarDay
+                        const doseDateSource =
+                          dose?.doseDate || dose?.createdAt || dose?.updatedAt;
+                        if (!doseDateSource) return false;
+                        const doseDateKey =
+                          dose?.localDate ||
+                          dateToLocalKey(new Date(doseDateSource));
+                        return doseDateKey === selectedCalendarDay;
                       }).length === 0 && (
                         <div className="text-center py-8 text-gray-400">
                           No doses logged for this day
@@ -1758,10 +2093,14 @@ export function PeptideTracker() {
                 <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30 shadow-xl hover:shadow-primary-400/20 transition-all duration-300 flex items-start">
                   <AlertCircle className="w-5 h-5 text-primary-300 mr-3 mt-0.5 flex-shrink-0" />
                   <div>
-                    <h4 className="font-semibold text-primary-200 mb-1">IRB-Approved Research Protocol</h4>
+                    <h4 className="font-semibold text-primary-200 mb-1">
+                      IRB-Approved Research Protocol
+                    </h4>
                     <p className="text-gray-300 text-sm">
-                      Your peptide data is securely tracked and can be shared with healthcare providers for research purposes. 
-                      All data handling follows IRB compliance standards for participant safety.
+                      Your peptide data is securely tracked and can be shared
+                      with healthcare providers for research purposes. All data
+                      handling follows IRB compliance standards for participant
+                      safety.
                     </p>
                   </div>
                 </div>
@@ -1775,18 +2114,22 @@ export function PeptideTracker() {
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
             <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 max-w-2xl w-full border border-primary-400/30 shadow-2xl">
               <div className="flex justify-between items-center mb-6">
-                <h3 className="text-2xl font-bold text-white">{selectedProtocol.name} Schedule</h3>
-                <button 
+                <h3 className="text-2xl font-bold text-white">
+                  {selectedProtocol.name} Schedule
+                </h3>
+                <button
                   onClick={() => setShowScheduleModal(false)}
                   className="text-gray-400 hover:text-white transition-colors"
                 >
                   ✕
                 </button>
               </div>
-              
+
               <div className="space-y-4">
                 <div className="bg-gray-700/30 rounded-lg p-4">
-                  <h4 className="font-semibold text-primary-300 mb-2">Current Protocol Details</h4>
+                  <h4 className="font-semibold text-primary-300 mb-2">
+                    Current Protocol Details
+                  </h4>
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
                       <span className="text-gray-400">Dosage:</span>
@@ -1808,75 +2151,105 @@ export function PeptideTracker() {
                 </div>
 
                 <div className="bg-secondary-600/20 rounded-lg p-4">
-                  <h4 className="font-semibold text-secondary-300 mb-3">Weekly Schedule</h4>
+                  <h4 className="font-semibold text-secondary-300 mb-3">
+                    Weekly Schedule
+                  </h4>
                   <div className="grid grid-cols-7 gap-2">
-                    {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, index) => {
-                      // Determine if this day is active based on frequency
-                      const isActiveDay =
-                        selectedProtocol.frequency.toLowerCase().includes('daily') ||
-                        selectedProtocol.frequency.toLowerCase().includes('every day') ||
-                        (selectedProtocol.frequency.includes('5 days') && index >= 1 && index <= 5) ||
-                        (selectedProtocol.frequency.includes('3x per week') && [1, 3, 5].includes(index)) ||
-                        (selectedProtocol.frequency.includes('2x per week') && [1, 4].includes(index)) ||
-                        (selectedProtocol.frequency.toLowerCase().includes('every other day') && index % 2 === 1);
+                    {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(
+                      (day, index) => {
+                        // Determine if this day is active based on frequency
+                        const isActiveDay =
+                          selectedProtocol.frequency
+                            .toLowerCase()
+                            .includes("daily") ||
+                          selectedProtocol.frequency
+                            .toLowerCase()
+                            .includes("every day") ||
+                          (selectedProtocol.frequency.includes("5 days") &&
+                            index >= 1 &&
+                            index <= 5) ||
+                          (selectedProtocol.frequency.includes("3x per week") &&
+                            [1, 3, 5].includes(index)) ||
+                          (selectedProtocol.frequency.includes("2x per week") &&
+                            [1, 4].includes(index)) ||
+                          (selectedProtocol.frequency
+                            .toLowerCase()
+                            .includes("every other day") &&
+                            index % 2 === 1);
 
-                      // Determine dose times based on timing
-                      const doseTimes: string[] = [];
-                      if (isActiveDay) {
-                        const timing = selectedProtocol.timing.toLowerCase();
-                        if (timing.includes('am/pm') || timing.includes('twice')) {
-                          doseTimes.push('8:00 AM', '8:00 PM');
-                        } else if (timing.includes('am')) {
-                          doseTimes.push('8:00 AM');
-                        } else if (timing.includes('pm')) {
-                          doseTimes.push('8:00 PM');
-                        } else if (timing.includes('before meals')) {
-                          doseTimes.push('7:00 AM', '12:00 PM', '6:00 PM');
-                        } else if (timing.includes('after meals')) {
-                          doseTimes.push('9:00 AM', '2:00 PM', '8:00 PM');
-                        } else {
-                          doseTimes.push('Scheduled');
+                        // Determine dose times based on timing
+                        const doseTimes: string[] = [];
+                        if (isActiveDay) {
+                          const timing = selectedProtocol.timing.toLowerCase();
+                          if (
+                            timing.includes("am/pm") ||
+                            timing.includes("twice")
+                          ) {
+                            doseTimes.push("8:00 AM", "8:00 PM");
+                          } else if (timing.includes("am")) {
+                            doseTimes.push("8:00 AM");
+                          } else if (timing.includes("pm")) {
+                            doseTimes.push("8:00 PM");
+                          } else if (timing.includes("before meals")) {
+                            doseTimes.push("7:00 AM", "12:00 PM", "6:00 PM");
+                          } else if (timing.includes("after meals")) {
+                            doseTimes.push("9:00 AM", "2:00 PM", "8:00 PM");
+                          } else {
+                            doseTimes.push("Scheduled");
+                          }
                         }
-                      }
 
-                      return (
-                        <div key={day} className="text-center">
-                          <div className="text-xs font-semibold text-gray-300 mb-2">{day}</div>
-                          <div className={`min-h-[60px] rounded-lg p-2 flex flex-col items-center justify-center text-[10px] leading-tight ${
-                            isActiveDay
-                              ? 'bg-gradient-to-br from-primary-500/20 to-secondary-500/20 border border-primary-400/30 text-primary-200'
-                              : 'bg-gray-700/20 border border-gray-600/20 text-gray-500'
-                          }`}>
-                            {doseTimes.length > 0 ? (
-                              doseTimes.map((time, idx) => (
-                                <div key={idx} className="font-medium whitespace-nowrap">
-                                  {time}
-                                </div>
-                              ))
-                            ) : (
-                              <div className="text-gray-500">—</div>
-                            )}
+                        return (
+                          <div key={day} className="text-center">
+                            <div className="text-xs font-semibold text-gray-300 mb-2">
+                              {day}
+                            </div>
+                            <div
+                              className={`min-h-[60px] rounded-lg p-2 flex flex-col items-center justify-center text-[10px] leading-tight ${
+                                isActiveDay
+                                  ? "bg-gradient-to-br from-primary-500/20 to-secondary-500/20 border border-primary-400/30 text-primary-200"
+                                  : "bg-gray-700/20 border border-gray-600/20 text-gray-500"
+                              }`}
+                            >
+                              {doseTimes.length > 0 ? (
+                                doseTimes.map((time, idx) => (
+                                  <div
+                                    key={idx}
+                                    className="font-medium whitespace-nowrap"
+                                  >
+                                    {time}
+                                  </div>
+                                ))
+                              ) : (
+                                <div className="text-gray-500">—</div>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      },
+                    )}
                   </div>
                   <div className="mt-3 text-xs text-gray-400 text-center">
-                    Times shown are suggested based on your protocol timing ({selectedProtocol.timing})
+                    Times shown are suggested based on your protocol timing (
+                    {selectedProtocol.timing})
                   </div>
                 </div>
 
                 <div className="bg-amber-600/20 rounded-lg p-4">
-                  <h4 className="font-semibold text-amber-300 mb-2">Preparation Instructions</h4>
+                  <h4 className="font-semibold text-amber-300 mb-2">
+                    Preparation Instructions
+                  </h4>
                   <p className="text-amber-100 text-sm">
-                    Reconstitute {selectedProtocol.vialAmount} vial with {selectedProtocol.reconstitution} of bacteriostatic water. 
-                    Each dose requires {selectedProtocol.syringeUnits} units on an insulin syringe.
+                    Reconstitute {selectedProtocol.vialAmount} vial with{" "}
+                    {selectedProtocol.reconstitution} of bacteriostatic water.
+                    Each dose requires {selectedProtocol.syringeUnits} units on
+                    an insulin syringe.
                   </p>
                 </div>
               </div>
 
               <div className="flex justify-end mt-6">
-                <button 
+                <button
                   onClick={() => setShowScheduleModal(false)}
                   className="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-6 rounded-lg transition-colors"
                 >
@@ -1897,7 +2270,9 @@ export function PeptideTracker() {
                     <h2 className="text-3xl font-bold bg-gradient-to-r from-primary-300 to-secondary-300 bg-clip-text text-transparent">
                       Add Research Protocol
                     </h2>
-                    <p className="text-primary-200 mt-1">Select a peptide and scheduling details for tracking</p>
+                    <p className="text-primary-200 mt-1">
+                      Select a peptide and scheduling details for tracking
+                    </p>
                   </div>
                   <button
                     onClick={() => setShowAddProtocolModal(false)}
@@ -1910,13 +2285,13 @@ export function PeptideTracker() {
               <div className="overflow-y-auto max-h-[calc(92vh-100px)] custom-scrollbar p-8">
                 <DosageCalculator
                   mode="addProtocol"
-                  peptideLibrary={peptideLibrary.map(p => ({
+                  peptideLibrary={peptideLibrary.map((p) => ({
                     id: p.id,
                     name: p.name,
                     dosage: p.dosage,
                     category: p.purpose,
                     reconstitution: p.reconstitution,
-                    vialAmount: p.vialAmount
+                    vialAmount: p.vialAmount,
                   }))}
                   onSaveProtocol={handleSaveProtocol}
                   onClose={() => setShowAddProtocolModal(false)}
@@ -1938,10 +2313,11 @@ export function PeptideTracker() {
                       Dosage Calculator
                     </h2>
                     <p className="text-primary-200 mt-1">
-                      {selectedProtocol.name} • {selectedProtocol.purpose} Protocol
+                      {selectedProtocol.name} • {selectedProtocol.purpose}{" "}
+                      Protocol
                     </p>
                   </div>
-                  <button 
+                  <button
                     onClick={() => setShowCalculatorModal(false)}
                     className="bg-red-500/20 hover:bg-red-500/30 text-red-300 hover:text-red-200 rounded-full p-3 transition-all duration-300 hover:scale-110"
                   >
@@ -1949,19 +2325,23 @@ export function PeptideTracker() {
                   </button>
                 </div>
               </div>
-              
+
               {/* Calculator Content with Premium Styling */}
               <div className="overflow-y-auto max-h-[calc(92vh-100px)] custom-scrollbar p-8">
                 <DosageCalculator
                   importedPeptide={{
-                    id: selectedProtocol.id || 'temp',
+                    id: selectedProtocol.id || "temp",
                     name: selectedProtocol.name,
-                    vialSize: parseFloat(selectedProtocol.vialAmount.replace(/[^0-9.]/g, '')),
-                    recommendedDose: parseFloat(selectedProtocol.dosage.replace(/[^0-9.]/g, ''))
+                    vialSize: parseFloat(
+                      selectedProtocol.vialAmount.replace(/[^0-9.]/g, ""),
+                    ),
+                    recommendedDose: parseFloat(
+                      selectedProtocol.dosage.replace(/[^0-9.]/g, ""),
+                    ),
                   }}
                   onSaveToLog={(entry) => {
-                    console.log('Saving calculator entry to log:', entry)
-                    setShowCalculatorModal(false)
+                    console.log("Saving calculator entry to log:", entry);
+                    setShowCalculatorModal(false);
                   }}
                 />
               </div>
@@ -1975,18 +2355,22 @@ export function PeptideTracker() {
             <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 max-w-md w-full border border-primary-400/30 shadow-2xl">
               <div className="flex justify-between items-center mb-6">
                 <h3 className="text-xl font-bold text-white">Log Dose</h3>
-                <button 
+                <button
                   onClick={() => setShowDoseModal(false)}
                   className="text-gray-400 hover:text-white transition-colors"
                 >
                   ✕
                 </button>
               </div>
-              
+
               <div className="space-y-4">
                 <div>
-                  <h4 className="font-semibold text-primary-300 mb-2">{selectedProtocol.name}</h4>
-                  <p className="text-gray-300 text-sm">{selectedProtocol.dosage} • {new Date().toLocaleString()}</p>
+                  <h4 className="font-semibold text-primary-300 mb-2">
+                    {selectedProtocol.name}
+                  </h4>
+                  <p className="text-gray-300 text-sm">
+                    {selectedProtocol.dosage} • {new Date().toLocaleString()}
+                  </p>
                 </div>
 
                 <div>
@@ -2004,13 +2388,13 @@ export function PeptideTracker() {
               </div>
 
               <div className="flex gap-3 mt-6">
-                <button 
+                <button
                   onClick={() => setShowDoseModal(false)}
                   className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
                 >
                   Cancel
                 </button>
-                <button 
+                <button
                   onClick={logDose}
                   className="flex-1 bg-secondary-600 hover:bg-secondary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
                 >
@@ -2037,7 +2421,9 @@ export function PeptideTracker() {
 
               <div className="space-y-4">
                 <div>
-                  <h4 className="font-semibold text-primary-300 mb-4">{editingProtocol.name}</h4>
+                  <h4 className="font-semibold text-primary-300 mb-4">
+                    {editingProtocol.name}
+                  </h4>
                 </div>
 
                 <div>
@@ -2062,13 +2448,42 @@ export function PeptideTracker() {
                     onChange={(e) => setCustomFrequency(e.target.value)}
                     className="w-full bg-gray-800 text-white border border-gray-700 rounded-lg px-4 py-2 focus:border-primary-400 focus:outline-none focus:ring-1 focus:ring-primary-400"
                   >
-                    <option className="bg-gray-900 text-white" value="">Select frequency...</option>
-                    <option className="bg-gray-900 text-white" value="Daily">Daily</option>
-                    <option className="bg-gray-900 text-white" value="Every other day">Every other day</option>
-                    <option className="bg-gray-900 text-white" value="3x per week">3x per week</option>
-                    <option className="bg-gray-900 text-white" value="2x per week">2x per week</option>
-                    <option className="bg-gray-900 text-white" value="5 days on, 2 days off">5 days on, 2 days off</option>
-                    <option className="bg-gray-900 text-white" value="Once per week">Once per week</option>
+                    <option className="bg-gray-900 text-white" value="">
+                      Select frequency...
+                    </option>
+                    <option className="bg-gray-900 text-white" value="Daily">
+                      Daily
+                    </option>
+                    <option
+                      className="bg-gray-900 text-white"
+                      value="Every other day"
+                    >
+                      Every other day
+                    </option>
+                    <option
+                      className="bg-gray-900 text-white"
+                      value="3x per week"
+                    >
+                      3x per week
+                    </option>
+                    <option
+                      className="bg-gray-900 text-white"
+                      value="2x per week"
+                    >
+                      2x per week
+                    </option>
+                    <option
+                      className="bg-gray-900 text-white"
+                      value="5 days on, 2 days off"
+                    >
+                      5 days on, 2 days off
+                    </option>
+                    <option
+                      className="bg-gray-900 text-white"
+                      value="Once per week"
+                    >
+                      Once per week
+                    </option>
                   </select>
                 </div>
 
@@ -2087,7 +2502,11 @@ export function PeptideTracker() {
                         <span>{time}</span>
                         <button
                           type="button"
-                          onClick={() => setCustomTimesArray(prev => prev.filter(t => t !== time))}
+                          onClick={() =>
+                            setCustomTimesArray((prev) =>
+                              prev.filter((t) => t !== time),
+                            )
+                          }
                           className="text-primary-200 hover:text-white transition-colors"
                           aria-label={`Remove ${time}`}
                         >
@@ -2096,7 +2515,9 @@ export function PeptideTracker() {
                       </div>
                     ))}
                     {customTimesArray.length === 0 && (
-                      <p className="text-xs text-gray-400">No dose times selected</p>
+                      <p className="text-xs text-gray-400">
+                        No dose times selected
+                      </p>
                     )}
                   </div>
 
@@ -2111,8 +2532,13 @@ export function PeptideTracker() {
                     <button
                       type="button"
                       onClick={() => {
-                        if (newCustomTimeInput && !customTimesArray.includes(newCustomTimeInput)) {
-                          setCustomTimesArray(prev => [...prev, newCustomTimeInput].sort())
+                        if (
+                          newCustomTimeInput &&
+                          !customTimesArray.includes(newCustomTimeInput)
+                        ) {
+                          setCustomTimesArray((prev) =>
+                            [...prev, newCustomTimeInput].sort(),
+                          );
                         }
                       }}
                       className="bg-primary-600/30 hover:bg-primary-600/50 text-primary-200 border border-primary-400/40 px-4 py-2 rounded-lg text-sm font-medium transition-all"
@@ -2141,7 +2567,9 @@ export function PeptideTracker() {
 
                 <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3 mt-4">
                   <p className="text-xs text-amber-300">
-                    <strong>Note:</strong> Editing this protocol will only update YOUR schedule. Your past logged doses remain unchanged for accurate history tracking.
+                    <strong>Note:</strong> Editing this protocol will only
+                    update YOUR schedule. Your past logged doses remain
+                    unchanged for accurate history tracking.
                   </p>
                 </div>
               </div>
@@ -2168,21 +2596,24 @@ export function PeptideTracker() {
         {showNotificationModal && selectedProtocolForNotif && (
           <NotificationPreferences
             protocolId={selectedProtocolForNotif}
-            protocolName={currentProtocols.find(p => p.id === selectedProtocolForNotif)?.name || 'Protocol'}
+            protocolName={
+              currentProtocols.find((p) => p.id === selectedProtocolForNotif)
+                ?.name || "Protocol"
+            }
             onClose={() => {
-              setShowNotificationModal(false)
-              setSelectedProtocolForNotif(null)
+              setShowNotificationModal(false);
+              setSelectedProtocolForNotif(null);
               // Refresh notification preferences to update icon state
-              fetchNotificationPreferences()
+              fetchNotificationPreferences();
             }}
           />
         )}
       </div>
     </div>
-  )
+  );
 }
 
 const getClientTimezone = () => {
-  if (typeof window === 'undefined') return 'UTC'
-  return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
-}
+  if (typeof window === "undefined") return "UTC";
+  return Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+};

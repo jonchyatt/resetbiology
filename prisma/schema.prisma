@@ -8,48 +8,48 @@ datasource db {
 }
 
 model User {
-  id                     String                   @id @default(auto()) @map("_id") @db.ObjectId
-  name                   String?
-  email                  String?                  @unique
-  emailVerified          DateTime?
-  image                  String?
-  createdAt              DateTime                 @default(now())
-  updatedAt              DateTime                 @updatedAt
-  auth0Sub               String?                  @unique
-  rbClientId             String?                  @unique
-  displayName            String?
-  avatarUrl              String?
-  role                   String                   @default("basic")
-  profileJson            Json?
-  permissionsJson        Json?
-  accessLevel            String                   @default("guest")
-  permissions            Json?
-  subscriptionStatus     String                   @default("none")
-  subscriptionExpiry     DateTime?
-  trialStartDate         DateTime?
-  trialEndDate           DateTime?
-  drivePermissions       Json?
-  driveFolder            String?
-  profileData            Json?
-  irbApprovalStatus      String?
-  irbSubmissionDate      DateTime?
-  quizResponses          Json?
-  onboardingComplete     Boolean                  @default(false)
-  affiliateTracking      AffiliateTracking[]
-  breathSessions         BreathSession[]
-  progress               ClientProgress[]
-  gamificationPoints     GamificationPoint[]
-  moduleCompletions      ModuleCompletion[]
-  peptide_orders         peptide_orders[]
-  successDeposits        SuccessDeposit[]
-  user_peptide_protocols user_peptide_protocols[]
-  dailyTasks             DailyTask[]
-  foodEntries            FoodEntry[]
-  mealPlans              MealPlan[]
-  foodLogs               FoodLog[]
-  workoutSessions        WorkoutSession[]
-  workoutPrograms        WorkoutProgram[]
-  journalEntries         JournalEntry[]
+  id                      String                   @id @default(auto()) @map("_id") @db.ObjectId
+  name                    String?
+  email                   String?                  @unique
+  emailVerified           DateTime?
+  image                   String?
+  createdAt               DateTime                 @default(now())
+  updatedAt               DateTime                 @updatedAt
+  auth0Sub                String?                  @unique
+  rbClientId              String?                  @unique
+  displayName             String?
+  avatarUrl               String?
+  role                    String                   @default("basic")
+  profileJson             Json?
+  permissionsJson         Json?
+  accessLevel             String                   @default("guest")
+  permissions             Json?
+  subscriptionStatus      String                   @default("none")
+  subscriptionExpiry      DateTime?
+  trialStartDate          DateTime?
+  trialEndDate            DateTime?
+  drivePermissions        Json?
+  driveFolder             String?
+  profileData             Json?
+  irbApprovalStatus       String?
+  irbSubmissionDate       DateTime?
+  quizResponses           Json?
+  onboardingComplete      Boolean                  @default(false)
+  affiliateTracking       AffiliateTracking[]
+  breathSessions          BreathSession[]
+  progress                ClientProgress[]
+  gamificationPoints      GamificationPoint[]
+  moduleCompletions       ModuleCompletion[]
+  peptide_orders          peptide_orders[]
+  successDeposits         SuccessDeposit[]
+  user_peptide_protocols  user_peptide_protocols[]
+  dailyTasks              DailyTask[]
+  foodEntries             FoodEntry[]
+  mealPlans               MealPlan[]
+  foodLogs                FoodLog[]
+  workoutSessions         WorkoutSession[]
+  workoutPrograms         WorkoutProgram[]
+  journalEntries          JournalEntry[]
   notificationPreferences NotificationPreference[]
   scheduledNotifications  ScheduledNotification[]
   pushSubscriptions       PushSubscription[]
@@ -60,7 +60,7 @@ model User {
 
 model ClientProgress {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId     String  @db.ObjectId
+  userId     String   @db.ObjectId
   metricType String
   value      Float
   date       DateTime @default(now())
@@ -72,11 +72,11 @@ model ClientProgress {
 
 model ModuleCompletion {
   id             String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId         String  @db.ObjectId
+  userId         String   @db.ObjectId
   moduleId       String
   completedAt    DateTime @default(now())
-  localDate      String?  // User's local date YYYY-MM-DD for timezone-safe bucketing
-  localTime      String?  // User's local time HH:MM:SS
+  localDate      String? // User's local date YYYY-MM-DD for timezone-safe bucketing
+  localTime      String? // User's local time HH:MM:SS
   audioDuration  Int?
   fullCompletion Boolean  @default(false)
   user           User     @relation(fields: [userId], references: [id])
@@ -86,7 +86,7 @@ model ModuleCompletion {
 
 model GamificationPoint {
   id             String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId         String  @db.ObjectId
+  userId         String   @db.ObjectId
   pointType      String
   amount         Int
   earnedAt       DateTime @default(now())
@@ -118,8 +118,8 @@ model BreathSession {
   cycles        Int?
   progressScore Float?
   createdAt     DateTime @default(now())
-  localDate     String?  // User's local date YYYY-MM-DD for timezone-safe bucketing
-  localTime     String?  // User's local time HH:MM:SS
+  localDate     String? // User's local date YYYY-MM-DD for timezone-safe bucketing
+  localTime     String? // User's local time HH:MM:SS
   user          User     @relation(fields: [userId], references: [id])
 
   @@map("breath_sessions")
@@ -127,7 +127,7 @@ model BreathSession {
 
 model AffiliateTracking {
   id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId       String  @db.ObjectId
+  userId       String   @db.ObjectId
   referralCode String   @unique
   clicks       Int      @default(0)
   conversions  Int      @default(0)
@@ -140,7 +140,7 @@ model AffiliateTracking {
 
 model Assessment {
   id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId       String? @db.ObjectId
+  userId       String?  @db.ObjectId
   responses    Json
   results      Json?
   irbSubmitted Boolean  @default(false)
@@ -158,9 +158,6 @@ model VariableReward {
 
   @@map("variable_rewards")
 }
-
-
-
 
 model Peptide {
   id                     String                   @id @default(auto()) @map("_id") @db.ObjectId
@@ -211,23 +208,23 @@ model peptide_categories {
 
 model peptide_doses {
   id                     String                 @id @default(auto()) @map("_id") @db.ObjectId
-  protocolId             String  @db.ObjectId
-  protocolName           String?                // Peptide name at time of logging (preserved even if protocol deleted)
-  protocolSnapshot       Json?                  // Full protocol details at time of logging (dosage, frequency, timing)
+  protocolId             String                 @db.ObjectId
+  protocolName           String? // Peptide name at time of logging (preserved even if protocol deleted)
+  protocolSnapshot       Json? // Full protocol details at time of logging (dosage, frequency, timing)
   doseDate               DateTime
   dosage                 String
   time                   String?
   notes                  String?
   sideEffects            String?
   createdAt              DateTime               @default(now())
-  localDate              String?                // User's local date YYYY-MM-DD for timezone-safe bucketing
-  localTime              String?                // User's local time HH:MM:SS
+  localDate              String? // User's local date YYYY-MM-DD for timezone-safe bucketing
+  localTime              String? // User's local time HH:MM:SS
   user_peptide_protocols user_peptide_protocols @relation(fields: [protocolId], references: [id])
 }
 
 model peptide_education {
   id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  peptideId    String  @db.ObjectId
+  peptideId    String   @db.ObjectId
   title        String
   content      String
   type         String
@@ -240,8 +237,8 @@ model peptide_education {
 
 model peptide_orders {
   id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId       String  @db.ObjectId
-  peptideId    String  @db.ObjectId
+  userId       String   @db.ObjectId
+  peptideId    String   @db.ObjectId
   quantity     Int
   unitPrice    Float
   totalPrice   Float
@@ -261,9 +258,10 @@ model user_peptide_protocols {
   endDate                DateTime?
   dosage                 String
   frequency              String
-  timing                 String?                 // Dose times (e.g., "08:00" or "08:00/20:00" for multiple times)
+  timing                 String? // Dose times (e.g., "08:00" or "08:00/20:00" for multiple times)
   notes                  String?
   isActive               Boolean                 @default(true)
+  administrationType     String?                 @default("injection") // "injection" | "oral" | "nasal" | "topical"
   createdAt              DateTime                @default(now())
   updatedAt              DateTime
   peptide_doses          peptide_doses[]
@@ -276,7 +274,7 @@ model DailyTask {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   userId    String   @db.ObjectId
   date      DateTime
-  taskName  String   // peptides, journal, workout, meals, module, breath
+  taskName  String // peptides, journal, workout, meals, module, breath
   completed Boolean  @default(false)
   user      User     @relation(fields: [userId], references: [id])
 
@@ -292,7 +290,7 @@ model FoodEntry {
   protein  Float
   carbs    Float
   fats     Float
-  mealType String   // breakfast, lunch, dinner, snack
+  mealType String // breakfast, lunch, dinner, snack
   loggedAt DateTime @default(now())
   user     User     @relation(fields: [userId], references: [id])
 
@@ -302,13 +300,13 @@ model FoodEntry {
 model WorkoutSession {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
   userId      String   @db.ObjectId
-  exercises   Json     // Array of exercises with sets/reps/weight
-  duration    Int      // in seconds
+  exercises   Json // Array of exercises with sets/reps/weight
+  duration    Int // in seconds
   programId   String?
   notes       String?
   completedAt DateTime @default(now())
-  localDate   String?  // User's local date YYYY-MM-DD for timezone-safe bucketing
-  localTime   String?  // User's local time HH:MM:SS
+  localDate   String? // User's local date YYYY-MM-DD for timezone-safe bucketing
+  localTime   String? // User's local time HH:MM:SS
   user        User     @relation(fields: [userId], references: [id])
 
   @@map("workout_sessions")
@@ -317,7 +315,7 @@ model WorkoutSession {
 model JournalEntry {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   userId    String   @db.ObjectId
-  entry     String   // JSON string containing all journal data
+  entry     String // JSON string containing all journal data
   mood      String?
   weight    Float?
   date      DateTime
@@ -331,7 +329,7 @@ model MealPlan {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId
   userId        String   @db.ObjectId
   name          String
-  planType      String   // Muscle Building, Fat Loss, Keto, etc.
+  planType      String // Muscle Building, Fat Loss, Keto, etc.
   dailyCalories Float
   proteinTarget Float
   carbsTarget   Float
@@ -349,8 +347,8 @@ model WorkoutProgram {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
   userId      String   @db.ObjectId
   name        String
-  programType String   // Push, Pull, Legs, Full Body, etc.
-  template    Json     // Array of exercises with sets/reps
+  programType String // Push, Pull, Legs, Full Body, etc.
+  template    Json // Array of exercises with sets/reps
   description String?
   notes       String?
   isActive    Boolean  @default(true)
@@ -362,142 +360,143 @@ model WorkoutProgram {
 
 // --- STRIPE CATALOG MODELS (Mongo) ---
 model Product {
-  id               String    @id @default(auto()) @map("_id") @db.ObjectId
-  slug             String    @unique
-  name             String
-  description      String?
-  imageUrl         String?
-  
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  slug        String  @unique
+  name        String
+  description String?
+  imageUrl    String?
+
   // Additional images and media
-  allImages        Json?     // Array of all product image URLs
-  localImages      Json?     // Array of local image file paths
-  videos           Json?     // Array of video URLs (YouTube, etc)
-  
+  allImages   Json? // Array of all product image URLs
+  localImages Json? // Array of local image file paths
+  videos      Json? // Array of video URLs (YouTube, etc)
+
   // Pricing
-  partnerPrice     Float?    // Wholesale/partner price
-  retailPrice      Float?    // Customer price (with markup)
-  
+  partnerPrice Float? // Wholesale/partner price
+  retailPrice  Float? // Customer price (with markup)
+
   // Protocol and dosage information
-  protocolInfo     Json?     // Object with dosage, frequency, timing, etc
-  educationalContent Json?   // Array of educational content
-  learnMoreLinks   Json?     // Array of learn more page URLs
-  
+  protocolInfo       Json? // Object with dosage, frequency, timing, etc
+  educationalContent Json? // Array of educational content
+  learnMoreLinks     Json? // Array of learn more page URLs
+
   // Peptide Tracker Protocol Fields
-  isTrackable      Boolean   @default(false)  // Show in peptide tracker
-  protocolPurpose  String?   // "Fat Loss", "Healing", "Performance", etc
-  protocolDosageRange String? // e.g., "0.5mg-2.5mg" or "250mcg"
-  protocolFrequency String?  // e.g., "3x per week", "daily", "every other day"
-  protocolTiming   String?   // e.g., "AM", "PM", "twice daily"
-  protocolDuration String?   // e.g., "8 weeks on, 8 weeks off"
-  vialAmount       String?   // e.g., "10mg", "5mg"
+  isTrackable                Boolean @default(false) // Show in peptide tracker
+  protocolPurpose            String? // "Fat Loss", "Healing", "Performance", etc
+  protocolDosageRange        String? // e.g., "0.5mg-2.5mg" or "250mcg"
+  protocolFrequency          String? // e.g., "3x per week", "daily", "every other day"
+  protocolTiming             String? // e.g., "AM", "PM", "twice daily"
+  protocolDuration           String? // e.g., "8 weeks on, 8 weeks off"
+  vialAmount                 String? // e.g., "10mg", "5mg"
   reconstitutionInstructions String? // e.g., "2ml BAC water"
-  syringeUnits     Float?    // For dosage calculator
-  
+  syringeUnits               Float? // For dosage calculator
+
   // Product variant fields
-  baseProductName  String?   // Base name for grouping variants (e.g., "GHK-Cu")
-  variantLabel     String?   // Variant identifier (e.g., "50mg", "100mg", "5mg")
-  variantOrder     Int?      @default(0) // Display order for variants (lower = first)
+  baseProductName String? // Base name for grouping variants (e.g., "GHK-Cu")
+  variantLabel    String? // Variant identifier (e.g., "50mg", "100mg", "5mg")
+  variantOrder    Int?    @default(0) // Display order for variants (lower = first)
 
   // Inventory management
-  trackInventory      Boolean   @default(false)  // Enable inventory tracking for this product
-  quantityAvailable   Int?      @default(0)      // Current stock level
-  lowStockThreshold   Int?      @default(5)      // Alert when stock falls below this number
-  allowBackorder      Boolean   @default(false)  // Allow purchases when out of stock
-  isBundle            Boolean   @default(false)  // Is this a bundle/package product
-  bundlePriceOverride Int?                       // Manual price override for bundles (in cents)
+  trackInventory      Boolean @default(false) // Enable inventory tracking for this product
+  quantityAvailable   Int?    @default(0) // Current stock level
+  lowStockThreshold   Int?    @default(5) // Alert when stock falls below this number
+  allowBackorder      Boolean @default(false) // Allow purchases when out of stock
+  isBundle            Boolean @default(false) // Is this a bundle/package product
+  bundlePriceOverride Int? // Manual price override for bundles (in cents)
 
   // Product flags
-  active           Boolean   @default(true)
-  storefront       Boolean   @default(false)
-  featured         Boolean   @default(false)
-  category         String?   // Product category
-  
-  // Stripe integration
-  stripeProductId  String?
-  lastSyncedAt     DateTime?
-  
-  // Rich metadata
-  metadata         Json?
-  originalUrl      String?   // Original product URL from source
-  
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
+  active     Boolean @default(true)
+  storefront Boolean @default(false)
+  featured           Boolean @default(false)
+  category           String? // Product category
+  administrationType String? @default("injection") // "injection" | "oral" | "nasal" | "topical"
 
-  prices              Price[]
-  productPages        ProductPage[]
-  bundleItems         BundleItem[]  @relation("BundleProduct")
-  bundleComponents    BundleItem[]  @relation("ComponentProduct")
-  waitlistEntries     WaitlistEntry[]
+  // Stripe integration
+  stripeProductId String?
+  lastSyncedAt    DateTime?
+
+  // Rich metadata
+  metadata    Json?
+  originalUrl String? // Original product URL from source
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  prices                Price[]
+  productPages          ProductPage[]
+  bundleItems           BundleItem[]           @relation("BundleProduct")
+  bundleComponents      BundleItem[]           @relation("ComponentProduct")
+  waitlistEntries       WaitlistEntry[]
   inventoryTransactions InventoryTransaction[]
 }
 
 model Price {
-  id             String    @id @default(auto()) @map("_id") @db.ObjectId
-  productId      String    @db.ObjectId
-  product        Product   @relation(fields: [productId], references: [id])
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  productId String  @db.ObjectId
+  product   Product @relation(fields: [productId], references: [id])
 
-  label          String?
-  unitAmount     Int
-  currency       String    @default("usd")
-  interval       String?   // "month" | "year" | null for one-time
-  isPrimary      Boolean   @default(false)
-  active         Boolean   @default(true)
+  label      String?
+  unitAmount Int
+  currency   String  @default("usd")
+  interval   String? // "month" | "year" | null for one-time
+  isPrimary  Boolean @default(false)
+  active     Boolean @default(true)
 
-  stripePriceId  String?
+  stripePriceId String?
 
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Order {
-  id                    String   @id @default(auto()) @map("_id") @db.ObjectId
-  stripeSessionId       String   @unique
+  id                    String  @id @default(auto()) @map("_id") @db.ObjectId
+  stripeSessionId       String  @unique
   stripePaymentIntentId String?
   stripeCustomerId      String?
-  productId             String?  @db.ObjectId
-  priceId               String?  @db.ObjectId
+  productId             String? @db.ObjectId
+  priceId               String? @db.ObjectId
   amountTotal           Int?
   currency              String?
   email                 String?
-  status                String   @default("pending") // pending | paid | failed | refunded
+  status                String  @default("pending") // pending | paid | failed | refunded
 
   // Shipping Information
-  shippingName          String?
-  shippingLine1         String?
-  shippingLine2         String?
-  shippingCity          String?
-  shippingState         String?
-  shippingPostalCode    String?
-  shippingCountry       String?
-  shippingPhone         String?
+  shippingName       String?
+  shippingLine1      String?
+  shippingLine2      String?
+  shippingCity       String?
+  shippingState      String?
+  shippingPostalCode String?
+  shippingCountry    String?
+  shippingPhone      String?
 
   // Fulfillment
-  fulfillmentStatus     String   @default("unfulfilled") // unfulfilled | processing | shipped | delivered
-  trackingNumber        String?
-  trackingUrl           String?
-  shippedAt             DateTime?
-  deliveredAt           DateTime?
-  notes                 String?
+  fulfillmentStatus String    @default("unfulfilled") // unfulfilled | processing | shipped | delivered
+  trackingNumber    String?
+  trackingUrl       String?
+  shippedAt         DateTime?
+  deliveredAt       DateTime?
+  notes             String?
 
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // Store full HTML content for product pages
 model ProductPage {
-  id                String   @id @default(auto()) @map("_id") @db.ObjectId
-  productId         String   @db.ObjectId
-  product           Product  @relation(fields: [productId], references: [id])
-  
-  pageType          String   // "main" | "learn_more" | "education"
-  title             String?
-  htmlContent       String   // Full HTML content
-  textContent       String?  // Plain text version
-  sourceUrl         String?  // Original URL where content came from
-  
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  productId String  @db.ObjectId
+  product   Product @relation(fields: [productId], references: [id])
+
+  pageType    String // "main" | "learn_more" | "education"
+  title       String?
+  htmlContent String // Full HTML content
+  textContent String? // Plain text version
+  sourceUrl   String? // Original URL where content came from
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@unique([productId, pageType])
   @@map("product_pages")
 }
@@ -513,37 +512,37 @@ model FoodRef {
   nutrientsJson Json
   createdAt     DateTime @default(now())
 
-  @@map("food_refs")
   @@unique([source, sourceId], map: "foodref_source_sourceId")
+  @@map("food_refs")
 }
 
 model FoodLog {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId      String   @db.ObjectId
-  user        User     @relation(fields: [userId], references: [id])
-  loggedAt    DateTime @default(now())
-  localDate   String?  // User's local date as YYYY-MM-DD for timezone-safe bucketing
-  localTime   String?  // User's local time as HH:MM:SS
-  source      String
-  sourceId    String?
-  itemName    String
-  brand       String?
-  quantity    Float    @default(1)
-  unit        String   @default("serving")
-  gramWeight  Float?
-  nutrients   Json
-  photoUrl    String?
-  notes       String?
-  mealType    String   @default("snack")
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String   @db.ObjectId
+  user       User     @relation(fields: [userId], references: [id])
+  loggedAt   DateTime @default(now())
+  localDate  String? // User's local date as YYYY-MM-DD for timezone-safe bucketing
+  localTime  String? // User's local time as HH:MM:SS
+  source     String
+  sourceId   String?
+  itemName   String
+  brand      String?
+  quantity   Float    @default(1)
+  unit       String   @default("serving")
+  gramWeight Float?
+  nutrients  Json
+  photoUrl   String?
+  notes      String?
+  mealType   String   @default("snack")
 
   // AI Analysis Fields
-  aiMetadata  Json?    // Full AI analysis (items breakdown, assumptions, ranges)
-  confidence  Float?   // AI confidence score (0-1)
-  aiSource    String?  // "vision" | "voice" | "chat" | null
+  aiMetadata Json? // Full AI analysis (items breakdown, assumptions, ranges)
+  confidence Float? // AI confidence score (0-1)
+  aiSource   String? // "vision" | "voice" | "chat" | null
 
-  @@map("food_logs")
   @@index([userId, loggedAt], map: "foodlog_user_loggedAt")
   @@index([userId, localDate], map: "foodlog_user_localDate")
+  @@map("food_logs")
 }
 
 // --- PWA NOTIFICATION MODELS ---
@@ -564,16 +563,16 @@ model NotificationPreference {
 }
 
 model ScheduledNotification {
-  id           String    @id @default(auto()) @map("_id") @db.ObjectId
-  userId       String    @db.ObjectId
-  protocolId   String    @db.ObjectId
+  id           String                 @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String                 @db.ObjectId
+  protocolId   String                 @db.ObjectId
   doseTime     DateTime
   reminderTime DateTime
-  type         String    // "push" | "email"
-  sent         Boolean   @default(false)
+  type         String // "push" | "email"
+  sent         Boolean                @default(false)
   sentAt       DateTime?
-  createdAt    DateTime  @default(now())
-  user         User      @relation(fields: [userId], references: [id])
+  createdAt    DateTime               @default(now())
+  user         User                   @relation(fields: [userId], references: [id])
   protocol     user_peptide_protocols @relation(fields: [protocolId], references: [id])
 
   @@index([reminderTime, sent])
@@ -584,7 +583,7 @@ model PushSubscription {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   userId    String   @db.ObjectId
   endpoint  String
-  keys      Json     // {p256dh, auth}
+  keys      Json // {p256dh, auth}
   createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id])
 
@@ -597,17 +596,17 @@ model PushSubscription {
 // Tracks every cron job execution for health monitoring
 model CronHealthCheck {
   id                  String    @id @default(auto()) @map("_id") @db.ObjectId
-  cronType            String    // "notification-send"
-  status              String    // "started" | "completed" | "failed"
+  cronType            String // "notification-send"
+  status              String // "started" | "completed" | "failed"
   startedAt           DateTime  @default(now())
   completedAt         DateTime?
-  duration            Int?      // milliseconds
+  duration            Int? // milliseconds
   notificationsFound  Int?
   notificationsSent   Int?
   notificationsFailed Int?
-  errorMessage        String?   // If failed
-  errorStack          String?   // Full stack trace
-  metadata            Json?     // Additional context
+  errorMessage        String? // If failed
+  errorStack          String? // Full stack trace
+  metadata            Json? // Additional context
 
   @@index([cronType, startedAt])
   @@index([status, startedAt])
@@ -617,13 +616,13 @@ model CronHealthCheck {
 // Logs all email send failures for debugging
 model EmailFailureLog {
   id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  emailType    String   // "dose-reminder" | "order-confirmation" | "seller-notification" | "shipping-confirmation"
-  recipient    String   // Email address
-  userId       String?  @db.ObjectId  // If applicable
+  emailType    String // "dose-reminder" | "order-confirmation" | "seller-notification" | "shipping-confirmation"
+  recipient    String // Email address
+  userId       String?  @db.ObjectId // If applicable
   errorMessage String
-  errorCode    String?  // Resend error code
-  errorStack   String?  // Full stack trace
-  payload      Json?    // Email data that failed
+  errorCode    String? // Resend error code
+  errorStack   String? // Full stack trace
+  payload      Json? // Email data that failed
   attemptedAt  DateTime @default(now())
   retryCount   Int      @default(0)
   retrySuccess Boolean  @default(false)
@@ -635,17 +634,17 @@ model EmailFailureLog {
 
 // Tracks push notification subscription health per user
 model PushSubscriptionHealth {
-  id                   String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId               String   @db.ObjectId
-  subscriptionId       String   @db.ObjectId  // Reference to PushSubscription
-  lastSuccessSendAt    DateTime?
-  lastFailureSendAt    DateTime?
-  lastFailureReason    String?
-  consecutiveFailures  Int      @default(0)
-  isHealthy            Boolean  @default(true)
-  checkedAt            DateTime @default(now())
+  id                  String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId              String    @db.ObjectId
+  subscriptionId      String    @db.ObjectId // Reference to PushSubscription
+  lastSuccessSendAt   DateTime?
+  lastFailureSendAt   DateTime?
+  lastFailureReason   String?
+  consecutiveFailures Int       @default(0)
+  isHealthy           Boolean   @default(true)
+  checkedAt           DateTime  @default(now())
 
-  user                 User     @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 
   @@index([userId, isHealthy])
   @@index([consecutiveFailures])
@@ -656,17 +655,17 @@ model PushSubscriptionHealth {
 
 // Defines which products are in a bundle (e.g., "Glow Protocol" contains TB-500, BPC-157, GHK-Cu)
 model BundleItem {
-  id               String   @id @default(auto()) @map("_id") @db.ObjectId
-  bundleProductId  String   @db.ObjectId  // The bundle product (e.g., "Glow Protocol")
-  componentProductId String @db.ObjectId  // The component product (e.g., "TB-500")
-  quantity         Int      @default(1)   // How many of this component in the bundle
-  isOptional       Boolean  @default(false) // Optional add-on component
-  displayOrder     Int      @default(0)     // Order in which components are displayed
+  id                 String  @id @default(auto()) @map("_id") @db.ObjectId
+  bundleProductId    String  @db.ObjectId // The bundle product (e.g., "Glow Protocol")
+  componentProductId String  @db.ObjectId // The component product (e.g., "TB-500")
+  quantity           Int     @default(1) // How many of this component in the bundle
+  isOptional         Boolean @default(false) // Optional add-on component
+  displayOrder       Int     @default(0) // Order in which components are displayed
 
-  bundleProduct    Product  @relation("BundleProduct", fields: [bundleProductId], references: [id])
-  componentProduct Product  @relation("ComponentProduct", fields: [componentProductId], references: [id])
+  bundleProduct    Product @relation("BundleProduct", fields: [bundleProductId], references: [id])
+  componentProduct Product @relation("ComponentProduct", fields: [componentProductId], references: [id])
 
-  createdAt        DateTime @default(now())
+  createdAt DateTime @default(now())
 
   @@unique([bundleProductId, componentProductId])
   @@map("bundle_items")
@@ -674,15 +673,15 @@ model BundleItem {
 
 // Tracks customer waitlist for out-of-stock products
 model WaitlistEntry {
-  id          String    @id @default(auto()) @map("_id") @db.ObjectId
-  productId   String    @db.ObjectId
-  email       String
-  name        String?
-  notified    Boolean   @default(false)
-  notifiedAt  DateTime?
-  createdAt   DateTime  @default(now())
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  productId  String    @db.ObjectId
+  email      String
+  name       String?
+  notified   Boolean   @default(false)
+  notifiedAt DateTime?
+  createdAt  DateTime  @default(now())
 
-  product     Product   @relation(fields: [productId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
 
   @@index([productId, notified])
   @@map("waitlist_entries")
@@ -692,16 +691,16 @@ model WaitlistEntry {
 model InventoryTransaction {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
   productId   String   @db.ObjectId
-  type        String   // "purchase", "restock", "adjustment", "bundle_sale"
-  quantity    Int      // Positive for additions, negative for reductions
-  previousQty Int      // Quantity before transaction
-  newQty      Int      // Quantity after transaction
-  reason      String?  // Optional explanation
-  orderId     String?  // Reference to order if applicable
-  createdBy   String?  // Admin user who made the change
+  type        String // "purchase", "restock", "adjustment", "bundle_sale"
+  quantity    Int // Positive for additions, negative for reductions
+  previousQty Int // Quantity before transaction
+  newQty      Int // Quantity after transaction
+  reason      String? // Optional explanation
+  orderId     String? // Reference to order if applicable
+  createdBy   String? // Admin user who made the change
   createdAt   DateTime @default(now())
 
-  product     Product  @relation(fields: [productId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
 
   @@index([productId, createdAt])
   @@map("inventory_transactions")
@@ -709,56 +708,56 @@ model InventoryTransaction {
 
 // --- ASSESSMENT FUNNEL ---
 model AssessmentResponse {
-  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
   // Contact Information
-  name              String
-  email             String
-  phone             String?
-  location          String?   // IP-based location
+  name     String
+  email    String
+  phone    String?
+  location String? // IP-based location
 
   // Quiz Responses (Q5-Q19)
   // Best Practices (Q5-Q14): Support ranked multi-select (stored as JSON arrays)
-  q5_protein_tracking         Json      // String[] for ranked answers
-  q6_stem_cell_support        Json
-  q7_unified_tracking         Json
-  q8_breathwork               Json
-  q9_sleep_tracking           Json
-  q10_detox_protocols         Json
-  q11_journaling              Json
-  q12_workout_program         Json
-  q13_accountability          Json
-  q14_peptide_knowledge       Json
+  q5_protein_tracking   Json // String[] for ranked answers
+  q6_stem_cell_support  Json
+  q7_unified_tracking   Json
+  q8_breathwork         Json
+  q9_sleep_tracking     Json
+  q10_detox_protocols   Json
+  q11_journaling        Json
+  q12_workout_program   Json
+  q13_accountability    Json
+  q14_peptide_knowledge Json
 
   // Qualifying Questions (Q15-Q19): Single-select only
-  q15_current_situation       String
-  q16_desired_outcome         String
-  q17_biggest_obstacle        String
-  q18_ideal_solution          String
-  q19_additional_info         String?
+  q15_current_situation String
+  q16_desired_outcome   String
+  q17_biggest_obstacle  String
+  q18_ideal_solution    String
+  q19_additional_info   String?
 
   // Calculated Fields
-  score                       Int       // 0-100 based on Q5-Q14
-  scoreCategory               String    // "master", "strong", "gaps", "fresh"
-  recommendedTier             String    // "diy", "guided", "done-with-you", "concierge"
+  score           Int // 0-100 based on Q5-Q14
+  scoreCategory   String // "master", "strong", "gaps", "fresh"
+  recommendedTier String // "diy", "guided", "done-with-you", "concierge"
 
   // Engagement Tracking
-  timeToComplete              Int?      // Seconds
-  completedAt                 DateTime  @default(now())
-  viewedResults               Boolean   @default(false)
-  clickedCTA                  Boolean   @default(false)
-  bookedCall                  Boolean   @default(false)
-  convertedToCustomer         Boolean   @default(false)
-  conversionDate              DateTime?
+  timeToComplete      Int? // Seconds
+  completedAt         DateTime  @default(now())
+  viewedResults       Boolean   @default(false)
+  clickedCTA          Boolean   @default(false)
+  bookedCall          Boolean   @default(false)
+  convertedToCustomer Boolean   @default(false)
+  conversionDate      DateTime?
 
   // UTM & Source Tracking
-  utmSource                   String?
-  utmMedium                   String?
-  utmCampaign                 String?
-  referrer                    String?
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+  referrer    String?
 
   // A/B Test Variant
-  variant                     String?   // "control" or "funnel-v1"
+  variant String? // "control" or "funnel-v1"
 
   @@index([email])
   @@index([score])
@@ -771,20 +770,18 @@ model AssessmentResponse {
 
 // Tracks all AI API usage for cost monitoring and rate limiting
 model AIUsage {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId      String   @db.ObjectId
-  type        String   // "image" | "chat" | "voice"
-  model       String   // "gpt-4o-mini", "whisper-1", etc.
-  tokensUsed  Int      // Total tokens consumed
-  cost        Float    // Estimated cost in USD
-  success     Boolean  @default(true)
-  errorMsg    String?  // If failed
-  metadata    Json?    // Additional context (image size, etc.)
-  createdAt   DateTime @default(now())
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String   @db.ObjectId
+  type       String // "image" | "chat" | "voice"
+  model      String // "gpt-4o-mini", "whisper-1", etc.
+  tokensUsed Int // Total tokens consumed
+  cost       Float // Estimated cost in USD
+  success    Boolean  @default(true)
+  errorMsg   String? // If failed
+  metadata   Json? // Additional context (image size, etc.)
+  createdAt  DateTime @default(now())
 
   @@index([userId, type, createdAt])
   @@index([createdAt])
   @@map("ai_usage")
 }
-
-
