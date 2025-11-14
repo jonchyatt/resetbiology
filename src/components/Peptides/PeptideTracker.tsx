@@ -1271,6 +1271,29 @@ export function PeptideTracker() {
       return doseDateKey === todayKey && doseName === protocol.name
     })
 
+    // Extract next dose time from protocol timing
+    const getNextDoseTime = () => {
+      const timing = protocol.timing.toLowerCase()
+      if (timing.includes('/')) {
+        // Has specific times like "08:00/20:00"
+        const times = timing.split('/').map(t => t.trim())
+        // Return the first time (could be enhanced to show next upcoming time)
+        return times[0]
+      } else if (timing.match(/^\d{2}:\d{2}$/)) {
+        // Single time like "15:50"
+        return timing
+      } else if (timing.includes('am') && !timing.includes('pm')) {
+        return '08:00'
+      } else if (timing.includes('pm') && !timing.includes('am')) {
+        return '20:00'
+      } else if (timing.includes('am') && timing.includes('pm')) {
+        return '08:00' // Show first dose of the day
+      }
+      return null
+    }
+
+    const nextDoseTime = getNextDoseTime()
+
     // Determine status badge
     let statusBadge: { text: string; className: string } | null = null
     if (isCompletedToday) {
@@ -1282,7 +1305,7 @@ export function PeptideTracker() {
       const daysUntil = Math.floor((nextDoseDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
       if (daysUntil === 0) {
         statusBadge = {
-          text: 'Coming Due Today',
+          text: nextDoseTime ? `Coming Due: ${nextDoseTime}` : 'Coming Due Today',
           className: 'bg-amber-500/20 text-amber-300 border-amber-400/40'
         }
       } else if (daysUntil === 1) {
@@ -1319,6 +1342,13 @@ export function PeptideTracker() {
             </div>
           </button>
           <div className="flex gap-2">
+            <button
+              onClick={() => openDoseModal(protocol)}
+              className="text-secondary-400 hover:text-secondary-300 transition-colors"
+              title="Log Dose"
+            >
+              <Syringe className="w-5 h-5" />
+            </button>
             <button
               onClick={() => {
                 setSelectedProtocolForNotif(protocol.id)
