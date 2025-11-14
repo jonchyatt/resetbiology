@@ -5,11 +5,6 @@ import { prisma } from '@/lib/prisma'
 import OpenAI from 'openai'
 import { compressImageForAI, base64ToBuffer, estimateVisionCost } from '@/lib/imageUtils'
 
-// Initialize OpenAI client
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-})
-
 // Nutrition analysis prompt (adapted from n8n workflow)
 const NUTRITION_ANALYSIS_PROMPT = `You are a professional nutrition analyst. Your goal is to analyze this food photo for each visible item and output a structured JSON with clear calorie and macro estimates.
 
@@ -126,6 +121,11 @@ export async function POST(req: NextRequest) {
 
     // 5. Call OpenAI Vision API with GPT-4o-mini
     const startTime = Date.now()
+
+    // Initialize OpenAI client (lazy initialization to avoid build-time errors)
+    const openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY
+    })
 
     const response = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
