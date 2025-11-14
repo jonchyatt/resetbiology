@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react"
 import Link from "next/link"
-import { Apple, Target, Plus, X, Calendar, TrendingUp, Utensils, Copy, Edit, Trash2 } from "lucide-react"
+import { Apple, Target, Plus, X, Calendar, TrendingUp, Utensils, Copy, Edit, Trash2, Star } from "lucide-react"
 import { FoodQuickAdd, FoodQuickAddResult } from "./FoodQuickAdd"
 import { RecentFoods } from "./RecentFoods"
 import { MacroGoals } from "./MacroGoals"
@@ -56,6 +56,10 @@ export function NutritionTracker() {
   const [showEditModal, setShowEditModal] = useState(false)
   const [editingEntry, setEditingEntry] = useState<FoodHistoryEntry | null>(null)
 
+  // Favorites state
+  const [favorites, setFavorites] = useState<any[]>([])
+  const [favoritesLoading, setFavoritesLoading] = useState(false)
+
   // Form state for adding food
   const [foodName, setFoodName] = useState('')
   const [calories, setCalories] = useState('')
@@ -67,7 +71,65 @@ export function NutritionTracker() {
   useEffect(() => {
     fetchTodaysFoods()
     fetchFoodLibrary()
+    loadFavorites()
   }, [])
+
+  // Load favorites from API
+  const loadFavorites = async () => {
+    try {
+      setFavoritesLoading(true)
+      const res = await fetch('/api/nutrition/favorites')
+      if (res.ok) {
+        const data = await res.json()
+        setFavorites(data.favorites || [])
+      }
+    } catch (err) {
+      console.error('Failed to load favorites:', err)
+    } finally {
+      setFavoritesLoading(false)
+    }
+  }
+
+  // Check if a history item is favorited
+  const isFavorited = (entry: FoodHistoryEntry): boolean => {
+    return favorites.some(
+      (f) => f.description === entry.itemName && (entry.brand ? f.brand === entry.brand : true)
+    )
+  }
+
+  // Toggle favorite for a history item
+  const toggleFavoriteFromHistory = async (entry: FoodHistoryEntry, e: React.MouseEvent) => {
+    e.stopPropagation()
+
+    const action = isFavorited(entry) ? 'remove' : 'add'
+
+    try {
+      const res = await fetch('/api/nutrition/favorites', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          food: {
+            source: 'history',
+            sourceId: entry.id,
+            description: entry.itemName,
+            brand: entry.brand || null,
+            per: entry.unit === 'g' ? '100g' : 'serving',
+            nutrients: entry.nutrients || null,
+            defaultGrams: entry.gramWeight || 100,
+            defaultServings: entry.quantity || 1
+          },
+          action
+        })
+      })
+
+      if (res.ok) {
+        const data = await res.json()
+        setFavorites(data.favorites || [])
+      }
+    } catch (err) {
+      console.error('Failed to toggle favorite:', err)
+    }
+  }
 
   useEffect(() => {
     if (!logSuccess) return
@@ -707,6 +769,17 @@ export function NutritionTracker() {
                                   <p>{loggedDate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</p>
                                 </div>
                                 <div className="flex gap-2 items-center">
+                                  <button
+                                    onClick={(e) => toggleFavoriteFromHistory(entry, e)}
+                                    className="p-1 hover:scale-110 transition-transform"
+                                    title={isFavorited(entry) ? "Remove from favorites" : "Add to favorites"}
+                                  >
+                                    <Star
+                                      className="w-4 h-4"
+                                      fill={isFavorited(entry) ? '#eab308' : 'none'}
+                                      stroke={isFavorited(entry) ? '#eab308' : '#94a3b8'}
+                                    />
+                                  </button>
                                   <button
                                     onClick={() => handleEditEntry(entry)}
                                     className="text-blue-400 hover:text-blue-300 transition-colors"

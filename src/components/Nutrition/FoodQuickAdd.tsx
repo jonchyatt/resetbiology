@@ -357,10 +357,10 @@ export function FoodQuickAdd({ onLogged }: { onLogged?: (result: FoodQuickAddRes
           {/* Camera Button */}
           <button
             onClick={() => setShowCameraModal(true)}
-            className="p-2 rounded-lg bg-primary-500/20 hover:bg-primary-500/30 border border-primary-400/30 transition-colors"
+            className="p-2 rounded-lg bg-primary-500/20 hover:bg-primary-500/30 border border-primary-400/40 transition-colors hover:border-primary-400/60"
             title="Snap food photo with AI"
           >
-            <Camera className="w-4 h-4 text-primary-300" />
+            <Camera className="w-5 h-5 text-primary-300" />
           </button>
         </div>
 
