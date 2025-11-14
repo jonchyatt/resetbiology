@@ -12,8 +12,10 @@ import {
   Edit,
   ChevronDown,
   Bell,
+  Pill,
 } from "lucide-react";
 import { DosageCalculator } from "./DosageCalculator";
+import { QuickAddOralMed } from "./QuickAddOralMed";
 import NotificationPreferences from "@/components/Notifications/NotificationPreferences";
 import PushUnavailableWarning from "@/components/Notifications/PushUnavailableWarning";
 
@@ -47,6 +49,7 @@ interface PeptideProtocol {
   startDate?: string;
   currentCycle?: number;
   isActive: boolean;
+  administrationType?: string;
 }
 
 interface DoseEntry {
@@ -97,6 +100,7 @@ export function PeptideTracker() {
   const [showDoseModal, setShowDoseModal] = useState(false);
   const [showCalculatorModal, setShowCalculatorModal] = useState(false);
   const [showAddProtocolModal, setShowAddProtocolModal] = useState(false);
+  const [showQuickAddOral, setShowQuickAddOral] = useState(false);
   const [showEditProtocolModal, setShowEditProtocolModal] = useState(false);
   const [editingProtocol, setEditingProtocol] =
     useState<PeptideProtocol | null>(null);
@@ -1568,7 +1572,11 @@ export function PeptideTracker() {
               className="text-secondary-400 hover:text-secondary-300 transition-colors"
               title="Log Dose"
             >
-              <Syringe className="w-5 h-5" />
+              {protocol.administrationType === "oral" ? (
+                <Pill className="w-5 h-5" />
+              ) : (
+                <Syringe className="w-5 h-5" />
+              )}
             </button>
             <button
               onClick={() => {
@@ -1769,13 +1777,22 @@ export function PeptideTracker() {
                     <h3 className="text-2xl font-bold text-white">
                       Active Protocols
                     </h3>
-                    <button
-                      onClick={() => setShowAddProtocolModal(true)}
-                      className="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center"
-                    >
-                      <Plus className="w-4 h-4 mr-2" />
-                      Add Research Protocol
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setShowAddProtocolModal(true)}
+                        className="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center"
+                      >
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add Research Protocol
+                      </button>
+                      <button
+                        onClick={() => setShowQuickAddOral(true)}
+                        className="bg-teal-600 hover:bg-teal-700 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center"
+                      >
+                        <Pill className="w-4 h-4 mr-2" />
+                        Add Oral Med
+                      </button>
+                    </div>
                   </div>
 
                   {currentProtocols.length === 0 ? (
