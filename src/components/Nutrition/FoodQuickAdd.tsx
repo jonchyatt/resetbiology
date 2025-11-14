@@ -351,13 +351,13 @@ export function FoodQuickAdd({ onLogged }: { onLogged?: (result: FoodQuickAddRes
 
   return (
     <section className="rounded-2xl bg-gradient-to-br from-emerald-500/10 via-slate-900/40 to-slate-900/60 border border-emerald-400/30 shadow-lg p-6">
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mb-4 flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <h2 className="text-xl font-bold text-white">Add Nutrition</h2>
           {/* Camera Button */}
           <button
             onClick={() => setShowCameraModal(true)}
-            className="p-2 rounded-lg bg-primary-500/20 hover:bg-primary-500/30 border border-primary-400/40 transition-colors hover:border-primary-400/60"
+            className="px-4 py-2 rounded-lg bg-primary-500/20 hover:bg-primary-500/30 border border-primary-400/40 transition-colors hover:border-primary-400/60"
             title="Snap food photo with AI"
           >
             <Camera className="w-5 h-5 text-primary-300" />
@@ -378,7 +378,7 @@ export function FoodQuickAdd({ onLogged }: { onLogged?: (result: FoodQuickAddRes
           </button>
           <button
             onClick={() => setActiveTab('favorites')}
-            className={`px-4 py-1.5 rounded-lg text-sm font-medium transition flex items-center gap-1 ${
+            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition flex items-center gap-1 ${
               activeTab === 'favorites'
                 ? 'bg-yellow-500 text-white'
                 : 'bg-slate-700/50 text-slate-300 hover:bg-slate-700'
