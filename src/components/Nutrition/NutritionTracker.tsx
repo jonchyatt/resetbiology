@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react"
 import Link from "next/link"
-import { Apple, Target, Plus, X, Calendar, TrendingUp, Utensils, Copy } from "lucide-react"
+import { Apple, Target, Plus, X, Calendar, TrendingUp, Utensils, Copy, Edit, Trash2 } from "lucide-react"
 import { FoodQuickAdd, FoodQuickAddResult } from "./FoodQuickAdd"
 import { RecentFoods } from "./RecentFoods"
 import { MacroGoals } from "./MacroGoals"
@@ -53,6 +53,8 @@ export function NutritionTracker() {
   const [historyLoading, setHistoryLoading] = useState(false)
   const [historyError, setHistoryError] = useState<string | null>(null)
   const [copyingDay, setCopyingDay] = useState(false)
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [editingEntry, setEditingEntry] = useState<FoodHistoryEntry | null>(null)
 
   // Form state for adding food
   const [foodName, setFoodName] = useState('')
@@ -323,6 +325,87 @@ export function NutritionTracker() {
       alert('Failed to copy meals')
     } finally {
       setCopyingDay(false)
+    }
+  }
+
+  const handleEditEntry = (entry: FoodHistoryEntry) => {
+    setEditingEntry(entry)
+    // Pre-fill form with entry data
+    setFoodName(entry.itemName)
+    setCalories((entry.nutrients?.kcal ?? 0).toString())
+    setProtein((entry.nutrients?.protein_g ?? 0).toString())
+    setCarbs((entry.nutrients?.carb_g ?? 0).toString())
+    setFats((entry.nutrients?.fat_g ?? 0).toString())
+    setSelectedMealType(entry.mealType || 'snack')
+    setShowEditModal(true)
+  }
+
+  const handleDeleteHistoryEntry = async (entryId: string) => {
+    if (!confirm('Delete this food entry?')) return
+
+    try {
+      const response = await fetch(`/api/foods/log?id=${entryId}`, {
+        method: 'DELETE',
+      })
+
+      const data = await response.json()
+
+      if (data.ok) {
+        console.log('✅ Food entry deleted')
+        fetchTodaysFoods()
+        setRecentRefresh((prev) => prev + 1)
+        setHistoryRefresh((prev) => prev + 1)
+      } else {
+        alert('Failed to delete entry')
+      }
+    } catch (error) {
+      console.error('Error deleting food:', error)
+      alert('Failed to delete entry')
+    }
+  }
+
+  const handleUpdateEntry = async () => {
+    if (!editingEntry || !foodName || !calories) {
+      alert('Please enter at least food name and calories')
+      return
+    }
+
+    try {
+      const response = await fetch('/api/nutrition/entries', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          entryId: editingEntry.id,
+          name: foodName,
+          calories: parseFloat(calories),
+          protein: protein ? parseFloat(protein) : 0,
+          carbs: carbs ? parseFloat(carbs) : 0,
+          fats: fats ? parseFloat(fats) : 0,
+          mealType: selectedMealType
+        })
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        console.log('✅ Food entry updated!')
+        fetchTodaysFoods()
+        setRecentRefresh((prev) => prev + 1)
+        setHistoryRefresh((prev) => prev + 1)
+        // Reset form
+        setFoodName('')
+        setCalories('')
+        setProtein('')
+        setCarbs('')
+        setFats('')
+        setShowEditModal(false)
+        setEditingEntry(null)
+      } else {
+        alert(`Failed to update food: ${data.error}`)
+      }
+    } catch (error) {
+      console.error('Error updating food:', error)
+      alert('Failed to update food. Please try again.')
     }
   }
 
@@ -608,7 +691,7 @@ export function NutritionTracker() {
                             const fats = Math.round(typeof entry.nutrients?.fat_g === 'number' ? entry.nutrients.fat_g : 0)
                             return (
                               <li key={entry.id} className="flex items-start justify-between gap-4 rounded-lg border border-gray-700/40 bg-gray-800/40 px-3 py-2 text-sm text-gray-100">
-                                <div>
+                                <div className="flex-1">
                                   <p className="font-medium text-white">
                                     {entry.itemName}
                                     {entry.brand ? <span className="ml-1 text-xs text-gray-400">({entry.brand})</span> : null}
@@ -622,6 +705,22 @@ export function NutritionTracker() {
                                   <p className="text-sm font-semibold text-white">{kcal} kcal</p>
                                   <p>P {protein}g • C {carbs}g • F {fats}g</p>
                                   <p>{loggedDate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</p>
+                                </div>
+                                <div className="flex gap-2 items-center">
+                                  <button
+                                    onClick={() => handleEditEntry(entry)}
+                                    className="text-blue-400 hover:text-blue-300 transition-colors"
+                                    title="Edit entry"
+                                  >
+                                    <Edit className="w-4 h-4" />
+                                  </button>
+                                  <button
+                                    onClick={() => handleDeleteHistoryEntry(entry.id)}
+                                    className="text-red-400 hover:text-red-300 transition-colors"
+                                    title="Delete entry"
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </button>
                                 </div>
                               </li>
                             )
@@ -826,6 +925,126 @@ export function NutritionTracker() {
                   </button>
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Food Modal */}
+      {showEditModal && editingEntry && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 max-w-md w-full border border-primary-400/30 shadow-2xl">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-bold text-white">Edit Food Entry</h3>
+              <button
+                onClick={() => {
+                  setShowEditModal(false)
+                  setEditingEntry(null)
+                  setFoodName('')
+                  setCalories('')
+                  setProtein('')
+                  setCarbs('')
+                  setFats('')
+                }}
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Meal Type</label>
+                <select
+                  value={selectedMealType}
+                  onChange={(e) => setSelectedMealType(e.target.value)}
+                  className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
+                >
+                  <option value="breakfast">Breakfast</option>
+                  <option value="lunch">Lunch</option>
+                  <option value="dinner">Dinner</option>
+                  <option value="snack">Snack</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Food Name *</label>
+                <input
+                  type="text"
+                  required
+                  value={foodName}
+                  onChange={(e) => setFoodName(e.target.value)}
+                  className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
+                  placeholder="e.g., Chicken Breast"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Calories *</label>
+                  <input
+                    type="number"
+                    required
+                    value={calories}
+                    onChange={(e) => setCalories(e.target.value)}
+                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
+                    placeholder="200"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Protein (g)</label>
+                  <input
+                    type="number"
+                    value={protein}
+                    onChange={(e) => setProtein(e.target.value)}
+                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
+                    placeholder="Optional"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Carbs (g)</label>
+                  <input
+                    type="number"
+                    value={carbs}
+                    onChange={(e) => setCarbs(e.target.value)}
+                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
+                    placeholder="Optional"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Fats (g)</label>
+                  <input
+                    type="number"
+                    value={fats}
+                    onChange={(e) => setFats(e.target.value)}
+                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
+                    placeholder="Optional"
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <button
+                  onClick={() => {
+                    setShowEditModal(false)
+                    setEditingEntry(null)
+                    setFoodName('')
+                    setCalories('')
+                    setProtein('')
+                    setCarbs('')
+                    setFats('')
+                  }}
+                  className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleUpdateEntry}
+                  className="flex-1 bg-secondary-600 hover:bg-secondary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                >
+                  Update Entry
+                </button>
+              </div>
             </div>
           </div>
         </div>
