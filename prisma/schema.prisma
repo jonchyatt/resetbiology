@@ -49,6 +49,8 @@ model User {
   foodLogs                FoodLog[]
   workoutSessions         WorkoutSession[]
   workoutPrograms         WorkoutProgram[]
+  workoutAssignments      WorkoutAssignment[]
+  workoutCheckIns         WorkoutCheckIn[]
   journalEntries          JournalEntry[]
   notificationPreferences NotificationPreference[]
   scheduledNotifications  ScheduledNotification[]
@@ -356,6 +358,78 @@ model WorkoutProgram {
   user        User     @relation(fields: [userId], references: [id])
 
   @@map("workout_programs")
+}
+
+model WorkoutProtocol {
+  id             String               @id @default(auto()) @map("_id") @db.ObjectId
+  slug           String               @unique
+  name           String
+  summary        String?
+  goal           String?
+  level          String?
+  durationWeeks  Int?
+  sessionsPerWeek Int?
+  tags           String[]
+  focusAreas     String[]
+  equipment      Json?
+  readinessNotes Json?
+  aiInsights     Json?
+  researchLinks  Json?
+  phases         Json
+  isPublic       Boolean              @default(true)
+  createdBy      String?
+  updatedBy      String?
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  assignments    WorkoutAssignment[]
+
+  @@map("workout_protocols")
+}
+
+model WorkoutAssignment {
+  id                   String            @id @default(auto()) @map("_id") @db.ObjectId
+  userId               String            @db.ObjectId
+  protocolId           String            @db.ObjectId
+  status               String            @default("active") // active, paused, completed, archived
+  startDate            DateTime?
+  endDate              DateTime?
+  personalization      Json?
+  readinessRules       Json?
+  plan                 Json?
+  currentSessionIndex  Int               @default(0)
+  progress             Json?
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
+  user                 User              @relation(fields: [userId], references: [id])
+  protocol             WorkoutProtocol   @relation(fields: [protocolId], references: [id])
+  checkIns             WorkoutCheckIn[]
+
+  @@index([userId, status])
+  @@map("workout_assignments")
+}
+
+model WorkoutCheckIn {
+  id            String             @id @default(auto()) @map("_id") @db.ObjectId
+  userId        String             @db.ObjectId
+  assignmentId  String?            @db.ObjectId
+  readinessScore Float?
+  energyLevel   Int?
+  sorenessLevel Int?
+  sleepHours    Float?
+  stressLevel   Int?
+  mood          String?
+  painNotes     String?
+  notes         String?
+  tags          String[]
+  metrics       Json?
+  localDate     String?
+  localTime     String?
+  createdAt     DateTime           @default(now())
+  user          User               @relation(fields: [userId], references: [id])
+  assignment    WorkoutAssignment? @relation(fields: [assignmentId], references: [id])
+
+  @@index([userId, createdAt])
+  @@map("workout_checkins")
 }
 
 // --- STRIPE CATALOG MODELS (Mongo) ---
