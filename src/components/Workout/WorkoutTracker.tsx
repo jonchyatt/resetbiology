@@ -383,15 +383,17 @@ export function WorkoutTracker() {
   );
 
   return (
-    <div className="relative space-y-8">
-      <div
-        className="pointer-events-none absolute inset-0 opacity-60"
-        aria-hidden="true"
-        style={{
-          background:
-            "radial-gradient(circle at 10% 20%, rgba(63,191,181,0.25), transparent 45%), radial-gradient(circle at 80% 0%, rgba(114,194,71,0.25), transparent 40%)",
-        }}
-      />
+    <div
+      className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 relative"
+      style={{
+        backgroundImage:
+          "linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url(/hero-background.jpg)",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundAttachment: "fixed",
+      }}
+    >
+      <div className="relative z-10 space-y-8 px-4 py-10 md:px-10">
 
       {logSuccess && (
         <div className="fixed right-6 top-20 z-40 max-w-sm rounded-2xl border border-emerald-400/40 bg-emerald-500/20 px-4 py-3 text-sm text-emerald-50 shadow-2xl backdrop-blur">
@@ -434,7 +436,7 @@ export function WorkoutTracker() {
 
       <div className="relative z-10 grid gap-6 xl:grid-cols-3">
         <div className="space-y-6 xl:col-span-2">
-          <section className="rounded-3xl border border-white/5 bg-primary-500/15 p-6 shadow-2xl shadow-primary-500/20 backdrop-blur-sm hover:shadow-primary-500/30 transition-all">
+          <section className="rounded-3xl border border-primary-400/30 bg-gray-900/40 p-6 shadow-inner">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-xs uppercase tracking-[0.3em] text-secondary-200/70">Active protocol</p>
@@ -476,7 +478,7 @@ export function WorkoutTracker() {
                 </div>
 
                 {nextSession ? (
-                  <div className="mt-6 rounded-2xl border border-white/10 bg-primary-500/10 p-5 shadow-lg shadow-primary-500/20 backdrop-blur-sm">
+                  <div className="mt-6 rounded-2xl border border-primary-400/30 bg-gray-900/40 p-5 shadow-inner">
                     <div className="flex flex-wrap items-center justify-between gap-3">
                       <div className="flex items-center gap-3">
                         <ListChecks className="h-6 w-6 text-secondary-200" />
@@ -498,7 +500,7 @@ export function WorkoutTracker() {
                       {nextSession.blocks.slice(0, 3).map((block, blockIndex) => (
                         <div
                           key={`${block.label}-${blockIndex}`}
-                          className="rounded-xl border border-white/5 bg-secondary-500/10 px-4 py-3 text-sm text-slate-200 shadow-md shadow-secondary-500/10"
+                          className="rounded-xl border border-primary-400/20 bg-gray-900/30 px-4 py-3 text-sm text-slate-200"
                         >
                           <p className="font-semibold text-white">{block.label}</p>
                           <p className="text-xs uppercase tracking-wide text-secondary-200/70">{block.focus}</p>
@@ -531,7 +533,7 @@ export function WorkoutTracker() {
                     </div>
                   </div>
                 ) : (
-                  <p className="mt-6 rounded-xl border border-white/10 bg-primary-500/10 p-4 text-sm text-slate-300 shadow-md shadow-primary-500/10 backdrop-blur-sm">
+                  <p className="mt-6 rounded-xl border border-primary-400/20 bg-gray-900/30 p-4 text-sm text-slate-300">
                     Every planned session in this block is complete. Assign a new protocol or resume a paused one.
                   </p>
                 )}
@@ -546,7 +548,7 @@ export function WorkoutTracker() {
             )}
           </section>
 
-          <section className="rounded-3xl border border-white/5 bg-primary-500/15 p-6 shadow-2xl shadow-primary-500/20 backdrop-blur-sm hover:shadow-primary-500/30 transition-all">
+          <section className="rounded-3xl border border-primary-400/30 bg-gray-900/40 p-6 shadow-inner">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
                 <p className="text-xs uppercase tracking-[0.3em] text-secondary-200/70">Today</p>
@@ -561,14 +563,14 @@ export function WorkoutTracker() {
             </div>
 
             {todaysWorkouts.length === 0 ? (
-              <div className="mt-6 rounded-2xl border border-white/10 bg-primary-500/10 p-6 text-center text-slate-300 shadow-md shadow-primary-500/10 backdrop-blur-sm">
+              <div className="mt-6 rounded-2xl border border-primary-400/20 bg-gray-900/30 p-6 text-center text-slate-300">
                 <p>No training logged yet today.</p>
                 <p className="text-sm text-slate-400">Start a prescribed session or use quick add.</p>
               </div>
             ) : (
               <div className="mt-6 space-y-4">
                 {Object.entries(workoutsByCategory).map(([category, workouts]) => (
-                  <div key={category} className="rounded-2xl border border-white/10 bg-secondary-500/10 p-4 shadow-lg shadow-secondary-500/20 backdrop-blur-sm">
+                  <div key={category} className="rounded-2xl border border-primary-400/30 bg-gray-900/40 p-4 shadow-inner">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3 text-white">
                         <Activity className="h-4 w-4 text-secondary-200" />
@@ -578,7 +580,7 @@ export function WorkoutTracker() {
                     </div>
                     <div className="mt-4 space-y-3">
                       {workouts.map((workout) => (
-                        <div key={workout.id} className="rounded-xl border border-white/5 bg-primary-500/5 p-4 shadow-md shadow-primary-500/10 hover:scale-105 transition-all">
+                        <div key={workout.id} className="rounded-xl border border-primary-400/20 bg-gray-900/30 p-4">
                           <div className="flex items-center justify-between gap-3">
                             <div>
                               <p className="font-semibold text-white">{workout.name}</p>
@@ -601,7 +603,7 @@ export function WorkoutTracker() {
               </div>
             )}
           </section>
-          <section className="rounded-3xl border border-white/5 bg-primary-500/15 p-6 shadow-2xl shadow-primary-500/20 backdrop-blur-sm hover:shadow-primary-500/30 transition-all">
+          <section className="rounded-3xl border border-primary-400/30 bg-gray-900/40 p-6 shadow-inner">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <p className="text-xs uppercase tracking-[0.3em] text-secondary-200/70">Readiness</p>
@@ -666,7 +668,7 @@ export function WorkoutTracker() {
             </div>
 
             <textarea
-              className="mt-4 w-full rounded-2xl border border-white/10 bg-primary-500/10 px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:border-secondary-400 focus:outline-none shadow-md shadow-primary-500/10 backdrop-blur-sm"
+              className="mt-4 w-full rounded-2xl border border-primary-400/20 bg-gray-900/30 px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:border-secondary-400 focus:outline-none"
               placeholder="Notes for your coach or future self…"
               value={readinessPayload.notes}
               rows={3}
@@ -692,7 +694,7 @@ export function WorkoutTracker() {
               {checkInsLoading && <p className="text-xs text-slate-400">Loading recent check-ins…</p>}
               {!checkInsLoading &&
                 checkIns.slice(0, 4).map((entry) => (
-                  <div key={entry.id} className="flex items-center justify-between rounded-xl border border-white/5 bg-primary-500/10 px-3 py-2 text-xs text-slate-300 shadow-sm shadow-primary-500/5">
+                  <div key={entry.id} className="flex items-center justify-between rounded-xl border border-primary-400/20 bg-gray-900/30 px-3 py-2 text-xs text-slate-300">
                     <div>
                       <p className="font-semibold text-white">{entry.readinessScore ?? "--"}% readiness</p>
                       <p>Energy {entry.energyLevel ?? "--"}/10 • Soreness {entry.sorenessLevel ?? "--"}/10</p>
@@ -707,7 +709,7 @@ export function WorkoutTracker() {
         </div>
 
         <div className="space-y-6">
-          <section className="rounded-3xl border border-white/5 bg-primary-500/15 p-6 shadow-2xl shadow-primary-500/20 backdrop-blur-sm hover:shadow-primary-500/30 transition-all">
+          <section className="rounded-3xl border border-primary-400/30 bg-gray-900/40 p-6 shadow-inner">
             <WorkoutQuickAdd
               onLogged={(result) => {
                 handleQuickAddLogged(result);
@@ -717,7 +719,7 @@ export function WorkoutTracker() {
           <RecentWorkouts refreshToken={recentRefresh} />
         </div>
       </div>
-      <section className="relative z-10 rounded-3xl border border-white/5 bg-secondary-500/15 p-6 shadow-2xl shadow-secondary-500/20 backdrop-blur-sm hover:shadow-secondary-500/30 transition-all">
+      <section className="relative z-10 rounded-3xl border border-primary-400/30 bg-gray-900/40 p-6 shadow-inner">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <p className="text-xs uppercase tracking-[0.3em] text-secondary-200/70">Personalization</p>
@@ -770,7 +772,7 @@ export function WorkoutTracker() {
         </div>
       </section>
 
-      <section className="relative z-10 rounded-3xl border border-white/5 bg-secondary-500/15 p-6 shadow-2xl shadow-secondary-500/20 backdrop-blur-sm hover:shadow-secondary-500/30 transition-all">
+      <section className="relative z-10 rounded-3xl border border-primary-400/30 bg-gray-900/40 p-6 shadow-inner">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <p className="text-xs uppercase tracking-[0.3em] text-secondary-200/70">Protocol library</p>
@@ -785,7 +787,7 @@ export function WorkoutTracker() {
         ) : (
           <div className="mt-6 grid gap-5 lg:grid-cols-3">
             {protocols.map((protocol) => (
-              <article key={protocol.id} className="rounded-2xl border border-white/10 bg-secondary-500/15 p-5 shadow-lg shadow-secondary-500/20 backdrop-blur-sm hover:shadow-secondary-500/30 hover:scale-105 transition-all">
+              <article key={protocol.id} className="rounded-2xl border border-primary-400/30 bg-gray-900/40 p-5 shadow-inner">
                 <div className="flex items-center justify-between gap-3">
                   <h3 className="text-lg font-semibold text-white">{protocol.name}</h3>
                   <span className="rounded-full border border-white/10 px-3 py-1 text-xs uppercase tracking-widest text-slate-200">
@@ -806,7 +808,7 @@ export function WorkoutTracker() {
                   <li>Focus: {(protocol.focusAreas ?? []).join(", ") || "holistic"}</li>
                 </ul>
                 {protocol.readinessNotes && (
-                  <div className="mt-3 rounded-xl border border-white/5 bg-primary-500/5 px-3 py-2 text-xs text-slate-300 shadow-sm shadow-primary-500/5">
+                  <div className="mt-3 rounded-xl border border-primary-400/20 bg-gray-900/30 px-3 py-2 text-xs text-slate-300">
                     <p className="font-semibold text-white">Readiness rules</p>
                     <ul className="mt-1 space-y-1">
                       {protocol.readinessNotes.slice(0, 2).map((note, index) => (
@@ -845,7 +847,7 @@ export function WorkoutTracker() {
         )}
       </section>
 
-      <section className="relative z-10 rounded-3xl border border-white/5 bg-secondary-500/15 p-6 shadow-2xl shadow-secondary-500/20 backdrop-blur-sm hover:shadow-secondary-500/30 transition-all">
+      <section className="relative z-10 rounded-3xl border border-primary-400/30 bg-gray-900/40 p-6 shadow-inner">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <p className="text-xs uppercase tracking-[0.3em] text-secondary-200/70">History</p>
@@ -868,19 +870,20 @@ export function WorkoutTracker() {
               <HistoryDay key={day.key} label={day.label} entries={day.entries} totals={day.totals} />
             ))}
             {groupedHistory.length === 0 && (
-              <p className="rounded-2xl border border-white/10 bg-primary-500/10 p-4 text-sm text-slate-300 shadow-md shadow-primary-500/10 backdrop-blur-sm">
+              <p className="rounded-2xl border border-primary-400/20 bg-gray-900/30 p-4 text-sm text-slate-300">
                 Log your first workout to unlock the historical timeline.
               </p>
             )}
           </div>
         )}
       </section>
+      </div>
     </div>
   );
 }
 function StatCard({ icon, label, value, subtext }: { icon: ReactNode; label: string; value: ReactNode; subtext: string }) {
   return (
-    <article className="rounded-2xl border border-white/5 bg-secondary-500/10 p-4 shadow-xl shadow-secondary-500/20 backdrop-blur-sm hover:shadow-secondary-500/30 hover:scale-105 transition-all">
+    <article className="rounded-2xl border border-primary-400/20 bg-gray-900/30 p-4 shadow-inner">
       <div className="flex items-center gap-3">
         <div className="rounded-xl bg-white/5 p-3">{icon}</div>
         <div>
@@ -974,7 +977,7 @@ function HistoryDay({
   totals: { sets: number; reps: number; weight: number; duration: number };
 }) {
   return (
-    <div className="rounded-2xl border border-white/5 bg-primary-500/10 p-4 shadow-md shadow-primary-500/10 backdrop-blur-sm hover:scale-105 transition-all">
+    <div className="rounded-2xl border border-primary-400/20 bg-gray-900/30 p-4 shadow-inner">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3 text-white">
           <Calendar className="h-4 w-4 text-secondary-200" />
