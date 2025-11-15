@@ -23,6 +23,10 @@ test.describe('Workout Tracker - Comprehensive Testing', () => {
       let grayViolations = 0;
       let transparencyViolations = 0;
       let missingBackdrop = 0;
+      let missingGlow = 0;
+      let missingHoverEffects = 0;
+      let wrongOpacities = 0;
+      let backgroundGradientPresent = false;
 
       const elements = document.querySelectorAll('*');
       elements.forEach((el) => {
@@ -54,6 +58,33 @@ test.describe('Workout Tracker - Comprehensive Testing', () => {
         if (className.includes('bg-gradient') && !className.includes('backdrop-blur')) {
           missingBackdrop++;
         }
+
+        // Check for background gradient
+        const backgroundImage = styles.backgroundImage;
+        if (backgroundImage && backgroundImage.includes('radial-gradient') &&
+            (backgroundImage.includes('191') || backgroundImage.includes('194'))) {
+          backgroundGradientPresent = true;
+        }
+
+        // Check for missing shadow-glow effects
+        const boxShadow = styles.boxShadow;
+        if (className.includes('rounded') && className.includes('border') &&
+            !boxShadow.includes('191') && !boxShadow.includes('194')) {
+          missingGlow++;
+        }
+
+        // Check for missing hover effects on cards
+        if (className.includes('rounded-2xl') && !className.includes('hover:')) {
+          missingHoverEffects++;
+        }
+
+        // Check for wrong opacity values (should be /10, /15, /20 max)
+        if (bgColor.includes('rgba') && (
+          bgColor.includes('0.4') || bgColor.includes('0.5') ||
+          bgColor.includes('0.6') || bgColor.includes('0.7')
+        )) {
+          wrongOpacities++;
+        }
       });
 
       if (!brandColorFound) {
@@ -67,6 +98,18 @@ test.describe('Workout Tracker - Comprehensive Testing', () => {
       }
       if (missingBackdrop > 0) {
         issues.push(`❌ ${missingBackdrop} gradient cards missing backdrop-blur-sm`);
+      }
+      if (!backgroundGradientPresent) {
+        issues.push('❌ Background gradient effect missing (should have radial-gradient with brand colors)');
+      }
+      if (missingGlow > 5) { // Allow some elements without glow
+        issues.push(`❌ ${missingGlow} cards missing shadow-glow effects (shadow-primary-500/20 or shadow-secondary-500/20)`);
+      }
+      if (missingHoverEffects > 5) { // Allow some elements without hover
+        issues.push(`❌ ${missingHoverEffects} cards missing hover effects (hover:scale-105 or hover:shadow-*)`);
+      }
+      if (wrongOpacities > 0) {
+        issues.push(`❌ ${wrongOpacities} elements with opacity > 0.3 (should use /10, /15, or /20)`);
       }
 
       return issues;

@@ -116,7 +116,7 @@ export function VisionHealing() {
 
   return (
     <div className="space-y-10 text-white">
-      <section className="rounded-3xl border border-white/10 bg-slate-950/70 p-8 shadow-2xl shadow-black/30 backdrop-blur">
+      <section className="rounded-3xl border border-white/10 bg-primary-500/20 p-8 shadow-2xl shadow-primary-500/20 backdrop-blur-sm hover:shadow-primary-500/30 transition-all">
         <div className="flex flex-wrap items-start justify-between gap-6">
           <div>
             <p className="text-xs uppercase tracking-[0.3em] text-secondary-200/70">Vision Recovery Lab</p>
@@ -148,7 +148,7 @@ export function VisionHealing() {
       </section>
 
       <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-        <div className="rounded-3xl border border-white/10 bg-slate-950/70 p-6 shadow-2xl shadow-black/30 backdrop-blur">
+        <div className="rounded-3xl border border-white/10 bg-primary-500/10 p-6 shadow-2xl shadow-primary-500/20 backdrop-blur-sm hover:shadow-primary-500/30 transition-all">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
               <p className="text-xs uppercase tracking-[0.3em] text-secondary-200/70">Calibration</p>
@@ -172,7 +172,7 @@ export function VisionHealing() {
             </div>
           </div>
 
-          <div className="mt-5 rounded-2xl border border-white/5 bg-black/60 p-5 text-center">
+          <div className="mt-5 rounded-2xl border border-white/5 bg-primary-500/20 p-5 text-center shadow-lg shadow-primary-500/10 backdrop-blur-sm">
             <div className="flex items-center justify-between text-sm text-slate-300">
               <span>Target distance</span>
               <span>{distanceCm} cm</span>
@@ -227,7 +227,7 @@ export function VisionHealing() {
             <button
               onClick={cycleLine}
               disabled={isShuffling}
-              className="mt-6 inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:border-white/40 disabled:opacity-50"
+              className="mt-6 inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-primary-500/10 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-primary-500/20 transition hover:border-white/40 hover:shadow-primary-500/30 hover:scale-105 disabled:opacity-50"
             >
               {isShuffling ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCcw className="h-4 w-4" />}
               Shuffle line
@@ -236,7 +236,7 @@ export function VisionHealing() {
         </div>
 
         <div className="space-y-6">
-          <div className="rounded-3xl border border-white/10 bg-slate-950/70 p-6 shadow-2xl shadow-black/30 backdrop-blur">
+          <div className="rounded-3xl border border-white/10 bg-secondary-500/10 p-6 shadow-2xl shadow-secondary-500/20 backdrop-blur-sm hover:shadow-secondary-500/30 transition-all">
             <div className="flex items-center gap-3">
               <Ruler className="h-5 w-5 text-secondary-200" />
               <div>
@@ -246,7 +246,7 @@ export function VisionHealing() {
             </div>
             <ul className="mt-5 space-y-3 text-sm text-slate-200">
               {visionMetrics.map((metric) => (
-                <li key={metric.label} className="rounded-2xl border border-white/5 bg-slate-900/40 px-4 py-3">
+                <li key={metric.label} className="rounded-2xl border border-white/5 bg-primary-500/10 px-4 py-3 shadow-md shadow-primary-500/10 hover:scale-105 transition-all">
                   <p className="font-semibold text-white">{metric.label}</p>
                   <p className="text-xs uppercase tracking-wide text-secondary-200/70">Target: {metric.target}</p>
                   <p className="mt-1 text-slate-300">{metric.howTo}</p>
@@ -255,7 +255,7 @@ export function VisionHealing() {
             </ul>
           </div>
 
-          <div className="rounded-3xl border border-white/10 bg-slate-950/70 p-6 shadow-2xl shadow-black/30 backdrop-blur">
+          <div className="rounded-3xl border border-white/10 bg-secondary-500/10 p-6 shadow-2xl shadow-secondary-500/20 backdrop-blur-sm hover:shadow-secondary-500/30 transition-all">
             <div className="flex items-center gap-3">
               <Brain className="h-5 w-5 text-secondary-200" />
               <div>
@@ -273,7 +273,7 @@ export function VisionHealing() {
         </div>
       </section>
 
-      <section className="rounded-3xl border border-white/10 bg-slate-950/70 p-6 shadow-2xl shadow-black/30 backdrop-blur">
+      <section className="rounded-3xl border border-white/10 bg-primary-500/15 p-6 shadow-2xl shadow-primary-500/20 backdrop-blur-sm hover:shadow-primary-500/30 transition-all">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <p className="text-xs uppercase tracking-[0.3em] text-secondary-200/70">Interactive flow builder</p>
@@ -292,8 +292,8 @@ export function VisionHealing() {
                 setBlockIndex(0);
               }}
               className={`rounded-full border px-4 py-2 font-semibold uppercase tracking-widest transition ${
-                waveIndex === idx ? "border-secondary-400 bg-secondary-500/20 text-white" : "border-white/10 text-slate-300"
-              }`}
+                waveIndex === idx ? "border-secondary-400 bg-secondary-500/20 text-white shadow-lg shadow-secondary-500/20" : "border-white/10 text-slate-300 hover:shadow-md hover:shadow-secondary-500/10"
+              } hover:scale-105`}
             >
               {wave.title}
             </button>
@@ -312,7 +312,7 @@ export function VisionHealing() {
               key={block.title}
               onClick={() => setBlockIndex(idx)}
               className={`rounded-2xl border px-4 py-4 text-left transition ${
-                blockIndex === idx ? "border-secondary-400 bg-secondary-500/10" : "border-white/10 bg-slate-900/40"
+                blockIndex === idx ? "border-secondary-400 bg-secondary-500/20 shadow-lg shadow-secondary-500/20" : "border-white/10 bg-primary-500/10 hover:shadow-primary-500/20"
               }`}
             >
               <p className="text-xs uppercase tracking-[0.3em] text-secondary-200/80">{block.duration}</p>
@@ -329,7 +329,7 @@ export function VisionHealing() {
         </div>
 
         <div className="mt-8 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-          <div className="rounded-2xl border border-white/10 bg-slate-900/40 p-5">
+          <div className="rounded-2xl border border-white/10 bg-secondary-500/10 p-5 shadow-lg shadow-secondary-500/20 backdrop-blur-sm">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs uppercase tracking-[0.3em] text-secondary-200/80">{activeBlock.duration}</p>
@@ -382,7 +382,7 @@ export function VisionHealing() {
 
                 <p className="mt-4 text-sm text-slate-300">{selectedExercise.summary}</p>
 
-                <div className="mt-4 rounded-xl border border-white/10 bg-black/30 p-4">
+                <div className="mt-4 rounded-xl border border-white/10 bg-primary-500/10 p-4 shadow-md shadow-primary-500/10 backdrop-blur-sm">
                   <div className="flex items-center justify-between text-xs text-slate-400">
                     <span>Checkpoint {selectedSteps.length ? coachStep + 1 : 0}/{selectedSteps.length}</span>
                     {selectedExercise.distanceTargets && (
@@ -412,12 +412,12 @@ export function VisionHealing() {
                     </div>
                   ))}
                   {selectedExercise.progression && (
-                    <div className="rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-xs text-slate-400">
+                    <div className="rounded-xl border border-white/10 bg-secondary-500/10 px-4 py-3 text-xs text-slate-400 shadow-sm shadow-secondary-500/10">
                       Progression: {selectedExercise.progression}
                     </div>
                   )}
                   {selectedExercise.layering && (
-                    <div className="rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-xs text-slate-400">
+                    <div className="rounded-xl border border-white/10 bg-secondary-500/10 px-4 py-3 text-xs text-slate-400 shadow-sm shadow-secondary-500/10">
                       Layering idea: {selectedExercise.layering}
                     </div>
                   )}
@@ -430,7 +430,7 @@ export function VisionHealing() {
         </div>
       </section>
 
-      <section className="rounded-3xl border border-white/10 bg-slate-950/70 p-6 shadow-2xl shadow-black/30 backdrop-blur">
+      <section className="rounded-3xl border border-white/10 bg-primary-500/15 p-6 shadow-2xl shadow-primary-500/20 backdrop-blur-sm hover:shadow-primary-500/30 transition-all">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <p className="text-xs uppercase tracking-[0.3em] text-secondary-200/70">Exercise explorer</p>
@@ -446,8 +446,8 @@ export function VisionHealing() {
               key={filter.value}
               onClick={() => setExerciseFilter(filter.value)}
               className={`rounded-full border px-4 py-1 font-semibold uppercase tracking-widest transition ${
-                exerciseFilter === filter.value ? "border-secondary-400 bg-secondary-400/20 text-white" : "border-white/10 text-slate-300"
-              }`}
+                exerciseFilter === filter.value ? "border-secondary-400 bg-secondary-400/20 text-white shadow-md shadow-secondary-500/20" : "border-white/10 text-slate-300 hover:shadow-sm hover:shadow-secondary-500/10"
+              } hover:scale-105`}
             >
               {filter.label}
             </button>
@@ -456,7 +456,7 @@ export function VisionHealing() {
 
         <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           {filteredExercises.map((exercise) => (
-            <article key={exercise.id} className="rounded-2xl border border-white/10 bg-slate-900/50 p-5 shadow-lg shadow-black/20">
+            <article key={exercise.id} className="rounded-2xl border border-white/10 bg-primary-500/15 p-5 shadow-lg shadow-primary-500/20 backdrop-blur-sm hover:shadow-primary-500/30 hover:scale-105 transition-all">
               <div className="flex items-center justify-between gap-3">
                 <div>
                   <p className="text-xs uppercase tracking-[0.3em] text-secondary-200/70">
@@ -504,7 +504,7 @@ function DirectionalE({ direction }: { direction: Direction }) {
 
 function InfoCard({ title, value }: { title: string; value: string }) {
   return (
-    <div className="rounded-2xl border border-white/5 bg-slate-900/40 px-4 py-3 text-sm text-slate-200">
+    <div className="rounded-2xl border border-white/5 bg-primary-500/10 px-4 py-3 text-sm text-slate-200 shadow-md shadow-primary-500/10 backdrop-blur-sm">
       <p className="text-xs uppercase tracking-[0.3em] text-secondary-200/70">{title}</p>
       <p className="mt-2 text-base font-semibold text-white">{value}</p>
     </div>
