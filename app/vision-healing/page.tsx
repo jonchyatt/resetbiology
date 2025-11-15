@@ -16,7 +16,7 @@ export default function VisionHealingPage() {
         backgroundAttachment: "fixed",
       }}
     >
-      <div className="relative z-10 mx-auto max-w-6xl">
+      <div className="relative z-10 mx-auto max-w-6xl mt-16">
         <VisionHealing />
       </div>
     </main>

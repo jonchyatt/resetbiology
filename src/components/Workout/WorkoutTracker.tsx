@@ -393,7 +393,7 @@ export function WorkoutTracker() {
         backgroundAttachment: "fixed",
       }}
     >
-      <div className="relative z-10 space-y-8 px-4 py-10 md:px-10">
+      <div className="relative z-10 space-y-8 px-4 py-10 md:px-10 mt-16">
 
       {logSuccess && (
         <div className="fixed right-6 top-20 z-40 max-w-sm rounded-2xl border border-emerald-400/40 bg-emerald-500/20 px-4 py-3 text-sm text-emerald-50 shadow-2xl backdrop-blur">
