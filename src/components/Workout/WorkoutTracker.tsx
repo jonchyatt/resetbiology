@@ -393,7 +393,55 @@ export function WorkoutTracker() {
         backgroundAttachment: "fixed",
       }}
     >
-      <div className="relative z-10 space-y-8 px-4 py-10 md:px-10 mt-16">
+      <div className="relative z-10">
+        {/* Header - Added mt-16 to create proper space below fixed nav (nav is h-16 = 64px) */}
+        <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm shadow-2xl border-b border-primary-400/30 mt-16">
+          <div className="container mx-auto px-4 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <img
+                  src="/logo1.png"
+                  alt="Reset Biology"
+                  className="h-10 w-auto rounded-lg drop-shadow-lg bg-white/10 backdrop-blur-sm p-1 border border-white/20"
+                />
+                <div>
+                  <div className="flex items-center">
+                    <a
+                      href="/portal"
+                      className="text-xl font-bold text-white drop-shadow-lg hover:text-primary-300 transition-colors"
+                    >
+                      Portal
+                    </a>
+                    <span className="mx-2 text-primary-300">&gt;</span>
+                    <span className="text-lg text-gray-200 drop-shadow-sm">
+                      Workout Tracker
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center gap-4">
+                <a
+                  href="/portal"
+                  className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm"
+                >
+                  ← Back to Portal
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Title Section */}
+        <div className="text-center py-8">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 text-shadow-lg animate-fade-in">
+            <span className="text-primary-400">Workout</span> Tracker
+          </h2>
+          <p className="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto font-medium leading-relaxed drop-shadow-sm">
+            Custom fitness programs with analytics. Track your strength gains, endurance metrics, and body composition progress.
+          </p>
+        </div>
+
+        <div className="space-y-8 px-4 md:px-10">
 
       {logSuccess && (
         <div className="fixed right-6 top-20 z-40 max-w-sm rounded-2xl border border-emerald-400/40 bg-emerald-500/20 px-4 py-3 text-sm text-emerald-50 shadow-2xl backdrop-blur">
@@ -877,6 +925,7 @@ export function WorkoutTracker() {
           </div>
         )}
       </section>
+      </div>
       </div>
     </div>
   );
