@@ -36,7 +36,7 @@ export default function TrainingSession({
   const [attempts, setAttempts] = useState(0)
   const [correct, setCorrect] = useState(0)
   const [sessionDuration, setSessionDuration] = useState(0)
-  const [currentLetter, setCurrentLetter] = useState<string>()
+  const [resetTrigger, setResetTrigger] = useState(0) // Increments to trigger new letter
   const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null)
   const [sessionComplete, setSessionComplete] = useState(false)
 
@@ -68,7 +68,7 @@ export default function TrainingSession({
     // Clear feedback after 1 second and generate new letter
     setTimeout(() => {
       setFeedback(null)
-      setCurrentLetter(undefined) // Triggers new random letter
+      setResetTrigger(prev => prev + 1) // Triggers new random letter
     }, 1000)
 
     // Check if should level up or complete session
@@ -84,6 +84,7 @@ export default function TrainingSession({
             setCurrentLevel(prev => prev + 1)
             setAttempts(0)
             setCorrect(0)
+            setResetTrigger(prev => prev + 1) // Generate new letter for new level
             speak(`Level up! Now trying ${DIFFICULTY_LEVELS[currentLevel]?.chartSize}`)
           }, 1500)
         } else {
@@ -100,6 +101,7 @@ export default function TrainingSession({
         setTimeout(() => {
           setAttempts(0)
           setCorrect(0)
+          setResetTrigger(prev => prev + 1) // Generate new letter for retry
           speak(`Let's try this level again. You need ${difficulty.requiredAccuracy}% accuracy.`)
         }, 1500)
       }
@@ -143,6 +145,7 @@ export default function TrainingSession({
     setIsActive(false)
     setSessionComplete(false)
     setFeedback(null)
+    setResetTrigger(prev => prev + 1) // Generate new letter for fresh start
   }
 
   const formatTime = (seconds: number) => {
@@ -251,7 +254,7 @@ export default function TrainingSession({
             chartSize={difficulty.chartSize}
             exerciseType={exerciseType}
             onAnswer={handleAnswer}
-            currentLetter={currentLetter}
+            resetTrigger={resetTrigger}
           />
         </div>
       )}

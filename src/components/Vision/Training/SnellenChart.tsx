@@ -1,10 +1,12 @@
 'use client'
 
+import { useState, useEffect } from 'react'
+
 interface SnellenChartProps {
   chartSize: string // "20/20", "20/40", "20/60", etc.
   exerciseType: 'letters' | 'e-directional'
   onAnswer: (correct: boolean) => void
-  currentLetter?: string
+  resetTrigger?: number // Changes when parent wants to generate new letter
 }
 
 // Snellen chart letter sizes (relative to 20/20)
@@ -32,17 +34,27 @@ export default function SnellenChart({
   chartSize,
   exerciseType,
   onAnswer,
-  currentLetter
+  resetTrigger = 0
 }: SnellenChartProps) {
+  // State to hold current letter/direction (only changes when resetTrigger changes)
+  const [currentLetter, setCurrentLetter] = useState(() =>
+    SNELLEN_LETTERS[Math.floor(Math.random() * SNELLEN_LETTERS.length)]
+  )
+  const [currentDirection, setCurrentDirection] = useState<EDirection>(() =>
+    E_DIRECTIONS[Math.floor(Math.random() * E_DIRECTIONS.length)]
+  )
+
+  // Generate new letter/direction only when resetTrigger changes
+  useEffect(() => {
+    setCurrentLetter(SNELLEN_LETTERS[Math.floor(Math.random() * SNELLEN_LETTERS.length)])
+    setCurrentDirection(E_DIRECTIONS[Math.floor(Math.random() * E_DIRECTIONS.length)])
+  }, [resetTrigger])
+
   const sizeMultiplier = CHART_SIZES[chartSize as keyof typeof CHART_SIZES] || 1
 
   // Base size in rem (20/20 baseline)
   const baseFontSize = 4 // rem
   const fontSize = baseFontSize * sizeMultiplier
-
-  // Generate random letter or E direction
-  const randomLetter = currentLetter || SNELLEN_LETTERS[Math.floor(Math.random() * SNELLEN_LETTERS.length)]
-  const randomEDirection: EDirection = E_DIRECTIONS[Math.floor(Math.random() * E_DIRECTIONS.length)]
 
   // Render E chart based on direction
   const renderEChart = (direction: EDirection) => {
@@ -87,10 +99,10 @@ export default function SnellenChart({
               letterSpacing: '0.1em'
             }}
           >
-            {randomLetter}
+            {currentLetter}
           </div>
         ) : (
-          renderEChart(randomEDirection)
+          renderEChart(currentDirection)
         )}
       </div>
 
@@ -101,7 +113,7 @@ export default function SnellenChart({
           SNELLEN_LETTERS.map(letter => (
             <button
               key={letter}
-              onClick={() => onAnswer(letter === randomLetter)}
+              onClick={() => onAnswer(letter === currentLetter)}
               className="bg-gray-900 hover:bg-primary-500 text-white font-bold py-3 px-6 rounded-lg transition-all transform hover:scale-105 text-xl"
             >
               {letter}
@@ -112,7 +124,7 @@ export default function SnellenChart({
           <>
             <div className="w-full flex justify-center mb-2">
               <button
-                onClick={() => onAnswer(randomEDirection === 'up')}
+                onClick={() => onAnswer(currentDirection === 'up')}
                 className="bg-gray-900 hover:bg-primary-500 text-white font-bold py-3 px-6 rounded-lg transition-all transform hover:scale-105"
               >
                 ↑ Up
@@ -120,13 +132,13 @@ export default function SnellenChart({
             </div>
             <div className="w-full flex gap-3 justify-center">
               <button
-                onClick={() => onAnswer(randomEDirection === 'left')}
+                onClick={() => onAnswer(currentDirection === 'left')}
                 className="bg-gray-900 hover:bg-primary-500 text-white font-bold py-3 px-6 rounded-lg transition-all transform hover:scale-105"
               >
                 ← Left
               </button>
               <button
-                onClick={() => onAnswer(randomEDirection === 'right')}
+                onClick={() => onAnswer(currentDirection === 'right')}
                 className="bg-gray-900 hover:bg-primary-500 text-white font-bold py-3 px-6 rounded-lg transition-all transform hover:scale-105"
               >
                 Right →
@@ -134,7 +146,7 @@ export default function SnellenChart({
             </div>
             <div className="w-full flex justify-center mt-2">
               <button
-                onClick={() => onAnswer(randomEDirection === 'down')}
+                onClick={() => onAnswer(currentDirection === 'down')}
                 className="bg-gray-900 hover:bg-primary-500 text-white font-bold py-3 px-6 rounded-lg transition-all transform hover:scale-105"
               >
                 ↓ Down
