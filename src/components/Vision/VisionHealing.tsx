@@ -13,9 +13,13 @@ import {
   Sparkles,
   Target,
   Timer,
+  Zap,
+  BarChart3,
 } from "lucide-react";
 import { readinessPrompts, visionMetrics, visionWaves } from "@/data/visionProtocols";
 import { visionExerciseMap, visionExercises, VisionExercise } from "@/data/visionExercises";
+import TrainingSession from "./Training/TrainingSession";
+import ProgressDashboard from "./Training/ProgressDashboard";
 
 const LETTER_LINES = [
   ["E"],
@@ -54,7 +58,13 @@ const categoryFilters: Array<{ value: "all" | VisionExercise["category"]; label:
   ...Object.entries(CATEGORY_LABELS).map(([value, label]) => ({ value: value as VisionExercise["category"], label })),
 ];
 
+type TabMode = 'training' | 'exercises' | 'progress'
+
 export function VisionHealing() {
+  const [activeTab, setActiveTab] = useState<TabMode>('training')
+  const [trainingVisionType, setTrainingVisionType] = useState<'near' | 'far'>('near')
+  const [trainingExerciseType, setTrainingExerciseType] = useState<'letters' | 'e-directional'>('letters')
+
   const [visionMode, setVisionMode] = useState<"near" | "far">("near");
   const [chartMode, setChartMode] = useState<"letters" | "directional">("letters");
   const [distanceCm, setDistanceCm] = useState(40);
@@ -163,6 +173,122 @@ export function VisionHealing() {
         </p>
       </div>
 
+      {/* Tab Navigation */}
+      <div className="flex flex-wrap gap-3 justify-center mb-8">
+        <button
+          onClick={() => setActiveTab('training')}
+          className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all ${
+            activeTab === 'training'
+              ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/30'
+              : 'bg-gray-900/40 border border-primary-400/30 text-gray-300 hover:text-white hover:border-primary-400/50'
+          }`}
+        >
+          <Zap className="w-5 h-5" />
+          Dynamic Training
+        </button>
+        <button
+          onClick={() => setActiveTab('exercises')}
+          className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all ${
+            activeTab === 'exercises'
+              ? 'bg-secondary-500 text-white shadow-lg shadow-secondary-500/30'
+              : 'bg-gray-900/40 border border-primary-400/30 text-gray-300 hover:text-white hover:border-primary-400/50'
+          }`}
+        >
+          <Eye className="w-5 h-5" />
+          Exercise Library
+        </button>
+        <button
+          onClick={() => setActiveTab('progress')}
+          className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all ${
+            activeTab === 'progress'
+              ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/30'
+              : 'bg-gray-900/40 border border-primary-400/30 text-gray-300 hover:text-white hover:border-primary-400/50'
+          }`}
+        >
+          <BarChart3 className="w-5 h-5" />
+          Progress & Stats
+        </button>
+      </div>
+
+      {/* Dynamic Training Tab */}
+      {activeTab === 'training' && (
+        <div className="space-y-6">
+          {/* Training mode selection */}
+          <div className="bg-gray-900/40 border border-primary-400/30 rounded-lg p-6 shadow-inner">
+            <h3 className="text-xl font-bold text-white mb-4">Select Training Mode</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Vision type */}
+              <div>
+                <label className="text-gray-300 font-semibold mb-2 block">Vision Type:</label>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setTrainingVisionType('near')}
+                    className={`flex-1 px-4 py-3 rounded-lg font-semibold transition-all ${
+                      trainingVisionType === 'near'
+                        ? 'bg-primary-500 text-white'
+                        : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                    }`}
+                  >
+                    Near Vision (40cm)
+                  </button>
+                  <button
+                    onClick={() => setTrainingVisionType('far')}
+                    className={`flex-1 px-4 py-3 rounded-lg font-semibold transition-all ${
+                      trainingVisionType === 'far'
+                        ? 'bg-primary-500 text-white'
+                        : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                    }`}
+                  >
+                    Far Vision (3-6m)
+                  </button>
+                </div>
+              </div>
+
+              {/* Exercise type */}
+              <div>
+                <label className="text-gray-300 font-semibold mb-2 block">Exercise Type:</label>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setTrainingExerciseType('letters')}
+                    className={`flex-1 px-4 py-3 rounded-lg font-semibold transition-all ${
+                      trainingExerciseType === 'letters'
+                        ? 'bg-secondary-500 text-white'
+                        : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                    }`}
+                  >
+                    Letters
+                  </button>
+                  <button
+                    onClick={() => setTrainingExerciseType('e-directional')}
+                    className={`flex-1 px-4 py-3 rounded-lg font-semibold transition-all ${
+                      trainingExerciseType === 'e-directional'
+                        ? 'bg-secondary-500 text-white'
+                        : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                    }`}
+                  >
+                    E-Directional
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Training session */}
+          <TrainingSession
+            visionType={trainingVisionType}
+            exerciseType={trainingExerciseType}
+          />
+        </div>
+      )}
+
+      {/* Progress Tab */}
+      {activeTab === 'progress' && (
+        <ProgressDashboard />
+      )}
+
+      {/* Exercises Tab - Existing Content */}
+      {activeTab === 'exercises' && (
+        <>
       <section className="rounded-3xl border border-primary-400/30 bg-gray-900/40 p-8 shadow-inner">
         <div className="flex flex-wrap items-start justify-between gap-6">
           <div>
@@ -530,6 +656,8 @@ export function VisionHealing() {
           ))}
         </div>
       </section>
+        </>
+      )}
     </div>
   );
 }

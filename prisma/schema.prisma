@@ -56,6 +56,8 @@ model User {
   scheduledNotifications  ScheduledNotification[]
   pushSubscriptions       PushSubscription[]
   pushSubscriptionHealth  PushSubscriptionHealth[]
+  visionSessions          VisionSession[]
+  visionProgress          VisionProgress[]
 
   @@map("users")
 }
@@ -858,4 +860,39 @@ model AIUsage {
   @@index([userId, type, createdAt])
   @@index([createdAt])
   @@map("ai_usage")
+}
+
+// --- VISION TRAINING SYSTEM ---
+
+// Tracks individual vision training sessions
+model VisionSession {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String   @db.ObjectId
+  visionType   String   // "near" | "far"
+  exerciseType String   // "letters" | "e-directional"
+  distanceCm   Float    // Distance achieved in cm
+  accuracy     Float    // Percentage correct (0-100)
+  chartSize    String   // Which line was being tested (e.g., "20/20", "20/40")
+  duration     Int      // Session duration in seconds
+  success      Boolean  // Did they pass this level?
+  createdAt    DateTime @default(now())
+  user         User     @relation(fields: [userId], references: [id])
+
+  @@index([userId, createdAt])
+  @@map("vision_sessions")
+}
+
+// Tracks overall vision training progress per user
+model VisionProgress {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String   @db.ObjectId
+  visionType      String   // "near" | "far"
+  currentLevel    Int      // Current difficulty level (1-10)
+  maxDistanceCm   Float    // Best distance achieved
+  lastSessionDate DateTime
+  totalSessions   Int
+  user            User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, visionType])
+  @@map("vision_progress")
 }
