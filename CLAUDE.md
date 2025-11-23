@@ -304,30 +304,26 @@ npx playwright test tests/test-timing-with-auth.spec.ts --headed --project=chrom
 - ✅ Awards 10 points for daily logging
 - ✅ Supports bulk import of custom foods
 
+### ~~3. **PWA + Notification System for Peptide Dose Reminders**~~ ✅ COMPLETE!
+- ✅ Progressive Web App with manifest.json
+- ✅ Service worker for push notifications
+- ✅ NotificationPreferences component
+- ✅ Database schema with NotificationPreference, ScheduledNotification, PushSubscription models
+- ✅ API endpoints for push notifications
+- ✅ "Remind Me" button in peptide tracker
+- ✅ 100% free (no Twilio/SMS costs)
+
+### ~~4. **$1 Trial Subscription System**~~ ✅ COMPLETE! (November 23, 2025)
+- ✅ TrialSubscription modal component with beautiful UI
+- ✅ `/api/subscriptions/trial` endpoint with Stripe integration
+- ✅ Trial banner on portal dashboard (auto-shows for non-subscribers)
+- ✅ Subscription status checking throughout app
+- ✅ Added stripeCustomerId to User model
+- ✅ Complete setup guide in STRIPE_TRIAL_SETUP.md
+- ✅ 14-day trial for $1, then $29.99/month
+- ✅ Webhook integration for subscription events
+
 ## 🟡 NEXT UP (After Priorities)
-
-### 3. **PWA + Notification System for Peptide Dose Reminders** 🔔
-**Status:** Ready to implement (user approved)
-**Estimated Time:** 3-4 hours
-**Trigger Phrase:** "Implement the PWA notification system" or "Start the dose reminder project"
-
-#### 📋 Complete Implementation Plan
-
-**What This Does:**
-- Converts Reset Biology into a Progressive Web App (installable to phone home screen)
-- Adds Web Push Notifications for dose reminders (works when app closed)
-- Email notifications as fallback
-- "Remind Me" button in peptide tracker
-- User notification preferences
-
-**Benefits:**
-- 100% free (no Twilio/SMS costs)
-- Native app experience on mobile
-- Works offline
-- Push notifications even when app closed
-- Admin/editing workflow unchanged
-
-#### Step-by-Step Implementation (Follow This Exactly):
 
 **Phase 1: Database Schema (30 min)**
 1. Add to `prisma/schema.prisma`:

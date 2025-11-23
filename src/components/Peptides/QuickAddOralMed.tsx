@@ -19,8 +19,15 @@ export function QuickAddOralMed({ onClose, onAdd }: QuickAddOralMedProps) {
   const [dosageAmount, setDosageAmount] = useState("");
   const [dosageUnit, setDosageUnit] = useState("capsules");
   const [frequency, setFrequency] = useState("daily");
+  const [selectedDays, setSelectedDays] = useState<string[]>(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']);
   const [times, setTimes] = useState<string[]>(["08:00"]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const toggleDay = (day: string) => {
+    setSelectedDays(prev =>
+      prev.includes(day) ? prev.filter(d => d !== day) : [...prev, day]
+    );
+  };
 
   const addTimeSlot = () => {
     if (times.length < 4) {
@@ -40,13 +47,27 @@ export function QuickAddOralMed({ onClose, onAdd }: QuickAddOralMedProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validate day selection for custom schedules
+    if ((frequency === '3x per week' || frequency === '2x per week' || frequency === 'Custom') && selectedDays.length === 0) {
+      alert("Please select at least one day for your custom schedule");
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
+      // Format frequency with days if applicable
+      let finalFrequency = frequency;
+      if (frequency === '3x per week' || frequency === '2x per week' || frequency === 'Custom') {
+        const daysString = selectedDays.join('/');
+        finalFrequency = `${daysString}`;
+      }
+
       await onAdd({
         peptideName: medicationName,
         dosage: `${dosageAmount} ${dosageUnit}`,
-        frequency,
+        frequency: finalFrequency,
         timing: times.join("/"),
         administrationType: "oral",
       });
@@ -137,10 +158,42 @@ export function QuickAddOralMed({ onClose, onAdd }: QuickAddOralMedProps) {
               <option value="daily">Daily</option>
               <option value="every other day">Every Other Day</option>
               <option value="3x per week">3x Per Week</option>
-              <option value="weekly">Weekly</option>
+              <option value="2x per week">2x Per Week</option>
+              <option value="5 days on, 2 days off">5 days on, 2 days off</option>
+              <option value="Once per week">Once per week</option>
+              <option value="Custom">Custom</option>
               <option value="as needed">As Needed</option>
             </select>
           </div>
+
+          {/* Day selection for custom schedules */}
+          {(frequency === '3x per week' || frequency === '2x per week' || frequency === 'Custom') && (
+            <div>
+              <label className="block text-sm font-semibold text-white mb-2">
+                Select Days *
+              </label>
+              <div className="flex flex-wrap items-center gap-1.5">
+                {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
+                  <button
+                    key={day}
+                    type="button"
+                    onClick={() => toggleDay(day)}
+                    className={`flex-shrink-0 px-2.5 sm:px-3 py-1.5 text-xs font-semibold rounded-md border transition-all whitespace-nowrap ${
+                      selectedDays.includes(day)
+                        ? 'bg-teal-500/50 text-teal-50 border-teal-400/70 shadow-[0_0_18px_rgba(20,184,166,0.5)]'
+                        : 'bg-teal-500/15 text-teal-200 border-teal-400/40 hover:bg-teal-500/25'
+                    }`}
+                    aria-pressed={selectedDays.includes(day)}
+                  >
+                    {day}
+                  </button>
+                ))}
+              </div>
+              <p className="text-xs text-gray-400 mt-2">
+                Select which days you want to take this dose
+              </p>
+            </div>
+          )}
 
           {/* Times */}
           <div>

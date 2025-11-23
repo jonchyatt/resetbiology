@@ -22,10 +22,10 @@ export function PortalHeader({
   showBackLink = true
 }: PortalHeaderProps) {
   return (
-    <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm shadow-2xl border-b border-primary-400/30 mt-16">
+    <div className="fixed top-0 left-0 right-0 z-40 bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm shadow-2xl border-b border-primary-400/30">
       <div className="container mx-auto px-4 py-3">
-        <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
+        <div className="flex flex-row items-center justify-between w-full">
+        <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
           <img
             src="/logo1.png"
             alt="Reset Biology"
@@ -44,22 +44,22 @@ export function PortalHeader({
             )}
           </div>
         </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
             {showOrderPeptides && (
-              <a href="/order" className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
+              <a href="/order" className="text-primary-300 hover:text-primary-200 font-medium text-xs sm:text-sm transition-colors drop-shadow-sm whitespace-nowrap">
                 Order Peptides
               </a>
             )}
-            <a href="/daily-history" className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
+            <a href="/daily-history" className="text-primary-300 hover:text-primary-200 font-medium text-xs sm:text-sm transition-colors drop-shadow-sm whitespace-nowrap hidden sm:block">
               Daily History
             </a>
             {secondaryBackLink && (
-              <a href={secondaryBackLink} className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
+              <a href={secondaryBackLink} className="text-primary-300 hover:text-primary-200 font-medium text-xs sm:text-sm transition-colors drop-shadow-sm whitespace-nowrap">
                 ← {secondaryBackText}
               </a>
             )}
             {showBackLink && (
-              <a href={backLink} className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
+              <a href={backLink} className="text-primary-300 hover:text-primary-200 font-medium text-xs sm:text-sm transition-colors drop-shadow-sm whitespace-nowrap">
                 ← {backText}
               </a>
             )}

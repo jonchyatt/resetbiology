@@ -5,7 +5,7 @@ import Image from "next/image"
 
 export function QuizCTA() {
   return (
-    <Link href="/quiz">
+    <Link href="/assessment">
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#2a9d8f] via-[#3FBFB5] to-[#72C247] p-1 shadow-2xl hover:shadow-[0_0_60px_rgba(63,191,181,0.6)] transition-all duration-500 group cursor-pointer">
         {/* Animated gradient border effect */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#72C247] via-[#3FBFB5] to-[#2a9d8f] opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"></div>
