@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { PortalHeader } from '@/components/Navigation/PortalHeader';
+import AgeVerificationModal from '@/components/AgeVerification/AgeVerificationModal';
 
 interface Price {
   id: string;
@@ -163,19 +164,23 @@ export default function OrderPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 relative"
-         style={{
-           backgroundImage: 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url(/hero-background.jpg)',
-           backgroundSize: 'cover',
-           backgroundPosition: 'center',
-           backgroundAttachment: 'fixed'
-         }}>
-      <div className="relative z-10">
-        <PortalHeader
-          section="Order Peptides"
-          subtitle="Premium quality peptides for your wellness journey"
-          showOrderPeptides={false}
-        />
+    <>
+      {/* Age Verification Modal */}
+      <AgeVerificationModal />
+
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 relative"
+           style={{
+             backgroundImage: 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url(/hero-background.jpg)',
+             backgroundSize: 'cover',
+             backgroundPosition: 'center',
+             backgroundAttachment: 'fixed'
+           }}>
+        <div className="relative z-10">
+          <PortalHeader
+            section="Order Peptides"
+            subtitle="Premium quality peptides for your wellness journey"
+            showOrderPeptides={false}
+          />
 
         <div className="text-center pt-8 pb-6">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 text-shadow-lg animate-fade-in">
@@ -422,5 +427,6 @@ export default function OrderPage() {
         </div>
       </div>
     </div>
+    </>
   );
 }

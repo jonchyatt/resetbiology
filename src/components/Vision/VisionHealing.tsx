@@ -64,6 +64,8 @@ export function VisionHealing() {
   const [activeTab, setActiveTab] = useState<TabMode>('training')
   const [trainingVisionType, setTrainingVisionType] = useState<'near' | 'far'>('near')
   const [trainingExerciseType, setTrainingExerciseType] = useState<'letters' | 'e-directional'>('letters')
+  const [userProgress, setUserProgress] = useState<{ near?: { currentLevel: number }, far?: { currentLevel: number } }>({})
+  const [progressLoading, setProgressLoading] = useState(true)
 
   const [visionMode, setVisionMode] = useState<"near" | "far">("near");
   const [chartMode, setChartMode] = useState<"letters" | "directional">("letters");
@@ -111,6 +113,32 @@ export function VisionHealing() {
     setSelectedExerciseId(defaultExercise);
     setCoachStep(0);
   }, [waveIndex, blockIndex]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Fetch user's vision progress on mount
+  useEffect(() => {
+    async function fetchProgress() {
+      try {
+        const res = await fetch('/api/vision/progress', { credentials: 'include' })
+        if (res.ok) {
+          const data = await res.json()
+          if (data.success && data.progress) {
+            const progressMap: { near?: { currentLevel: number }, far?: { currentLevel: number } } = {}
+            data.progress.forEach((p: any) => {
+              progressMap[p.visionType as 'near' | 'far'] = {
+                currentLevel: p.currentLevel || 1
+              }
+            })
+            setUserProgress(progressMap)
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching vision progress:', error)
+      } finally {
+        setProgressLoading(false)
+      }
+    }
+    fetchProgress()
+  }, [])
 
   const selectedExercise = visionExerciseMap[selectedExerciseId];
   const selectedSteps = selectedExercise?.checkpoints ?? [];
@@ -277,6 +305,7 @@ export function VisionHealing() {
           <TrainingSession
             visionType={trainingVisionType}
             exerciseType={trainingExerciseType}
+            initialLevel={userProgress[trainingVisionType]?.currentLevel || 1}
           />
         </div>
       )}

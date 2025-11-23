@@ -13,16 +13,16 @@ interface TrainingSessionProps {
 
 // Adaptive difficulty system
 const DIFFICULTY_LEVELS = [
-  { level: 1, chartSize: '20/200', targetDistance: 40, requiredAccuracy: 60 },
-  { level: 2, chartSize: '20/100', targetDistance: 45, requiredAccuracy: 65 },
-  { level: 3, chartSize: '20/70', targetDistance: 50, requiredAccuracy: 70 },
-  { level: 4, chartSize: '20/50', targetDistance: 55, requiredAccuracy: 75 },
-  { level: 5, chartSize: '20/40', targetDistance: 60, requiredAccuracy: 80 },
-  { level: 6, chartSize: '20/30', targetDistance: 300, requiredAccuracy: 80 }, // Far vision starts
-  { level: 7, chartSize: '20/25', targetDistance: 400, requiredAccuracy: 85 },
-  { level: 8, chartSize: '20/20', targetDistance: 500, requiredAccuracy: 85 },
-  { level: 9, chartSize: '20/15', targetDistance: 600, requiredAccuracy: 90 },
-  { level: 10, chartSize: '20/10', targetDistance: 600, requiredAccuracy: 95 }
+  { level: 1, chartSize: '20/200', targetDistance: 30, requiredAccuracy: 60 },
+  { level: 2, chartSize: '20/100', targetDistance: 35, requiredAccuracy: 65 },
+  { level: 3, chartSize: '20/70', targetDistance: 40, requiredAccuracy: 70 },
+  { level: 4, chartSize: '20/50', targetDistance: 45, requiredAccuracy: 75 },
+  { level: 5, chartSize: '20/40', targetDistance: 50, requiredAccuracy: 80 },
+  { level: 6, chartSize: '20/30', targetDistance: 55, requiredAccuracy: 80 }, // Far vision starts
+  { level: 7, chartSize: '20/25', targetDistance: 60, requiredAccuracy: 85 },
+  { level: 8, chartSize: '20/20', targetDistance: 65, requiredAccuracy: 85 },
+  { level: 9, chartSize: '20/15', targetDistance: 70, requiredAccuracy: 90 },
+  { level: 10, chartSize: '20/10', targetDistance: 70, requiredAccuracy: 95 }
 ]
 
 export default function TrainingSession({
@@ -32,7 +32,7 @@ export default function TrainingSession({
 }: TrainingSessionProps) {
   const [currentLevel, setCurrentLevel] = useState(initialLevel)
   const [isActive, setIsActive] = useState(false)
-  const [currentDistance, setCurrentDistance] = useState(40)
+  const [currentDistance, setCurrentDistance] = useState(30)
   const [attempts, setAttempts] = useState(0)
   const [correct, setCorrect] = useState(0)
   const [sessionDuration, setSessionDuration] = useState(0)

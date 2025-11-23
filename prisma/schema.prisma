@@ -26,6 +26,7 @@ model User {
   permissions             Json?
   subscriptionStatus      String                   @default("none")
   subscriptionExpiry      DateTime?
+  stripeCustomerId        String?
   trialStartDate          DateTime?
   trialEndDate            DateTime?
   drivePermissions        Json?

@@ -2,10 +2,11 @@
 
 import Link from "next/link"
 import { useState, useEffect } from "react"
-import { Trophy, Calendar, ChevronRight, Target, Dumbbell, Apple, Brain, Wind, BookOpen, ShoppingBag, Check, Flame } from "lucide-react"
+import { Trophy, Calendar, ChevronRight, Target, Dumbbell, Apple, Brain, Wind, BookOpen, ShoppingBag, Check, Flame, Sparkles, X } from "lucide-react"
 import { PortalHeader } from "@/components/Navigation/PortalHeader"
 import { useUser } from "@auth0/nextjs-auth0"
 import { useRouter } from "next/navigation"
+import TrialSubscription from "@/components/Subscriptions/TrialSubscription"
 
 interface DailyJournalData {
   weight: number | null
@@ -26,7 +27,10 @@ export function EnhancedDashboard() {
   const router = useRouter()
   const [totalPoints] = useState(1250)
   const [currentStreak, setCurrentStreak] = useState(0)
-  
+  const [hasActiveSubscription, setHasActiveSubscription] = useState<boolean | null>(null)
+  const [showTrialModal, setShowTrialModal] = useState(false)
+  const [showTrialBanner, setShowTrialBanner] = useState(true)
+
   // Daily tasks state
   const [dailyTasks, setDailyTasks] = useState({
     peptides: false,
@@ -153,6 +157,25 @@ export function EnhancedDashboard() {
       alert(`Failed to save journal entry: ${error instanceof Error ? error.message : 'Please try again.'}`)
     }
   }
+
+  // Check subscription status on mount
+  useEffect(() => {
+    const checkSubscription = async () => {
+      try {
+        const response = await fetch('/api/subscriptions/status')
+        if (response.ok) {
+          const data = await response.json()
+          setHasActiveSubscription(data.hasActiveSubscription)
+        } else {
+          setHasActiveSubscription(false)
+        }
+      } catch (error) {
+        console.error('Failed to check subscription:', error)
+        setHasActiveSubscription(false)
+      }
+    }
+    checkSubscription()
+  }, [])
 
   // Load tasks on mount
   useEffect(() => {
@@ -409,6 +432,51 @@ export function EnhancedDashboard() {
             )}
           </div>
 
+          {/* Trial Subscription Banner */}
+          {hasActiveSubscription === false && showTrialBanner && (
+            <div className="mb-8 bg-gradient-to-r from-primary-600/20 via-secondary-600/20 to-primary-600/20 border-2 border-primary-400/40 rounded-xl p-6 shadow-lg backdrop-blur-sm relative overflow-hidden">
+              {/* Close button */}
+              <button
+                onClick={() => setShowTrialBanner(false)}
+                className="absolute top-3 right-3 text-gray-300 hover:text-white transition-colors"
+                aria-label="Dismiss"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              {/* Animated background gradient */}
+              <div className="absolute inset-0 bg-gradient-to-r from-primary-500/10 to-secondary-500/10 animate-pulse opacity-50"></div>
+
+              <div className="relative z-10 flex flex-col md:flex-row items-center gap-6">
+                {/* Icon */}
+                <div className="flex-shrink-0 bg-gradient-to-br from-primary-500/30 to-secondary-500/30 p-4 rounded-full">
+                  <Sparkles className="w-10 h-10 text-primary-300" />
+                </div>
+
+                {/* Content */}
+                <div className="flex-1 text-center md:text-left">
+                  <h3 className="text-2xl font-bold text-white mb-2">
+                    Unlock Full Access with $1 Trial
+                  </h3>
+                  <p className="text-gray-200 mb-1">
+                    Get 14 days of complete access to all premium features for just $1
+                  </p>
+                  <p className="text-sm text-gray-300">
+                    Then $29.99/month • Cancel anytime during trial
+                  </p>
+                </div>
+
+                {/* CTA Button */}
+                <button
+                  onClick={() => setShowTrialModal(true)}
+                  className="flex-shrink-0 px-6 py-3 bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 text-white font-bold rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-primary-500/50"
+                >
+                  Start $1 Trial →
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Main Portal Section - Matching Portalview.png */}
           <div className="card-hover-primary mb-8">
             <div className="text-center mb-6">
@@ -645,6 +713,14 @@ export function EnhancedDashboard() {
           </div>
         </div>
       </div>
+
+      {/* Trial Subscription Modal */}
+      {showTrialModal && (
+        <TrialSubscription
+          onClose={() => setShowTrialModal(false)}
+          redirectUrl="/portal"
+        />
+      )}
     </div>
   )
 }

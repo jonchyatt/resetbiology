@@ -113,6 +113,7 @@ export function PeptideTracker() {
   const [customDuration, setCustomDuration] = useState("");
   const [customTimesArray, setCustomTimesArray] = useState<string[]>([]);
   const [newCustomTimeInput, setNewCustomTimeInput] = useState<string>("08:00");
+  const [selectedDays, setSelectedDays] = useState<string[]>(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']);
   const [peptideLibrary, setPeptideLibrary] = useState<
     Omit<PeptideProtocol, "startDate" | "currentCycle" | "isActive">[]
   >([]);
@@ -675,6 +676,13 @@ export function PeptideTracker() {
     fetchTodaysDoses(todayKey);
   }, [todayKey, fetchTodaysDoses]);
 
+  // Toggle day selection for custom schedules
+  const toggleDay = (day: string) => {
+    setSelectedDays(prev =>
+      prev.includes(day) ? prev.filter(d => d !== day) : [...prev, day]
+    );
+  };
+
   const fetchUserProtocols = async () => {
     try {
       const response = await fetch("/api/peptides/protocols", {
@@ -700,6 +708,7 @@ export function PeptideTracker() {
             : dateToLocalKey(new Date()),
           currentCycle: 1,
           isActive: protocol.isActive,
+          administrationType: protocol.administrationType || "injection",
         }));
         setCurrentProtocols(formattedProtocols);
         console.log(
@@ -855,6 +864,7 @@ export function PeptideTracker() {
     vialAmount: string;
     reconstitution: string;
     notes?: string;
+    administrationType?: string;
     notifications?: {
       pushEnabled: boolean;
       emailEnabled: boolean;
@@ -888,6 +898,7 @@ export function PeptideTracker() {
             `Schedule: ${protocolData.schedule.frequency}`,
           startDate: dateToLocalKey(new Date()), // Send user's local date
           timezone: getClientTimezone(),
+          administrationType: protocolData.administrationType || "injection",
         }),
       });
 
@@ -1184,6 +1195,17 @@ export function PeptideTracker() {
     setCustomTiming(protocol.timing);
     setCustomDuration(protocol.duration);
 
+    // Parse existing frequency for days (if it contains specific days like "Mon/Wed/Fri")
+    const allDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const frequencyDays = protocol.frequency.split('/').filter(day => allDays.includes(day));
+
+    if (frequencyDays.length > 0) {
+      setSelectedDays(frequencyDays);
+    } else {
+      // Default to all days if no specific days are set
+      setSelectedDays(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']);
+    }
+
     // Parse existing timing into times array
     // protocol.timing might be like "08:00/20:00" or "AM" or "PM" or "15:50" or "AM & PM (twice daily)"
     const timesArray: string[] = [];
@@ -1221,9 +1243,23 @@ export function PeptideTracker() {
       return;
     }
 
+    // Validate day selection for custom schedules
+    if ((customFrequency === '3x per week' || customFrequency === '2x per week' || customFrequency === 'Custom') && selectedDays.length === 0) {
+      alert("Please select at least one day for your custom schedule");
+      return;
+    }
+
     // Join times array into string for storage
     const timingString = customTimesArray.join("/");
-    console.log(`💾 Saving protocol: timing="${timingString}"`);
+
+    // Format frequency with days if applicable
+    let finalFrequency = customFrequency;
+    if (customFrequency === '3x per week' || customFrequency === '2x per week' || customFrequency === 'Custom') {
+      const daysString = selectedDays.join('/');
+      finalFrequency = `${daysString}`;
+    }
+
+    console.log(`💾 Saving protocol: frequency="${finalFrequency}", timing="${timingString}"`);
 
     try {
       const response = await fetch("/api/peptides/protocols", {
@@ -1232,7 +1268,7 @@ export function PeptideTracker() {
         body: JSON.stringify({
           protocolId: editingProtocol.id,
           dosage: customDosage,
-          frequency: customFrequency,
+          frequency: finalFrequency,
           timing: timingString,
           timezone: getClientTimezone(),
         }),
@@ -2504,6 +2540,35 @@ export function PeptideTracker() {
                   </select>
                 </div>
 
+                {/* Day selection for custom schedules */}
+                {(customFrequency === '3x per week' || customFrequency === '2x per week' || customFrequency === 'Custom') && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      Select Days *
+                    </label>
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
+                        <button
+                          key={day}
+                          type="button"
+                          onClick={() => toggleDay(day)}
+                          className={`flex-shrink-0 px-2.5 sm:px-3 py-1.5 text-xs font-semibold rounded-md border transition-all whitespace-nowrap ${
+                            selectedDays.includes(day)
+                              ? 'bg-primary-500/50 text-primary-50 border-primary-400/70 shadow-[0_0_18px_rgba(63,191,181,0.5)]'
+                              : 'bg-primary-500/15 text-primary-200 border-primary-400/40 hover:bg-primary-500/25'
+                          }`}
+                          aria-pressed={selectedDays.includes(day)}
+                        >
+                          {day}
+                        </button>
+                      ))}
+                    </div>
+                    <p className="text-xs text-gray-400 mt-2">
+                      Select which days you want to take this dose
+                    </p>
+                  </div>
+                )}
+
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
                     Dose Times *
@@ -2622,6 +2687,30 @@ export function PeptideTracker() {
               setSelectedProtocolForNotif(null);
               // Refresh notification preferences to update icon state
               fetchNotificationPreferences();
+            }}
+          />
+        )}
+
+        {/* Oral Medication Quick Add Modal */}
+        {showQuickAddOral && (
+          <QuickAddOralMed
+            onClose={() => setShowQuickAddOral(false)}
+            onAdd={async (medData) => {
+              // Convert oral med data to protocol format
+              await handleSaveProtocol({
+                peptideName: medData.peptideName,
+                dosage: medData.dosage,
+                schedule: {
+                  days: [], // Not used for oral meds
+                  times: medData.timing.split("/"),
+                  frequency: medData.frequency,
+                },
+                duration: "Ongoing",
+                vialAmount: "N/A",
+                reconstitution: "N/A",
+                notes: `Oral medication: ${medData.administrationType}`,
+              });
+              setShowQuickAddOral(false);
             }}
           />
         )}
