@@ -33,6 +33,9 @@ model User {
   trialEndDate            DateTime?
   drivePermissions        Json?
   driveFolder             String?
+  googleDriveRefreshToken String?                  // Encrypted OAuth refresh token
+  googleDriveConnectedAt  DateTime?                // When Drive was connected
+  googleDriveSyncEnabled  Boolean                  @default(false)
   profileData             Json?
   irbApprovalStatus       String?
   irbSubmissionDate       DateTime?
