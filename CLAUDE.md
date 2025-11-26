@@ -151,11 +151,67 @@ scripts/seed-breath-exercises.ts
 - `app/admin/page.tsx` - Added Breath Exercises link
 - `STRIPE_TRIAL_SETUP.md` - Updated documentation
 
-### ⚠️ Action Required After Deploy:
-1. **Stripe Dashboard**: Create $12.99/month price in both test and live mode
-2. **Vercel Environment Variables**:
-   - `STRIPE_MONTHLY_PRICE_ID` = your $12.99 price ID
-   - `SELLER_EMAILS` = comma-separated list of notification recipients
+---
+
+# 🔧 ADMIN TODO LIST (User Must Complete)
+
+These are manual tasks the user needs to complete outside of Claude Code. Mark as ✅ when done.
+
+## Stripe & Payment Setup
+
+- [ ] **Create $12.99/month Price in Stripe Dashboard**
+  1. Go to Stripe Dashboard → Products → Add Product (or select existing)
+  2. Click "Add pricing" → Price: $12.99 → Billing period: Monthly
+  3. Copy the Price ID (starts with `price_`)
+  4. Do this for BOTH test mode and live mode
+
+- [ ] **Update Vercel Environment Variables**
+  ```
+  STRIPE_MONTHLY_PRICE_ID=price_xxx  (your $12.99 price ID)
+  SELLER_EMAILS=email1@x.com,email2@x.com  (for order notifications)
+  ```
+  - Go to: https://vercel.com/your-project/settings/environment-variables
+  - Add/update the variables above
+  - Set for: Production, Preview, and Development
+  - Click Save
+
+- [ ] **Redeploy to Apply Environment Changes**
+  ```bash
+  npx vercel --prod
+  ```
+
+- [ ] **Test Stripe Integration**
+  1. Visit resetbiology.com/portal
+  2. Click "Start FREE Trial"
+  3. Use test card: 4242 4242 4242 4242
+  4. Verify in Stripe Dashboard → Subscriptions
+
+## Live Mode Checklist (When Ready for Real Payments)
+
+- [ ] **Switch Stripe to Live Mode**
+  - Toggle to "Live mode" in Stripe Dashboard (top right)
+  - Create the $12.99 product/price in live mode
+  - Copy live Price ID
+
+- [ ] **Set Up Live Webhook**
+  - Go to: https://dashboard.stripe.com/webhooks
+  - Add endpoint: `https://resetbiology.com/api/stripe/webhook`
+  - Select events: checkout.session.completed, customer.subscription.*
+  - Copy signing secret
+
+- [ ] **Update Vercel with Live Keys**
+  ```
+  STRIPE_SECRET_KEY=sk_live_xxx
+  STRIPE_PUBLISHABLE_KEY=pk_live_xxx
+  STRIPE_WEBHOOK_SECRET=whsec_xxx
+  STRIPE_MONTHLY_PRICE_ID=price_live_xxx
+  ```
+
+- [ ] **Test with Real Card**
+  - Make a test purchase with your own card
+  - Cancel immediately in Stripe Dashboard to avoid charges
+
+---
 
 ## ⚠️ CRITICAL PERFORMANCE REMINDERS
 - **CHECK AVAILABLE TOOLS FIRST** - Run `claude mcp list` to see what's connected

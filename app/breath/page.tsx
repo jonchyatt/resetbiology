@@ -1,12 +1,12 @@
 "use client"
 
-import { BreathTrainingApp } from "@/components/Breath/BreathTrainingApp"
+import { BreathPage } from "@/components/Breath/BreathPage"
 import SubscriptionGate from "@/components/Subscriptions/SubscriptionGate"
 
-export default function BreathPage() {
+export default function BreathPageRoute() {
   return (
     <SubscriptionGate featureName="Breathing App">
-      <BreathTrainingApp />
+      <BreathPage />
     </SubscriptionGate>
   )
 }

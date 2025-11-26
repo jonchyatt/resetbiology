@@ -11,9 +11,11 @@ import {
   Dumbbell,
   Flame,
   ListChecks,
+  Plus,
   Sparkles,
   Target,
   TrendingUp,
+  X,
 } from "lucide-react";
 import { WorkoutQuickAdd, WorkoutQuickAddResult } from "./WorkoutQuickAdd";
 import { RecentWorkouts } from "./RecentWorkouts";
@@ -80,6 +82,7 @@ export function WorkoutTracker() {
   const [assigningProtocolId, setAssigningProtocolId] = useState<string | null>(null);
   const [sessionActionLoading, setSessionActionLoading] = useState(false);
   const [checkInSubmitting, setCheckInSubmitting] = useState(false);
+  const [showProtocolLibrary, setShowProtocolLibrary] = useState(false);
 
   const [preferredEquipment, setPreferredEquipment] = useState<string[]>(["Barbell", "Dumbbell"]);
   const [goalPriority, setGoalPriority] = useState(goalOptions[0].value);
@@ -496,12 +499,21 @@ export function WorkoutTracker() {
                     "Intelligent protocol-driven training taps into your peptide timing, nutrition, and accountability stack."}
                 </p>
               </div>
-              <button
-                onClick={() => fetchAssignments()}
-                className="rounded-full border border-white/10 px-3 py-1 text-xs uppercase tracking-widest text-slate-200 transition hover:border-white/40"
-              >
-                Refresh
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setShowProtocolLibrary(true)}
+                  className="inline-flex items-center gap-2 rounded-xl bg-secondary-400/90 px-4 py-2 text-sm font-semibold text-slate-950 shadow-md shadow-secondary-500/40 transition hover:bg-secondary-300"
+                >
+                  <Plus className="h-4 w-4" />
+                  Add Protocol
+                </button>
+                <button
+                  onClick={() => fetchAssignments()}
+                  className="rounded-full border border-white/10 px-3 py-1 text-xs uppercase tracking-widest text-slate-200 transition hover:border-white/40"
+                >
+                  Refresh
+                </button>
+              </div>
             </div>
             {assignmentsLoading ? (
               <p className="mt-6 text-sm text-slate-300">Loading assignment intelligence…</p>
@@ -927,6 +939,82 @@ export function WorkoutTracker() {
       </section>
       </div>
       </div>
+
+      {/* Protocol Library Modal */}
+      {showProtocolLibrary && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 max-w-4xl w-full border border-primary-400/30 shadow-2xl max-h-[85vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h3 className="text-2xl font-bold text-white">Workout Protocol Library</h3>
+                <p className="text-sm text-slate-400 mt-1">Research-backed templates with AI-assisted guardrails</p>
+              </div>
+              <button
+                onClick={() => setShowProtocolLibrary(false)}
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            {assignError && (
+              <p className="mb-4 rounded-xl border border-rose-500/40 bg-rose-500/10 px-4 py-2 text-sm text-rose-200">
+                {assignError}
+              </p>
+            )}
+
+            {protocolsLoading ? (
+              <div className="text-center py-8">
+                <div className="animate-spin w-8 h-8 border-2 border-secondary-400 border-t-transparent rounded-full mx-auto mb-3"></div>
+                <p className="text-slate-300">Loading protocols...</p>
+              </div>
+            ) : protocols.length === 0 ? (
+              <p className="text-center py-8 text-slate-400">No protocols available yet.</p>
+            ) : (
+              <div className="grid gap-4 md:grid-cols-2">
+                {protocols.map((protocol) => (
+                  <article
+                    key={protocol.id}
+                    className="rounded-2xl border border-primary-400/30 bg-gray-900/40 p-5 shadow-inner"
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <h4 className="text-lg font-semibold text-white">{protocol.name}</h4>
+                      <span className="rounded-full border border-white/10 px-3 py-1 text-xs uppercase tracking-widest text-slate-200">
+                        {protocol.level || "multi-level"}
+                      </span>
+                    </div>
+                    <p className="mt-2 text-sm text-slate-300 line-clamp-2">{protocol.summary}</p>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {(protocol.tags ?? []).slice(0, 3).map((tag) => (
+                        <span
+                          key={tag}
+                          className="rounded-full bg-slate-900/90 px-3 py-1 text-[11px] uppercase tracking-wide text-secondary-200"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                    <ul className="mt-3 space-y-1 text-xs text-slate-400">
+                      <li>Duration: {protocol.durationWeeks ?? "--"} weeks</li>
+                      <li>Sessions/week: {protocol.sessionsPerWeek ?? "--"}</li>
+                    </ul>
+                    <button
+                      disabled={assigningProtocolId === protocol.id}
+                      onClick={() => {
+                        handleAssignProtocol(protocol.id);
+                        setShowProtocolLibrary(false);
+                      }}
+                      className="mt-4 inline-flex w-full items-center justify-center rounded-xl bg-secondary-400/90 px-4 py-2 text-sm font-semibold text-slate-950 shadow-md shadow-secondary-500/40 transition hover:bg-secondary-300 disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      Assign Protocol
+                    </button>
+                  </article>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

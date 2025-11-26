@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react"
 import Link from "next/link"
-import { Apple, Target, Plus, X, Calendar, TrendingUp, Utensils, Copy, Edit, Trash2, Star } from "lucide-react"
+import { Apple, Target, Plus, X, Calendar, TrendingUp, Utensils, Copy, Edit, Trash2, Star, Check, Flame } from "lucide-react"
 import { FoodQuickAdd, FoodQuickAddResult } from "./FoodQuickAdd"
 import { RecentFoods } from "./RecentFoods"
 import { MacroGoals } from "./MacroGoals"
@@ -60,6 +60,20 @@ export function NutritionTracker() {
   const [favorites, setFavorites] = useState<any[]>([])
   const [favoritesLoading, setFavoritesLoading] = useState(false)
 
+  // Meal Plans state
+  const [mealPlans, setMealPlans] = useState<any[]>([])
+  const [mealPlansLoading, setMealPlansLoading] = useState(false)
+  const [showAddPlanModal, setShowAddPlanModal] = useState(false)
+  const [newPlan, setNewPlan] = useState({
+    name: '',
+    planType: 'maintenance',
+    dailyCalories: '',
+    proteinTarget: '',
+    carbsTarget: '',
+    fatsTarget: '',
+    description: ''
+  })
+
   // Form state for adding food
   const [foodName, setFoodName] = useState('')
   const [calories, setCalories] = useState('')
@@ -67,11 +81,79 @@ export function NutritionTracker() {
   const [carbs, setCarbs] = useState('')
   const [fats, setFats] = useState('')
 
+  // Load meal plans
+  const loadMealPlans = async () => {
+    try {
+      setMealPlansLoading(true)
+      const res = await fetch('/api/nutrition/plans?activeOnly=true')
+      if (res.ok) {
+        const data = await res.json()
+        setMealPlans(data.plans || [])
+      }
+    } catch (err) {
+      console.error('Failed to load meal plans:', err)
+    } finally {
+      setMealPlansLoading(false)
+    }
+  }
+
+  // Create new meal plan
+  const createMealPlan = async () => {
+    if (!newPlan.name || !newPlan.dailyCalories) {
+      alert('Please enter at least name and daily calories')
+      return
+    }
+
+    try {
+      const res = await fetch('/api/nutrition/plans', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newPlan)
+      })
+
+      if (res.ok) {
+        await loadMealPlans()
+        setShowAddPlanModal(false)
+        setNewPlan({
+          name: '',
+          planType: 'maintenance',
+          dailyCalories: '',
+          proteinTarget: '',
+          carbsTarget: '',
+          fatsTarget: '',
+          description: ''
+        })
+      } else {
+        const data = await res.json()
+        alert(`Failed to create plan: ${data.error}`)
+      }
+    } catch (err) {
+      console.error('Failed to create meal plan:', err)
+      alert('Failed to create meal plan')
+    }
+  }
+
+  // Delete/deactivate meal plan
+  const removeMealPlan = async (planId: string) => {
+    if (!confirm('Remove this meal plan?')) return
+    try {
+      const res = await fetch(`/api/nutrition/plans?id=${planId}`, {
+        method: 'DELETE'
+      })
+      if (res.ok) {
+        await loadMealPlans()
+      }
+    } catch (err) {
+      console.error('Failed to remove meal plan:', err)
+    }
+  }
+
   // Load food library and today's foods
   useEffect(() => {
     fetchTodaysFoods()
     fetchFoodLibrary()
     loadFavorites()
+    loadMealPlans()
   }, [])
 
   // Load favorites from API
@@ -578,6 +660,103 @@ export function NutritionTracker() {
 
         {activeTab === 'today' && (
           <div className="max-w-6xl mx-auto">
+            {/* Active Meal Plans Section */}
+            <div className="mb-8">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-2xl font-bold text-white flex items-center">
+                  <Target className="w-6 h-6 mr-2 text-secondary-400" />
+                  Active Meal Plans
+                </h3>
+                <button
+                  onClick={() => setShowAddPlanModal(true)}
+                  className="bg-secondary-500 hover:bg-secondary-600 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Plan
+                </button>
+              </div>
+
+              {mealPlansLoading ? (
+                <div className="text-center py-6">
+                  <div className="animate-spin w-8 h-8 border-2 border-secondary-400 border-t-transparent rounded-full mx-auto"></div>
+                </div>
+              ) : mealPlans.length === 0 ? (
+                <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 text-center">
+                  <Apple className="w-12 h-12 text-secondary-400 mx-auto mb-4" />
+                  <h4 className="text-lg font-semibold text-white mb-2">No Active Meal Plans</h4>
+                  <p className="text-gray-300 text-sm mb-4">Create a meal plan to track your daily macro targets</p>
+                  <button
+                    onClick={() => setShowAddPlanModal(true)}
+                    className="bg-secondary-500 hover:bg-secondary-600 text-white font-semibold py-2 px-6 rounded-lg transition-colors"
+                  >
+                    Create Your First Plan
+                  </button>
+                </div>
+              ) : (
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  {mealPlans.map((plan) => (
+                    <div
+                      key={plan.id}
+                      className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-xl p-5 border border-secondary-400/20 hover:border-secondary-400/40 transition-all shadow-lg"
+                    >
+                      <div className="flex items-start justify-between mb-3">
+                        <div>
+                          <h4 className="text-lg font-bold text-white">{plan.name}</h4>
+                          <span className="text-xs px-2 py-1 rounded-full bg-secondary-600/30 text-secondary-300 capitalize">
+                            {plan.planType}
+                          </span>
+                        </div>
+                        <button
+                          onClick={() => removeMealPlan(plan.id)}
+                          className="p-2 text-gray-400 hover:text-red-400 transition-colors"
+                          title="Remove"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+
+                      {plan.description && (
+                        <p className="text-gray-300 text-sm mb-3 line-clamp-2">{plan.description}</p>
+                      )}
+
+                      <div className="grid grid-cols-2 gap-2 text-xs">
+                        <div className="bg-gray-700/50 rounded-lg p-2 text-center">
+                          <div className="text-secondary-300 font-semibold text-lg">{plan.dailyCalories}</div>
+                          <div className="text-gray-400">Daily Cal</div>
+                        </div>
+                        <div className="bg-gray-700/50 rounded-lg p-2 text-center">
+                          <div className="text-secondary-300 font-semibold text-lg">{plan.proteinTarget}g</div>
+                          <div className="text-gray-400">Protein</div>
+                        </div>
+                        <div className="bg-gray-700/50 rounded-lg p-2 text-center">
+                          <div className="text-secondary-300 font-semibold">{plan.carbsTarget}g</div>
+                          <div className="text-gray-400">Carbs</div>
+                        </div>
+                        <div className="bg-gray-700/50 rounded-lg p-2 text-center">
+                          <div className="text-secondary-300 font-semibold">{plan.fatsTarget}g</div>
+                          <div className="text-gray-400">Fats</div>
+                        </div>
+                      </div>
+
+                      {/* Progress against plan */}
+                      <div className="mt-3 pt-3 border-t border-gray-700/50">
+                        <div className="flex justify-between text-xs text-gray-400 mb-1">
+                          <span>Today's Progress</span>
+                          <span>{Math.round((todaysTotals.calories / plan.dailyCalories) * 100)}%</span>
+                        </div>
+                        <div className="w-full bg-gray-700 rounded-full h-2">
+                          <div
+                            className="bg-gradient-to-r from-secondary-500 to-primary-500 h-2 rounded-full transition-all"
+                            style={{ width: `${Math.min(100, (todaysTotals.calories / plan.dailyCalories) * 100)}%` }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <div className="grid gap-6 lg:grid-cols-3">
               {/* Column 1 - Add Nutrition */}
               <div className="space-y-6">
@@ -1122,9 +1301,123 @@ export function NutritionTracker() {
           </div>
         </div>
       )}
+
+      {/* Add Meal Plan Modal */}
+      {showAddPlanModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 max-w-lg w-full border border-secondary-400/30 shadow-2xl">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-bold text-white">Create Meal Plan</h3>
+              <button
+                onClick={() => setShowAddPlanModal(false)}
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Plan Name *</label>
+                <input
+                  type="text"
+                  value={newPlan.name}
+                  onChange={(e) => setNewPlan({ ...newPlan, name: e.target.value })}
+                  className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-secondary-400 focus:outline-none"
+                  placeholder="e.g., Cut Phase, Maintenance, Bulk"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Plan Type</label>
+                <select
+                  value={newPlan.planType}
+                  onChange={(e) => setNewPlan({ ...newPlan, planType: e.target.value })}
+                  className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-secondary-400 focus:outline-none"
+                >
+                  <option value="maintenance">Maintenance</option>
+                  <option value="cut">Cut / Fat Loss</option>
+                  <option value="bulk">Bulk / Muscle Gain</option>
+                  <option value="keto">Keto</option>
+                  <option value="low-carb">Low Carb</option>
+                  <option value="high-protein">High Protein</option>
+                  <option value="custom">Custom</option>
+                </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Daily Calories *</label>
+                  <input
+                    type="number"
+                    value={newPlan.dailyCalories}
+                    onChange={(e) => setNewPlan({ ...newPlan, dailyCalories: e.target.value })}
+                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-secondary-400 focus:outline-none"
+                    placeholder="2000"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Protein (g)</label>
+                  <input
+                    type="number"
+                    value={newPlan.proteinTarget}
+                    onChange={(e) => setNewPlan({ ...newPlan, proteinTarget: e.target.value })}
+                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-secondary-400 focus:outline-none"
+                    placeholder="150"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Carbs (g)</label>
+                  <input
+                    type="number"
+                    value={newPlan.carbsTarget}
+                    onChange={(e) => setNewPlan({ ...newPlan, carbsTarget: e.target.value })}
+                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-secondary-400 focus:outline-none"
+                    placeholder="200"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Fats (g)</label>
+                  <input
+                    type="number"
+                    value={newPlan.fatsTarget}
+                    onChange={(e) => setNewPlan({ ...newPlan, fatsTarget: e.target.value })}
+                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-secondary-400 focus:outline-none"
+                    placeholder="65"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Description (optional)</label>
+                <textarea
+                  value={newPlan.description}
+                  onChange={(e) => setNewPlan({ ...newPlan, description: e.target.value })}
+                  className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-secondary-400 focus:outline-none"
+                  placeholder="Notes about this plan..."
+                  rows={2}
+                />
+              </div>
+
+              <div className="flex gap-3 mt-6">
+                <button
+                  onClick={createMealPlan}
+                  className="flex-1 bg-secondary-500 hover:bg-secondary-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center"
+                >
+                  <Check className="w-4 h-4 mr-2" />
+                  Create Plan
+                </button>
+                <button
+                  onClick={() => setShowAddPlanModal(false)}
+                  className="px-4 py-3 text-gray-400 hover:text-white transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
-
-
-

@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useState, useEffect } from "react"
-import { Trophy, Calendar, ChevronRight, Target, Dumbbell, Apple, Brain, Wind, BookOpen, ShoppingBag, Check, Flame, Sparkles, X } from "lucide-react"
+import { Trophy, Calendar, ChevronRight, Target, Dumbbell, Apple, Brain, Wind, BookOpen, ShoppingBag, Check, Flame, Sparkles, X, Eye, Zap } from "lucide-react"
 import { PortalHeader } from "@/components/Navigation/PortalHeader"
 import { useUser } from "@auth0/nextjs-auth0"
 import { useRouter } from "next/navigation"
@@ -534,8 +534,8 @@ export function EnhancedDashboard() {
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">📋 Daily Check-in</h2>
             </div>
 
-            {/* Quick Access Cards (2x3 Grid) */}
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
+            {/* Quick Access Cards (2x4 Grid) */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
                 <Link href="/peptides" className="group">
                   <div className="p-6 bg-gradient-to-br from-teal-600/30 to-teal-700/30 border border-teal-400/30 rounded-lg hover:scale-[1.02] hover:shadow-lg hover:shadow-teal-500/20 transition-all text-center">
                     <Target className="w-8 h-8 text-teal-300 mx-auto mb-2" />
@@ -575,6 +575,20 @@ export function EnhancedDashboard() {
                   <div className="p-6 bg-gradient-to-br from-secondary-600/30 to-secondary-700/30 border border-secondary-400/30 rounded-lg hover:scale-[1.02] hover:shadow-lg hover:shadow-secondary-500/20 transition-all text-center">
                     <BookOpen className="w-8 h-8 text-secondary-300 mx-auto mb-2" />
                     <span className="text-white font-medium">Journal</span>
+                  </div>
+                </Link>
+
+                <Link href="/vision-healing" className="group">
+                  <div className="p-6 bg-gradient-to-br from-cyan-600/30 to-cyan-700/30 border border-cyan-400/30 rounded-lg hover:scale-[1.02] hover:shadow-lg hover:shadow-cyan-500/20 transition-all text-center">
+                    <Eye className="w-8 h-8 text-cyan-300 mx-auto mb-2" />
+                    <span className="text-white font-medium">Vision</span>
+                  </div>
+                </Link>
+
+                <Link href="/mental-training" className="group">
+                  <div className="p-6 bg-gradient-to-br from-pink-600/30 to-pink-700/30 border border-pink-400/30 rounded-lg hover:scale-[1.02] hover:shadow-lg hover:shadow-pink-500/20 transition-all text-center">
+                    <Zap className="w-8 h-8 text-pink-300 mx-auto mb-2" />
+                    <span className="text-white font-medium">N-Back</span>
                   </div>
                 </Link>
               </div>
