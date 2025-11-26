@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { User, Settings, Calendar, TrendingUp, Shield, CreditCard, Download, LogOut, Bell, Lock, Eye, EyeOff } from "lucide-react"
+import { User, Settings, Calendar, TrendingUp, Shield, CreditCard, Download, LogOut, Bell, Lock, Eye, EyeOff, Cloud, ExternalLink, RefreshCw } from "lucide-react"
 import { PortalHeader } from "@/components/Navigation/PortalHeader"
 import { useUser } from "@auth0/nextjs-auth0"
 import { useRouter } from "next/navigation"
@@ -20,18 +20,59 @@ export default function ProfilePage() {
   // Form state for editable fields
   const [formData, setFormData] = useState({
     name: "",
-    email: ""
+    email: "",
+    username: ""
   })
+
+  // Google Drive sync state
+  const [driveConnected, setDriveConnected] = useState(false)
+  const [driveLoading, setDriveLoading] = useState(false)
   
   // Load user data when available
   useEffect(() => {
     if (user) {
       setFormData({
         name: user.name || "",
-        email: user.email || ""
+        email: user.email || "",
+        username: (user as any).username || ""
       })
+      // Check if Google Drive is connected
+      checkDriveConnection()
     }
   }, [user])
+
+  const checkDriveConnection = async () => {
+    try {
+      const res = await fetch('/api/integrations/google-drive/status')
+      if (res.ok) {
+        const data = await res.json()
+        setDriveConnected(data.connected || false)
+      }
+    } catch (error) {
+      console.error('Error checking Drive status:', error)
+    }
+  }
+
+  const connectGoogleDrive = async () => {
+    setDriveLoading(true)
+    // Redirect to Google OAuth flow
+    window.location.href = '/api/integrations/google-drive/connect'
+  }
+
+  const disconnectGoogleDrive = async () => {
+    if (!confirm('Disconnect Google Drive? Your synced files will remain in Drive.')) return
+    setDriveLoading(true)
+    try {
+      const res = await fetch('/api/integrations/google-drive/disconnect', { method: 'POST' })
+      if (res.ok) {
+        setDriveConnected(false)
+      }
+    } catch (error) {
+      console.error('Error disconnecting Drive:', error)
+    } finally {
+      setDriveLoading(false)
+    }
+  }
 
   // Handle save changes
   const handleSaveChanges = async () => {
@@ -101,25 +142,25 @@ export default function ProfilePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* User Overview */}
           <div className="card-hover-primary mb-8">
-            <div className="flex items-center gap-6">
-              <div className="w-24 h-24 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-full flex items-center justify-center">
-                <User className="w-12 h-12 text-white" />
+            <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
+              <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-full flex items-center justify-center flex-shrink-0">
+                <User className="w-10 h-10 sm:w-12 sm:h-12 text-white" />
               </div>
-              <div className="flex-1">
-                <h3 className="text-2xl font-bold text-white mb-2">
+              <div className="flex-1 min-w-0 text-center sm:text-left">
+                <h3 className="text-xl sm:text-2xl font-bold text-white mb-1 sm:mb-2 truncate">
                   {user?.name || "User"}
                 </h3>
-                <p className="text-primary-300 mb-2">
+                <p className="text-primary-300 text-sm sm:text-base mb-1 sm:mb-2 truncate">
                   {user?.email || "No email provided"}
                 </p>
-                <div className="flex items-center gap-4 text-sm text-gray-300">
+                <div className="flex items-center justify-center sm:justify-start gap-4 text-sm text-gray-300">
                   <span>Member Account</span>
                 </div>
               </div>
-              <div className="text-right">
-                <button 
+              <div className="flex-shrink-0 w-full sm:w-auto">
+                <button
                   onClick={handleSignOut}
-                  className="action-btn-primary px-6 py-3"
+                  className="action-btn-primary w-full sm:w-auto px-6 py-3 text-sm sm:text-base whitespace-nowrap flex items-center justify-center"
                 >
                   <LogOut className="w-4 h-4 mr-2" />
                   Sign Out
@@ -170,6 +211,17 @@ export default function ProfilePage() {
                       />
                     </div>
                     <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">Username</label>
+                      <input
+                        type="text"
+                        value={formData.username}
+                        onChange={(e) => setFormData({...formData, username: e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '')})}
+                        className="input-primary"
+                        placeholder="Choose a username"
+                      />
+                      <p className="text-xs text-gray-400 mt-1">Lowercase letters, numbers, and underscores only</p>
+                    </div>
+                    <div>
                       <label className="block text-sm font-medium text-gray-300 mb-2">Email Address</label>
                       <input
                         type="email"
@@ -198,7 +250,7 @@ export default function ProfilePage() {
                       <p className="text-xs text-gray-400 mt-1">Password management via Auth0</p>
                     </div>
                     <div className="pt-4">
-                      <button 
+                      <button
                         onClick={handleSaveChanges}
                         className="action-btn-primary px-6 py-3"
                       >
@@ -318,6 +370,75 @@ export default function ProfilePage() {
                         </div>
                       </div>
                     </div>
+
+                    {/* Google Drive Sync Section */}
+                    <div className="bg-gradient-to-r from-blue-600/20 to-cyan-600/20 border border-blue-400/30 rounded-lg p-5">
+                      <div className="flex items-start gap-4">
+                        <div className="p-3 bg-blue-500/20 rounded-lg">
+                          <Cloud className="w-8 h-8 text-blue-400" />
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-bold text-white text-lg mb-1">Google Drive Sync</h4>
+                          <p className="text-sm text-gray-300 mb-4">
+                            Automatically sync your daily journal entries, food photos, workout summaries, and progress reports to your Google Drive.
+                          </p>
+
+                          {driveConnected ? (
+                            <div className="space-y-3">
+                              <div className="flex items-center gap-2 text-secondary-400">
+                                <div className="w-2 h-2 bg-secondary-400 rounded-full animate-pulse" />
+                                <span className="text-sm font-medium">Connected to Google Drive</span>
+                              </div>
+                              <div className="flex flex-wrap gap-3">
+                                <button
+                                  onClick={disconnectGoogleDrive}
+                                  disabled={driveLoading}
+                                  className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+                                >
+                                  {driveLoading ? 'Processing...' : 'Disconnect'}
+                                </button>
+                                <button
+                                  onClick={() => window.open('https://drive.google.com', '_blank')}
+                                  className="px-4 py-2 bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+                                >
+                                  <ExternalLink className="w-4 h-4" />
+                                  Open Drive
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <button
+                              onClick={connectGoogleDrive}
+                              disabled={driveLoading}
+                              className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors disabled:opacity-50 flex items-center gap-2"
+                            >
+                              {driveLoading ? (
+                                <>
+                                  <RefreshCw className="w-5 h-5 animate-spin" />
+                                  Connecting...
+                                </>
+                              ) : (
+                                <>
+                                  <Cloud className="w-5 h-5" />
+                                  Connect Google Drive
+                                </>
+                              )}
+                            </button>
+                          )}
+
+                          <div className="mt-4 text-xs text-gray-400">
+                            <p className="mb-1">When connected, we'll sync:</p>
+                            <ul className="list-disc list-inside space-y-0.5">
+                              <li>Daily journal entries with notes and photos</li>
+                              <li>Workout summaries and progress</li>
+                              <li>Nutrition logs with food images</li>
+                              <li>Breath work and peptide tracking</li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
                     <div className="space-y-4">
                       <button className="w-full flex items-center justify-between p-4 bg-gray-800/50 rounded-lg border border-gray-600/30 hover:bg-gray-700/50 transition-colors">
                         <div className="flex items-center gap-3">

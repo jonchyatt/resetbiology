@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import SnellenChart from './SnellenChart'
 import DistanceTracker from './DistanceTracker'
-import { Play, Pause, RotateCcw, CheckCircle, XCircle } from 'lucide-react'
+import { Play, Pause, RotateCcw, CheckCircle, XCircle, Glasses, MoveHorizontal, Trophy, ArrowRight } from 'lucide-react'
 
 interface TrainingSessionProps {
   visionType: 'near' | 'far'
@@ -11,14 +11,25 @@ interface TrainingSessionProps {
   initialLevel?: number
 }
 
-// Adaptive difficulty system
+// Reader glasses progression for nearsightedness training
+// The concept: move phone away -> hit arm's length -> add readers -> move back in -> repeat
+const READER_GLASSES_STAGES = [
+  { stage: 0, glassesStrength: 0, label: 'No Glasses', minDistance: 20, maxDistance: 60, color: 'text-gray-300' },
+  { stage: 1, glassesStrength: 1.0, label: '+1.0 Readers', minDistance: 20, maxDistance: 60, color: 'text-blue-400' },
+  { stage: 2, glassesStrength: 1.5, label: '+1.5 Readers', minDistance: 20, maxDistance: 60, color: 'text-cyan-400' },
+  { stage: 3, glassesStrength: 2.0, label: '+2.0 Readers', minDistance: 20, maxDistance: 60, color: 'text-secondary-400' },
+  { stage: 4, glassesStrength: 2.5, label: '+2.5 Readers', minDistance: 20, maxDistance: 60, color: 'text-purple-400' },
+  { stage: 5, glassesStrength: 3.0, label: '+3.0 Readers', minDistance: 20, maxDistance: 60, color: 'text-pink-400' },
+]
+
+// Adaptive difficulty system - now with distance progression within each level
 const DIFFICULTY_LEVELS = [
   { level: 1, chartSize: '20/200', targetDistance: 30, requiredAccuracy: 60 },
   { level: 2, chartSize: '20/100', targetDistance: 35, requiredAccuracy: 65 },
   { level: 3, chartSize: '20/70', targetDistance: 40, requiredAccuracy: 70 },
   { level: 4, chartSize: '20/50', targetDistance: 45, requiredAccuracy: 75 },
   { level: 5, chartSize: '20/40', targetDistance: 50, requiredAccuracy: 80 },
-  { level: 6, chartSize: '20/30', targetDistance: 55, requiredAccuracy: 80 }, // Far vision starts
+  { level: 6, chartSize: '20/30', targetDistance: 55, requiredAccuracy: 80 },
   { level: 7, chartSize: '20/25', targetDistance: 60, requiredAccuracy: 85 },
   { level: 8, chartSize: '20/20', targetDistance: 65, requiredAccuracy: 85 },
   { level: 9, chartSize: '20/15', targetDistance: 70, requiredAccuracy: 90 },
@@ -40,8 +51,16 @@ export default function TrainingSession({
   const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null)
   const [sessionComplete, setSessionComplete] = useState(false)
 
+  // Distance progression state for nearsightedness training
+  const [targetDistanceCm, setTargetDistanceCm] = useState(25) // Start close
+  const [readerGlassesStage, setReaderGlassesStage] = useState(0)
+  const [distanceProgressionMode, setDistanceProgressionMode] = useState(visionType === 'near')
+  const [showGlassesPrompt, setShowGlassesPrompt] = useState(false)
+  const [consecutiveSuccessAtMax, setConsecutiveSuccessAtMax] = useState(0)
+
   const difficulty = DIFFICULTY_LEVELS[currentLevel - 1] || DIFFICULTY_LEVELS[0]
   const accuracy = attempts > 0 ? (correct / attempts) * 100 : 0
+  const currentGlassesStage = READER_GLASSES_STAGES[readerGlassesStage] || READER_GLASSES_STAGES[0]
 
   // Session timer
   useEffect(() => {
@@ -60,9 +79,22 @@ export default function TrainingSession({
       setCorrect(prev => prev + 1)
       setFeedback('correct')
       speak('Correct!')
+
+      // Distance progression for nearsightedness training
+      if (distanceProgressionMode && visionType === 'near') {
+        handleDistanceProgression(true)
+      }
     } else {
       setFeedback('incorrect')
       speak('Try again')
+      setConsecutiveSuccessAtMax(0)
+
+      // If struggling, suggest moving closer
+      if (distanceProgressionMode && targetDistanceCm > 25) {
+        setTimeout(() => {
+          speak('Move the screen a bit closer if needed')
+        }, 1500)
+      }
     }
 
     // Clear feedback after 1 second and generate new letter
@@ -106,6 +138,53 @@ export default function TrainingSession({
         }, 1500)
       }
     }
+  }
+
+  // Handle distance progression - the "barbell" concept
+  const handleDistanceProgression = (wasCorrect: boolean) => {
+    if (!wasCorrect) return
+
+    const maxDistance = currentGlassesStage.maxDistance
+
+    // At arm's length (max distance)?
+    if (targetDistanceCm >= maxDistance - 5) {
+      setConsecutiveSuccessAtMax(prev => prev + 1)
+
+      // After 3 consecutive successes at max distance, prompt for glasses upgrade
+      if (consecutiveSuccessAtMax >= 2) {
+        if (readerGlassesStage < READER_GLASSES_STAGES.length - 1) {
+          setShowGlassesPrompt(true)
+          speak(`Great work! You've mastered ${maxDistance}cm. Time to add reading glasses for more challenge!`)
+        }
+      }
+    } else {
+      // Gradually increase distance (like adding weight to barbell)
+      const newDistance = Math.min(targetDistanceCm + 2, maxDistance)
+      setTargetDistanceCm(newDistance)
+
+      if (newDistance > targetDistanceCm) {
+        speak(`Moving to ${newDistance} centimeters`)
+      }
+    }
+  }
+
+  // Upgrade to next glasses stage
+  const upgradeGlasses = () => {
+    if (readerGlassesStage < READER_GLASSES_STAGES.length - 1) {
+      setReaderGlassesStage(prev => prev + 1)
+      setTargetDistanceCm(25) // Reset to close distance
+      setConsecutiveSuccessAtMax(0)
+      setShowGlassesPrompt(false)
+      const nextStage = READER_GLASSES_STAGES[readerGlassesStage + 1]
+      speak(`Put on your ${nextStage.label}. Starting at 25 centimeters.`)
+    }
+  }
+
+  // Skip glasses upgrade
+  const skipGlassesUpgrade = () => {
+    setShowGlassesPrompt(false)
+    setConsecutiveSuccessAtMax(0)
+    speak('Continuing at current level')
   }
 
   const speak = (text: string) => {
@@ -221,9 +300,106 @@ export default function TrainingSession({
         </div>
       </div>
 
+      {/* Distance Progression Panel - for near vision training */}
+      {visionType === 'near' && distanceProgressionMode && (
+        <div className="bg-gradient-to-r from-blue-600/20 to-cyan-600/20 border border-blue-400/30 rounded-lg p-5">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-blue-500/20 rounded-lg">
+                <MoveHorizontal className="w-6 h-6 text-blue-400" />
+              </div>
+              <div>
+                <h4 className="text-white font-bold">Distance Progression</h4>
+                <p className="text-sm text-gray-300">Like adding weight to a barbell</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Glasses className={`w-5 h-5 ${currentGlassesStage.color}`} />
+              <span className={`font-semibold ${currentGlassesStage.color}`}>
+                {currentGlassesStage.label}
+              </span>
+            </div>
+          </div>
+
+          {/* Distance progress bar */}
+          <div className="mb-4">
+            <div className="flex justify-between text-sm mb-2">
+              <span className="text-gray-400">Target Distance</span>
+              <span className="text-white font-bold">{targetDistanceCm} cm</span>
+            </div>
+            <div className="bg-gray-700 rounded-full h-4 overflow-hidden">
+              <div
+                className="h-full bg-gradient-to-r from-blue-500 to-cyan-400 transition-all duration-500"
+                style={{ width: `${((targetDistanceCm - 20) / 40) * 100}%` }}
+              />
+            </div>
+            <div className="flex justify-between text-xs text-gray-500 mt-1">
+              <span>20 cm (close)</span>
+              <span>60 cm (arm's length)</span>
+            </div>
+          </div>
+
+          {/* Glasses progression stages */}
+          <div className="flex gap-2 overflow-x-auto pb-2">
+            {READER_GLASSES_STAGES.map((stage, idx) => (
+              <div
+                key={stage.stage}
+                className={`flex-shrink-0 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+                  idx === readerGlassesStage
+                    ? 'bg-blue-500/30 border border-blue-400/50 text-white'
+                    : idx < readerGlassesStage
+                    ? 'bg-secondary-500/20 border border-secondary-400/30 text-secondary-300'
+                    : 'bg-gray-800/50 border border-gray-600/30 text-gray-500'
+                }`}
+              >
+                {idx < readerGlassesStage && <CheckCircle className="w-3 h-3 inline mr-1" />}
+                {stage.label}
+              </div>
+            ))}
+          </div>
+
+          <p className="text-xs text-gray-400 mt-3">
+            Move the screen away as you get correct answers. At arm's length, add reader glasses to "add weight" and continue strengthening.
+          </p>
+        </div>
+      )}
+
+      {/* Glasses upgrade prompt */}
+      {showGlassesPrompt && (
+        <div className="bg-gradient-to-r from-purple-600/30 to-pink-600/30 border border-purple-400/40 rounded-lg p-6 animate-pulse">
+          <div className="flex items-start gap-4">
+            <div className="p-3 bg-purple-500/30 rounded-lg">
+              <Trophy className="w-8 h-8 text-purple-400" />
+            </div>
+            <div className="flex-1">
+              <h4 className="text-white font-bold text-lg mb-2">Ready for More Challenge!</h4>
+              <p className="text-gray-300 mb-4">
+                You've mastered the current distance. Add <span className="font-bold text-cyan-400">{READER_GLASSES_STAGES[readerGlassesStage + 1]?.label}</span> to continue strengthening your eyes.
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={upgradeGlasses}
+                  className="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold flex items-center gap-2 transition-all"
+                >
+                  <Glasses className="w-5 h-5" />
+                  Add Glasses
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={skipGlassesUpgrade}
+                  className="px-4 py-3 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-lg font-medium transition-all"
+                >
+                  Not Now
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Distance tracker */}
       <DistanceTracker
-        targetDistanceCm={difficulty.targetDistance}
+        targetDistanceCm={distanceProgressionMode ? targetDistanceCm : difficulty.targetDistance}
         onDistanceChange={setCurrentDistance}
         visionType={visionType}
       />

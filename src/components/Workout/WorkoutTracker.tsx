@@ -424,6 +424,12 @@ export function WorkoutTracker() {
               </div>
               <div className="flex items-center gap-4">
                 <a
+                  href="/daily-history"
+                  className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm"
+                >
+                  Daily History
+                </a>
+                <a
                   href="/portal"
                   className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm"
                 >

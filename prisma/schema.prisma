@@ -64,6 +64,7 @@ model User {
   nbackSessions           NBackSession[]
   nbackProgress           NBackProgress[]
   userBreathExercises     UserBreathExercise[]
+  visionProgramEnrollment VisionProgramEnrollment?
 
   @@map("users")
 }
@@ -1017,4 +1018,89 @@ model NBackProgress {
 
   @@unique([userId, gameMode])
   @@map("nback_progress")
+}
+
+// ============================================
+// VISION MASTER PROGRAM ENROLLMENT
+// ============================================
+// Tracks user's progress through the 12-week ScreenFit program
+
+model VisionProgramEnrollment {
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String   @db.ObjectId @unique // One enrollment per user
+  programId         String   @default("screenfit-12week") // Which program
+  startDate         DateTime @default(now()) // When user started
+  currentWeek       Int      @default(1)
+  currentDay        Int      @default(1)
+  status            String   @default("active") // "active" | "paused" | "completed" | "abandoned"
+
+  // Baseline measurements (recorded at start)
+  initialNearSnellen    String?  // e.g., "20/40"
+  initialFarSnellen     String?  // e.g., "20/60"
+  initialNearPointCm    Float?   // Near point of convergence
+
+  // Current measurements (updated as they progress)
+  currentNearSnellen    String?
+  currentFarSnellen     String?
+  currentNearPointCm    Float?
+  currentReaderStage    Int      @default(0) // Reader glasses stage (0-5)
+
+  // Progress tracking
+  sessionsCompleted     Int      @default(0)
+  totalPracticeMinutes  Int      @default(0)
+  streakDays            Int      @default(0)
+  longestStreak         Int      @default(0)
+  lastSessionDate       DateTime?
+
+  // Phase completion tracking
+  phase1Complete        Boolean  @default(false) // Weeks 1-2
+  phase2Complete        Boolean  @default(false) // Weeks 3-4
+  phase3Complete        Boolean  @default(false) // Weeks 5-6
+  phase4Complete        Boolean  @default(false) // Weeks 7-8
+  phase5Complete        Boolean  @default(false) // Weeks 9-10
+  phase6Complete        Boolean  @default(false) // Weeks 11-12
+
+  pausedAt              DateTime?
+  completedAt           DateTime?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  user                  User     @relation(fields: [userId], references: [id])
+  dailySessions         VisionDailySession[]
+
+  @@map("vision_program_enrollments")
+}
+
+// Tracks each daily session completion
+model VisionDailySession {
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  enrollmentId      String   @db.ObjectId
+  userId            String   @db.ObjectId
+  week              Int
+  day               Int
+  sessionTitle      String
+
+  // Baseline test results for this session
+  nearSnellenResult String?
+  farSnellenResult  String?
+
+  // Session metrics
+  baselineMinutes   Int
+  exerciseMinutes   Int
+  totalMinutes      Int
+  exercisesCompleted String[] // Array of exercise IDs completed
+
+  // Performance data
+  accuracy          Float?   // Overall accuracy if tracked
+  notes             String?  // User notes
+  coachFeedback     String?  // Any specific feedback
+
+  completedAt       DateTime @default(now())
+  localDate         String?  // User's local date YYYY-MM-DD
+
+  enrollment        VisionProgramEnrollment @relation(fields: [enrollmentId], references: [id])
+
+  @@index([enrollmentId, week, day])
+  @@index([userId, localDate])
+  @@map("vision_daily_sessions")
 }

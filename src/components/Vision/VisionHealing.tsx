@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import {
   ArrowRight,
   Brain,
+  Calendar,
   CheckCircle2,
   Eye,
   Flame,
@@ -20,6 +21,7 @@ import { readinessPrompts, visionMetrics, visionWaves } from "@/data/visionProto
 import { visionExerciseMap, visionExercises, VisionExercise } from "@/data/visionExercises";
 import TrainingSession from "./Training/TrainingSession";
 import ProgressDashboard from "./Training/ProgressDashboard";
+import DailyPractice from "./Training/DailyPractice";
 
 const LETTER_LINES = [
   ["E"],
@@ -58,10 +60,10 @@ const categoryFilters: Array<{ value: "all" | VisionExercise["category"]; label:
   ...Object.entries(CATEGORY_LABELS).map(([value, label]) => ({ value: value as VisionExercise["category"], label })),
 ];
 
-type TabMode = 'training' | 'exercises' | 'progress'
+type TabMode = 'program' | 'training' | 'exercises' | 'progress'
 
 export function VisionHealing() {
-  const [activeTab, setActiveTab] = useState<TabMode>('training')
+  const [activeTab, setActiveTab] = useState<TabMode>('program')
   const [trainingVisionType, setTrainingVisionType] = useState<'near' | 'far'>('near')
   const [trainingExerciseType, setTrainingExerciseType] = useState<'letters' | 'e-directional'>('letters')
   const [userProgress, setUserProgress] = useState<{ near?: { currentLevel: number }, far?: { currentLevel: number } }>({})
@@ -153,56 +155,84 @@ export function VisionHealing() {
   };
 
   return (
-    <div className="space-y-10 text-white">
-      {/* Header with breadcrumbs */}
-      <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm shadow-2xl border-b border-primary-400/30 -mx-4 md:-mx-10 -mt-16 mb-8">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <img
-                src="/logo1.png"
-                alt="Reset Biology"
-                className="h-10 w-auto rounded-lg drop-shadow-lg bg-white/10 backdrop-blur-sm p-1 border border-white/20"
-              />
-              <div>
-                <div className="flex items-center">
-                  <a
-                    href="/portal"
-                    className="text-xl font-bold text-white drop-shadow-lg hover:text-primary-300 transition-colors"
-                  >
-                    Portal
-                  </a>
-                  <span className="mx-2 text-primary-300">&gt;</span>
-                  <span className="text-lg text-gray-200 drop-shadow-sm">
-                    Vision Healing
-                  </span>
+    <div
+      className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 relative"
+      style={{
+        backgroundImage:
+          "linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url(/hero-background.jpg)",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundAttachment: "fixed",
+      }}
+    >
+      <div className="relative z-10">
+        {/* Header - Added mt-16 to create proper space below fixed nav (nav is h-16 = 64px) */}
+        <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm shadow-2xl border-b border-primary-400/30 mt-16">
+          <div className="container mx-auto px-4 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <img
+                  src="/logo1.png"
+                  alt="Reset Biology"
+                  className="h-10 w-auto rounded-lg drop-shadow-lg bg-white/10 backdrop-blur-sm p-1 border border-white/20"
+                />
+                <div>
+                  <div className="flex items-center">
+                    <a
+                      href="/portal"
+                      className="text-xl font-bold text-white drop-shadow-lg hover:text-primary-300 transition-colors"
+                    >
+                      Portal
+                    </a>
+                    <span className="mx-2 text-primary-300">&gt;</span>
+                    <span className="text-lg text-gray-200 drop-shadow-sm">
+                      Vision Healing
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <a
-                href="/portal"
-                className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm"
-              >
-                ← Back to Portal
-              </a>
+              <div className="flex items-center gap-4">
+                <a
+                  href="/daily-history"
+                  className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm"
+                >
+                  Daily History
+                </a>
+                <a
+                  href="/portal"
+                  className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm"
+                >
+                  ← Back to Portal
+                </a>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Title Section */}
-      <div className="text-center py-8">
-        <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 text-shadow-lg animate-fade-in">
-          <span className="text-primary-400">Vision</span> Healing
-        </h2>
-        <p className="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto font-medium leading-relaxed drop-shadow-sm">
-          Interactive eye-healing flows with the same precision you expect from Reset Biology
-        </p>
-      </div>
+        {/* Title Section */}
+        <div className="text-center py-8">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 text-shadow-lg animate-fade-in">
+            <span className="text-primary-400">Vision</span> Healing
+          </h2>
+          <p className="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto font-medium leading-relaxed drop-shadow-sm">
+            Interactive eye-healing flows with the same precision you expect from Reset Biology
+          </p>
+        </div>
 
-      {/* Tab Navigation */}
-      <div className="flex flex-wrap gap-3 justify-center mb-8">
+        <div className="container mx-auto px-4 pb-8">
+          {/* Tab Navigation */}
+          <div className="flex flex-wrap gap-3 justify-center mb-8">
+        <button
+          onClick={() => setActiveTab('program')}
+          className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all ${
+            activeTab === 'program'
+              ? 'bg-gradient-to-r from-primary-500 to-secondary-500 text-white shadow-lg shadow-primary-500/30'
+              : 'bg-gray-900/40 border border-primary-400/30 text-gray-300 hover:text-white hover:border-primary-400/50'
+          }`}
+        >
+          <Calendar className="w-5 h-5" />
+          12-Week Program
+        </button>
         <button
           onClick={() => setActiveTab('training')}
           className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all ${
@@ -212,7 +242,7 @@ export function VisionHealing() {
           }`}
         >
           <Zap className="w-5 h-5" />
-          Dynamic Training
+          Snellen Trainer
         </button>
         <button
           onClick={() => setActiveTab('exercises')}
@@ -237,6 +267,11 @@ export function VisionHealing() {
           Progress & Stats
         </button>
       </div>
+
+      {/* 12-Week Program Tab */}
+      {activeTab === 'program' && (
+        <DailyPractice />
+      )}
 
       {/* Dynamic Training Tab */}
       {activeTab === 'training' && (
@@ -687,6 +722,8 @@ export function VisionHealing() {
       </section>
         </>
       )}
+        </div>
+      </div>
     </div>
   );
 }
