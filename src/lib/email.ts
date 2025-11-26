@@ -172,7 +172,25 @@ export async function sendOrderConfirmationEmail(data: OrderEmailData) {
 }
 
 /**
- * Send new order notification to seller
+ * Get order notification email recipients
+ * Supports multiple emails via comma-separated SELLER_EMAILS env var
+ * Falls back to SELLER_EMAIL for backwards compatibility
+ */
+function getOrderNotificationRecipients(): string[] {
+  // First check SELLER_EMAILS (plural, comma-separated)
+  const multipleEmails = process.env.SELLER_EMAILS;
+  if (multipleEmails) {
+    return multipleEmails.split(',').map(e => e.trim()).filter(Boolean);
+  }
+
+  // Fall back to single SELLER_EMAIL
+  const singleEmail = process.env.SELLER_EMAIL || 'jonchyatt@gmail.com';
+  return [singleEmail];
+}
+
+/**
+ * Send new order notification to seller(s)
+ * Supports multiple recipients via SELLER_EMAILS env var (comma-separated)
  */
 export async function sendSellerOrderNotification(data: OrderEmailData) {
   if (!resend) {
@@ -182,7 +200,7 @@ export async function sendSellerOrderNotification(data: OrderEmailData) {
 
   try {
     const amount = (data.amountTotal / 100).toFixed(2);
-    const sellerEmail = process.env.SELLER_EMAIL || 'jonchyatt@gmail.com';
+    const recipients = getOrderNotificationRecipients();
 
     const emailHtml = `
       <!DOCTYPE html>
@@ -266,22 +284,23 @@ export async function sendSellerOrderNotification(data: OrderEmailData) {
       </html>
     `;
 
+    // Send to all recipients
     const result = await resend.emails.send({
       from: 'Reset Biology Orders <orders@resetbiology.com>',
-      to: sellerEmail,
+      to: recipients,
       subject: `🎉 New Order #${data.orderNumber}`,
       html: emailHtml,
     });
 
-    console.log('[email] Seller notification sent to', sellerEmail, result);
-    return { success: true, data: result };
+    console.log('[email] Seller notification sent to', recipients.join(', '), result);
+    return { success: true, data: result, recipients };
   } catch (error: any) {
-    const sellerEmail = process.env.SELLER_EMAIL || 'jonchyatt@gmail.com';
+    const recipients = getOrderNotificationRecipients();
 
     // Log failure to database
     await EmailFailureLogger.logFailure({
       emailType: 'seller-notification',
-      recipient: sellerEmail,
+      recipient: recipients.join(', '),
       errorMessage: error.message,
       errorCode: error.code,
       errorStack: error.stack,

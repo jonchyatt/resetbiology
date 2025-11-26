@@ -11,13 +11,27 @@ export interface SubscriptionAccess {
   tier: SubscriptionTier
   expiryDate: Date | null
   daysRemaining: number | null
+  isAdmin: boolean
+}
+
+/**
+ * Check if user is an admin
+ * Admin users get full access to all features regardless of subscription
+ */
+export function isAdmin(user: User | null): boolean {
+  if (!user) return false
+  return user.role === 'admin' || user.accessLevel === 'admin'
 }
 
 /**
  * Check if user has an active subscription
+ * Admin users always return true (full access)
  */
 export function hasActiveSubscription(user: User | null): boolean {
   if (!user) return false
+
+  // Admin bypass - admins have full access
+  if (isAdmin(user)) return true
 
   // Check subscription status
   if (user.subscriptionStatus !== 'active') return false
@@ -40,15 +54,17 @@ export function getSubscriptionAccess(user: User | null): SubscriptionAccess {
       hasActiveSubscription: false,
       tier: 'free',
       expiryDate: null,
-      daysRemaining: null
+      daysRemaining: null,
+      isAdmin: false
     }
   }
 
+  const userIsAdmin = isAdmin(user)
   const isActive = hasActiveSubscription(user)
   const expiryDate = user.subscriptionExpiry || null
 
   let daysRemaining: number | null = null
-  if (expiryDate) {
+  if (expiryDate && !userIsAdmin) {
     const diffTime = expiryDate.getTime() - new Date().getTime()
     daysRemaining = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
   }
@@ -56,8 +72,9 @@ export function getSubscriptionAccess(user: User | null): SubscriptionAccess {
   return {
     hasActiveSubscription: isActive,
     tier: isActive ? 'premium' : 'free',
-    expiryDate,
-    daysRemaining: daysRemaining && daysRemaining > 0 ? daysRemaining : null
+    expiryDate: userIsAdmin ? null : expiryDate,
+    daysRemaining: userIsAdmin ? null : (daysRemaining && daysRemaining > 0 ? daysRemaining : null),
+    isAdmin: userIsAdmin
   }
 }
 

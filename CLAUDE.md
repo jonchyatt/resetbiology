@@ -76,60 +76,86 @@ Before making ANY code changes, you MUST follow these steps:
 Building a complex medical/wellness platform with public marketing site, secure client portal, gamification system, and integrated breath training application.
 
 ## Current Session Status (Update This When Ending Session)
-- **Date:** November 5, 2025
-- **Last Action:** Fixed protocol timing persistence + PWA notification system work
-- **Deployment:** Fixed syntax error (PeptideTracker line 504) - deployed successfully
-- **Testing Setup:** Created persistent Playwright browser system with auth state
-- **Next Priority:** Continue PWA notification testing with persistent browser
-- **Watch Out For:** Timing test shows save/reload works but need to verify console logs show correct timing value
+- **Date:** November 26, 2025
+- **Last Action:** Comprehensive feature update - admin access, breath admin, Stripe trial, email, quiz lookup
+- **Deployment:** Pending - TypeScript passes, ready for deploy
+- **Next Priority:** Test all new features on production after deployment
+- **Watch Out For:** Stripe price ID needs to be set to $12.99 in Stripe Dashboard
 
-## 🎯 Session Progress (November 5, 2025)
+## 🎯 Session Progress (November 26, 2025)
 
 ### ✅ Completed This Session:
-1. **Protocol Timing Fix** - Added handling for single HH:MM format in PeptideTracker (line 866-868)
-2. **Auth State Persistence** - Created `auth-state.json` for reusable Playwright sessions
-3. **Persistent Browser Tests** - Built system for keeping Chromium browser open between tests
-4. **Test Files Created:**
-   - `tests/save-auth-state.spec.ts` - Captures login session
-   - `tests/test-timing-with-auth.spec.ts` - Tests timing with saved auth
-   - `tests/persistent-browser.ts` - Reusable browser session manager
-   - `tests/persistent-timing-test.spec.ts` - Persistent browser test
-   - `tests/open-persistent-browser.spec.ts` - Opens browser indefinitely
-   - `tests/PERSISTENT-BROWSER.md` - Documentation
 
-### 🔧 Technical Details:
-**Auth State System:**
-- Saves cookies/session to `auth-state.json`
-- Reuses across multiple test runs
-- No repeated logins needed
+#### 1. **Admin Full Access System**
+- Updated `src/lib/subscriptionHelpers.ts` with `isAdmin()` function
+- Admin users now bypass all subscription checks
+- Admin status returned in `/api/subscriptions/status` endpoint
 
-**Persistent Browser:**
-- Chromium window stays open
-- Can dispatch sub-agents to interact with same window
-- User watches automation in real-time
-- Timeout set to `999999999` (~11 days)
+#### 2. **Breath Exercise Admin System**
+- Created `BreathExercise` model in Prisma schema with full customization options
+- Built `/admin/breath` page for creating/editing exercises
+- Created `/api/breath/exercises` API (GET/POST/PATCH/DELETE)
+- Added link to admin dashboard
 
-**How to Use Next Session:**
-```bash
-# Open persistent browser with auth
-npx playwright test tests/open-persistent-browser.spec.ts --headed --project=chromium
+#### 3. **Predefined Breath Exercises** (Research-Based)
+- **Vagal Reset** - 4-8 breathing pattern for parasympathetic activation
+- **Deep Relaxation** - 4-6 pattern with 2s hold
+- **4-7-8 Sleep Breath** - Dr. Andrew Weil's famous technique
+- **Box Breathing** - Navy SEAL stress management (4-4-4-4)
+- **Energizing Breath** - Quick 2-2 pattern for energy
+- **Quick Calm (Sample)** - For hero page demo
 
-# Browser will open at resetbiology.com/peptides
-# Already logged in with saved auth
-# Stays open until Ctrl+C
+#### 4. **Mini Breath Exercise Component**
+- Created `MiniBreathExercise.tsx` for compact breath training
+- Created `BreathSample.tsx` for hero page integration
+- Fetches sample exercise from database
+
+#### 5. **FREE Trial Subscription ($0 with Payment Collection)**
+- Created `/api/subscriptions/free-trial` endpoint
+- Updated `TrialSubscription.tsx` to support both FREE and $1 trial
+- Price updated to **$12.99/month** (was $29.99)
+- Added review reminder text
+
+#### 6. **Multiple Email Recipients for Orders**
+- Updated `src/lib/email.ts` with `getOrderNotificationRecipients()`
+- Supports `SELLER_EMAILS` env var (comma-separated)
+- Falls back to `SELLER_EMAIL` for backwards compatibility
+
+#### 7. **Quiz Results Lookup for Returning Users**
+- Created `/api/assessment/my-results` endpoint
+- Looks up assessment by authenticated user's email
+- Portal shows previous quiz results banner
+
+#### 8. **Portal Trial Banner Logic**
+- Banner hidden for subscribers and admins
+- Shows FREE trial messaging (was $1)
+- Previous assessment results displayed for non-subscribers
+
+### 📋 New Files Created:
+```
+app/api/breath/exercises/route.ts
+app/api/subscriptions/free-trial/route.ts
+app/api/assessment/my-results/route.ts
+app/admin/breath/page.tsx
+src/components/Breath/MiniBreathExercise.tsx
+src/components/Hero/BreathSample.tsx
+scripts/seed-breath-exercises.ts
 ```
 
-### 📋 Files Modified This Session:
-- `src/components/Peptides/PeptideTracker.tsx` - Fixed timing parsing (line 866-868, 494)
-- `src/components/Notifications/NotificationPreferences.tsx` - Added console logs
-- `app/api/peptides/protocols/route.ts` - Timing field handling
-- `prisma/schema.prisma` - Added `timing` field to protocols
-- Created 8+ new test files in `tests/` directory
+### 📋 Files Modified:
+- `prisma/schema.prisma` - Added BreathExercise model
+- `src/lib/subscriptionHelpers.ts` - Added isAdmin() function
+- `src/lib/email.ts` - Multiple email recipient support
+- `src/components/Subscriptions/TrialSubscription.tsx` - FREE trial, $12.99 price
+- `src/components/Portal/EnhancedDashboard.tsx` - Updated trial banner, quiz results
+- `app/admin/page.tsx` - Added Breath Exercises link
+- `STRIPE_TRIAL_SETUP.md` - Updated documentation
 
-### ⚠️ Known Issues:
-1. **Timing Console Logs Not Appearing** - Save/reload works but `timing="15:50"` logs not showing in browser console
-2. **PWA Notifications** - Push notification setup complete but not yet verified working on mobile
-3. **Multiple Background Processes** - Several old test processes still running (can be cleaned up)
+### ⚠️ Action Required After Deploy:
+1. **Stripe Dashboard**: Create $12.99/month price in both test and live mode
+2. **Vercel Environment Variables**:
+   - `STRIPE_MONTHLY_PRICE_ID` = your $12.99 price ID
+   - `SELLER_EMAILS` = comma-separated list of notification recipients
 
 ## ⚠️ CRITICAL PERFORMANCE REMINDERS
 - **CHECK AVAILABLE TOOLS FIRST** - Run `claude mcp list` to see what's connected
@@ -967,6 +993,12 @@ Claude will read this plan and execute it step-by-step with a todo list.
 - Entry templates
 - History view
 - Mood tracking
+
+### 5. **Google Drive Journal Sync**
+- OAuth connection flow that lets a user pick/authorize a Drive folder (use `drive.file` scope, store encrypted refresh token + folderId per user).
+- Snapshot generator that bundles each day’s journal entry, workout summary, peptide doses, breath notes, and food photos into a single PDF/HTML file with branded styling.
+- Background job/queue that runs on journal finalize (or nightly) to push the snapshot to the user’s folder and log Drive fileIds/status for re-sync.
+- Portal settings toggle with “Connect Drive”, status indicator, and “Resend Latest Entry” button for manual retries or folder changes.
 
 ## 🟢 FUTURE FEATURES
 

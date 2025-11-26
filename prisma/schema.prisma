@@ -130,6 +130,44 @@ model BreathSession {
   @@map("breath_sessions")
 }
 
+// Breath exercises that can be created by admins and chosen by users
+model BreathExercise {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  name            String   // e.g., "Vagal Reset", "Relaxation", "4-7-8 Breathing"
+  slug            String   @unique // URL-friendly identifier
+  description     String   // Description shown to users
+  category        String   // "relaxation" | "energizing" | "vagal" | "sample"
+
+  // Breathing pattern settings
+  inhaleMs        Int      @default(4000)  // Inhale duration in ms
+  exhaleMs        Int      @default(4000)  // Exhale duration in ms
+  inhaleHoldMs    Int      @default(0)     // Hold after inhale
+  exhaleHoldMs    Int      @default(0)     // Hold after exhale
+  breathsPerCycle Int      @default(10)    // Breaths before hold phase
+  cyclesTarget    Int      @default(3)     // Number of cycles
+
+  // Optional hold phases between cycles
+  postCycleExhaleHoldMs Int @default(0)   // Long exhale hold between cycles
+  postCycleInhaleHoldMs Int @default(0)   // Recovery inhale hold
+
+  // Audio/music settings
+  backgroundMusic String?  // URL to music file or null for silence
+  musicVolume     Float    @default(0.5) // 0-1 volume level
+  guidedAudio     String?  // URL to voice guidance audio
+
+  // Display settings
+  isSample        Boolean  @default(false) // Can be shown on hero page
+  isActive        Boolean  @default(true)  // Is available for users
+  sortOrder       Int      @default(0)     // Display order
+
+  // Metadata
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  createdBy       String?  // Admin user ID who created it
+
+  @@map("breath_exercises")
+}
+
 model AffiliateTracking {
   id           String   @id @default(auto()) @map("_id") @db.ObjectId
   userId       String   @db.ObjectId

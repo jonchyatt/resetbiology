@@ -1,7 +1,17 @@
-# Stripe $1 Trial → Monthly Subscription Setup Guide
+# Stripe Trial → Monthly Subscription Setup Guide
 
 ## Overview
-This guide walks through setting up a $1 trial that automatically converts to $29.99/month subscription after 14 days.
+This guide walks through setting up trial subscriptions that automatically convert to $12.99/month after 14 days.
+
+**Two options available:**
+1. **FREE Trial** (`/api/subscriptions/free-trial`) - No charge, collects payment info, charges $12.99/month after 14 days
+2. **$1 Trial** (`/api/subscriptions/trial`) - Charges $1 immediately, then $12.99/month after 14 days
+
+**Price**: $12.99/month (Basic Membership)
+
+**Trial End Reminder**: We send a reminder 2 days before trial ends to let users cancel or leave a review.
+
+Both options collect payment information upfront to ensure conversion after the trial period.
 
 ## Step 1: Create Product in Stripe Dashboard
 
@@ -19,7 +29,7 @@ This guide walks through setting up a $1 trial that automatically converts to $2
 1. **In the product page, click "Add another price"**
 2. **Configure pricing:**
    - **Price model**: Standard pricing
-   - **Price**: $29.99
+   - **Price**: $12.99
    - **Billing period**: Monthly
    - **Currency**: USD
 
@@ -76,7 +86,7 @@ STRIPE_TRIAL_PRICE_ID=price_YOUR_ACTUAL_PRICE_ID_HERE
    - You should see a new subscription with:
      - Status: "Trialing"
      - Trial end date: 14 days from now
-     - Next payment: $29.99 on [trial end date]
+     - Next payment: $12.99 on [trial end date]
 
 5. **Verify in app:**
    - User's `subscriptionStatus` should be "active"
@@ -107,29 +117,111 @@ Webhook secret is already in `.env.local`:
 STRIPE_WEBHOOK_SECRET=whsec_NwKzNbtBSV2U20npOjtGPYIZGlH2dM2t
 ```
 
-## Step 7: Go Live (Production)
+## Step 7: Go Live (Production) - COMPLETE CHECKLIST
 
-When ready to accept real payments:
+When ready to accept real payments, follow these steps:
 
-1. **Switch to Live Mode in Stripe Dashboard**
-2. **Create the same product and price in Live mode**
-3. **Get the Live Price ID**
-4. **Update environment variable:**
-   - In Vercel: Update `STRIPE_TRIAL_PRICE_ID` with live price ID
-   - Update `STRIPE_SECRET_KEY` with live secret key (starts with `sk_live_`)
-   - Update `STRIPE_PUBLISHABLE_KEY` with live publishable key (starts with `pk_live_`)
-   - Update `STRIPE_WEBHOOK_SECRET` with live webhook secret
+### Step 7.1: Stripe Dashboard Setup (Live Mode)
 
-5. **Set up webhook endpoint in Live mode:**
-   - Go to https://dashboard.stripe.com/webhooks
-   - Click "Add endpoint"
-   - URL: https://resetbiology.com/api/stripe/webhook
-   - Events to send:
-     - checkout.session.completed
-     - customer.subscription.created
-     - customer.subscription.updated
-     - customer.subscription.deleted
-   - Copy the webhook signing secret and update `STRIPE_WEBHOOK_SECRET`
+1. **Switch to Live Mode**
+   - In Stripe Dashboard, toggle from "Test mode" to "Live mode" (top right corner)
+   - The URL will change from `dashboard.stripe.com/test/...` to `dashboard.stripe.com/...`
+
+2. **Create Product in Live Mode**
+   - Go to: https://dashboard.stripe.com/products
+   - Click "Add product"
+   - **Name**: Reset Biology Premium Membership
+   - **Description**: Full access to all premium features
+   - Click "Add pricing"
+
+3. **Create Monthly Price (for FREE trial)**
+   - **Price**: $12.99
+   - **Billing period**: Monthly
+   - **Currency**: USD
+   - Click "Add price"
+   - **Copy the Price ID** (starts with `price_live_...`) - save this!
+
+4. **Create Trial Price (for $1 trial, optional)**
+   - Click "Add another price" on the same product
+   - **Price**: $12.99 (monthly)
+   - Under "More pricing options":
+     - **Trial period**: 14 days
+     - **Trial amount**: $1.00
+   - Click "Add price"
+   - **Copy this Price ID too** (for $1 trial option)
+
+### Step 7.2: Set Up Webhook (Live Mode)
+
+1. Go to: https://dashboard.stripe.com/webhooks
+2. Click "Add endpoint"
+3. **Endpoint URL**: `https://resetbiology.com/api/stripe/webhook`
+4. **Select events to listen for:**
+   - `checkout.session.completed`
+   - `customer.subscription.created`
+   - `customer.subscription.updated`
+   - `customer.subscription.deleted`
+   - `invoice.payment_succeeded`
+   - `invoice.payment_failed`
+5. Click "Add endpoint"
+6. **Click on the endpoint** → Click "Reveal signing secret"
+7. **Copy the signing secret** (starts with `whsec_...`) - save this!
+
+### Step 7.3: Get API Keys (Live Mode)
+
+1. Go to: https://dashboard.stripe.com/apikeys
+2. **Copy these keys:**
+   - **Publishable key**: starts with `pk_live_...`
+   - **Secret key**: Click "Reveal" → starts with `sk_live_...`
+
+### Step 7.4: Update Environment Variables (Vercel)
+
+1. Go to: https://vercel.com/your-project/settings/environment-variables
+2. **Update/Add these variables:**
+
+| Variable | Value | Notes |
+|----------|-------|-------|
+| `STRIPE_SECRET_KEY` | `sk_live_xxx...` | Live secret key |
+| `STRIPE_PUBLISHABLE_KEY` | `pk_live_xxx...` | Live publishable key |
+| `STRIPE_WEBHOOK_SECRET` | `whsec_xxx...` | From webhook endpoint |
+| `STRIPE_MONTHLY_PRICE_ID` | `price_live_xxx...` | For FREE trial ($12.99/mo) |
+| `STRIPE_TRIAL_PRICE_ID` | `price_live_xxx...` | For $1 trial (optional) |
+
+3. **Set variables for all environments**: Production, Preview, Development
+4. **Click "Save"**
+
+### Step 7.5: Redeploy Application
+
+1. Go to your Vercel dashboard
+2. Click "Redeploy" on the latest deployment
+3. Wait for deployment to complete
+
+### Step 7.6: Test with Real Card
+
+1. Go to https://resetbiology.com/portal
+2. Click "Start FREE Trial"
+3. Enter a **real card** (your own card)
+4. Complete checkout
+5. Verify in Stripe Dashboard:
+   - Go to https://dashboard.stripe.com/subscriptions
+   - You should see a new subscription with status "Trialing"
+6. **Cancel the test subscription** in Stripe Dashboard to avoid charges
+
+### Troubleshooting Go-Live Issues
+
+| Issue | Solution |
+|-------|----------|
+| "Stripe not configured" | Check `STRIPE_SECRET_KEY` is set in Vercel |
+| Webhook signature failed | Ensure `STRIPE_WEBHOOK_SECRET` matches live endpoint |
+| Wrong price charged | Verify `STRIPE_MONTHLY_PRICE_ID` is the live price ID |
+| Subscription not activating | Check webhook logs in Stripe Dashboard |
+| "Invalid API key" | Make sure you're using `sk_live_` not `sk_test_` |
+
+### Important Notes
+
+- **Never commit live keys to git** - always use environment variables
+- **Test mode keys** start with `pk_test_` and `sk_test_`
+- **Live mode keys** start with `pk_live_` and `sk_live_`
+- Webhooks in test mode won't work in production (and vice versa)
 
 ## How the Trial Works
 
@@ -145,8 +237,8 @@ When ready to accept real payments:
 
 3. **After 14 days:**
    - If user hasn't canceled:
-     - Automatically charged $29.99
-     - Subscription continues monthly at $29.99
+     - Automatically charged $12.99
+     - Subscription continues monthly at $12.99
    - If user canceled during trial:
      - No additional charges
      - Access ends at trial expiry

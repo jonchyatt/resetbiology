@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Database, Dumbbell, Apple, Syringe, Settings, Package, ShoppingCart, ClipboardList } from "lucide-react"
+import { Database, Dumbbell, Apple, Syringe, Settings, Package, ShoppingCart, ClipboardList, Wind } from "lucide-react"
 
 export default function AdminDashboard() {
   return (
@@ -77,6 +77,22 @@ export default function AdminDashboard() {
                 </p>
                 <div className="text-green-300 font-medium group-hover:text-green-200 transition-colors">
                   Manage Foods →
+                </div>
+              </div>
+            </Link>
+
+            {/* Breath Exercises */}
+            <Link href="/admin/breath" className="group">
+              <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-teal-400/30 shadow-2xl hover:shadow-teal-400/20 group-hover:scale-105 transition-all duration-300">
+                <div className="flex items-center mb-4">
+                  <Wind className="w-8 h-8 text-teal-400 mr-3" />
+                  <h3 className="text-xl font-bold text-white">Breath Exercises</h3>
+                </div>
+                <p className="text-gray-300 mb-4">
+                  Create and manage breathing exercises like Vagal Reset, Relaxation, and sample exercises.
+                </p>
+                <div className="text-teal-300 font-medium group-hover:text-teal-200 transition-colors">
+                  Manage Exercises →
                 </div>
               </div>
             </Link>

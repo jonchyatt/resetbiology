@@ -28,8 +28,10 @@ export function EnhancedDashboard() {
   const [totalPoints] = useState(1250)
   const [currentStreak, setCurrentStreak] = useState(0)
   const [hasActiveSubscription, setHasActiveSubscription] = useState<boolean | null>(null)
+  const [isAdmin, setIsAdmin] = useState(false)
   const [showTrialModal, setShowTrialModal] = useState(false)
   const [showTrialBanner, setShowTrialBanner] = useState(true)
+  const [previousAssessment, setPreviousAssessment] = useState<any>(null)
 
   // Daily tasks state
   const [dailyTasks, setDailyTasks] = useState({
@@ -158,7 +160,7 @@ export function EnhancedDashboard() {
     }
   }
 
-  // Check subscription status on mount
+  // Check subscription status and previous assessment on mount
   useEffect(() => {
     const checkSubscription = async () => {
       try {
@@ -166,6 +168,7 @@ export function EnhancedDashboard() {
         if (response.ok) {
           const data = await response.json()
           setHasActiveSubscription(data.hasActiveSubscription)
+          setIsAdmin(data.isAdmin === true)
         } else {
           setHasActiveSubscription(false)
         }
@@ -174,7 +177,23 @@ export function EnhancedDashboard() {
         setHasActiveSubscription(false)
       }
     }
+
+    const checkPreviousAssessment = async () => {
+      try {
+        const response = await fetch('/api/assessment/my-results')
+        if (response.ok) {
+          const data = await response.json()
+          if (data.found && data.assessment) {
+            setPreviousAssessment(data.assessment)
+          }
+        }
+      } catch (error) {
+        console.error('Failed to check previous assessment:', error)
+      }
+    }
+
     checkSubscription()
+    checkPreviousAssessment()
   }, [])
 
   // Load tasks on mount
@@ -432,47 +451,79 @@ export function EnhancedDashboard() {
             )}
           </div>
 
-          {/* Trial Subscription Banner */}
-          {hasActiveSubscription === false && showTrialBanner && (
-            <div className="mb-8 bg-gradient-to-r from-primary-600/20 via-secondary-600/20 to-primary-600/20 border-2 border-primary-400/40 rounded-xl p-6 shadow-lg backdrop-blur-sm relative overflow-hidden">
+          {/* Trial Subscription Banner - Only show for non-subscribers who aren't admins */}
+          {hasActiveSubscription === false && !isAdmin && showTrialBanner && (
+            <div className="mb-8 bg-gradient-to-r from-green-600/20 via-emerald-600/20 to-green-600/20 border-2 border-green-400/40 rounded-xl p-6 shadow-lg backdrop-blur-sm relative overflow-hidden">
               {/* Close button */}
               <button
                 onClick={() => setShowTrialBanner(false)}
-                className="absolute top-3 right-3 text-gray-300 hover:text-white transition-colors"
+                className="absolute top-3 right-3 text-gray-300 hover:text-white transition-colors z-20"
                 aria-label="Dismiss"
               >
                 <X className="w-5 h-5" />
               </button>
 
               {/* Animated background gradient */}
-              <div className="absolute inset-0 bg-gradient-to-r from-primary-500/10 to-secondary-500/10 animate-pulse opacity-50"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-green-500/10 to-emerald-500/10 animate-pulse opacity-50"></div>
 
               <div className="relative z-10 flex flex-col md:flex-row items-center gap-6">
                 {/* Icon */}
-                <div className="flex-shrink-0 bg-gradient-to-br from-primary-500/30 to-secondary-500/30 p-4 rounded-full">
-                  <Sparkles className="w-10 h-10 text-primary-300" />
+                <div className="flex-shrink-0 bg-gradient-to-br from-green-500/30 to-emerald-500/30 p-4 rounded-full">
+                  <Sparkles className="w-10 h-10 text-green-300" />
                 </div>
 
                 {/* Content */}
                 <div className="flex-1 text-center md:text-left">
                   <h3 className="text-2xl font-bold text-white mb-2">
-                    Unlock Full Access with $1 Trial
+                    Start Your FREE 14-Day Trial
                   </h3>
                   <p className="text-gray-200 mb-1">
-                    Get 14 days of complete access to all premium features for just $1
+                    Get complete access to all premium features - no charge for 14 days
                   </p>
                   <p className="text-sm text-gray-300">
-                    Then $29.99/month • Cancel anytime during trial
+                    Then $12.99/month • Cancel anytime during trial
+                  </p>
+                  <p className="text-xs text-amber-300 mt-1">
+                    We'll remind you before it ends - cancel or review!
                   </p>
                 </div>
 
                 {/* CTA Button */}
                 <button
                   onClick={() => setShowTrialModal(true)}
-                  className="flex-shrink-0 px-6 py-3 bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 text-white font-bold rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-primary-500/50"
+                  className="flex-shrink-0 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-bold rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-green-500/50"
                 >
-                  Start $1 Trial →
+                  Start FREE Trial →
                 </button>
+              </div>
+            </div>
+          )}
+
+          {/* Previous Assessment Results Banner - Show if user has quiz results but no subscription */}
+          {previousAssessment && hasActiveSubscription === false && !isAdmin && (
+            <div className="mb-8 bg-gradient-to-r from-blue-600/20 via-indigo-600/20 to-blue-600/20 border border-blue-400/30 rounded-xl p-6 backdrop-blur-sm">
+              <div className="flex flex-col md:flex-row items-center gap-4">
+                <div className="flex-shrink-0 bg-blue-500/30 p-3 rounded-full">
+                  <Target className="w-8 h-8 text-blue-300" />
+                </div>
+                <div className="flex-1 text-center md:text-left">
+                  <h3 className="text-xl font-bold text-white mb-1">
+                    Your Assessment Results
+                  </h3>
+                  <p className="text-gray-300 text-sm">
+                    Score: <span className="text-blue-300 font-semibold">{previousAssessment.score?.toFixed(0) || 0}%</span>
+                    {' • '}
+                    Tier: <span className="text-blue-300 font-semibold capitalize">{previousAssessment.recommendedTier || 'N/A'}</span>
+                    {' • '}
+                    Category: <span className="text-blue-300 font-semibold capitalize">{previousAssessment.scoreCategory || 'N/A'}</span>
+                  </p>
+                </div>
+                <Link
+                  href={`/assessment/results?id=${previousAssessment.id}`}
+                  className="px-4 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 rounded-lg transition-colors border border-blue-400/30"
+                >
+                  View Full Results →
+                </Link>
               </div>
             </div>
           )}
