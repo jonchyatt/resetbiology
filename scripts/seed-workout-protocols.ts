@@ -32,11 +32,11 @@ const WORKOUT_PROTOCOLS = [
       required: [],
       optional: ['resistance-band', 'wall', 'towel']
     },
-    readinessNotes: {
-      preWorkout: 'Take 15g hydrolyzed collagen + vitamin C 30-60 minutes before exercise',
-      timing: 'Tendons become refractory after ~10 minutes of loading. Short sessions are optimal.',
-      recovery: 'Wait 6-8 hours between sessions for collagen synthesis window to reset'
-    },
+    readinessNotes: [
+      'Take 15g hydrolyzed collagen + vitamin C 30-60 minutes before exercise',
+      'Tendons become refractory after ~10 minutes of loading. Short sessions are optimal.',
+      'Wait 6-8 hours between sessions for collagen synthesis window to reset'
+    ],
     aiInsights: {
       keyPrinciple: 'Tendons need mechanical load to orient collagen fibers properly. Isometrics provide sustained tension without movement, maximizing "creep effect" for collagen remodeling.',
       supplementation: '15g hydrolyzed collagen (from skin source) + 50mg vitamin C, 30-60 min pre-exercise',
@@ -44,9 +44,9 @@ const WORKOUT_PROTOCOLS = [
       progression: 'Progress by increasing perceived effort (not hold time) within pain-free range'
     },
     researchLinks: [
-      { title: 'Dr. Keith Baar - UC Davis Research Profile', url: 'https://health.ucdavis.edu/physiology/faculty/baar.html' },
-      { title: 'Tim Ferriss Podcast #797 - Dr. Keith Baar on Tendon Repair', url: 'https://tim.blog/2025/02/26/dr-keith-baar/' },
-      { title: 'Using load to improve tendon tissue engineering (2024)', url: 'https://www.sciencedirect.com/science/article/pii/S0945053X24001434' }
+      { label: 'Dr. Keith Baar - UC Davis Research Profile', url: 'https://health.ucdavis.edu/physiology/faculty/baar.html' },
+      { label: 'Tim Ferriss Podcast #797 - Dr. Keith Baar on Tendon Repair', url: 'https://tim.blog/2025/02/26/dr-keith-baar/' },
+      { label: 'Using load to improve tendon tissue engineering (2024)', url: 'https://www.sciencedirect.com/science/article/pii/S0945053X24001434' }
     ],
     phases: [
       {
@@ -174,11 +174,11 @@ const WORKOUT_PROTOCOLS = [
       required: [],
       optional: ['handgrip-dynamometer', 'wall', 'chair']
     },
-    readinessNotes: {
-      medical: 'Consult physician before starting if you have uncontrolled hypertension or heart conditions',
-      monitoring: 'Consider tracking blood pressure before and after the 8-week protocol',
-      breathing: 'Breathe normally during holds - do not hold your breath'
-    },
+    readinessNotes: [
+      'Consult physician before starting if you have uncontrolled hypertension or heart conditions',
+      'Consider tracking blood pressure before and after the 8-week protocol',
+      'Breathe normally during holds - do not hold your breath'
+    ],
     aiInsights: {
       keyFinding: 'Meta-analysis of 270 trials (15,827 participants) found isometric exercise produced the largest BP reductions compared to all other exercise types',
       expectedResults: 'Average reductions: SBP -6.77 to -9.7 mmHg, DBP -3.96 to -4.8 mmHg (equivalent to medication monotherapy)',
@@ -186,10 +186,10 @@ const WORKOUT_PROTOCOLS = [
       mechanism: 'Improved endothelial function, reduced arterial stiffness, autonomic nervous system modulation'
     },
     researchLinks: [
-      { title: 'Isometric Exercise Training: Mechanisms and Protocol Application (PMC)', url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC8758172/' },
-      { title: 'Isometric training for blood pressure: Systematic review (Nature)', url: 'https://www.nature.com/articles/hr2015111' },
-      { title: 'Evidence-based guide to isometric training in hypertension', url: 'https://clinicalhypertension.biomedcentral.com/articles/10.1186/s40885-022-00232-3' },
-      { title: 'Mayo Clinic - Isometric exercise and blood pressure', url: 'https://www.mayoclinichealthsystem.org/hometown-health/speaking-of-health/isometric-exercise-and-blood-pressure' }
+      { label: 'Isometric Exercise Training: Mechanisms and Protocol Application (PMC)', url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC8758172/' },
+      { label: 'Isometric training for blood pressure: Systematic review (Nature)', url: 'https://www.nature.com/articles/hr2015111' },
+      { label: 'Evidence-based guide to isometric training in hypertension', url: 'https://clinicalhypertension.biomedcentral.com/articles/10.1186/s40885-022-00232-3' },
+      { label: 'Mayo Clinic - Isometric exercise and blood pressure', url: 'https://www.mayoclinichealthsystem.org/hometown-health/speaking-of-health/isometric-exercise-and-blood-pressure' }
     ],
     phases: [
       {
@@ -303,11 +303,11 @@ const WORKOUT_PROTOCOLS = [
       required: ['mini-trampoline'],
       optional: ['stability-bar']
     },
-    readinessNotes: {
-      caution: 'Start very gently if new to rebounding. Use stability bar if balance is a concern.',
-      contraindications: 'Consult physician if you have lymphedema, recent surgery, or balance disorders',
-      hydration: 'Drink water before and after to support lymphatic function'
-    },
+    readinessNotes: [
+      'Start very gently if new to rebounding. Use stability bar if balance is a concern.',
+      'Consult physician if you have lymphedema, recent surgery, or balance disorders',
+      'Drink water before and after to support lymphatic function'
+    ],
     aiInsights: {
       mechanism: 'The lymphatic system has no pump - it relies on muscle contractions and body movement. Rebounding creates rhythmic acceleration/deceleration that opens and closes lymphatic valves.',
       nasaStudy: '1980 NASA study found rebounding 68% more efficient than jogging for oxygen consumption',
@@ -315,9 +315,9 @@ const WORKOUT_PROTOCOLS = [
       boneBenefit: 'The G-force loading also supports bone density without joint impact'
     },
     researchLinks: [
-      { title: 'NASA Journal of Applied Physiology Study (1980)', url: 'https://www.jumpsport.com/blog/the-science-behind-trampolining-and-how-it-improves-health/' },
-      { title: 'Rebounding effectiveness on lymphedema (IJPTR)', url: 'https://ijptr.net/a-study-to-assess-the-effectiveness-of-rebounding-exercise-on-lymphedema-shailendra-mehta/' },
-      { title: 'Trampoline exercise for balance in older adults', url: 'https://www.springfreetrampoline.com/blogs/beyond-the-bounce/trampoline-benefits-lymphatic-system' }
+      { label: 'NASA Journal of Applied Physiology Study (1980)', url: 'https://www.jumpsport.com/blog/the-science-behind-trampolining-and-how-it-improves-health/' },
+      { label: 'Rebounding effectiveness on lymphedema (IJPTR)', url: 'https://ijptr.net/a-study-to-assess-the-effectiveness-of-rebounding-exercise-on-lymphedema-shailendra-mehta/' },
+      { label: 'Trampoline exercise for balance in older adults', url: 'https://www.springfreetrampoline.com/blogs/beyond-the-bounce/trampoline-benefits-lymphatic-system' }
     ],
     phases: [
       {
@@ -450,12 +450,12 @@ const WORKOUT_PROTOCOLS = [
       required: ['bfr-bands'],
       optional: ['resistance-band', 'pull-up-bar']
     },
-    readinessNotes: {
-      safety: 'Start with 40-50% limb occlusion pressure. Arms: 100-150mmHg, Legs: 150-200mmHg',
-      contraindications: 'Do NOT use if you have blood clots, peripheral vascular disease, or are pregnant',
-      timing: 'Keep bands inflated for entire exercise set, release during rest between exercises',
-      sensation: 'You should feel a "pumped" sensation and mild discomfort, but not numbness or tingling'
-    },
+    readinessNotes: [
+      'Start with 40-50% limb occlusion pressure. Arms: 100-150mmHg, Legs: 150-200mmHg',
+      'Do NOT use if you have blood clots, peripheral vascular disease, or are pregnant',
+      'Keep bands inflated for entire exercise set, release during rest between exercises',
+      'You should feel a "pumped" sensation and mild discomfort, but not numbness or tingling'
+    ],
     aiInsights: {
       mechanism: 'BFR creates metabolic stress that triggers muscle protein synthesis at low loads (20-40% 1RM) that would normally require 70%+ 1RM',
       protocol: 'Standard: 30-15-15-15 reps (75 total) with 30 second rest, at 20-40% 1RM equivalent',
@@ -463,10 +463,10 @@ const WORKOUT_PROTOCOLS = [
       frequency: 'Can train 2-4x weekly, some research supports daily for short periods (1-3 weeks)'
     },
     researchLinks: [
-      { title: 'BFR Therapy for Rehabilitation (PMC)', url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC8811521/' },
-      { title: 'BFR Exercise Methodology and Safety (PMC)', url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC6530612/' },
-      { title: 'Systemic Effects of BFR Training', url: 'https://ijspt.scholasticahq.com/article/25791-the-systemic-effects-of-blood-flow-restriction-training-a-systematic-review' },
-      { title: 'BFR and High-Performance Athletes (APS)', url: 'https://journals.physiology.org/doi/full/10.1152/japplphysiol.00982.2020' }
+      { label: 'BFR Therapy for Rehabilitation (PMC)', url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC8811521/' },
+      { label: 'BFR Exercise Methodology and Safety (PMC)', url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC6530612/' },
+      { label: 'Systemic Effects of BFR Training', url: 'https://ijspt.scholasticahq.com/article/25791-the-systemic-effects-of-blood-flow-restriction-training-a-systematic-review' },
+      { label: 'BFR and High-Performance Athletes (APS)', url: 'https://journals.physiology.org/doi/full/10.1152/japplphysiol.00982.2020' }
     ],
     phases: [
       {
@@ -650,12 +650,12 @@ const WORKOUT_PROTOCOLS = [
       required: [],
       optional: ['heart-rate-monitor', 'bike', 'treadmill', 'rower']
     },
-    readinessNotes: {
-      heartRateZone: 'Zone 2 = 60-70% of max HR. Max HR ≈ 220 - your age.',
-      talkTest: 'You should be able to hold a conversation, but it takes effort',
-      consistency: 'Cumulative time matters most - more sustainable sessions = more mitochondria',
-      fasted: 'Some evidence suggests fasted Zone 2 enhances fat oxidation adaptations'
-    },
+    readinessNotes: [
+      'Zone 2 = 60-70% of max HR. Max HR ≈ 220 - your age.',
+      'You should be able to hold a conversation, but it takes effort',
+      'Cumulative time matters most - more sustainable sessions = more mitochondria',
+      'Some evidence suggests fasted Zone 2 enhances fat oxidation adaptations'
+    ],
     aiInsights: {
       mechanism: 'Sustained Zone 2 activates PGC-1α, the master regulator of mitochondrial biogenesis. This creates new mitochondria in slow-twitch muscle fibers.',
       duration: 'Research suggests 60-120 minutes per session for optimal mitochondrial adaptations',
@@ -663,10 +663,10 @@ const WORKOUT_PROTOCOLS = [
       timeline: 'Capillary and mitochondrial changes visible within weeks in untrained individuals'
     },
     researchLinks: [
-      { title: 'Zone 2 Training: Myth or Scientific Reality (Sci-Sport)', url: 'https://sci-sport.com/en/zone-2-the-ideal-intensity-myth-or-scientific-reality-255/' },
-      { title: 'Mitochondrial Health and Longevity (Healthspan)', url: 'https://gethealthspan.com/science/article/zone-2-endurance-training-longevity-mitochondrial-health' },
-      { title: 'Exercise Training and Mitochondrial Function (PMC)', url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC9603958/' },
-      { title: 'Zone 2 and Metabolic Health (Levels)', url: 'https://www.levels.com/blog/the-metabolic-benefits-of-slow-steady-zone-2-exercise' }
+      { label: 'Zone 2 Training: Myth or Scientific Reality (Sci-Sport)', url: 'https://sci-sport.com/en/zone-2-the-ideal-intensity-myth-or-scientific-reality-255/' },
+      { label: 'Mitochondrial Health and Longevity (Healthspan)', url: 'https://gethealthspan.com/science/article/zone-2-endurance-training-longevity-mitochondrial-health' },
+      { label: 'Exercise Training and Mitochondrial Function (PMC)', url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC9603958/' },
+      { label: 'Zone 2 and Metabolic Health (Levels)', url: 'https://www.levels.com/blog/the-metabolic-benefits-of-slow-steady-zone-2-exercise' }
     ],
     phases: [
       {
@@ -788,12 +788,12 @@ const WORKOUT_PROTOCOLS = [
       required: [],
       optional: ['nordic-curl-strap', 'partner', 'loaded-barbell-anchor']
     },
-    readinessNotes: {
-      progression: 'Start with assisted/partial range if unable to do full Nordic. Progress slowly.',
-      doms: 'Expect significant DOMS (muscle soreness) initially - this is normal with eccentrics',
-      warmup: 'Essential: 5-10 min light cardio + dynamic stretching before eccentric work',
-      frequency: 'Research shows LOW volume (2x/week) is equally effective as high volume'
-    },
+    readinessNotes: [
+      'Start with assisted/partial range if unable to do full Nordic. Progress slowly.',
+      'Expect significant DOMS (muscle soreness) initially - this is normal with eccentrics',
+      'Essential: 5-10 min light cardio + dynamic stretching before eccentric work',
+      'Research shows LOW volume (2x/week) is equally effective as high volume'
+    ],
     aiInsights: {
       injuryPrevention: 'Nordic curls reduce hamstring injury incidence significantly in athletes',
       muscleAdaptation: 'Eccentrics shift muscle optimum length, protecting against strain injuries',
@@ -801,10 +801,10 @@ const WORKOUT_PROTOCOLS = [
       microDosing: 'Recent research supports "micro-dosing" - low volume is equally effective'
     },
     researchLinks: [
-      { title: 'Nordic Hamstring Exercise Volume Meta-Analysis (PMC)', url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC6942028/' },
-      { title: '4-Week NHE Protocol Results (PMC)', url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC7735695/' },
-      { title: 'NHE as Staple Exercise for Athletes (Bret Contreras)', url: 'https://bretcontreras.com/nordic-ham-curl-staple-exercise-athletes/' },
-      { title: 'Sports Medicine Nordic Curl Research', url: 'https://link.springer.com/article/10.1007/s40279-019-01178-7' }
+      { label: 'Nordic Hamstring Exercise Volume Meta-Analysis (PMC)', url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC6942028/' },
+      { label: '4-Week NHE Protocol Results (PMC)', url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC7735695/' },
+      { label: 'NHE as Staple Exercise for Athletes (Bret Contreras)', url: 'https://bretcontreras.com/nordic-ham-curl-staple-exercise-athletes/' },
+      { label: 'Sports Medicine Nordic Curl Research', url: 'https://link.springer.com/article/10.1007/s40279-019-01178-7' }
     ],
     phases: [
       {
@@ -932,12 +932,12 @@ const WORKOUT_PROTOCOLS = [
       required: [],
       optional: ['cold-shower', 'ice-bath', 'cold-plunge']
     },
-    readinessNotes: {
-      safety: 'Never do cold exposure alone if using ice baths. Start gradually.',
-      contraindications: 'Avoid if you have heart conditions, Raynaud\'s disease, or are pregnant',
-      shivering: 'Goal is to reach point just before shivering - this activates BAT without excessive stress',
-      timing: 'Morning cold exposure may enhance cortisol awakening response'
-    },
+    readinessNotes: [
+      'Never do cold exposure alone if using ice baths. Start gradually.',
+      'Avoid if you have heart conditions, Raynaud\'s disease, or are pregnant',
+      'Goal is to reach point just before shivering - this activates BAT without excessive stress',
+      'Morning cold exposure may enhance cortisol awakening response'
+    ],
     aiInsights: {
       batActivation: 'Brown fat activated at mild cold (16-19°C/60-66°F) - doesn\'t require extreme cold',
       duration: 'Research shows 2-6 hours of mild cold exposure daily for 14 days significantly increases BAT activity',
@@ -945,10 +945,10 @@ const WORKOUT_PROTOCOLS = [
       metabolism: 'Cold acclimation increased non-shivering thermogenesis from 10.8% to 17.8%'
     },
     researchLinks: [
-      { title: 'Cold acclimation recruits human brown fat (JCI)', url: 'https://www.jci.org/articles/view/68993' },
-      { title: 'Intermittent Cold Exposure and Brown Fat (PMC)', url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC3895006/' },
-      { title: 'Acute Cold Exposure Meta-Analysis (PMC)', url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC9273773/' },
-      { title: 'Fat cells directly sense temperature (PNAS)', url: 'https://www.pnas.org/doi/10.1073/pnas.1310261110' }
+      { label: 'Cold acclimation recruits human brown fat (JCI)', url: 'https://www.jci.org/articles/view/68993' },
+      { label: 'Intermittent Cold Exposure and Brown Fat (PMC)', url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC3895006/' },
+      { label: 'Acute Cold Exposure Meta-Analysis (PMC)', url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC9273773/' },
+      { label: 'Fat cells directly sense temperature (PNAS)', url: 'https://www.pnas.org/doi/10.1073/pnas.1310261110' }
     ],
     phases: [
       {
@@ -1078,11 +1078,11 @@ const WORKOUT_PROTOCOLS = [
       required: [],
       optional: ['foam-roller', 'lacrosse-ball', 'yoga-mat']
     },
-    readinessNotes: {
-      consistency: 'Small daily practice beats occasional long sessions',
-      intensity: 'Move through full range without pain. Some discomfort is OK, sharp pain is not.',
-      breathing: 'Exhale as you move deeper into ranges'
-    },
+    readinessNotes: [
+      'Small daily practice beats occasional long sessions',
+      'Move through full range without pain. Some discomfort is OK, sharp pain is not.',
+      'Exhale as you move deeper into ranges'
+    ],
     aiInsights: {
       cars: 'Controlled Articular Rotations (CARs) maintain joint capsule health through full range movement',
       useItOrLoseIt: 'Joints that aren\'t moved through full range will lose that range over time',
@@ -1090,7 +1090,7 @@ const WORKOUT_PROTOCOLS = [
       morningRoutine: 'Best done in morning to assess daily mobility and "oil" the joints'
     },
     researchLinks: [
-      { title: 'Kinstretch/FRC Methodology', url: 'https://www.functionalanatomyseminars.com/' }
+      { label: 'Kinstretch/FRC Methodology', url: 'https://www.functionalanatomyseminars.com/' }
     ],
     phases: [
       {
