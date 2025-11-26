@@ -59,6 +59,8 @@ model User {
   pushSubscriptionHealth  PushSubscriptionHealth[]
   visionSessions          VisionSession[]
   visionProgress          VisionProgress[]
+  nbackSessions           NBackSession[]
+  nbackProgress           NBackProgress[]
 
   @@map("users")
 }
@@ -934,4 +936,56 @@ model VisionProgress {
 
   @@unique([userId, visionType])
   @@map("vision_progress")
+}
+
+// ============================================
+// N-BACK MENTAL TRAINING MODELS
+// ============================================
+
+model NBackSession {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String   @db.ObjectId
+  gameMode        String   // "dual" | "triple"
+  nLevel          Int      // N-back level (1, 2, 3, etc.)
+  totalTrials     Int      // Number of trials in session
+  positionHits    Int      // Correct position matches identified
+  positionMisses  Int      // Missed position matches
+  positionFalse   Int      // False positives for position
+  audioHits       Int      // Correct audio matches identified
+  audioMisses     Int      // Missed audio matches
+  audioFalse      Int      // False positives for audio
+  letterHits      Int?     // For triple mode: correct letter matches
+  letterMisses    Int?     // For triple mode: missed letter matches
+  letterFalse     Int?     // For triple mode: false positives for letter
+  overallAccuracy Float    // Overall percentage (0-100)
+  positionAccuracy Float   // Position-specific accuracy
+  audioAccuracy   Float    // Audio-specific accuracy
+  letterAccuracy  Float?   // Letter-specific accuracy (triple mode)
+  durationSeconds Int      // Session duration
+  levelAdvanced   Boolean  // Did user advance to next level?
+  createdAt       DateTime @default(now())
+  user            User     @relation(fields: [userId], references: [id])
+
+  @@index([userId, createdAt])
+  @@map("nback_sessions")
+}
+
+model NBackProgress {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String   @db.ObjectId
+  gameMode        String   // "dual" | "triple"
+  currentNLevel   Int      @default(2) // Current N-back level
+  highestNLevel   Int      @default(2) // Best N-level achieved
+  bestAccuracy    Float    @default(0) // Best overall accuracy
+  totalSessions   Int      @default(0)
+  totalTrials     Int      @default(0)
+  avgAccuracy     Float    @default(0)
+  streakDays      Int      @default(0) // Consecutive days practiced
+  lastSessionDate DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  user            User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, gameMode])
+  @@map("nback_progress")
 }
