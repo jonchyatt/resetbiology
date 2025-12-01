@@ -41,6 +41,8 @@ model User {
   irbSubmissionDate       DateTime?
   quizResponses           Json?
   onboardingComplete      Boolean                  @default(false)
+  voiceMinutesRemaining   Int                      @default(60) // "Gas Tank" for voice agent
+  voiceUsageLogs          VoiceUsageLog[]
   affiliateTracking       AffiliateTracking[]
   breathSessions          BreathSession[]
   progress                ClientProgress[]
@@ -799,6 +801,17 @@ model PushSubscriptionHealth {
   @@index([userId, isHealthy])
   @@index([consecutiveFailures])
   @@map("push_subscription_health")
+}
+
+model VoiceUsageLog {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  minutes   Int
+  agentType String   // "BIO_COACH", "VISION_TUTOR", etc.
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@map("voice_usage_logs")
 }
 
 // --- INVENTORY & BUNDLE MANAGEMENT ---
