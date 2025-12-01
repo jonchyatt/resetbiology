@@ -59,16 +59,24 @@ export function QuickAddOralMed({ onClose, onAdd }: QuickAddOralMedProps) {
     try {
       // Format frequency with days if applicable
       let finalFrequency = frequency;
+      let finalTiming = times.join("/");
+
       if (frequency === '3x per week' || frequency === '2x per week' || frequency === 'Custom') {
         const daysString = selectedDays.join('/');
         finalFrequency = `${daysString}`;
+      }
+
+      // For "as needed" medications, set timing to "as needed" instead of a specific time
+      if (frequency === 'as needed') {
+        finalFrequency = 'as needed';
+        finalTiming = 'as needed';
       }
 
       await onAdd({
         peptideName: medicationName,
         dosage: `${dosageAmount} ${dosageUnit}`,
         frequency: finalFrequency,
-        timing: times.join("/"),
+        timing: finalTiming,
         administrationType: "oral",
       });
       onClose();
@@ -195,45 +203,56 @@ export function QuickAddOralMed({ onClose, onAdd }: QuickAddOralMedProps) {
             </div>
           )}
 
-          {/* Times */}
-          <div>
-            <label className="block text-sm font-semibold text-white mb-2">
-              Times Per Day
-            </label>
-            <div className="space-y-2">
-              {times.map((time, index) => (
-                <div key={index} className="flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-teal-400 flex-shrink-0" />
-                  <input
-                    type="time"
-                    value={time}
-                    onChange={(e) => updateTime(index, e.target.value)}
-                    className="flex-1 bg-gray-700 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none"
-                  />
-                  {times.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => removeTimeSlot(index)}
-                      className="p-2 text-red-400 hover:bg-red-400/10 rounded-lg transition-colors"
-                    >
-                      <Minus className="w-4 h-4" />
-                    </button>
-                  )}
-                </div>
-              ))}
+          {/* Times - hide for "as needed" frequency */}
+          {frequency !== 'as needed' && (
+            <div>
+              <label className="block text-sm font-semibold text-white mb-2">
+                Times Per Day
+              </label>
+              <div className="space-y-2">
+                {times.map((time, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-teal-400 flex-shrink-0" />
+                    <input
+                      type="time"
+                      value={time}
+                      onChange={(e) => updateTime(index, e.target.value)}
+                      className="flex-1 bg-gray-700 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none"
+                    />
+                    {times.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => removeTimeSlot(index)}
+                        className="p-2 text-red-400 hover:bg-red-400/10 rounded-lg transition-colors"
+                      >
+                        <Minus className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                ))}
 
-              {times.length < 4 && (
-                <button
-                  type="button"
-                  onClick={addTimeSlot}
-                  className="flex items-center gap-2 text-teal-400 hover:text-teal-300 text-sm font-medium transition-colors"
-                >
-                  <Plus className="w-4 h-4" />
-                  Add Another Time
-                </button>
-              )}
+                {times.length < 4 && (
+                  <button
+                    type="button"
+                    onClick={addTimeSlot}
+                    className="flex items-center gap-2 text-teal-400 hover:text-teal-300 text-sm font-medium transition-colors"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Add Another Time
+                  </button>
+                )}
+              </div>
             </div>
-          </div>
+          )}
+
+          {/* As needed info message */}
+          {frequency === 'as needed' && (
+            <div className="bg-teal-500/20 border border-teal-400/30 rounded-lg p-4">
+              <p className="text-teal-300 text-sm">
+                This medication will be tracked as "as needed" - take whenever required.
+              </p>
+            </div>
+          )}
 
           {/* Actions */}
           <div className="flex gap-3 pt-4">

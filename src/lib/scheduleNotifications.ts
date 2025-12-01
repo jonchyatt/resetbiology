@@ -77,6 +77,14 @@ export async function scheduleNotificationsForProtocol(
       })
     }
 
+    // Skip notification scheduling for "as needed" medications
+    const timingLower = (protocol.timing || '').toLowerCase()
+    const frequencyLower = (protocol.frequency || '').toLowerCase()
+    if (timingLower.includes('as needed') || frequencyLower.includes('as needed')) {
+      console.log(`Protocol ${protocolId} is "as needed" - skipping notification scheduling`)
+      return { scheduled: 0, message: 'As-needed medications do not have scheduled notifications' }
+    }
+
     // Parse dose times from protocol.timing or notes
     // Expected format: "08:00" or "08:00/20:00" (multiple times separated by /)
     const doseTimes = parseDoseTimes(protocol.timing || '')

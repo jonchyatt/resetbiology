@@ -15,7 +15,6 @@ import {
   Play,
   Sparkles,
   TrendingUp,
-  Users,
   Timer
 } from 'lucide-react'
 import { visionMasterProgram } from '@/data/visionProtocols'
@@ -28,12 +27,12 @@ interface CurriculumOverviewProps {
 
 // Phase colors and icons
 const PHASE_CONFIG = {
-  'Foundation': { color: 'from-blue-500 to-cyan-500', icon: Eye, description: 'Build neural pathways' },
-  'Integration': { color: 'from-cyan-500 to-teal-500', icon: Brain, description: 'Connect vision & movement' },
-  'Speed & Resilience': { color: 'from-teal-500 to-green-500', icon: Zap, description: 'Build speed & endurance' },
-  'Advanced': { color: 'from-green-500 to-yellow-500', icon: Target, description: 'Peak performance' },
-  'Distance Mastery': { color: 'from-yellow-500 to-orange-500', icon: TrendingUp, description: 'Maximize range' },
-  'Integration & Maintenance': { color: 'from-orange-500 to-red-500', icon: Award, description: 'Lock in gains' },
+  'Foundation': { color: 'from-blue-500 to-cyan-500', bgColor: 'bg-blue-600', icon: Eye, description: 'Build neural pathways' },
+  'Integration': { color: 'from-cyan-500 to-teal-500', bgColor: 'bg-cyan-600', icon: Brain, description: 'Connect vision & movement' },
+  'Speed & Resilience': { color: 'from-teal-500 to-green-500', bgColor: 'bg-teal-600', icon: Zap, description: 'Build speed & endurance' },
+  'Advanced': { color: 'from-green-500 to-yellow-500', bgColor: 'bg-green-600', icon: Target, description: 'Peak performance' },
+  'Distance Mastery': { color: 'from-yellow-500 to-orange-500', bgColor: 'bg-yellow-600', icon: TrendingUp, description: 'Maximize range' },
+  'Integration & Maintenance': { color: 'from-orange-500 to-red-500', bgColor: 'bg-orange-600', icon: Award, description: 'Lock in gains' },
 }
 
 export default function CurriculumOverview({ onEnroll, enrolling }: CurriculumOverviewProps) {
@@ -63,7 +62,7 @@ export default function CurriculumOverview({ onEnroll, enrolling }: CurriculumOv
   return (
     <div className="space-y-8">
       {/* Hero Section */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary-600/30 via-gray-900 to-secondary-600/30 border border-primary-400/30 p-8">
+      <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-8 border border-primary-400/30 shadow-2xl relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-secondary-500/20 to-transparent rounded-full blur-3xl" />
         <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-primary-500/20 to-transparent rounded-full blur-3xl" />
 
@@ -72,7 +71,7 @@ export default function CurriculumOverview({ onEnroll, enrolling }: CurriculumOv
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <Sparkles className="w-5 h-5 text-secondary-400" />
-                <span className="text-sm font-semibold text-secondary-400 uppercase tracking-wider">
+                <span className="text-sm font-semibold text-secondary-300 uppercase tracking-wider">
                   Complete Vision Program
                 </span>
               </div>
@@ -99,7 +98,7 @@ export default function CurriculumOverview({ onEnroll, enrolling }: CurriculumOv
       </div>
 
       {/* Program Timeline */}
-      <div className="bg-gray-900/40 border border-primary-400/30 rounded-2xl p-6">
+      <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-xl p-6 border border-primary-400/20 shadow-lg">
         <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
           <Calendar className="w-5 h-5 text-primary-400" />
           Your 12-Week Journey
@@ -117,7 +116,7 @@ export default function CurriculumOverview({ onEnroll, enrolling }: CurriculumOv
                   <div className="bg-gray-900 rounded-xl p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <div className={`p-2 rounded-lg bg-gradient-to-br ${config.color}`}>
+                        <div className={`p-2 rounded-lg ${config.bgColor}`}>
                           <PhaseIcon className="w-5 h-5 text-white" />
                         </div>
                         <div>
@@ -135,7 +134,7 @@ export default function CurriculumOverview({ onEnroll, enrolling }: CurriculumOv
                         <div key={week.week}>
                           <button
                             onClick={() => setExpandedWeek(expandedWeek === week.week ? null : week.week)}
-                            className="w-full flex items-center justify-between p-3 rounded-lg bg-gray-800/50 hover:bg-gray-800 transition-colors"
+                            className="w-full flex items-center justify-between p-3 rounded-lg bg-gray-800/30 hover:bg-gray-800/50 backdrop-blur-sm transition-all duration-300"
                           >
                             <div className="flex items-center gap-3">
                               <span className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center text-sm font-bold text-white">
@@ -157,7 +156,7 @@ export default function CurriculumOverview({ onEnroll, enrolling }: CurriculumOv
                           {expandedWeek === week.week && (
                             <div className="mt-2 ml-11 space-y-3 animate-in slide-in-from-top-2 duration-200">
                               {/* Goals */}
-                              <div className="bg-gray-800/30 rounded-lg p-3">
+                              <div className="bg-gray-800/30 backdrop-blur-sm rounded-lg p-3 border border-primary-400/10">
                                 <p className="text-xs font-semibold text-primary-400 mb-2">WEEK GOALS</p>
                                 <ul className="space-y-1">
                                   {week.goals.map((goal, i) => (
@@ -174,7 +173,7 @@ export default function CurriculumOverview({ onEnroll, enrolling }: CurriculumOv
                                 {week.sessions.map(session => (
                                   <div
                                     key={session.day}
-                                    className="bg-gray-800/30 rounded-lg p-2 text-center"
+                                    className="bg-gray-800/30 backdrop-blur-sm rounded-lg p-2 text-center border border-primary-400/10"
                                   >
                                     <p className="text-xs text-gray-500">Day {session.day}</p>
                                     <p className="text-xs font-medium text-white truncate" title={session.title}>
@@ -188,7 +187,7 @@ export default function CurriculumOverview({ onEnroll, enrolling }: CurriculumOv
                               </div>
 
                               {/* Weekend recovery */}
-                              <div className="bg-blue-500/10 border border-blue-400/20 rounded-lg p-3">
+                              <div className="bg-blue-600/20 backdrop-blur-sm border border-blue-400/20 rounded-lg p-3">
                                 <p className="text-xs font-semibold text-blue-400 mb-1">WEEKEND RECOVERY</p>
                                 <p className="text-xs text-blue-200/70">
                                   {week.weekendRecovery.join(' • ')}
@@ -208,7 +207,7 @@ export default function CurriculumOverview({ onEnroll, enrolling }: CurriculumOv
       </div>
 
       {/* Exercise Library Preview */}
-      <div className="bg-gray-900/40 border border-primary-400/30 rounded-2xl p-6">
+      <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-xl p-6 border border-primary-400/20 shadow-lg">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold text-white flex items-center gap-2">
             <Zap className="w-5 h-5 text-secondary-400" />
@@ -216,7 +215,7 @@ export default function CurriculumOverview({ onEnroll, enrolling }: CurriculumOv
           </h2>
           <button
             onClick={() => setShowAllExercises(!showAllExercises)}
-            className="text-sm text-primary-400 hover:text-primary-300"
+            className="text-sm text-primary-400 hover:text-primary-300 transition-colors"
           >
             {showAllExercises ? 'Show less' : 'Show all'}
           </button>
@@ -226,14 +225,14 @@ export default function CurriculumOverview({ onEnroll, enrolling }: CurriculumOv
           {(showAllExercises ? usedExercises : usedExercises.slice(0, 6)).map(exercise => (
             <div
               key={exercise.id}
-              className="bg-gray-800/50 rounded-xl p-4 border border-gray-700/50 hover:border-primary-400/30 transition-colors"
+              className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-xl p-4 border border-primary-400/20 hover:border-primary-400/30 hover:shadow-lg hover:shadow-primary-500/20 transition-all duration-300"
             >
               <div className="flex items-start justify-between mb-2">
                 <h3 className="font-semibold text-white">{exercise.title}</h3>
                 <span className={`text-xs px-2 py-0.5 rounded-full ${
-                  exercise.intensity === 'low' ? 'bg-green-500/20 text-green-300' :
-                  exercise.intensity === 'moderate' ? 'bg-yellow-500/20 text-yellow-300' :
-                  'bg-red-500/20 text-red-300'
+                  exercise.intensity === 'low' ? 'bg-green-600/30 text-green-300' :
+                  exercise.intensity === 'moderate' ? 'bg-yellow-600/30 text-yellow-300' :
+                  'bg-red-600/30 text-red-300'
                 }`}>
                   {exercise.intensity}
                 </span>
@@ -244,7 +243,7 @@ export default function CurriculumOverview({ onEnroll, enrolling }: CurriculumOv
                   <Clock className="w-3 h-3" />
                   {exercise.duration}
                 </span>
-                <span className="capitalize px-2 py-0.5 bg-gray-700/50 rounded">
+                <span className="capitalize px-2 py-0.5 bg-gray-700/30 rounded">
                   {exercise.category}
                 </span>
               </div>
@@ -254,7 +253,7 @@ export default function CurriculumOverview({ onEnroll, enrolling }: CurriculumOv
       </div>
 
       {/* What's Included */}
-      <div className="bg-gradient-to-br from-secondary-600/20 to-primary-600/20 border border-secondary-400/30 rounded-2xl p-6">
+      <div className="bg-gradient-to-r from-secondary-600/20 to-primary-600/20 backdrop-blur-sm rounded-xl p-6 border border-secondary-400/30 shadow-lg">
         <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
           <Award className="w-5 h-5 text-secondary-400" />
           What's Included
@@ -280,7 +279,7 @@ export default function CurriculumOverview({ onEnroll, enrolling }: CurriculumOv
       </div>
 
       {/* Sample Session Preview */}
-      <div className="bg-gray-900/40 border border-primary-400/30 rounded-2xl p-6">
+      <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-xl p-6 border border-primary-400/20 shadow-lg">
         <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
           <Play className="w-5 h-5 text-primary-400" />
           Sample Session Preview
@@ -295,7 +294,7 @@ export default function CurriculumOverview({ onEnroll, enrolling }: CurriculumOv
             { phase: 'Integration', time: '3-5 min', desc: 'Apply skills to real-world scenarios', color: 'purple' },
           ].map((step, i) => (
             <div key={i} className="flex items-start gap-4">
-              <div className={`w-10 h-10 rounded-full bg-${step.color}-500/20 flex items-center justify-center flex-shrink-0`}>
+              <div className={`w-10 h-10 rounded-full bg-${step.color}-600/30 flex items-center justify-center flex-shrink-0`}>
                 <span className="text-white font-bold">{i + 1}</span>
               </div>
               <div className="flex-1">
@@ -311,7 +310,7 @@ export default function CurriculumOverview({ onEnroll, enrolling }: CurriculumOv
       </div>
 
       {/* CTA Section */}
-      <div className="bg-gradient-to-r from-primary-600/30 to-secondary-600/30 border border-primary-400/30 rounded-2xl p-8 text-center">
+      <div className="bg-gradient-to-r from-primary-600/30 to-secondary-600/30 backdrop-blur-sm rounded-xl p-8 border border-primary-400/30 shadow-2xl text-center">
         <h2 className="text-2xl font-bold text-white mb-3">Ready to Transform Your Vision?</h2>
         <p className="text-gray-300 mb-6 max-w-xl mx-auto">
           Join the 12-week program and follow a proven methodology for improving your eyesight naturally.
@@ -319,7 +318,7 @@ export default function CurriculumOverview({ onEnroll, enrolling }: CurriculumOv
         <button
           onClick={onEnroll}
           disabled={enrolling}
-          className="px-8 py-4 bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 text-white font-bold text-lg rounded-xl transition-all shadow-lg shadow-primary-500/30 disabled:opacity-50 flex items-center gap-2 mx-auto"
+          className="px-8 py-4 bg-primary-500 hover:bg-primary-600 disabled:opacity-50 text-white font-bold text-lg rounded-xl transition-all duration-300 hover:scale-105 shadow-lg shadow-primary-500/30 flex items-center gap-2 mx-auto"
         >
           {enrolling ? (
             <>
@@ -343,7 +342,7 @@ export default function CurriculumOverview({ onEnroll, enrolling }: CurriculumOv
 
 function StatCard({ icon: Icon, label, value }: { icon: any; label: string; value: string }) {
   return (
-    <div className="bg-gray-800/50 rounded-xl p-4 text-center">
+    <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-xl p-4 text-center border border-primary-400/20 hover:shadow-lg hover:shadow-primary-500/20 transition-all duration-300">
       <Icon className="w-6 h-6 text-primary-400 mx-auto mb-2" />
       <p className="text-2xl font-bold text-white">{value}</p>
       <p className="text-xs text-gray-400">{label}</p>

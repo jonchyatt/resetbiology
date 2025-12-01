@@ -12,22 +12,47 @@ export async function POST(request: NextRequest) {
     }
     
     const body = await request.json()
-    const { name, email } = body
-    
+    const { name, email, username } = body
+
+    // Validate username format if provided
+    if (username && !/^[a-z0-9_]+$/.test(username)) {
+      return NextResponse.json({
+        error: 'Username can only contain lowercase letters, numbers, and underscores'
+      }, { status: 400 })
+    }
+
+    // Check username uniqueness if changed
+    if (username) {
+      const existingUser = await prisma.user.findFirst({
+        where: {
+          username: username,
+          NOT: { auth0Sub: session.user.sub }
+        }
+      })
+      if (existingUser) {
+        return NextResponse.json({
+          error: 'This username is already taken'
+        }, { status: 400 })
+      }
+    }
+
     // Update user in database
     const updatedUser = await prisma.user.update({
       where: { auth0Sub: session.user.sub },
       data: {
         name: name || null,
         email: email || null,
+        username: username || null,
       }
     })
-    
-    return NextResponse.json({ 
-      success: true, 
+
+    return NextResponse.json({
+      success: true,
       user: {
         name: updatedUser.name,
-        email: updatedUser.email
+        email: updatedUser.email,
+        username: updatedUser.username,
+        memberID: updatedUser.memberID,
       }
     })
     

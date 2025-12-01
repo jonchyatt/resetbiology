@@ -10,7 +10,6 @@ import {
   CheckCircle,
   Clock,
   ChevronRight,
-  Eye,
   Target
 } from 'lucide-react'
 import { VisionExercise } from '@/data/visionExercises'
@@ -27,13 +26,13 @@ const AUDIO_PATTERNS = {
     type: 'visual-follow',
     cues: ['Follow the dot smoothly', 'Keep your head still', 'Eyes only', 'Good, continue'],
     pattern: 'figure8',
-    speed: 4000, // ms per loop
+    speed: 4000,
   },
   'eye-jumps': {
     type: 'saccade',
     cues: ['Left', 'Right', 'Left', 'Right', 'Up', 'Down', 'Diagonal'],
     pattern: 'jump',
-    speed: 1000, // ms per jump (60 bpm)
+    speed: 1000,
   },
   'figure8-fixation': {
     type: 'visual-follow',
@@ -98,7 +97,7 @@ export default function GuidedExercise({ exercise, onComplete, onBack }: GuidedE
     }
   }, [isMuted])
 
-  // Play a tone for rhythm (metronome)
+  // Play a tone for rhythm
   const playTone = useCallback((frequency: number = 440, duration: number = 100) => {
     if (isMuted) return
 
@@ -143,8 +142,8 @@ export default function GuidedExercise({ exercise, onComplete, onBack }: GuidedE
       const elapsed = Date.now() - startTime
       const progress = (elapsed % pattern.speed) / pattern.speed
 
-      // Clear canvas
-      ctx.fillStyle = '#1a1a2e'
+      // Clear canvas with dark background
+      ctx.fillStyle = '#111827'
       ctx.fillRect(0, 0, canvas.width, canvas.height)
 
       // Draw based on pattern type
@@ -197,7 +196,6 @@ export default function GuidedExercise({ exercise, onComplete, onBack }: GuidedE
           setCurrentStep(newStep)
           speak(pattern.cues[newStep])
 
-          // Play tone for rhythm exercises
           if (pattern.type === 'saccade') {
             playTone(newStep % 2 === 0 ? 440 : 550)
           }
@@ -224,8 +222,8 @@ export default function GuidedExercise({ exercise, onComplete, onBack }: GuidedE
 
   // Drawing functions
   const drawInfinity = (ctx: CanvasRenderingContext2D, cx: number, cy: number, progress: number) => {
-    const a = 120 // horizontal radius
-    const b = 60  // vertical radius
+    const a = 120
+    const b = 60
     const t = progress * Math.PI * 2
 
     // Draw path
@@ -264,14 +262,14 @@ export default function GuidedExercise({ exercise, onComplete, onBack }: GuidedE
 
   const drawSaccadeTargets = (ctx: CanvasRenderingContext2D, cx: number, cy: number, progress: number) => {
     const positions = [
-      { x: cx - 150, y: cy },     // Left
-      { x: cx + 150, y: cy },     // Right
-      { x: cx, y: cy - 100 },     // Up
-      { x: cx, y: cy + 100 },     // Down
+      { x: cx - 150, y: cy },
+      { x: cx + 150, y: cy },
+      { x: cx, y: cy - 100 },
+      { x: cx, y: cy + 100 },
     ]
 
     // Draw all target positions
-    positions.forEach((pos, i) => {
+    positions.forEach((pos) => {
       ctx.fillStyle = 'rgba(255, 255, 255, 0.1)'
       ctx.beginPath()
       ctx.arc(pos.x, pos.y, 20, 0, Math.PI * 2)
@@ -461,7 +459,7 @@ export default function GuidedExercise({ exercise, onComplete, onBack }: GuidedE
 
   if (showCompletionScreen) {
     return (
-      <div className="bg-gradient-to-br from-secondary-600/20 to-primary-600/20 border border-secondary-400/30 rounded-2xl p-8 text-center">
+      <div className="bg-gradient-to-r from-secondary-600/20 to-primary-600/20 backdrop-blur-sm rounded-xl p-8 border border-secondary-400/30 shadow-2xl text-center">
         <CheckCircle className="w-20 h-20 text-secondary-400 mx-auto mb-4" />
         <h2 className="text-2xl font-bold text-white mb-2">Exercise Complete!</h2>
         <p className="text-gray-300 mb-6">
@@ -470,14 +468,14 @@ export default function GuidedExercise({ exercise, onComplete, onBack }: GuidedE
         <div className="flex gap-4 justify-center">
           <button
             onClick={handleReset}
-            className="px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-xl font-semibold flex items-center gap-2"
+            className="px-6 py-3 bg-gray-700/80 backdrop-blur-sm hover:bg-gray-600/80 text-white rounded-lg font-semibold flex items-center gap-2 transition-all duration-300 hover:shadow-lg"
           >
             <RotateCcw className="w-5 h-5" />
             Do Again
           </button>
           <button
             onClick={onComplete}
-            className="px-6 py-3 bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 text-white rounded-xl font-semibold flex items-center gap-2"
+            className="px-6 py-3 bg-primary-500 hover:bg-primary-600 text-white rounded-lg font-semibold flex items-center gap-2 transition-all duration-300 hover:shadow-lg hover:shadow-primary-500/30"
           >
             Continue
             <ChevronRight className="w-5 h-5" />
@@ -493,21 +491,21 @@ export default function GuidedExercise({ exercise, onComplete, onBack }: GuidedE
       <div className="flex items-center justify-between">
         <button
           onClick={onBack}
-          className="text-gray-400 hover:text-white flex items-center gap-2 text-sm"
+          className="text-gray-400 hover:text-white flex items-center gap-2 text-sm transition-colors"
         >
           <ChevronRight className="w-4 h-4 rotate-180" />
           Back to exercises
         </button>
         <button
           onClick={() => setIsMuted(!isMuted)}
-          className="p-2 rounded-lg bg-gray-800/50 hover:bg-gray-700 text-gray-400 hover:text-white"
+          className="p-2 rounded-lg bg-gray-800/30 backdrop-blur-sm hover:bg-gray-700/30 text-gray-400 hover:text-white transition-all duration-300"
         >
           {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
         </button>
       </div>
 
       {/* Exercise Info */}
-      <div className="bg-gray-900/40 border border-primary-400/30 rounded-2xl p-6">
+      <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-xl p-6 border border-primary-400/20 shadow-lg">
         <div className="flex items-start justify-between mb-4">
           <div>
             <h2 className="text-2xl font-bold text-white mb-1">{exercise.title}</h2>
@@ -527,14 +525,14 @@ export default function GuidedExercise({ exercise, onComplete, onBack }: GuidedE
           </div>
           <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-primary-500 to-secondary-500 transition-all duration-1000"
+              className="h-full bg-primary-500 transition-all duration-1000"
               style={{ width: `${(elapsedTime / durationSeconds) * 100}%` }}
             />
           </div>
         </div>
 
         {/* Current cue */}
-        <div className="bg-primary-500/10 border border-primary-400/30 rounded-xl p-4 text-center mb-4">
+        <div className="bg-primary-600/20 border border-primary-400/30 rounded-xl p-4 text-center mb-4">
           <p className="text-primary-300 text-lg font-medium">
             {pattern.cues[currentStep] || 'Ready to begin'}
           </p>
@@ -542,18 +540,18 @@ export default function GuidedExercise({ exercise, onComplete, onBack }: GuidedE
       </div>
 
       {/* Visual Guide Canvas */}
-      <div className="bg-gray-900/60 border border-primary-400/30 rounded-2xl overflow-hidden">
+      <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-xl border border-primary-400/20 shadow-lg overflow-hidden">
         <canvas
           ref={canvasRef}
           width={400}
           height={300}
           className="w-full h-auto"
-          style={{ background: '#1a1a2e' }}
+          style={{ background: '#111827' }}
         />
       </div>
 
       {/* Checkpoints */}
-      <div className="bg-gray-900/40 border border-gray-700/50 rounded-xl p-4">
+      <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-xl p-4 border border-primary-400/20 shadow-lg">
         <h4 className="text-white font-semibold mb-3 flex items-center gap-2">
           <Target className="w-4 h-4 text-secondary-400" />
           Key Points
@@ -572,17 +570,17 @@ export default function GuidedExercise({ exercise, onComplete, onBack }: GuidedE
       <div className="flex gap-4 justify-center">
         <button
           onClick={handleReset}
-          className="px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-xl font-semibold flex items-center gap-2"
+          className="px-6 py-3 bg-gray-700/80 backdrop-blur-sm hover:bg-gray-600/80 text-white rounded-lg font-semibold flex items-center gap-2 transition-all duration-300 hover:shadow-lg"
         >
           <RotateCcw className="w-5 h-5" />
           Reset
         </button>
         <button
           onClick={() => isPlaying ? setIsPlaying(false) : handleStart()}
-          className={`px-8 py-3 rounded-xl font-semibold flex items-center gap-2 ${
+          className={`px-8 py-3 rounded-lg font-semibold flex items-center gap-2 transition-all duration-300 ${
             isPlaying
-              ? 'bg-yellow-500 hover:bg-yellow-600 text-gray-900'
-              : 'bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 text-white'
+              ? 'bg-yellow-500 hover:bg-yellow-600 text-gray-900 shadow-lg shadow-yellow-500/20'
+              : 'bg-primary-500 hover:bg-primary-600 text-white shadow-lg shadow-primary-500/20'
           }`}
         >
           {isPlaying ? (

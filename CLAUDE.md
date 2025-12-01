@@ -364,6 +364,50 @@ npx playwright test tests/test-timing-with-auth.spec.ts --headed --project=chrom
 - Use transparency: `/20` or `/30` with `backdrop-blur-sm`
 - Reference: `/order` page for styling patterns
 
+## 🎨 MANDATORY STYLING STANDARDS - READ BEFORE CREATING ANY NEW PAGE
+
+### Page Background (REQUIRED for ALL portal pages)
+Every portal page MUST have this wrapper with hero-background.jpg:
+```tsx
+<div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800"
+     style={{
+       backgroundImage: 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url(/hero-background.jpg)',
+       backgroundSize: 'cover',
+       backgroundPosition: 'center',
+       backgroundAttachment: 'fixed'
+     }}>
+  {/* Page content with relative z-10 */}
+</div>
+```
+
+### Card Styling (REQUIRED pattern)
+All cards MUST use glassmorphism with these exact classes:
+```tsx
+// Standard card
+className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-xl p-6 border border-primary-400/20 shadow-lg"
+
+// Accent card (hero/CTA)
+className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-8 border border-primary-400/30 shadow-2xl"
+```
+
+### DO NOT USE:
+- ❌ `bg-gray-800/30` without `backdrop-blur-sm`
+- ❌ `bg-gray-800/50` or `/40` (too opaque)
+- ❌ `bg-gray-900/40` (too opaque, no blur)
+- ❌ `rounded-lg` on main cards (use `rounded-xl`)
+- ❌ Any solid backgrounds that hide the hero-background.jpg
+
+### Reference Files for Correct Styling:
+- `/src/components/Breath/BreathPage.tsx` - GOLD STANDARD
+- `/src/components/Portal/EnhancedDashboard.tsx`
+- `/src/components/Peptides/PeptideTracker.tsx`
+
+### Before Pushing Any UI Changes:
+1. Check that hero-background.jpg is visible through all cards
+2. Verify `backdrop-blur-sm` is on every card
+3. Confirm opacity is `/20` or `/30` (not `/40` or `/50`)
+4. Compare screenshot against Breath Training page
+
 ---
 
 # 🚨 PERMANENT FEATURE DEVELOPMENT TODO LIST

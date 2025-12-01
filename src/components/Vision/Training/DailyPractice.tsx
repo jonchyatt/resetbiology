@@ -186,10 +186,10 @@ export default function DailyPractice() {
 
   if (loading) {
     return (
-      <div className="bg-gray-900/40 border border-primary-400/30 rounded-lg p-8 text-center">
+      <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm border border-primary-400/20 rounded-xl p-8 text-center shadow-lg">
         <div className="animate-pulse">
-          <div className="h-8 bg-gray-700 rounded w-1/3 mx-auto mb-4"></div>
-          <div className="h-4 bg-gray-700 rounded w-2/3 mx-auto"></div>
+          <div className="h-8 bg-gray-700/50 rounded w-1/3 mx-auto mb-4"></div>
+          <div className="h-4 bg-gray-700/50 rounded w-2/3 mx-auto"></div>
         </div>
       </div>
     )
@@ -209,7 +209,7 @@ export default function DailyPractice() {
           {/* Phase Overview */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
             {programInfo.phases.map((phase, idx) => (
-              <div key={idx} className="bg-gray-800/50 rounded-lg p-4 text-center">
+              <div key={idx} className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-xl p-4 text-center border border-primary-400/20">
                 <div className="text-xs text-primary-400 font-semibold mb-1">Weeks {phase.weeks}</div>
                 <div className="text-white font-bold mb-1">{phase.name}</div>
                 <div className="text-gray-400 text-xs">{phase.focus}</div>
@@ -218,7 +218,7 @@ export default function DailyPractice() {
           </div>
 
           {/* What's included */}
-          <div className="bg-gray-800/30 rounded-lg p-6 mb-8">
+          <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-xl p-6 mb-8 border border-primary-400/20">
             <h3 className="text-white font-bold mb-4">What's Included:</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
               <div className="flex items-center gap-2 text-gray-300">
@@ -249,7 +249,7 @@ export default function DailyPractice() {
           </div>
 
           {/* Optional baseline inputs */}
-          <div className="bg-gray-800/30 rounded-lg p-6 mb-8">
+          <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-xl p-6 mb-8 border border-primary-400/20">
             <h3 className="text-white font-bold mb-4">Record Your Starting Baselines (Optional):</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -325,7 +325,7 @@ export default function DailyPractice() {
         <ProgressHeader enrollment={enrollment} todaySession={todaySession} />
 
         {/* Rest day card */}
-        <div className="bg-gradient-to-br from-blue-600/20 to-purple-600/20 border border-blue-400/30 rounded-xl p-8 text-center">
+        <div className="bg-gradient-to-br from-blue-600/20 to-purple-600/20 backdrop-blur-sm border border-blue-400/30 rounded-xl p-8 text-center shadow-lg">
           <Coffee className="w-16 h-16 text-blue-400 mx-auto mb-4" />
           <h3 className="text-2xl font-bold text-white mb-2">Rest Day</h3>
           <p className="text-gray-300 mb-6">
@@ -333,7 +333,7 @@ export default function DailyPractice() {
           </p>
 
           {todaySession.weekendRecovery && (
-            <div className="bg-gray-800/50 rounded-lg p-6 text-left max-w-md mx-auto">
+            <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-xl p-6 text-left max-w-md mx-auto border border-primary-400/20">
               <h4 className="text-white font-semibold mb-3">Weekend Recovery Activities:</h4>
               <ul className="space-y-2">
                 {todaySession.weekendRecovery.map((activity, idx) => (
@@ -356,18 +356,18 @@ export default function DailyPractice() {
       <div className="space-y-6">
         <ProgressHeader enrollment={enrollment} todaySession={todaySession} />
 
-        <div className="bg-gradient-to-br from-secondary-600/20 to-primary-600/20 border border-secondary-400/30 rounded-xl p-8 text-center">
+        <div className="bg-gradient-to-br from-secondary-600/20 to-primary-600/20 backdrop-blur-sm border border-secondary-400/30 rounded-xl p-8 text-center shadow-lg">
           <Trophy className="w-16 h-16 text-secondary-400 mx-auto mb-4" />
           <h3 className="text-2xl font-bold text-white mb-2">Session Complete!</h3>
           <p className="text-gray-300 mb-4">
             You've completed today's session: {todaySession.session?.title}
           </p>
           <div className="flex justify-center gap-4 text-sm">
-            <div className="bg-gray-800/50 rounded-lg px-4 py-2">
+            <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-lg px-4 py-2 border border-primary-400/20">
               <span className="text-gray-400">Streak:</span>
               <span className="text-secondary-400 font-bold ml-2">{enrollment.streakDays} days</span>
             </div>
-            <div className="bg-gray-800/50 rounded-lg px-4 py-2">
+            <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-lg px-4 py-2 border border-primary-400/20">
               <span className="text-gray-400">Total:</span>
               <span className="text-primary-400 font-bold ml-2">{enrollment.sessionsCompleted} sessions</span>
             </div>
@@ -409,9 +409,9 @@ export default function DailyPractice() {
       <ProgressHeader enrollment={enrollment} todaySession={todaySession} />
 
       {/* Today's session card */}
-      <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 border border-primary-400/30 rounded-xl overflow-hidden">
+      <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm border border-primary-400/30 rounded-xl overflow-hidden shadow-lg">
         {/* Session header */}
-        <div className="bg-gray-800/50 px-6 py-4 border-b border-gray-700/50">
+        <div className="bg-gradient-to-r from-gray-800/80 to-gray-900/80 backdrop-blur-sm px-6 py-4 border-b border-gray-700/30">
           <div className="flex items-center justify-between">
             <div>
               <div className="flex items-center gap-2 mb-1">
@@ -440,7 +440,7 @@ export default function DailyPractice() {
           {!sessionStarted && (
             <>
               {/* Week goals */}
-              <div className="bg-gray-800/30 rounded-lg p-4">
+              <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-xl p-4 border border-primary-400/20">
                 <h4 className="text-white font-semibold mb-2 flex items-center gap-2">
                   <Target className="w-4 h-4 text-primary-400" />
                   This Week's Goals
@@ -457,7 +457,7 @@ export default function DailyPractice() {
 
               {/* Session overview */}
               <div className="space-y-3">
-                <div className="flex items-center justify-between bg-gray-800/30 rounded-lg p-4">
+                <div className="flex items-center justify-between bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-xl p-4 border border-primary-400/20">
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-blue-500/20 rounded-lg">
                       <Eye className="w-5 h-5 text-blue-400" />
@@ -475,7 +475,7 @@ export default function DailyPractice() {
                   </button>
                 </div>
 
-                <div className="bg-gray-800/30 rounded-lg p-4">
+                <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-xl p-4 border border-primary-400/20">
                   <div className="flex items-center gap-3 mb-3">
                     <div className="p-2 bg-secondary-500/20 rounded-lg">
                       <Zap className="w-5 h-5 text-secondary-400" />
@@ -500,7 +500,7 @@ export default function DailyPractice() {
               </div>
 
               {/* Coaching cues */}
-              <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
+              <div className="bg-yellow-500/10 backdrop-blur-sm border border-yellow-500/30 rounded-xl p-4">
                 <h4 className="text-yellow-300 font-semibold mb-2 flex items-center gap-2">
                   <BookOpen className="w-4 h-4" />
                   Today's Coaching Cues
@@ -529,7 +529,7 @@ export default function DailyPractice() {
               {/* Phase 1: Baseline */}
               {!baselineComplete && (
                 <div className="space-y-4">
-                  <div className="bg-blue-500/20 border border-blue-400/30 rounded-lg p-6">
+                  <div className="bg-blue-500/20 backdrop-blur-sm border border-blue-400/30 rounded-xl p-6">
                     <h4 className="text-white font-bold text-lg mb-2 flex items-center gap-2">
                       <Eye className="w-5 h-5 text-blue-400" />
                       Step 1: Snellen Baseline ({session.baselineMinutes} min)
@@ -686,7 +686,7 @@ export default function DailyPractice() {
                       value={sessionNotes}
                       onChange={(e) => setSessionNotes(e.target.value)}
                       placeholder="How did it feel? Any observations?"
-                      className="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 text-white text-sm resize-none"
+                      className="w-full bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm border border-primary-400/20 rounded-xl px-4 py-3 text-white text-sm resize-none"
                       rows={2}
                     />
                   </div>
@@ -716,7 +716,7 @@ function ProgressHeader({ enrollment, todaySession }: { enrollment: Enrollment; 
   const progressPercent = ((todaySession.week - 1) * 5 + todaySession.day) / 60 * 100
 
   return (
-    <div className="bg-gray-900/40 border border-primary-400/30 rounded-lg p-4">
+    <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm border border-primary-400/20 rounded-xl p-4 shadow-lg">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-3">
           <div className="text-white font-bold">
