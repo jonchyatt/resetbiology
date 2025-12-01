@@ -10,17 +10,19 @@ interface SnellenChartProps {
 }
 
 // Snellen chart letter sizes (relative to 20/20)
+// Reduced from original values to fit on mobile screens
+// Original 20/200 was 10x = 40rem which overflows phones
 const CHART_SIZES = {
-  '20/200': 10,
-  '20/100': 5,
-  '20/70': 3.5,
-  '20/50': 2.5,
-  '20/40': 2,
-  '20/30': 1.5,
-  '20/25': 1.25,
-  '20/20': 1,
-  '20/15': 0.75,
-  '20/10': 0.5
+  '20/200': 4,      // Was 10 - too big for phones
+  '20/100': 3,      // Was 5
+  '20/70': 2.5,     // Was 3.5
+  '20/50': 2,       // Was 2.5
+  '20/40': 1.75,    // Was 2
+  '20/30': 1.5,     // Same
+  '20/25': 1.25,    // Same
+  '20/20': 1,       // Same
+  '20/15': 0.75,    // Same
+  '20/10': 0.5      // Same
 }
 
 // Standard Snellen letters (most legible)

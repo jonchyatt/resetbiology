@@ -45,7 +45,9 @@ const DIRECTIONAL_LINES: Direction[][] = [
   ["down", "left", "right", "up", "down", "left"],
 ];
 
-const letterScale = [64, 56, 48, 40, 32, 24, 18, 14, 12, 10];
+// Letter/E sizes in pixels - scaled for mobile (start at 20/70 equivalent, not 20/200)
+// Smaller starting size prevents letters going off-screen on phones
+const letterScale = [48, 42, 36, 30, 26, 22, 18, 14, 12, 10];
 
 const CATEGORY_LABELS: Record<VisionExercise["category"], string> = {
   downshift: "Downshift",
@@ -452,7 +454,7 @@ export function VisionHealing() {
                   key={`${value}-${idx}`}
                   className="flex items-center justify-center text-white"
                   style={{
-                    fontSize: chartMode === "letters" ? `${letterScale[Math.min(lineIndex, letterScale.length - 1)]}px` : "64px",
+                    fontSize: `${letterScale[Math.min(lineIndex, letterScale.length - 1)]}px`,
                     letterSpacing: chartMode === "letters" ? "0.2em" : "0.5em",
                   }}
                 >
@@ -738,8 +740,9 @@ function DirectionalE({ direction }: { direction: Direction }) {
     left: "-rotate-90",
   };
 
+  // Size is inherited from parent's fontSize style - don't hardcode here
   return (
-    <span className={`inline-block font-sans text-[72px] font-black ${rotations[direction]}`}>E</span>
+    <span className={`inline-block font-sans font-black ${rotations[direction]}`} style={{ fontSize: 'inherit' }}>E</span>
   );
 }
 

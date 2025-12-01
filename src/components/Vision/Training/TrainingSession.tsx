@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import SnellenChart from './SnellenChart'
-import DistanceTracker from './DistanceTracker'
+import DistanceGuidance from './DistanceGuidance'
 import { Play, Pause, RotateCcw, CheckCircle, XCircle, Glasses, MoveHorizontal, Trophy, ArrowRight } from 'lucide-react'
 
 interface TrainingSessionProps {
@@ -22,18 +22,18 @@ const READER_GLASSES_STAGES = [
   { stage: 5, glassesStrength: 3.0, label: '+3.0 Readers', minDistance: 20, maxDistance: 60, color: 'text-pink-400' },
 ]
 
-// Adaptive difficulty system - now with distance progression within each level
+// Adaptive difficulty system - start at 20/70 (readable on phones)
+// If user struggles, they can manually go to easier levels
+// Most users won't need 20/200 on a phone (if you can't see that, see a doctor)
 const DIFFICULTY_LEVELS = [
-  { level: 1, chartSize: '20/200', targetDistance: 30, requiredAccuracy: 60 },
-  { level: 2, chartSize: '20/100', targetDistance: 35, requiredAccuracy: 65 },
-  { level: 3, chartSize: '20/70', targetDistance: 40, requiredAccuracy: 70 },
-  { level: 4, chartSize: '20/50', targetDistance: 45, requiredAccuracy: 75 },
-  { level: 5, chartSize: '20/40', targetDistance: 50, requiredAccuracy: 80 },
-  { level: 6, chartSize: '20/30', targetDistance: 55, requiredAccuracy: 80 },
-  { level: 7, chartSize: '20/25', targetDistance: 60, requiredAccuracy: 85 },
-  { level: 8, chartSize: '20/20', targetDistance: 65, requiredAccuracy: 85 },
-  { level: 9, chartSize: '20/15', targetDistance: 70, requiredAccuracy: 90 },
-  { level: 10, chartSize: '20/10', targetDistance: 70, requiredAccuracy: 95 }
+  { level: 1, chartSize: '20/70', targetDistance: 30, requiredAccuracy: 60 },
+  { level: 2, chartSize: '20/50', targetDistance: 35, requiredAccuracy: 65 },
+  { level: 3, chartSize: '20/40', targetDistance: 40, requiredAccuracy: 70 },
+  { level: 4, chartSize: '20/30', targetDistance: 45, requiredAccuracy: 75 },
+  { level: 5, chartSize: '20/25', targetDistance: 50, requiredAccuracy: 80 },
+  { level: 6, chartSize: '20/20', targetDistance: 55, requiredAccuracy: 80 },
+  { level: 7, chartSize: '20/15', targetDistance: 60, requiredAccuracy: 85 },
+  { level: 8, chartSize: '20/10', targetDistance: 65, requiredAccuracy: 90 },
 ]
 
 export default function TrainingSession({
@@ -43,7 +43,6 @@ export default function TrainingSession({
 }: TrainingSessionProps) {
   const [currentLevel, setCurrentLevel] = useState(initialLevel)
   const [isActive, setIsActive] = useState(false)
-  const [currentDistance, setCurrentDistance] = useState(30)
   const [attempts, setAttempts] = useState(0)
   const [correct, setCorrect] = useState(0)
   const [sessionDuration, setSessionDuration] = useState(0)
@@ -204,7 +203,7 @@ export default function TrainingSession({
         body: JSON.stringify({
           visionType,
           exerciseType,
-          distanceCm: currentDistance,
+          distanceCm: distanceProgressionMode ? targetDistanceCm : difficulty.targetDistance,
           accuracy,
           chartSize: difficulty.chartSize,
           duration: sessionDuration,
@@ -397,10 +396,9 @@ export default function TrainingSession({
         </div>
       )}
 
-      {/* Distance tracker */}
-      <DistanceTracker
+      {/* Distance guidance - simple instructions instead of broken sensor tracking */}
+      <DistanceGuidance
         targetDistanceCm={distanceProgressionMode ? targetDistanceCm : difficulty.targetDistance}
-        onDistanceChange={setCurrentDistance}
         visionType={visionType}
       />
 
