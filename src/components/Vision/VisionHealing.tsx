@@ -1,756 +1,274 @@
-"use client";
+'use client'
 
-import { useEffect, useMemo, useState } from "react";
+import { useState, useEffect } from 'react'
 import {
-  ArrowRight,
-  Brain,
   Calendar,
-  CheckCircle2,
-  Eye,
-  Flame,
-  Loader2,
-  RefreshCcw,
-  Ruler,
-  Sparkles,
-  Target,
-  Timer,
+  Play,
   Zap,
   BarChart3,
-} from "lucide-react";
-import { readinessPrompts, visionMetrics, visionWaves } from "@/data/visionProtocols";
-import { visionExerciseMap, visionExercises, VisionExercise } from "@/data/visionExercises";
-import TrainingSession from "./Training/TrainingSession";
-import ProgressDashboard from "./Training/ProgressDashboard";
-import DailyPractice from "./Training/DailyPractice";
+  Eye,
+  ChevronRight,
+  Sparkles
+} from 'lucide-react'
+import CurriculumOverview from './Training/CurriculumOverview'
+import DailyPractice from './Training/DailyPractice'
+import QuickPractice from './Training/QuickPractice'
+import ProgressDashboard from './Training/ProgressDashboard'
+import TrainingSession from './Training/TrainingSession'
 
-const LETTER_LINES = [
-  ["E"],
-  ["F", "P"],
-  ["T", "O", "Z"],
-  ["L", "P", "E", "D"],
-  ["P", "E", "C", "F", "D"],
-  ["E", "D", "F", "C", "Z", "P"],
-  ["F", "E", "L", "O", "P", "Z", "D"],
-  ["D", "E", "F", "P", "O", "T", "E", "C"],
-  ["L", "E", "F", "O", "D", "P", "C", "T"],
-  ["F", "D", "P", "L", "T", "C", "E", "O"],
-];
+type TabMode = 'curriculum' | 'today' | 'practice' | 'trainer' | 'progress'
 
-const DIRECTIONAL_LINES: Direction[][] = [
-  ["up"],
-  ["left", "right"],
-  ["up", "down", "left"],
-  ["right", "up", "down", "left"],
-  ["up", "right", "down", "left", "up"],
-  ["down", "left", "right", "up", "down", "left"],
-];
+interface TabConfig {
+  id: TabMode
+  label: string
+  icon: any
+  description: string
+}
 
-// Letter/E sizes in pixels - scaled for mobile (start at 20/70 equivalent, not 20/200)
-// Smaller starting size prevents letters going off-screen on phones
-const letterScale = [48, 42, 36, 30, 26, 22, 18, 14, 12, 10];
-
-const CATEGORY_LABELS: Record<VisionExercise["category"], string> = {
-  downshift: "Downshift",
-  mechanics: "Mechanics",
-  peripheral: "Peripheral",
-  speed: "Speed",
-  integration: "Integration",
-};
-
-const categoryFilters: Array<{ value: "all" | VisionExercise["category"]; label: string }> = [
-  { value: "all", label: "All" },
-  ...Object.entries(CATEGORY_LABELS).map(([value, label]) => ({ value: value as VisionExercise["category"], label })),
-];
-
-type TabMode = 'program' | 'training' | 'exercises' | 'progress'
+const TABS: TabConfig[] = [
+  { id: 'curriculum', label: '12-Week Program', icon: Calendar, description: 'Full program overview' },
+  { id: 'today', label: "Today's Session", icon: Play, description: 'Daily guided training' },
+  { id: 'practice', label: 'Quick Practice', icon: Zap, description: 'Individual exercises' },
+  { id: 'trainer', label: 'Snellen Trainer', icon: Eye, description: 'Vision testing' },
+  { id: 'progress', label: 'Progress', icon: BarChart3, description: 'Your stats' },
+]
 
 export function VisionHealing() {
-  const [activeTab, setActiveTab] = useState<TabMode>('program')
-  const [trainingVisionType, setTrainingVisionType] = useState<'near' | 'far'>('near')
-  const [trainingExerciseType, setTrainingExerciseType] = useState<'letters' | 'e-directional'>('letters')
-  const [userProgress, setUserProgress] = useState<{ near?: { currentLevel: number }, far?: { currentLevel: number } }>({})
-  const [progressLoading, setProgressLoading] = useState(true)
+  const [activeTab, setActiveTab] = useState<TabMode>('curriculum')
+  const [isEnrolled, setIsEnrolled] = useState(false)
+  const [enrolling, setEnrolling] = useState(false)
+  const [loading, setLoading] = useState(true)
 
-  const [visionMode, setVisionMode] = useState<"near" | "far">("near");
-  const [chartMode, setChartMode] = useState<"letters" | "directional">("letters");
-  const [distanceCm, setDistanceCm] = useState(40);
-  const [lineIndex, setLineIndex] = useState(4);
-  const [isShuffling, setIsShuffling] = useState(false);
+  // Trainer settings
+  const [trainerVisionType, setTrainerVisionType] = useState<'near' | 'far'>('near')
+  const [trainerExerciseType, setTrainerExerciseType] = useState<'letters' | 'e-directional'>('letters')
 
-  const [waveIndex, setWaveIndex] = useState(0);
-  const [blockIndex, setBlockIndex] = useState(0);
-  const [selectedExerciseId, setSelectedExerciseId] = useState<string>(visionWaves[0].blocks[0].exerciseIds[0]);
-  const [coachStep, setCoachStep] = useState(0);
-  const [exerciseFilter, setExerciseFilter] = useState<"all" | VisionExercise["category"]>("all");
-
-  const chartLines = chartMode === "letters" ? LETTER_LINES : DIRECTIONAL_LINES;
-  const activeLine = chartLines[Math.min(lineIndex, chartLines.length - 1)];
-  const distanceRange = visionMode === "far" ? { min: 30, max: 200 } : { min: 10, max: 80 };
-
-  const instruction = useMemo(() => {
-    if (visionMode === "far") {
-      return distanceCm >= 150
-        ? "Hold steady — log this distance as today’s far baseline."
-        : "If letters are clear, step back 2 cm. If blurry, move closer 1 cm.";
-    }
-    return distanceCm <= 15
-      ? "Great near control. Try a micro-hold at 10 cm before blinking."
-      : "Dial closer in 0.5 cm increments, breathe out as the chart approaches.";
-  }, [distanceCm, visionMode]);
-
-  const cycleLine = () => {
-    setIsShuffling(true);
-    setTimeout(() => {
-      setLineIndex((prev) => (prev + 1) % chartLines.length);
-      setIsShuffling(false);
-    }, 200);
-  };
-
-  const activeWave = visionWaves[waveIndex];
-  const activeBlock = activeWave.blocks[blockIndex];
-  const blockExercises = activeBlock.exerciseIds
-    .map((id) => visionExerciseMap[id])
-    .filter((exercise): exercise is VisionExercise => Boolean(exercise));
-
+  // Check enrollment status on mount
   useEffect(() => {
-    const defaultExercise = blockExercises[0]?.id ?? visionExercises[0].id;
-    setSelectedExerciseId(defaultExercise);
-    setCoachStep(0);
-  }, [waveIndex, blockIndex]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Fetch user's vision progress on mount
-  useEffect(() => {
-    async function fetchProgress() {
-      try {
-        const res = await fetch('/api/vision/progress', { credentials: 'include' })
-        if (res.ok) {
-          const data = await res.json()
-          if (data.success && data.progress) {
-            const progressMap: { near?: { currentLevel: number }, far?: { currentLevel: number } } = {}
-            data.progress.forEach((p: any) => {
-              progressMap[p.visionType as 'near' | 'far'] = {
-                currentLevel: p.currentLevel || 1
-              }
-            })
-            setUserProgress(progressMap)
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching vision progress:', error)
-      } finally {
-        setProgressLoading(false)
-      }
-    }
-    fetchProgress()
+    checkEnrollment()
   }, [])
 
-  const selectedExercise = visionExerciseMap[selectedExerciseId];
-  const selectedSteps = selectedExercise?.checkpoints ?? [];
-  const filteredExercises = useMemo(() => {
-    if (exerciseFilter === "all") return visionExercises;
-    return visionExercises.filter((exercise) => exercise.category === exerciseFilter);
-  }, [exerciseFilter]);
+  const checkEnrollment = async () => {
+    try {
+      const response = await fetch('/api/vision/program')
+      const data = await response.json()
+      if (data.success && data.enrolled) {
+        setIsEnrolled(true)
+        setActiveTab('today') // Go to today's session if enrolled
+      }
+    } catch (error) {
+      console.error('Failed to check enrollment:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
-  const goNextStep = () => {
-    if (!selectedSteps.length) return;
-    setCoachStep((prev) => (prev + 1) % selectedSteps.length);
-  };
+  const handleEnroll = async () => {
+    setEnrolling(true)
+    try {
+      const response = await fetch('/api/vision/program', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'enroll', data: {} })
+      })
+      const data = await response.json()
+      if (data.success) {
+        setIsEnrolled(true)
+        setActiveTab('today')
+      }
+    } catch (error) {
+      console.error('Failed to enroll:', error)
+    } finally {
+      setEnrolling(false)
+    }
+  }
+
+  // Filter tabs based on enrollment status
+  const visibleTabs = isEnrolled
+    ? TABS
+    : TABS.filter(t => ['curriculum', 'practice', 'trainer'].includes(t.id))
+
+  if (loading) {
+    return (
+      <div className="min-h-[400px] flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-primary-500/30 border-t-primary-500 rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-gray-400">Loading vision program...</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
-    <div
-      className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 relative"
-      style={{
-        backgroundImage:
-          "linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url(/hero-background.jpg)",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundAttachment: "fixed",
-      }}
-    >
-      <div className="relative z-10 pt-16">
-        {/* Portal Subnav Header */}
-        <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm shadow-2xl border-b border-primary-400/30">
-          <div className="container mx-auto px-4 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <img
-                  src="/logo1.png"
-                  alt="Reset Biology"
-                  className="h-10 w-auto rounded-lg drop-shadow-lg bg-white/10 backdrop-blur-sm p-1 border border-white/20"
-                />
-                <div>
-                  <div className="flex items-center">
-                    <a
-                      href="/portal"
-                      className="text-xl font-bold text-white drop-shadow-lg hover:text-primary-300 transition-colors"
-                    >
-                      Portal
-                    </a>
-                    <span className="mx-2 text-primary-300">&gt;</span>
-                    <span className="text-lg text-gray-200 drop-shadow-sm">
-                      Vision Healing
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <a
-                  href="/daily-history"
-                  className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm"
-                >
-                  Daily History
-                </a>
-                <a
-                  href="/portal"
-                  className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm"
-                >
-                  ← Back to Portal
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Title Section */}
-        <div className="text-center py-8">
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 text-shadow-lg animate-fade-in">
-            <span className="text-primary-400">Vision</span> Healing
-          </h2>
-          <p className="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto font-medium leading-relaxed drop-shadow-sm">
-            Interactive eye-healing flows with the same precision you expect from Reset Biology
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between flex-wrap gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+            <Eye className="w-7 h-7 text-primary-400" />
+            Vision Training
+          </h1>
+          <p className="text-gray-400 mt-1">
+            {isEnrolled
+              ? 'Continue your vision improvement journey'
+              : 'Explore the program and start your journey'}
           </p>
         </div>
-
-        <div className="container mx-auto px-4 pb-8">
-          {/* Tab Navigation */}
-          <div className="flex flex-wrap gap-3 justify-center mb-8">
-        <button
-          onClick={() => setActiveTab('program')}
-          className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all ${
-            activeTab === 'program'
-              ? 'bg-gradient-to-r from-primary-500 to-secondary-500 text-white shadow-lg shadow-primary-500/30'
-              : 'bg-gray-900/40 border border-primary-400/30 text-gray-300 hover:text-white hover:border-primary-400/50'
-          }`}
-        >
-          <Calendar className="w-5 h-5" />
-          12-Week Program
-        </button>
-        <button
-          onClick={() => setActiveTab('training')}
-          className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all ${
-            activeTab === 'training'
-              ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/30'
-              : 'bg-gray-900/40 border border-primary-400/30 text-gray-300 hover:text-white hover:border-primary-400/50'
-          }`}
-        >
-          <Zap className="w-5 h-5" />
-          Snellen Trainer
-        </button>
-        <button
-          onClick={() => setActiveTab('exercises')}
-          className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all ${
-            activeTab === 'exercises'
-              ? 'bg-secondary-500 text-white shadow-lg shadow-secondary-500/30'
-              : 'bg-gray-900/40 border border-primary-400/30 text-gray-300 hover:text-white hover:border-primary-400/50'
-          }`}
-        >
-          <Eye className="w-5 h-5" />
-          Exercise Library
-        </button>
-        <button
-          onClick={() => setActiveTab('progress')}
-          className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all ${
-            activeTab === 'progress'
-              ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/30'
-              : 'bg-gray-900/40 border border-primary-400/30 text-gray-300 hover:text-white hover:border-primary-400/50'
-          }`}
-        >
-          <BarChart3 className="w-5 h-5" />
-          Progress & Stats
-        </button>
+        {isEnrolled && (
+          <div className="flex items-center gap-2 px-4 py-2 bg-secondary-500/10 border border-secondary-400/30 rounded-full">
+            <Sparkles className="w-4 h-4 text-secondary-400" />
+            <span className="text-secondary-400 text-sm font-medium">Program Active</span>
+          </div>
+        )}
       </div>
 
-      {/* 12-Week Program Tab */}
-      {activeTab === 'program' && (
-        <DailyPractice />
-      )}
+      {/* Tab Navigation */}
+      <div className="bg-gray-900/40 border border-primary-400/20 rounded-2xl p-2">
+        <div className="flex flex-wrap gap-2">
+          {visibleTabs.map(tab => {
+            const Icon = tab.icon
+            const isActive = activeTab === tab.id
 
-      {/* Dynamic Training Tab */}
-      {activeTab === 'training' && (
-        <div className="space-y-6">
-          {/* Training mode selection */}
-          <div className="bg-gray-900/40 border border-primary-400/30 rounded-lg p-6 shadow-inner">
-            <h3 className="text-xl font-bold text-white mb-4">Select Training Mode</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Vision type */}
-              <div>
-                <label className="text-gray-300 font-semibold mb-2 block">Vision Type:</label>
-                <div className="flex gap-3">
-                  <button
-                    onClick={() => setTrainingVisionType('near')}
-                    className={`flex-1 px-4 py-3 rounded-lg font-semibold transition-all ${
-                      trainingVisionType === 'near'
-                        ? 'bg-primary-500 text-white'
-                        : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                    }`}
-                  >
-                    Near Vision (40cm)
-                  </button>
-                  <button
-                    onClick={() => setTrainingVisionType('far')}
-                    className={`flex-1 px-4 py-3 rounded-lg font-semibold transition-all ${
-                      trainingVisionType === 'far'
-                        ? 'bg-primary-500 text-white'
-                        : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                    }`}
-                  >
-                    Far Vision (3-6m)
-                  </button>
-                </div>
-              </div>
-
-              {/* Exercise type */}
-              <div>
-                <label className="text-gray-300 font-semibold mb-2 block">Exercise Type:</label>
-                <div className="flex gap-3">
-                  <button
-                    onClick={() => setTrainingExerciseType('letters')}
-                    className={`flex-1 px-4 py-3 rounded-lg font-semibold transition-all ${
-                      trainingExerciseType === 'letters'
-                        ? 'bg-secondary-500 text-white'
-                        : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                    }`}
-                  >
-                    Letters
-                  </button>
-                  <button
-                    onClick={() => setTrainingExerciseType('e-directional')}
-                    className={`flex-1 px-4 py-3 rounded-lg font-semibold transition-all ${
-                      trainingExerciseType === 'e-directional'
-                        ? 'bg-secondary-500 text-white'
-                        : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                    }`}
-                  >
-                    E-Directional
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Training session */}
-          <TrainingSession
-            visionType={trainingVisionType}
-            exerciseType={trainingExerciseType}
-            initialLevel={userProgress[trainingVisionType]?.currentLevel || 1}
-          />
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-2 px-4 py-3 rounded-xl transition-all ${
+                  isActive
+                    ? 'bg-gradient-to-r from-primary-500/20 to-secondary-500/20 border border-primary-400/40 text-white shadow-lg'
+                    : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+                }`}
+              >
+                <Icon className={`w-5 h-5 ${isActive ? 'text-primary-400' : ''}`} />
+                <span className="font-medium hidden sm:inline">{tab.label}</span>
+                <span className="font-medium sm:hidden">{tab.label.split(' ')[0]}</span>
+              </button>
+            )
+          })}
         </div>
-      )}
+      </div>
 
-      {/* Progress Tab */}
-      {activeTab === 'progress' && (
-        <ProgressDashboard />
-      )}
+      {/* Tab Content */}
+      <div className="min-h-[500px]">
+        {activeTab === 'curriculum' && (
+          <CurriculumOverview onEnroll={handleEnroll} enrolling={enrolling} />
+        )}
 
-      {/* Exercises Tab - Existing Content */}
-      {activeTab === 'exercises' && (
-        <>
-      <section className="rounded-3xl border border-primary-400/30 bg-gray-900/40 p-8 shadow-inner">
-        <div className="flex flex-wrap items-start justify-between gap-6">
-          <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-secondary-200/70">Vision Recovery Lab</p>
-            <h1 className="mt-3 text-3xl font-semibold leading-tight">
-              Interactive eye-healing flows with the same precision you expect from Reset Biology
-            </h1>
-            <p className="mt-4 text-base text-slate-300">
-              We rebuilt the entire ScreenFit workbook into a living, guided experience: adaptive Snellen trainer, wave-based
-              programming, session coach, and exercise explorer — no PDFs, no friction, just modern UX on any device.
-            </p>
-            <div className="mt-6 flex flex-wrap gap-4 text-sm text-slate-200">
-              <div className="rounded-2xl border border-emerald-400/30 bg-emerald-500/10 px-4 py-2">
-                Adaptive near/far guidance
-              </div>
-              <div className="rounded-2xl border border-cyan-400/30 bg-cyan-500/10 px-4 py-2">Protocol intelligence</div>
-              <div className="rounded-2xl border border-purple-400/30 bg-purple-500/10 px-4 py-2">Session-level coaching</div>
-            </div>
-          </div>
-          <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-indigo-600/30 via-slate-900 to-black px-6 py-5 text-sm text-slate-200">
-            <p className="font-semibold text-white">What’s inside</p>
-            <ul className="mt-3 space-y-2">
-              <li>• Snellen-inspired trainer with live cues</li>
-              <li>• Protocol waves mapped to interactive blocks</li>
-              <li>• Session coach cycling each checkpoint</li>
-              <li>• Explorer for every drill, cue, and progression</li>
-            </ul>
-          </div>
-        </div>
-      </section>
+        {activeTab === 'today' && isEnrolled && (
+          <DailyPractice />
+        )}
 
-      <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-        <div className="rounded-3xl border border-white/10 bg-primary-500/10 p-6 shadow-2xl shadow-primary-500/20 backdrop-blur-sm hover:shadow-primary-500/30 transition-all">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div>
-              <p className="text-xs uppercase tracking-[0.3em] text-secondary-200/70">Calibration</p>
-              <h2 className="text-xl font-semibold">Distance-guided Snellen trainer</h2>
-            </div>
-            <div className="flex gap-2 text-xs">
-              {(["near", "far"] as const).map((mode) => (
-                <button
-                  key={mode}
-                  className={`rounded-full border px-3 py-1 uppercase tracking-widest ${
-                    visionMode === mode ? "border-secondary-400 bg-secondary-400/20 text-white" : "border-white/10 text-slate-300"
-                  }`}
-                  onClick={() => {
-                    setVisionMode(mode);
-                    setDistanceCm(mode === "near" ? 35 : 120);
-                  }}
-                >
-                  {mode} vision
-                </button>
-              ))}
-            </div>
-          </div>
+        {activeTab === 'practice' && (
+          <QuickPractice />
+        )}
 
-          <div className="mt-5 rounded-2xl border border-primary-400/20 bg-gray-900/30 p-5 text-center">
-            <div className="flex items-center justify-between text-sm text-slate-300">
-              <span>Target distance</span>
-              <span>{distanceCm} cm</span>
-            </div>
-            <input
-              type="range"
-              min={distanceRange.min}
-              max={distanceRange.max}
-              value={distanceCm}
-              onChange={(event) => setDistanceCm(Number(event.target.value))}
-              className="mt-4 w-full accent-secondary-300"
-            />
-            <p className="mt-3 text-sm text-slate-200">{instruction}</p>
-          </div>
+        {activeTab === 'trainer' && (
+          <div className="space-y-6">
+            {/* Trainer Settings */}
+            <div className="bg-gray-900/40 border border-primary-400/30 rounded-2xl p-6">
+              <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                <Eye className="w-6 h-6 text-primary-400" />
+                Snellen Vision Trainer
+              </h2>
+              <p className="text-gray-400 mb-6">
+                Test and train your vision with adaptive difficulty. The trainer adjusts
+                based on your performance - get 60%+ accuracy to advance to smaller letters.
+              </p>
 
-          <div className="mt-6 rounded-2xl border border-white/5 bg-gradient-to-b from-white/5 to-black/40 p-6 text-center">
-            <div className="flex items-center justify-between">
-              <div className="text-left text-xs uppercase tracking-[0.3em] text-slate-400">Chart mode</div>
-              <div className="flex gap-2 text-xs">
-                {(["letters", "directional"] as const).map((mode) => (
-                  <button
-                    key={mode}
-                    onClick={() => {
-                      setChartMode(mode);
-                      setLineIndex(0);
-                    }}
-                    className={`rounded-xl px-3 py-1 ${
-                      chartMode === mode ? "bg-white/20 text-white" : "bg-white/5 text-slate-300"
-                    }`}
-                  >
-                    {mode === "letters" ? "Letter lines" : "E directional"}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="mt-5 space-y-3 font-mono">
-              {activeLine.map((value, idx) => (
-                <div
-                  key={`${value}-${idx}`}
-                  className="flex items-center justify-center text-white"
-                  style={{
-                    fontSize: `${letterScale[Math.min(lineIndex, letterScale.length - 1)]}px`,
-                    letterSpacing: chartMode === "letters" ? "0.2em" : "0.5em",
-                  }}
-                >
-                  {chartMode === "letters" ? value : <DirectionalE direction={value as Direction} />}
-                </div>
-              ))}
-            </div>
-
-            <button
-              onClick={cycleLine}
-              disabled={isShuffling}
-              className="mt-6 inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-primary-500/10 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-primary-500/20 transition hover:border-white/40 hover:shadow-primary-500/30 hover:scale-105 disabled:opacity-50"
-            >
-              {isShuffling ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCcw className="h-4 w-4" />}
-              Shuffle line
-            </button>
-          </div>
-        </div>
-
-        <div className="space-y-6">
-          <div className="rounded-3xl border border-primary-400/30 bg-gray-900/40 p-6 shadow-inner">
-            <div className="flex items-center gap-3">
-              <Ruler className="h-5 w-5 text-secondary-200" />
-              <div>
-                <p className="text-xs uppercase tracking-[0.3em] text-secondary-200/70">Key metrics</p>
-                <h3 className="text-lg font-semibold">Quantify the gains</h3>
-              </div>
-            </div>
-            <ul className="mt-5 space-y-3 text-sm text-slate-200">
-              {visionMetrics.map((metric) => (
-                <li key={metric.label} className="rounded-2xl border border-primary-400/20 bg-gray-900/30 px-4 py-3">
-                  <p className="font-semibold text-white">{metric.label}</p>
-                  <p className="text-xs uppercase tracking-wide text-secondary-200/70">Target: {metric.target}</p>
-                  <p className="mt-1 text-slate-300">{metric.howTo}</p>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="rounded-3xl border border-primary-400/30 bg-gray-900/40 p-6 shadow-inner">
-            <div className="flex items-center gap-3">
-              <Brain className="h-5 w-5 text-secondary-200" />
-              <div>
-                <p className="text-xs uppercase tracking-[0.3em] text-secondary-200/70">Readiness prompts</p>
-                <h3 className="text-lg font-semibold">Check in before drills</h3>
-              </div>
-            </div>
-            <ul className="mt-4 list-disc space-y-2 pl-5 text-sm text-slate-300">
-              {readinessPrompts.map((prompt) => (
-                <li key={prompt}>{prompt}</li>
-              ))}
-            </ul>
-            <p className="mt-4 text-xs text-slate-400">Log the answers next to your Snellen readings or in the Reset journal.</p>
-          </div>
-        </div>
-      </section>
-
-      <section className="rounded-3xl border border-primary-400/30 bg-gray-900/40 p-6 shadow-inner">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-secondary-200/70">Interactive flow builder</p>
-            <h2 className="text-xl font-semibold">Choose a wave, follow the blocks, let the coach guide you</h2>
-            <p className="text-sm text-slate-300">Every drill, cue, and progression is now native to the app.</p>
-          </div>
-          <Sparkles className="h-10 w-10 text-secondary-200" />
-        </div>
-
-        <div className="mt-6 flex flex-wrap gap-2 text-xs">
-          {visionWaves.map((wave, idx) => (
-            <button
-              key={wave.key}
-              onClick={() => {
-                setWaveIndex(idx);
-                setBlockIndex(0);
-              }}
-              className={`rounded-full border px-4 py-2 font-semibold uppercase tracking-widest transition ${
-                waveIndex === idx ? "border-secondary-400 bg-secondary-500/20 text-white shadow-lg shadow-secondary-500/20" : "border-white/10 text-slate-300 hover:shadow-md hover:shadow-secondary-500/10"
-              } hover:scale-105`}
-            >
-              {wave.title}
-            </button>
-          ))}
-        </div>
-
-        <div className="mt-6 grid gap-4 md:grid-cols-3 text-sm text-slate-200">
-          <InfoCard title="Duration" value={activeWave.duration} />
-          <InfoCard title="Rhythm" value={activeWave.rhythm} />
-          <InfoCard title="Recovery cues" value={activeWave.recovery.join(" • ")} />
-        </div>
-
-        <div className="mt-6 grid gap-3 md:grid-cols-3">
-          {activeWave.blocks.map((block, idx) => (
-            <button
-              key={block.title}
-              onClick={() => setBlockIndex(idx)}
-              className={`rounded-2xl border px-4 py-4 text-left transition ${
-                blockIndex === idx ? "border-secondary-400 bg-secondary-500/20 shadow-lg shadow-secondary-500/20" : "border-white/10 bg-primary-500/10 hover:shadow-primary-500/20"
-              }`}
-            >
-              <p className="text-xs uppercase tracking-[0.3em] text-secondary-200/80">{block.duration}</p>
-              <p className="mt-2 text-lg font-semibold text-white">{block.title}</p>
-              <p className="mt-2 text-sm text-slate-300">{block.description}</p>
-              <div className="mt-3 text-xs text-slate-400">Intent: {block.intent}</div>
-              <ul className="mt-2 text-xs text-slate-300">
-                {block.cues.map((cue) => (
-                  <li key={cue}>• {cue}</li>
-                ))}
-              </ul>
-            </button>
-          ))}
-        </div>
-
-        <div className="mt-8 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-          <div className="rounded-2xl border border-primary-400/30 bg-gray-900/40 p-5">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs uppercase tracking-[0.3em] text-secondary-200/80">{activeBlock.duration}</p>
-                <h3 className="text-lg font-semibold text-white">Block drill stack</h3>
-              </div>
-              <Timer className="h-5 w-5 text-secondary-200" />
-            </div>
-
-            <ul className="mt-4 space-y-3">
-              {blockExercises.map((exercise) => (
-                <li
-                  key={exercise.id}
-                  className={`rounded-2xl border px-4 py-3 text-sm transition ${
-                    selectedExerciseId === exercise.id
-                      ? "border-secondary-400 bg-secondary-500/10"
-                      : "border-white/10 bg-slate-950/30 hover:border-white/30"
-                  }`}
-                >
-                  <button
-                    className="flex w-full items-center justify-between text-left"
-                    onClick={() => {
-                      setSelectedExerciseId(exercise.id);
-                      setCoachStep(0);
-                    }}
-                  >
-                    <div>
-                      <p className="font-semibold text-white">{exercise.title}</p>
-                      <p className="text-xs text-slate-400">{exercise.duration} • {CATEGORY_LABELS[exercise.category]}</p>
-                    </div>
-                    <ArrowRight className="h-4 w-4 text-secondary-200" />
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-5">
-            {selectedExercise ? (
-              <>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.3em] text-secondary-200/70">Session coach</p>
-                    <h3 className="text-lg font-semibold text-white">{selectedExercise.title}</h3>
-                    <p className="text-xs text-slate-400">
-                      {selectedExercise.duration} • {CATEGORY_LABELS[selectedExercise.category]} • {selectedExercise.intensity} intent
-                    </p>
-                  </div>
-                  <Flame className="h-5 w-5 text-secondary-200" />
-                </div>
-
-                <p className="mt-4 text-sm text-slate-300">{selectedExercise.summary}</p>
-
-                <div className="mt-4 rounded-xl border border-white/10 bg-primary-500/10 p-4 shadow-md shadow-primary-500/10 backdrop-blur-sm">
-                  <div className="flex items-center justify-between text-xs text-slate-400">
-                    <span>Checkpoint {selectedSteps.length ? coachStep + 1 : 0}/{selectedSteps.length}</span>
-                    {selectedExercise.distanceTargets && (
-                      <span>
-                        Near: {selectedExercise.distanceTargets.near ?? "--"} • Far: {selectedExercise.distanceTargets.far ?? "--"}
-                      </span>
-                    )}
-                  </div>
-                  <p className="mt-3 text-base font-semibold text-white">
-                    {selectedSteps[coachStep] ?? "Add checkpoints to this drill."}
-                  </p>
-                  <button
-                    onClick={goNextStep}
-                    disabled={!selectedSteps.length}
-                    className="mt-4 inline-flex items-center gap-2 rounded-xl border border-secondary-400/50 px-4 py-2 text-sm font-semibold text-secondary-100 transition hover:border-secondary-300 disabled:opacity-50"
-                  >
-                    Next checkpoint
-                    <CheckCircle2 className="h-4 w-4" />
-                  </button>
-                </div>
-
-                <div className="mt-4 grid gap-3 text-sm text-slate-300">
-                  {selectedExercise.guidance.map((tip) => (
-                    <div key={tip.heading} className="rounded-xl border border-white/5 bg-white/5 px-4 py-3">
-                      <p className="text-xs uppercase tracking-[0.3em] text-secondary-200/80">{tip.heading}</p>
-                      <p className="mt-1">{tip.detail}</p>
-                    </div>
-                  ))}
-                  {selectedExercise.progression && (
-                    <div className="rounded-xl border border-white/10 bg-secondary-500/10 px-4 py-3 text-xs text-slate-400 shadow-sm shadow-secondary-500/10">
-                      Progression: {selectedExercise.progression}
-                    </div>
-                  )}
-                  {selectedExercise.layering && (
-                    <div className="rounded-xl border border-white/10 bg-secondary-500/10 px-4 py-3 text-xs text-slate-400 shadow-sm shadow-secondary-500/10">
-                      Layering idea: {selectedExercise.layering}
-                    </div>
-                  )}
-                </div>
-              </>
-            ) : (
-              <p className="text-sm text-slate-300">Select an exercise to launch the session coach.</p>
-            )}
-          </div>
-        </div>
-      </section>
-
-      <section className="rounded-3xl border border-primary-400/30 bg-gray-900/40 p-6 shadow-inner">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-secondary-200/70">Exercise explorer</p>
-            <h2 className="text-xl font-semibold">Every drill, beautifully interactive</h2>
-            <p className="text-sm text-slate-300">Filter by category, tap a card, and you’ve got the entire playbook.</p>
-          </div>
-          <Eye className="h-10 w-10 text-secondary-200" />
-        </div>
-
-        <div className="mt-6 flex flex-wrap gap-2 text-xs">
-          {categoryFilters.map((filter) => (
-            <button
-              key={filter.value}
-              onClick={() => setExerciseFilter(filter.value)}
-              className={`rounded-full border px-4 py-1 font-semibold uppercase tracking-widest transition ${
-                exerciseFilter === filter.value ? "border-secondary-400 bg-secondary-400/20 text-white shadow-md shadow-secondary-500/20" : "border-white/10 text-slate-300 hover:shadow-sm hover:shadow-secondary-500/10"
-              } hover:scale-105`}
-            >
-              {filter.label}
-            </button>
-          ))}
-        </div>
-
-        <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-          {filteredExercises.map((exercise) => (
-            <article key={exercise.id} className="rounded-2xl border border-primary-400/30 bg-gray-900/40 p-5 shadow-inner">
-              <div className="flex items-center justify-between gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Vision Type */}
                 <div>
-                  <p className="text-xs uppercase tracking-[0.3em] text-secondary-200/70">
-                    {CATEGORY_LABELS[exercise.category]} • {exercise.duration}
+                  <label className="block text-sm font-medium text-gray-300 mb-3">
+                    Vision Type
+                  </label>
+                  <div className="flex gap-2">
+                    {(['near', 'far'] as const).map(type => (
+                      <button
+                        key={type}
+                        onClick={() => setTrainerVisionType(type)}
+                        className={`flex-1 py-3 px-4 rounded-xl font-medium transition-all ${
+                          trainerVisionType === type
+                            ? 'bg-primary-500/20 border border-primary-400/50 text-white'
+                            : 'bg-gray-800/50 border border-gray-700/50 text-gray-400 hover:text-white hover:border-gray-600'
+                        }`}
+                      >
+                        <span className="text-lg mr-2">{type === 'near' ? '📱' : '🖥️'}</span>
+                        {type === 'near' ? 'Near Vision' : 'Far Vision'}
+                      </button>
+                    ))}
+                  </div>
+                  <p className="text-xs text-gray-500 mt-2">
+                    {trainerVisionType === 'near'
+                      ? 'Best for phone/tablet - hold at arm\'s length (~40cm)'
+                      : 'Best for computer/TV - sit 2+ meters away'}
                   </p>
-                  <h3 className="text-lg font-semibold text-white">{exercise.title}</h3>
                 </div>
-                <Flame className="h-5 w-5 text-secondary-200" />
+
+                {/* Exercise Type */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-3">
+                    Chart Type
+                  </label>
+                  <div className="flex gap-2">
+                    {([
+                      { id: 'letters', label: 'Letters', emoji: '🔤' },
+                      { id: 'e-directional', label: 'E Chart', emoji: '👁️' }
+                    ] as const).map(type => (
+                      <button
+                        key={type.id}
+                        onClick={() => setTrainerExerciseType(type.id)}
+                        className={`flex-1 py-3 px-4 rounded-xl font-medium transition-all ${
+                          trainerExerciseType === type.id
+                            ? 'bg-secondary-500/20 border border-secondary-400/50 text-white'
+                            : 'bg-gray-800/50 border border-gray-700/50 text-gray-400 hover:text-white hover:border-gray-600'
+                        }`}
+                      >
+                        <span className="text-lg mr-2">{type.emoji}</span>
+                        {type.label}
+                      </button>
+                    ))}
+                  </div>
+                  <p className="text-xs text-gray-500 mt-2">
+                    {trainerExerciseType === 'letters'
+                      ? 'Identify the letter shown (E, F, P, T, O, Z, L, D)'
+                      : 'Identify which direction the E is pointing'}
+                  </p>
+                </div>
               </div>
-              <p className="mt-3 text-sm text-slate-300">{exercise.summary}</p>
-              <div className="mt-3 flex flex-wrap gap-2">
-                {exercise.focus.map((tag) => (
-                  <span key={tag} className="rounded-full bg-white/5 px-3 py-1 text-xs uppercase tracking-widest text-secondary-200">
-                    {tag}
-                  </span>
-                ))}
-              </div>
-              <ul className="mt-4 list-disc space-y-1 pl-5 text-sm text-slate-300">
-                {exercise.checkpoints.map((checkpoint) => (
-                  <li key={checkpoint}>{checkpoint}</li>
-                ))}
-              </ul>
-            </article>
-          ))}
-        </div>
-      </section>
-        </>
-      )}
-        </div>
+            </div>
+
+            {/* Training Session */}
+            <TrainingSession
+              visionType={trainerVisionType}
+              exerciseType={trainerExerciseType}
+            />
+          </div>
+        )}
+
+        {activeTab === 'progress' && isEnrolled && (
+          <ProgressDashboard />
+        )}
+
+        {/* Not enrolled notice for certain tabs */}
+        {!isEnrolled && (activeTab === 'today' || activeTab === 'progress') && (
+          <div className="bg-yellow-500/10 border border-yellow-400/30 rounded-xl p-8 text-center">
+            <Eye className="w-12 h-12 text-yellow-400/50 mx-auto mb-4" />
+            <h3 className="text-xl font-bold text-white mb-2">Program Required</h3>
+            <p className="text-gray-300 mb-6 max-w-md mx-auto">
+              Enroll in the 12-week program to access daily sessions and progress tracking.
+            </p>
+            <button
+              onClick={() => setActiveTab('curriculum')}
+              className="px-6 py-3 bg-yellow-500/20 hover:bg-yellow-500/30 border border-yellow-400/50 text-yellow-300 rounded-xl font-medium flex items-center gap-2 mx-auto transition-all"
+            >
+              View Program Details
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        )}
       </div>
     </div>
-  );
+  )
 }
 
-type Direction = "up" | "down" | "left" | "right";
-
-function DirectionalE({ direction }: { direction: Direction }) {
-  const rotations: Record<Direction, string> = {
-    up: "rotate-0",
-    right: "rotate-90",
-    down: "rotate-180",
-    left: "-rotate-90",
-  };
-
-  // Size is inherited from parent's fontSize style - don't hardcode here
-  return (
-    <span className={`inline-block font-sans font-black ${rotations[direction]}`} style={{ fontSize: 'inherit' }}>E</span>
-  );
-}
-
-function InfoCard({ title, value }: { title: string; value: string }) {
-  return (
-    <div className="rounded-2xl border border-primary-400/20 bg-gray-900/30 px-4 py-3 text-sm text-slate-200">
-      <p className="text-xs uppercase tracking-[0.3em] text-secondary-200/70">{title}</p>
-      <p className="mt-2 text-base font-semibold text-white">{value}</p>
-    </div>
-  );
-}
+export default VisionHealing
