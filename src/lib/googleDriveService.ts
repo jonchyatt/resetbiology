@@ -10,7 +10,7 @@ const SCOPES = ['https://www.googleapis.com/auth/drive.file'];
  * Retrieves the authenticated Google Drive client for a specific user.
  * Assumes the user has already authenticated via OAuth and we have a refresh token.
  */
-async function getDriveClient(userId: string) {
+export async function getDriveClient(userId: string) {
   const user = await prisma.user.findUnique({
     where: { id: userId },
     select: { googleDriveRefreshToken: true },
@@ -119,13 +119,13 @@ export async function createVaultStructure(userId: string) {
  */
 export async function logToVault(userId: string, logType: 'nutrition' | 'peptide' | 'vision' | 'workout', data: any) {
   const drive = await getDriveClient(userId);
-  
+
   // Get subfolder ID from DB
   const user = await prisma.user.findUnique({
     where: { id: userId },
     select: { drivePermissions: true },
   });
-  
+
   const folders = user?.drivePermissions as Record<string, string>;
   const logsFolderId = folders?.['Logs'];
 
@@ -158,7 +158,7 @@ export async function logToVault(userId: string, logType: 'nutrition' | 'peptide
   // Format data as CSV row
   const timestamp = new Date().toISOString();
   const row = `${timestamp},${Object.values(data).join(',')}\n`;
-  
+
   const newContent = currentContent + row;
 
   if (fileId) {
