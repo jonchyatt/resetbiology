@@ -138,7 +138,7 @@ export function JournalHistory() {
 
   return (
 
-    <div className="relative min-h-screen overflow-hidden" style={{
+    <div className="relative min-h-screen overflow-hidden pt-28" style={{
       backgroundImage: 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url(/hero-background.jpg)',
       backgroundSize: 'cover',
       backgroundPosition: 'center',

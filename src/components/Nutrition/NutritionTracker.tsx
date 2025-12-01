@@ -583,7 +583,7 @@ export function NutritionTracker() {
     return latest
   }, [todaysFoods])
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 relative"
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 relative pt-16"
          style={{
            backgroundImage: 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url(/hero-background.jpg)',
            backgroundSize: 'cover',
@@ -602,8 +602,8 @@ export function NutritionTracker() {
         </div>
       )}
 
-      {/* Header - matching PeptideTracker pattern */}
-      <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm shadow-2xl border-b border-primary-400/30 mt-16">
+      {/* Portal Subnav Header */}
+      <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm shadow-2xl border-b border-primary-400/30">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">

@@ -517,9 +517,9 @@ export default function NBackTrainer() {
         backgroundAttachment: 'fixed'
       }}
     >
-      <div className="relative z-10">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm shadow-2xl border-b border-primary-400/30 mt-16">
+      <div className="relative z-10 pt-16">
+        {/* Portal Subnav Header */}
+        <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm shadow-2xl border-b border-primary-400/30">
           <div className="container mx-auto px-4 py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">

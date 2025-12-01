@@ -16,9 +16,40 @@ export default defineConfig({
     }
   },
   projects: [
+    // Desktop
     {
-      name: 'chromium',
+      name: 'Desktop Chrome',
       use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'Desktop Safari',
+      use: { ...devices['Desktop Safari'] },
+    },
+    {
+      name: 'Desktop Firefox',
+      use: { ...devices['Desktop Firefox'] },
+    },
+    // Mobile - iOS (Apple)
+    {
+      name: 'iPhone 12',
+      use: { ...devices['iPhone 12'] },
+    },
+    {
+      name: 'iPhone 15 Pro',
+      use: { ...devices['iPhone 15 Pro'] },
+    },
+    {
+      name: 'iPad Pro 11',
+      use: { ...devices['iPad Pro 11'] },
+    },
+    // Mobile - Android
+    {
+      name: 'Pixel 7',
+      use: { ...devices['Pixel 7'] },
+    },
+    {
+      name: 'Galaxy S23',
+      use: { ...devices['Galaxy S23'] },
     },
   ],
 });

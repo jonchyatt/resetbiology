@@ -1,7 +1,7 @@
 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-**Last Updated:** November 5, 2025
+**Last Updated:** November 30, 2025
 
 # ⚡ FIRST ACTION EVERY SESSION
 
@@ -76,11 +76,11 @@ Before making ANY code changes, you MUST follow these steps:
 Building a complex medical/wellness platform with public marketing site, secure client portal, gamification system, and integrated breath training application.
 
 ## Current Session Status (Update This When Ending Session)
-- **Date:** November 26, 2025
-- **Last Action:** Comprehensive feature update - admin access, breath admin, Stripe trial, email, quiz lookup
-- **Deployment:** Pending - TypeScript passes, ready for deploy
-- **Next Priority:** Test all new features on production after deployment
-- **Watch Out For:** Stripe price ID needs to be set to $12.99 in Stripe Dashboard
+- **Date:** November 30, 2025
+- **Last Action:** HOS system review, Playwright multi-device config, Voice Agent architecture planning
+- **Deployment:** Production is current
+- **Next Priority:** Google Drive sync + Voice Agent ecosystem implementation
+- **Watch Out For:** PWA notifications CONFIRMED WORKING (stop marking as incomplete!)
 
 ## 🎯 Session Progress (November 26, 2025)
 
@@ -368,677 +368,55 @@ npx playwright test tests/test-timing-with-auth.spec.ts --headed --project=chrom
 
 # 🚨 PERMANENT FEATURE DEVELOPMENT TODO LIST
 
-## 🔴 CURRENT PRIORITIES (Work on These First)
-
-### ~~1. **Workout Tracking Page** (`/workout`)~~ ✅ COMPLETE!
-- ✅ Component exists at `src/components/Workout/WorkoutTracker.tsx`
-- ✅ Connected to database via `/api/workout/sessions`
-- ✅ Exercise library with 30+ exercises at `/api/workout/exercises`
-- ✅ Saves to WorkoutSession table
-- ✅ Awards 50 gamification points per workout
-- ✅ Supports bulk import of custom exercises
-
-### ~~2. **Nutrition Tracking Page** (`/nutrition`)~~ ✅ COMPLETE!
-- ✅ Component exists at `src/components/Nutrition/NutritionTracker.tsx`
-- ✅ Connected to database via `/api/nutrition/entries`
-- ✅ Food database with search at `/api/nutrition/foods`
-- ✅ Saves to FoodEntry table
-- ✅ Awards 10 points for daily logging
-- ✅ Supports bulk import of custom foods
-
-### ~~3. **PWA + Notification System for Peptide Dose Reminders**~~ ✅ COMPLETE!
-- ✅ Progressive Web App with manifest.json
-- ✅ Service worker for push notifications
-- ✅ NotificationPreferences component
-- ✅ Database schema with NotificationPreference, ScheduledNotification, PushSubscription models
-- ✅ API endpoints for push notifications
-- ✅ "Remind Me" button in peptide tracker
-- ✅ 100% free (no Twilio/SMS costs)
-
-### ~~4. **$1 Trial Subscription System**~~ ✅ COMPLETE! (November 23, 2025)
-- ✅ TrialSubscription modal component with beautiful UI
-- ✅ `/api/subscriptions/trial` endpoint with Stripe integration
-- ✅ Trial banner on portal dashboard (auto-shows for non-subscribers)
-- ✅ Subscription status checking throughout app
-- ✅ Added stripeCustomerId to User model
-- ✅ Complete setup guide in STRIPE_TRIAL_SETUP.md
-- ✅ 14-day trial for $1, then $29.99/month
-- ✅ Webhook integration for subscription events
-
-## 🟡 NEXT UP (After Priorities)
-
-**Phase 1: Database Schema (30 min)**
-1. Add to `prisma/schema.prisma`:
-```prisma
-model NotificationPreference {
-  id              String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId          String   @db.ObjectId
-  protocolId      String   @db.ObjectId
-  pushEnabled     Boolean  @default(true)
-  emailEnabled    Boolean  @default(false)
-  reminderMinutes Int      @default(15)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  user            User     @relation(fields: [userId], references: [id])
-
-  @@unique([userId, protocolId])
-  @@map("notification_preferences")
-}
-
-model ScheduledNotification {
-  id           String    @id @default(auto()) @map("_id") @db.ObjectId
-  userId       String    @db.ObjectId
-  protocolId   String    @db.ObjectId
-  doseTime     DateTime
-  reminderTime DateTime
-  type         String    // "push" | "email"
-  sent         Boolean   @default(false)
-  sentAt       DateTime?
-  createdAt    DateTime  @default(now())
-  user         User      @relation(fields: [userId], references: [id])
-
-  @@index([reminderTime, sent])
-  @@map("scheduled_notifications")
-}
-
-model PushSubscription {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId       String   @db.ObjectId
-  endpoint     String
-  keys         Json     // {p256dh, auth}
-  createdAt    DateTime @default(now())
-  user         User     @relation(fields: [userId], references: [id])
-
-  @@unique([userId, endpoint])
-  @@map("push_subscriptions")
-}
-```
-
-2. Update User model to add relations:
-```prisma
-model User {
-  // ... existing fields ...
-  notificationPreferences NotificationPreference[]
-  scheduledNotifications  ScheduledNotification[]
-  pushSubscriptions       PushSubscription[]
-}
-```
-
-3. Run: `npx prisma db push`
-
-**Phase 2: PWA Manifest & Service Worker (45 min)**
-
-4. Create `/public/manifest.json`:
-```json
-{
-  "name": "Reset Biology",
-  "short_name": "Reset Bio",
-  "description": "Cellular health optimization platform",
-  "start_url": "/portal",
-  "display": "standalone",
-  "background_color": "#1a1a2e",
-  "theme_color": "#3FBFB5",
-  "orientation": "portrait",
-  "icons": [
-    {
-      "src": "/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
-  ]
-}
-```
-
-5. Create `/public/service-worker.js`:
-```javascript
-const CACHE_NAME = 'reset-biology-v1'
-
-// Install event
-self.addEventListener('install', (event) => {
-  console.log('Service Worker: Installed')
-  self.skipWaiting()
-})
-
-// Activate event
-self.addEventListener('activate', (event) => {
-  console.log('Service Worker: Activated')
-  event.waitUntil(clients.claim())
-})
-
-// Push notification event
-self.addEventListener('push', (event) => {
-  const data = event.data?.json() || {}
-  const options = {
-    body: data.body || 'Time for your dose!',
-    icon: '/icon-192.png',
-    badge: '/icon-192.png',
-    vibrate: [200, 100, 200],
-    tag: data.tag || 'dose-reminder',
-    data: {
-      url: data.url || '/peptides'
-    }
-  }
-
-  event.waitUntil(
-    self.registration.showNotification(data.title || 'Dose Reminder', options)
-  )
-})
-
-// Notification click event
-self.addEventListener('notificationclick', (event) => {
-  event.notification.close()
-  event.waitUntil(
-    clients.openWindow(event.notification.data.url)
-  )
-})
-```
-
-6. Update `/app/layout.tsx` to register service worker:
-```typescript
-// Add to <head> section:
-<link rel="manifest" href="/manifest.json" />
-<meta name="theme-color" content="#3FBFB5" />
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-
-// Add script before closing </body>:
-<Script id="register-sw" strategy="afterInteractive">
-  {`
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/service-worker.js')
-          .then(reg => console.log('SW registered:', reg))
-          .catch(err => console.log('SW registration failed:', err))
-      })
-    }
-  `}
-</Script>
-```
-
-**Phase 3: API Endpoints (60 min)**
-
-7. Create `/app/api/notifications/subscribe/route.ts`:
-```typescript
-import { NextRequest, NextResponse } from 'next/server'
-import { getSession } from '@auth0/nextjs-auth0'
-import prisma from '@/lib/prisma'
-
-export async function POST(req: NextRequest) {
-  const session = await getSession()
-  if (!session?.user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
-
-  const { subscription } = await req.json()
-
-  const user = await prisma.user.findFirst({
-    where: {
-      OR: [
-        { auth0Sub: session.user.sub },
-        { email: session.user.email }
-      ]
-    }
-  })
-
-  if (!user) {
-    return NextResponse.json({ error: 'User not found' }, { status: 404 })
-  }
-
-  await prisma.pushSubscription.upsert({
-    where: {
-      userId_endpoint: {
-        userId: user.id,
-        endpoint: subscription.endpoint
-      }
-    },
-    create: {
-      userId: user.id,
-      endpoint: subscription.endpoint,
-      keys: subscription.keys
-    },
-    update: {
-      keys: subscription.keys
-    }
-  })
-
-  return NextResponse.json({ success: true })
-}
-```
-
-8. Create `/app/api/notifications/preferences/route.ts`:
-```typescript
-import { NextRequest, NextResponse } from 'next/server'
-import { getSession } from '@auth0/nextjs-auth0'
-import prisma from '@/lib/prisma'
-
-export async function GET(req: NextRequest) {
-  const session = await getSession()
-  if (!session?.user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
-
-  const user = await prisma.user.findFirst({
-    where: {
-      OR: [
-        { auth0Sub: session.user.sub },
-        { email: session.user.email }
-      ]
-    },
-    include: {
-      notificationPreferences: true
-    }
-  })
-
-  return NextResponse.json(user?.notificationPreferences || [])
-}
-
-export async function POST(req: NextRequest) {
-  const session = await getSession()
-  if (!session?.user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
-
-  const { protocolId, pushEnabled, emailEnabled, reminderMinutes } = await req.json()
-
-  const user = await prisma.user.findFirst({
-    where: {
-      OR: [
-        { auth0Sub: session.user.sub },
-        { email: session.user.email }
-      ]
-    }
-  })
-
-  if (!user) {
-    return NextResponse.json({ error: 'User not found' }, { status: 404 })
-  }
-
-  const preference = await prisma.notificationPreference.upsert({
-    where: {
-      userId_protocolId: {
-        userId: user.id,
-        protocolId
-      }
-    },
-    create: {
-      userId: user.id,
-      protocolId,
-      pushEnabled,
-      emailEnabled,
-      reminderMinutes
-    },
-    update: {
-      pushEnabled,
-      emailEnabled,
-      reminderMinutes
-    }
-  })
-
-  return NextResponse.json(preference)
-}
-```
-
-9. Create `/app/api/notifications/send/route.ts` (for cron job):
-```typescript
-import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/prisma'
-import webpush from 'web-push'
-
-// Set VAPID keys (generate with: npx web-push generate-vapid-keys)
-webpush.setVapidDetails(
-  'mailto:admin@resetbiology.com',
-  process.env.VAPID_PUBLIC_KEY!,
-  process.env.VAPID_PRIVATE_KEY!
-)
-
-export async function POST(req: NextRequest) {
-  // Verify cron secret
-  const authHeader = req.headers.get('authorization')
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
-
-  const now = new Date()
-
-  // Find notifications to send
-  const notifications = await prisma.scheduledNotification.findMany({
-    where: {
-      reminderTime: {
-        lte: now
-      },
-      sent: false
-    },
-    include: {
-      user: {
-        include: {
-          pushSubscriptions: true
-        }
-      }
-    }
-  })
-
-  const results = []
-
-  for (const notification of notifications) {
-    // Send push notifications
-    if (notification.type === 'push') {
-      for (const sub of notification.user.pushSubscriptions) {
-        try {
-          await webpush.sendNotification(
-            {
-              endpoint: sub.endpoint,
-              keys: sub.keys as any
-            },
-            JSON.stringify({
-              title: 'Dose Reminder',
-              body: 'Time for your peptide dose!',
-              url: '/peptides',
-              tag: `dose-${notification.id}`
-            })
-          )
-          results.push({ id: notification.id, status: 'sent' })
-        } catch (error) {
-          console.error('Push notification failed:', error)
-          results.push({ id: notification.id, status: 'failed' })
-        }
-      }
-    }
-
-    // Mark as sent
-    await prisma.scheduledNotification.update({
-      where: { id: notification.id },
-      data: { sent: true, sentAt: new Date() }
-    })
-  }
-
-  return NextResponse.json({ sent: results.length, results })
-}
-```
-
-**Phase 4: UI Components (60 min)**
-
-10. Create `/src/components/Notifications/NotificationPreferences.tsx`:
-```typescript
-'use client'
-import { useState, useEffect } from 'react'
-import { Bell, Mail } from 'lucide-react'
-
-interface Props {
-  protocolId: string
-  onClose: () => void
-}
-
-export default function NotificationPreferences({ protocolId, onClose }: Props) {
-  const [pushEnabled, setPushEnabled] = useState(true)
-  const [emailEnabled, setEmailEnabled] = useState(false)
-  const [reminderMinutes, setReminderMinutes] = useState(15)
-  const [pushPermission, setPushPermission] = useState<NotificationPermission>('default')
-
-  useEffect(() => {
-    if ('Notification' in window) {
-      setPushPermission(Notification.permission)
-    }
-  }, [])
-
-  const requestPushPermission = async () => {
-    if ('Notification' in window && 'serviceWorker' in navigator) {
-      const permission = await Notification.requestPermission()
-      setPushPermission(permission)
-
-      if (permission === 'granted') {
-        // Subscribe to push
-        const registration = await navigator.serviceWorker.ready
-        const subscription = await registration.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
-        })
-
-        // Send to server
-        await fetch('/api/notifications/subscribe', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ subscription })
-        })
-      }
-    }
-  }
-
-  const savePreferences = async () => {
-    await fetch('/api/notifications/preferences', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        protocolId,
-        pushEnabled,
-        emailEnabled,
-        reminderMinutes
-      })
-    })
-    onClose()
-  }
-
-  return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-gray-800 rounded-lg p-6 max-w-md w-full">
-        <h3 className="text-xl font-bold text-white mb-4">Notification Preferences</h3>
-
-        {/* Push Notifications */}
-        <div className="mb-4 p-4 bg-gray-700/50 rounded-lg">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2">
-              <Bell className="w-5 h-5 text-primary-400" />
-              <span className="text-white font-semibold">Push Notifications</span>
-            </div>
-            <input
-              type="checkbox"
-              checked={pushEnabled}
-              onChange={(e) => setPushEnabled(e.target.checked)}
-              disabled={pushPermission !== 'granted'}
-              className="w-5 h-5"
-            />
-          </div>
-
-          {pushPermission !== 'granted' && (
-            <button
-              onClick={requestPushPermission}
-              className="text-sm text-primary-400 hover:text-primary-300"
-            >
-              Enable push notifications →
-            </button>
-          )}
-        </div>
-
-        {/* Email Notifications */}
-        <div className="mb-4 p-4 bg-gray-700/50 rounded-lg">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Mail className="w-5 h-5 text-blue-400" />
-              <span className="text-white font-semibold">Email Reminders</span>
-            </div>
-            <input
-              type="checkbox"
-              checked={emailEnabled}
-              onChange={(e) => setEmailEnabled(e.target.checked)}
-              className="w-5 h-5"
-            />
-          </div>
-        </div>
-
-        {/* Reminder Timing */}
-        <div className="mb-6">
-          <label className="text-white font-semibold mb-2 block">
-            Remind me before dose:
-          </label>
-          <select
-            value={reminderMinutes}
-            onChange={(e) => setReminderMinutes(Number(e.target.value))}
-            className="w-full bg-gray-700 text-white px-4 py-2 rounded-lg"
-          >
-            <option value={5}>5 minutes</option>
-            <option value={15}>15 minutes</option>
-            <option value={30}>30 minutes</option>
-            <option value={60}>1 hour</option>
-          </select>
-        </div>
-
-        {/* Actions */}
-        <div className="flex gap-3">
-          <button
-            onClick={savePreferences}
-            className="flex-1 bg-primary-500 hover:bg-primary-600 text-white py-2 px-4 rounded-lg font-semibold"
-          >
-            Save Preferences
-          </button>
-          <button
-            onClick={onClose}
-            className="px-4 py-2 text-gray-400 hover:text-white"
-          >
-            Cancel
-          </button>
-        </div>
-      </div>
-    </div>
-  )
-}
-```
-
-11. Update `/src/components/Peptides/PeptideTracker.tsx`:
-- Import notification component
-- Replace "Scheduled" label with "Remind Me" button (line ~1041)
-- Add click handler to show notification preferences modal
-
-```typescript
-// Add imports
-import NotificationPreferences from '@/components/Notifications/NotificationPreferences'
-import { Bell } from 'lucide-react'
-
-// Add state
-const [showNotificationModal, setShowNotificationModal] = useState(false)
-const [selectedProtocolForNotif, setSelectedProtocolForNotif] = useState<string | null>(null)
-
-// Replace the "Scheduled" label section (around line 1040):
-<button
-  onClick={() => {
-    setSelectedProtocolForNotif(protocol.id)
-    setShowNotificationModal(true)
-  }}
-  className={`flex items-center gap-1 text-xs ${isNext ? 'text-primary-200 font-semibold' : 'text-gray-400 hover:text-primary-400'} transition-colors`}
->
-  <Bell className="w-3 h-3" />
-  <span>{isNext ? 'Remind Me' : 'Set Reminder'}</span>
-</button>
-
-// Add modal at bottom of component:
-{showNotificationModal && selectedProtocolForNotif && (
-  <NotificationPreferences
-    protocolId={selectedProtocolForNotif}
-    onClose={() => {
-      setShowNotificationModal(false)
-      setSelectedProtocolForNotif(null)
-    }}
-  />
-)}
-```
-
-**Phase 5: Environment & Cron Setup (30 min)**
-
-12. Generate VAPID keys:
-```bash
-npx web-push generate-vapid-keys
-```
-
-13. Add to `.env.local`:
-```
-VAPID_PUBLIC_KEY=<public_key>
-VAPID_PRIVATE_KEY=<private_key>
-CRON_SECRET=<random_secure_string>
-NEXT_PUBLIC_VAPID_PUBLIC_KEY=<public_key>
-```
-
-14. Create Vercel Cron Job in `vercel.json`:
-```json
-{
-  "crons": [{
-    "path": "/api/notifications/send",
-    "schedule": "*/5 * * * *"
-  }]
-}
-```
-
-**Phase 6: Testing & Deployment (30 min)**
-
-15. Test locally:
-```bash
-npm run build
-npm run dev
-```
-
-16. Test on phone:
-- Visit localhost:3000 (use ngrok if needed)
-- Check for install prompt
-- Enable notifications
-- Set reminder on a dose
-- Verify notification arrives
-
-17. Deploy to production:
-```bash
-git add .
-git commit -m "feat: Add PWA with push notification system for dose reminders"
-git push origin master
-```
-
-18. Test on production with ChromeMCP:
-- Open https://resetbiology.com on mobile
-- Install PWA
-- Enable notifications
-- Set reminder
-- Wait for notification
-
-#### 🎯 Success Criteria:
-- [ ] Service worker registered
-- [ ] Install prompt appears on mobile
-- [ ] Push notification permission requested
-- [ ] "Remind Me" button visible on doses
-- [ ] Notification preferences modal works
-- [ ] Push notifications sent at correct times
-- [ ] Email fallback works
-- [ ] Admin workflow unchanged
-
-#### 📝 Files Created/Modified:
-**Created:**
-- `/public/manifest.json`
-- `/public/service-worker.js`
-- `/app/api/notifications/subscribe/route.ts`
-- `/app/api/notifications/preferences/route.ts`
-- `/app/api/notifications/send/route.ts`
-- `/src/components/Notifications/NotificationPreferences.tsx`
-- `/vercel.json`
-
-**Modified:**
-- `/prisma/schema.prisma` (3 new models + User relations)
-- `/app/layout.tsx` (manifest link + SW registration)
-- `/src/components/Peptides/PeptideTracker.tsx` (Remind Me button)
-- `/.env.local` (VAPID keys)
-
-#### 🚀 How to Trigger in New Session:
-Simply say any of:
-- "Implement the PWA notification system"
-- "Start the dose reminder project"
-- "Build the notification feature we discussed"
-- "Let's add push notifications for peptides"
-
-Claude will read this plan and execute it step-by-step with a todo list.
+## ✅ COMPLETED FEATURES (Do Not Recreate!)
+
+| Feature | Status | Notes |
+|---------|--------|-------|
+| Workout Tracking `/workout` | ✅ DONE | 30+ exercises, gamification integrated |
+| Nutrition Tracking `/nutrition` | ✅ DONE | Food database, daily logging |
+| PWA + Push Notifications | ✅ DONE | **WORKING PERFECTLY - CONFIRMED Nov 30** |
+| Trial Subscription | ✅ DONE | FREE trial, $12.99/mo after |
+| Breath Training `/breath` | ✅ DONE | Admin panel, predefined exercises |
+| Peptide Tracker `/peptides` | ✅ DONE | Protocols, doses, reminders |
 
 ---
 
-### 4. **Gamification System Enhancement**
+## 🔴 CURRENT PRIORITIES (Work on These First)
+
+### 1. **Google Drive Vault Integration** (HIGH PRIORITY)
+User data stored on CLIENT'S Google Drive, not our servers.
+- OAuth connection flow (`drive.file` scope)
+- Create `/My_Reset_Biology_Vault/` folder structure:
+  - `/Logs/` - nutrition_tracker.csv, peptide_schedule.csv, workout_log.csv
+  - `/Journal/` - Voice journal transcripts
+  - `/Profile/` - user_preferences.json
+- Sync existing MongoDB data → Drive on connect
+- Real-time write on new entries
+- "Connect Drive" button in Portal Settings
+
+### 2. **Voice Agent Ecosystem** (MAJOR NEW FEATURE)
+Build multi-agent AI coaching system using Gemini 3 Multimodal Live API.
+
+**Agent Roster:**
+| Agent | Role | Priority |
+|-------|------|----------|
+| Concierge | Master Router / Triage | Build First |
+| Bio-Coach | Nutrition + Peptides | HIGH |
+| Vision Tutor | Eye Exercise Guide | MEDIUM |
+| Mind Gym | Memory/N-Back Games | MEDIUM |
+| Breathwork Guide | Breathing Protocols | MEDIUM |
+| Journal Companion | Voice Journaling | HIGH |
+| The Professor | Educational / Citations | MEDIUM |
+| Sales Closer | Objection Handling | HIGH |
+| Intake Agent | Onboarding Interview | HIGH |
+
+**Architecture:**
+- Voice Minutes "Gas Tank" economy (usage-based billing protection)
+- Text fallback when voice minutes exhausted
+- Cross-reference data (Vision Agent checks Nutrition logs)
+- Stateless agents → read/write to Google Drive Vault
+
+### 3. **Gamification System Enhancement**
 - Points calculation engine
 - Achievement badges
 - Tier system (Bronze/Silver/Gold/Platinum)
@@ -1050,28 +428,24 @@ Claude will read this plan and execute it step-by-step with a todo list.
 - History view
 - Mood tracking
 
-### 5. **Google Drive Journal Sync**
-- OAuth connection flow that lets a user pick/authorize a Drive folder (use `drive.file` scope, store encrypted refresh token + folderId per user).
-- Snapshot generator that bundles each day’s journal entry, workout summary, peptide doses, breath notes, and food photos into a single PDF/HTML file with branded styling.
-- Background job/queue that runs on journal finalize (or nightly) to push the snapshot to the user’s folder and log Drive fileIds/status for re-sync.
-- Portal settings toggle with “Connect Drive”, status indicator, and “Resend Latest Entry” button for manual retries or folder changes.
+---
 
 ## 🟢 FUTURE FEATURES
 
-### 5. **Stripe Payment Integration**
-- Set up Stripe account
-- Checkout flow
-- Subscription management
+### 5. **Stripe Payment Enhancements**
+- ⚠️ Partial (trial exists, basic checkout works)
+- Complete subscription management UI
+- Upgrade/downgrade flows
+- Voice Minutes tier integration
 
 ### 6. **Affiliate System**
 - Referral tracking
 - Commission calculation
 - Payout system
 
-### 7. **Accountability Deposits**
-- "Treasure Chest" system
-- Goal tracking
-- Partner payouts
+### 7. **Accountability Deposits ("Treasure Chest")**
+- Goal tracking with financial stakes
+- Partner payouts on goal completion
 
 ## ✅ RECENTLY COMPLETED (October 2025)
 
@@ -1105,40 +479,18 @@ Claude will read this plan and execute it step-by-step with a todo list.
 
 ## 📊 Database Tables Status
 
-### ✅ Existing & Working:
+### ✅ All Tables Exist & Working:
 - User (Auth0 integrated)
 - Product (peptides)
-- BreathSession
+- BreathSession, BreathExercise
 - ModuleCompletion
 - GamificationPoint
 - DailyTask
 - JournalEntry
-
-### 🔴 Need to Create:
-```prisma
-model FoodEntry {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId      String   @db.ObjectId
-  name        String
-  calories    Float
-  protein     Float
-  carbs       Float
-  fats        Float
-  mealType    String
-  loggedAt    DateTime @default(now())
-  user        User     @relation(fields: [userId], references: [id])
-}
-
-model WorkoutSession {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId      String   @db.ObjectId
-  exercises   Json
-  duration    Int
-  programId   String?
-  completedAt DateTime @default(now())
-  user        User     @relation(fields: [userId], references: [id])
-}
-```
+- FoodEntry, FoodLog, MealPlan
+- WorkoutSession, WorkoutProgram
+- NotificationPreference, ScheduledNotification, PushSubscription
+- user_peptide_protocols, peptide_doses
 
 ## 🎯 API Endpoints Status
 

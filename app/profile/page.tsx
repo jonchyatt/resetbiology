@@ -116,7 +116,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 relative"
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 relative pt-28"
          style={{
            backgroundImage: 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url(/hero-background.jpg)',
            backgroundSize: 'cover',
@@ -427,13 +427,18 @@ export default function ProfilePage() {
                           )}
 
                           <div className="mt-4 text-xs text-gray-400">
-                            <p className="mb-1">When connected, we'll sync:</p>
+                            <p className="mb-1">When connected, we'll sync to your Drive:</p>
                             <ul className="list-disc list-inside space-y-0.5">
-                              <li>Daily journal entries with notes and photos</li>
-                              <li>Workout summaries and progress</li>
-                              <li>Nutrition logs with food images</li>
-                              <li>Breath work and peptide tracking</li>
+                              <li>📓 Daily journal entries</li>
+                              <li>🏋️ Workout summaries</li>
+                              <li>🥗 Nutrition logs</li>
+                              <li>💉 Peptide dose tracking</li>
+                              <li>🌬️ Breath session history</li>
+                              <li>👁️ Vision training progress</li>
+                              <li>🧠 Memory (N-Back) scores</li>
+                              <li>👤 Profile & preferences</li>
                             </ul>
+                            <p className="mt-2 text-gray-500">Your data stays on YOUR Drive - we just visit it.</p>
                           </div>
                         </div>
                       </div>

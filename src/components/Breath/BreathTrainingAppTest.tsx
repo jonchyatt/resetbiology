@@ -467,9 +467,9 @@ export function BreathTrainingApp({ onSessionComplete }: BreathTrainingAppProps)
            backgroundPosition: 'center',
            backgroundAttachment: 'fixed'
          }}>
-      <div className="relative z-10 min-h-screen flex flex-col">
-        {/* Portal Header - Added mt-16 to create proper space below fixed nav */}
-        <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm shadow-2xl border-b border-primary-400/30 mt-16 relative">
+      <div className="relative z-10 min-h-screen flex flex-col pt-16">
+        {/* Portal Subnav Header */}
+        <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm shadow-2xl border-b border-primary-400/30">
           <div className="container mx-auto px-4 py-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">

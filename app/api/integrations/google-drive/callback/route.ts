@@ -80,7 +80,7 @@ export async function GET(req: NextRequest) {
       console.log('Created new Reset Biology folder:', folderId)
 
       // Create subfolders
-      const subfolders = ['Journal', 'Nutrition', 'Workouts', 'Breath Sessions', 'Progress Reports']
+      const subfolders = ['Journal', 'Nutrition', 'Workouts', 'Breath Sessions', 'Peptides', 'Vision Training', 'Memory Training', 'Profile', 'Progress Reports']
       for (const subfolder of subfolders) {
         await drive.files.create({
           requestBody: {

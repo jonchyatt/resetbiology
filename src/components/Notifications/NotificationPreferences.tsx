@@ -235,17 +235,38 @@ export default function NotificationPreferences({ protocolId, protocolName, onCl
       // Get VAPID public key and convert to Uint8Array
       const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
       if (!vapidKey) {
-        throw new Error('VAPID public key not configured')
+        throw new Error('Push notifications not configured on this server. Please contact support.')
       }
 
-      const applicationServerKey = urlBase64ToUint8Array(vapidKey)
-      console.log('✅ VAPID key converted to Uint8Array')
+      // Validate VAPID key format before conversion
+      if (vapidKey.length < 60 || !/^[A-Za-z0-9_-]+$/.test(vapidKey)) {
+        console.error('Invalid VAPID key format:', vapidKey.substring(0, 10) + '...')
+        throw new Error('Push notification configuration error. Please contact support.')
+      }
+
+      let applicationServerKey: Uint8Array
+      try {
+        applicationServerKey = urlBase64ToUint8Array(vapidKey)
+        console.log('✅ VAPID key converted to Uint8Array, length:', applicationServerKey.length)
+      } catch (conversionError) {
+        console.error('VAPID key conversion error:', conversionError)
+        throw new Error('Push notification configuration error. Please contact support.')
+      }
 
       // Subscribe to push notifications
-      const subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: applicationServerKey as BufferSource
-      })
+      let subscription: PushSubscription
+      try {
+        subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: applicationServerKey as BufferSource
+        })
+      } catch (subscribeError: any) {
+        console.error('Push subscribe error:', subscribeError)
+        if (subscribeError?.message?.includes('pattern')) {
+          throw new Error('Push notification setup failed. The server configuration may be invalid. Please try again later or contact support.')
+        }
+        throw subscribeError
+      }
       console.log('✅ Push subscription created:', subscription.endpoint)
 
       // Send subscription to server (properly serialized)
