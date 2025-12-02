@@ -4,11 +4,17 @@ import { useState, useEffect } from 'react';
 import { useUser } from '@auth0/nextjs-auth0';
 
 const AGENTS = [
-    { id: 'CONCIERGE', name: 'Concierge', description: 'Greets users and routes them' },
-    { id: 'BIO_COACH', name: 'Bio-Coach', description: 'Nutrition, peptides, weight loss' },
-    { id: 'VISION_TUTOR', name: 'Vision Tutor', description: 'Eye exercises, Gabor patches' },
-    { id: 'PROFESSOR', name: 'The Professor', description: 'Science, mechanisms, research' },
-    { id: 'SALES_CLOSER', name: 'Sales Closer', description: 'Objections, pricing, signup' },
+    { id: 'CONCIERGE', name: 'Concierge', description: 'Greets users, routes to specialists' },
+    { id: 'PEPTIDE', name: 'Peptide Specialist', description: 'Dosing, timing, side effects' },
+    { id: 'EXERCISE', name: 'Exercise Physiologist', description: 'Workouts, form, recovery' },
+    { id: 'NUTRITION', name: 'Nutrition Coach', description: 'Diet, macros, fasting' },
+    { id: 'BREATH', name: 'Breath Coach', description: 'Breathwork, vagal tone' },
+    { id: 'JOURNAL', name: 'Reflection Guide', description: 'Journaling, emotions' },
+    { id: 'VISION', name: 'Vision Tutor', description: '12-week program, exercises' },
+    { id: 'NBACK', name: 'Cognitive Trainer', description: 'N-Back, mental training' },
+    { id: 'COURSE', name: 'Course Guide', description: 'Lessons, modules, progress' },
+    { id: 'PROFESSOR', name: 'The Professor', description: 'Science, mechanisms' },
+    { id: 'SALES', name: 'Sales', description: 'Pricing, objections, signup' },
 ];
 
 export default function AgentAdminPage() {
@@ -83,7 +89,7 @@ export default function AgentAdminPage() {
                 <p className="text-slate-400 mb-8">Train your AI agents with custom instructions and knowledge</p>
 
                 {/* Agent Selection */}
-                <div className="grid grid-cols-5 gap-4 mb-8">
+                <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-8">
                     {AGENTS.map((agent) => (
                         <button
                             key={agent.id}

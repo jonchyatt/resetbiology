@@ -1,19 +1,49 @@
 import { OpenAI } from 'openai';
-import { createVaultStructure, logToVault } from '../googleDriveService';
+import { BaseAgent } from './BaseAgent';
+
+// Import all specialized agents
 import { BioCoachAgent } from './BioCoach';
 import { VisionTutorAgent } from './VisionTutor';
 import { ProfessorAgent } from './Professor';
 import { SalesCloserAgent } from './SalesCloser';
-import { BaseAgent } from './BaseAgent';
+import { PeptideAgent } from './PeptideAgent';
+import { ExerciseAgent } from './ExerciseAgent';
+import { NutritionAgent } from './NutritionAgent';
+import { BreathAgent } from './BreathAgent';
+import { JournalAgent } from './JournalAgent';
+import { NBackAgent } from './NBackAgent';
+import { CourseAgent } from './CourseAgent';
 
-// Define the available agents
-export type AgentType = 'CONCIERGE' | 'BIO_COACH' | 'VISION_TUTOR' | 'PROFESSOR' | 'SALES_CLOSER';
+// All available agent types
+export type AgentType =
+    | 'CONCIERGE'
+    | 'PEPTIDE'
+    | 'EXERCISE'
+    | 'NUTRITION'
+    | 'BREATH'
+    | 'JOURNAL'
+    | 'VISION'
+    | 'NBACK'
+    | 'COURSE'
+    | 'SALES'
+    | 'PROFESSOR'
+    | 'BIO_COACH'      // Legacy - routes to appropriate specialist
+    | 'VISION_TUTOR'   // Legacy - routes to VISION
+    | 'SALES_CLOSER';  // Legacy - routes to SALES
 
-interface AgentContext {
-    userId: string;
-    currentAgent: AgentType;
-    history: { role: 'user' | 'assistant'; content: string }[];
-}
+// Map page paths to agents
+const PAGE_TO_AGENT: Record<string, AgentType> = {
+    '/peptides': 'PEPTIDE',
+    '/workout': 'EXERCISE',
+    '/nutrition': 'NUTRITION',
+    '/breathe': 'BREATH',
+    '/journal': 'JOURNAL',
+    '/vision': 'VISION',
+    '/nback': 'NBACK',
+    '/modules': 'COURSE',
+    '/portal': 'CONCIERGE',
+    '/order': 'SALES',
+};
 
 export class AgentOrchestrator {
     private openai: OpenAI;
@@ -25,40 +55,60 @@ export class AgentOrchestrator {
     }
 
     /**
-     * The main entry point. Receives a user message and routes it.
+     * Main entry point. Can accept an optional pageContext for direct routing.
      */
-    async handleMessage(userId: string, message: string, history: any[]) {
-        // 1. Analyze Intent (Router)
-        const intent = await this.classifyIntent(message);
+    async handleMessage(userId: string, message: string, history: any[], pageContext?: string) {
+        let agentType: AgentType;
 
-        // 2. Load the appropriate Agent
-        const agent = this.getAgent(intent);
+        // If page context provided, route directly to that agent (no LLM call)
+        if (pageContext && PAGE_TO_AGENT[pageContext]) {
+            agentType = PAGE_TO_AGENT[pageContext];
+        } else {
+            // Fall back to intent classification
+            agentType = await this.classifyIntent(message);
+        }
 
-        // 3. Execute Agent Logic
+        // Get the agent instance
+        const agent = this.getAgent(agentType);
+
+        // Generate response
         const response = await agent.generateResponse(userId, message, history);
 
         return {
-            agent: intent,
+            agent: agentType,
             response: response,
         };
     }
 
     /**
-     * Uses a fast LLM call to classify the user's intent.
+     * Direct routing - skip intent classification when you know which agent you need
+     */
+    async handleDirectMessage(userId: string, message: string, history: any[], agentType: AgentType) {
+        const agent = this.getAgent(agentType);
+        const response = await agent.generateResponse(userId, message, history);
+        return { agent: agentType, response };
+    }
+
+    /**
+     * Classify intent when no page context is provided
      */
     private async classifyIntent(message: string): Promise<AgentType> {
-        const systemPrompt = `
-      You are the "Reset Biology Concierge". Your job is to route the user to the right specialist.
-      
-      Available Specialists:
-      1. BIO_COACH: Nutrition, diet, peptides, weight loss, nausea, side effects.
-      2. VISION_TUTOR: Eye exercises, Gabor patches, blurry vision, headaches from screens.
-      3. PROFESSOR: "Why" questions, mechanism of action, research, science theory.
-      4. SALES_CLOSER: Pricing, objections ("too expensive"), buying the course.
-      5. CONCIERGE: General greetings, "help", or unclear requests.
+        const systemPrompt = `You route users to specialists. Output ONLY the agent name.
 
-      Output ONLY the Agent Name (e.g., "BIO_COACH").
-    `;
+Agents:
+- PEPTIDE: Peptide dosing, timing, side effects, reconstitution
+- EXERCISE: Workouts, form, programming, recovery
+- NUTRITION: Diet, macros, fasting, supplements
+- BREATH: Breathwork, stress, vagal tone
+- JOURNAL: Reflection, emotional processing, patterns
+- VISION: Eye exercises, 12-week vision program
+- NBACK: Mental training, cognitive exercises
+- COURSE: Lesson content, module progress
+- SALES: Pricing, objections, subscription questions
+- PROFESSOR: Science questions, mechanism of action, research
+- CONCIERGE: Greetings, general help, unclear requests
+
+Output the agent name only (e.g., "PEPTIDE").`;
 
         const completion = await this.openai.chat.completions.create({
             model: 'gpt-4o-mini',
@@ -67,30 +117,81 @@ export class AgentOrchestrator {
                 { role: 'user', content: message },
             ],
             temperature: 0,
+            max_tokens: 20,
         });
 
-        const intent = completion.choices[0].message?.content?.trim() as AgentType;
+        const intent = completion.choices[0].message?.content?.trim().toUpperCase() as AgentType;
+
+        // Handle legacy agent names
+        if (intent === 'BIO_COACH') return 'NUTRITION';
+        if (intent === 'VISION_TUTOR') return 'VISION';
+        if (intent === 'SALES_CLOSER') return 'SALES';
+
         return intent || 'CONCIERGE';
     }
 
+    /**
+     * Get agent instance by type
+     */
     private getAgent(type: AgentType): BaseAgent {
         switch (type) {
+            case 'PEPTIDE':
+                return new PeptideAgent();
+            case 'EXERCISE':
+                return new ExerciseAgent();
+            case 'NUTRITION':
             case 'BIO_COACH':
-                return new BioCoachAgent();
+                return new NutritionAgent();
+            case 'BREATH':
+                return new BreathAgent();
+            case 'JOURNAL':
+                return new JournalAgent();
+            case 'VISION':
             case 'VISION_TUTOR':
                 return new VisionTutorAgent();
-            case 'PROFESSOR':
-                return new ProfessorAgent();
+            case 'NBACK':
+                return new NBackAgent();
+            case 'COURSE':
+                return new CourseAgent();
+            case 'SALES':
             case 'SALES_CLOSER':
                 return new SalesCloserAgent();
+            case 'PROFESSOR':
+                return new ProfessorAgent();
             default:
                 return new ConciergeAgent();
         }
     }
 }
 
+/**
+ * Concierge - welcomes users and helps route them
+ */
 class ConciergeAgent extends BaseAgent {
     async generateResponse(userId: string, message: string, history: any[]) {
-        return "Welcome to Reset Biology. How can I help you today? I can connect you with our Bio-Coach, Vision Tutor, or Professor.";
+        const systemPrompt = `
+### ROLE
+You are the Reset Biology Concierge. You warmly greet users and help them find the right specialist.
+
+### AVAILABLE SPECIALISTS
+- Peptide Protocol Specialist - dosing, timing, side effects
+- Exercise Physiologist - workouts, form, recovery
+- Nutrition Coach - diet, fasting, supplements
+- Breath Coach - breathwork, stress management
+- Reflection Guide - journaling, emotional processing
+- Vision Tutor - eye exercises, vision program
+- Cognitive Trainer - N-Back, mental training
+- Course Guide - lesson content, progress
+- Sales - pricing, subscription questions
+
+### BEHAVIORS
+1. Be warm and welcoming
+2. Ask what they need help with if unclear
+3. Briefly describe relevant specialists
+4. Keep it conversational, not a menu reading
+`;
+
+        const dynamicInstructions = await this.loadDynamicTraining(userId, 'CONCIERGE');
+        return this.callLLM(systemPrompt + dynamicInstructions, message, history);
     }
 }

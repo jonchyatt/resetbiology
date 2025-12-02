@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import { Mic, Keyboard, X, Battery, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -11,6 +12,7 @@ interface VoiceAgentDrawerProps {
 }
 
 export function VoiceAgentDrawer({ isOpen, onClose, minutesRemaining }: VoiceAgentDrawerProps) {
+    const pathname = usePathname();
     const [mode, setMode] = useState<'voice' | 'text'>('voice');
     const [isListening, setIsListening] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
@@ -100,7 +102,12 @@ export function VoiceAgentDrawer({ isOpen, onClose, minutesRemaining }: VoiceAge
         const audioFile = new File([audioBlob], 'recording.webm', { type: 'audio/webm' });
         formData.append('audio', audioFile);
 
-        console.log('[VoiceDrawer] Sending audio to backend:', audioFile.size, 'bytes, type:', audioFile.type);
+        // Send current page for context-aware routing (skips intent classification)
+        if (pathname) {
+            formData.append('pageContext', pathname);
+        }
+
+        console.log('[VoiceDrawer] Sending audio to backend:', audioFile.size, 'bytes, page:', pathname);
 
         try {
             const response = await fetch('/api/voice/chat', {

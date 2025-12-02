@@ -70,10 +70,14 @@ export async function POST(req: NextRequest) {
         }
 
         // 4. Get Agent Response (The "Brain")
+        // Check for page context from form data (for page-aware routing)
+        const pageContext = formData.get('pageContext') as string | null;
+        console.log(`[VoiceAPI] Page context: ${pageContext || 'none (will classify)'}`);
+
         let agent: string;
         let agentText: string;
         try {
-            const result = await orchestrator.handleMessage(userId, userText, []);
+            const result = await orchestrator.handleMessage(userId, userText, [], pageContext || undefined);
             agent = result.agent;
             agentText = result.response;
             console.log(`[VoiceAPI] Agent (${agent}) replied: "${agentText}"`);
