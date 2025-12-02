@@ -521,7 +521,6 @@ export default function NBackTrainer() {
       <div className="relative z-10 pt-32">
         <PortalHeader
           section="Mental Training"
-          backLink="/portal"
           secondaryBackLink="/daily-history"
           secondaryBackText="Daily History"
         />

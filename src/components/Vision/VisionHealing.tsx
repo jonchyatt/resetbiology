@@ -119,7 +119,6 @@ export function VisionHealing() {
       <div className="relative z-10 min-h-screen flex flex-col pt-32">
         <PortalHeader
           section="Vision Training"
-          backLink="/portal"
           secondaryBackLink="/daily-history"
           secondaryBackText="Daily History"
         />

@@ -158,7 +158,6 @@ export function BreathPage() {
       <div className="relative z-10 min-h-screen flex flex-col pt-32">
         <PortalHeader
           section="Breath Training"
-          backLink="/portal"
           secondaryBackLink="/daily-history"
           secondaryBackText="Daily History"
         />

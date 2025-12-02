@@ -153,23 +153,24 @@ export function VoiceAgentDrawer({ isOpen, onClose, minutesRemaining }: VoiceAge
         <AnimatePresence>
             {isOpen && (
                 <>
-                    {/* Backdrop */}
+                    {/* Backdrop - high z-index to cover everything */}
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 0.5 }}
                         exit={{ opacity: 0 }}
                         onClick={onClose}
-                        className="fixed inset-0 bg-black z-40"
+                        className="fixed inset-0 bg-black"
+                        style={{ zIndex: 9998 }}
                     />
 
-                    {/* Drawer */}
+                    {/* Drawer - highest z-index to stay above all content */}
                     <motion.div
                         initial={{ y: '100%' }}
                         animate={{ y: 0 }}
                         exit={{ y: '100%' }}
                         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                        className="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 rounded-t-3xl shadow-2xl z-50 border-t border-slate-200 dark:border-slate-800"
-                        style={{ height: '35vh', maxHeight: '400px' }}
+                        className="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 rounded-t-3xl shadow-2xl border-t border-slate-200 dark:border-slate-800"
+                        style={{ height: '35vh', maxHeight: '400px', zIndex: 9999 }}
                     >
                         {/* Hidden Audio Player */}
                         <audio ref={audioRef} className="hidden" />

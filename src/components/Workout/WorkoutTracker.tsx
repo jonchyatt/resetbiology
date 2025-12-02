@@ -400,10 +400,8 @@ export function WorkoutTracker() {
       <div className="relative z-10 pt-32">
         <PortalHeader
           section="Workout Tracker"
-          backLink="/portal"
           secondaryBackLink="/daily-history"
           secondaryBackText="Daily History"
-          showBackLink={false}
         />
 
         {/* Title Section */}

@@ -3,23 +3,17 @@
 interface PortalHeaderProps {
   section: string
   subtitle?: string
-  backLink?: string
-  backText?: string
   secondaryBackLink?: string
   secondaryBackText?: string
   showOrderPeptides?: boolean
-  showBackLink?: boolean
 }
 
 export function PortalHeader({
   section,
   subtitle,
-  backLink = "/portal",
-  backText = "Back to Portal",
   secondaryBackLink,
   secondaryBackText,
-  showOrderPeptides = true,
-  showBackLink = true
+  showOrderPeptides = true
 }: PortalHeaderProps) {
   return (
     <div
@@ -59,11 +53,6 @@ export function PortalHeader({
             {secondaryBackLink && (
               <a href={secondaryBackLink} className="text-primary-300 hover:text-primary-200 font-medium text-xs sm:text-sm transition-colors drop-shadow-sm whitespace-nowrap">
                 ← {secondaryBackText}
-              </a>
-            )}
-            {showBackLink && (
-              <a href={backLink} className="text-primary-300 hover:text-primary-200 font-medium text-xs sm:text-sm transition-colors drop-shadow-sm whitespace-nowrap">
-                ← {backText}
               </a>
             )}
           </div>
