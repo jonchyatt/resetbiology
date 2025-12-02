@@ -20,6 +20,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
       <body>
+        {/* iOS Safe Area Status Bar Cover - prevents page content from showing behind status bar */}
+        <div
+          className="fixed top-0 left-0 right-0 z-[9999] bg-slate-900 pointer-events-none"
+          style={{ height: 'env(safe-area-inset-top, 0px)' }}
+          aria-hidden="true"
+        />
         <ClientAuth0Provider>
           <Header />
           {children}

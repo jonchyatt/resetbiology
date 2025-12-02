@@ -620,9 +620,6 @@ export function NutritionTracker() {
               <a href="/daily-history" className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
                 Daily History
               </a>
-              <a href="/portal" className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
-                ← Back to Portal
-              </a>
             </div>
           </div>
         </div>

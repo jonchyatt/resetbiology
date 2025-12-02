@@ -1,13 +1,21 @@
 'use client'
 
 import { AlertCircle, X, RefreshCw, Bell } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { usePushAvailability } from '@/hooks/usePushAvailability'
 
 export default function PushUnavailableWarning() {
   const availability = usePushAvailability()
   const [dismissed, setDismissed] = useState(false)
   const [requesting, setRequesting] = useState(false)
+  const [permissionState, setPermissionState] = useState<NotificationPermission | null>(null)
+
+  // Track actual permission state independently
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'Notification' in window) {
+      setPermissionState(Notification.permission)
+    }
+  }, [requesting]) // Re-check after request attempt
 
   // Don't show if dismissed
   if (dismissed) return null
@@ -17,18 +25,15 @@ export default function PushUnavailableWarning() {
     return null
   }
 
-  // Don't show if user explicitly denied (they know what they did)
-  if (availability.blockReason?.includes('denied')) {
-    return null
-  }
-
-  // Request push permission
+  // Request push permission - works even after previous cancel
   const requestPermission = async () => {
-    if (!availability.isSupported || !availability.canShowPrompt) return
+    if (!availability.isSupported) return
 
     setRequesting(true)
     try {
       const permission = await Notification.requestPermission()
+      setPermissionState(permission)
+
       if (permission === 'granted') {
         // Subscribe to push notifications
         const registration = await navigator.serviceWorker.ready
@@ -54,6 +59,10 @@ export default function PushUnavailableWarning() {
     }
   }
 
+  // Use local permission state if available, fall back to hook's state
+  const currentPermission = permissionState ?? (availability.isPermissionGranted ? 'granted' : 'default')
+  const canRequestPermission = availability.isSupported && availability.isServiceWorkerReady && currentPermission !== 'denied'
+
   // Determine the message and action
   let message = ''
   let actionButton: React.ReactNode = null
@@ -65,19 +74,30 @@ export default function PushUnavailableWarning() {
     message = 'Service worker not ready. Refresh the page to enable push notifications.'
     actionButton = (
       <button
-        onClick={() => window.location.reload()}
+        onClick={(e) => {
+          e.stopPropagation()
+          window.location.reload()
+        }}
         className="flex items-center gap-1 px-3 py-1 bg-white/20 hover:bg-white/30 rounded-md text-sm font-medium transition-colors"
       >
         <RefreshCw className="w-4 h-4" />
         Refresh
       </button>
     )
-  } else if (!availability.isPermissionGranted && availability.canShowPrompt) {
+  } else if (currentPermission === 'denied') {
+    // Permission was blocked - can't request again
+    message = 'Notifications blocked. Tap the lock icon in your browser address bar to enable.'
+    // No action button - user must manually enable in browser
+  } else if (canRequestPermission) {
+    // Permission is default or user cancelled before - can still request
     message = 'Enable push notifications to get dose reminders even when the app is closed.'
     isClickable = true
     actionButton = (
       <button
-        onClick={requestPermission}
+        onClick={(e) => {
+          e.stopPropagation()
+          requestPermission()
+        }}
         disabled={requesting}
         className="flex items-center gap-1 px-3 py-1 bg-white/20 hover:bg-white/30 rounded-md text-sm font-medium transition-colors disabled:opacity-50"
       >

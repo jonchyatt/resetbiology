@@ -398,9 +398,14 @@ export default function NotificationPreferences({ protocolId, protocolName, onCl
           )}
 
           {pushPermission === 'denied' && (
-            <p className="text-xs text-red-400 mt-2">
-              Notifications are blocked by your browser. Enable them in Settings to use push reminders.
-            </p>
+            <div className="mt-2 p-2 bg-red-500/10 border border-red-500/30 rounded">
+              <p className="text-xs text-red-400 font-medium">
+                Notifications are blocked by your browser.
+              </p>
+              <p className="text-xs text-red-300/80 mt-1">
+                To enable: Tap the lock/info icon in your browser's address bar → Site Settings → Notifications → Allow
+              </p>
+            </div>
           )}
 
           {needsStandaloneHint && (
