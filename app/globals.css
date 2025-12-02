@@ -62,6 +62,8 @@ body {
   font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
   font-feature-settings: 'cv11', 'ss01';
   font-variation-settings: 'opsz' 32;
+  /* Reserve space for the fixed header + safe area so page content never hides under the nav on mobile */
+  padding-top: calc(64px + env(safe-area-inset-top, 0px));
 }
 
 /* Reset Biology Utility Classes */
