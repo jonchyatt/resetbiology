@@ -44,6 +44,13 @@ export function BreathPage() {
   const [selectedExercise, setSelectedExercise] = useState<UserBreathExercise | null>(null)
   const [filterCategory, setFilterCategory] = useState<string>("all")
 
+  // Keep header/subnav visible when switching tabs
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "smooth" })
+    }
+  }, [activeTab])
+
   // Fetch user's active exercises
   const fetchUserExercises = useCallback(async () => {
     try {

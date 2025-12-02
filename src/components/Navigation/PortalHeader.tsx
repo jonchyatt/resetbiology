@@ -22,7 +22,10 @@ export function PortalHeader({
   showBackLink = true
 }: PortalHeaderProps) {
   return (
-    <div className="fixed top-16 left-0 right-0 z-40 bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm shadow-2xl border-b border-primary-400/30">
+    <div
+      className="fixed left-0 right-0 z-40 bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm shadow-2xl border-b border-primary-400/30"
+      style={{ top: "calc(64px + env(safe-area-inset-top, 0px))" }}
+    >
       <div className="container mx-auto px-4 py-3">
         <div className="flex flex-row items-center justify-between w-full">
         <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
@@ -47,7 +50,7 @@ export function PortalHeader({
           <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
             {showOrderPeptides && (
               <a href="/order" className="text-primary-300 hover:text-primary-200 font-medium text-xs sm:text-sm transition-colors drop-shadow-sm whitespace-nowrap">
-                Order Peptides
+                Order
               </a>
             )}
             <a href="/daily-history" className="text-primary-300 hover:text-primary-200 font-medium text-xs sm:text-sm transition-colors drop-shadow-sm whitespace-nowrap hidden sm:block">

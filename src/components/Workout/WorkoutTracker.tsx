@@ -403,6 +403,7 @@ export function WorkoutTracker() {
           backLink="/portal"
           secondaryBackLink="/daily-history"
           secondaryBackText="Daily History"
+          showBackLink={false}
         />
 
         {/* Title Section */}
