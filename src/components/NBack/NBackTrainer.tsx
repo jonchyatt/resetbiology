@@ -23,6 +23,7 @@ import {
   Calendar,
   Flame
 } from 'lucide-react'
+import { PortalHeader } from '@/components/Navigation/PortalHeader'
 
 // Types
 type GameMode = 'dual' | 'triple'
@@ -517,47 +518,13 @@ export default function NBackTrainer() {
         backgroundAttachment: 'fixed'
       }}
     >
-      <div className="relative z-10 pt-16">
-        {/* Portal Subnav Header */}
-        <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm shadow-2xl border-b border-primary-400/30">
-          <div className="container mx-auto px-4 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <img
-                  src="/logo1.png"
-                  alt="Reset Biology"
-                  className="h-10 w-auto rounded-lg drop-shadow-lg bg-white/10 backdrop-blur-sm p-1 border border-white/20"
-                />
-                <div>
-                  <div className="flex items-center">
-                    <a
-                      href="/portal"
-                      className="text-xl font-bold text-white drop-shadow-lg hover:text-primary-300 transition-colors"
-                    >
-                      Portal
-                    </a>
-                    <span className="mx-2 text-primary-300">&gt;</span>
-                    <span className="text-lg text-gray-200 drop-shadow-sm">Mental Training</span>
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <a
-                  href="/daily-history"
-                  className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors"
-                >
-                  Daily History
-                </a>
-                <a
-                  href="/portal"
-                  className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors"
-                >
-                  ← Back to Portal
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div className="relative z-10 pt-32">
+        <PortalHeader
+          section="Mental Training"
+          backLink="/portal"
+          secondaryBackLink="/daily-history"
+          secondaryBackText="Daily History"
+        />
 
         {/* Title */}
         <div className="text-center py-8">
@@ -579,11 +546,10 @@ export default function NBackTrainer() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as typeof activeTab)}
-              className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all ${
-                activeTab === tab.id
-                  ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/30'
-                  : 'bg-gray-800/50 text-gray-300 hover:bg-gray-700/50'
-              }`}
+              className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all ${activeTab === tab.id
+                ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/30'
+                : 'bg-gray-800/50 text-gray-300 hover:bg-gray-700/50'
+                }`}
             >
               <tab.icon className="w-5 h-5" />
               {tab.label}
@@ -616,11 +582,10 @@ export default function NBackTrainer() {
                   <div className="grid md:grid-cols-2 gap-4 mb-6">
                     <button
                       onClick={() => setGameMode('dual')}
-                      className={`p-6 rounded-xl border-2 transition-all text-left ${
-                        gameMode === 'dual'
-                          ? 'border-primary-400 bg-primary-500/10'
-                          : 'border-gray-700 hover:border-gray-600'
-                      }`}
+                      className={`p-6 rounded-xl border-2 transition-all text-left ${gameMode === 'dual'
+                        ? 'border-primary-400 bg-primary-500/10'
+                        : 'border-gray-700 hover:border-gray-600'
+                        }`}
                     >
                       <div className="flex items-center gap-3 mb-3">
                         <div className="p-2 rounded-lg bg-primary-500/20">
@@ -638,11 +603,10 @@ export default function NBackTrainer() {
 
                     <button
                       onClick={() => setGameMode('triple')}
-                      className={`p-6 rounded-xl border-2 transition-all text-left ${
-                        gameMode === 'triple'
-                          ? 'border-secondary-400 bg-secondary-500/10'
-                          : 'border-gray-700 hover:border-gray-600'
-                      }`}
+                      className={`p-6 rounded-xl border-2 transition-all text-left ${gameMode === 'triple'
+                        ? 'border-secondary-400 bg-secondary-500/10'
+                        : 'border-gray-700 hover:border-gray-600'
+                        }`}
                     >
                       <div className="flex items-center gap-3 mb-3">
                         <div className="p-2 rounded-lg bg-primary-500/20">
@@ -828,11 +792,10 @@ export default function NBackTrainer() {
                         return (
                           <div
                             key={i}
-                            className={`aspect-square rounded-xl border-2 flex items-center justify-center text-3xl font-bold transition-all duration-200 ${
-                              isActive
-                                ? 'bg-primary-500 border-primary-400 text-white shadow-lg shadow-primary-500/50'
-                                : 'bg-gray-800/50 border-gray-700'
-                            }`}
+                            className={`aspect-square rounded-xl border-2 flex items-center justify-center text-3xl font-bold transition-all duration-200 ${isActive
+                              ? 'bg-primary-500 border-primary-400 text-white shadow-lg shadow-primary-500/50'
+                              : 'bg-gray-800/50 border-gray-700'
+                              }`}
                           >
                             {isActive && gameMode === 'triple' && trials[currentTrialIndex]?.visualLetter}
                           </div>
@@ -855,11 +818,10 @@ export default function NBackTrainer() {
                       <button
                         onClick={() => setPositionResponse(true)}
                         disabled={gameState === 'paused' || currentTrialIndex < nLevel}
-                        className={`py-4 px-6 rounded-xl font-bold text-lg transition-all ${
-                          positionResponse
-                            ? 'bg-primary-500 text-white'
-                            : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                        } ${feedback.position === 'correct' ? 'ring-2 ring-green-500' : ''} ${feedback.position === 'incorrect' || feedback.position === 'missed' ? 'ring-2 ring-red-500' : ''} disabled:opacity-50`}
+                        className={`py-4 px-6 rounded-xl font-bold text-lg transition-all ${positionResponse
+                          ? 'bg-primary-500 text-white'
+                          : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                          } ${feedback.position === 'correct' ? 'ring-2 ring-green-500' : ''} ${feedback.position === 'incorrect' || feedback.position === 'missed' ? 'ring-2 ring-red-500' : ''} disabled:opacity-50`}
                       >
                         <Grid3X3 className="w-6 h-6 mx-auto mb-1" />
                         Position (A)
@@ -867,11 +829,10 @@ export default function NBackTrainer() {
                       <button
                         onClick={() => setAudioResponse(true)}
                         disabled={gameState === 'paused' || currentTrialIndex < nLevel}
-                        className={`py-4 px-6 rounded-xl font-bold text-lg transition-all ${
-                          audioResponse
-                            ? 'bg-blue-500 text-white'
-                            : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                        } ${feedback.audio === 'correct' ? 'ring-2 ring-green-500' : ''} ${feedback.audio === 'incorrect' || feedback.audio === 'missed' ? 'ring-2 ring-red-500' : ''} disabled:opacity-50`}
+                        className={`py-4 px-6 rounded-xl font-bold text-lg transition-all ${audioResponse
+                          ? 'bg-blue-500 text-white'
+                          : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                          } ${feedback.audio === 'correct' ? 'ring-2 ring-green-500' : ''} ${feedback.audio === 'incorrect' || feedback.audio === 'missed' ? 'ring-2 ring-red-500' : ''} disabled:opacity-50`}
                       >
                         <Volume2 className="w-6 h-6 mx-auto mb-1" />
                         Audio (L)
@@ -880,11 +841,10 @@ export default function NBackTrainer() {
                         <button
                           onClick={() => setLetterResponse(true)}
                           disabled={gameState === 'paused' || currentTrialIndex < nLevel}
-                          className={`py-4 px-6 rounded-xl font-bold text-lg transition-all ${
-                            letterResponse
-                              ? 'bg-secondary-500 text-white'
-                              : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                          } ${feedback.letter === 'correct' ? 'ring-2 ring-green-500' : ''} ${feedback.letter === 'incorrect' || feedback.letter === 'missed' ? 'ring-2 ring-red-500' : ''} disabled:opacity-50`}
+                          className={`py-4 px-6 rounded-xl font-bold text-lg transition-all ${letterResponse
+                            ? 'bg-secondary-500 text-white'
+                            : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                            } ${feedback.letter === 'correct' ? 'ring-2 ring-green-500' : ''} ${feedback.letter === 'incorrect' || feedback.letter === 'missed' ? 'ring-2 ring-red-500' : ''} disabled:opacity-50`}
                         >
                           <Type className="w-6 h-6 mx-auto mb-1" />
                           Letter (S)
@@ -917,9 +877,8 @@ export default function NBackTrainer() {
               {gameState === 'finished' && (
                 <div className="bg-gray-900/80 backdrop-blur-sm rounded-2xl border border-primary-400/20 p-8">
                   <div className="text-center mb-8">
-                    <div className={`inline-flex p-4 rounded-full mb-4 ${
-                      saveResult?.advanced ? 'bg-secondary-500/20' : 'bg-primary-500/20'
-                    }`}>
+                    <div className={`inline-flex p-4 rounded-full mb-4 ${saveResult?.advanced ? 'bg-secondary-500/20' : 'bg-primary-500/20'
+                      }`}>
                       {saveResult?.advanced ? (
                         <Zap className="w-12 h-12 text-secondary-400" />
                       ) : (
@@ -1111,9 +1070,8 @@ export default function NBackTrainer() {
                         className="flex items-center justify-between p-4 bg-gray-800/50 rounded-xl"
                       >
                         <div className="flex items-center gap-4">
-                          <div className={`p-2 rounded-lg ${
-                            session.levelAdvanced ? 'bg-secondary-500/20' : 'bg-gray-700'
-                          }`}>
+                          <div className={`p-2 rounded-lg ${session.levelAdvanced ? 'bg-secondary-500/20' : 'bg-gray-700'
+                            }`}>
                             {session.levelAdvanced ? (
                               <Zap className="w-5 h-5 text-secondary-400" />
                             ) : (
@@ -1134,13 +1092,12 @@ export default function NBackTrainer() {
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className={`text-xl font-bold ${
-                            session.overallAccuracy >= 80
-                              ? 'text-green-400'
-                              : session.overallAccuracy >= 60
+                          <p className={`text-xl font-bold ${session.overallAccuracy >= 80
+                            ? 'text-green-400'
+                            : session.overallAccuracy >= 60
                               ? 'text-yellow-400'
                               : 'text-red-400'
-                          }`}>
+                            }`}>
                             {Math.round(session.overallAccuracy)}%
                           </p>
                           <p className="text-xs text-gray-400">

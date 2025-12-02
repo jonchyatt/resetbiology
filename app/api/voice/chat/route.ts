@@ -45,15 +45,23 @@ export async function POST(req: NextRequest) {
         // 3. Transcribe Audio (Speech-to-Text)
         let userText: string;
         try {
+            // Ensure the file has a proper name for OpenAI
+            const fileName = audioFile.name || 'recording.webm';
+            console.log(`[VoiceAPI] Transcribing file: ${fileName}, size: ${audioFile.size}, type: ${audioFile.type}`);
+
+            // Create a new File with proper name if needed
+            const fileForWhisper = new File([audioFile], fileName, { type: audioFile.type || 'audio/webm' });
+
             const transcription = await openai.audio.transcriptions.create({
-                file: audioFile,
+                file: fileForWhisper,
                 model: 'whisper-1',
             });
             userText = transcription.text;
             console.log(`[VoiceAPI] User said: "${userText}"`);
         } catch (transcribeError) {
             console.error('[VoiceAPI] Transcription error:', transcribeError);
-            return NextResponse.json({ error: 'Transcription failed', details: String(transcribeError) }, { status: 500 });
+            const errorDetails = transcribeError instanceof Error ? transcribeError.message : String(transcribeError);
+            return NextResponse.json({ error: 'Transcription failed', details: errorDetails }, { status: 500 });
         }
 
         if (!userText || userText.trim().length === 0) {

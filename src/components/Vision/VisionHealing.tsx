@@ -10,6 +10,7 @@ import {
   ChevronRight,
   Sparkles
 } from 'lucide-react'
+import { PortalHeader } from '@/components/Navigation/PortalHeader'
 import CurriculumOverview from './Training/CurriculumOverview'
 import DailyPractice from './Training/DailyPractice'
 import QuickPractice from './Training/QuickPractice'
@@ -91,12 +92,12 @@ export function VisionHealing() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800"
-           style={{
-             backgroundImage: 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url(/hero-background.jpg)',
-             backgroundSize: 'cover',
-             backgroundPosition: 'center',
-             backgroundAttachment: 'fixed'
-           }}>
+        style={{
+          backgroundImage: 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url(/hero-background.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundAttachment: 'fixed'
+        }}>
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
             <div className="w-12 h-12 border-4 border-primary-400/30 border-t-primary-400 rounded-full animate-spin mx-auto mb-4" />
@@ -109,44 +110,19 @@ export function VisionHealing() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800"
-         style={{
-           backgroundImage: 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url(/hero-background.jpg)',
-           backgroundSize: 'cover',
-           backgroundPosition: 'center',
-           backgroundAttachment: 'fixed'
-         }}>
-      <div className="relative z-10 min-h-screen flex flex-col pt-16">
-        {/* Portal Subnav Header */}
-        <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm shadow-2xl border-b border-primary-400/30">
-          <div className="container mx-auto px-4 py-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <img src="/logo1.png" alt="Reset Biology" className="h-10 w-auto rounded-lg drop-shadow-lg bg-white/10 backdrop-blur-sm p-1 border border-white/20" />
-                <div>
-                  <div className="flex items-center">
-                    <a href="/portal" className="text-xl font-bold text-white drop-shadow-lg hover:text-primary-300 transition-colors">Portal</a>
-                    <span className="mx-2 text-primary-300">&gt;</span>
-                    <span className="text-lg text-gray-200 drop-shadow-sm">Vision Training</span>
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center gap-4">
-                {isEnrolled && (
-                  <div className="flex items-center gap-2 px-3 py-1.5 bg-secondary-500/20 border border-secondary-400/30 rounded-full">
-                    <Sparkles className="w-4 h-4 text-secondary-400" />
-                    <span className="text-secondary-300 text-sm font-medium">Program Active</span>
-                  </div>
-                )}
-                <a href="/daily-history" className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
-                  Daily History
-                </a>
-                <a href="/portal" className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
-                  ← Back to Portal
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
+      style={{
+        backgroundImage: 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url(/hero-background.jpg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed'
+      }}>
+      <div className="relative z-10 min-h-screen flex flex-col pt-32">
+        <PortalHeader
+          section="Vision Training"
+          backLink="/portal"
+          secondaryBackLink="/daily-history"
+          secondaryBackText="Daily History"
+        />
 
         {/* Page Title */}
         <div className="text-center py-8">
@@ -171,11 +147,10 @@ export function VisionHealing() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`px-4 md:px-6 py-3 rounded-lg font-semibold transition-all duration-300 flex items-center gap-2 ${
-                  isActive
-                    ? 'bg-primary-600 text-white shadow-lg shadow-primary-500/20'
-                    : 'bg-gray-800/30 backdrop-blur-sm text-gray-300 hover:bg-gray-700/30'
-                }`}
+                className={`px-4 md:px-6 py-3 rounded-lg font-semibold transition-all duration-300 flex items-center gap-2 ${isActive
+                  ? 'bg-primary-600 text-white shadow-lg shadow-primary-500/20'
+                  : 'bg-gray-800/30 backdrop-blur-sm text-gray-300 hover:bg-gray-700/30'
+                  }`}
               >
                 <Icon className="w-5 h-5" />
                 <span className="hidden sm:inline">{tab.label}</span>
@@ -223,11 +198,10 @@ export function VisionHealing() {
                           <button
                             key={type}
                             onClick={() => setTrainerVisionType(type)}
-                            className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all duration-300 ${
-                              trainerVisionType === type
-                                ? 'bg-primary-600 text-white shadow-lg shadow-primary-500/20'
-                                : 'bg-gray-700/30 backdrop-blur-sm text-gray-300 hover:bg-gray-600/30'
-                            }`}
+                            className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all duration-300 ${trainerVisionType === type
+                              ? 'bg-primary-600 text-white shadow-lg shadow-primary-500/20'
+                              : 'bg-gray-700/30 backdrop-blur-sm text-gray-300 hover:bg-gray-600/30'
+                              }`}
                           >
                             {type === 'near' ? '📱 Near' : '🖥️ Far'}
                           </button>
@@ -253,11 +227,10 @@ export function VisionHealing() {
                           <button
                             key={type.id}
                             onClick={() => setTrainerExerciseType(type.id)}
-                            className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all duration-300 ${
-                              trainerExerciseType === type.id
-                                ? 'bg-secondary-600 text-white shadow-lg shadow-secondary-500/20'
-                                : 'bg-gray-700/30 backdrop-blur-sm text-gray-300 hover:bg-gray-600/30'
-                            }`}
+                            className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all duration-300 ${trainerExerciseType === type.id
+                              ? 'bg-secondary-600 text-white shadow-lg shadow-secondary-500/20'
+                              : 'bg-gray-700/30 backdrop-blur-sm text-gray-300 hover:bg-gray-600/30'
+                              }`}
                           >
                             {type.label}
                           </button>

@@ -72,15 +72,15 @@ export function EnhancedDashboard() {
   const handleTaskChange = async (taskName: keyof typeof dailyTasks) => {
     const newState = { ...dailyTasks, [taskName]: !dailyTasks[taskName] }
     setDailyTasks(newState)
-    
+
     // Save to database via API
     try {
-      await fetch('/api/daily-tasks', { 
-        method: 'POST', 
+      await fetch('/api/daily-tasks', {
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ taskName, completed: newState[taskName] }) 
+        body: JSON.stringify({ taskName, completed: newState[taskName] })
       })
-      
+
       // Auto-update journal when task is completed
       if (newState[taskName]) {
         const timestamp = new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
@@ -376,16 +376,16 @@ export function EnhancedDashboard() {
     }
   }, [])
 
-  const TaskRow = ({ 
-    icon, 
-    title, 
-    points, 
-    description, 
-    taskKey, 
+  const TaskRow = ({
+    icon,
+    title,
+    points,
+    description,
+    taskKey,
     linkTo,
     cardColor,
     cardIcon: CardIcon
-  }: { 
+  }: {
     icon?: React.ReactNode
     title: string
     points: number
@@ -411,9 +411,9 @@ export function EnhancedDashboard() {
           <p className="text-sm text-gray-400">{description}</p>
         </div>
       </label>
-      
+
       {/* Integrated card button on the right */}
-      <Link href={linkTo} 
+      <Link href={linkTo}
         className={`px-3 py-3 ${cardColor} rounded-lg border transform transition duration-200 flex flex-col items-center justify-center min-w-[96px] group-hover:shadow-lg hover:-translate-y-1 hover:shadow-primary-500/20`}
       >
         <CardIcon className="w-8 h-8 text-white mb-2" />
@@ -423,13 +423,13 @@ export function EnhancedDashboard() {
   )
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 relative pt-28"
-         style={{
-           backgroundImage: 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url(/hero-background.jpg)',
-           backgroundSize: 'cover',
-           backgroundPosition: 'center',
-           backgroundAttachment: 'fixed'
-         }}>
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 relative pt-32"
+      style={{
+        backgroundImage: 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url(/hero-background.jpg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed'
+      }}>
       <div className="relative z-10">
         <PortalHeader
           section="Daily Check-in"
@@ -437,7 +437,7 @@ export function EnhancedDashboard() {
           showOrderPeptides={false}
           showBackLink={false}
         />
-        
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Welcome Header */}
           <div className="text-center mb-8">
@@ -536,62 +536,62 @@ export function EnhancedDashboard() {
 
             {/* Quick Access Cards (2x4 Grid) */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
-                <Link href="/peptides" className="group">
-                  <div className="p-6 bg-gradient-to-br from-teal-600/30 to-teal-700/30 border border-teal-400/30 rounded-lg hover:scale-[1.02] hover:shadow-lg hover:shadow-teal-500/20 transition-all text-center">
-                    <Target className="w-8 h-8 text-teal-300 mx-auto mb-2" />
-                    <span className="text-white font-medium">Peptides</span>
-                  </div>
-                </Link>
+              <Link href="/peptides" className="group">
+                <div className="p-6 bg-gradient-to-br from-teal-600/30 to-teal-700/30 border border-teal-400/30 rounded-lg hover:scale-[1.02] hover:shadow-lg hover:shadow-teal-500/20 transition-all text-center">
+                  <Target className="w-8 h-8 text-teal-300 mx-auto mb-2" />
+                  <span className="text-white font-medium">Peptides</span>
+                </div>
+              </Link>
 
-                <Link href="/workout" className="group">
-                  <div className="p-6 bg-gradient-to-br from-green-600/30 to-green-700/30 border border-green-400/30 rounded-lg hover:scale-[1.02] hover:shadow-lg hover:shadow-green-500/20 transition-all text-center">
-                    <Dumbbell className="w-8 h-8 text-green-300 mx-auto mb-2" />
-                    <span className="text-white font-medium">Workout</span>
-                  </div>
-                </Link>
+              <Link href="/workout" className="group">
+                <div className="p-6 bg-gradient-to-br from-green-600/30 to-green-700/30 border border-green-400/30 rounded-lg hover:scale-[1.02] hover:shadow-lg hover:shadow-green-500/20 transition-all text-center">
+                  <Dumbbell className="w-8 h-8 text-green-300 mx-auto mb-2" />
+                  <span className="text-white font-medium">Workout</span>
+                </div>
+              </Link>
 
-                <Link href="/nutrition" className="group">
-                  <div className="p-6 bg-gradient-to-br from-amber-600/30 to-amber-700/30 border border-amber-400/30 rounded-lg hover:scale-[1.02] hover:shadow-lg hover:shadow-amber-500/20 transition-all text-center">
-                    <Apple className="w-8 h-8 text-amber-300 mx-auto mb-2" />
-                    <span className="text-white font-medium">Nutrition</span>
-                  </div>
-                </Link>
+              <Link href="/nutrition" className="group">
+                <div className="p-6 bg-gradient-to-br from-amber-600/30 to-amber-700/30 border border-amber-400/30 rounded-lg hover:scale-[1.02] hover:shadow-lg hover:shadow-amber-500/20 transition-all text-center">
+                  <Apple className="w-8 h-8 text-amber-300 mx-auto mb-2" />
+                  <span className="text-white font-medium">Nutrition</span>
+                </div>
+              </Link>
 
-                <Link href="/modules" className="group">
-                  <div className="p-6 bg-gradient-to-br from-purple-600/30 to-purple-700/30 border border-purple-400/30 rounded-lg hover:scale-[1.02] hover:shadow-lg hover:shadow-purple-500/20 transition-all text-center">
-                    <Brain className="w-8 h-8 text-purple-300 mx-auto mb-2" />
-                    <span className="text-white font-medium">Modules</span>
-                  </div>
-                </Link>
-                
-                <Link href="/breath" className="group">
-                  <div className="p-6 bg-gradient-to-br from-blue-600/30 to-blue-700/30 border border-blue-400/30 rounded-lg hover:scale-[1.02] hover:shadow-lg hover:shadow-blue-500/20 transition-all text-center">
-                    <Wind className="w-8 h-8 text-blue-300 mx-auto mb-2" />
-                    <span className="text-white font-medium">Breathe</span>
-                  </div>
-                </Link>
+              <Link href="/modules" className="group">
+                <div className="p-6 bg-gradient-to-br from-purple-600/30 to-purple-700/30 border border-purple-400/30 rounded-lg hover:scale-[1.02] hover:shadow-lg hover:shadow-purple-500/20 transition-all text-center">
+                  <Brain className="w-8 h-8 text-purple-300 mx-auto mb-2" />
+                  <span className="text-white font-medium">Modules</span>
+                </div>
+              </Link>
 
-                <Link href="#journal" className="group">
-                  <div className="p-6 bg-gradient-to-br from-secondary-600/30 to-secondary-700/30 border border-secondary-400/30 rounded-lg hover:scale-[1.02] hover:shadow-lg hover:shadow-secondary-500/20 transition-all text-center">
-                    <BookOpen className="w-8 h-8 text-secondary-300 mx-auto mb-2" />
-                    <span className="text-white font-medium">Journal</span>
-                  </div>
-                </Link>
+              <Link href="/breath" className="group">
+                <div className="p-6 bg-gradient-to-br from-blue-600/30 to-blue-700/30 border border-blue-400/30 rounded-lg hover:scale-[1.02] hover:shadow-lg hover:shadow-blue-500/20 transition-all text-center">
+                  <Wind className="w-8 h-8 text-blue-300 mx-auto mb-2" />
+                  <span className="text-white font-medium">Breathe</span>
+                </div>
+              </Link>
 
-                <Link href="/vision-healing" className="group">
-                  <div className="p-6 bg-gradient-to-br from-cyan-600/30 to-cyan-700/30 border border-cyan-400/30 rounded-lg hover:scale-[1.02] hover:shadow-lg hover:shadow-cyan-500/20 transition-all text-center">
-                    <Eye className="w-8 h-8 text-cyan-300 mx-auto mb-2" />
-                    <span className="text-white font-medium">Vision</span>
-                  </div>
-                </Link>
+              <Link href="#journal" className="group">
+                <div className="p-6 bg-gradient-to-br from-secondary-600/30 to-secondary-700/30 border border-secondary-400/30 rounded-lg hover:scale-[1.02] hover:shadow-lg hover:shadow-secondary-500/20 transition-all text-center">
+                  <BookOpen className="w-8 h-8 text-secondary-300 mx-auto mb-2" />
+                  <span className="text-white font-medium">Journal</span>
+                </div>
+              </Link>
 
-                <Link href="/mental-training" className="group">
-                  <div className="p-6 bg-gradient-to-br from-pink-600/30 to-pink-700/30 border border-pink-400/30 rounded-lg hover:scale-[1.02] hover:shadow-lg hover:shadow-pink-500/20 transition-all text-center">
-                    <Zap className="w-8 h-8 text-pink-300 mx-auto mb-2" />
-                    <span className="text-white font-medium">N-Back</span>
-                  </div>
-                </Link>
-              </div>
+              <Link href="/vision-healing" className="group">
+                <div className="p-6 bg-gradient-to-br from-cyan-600/30 to-cyan-700/30 border border-cyan-400/30 rounded-lg hover:scale-[1.02] hover:shadow-lg hover:shadow-cyan-500/20 transition-all text-center">
+                  <Eye className="w-8 h-8 text-cyan-300 mx-auto mb-2" />
+                  <span className="text-white font-medium">Vision</span>
+                </div>
+              </Link>
+
+              <Link href="/mental-training" className="group">
+                <div className="p-6 bg-gradient-to-br from-pink-600/30 to-pink-700/30 border border-pink-400/30 rounded-lg hover:scale-[1.02] hover:shadow-lg hover:shadow-pink-500/20 transition-all text-center">
+                  <Zap className="w-8 h-8 text-pink-300 mx-auto mb-2" />
+                  <span className="text-white font-medium">N-Back</span>
+                </div>
+              </Link>
+            </div>
 
             {/* Secondary Action */}
             <div className="mt-6 pt-6 border-t border-gray-600/30">
@@ -606,7 +606,7 @@ export function EnhancedDashboard() {
                 <ChevronRight className="w-5 h-5 text-purple-300" />
               </Link>
             </div>
-            
+
             {/* Progress bar */}
             <div className="mt-6">
               <div className="flex justify-between text-sm mb-2">
@@ -616,7 +616,7 @@ export function EnhancedDashboard() {
                 </span>
               </div>
               <div className="w-full bg-gray-700 rounded-full h-2">
-                <div 
+                <div
                   className="bg-gradient-to-r from-primary-500 to-secondary-500 h-2 rounded-full transition-all duration-500"
                   style={{ width: `${(Object.values(dailyTasks).filter(Boolean).length / 6) * 100}%` }}
                 />
@@ -632,7 +632,7 @@ export function EnhancedDashboard() {
                 View History
               </Link>
             </div>
-            
+
             {/* Weight and Mood */}
             <div className="grid grid-cols-2 gap-4 mb-4">
               <div>
@@ -641,7 +641,7 @@ export function EnhancedDashboard() {
                   type="number"
                   step="0.1"
                   value={journalData.weight || ""}
-                  onChange={(e) => setJournalData({...journalData, weight: parseFloat(e.target.value)})}
+                  onChange={(e) => setJournalData({ ...journalData, weight: parseFloat(e.target.value) })}
                   className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-white"
                   placeholder="Enter weight"
                 />
@@ -650,7 +650,7 @@ export function EnhancedDashboard() {
                 <label className="block text-sm font-medium text-gray-300 mb-2">Current Mood</label>
                 <select
                   value={journalData.mood}
-                  onChange={(e) => setJournalData({...journalData, mood: e.target.value})}
+                  onChange={(e) => setJournalData({ ...journalData, mood: e.target.value })}
                   className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-white"
                 >
                   <option value="">Select mood...</option>
@@ -668,7 +668,7 @@ export function EnhancedDashboard() {
               </label>
               <textarea
                 value={journalData.reasonsValidation}
-                onChange={(e) => setJournalData({...journalData, reasonsValidation: e.target.value})}
+                onChange={(e) => setJournalData({ ...journalData, reasonsValidation: e.target.value })}
                 className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-white"
                 rows={3}
                 placeholder="Write your reasons for success..."
@@ -678,35 +678,35 @@ export function EnhancedDashboard() {
             {/* David Snyder Affirmation Format */}
             <div className="space-y-3 p-4 bg-primary-600/10 rounded-lg border border-primary-400/30 mb-4">
               <h4 className="font-medium text-primary-300">Daily Affirmation</h4>
-              
+
               <div>
                 <label className="block text-sm text-gray-300 mb-1">I am...</label>
                 <input
                   type="text"
                   value={journalData.affirmationGoal}
-                  onChange={(e) => setJournalData({...journalData, affirmationGoal: e.target.value})}
+                  onChange={(e) => setJournalData({ ...journalData, affirmationGoal: e.target.value })}
                   className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-white"
                   placeholder="e.g., achieving my ideal weight and health"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm text-gray-300 mb-1">Because...</label>
                 <input
                   type="text"
                   value={journalData.affirmationBecause}
-                  onChange={(e) => setJournalData({...journalData, affirmationBecause: e.target.value})}
+                  onChange={(e) => setJournalData({ ...journalData, affirmationBecause: e.target.value })}
                   className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-white"
                   placeholder="e.g., I am committed to my daily protocols"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm text-gray-300 mb-1">And that means...</label>
                 <input
                   type="text"
                   value={journalData.affirmationMeans}
-                  onChange={(e) => setJournalData({...journalData, affirmationMeans: e.target.value})}
+                  onChange={(e) => setJournalData({ ...journalData, affirmationMeans: e.target.value })}
                   className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-white"
                   placeholder="e.g., I have more energy and confidence every day"
                 />

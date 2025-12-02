@@ -96,9 +96,11 @@ export function VoiceAgentDrawer({ isOpen, onClose, minutesRemaining }: VoiceAge
 
     const sendAudioToBackend = async (audioBlob: Blob) => {
         const formData = new FormData();
-        formData.append('audio', audioBlob);
+        // OpenAI Whisper needs a proper filename with extension
+        const audioFile = new File([audioBlob], 'recording.webm', { type: 'audio/webm' });
+        formData.append('audio', audioFile);
 
-        console.log('[VoiceDrawer] Sending audio to backend:', audioBlob.size, 'bytes');
+        console.log('[VoiceDrawer] Sending audio to backend:', audioFile.size, 'bytes, type:', audioFile.type);
 
         try {
             const response = await fetch('/api/voice/chat', {

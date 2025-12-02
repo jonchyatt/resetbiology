@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react"
 import { BreathTrainingApp } from "./BreathTrainingApp"
 import { Plus, Wind, Play, Edit2, Trash2, X, Clock, RotateCcw } from "lucide-react"
+import { PortalHeader } from "@/components/Navigation/PortalHeader"
 
 interface BreathExercise {
   id: string
@@ -141,38 +142,19 @@ export function BreathPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800"
-         style={{
-           backgroundImage: 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url(/hero-background.jpg)',
-           backgroundSize: 'cover',
-           backgroundPosition: 'center',
-           backgroundAttachment: 'fixed'
-         }}>
-      <div className="relative z-10 min-h-screen flex flex-col pt-16">
-        {/* Portal Subnav Header */}
-        <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm shadow-2xl border-b border-primary-400/30">
-          <div className="container mx-auto px-4 py-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <img src="/logo1.png" alt="Reset Biology" className="h-10 w-auto rounded-lg drop-shadow-lg bg-white/10 backdrop-blur-sm p-1 border border-white/20" />
-                <div>
-                  <div className="flex items-center">
-                    <a href="/portal" className="text-xl font-bold text-white drop-shadow-lg hover:text-primary-300 transition-colors">Portal</a>
-                    <span className="mx-2 text-primary-300">&gt;</span>
-                    <span className="text-lg text-gray-200 drop-shadow-sm">Breath Training</span>
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <a href="/daily-history" className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
-                  Daily History
-                </a>
-                <a href="/portal" className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
-                  ← Back to Portal
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
+      style={{
+        backgroundImage: 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url(/hero-background.jpg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed'
+      }}>
+      <div className="relative z-10 min-h-screen flex flex-col pt-32">
+        <PortalHeader
+          section="Breath Training"
+          backLink="/portal"
+          secondaryBackLink="/daily-history"
+          secondaryBackText="Daily History"
+        />
 
         {/* Page Title */}
         <div className="text-center py-8">
@@ -189,21 +171,19 @@ export function BreathPage() {
         <div className="flex justify-center gap-4 mb-8 px-4">
           <button
             onClick={() => setActiveTab("exercises")}
-            className={`px-6 py-3 rounded-lg font-semibold transition-all ${
-              activeTab === "exercises"
-                ? "bg-primary-600 text-white shadow-lg"
-                : "bg-gray-800/50 text-gray-300 hover:bg-gray-700/50"
-            }`}
+            className={`px-6 py-3 rounded-lg font-semibold transition-all ${activeTab === "exercises"
+              ? "bg-primary-600 text-white shadow-lg"
+              : "bg-gray-800/50 text-gray-300 hover:bg-gray-700/50"
+              }`}
           >
             My Exercises
           </button>
           <button
             onClick={() => setActiveTab("training")}
-            className={`px-6 py-3 rounded-lg font-semibold transition-all ${
-              activeTab === "training"
-                ? "bg-primary-600 text-white shadow-lg"
-                : "bg-gray-800/50 text-gray-300 hover:bg-gray-700/50"
-            }`}
+            className={`px-6 py-3 rounded-lg font-semibold transition-all ${activeTab === "training"
+              ? "bg-primary-600 text-white shadow-lg"
+              : "bg-gray-800/50 text-gray-300 hover:bg-gray-700/50"
+              }`}
           >
             Training
           </button>
@@ -357,11 +337,10 @@ export function BreathPage() {
               <div className="flex flex-wrap gap-2 mb-6">
                 <button
                   onClick={() => setFilterCategory("all")}
-                  className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                    filterCategory === "all"
-                      ? "bg-primary-600 text-white"
-                      : "bg-gray-700 text-gray-300 hover:bg-gray-600"
-                  }`}
+                  className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${filterCategory === "all"
+                    ? "bg-primary-600 text-white"
+                    : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                    }`}
                 >
                   All
                 </button>
@@ -369,11 +348,10 @@ export function BreathPage() {
                   <button
                     key={cat}
                     onClick={() => setFilterCategory(cat)}
-                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors capitalize ${
-                      filterCategory === cat
-                        ? "bg-primary-600 text-white"
-                        : "bg-gray-700 text-gray-300 hover:bg-gray-600"
-                    }`}
+                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors capitalize ${filterCategory === cat
+                      ? "bg-primary-600 text-white"
+                      : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                      }`}
                   >
                     {cat}
                   </button>
@@ -397,11 +375,10 @@ export function BreathPage() {
                     return (
                       <div
                         key={exercise.id}
-                        className={`bg-gray-700/50 rounded-lg p-4 border transition-all ${
-                          added
-                            ? "border-green-500/40 bg-green-900/20"
-                            : "border-gray-600/40 hover:border-primary-400/40"
-                        }`}
+                        className={`bg-gray-700/50 rounded-lg p-4 border transition-all ${added
+                          ? "border-green-500/40 bg-green-900/20"
+                          : "border-gray-600/40 hover:border-primary-400/40"
+                          }`}
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
@@ -431,11 +408,10 @@ export function BreathPage() {
                           <button
                             onClick={() => addExercise(exercise.id)}
                             disabled={added}
-                            className={`ml-4 px-4 py-2 rounded-lg font-medium transition-colors ${
-                              added
-                                ? "bg-gray-600 text-gray-400 cursor-not-allowed"
-                                : "bg-primary-600 hover:bg-primary-700 text-white"
-                            }`}
+                            className={`ml-4 px-4 py-2 rounded-lg font-medium transition-colors ${added
+                              ? "bg-gray-600 text-gray-400 cursor-not-allowed"
+                              : "bg-primary-600 hover:bg-primary-700 text-white"
+                              }`}
                           >
                             {added ? "Added" : "Add"}
                           </button>
