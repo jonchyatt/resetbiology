@@ -19,6 +19,8 @@ interface Question {
   placeholder?: string
   required?: boolean
   options?: QuestionOption[]
+  multiSelect?: boolean
+  maxMultiSelect?: number
 }
 
 // All 19 questions from AssessmentQuiz.tsx
