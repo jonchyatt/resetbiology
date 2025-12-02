@@ -7,7 +7,8 @@ export interface AgentContext {
 
 export abstract class BaseAgent {
     protected openai: OpenAI;
-    protected model: string = 'gpt-4o'; // Default model
+    protected model: string = 'gpt-4o-mini'; // Fast model for voice
+    protected maxTokens: number = 150; // Keep responses concise for voice
 
     constructor() {
         this.openai = new OpenAI({
@@ -28,8 +29,18 @@ export abstract class BaseAgent {
         userMessage: string,
         history: any[] = []
     ): Promise<string> {
+        // Add voice brevity instruction
+        const voiceOptimizedPrompt = systemPrompt + `
+
+### VOICE RESPONSE RULES (CRITICAL)
+- Keep responses under 2-3 sentences
+- Be conversational, not verbose
+- No bullet points or lists - speak naturally
+- Get to the point quickly
+- End with a simple question if needed`;
+
         const messages: any[] = [
-            { role: 'system', content: systemPrompt },
+            { role: 'system', content: voiceOptimizedPrompt },
             ...history,
             { role: 'user', content: userMessage }
         ];
@@ -37,24 +48,32 @@ export abstract class BaseAgent {
         const completion = await this.openai.chat.completions.create({
             model: this.model,
             messages: messages,
+            max_tokens: this.maxTokens,
+            temperature: 0.7,
         });
 
         return completion.choices[0].message?.content || "I'm having trouble thinking right now.";
     }
 
     /**
-     * Fetches dynamic training data from the Vault.
+     * Fetches dynamic training data from the database.
      */
     protected async loadDynamicTraining(userId: string, agentName: string): Promise<string> {
         try {
-            // We import dynamically to avoid circular deps if any
-            const { getAgentTraining } = await import('../../app/actions/agentTraining');
-            const training = await getAgentTraining(userId, agentName);
-            if (training) {
-                return `\n\n### DYNAMIC TRAINING (FROM ADMIN)\n${training}\n`;
+            // Import prisma dynamically to avoid issues
+            const { prisma } = await import('@/lib/prisma');
+
+            // Find training for this agent (global - not user specific for now)
+            const training = await prisma.agentTraining.findFirst({
+                where: { agentId: agentName },
+                orderBy: { updatedAt: 'desc' }
+            });
+
+            if (training?.content) {
+                return `\n\n### CUSTOM TRAINING INSTRUCTIONS\n${training.content}\n`;
             }
         } catch (e) {
-            console.error('Failed to load dynamic training', e);
+            console.error('Failed to load dynamic training:', e);
         }
         return "";
     }

@@ -1120,3 +1120,19 @@ model VisionDailySession {
   @@index([userId, localDate])
   @@map("vision_daily_sessions")
 }
+
+// ============================================
+// VOICE AGENT TRAINING
+// ============================================
+
+model AgentTraining {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  agentId   String   // "CONCIERGE" | "BIO_COACH" | "VISION_TUTOR" | "PROFESSOR" | "SALES_CLOSER"
+  userId    String   @db.ObjectId // Admin user who created the training
+  content   String   // The training instructions
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([agentId, userId])
+  @@map("agent_trainings")
+}
