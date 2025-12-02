@@ -23,15 +23,36 @@ export function VoiceAgentDrawer({ isOpen, onClose, minutesRemaining }: VoiceAge
     // Simulated "Gas Tank" color logic
     const batteryColor = minutesRemaining > 30 ? 'text-green-500' : minutesRemaining > 10 ? 'text-yellow-500' : 'text-red-500';
 
+    // Permission Logic
     useEffect(() => {
-        if (!isOpen) {
+        if (isOpen) {
+            checkMicrophonePermission();
+        } else {
             stopRecording();
             setIsListening(false);
         }
     }, [isOpen]);
 
+    const checkMicrophonePermission = async () => {
+        try {
+            const permissionStatus = await navigator.permissions.query({ name: 'microphone' as PermissionName });
+            if (permissionStatus.state === 'granted') {
+                // Already granted, we can start if user wants, or just be ready
+            } else if (permissionStatus.state === 'prompt') {
+                // Will ask when we call getUserMedia
+            } else {
+                // Denied
+                setAgentMessage("Microphone access is denied. Please enable it in your browser settings.");
+            }
+        } catch (e) {
+            // Firefox doesn't support querying microphone permission
+            console.log("Permission query not supported", e);
+        }
+    };
+
     const startRecording = async () => {
         try {
+            // Check permission state first if possible, but getUserMedia will prompt if needed
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             mediaRecorderRef.current = new MediaRecorder(stream);
             chunksRef.current = [];
@@ -51,7 +72,7 @@ export function VoiceAgentDrawer({ isOpen, onClose, minutesRemaining }: VoiceAge
             setIsListening(true);
         } catch (err) {
             console.error("Error accessing microphone:", err);
-            alert("Could not access microphone. Please allow permissions.");
+            setAgentMessage("Could not access microphone. Please allow permissions.");
         }
     };
 
@@ -122,106 +143,90 @@ export function VoiceAgentDrawer({ isOpen, onClose, minutesRemaining }: VoiceAge
     return (
         <AnimatePresence>
             {isOpen && (
-                <motion.div
-                    initial={{ y: '100%' }}
-                    animate={{ y: 0 }}
-                    exit={{ y: '100%' }}
-                    className="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 rounded-t-3xl shadow-2xl z-50 border-t border-slate-200 dark:border-slate-800"
-                    style={{ height: mode === 'voice' ? '50vh' : '80vh' }}
-                >
-                    {/* Hidden Audio Player */}
-                    <audio ref={audioRef} className="hidden" />
+                <>
+                    {/* Backdrop */}
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 0.5 }}
+                        exit={{ opacity: 0 }}
+                        onClick={onClose}
+                        className="fixed inset-0 bg-black z-40"
+                    />
 
-                    {/* Header / Handle */}
-                    <div className="flex justify-between items-center p-4 border-b border-slate-100 dark:border-slate-800">
-                        <div className="w-12 h-1 bg-slate-300 rounded-full mx-auto absolute left-0 right-0" />
+                    {/* Drawer */}
+                    <motion.div
+                        initial={{ y: '100%' }}
+                        animate={{ y: 0 }}
+                        exit={{ y: '100%' }}
+                        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                        className="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 rounded-t-3xl shadow-2xl z-50 border-t border-slate-200 dark:border-slate-800"
+                        style={{ height: '35vh', maxHeight: '400px' }}
+                    >
+                        {/* Hidden Audio Player */}
+                        <audio ref={audioRef} className="hidden" />
 
-                        {/* Gas Tank Indicator */}
-                        <div className={`flex items-center gap-2 ${batteryColor} font-medium`}>
-                            <Battery className="w-5 h-5" />
-                            <span>{minutesRemaining} min</span>
+                        {/* Header / Handle */}
+                        <div className="flex justify-between items-center p-4 border-b border-slate-100 dark:border-slate-800">
+                            <div className="w-12 h-1 bg-slate-300 rounded-full mx-auto absolute left-0 right-0 top-4" />
+
+                            {/* Gas Tank Indicator */}
+                            <div className={`flex items-center gap-2 ${batteryColor} font-medium z-10`}>
+                                <Battery className="w-5 h-5" />
+                                <span>{minutesRemaining} min</span>
+                            </div>
+
+                            <button onClick={onClose} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full z-10">
+                                <X className="w-6 h-6 text-slate-500" />
+                            </button>
                         </div>
 
-                        <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full">
-                            <X className="w-6 h-6" />
-                        </button>
-                    </div>
+                        {/* Content Area */}
+                        <div className="h-full flex flex-row items-center justify-between px-8 pb-8">
 
-                    {/* Content Area */}
-                    <div className="h-full flex flex-col items-center justify-center p-6">
+                            {/* Left: Status Text */}
+                            <div className="flex-1 pr-4">
+                                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
+                                    {isListening ? "Listening..." : isProcessing ? "Thinking..." : "Tap to Speak"}
+                                </h3>
+                                <p className="text-slate-600 dark:text-slate-300 text-sm line-clamp-3">
+                                    {agentMessage}
+                                </p>
+                            </div>
 
-                        {mode === 'voice' ? (
-                            <>
-                                {/* Voice Visualizer (Simulated) */}
-                                <div className="w-full h-32 flex items-center justify-center gap-1 mb-8">
-                                    {[...Array(10)].map((_, i) => (
+                            {/* Center: Visualizer (Only when active) */}
+                            {(isListening || isProcessing) && (
+                                <div className="flex items-center gap-1 h-16 mx-4">
+                                    {[...Array(5)].map((_, i) => (
                                         <motion.div
                                             key={i}
                                             animate={{
-                                                height: isListening ? [20, 60, 20] : isProcessing ? [20, 40, 20] : 10,
-                                                opacity: isProcessing ? 0.5 : 1
+                                                height: isListening ? [10, 40, 10] : isProcessing ? [10, 25, 10] : 5,
+                                                opacity: isProcessing ? 0.6 : 1
                                             }}
-                                            transition={{ repeat: Infinity, duration: 0.5 + Math.random() * 0.5 }}
-                                            className={`w-3 rounded-full ${isProcessing ? 'bg-yellow-500' : 'bg-teal-500'}`}
+                                            transition={{ repeat: Infinity, duration: 0.4 + Math.random() * 0.3 }}
+                                            className={`w-2 rounded-full ${isProcessing ? 'bg-yellow-500' : 'bg-teal-500'}`}
                                         />
                                     ))}
                                 </div>
+                            )}
 
-                                <div className="text-center space-y-4 max-w-md">
-                                    <h3 className="text-2xl font-semibold text-slate-800 dark:text-white">
-                                        {isListening ? "Listening..." : isProcessing ? "Thinking..." : "Tap to Speak"}
-                                    </h3>
-                                    <p className="text-slate-500 transition-all duration-300">
-                                        {agentMessage}
-                                    </p>
-                                </div>
-
-                                {/* Controls */}
-                                <div className="mt-12 flex gap-6">
-                                    <button
-                                        onClick={toggleListening}
-                                        disabled={isProcessing}
-                                        className={`p-6 rounded-full transition-all shadow-lg text-white ${isListening ? 'bg-red-500 shadow-red-500/50' :
-                                                isProcessing ? 'bg-slate-400 cursor-not-allowed' :
-                                                    'bg-teal-600 shadow-teal-600/50 hover:scale-105'
-                                            }`}
-                                    >
-                                        {isProcessing ? <Loader2 className="w-8 h-8 animate-spin" /> : <Mic className="w-8 h-8" />}
-                                    </button>
-
-                                    <button
-                                        onClick={() => setMode('text')}
-                                        className="p-6 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200"
-                                    >
-                                        <Keyboard className="w-8 h-8" />
-                                    </button>
-                                </div>
-                            </>
-                        ) : (
-                            /* Text Mode Fallback */
-                            <div className="w-full h-full flex flex-col">
-                                <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                                    <div className="bg-slate-100 p-4 rounded-lg rounded-tl-none max-w-[80%]">
-                                        <p className="text-sm font-bold text-slate-500 mb-1">Concierge</p>
-                                        <p>{agentMessage}</p>
-                                    </div>
-                                </div>
-                                <div className="mt-auto pt-4 border-t flex gap-2">
-                                    <input
-                                        type="text"
-                                        placeholder="Type your question..."
-                                        className="flex-1 p-3 rounded-xl border border-slate-300 dark:bg-slate-800 dark:border-slate-700"
-                                    />
-                                    <button className="bg-teal-600 text-white px-6 rounded-xl font-medium">Send</button>
-                                </div>
-                                <button onClick={() => setMode('voice')} className="mt-4 text-teal-600 text-sm font-medium">
-                                    Switch back to Voice
+                            {/* Right: Controls */}
+                            <div className="flex gap-4 items-center">
+                                <button
+                                    onClick={toggleListening}
+                                    disabled={isProcessing}
+                                    className={`p-4 rounded-full transition-all shadow-lg text-white ${isListening ? 'bg-red-500 shadow-red-500/50' :
+                                        isProcessing ? 'bg-slate-400 cursor-not-allowed' :
+                                            'bg-teal-600 shadow-teal-600/50 hover:scale-105'
+                                        }`}
+                                >
+                                    {isProcessing ? <Loader2 className="w-6 h-6 animate-spin" /> : <Mic className="w-6 h-6" />}
                                 </button>
                             </div>
-                        )}
 
-                    </div>
-                </motion.div>
+                        </div>
+                    </motion.div>
+                </>
             )}
         </AnimatePresence>
     );
