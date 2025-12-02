@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { OpenAI } from 'openai';
 import { AgentOrchestrator } from '@/lib/agents/AgentOrchestrator';
-import { getSession } from '@auth0/nextjs-auth0';
+import { auth0 } from '@/lib/auth0';
 
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
@@ -12,7 +12,7 @@ const orchestrator = new AgentOrchestrator();
 export async function POST(req: NextRequest) {
     try {
         // 1. Authenticate User
-        const session = await getSession();
+        const session = await auth0.getSession();
         const userId = session?.user?.sub; // Auth0 User ID
 
         if (!userId) {
