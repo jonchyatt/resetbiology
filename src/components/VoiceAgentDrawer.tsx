@@ -77,30 +77,43 @@ export function VoiceAgentDrawer({ isOpen, onClose, minutesRemaining }: VoiceAge
         const formData = new FormData();
         formData.append('audio', audioBlob);
 
+        console.log('[VoiceDrawer] Sending audio to backend:', audioBlob.size, 'bytes');
+
         try {
             const response = await fetch('/api/voice/chat', {
                 method: 'POST',
                 body: formData,
             });
 
-            if (!response.ok) throw new Error('Failed to process voice');
+            console.log('[VoiceDrawer] Response status:', response.status);
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                console.error('[VoiceDrawer] API error:', response.status, errorData);
+                throw new Error(errorData.error || `Failed to process voice (${response.status})`);
+            }
 
             // 1. Get Text Response from Header
             const textResponse = decodeURIComponent(response.headers.get('X-Agent-Response-Text') || '');
-            setAgentMessage(textResponse);
+            console.log('[VoiceDrawer] Agent response text:', textResponse);
+            setAgentMessage(textResponse || "I processed your request but have no response.");
 
             // 2. Play Audio Response
             const audioBlobResponse = await response.blob();
+            console.log('[VoiceDrawer] Audio response size:', audioBlobResponse.size, 'bytes');
             const audioUrl = URL.createObjectURL(audioBlobResponse);
 
             if (audioRef.current) {
                 audioRef.current.src = audioUrl;
-                audioRef.current.play();
+                audioRef.current.play().catch(err => {
+                    console.error('[VoiceDrawer] Audio playback error:', err);
+                });
             }
 
         } catch (error) {
-            console.error("Error sending audio:", error);
-            setAgentMessage("Sorry, I had trouble hearing you. Please try again.");
+            console.error("[VoiceDrawer] Error sending audio:", error);
+            const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+            setAgentMessage(`Sorry, I had trouble: ${errorMsg}. Please try again.`);
         } finally {
             setIsProcessing(false);
         }
