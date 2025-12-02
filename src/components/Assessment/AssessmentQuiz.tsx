@@ -1,7 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react"
+import { ChevronLeft, ChevronRight } from "lucide-react"
+import { AssessmentConfig, defaultAssessmentConfig } from "@/config/assessmentConfig"
 
 interface QuestionOption {
   value: string
@@ -17,6 +18,8 @@ interface Question {
   placeholder?: string
   required?: boolean
   options?: QuestionOption[]
+  multiSelect?: boolean
+  maxMultiSelect?: number
 }
 
 interface QuizData {
@@ -68,7 +71,7 @@ export function AssessmentQuiz({ onComplete }: AssessmentQuizProps) {
     q19_additional_info: ""
   })
 
-  const questions: Question[] = [
+  const DEFAULT_QUESTIONS: Question[] = [
     // Step 0-3: Contact Info
     {
       id: "name",
@@ -261,11 +264,43 @@ export function AssessmentQuiz({ onComplete }: AssessmentQuizProps) {
     }
   ]
 
+  const [questions, setQuestions] = useState<Question[]>(DEFAULT_QUESTIONS)
+
+  useEffect(() => {
+    const loadConfig = async () => {
+      try {
+        const res = await fetch('/api/assessment/config', { cache: 'no-store' })
+        if (res.ok) {
+          const cfg = (await res.json()) as AssessmentConfig
+          const mapped =
+            cfg.questions && cfg.questions.length
+              ? cfg.questions.map((q) => {
+                  const numericId = parseInt(q.id.replace(/\D/g, ''), 10)
+                  return {
+                    ...q,
+                    multiSelect: q.multiSelect ?? (numericId >= 5 && numericId <= 14),
+                    maxMultiSelect: q.maxMultiSelect || 4
+                  }
+                })
+              : DEFAULT_QUESTIONS
+          setQuestions(mapped)
+        } else {
+          setQuestions(DEFAULT_QUESTIONS)
+        }
+      } catch (error) {
+        console.error('Failed to load assessment config; using defaults', error)
+        setQuestions(DEFAULT_QUESTIONS)
+      }
+    }
+
+    loadConfig()
+  }, [])
+
   const currentQuestion = questions[currentStep]
   const progress = ((currentStep + 1) / questions.length) * 100
 
   // Determine if current question allows multi-select (best practices questions Q5-Q14)
-  const isMultiSelect = currentStep >= 3 && currentStep <= 12
+  const isMultiSelect = currentQuestion?.multiSelect ?? (currentStep >= 3 && currentStep <= 12)
 
   const handleInputChange = (value: string) => {
     setFormData(prev => ({
@@ -278,6 +313,7 @@ export function AssessmentQuiz({ onComplete }: AssessmentQuizProps) {
     setFormData(prev => {
       const currentValue = prev[currentQuestion.id as keyof QuizData]
       const currentArray = Array.isArray(currentValue) ? currentValue : []
+      const limit = currentQuestion.maxMultiSelect || 4
 
       // If already selected, remove it (and others move up automatically)
       if (currentArray.includes(value)) {
@@ -288,7 +324,7 @@ export function AssessmentQuiz({ onComplete }: AssessmentQuizProps) {
       }
 
       // If not selected and less than 4 choices, add it
-      if (currentArray.length < 4) {
+      if (currentArray.length < limit) {
         return {
           ...prev,
           [currentQuestion.id]: [...currentArray, value]
@@ -301,6 +337,7 @@ export function AssessmentQuiz({ onComplete }: AssessmentQuizProps) {
   }
 
   const canProceed = () => {
+    if (!currentQuestion) return false
     const currentValue = formData[currentQuestion.id as keyof QuizData]
     if (!currentQuestion.required) return true
 
@@ -346,7 +383,7 @@ export function AssessmentQuiz({ onComplete }: AssessmentQuizProps) {
 
   const calculateScore = () => {
     let totalScore = 0
-    const scoringQuestions = questions.slice(3, 13) // Q5-Q14
+    const scoringQuestions = questions.filter(q => q.options?.some(opt => opt.score !== undefined))
 
     // Ranking weights: 1st = 100%, 2nd = 75%, 3rd = 50%, 4th = 25%
     const rankWeights = [1.0, 0.75, 0.5, 0.25]
@@ -468,7 +505,7 @@ export function AssessmentQuiz({ onComplete }: AssessmentQuizProps) {
                 {isMultiSelect && (
                   <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-3 mb-4">
                     <p className="text-blue-300 text-sm text-center">
-                      💡 Select up to 4 options that apply to you (click to rank, click again to remove)
+                      💡 Select up to {currentQuestion.maxMultiSelect || 4} options that apply to you (click to rank, click again to remove)
                     </p>
                   </div>
                 )}
@@ -517,7 +554,7 @@ export function AssessmentQuiz({ onComplete }: AssessmentQuizProps) {
                 {isMultiSelect && Array.isArray(formData[currentQuestion.id as keyof QuizData]) && (
                   <div className="mt-4 text-center">
                     <span className="text-gray-400 text-sm">
-                      {(formData[currentQuestion.id as keyof QuizData] as string[]).length} of 4 choices selected
+                      {(formData[currentQuestion.id as keyof QuizData] as string[]).length} of {currentQuestion.maxMultiSelect || 4} choices selected
                     </span>
                   </div>
                 )}

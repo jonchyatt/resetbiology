@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { TrendingUp, Zap, Target, AlertTriangle, CheckCircle2, Calendar, BookOpen, Phone, Gift, Star, Unlock } from "lucide-react"
 import Link from "next/link"
+import { defaultAssessmentConfig } from "@/config/assessmentConfig"
 
 interface ResultsData {
   name: string
@@ -22,6 +23,7 @@ interface AssessmentResultsProps {
 export function AssessmentResults({ results, onBookCall }: AssessmentResultsProps) {
   const { name, score, scoreCategory, recommendedTier } = results
   const [showExitModal, setShowExitModal] = useState(false)
+  const [offerConfig, setOfferConfig] = useState(defaultAssessmentConfig.resultsOffer)
 
   // Exit-intent detection
   useEffect(() => {
@@ -37,6 +39,23 @@ export function AssessmentResults({ results, onBookCall }: AssessmentResultsProp
 
     document.addEventListener('mouseleave', handleMouseLeave)
     return () => document.removeEventListener('mouseleave', handleMouseLeave)
+  }, [])
+
+  useEffect(() => {
+    const loadOffers = async () => {
+      try {
+        const res = await fetch('/api/assessment/config', { cache: 'no-store' })
+        if (res.ok) {
+          const data = await res.json()
+          if (data?.resultsOffer) {
+            setOfferConfig(data.resultsOffer)
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load assessment offer config', error)
+      }
+    }
+    loadOffers()
   }, [])
 
   // Score category copy
@@ -352,71 +371,58 @@ export function AssessmentResults({ results, onBookCall }: AssessmentResultsProp
           </div>
         </div>
 
-        {/* LIMITED TIME VALUE OFFER */}
-        <div className="bg-gradient-to-br from-yellow-500/20 via-orange-500/20 to-red-500/20 backdrop-blur-xl rounded-3xl p-8 md:p-10 border-2 border-yellow-500/40 shadow-2xl shadow-yellow-500/20">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <Gift className="w-8 h-8 text-yellow-400 animate-bounce" />
-            <h3 className="text-2xl md:text-3xl font-black text-white text-center">
-              🎁 Exclusive Assessment Completion Offer
-            </h3>
+        <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-xl rounded-3xl p-8 md:p-10 border border-primary-500/30 shadow-2xl shadow-primary-500/10">
+          <div className="text-center space-y-2 mb-6">
+            <div className="flex items-center justify-center gap-3 text-primary-300">
+              <Gift className="w-7 h-7" />
+              <h3 className="text-2xl md:text-3xl font-black text-white text-center">
+                {offerConfig.title}
+              </h3>
+            </div>
+            <p className="text-gray-300 text-lg">{offerConfig.subtitle}</p>
           </div>
 
-          <div className="text-center mb-6">
-            <p className="text-xl text-white font-semibold mb-2">
-              Because you took the time to complete this assessment...
-            </p>
-            <p className="text-gray-200 text-lg">
-              We want to prove we're invested in YOUR success!
-            </p>
-          </div>
+          <div className="grid md:grid-cols-3 gap-4">
+            {offerConfig.offers.map((offer) => (
+              <div
+                key={offer.id}
+                className="bg-gray-900/60 border border-gray-700 rounded-2xl p-5 flex flex-col gap-3"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="space-y-1">
+                    <h4 className="text-xl font-bold text-white">{offer.title}</h4>
+                    {offer.subtitle && <p className="text-gray-300 text-sm">{offer.subtitle}</p>}
+                  </div>
+                  {offer.badge && (
+                    <span className="text-xs bg-primary-500/20 text-primary-200 px-2 py-1 rounded-full">
+                      {offer.badge}
+                    </span>
+                  )}
+                </div>
 
-          <div className="bg-gray-900/60 rounded-2xl p-6 mb-6 border border-yellow-500/30">
-            <div className="flex items-start gap-4 mb-4">
-              <Star className="w-6 h-6 text-yellow-400 flex-shrink-0 mt-1" />
-              <div>
-                <h4 className="text-xl font-bold text-white mb-3">
-                  Purchase ANY Peptide Protocol Today →
-                </h4>
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0" />
-                    <span className="text-gray-200"><strong className="text-white">FREE 2-Month Portal Access</strong> (Breathwork App + MMM Module 1)</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Unlock className="w-5 h-5 text-green-400 flex-shrink-0" />
-                    <span className="text-gray-200"><strong className="text-white">Unlock Additional Rewards</strong> as you complete modules</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Target className="w-5 h-5 text-green-400 flex-shrink-0" />
-                    <span className="text-gray-200"><strong className="text-white">Personal Success Tracking</strong> to optimize your results</span>
-                  </div>
+                {offer.bullets && offer.bullets.length > 0 && (
+                  <ul className="space-y-2 text-gray-300 text-sm">
+                    {offer.bullets.map((bullet, idx) => (
+                      <li key={idx} className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-primary-300 mt-0.5" />
+                        <span>{bullet}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
+                <div className="pt-2">
+                  <Link
+                    href={offer.ctaLink}
+                    className="inline-flex items-center gap-2 bg-gradient-to-r from-primary-500 to-secondary-500 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg hover:shadow-primary-500/30 transition-all"
+                  >
+                    <Star className="w-4 h-4" />
+                    {offer.ctaText}
+                  </Link>
                 </div>
               </div>
-            </div>
-
-            <div className="bg-primary-500/20 rounded-xl p-4 border border-primary-500/30 mt-4">
-              <p className="text-center text-white font-semibold text-lg mb-2">
-                💪 We're committed to making this work for YOU!
-              </p>
-              <p className="text-center text-gray-300 text-sm">
-                If you're actually committed to your transformation, we'll give you the tools AND support to succeed.
-              </p>
-            </div>
+            ))}
           </div>
-
-          <div className="flex justify-center">
-            <Link
-              href="/store"
-              className="inline-flex items-center gap-3 bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500 text-white px-10 py-5 rounded-2xl font-black text-xl hover:shadow-2xl hover:shadow-yellow-500/50 transform hover:scale-105 transition-all"
-            >
-              <Gift className="w-6 h-6" />
-              Claim My Bonus & Browse Protocols
-            </Link>
-          </div>
-
-          <p className="text-center text-gray-400 text-sm mt-4">
-            This offer is available for the next 24 hours
-          </p>
         </div>
 
         {/* Social Proof / Contact */}

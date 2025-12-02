@@ -1,14 +1,34 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { ChevronDown, CheckCircle2, TrendingUp, Target, Zap } from "lucide-react"
 import Image from "next/image"
+import { defaultAssessmentConfig } from "@/config/assessmentConfig"
 
 interface AssessmentLandingProps {
   onStartQuiz: () => void
 }
 
 export function AssessmentLanding({ onStartQuiz }: AssessmentLandingProps) {
+  const [landingCopy, setLandingCopy] = useState(defaultAssessmentConfig.landing)
+
+  useEffect(() => {
+    const loadConfig = async () => {
+      try {
+        const res = await fetch('/api/assessment/config', { cache: 'no-store' })
+        if (res.ok) {
+          const data = await res.json()
+          if (data?.landing) {
+            setLandingCopy(data.landing)
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load assessment landing config', error)
+      }
+    }
+    loadConfig()
+  }, [])
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 relative"
          style={{
@@ -27,22 +47,16 @@ export function AssessmentLanding({ onStartQuiz }: AssessmentLandingProps) {
             {/* Frustration Hook */}
             <h1 className="text-3xl md:text-5xl lg:text-6xl font-black leading-tight">
               <span className="block bg-gradient-to-r from-gray-100 via-white to-gray-100 bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]">
-                Feeling frustrated that you're
+                {landingCopy.headline}
               </span>
               <span className="block mt-3 bg-gradient-to-r from-[#3FBFB5] via-[#5dd9cc] to-[#72C247] bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(63,191,181,0.5)]">
-                not losing weight...
-              </span>
-              <span className="block mt-3 text-white/90 text-2xl md:text-4xl">
-                even though you're tracking calories, working out 4x/week,
-              </span>
-              <span className="block mt-2 text-white/90 text-2xl md:text-4xl">
-                and doing "everything right"?
+                {landingCopy.subheadline}
               </span>
             </h1>
 
             {/* Subheading */}
             <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto font-semibold">
-              Answer 15 questions to discover the <span className="text-primary-400">3 cellular optimization gaps</span> keeping you stuck—and what to do about them.
+              {landingCopy.supportingPoints[0] || 'Answer 15 questions to discover the 3 cellular optimization gaps keeping you stuck and what to do about them.'}
             </p>
           </div>
 
