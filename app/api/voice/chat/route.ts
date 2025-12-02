@@ -75,22 +75,22 @@ export async function POST(req: NextRequest) {
         }
 
         // 5. Generate Speech (Text-to-Speech)
-        let buffer: Buffer;
+        let audioArrayBuffer: ArrayBuffer;
         try {
             const mp3 = await openai.audio.speech.create({
                 model: 'tts-1',
                 voice: 'alloy',
                 input: agentText,
             });
-            buffer = Buffer.from(await mp3.arrayBuffer());
-            console.log(`[VoiceAPI] Generated audio response: ${buffer.length} bytes`);
+            audioArrayBuffer = await mp3.arrayBuffer();
+            console.log(`[VoiceAPI] Generated audio response: ${audioArrayBuffer.byteLength} bytes`);
         } catch (ttsError) {
             console.error('[VoiceAPI] TTS error:', ttsError);
             return NextResponse.json({ error: 'TTS failed', details: String(ttsError) }, { status: 500 });
         }
 
         // 6. Return Audio and Metadata
-        return new NextResponse(buffer, {
+        return new NextResponse(audioArrayBuffer, {
             headers: {
                 'Content-Type': 'audio/mpeg',
                 'X-Agent-Response-Text': encodeURIComponent(agentText),
