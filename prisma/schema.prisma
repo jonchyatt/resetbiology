@@ -1136,3 +1136,79 @@ model AgentTraining {
   @@unique([agentId, userId])
   @@map("agent_trainings")
 }
+
+// ============================================
+// NEPQ QUIZ FUNNEL SUBMISSIONS
+// ============================================
+// Stores responses from the NEPQ (Neuro-Emotional Persuasion Questioning) quiz funnel
+
+model NEPQSubmission {
+  id                    String    @id @default(auto()) @map("_id") @db.ObjectId
+
+  // Section 1: Contact Intake
+  name                  String
+  email                 String
+  phone                 String?
+
+  // Section 2: Best Practices Audit (multi-select)
+  bestPractices         Json      // Array of selected practice values with scores
+  auditScore            Int       // Calculated score from audit
+  auditLevel            String    // "beginner" | "intermediate" | "advanced" | "expert"
+
+  // Section 3: Journey/Qualifying
+  journeyStage          String    // "starting" | "stuck_6_12mo" | "plateaus_1_3yr" | "frustrated_3yr_plus"
+  desiredOutcome        String    // "lose_fat" | "energy_vitality" | "break_plateau" | "sustainable_system"
+  biggestObstacle       String    // "knowledge_gap" | "consistency" | "broken_metabolism" | "overwhelm"
+
+  // Section 4: Black Swan - Success Vision
+  successVision         String    // Textarea response - what success looks like
+  successFeeling        String    // Textarea response - emotional meaning of success
+
+  // Section 5: Desire Amplification (MI Technique)
+  whyChange             String    // Why are they thinking about change?
+  readinessScore        Int       // 1-10 scale
+  whyNotLower           String    // Why didn't they pick a lower number?
+  positiveOutcomes      String    // What positive outcomes would happen?
+  whyImportant          String    // Why are those outcomes important?
+
+  // Section 6: Energy Spin Up
+  completedEnergySpin   Boolean   @default(false)
+  energySpinDuration    Int?      // How long they spent in seconds
+
+  // Section 7: Close
+  viewedOffers          Boolean   @default(false)
+  selectedOffer         String?   // "diy" | "guided" | "done-with-you" | "concierge" | "other"
+  otherOfferRequest     String?   // If they selected "other", what did they want?
+
+  // Conversion Tracking
+  convertedAt           DateTime?
+  stripeSessionId       String?   // If they started checkout
+  conversionValue       Float?    // Amount if converted
+
+  // Engagement Analytics
+  startedAt             DateTime  @default(now())
+  completedAt           DateTime?
+  timeToComplete        Int?      // Total seconds from start to completion
+  sectionsCompleted     Int       @default(0)
+  lastActiveSection     String?   // Which section they were last on
+
+  // UTM & Source Tracking
+  utmSource             String?
+  utmMedium             String?
+  utmCampaign           String?
+  referrer              String?
+  userAgent             String?
+  ipAddress             String?
+
+  // A/B Testing
+  variant               String    @default("nepq-v1")
+
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([email])
+  @@index([selectedOffer])
+  @@index([completedAt])
+  @@index([auditLevel])
+  @@map("nepq_submissions")
+}

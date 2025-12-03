@@ -1,0 +1,568 @@
+/**
+ * NEPQ Quiz Configuration
+ *
+ * Based on Neuro-Emotional Persuasion Questioning (NEPQ) framework
+ * with Chris Voss "No-oriented" closing techniques and Motivational Interviewing
+ *
+ * 7 Sections:
+ * 1. Contact Intake
+ * 2. Authority/Best Practices Audit (scored, multi-select)
+ * 3. Journey/Qualifying Questions (situation awareness)
+ * 4. Black Swan - Success Definition (open-ended)
+ * 5. Desire Amplification (MI technique)
+ * 6. Energy Spin Up (placeholder for Phase 2 audio)
+ * 7. Commitment/Close (No-oriented questions)
+ */
+
+export type NEPQSection =
+  | 'contact'
+  | 'audit'
+  | 'journey'
+  | 'vision'
+  | 'amplification'
+  | 'energySpin'
+  | 'close'
+
+export type NEPQQuestionType =
+  | 'text'
+  | 'email'
+  | 'tel'
+  | 'textarea'
+  | 'choice'
+  | 'scale'
+  | 'multiSelect'
+
+export type NEPQOption = {
+  value: string
+  label: string
+  score?: number
+  sublabel?: string
+}
+
+export type NEPQQuestion = {
+  id: string
+  section: NEPQSection
+  question: string
+  subtitle?: string
+  type: NEPQQuestionType
+  placeholder?: string
+  required?: boolean
+  options?: NEPQOption[]
+  min?: number
+  max?: number
+  minLabel?: string
+  maxLabel?: string
+  feedbackType?: 'mirror' | 'label' | 'none'
+  labelPrefix?: string // "It seems like...", "It sounds like..."
+}
+
+export type NEPQOffer = {
+  id: string
+  tier: 'diy' | 'guided' | 'doneWithYou' | 'concierge' | 'other'
+  title: string
+  subtitle: string
+  trialPrice: string
+  monthlyPrice: string
+  features: string[]
+  badge?: string
+  accentColor: 'teal' | 'blue' | 'purple' | 'gold' | 'gray'
+  stripeLink?: string
+  highlighted?: boolean
+}
+
+export type NEPQConfig = {
+  sections: {
+    id: NEPQSection
+    title: string
+    subtitle?: string
+    progressLabel: string
+  }[]
+  questions: NEPQQuestion[]
+  offers: NEPQOffer[]
+  closeQuestion: {
+    question: string
+    yesText: string
+    noText: string
+  }
+}
+
+// Best Practices Audit scoring weights
+export const AUDIT_CATEGORIES = {
+  proteinTracking: { weight: 1, maxScore: 10 },
+  stemCell: { weight: 1.2, maxScore: 10 },
+  digitalTracking: { weight: 1, maxScore: 10 },
+  breathwork: { weight: 1.1, maxScore: 10 },
+  sleepOptimization: { weight: 1.2, maxScore: 10 },
+  journaling: { weight: 0.8, maxScore: 10 },
+  workoutProgram: { weight: 1, maxScore: 10 },
+  accountability: { weight: 1.1, maxScore: 10 },
+  peptideKnowledge: { weight: 0.9, maxScore: 10 },
+} as const
+
+export const nepqConfig: NEPQConfig = {
+  sections: [
+    {
+      id: 'contact',
+      title: 'Welcome to Reset Biology',
+      subtitle: 'Let\'s start with the basics so we can personalize your experience',
+      progressLabel: 'Getting Started',
+    },
+    {
+      id: 'audit',
+      title: 'Current Practices Audit',
+      subtitle: 'Select all that apply to your current health routine',
+      progressLabel: 'Your Foundation',
+    },
+    {
+      id: 'journey',
+      title: 'Your Journey So Far',
+      subtitle: 'Help us understand where you are right now',
+      progressLabel: 'Your Story',
+    },
+    {
+      id: 'vision',
+      title: 'Defining Success',
+      subtitle: 'Paint a picture of what success looks like for you',
+      progressLabel: 'Your Vision',
+    },
+    {
+      id: 'amplification',
+      title: 'Why This Matters',
+      subtitle: 'Let\'s explore what\'s driving you to make a change',
+      progressLabel: 'Your Why',
+    },
+    {
+      id: 'energySpin',
+      title: 'Energy Activation',
+      subtitle: 'A brief guided experience to connect with your goals',
+      progressLabel: 'Activation',
+    },
+    {
+      id: 'close',
+      title: 'Your Path Forward',
+      subtitle: 'Explore which option fits your goals',
+      progressLabel: 'Next Steps',
+    },
+  ],
+
+  questions: [
+    // Section 1: Contact Intake
+    {
+      id: 'name',
+      section: 'contact',
+      question: 'What would you like to be called at Reset Biology?',
+      type: 'text',
+      placeholder: 'Your preferred name',
+      required: true,
+    },
+    {
+      id: 'email',
+      section: 'contact',
+      question: 'What\'s your email address?',
+      subtitle: 'We\'ll use this to save your progress and send your personalized results',
+      type: 'email',
+      placeholder: 'you@example.com',
+      required: true,
+    },
+    {
+      id: 'phone',
+      section: 'contact',
+      question: 'Phone number (optional)',
+      subtitle: 'For priority support and faster responses',
+      type: 'tel',
+      placeholder: '(555) 123-4567',
+      required: false,
+    },
+
+    // Section 2: Authority/Best Practices Audit (Multi-select, Scored)
+    {
+      id: 'audit_practices',
+      section: 'audit',
+      question: 'Which of these practices are you currently doing?',
+      subtitle: 'Select all that apply - be honest, this helps us identify gaps',
+      type: 'multiSelect',
+      options: [
+        {
+          value: 'protein_tracking',
+          label: 'Tracking protein intake',
+          sublabel: 'Aiming for 0.8-1g per lb bodyweight',
+          score: 10,
+        },
+        {
+          value: 'stem_cell_protocols',
+          label: 'Stem cell or peptide protocols',
+          sublabel: 'Using regenerative medicine approaches',
+          score: 10,
+        },
+        {
+          value: 'digital_tracking',
+          label: 'Digital health tracking system',
+          sublabel: 'Unified platform for workouts, nutrition, recovery',
+          score: 10,
+        },
+        {
+          value: 'breathwork_meditation',
+          label: 'Daily breathwork or meditation',
+          sublabel: '10+ minutes of intentional practice',
+          score: 10,
+        },
+        {
+          value: 'sleep_optimization',
+          label: 'Sleep tracking & optimization',
+          sublabel: 'Using protocols for 7+ hours quality sleep',
+          score: 10,
+        },
+        {
+          value: 'journaling',
+          label: 'Journaling for emotional patterns',
+          sublabel: 'Tracking stress, mood, and their health impact',
+          score: 10,
+        },
+        {
+          value: 'structured_workout',
+          label: 'Structured workout program',
+          sublabel: 'Progressive training designed for your goals',
+          score: 10,
+        },
+        {
+          value: 'accountability_systems',
+          label: 'Accountability systems',
+          sublabel: 'Daily check-ins, reminders, or coaching',
+          score: 10,
+        },
+        {
+          value: 'peptide_familiarity',
+          label: 'Familiar with peptides',
+          sublabel: 'Know about BPC-157, CJC-1295, Retatrutide',
+          score: 10,
+        },
+      ],
+    },
+
+    // Section 3: Journey/Qualifying Questions
+    {
+      id: 'journey_stage',
+      section: 'journey',
+      question: 'Where are you in your health optimization journey?',
+      type: 'choice',
+      required: true,
+      options: [
+        {
+          value: 'starting',
+          label: 'Just getting started',
+          sublabel: 'Ready to build the right foundation from day one',
+        },
+        {
+          value: 'stuck_6_12mo',
+          label: 'Been at it 6-12 months',
+          sublabel: 'Made some progress but hit a plateau',
+        },
+        {
+          value: 'plateaus_1_3yr',
+          label: 'Trying for 1-3 years',
+          sublabel: 'Multiple plateaus, looking for what actually works',
+        },
+        {
+          value: 'frustrated_3yr_plus',
+          label: 'Over 3 years, tried everything',
+          sublabel: 'Ready for a completely different approach',
+        },
+      ],
+    },
+    {
+      id: 'desired_outcome',
+      section: 'journey',
+      question: 'What\'s the #1 outcome you want to achieve in the next 90 days?',
+      type: 'choice',
+      required: true,
+      options: [
+        {
+          value: 'lose_fat',
+          label: 'Lose stubborn body fat',
+          sublabel: 'Finally break through and see real changes',
+        },
+        {
+          value: 'energy_vitality',
+          label: 'Increase energy and vitality',
+          sublabel: 'Feel alive, focused, and motivated again',
+        },
+        {
+          value: 'break_plateau',
+          label: 'Break through my plateau',
+          sublabel: 'Get unstuck and start progressing again',
+        },
+        {
+          value: 'sustainable_system',
+          label: 'Build a sustainable system',
+          sublabel: 'Something that actually works long-term',
+        },
+      ],
+    },
+    {
+      id: 'biggest_obstacle',
+      section: 'journey',
+      question: 'What do you believe is the biggest thing holding you back?',
+      type: 'choice',
+      required: true,
+      feedbackType: 'label',
+      labelPrefix: 'It sounds like',
+      options: [
+        {
+          value: 'knowledge_gap',
+          label: 'I don\'t know what I\'m missing',
+          sublabel: 'Feel like there\'s something I haven\'t figured out',
+        },
+        {
+          value: 'consistency',
+          label: 'I can\'t stay consistent',
+          sublabel: 'Start strong but fade over time',
+        },
+        {
+          value: 'broken_metabolism',
+          label: 'My body doesn\'t respond anymore',
+          sublabel: 'What used to work doesn\'t work now',
+        },
+        {
+          value: 'overwhelm',
+          label: 'Too many conflicting approaches',
+          sublabel: 'Information overload, don\'t know what to follow',
+        },
+      ],
+    },
+
+    // Section 4: Black Swan - Success Definition
+    {
+      id: 'success_vision',
+      section: 'vision',
+      question: 'Imagine it\'s 90 days from now and you\'ve succeeded. What does that look like?',
+      subtitle: 'Describe what you would see, feel, and experience. The more specific, the better.',
+      type: 'textarea',
+      placeholder: 'When I wake up in 90 days, I\'ll notice... I\'ll feel... People will see...',
+      required: true,
+      feedbackType: 'mirror',
+    },
+    {
+      id: 'success_feeling',
+      section: 'vision',
+      question: 'What would achieving this mean to you emotionally?',
+      subtitle: 'Beyond the physical changes, how would you feel about yourself?',
+      type: 'textarea',
+      placeholder: 'I would feel... It would mean...',
+      required: true,
+      feedbackType: 'label',
+      labelPrefix: 'It seems like',
+    },
+
+    // Section 5: Desire Amplification (Motivational Interviewing)
+    {
+      id: 'why_change',
+      section: 'amplification',
+      question: 'Why are you even thinking about making a change right now?',
+      subtitle: 'What\'s happened recently that\'s making you consider this?',
+      type: 'textarea',
+      placeholder: 'I\'m thinking about this because...',
+      required: true,
+      feedbackType: 'mirror',
+    },
+    {
+      id: 'readiness_scale',
+      section: 'amplification',
+      question: 'On a scale of 1-10, how ready are you to commit to a real change?',
+      subtitle: '1 = Not ready at all, 10 = Completely ready to start today',
+      type: 'scale',
+      min: 1,
+      max: 10,
+      minLabel: 'Not ready',
+      maxLabel: 'All in',
+      required: true,
+    },
+    {
+      id: 'why_not_lower',
+      section: 'amplification',
+      question: 'Interesting. Why didn\'t you pick a lower number?',
+      subtitle: 'What\'s making you more ready than not?',
+      type: 'textarea',
+      placeholder: 'I didn\'t pick a lower number because...',
+      required: true,
+      feedbackType: 'label',
+      labelPrefix: 'It sounds like',
+    },
+    {
+      id: 'positive_outcomes',
+      section: 'amplification',
+      question: 'Imagine you\'ve successfully made this change. What positive things would happen?',
+      subtitle: 'Think about all areas of your life that would improve.',
+      type: 'textarea',
+      placeholder: 'If I made this change, I would...',
+      required: true,
+      feedbackType: 'mirror',
+    },
+    {
+      id: 'why_important',
+      section: 'amplification',
+      question: 'Why are those outcomes important to you?',
+      subtitle: 'What makes them matter?',
+      type: 'textarea',
+      placeholder: 'Those outcomes are important because...',
+      required: true,
+      feedbackType: 'label',
+      labelPrefix: 'It seems like',
+    },
+  ],
+
+  // No-Oriented Commitment Question
+  closeQuestion: {
+    question: 'Would it be a bad idea to at least explore which option might fit your goals?',
+    yesText: 'No, let me see my options',
+    noText: 'I\'m not ready yet',
+  },
+
+  // Offer Options
+  offers: [
+    {
+      id: 'diy',
+      tier: 'diy',
+      title: 'DIY Explorer',
+      subtitle: 'Tools to run your own experiment',
+      trialPrice: '$1',
+      monthlyPrice: '$12.99/mo',
+      features: [
+        'Breath training protocols',
+        'Workout tracking system',
+        'Nutrition logging',
+        'Progress dashboard',
+        'Basic peptide education',
+      ],
+      accentColor: 'blue',
+    },
+    {
+      id: 'guided',
+      tier: 'guided',
+      title: 'All Protocols + AI Coaching',
+      subtitle: 'Everything plus personalized guidance',
+      trialPrice: '$1',
+      monthlyPrice: '$29/mo',
+      features: [
+        'Everything in DIY',
+        'All training modules unlocked',
+        'AI-powered coaching chat',
+        'Individualized protocol plan',
+        'Beginner Partnership peptide discounts',
+        'Weekly progress insights',
+      ],
+      badge: 'Most Popular',
+      accentColor: 'teal',
+      highlighted: true,
+    },
+    {
+      id: 'done-with-you',
+      tier: 'doneWithYou',
+      title: 'Done-With-You',
+      subtitle: 'Personal guidance every step of the way',
+      trialPrice: '$99',
+      monthlyPrice: '$149/mo',
+      features: [
+        'Everything in Guided',
+        '1-on-1 planning session',
+        'Email support within 24hrs',
+        'Monthly video check-ins',
+        'Custom protocol adjustments',
+        'Full Partnership peptide discounts',
+      ],
+      accentColor: 'purple',
+    },
+    {
+      id: 'concierge',
+      tier: 'concierge',
+      title: 'Concierge',
+      subtitle: 'Complete white-glove service',
+      trialPrice: 'Book a call',
+      monthlyPrice: '$5,000+/mo',
+      features: [
+        'Everything above',
+        'Weekly 1-on-1 calls',
+        'Direct access messaging',
+        'Fully managed protocols',
+        'Quarterly in-person options',
+        'Complete accountability system',
+      ],
+      badge: 'VIP',
+      accentColor: 'gold',
+    },
+    {
+      id: 'other',
+      tier: 'other',
+      title: 'Something Else?',
+      subtitle: 'Let\'s figure out what works for you',
+      trialPrice: 'Talk to us',
+      monthlyPrice: 'Custom',
+      features: [
+        'Maybe you need something different',
+        'We\'re open to creative solutions',
+        'Let\'s have a conversation',
+      ],
+      accentColor: 'gray',
+    },
+  ],
+}
+
+// Helper functions
+export function getSectionQuestions(section: NEPQSection): NEPQQuestion[] {
+  return nepqConfig.questions.filter(q => q.section === section)
+}
+
+export function getSectionById(sectionId: NEPQSection) {
+  return nepqConfig.sections.find(s => s.id === sectionId)
+}
+
+export function calculateAuditScore(selectedPractices: string[]): {
+  score: number
+  maxScore: number
+  percentage: number
+  level: 'beginner' | 'intermediate' | 'advanced' | 'expert'
+} {
+  const auditQuestion = nepqConfig.questions.find(q => q.id === 'audit_practices')
+  if (!auditQuestion?.options) {
+    return { score: 0, maxScore: 90, percentage: 0, level: 'beginner' }
+  }
+
+  const score = selectedPractices.reduce((total, practice) => {
+    const option = auditQuestion.options?.find(o => o.value === practice)
+    return total + (option?.score || 0)
+  }, 0)
+
+  const maxScore = auditQuestion.options.reduce((total, opt) => total + (opt.score || 0), 0)
+  const percentage = Math.round((score / maxScore) * 100)
+
+  let level: 'beginner' | 'intermediate' | 'advanced' | 'expert' = 'beginner'
+  if (percentage >= 80) level = 'expert'
+  else if (percentage >= 60) level = 'advanced'
+  else if (percentage >= 30) level = 'intermediate'
+
+  return { score, maxScore, percentage, level }
+}
+
+export function generateMirrorResponse(input: string): string {
+  // Extract last 1-3 key words/phrases for mirroring
+  const words = input.trim().split(/\s+/)
+  if (words.length <= 3) {
+    return `"${input.trim()}"...`
+  }
+  const lastWords = words.slice(-3).join(' ')
+  return `"${lastWords}"...`
+}
+
+export function generateLabelResponse(input: string, prefix: string = 'It seems like'): string {
+  // Create a labeling response based on the input
+  const cleanInput = input.trim().toLowerCase()
+
+  // Remove leading "I" or "I'm" to make it flow better
+  let processed = cleanInput
+    .replace(/^i'm\s+/, '')
+    .replace(/^i\s+/, '')
+    .replace(/^my\s+/, 'your ')
+
+  return `${prefix} ${processed}`
+}
+
+export default nepqConfig
