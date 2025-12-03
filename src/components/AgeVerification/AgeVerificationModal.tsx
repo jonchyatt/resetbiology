@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react';
-import { Shield } from 'lucide-react';
+import { Shield, XCircle } from 'lucide-react';
+import Link from 'next/link';
 
 export default function AgeVerificationModal() {
   const [show, setShow] = useState(false);
@@ -21,6 +22,13 @@ export default function AgeVerificationModal() {
   const handleConsent = () => {
     sessionStorage.setItem('ageConsent', 'true');
     setHasConsented(true);
+    setShow(false);
+  };
+
+  // For users under 21, deliberately do NOT set consent and let them navigate away.
+  const handleUnderage = () => {
+    sessionStorage.removeItem('ageConsent');
+    setHasConsented(false);
     setShow(false);
   };
 
@@ -52,13 +60,24 @@ export default function AgeVerificationModal() {
           </p>
         </div>
 
-        {/* Button */}
-        <button
-          onClick={handleConsent}
-          className="w-full bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 text-white font-bold py-4 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-primary-500/50"
-        >
-          I Consent - I am 21 or Older
-        </button>
+        {/* Buttons */}
+        <div className="space-y-3">
+          <button
+            onClick={handleConsent}
+            className="w-full bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 text-white font-bold py-4 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-primary-500/50"
+          >
+            I Consent - I am 21 or Older
+          </button>
+
+          <Link
+            href="/not-eligible"
+            onClick={handleUnderage}
+            className="w-full inline-flex items-center justify-center gap-2 bg-gray-800/60 hover:bg-gray-700/70 text-gray-100 font-semibold py-4 px-6 rounded-lg border border-gray-600 transition-all duration-300"
+          >
+            <XCircle className="w-5 h-5 text-red-300" />
+            No, I'm under 21
+          </Link>
+        </div>
       </div>
     </div>
   );
