@@ -684,8 +684,22 @@ export function NEPQQuiz({ onComplete, onClose }: NEPQQuizProps) {
 
         {/* Progress Bar */}
         <div className="mb-8">
-          {/* Section Labels */}
-          <div className="flex justify-between items-center mb-3 overflow-x-auto pb-2">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-sm text-gray-400">
+              {sectionInfo?.progressLabel}
+            </span>
+            <span className="text-sm text-primary-300">
+              {progressPercent}% Complete
+            </span>
+          </div>
+          <div className="w-full bg-gray-800 rounded-full h-2">
+            <div
+              className="bg-gradient-to-r from-primary-400 to-secondary-400 h-2 rounded-full transition-all duration-500"
+              style={{ width: `${progressPercent}%` }}
+            />
+          </div>
+          {/* Section Labels - BELOW the progress bar */}
+          <div className="flex justify-between items-start mt-3 overflow-x-auto">
             {allSections.map((section, idx) => {
               const isActive = section.id === currentSection
               const isCompleted = idx < sectionIndex
@@ -715,20 +729,6 @@ export function NEPQQuiz({ onComplete, onClose }: NEPQQuizProps) {
                 </div>
               )
             })}
-          </div>
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-sm text-gray-400">
-              Step {currentProgress} of {totalQuestions}
-            </span>
-            <span className="text-sm text-primary-300">
-              {progressPercent}% Complete
-            </span>
-          </div>
-          <div className="w-full bg-gray-800 rounded-full h-2">
-            <div
-              className="bg-gradient-to-r from-primary-400 to-secondary-400 h-2 rounded-full transition-all duration-500"
-              style={{ width: `${progressPercent}%` }}
-            />
           </div>
         </div>
 
