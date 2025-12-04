@@ -168,7 +168,7 @@ export function NEPQQuiz({ onComplete, onClose }: NEPQQuizProps) {
     }
 
     // Move to next section
-    const sections: NEPQSection[] = ["contact", "audit", "journey", "vision", "amplification", "energySpin", "close"]
+    const sections: NEPQSection[] = ["contact", "audit", "journey", "amplification", "vision", "energySpin", "close"]
     const currentSectionIndex = sections.indexOf(currentSection)
 
     if (currentSectionIndex < sections.length - 1) {
@@ -196,7 +196,7 @@ export function NEPQQuiz({ onComplete, onClose }: NEPQQuizProps) {
       return
     }
 
-    const sections: NEPQSection[] = ["contact", "audit", "journey", "vision", "amplification"]
+    const sections: NEPQSection[] = ["contact", "audit", "journey", "amplification", "vision"]
     const currentSectionIndex = sections.indexOf(currentSection)
 
     if (currentSectionIndex > 0) {
@@ -422,8 +422,8 @@ export function NEPQQuiz({ onComplete, onClose }: NEPQQuizProps) {
         onSelect={handleOfferSelect}
         onBack={() => {
           setShowClose(false)
-          setCurrentSection("amplification")
-          setCurrentQuestionIndex(getSectionQuestions("amplification").length - 1)
+          setCurrentSection("vision")
+          setCurrentQuestionIndex(getSectionQuestions("vision").length - 1)
         }}
       />
     )
