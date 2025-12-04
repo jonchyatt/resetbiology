@@ -680,6 +680,38 @@ export function NEPQQuiz({ onComplete, onClose }: NEPQQuizProps) {
 
         {/* Progress Bar */}
         <div className="mb-8">
+          {/* Section Labels */}
+          <div className="flex justify-between items-center mb-3 overflow-x-auto pb-2">
+            {allSections.map((section, idx) => {
+              const isActive = section.id === currentSection
+              const isCompleted = idx < sectionIndex
+              return (
+                <div
+                  key={section.id}
+                  className={`flex flex-col items-center min-w-0 flex-1 px-1 ${
+                    isActive ? "opacity-100" : isCompleted ? "opacity-70" : "opacity-40"
+                  }`}
+                >
+                  <div
+                    className={`w-3 h-3 rounded-full mb-1 ${
+                      isActive
+                        ? "bg-primary-400 ring-2 ring-primary-400/50"
+                        : isCompleted
+                        ? "bg-primary-500"
+                        : "bg-gray-600"
+                    }`}
+                  />
+                  <span
+                    className={`text-xs whitespace-nowrap ${
+                      isActive ? "text-primary-300 font-semibold" : "text-gray-400"
+                    }`}
+                  >
+                    {section.progressLabel}
+                  </span>
+                </div>
+              )
+            })}
+          </div>
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm text-gray-400">
               Step {currentProgress} of {totalQuestions}

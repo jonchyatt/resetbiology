@@ -121,16 +121,16 @@ export const nepqConfig: NEPQConfig = {
       progressLabel: 'Your Story',
     },
     {
-      id: 'vision',
-      title: 'Defining Success',
-      subtitle: 'Paint a picture of what success looks like for you',
-      progressLabel: 'Your Vision',
-    },
-    {
       id: 'amplification',
       title: 'Why This Matters',
       subtitle: 'Let\'s explore what\'s driving you to make a change',
       progressLabel: 'Your Why',
+    },
+    {
+      id: 'vision',
+      title: 'Defining Success',
+      subtitle: 'Paint a picture of what success looks like for you',
+      progressLabel: 'Your Vision',
     },
     {
       id: 'energySpin',
@@ -356,10 +356,10 @@ export const nepqConfig: NEPQConfig = {
     {
       id: 'why_change',
       section: 'amplification',
-      question: 'Why are you even thinking about making a change right now?',
-      subtitle: 'What\'s happened recently that\'s making you consider this?',
+      question: 'Really, only you know why you are here. What is it you are wanting?',
+      subtitle: 'Why are you even thinking about making a change right now?',
       type: 'textarea',
-      placeholder: 'I\'m thinking about this because...',
+      placeholder: 'I\'m here because...',
       required: true,
     },
     {
