@@ -1,16 +1,13 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState } from "react"
 import { ChevronLeft, ChevronRight, Check, Sparkles } from "lucide-react"
 import {
   nepqConfig,
   NEPQSection,
-  NEPQQuestion,
   getSectionQuestions,
   getSectionById,
   calculateAuditScore,
-  generateMirrorResponse,
-  generateLabelResponse,
 } from "@/config/nepqQuizConfig"
 import { NEPQClose } from "./NEPQClose"
 import { EnergySpin } from "./EnergySpin"
@@ -54,7 +51,6 @@ export function NEPQQuiz({ onComplete, onClose }: NEPQQuizProps) {
   const [showEnergySpin, setShowEnergySpin] = useState(false)
   const [showClose, setShowClose] = useState(false)
   const [completedEnergySpin, setCompletedEnergySpin] = useState(false)
-  const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null)
 
   const [answers, setAnswers] = useState<NEPQAnswers>({
     name: "",
@@ -88,37 +84,12 @@ export function NEPQQuiz({ onComplete, onClose }: NEPQQuizProps) {
   const currentProgress = questionsBeforeCurrentSection + currentQuestionIndex + 1
   const progressPercent = Math.round((currentProgress / totalQuestions) * 100)
 
-  // Generate feedback when answer changes
-  const generateFeedback = useCallback((question: NEPQQuestion, value: string | number) => {
-    if (!question.feedbackType || question.feedbackType === "none") {
-      setFeedbackMessage(null)
-      return
-    }
-
-    const strValue = String(value)
-    if (strValue.length < 10) {
-      setFeedbackMessage(null)
-      return
-    }
-
-    if (question.feedbackType === "mirror") {
-      setFeedbackMessage(generateMirrorResponse(strValue))
-    } else if (question.feedbackType === "label" && question.labelPrefix) {
-      setFeedbackMessage(generateLabelResponse(strValue, question.labelPrefix))
-    }
-  }, [])
-
   // Handle input changes
   const handleInputChange = (questionId: string, value: string | number | string[]) => {
     setAnswers(prev => ({
       ...prev,
       [questionId]: value,
     }))
-
-    // Generate feedback for textarea responses
-    if (currentQuestion?.feedbackType && typeof value === "string") {
-      generateFeedback(currentQuestion, value)
-    }
   }
 
   // Handle multi-select toggle
@@ -153,8 +124,6 @@ export function NEPQQuiz({ onComplete, onClose }: NEPQQuizProps) {
 
   // Navigate to next question/section
   const handleNext = () => {
-    setFeedbackMessage(null)
-
     // If there are more questions in this section
     if (currentQuestionIndex < sectionQuestions.length - 1) {
       setCurrentQuestionIndex(prev => prev + 1)
@@ -185,8 +154,6 @@ export function NEPQQuiz({ onComplete, onClose }: NEPQQuizProps) {
 
   // Navigate to previous question/section
   const handleBack = () => {
-    setFeedbackMessage(null)
-
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex(prev => prev - 1)
       return
@@ -198,8 +165,13 @@ export function NEPQQuiz({ onComplete, onClose }: NEPQQuizProps) {
     if (currentSectionIndex > 0) {
       const prevSection = sections[currentSectionIndex - 1]
       setCurrentSection(prevSection)
-      const prevSectionQuestions = getSectionQuestions(prevSection)
-      setCurrentQuestionIndex(prevSectionQuestions.length - 1)
+      // Contact section is special (combined) - just set index to 0
+      if (prevSection === "contact") {
+        setCurrentQuestionIndex(0)
+      } else {
+        const prevSectionQuestions = getSectionQuestions(prevSection)
+        setCurrentQuestionIndex(prevSectionQuestions.length - 1)
+      }
     }
   }
 
@@ -284,22 +256,14 @@ export function NEPQQuiz({ onComplete, onClose }: NEPQQuizProps) {
 
       case "textarea":
         return (
-          <div className="space-y-4">
-            <textarea
-              value={String(value || "")}
-              onChange={(e) => handleInputChange(currentQuestion.id, e.target.value)}
-              placeholder={currentQuestion.placeholder}
-              rows={5}
-              className="w-full px-6 py-4 bg-gray-700/50 border border-gray-600 rounded-xl text-white text-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
-              autoFocus
-            />
-            {/* Feedback Message */}
-            {feedbackMessage && (
-              <div className="bg-primary-500/10 border border-primary-500/30 rounded-lg p-4 animate-fade-in">
-                <p className="text-primary-300 italic">{feedbackMessage}</p>
-              </div>
-            )}
-          </div>
+          <textarea
+            value={String(value || "")}
+            onChange={(e) => handleInputChange(currentQuestion.id, e.target.value)}
+            placeholder={currentQuestion.placeholder}
+            rows={5}
+            className="w-full px-6 py-4 bg-gray-700/50 border border-gray-600 rounded-xl text-white text-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+            autoFocus
+          />
         )
 
       case "scale":
@@ -433,8 +397,124 @@ export function NEPQQuiz({ onComplete, onClose }: NEPQQuizProps) {
     }
   }
 
+  // Special render for contact section (combined name + email like /quiz)
+  const renderContactSection = () => {
+    const canProceedContact = answers.name.trim() !== "" && answers.email.trim() !== "" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(answers.email)
+
+    return (
+      <div
+        className="min-h-screen flex items-center justify-center px-4"
+        style={{
+          backgroundImage: 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url(/hero-background.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundAttachment: 'fixed'
+        }}
+      >
+        <div className="max-w-2xl w-full">
+          {/* Progress Bar */}
+          <div className="mb-8">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm text-gray-400">Step 1 of 12</span>
+              <span className="text-sm text-primary-300">8% Complete</span>
+            </div>
+            <div className="w-full bg-gray-800 rounded-full h-2">
+              <div
+                className="bg-gradient-to-r from-primary-400 to-secondary-400 h-2 rounded-full transition-all duration-500"
+                style={{ width: '8%' }}
+              />
+            </div>
+          </div>
+
+          {/* Quiz Card */}
+          <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-8 border border-primary-400/30 shadow-2xl">
+            <div className="space-y-6">
+              <div className="text-center mb-8">
+                <h1 className="text-3xl font-bold text-white mb-4">Let's Get Started</h1>
+                <p className="text-gray-300 text-lg leading-relaxed">
+                  We want to get it right. We only want to get you to where <span className="text-primary-300 font-semibold">YOU</span> want to go.
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  What do you want to be called here at Reset Biology?
+                </label>
+                <input
+                  type="text"
+                  value={answers.name}
+                  onChange={(e) => handleInputChange("name", e.target.value)}
+                  placeholder="Your preferred name..."
+                  className="w-full bg-gray-800/50 border border-primary-400/30 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/20"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  What is the best email address for you to use to log into our site?
+                </label>
+                <input
+                  type="email"
+                  value={answers.email}
+                  onChange={(e) => handleInputChange("email", e.target.value)}
+                  placeholder="your.email@example.com"
+                  className="w-full bg-gray-800/50 border border-primary-400/30 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/20"
+                  onKeyPress={(e) => {
+                    if (e.key === "Enter" && canProceedContact) {
+                      // Skip past the email and phone questions to next section
+                      setCurrentSection("audit")
+                      setCurrentQuestionIndex(0)
+                    }
+                  }}
+                />
+              </div>
+
+              <div className="bg-primary-500/10 border border-primary-400/30 rounded-lg p-4 mt-6">
+                <p className="text-gray-300 text-sm leading-relaxed">
+                  We are going to go through some questions that will help us get to know you and you to have the opportunity to get to know us. By the end of this short quiz we will help get you to where you want to be.
+                </p>
+              </div>
+            </div>
+
+            {/* Navigation Button */}
+            <div className="mt-8">
+              <button
+                onClick={() => {
+                  // Skip past the email and phone questions to next section
+                  setCurrentSection("audit")
+                  setCurrentQuestionIndex(0)
+                }}
+                disabled={!canProceedContact}
+                className={`w-full py-3 px-6 rounded-lg font-bold transition-all duration-300 ${
+                  canProceedContact
+                    ? "bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-400 hover:to-secondary-400 text-white hover:shadow-lg hover:shadow-primary-400/20"
+                    : "opacity-50 cursor-not-allowed bg-gray-700 text-gray-400"
+                }`}
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Show special contact section
+  if (currentSection === "contact") {
+    return renderContactSection()
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 px-4 py-8 md:py-12">
+    <div
+      className="min-h-screen px-4 py-8 md:py-12"
+      style={{
+        backgroundImage: 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url(/hero-background.jpg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed'
+      }}
+    >
       <div className="max-w-3xl mx-auto">
         {/* Close Button */}
         {onClose && (
@@ -452,96 +532,78 @@ export function NEPQQuiz({ onComplete, onClose }: NEPQQuizProps) {
         {/* Progress Bar */}
         <div className="mb-8">
           <div className="flex justify-between items-center mb-2">
-            <span className="text-sm font-semibold text-gray-400">
-              {sectionInfo?.progressLabel}
+            <span className="text-sm text-gray-400">
+              Step {currentProgress} of {totalQuestions}
             </span>
-            <span className="text-sm font-semibold text-primary-400">
+            <span className="text-sm text-primary-300">
               {progressPercent}% Complete
             </span>
           </div>
-          <div className="w-full h-3 bg-gray-700 rounded-full overflow-hidden">
+          <div className="w-full bg-gray-800 rounded-full h-2">
             <div
-              className="h-full bg-gradient-to-r from-primary-500 to-secondary-500 transition-all duration-500 rounded-full"
+              className="bg-gradient-to-r from-primary-400 to-secondary-400 h-2 rounded-full transition-all duration-500"
               style={{ width: `${progressPercent}%` }}
             />
-          </div>
-          {/* Section indicators */}
-          <div className="flex justify-between mt-4">
-            {allSections.map((section, idx) => (
-              <div
-                key={section.id}
-                className={`flex flex-col items-center ${
-                  idx <= sectionIndex ? "text-primary-400" : "text-gray-600"
-                }`}
-              >
-                <div
-                  className={`w-3 h-3 rounded-full mb-1 ${
-                    idx < sectionIndex
-                      ? "bg-primary-500"
-                      : idx === sectionIndex
-                      ? "bg-primary-400 ring-2 ring-primary-500/30"
-                      : "bg-gray-700"
-                  }`}
-                />
-                <span className="text-xs hidden md:block">{section.progressLabel}</span>
-              </div>
-            ))}
           </div>
         </div>
 
         {/* Question Card */}
-        <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-xl rounded-3xl p-8 md:p-10 border border-white/10 shadow-2xl">
+        <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-8 border border-primary-400/30 shadow-2xl">
           <div className="space-y-6">
             {/* Section Title */}
             {currentQuestionIndex === 0 && (
-              <div className="flex items-center gap-3 mb-4">
-                <Sparkles className="w-6 h-6 text-primary-400" />
-                <span className="text-primary-400 font-semibold uppercase tracking-wide text-sm">
-                  {sectionInfo?.title}
-                </span>
+              <div className="text-center mb-8">
+                <h1 className="text-3xl font-bold text-white mb-4">{sectionInfo?.title}</h1>
+                {sectionInfo?.subtitle && (
+                  <p className="text-gray-300 text-lg">{sectionInfo.subtitle}</p>
+                )}
               </div>
             )}
 
             {/* Question Text */}
-            <div>
-              <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
-                {currentQuestion?.question}
-              </h2>
-              {currentQuestion?.subtitle && (
-                <p className="text-gray-400 text-lg">{currentQuestion.subtitle}</p>
-              )}
-            </div>
+            {currentQuestionIndex > 0 && (
+              <div>
+                <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
+                  {currentQuestion?.question}
+                </h2>
+                {currentQuestion?.subtitle && (
+                  <p className="text-gray-400 text-lg">{currentQuestion.subtitle}</p>
+                )}
+              </div>
+            )}
+
+            {/* First question in section: show question in context */}
+            {currentQuestionIndex === 0 && currentQuestion && (
+              <div>
+                <p className="text-xl text-gray-200 mb-6">
+                  {currentQuestion.question}
+                </p>
+              </div>
+            )}
 
             {/* Input */}
             {renderQuestionInput()}
           </div>
 
           {/* Navigation Buttons */}
-          <div className="flex justify-between items-center mt-8 pt-8 border-t border-gray-700">
+          <div className="flex gap-4 mt-8">
             <button
               onClick={handleBack}
-              disabled={currentSection === "contact" && currentQuestionIndex === 0}
-              className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all ${
-                currentSection === "contact" && currentQuestionIndex === 0
-                  ? "opacity-50 cursor-not-allowed text-gray-500"
-                  : "text-white hover:bg-gray-700/50"
-              }`}
+              className="flex-1 bg-gray-700 hover:bg-gray-600 text-white font-medium py-3 px-6 rounded-lg transition-colors"
             >
-              <ChevronLeft className="w-5 h-5" />
               Back
             </button>
 
             <button
               onClick={handleNext}
               disabled={!canProceed()}
-              className={`flex items-center gap-2 px-8 py-3 rounded-xl font-bold transition-all ${
+              className={`flex-1 py-3 px-6 rounded-lg font-bold transition-all duration-300 ${
                 canProceed()
-                  ? "bg-gradient-to-r from-primary-500 to-secondary-500 text-white hover:shadow-lg hover:shadow-primary-500/50 transform hover:scale-105"
+                  ? "bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-400 hover:to-secondary-400 text-white hover:shadow-lg hover:shadow-primary-400/20"
                   : "opacity-50 cursor-not-allowed bg-gray-700 text-gray-400"
               }`}
             >
-              Continue
-              <ChevronRight className="w-5 h-5" />
+              Next
             </button>
           </div>
         </div>

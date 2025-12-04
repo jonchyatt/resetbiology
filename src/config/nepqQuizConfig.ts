@@ -52,8 +52,6 @@ export type NEPQQuestion = {
   max?: number
   minLabel?: string
   maxLabel?: string
-  feedbackType?: 'mirror' | 'label' | 'none'
-  labelPrefix?: string // "It seems like...", "It sounds like..."
 }
 
 export type NEPQOffer = {
@@ -304,8 +302,6 @@ export const nepqConfig: NEPQConfig = {
       question: 'What do you believe is the biggest thing holding you back?',
       type: 'choice',
       required: true,
-      feedbackType: 'label',
-      labelPrefix: 'It sounds like',
       options: [
         {
           value: 'knowledge_gap',
@@ -339,7 +335,6 @@ export const nepqConfig: NEPQConfig = {
       type: 'textarea',
       placeholder: 'When I wake up in 90 days, I\'ll notice... I\'ll feel... People will see...',
       required: true,
-      feedbackType: 'mirror',
     },
     {
       id: 'success_feeling',
@@ -349,8 +344,6 @@ export const nepqConfig: NEPQConfig = {
       type: 'textarea',
       placeholder: 'I would feel... It would mean...',
       required: true,
-      feedbackType: 'label',
-      labelPrefix: 'It seems like',
     },
 
     // Section 5: Desire Amplification (Motivational Interviewing)
@@ -362,7 +355,6 @@ export const nepqConfig: NEPQConfig = {
       type: 'textarea',
       placeholder: 'I\'m thinking about this because...',
       required: true,
-      feedbackType: 'mirror',
     },
     {
       id: 'readiness_scale',
@@ -384,8 +376,6 @@ export const nepqConfig: NEPQConfig = {
       type: 'textarea',
       placeholder: 'I didn\'t pick a lower number because...',
       required: true,
-      feedbackType: 'label',
-      labelPrefix: 'It sounds like',
     },
     {
       id: 'positive_outcomes',
@@ -395,7 +385,6 @@ export const nepqConfig: NEPQConfig = {
       type: 'textarea',
       placeholder: 'If I made this change, I would...',
       required: true,
-      feedbackType: 'mirror',
     },
     {
       id: 'why_important',
@@ -405,8 +394,6 @@ export const nepqConfig: NEPQConfig = {
       type: 'textarea',
       placeholder: 'Those outcomes are important because...',
       required: true,
-      feedbackType: 'label',
-      labelPrefix: 'It seems like',
     },
   ],
 
@@ -540,29 +527,6 @@ export function calculateAuditScore(selectedPractices: string[]): {
   else if (percentage >= 30) level = 'intermediate'
 
   return { score, maxScore, percentage, level }
-}
-
-export function generateMirrorResponse(input: string): string {
-  // Extract last 1-3 key words/phrases for mirroring
-  const words = input.trim().split(/\s+/)
-  if (words.length <= 3) {
-    return `"${input.trim()}"...`
-  }
-  const lastWords = words.slice(-3).join(' ')
-  return `"${lastWords}"...`
-}
-
-export function generateLabelResponse(input: string, prefix: string = 'It seems like'): string {
-  // Create a labeling response based on the input
-  const cleanInput = input.trim().toLowerCase()
-
-  // Remove leading "I" or "I'm" to make it flow better
-  let processed = cleanInput
-    .replace(/^i'm\s+/, '')
-    .replace(/^i\s+/, '')
-    .replace(/^my\s+/, 'your ')
-
-  return `${prefix} ${processed}`
 }
 
 export default nepqConfig
