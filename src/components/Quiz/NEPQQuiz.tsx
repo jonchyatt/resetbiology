@@ -23,6 +23,7 @@ export interface NEPQAnswers {
   journey_stage: string
   desired_outcome: string[]  // Now ranked array
   biggest_obstacle: string
+  biggest_obstacle_other: string  // Custom frustration text when "other" selected
   // Section 4: Vision
   success_vision: string
   success_feeling: string
@@ -60,6 +61,7 @@ export function NEPQQuiz({ onComplete, onClose }: NEPQQuizProps) {
     journey_stage: "",
     desired_outcome: [],
     biggest_obstacle: "",
+    biggest_obstacle_other: "",
     success_vision: "",
     success_feeling: "",
     why_change: "",
@@ -372,6 +374,74 @@ export function NEPQQuiz({ onComplete, onClose }: NEPQQuizProps) {
                     </div>
                   </div>
                 </button>
+              )
+            })}
+          </div>
+        )
+
+      case "choiceWithOther":
+        const otherFieldId = `${currentQuestion.id}_other` as keyof NEPQAnswers
+        const otherValue = answers[otherFieldId] || ""
+        return (
+          <div className="space-y-3">
+            {currentQuestion.options?.map((option) => {
+              const isSelected = value === option.value
+              const isOther = option.value === "other"
+              return (
+                <div key={option.value}>
+                  <button
+                    onClick={() => {
+                      handleInputChange(currentQuestion.id, option.value)
+                      // Don't auto-advance if "other" is selected - wait for text input
+                      if (!isOther) {
+                        setTimeout(() => {
+                          if (canProceed()) handleNext()
+                        }, 300)
+                      }
+                    }}
+                    className={`w-full text-left px-6 py-4 rounded-xl border-2 transition-all duration-300 ${
+                      isSelected
+                        ? "bg-gradient-to-r from-primary-500/20 to-secondary-500/20 border-primary-500 shadow-lg shadow-primary-500/20"
+                        : "bg-gray-700/30 border-gray-600 hover:border-primary-500/50 hover:bg-gray-700/50"
+                    }`}
+                  >
+                    <div className="flex items-start gap-4">
+                      <div
+                        className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 mt-0.5 transition-all ${
+                          isSelected
+                            ? "bg-primary-500 border-primary-500"
+                            : "border-gray-500"
+                        }`}
+                      >
+                        {isSelected && <Check className="w-4 h-4 text-white" />}
+                      </div>
+                      <div>
+                        <span className="text-white font-semibold text-lg block">
+                          {option.label}
+                        </span>
+                        {option.sublabel && (
+                          <span className="text-gray-400 text-sm">{option.sublabel}</span>
+                        )}
+                      </div>
+                    </div>
+                  </button>
+                  {/* Show text input when "other" is selected */}
+                  {isOther && isSelected && (
+                    <div className="mt-3 ml-10">
+                      <textarea
+                        value={String(otherValue)}
+                        onChange={(e) => handleInputChange(otherFieldId, e.target.value)}
+                        placeholder="Tell us what's holding you back..."
+                        rows={3}
+                        className="w-full px-4 py-3 bg-gray-700/50 border border-primary-500/50 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+                        autoFocus
+                      />
+                      <p className="text-xs text-gray-400 mt-2">
+                        Your frustration helps us understand how to help you better
+                      </p>
+                    </div>
+                  )}
+                </div>
               )
             })}
           </div>

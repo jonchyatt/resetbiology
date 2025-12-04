@@ -29,6 +29,7 @@ export type NEPQQuestionType =
   | 'tel'
   | 'textarea'
   | 'choice'
+  | 'choiceWithOther'
   | 'scale'
   | 'multiSelect'
   | 'rankedSelect'
@@ -299,8 +300,8 @@ export const nepqConfig: NEPQConfig = {
     {
       id: 'biggest_obstacle',
       section: 'journey',
-      question: 'What do you believe is the biggest thing holding you back?',
-      type: 'choice',
+      question: 'Which of these frustrations do you have? What is holding you back the most?',
+      type: 'choiceWithOther',
       required: true,
       options: [
         {
@@ -322,6 +323,11 @@ export const nepqConfig: NEPQConfig = {
           value: 'overwhelm',
           label: 'Too many conflicting approaches',
           sublabel: 'Information overload, don\'t know what to follow',
+        },
+        {
+          value: 'other',
+          label: 'Other',
+          sublabel: 'Tell us what\'s really holding you back',
         },
       ],
     },
