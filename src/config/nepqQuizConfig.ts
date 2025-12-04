@@ -31,6 +31,7 @@ export type NEPQQuestionType =
   | 'choice'
   | 'scale'
   | 'multiSelect'
+  | 'rankedSelect'
 
 export type NEPQOption = {
   value: string
@@ -52,6 +53,7 @@ export type NEPQQuestion = {
   max?: number
   minLabel?: string
   maxLabel?: string
+  maxRankedSelect?: number // For rankedSelect type
 }
 
 export type NEPQOffer = {
@@ -270,29 +272,27 @@ export const nepqConfig: NEPQConfig = {
     {
       id: 'desired_outcome',
       section: 'journey',
-      question: 'What\'s the #1 outcome you want to achieve in the next 90 days?',
-      type: 'choice',
+      question: 'Which of these is most important to you in the next 90 days?',
+      subtitle: 'Select up to 3 in order of importance (click again to remove)',
+      type: 'rankedSelect',
+      maxRankedSelect: 3,
       required: true,
       options: [
         {
           value: 'lose_fat',
           label: 'Lose stubborn body fat',
-          sublabel: 'Finally break through and see real changes',
         },
         {
           value: 'energy_vitality',
           label: 'Increase energy and vitality',
-          sublabel: 'Feel alive, focused, and motivated again',
         },
         {
           value: 'break_plateau',
           label: 'Break through my plateau',
-          sublabel: 'Get unstuck and start progressing again',
         },
         {
           value: 'sustainable_system',
           label: 'Build a sustainable system',
-          sublabel: 'Something that actually works long-term',
         },
       ],
     },

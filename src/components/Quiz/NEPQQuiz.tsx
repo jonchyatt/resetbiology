@@ -21,7 +21,7 @@ export interface NEPQAnswers {
   audit_practices: string[]
   // Section 3: Journey
   journey_stage: string
-  desired_outcome: string
+  desired_outcome: string[]  // Now ranked array
   biggest_obstacle: string
   // Section 4: Vision
   success_vision: string
@@ -58,7 +58,7 @@ export function NEPQQuiz({ onComplete, onClose }: NEPQQuizProps) {
     phone: "",
     audit_practices: [],
     journey_stage: "",
-    desired_outcome: "",
+    desired_outcome: [],
     biggest_obstacle: "",
     success_vision: "",
     success_feeling: "",
@@ -101,6 +101,39 @@ export function NEPQQuiz({ onComplete, onClose }: NEPQQuizProps) {
       }
       return { ...prev, [questionId]: [...currentValues, value] }
     })
+  }
+
+  // Handle ranked select toggle (click to add in order, click again to remove)
+  const handleRankedSelectToggle = (questionId: string, value: string, maxSelections: number = 3) => {
+    setAnswers(prev => {
+      const currentValues = prev[questionId as keyof NEPQAnswers] as string[]
+      // If already selected, remove it (and others move up automatically)
+      if (currentValues.includes(value)) {
+        return { ...prev, [questionId]: currentValues.filter(v => v !== value) }
+      }
+      // If not selected and under limit, add it
+      if (currentValues.length < maxSelections) {
+        return { ...prev, [questionId]: [...currentValues, value] }
+      }
+      // Already have max choices, don't add more
+      return prev
+    })
+  }
+
+  // Get rank label
+  const getRankLabel = (index: number): string => {
+    const labels = ["1st", "2nd", "3rd"]
+    return labels[index] || ""
+  }
+
+  // Get rank color
+  const getRankColor = (index: number): string => {
+    const colors = [
+      "bg-yellow-500 text-yellow-900", // 1st - gold
+      "bg-gray-400 text-gray-900",      // 2nd - silver
+      "bg-orange-600 text-orange-100",  // 3rd - bronze
+    ]
+    return colors[index] || colors[2]
   }
 
   // Check if we can proceed to next question
@@ -388,6 +421,52 @@ export function NEPQQuiz({ onComplete, onClose }: NEPQQuizProps) {
                   </button>
                 )
               })}
+            </div>
+          </div>
+        )
+
+      case "rankedSelect":
+        const rankedValues = (value as string[]) || []
+        const maxRanked = currentQuestion.maxRankedSelect || 3
+        return (
+          <div className="space-y-4">
+            <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-3">
+              <p className="text-blue-300 text-sm text-center">
+                Select up to {maxRanked} options in order of importance (click again to remove)
+              </p>
+            </div>
+            <div className="space-y-3">
+              {currentQuestion.options?.map((option) => {
+                const rankIndex = rankedValues.indexOf(option.value)
+                const isRankedSelected = rankIndex !== -1
+                return (
+                  <button
+                    key={option.value}
+                    onClick={() => handleRankedSelectToggle(currentQuestion.id, option.value, maxRanked)}
+                    className={`w-full text-left px-6 py-4 rounded-xl border-2 transition-all duration-300 ${
+                      isRankedSelected
+                        ? "bg-gradient-to-r from-primary-500/20 to-secondary-500/20 border-primary-500 shadow-lg shadow-primary-500/20"
+                        : "bg-gray-700/30 border-gray-600 hover:border-primary-500/50 hover:bg-gray-700/50"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-white font-semibold text-lg flex-1">
+                        {option.label}
+                      </span>
+                      {isRankedSelected && (
+                        <span className={`ml-3 px-3 py-1 rounded-full text-sm font-bold flex-shrink-0 ${getRankColor(rankIndex)}`}>
+                          {getRankLabel(rankIndex)} choice
+                        </span>
+                      )}
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
+            <div className="mt-4 text-center">
+              <span className="text-gray-400 text-sm">
+                {rankedValues.length} of {maxRanked} choices selected
+              </span>
             </div>
           </div>
         )
