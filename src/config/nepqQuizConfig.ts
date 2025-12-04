@@ -336,27 +336,7 @@ export const nepqConfig: NEPQConfig = {
       ],
     },
 
-    // Section 4: Black Swan - Success Definition
-    {
-      id: 'success_vision',
-      section: 'vision',
-      question: 'Imagine it\'s 90 days from now and you\'ve succeeded. What does that look like?',
-      subtitle: 'Describe what you would see, feel, and experience. The more specific, the better.',
-      type: 'textarea',
-      placeholder: 'When I wake up in 90 days, I\'ll notice... I\'ll feel... People will see...',
-      required: true,
-    },
-    {
-      id: 'success_feeling',
-      section: 'vision',
-      question: 'What would achieving this mean to you emotionally?',
-      subtitle: 'Beyond the physical changes, how would you feel about yourself?',
-      type: 'textarea',
-      placeholder: 'I would feel... It would mean...',
-      required: true,
-    },
-
-    // Section 5: Desire Amplification (Motivational Interviewing)
+    // Section 4: Your Why - Desire Amplification (Motivational Interviewing)
     {
       id: 'why_change',
       section: 'amplification',
@@ -403,6 +383,26 @@ export const nepqConfig: NEPQConfig = {
       subtitle: 'What makes them matter?',
       type: 'textarea',
       placeholder: 'Those outcomes are important because...',
+      required: true,
+    },
+
+    // Section 5: Your Vision - Success Definition
+    {
+      id: 'success_vision',
+      section: 'vision',
+      question: 'Imagine it\'s 90 days from now and you\'ve succeeded. What does that look like?',
+      subtitle: 'Describe what you would see, feel, and experience. The more specific, the better.',
+      type: 'textarea',
+      placeholder: 'When I wake up in 90 days, I\'ll notice... I\'ll feel... People will see...',
+      required: true,
+    },
+    {
+      id: 'success_feeling',
+      section: 'vision',
+      question: 'What would achieving this mean to you emotionally?',
+      subtitle: 'Beyond the physical changes, how would you feel about yourself?',
+      type: 'textarea',
+      placeholder: 'I would feel... It would mean...',
       required: true,
     },
   ],
