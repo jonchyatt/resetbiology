@@ -499,45 +499,49 @@ export function NEPQQuiz({ onComplete, onClose }: NEPQQuizProps) {
         const rankedValues = (value as string[]) || []
         const maxRanked = currentQuestion.maxRankedSelect || 3
         return (
-          <div className="space-y-4">
-            <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-3">
-              <p className="text-blue-300 text-sm text-center">
-                Select up to {maxRanked} options in order of importance (click again to remove)
-              </p>
-            </div>
-            <div className="space-y-3">
-              {currentQuestion.options?.map((option) => {
-                const rankIndex = rankedValues.indexOf(option.value)
-                const isRankedSelected = rankIndex !== -1
-                return (
-                  <button
-                    key={option.value}
-                    onClick={() => handleRankedSelectToggle(currentQuestion.id, option.value, maxRanked)}
-                    className={`w-full text-left px-6 py-4 rounded-xl border-2 transition-all duration-300 ${
-                      isRankedSelected
-                        ? "bg-gradient-to-r from-primary-500/20 to-secondary-500/20 border-primary-500 shadow-lg shadow-primary-500/20"
-                        : "bg-gray-700/30 border-gray-600 hover:border-primary-500/50 hover:bg-gray-700/50"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="text-white font-semibold text-lg flex-1">
-                        {option.label}
-                      </span>
+          <div className="space-y-3">
+            {currentQuestion.options?.map((option) => {
+              const rankIndex = rankedValues.indexOf(option.value)
+              const isRankedSelected = rankIndex !== -1
+              return (
+                <button
+                  key={option.value}
+                  onClick={() => handleRankedSelectToggle(currentQuestion.id, option.value, maxRanked)}
+                  className={`w-full text-left px-6 py-4 rounded-xl border-2 transition-all duration-300 ${
+                    isRankedSelected
+                      ? "bg-gradient-to-r from-primary-500/20 to-secondary-500/20 border-primary-500 shadow-lg shadow-primary-500/20"
+                      : "bg-gray-700/30 border-gray-600 hover:border-primary-500/50 hover:bg-gray-700/50"
+                  }`}
+                >
+                  <div className="flex items-start gap-4">
+                    <div
+                      className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 mt-0.5 transition-all ${
+                        isRankedSelected
+                          ? "bg-primary-500 border-primary-500"
+                          : "border-gray-500"
+                      }`}
+                    >
                       {isRankedSelected && (
-                        <span className={`ml-3 px-3 py-1 rounded-full text-sm font-bold flex-shrink-0 ${getRankColor(rankIndex)}`}>
-                          {getRankLabel(rankIndex)} choice
-                        </span>
+                        <span className="text-white text-xs font-bold">{rankIndex + 1}</span>
                       )}
                     </div>
-                  </button>
-                )
-              })}
-            </div>
-            <div className="mt-4 text-center">
-              <span className="text-gray-400 text-sm">
-                {rankedValues.length} of {maxRanked} choices selected
-              </span>
-            </div>
+                    <div className="flex-1">
+                      <span className="text-white font-semibold text-lg block">
+                        {option.label}
+                      </span>
+                      {option.sublabel && (
+                        <span className="text-gray-400 text-sm">{option.sublabel}</span>
+                      )}
+                    </div>
+                    {isRankedSelected && (
+                      <span className={`px-3 py-1 rounded-full text-sm font-bold flex-shrink-0 ${getRankColor(rankIndex)}`}>
+                        {getRankLabel(rankIndex)}
+                      </span>
+                    )}
+                  </div>
+                </button>
+              )
+            })}
           </div>
         )
 

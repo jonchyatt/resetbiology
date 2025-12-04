@@ -282,18 +282,22 @@ export const nepqConfig: NEPQConfig = {
         {
           value: 'lose_fat',
           label: 'Lose stubborn body fat',
+          sublabel: 'Finally break through and see real changes',
         },
         {
           value: 'energy_vitality',
           label: 'Increase energy and vitality',
+          sublabel: 'Feel alive, focused, and motivated again',
         },
         {
           value: 'break_plateau',
           label: 'Break through my plateau',
+          sublabel: 'Get unstuck and start progressing again',
         },
         {
           value: 'sustainable_system',
           label: 'Build a sustainable system',
+          sublabel: 'Something that actually works long-term',
         },
       ],
     },
