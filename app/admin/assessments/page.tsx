@@ -2,26 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { TrendingUp, Users, DollarSign, Calendar, Save } from "lucide-react"
-import { AssessmentConfig, AssessmentQuestionOption, defaultAssessmentConfig } from "@/config/assessmentConfig"
-
-// Question types (matches AssessmentQuiz.tsx)
-interface QuestionOption {
-  value: string
-  label: string
-  score?: number
-}
-
-interface Question {
-  id: string
-  question: string
-  subtitle?: string
-  type: "text" | "email" | "tel" | "textarea" | "choice"
-  placeholder?: string
-  required?: boolean
-  options?: QuestionOption[]
-  multiSelect?: boolean
-  maxMultiSelect?: number
-}
+import { AssessmentConfig, AssessmentQuestion, AssessmentQuestionOption, defaultAssessmentConfig } from "@/config/assessmentConfig"
 
 // All 19 questions from AssessmentQuiz.tsx
 export default function AssessmentsAdminPage() {
@@ -63,7 +44,7 @@ export default function AssessmentsAdminPage() {
     }
   }
 
-  const updateQuestion = (index: number, updates: Partial<Question>) => {
+  const updateQuestion = (index: number, updates: Partial<AssessmentQuestion>) => {
     setConfig(prev => {
       const next = [...prev.questions]
       next[index] = { ...next[index], ...updates }
@@ -398,7 +379,7 @@ export default function AssessmentsAdminPage() {
                   <ul className="space-y-2 mt-3">
                     {config.landing.supportingPoints.map((point, idx) => (
                       <li key={idx} className="flex items-start gap-2 text-gray-300">
-                        <span className="text-primary-400 mt-1">•</span>
+                        <span className="text-primary-400 mt-1">-</span>
                         <span>{point}</span>
                       </li>
                     ))}

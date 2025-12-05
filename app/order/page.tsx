@@ -20,6 +20,9 @@ interface Product {
   slug: string;
   description: string | null;
   imageUrl: string | null;
+  category?: string | null;
+  administrationType?: string | null;
+  metadata?: Record<string, any> | null;
   prices: Price[];
   baseProductName: string | null;
   variantLabel: string | null;
@@ -112,9 +115,15 @@ export default function OrderPage() {
     return Array.from(groups.values());
   })();
 
-  const handleCheckout = async (productId: string, priceId: string) => {
+  const handleCheckout = async (productId: string, priceId: string, opts?: { nonPeptide?: boolean }) => {
     setCheckoutLoading(productId);
     try {
+      if (opts?.nonPeptide) {
+        sessionStorage.setItem('nonPeptideOnlyCart', 'true');
+      } else {
+        sessionStorage.removeItem('nonPeptideOnlyCart');
+      }
+
       const res = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -189,6 +198,14 @@ export default function OrderPage() {
           <p className="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto font-medium leading-relaxed drop-shadow-sm px-4">
             Premium quality peptides for your wellness journey
           </p>
+          <div className="mt-3 flex justify-center">
+            <a
+              href="/order/non-peptide"
+              className="text-sm text-primary-200 hover:text-primary-100 underline-offset-4 underline"
+            >
+              Looking for non-peptide options? View StemRegen and EnergyBits
+            </a>
+          </div>
         </div>
 
         {/* Filter Tabs */}
@@ -249,6 +266,11 @@ export default function OrderPage() {
                   const selectedVariantId = selectedVariants[groupKey] || group.variants[0].id;
                   const selectedProduct = group.variants.find(v => v.id === selectedVariantId) || group.variants[0];
                   const primary = selectedProduct.prices.find(x => x.isPrimary) || selectedProduct.prices[0];
+                  const isNonPeptide =
+                    selectedProduct.category === 'non-peptide' ||
+                    selectedProduct.metadata?.nonPeptide === true ||
+                    selectedProduct.slug?.startsWith('stemregen-') ||
+                    selectedProduct.slug?.startsWith('energybits-');
                   const isLoading = checkoutLoading === selectedProduct.id;
                   const hasVariants = group.variants.length > 1;
 
@@ -313,7 +335,7 @@ export default function OrderPage() {
                           )}
 
                           <p className="text-primary-400 text-sm font-medium mb-4 group-hover:text-primary-300 transition-colors">
-                            View Details →
+                            View Details &gt;
                           </p>
 
                           {/* Variant Selector - Only show if multiple variants */}
@@ -382,7 +404,7 @@ export default function OrderPage() {
                                   type="button"
                                   onClick={(e) => {
                                     e.stopPropagation(); // Prevent card click
-                                    handleCheckout(selectedProduct.id, primary.id);
+                                    handleCheckout(selectedProduct.id, primary.id, { nonPeptide: isNonPeptide });
                                   }}
                                   disabled={isLoading}
                                   className="w-full bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:shadow-primary-500/30 transition-all duration-200 flex items-center justify-center group backdrop-blur-sm disabled:opacity-50 disabled:cursor-not-allowed relative z-10"

@@ -9,6 +9,15 @@ export default function AgeVerificationModal() {
   const [hasConsented, setHasConsented] = useState(false);
 
   useEffect(() => {
+    const bypassNonPeptide = sessionStorage.getItem('nonPeptideOnlyCart') === 'true';
+    if (bypassNonPeptide) {
+      // Allow checkout for non-peptide-only carts without showing the age gate
+      sessionStorage.removeItem('nonPeptideOnlyCart');
+      setHasConsented(true);
+      setShow(false);
+      return;
+    }
+
     // Check if user has already consented in this session
     const consented = sessionStorage.getItem('ageConsent') === 'true';
     setHasConsented(consented);
