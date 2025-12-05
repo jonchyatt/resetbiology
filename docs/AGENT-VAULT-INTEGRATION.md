@@ -3,6 +3,7 @@
 > **Purpose**: Enable AI agents to read from and write to user's Google Drive Vault, creating personalized, context-aware coaching experiences while maintaining performance and privacy.
 
 > **Last Updated**: December 5, 2025
+> **Version**: 2.0 - Enhanced with RAG optimizations
 
 ---
 
@@ -11,6 +12,40 @@
 This plan transforms our 11 stateless AI agents into context-aware coaches that remember each user's history. By partitioning the Google Drive Vault and loading only relevant slices into agent context, we achieve personalization without latency bloat.
 
 **The Core Insight**: Each agent only needs its domain's data. The Peptide Agent doesn't need workout history. The Nutrition Agent doesn't need vision scores. Partition-aware loading keeps context small and responses fast.
+
+---
+
+## RAG Optimization Principles
+
+### 1. Recency-Weighted Context
+Recent data is more relevant than old data. Weight context loading:
+- **Last 24 hours**: Full detail (every entry)
+- **Last 7 days**: Summarized (daily totals/highlights)
+- **Last 30 days**: Trends only (weekly averages)
+- **Beyond 30 days**: Only referenced if user asks
+
+### 2. Query-Aware Retrieval
+Don't load the same context for every message. Analyze user intent:
+- "How much BPC did I take yesterday?" → Load only last 48 hours peptides
+- "What's my trend?" → Load 30-day summary, skip details
+- "Help me with my next dose" → Load current protocol + last 3 doses
+
+### 3. Semantic Chunking
+Split data into meaningful chunks for retrieval:
+- Each day = one chunk (for daily activities)
+- Each protocol = one chunk (for peptides)
+- Each session = one chunk (for workouts/breath)
+
+### 4. Progressive Loading
+First response should be <1 second. Load context in stages:
+1. **Immediate** (cached): User profile + current day
+2. **Fast** (parallel): Last 7 days partition
+3. **Background** (optional): Historical summaries
+
+### 5. Context Compression
+Use LLM to summarize verbose data before injection:
+- Raw: 50 nutrition entries = 3000 chars
+- Compressed: "Dec 1-5: Avg 1850 cal, 160g protein. Missed breakfast twice." = 80 chars
 
 ---
 
@@ -133,9 +168,9 @@ For profile and preferences:
 
 ---
 
-## API Design: Vault Read/Write
+## API Design: Vault Read/Write (RAG-Optimized)
 
-### `readFromVault(userId, options)`
+### `readFromVault(userId, options)` - Enhanced
 
 ```typescript
 interface VaultReadOptions {
@@ -157,6 +192,11 @@ interface VaultReadOptions {
 
   // OPTIONAL: Format preference
   format?: 'raw' | 'summary'; // 'summary' = LLM-friendly prose
+
+  // NEW: RAG Optimization Options
+  recencyTier?: 'today' | 'week' | 'month' | 'all';  // Controls detail level
+  queryHint?: string;        // User's message - helps optimize retrieval
+  compress?: boolean;        // Use LLM to compress verbose data (default: true for >1000 chars)
 }
 
 // Returns
@@ -166,7 +206,39 @@ interface VaultReadResult {
   charCount: number;         // How much was loaded
   truncated: boolean;        // Was data cut off?
   source: string;            // Which file(s) were read
+  cached: boolean;           // Was this from cache?
+  compressionRatio?: number; // Original/compressed size ratio
   error?: string;
+}
+```
+
+### `analyzeQueryIntent(message)` - NEW
+
+```typescript
+// Fast intent analysis to optimize vault retrieval
+interface QueryIntent {
+  timeScope: 'today' | 'yesterday' | 'week' | 'month' | 'specific_date' | 'trend';
+  dataType: 'detail' | 'summary' | 'comparison' | 'recommendation';
+  specificItem?: string;     // e.g., "BPC-157" if asking about specific peptide
+}
+
+function analyzeQueryIntent(message: string): QueryIntent {
+  const lower = message.toLowerCase();
+
+  // Time scope detection
+  let timeScope: QueryIntent['timeScope'] = 'week';
+  if (lower.includes('today') || lower.includes('this morning')) timeScope = 'today';
+  else if (lower.includes('yesterday')) timeScope = 'yesterday';
+  else if (lower.includes('trend') || lower.includes('progress')) timeScope = 'month';
+  else if (lower.includes('last week')) timeScope = 'week';
+
+  // Data type detection
+  let dataType: QueryIntent['dataType'] = 'detail';
+  if (lower.includes('trend') || lower.includes('average') || lower.includes('overall')) dataType = 'summary';
+  else if (lower.includes('compare') || lower.includes('vs') || lower.includes('better')) dataType = 'comparison';
+  else if (lower.includes('should') || lower.includes('recommend') || lower.includes('help')) dataType = 'recommendation';
+
+  return { timeScope, dataType };
 }
 ```
 
@@ -189,6 +261,33 @@ interface VaultWriteOptions {
   jsonFile?: string;         // e.g., "user_preferences.json"
   jsonData?: Record<string, any>;
   jsonMerge?: boolean;       // Merge with existing or replace
+
+  // NEW: Invalidate cache after write
+  invalidateCache?: boolean; // Default: true - clears related cache entries
+}
+```
+
+### `compressContext(rawData, targetChars)` - NEW
+
+```typescript
+// Uses fast LLM call to compress verbose data
+async function compressContext(rawData: string, targetChars: number = 500): Promise<string> {
+  if (rawData.length <= targetChars) return rawData;
+
+  const response = await openai.chat.completions.create({
+    model: 'gpt-4o-mini',
+    messages: [{
+      role: 'system',
+      content: `Compress this data to ~${targetChars} chars. Keep key facts, dates, numbers. Remove redundancy.`
+    }, {
+      role: 'user',
+      content: rawData
+    }],
+    max_tokens: Math.ceil(targetChars / 3),
+    temperature: 0
+  });
+
+  return response.choices[0].message?.content || rawData.slice(0, targetChars);
 }
 ```
 
@@ -393,29 +492,88 @@ Weekly average: 1,920 cal/day, 158g protein/day
 | Write to vault | 150ms | 300ms |
 | **Total voice response** | **1200ms** | **2900ms** |
 
-### Caching Strategy
+### Caching Strategy (Enhanced)
 
 ```typescript
-// Cache vault reads for 5 minutes per user per partition
-const vaultCache = new Map<string, { data: string; timestamp: number }>();
+// Multi-tier cache with recency awareness
+interface CacheEntry {
+  data: string;
+  timestamp: number;
+  recencyTier: 'today' | 'week' | 'month';
+  compressed: boolean;
+}
 
-function getCacheKey(userId: string, partition: string): string {
-  return `${userId}:${partition}`;
+const vaultCache = new Map<string, CacheEntry>();
+
+// Cache TTLs based on recency tier
+const CACHE_TTL = {
+  today: 2 * 60 * 1000,    // 2 minutes - today's data changes frequently
+  week: 10 * 60 * 1000,    // 10 minutes - weekly summaries stable
+  month: 30 * 60 * 1000,   // 30 minutes - monthly trends very stable
+};
+
+function getCacheKey(userId: string, partition: string, tier: string): string {
+  return `${userId}:${partition}:${tier}`;
 }
 
 async function readFromVaultCached(userId: string, options: VaultReadOptions): Promise<VaultReadResult> {
-  const key = getCacheKey(userId, options.folder);
+  const tier = options.recencyTier || 'week';
+  const key = getCacheKey(userId, options.folder, tier);
   const cached = vaultCache.get(key);
 
-  if (cached && Date.now() - cached.timestamp < 5 * 60 * 1000) {
-    return { success: true, data: cached.data, charCount: cached.data.length, truncated: false, source: 'cache' };
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL[tier]) {
+    return {
+      success: true,
+      data: cached.data,
+      charCount: cached.data.length,
+      truncated: false,
+      source: 'cache',
+      cached: true
+    };
   }
 
   const result = await readFromVault(userId, options);
   if (result.success) {
-    vaultCache.set(key, { data: result.data, timestamp: Date.now() });
+    vaultCache.set(key, {
+      data: result.data,
+      timestamp: Date.now(),
+      recencyTier: tier,
+      compressed: options.compress ?? true
+    });
   }
-  return result;
+  return { ...result, cached: false };
+}
+
+// Invalidate cache after writes
+function invalidateUserCache(userId: string, partition?: string): void {
+  for (const key of vaultCache.keys()) {
+    if (key.startsWith(userId + ':')) {
+      if (!partition || key.includes(`:${partition}:`)) {
+        vaultCache.delete(key);
+      }
+    }
+  }
+}
+```
+
+### Parallel Loading Strategy
+
+```typescript
+// Load multiple partitions in parallel for Concierge agent
+async function loadCrossPartitionContext(userId: string, partitions: string[]): Promise<Record<string, string>> {
+  const results = await Promise.all(
+    partitions.map(async (partition) => {
+      const result = await readFromVaultCached(userId, {
+        folder: partition as any,
+        recencyTier: 'today',
+        maxChars: 300,
+        compress: true
+      });
+      return [partition, result.success ? result.data : ''];
+    })
+  );
+
+  return Object.fromEntries(results);
 }
 ```
 

@@ -1,7 +1,12 @@
-import { BaseAgent } from './BaseAgent';
-import { logToVault } from '../googleDriveService';
+import { BaseAgent, LoggingIntent } from './BaseAgent';
+import { VaultPartition, writeToVault } from '@/lib/vaultService';
 
 export class BioCoachAgent extends BaseAgent {
+
+    // BioCoach can access multiple partitions - uses Nutrition as primary
+    protected getVaultPartition(): VaultPartition {
+        return 'Nutrition';
+    }
 
     async generateResponse(userId: string, message: string, history: any[]): Promise<string> {
         // 1. Define the Persona and Clinical Protocols
@@ -26,45 +31,85 @@ You do not store long-term memories yourself. You assume the "Vault" has the dat
 If the user says "I took my dose", you must acknowledge it and internally flag it for logging (simulated here by your response).
     `;
 
+        // Load vault context
+        const vaultContext = await this.loadVaultContext(userId, message);
+
         // 1.5 Load Dynamic Training
         const dynamicInstructions = await this.loadDynamicTraining(userId, 'BIO_COACH');
-        const fullPrompt = systemPrompt + dynamicInstructions;
+        const fullPrompt = systemPrompt + vaultContext + dynamicInstructions;
 
-        // 2. Check for "Logging" Intents (Simple heuristic for now)
-        if (this.detectLoggingIntent(message)) {
-            await this.handleLogging(userId, message);
-            // We append a system note to the history so the LLM knows it was logged
-            history.push({ role: 'system', content: 'ACTION: The previous user action was successfully logged to the Vault.' });
+        // 2. Check for "Logging" Intents
+        const loggingIntent = this.detectLoggingIntent(message);
+        if (loggingIntent) {
+            const logged = await this.handleLogging(userId, loggingIntent);
+            if (logged) {
+                // We append a system note to the history so the LLM knows it was logged
+                history.push({ role: 'system', content: 'ACTION: The previous user action was successfully logged to the Vault.' });
+            }
         }
 
         // 3. Generate Response
         return this.callLLM(fullPrompt, message, history);
     }
 
-    private detectLoggingIntent(message: string): boolean {
+    protected detectLoggingIntent(message: string): LoggingIntent | null {
+        const lower = message.toLowerCase();
         const keywords = ['took', 'ate', 'drank', 'injected', 'dose', 'log'];
-        return keywords.some(k => message.toLowerCase().includes(k));
-    }
 
-    private async handleLogging(userId: string, message: string) {
-        // In a real scenario, we would use an LLM to extract structured data.
-        // For now, we log the raw message to the 'nutrition' or 'peptide' log based on keywords.
+        if (!keywords.some(k => lower.includes(k))) {
+            return null;
+        }
 
+        // Determine type
         let type: 'nutrition' | 'peptide' | 'workout' = 'nutrition';
-        if (message.toLowerCase().includes('inject') || message.toLowerCase().includes('dose')) {
+        if (lower.includes('inject') || lower.includes('dose') || lower.includes('peptide')) {
             type = 'peptide';
-        } else if (message.toLowerCase().includes('run') || message.toLowerCase().includes('lift')) {
+        } else if (lower.includes('run') || lower.includes('lift') || lower.includes('workout')) {
             type = 'workout';
         }
 
+        return {
+            type: `biocoach_${type}`,
+            data: {
+                rawInput: message,
+                logType: type,
+                timestamp: new Date().toISOString()
+            }
+        };
+    }
+
+    protected async handleLogging(userId: string, intent: LoggingIntent): Promise<boolean> {
+        const { rawInput, logType, timestamp } = intent.data as {
+            rawInput: string;
+            logType: string;
+            timestamp: string;
+        };
+
+        const date = new Date(timestamp);
+        const localDate = date.toISOString().split('T')[0];
+        const localTime = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+        // Determine folder based on log type
+        const folder: VaultPartition = logType === 'peptide' ? 'Peptides' :
+                                       logType === 'workout' ? 'Workouts' : 'Nutrition';
+
         try {
-            await logToVault(userId, type, {
-                raw_input: message,
-                source: 'voice_agent'
+            const result = await writeToVault(userId, {
+                folder,
+                csvFile: `${logType}_log.csv`,
+                csvRow: {
+                    timestamp,
+                    date: localDate,
+                    time: localTime,
+                    raw_input: rawInput,
+                    source: 'bio_coach'
+                }
             });
-            console.log(`[BioCoach] Logged to Vault: ${type}`);
+            console.log(`[BioCoach] Logged to Vault: ${logType}`);
+            return result.success;
         } catch (error) {
             console.error('[BioCoach] Failed to log to Vault:', error);
+            return false;
         }
     }
 }
