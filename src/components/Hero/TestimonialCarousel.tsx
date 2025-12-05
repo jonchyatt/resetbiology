@@ -29,14 +29,7 @@ const testimonials = [
     rating: 5,
     results: 'Transformed body composition'
   },
-  {
-    name: 'Sarah',
-    location: 'Utah',
-    videoPath: 'UtahMom-web.mp4',
-    quote: '"Best health decision I\'ve made. As a busy mom, I needed something that worked efficiently. The results were beyond my expectations."',
-    rating: 5,
-    results: 'Sustainable weight loss'
-  },
+
   {
     name: 'Josh',
     location: 'Utah',
@@ -111,11 +104,10 @@ export function TestimonialCarousel() {
                   setIsAutoPlaying(false)
                   setCurrentIndex(idx)
                 }}
-                className={`w-2 h-2 rounded-full transition-all ${
-                  idx === currentIndex
+                className={`w-2 h-2 rounded-full transition-all ${idx === currentIndex
                     ? 'bg-primary-400 w-6'
                     : 'bg-gray-600 hover:bg-gray-500'
-                }`}
+                  }`}
                 aria-label={`Go to testimonial ${idx + 1}`}
               />
             ))}

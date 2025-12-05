@@ -5,35 +5,41 @@ import { MuscleWarning } from "./MuscleWarning"
 import { QuizCTA } from "./QuizCTA"
 import { WhenToStart } from "./WhenToStart"
 import { TestimonialCarousel } from "./TestimonialCarousel"
+import { ValuePropSection } from "./ValuePropSection"
 
 export function HeroSection() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 relative"
-         style={{
-           backgroundImage: 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url(/hero-background.jpg)',
-           backgroundSize: 'cover',
-           backgroundPosition: 'center',
-           backgroundAttachment: 'fixed'
-         }}>
+      style={{
+        backgroundImage: 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url(/hero-background.jpg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed'
+      }}>
 
       {/* Hero Section */}
       <section className="min-h-screen flex items-center justify-center px-4 pt-32 pb-16">
         <div className="max-w-7xl mx-auto w-full space-y-12">
 
-          {/* Three Column Layout: STOP | Quiz CTA | When to Start */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
-            {/* Left: STOP Warning - Sidebar with top padding */}
-            <div className="lg:col-span-3 lg:pt-24">
-              <MuscleWarning />
-            </div>
-
-            {/* Center: Main Quiz CTA with Logo - Takes most space */}
-            <div className="lg:col-span-6">
+          {/* Vertical Stack Layout: Quiz CTA | STOP | When to Start */}
+          <div className="flex flex-col items-center gap-8 max-w-4xl mx-auto">
+            {/* 1. Main Quiz CTA - Takes center stage */}
+            <div className="w-full">
               <QuizCTA />
             </div>
 
-            {/* Right: When to Start - Sidebar with top padding */}
-            <div className="lg:col-span-3 lg:pt-24">
+            {/* 2. Value Proposition - From Get Started Page */}
+            <div className="w-full">
+              <ValuePropSection />
+            </div>
+
+            {/* 3. STOP Warning - Underneath */}
+            <div className="w-full max-w-2xl">
+              <MuscleWarning />
+            </div>
+
+            {/* 3. When to Start - Bottom */}
+            <div className="w-full max-w-2xl">
               <WhenToStart />
             </div>
           </div>
