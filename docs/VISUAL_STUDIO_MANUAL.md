@@ -27,11 +27,22 @@ This guide covers everything you need to create stunning audio-reactive visualiz
 C:\Users\jonch\reset-biology-website\scripts\visuals\start-visual-studio.bat
 ```
 
-Or create a desktop shortcut to it for even easier access!
-
 The script will:
 1. Start the development server
 2. Automatically open your browser to the Visual Studio
+
+#### Create a Desktop Shortcut (Recommended)
+
+For even easier access, create a desktop shortcut:
+
+1. Navigate to `C:\Users\jonch\reset-biology-website\scripts\visuals\`
+2. Right-click on `start-visual-studio.bat`
+3. Select **"Create shortcut"**
+4. Drag the shortcut to your **Desktop**
+5. Right-click the shortcut and select **"Rename"**
+6. Name it **"Visual Studio"** or **"Orb Generator"**
+
+Now you can launch Visual Studio from your desktop with one double-click!
 
 ### Option 2: High-Quality Video Export
 
