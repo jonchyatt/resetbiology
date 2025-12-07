@@ -20,14 +20,18 @@ This guide covers everything you need to create stunning audio-reactive visualiz
 
 ## Quick Start
 
-### Option 1: Web Preview (Fastest)
+### Option 1: Web Preview (One-Click)
 
-```bash
-cd C:\Users\jonch\reset-biology-website
-npm run dev
+**Double-click this file:**
+```
+C:\Users\jonch\reset-biology-website\scripts\visuals\start-visual-studio.bat
 ```
 
-Open your browser to: **http://localhost:3001/visuals/breathing**
+Or create a desktop shortcut to it for even easier access!
+
+The script will:
+1. Start the development server
+2. Automatically open your browser to the Visual Studio
 
 ### Option 2: High-Quality Video Export
 
@@ -401,13 +405,19 @@ If your Zion video has people or tripod visible:
 
 ## Quick Reference Card
 
-### Web URL
+### One-Click Launch (Recommended)
 ```
-http://localhost:3001/visuals/breathing
+Double-click: scripts\visuals\start-visual-studio.bat
 ```
 
-### Start Dev Server
+### Web URL (once server is running)
+```
+http://localhost:3000/visuals/breathing
+```
+
+### Manual Start (if needed)
 ```bash
+cd C:\Users\jonch\reset-biology-website
 npm run dev
 ```
 
