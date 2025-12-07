@@ -1,0 +1,53 @@
+# Minimalized settings from additive_rainbow.prefab (Unity ParticleSystem)
+# Non-essential Unity metadata removed. Use this as a spec/reference.
+
+particleSystem:
+  looping: true
+  prewarm: true
+  playOnAwake: true
+  durationSeconds: 5
+  maxParticles: 1000
+  scalingMode: local
+
+  startLifetime: 2.0
+  startSpeed:
+    mode: randomBetweenTwoConstants
+    min: 0.0
+    max: 1.0
+  startSize: 2.0
+
+  # Rainbow ramp; times are 0..1
+  startColor:
+    gradient:
+      - t: 0.0000  ; color: [1.00, 0.00, 0.00, 1.0]  # red, opaque
+      - t: 0.1266  ; color: [1.00, 0.44, 0.00, 1.0]  # orange, opaque
+      - t: 0.2766  ; color: [1.00, 0.85, 0.00, 0.0]  # yellow, fades out
+      - t: 0.4383  ; color: [0.14, 1.00, 0.07, 0.0]  # green, transparent
+      - t: 0.6030  ; color: [0.01, 0.75, 1.00, 0.0]  # cyan, transparent
+      - t: 0.7649  ; color: [0.31, 0.13, 0.61, 0.0]  # purple, transparent
+      - t: 0.9066  ; color: [0.67, 0.00, 0.82, 0.0]  # magenta, transparent
+      - t: 1.0000  ; color: [1.00, 0.00, 0.00, 0.0]  # red, transparent
+
+  shape:
+    type: cone
+    angleDeg: 25
+    length: 5
+    radius: 0.01
+    radiusThickness: 1.0
+    donutRadius: 0.2
+
+  emission:
+    rateOverTime: 40
+
+  sizeOverLifetime:
+    curve:
+      - { t: 0.0,  v: 0.3737 }
+      - { t: 0.2,  v: 1.0    }
+      - { t: 1.0,  v: 0.5    }
+
+renderer:
+  renderMode: billboard
+  sortMode: distance # Unity sortMode 2
+  maxParticleSize: 0.5
+  lengthScale: 2.0
+  material: additive_shader_material_guid_de30bfa008962244abdf4fb543683f7d

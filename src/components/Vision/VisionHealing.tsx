@@ -43,6 +43,7 @@ export function VisionHealing() {
   // Trainer settings
   const [trainerVisionType, setTrainerVisionType] = useState<'near' | 'far'>('near')
   const [trainerExerciseType, setTrainerExerciseType] = useState<'letters' | 'e-directional'>('letters')
+  const [trainerDeviceMode, setTrainerDeviceMode] = useState<'phone' | 'desktop'>('phone')
 
   // Check enrollment status on mount
   useEffect(() => {
@@ -134,6 +135,28 @@ export function VisionHealing() {
               ? 'Continue your vision improvement journey'
               : 'Transform your eyesight with our 12-week program'}
           </p>
+          {isEnrolled && (
+            <div className="mt-4 flex flex-wrap justify-center gap-3">
+              <button
+                onClick={() => setActiveTab('today')}
+                className="px-4 py-2 rounded-lg bg-primary-600 text-white font-semibold shadow-lg shadow-primary-500/30 hover:bg-primary-500 transition"
+              >
+                Go to Today’s Session
+              </button>
+              <button
+                onClick={() => setActiveTab('trainer')}
+                className="px-4 py-2 rounded-lg bg-gray-800/70 text-primary-200 border border-primary-500/30 hover:border-primary-400 transition"
+              >
+                Run Snellen Check
+              </button>
+              <button
+                onClick={() => setActiveTab('curriculum')}
+                className="px-4 py-2 rounded-lg bg-gray-800/70 text-secondary-200 border border-secondary-500/30 hover:border-secondary-400 transition"
+              >
+                View 12-Week Overview
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Tab Navigation */}
@@ -182,11 +205,32 @@ export function VisionHealing() {
                     <Eye className="w-6 h-6 text-primary-400" />
                     Snellen Vision Trainer
                   </h3>
-                  <p className="text-gray-300 mb-6">
-                    Test and train your vision with adaptive difficulty. Get 60%+ accuracy to advance to smaller letters.
+                  <p className="text-gray-300 mb-4">
+                    Phone-first: arm’s length, shrink text until readable, then add +1.0 readers and repeat, then +2.0. Desktop: pick a distance and aim for smaller lines.
                   </p>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {/* Device Mode */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-3">
+                        Device Mode
+                      </label>
+                      <div className="flex gap-2">
+                        {(['phone', 'desktop'] as const).map(mode => (
+                          <button
+                            key={mode}
+                            onClick={() => setTrainerDeviceMode(mode)}
+                            className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all duration-300 ${trainerDeviceMode === mode
+                              ? 'bg-primary-600 text-white shadow-lg shadow-primary-500/20'
+                              : 'bg-gray-700/30 backdrop-blur-sm text-gray-300 hover:bg-gray-600/30'
+                              }`}
+                          >
+                            {mode === 'phone' ? "Phone (arm's length)" : 'Desktop (set distance)'}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
                     {/* Vision Type */}
                     <div>
                       <label className="block text-sm font-medium text-gray-300 mb-3">
@@ -208,8 +252,8 @@ export function VisionHealing() {
                       </div>
                       <p className="text-xs text-gray-400 mt-2">
                         {trainerVisionType === 'near'
-                          ? 'Hold phone at arm\'s length (~40cm)'
-                          : 'Sit 2+ meters from screen'}
+                          ? "Start at arm's length; move back only if easy"
+                          : 'Start at comfortable distance; aim to move out with readers'}
                       </p>
                     </div>
 
@@ -248,6 +292,7 @@ export function VisionHealing() {
                 <TrainingSession
                   visionType={trainerVisionType}
                   exerciseType={trainerExerciseType}
+                  deviceMode={trainerDeviceMode}
                 />
               </div>
             )}

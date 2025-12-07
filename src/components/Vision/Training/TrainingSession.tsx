@@ -9,6 +9,7 @@ interface TrainingSessionProps {
   visionType: 'near' | 'far'
   exerciseType: 'letters' | 'e-directional'
   initialLevel?: number
+  deviceMode?: 'phone' | 'desktop'
 }
 
 // Reader glasses progression for nearsightedness training
@@ -39,7 +40,8 @@ const DIFFICULTY_LEVELS = [
 export default function TrainingSession({
   visionType,
   exerciseType,
-  initialLevel = 1
+  initialLevel = 1,
+  deviceMode = 'phone'
 }: TrainingSessionProps) {
   const [currentLevel, setCurrentLevel] = useState(initialLevel)
   const [isActive, setIsActive] = useState(false)
@@ -51,7 +53,7 @@ export default function TrainingSession({
   const [sessionComplete, setSessionComplete] = useState(false)
 
   // Distance progression state for nearsightedness training
-  const [targetDistanceCm, setTargetDistanceCm] = useState(25) // Start close
+  const [targetDistanceCm, setTargetDistanceCm] = useState(deviceMode === 'desktop' ? 80 : 25) // Start close for phone, farther for desktop
   const [readerGlassesStage, setReaderGlassesStage] = useState(0)
   const [distanceProgressionMode, setDistanceProgressionMode] = useState(visionType === 'near')
   const [showGlassesPrompt, setShowGlassesPrompt] = useState(false)
@@ -60,6 +62,11 @@ export default function TrainingSession({
   const difficulty = DIFFICULTY_LEVELS[currentLevel - 1] || DIFFICULTY_LEVELS[0]
   const accuracy = attempts > 0 ? (correct / attempts) * 100 : 0
   const currentGlassesStage = READER_GLASSES_STAGES[readerGlassesStage] || READER_GLASSES_STAGES[0]
+
+  // Reset target distance if device mode changes
+  useEffect(() => {
+    setTargetDistanceCm(deviceMode === 'desktop' ? 80 : 25)
+  }, [deviceMode])
 
   // Session timer
   useEffect(() => {
@@ -400,6 +407,7 @@ export default function TrainingSession({
       <DistanceGuidance
         targetDistanceCm={distanceProgressionMode ? targetDistanceCm : difficulty.targetDistance}
         visionType={visionType}
+        deviceMode={deviceMode}
       />
 
       {/* Snellen chart */}
@@ -429,6 +437,7 @@ export default function TrainingSession({
             exerciseType={exerciseType}
             onAnswer={handleAnswer}
             resetTrigger={resetTrigger}
+            deviceMode={deviceMode}
           />
         </div>
       )}
