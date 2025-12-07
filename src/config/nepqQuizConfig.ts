@@ -118,19 +118,19 @@ export const nepqConfig: NEPQConfig = {
       id: 'journey',
       title: 'Your Journey So Far',
       subtitle: 'Help us understand where you are right now',
-      progressLabel: 'Your Story',
+      progressLabel: 'Your Why',
     },
     {
       id: 'amplification',
       title: 'Why This Matters',
       subtitle: 'Let\'s explore what\'s driving you to make a change',
-      progressLabel: 'Your Why',
+      progressLabel: 'Your Vision',
     },
     {
       id: 'vision',
       title: 'Defining Success',
       subtitle: 'Paint a picture of what success looks like for you',
-      progressLabel: 'Your Vision',
+      progressLabel: 'Your Results',
     },
     {
       id: 'energySpin',
@@ -179,7 +179,7 @@ export const nepqConfig: NEPQConfig = {
     {
       id: 'audit_practices',
       section: 'audit',
-      question: 'Which of these practices are you currently doing?',
+      question: 'Which of these are you currently doing?',
       subtitle: 'Select all that apply - be honest, this helps us identify gaps',
       type: 'multiSelect',
       options: [
@@ -390,7 +390,7 @@ export const nepqConfig: NEPQConfig = {
     {
       id: 'success_vision',
       section: 'vision',
-      question: 'Imagine it\'s 90 days from now and you\'ve succeeded. What does that look like?',
+      question: 'Imagine it\'s 90 days from now and you\'ve succeeded. What would that be?',
       subtitle: 'Describe what you would see, feel, and experience. The more specific, the better.',
       type: 'textarea',
       placeholder: 'When I wake up in 90 days, I\'ll notice... I\'ll feel... People will see...',

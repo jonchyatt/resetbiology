@@ -47,7 +47,7 @@ interface NEPQQuizProps {
 }
 
 export function NEPQQuiz({ onComplete, onClose }: NEPQQuizProps) {
-  const [showLanding, setShowLanding] = useState(true)
+  const [showLanding, setShowLanding] = useState(false)
   const [currentSection, setCurrentSection] = useState<NEPQSection>("contact")
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [startTime] = useState(Date.now())
@@ -167,17 +167,12 @@ export function NEPQQuiz({ onComplete, onClose }: NEPQQuizProps) {
       return
     }
 
-    // Move to next section
-    const sections: NEPQSection[] = ["contact", "audit", "journey", "amplification", "vision", "energySpin", "close"]
+    // Move to next section (skip energySpin - go directly to close after vision)
+    const sections: NEPQSection[] = ["contact", "audit", "journey", "amplification", "vision", "close"]
     const currentSectionIndex = sections.indexOf(currentSection)
 
     if (currentSectionIndex < sections.length - 1) {
       const nextSection = sections[currentSectionIndex + 1]
-
-      if (nextSection === "energySpin") {
-        setShowEnergySpin(true)
-        return
-      }
 
       if (nextSection === "close") {
         setShowClose(true)
@@ -558,12 +553,7 @@ export function NEPQQuiz({ onComplete, onClose }: NEPQQuizProps) {
                   <button
                     onClick={() => {
                       handleInputChange(currentQuestion.id, option.value)
-                      // Don't auto-advance if "other" is selected - wait for text input
-                      if (!isOther) {
-                        setTimeout(() => {
-                          if (canProceed()) handleNext()
-                        }, 300)
-                      }
+                      // No auto-advance - wait for user to click Next
                     }}
                     className={`w-full text-left px-6 py-4 rounded-xl border-2 transition-all duration-300 ${
                       isSelected
@@ -913,22 +903,39 @@ export function NEPQQuiz({ onComplete, onClose }: NEPQQuizProps) {
 
             {/* Question Text */}
             {currentQuestionIndex > 0 && (
-              <div>
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
+              <div className="text-center">
+                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
                   {currentQuestion?.question}
                 </h2>
                 {currentQuestion?.subtitle && (
-                  <p className="text-gray-400 text-lg">{currentQuestion.subtitle}</p>
+                  currentQuestion.subtitle.includes('(') ? (
+                    <div className="text-gray-400 text-lg">
+                      <p>{currentQuestion.subtitle.split('(')[0].trim()}</p>
+                      <p className="mt-1">({currentQuestion.subtitle.split('(')[1]}</p>
+                    </div>
+                  ) : (
+                    <p className="text-gray-400 text-lg">{currentQuestion.subtitle}</p>
+                  )
                 )}
               </div>
             )}
 
             {/* First question in section: show question in context */}
             {currentQuestionIndex === 0 && currentQuestion && (
-              <div>
-                <p className="text-xl text-gray-200 mb-6">
+              <div className="text-center">
+                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
                   {currentQuestion.question}
-                </p>
+                </h2>
+                {currentQuestion?.subtitle && (
+                  currentQuestion.subtitle.includes('(') ? (
+                    <div className="text-gray-400 text-lg">
+                      <p>{currentQuestion.subtitle.split('(')[0].trim()}</p>
+                      <p className="mt-1">({currentQuestion.subtitle.split('(')[1]}</p>
+                    </div>
+                  ) : (
+                    <p className="text-gray-400 text-lg">{currentQuestion.subtitle}</p>
+                  )
+                )}
               </div>
             )}
 

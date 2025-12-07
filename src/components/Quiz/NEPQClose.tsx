@@ -108,70 +108,83 @@ export function NEPQClose({ answers, auditScore, onSelect, onBack }: NEPQClosePr
   // Commitment question stage
   if (stage === "commitment") {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center px-4">
-        <div className="max-w-2xl mx-auto text-center">
-          {/* Summary */}
-          <div className="mb-8 text-left bg-gray-800/50 rounded-xl p-6 border border-gray-700">
-            <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-              <Award className="w-5 h-5 text-primary-400" />
+      <div
+        className="min-h-screen flex items-center justify-center px-4 py-8"
+        style={{
+          backgroundImage: 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url(/hero-background.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundAttachment: 'fixed'
+        }}
+      >
+        <div className="max-w-2xl mx-auto w-full">
+          {/* Profile Summary Card */}
+          <div className="mb-8 bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-xl p-6 border border-primary-400/20 shadow-lg">
+            <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-lg flex items-center justify-center">
+                <Award className="w-5 h-5 text-white" />
+              </div>
               Your Profile Summary
             </h3>
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <span className="text-gray-400">Practice Level:</span>
-                <span className="text-white font-medium ml-2 capitalize">{auditScore.level}</span>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-gray-700/30 rounded-lg p-4">
+                <span className="text-gray-400 text-sm block mb-1">Practice Level</span>
+                <span className="text-white font-semibold text-lg capitalize">{auditScore.level}</span>
               </div>
-              <div>
-                <span className="text-gray-400">Foundation Score:</span>
-                <span className="text-primary-400 font-medium ml-2">{auditScore.percentage}%</span>
+              <div className="bg-gray-700/30 rounded-lg p-4">
+                <span className="text-gray-400 text-sm block mb-1">Foundation Score</span>
+                <span className="text-primary-400 font-semibold text-lg">{auditScore.percentage}%</span>
               </div>
-              <div>
-                <span className="text-gray-400">Current Stage:</span>
-                <span className="text-white font-medium ml-2 capitalize">
+              <div className="bg-gray-700/30 rounded-lg p-4">
+                <span className="text-gray-400 text-sm block mb-1">Current Stage</span>
+                <span className="text-white font-semibold text-lg capitalize">
                   {answers.journey_stage.replace(/_/g, " ")}
                 </span>
               </div>
-              <div>
-                <span className="text-gray-400">Readiness:</span>
-                <span className="text-secondary-400 font-medium ml-2">{answers.readiness_scale}/10</span>
+              <div className="bg-gray-700/30 rounded-lg p-4">
+                <span className="text-gray-400 text-sm block mb-1">Readiness</span>
+                <span className="text-secondary-400 font-semibold text-lg">{answers.readiness_scale}/10</span>
               </div>
             </div>
           </div>
 
-          {/* No-oriented question */}
-          <div className="mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-              {closeQuestion.question}
-            </h2>
-            <p className="text-gray-400 text-lg">
-              Based on your profile, we have some options that might help you reach your goals.
-            </p>
-          </div>
+          {/* Question Card */}
+          <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-8 border border-primary-400/30 shadow-2xl text-center">
+            {/* No-oriented question */}
+            <div className="mb-8">
+              <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                {closeQuestion.question}
+              </h2>
+              <p className="text-gray-300 text-lg">
+                Based on your profile, we have some options that might help you reach your goals.
+              </p>
+            </div>
 
-          {/* Response buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            {/* Response buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <button
+                onClick={() => handleCommitmentResponse(true)}
+                className="px-8 py-4 bg-gradient-to-r from-primary-500 to-secondary-500 text-white rounded-xl font-bold text-lg hover:shadow-lg hover:shadow-primary-500/30 transition-all hover:scale-105"
+              >
+                {closeQuestion.yesText}
+              </button>
+              <button
+                onClick={() => handleCommitmentResponse(false)}
+                className="px-8 py-4 bg-gray-700/50 text-gray-300 rounded-xl font-medium text-lg hover:bg-gray-600/50 transition-all border border-gray-600"
+              >
+                {closeQuestion.noText}
+              </button>
+            </div>
+
+            {/* Back button */}
             <button
-              onClick={() => handleCommitmentResponse(true)}
-              className="px-8 py-4 bg-gradient-to-r from-primary-500 to-secondary-500 text-white rounded-xl font-bold text-lg hover:shadow-lg hover:shadow-primary-500/30 transition-all"
+              onClick={onBack}
+              className="mt-8 text-gray-400 hover:text-white transition-colors flex items-center gap-2 mx-auto"
             >
-              {closeQuestion.yesText}
-            </button>
-            <button
-              onClick={() => handleCommitmentResponse(false)}
-              className="px-8 py-4 bg-gray-700/50 text-gray-300 rounded-xl font-medium text-lg hover:bg-gray-700 transition-all"
-            >
-              {closeQuestion.noText}
+              <ChevronLeft className="w-4 h-4" />
+              Go back
             </button>
           </div>
-
-          {/* Back button */}
-          <button
-            onClick={onBack}
-            className="mt-8 text-gray-500 hover:text-gray-300 transition-colors flex items-center gap-2 mx-auto"
-          >
-            <ChevronLeft className="w-4 h-4" />
-            Go back
-          </button>
         </div>
       </div>
     )
@@ -179,7 +192,15 @@ export function NEPQClose({ answers, auditScore, onSelect, onBack }: NEPQClosePr
 
   // Offers stage
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 px-4 py-8 md:py-12">
+    <div
+      className="min-h-screen px-4 py-8 md:py-12"
+      style={{
+        backgroundImage: 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url(/hero-background.jpg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed'
+      }}
+    >
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-10">
