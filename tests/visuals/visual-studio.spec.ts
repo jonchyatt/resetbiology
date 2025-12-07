@@ -166,9 +166,8 @@ test.describe('Orb Tab', () => {
   test('should display particle settings sliders', async ({ page }) => {
     await expect(page.locator('text=Particle Settings')).toBeVisible();
     await expect(page.locator('text=Particle Count')).toBeVisible();
-    await expect(page.locator('text=Point Size')).toBeVisible();
     await expect(page.locator('text=Glow Intensity')).toBeVisible();
-    await expect(page.locator('text=Particle Spread')).toBeVisible();
+    await expect(page.locator('text=Turbulence')).toBeVisible();
 
     await screenshot(page, '09-particle-settings-visible');
   });

@@ -8,7 +8,7 @@ import {
   BreathingOrbCanvas,
   BreathIndicator,
   AudioAmplitudeDisplay,
-  AudioAnalyzer,
+  audioAnalyzer,
   BackgroundOption,
 } from "@/components/visuals/BreathingOrb";
 
@@ -402,13 +402,12 @@ export default function VisualStudioPage() {
   const [mode, setMode] = useState<"breath" | "audio">("breath");
   const [patternKey, setPatternKey] = useState("4-7-8");
 
-  // Orb visual settings
-  const [colorA, setColorA] = useState("#fff5cc");
-  const [colorB, setColorB] = useState("#ff6b1f");
-  const [particleCount, setParticleCount] = useState(16000);
-  const [pointSize, setPointSize] = useState(6);
-  const [glowIntensity, setGlowIntensity] = useState(1.0);
-  const [particleSpread, setParticleSpread] = useState(0.6);
+  // Orb visual settings - updated defaults for better appearance
+  const [colorA, setColorA] = useState("#ffdd77");
+  const [colorB, setColorB] = useState("#ff4400");
+  const [particleCount, setParticleCount] = useState(25000);
+  const [intensity, setIntensity] = useState(1.5);
+  const [turbulence, setTurbulence] = useState(0.4);
 
   // Background settings
   const [backgroundKey, setBackgroundKey] = useState("stars");
@@ -418,13 +417,13 @@ export default function VisualStudioPage() {
 
   // Star settings
   const [starEnabled, setStarEnabled] = useState(true);
-  const [starCount, setStarCount] = useState(6000);
-  const [starSpeed, setStarSpeed] = useState(0.2);
-  const [starFactor, setStarFactor] = useState(2.2);
+  const [starCount, setStarCount] = useState(4000);
+  const [starSpeed, setStarSpeed] = useState(0.3);
+  const [starColorful, setStarColorful] = useState(true);
 
   // Water settings
   const [waterEnabled, setWaterEnabled] = useState(true);
-  const [waterReflectivity, setWaterReflectivity] = useState(0.6);
+  const [waterReflectivity, setWaterReflectivity] = useState(0.4);
 
   // Audio state
   const [audioFile, setAudioFile] = useState<File | null>(null);
@@ -432,8 +431,8 @@ export default function VisualStudioPage() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioAmplitude, setAudioAmplitude] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const analyzerRef = useRef<AudioAnalyzer | null>(null);
-  const animationFrameRef = useRef<number | null>(null);
+  const animationFrameRef = useRef<number>(0);
+  const isPlayingRef = useRef(false); // Ref to avoid stale closure
 
   // Tab state
   const [activeTab, setActiveTab] = useState<TabKey>("mode");
@@ -462,18 +461,20 @@ export default function VisualStudioPage() {
   const handleAudioFileSelect = useCallback((file: File | null) => {
     // Cleanup previous
     if (audioUrl) URL.revokeObjectURL(audioUrl);
-    if (analyzerRef.current) analyzerRef.current.dispose();
+    audioAnalyzer.disconnect();
 
     if (file) {
       const url = URL.createObjectURL(file);
       setAudioFile(file);
       setAudioUrl(url);
       setMode("audio");
+      console.log("[Page] Audio file selected:", file.name);
     } else {
       setAudioFile(null);
       setAudioUrl(null);
     }
     setIsPlaying(false);
+    isPlayingRef.current = false;
     setAudioAmplitude(0);
   }, [audioUrl]);
 
@@ -493,61 +494,59 @@ export default function VisualStudioPage() {
     }
   }, [videoUrl]);
 
-  // Initialize audio analyzer when audio element is ready
-  const initializeAudio = useCallback(async () => {
-    if (!audioRef.current || !audioUrl) return;
-
-    try {
-      if (!analyzerRef.current) {
-        analyzerRef.current = new AudioAnalyzer();
-      }
-      await analyzerRef.current.initialize(audioRef.current);
-    } catch (err) {
-      console.error("Failed to initialize audio analyzer:", err);
-    }
-  }, [audioUrl]);
-
-  // Audio animation loop
+  // Audio animation loop - uses ref to avoid stale closure
   const updateAudioVisualization = useCallback(() => {
-    if (analyzerRef.current && isPlaying) {
-      analyzerRef.current.update();
-      setAudioAmplitude(analyzerRef.current.currentAmplitude);
+    if (isPlayingRef.current) {
+      audioAnalyzer.update();
+      setAudioAmplitude(audioAnalyzer.amplitude);
     }
     animationFrameRef.current = requestAnimationFrame(updateAudioVisualization);
-  }, [isPlaying]);
+  }, []);
 
   // Play/pause audio
   const togglePlayback = useCallback(async () => {
-    if (!audioRef.current) return;
+    if (!audioRef.current) {
+      console.error("[Page] No audio element");
+      return;
+    }
 
     if (isPlaying) {
+      console.log("[Page] Pausing audio");
       audioRef.current.pause();
       setIsPlaying(false);
+      isPlayingRef.current = false;
     } else {
-      await initializeAudio();
-      await audioRef.current.play();
-      setIsPlaying(true);
-    }
-  }, [isPlaying, initializeAudio]);
-
-  // Start/stop animation loop
-  useEffect(() => {
-    if (isPlaying) {
-      animationFrameRef.current = requestAnimationFrame(updateAudioVisualization);
-    }
-    return () => {
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
+      try {
+        console.log("[Page] Connecting audio analyzer...");
+        await audioAnalyzer.connect(audioRef.current);
+        console.log("[Page] Playing audio...");
+        await audioRef.current.play();
+        setIsPlaying(true);
+        isPlayingRef.current = true;
+        console.log("[Page] Audio playing successfully");
+      } catch (err) {
+        console.error("[Page] Failed to play audio:", err);
       }
+    }
+  }, [isPlaying]);
+
+  // Start animation loop on mount
+  useEffect(() => {
+    console.log("[Page] Starting animation loop");
+    animationFrameRef.current = requestAnimationFrame(updateAudioVisualization);
+
+    return () => {
+      console.log("[Page] Stopping animation loop");
+      cancelAnimationFrame(animationFrameRef.current);
     };
-  }, [isPlaying, updateAudioVisualization]);
+  }, [updateAudioVisualization]);
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (audioUrl) URL.revokeObjectURL(audioUrl);
       if (videoUrl && videoUrl.startsWith("blob:")) URL.revokeObjectURL(videoUrl);
-      if (analyzerRef.current) analyzerRef.current.dispose();
+      audioAnalyzer.disconnect();
     };
   }, []);
 
@@ -707,27 +706,19 @@ export default function VisualStudioPage() {
                 unit=" particles"
               />
               <SliderControl
-                label="Point Size"
-                value={pointSize}
-                onChange={setPointSize}
-                min={2}
-                max={15}
-                step={0.5}
-              />
-              <SliderControl
                 label="Glow Intensity"
-                value={glowIntensity}
-                onChange={setGlowIntensity}
-                min={0.2}
-                max={2.0}
+                value={intensity}
+                onChange={setIntensity}
+                min={0.5}
+                max={3.0}
                 step={0.1}
               />
               <SliderControl
-                label="Particle Spread"
-                value={particleSpread}
-                onChange={setParticleSpread}
-                min={0.3}
-                max={1.2}
+                label="Turbulence"
+                value={turbulence}
+                onChange={setTurbulence}
+                min={0.1}
+                max={1.0}
                 step={0.05}
               />
             </ControlSection>
@@ -816,13 +807,11 @@ export default function VisualStudioPage() {
                     max={1}
                     step={0.05}
                   />
-                  <SliderControl
-                    label="Star Size Variation"
-                    value={starFactor}
-                    onChange={setStarFactor}
-                    min={1}
-                    max={5}
-                    step={0.1}
+                  <ToggleControl
+                    label="Colorful Stars"
+                    checked={starColorful}
+                    onChange={setStarColorful}
+                    description="Add varied colors to some stars"
                   />
                 </>
               )}
@@ -1009,13 +998,12 @@ export default function VisualStudioPage() {
                   particleCount={particleCount}
                   colorA={colorA}
                   colorB={colorB}
-                  pointSize={pointSize}
-                  glowIntensity={glowIntensity}
-                  particleSpread={particleSpread}
+                  intensity={intensity}
+                  turbulence={turbulence}
                   starEnabled={starEnabled}
                   starCount={starCount}
                   starSpeed={starSpeed}
-                  starFactor={starFactor}
+                  starColorful={starColorful}
                   waterEnabled={waterEnabled}
                   waterReflectivity={waterReflectivity}
                   videoUrl={videoUrl || undefined}
