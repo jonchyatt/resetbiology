@@ -92,6 +92,71 @@ This is where you choose what drives the orb animation.
 
 Customize the appearance of the glowing particle orb.
 
+#### Orb Type Selection
+
+Choose between two orb implementations:
+
+| Orb Type | Description | Best For |
+|----------|-------------|----------|
+| **Rainbow Orb** | Original audio-reactive rainbow particle system | Simple visualizations, quick setup |
+| **Unity Orb** | Advanced dual-layer particle system with full customization | Creating ethereal nebula effects, matching Unity look |
+
+---
+
+#### Unity Orb - Particle Layer System
+
+When "Unity Orb" is selected, you get access to the **Unity Particle Layers** section with full control over the particle system.
+
+##### Default Layers
+
+The Unity Orb comes with two pre-configured layers:
+
+| Layer | Description | Settings |
+|-------|-------------|----------|
+| **Core Glow** | Bright particles from the center | 1,500 particles, bass-reactive |
+| **Ethereal Mist** | Soft diffuse outer cloud | 1,000 particles, mids-reactive |
+
+##### Layer Controls
+
+Each layer has these adjustable settings:
+
+| Setting | Range | Description |
+|---------|-------|-------------|
+| **Enable/Disable** | Toggle | Turn layer on/off |
+| **Layer Name** | Text | Rename for organization |
+| **Audio Frequency Band** | All/Bass/Mids/Treble | Which frequencies trigger reactivity |
+| **Particles** | 100 - 5,000 | More = denser effect |
+| **Base Size** | 0.01 - 0.50 | Particle scale (higher = larger glow) |
+| **Spawn Radius** | 0.01 - 0.50 | How spread out from center |
+| **Max Speed** | 0 - 0.10 | Outward drift velocity |
+| **Audio Reactivity** | 0 - 2.0 | How much audio affects this layer |
+| **Size Over Lifetime** | Birth/Peak/Death % | Particle size curve |
+| **Peak at Lifetime** | 30% - 90% | When particle reaches max size |
+| **Lifetime** | 0.5 - 5.0 seconds | How long particles live |
+
+##### Adding New Layers
+
+Click **"+ Add Particle Layer"** to create additional layers. Each new layer starts with sensible defaults.
+
+##### Duplicating Layers
+
+Click the **copy icon** (📋) on any layer to duplicate it with all its settings.
+
+##### Recommended Settings for Ethereal Nebula Effect
+
+For the beautiful, soft nebula look:
+
+| Layer | Base Size | Spawn Radius | Particles | Max Speed | Frequency |
+|-------|-----------|--------------|-----------|-----------|-----------|
+| Core Glow | 0.20 | 0.05 | 1,500 | 0.04 | Bass |
+| Ethereal Mist | 0.20 | 0.20 | 1,000 | 0.01 | Mids |
+
+**Size Over Lifetime Tips:**
+- **Core Glow**: Birth 2%, Peak 100%, Death 7%, Peak at 40% - grows quickly, fades slowly
+- **Ethereal Mist**: Birth 2%, Peak 100%, Death 2%, Peak at 70% - grows slowly, symmetric fade
+
+---
+
 #### Color Presets (Quick Selection)
 
 Click any preset to instantly apply:
@@ -290,8 +355,8 @@ For highest quality (8K, 360, stereo), use the Blender pipeline.
 
 2. Edit these lines:
    ```batch
-   set "AUDIO=C:\path\to\your\meditation.wav"
-   set "BACKGROUND=C:\path\to\your\zion-video.mp4"
+   set "AUDIO=C:\users\jonch\Downloads\Short and clean.mp3"
+   set "BACKGROUND=C:\Users\jonch\Downloads\Zion1.mp4"
    set "OUTPUT=C:\Users\jonch\reset-biology-website\renders\my-video.mp4"
    ```
 

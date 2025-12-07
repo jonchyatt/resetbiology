@@ -5,11 +5,18 @@ import {
   BREATH_PATTERNS,
   BACKGROUNDS,
   COLOR_PRESETS,
+  STAR_NEST_PRESETS,
+  ORB_TYPES,
+  DEFAULT_UNITY_LAYERS,
   BreathingOrbCanvas,
   BreathIndicator,
   AudioAmplitudeDisplay,
   audioAnalyzer,
   BackgroundOption,
+  StarNestPreset,
+  OrbType,
+  ParticleLayerConfig,
+  FrequencyBand,
 } from "@/components/visuals/BreathingOrb";
 
 // ============================================================================
@@ -17,6 +24,8 @@ import {
 // ============================================================================
 
 type TabKey = "mode" | "orb" | "environment" | "export";
+type LeftTabKey = "mode" | "export";
+type RightTabKey = "orb" | "environment";
 
 type ExportSettings = {
   resolution: "1080p" | "4k" | "8k";
@@ -408,6 +417,17 @@ export default function VisualStudioPage() {
   const [particleCount, setParticleCount] = useState(25000);
   const [intensity, setIntensity] = useState(1.5);
   const [turbulence, setTurbulence] = useState(0.4);
+  const [orbType, setOrbType] = useState<OrbType>("rainbow");
+
+  // Unity Orb layer settings - deep copy of defaults to avoid mutation
+  const [unityLayers, setUnityLayers] = useState<ParticleLayerConfig[]>(() =>
+    DEFAULT_UNITY_LAYERS.map(l => ({ ...l }))
+  );
+
+  // Frequency band amplitudes for per-layer reactivity
+  const [bassAmplitude, setBassAmplitude] = useState(0);
+  const [midsAmplitude, setMidsAmplitude] = useState(0);
+  const [trebleAmplitude, setTrebleAmplitude] = useState(0);
 
   // Background settings
   const [backgroundKey, setBackgroundKey] = useState("stars");
@@ -415,14 +435,12 @@ export default function VisualStudioPage() {
   const [videoUrl, setVideoUrl] = useState("");
   const [videoFile, setVideoFile] = useState<File | null>(null);
 
-  // Star settings
-  const [starEnabled, setStarEnabled] = useState(true);
-  const [starCount, setStarCount] = useState(4000);
-  const [starSpeed, setStarSpeed] = useState(0.3);
-  const [starColorful, setStarColorful] = useState(true);
+  // Star Nest Skybox settings
+  const [skyboxEnabled, setSkyboxEnabled] = useState(true);
+  const [skyboxPresetKey, setSkyboxPresetKey] = useState("darkWorld1"); // THE ONE from 1DarkWorld1.mat
 
   // Water settings
-  const [waterEnabled, setWaterEnabled] = useState(true);
+  const [waterEnabled, setWaterEnabled] = useState(false);
   const [waterReflectivity, setWaterReflectivity] = useState(0.4);
 
   // Audio state
@@ -430,12 +448,17 @@ export default function VisualStudioPage() {
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioAmplitude, setAudioAmplitude] = useState(0);
+  const [beatScale, setBeatScale] = useState(1.0);      // Beat detection scale (0.9 rest -> 1.8 beat)
+  const [globalHue, setGlobalHue] = useState(0);        // Rainbow hue (0-1)
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const animationFrameRef = useRef<number>(0);
   const isPlayingRef = useRef(false); // Ref to avoid stale closure
+  const lastTimeRef = useRef(performance.now()); // For delta time calculation
 
-  // Tab state
+  // Tab state - separate for left and right panels
   const [activeTab, setActiveTab] = useState<TabKey>("mode");
+  const [leftTab, setLeftTab] = useState<LeftTabKey>("mode");
+  const [rightTab, setRightTab] = useState<RightTabKey>("orb");
 
   // Export settings
   const [exportSettings, setExportSettings] = useState<ExportSettings>({
@@ -497,8 +520,22 @@ export default function VisualStudioPage() {
   // Audio animation loop - uses ref to avoid stale closure
   const updateAudioVisualization = useCallback(() => {
     if (isPlayingRef.current) {
-      audioAnalyzer.update();
+      // Calculate delta time for smooth animations
+      const now = performance.now();
+      const deltaTime = (now - lastTimeRef.current) / 1000; // Convert to seconds
+      lastTimeRef.current = now;
+
+      // Update audio analyzer with delta time for beat detection
+      audioAnalyzer.update(deltaTime);
+
+      // Read all values from audio analyzer
       setAudioAmplitude(audioAnalyzer.amplitude);
+      setBeatScale(audioAnalyzer.currentScale);
+      setGlobalHue(audioAnalyzer.globalHue);
+      // Frequency band amplitudes for Unity Orb layers
+      setBassAmplitude(audioAnalyzer.bass);
+      setMidsAmplitude(audioAnalyzer.mid);
+      setTrebleAmplitude(audioAnalyzer.high);
     }
     animationFrameRef.current = requestAnimationFrame(updateAudioVisualization);
   }, []);
@@ -570,9 +607,9 @@ export default function VisualStudioPage() {
     return cmd;
   }, [exportSettings]);
 
-  // Tab content renderer
-  const renderTabContent = () => {
-    switch (activeTab) {
+  // Tab content renderer - accepts tab key for split panel support
+  const renderTabContent = (tab: TabKey = activeTab) => {
+    switch (tab) {
       case "mode":
         return (
           <div className="space-y-6">
@@ -669,6 +706,26 @@ export default function VisualStudioPage() {
       case "orb":
         return (
           <div className="space-y-6">
+            {/* Orb Type Selector */}
+            <ControlSection title="Orb Type" icon={<IconPalette />}>
+              <div className="grid grid-cols-2 gap-3">
+                {ORB_TYPES.map((orb) => (
+                  <button
+                    key={orb.key}
+                    onClick={() => setOrbType(orb.key)}
+                    className={`flex flex-col items-center gap-2 p-4 rounded-xl border transition-all ${
+                      orbType === orb.key
+                        ? "border-teal-400 bg-teal-500/10 text-teal-400"
+                        : "border-slate-600 hover:border-slate-500 text-slate-300"
+                    }`}
+                  >
+                    <span className="text-sm font-medium">{orb.label}</span>
+                    <span className="text-xs text-slate-400 text-center">{orb.description}</span>
+                  </button>
+                ))}
+              </div>
+            </ControlSection>
+
             {/* Color Presets */}
             <ControlSection title="Color Presets" icon={<IconPalette />}>
               <ColorPresetPicker
@@ -722,6 +779,348 @@ export default function VisualStudioPage() {
                 step={0.05}
               />
             </ControlSection>
+
+            {/* Unity Orb Layer Settings - Only show for Unity Orb */}
+            {orbType === "unity" && (
+              <ControlSection title="Unity Particle Layers">
+                <div className="space-y-4">
+                  {unityLayers.map((layer, idx) => (
+                    <div
+                      key={layer.id}
+                      className={`p-4 rounded-lg border ${
+                        layer.enabled
+                          ? "border-teal-500/50 bg-teal-900/20"
+                          : "border-slate-700 bg-slate-800/50"
+                      }`}
+                    >
+                      {/* Layer Header */}
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-3">
+                          <button
+                            onClick={() => {
+                              const updated = [...unityLayers];
+                              updated[idx] = { ...updated[idx], enabled: !updated[idx].enabled };
+                              setUnityLayers(updated);
+                            }}
+                            className={`w-10 h-6 rounded-full transition-colors ${
+                              layer.enabled ? "bg-teal-500" : "bg-slate-600"
+                            }`}
+                          >
+                            <div
+                              className={`w-4 h-4 rounded-full bg-white transition-transform ${
+                                layer.enabled ? "translate-x-5" : "translate-x-1"
+                              }`}
+                            />
+                          </button>
+                          <input
+                            type="text"
+                            value={layer.name}
+                            onChange={(e) => {
+                              const updated = [...unityLayers];
+                              updated[idx] = { ...updated[idx], name: e.target.value };
+                              setUnityLayers(updated);
+                            }}
+                            className="bg-transparent text-sm font-medium text-white border-b border-transparent hover:border-slate-500 focus:border-teal-400 focus:outline-none"
+                          />
+                        </div>
+                        <div className="flex gap-2">
+                          {/* Duplicate Button */}
+                          <button
+                            onClick={() => {
+                              const newLayer: ParticleLayerConfig = {
+                                ...layer,
+                                id: `${layer.id}-copy-${Date.now()}`,
+                                name: `${layer.name} Copy`,
+                              };
+                              setUnityLayers([...unityLayers, newLayer]);
+                            }}
+                            className="p-1 text-slate-400 hover:text-teal-400 transition-colors"
+                            title="Duplicate Layer"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                          </button>
+                          {/* Delete Button (only if more than 1 layer) */}
+                          {unityLayers.length > 1 && (
+                            <button
+                              onClick={() => {
+                                setUnityLayers(unityLayers.filter((_, i) => i !== idx));
+                              }}
+                              className="p-1 text-slate-400 hover:text-red-400 transition-colors"
+                              title="Delete Layer"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              </svg>
+                            </button>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Collapsed Settings for enabled layers */}
+                      {layer.enabled && (
+                        <div className="space-y-3 mt-4 pt-4 border-t border-slate-700/50">
+                          {/* Frequency Band Selector */}
+                          <div>
+                            <label className="block text-xs text-slate-400 mb-1">Audio Frequency Band</label>
+                            <div className="grid grid-cols-4 gap-1">
+                              {(["all", "bass", "mids", "treble"] as FrequencyBand[]).map((band) => (
+                                <button
+                                  key={band}
+                                  onClick={() => {
+                                    const updated = [...unityLayers];
+                                    updated[idx] = { ...updated[idx], frequencyBand: band };
+                                    setUnityLayers(updated);
+                                  }}
+                                  className={`px-2 py-1 text-xs rounded ${
+                                    layer.frequencyBand === band
+                                      ? "bg-teal-500 text-white"
+                                      : "bg-slate-700 text-slate-300 hover:bg-slate-600"
+                                  }`}
+                                >
+                                  {band.charAt(0).toUpperCase() + band.slice(1)}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Particle Count */}
+                          <div>
+                            <label className="flex justify-between text-xs text-slate-400 mb-1">
+                              <span>Particles</span>
+                              <span className="text-teal-400">{layer.particleCount.toLocaleString()}</span>
+                            </label>
+                            <input
+                              type="range"
+                              min={100}
+                              max={5000}
+                              step={100}
+                              value={layer.particleCount}
+                              onChange={(e) => {
+                                const updated = [...unityLayers];
+                                updated[idx] = { ...updated[idx], particleCount: parseInt(e.target.value) };
+                                setUnityLayers(updated);
+                              }}
+                              className="w-full h-1 rounded-full appearance-none bg-slate-600 accent-teal-500"
+                            />
+                          </div>
+
+                          {/* Base Size */}
+                          <div>
+                            <label className="flex justify-between text-xs text-slate-400 mb-1">
+                              <span>Base Size</span>
+                              <span className="text-teal-400">{layer.baseSize.toFixed(2)}</span>
+                            </label>
+                            <input
+                              type="range"
+                              min={0.01}
+                              max={0.5}
+                              step={0.01}
+                              value={layer.baseSize}
+                              onChange={(e) => {
+                                const updated = [...unityLayers];
+                                updated[idx] = { ...updated[idx], baseSize: parseFloat(e.target.value) };
+                                setUnityLayers(updated);
+                              }}
+                              className="w-full h-1 rounded-full appearance-none bg-slate-600 accent-teal-500"
+                            />
+                          </div>
+
+                          {/* Spawn Radius */}
+                          <div>
+                            <label className="flex justify-between text-xs text-slate-400 mb-1">
+                              <span>Spawn Radius</span>
+                              <span className="text-teal-400">{layer.spawnRadius.toFixed(2)}</span>
+                            </label>
+                            <input
+                              type="range"
+                              min={0.01}
+                              max={0.5}
+                              step={0.01}
+                              value={layer.spawnRadius}
+                              onChange={(e) => {
+                                const updated = [...unityLayers];
+                                updated[idx] = { ...updated[idx], spawnRadius: parseFloat(e.target.value) };
+                                setUnityLayers(updated);
+                              }}
+                              className="w-full h-1 rounded-full appearance-none bg-slate-600 accent-teal-500"
+                            />
+                          </div>
+
+                          {/* Max Speed */}
+                          <div>
+                            <label className="flex justify-between text-xs text-slate-400 mb-1">
+                              <span>Max Speed</span>
+                              <span className="text-teal-400">{layer.maxSpeed.toFixed(2)}</span>
+                            </label>
+                            <input
+                              type="range"
+                              min={0}
+                              max={0.1}
+                              step={0.005}
+                              value={layer.maxSpeed}
+                              onChange={(e) => {
+                                const updated = [...unityLayers];
+                                updated[idx] = { ...updated[idx], maxSpeed: parseFloat(e.target.value) };
+                                setUnityLayers(updated);
+                              }}
+                              className="w-full h-1 rounded-full appearance-none bg-slate-600 accent-teal-500"
+                            />
+                          </div>
+
+                          {/* Audio Reactivity */}
+                          <div>
+                            <label className="flex justify-between text-xs text-slate-400 mb-1">
+                              <span>Audio Reactivity</span>
+                              <span className="text-teal-400">{layer.audioReactivity.toFixed(2)}</span>
+                            </label>
+                            <input
+                              type="range"
+                              min={0}
+                              max={2}
+                              step={0.1}
+                              value={layer.audioReactivity}
+                              onChange={(e) => {
+                                const updated = [...unityLayers];
+                                updated[idx] = { ...updated[idx], audioReactivity: parseFloat(e.target.value) };
+                                setUnityLayers(updated);
+                              }}
+                              className="w-full h-1 rounded-full appearance-none bg-slate-600 accent-teal-500"
+                            />
+                          </div>
+
+                          {/* Size Over Lifetime Header */}
+                          <div className="pt-2 border-t border-slate-700/50">
+                            <label className="text-xs text-slate-400 mb-2 block">Size Over Lifetime</label>
+                            <div className="grid grid-cols-3 gap-2">
+                              {/* Size at Birth */}
+                              <div>
+                                <label className="text-[10px] text-slate-500 block mb-1">Birth ({(layer.sizeAtBirth * 100).toFixed(0)}%)</label>
+                                <input
+                                  type="range"
+                                  min={0.01}
+                                  max={0.5}
+                                  step={0.01}
+                                  value={layer.sizeAtBirth}
+                                  onChange={(e) => {
+                                    const updated = [...unityLayers];
+                                    updated[idx] = { ...updated[idx], sizeAtBirth: parseFloat(e.target.value) };
+                                    setUnityLayers(updated);
+                                  }}
+                                  className="w-full h-1 rounded-full appearance-none bg-slate-600 accent-teal-500"
+                                />
+                              </div>
+                              {/* Size at Peak */}
+                              <div>
+                                <label className="text-[10px] text-slate-500 block mb-1">Peak ({(layer.sizeAtPeak * 100).toFixed(0)}%)</label>
+                                <input
+                                  type="range"
+                                  min={0.5}
+                                  max={1.5}
+                                  step={0.05}
+                                  value={layer.sizeAtPeak}
+                                  onChange={(e) => {
+                                    const updated = [...unityLayers];
+                                    updated[idx] = { ...updated[idx], sizeAtPeak: parseFloat(e.target.value) };
+                                    setUnityLayers(updated);
+                                  }}
+                                  className="w-full h-1 rounded-full appearance-none bg-slate-600 accent-teal-500"
+                                />
+                              </div>
+                              {/* Size at Death */}
+                              <div>
+                                <label className="text-[10px] text-slate-500 block mb-1">Death ({(layer.sizeAtDeath * 100).toFixed(0)}%)</label>
+                                <input
+                                  type="range"
+                                  min={0.01}
+                                  max={0.5}
+                                  step={0.01}
+                                  value={layer.sizeAtDeath}
+                                  onChange={(e) => {
+                                    const updated = [...unityLayers];
+                                    updated[idx] = { ...updated[idx], sizeAtDeath: parseFloat(e.target.value) };
+                                    setUnityLayers(updated);
+                                  }}
+                                  className="w-full h-1 rounded-full appearance-none bg-slate-600 accent-teal-500"
+                                />
+                              </div>
+                            </div>
+                            {/* Peak Lifetime Position */}
+                            <div className="mt-2">
+                              <label className="flex justify-between text-[10px] text-slate-500 mb-1">
+                                <span>Peak at Lifetime</span>
+                                <span className="text-teal-400">{(layer.peakLifetime * 100).toFixed(0)}%</span>
+                              </label>
+                              <input
+                                type="range"
+                                min={0.3}
+                                max={0.9}
+                                step={0.05}
+                                value={layer.peakLifetime}
+                                onChange={(e) => {
+                                  const updated = [...unityLayers];
+                                  updated[idx] = { ...updated[idx], peakLifetime: parseFloat(e.target.value) };
+                                  setUnityLayers(updated);
+                                }}
+                                className="w-full h-1 rounded-full appearance-none bg-slate-600 accent-teal-500"
+                              />
+                            </div>
+                          </div>
+
+                          {/* Lifetime */}
+                          <div>
+                            <label className="flex justify-between text-xs text-slate-400 mb-1">
+                              <span>Lifetime (seconds)</span>
+                              <span className="text-teal-400">{layer.lifetime.toFixed(1)}s</span>
+                            </label>
+                            <input
+                              type="range"
+                              min={0.5}
+                              max={5}
+                              step={0.1}
+                              value={layer.lifetime}
+                              onChange={(e) => {
+                                const updated = [...unityLayers];
+                                updated[idx] = { ...updated[idx], lifetime: parseFloat(e.target.value) };
+                                setUnityLayers(updated);
+                              }}
+                              className="w-full h-1 rounded-full appearance-none bg-slate-600 accent-teal-500"
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+
+                  {/* Add New Layer Button */}
+                  <button
+                    onClick={() => {
+                      const newLayer: ParticleLayerConfig = {
+                        id: `layer-${Date.now()}`,
+                        name: `Layer ${unityLayers.length + 1}`,
+                        enabled: true,
+                        particleCount: 1000,
+                        baseSize: 0.15,          // Moderate size
+                        spawnRadius: 0.10,       // Moderate spread
+                        maxSpeed: 0.02,          // Slow movement
+                        lifetime: 2.0,
+                        audioReactivity: 0.5,
+                        frequencyBand: "all",
+                        sizeAtBirth: 0.02,
+                        sizeAtPeak: 1.0,
+                        sizeAtDeath: 0.02,
+                        peakLifetime: 0.5,
+                      };
+                      setUnityLayers([...unityLayers, newLayer]);
+                    }}
+                    className="w-full py-2 px-4 rounded-lg border border-dashed border-slate-600 text-slate-400 hover:border-teal-500 hover:text-teal-400 transition-colors text-sm"
+                  >
+                    + Add Particle Layer
+                  </button>
+                </div>
+              </ControlSection>
+            )}
           </div>
         );
 
@@ -780,40 +1179,36 @@ export default function VisualStudioPage() {
               </div>
             </ControlSection>
 
-            {/* Stars */}
-            <ControlSection title="Star Field" icon={<IconStar />}>
+            {/* Star Nest Skybox */}
+            <ControlSection title="Star Nest Skybox" icon={<IconStar />}>
               <ToggleControl
-                label="Enable Stars"
-                checked={starEnabled}
-                onChange={setStarEnabled}
-                description="Animated star background"
+                label="Enable Skybox"
+                checked={skyboxEnabled}
+                onChange={setSkyboxEnabled}
+                description="Procedural volumetric background by Pablo Román Andrioli"
               />
-              {starEnabled && (
-                <>
-                  <SliderControl
-                    label="Star Count"
-                    value={starCount}
-                    onChange={setStarCount}
-                    min={1000}
-                    max={20000}
-                    step={500}
-                    unit=" stars"
-                  />
-                  <SliderControl
-                    label="Star Speed"
-                    value={starSpeed}
-                    onChange={setStarSpeed}
-                    min={0}
-                    max={1}
-                    step={0.05}
-                  />
-                  <ToggleControl
-                    label="Colorful Stars"
-                    checked={starColorful}
-                    onChange={setStarColorful}
-                    description="Add varied colors to some stars"
-                  />
-                </>
+              {skyboxEnabled && (
+                <div className="mt-4 space-y-3">
+                  <span className="block text-sm text-slate-300 mb-2">Skybox Preset</span>
+                  <div className="grid grid-cols-1 gap-2">
+                    {STAR_NEST_PRESETS.map((preset) => (
+                      <button
+                        key={preset.key}
+                        onClick={() => setSkyboxPresetKey(preset.key)}
+                        className={`text-left p-3 rounded-lg border transition-all ${
+                          skyboxPresetKey === preset.key
+                            ? "border-teal-400 bg-teal-500/10"
+                            : "border-slate-600 hover:border-slate-500 hover:bg-slate-800/50"
+                        }`}
+                      >
+                        <span className="block text-sm font-medium text-slate-200">{preset.label}</span>
+                        <span className="block text-xs text-slate-400 mt-0.5">
+                          Iterations: {preset.iterations} | Vol steps: {preset.volsteps}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
               )}
             </ControlSection>
 
@@ -953,24 +1348,22 @@ export default function VisualStudioPage() {
         </div>
       </header>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Panel - Controls */}
-          <div className="lg:col-span-1 space-y-4">
-            {/* Tabs */}
+      {/* Main Content - Three Column Layout */}
+      <div className="w-full px-4 py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr_280px] gap-4">
+          {/* Left Panel - Mode & Export */}
+          <div className="space-y-4">
+            {/* Left Tabs */}
             <div className="flex rounded-xl bg-slate-900/50 p-1 border border-slate-700/50">
               {[
                 { key: "mode", label: "Mode" },
-                { key: "orb", label: "Orb" },
-                { key: "environment", label: "Environment" },
                 { key: "export", label: "Export" },
               ].map((tab) => (
                 <button
                   key={tab.key}
-                  onClick={() => setActiveTab(tab.key as TabKey)}
+                  onClick={() => setLeftTab(tab.key as LeftTabKey)}
                   className={`flex-1 py-2 px-3 text-sm font-medium rounded-lg transition-all ${
-                    activeTab === tab.key
+                    leftTab === tab.key
                       ? "bg-teal-500 text-white"
                       : "text-slate-400 hover:text-white hover:bg-slate-800/50"
                   }`}
@@ -980,16 +1373,16 @@ export default function VisualStudioPage() {
               ))}
             </div>
 
-            {/* Tab Content */}
+            {/* Left Tab Content */}
             <div className="max-h-[calc(100vh-200px)] overflow-y-auto pr-2 space-y-4">
-              {renderTabContent()}
+              {renderTabContent(leftTab)}
             </div>
           </div>
 
-          {/* Right Panel - Preview */}
-          <div className="lg:col-span-2">
+          {/* Center Panel - Preview Canvas */}
+          <div className="min-w-0">
             <div className="sticky top-24">
-              <div className="relative">
+              <div className="relative h-[600px] rounded-2xl border border-slate-700/60 shadow-2xl overflow-hidden">
                 <BreathingOrbCanvas
                   mode={mode}
                   patternKey={patternKey}
@@ -1000,13 +1393,22 @@ export default function VisualStudioPage() {
                   colorB={colorB}
                   intensity={intensity}
                   turbulence={turbulence}
-                  starEnabled={starEnabled}
-                  starCount={starCount}
-                  starSpeed={starSpeed}
-                  starColorful={starColorful}
+                  skyboxEnabled={skyboxEnabled}
+                  skyboxPresetKey={skyboxPresetKey}
                   waterEnabled={waterEnabled}
                   waterReflectivity={waterReflectivity}
                   videoUrl={videoUrl || undefined}
+                  // Audio-reactive rainbow mode - only active in audio mode
+                  beatScale={mode === "audio" ? beatScale : 1.0}
+                  globalHue={mode === "audio" ? globalHue : 0}
+                  useRainbowMode={mode === "audio"}
+                  // Orb type selection
+                  orbType={orbType}
+                  // Unity Orb layer configuration
+                  unityLayers={unityLayers}
+                  bassAmplitude={bassAmplitude}
+                  midsAmplitude={midsAmplitude}
+                  trebleAmplitude={trebleAmplitude}
                 />
 
                 {/* Overlay indicators */}
@@ -1020,27 +1422,63 @@ export default function VisualStudioPage() {
 
               {/* Quick info */}
               <div className="mt-4 p-4 rounded-xl bg-slate-900/50 border border-slate-700/50">
-                <div className="grid grid-cols-3 gap-4 text-center">
+                <div className="grid grid-cols-4 gap-4 text-center">
                   <div>
-                    <span className="block text-2xl font-semibold text-teal-400">
-                      {particleCount.toLocaleString()}
+                    <span className="block text-xl font-semibold text-teal-400">
+                      {ORB_TYPES.find(o => o.key === orbType)?.label.split(" ")[0] || "Rainbow"}
+                    </span>
+                    <span className="text-xs text-slate-400">Orb</span>
+                  </div>
+                  <div>
+                    <span className="block text-xl font-semibold text-teal-400">
+                      {orbType === "unity"
+                        ? unityLayers.reduce((sum, l) => sum + (l.enabled ? l.particleCount : 0), 0).toLocaleString()
+                        : particleCount.toLocaleString()}
                     </span>
                     <span className="text-xs text-slate-400">Particles</span>
                   </div>
                   <div>
-                    <span className="block text-2xl font-semibold text-teal-400">
+                    <span className="block text-xl font-semibold text-teal-400">
                       {mode === "breath" ? BREATH_PATTERNS[patternKey]?.label.split(" ")[0] : "Audio"}
                     </span>
                     <span className="text-xs text-slate-400">Mode</span>
                   </div>
                   <div>
-                    <span className="block text-2xl font-semibold text-teal-400">
-                      {starEnabled ? starCount.toLocaleString() : "Off"}
+                    <span className="block text-xl font-semibold text-teal-400">
+                      {skyboxEnabled ? STAR_NEST_PRESETS.find(p => p.key === skyboxPresetKey)?.label.split(" ")[0] : "Off"}
                     </span>
-                    <span className="text-xs text-slate-400">Stars</span>
+                    <span className="text-xs text-slate-400">Skybox</span>
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+
+          {/* Right Panel - Orb & Environment */}
+          <div className="space-y-4">
+            {/* Right Tabs */}
+            <div className="flex rounded-xl bg-slate-900/50 p-1 border border-slate-700/50">
+              {[
+                { key: "orb", label: "Orb" },
+                { key: "environment", label: "Environment" },
+              ].map((tab) => (
+                <button
+                  key={tab.key}
+                  onClick={() => setRightTab(tab.key as RightTabKey)}
+                  className={`flex-1 py-2 px-3 text-sm font-medium rounded-lg transition-all ${
+                    rightTab === tab.key
+                      ? "bg-teal-500 text-white"
+                      : "text-slate-400 hover:text-white hover:bg-slate-800/50"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Right Tab Content */}
+            <div className="max-h-[calc(100vh-200px)] overflow-y-auto pr-2 space-y-4">
+              {renderTabContent(rightTab)}
             </div>
           </div>
         </div>
