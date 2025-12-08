@@ -460,50 +460,8 @@ export function BreathTrainingApp({ onSessionComplete }: BreathTrainingAppProps)
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex flex-col relative"
-         style={{
-           backgroundImage: 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url(/hero-background.jpg)',
-           backgroundSize: 'cover',
-           backgroundPosition: 'center',
-           backgroundAttachment: 'fixed'
-         }}>
-      <div className="relative z-10 min-h-screen flex flex-col pt-16">
-        {/* Portal Subnav Header */}
-        <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm shadow-2xl border-b border-primary-400/30">
-          <div className="container mx-auto px-4 py-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <img src="/logo1.png" alt="Reset Biology" className="h-10 w-auto rounded-lg drop-shadow-lg bg-white/10 backdrop-blur-sm p-1 border border-white/20" />
-                <div>
-                  <div className="flex items-center">
-                    <a href="/portal" className="text-xl font-bold text-white drop-shadow-lg hover:text-primary-300 transition-colors">Portal</a>
-                    <span className="mx-2 text-primary-300">&gt;</span>
-                    <span className="text-lg text-gray-200 drop-shadow-sm">Breath Training</span>
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <a href="/daily-history" className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
-                  Daily History
-                </a>
-                <a href="/portal" className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
-                  ← Back to Portal
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      
-        {/* Training Description */}
-        <div className="text-center py-12">
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-8 text-shadow-lg animate-fade-in">
-            Guided <span className="text-primary-400">Breath Training</span>
-          </h2>
-          <p className="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto font-medium leading-relaxed drop-shadow-sm mb-4">
-            Master your nervous system through conscious breathing. Enhance your metabolic reset with precision breathing techniques.
-          </p>
-        </div>
-
+    <div className="flex flex-col relative">
+      <div className="relative z-10 flex flex-col">
       {/* Main Training Interface */}
       <div className="flex-1 flex items-center justify-center px-4">
         <div className="w-full max-w-7xl">
