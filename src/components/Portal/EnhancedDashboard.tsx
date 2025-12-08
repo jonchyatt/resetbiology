@@ -441,7 +441,7 @@ export function EnhancedDashboard() {
           {/* Welcome Header */}
           <div className="text-center mb-8">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 text-shadow-lg animate-fade-in">
-              Welcome back, <span className="text-primary-400">{user?.name || user?.email || "Wellness Warrior"}</span>
+              Welcome back, <span className="text-primary-400">{user?.name || user?.nickname || (user?.email ? user.email.split('@')[0] : "Wellness Warrior")}</span>
             </h1>
             {currentStreak > 0 && (
               <div className="mt-3 inline-flex items-center px-4 py-2 bg-secondary-600/20 rounded-full border border-secondary-400/30">
@@ -587,7 +587,7 @@ export function EnhancedDashboard() {
               <Link href="/mental-training" className="group">
                 <div className="p-6 bg-gradient-to-br from-pink-600/30 to-pink-700/30 border border-pink-400/30 rounded-lg hover:scale-[1.02] hover:shadow-lg hover:shadow-pink-500/20 transition-all text-center">
                   <Zap className="w-8 h-8 text-pink-300 mx-auto mb-2" />
-                  <span className="text-white font-medium">N-Back</span>
+                  <span className="text-white font-medium">Memory</span>
                 </div>
               </Link>
             </div>

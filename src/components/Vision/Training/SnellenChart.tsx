@@ -133,11 +133,11 @@ export default function SnellenChart({
       </div>
 
       <div className="mt-6 text-gray-600 text-sm text-center">
-        <p className="mb-1">Optimal viewing depends on your device.</p>
+        <p className="mb-1">Find your edge of clarity - where letters are just barely readable.</p>
         <p className="text-xs">
           {deviceMode === 'phone'
-            ? 'Phone: start at arm’s length; shrink text; add +1.0 readers, then +2.0.'
-            : 'Desktop: start ~80cm; move back as you succeed.'}
+            ? 'Start comfortable, then gradually extend distance as you improve.'
+            : 'Position at normal desk distance, adjust as needed.'}
         </p>
       </div>
     </div>

@@ -15,14 +15,16 @@ export default function DistanceGuidance({
   deviceMode = 'phone'
 }: DistanceGuidanceProps) {
   const getDistanceDescription = () => {
-    if (visionType === 'near') {
-      if (targetDistanceCm <= 25) return "Very close - about a hand's length"
-      if (targetDistanceCm <= 40) return "Normal reading distance - about arm's length"
-      if (targetDistanceCm <= 60) return "Extended arm's length"
-      return 'Far near vision - push your arm out fully'
+    if (deviceMode === 'phone') {
+      if (targetDistanceCm <= 25) return "Close - about a hand's length away"
+      if (targetDistanceCm <= 40) return "Comfortable reading distance"
+      if (targetDistanceCm <= 60) return "Extended arm's length - push the blur"
+      return "Maximum arm's reach - challenge your edge of clarity"
     }
-    if (targetDistanceCm < 200) return 'Use a desk setup; target ~80cm+'
-    return 'Use a TV/monitor at 2–3m for far checks'
+    // Desktop mode
+    if (targetDistanceCm <= 60) return "Close desktop viewing"
+    if (targetDistanceCm <= 80) return "Normal desk distance"
+    return "Extended desk distance - lean back slightly"
   }
 
   const isPhoneAppropriate = visionType === 'near' || targetDistanceCm <= 100
@@ -64,32 +66,23 @@ export default function DistanceGuidance({
         </div>
       </div>
 
-      {!isPhoneAppropriate && (
+      {!isPhoneAppropriate && deviceMode === 'phone' && (
         <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3 text-sm">
           <div className="flex items-center gap-2 text-yellow-300 font-medium">
             <Monitor className="w-4 h-4" />
-            <span>Use a computer/TV for far vision training</span>
+            <span>Consider switching to Desktop mode</span>
           </div>
           <p className="text-yellow-200/70 mt-1 text-xs">
-            Larger screens make tiny lines legible at distance.
+            Larger screens work better for advanced distance training.
           </p>
         </div>
       )}
 
       <div className="mt-3 text-xs text-gray-400 space-y-1">
-        {visionType === 'near' ? (
-          <>
-            <p>• Hold your {deviceMode === 'phone' ? 'phone' : 'screen'} at the distance shown above</p>
-            <p>• Keep your head still, move only your eyes</p>
-            <p>• Blink naturally</p>
-          </>
-        ) : (
-          <>
-            <p>• Desktop: aim ~80cm; TV: 2–3m</p>
-            <p>• Use a large monitor if possible</p>
-            <p>• Avoid glare; keep room lighting even</p>
-          </>
-        )}
+        <p>• Hold your {deviceMode === 'phone' ? 'phone' : 'screen'} at the distance shown above</p>
+        <p>• Keep your head still, move only your eyes</p>
+        <p>• Blink naturally between attempts</p>
+        <p>• Find your "edge of clarity" - where text is just barely readable</p>
       </div>
     </div>
   )

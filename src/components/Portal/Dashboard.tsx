@@ -82,7 +82,7 @@ export function Dashboard() {
           {/* Personalized Welcome Header */}
           <div className="text-center mb-8">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 text-shadow-lg animate-fade-in">
-              Welcome back, <span className="text-primary-400">{user?.name || "Wellness Warrior"}</span>
+              Welcome back, <span className="text-primary-400">{user?.name || user?.nickname || (user?.email ? user.email.split('@')[0] : "Wellness Warrior")}</span>
             </h1>
             <div className="flex items-center justify-center gap-8 text-lg text-gray-200">
               <div className="flex items-center gap-2">

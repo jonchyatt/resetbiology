@@ -206,7 +206,7 @@ export function VisionHealing() {
                     Snellen Vision Trainer
                   </h3>
                   <p className="text-gray-300 mb-4">
-                    Phone-first: arm’s length, shrink text until readable, then add +1.0 readers and repeat, then +2.0. Desktop: pick a distance and aim for smaller lines.
+                    Train at your edge of clarity - where text is just barely readable. As you improve, gradually increase the challenge.
                   </p>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -234,7 +234,7 @@ export function VisionHealing() {
                     {/* Vision Type */}
                     <div>
                       <label className="block text-sm font-medium text-gray-300 mb-3">
-                        Vision Type
+                        Training Focus
                       </label>
                       <div className="flex gap-2">
                         {(['near', 'far'] as const).map(type => (
@@ -246,14 +246,14 @@ export function VisionHealing() {
                               : 'bg-gray-700/30 backdrop-blur-sm text-gray-300 hover:bg-gray-600/30'
                               }`}
                           >
-                            {type === 'near' ? '📱 Near' : '🖥️ Far'}
+                            {type === 'near' ? 'Nearsighted (can\'t see far)' : 'Farsighted (can\'t see close)'}
                           </button>
                         ))}
                       </div>
                       <p className="text-xs text-gray-400 mt-2">
                         {trainerVisionType === 'near'
-                          ? "Start at arm's length; move back only if easy"
-                          : 'Start at comfortable distance; aim to move out with readers'}
+                          ? "For myopia: push clarity outward from your screen"
+                          : 'For hyperopia: bring clarity closer to your screen'}
                       </p>
                     </div>
 
