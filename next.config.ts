@@ -2,6 +2,8 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: 'standalone',
+  // Required for @react-three packages to work with Next.js
+  transpilePackages: ['three', '@react-three/fiber', '@react-three/drei'],
   eslint: {
     ignoreDuringBuilds: true,
   },
