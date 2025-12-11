@@ -25,15 +25,13 @@ export interface NEPQAnswers {
   desired_outcome: string[]  // Now ranked array
   biggest_obstacle: string
   biggest_obstacle_other: string  // Custom frustration text when "other" selected
-  // Section 4: Vision
+  // Section 4: Vision (now before Amplification)
   success_vision: string
   success_feeling: string
   // Section 5: Amplification
   why_change: string
   readiness_scale: number
   why_not_lower: string
-  positive_outcomes: string
-  why_important: string
 }
 
 interface NEPQQuizProps {
@@ -69,8 +67,6 @@ export function NEPQQuiz({ onComplete, onClose }: NEPQQuizProps) {
     why_change: "",
     readiness_scale: 5,
     why_not_lower: "",
-    positive_outcomes: "",
-    why_important: "",
   })
 
   // Get questions for current section
@@ -168,7 +164,7 @@ export function NEPQQuiz({ onComplete, onClose }: NEPQQuizProps) {
     }
 
     // Move to next section (skip energySpin - go directly to close after vision)
-    const sections: NEPQSection[] = ["contact", "audit", "journey", "amplification", "vision", "close"]
+    const sections: NEPQSection[] = ["contact", "audit", "journey", "vision", "amplification", "close"]
     const currentSectionIndex = sections.indexOf(currentSection)
 
     if (currentSectionIndex < sections.length - 1) {
@@ -191,7 +187,7 @@ export function NEPQQuiz({ onComplete, onClose }: NEPQQuizProps) {
       return
     }
 
-    const sections: NEPQSection[] = ["contact", "audit", "journey", "amplification", "vision"]
+    const sections: NEPQSection[] = ["contact", "audit", "journey", "vision", "amplification"]
     const currentSectionIndex = sections.indexOf(currentSection)
 
     if (currentSectionIndex > 0) {

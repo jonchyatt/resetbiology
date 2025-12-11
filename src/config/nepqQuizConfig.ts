@@ -121,15 +121,15 @@ export const nepqConfig: NEPQConfig = {
       progressLabel: 'Your Why',
     },
     {
-      id: 'amplification',
-      title: 'Why This Matters',
-      subtitle: 'Let\'s explore what\'s driving you to make a change',
-      progressLabel: 'Your Vision',
-    },
-    {
       id: 'vision',
       title: 'Defining Success',
       subtitle: 'Paint a picture of what success looks like for you',
+      progressLabel: 'Your Vision',
+    },
+    {
+      id: 'amplification',
+      title: 'Why This Matters',
+      subtitle: 'Let\'s explore what\'s driving you to make a change',
       progressLabel: 'Your Results',
     },
     {
@@ -347,24 +347,6 @@ export const nepqConfig: NEPQConfig = {
       subtitle: 'What\'s making you more ready than not?',
       type: 'textarea',
       placeholder: 'I didn\'t pick a lower number because...',
-      required: true,
-    },
-    {
-      id: 'positive_outcomes',
-      section: 'amplification',
-      question: 'Imagine you\'ve successfully made this change. What positive things would happen?',
-      subtitle: 'Think about all areas of your life that would improve.',
-      type: 'textarea',
-      placeholder: 'If I made this change, I would...',
-      required: true,
-    },
-    {
-      id: 'why_important',
-      section: 'amplification',
-      question: 'Why are those outcomes important to you?',
-      subtitle: 'What makes them matter?',
-      type: 'textarea',
-      placeholder: 'Those outcomes are important because...',
       required: true,
     },
 
