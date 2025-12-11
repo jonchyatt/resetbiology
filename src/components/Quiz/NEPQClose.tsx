@@ -1,8 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { Check, ChevronLeft, Star, MessageCircle, Award } from "lucide-react"
-import { nepqConfig, NEPQOffer } from "@/config/nepqQuizConfig"
+import { Check, ChevronLeft, Star, MessageCircle, Award, Brain, Wind, Apple, Dumbbell, Target, Syringe } from "lucide-react"
+import { nepqConfig, NEPQOffer, CategoryScores, Recommendation } from "@/config/nepqQuizConfig"
 import { NEPQAnswers } from "./NEPQQuiz"
 
 interface NEPQCloseProps {
@@ -13,8 +13,27 @@ interface NEPQCloseProps {
     percentage: number
     level: "beginner" | "intermediate" | "advanced" | "expert"
   }
+  categoryScores?: CategoryScores
+  recommendations?: Recommendation[]
   onSelect: (offerId: string | null) => void
   onBack: () => void
+}
+
+// Icon mapping for recommendations
+const ICON_MAP: Record<string, React.ReactNode> = {
+  Brain: <Brain className="w-6 h-6" />,
+  Wind: <Wind className="w-6 h-6" />,
+  Apple: <Apple className="w-6 h-6" />,
+  Dumbbell: <Dumbbell className="w-6 h-6" />,
+  Target: <Target className="w-6 h-6" />,
+  Syringe: <Syringe className="w-6 h-6" />,
+}
+
+// Priority color mapping
+const PRIORITY_COLORS: Record<string, { bg: string; border: string; text: string }> = {
+  high: { bg: "from-red-500/20 to-orange-500/20", border: "border-red-400/40", text: "text-red-400" },
+  medium: { bg: "from-yellow-500/20 to-amber-500/20", border: "border-yellow-400/40", text: "text-yellow-400" },
+  low: { bg: "from-blue-500/20 to-cyan-500/20", border: "border-blue-400/40", text: "text-blue-400" },
 }
 
 /**
@@ -23,7 +42,7 @@ interface NEPQCloseProps {
  * Uses Chris Voss "No-oriented" questioning for low-pressure close
  * Shows offer cards with pricing and CTA
  */
-export function NEPQClose({ answers, auditScore, onSelect, onBack }: NEPQCloseProps) {
+export function NEPQClose({ answers, auditScore, categoryScores, recommendations, onSelect, onBack }: NEPQCloseProps) {
   const [stage, setStage] = useState<"commitment" | "offers">("commitment")
   const [selectedOffer, setSelectedOffer] = useState<string | null>(null)
   const [otherRequest, setOtherRequest] = useState("")
@@ -105,11 +124,11 @@ export function NEPQClose({ answers, auditScore, onSelect, onBack }: NEPQClosePr
     return baseClasses[color]
   }
 
-  // Commitment question stage
+  // Commitment question stage - Now shows personalized recommendations
   if (stage === "commitment") {
     return (
       <div
-        className="min-h-screen flex items-center justify-center px-4 py-8"
+        className="min-h-screen px-4 py-8"
         style={{
           backgroundImage: 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url(/hero-background.jpg)',
           backgroundSize: 'cover',
@@ -117,7 +136,17 @@ export function NEPQClose({ answers, auditScore, onSelect, onBack }: NEPQClosePr
           backgroundAttachment: 'fixed'
         }}
       >
-        <div className="max-w-2xl mx-auto w-full">
+        <div className="max-w-4xl mx-auto w-full">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">
+              {answers.name ? `${answers.name}, here's` : "Here's"} Your Personalized Assessment
+            </h1>
+            <p className="text-gray-300 text-lg">
+              Based on your answers, we've identified the key areas that will have the biggest impact
+            </p>
+          </div>
+
           {/* Profile Summary Card */}
           <div className="mb-8 bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-xl p-6 border border-primary-400/20 shadow-lg">
             <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-3">
@@ -126,7 +155,7 @@ export function NEPQClose({ answers, auditScore, onSelect, onBack }: NEPQClosePr
               </div>
               Your Profile Summary
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="bg-gray-700/30 rounded-lg p-4">
                 <span className="text-gray-400 text-sm block mb-1">Practice Level</span>
                 <span className="text-white font-semibold text-lg capitalize">{auditScore.level}</span>
@@ -138,7 +167,7 @@ export function NEPQClose({ answers, auditScore, onSelect, onBack }: NEPQClosePr
               <div className="bg-gray-700/30 rounded-lg p-4">
                 <span className="text-gray-400 text-sm block mb-1">Current Stage</span>
                 <span className="text-white font-semibold text-lg capitalize">
-                  {answers.journey_stage.replace(/_/g, " ")}
+                  {answers.journey_stage?.replace(/_/g, " ") || "Starting"}
                 </span>
               </div>
               <div className="bg-gray-700/30 rounded-lg p-4">
@@ -148,6 +177,50 @@ export function NEPQClose({ answers, auditScore, onSelect, onBack }: NEPQClosePr
             </div>
           </div>
 
+          {/* Personalized Recommendations */}
+          {recommendations && recommendations.length > 0 && (
+            <div className="mb-8">
+              <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                <Target className="w-5 h-5 text-primary-400" />
+                Your Priority Focus Areas
+              </h3>
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {recommendations.map((rec, index) => {
+                  const colors = PRIORITY_COLORS[rec.priority]
+                  return (
+                    <div
+                      key={rec.category}
+                      className={`bg-gradient-to-br ${colors.bg} backdrop-blur-sm rounded-xl p-5 border ${colors.border}`}
+                    >
+                      <div className="flex items-start gap-3 mb-3">
+                        <div className={`p-2 rounded-lg bg-gray-800/50 ${colors.text}`}>
+                          {ICON_MAP[rec.icon] || <Target className="w-6 h-6" />}
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <span className={`text-xs font-bold px-2 py-0.5 rounded-full bg-gray-800/50 ${colors.text}`}>
+                              #{index + 1} Priority
+                            </span>
+                          </div>
+                          <h4 className="text-white font-semibold mt-1">{rec.title}</h4>
+                        </div>
+                      </div>
+                      <p className="text-gray-300 text-sm mb-3">{rec.description}</p>
+                      <ul className="space-y-1">
+                        {rec.features.slice(0, 2).map((feature, idx) => (
+                          <li key={idx} className="flex items-center gap-2 text-xs text-gray-400">
+                            <Check className="w-3 h-3 text-primary-400 flex-shrink-0" />
+                            {feature}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+
           {/* Question Card */}
           <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-8 border border-primary-400/30 shadow-2xl text-center">
             {/* No-oriented question */}
@@ -156,7 +229,7 @@ export function NEPQClose({ answers, auditScore, onSelect, onBack }: NEPQClosePr
                 {closeQuestion.question}
               </h2>
               <p className="text-gray-300 text-lg">
-                Based on your profile, we have some options that might help you reach your goals.
+                We have personalized options to help you address these focus areas.
               </p>
             </div>
 

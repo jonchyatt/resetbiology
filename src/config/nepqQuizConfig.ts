@@ -18,9 +18,11 @@ export type NEPQSection =
   | 'contact'
   | 'audit'
   | 'journey'
+  | 'challenges'
   | 'vision'
   | 'amplification'
   | 'energySpin'
+  | 'mentalMastery'
   | 'close'
 
 export type NEPQQuestionType =
@@ -39,7 +41,27 @@ export type NEPQOption = {
   label: string
   score?: number
   sublabel?: string
+  // Category scoring for personalized recommendations
+  categoryScores?: {
+    mentalMastery?: number
+    breathwork?: number
+    tracking?: number
+    workout?: number
+    accountability?: number
+    peptides?: number
+  }
 }
+
+// Recommendation categories
+export type RecommendationCategory =
+  | 'mentalMastery'
+  | 'breathwork'
+  | 'tracking'
+  | 'workout'
+  | 'accountability'
+  | 'peptides'
+
+export type CategoryScores = Record<RecommendationCategory, number>
 
 export type NEPQQuestion = {
   id: string
@@ -118,7 +140,13 @@ export const nepqConfig: NEPQConfig = {
       id: 'journey',
       title: 'Your Journey So Far',
       subtitle: 'Help us understand where you are right now',
-      progressLabel: 'Your Why',
+      progressLabel: 'Your Journey',
+    },
+    {
+      id: 'challenges',
+      title: 'Your Challenges',
+      subtitle: 'Help us understand what you\'re working against',
+      progressLabel: 'Your Challenges',
     },
     {
       id: 'vision',
@@ -130,7 +158,7 @@ export const nepqConfig: NEPQConfig = {
       id: 'amplification',
       title: 'Why This Matters',
       subtitle: 'Let\'s explore what\'s driving you to make a change',
-      progressLabel: 'Your Results',
+      progressLabel: 'Your Why',
     },
     {
       id: 'energySpin',
@@ -139,10 +167,16 @@ export const nepqConfig: NEPQConfig = {
       progressLabel: 'Activation',
     },
     {
+      id: 'mentalMastery',
+      title: 'Mental Mastery Preview',
+      subtitle: 'Experience a sample of our guided visualization',
+      progressLabel: 'Preview',
+    },
+    {
       id: 'close',
-      title: 'Your Path Forward',
-      subtitle: 'Explore which option fits your goals',
-      progressLabel: 'Next Steps',
+      title: 'Your Personalized Results',
+      subtitle: 'Based on your answers, here\'s what we recommend',
+      progressLabel: 'Your Results',
     },
   ],
 
@@ -318,7 +352,125 @@ export const nepqConfig: NEPQConfig = {
       ],
     },
 
-    // Section 4: Your Why - Desire Amplification (Motivational Interviewing)
+    // Section 4: Challenges Assessment (Category Scoring)
+    {
+      id: 'eating_patterns',
+      section: 'challenges',
+      question: 'Which of these feel familiar to you?',
+      subtitle: 'Select all that apply - this helps us personalize your recommendations',
+      type: 'multiSelect',
+      required: true,
+      options: [
+        {
+          value: 'stress_eating',
+          label: 'I eat when stressed, anxious, or upset',
+          sublabel: 'Food helps me cope with emotions',
+          categoryScores: { mentalMastery: 2, breathwork: 1 },
+        },
+        {
+          value: 'cant_stop',
+          label: 'I have trouble stopping once I start eating',
+          sublabel: 'Hard to feel satisfied or know when to stop',
+          categoryScores: { mentalMastery: 2, peptides: 1 },
+        },
+        {
+          value: 'large_portions',
+          label: 'I eat larger portions than I intend to',
+          sublabel: 'Portion control is a struggle',
+          categoryScores: { mentalMastery: 1, tracking: 1 },
+        },
+        {
+          value: 'social_eating',
+          label: 'I eat differently around others vs alone',
+          sublabel: 'Social situations affect my eating',
+          categoryScores: { mentalMastery: 2, accountability: 1 },
+        },
+        {
+          value: 'distracted_eating',
+          label: 'I snack while watching TV or on my phone',
+          sublabel: 'Often eat without paying attention',
+          categoryScores: { tracking: 2, mentalMastery: 1 },
+        },
+        {
+          value: 'skip_then_overeat',
+          label: 'I skip meals then overeat later',
+          sublabel: 'Irregular eating patterns',
+          categoryScores: { tracking: 2, mentalMastery: 1 },
+        },
+        {
+          value: 'reward_food',
+          label: 'I reward myself with food',
+          sublabel: 'Food is tied to accomplishment or comfort',
+          categoryScores: { mentalMastery: 2 },
+        },
+        {
+          value: 'eat_fast',
+          label: 'I eat fast and often feel too full after',
+          sublabel: 'Don\'t take time to enjoy meals',
+          categoryScores: { mentalMastery: 1, breathwork: 1 },
+        },
+      ],
+    },
+    {
+      id: 'obstacles',
+      section: 'challenges',
+      question: 'What gets in your way?',
+      subtitle: 'Select all that apply',
+      type: 'multiSelect',
+      required: true,
+      options: [
+        {
+          value: 'high_stress',
+          label: 'High stress or poor sleep',
+          sublabel: 'Life feels overwhelming',
+          categoryScores: { breathwork: 2, peptides: 1 },
+        },
+        {
+          value: 'no_meal_planning',
+          label: 'Lack of meal planning or prep time',
+          sublabel: 'Don\'t know what to eat or when',
+          categoryScores: { tracking: 2 },
+        },
+        {
+          value: 'constant_hunger',
+          label: 'Constant hunger or cravings',
+          sublabel: 'Always thinking about food',
+          categoryScores: { peptides: 2, mentalMastery: 1 },
+        },
+        {
+          value: 'no_workout',
+          label: 'No structured workout routine',
+          sublabel: 'Exercise is inconsistent or non-existent',
+          categoryScores: { workout: 2 },
+        },
+        {
+          value: 'motivation',
+          label: 'Trouble staying motivated or consistent',
+          sublabel: 'Start strong but fade over time',
+          categoryScores: { accountability: 2, mentalMastery: 1 },
+        },
+        {
+          value: 'dont_know_what',
+          label: 'Don\'t know what to eat',
+          sublabel: 'Confused about nutrition',
+          categoryScores: { tracking: 2 },
+        },
+        {
+          value: 'low_energy',
+          label: 'Low energy or fatigue',
+          sublabel: 'Feel tired most of the time',
+          categoryScores: { peptides: 2, workout: 1 },
+        },
+        {
+          value: 'no_accountability',
+          label: 'No one holding me accountable',
+          sublabel: 'Doing this alone',
+          categoryScores: { accountability: 2 },
+        },
+      ],
+    },
+
+    // Section 5: Your Vision - Success Definition
     {
       id: 'why_change',
       section: 'amplification',
@@ -501,6 +653,148 @@ export function calculateAuditScore(selectedPractices: string[]): {
   else if (percentage >= 30) level = 'intermediate'
 
   return { score, maxScore, percentage, level }
+}
+
+// Calculate category scores from challenges questions
+export function calculateCategoryScores(
+  eatingPatterns: string[],
+  obstacles: string[]
+): CategoryScores {
+  const scores: CategoryScores = {
+    mentalMastery: 0,
+    breathwork: 0,
+    tracking: 0,
+    workout: 0,
+    accountability: 0,
+    peptides: 0,
+  }
+
+  // Get the questions with options
+  const eatingQuestion = nepqConfig.questions.find(q => q.id === 'eating_patterns')
+  const obstaclesQuestion = nepqConfig.questions.find(q => q.id === 'obstacles')
+
+  // Score eating patterns
+  eatingPatterns.forEach(value => {
+    const option = eatingQuestion?.options?.find(o => o.value === value)
+    if (option?.categoryScores) {
+      Object.entries(option.categoryScores).forEach(([category, score]) => {
+        scores[category as RecommendationCategory] += score
+      })
+    }
+  })
+
+  // Score obstacles
+  obstacles.forEach(value => {
+    const option = obstaclesQuestion?.options?.find(o => o.value === value)
+    if (option?.categoryScores) {
+      Object.entries(option.categoryScores).forEach(([category, score]) => {
+        scores[category as RecommendationCategory] += score
+      })
+    }
+  })
+
+  return scores
+}
+
+// Get top recommendations based on scores
+export type Recommendation = {
+  category: RecommendationCategory
+  score: number
+  title: string
+  description: string
+  icon: string
+  features: string[]
+  priority: 'high' | 'medium' | 'low'
+}
+
+export const RECOMMENDATION_INFO: Record<RecommendationCategory, Omit<Recommendation, 'category' | 'score' | 'priority'>> = {
+  mentalMastery: {
+    title: 'Mental Mastery Modules',
+    description: 'Address emotional eating patterns and build a healthier relationship with food',
+    icon: 'Brain',
+    features: [
+      'Guided visualizations for food cravings',
+      'Emotional eating pattern recognition',
+      'Mindful eating techniques',
+      'Stress-response reprogramming',
+    ],
+  },
+  breathwork: {
+    title: 'Breathwork & Meditation',
+    description: 'Reduce stress and improve sleep through proven breathing protocols',
+    icon: 'Wind',
+    features: [
+      'Vagal reset breathing exercises',
+      'Sleep optimization protocols',
+      'Stress reduction techniques',
+      'Daily meditation guidance',
+    ],
+  },
+  tracking: {
+    title: 'Nutrition Tracking System',
+    description: 'Take control of your nutrition with smart planning and tracking tools',
+    icon: 'Apple',
+    features: [
+      'Meal planning templates',
+      'Macro and calorie tracking',
+      'Food diary with insights',
+      'Portion guidance',
+    ],
+  },
+  workout: {
+    title: 'Structured Workout Program',
+    description: 'Build consistent exercise habits with progressive training plans',
+    icon: 'Dumbbell',
+    features: [
+      'Personalized workout plans',
+      'Progressive overload tracking',
+      'Exercise video library',
+      'Recovery guidance',
+    ],
+  },
+  accountability: {
+    title: 'Accountability System',
+    description: 'Stay consistent with check-ins, reminders, and support',
+    icon: 'Target',
+    features: [
+      'Daily task check-ins',
+      'Progress milestones',
+      'Streak tracking',
+      'Community support',
+    ],
+  },
+  peptides: {
+    title: 'Peptide Protocols',
+    description: 'Optimize metabolism and control hunger with research-backed peptides',
+    icon: 'Syringe',
+    features: [
+      'Hunger control peptides',
+      'Metabolism optimization',
+      'Energy enhancement',
+      'Personalized dosing guidance',
+    ],
+  },
+}
+
+export function getTopRecommendations(scores: CategoryScores, limit: number = 3): Recommendation[] {
+  const recommendations: Recommendation[] = Object.entries(scores)
+    .map(([category, score]) => {
+      const info = RECOMMENDATION_INFO[category as RecommendationCategory]
+      let priority: 'high' | 'medium' | 'low' = 'low'
+      if (score >= 4) priority = 'high'
+      else if (score >= 2) priority = 'medium'
+
+      return {
+        category: category as RecommendationCategory,
+        score,
+        priority,
+        ...info,
+      }
+    })
+    .filter(r => r.score > 0) // Only include categories with scores
+    .sort((a, b) => b.score - a.score) // Sort by score descending
+
+  return recommendations.slice(0, limit)
 }
 
 export default nepqConfig

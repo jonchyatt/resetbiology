@@ -9,9 +9,14 @@ import {
   getSectionQuestions,
   getSectionById,
   calculateAuditScore,
+  calculateCategoryScores,
+  getTopRecommendations,
+  CategoryScores,
+  Recommendation,
 } from "@/config/nepqQuizConfig"
 import { NEPQClose } from "./NEPQClose"
 import { EnergySpin } from "./EnergySpin"
+import { MentalMasteryPreview } from "./MentalMasteryPreview"
 
 export interface NEPQAnswers {
   // Section 1: Contact
@@ -25,10 +30,13 @@ export interface NEPQAnswers {
   desired_outcome: string[]  // Now ranked array
   biggest_obstacle: string
   biggest_obstacle_other: string  // Custom frustration text when "other" selected
-  // Section 4: Vision (now before Amplification)
+  // Section 4: Challenges (NEW - for category scoring)
+  eating_patterns: string[]
+  obstacles: string[]
+  // Section 5: Vision
   success_vision: string
   success_feeling: string
-  // Section 5: Amplification
+  // Section 6: Amplification
   why_change: string
   readiness_scale: number
   why_not_lower: string
@@ -40,6 +48,9 @@ interface NEPQQuizProps {
     auditLevel: string
     selectedOffer: string | null
     completedEnergySpin: boolean
+    completedMentalMastery: boolean
+    categoryScores: CategoryScores
+    recommendations: Recommendation[]
   }) => void
   onClose?: () => void
 }
@@ -50,8 +61,10 @@ export function NEPQQuiz({ onComplete, onClose }: NEPQQuizProps) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [startTime] = useState(Date.now())
   const [showEnergySpin, setShowEnergySpin] = useState(false)
+  const [showMentalMastery, setShowMentalMastery] = useState(false)
   const [showClose, setShowClose] = useState(false)
   const [completedEnergySpin, setCompletedEnergySpin] = useState(false)
+  const [completedMentalMastery, setCompletedMentalMastery] = useState(false)
 
   const [answers, setAnswers] = useState<NEPQAnswers>({
     name: "",
@@ -62,6 +75,8 @@ export function NEPQQuiz({ onComplete, onClose }: NEPQQuizProps) {
     desired_outcome: [],
     biggest_obstacle: "",
     biggest_obstacle_other: "",
+    eating_patterns: [],
+    obstacles: [],
     success_vision: "",
     success_feeling: "",
     why_change: "",
@@ -74,8 +89,8 @@ export function NEPQQuiz({ onComplete, onClose }: NEPQQuizProps) {
   const currentQuestion = sectionQuestions[currentQuestionIndex]
   const sectionInfo = getSectionById(currentSection)
 
-  // Calculate overall progress
-  const allSections = nepqConfig.sections.filter(s => s.id !== "energySpin" && s.id !== "close")
+  // Calculate overall progress (exclude special sections from progress bar)
+  const allSections = nepqConfig.sections.filter(s => s.id !== "energySpin" && s.id !== "mentalMastery" && s.id !== "close")
   const sectionIndex = allSections.findIndex(s => s.id === currentSection)
   const totalQuestions = allSections.reduce((sum, s) => sum + getSectionQuestions(s.id).length, 0)
   const questionsBeforeCurrentSection = allSections
@@ -163,12 +178,18 @@ export function NEPQQuiz({ onComplete, onClose }: NEPQQuizProps) {
       return
     }
 
-    // Move to next section (skip energySpin - go directly to close after vision)
-    const sections: NEPQSection[] = ["contact", "audit", "journey", "vision", "amplification", "close"]
+    // Move to next section
+    // Flow: contact -> audit -> journey -> challenges -> vision -> amplification -> mentalMastery -> close
+    const sections: NEPQSection[] = ["contact", "audit", "journey", "challenges", "vision", "amplification", "mentalMastery", "close"]
     const currentSectionIndex = sections.indexOf(currentSection)
 
     if (currentSectionIndex < sections.length - 1) {
       const nextSection = sections[currentSectionIndex + 1]
+
+      if (nextSection === "mentalMastery") {
+        setShowMentalMastery(true)
+        return
+      }
 
       if (nextSection === "close") {
         setShowClose(true)
@@ -187,7 +208,7 @@ export function NEPQQuiz({ onComplete, onClose }: NEPQQuizProps) {
       return
     }
 
-    const sections: NEPQSection[] = ["contact", "audit", "journey", "vision", "amplification"]
+    const sections: NEPQSection[] = ["contact", "audit", "journey", "challenges", "vision", "amplification"]
     const currentSectionIndex = sections.indexOf(currentSection)
 
     if (currentSectionIndex > 0) {
@@ -207,18 +228,33 @@ export function NEPQQuiz({ onComplete, onClose }: NEPQQuizProps) {
   const handleEnergySpinComplete = () => {
     setCompletedEnergySpin(true)
     setShowEnergySpin(false)
-    setShowClose(true)
+    setShowMentalMastery(true)
   }
 
   // Handle Energy Spin skip
   const handleEnergySpinSkip = () => {
     setShowEnergySpin(false)
+    setShowMentalMastery(true)
+  }
+
+  // Handle Mental Mastery Preview completion
+  const handleMentalMasteryComplete = () => {
+    setCompletedMentalMastery(true)
+    setShowMentalMastery(false)
+    setShowClose(true)
+  }
+
+  // Handle Mental Mastery Preview skip
+  const handleMentalMasterySkip = () => {
+    setShowMentalMastery(false)
     setShowClose(true)
   }
 
   // Handle offer selection and completion
   const handleOfferSelect = (offerId: string | null) => {
     const auditResult = calculateAuditScore(answers.audit_practices)
+    const categoryScores = calculateCategoryScores(answers.eating_patterns, answers.obstacles)
+    const recommendations = getTopRecommendations(categoryScores)
 
     onComplete({
       ...answers,
@@ -226,6 +262,9 @@ export function NEPQQuiz({ onComplete, onClose }: NEPQQuizProps) {
       auditLevel: auditResult.level,
       selectedOffer: offerId,
       completedEnergySpin,
+      completedMentalMastery,
+      categoryScores,
+      recommendations,
     })
   }
 
@@ -404,17 +443,32 @@ export function NEPQQuiz({ onComplete, onClose }: NEPQQuizProps) {
     )
   }
 
-  // Render Close/Offers
+  // Render Mental Mastery Preview
+  if (showMentalMastery) {
+    return (
+      <MentalMasteryPreview
+        userName={answers.name}
+        onComplete={handleMentalMasteryComplete}
+        onSkip={handleMentalMasterySkip}
+      />
+    )
+  }
+
+  // Render Close/Offers with personalized recommendations
   if (showClose) {
+    const categoryScores = calculateCategoryScores(answers.eating_patterns, answers.obstacles)
+    const recommendations = getTopRecommendations(categoryScores)
+
     return (
       <NEPQClose
         answers={answers}
         auditScore={calculateAuditScore(answers.audit_practices)}
+        categoryScores={categoryScores}
+        recommendations={recommendations}
         onSelect={handleOfferSelect}
         onBack={() => {
           setShowClose(false)
-          setCurrentSection("vision")
-          setCurrentQuestionIndex(getSectionQuestions("vision").length - 1)
+          setShowMentalMastery(true)
         }}
       />
     )
