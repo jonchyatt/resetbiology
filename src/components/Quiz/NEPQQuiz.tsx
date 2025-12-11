@@ -504,10 +504,7 @@ export function NEPQQuiz({ onComplete, onClose }: NEPQQuizProps) {
                   key={option.value}
                   onClick={() => {
                     handleInputChange(currentQuestion.id, option.value)
-                    // Auto-advance after selection
-                    setTimeout(() => {
-                      if (canProceed()) handleNext()
-                    }, 300)
+                    // No auto-advance - let user click Next to proceed
                   }}
                   className={`w-full text-left px-6 py-4 rounded-xl border-2 transition-all duration-300 ${
                     isSelected
