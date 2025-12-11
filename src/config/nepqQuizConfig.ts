@@ -184,33 +184,21 @@ export const nepqConfig: NEPQConfig = {
       type: 'multiSelect',
       options: [
         {
-          value: 'protein_tracking',
-          label: 'Tracking protein intake',
-          sublabel: 'Aiming for 0.8-1g per lb bodyweight',
-          score: 10,
-        },
-        {
           value: 'stem_cell_protocols',
-          label: 'Stem cell or peptide protocols',
+          label: 'Peptide Research Protocol',
           sublabel: 'Using regenerative medicine approaches',
           score: 10,
         },
         {
           value: 'digital_tracking',
-          label: 'Digital health tracking system',
-          sublabel: 'Unified platform for workouts, nutrition, recovery',
+          label: 'Nutrition tracking',
+          sublabel: 'Tracking meals, calories, and macros',
           score: 10,
         },
         {
           value: 'breathwork_meditation',
           label: 'Daily breathwork or meditation',
           sublabel: '10+ minutes of intentional practice',
-          score: 10,
-        },
-        {
-          value: 'sleep_optimization',
-          label: 'Sleep tracking & optimization',
-          sublabel: 'Using protocols for 7+ hours quality sleep',
           score: 10,
         },
         {
@@ -229,12 +217,6 @@ export const nepqConfig: NEPQConfig = {
           value: 'accountability_systems',
           label: 'Accountability systems',
           sublabel: 'Daily check-ins, reminders, or coaching',
-          score: 10,
-        },
-        {
-          value: 'peptide_familiarity',
-          label: 'Familiar with peptides',
-          sublabel: 'Know about BPC-157, CJC-1295, Retatrutide',
           score: 10,
         },
       ],
