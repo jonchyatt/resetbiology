@@ -428,156 +428,124 @@ export function WorkoutTracker() {
             </div>
           )}
 
-          <section className="relative z-10 grid gap-5 lg:grid-cols-4">
-            <StatCard
-              icon={<Dumbbell className="h-5 w-5 text-secondary-200" />}
-              label="Total Sets"
-              value={todaysTotals.sets}
-              subtext={todaysWorkouts.length > 0 ? `${todaysWorkouts.length} sessions` : "Log a session"}
-            />
-            <StatCard
-              icon={<Flame className="h-5 w-5 text-orange-200" />}
-              label="Total Reps"
-              value={todaysTotals.reps}
-              subtext={`${Math.round(todaysTotals.weight).toLocaleString()} lbs moved`}
-            />
-            <StatCard
-              icon={<Clock className="h-5 w-5 text-sky-200" />}
-              label="Time Under Tension"
-              value={formatDuration(todaysTotals.duration)}
-              subtext="Across all logged work"
-            />
-            <StatCard
-              icon={<TrendingUp className="h-5 w-5 text-emerald-200" />}
-              label="Protocol Completion"
-              value={`${Math.round(planCompletionRate * 100)}%`}
-              subtext={activeAssignment ? `${completedSessions}/${activePlanSessions.length} sessions` : "No active protocol"}
-            />
+          {/* MY PROTOCOLS - Quick Access Section (mirrors Peptide Tracker) */}
+          <section className="relative z-10 rounded-3xl border border-primary-400/30 bg-gray-900/40 p-6 shadow-inner">
+            <div className="flex items-center justify-between gap-4 mb-6">
+              <div>
+                <h2 className="text-2xl font-semibold text-white">My Workout Protocols</h2>
+                <p className="text-sm text-slate-400">Click a protocol to start training</p>
+              </div>
+              <button
+                onClick={() => setShowProtocolLibrary(true)}
+                className="inline-flex items-center gap-2 rounded-xl bg-secondary-400/90 px-4 py-2 text-sm font-semibold text-slate-950 shadow-md shadow-secondary-500/40 transition hover:bg-secondary-300"
+              >
+                <Plus className="h-4 w-4" />
+                Add from Library
+              </button>
+            </div>
+
+            {assignmentsLoading ? (
+              <div className="text-center py-8">
+                <div className="animate-spin w-8 h-8 border-2 border-secondary-400 border-t-transparent rounded-full mx-auto mb-3"></div>
+                <p className="text-slate-300">Loading your protocols...</p>
+              </div>
+            ) : !activeAssignment ? (
+              <div className="rounded-2xl border border-dashed border-white/20 bg-slate-900/30 p-8 text-center">
+                <Dumbbell className="w-12 h-12 text-secondary-200/50 mx-auto mb-4" />
+                <p className="font-semibold text-white mb-2">No Active Protocol</p>
+                <p className="text-sm text-slate-400 mb-4">
+                  Add a workout protocol from our library to get started with guided training.
+                </p>
+                <button
+                  onClick={() => setShowProtocolLibrary(true)}
+                  className="inline-flex items-center gap-2 rounded-xl bg-secondary-500 px-6 py-3 text-sm font-semibold text-slate-950 shadow-lg transition hover:bg-secondary-400"
+                >
+                  Browse Protocol Library
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {/* Active Protocol Card - Clickable to start training */}
+                <div
+                  className="rounded-2xl border border-primary-400/30 bg-gray-900/40 p-5 shadow-inner cursor-pointer hover:border-primary-400/50 transition-all group"
+                  onClick={() => {
+                    if (nextSession) {
+                      // Could open a training modal or navigate to session
+                    }
+                  }}
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <Dumbbell className="h-6 w-6 text-secondary-200" />
+                        <h3 className="text-xl font-semibold text-white group-hover:text-primary-300 transition-colors">
+                          {activeAssignment.protocol?.name}
+                        </h3>
+                        <span className="rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-medium text-emerald-300">
+                          Active
+                        </span>
+                      </div>
+                      <p className="text-sm text-slate-300 mb-3">{activeAssignment.protocol?.summary}</p>
+                      <div className="flex flex-wrap gap-4 text-xs text-slate-400">
+                        <span>{completedSessions}/{activePlanSessions.length} sessions completed</span>
+                        <span>•</span>
+                        <span>{Math.round(planCompletionRate * 100)}% complete</span>
+                      </div>
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        // Could add remove/pause functionality
+                      }}
+                      className="p-2 text-gray-500 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100"
+                      title="Remove protocol"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+
+                  {/* Next Session Preview */}
+                  {nextSession && (
+                    <div className="mt-4 rounded-xl border border-primary-400/20 bg-gray-900/30 p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                          <ListChecks className="h-5 w-5 text-secondary-200" />
+                          <span className="text-sm font-semibold text-white">Next: {nextSession.title}</span>
+                        </div>
+                        <span className="text-xs text-slate-400">{nextSession.intensity} intensity</span>
+                      </div>
+                      <div className="flex gap-3">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleSessionAction("complete-session", nextSession.id);
+                          }}
+                          disabled={sessionActionLoading}
+                          className="flex-1 rounded-lg bg-secondary-500 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-secondary-400 disabled:opacity-50"
+                        >
+                          Complete Session
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleSessionAction("skip-session", nextSession.id);
+                          }}
+                          disabled={sessionActionLoading}
+                          className="rounded-lg border border-white/20 px-4 py-2 text-sm font-medium text-white/80 transition hover:border-white/40 disabled:opacity-50"
+                        >
+                          Skip
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </section>
 
           <div className="relative z-10 grid gap-6 xl:grid-cols-3">
             <div className="space-y-6 xl:col-span-2">
-              <section className="rounded-3xl border border-primary-400/30 bg-gray-900/40 p-6 shadow-inner">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.3em] text-secondary-200/70">Active protocol</p>
-                    <h2 className="text-2xl font-semibold text-white">
-                      {activeAssignment?.protocol?.name ?? "Select a protocol to unlock prescriptions"}
-                    </h2>
-                    <p className="mt-2 text-sm text-slate-300">
-                      {activeAssignment?.protocol?.summary ??
-                        "Intelligent protocol-driven training taps into your peptide timing, nutrition, and accountability stack."}
-                    </p>
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => setShowProtocolLibrary(true)}
-                      className="inline-flex items-center gap-2 rounded-xl bg-secondary-400/90 px-4 py-2 text-sm font-semibold text-slate-950 shadow-md shadow-secondary-500/40 transition hover:bg-secondary-300"
-                    >
-                      <Plus className="h-4 w-4" />
-                      Add Protocol
-                    </button>
-                    <button
-                      onClick={() => fetchAssignments()}
-                      className="rounded-full border border-white/10 px-3 py-1 text-xs uppercase tracking-widest text-slate-200 transition hover:border-white/40"
-                    >
-                      Refresh
-                    </button>
-                  </div>
-                </div>
-                {assignmentsLoading ? (
-                  <p className="mt-6 text-sm text-slate-300">Loading assignment intelligence…</p>
-                ) : activeAssignment ? (
-                  <>
-                    <div className="mt-6 grid gap-4 md:grid-cols-3">
-                      <AssignmentBadge
-                        label="Status"
-                        value={activeAssignment.status === "active" ? "On track" : activeAssignment.status}
-                        accent="from-emerald-500/20 to-emerald-500/5"
-                      />
-                      <AssignmentBadge
-                        label="Completed sessions"
-                        value={`${completedSessions}`}
-                        accent="from-sky-500/20 to-sky-500/5"
-                      />
-                      <AssignmentBadge
-                        label="Skipped"
-                        value={`${skippedSessions}`}
-                        accent="from-rose-500/20 to-rose-500/5"
-                      />
-                    </div>
-
-                    {nextSession ? (
-                      <div className="mt-6 rounded-2xl border border-primary-400/30 bg-gray-900/40 p-5 shadow-inner">
-                        <div className="flex flex-wrap items-center justify-between gap-3">
-                          <div className="flex items-center gap-3">
-                            <ListChecks className="h-6 w-6 text-secondary-200" />
-                            <div>
-                              <p className="text-xs uppercase tracking-[0.25em] text-secondary-200/70">Next prescription</p>
-                              <h3 className="text-lg font-semibold text-white">{nextSession.title}</h3>
-                              <p className="text-sm text-slate-400">
-                                Scheduled {nextSession.scheduledDate ? new Date(nextSession.scheduledDate).toLocaleString() : "soon"}
-                              </p>
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <p className="text-xs uppercase text-slate-400">Intensity</p>
-                            <p className="text-base font-semibold text-white">{nextSession.intensity}</p>
-                          </div>
-                        </div>
-
-                        <div className="mt-4 space-y-3">
-                          {nextSession.blocks.slice(0, 3).map((block, blockIndex) => (
-                            <div
-                              key={`${block.label}-${blockIndex}`}
-                              className="rounded-xl border border-primary-400/20 bg-gray-900/30 px-4 py-3 text-sm text-slate-200"
-                            >
-                              <p className="font-semibold text-white">{block.label}</p>
-                              <p className="text-xs uppercase tracking-wide text-secondary-200/70">{block.focus}</p>
-                              <ul className="mt-2 space-y-1 text-slate-300">
-                                {block.exercises.slice(0, 3).map((exercise, exerciseIndex) => (
-                                  <li key={`${exercise.key}-${exerciseIndex}`}>
-                                    {exercise.name} • {exercise.sets?.map((set) => set.reps ?? set.durationSeconds ?? "-").join(" / ")}
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          ))}
-                        </div>
-
-                        <div className="mt-5 flex flex-wrap gap-3">
-                          <button
-                            disabled={sessionActionLoading}
-                            onClick={() => handleSessionAction("complete-session", nextSession.id)}
-                            className="inline-flex flex-1 items-center justify-center rounded-xl bg-secondary-500/90 px-4 py-2 text-sm font-semibold text-slate-950 shadow-lg shadow-secondary-500/30 transition hover:bg-secondary-300 disabled:cursor-not-allowed disabled:opacity-60"
-                          >
-                            Mark Session Complete
-                          </button>
-                          <button
-                            disabled={sessionActionLoading}
-                            onClick={() => handleSessionAction("skip-session", nextSession.id)}
-                            className="inline-flex items-center justify-center rounded-xl border border-white/10 px-4 py-2 text-sm font-semibold text-white/80 transition hover:border-white/40 disabled:cursor-not-allowed disabled:opacity-50"
-                          >
-                            Skip Today
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <p className="mt-6 rounded-xl border border-primary-400/20 bg-gray-900/30 p-4 text-sm text-slate-300">
-                        Every planned session in this block is complete. Assign a new protocol or resume a paused one.
-                      </p>
-                    )}
-                  </>
-                ) : (
-                  <div className="mt-6 rounded-2xl border border-dashed border-white/10 bg-slate-900/30 p-6 text-sm text-slate-200">
-                    <p className="font-semibold text-white">No active assignment</p>
-                    <p className="mt-2 text-slate-300">
-                      Tap any curated protocol below to auto-build an actionable program complete with readiness guardrails and accountability.
-                    </p>
-                  </div>
-                )}
-              </section>
-
+              {/* Today's Logged Sessions */}
               <section className="rounded-3xl border border-primary-400/30 bg-gray-900/40 p-6 shadow-inner">
                 <div className="flex flex-wrap items-center justify-between gap-4">
                   <div>
