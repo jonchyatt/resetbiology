@@ -10,6 +10,23 @@ const prisma = new PrismaClient()
 
 const BREATH_EXERCISES = [
   {
+    name: 'Autophagy/VO2-max Builder',
+    slug: 'autophagy-vo2max',
+    description: 'The signature Reset Biology protocol. 40 deep breaths followed by exhale and inhale holds. Stimulates autophagy better than HIIT while boosting growth hormone. The go-to for weight loss and reducing loose skin.',
+    category: 'performance',
+    inhaleMs: 3000,
+    exhaleMs: 3000,
+    inhaleHoldMs: 0,  // User-controlled holds
+    exhaleHoldMs: 0,  // User-controlled holds
+    breathsPerCycle: 40,
+    cyclesTarget: 3,
+    postCycleExhaleHoldMs: 0,  // User-controlled
+    postCycleInhaleHoldMs: 0,  // User-controlled
+    isSample: false,
+    isActive: true,
+    sortOrder: 0  // First in list - primary protocol
+  },
+  {
     name: 'Vagal Reset',
     slug: 'vagal-reset',
     description: 'Stimulate the vagus nerve to calm your nervous system. Extended exhales activate the parasympathetic response for deep relaxation.',
