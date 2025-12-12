@@ -43,13 +43,19 @@ const PRIORITY_COLORS: Record<string, { bg: string; border: string; text: string
  * Shows offer cards with pricing and CTA
  */
 export function NEPQClose({ answers, auditScore, categoryScores, recommendations, onSelect, onBack }: NEPQCloseProps) {
-  const [stage, setStage] = useState<"commitment" | "offers">("commitment")
+  const [stage, setStage] = useState<"commitment" | "softExit" | "offers">("commitment")
   const [selectedOffer, setSelectedOffer] = useState<string | null>(null)
   const [otherRequest, setOtherRequest] = useState("")
 
   const { closeQuestion, offers } = nepqConfig
 
+  // Separate DIY offer from main offers for decoy pricing
+  const diyOffer = offers.find(o => o.tier === 'diy')
+  const otherOffer = offers.find(o => o.tier === 'other')
+  const mainOffers = offers.filter(o => o.tier !== 'diy' && o.tier !== 'other')
+
   // Get personalized recommendation based on audit level
+  // DIY removed from main offers - only recommend guided or higher
   const getRecommendedOffer = (): string => {
     switch (auditScore.level) {
       case "beginner":
@@ -57,9 +63,9 @@ export function NEPQClose({ answers, auditScore, categoryScores, recommendations
       case "intermediate":
         return "guided"
       case "advanced":
-        return "diy" // They can handle DIY
+        return "guided" // Was DIY, now guided since DIY is exit-only
       case "expert":
-        return "diy"
+        return "done-with-you" // Experts might want more hands-on
       default:
         return "guided"
     }
@@ -72,8 +78,8 @@ export function NEPQClose({ answers, auditScore, categoryScores, recommendations
     if (wantsToSee) {
       setStage("offers")
     } else {
-      // They said they're not ready - still show offers but with different framing
-      setStage("offers")
+      // They said they're not ready - show soft exit with DIY option
+      setStage("softExit")
     }
   }
 
@@ -263,7 +269,101 @@ export function NEPQClose({ answers, auditScore, categoryScores, recommendations
     )
   }
 
-  // Offers stage
+  // Soft Exit stage - DIY offer for those not ready for full commitment
+  if (stage === "softExit" && diyOffer) {
+    return (
+      <div
+        className="min-h-screen px-4 py-8 md:py-12"
+        style={{
+          backgroundImage: 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url(/hero-background.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundAttachment: 'fixed'
+        }}
+      >
+        <div className="max-w-2xl mx-auto">
+          {/* Empathetic header */}
+          <div className="text-center mb-8">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+              No pressure, {answers.name || "friend"}.
+            </h2>
+            <p className="text-gray-300 text-lg">
+              Not everyone is ready for full coaching support — and that's okay.
+            </p>
+          </div>
+
+          {/* DIY Offer Card */}
+          <div className="bg-gradient-to-br from-blue-500/20 to-blue-600/10 backdrop-blur-sm rounded-2xl p-8 border-2 border-blue-400/40 shadow-xl mb-8">
+            <div className="text-center mb-6">
+              <span className="inline-block bg-blue-500 text-white text-sm font-bold px-4 py-1 rounded-full mb-4">
+                Self-Guided Option
+              </span>
+              <h3 className="text-2xl font-bold text-white mb-2">{diyOffer.title}</h3>
+              <p className="text-gray-300">{diyOffer.subtitle}</p>
+            </div>
+
+            {/* Pricing */}
+            <div className="text-center mb-6">
+              <span className="text-5xl font-bold text-white">{diyOffer.trialPrice}</span>
+              <span className="text-gray-400 text-lg ml-2">to try it out</span>
+              <div className="text-gray-500 mt-1">then {diyOffer.monthlyPrice} if you love it</div>
+            </div>
+
+            {/* Features */}
+            <ul className="space-y-3 mb-8">
+              {diyOffer.features.map((feature, idx) => (
+                <li key={idx} className="flex items-start gap-3 text-gray-200">
+                  <Check className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                  {feature}
+                </li>
+              ))}
+            </ul>
+
+            {/* CTA */}
+            <button
+              onClick={() => onSelect(diyOffer.id)}
+              className="w-full py-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-bold text-lg hover:shadow-lg hover:shadow-blue-500/30 transition-all hover:scale-[1.02]"
+            >
+              Start DIY Trial for {diyOffer.trialPrice}
+            </button>
+          </div>
+
+          {/* Alternative actions */}
+          <div className="text-center space-y-4">
+            <p className="text-gray-400 text-sm">
+              Or if you want more support...
+            </p>
+            <button
+              onClick={() => setStage("offers")}
+              className="text-primary-400 hover:text-primary-300 font-medium transition-colors"
+            >
+              Show me the guided options →
+            </button>
+
+            <div className="pt-4 border-t border-gray-700/50">
+              <button
+                onClick={() => onSelect(null)}
+                className="text-gray-500 hover:text-gray-400 text-sm transition-colors"
+              >
+                I'll think about it and come back later
+              </button>
+            </div>
+          </div>
+
+          {/* Back button */}
+          <button
+            onClick={() => setStage("commitment")}
+            className="mt-8 text-gray-500 hover:text-gray-300 transition-colors flex items-center gap-2 mx-auto"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            Go back
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  // Offers stage - Main offers (no DIY, decoy pricing)
   return (
     <div
       className="min-h-screen px-4 py-8 md:py-12"
@@ -285,9 +385,9 @@ export function NEPQClose({ answers, auditScore, categoryScores, recommendations
           </p>
         </div>
 
-        {/* Offer Cards */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-8">
-          {offers.slice(0, 4).map((offer) => {
+        {/* Offer Cards - Main offers only (no DIY - decoy pricing layout) */}
+        <div className="grid gap-6 md:grid-cols-3 mb-8">
+          {mainOffers.map((offer) => {
             const isSelected = selectedOffer === offer.id
             const isRecommended = offer.id === recommendedOfferId
             const colors = getAccentClasses(offer.accentColor, isSelected)
@@ -349,9 +449,9 @@ export function NEPQClose({ answers, auditScore, categoryScores, recommendations
           })}
 
           {/* "Other" option */}
-          {offers.find(o => o.tier === "other") && (
+          {otherOffer && (
             <div
-              onClick={() => handleOfferSelect(offers.find(o => o.tier === "other")!)}
+              onClick={() => handleOfferSelect(otherOffer)}
               className={`cursor-pointer rounded-2xl border-2 ${
                 selectedOffer === "other" ? "border-gray-400" : "border-gray-600/50"
               } bg-gray-800/30 p-6 transition-all hover:border-gray-500 ${
