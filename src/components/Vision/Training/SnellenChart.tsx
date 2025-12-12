@@ -397,7 +397,7 @@ export default function SnellenChart({
   )
 }
 
-// Direction buttons component
+// Direction buttons component - LARGE touch-friendly buttons
 function DirectionButtons({
   onSelect,
   highlightCurrent = false
@@ -405,41 +405,45 @@ function DirectionButtons({
   onSelect: (dir: EDirection) => void
   highlightCurrent?: boolean
 }) {
+  const buttonBase = "bg-gray-900 hover:bg-primary-500 active:bg-primary-600 text-white font-bold rounded-xl transition-all transform hover:scale-105 active:scale-95 flex items-center justify-center gap-3 shadow-lg"
+  const buttonSize = "py-5 px-10 text-xl min-w-[140px]" // Much larger buttons
+  const iconSize = "w-7 h-7" // Larger icons
+
   return (
-    <div className="flex flex-col items-center gap-3">
+    <div className="flex flex-col items-center gap-4">
       {/* Up button */}
       <button
         onClick={() => onSelect('up')}
-        className="bg-gray-900 hover:bg-primary-500 text-white font-bold py-3 px-8 rounded-lg transition-all transform hover:scale-105 flex items-center gap-2"
+        className={`${buttonBase} ${buttonSize}`}
       >
-        <ArrowUp className="w-5 h-5" />
+        <ArrowUp className={iconSize} />
         Up
       </button>
 
       {/* Left and Right buttons */}
-      <div className="flex gap-4">
+      <div className="flex gap-6">
         <button
           onClick={() => onSelect('left')}
-          className="bg-gray-900 hover:bg-primary-500 text-white font-bold py-3 px-6 rounded-lg transition-all transform hover:scale-105 flex items-center gap-2"
+          className={`${buttonBase} ${buttonSize}`}
         >
-          <ArrowLeft className="w-5 h-5" />
+          <ArrowLeft className={iconSize} />
           Left
         </button>
         <button
           onClick={() => onSelect('right')}
-          className="bg-gray-900 hover:bg-primary-500 text-white font-bold py-3 px-6 rounded-lg transition-all transform hover:scale-105 flex items-center gap-2"
+          className={`${buttonBase} ${buttonSize}`}
         >
           Right
-          <ArrowRight className="w-5 h-5" />
+          <ArrowRight className={iconSize} />
         </button>
       </div>
 
       {/* Down button */}
       <button
         onClick={() => onSelect('down')}
-        className="bg-gray-900 hover:bg-primary-500 text-white font-bold py-3 px-8 rounded-lg transition-all transform hover:scale-105 flex items-center gap-2"
+        className={`${buttonBase} ${buttonSize}`}
       >
-        <ArrowDown className="w-5 h-5" />
+        <ArrowDown className={iconSize} />
         Down
       </button>
     </div>
