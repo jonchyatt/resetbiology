@@ -57,6 +57,7 @@ export function VisionTraining() {
   const [trainerVisionType, setTrainerVisionType] = useState<'near' | 'far'>('near')
   const [trainerExerciseType, setTrainerExerciseType] = useState<'letters' | 'e-directional'>('letters')
   const [trainerDeviceMode, setTrainerDeviceMode] = useState<'phone' | 'desktop'>('phone')
+  const [isTrainingActive, setIsTrainingActive] = useState(false)
 
   useEffect(() => {
     checkEnrollment()
@@ -242,7 +243,9 @@ export function VisionTraining() {
 
             {/* FOCUS TRAINING TAB (renamed from Snellen Trainer) */}
             {activeTab === 'trainer' && (
-              <div className="space-y-6">
+              <div className="space-y-4">
+                {/* Settings card - HIDE when training is active */}
+                {!isTrainingActive && (
                 <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-xl p-6 border border-primary-400/20 shadow-lg">
                   <h3 className="text-2xl font-bold text-white mb-2 flex items-center gap-2">
                     <Eye className="w-6 h-6 text-primary-400" />
@@ -314,11 +317,13 @@ export function VisionTraining() {
                     </div>
                   </div>
                 </div>
+                )}
 
                 <TrainingSession
                   visionType={trainerVisionType}
                   exerciseType={trainerExerciseType}
                   deviceMode={trainerDeviceMode}
+                  onActiveChange={setIsTrainingActive}
                 />
               </div>
             )}

@@ -10,6 +10,7 @@ interface TrainingSessionProps {
   exerciseType: 'letters' | 'e-directional'
   initialLevel?: number
   deviceMode?: 'phone' | 'desktop'
+  onActiveChange?: (isActive: boolean) => void
 }
 
 // Reader glasses progression for nearsightedness training
@@ -40,7 +41,8 @@ export default function TrainingSession({
   visionType,
   exerciseType,
   initialLevel = 1,
-  deviceMode = 'phone'
+  deviceMode = 'phone',
+  onActiveChange
 }: TrainingSessionProps) {
   const [currentLevel, setCurrentLevel] = useState(initialLevel)
   const [isActive, setIsActive] = useState(false)
@@ -77,6 +79,13 @@ export default function TrainingSession({
     }
     return () => clearInterval(interval)
   }, [isActive, sessionComplete])
+
+  // Notify parent when active state changes
+  useEffect(() => {
+    if (onActiveChange) {
+      onActiveChange(isActive)
+    }
+  }, [isActive, onActiveChange])
 
   const handleAnswer = (isCorrect: boolean) => {
     setAttempts(prev => prev + 1)
