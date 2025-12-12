@@ -249,9 +249,9 @@ export default function SnellenChart({
   const baseSize = getBaseSize()
 
   return (
-    <div className="flex flex-col items-center bg-white rounded-lg p-4 md:p-8">
-      {/* Full chart display */}
-      <div className="w-full max-w-2xl space-y-4 mb-6">
+    <div className="flex flex-col items-center bg-white rounded-lg p-2 md:p-4">
+      {/* Full chart display - compact layout near top */}
+      <div className="w-full max-w-2xl space-y-2 mb-4">
         {chartData.map((line, lineIdx) => (
           <div
             key={lineIdx}
@@ -275,17 +275,19 @@ export default function SnellenChart({
                   {/* The E optotype */}
                   <div className={`transition-all duration-200 ${
                     isPastLetter ? 'opacity-30' : ''
-                  }`}>
+                  } ${isCurrentLetter && !lineCompleted ? 'ring-4 ring-primary-400 ring-offset-2 rounded-sm' : ''}`}>
                     <TumblingE
                       direction={dir}
                       size={baseSize * line.scale * (deviceMode === 'phone' ? 0.6 : 1)}
                     />
                   </div>
 
-                  {/* Arrow pointer under current letter */}
+                  {/* Arrow pointer ABOVE current letter - more visible */}
                   {isCurrentLetter && !lineCompleted && (
-                    <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 animate-bounce">
-                      <ChevronDown className="w-6 h-6 text-primary-500" strokeWidth={3} />
+                    <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
+                      <div className="flex flex-col items-center animate-bounce">
+                        <ChevronDown className="w-8 h-8 text-primary-500 drop-shadow-lg" strokeWidth={3} />
+                      </div>
                     </div>
                   )}
                 </div>
