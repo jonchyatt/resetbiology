@@ -239,9 +239,81 @@ export default function TrainingSession({
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header with stats */}
-      <div className="bg-gray-900/40 border border-primary-400/30 rounded-lg p-6 shadow-inner">
+    <div className="space-y-4">
+      {/* CHART FIRST when active - this is the main focus! */}
+      {isActive && !sessionComplete && (
+        <div className="relative">
+          {/* Compact stats bar */}
+          <div className="bg-gray-900/60 backdrop-blur-sm rounded-t-lg px-4 py-2 flex items-center justify-between">
+            <div className="flex items-center gap-4 text-sm">
+              <span className="text-white font-semibold">{difficulty.label}</span>
+              <span className="text-gray-400">|</span>
+              <span className="text-gray-300">{formatTime(sessionDuration)}</span>
+              <span className="text-gray-400">|</span>
+              <span className={accuracy >= difficulty.requiredAccuracy ? 'text-secondary-400' : 'text-yellow-400'}>
+                {accuracy.toFixed(0)}% ({attempts}/10)
+              </span>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setIsActive(false)}
+                className="px-3 py-1 rounded bg-yellow-500 hover:bg-yellow-600 text-gray-900 text-sm font-semibold flex items-center gap-1"
+              >
+                <Pause className="w-4 h-4" />
+                Pause
+              </button>
+              <button
+                onClick={resetSession}
+                className="px-3 py-1 rounded bg-gray-700 hover:bg-gray-600 text-white text-sm flex items-center gap-1"
+              >
+                <RotateCcw className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* Feedback overlay */}
+          {feedback && (
+            <div className={`absolute top-12 right-4 z-10 flex items-center gap-2 px-4 py-2 rounded-lg font-semibold ${
+              feedback === 'correct' ? 'bg-secondary-500 text-white' : 'bg-red-500 text-white'
+            }`}>
+              {feedback === 'correct' ? (
+                <>
+                  <CheckCircle className="w-5 h-5" />
+                  Correct!
+                </>
+              ) : (
+                <>
+                  <XCircle className="w-5 h-5" />
+                  Try Again
+                </>
+              )}
+            </div>
+          )}
+
+          <SnellenChart
+            chartSize={difficulty.label}
+            exerciseType={exerciseType}
+            onAnswer={handleAnswer}
+            resetTrigger={resetTrigger}
+            deviceMode={deviceMode}
+            progressionMode="line-by-line"
+            onChartComplete={() => {
+              speak('Excellent! You completed the full chart.')
+            }}
+            onDistanceAdjust={(direction) => {
+              if (direction === 'further') {
+                setTargetDistanceCm(prev => Math.min(prev + 1, 100))
+              } else {
+                setTargetDistanceCm(prev => Math.max(prev - 1, 15))
+              }
+            }}
+          />
+        </div>
+      )}
+
+      {/* Header with stats - show when NOT active */}
+      {!isActive && (
+        <div className="bg-gray-900/40 border border-primary-400/30 rounded-lg p-6 shadow-inner">
         <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
           <div>
             <h3 className="text-2xl font-bold text-white mb-1">
@@ -304,9 +376,10 @@ export default function TrainingSession({
           </div>
         </div>
       </div>
+      )}
 
-      {/* Distance Progression Panel - for near vision training */}
-      {visionType === 'near' && distanceProgressionMode && (
+      {/* Distance Progression Panel - for near vision training - hide when active */}
+      {!isActive && visionType === 'near' && distanceProgressionMode && (
         <div className="bg-gradient-to-r from-blue-600/20 to-cyan-600/20 border border-blue-400/30 rounded-lg p-5">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
@@ -402,57 +475,13 @@ export default function TrainingSession({
         </div>
       )}
 
-      {/* Distance guidance - simple instructions instead of broken sensor tracking */}
-      <DistanceGuidance
-        targetDistanceCm={distanceProgressionMode ? targetDistanceCm : difficulty.targetDistance}
-        visionType={visionType}
-        deviceMode={deviceMode}
-      />
-
-      {/* Snellen chart */}
-      {isActive && !sessionComplete && (
-        <div className="relative">
-          {/* Feedback overlay */}
-          {feedback && (
-            <div className={`absolute top-4 right-4 z-10 flex items-center gap-2 px-4 py-2 rounded-lg font-semibold ${
-              feedback === 'correct' ? 'bg-secondary-500 text-white' : 'bg-red-500 text-white'
-            }`}>
-              {feedback === 'correct' ? (
-                <>
-                  <CheckCircle className="w-5 h-5" />
-                  Correct!
-                </>
-              ) : (
-                <>
-                  <XCircle className="w-5 h-5" />
-                  Try Again
-                </>
-              )}
-            </div>
-          )}
-
-          <SnellenChart
-            chartSize={difficulty.label}
-            exerciseType={exerciseType}
-            onAnswer={handleAnswer}
-            resetTrigger={resetTrigger}
-            deviceMode={deviceMode}
-            progressionMode="line-by-line"
-            onChartComplete={() => {
-              // Chart completed - can track this for gamification
-              speak('Excellent! You completed the full chart.')
-            }}
-            onDistanceAdjust={(direction) => {
-              // TINY adjustments - like adding 2.5lb plates, not 45s
-              // 1cm = about a finger-width
-              if (direction === 'further') {
-                setTargetDistanceCm(prev => Math.min(prev + 1, 100))
-              } else {
-                setTargetDistanceCm(prev => Math.max(prev - 1, 15))
-              }
-            }}
-          />
-        </div>
+      {/* Distance guidance - hide when active to keep chart visible */}
+      {!isActive && (
+        <DistanceGuidance
+          targetDistanceCm={distanceProgressionMode ? targetDistanceCm : difficulty.targetDistance}
+          visionType={visionType}
+          deviceMode={deviceMode}
+        />
       )}
 
       {/* Session complete */}
