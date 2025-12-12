@@ -131,9 +131,7 @@ export default function SnellenChart({
   const [currentLineIndex, setCurrentLineIndex] = useState(0)
   const [currentLetterIndex, setCurrentLetterIndex] = useState(0)
   const [consecutiveFailures, setConsecutiveFailures] = useState(0)
-  const [showRestPrompt, setShowRestPrompt] = useState(false)
   const [showDistancePrompt, setShowDistancePrompt] = useState(false)
-  const [lineCompleted, setLineCompleted] = useState(false)
 
   // For tracking progression - start normal, progress to thin lines
   const [strokeWeight, setStrokeWeight] = useState<'bold' | 'normal' | 'thin'>('normal')
@@ -163,11 +161,14 @@ export default function SnellenChart({
 
   // Generate new chart
   const regenerateChart = useCallback(() => {
+    // Cancel any speech to prevent audio overlap
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel()
+    }
     setChartData(generateChartData(exerciseType))
     setCurrentLineIndex(0)
     setCurrentLetterIndex(0)
     setConsecutiveFailures(0)
-    setLineCompleted(false)
   }, [exerciseType])
 
   // Handle answer in line-by-line mode
@@ -185,17 +186,16 @@ export default function SnellenChart({
       if (currentLetterIndex < currentLine.letterCount - 1) {
         setCurrentLetterIndex(prev => prev + 1)
       } else {
-        // Completed this line!
-        setLineCompleted(true)
-
+        // Completed this line! Auto-advance to next line
         // Check if this was the last line
         if (currentLineIndex >= CHART_LINES.length - 1) {
           // Chart complete! Prompt to move screen further
           setShowDistancePrompt(true)
           if (onChartComplete) onChartComplete()
         } else {
-          // Show rest prompt before next line (like resting between bench press sets)
-          setShowRestPrompt(true)
+          // Auto-advance to next line (no rest prompt needed)
+          setCurrentLineIndex(prev => prev + 1)
+          setCurrentLetterIndex(0)
         }
       }
     } else {
@@ -210,14 +210,6 @@ export default function SnellenChart({
         }, 2000)
       }
     }
-  }
-
-  // Move to next line after rest
-  const continueToNextLine = () => {
-    setShowRestPrompt(false)
-    setLineCompleted(false)
-    setCurrentLineIndex(prev => prev + 1)
-    setCurrentLetterIndex(0)
   }
 
   // Handle answer for letter mode
@@ -235,17 +227,16 @@ export default function SnellenChart({
       if (currentLetterIndex < currentLine.letterCount - 1) {
         setCurrentLetterIndex(prev => prev + 1)
       } else {
-        // Completed this line!
-        setLineCompleted(true)
-
+        // Completed this line! Auto-advance to next line
         // Check if this was the last line
         if (currentLineIndex >= CHART_LINES.length - 1) {
           // Chart complete! Prompt to move screen further
           setShowDistancePrompt(true)
           if (onChartComplete) onChartComplete()
         } else {
-          // Show rest prompt before next line
-          setShowRestPrompt(true)
+          // Auto-advance to next line (no rest prompt needed)
+          setCurrentLineIndex(prev => prev + 1)
+          setCurrentLetterIndex(0)
         }
       }
     } else {
@@ -274,6 +265,8 @@ export default function SnellenChart({
 
   const speak = (text: string) => {
     if ('speechSynthesis' in window) {
+      // Cancel any ongoing speech to prevent audio overlap/looping
+      window.speechSynthesis.cancel()
       const utterance = new SpeechSynthesisUtterance(text)
       utterance.rate = 1.0
       utterance.pitch = 1.0
@@ -376,7 +369,7 @@ export default function SnellenChart({
                     className="relative flex flex-col items-center"
                   >
                     {/* Arrow pointer ABOVE current letter */}
-                    {isCurrentLetter && !lineCompleted && (
+                    {isCurrentLetter && (
                       <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 z-10">
                         <ChevronDown className="w-5 h-5 text-primary-500 animate-bounce" strokeWidth={3} />
                       </div>
@@ -384,7 +377,7 @@ export default function SnellenChart({
                     {/* The E optotype */}
                     <div className={`transition-all duration-200 ${
                       isPastLetter ? 'opacity-20' : ''
-                    } ${isCurrentLetter && !lineCompleted ? 'ring-2 ring-primary-400 rounded-sm' : ''}`}>
+                    } ${isCurrentLetter ? 'ring-2 ring-primary-400 rounded-sm' : ''}`}>
                       <TumblingE
                         direction={dir}
                         size={baseSize * line.scale * (deviceMode === 'phone' ? 0.5 : 0.8)}
@@ -406,7 +399,7 @@ export default function SnellenChart({
                     className="relative flex flex-col items-center"
                   >
                     {/* Arrow pointer ABOVE current letter */}
-                    {isCurrentLetter && !lineCompleted && (
+                    {isCurrentLetter && (
                       <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 z-10">
                         <ChevronDown className="w-5 h-5 text-primary-500 animate-bounce" strokeWidth={3} />
                       </div>
@@ -414,7 +407,7 @@ export default function SnellenChart({
                     {/* The letter */}
                     <div className={`transition-all duration-200 ${
                       isPastLetter ? 'opacity-20' : ''
-                    } ${isCurrentLetter && !lineCompleted ? 'ring-2 ring-primary-400 rounded-sm px-1' : ''}`}>
+                    } ${isCurrentLetter ? 'ring-2 ring-primary-400 rounded-sm px-1' : ''}`}>
                       <SnellenLetter
                         letter={letter}
                         size={baseSize * line.scale * (deviceMode === 'phone' ? 0.5 : 0.8)}
@@ -428,22 +421,6 @@ export default function SnellenChart({
           </div>
         ))}
       </div>
-
-      {/* Rest prompt between lines - COMPACT */}
-      {showRestPrompt && (
-        <div className="bg-blue-50 border border-blue-300 rounded-lg p-3 mb-2 text-center">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-            <span className="text-green-600 font-semibold text-sm">Line Complete!</span>
-          </div>
-          <button
-            onClick={continueToNextLine}
-            className="px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg font-semibold text-sm transition-all"
-          >
-            Next Line →
-          </button>
-        </div>
-      )}
 
       {/* Distance adjustment prompt after completing chart - COMPACT */}
       {showDistancePrompt && (
@@ -476,7 +453,7 @@ export default function SnellenChart({
       )}
 
       {/* Input buttons - COMPACT and always visible */}
-      {!showRestPrompt && !showDistancePrompt && (
+      {!showDistancePrompt && (
         <div className="mt-1">
           <p className="text-gray-500 text-xs text-center mb-2">
             {exerciseType === 'e-directional' ? 'Which way?' : 'Which letter?'} (Line {currentLineIndex + 1}/{CHART_LINES.length})
