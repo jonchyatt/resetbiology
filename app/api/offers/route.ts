@@ -38,22 +38,3 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ error: 'Failed to fetch offers' }, { status: 500 });
     }
 }
-
-/**
- * Format offers for agent context injection
- * Returns a concise string the agent can use for pricing discussions
- */
-export function formatOffersForAgent(offers: any[]): string {
-    if (!offers || offers.length === 0) {
-        return 'No offers currently available.';
-    }
-
-    const lines = offers
-        .filter(o => o.isActive)
-        .map(offer => {
-            const features = offer.features?.slice(0, 3).join(', ') || '';
-            return `- ${offer.name}: ${offer.trialPrice} trial → ${offer.monthlyPrice} (${features})`;
-        });
-
-    return `### CURRENT OFFERS\n${lines.join('\n')}`;
-}
