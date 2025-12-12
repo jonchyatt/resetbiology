@@ -155,6 +155,8 @@ export default function TrainingSession({
   }
 
   // Handle distance progression - the "barbell" concept
+  // NOTE: Distance changes only happen when ENTIRE CHART is completed (via onChartComplete callback)
+  // This function just tracks glasses progression at max distance
   const handleDistanceProgression = (wasCorrect: boolean) => {
     if (!wasCorrect) return
 
@@ -171,15 +173,8 @@ export default function TrainingSession({
           speak(`Great work! You've mastered ${maxDistance}cm. Time to add reading glasses for more challenge!`)
         }
       }
-    } else {
-      // Gradually increase distance (like adding weight to barbell)
-      const newDistance = Math.min(targetDistanceCm + 2, maxDistance)
-      setTargetDistanceCm(newDistance)
-
-      if (newDistance > targetDistanceCm) {
-        speak(`Moving to ${newDistance} centimeters`)
-      }
     }
+    // NOTE: Removed per-answer distance increment - this now only happens after completing full chart
   }
 
   // Upgrade to next glasses stage
