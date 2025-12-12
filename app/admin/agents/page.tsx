@@ -5,6 +5,7 @@ import { useUser } from '@auth0/nextjs-auth0';
 
 const AGENTS = [
     { id: 'CONCIERGE', name: 'Concierge', description: 'Greets users, routes to specialists' },
+    { id: 'ONBOARDING', name: 'Onboarding Advisor', description: 'Trial signups, getting started' },
     { id: 'PEPTIDE', name: 'Peptide Specialist', description: 'Dosing, timing, side effects' },
     { id: 'EXERCISE', name: 'Exercise Physiologist', description: 'Workouts, form, recovery' },
     { id: 'NUTRITION', name: 'Nutrition Coach', description: 'Diet, macros, fasting' },
@@ -14,7 +15,7 @@ const AGENTS = [
     { id: 'NBACK', name: 'Cognitive Trainer', description: 'N-Back, mental training' },
     { id: 'COURSE', name: 'Course Guide', description: 'Lessons, modules, progress' },
     { id: 'PROFESSOR', name: 'The Professor', description: 'Science, mechanisms' },
-    { id: 'SALES', name: 'Sales', description: 'Pricing, objections, signup' },
+    { id: 'SALES', name: 'Sales (Products)', description: 'Peptide orders, product sales' },
 ];
 
 export default function AgentAdminPage() {

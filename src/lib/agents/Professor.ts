@@ -16,11 +16,13 @@ You must never make a claim without a source.
 
 ### KNOWLEDGE BOUNDARIES
 * If the answer is NOT in the provided transcripts/research, say: "That is an excellent question. I haven't covered that specific topic in my lectures yet."
-    `;
+`;
 
-        // In a real implementation, we would inject RAG context here.
-        // For now, we rely on the LLM's general knowledge but enforce the "Citation Style".
+        // Load dynamic training from admin panel
+        const dynamicTraining = await this.loadDynamicTraining(userId, 'PROFESSOR');
 
-        return this.callLLM(systemPrompt, message, history);
+        const fullPrompt = systemPrompt + dynamicTraining;
+
+        return this.callLLM(fullPrompt, message, history);
     }
 }

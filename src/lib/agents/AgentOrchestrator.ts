@@ -6,6 +6,7 @@ import { BioCoachAgent } from './BioCoach';
 import { VisionTutorAgent } from './VisionTutor';
 import { ProfessorAgent } from './Professor';
 import { SalesCloserAgent } from './SalesCloser';
+import { OnboardingAgent } from './OnboardingAgent';
 import { PeptideAgent } from './PeptideAgent';
 import { ExerciseAgent } from './ExerciseAgent';
 import { NutritionAgent } from './NutritionAgent';
@@ -26,6 +27,7 @@ export type AgentType =
     | 'NBACK'
     | 'COURSE'
     | 'SALES'
+    | 'ONBOARDING'
     | 'PROFESSOR'
     | 'BIO_COACH'      // Legacy - routes to appropriate specialist
     | 'VISION_TUTOR'   // Legacy - routes to VISION
@@ -43,6 +45,7 @@ const PAGE_TO_AGENT: Record<string, AgentType> = {
     '/modules': 'COURSE',
     '/portal': 'CONCIERGE',
     '/order': 'SALES',
+    '/get-started': 'ONBOARDING',
 };
 
 export class AgentOrchestrator {
@@ -104,7 +107,8 @@ Agents:
 - VISION: Eye exercises, 12-week vision program
 - NBACK: Mental training, cognitive exercises
 - COURSE: Lesson content, module progress
-- SALES: Pricing, objections, subscription questions
+- SALES: Product purchases, peptide orders
+- ONBOARDING: New user signup, trial questions, getting started
 - PROFESSOR: Science questions, mechanism of action, research
 - CONCIERGE: Greetings, general help, unclear requests
 
@@ -156,6 +160,8 @@ Output the agent name only (e.g., "PEPTIDE").`;
             case 'SALES':
             case 'SALES_CLOSER':
                 return new SalesCloserAgent();
+            case 'ONBOARDING':
+                return new OnboardingAgent();
             case 'PROFESSOR':
                 return new ProfessorAgent();
             default:

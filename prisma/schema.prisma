@@ -24,9 +24,14 @@ model User {
   role                    String                   @default("basic")
   profileJson             Json?
   permissionsJson         Json?
-  accessLevel             String                   @default("guest")
+  accessLevel             String                   @default("guest") // "guest" | "introduction" | "subscriber" | "admin"
   permissions             Json?
   subscriptionStatus      String                   @default("none")
+
+  // Introduction tier tracking (1-week free access after quiz + first login)
+  introductionStartDate   DateTime?                // When introduction tier started (first login after quiz)
+  introductionExpiresAt   DateTime?                // When introduction tier expires (7 days after start)
+  quizSubmissionId        String?                  // Link to their NEPQ quiz submission
   subscriptionExpiry      DateTime?
   stripeCustomerId        String?
   trialStartDate          DateTime?
@@ -1138,6 +1143,32 @@ model AgentTraining {
 }
 
 // ============================================
+// PRICING OFFERS
+// ============================================
+// Source of truth for pricing displayed in quiz and used by ONBOARDING agent
+
+model Offer {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  slug            String   @unique  // "guided", "done-with-you", "concierge", "other"
+  name            String   // "All Protocols + AI Coaching"
+  tagline         String   // "Everything plus personalized guidance"
+  trialPrice      String   // "$1" or "Book a call"
+  monthlyPrice    String   // "$29/mo" or "$5,000+/mo"
+  features        String[] // Array of feature strings
+  highlighted     Boolean  @default(false) // Show as recommended/featured
+  displayOrder    Int      @default(0)
+  color           String   @default("teal") // "teal", "purple", "gold", "gray"
+  ctaText         String   @default("Start Trial")
+  ctaUrl          String?  // Override URL if needed (e.g., Calendly link)
+  stripePriceId   String?  // Stripe Price ID for checkout
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("offers")
+}
+
+// ============================================
 // NEPQ QUIZ FUNNEL SUBMISSIONS
 // ============================================
 // Stores responses from the NEPQ (Neuro-Emotional Persuasion Questioning) quiz funnel
@@ -1164,14 +1195,24 @@ model NEPQSubmission {
   successVision         String    // Textarea response - what success looks like
   successFeeling        String    // Textarea response - emotional meaning of success
 
+  // Section 4: Challenges Assessment (NEW)
+  eatingPatterns        Json?     // Array of selected eating pattern values
+  obstacles             Json?     // Array of selected obstacle values
+  categoryScores        Json?     // {mentalMastery, breathwork, tracking, workout, accountability, peptides}
+  topRecommendations    Json?     // Array of top 3 recommendation objects
+
   // Section 5: Desire Amplification (MI Technique)
   whyChange             String    // Why are they thinking about change?
   readinessScore        Int       // 1-10 scale
   whyNotLower           String    // Why didn't they pick a lower number?
-  positiveOutcomes      String    // What positive outcomes would happen?
-  whyImportant          String    // Why are those outcomes important?
+  positiveOutcomes      String?   // What positive outcomes would happen? (now optional - removed from quiz)
+  whyImportant          String?   // Why are those outcomes important? (now optional - removed from quiz)
 
-  // Section 6: Energy Spin Up
+  // Section 6: Mental Mastery Preview (NEW)
+  completedMentalMastery Boolean  @default(false)
+  mentalMasteryDuration Int?      // How long they spent in seconds
+
+  // Section 7: Energy Spin Up (moved)
   completedEnergySpin   Boolean   @default(false)
   energySpinDuration    Int?      // How long they spent in seconds
 
