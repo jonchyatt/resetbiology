@@ -353,7 +353,7 @@ export function FoodQuickAdd({ onLogged }: { onLogged?: (result: FoodQuickAddRes
     <section className="rounded-2xl bg-gradient-to-br from-emerald-500/10 via-slate-900/40 to-slate-900/60 border border-emerald-400/30 shadow-lg p-6">
       <div className="mb-4 flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <h2 className="text-xl font-bold text-white">Add Nutrition</h2>
+          <h2 className="text-xl font-bold text-white">Log Nutrition</h2>
           {/* Camera Button */}
           <button
             onClick={() => setShowCameraModal(true)}
