@@ -2,18 +2,14 @@
 
 import { useState, useEffect } from 'react'
 import {
-  Calendar,
   Clock,
   CheckCircle,
   Play,
-  Pause,
   Trophy,
   Target,
-  Flame,
   ChevronRight,
   Eye,
   Zap,
-  Award,
   Coffee,
   BookOpen
 } from 'lucide-react'
@@ -321,9 +317,6 @@ export default function DailyPractice() {
   if (todaySession.isRestDay) {
     return (
       <div className="space-y-6">
-        {/* Progress header */}
-        <ProgressHeader enrollment={enrollment} todaySession={todaySession} />
-
         {/* Rest day card */}
         <div className="bg-gradient-to-br from-blue-600/20 to-purple-600/20 backdrop-blur-sm border border-blue-400/30 rounded-xl p-8 text-center shadow-lg">
           <Coffee className="w-16 h-16 text-blue-400 mx-auto mb-4" />
@@ -354,8 +347,6 @@ export default function DailyPractice() {
   if (todaySession.completed) {
     return (
       <div className="space-y-6">
-        <ProgressHeader enrollment={enrollment} todaySession={todaySession} />
-
         <div className="bg-gradient-to-br from-secondary-600/20 to-primary-600/20 backdrop-blur-sm border border-secondary-400/30 rounded-xl p-8 text-center shadow-lg">
           <Trophy className="w-16 h-16 text-secondary-400 mx-auto mb-4" />
           <h3 className="text-2xl font-bold text-white mb-2">Session Complete!</h3>
@@ -405,9 +396,6 @@ export default function DailyPractice() {
 
   return (
     <div className="space-y-6">
-      {/* Progress header */}
-      <ProgressHeader enrollment={enrollment} todaySession={todaySession} />
-
       {/* Today's session card */}
       <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm border border-primary-400/30 rounded-xl overflow-hidden shadow-lg">
         {/* Session header */}
@@ -706,73 +694,6 @@ export default function DailyPractice() {
             </>
           )}
         </div>
-      </div>
-    </div>
-  )
-}
-
-// Progress header component
-function ProgressHeader({ enrollment, todaySession }: { enrollment: Enrollment; todaySession: TodaySessionData }) {
-  const progressPercent = ((todaySession.week - 1) * 5 + todaySession.day) / 60 * 100
-
-  return (
-    <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm border border-primary-400/20 rounded-xl p-4 shadow-lg">
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-3">
-          <div className="text-white font-bold">
-            Week {todaySession.week} of 12
-          </div>
-          <span className="text-xs px-2 py-1 bg-primary-500/20 text-primary-300 rounded">
-            {todaySession.phase}
-          </span>
-        </div>
-        <div className="flex items-center gap-4 text-sm">
-          <div className="flex items-center gap-1">
-            <Flame className="w-4 h-4 text-orange-400" />
-            <span className="text-white font-semibold">{enrollment.streakDays}</span>
-            <span className="text-gray-400">day streak</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Award className="w-4 h-4 text-secondary-400" />
-            <span className="text-white font-semibold">{enrollment.sessionsCompleted}</span>
-            <span className="text-gray-400">sessions</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Progress bar */}
-      <div className="bg-gray-700 rounded-full h-2 overflow-hidden">
-        <div
-          className="h-full bg-gradient-to-r from-primary-500 to-secondary-500 transition-all duration-500"
-          style={{ width: `${progressPercent}%` }}
-        />
-      </div>
-      <div className="flex justify-between text-xs text-gray-500 mt-1">
-        <span>Day {(todaySession.week - 1) * 5 + Math.min(todaySession.day, 5)} of 60</span>
-        <span>{progressPercent.toFixed(0)}% complete</span>
-      </div>
-
-      {/* Phase indicators */}
-      <div className="flex gap-1 mt-3">
-        {[1, 2, 3, 4, 5, 6].map((phase) => {
-          const phaseKey = `phase${phase}` as keyof typeof enrollment.phaseProgress
-          const isComplete = enrollment.phaseProgress[phaseKey]
-          const isCurrent = todaySession.week >= (phase - 1) * 2 + 1 && todaySession.week <= phase * 2
-
-          return (
-            <div
-              key={phase}
-              className={`flex-1 h-1 rounded-full ${
-                isComplete
-                  ? 'bg-secondary-500'
-                  : isCurrent
-                  ? 'bg-primary-500'
-                  : 'bg-gray-700'
-              }`}
-              title={`Phase ${phase}`}
-            />
-          )
-        })}
       </div>
     </div>
   )
