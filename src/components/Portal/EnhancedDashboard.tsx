@@ -648,17 +648,17 @@ export function EnhancedDashboard() {
               </div>
             </div>
 
-            {/* Reasons Validation */}
+            {/* Daily Reflection */}
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-300 mb-2">
-                Why I'm Going to Be Successful Today
+                How am I today?
               </label>
               <textarea
                 value={journalData.reasonsValidation}
                 onChange={(e) => setJournalData({ ...journalData, reasonsValidation: e.target.value })}
                 className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-white"
-                rows={3}
-                placeholder="Write your reasons for success..."
+                rows={4}
+                placeholder="Why I'm going to be successful today... Am I feeling like I am making progress? What needs to improve? What is going well for me?"
               />
             </div>
 
