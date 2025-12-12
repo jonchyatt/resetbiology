@@ -1,3 +1,5 @@
+import { PortalHeader } from '@/components/Navigation/PortalHeader'
+
 export default function ModulesPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 relative"
@@ -7,44 +9,11 @@ export default function ModulesPage() {
            backgroundPosition: 'center',
            backgroundAttachment: 'fixed'
          }}>
-      <div className="relative z-10 pt-16">
-        {/* Portal Subnav Header */}
-        <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm shadow-2xl border-b border-primary-400/30">
-          <div className="container mx-auto px-4 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <img
-                  src="/logo1.png"
-                  alt="Reset Biology"
-                  className="h-10 w-auto rounded-lg drop-shadow-lg bg-white/10 backdrop-blur-sm p-1 border border-white/20"
-                />
-                <div>
-                  <div className="flex items-center">
-                    <a
-                      href="/portal"
-                      className="text-xl font-bold text-white drop-shadow-lg hover:text-primary-300 transition-colors"
-                    >
-                      Portal
-                    </a>
-                    <span className="mx-2 text-primary-300">&gt;</span>
-                    <span className="text-lg text-gray-200 drop-shadow-sm">
-                      Mental Mastery Modules
-                    </span>
-                  </div>
-                  <p className="text-xs text-gray-300/90 mt-1">Transform your mindset and metabolic health</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <a
-                  href="/daily-history"
-                  className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm"
-                >
-                  Daily History
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div className="relative z-10 pt-32">
+        <PortalHeader
+          section="Mental Mastery Modules"
+          subtitle="Transform your mindset and metabolic health"
+        />
 
         {/* Title Section - Matching Tracker Pages */}
         <div className="text-center py-8">
