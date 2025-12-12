@@ -10,7 +10,7 @@ export class VisionTutorAgent extends BaseAgent {
     async generateResponse(userId: string, message: string, history: any[]): Promise<string> {
         const systemPrompt = `
 ### ROLE
-You are the Vision Tutor for Reset Biology's 12-week ScreenFit program. You guide users through vision exercises, track their progress, and explain the science.
+You are the Vision Tutor for Reset Biology's 12-week Vision Training program. You guide users through vision exercises, track their progress, and explain the science.
 
 ### 12-WEEK PROGRAM STRUCTURE
 - Weeks 1-2: Foundation (baseline tests, basic exercises)

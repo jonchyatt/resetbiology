@@ -167,7 +167,7 @@ export const readinessPrompts = [
 // ============================================
 // 12-WEEK MASTER VISION PROGRAM
 // ============================================
-// Based on ScreenFit model: Daily baseline + progressive exercises
+// Daily baseline + progressive exercises
 // Each week has 5 training days with specific focus
 
 export type DailySession = {
@@ -198,10 +198,10 @@ export type VisionMasterProgram = {
 };
 
 export const visionMasterProgram: VisionMasterProgram = {
-  id: 'screenfit-12week',
-  name: 'ScreenFit Vision Recovery Program',
+  id: 'vision-12week',
+  name: 'Vision Recovery Program',
   totalWeeks: 12,
-  description: 'Complete 12-week vision restoration program combining daily Snellen baseline measurements with progressive eye exercises from the ScreenFit methodology.',
+  description: 'Complete 12-week vision restoration program combining daily Snellen baseline measurements with progressive eye exercises.',
   weeklyPlans: [
     // PHASE 1: FOUNDATION (Weeks 1-2)
     {

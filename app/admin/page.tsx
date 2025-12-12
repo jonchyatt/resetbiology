@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Database, Dumbbell, Apple, Syringe, Settings, Package, ShoppingCart, ClipboardList, Wind, Mic, Eye, Zap, Target, Brain, BookOpen, Layout } from "lucide-react"
+import { Database, Dumbbell, Apple, Syringe, Settings, Package, ShoppingCart, ClipboardList, Wind, Mic, Eye, Zap, Target, Brain, BookOpen, Layout, Users } from "lucide-react"
 
 export default function AdminDashboard() {
   return (
@@ -93,6 +93,22 @@ export default function AdminDashboard() {
                 </p>
                 <div className="text-teal-300 font-medium group-hover:text-teal-200 transition-colors">
                   Manage Exercises →
+                </div>
+              </div>
+            </Link>
+
+            {/* User Management */}
+            <Link href="/admin/users" className="group">
+              <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-indigo-400/30 shadow-2xl hover:shadow-indigo-400/20 group-hover:scale-105 transition-all duration-300">
+                <div className="flex items-center mb-4">
+                  <Users className="w-8 h-8 text-indigo-400 mr-3" />
+                  <h3 className="text-xl font-bold text-white">User Management</h3>
+                </div>
+                <p className="text-gray-300 mb-4">
+                  View all users, adjust access levels (guest, introduction, subscriber, admin), and create admins.
+                </p>
+                <div className="text-indigo-300 font-medium group-hover:text-indigo-200 transition-colors">
+                  Manage Users →
                 </div>
               </div>
             </Link>
@@ -303,11 +319,11 @@ export default function AdminDashboard() {
                   In Development (Hidden from Portal)
                 </h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                  <Link href="/vision-healing" className="flex items-center p-3 bg-cyan-600/20 rounded-lg border border-cyan-400/30 hover:bg-cyan-600/30 transition-colors group">
+                  <Link href="/vision-training" className="flex items-center p-3 bg-cyan-600/20 rounded-lg border border-cyan-400/30 hover:bg-cyan-600/30 transition-colors group">
                     <Eye className="w-5 h-5 text-cyan-300 mr-2" />
                     <div>
                       <span className="text-white text-sm">Vision Training</span>
-                      <span className="block text-xs text-gray-400 group-hover:text-cyan-300">/vision-healing</span>
+                      <span className="block text-xs text-gray-400 group-hover:text-cyan-300">/vision-training</span>
                     </div>
                   </Link>
                   <Link href="/mental-training" className="flex items-center p-3 bg-pink-600/20 rounded-lg border border-pink-400/30 hover:bg-pink-600/30 transition-colors group">

@@ -20,8 +20,7 @@ export async function GET(req: NextRequest) {
       where: { userId: user.id },
       include: {
         dailySessions: {
-          orderBy: { completedAt: 'desc' },
-          take: 10
+          orderBy: [{ week: 'asc' }, { day: 'asc' }]
         }
       }
     })
@@ -145,7 +144,7 @@ export async function POST(req: NextRequest) {
       const enrollment = await prisma.visionProgramEnrollment.create({
         data: {
           userId: user.id,
-          programId: 'screenfit-12week',
+          programId: 'vision-12week',
           startDate: new Date(),
           initialNearSnellen: data?.initialNearSnellen || null,
           initialFarSnellen: data?.initialFarSnellen || null,
@@ -168,6 +167,83 @@ export async function POST(req: NextRequest) {
         message: 'Successfully enrolled in Vision Recovery Program',
         enrollment,
         pointsAwarded: 100
+      })
+    }
+
+    if (action === 'complete_past_session') {
+      // Allow marking a past session as complete (for catching up)
+      const enrollment = await prisma.visionProgramEnrollment.findUnique({
+        where: { userId: user.id }
+      })
+
+      if (!enrollment) {
+        return NextResponse.json({ error: 'Not enrolled in program' }, { status: 400 })
+      }
+
+      const { week, day, localDate } = data
+
+      // Check if session already exists for this week/day
+      const existingSession = await prisma.visionDailySession.findFirst({
+        where: {
+          enrollmentId: enrollment.id,
+          week,
+          day
+        }
+      })
+
+      if (existingSession) {
+        return NextResponse.json({ error: 'Session already completed for this week/day' }, { status: 400 })
+      }
+
+      // Get session title from program
+      const weekPlan = visionMasterProgram.weeklyPlans[week - 1]
+      const sessionData = weekPlan?.sessions.find(s => s.day === day)
+
+      if (!sessionData) {
+        return NextResponse.json({ error: 'Invalid week/day combination' }, { status: 400 })
+      }
+
+      // Create the past session record
+      const dailySession = await prisma.visionDailySession.create({
+        data: {
+          enrollmentId: enrollment.id,
+          userId: user.id,
+          week,
+          day,
+          sessionTitle: sessionData.title,
+          baselineMinutes: sessionData.baselineMinutes,
+          exerciseMinutes: sessionData.exerciseMinutes,
+          totalMinutes: sessionData.baselineMinutes + sessionData.exerciseMinutes,
+          exercisesCompleted: sessionData.exerciseIds,
+          localDate: localDate || new Date().toISOString().split('T')[0],
+          notes: 'Marked as complete retroactively'
+        }
+      })
+
+      // Update enrollment stats
+      await prisma.visionProgramEnrollment.update({
+        where: { id: enrollment.id },
+        data: {
+          sessionsCompleted: enrollment.sessionsCompleted + 1,
+          totalPracticeMinutes: enrollment.totalPracticeMinutes + sessionData.baselineMinutes + sessionData.exerciseMinutes
+        }
+      })
+
+      // Award reduced points for retroactive completion (15 instead of 25)
+      await prisma.gamificationPoint.create({
+        data: {
+          userId: user.id,
+          pointType: 'vision_session_completed',
+          amount: 15,
+          activitySource: `Marked ${sessionData.title} complete (Week ${week} Day ${day})`
+        }
+      })
+
+      return NextResponse.json({
+        success: true,
+        message: 'Past session marked as complete',
+        dailySession,
+        pointsAwarded: 15
       })
     }
 

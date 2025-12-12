@@ -1,9 +1,6 @@
-import { VisionHealing } from "@/components/Vision/VisionHealing";
+import { redirect } from 'next/navigation';
 
-export const metadata = {
-  title: "Vision Healing | Reset Biology",
-};
-
-export default function VisionHealingPage() {
-  return <VisionHealing />;
+// Redirect from old URL to new URL
+export default function VisionHealingRedirect() {
+  redirect('/vision-training');
 }

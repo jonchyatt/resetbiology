@@ -116,7 +116,7 @@ export default function TrialSubscription({ onClose, redirectUrl, freeTrial = tr
               'Full access to all peptide tracking and protocols',
               '90+ Mental Mastery audio modules',
               'Advanced Breathing App with custom protocols',
-              'Vision healing and training exercises',
+              'Vision training exercises',
               'Workout and nutrition tracking',
               'Gamification system with rewards',
               'Priority support and exclusive updates'

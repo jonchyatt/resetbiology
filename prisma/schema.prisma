@@ -1044,12 +1044,12 @@ model NBackProgress {
 // ============================================
 // VISION MASTER PROGRAM ENROLLMENT
 // ============================================
-// Tracks user's progress through the 12-week ScreenFit program
+// Tracks user's progress through the 12-week Vision Training program
 
 model VisionProgramEnrollment {
   id                String   @id @default(auto()) @map("_id") @db.ObjectId
   userId            String   @db.ObjectId @unique // One enrollment per user
-  programId         String   @default("screenfit-12week") // Which program
+  programId         String   @default("vision-12week") // Which program
   startDate         DateTime @default(now()) // When user started
   currentWeek       Int      @default(1)
   currentDay        Int      @default(1)

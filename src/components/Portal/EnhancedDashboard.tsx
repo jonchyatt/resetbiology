@@ -577,7 +577,7 @@ export function EnhancedDashboard() {
                 </div>
               </Link>
 
-              {/* Vision and Memory hidden - in development. Access via /vision-healing and /mental-training directly */}
+              {/* Vision and Memory hidden - in development. Access via /vision-training and /mental-training directly */}
             </div>
 
             {/* Secondary Action */}
