@@ -23,18 +23,17 @@ const READER_GLASSES_STAGES = [
   { stage: 5, glassesStrength: 3.0, label: '+3.0 Readers', minDistance: 20, maxDistance: 60, color: 'text-pink-400' },
 ]
 
-// Adaptive difficulty system - start at 20/70 (readable on phones)
-// If user struggles, they can manually go to easier levels
-// Most users won't need 20/200 on a phone (if you can't see that, see a doctor)
+// Adaptive difficulty system - training levels, NOT medical diagnosis
+// We cannot use 20/XX notation - that requires calibrated equipment
 const DIFFICULTY_LEVELS = [
-  { level: 1, chartSize: '20/70', targetDistance: 30, requiredAccuracy: 60 },
-  { level: 2, chartSize: '20/50', targetDistance: 35, requiredAccuracy: 65 },
-  { level: 3, chartSize: '20/40', targetDistance: 40, requiredAccuracy: 70 },
-  { level: 4, chartSize: '20/30', targetDistance: 45, requiredAccuracy: 75 },
-  { level: 5, chartSize: '20/25', targetDistance: 50, requiredAccuracy: 80 },
-  { level: 6, chartSize: '20/20', targetDistance: 55, requiredAccuracy: 80 },
-  { level: 7, chartSize: '20/15', targetDistance: 60, requiredAccuracy: 85 },
-  { level: 8, chartSize: '20/10', targetDistance: 65, requiredAccuracy: 90 },
+  { level: 1, label: 'Warm-up', targetDistance: 30, requiredAccuracy: 60 },
+  { level: 2, label: 'Foundation', targetDistance: 35, requiredAccuracy: 65 },
+  { level: 3, label: 'Building', targetDistance: 40, requiredAccuracy: 70 },
+  { level: 4, label: 'Moderate', targetDistance: 45, requiredAccuracy: 75 },
+  { level: 5, label: 'Challenge', targetDistance: 50, requiredAccuracy: 80 },
+  { level: 6, label: 'Advanced', targetDistance: 55, requiredAccuracy: 80 },
+  { level: 7, label: 'Expert', targetDistance: 60, requiredAccuracy: 85 },
+  { level: 8, label: 'Peak', targetDistance: 65, requiredAccuracy: 90 },
 ]
 
 export default function TrainingSession({
@@ -123,7 +122,7 @@ export default function TrainingSession({
             setAttempts(0)
             setCorrect(0)
             setResetTrigger(prev => prev + 1) // Generate new letter for new level
-            speak(`Level up! Now trying ${DIFFICULTY_LEVELS[currentLevel]?.chartSize}`)
+            speak(`Level up! Now at ${DIFFICULTY_LEVELS[currentLevel]?.label} level`)
           }, 1500)
         } else {
           // Completed all levels!
@@ -212,7 +211,7 @@ export default function TrainingSession({
           exerciseType,
           distanceCm: distanceProgressionMode ? targetDistanceCm : difficulty.targetDistance,
           accuracy,
-          chartSize: difficulty.chartSize,
+          level: difficulty.label,
           duration: sessionDuration,
           success
         })
@@ -246,7 +245,7 @@ export default function TrainingSession({
         <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
           <div>
             <h3 className="text-2xl font-bold text-white mb-1">
-              Level {currentLevel} - {difficulty.chartSize}
+              Level {currentLevel} - {difficulty.label}
             </h3>
             <p className="text-gray-400 text-sm">
               {visionType === 'near' ? 'Near Vision' : 'Far Vision'} Training
@@ -433,11 +432,25 @@ export default function TrainingSession({
           )}
 
           <SnellenChart
-            chartSize={difficulty.chartSize}
+            chartSize={difficulty.label}
             exerciseType={exerciseType}
             onAnswer={handleAnswer}
             resetTrigger={resetTrigger}
             deviceMode={deviceMode}
+            progressionMode="line-by-line"
+            onChartComplete={() => {
+              // Chart completed - can track this for gamification
+              speak('Excellent! You completed the full chart.')
+            }}
+            onDistanceAdjust={(direction) => {
+              // TINY adjustments - like adding 2.5lb plates, not 45s
+              // 1cm = about a finger-width
+              if (direction === 'further') {
+                setTargetDistanceCm(prev => Math.min(prev + 1, 100))
+              } else {
+                setTargetDistanceCm(prev => Math.max(prev - 1, 15))
+              }
+            }}
           />
         </div>
       )}
