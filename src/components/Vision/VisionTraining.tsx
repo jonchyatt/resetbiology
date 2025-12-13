@@ -6,7 +6,10 @@ import {
   Eye,
   BookOpen,
   Flame,
-  Award
+  Award,
+  Smartphone,
+  Monitor,
+  RotateCcw
 } from 'lucide-react'
 import { PortalHeader } from '@/components/Navigation/PortalHeader'
 import CurriculumOverview from './Training/CurriculumOverview'
@@ -244,87 +247,142 @@ export function VisionTraining() {
             {/* FOCUS TRAINING TAB (renamed from Snellen Trainer) */}
             {activeTab === 'trainer' && (
               <div className="space-y-4">
-                {/* Settings card - HIDE when training is active */}
+                {/* Settings card - ONLY show when NOT training */}
                 {!isTrainingActive && (
-                <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-xl p-6 border border-primary-400/20 shadow-lg">
-                  <h3 className="text-2xl font-bold text-white mb-2 flex items-center gap-2">
-                    <Eye className="w-6 h-6 text-primary-400" />
-                    Focus Training
-                  </h3>
-                  <p className="text-gray-300 mb-4">
-                    Train at your edge of clarity - where text is just barely readable.
-                  </p>
+                  <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-xl p-6 border border-primary-400/20 shadow-lg">
+                    <h3 className="text-2xl font-bold text-white mb-2 flex items-center gap-2">
+                      <Eye className="w-6 h-6 text-primary-400" />
+                      Focus Training
+                    </h3>
+                    <p className="text-gray-300 mb-6">
+                      Train at your edge of clarity - where text is just barely readable.
+                    </p>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {/* Device Mode */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-3">Device Mode</label>
-                      <div className="flex gap-2">
-                        {(['phone', 'desktop'] as const).map(mode => (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                      {/* Device Mode */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-3">Device Mode</label>
+                        <div className="flex gap-2">
                           <button
-                            key={mode}
-                            onClick={() => setTrainerDeviceMode(mode)}
-                            className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all ${trainerDeviceMode === mode
-                              ? 'bg-primary-600 text-white'
-                              : 'bg-gray-700/30 text-gray-300 hover:bg-gray-600/30'
+                            onClick={() => setTrainerDeviceMode('phone')}
+                            className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all flex items-center justify-center gap-2 ${
+                              trainerDeviceMode === 'phone'
+                                ? 'bg-primary-600 text-white shadow-lg'
+                                : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/50'
                             }`}
                           >
-                            {mode === 'phone' ? "Phone" : 'Desktop'}
+                            <Smartphone className="w-5 h-5" />
+                            Phone
                           </button>
-                        ))}
+                          <button
+                            onClick={() => setTrainerDeviceMode('desktop')}
+                            className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all flex items-center justify-center gap-2 ${
+                              trainerDeviceMode === 'desktop'
+                                ? 'bg-primary-600 text-white shadow-lg'
+                                : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/50'
+                            }`}
+                          >
+                            <Monitor className="w-5 h-5" />
+                            Desktop
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Vision Type */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-3">Training Focus</label>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setTrainerVisionType('near')}
+                            className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all flex items-center justify-center gap-2 ${
+                              trainerVisionType === 'near'
+                                ? 'bg-blue-600 text-white shadow-lg'
+                                : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/50'
+                            }`}
+                          >
+                            <Eye className="w-5 h-5" />
+                            Nearsighted
+                          </button>
+                          <button
+                            onClick={() => setTrainerVisionType('far')}
+                            className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all flex items-center justify-center gap-2 ${
+                              trainerVisionType === 'far'
+                                ? 'bg-purple-600 text-white shadow-lg'
+                                : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/50'
+                            }`}
+                          >
+                            <Eye className="w-5 h-5" />
+                            Farsighted
+                          </button>
+                        </div>
+                        <p className="text-xs text-gray-400 mt-2 text-center">
+                          {trainerVisionType === 'near'
+                            ? 'Myopia: push clarity outward'
+                            : 'Hyperopia: pull clarity closer'}
+                        </p>
+                      </div>
+
+                      {/* Chart Type */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-3">Chart Type</label>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setTrainerExerciseType('letters')}
+                            className={`flex-1 py-3 px-4 rounded-lg font-bold transition-all ${
+                              trainerExerciseType === 'letters'
+                                ? 'bg-secondary-600 text-white shadow-lg'
+                                : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/50'
+                            }`}
+                          >
+                            ABC
+                          </button>
+                          <button
+                            onClick={() => setTrainerExerciseType('e-directional')}
+                            className={`flex-1 py-3 px-4 rounded-lg font-bold transition-all ${
+                              trainerExerciseType === 'e-directional'
+                                ? 'bg-secondary-600 text-white shadow-lg'
+                                : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/50'
+                            }`}
+                          >
+                            E →
+                          </button>
+                        </div>
                       </div>
                     </div>
 
-                    {/* Vision Type */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-3">Training Focus</label>
-                      <div className="flex gap-2">
-                        {(['near', 'far'] as const).map(type => (
-                          <button
-                            key={type}
-                            onClick={() => setTrainerVisionType(type)}
-                            className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all ${trainerVisionType === type
-                              ? 'bg-primary-600 text-white'
-                              : 'bg-gray-700/30 text-gray-300 hover:bg-gray-600/30'
-                            }`}
-                          >
-                            {type === 'near' ? 'Nearsighted' : 'Farsighted'}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Chart Type */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-3">Chart Type</label>
-                      <div className="flex gap-2">
-                        {([
-                          { id: 'letters', label: 'Letters' },
-                          { id: 'e-directional', label: 'E Chart' }
-                        ] as const).map(type => (
-                          <button
-                            key={type.id}
-                            onClick={() => setTrainerExerciseType(type.id)}
-                            className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all ${trainerExerciseType === type.id
-                              ? 'bg-secondary-600 text-white'
-                              : 'bg-gray-700/30 text-gray-300 hover:bg-gray-600/30'
-                            }`}
-                          >
-                            {type.label}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
+                    {/* START BUTTON - inside settings card */}
+                    <button
+                      onClick={() => setIsTrainingActive(true)}
+                      className="w-full py-4 rounded-xl font-bold text-xl bg-secondary-500 hover:bg-secondary-600 text-white shadow-lg shadow-secondary-500/30 flex items-center justify-center gap-3 transition-all hover:scale-[1.02]"
+                    >
+                      <Play className="w-6 h-6" />
+                      Start Training
+                    </button>
                   </div>
-                </div>
                 )}
 
-                <TrainingSession
-                  visionType={trainerVisionType}
-                  exerciseType={trainerExerciseType}
-                  deviceMode={trainerDeviceMode}
-                  onActiveChange={setIsTrainingActive}
-                />
+                {/* Training Session - ONLY show when training is active */}
+                {isTrainingActive && (
+                  <div className="space-y-4">
+                    {/* Back to Settings button */}
+                    <button
+                      onClick={() => setIsTrainingActive(false)}
+                      className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+                    >
+                      <RotateCcw className="w-4 h-4" />
+                      Back to Settings
+                    </button>
+
+                    <TrainingSession
+                      visionType={trainerVisionType}
+                      exerciseType={trainerExerciseType}
+                      deviceMode={trainerDeviceMode}
+                      onActiveChange={(active) => {
+                        if (!active) setIsTrainingActive(false)
+                      }}
+                    />
+                  </div>
+                )}
               </div>
             )}
 
