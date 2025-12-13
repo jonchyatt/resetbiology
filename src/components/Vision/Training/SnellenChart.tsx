@@ -26,8 +26,21 @@ const CHART_LINES = [
   { level: 5, label: 'Peak', scale: 0.8, letterCount: 6 },
 ]
 
-// Letters for the letter chart mode (standard Snellen letters)
-const SNELLEN_LETTERS = ['C', 'D', 'E', 'F', 'L', 'O', 'P', 'T', 'Z']
+// Confusable letters for letter chart mode - letters that look similar and challenge focus
+// Groups: O/Q/C/D, H/M/N, K/X, R/B, S/Z, V/W
+const CONFUSABLE_LETTERS = ['O', 'Q', 'C', 'D', 'H', 'M', 'N', 'K', 'X', 'R', 'S', 'Z', 'V']
+
+// Only show 4 letter choices at a time (like E chart has 4 directions)
+const getLetterChoices = (correctLetter: string): string[] => {
+  // Get 3 random distractors that aren't the correct letter
+  const distractors = CONFUSABLE_LETTERS
+    .filter(l => l !== correctLetter)
+    .sort(() => Math.random() - 0.5)
+    .slice(0, 3)
+
+  // Combine and shuffle
+  return [correctLetter, ...distractors].sort(() => Math.random() - 0.5)
+}
 
 const E_DIRECTIONS = ['up', 'down', 'left', 'right'] as const
 type EDirection = typeof E_DIRECTIONS[number]
@@ -100,10 +113,10 @@ const generateLineDirections = (count: number): EDirection[] => {
   )
 }
 
-// Generate random letters for a chart line
+// Generate random letters for a chart line using confusable letters
 const generateLineLetters = (count: number): string[] => {
   return Array.from({ length: count }, () =>
-    SNELLEN_LETTERS[Math.floor(Math.random() * SNELLEN_LETTERS.length)]
+    CONFUSABLE_LETTERS[Math.floor(Math.random() * CONFUSABLE_LETTERS.length)]
   )
 }
 
@@ -133,6 +146,12 @@ export default function SnellenChart({
   const [consecutiveFailures, setConsecutiveFailures] = useState(0)
   const [showDistancePrompt, setShowDistancePrompt] = useState(false)
 
+  // Visual feedback state - blinks green (correct) or red (incorrect)
+  const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null)
+
+  // Letter choices for current letter (4 options like E chart has 4 directions)
+  const [letterChoices, setLetterChoices] = useState<string[]>([])
+
   // For tracking progression - start normal, progress to thin lines
   const [strokeWeight, setStrokeWeight] = useState<'bold' | 'normal' | 'thin'>('normal')
 
@@ -141,14 +160,19 @@ export default function SnellenChart({
     E_DIRECTIONS[Math.floor(Math.random() * E_DIRECTIONS.length)]
   )
   const [singleLetter, setSingleLetter] = useState<string>(() =>
-    SNELLEN_LETTERS[Math.floor(Math.random() * SNELLEN_LETTERS.length)]
+    CONFUSABLE_LETTERS[Math.floor(Math.random() * CONFUSABLE_LETTERS.length)]
+  )
+  const [singleLetterChoices, setSingleLetterChoices] = useState<string[]>(() =>
+    getLetterChoices(CONFUSABLE_LETTERS[Math.floor(Math.random() * CONFUSABLE_LETTERS.length)])
   )
 
   // Reset chart when resetTrigger or exerciseType changes
   useEffect(() => {
     if (progressionMode === 'single') {
       setSingleDirection(E_DIRECTIONS[Math.floor(Math.random() * E_DIRECTIONS.length)])
-      setSingleLetter(SNELLEN_LETTERS[Math.floor(Math.random() * SNELLEN_LETTERS.length)])
+      const newLetter = CONFUSABLE_LETTERS[Math.floor(Math.random() * CONFUSABLE_LETTERS.length)]
+      setSingleLetter(newLetter)
+      setSingleLetterChoices(getLetterChoices(newLetter))
     }
   }, [resetTrigger, progressionMode])
 
@@ -158,6 +182,24 @@ export default function SnellenChart({
     setCurrentLineIndex(0)
     setCurrentLetterIndex(0)
   }, [exerciseType])
+
+  // Generate new letter choices when current letter changes
+  useEffect(() => {
+    if (exerciseType === 'letters' && chartData[currentLineIndex]) {
+      const correctLetter = chartData[currentLineIndex].letters[currentLetterIndex]
+      if (correctLetter) {
+        setLetterChoices(getLetterChoices(correctLetter))
+      }
+    }
+  }, [exerciseType, currentLineIndex, currentLetterIndex, chartData])
+
+  // Clear feedback after brief display
+  useEffect(() => {
+    if (feedback) {
+      const timer = setTimeout(() => setFeedback(null), 400)
+      return () => clearTimeout(timer)
+    }
+  }, [feedback])
 
   // Generate new chart
   const regenerateChart = useCallback(() => {
@@ -177,37 +219,39 @@ export default function SnellenChart({
     const correctDirection = currentLine.directions[currentLetterIndex]
     const isCorrect = selectedDirection === correctDirection
 
+    // Show visual feedback (green blink for correct, red for incorrect)
+    setFeedback(isCorrect ? 'correct' : 'incorrect')
     onAnswer(isCorrect)
 
     if (isCorrect) {
       setConsecutiveFailures(0)
 
-      // Move to next letter in line
-      if (currentLetterIndex < currentLine.letterCount - 1) {
-        setCurrentLetterIndex(prev => prev + 1)
-      } else {
-        // Completed this line! Auto-advance to next line
-        // Check if this was the last line
-        if (currentLineIndex >= CHART_LINES.length - 1) {
-          // Chart complete! Prompt to move screen further
-          setShowDistancePrompt(true)
-          if (onChartComplete) onChartComplete()
+      // Delay briefly to show feedback, then advance
+      setTimeout(() => {
+        // Move to next letter in line
+        if (currentLetterIndex < currentLine.letterCount - 1) {
+          setCurrentLetterIndex(prev => prev + 1)
         } else {
-          // Auto-advance to next line (no rest prompt needed)
-          setCurrentLineIndex(prev => prev + 1)
-          setCurrentLetterIndex(0)
+          // Completed this line! Auto-advance to next line
+          if (currentLineIndex >= CHART_LINES.length - 1) {
+            setShowDistancePrompt(true)
+            if (onChartComplete) onChartComplete()
+          } else {
+            setCurrentLineIndex(prev => prev + 1)
+            setCurrentLetterIndex(0)
+          }
         }
-      }
+      }, 300)
     } else {
       // Wrong answer
       setConsecutiveFailures(prev => prev + 1)
 
       // After 3 consecutive failures, reset to new chart
       if (consecutiveFailures >= 2) {
-        speak('Let\'s try a fresh chart. Take a breath.')
+        // Audio disabled for now - using visual feedback instead
         setTimeout(() => {
           regenerateChart()
-        }, 2000)
+        }, 1500)
       }
     }
   }
@@ -218,37 +262,39 @@ export default function SnellenChart({
     const correctLetter = currentLine.letters[currentLetterIndex]
     const isCorrect = selectedLetter.toUpperCase() === correctLetter.toUpperCase()
 
+    // Show visual feedback (green blink for correct, red for incorrect)
+    setFeedback(isCorrect ? 'correct' : 'incorrect')
     onAnswer(isCorrect)
 
     if (isCorrect) {
       setConsecutiveFailures(0)
 
-      // Move to next letter in line
-      if (currentLetterIndex < currentLine.letterCount - 1) {
-        setCurrentLetterIndex(prev => prev + 1)
-      } else {
-        // Completed this line! Auto-advance to next line
-        // Check if this was the last line
-        if (currentLineIndex >= CHART_LINES.length - 1) {
-          // Chart complete! Prompt to move screen further
-          setShowDistancePrompt(true)
-          if (onChartComplete) onChartComplete()
+      // Delay briefly to show feedback, then advance
+      setTimeout(() => {
+        // Move to next letter in line
+        if (currentLetterIndex < currentLine.letterCount - 1) {
+          setCurrentLetterIndex(prev => prev + 1)
         } else {
-          // Auto-advance to next line (no rest prompt needed)
-          setCurrentLineIndex(prev => prev + 1)
-          setCurrentLetterIndex(0)
+          // Completed this line! Auto-advance to next line
+          if (currentLineIndex >= CHART_LINES.length - 1) {
+            setShowDistancePrompt(true)
+            if (onChartComplete) onChartComplete()
+          } else {
+            setCurrentLineIndex(prev => prev + 1)
+            setCurrentLetterIndex(0)
+          }
         }
-      }
+      }, 300)
     } else {
       // Wrong answer
       setConsecutiveFailures(prev => prev + 1)
 
       // After 3 consecutive failures, reset to new chart
       if (consecutiveFailures >= 2) {
-        speak('Let\'s try a fresh chart. Take a breath.')
+        // Audio disabled for now - using visual feedback instead
         setTimeout(() => {
           regenerateChart()
-        }, 2000)
+        }, 1500)
       }
     }
   }
@@ -274,9 +320,16 @@ export default function SnellenChart({
     }
   }
 
-  // Get base size for letters/E based on device - SHRUNK to fit buttons on screen
+  // Get base size for letters/E based on device - SMALLER test text, bigger buttons
   const getBaseSize = () => {
-    return deviceMode === 'phone' ? 40 : 60
+    return deviceMode === 'phone' ? 28 : 45
+  }
+
+  // Get feedback ring color class
+  const getFeedbackClass = () => {
+    if (feedback === 'correct') return 'ring-4 ring-green-500 animate-pulse'
+    if (feedback === 'incorrect') return 'ring-4 ring-red-500 animate-pulse'
+    return 'ring-2 ring-primary-400'
   }
 
   // Single letter mode (backwards compatible)
@@ -321,9 +374,11 @@ export default function SnellenChart({
           <LetterButtons
             onSelect={(letter) => {
               onAnswer(letter === singleLetter)
-              setSingleLetter(SNELLEN_LETTERS[Math.floor(Math.random() * SNELLEN_LETTERS.length)])
+              const newLetter = CONFUSABLE_LETTERS[Math.floor(Math.random() * CONFUSABLE_LETTERS.length)]
+              setSingleLetter(newLetter)
+              setSingleLetterChoices(getLetterChoices(newLetter))
             }}
-            targetLetter={singleLetter}
+            choices={singleLetterChoices}
             compact={deviceMode === 'phone'}
           />
         )}
@@ -377,10 +432,10 @@ export default function SnellenChart({
                     {/* The E optotype */}
                     <div className={`transition-all duration-200 ${
                       isPastLetter ? 'opacity-20' : ''
-                    } ${isCurrentLetter ? 'ring-2 ring-primary-400 rounded-sm' : ''}`}>
+                    } ${isCurrentLetter ? getFeedbackClass() + ' rounded-sm' : ''}`}>
                       <TumblingE
                         direction={dir}
-                        size={baseSize * line.scale * (deviceMode === 'phone' ? 0.5 : 0.8)}
+                        size={baseSize * line.scale * (deviceMode === 'phone' ? 0.4 : 0.65)}
                         strokeWeight={getLineStrokeWeight(lineIdx)}
                       />
                     </div>
@@ -407,10 +462,10 @@ export default function SnellenChart({
                     {/* The letter */}
                     <div className={`transition-all duration-200 ${
                       isPastLetter ? 'opacity-20' : ''
-                    } ${isCurrentLetter ? 'ring-2 ring-primary-400 rounded-sm px-1' : ''}`}>
+                    } ${isCurrentLetter ? getFeedbackClass() + ' rounded-sm px-1' : ''}`}>
                       <SnellenLetter
                         letter={letter}
-                        size={baseSize * line.scale * (deviceMode === 'phone' ? 0.5 : 0.8)}
+                        size={baseSize * line.scale * (deviceMode === 'phone' ? 0.4 : 0.65)}
                         strokeWeight={getLineStrokeWeight(lineIdx)}
                       />
                     </div>
@@ -466,7 +521,7 @@ export default function SnellenChart({
           ) : (
             <LetterButtons
               onSelect={(letter) => handleLetterAnswer(letter)}
-              targetLetter={currentLine.letters[currentLetterIndex]}
+              choices={letterChoices}
               compact={deviceMode === 'phone'}
             />
           )}
@@ -499,7 +554,7 @@ export default function SnellenChart({
   )
 }
 
-// Direction buttons component - supports compact mode for mobile
+// Direction buttons component - LARGE buttons for easy tapping
 function DirectionButtons({
   onSelect,
   compact = false
@@ -507,28 +562,31 @@ function DirectionButtons({
   onSelect: (dir: EDirection) => void
   compact?: boolean
 }) {
-  const buttonBase = "bg-gray-900 hover:bg-primary-500 active:bg-primary-600 text-white font-bold rounded-lg transition-all transform active:scale-95 flex items-center justify-center shadow-md"
-  const buttonSize = compact ? "py-2 px-4 text-sm min-w-[70px] gap-1" : "py-3 px-6 text-base min-w-[100px] gap-2"
-  const iconSize = compact ? "w-4 h-4" : "w-5 h-5"
+  // MUCH bigger buttons - user emphasized buttons must be larger than test letters
+  const buttonBase = "bg-gray-900 hover:bg-primary-500 active:bg-primary-600 text-white font-bold rounded-xl transition-all transform active:scale-95 flex items-center justify-center shadow-lg"
+  const buttonSize = compact
+    ? "py-4 px-8 text-xl min-w-[120px] min-h-[56px] gap-2"
+    : "py-5 px-10 text-2xl min-w-[150px] min-h-[64px] gap-3"
+  const iconSize = compact ? "w-6 h-6" : "w-8 h-8"
 
   return (
-    <div className={`flex flex-col items-center ${compact ? 'gap-2' : 'gap-3'}`}>
+    <div className={`flex flex-col items-center ${compact ? 'gap-3' : 'gap-4'}`}>
       {/* Up button */}
       <button
         onClick={() => onSelect('up')}
         className={`${buttonBase} ${buttonSize}`}
       >
-        <ArrowUp className={iconSize} />
+        <ArrowUp className={iconSize} strokeWidth={2.5} />
         Up
       </button>
 
       {/* Left and Right buttons */}
-      <div className={`flex ${compact ? 'gap-3' : 'gap-4'}`}>
+      <div className={`flex ${compact ? 'gap-4' : 'gap-6'}`}>
         <button
           onClick={() => onSelect('left')}
           className={`${buttonBase} ${buttonSize}`}
         >
-          <ArrowLeft className={iconSize} />
+          <ArrowLeft className={iconSize} strokeWidth={2.5} />
           Left
         </button>
         <button
@@ -536,7 +594,7 @@ function DirectionButtons({
           className={`${buttonBase} ${buttonSize}`}
         >
           Right
-          <ArrowRight className={iconSize} />
+          <ArrowRight className={iconSize} strokeWidth={2.5} />
         </button>
       </div>
 
@@ -545,29 +603,33 @@ function DirectionButtons({
         onClick={() => onSelect('down')}
         className={`${buttonBase} ${buttonSize}`}
       >
-        <ArrowDown className={iconSize} />
+        <ArrowDown className={iconSize} strokeWidth={2.5} />
         Down
       </button>
     </div>
   )
 }
 
-// Letter buttons component for letter chart mode
+// Letter buttons component for letter chart mode - ONLY 4 CHOICES like E chart has 4 directions
 function LetterButtons({
   onSelect,
-  targetLetter,
+  choices,
   compact = false
 }: {
   onSelect: (letter: string) => void
-  targetLetter: string
+  choices: string[] // 4 letter choices
   compact?: boolean
 }) {
-  const buttonBase = "bg-gray-900 hover:bg-primary-500 active:bg-primary-600 text-white font-bold rounded-lg transition-all transform active:scale-95 flex items-center justify-center shadow-md"
-  const buttonSize = compact ? "py-2 px-3 text-sm min-w-[40px]" : "py-3 px-5 text-lg min-w-[50px]"
+  // MUCH bigger buttons - same size as direction buttons
+  const buttonBase = "bg-gray-900 hover:bg-primary-500 active:bg-primary-600 text-white font-black rounded-xl transition-all transform active:scale-95 flex items-center justify-center shadow-lg"
+  const buttonSize = compact
+    ? "py-4 px-6 text-3xl min-w-[80px] min-h-[64px]"
+    : "py-5 px-8 text-4xl min-w-[100px] min-h-[72px]"
 
+  // Display as 2x2 grid for 4 choices
   return (
-    <div className={`flex flex-wrap justify-center ${compact ? 'gap-1' : 'gap-2'} max-w-xs`}>
-      {SNELLEN_LETTERS.map((letter) => (
+    <div className={`grid grid-cols-2 ${compact ? 'gap-3' : 'gap-4'}`}>
+      {choices.map((letter) => (
         <button
           key={letter}
           onClick={() => onSelect(letter)}
