@@ -563,11 +563,12 @@ function DirectionButtons({
   compact?: boolean
 }) {
   // MUCH bigger buttons - user emphasized buttons must be larger than test letters
+  // Increased vertical height (py-6/py-7) for better tap targets
   const buttonBase = "bg-gray-900 hover:bg-primary-500 active:bg-primary-600 text-white font-bold rounded-xl transition-all transform active:scale-95 flex items-center justify-center shadow-lg"
   const buttonSize = compact
-    ? "py-4 px-8 text-xl min-w-[120px] min-h-[56px] gap-2"
-    : "py-5 px-10 text-2xl min-w-[150px] min-h-[64px] gap-3"
-  const iconSize = compact ? "w-6 h-6" : "w-8 h-8"
+    ? "py-6 px-10 text-2xl min-w-[130px] min-h-[72px] gap-2"
+    : "py-7 px-12 text-3xl min-w-[160px] min-h-[84px] gap-3"
+  const iconSize = compact ? "w-7 h-7" : "w-9 h-9"
 
   return (
     <div className={`flex flex-col items-center ${compact ? 'gap-3' : 'gap-4'}`}>

@@ -8,7 +8,11 @@ import {
   BarChart3,
   Eye,
   ChevronRight,
-  Sparkles
+  Sparkles,
+  Smartphone,
+  Monitor,
+  MoveHorizontal,
+  Focus
 } from 'lucide-react'
 import { PortalHeader } from '@/components/Navigation/PortalHeader'
 import CurriculumOverview from './Training/CurriculumOverview'
@@ -16,6 +20,7 @@ import DailyPractice from './Training/DailyPractice'
 import QuickPractice from './Training/QuickPractice'
 import ProgressDashboard from './Training/ProgressDashboard'
 import TrainingSession from './Training/TrainingSession'
+import ProgramProgress from './Training/ProgramProgress'
 
 type TabMode = 'curriculum' | 'today' | 'practice' | 'trainer' | 'progress'
 
@@ -34,16 +39,43 @@ const TABS: TabConfig[] = [
   { id: 'progress', label: 'Progress', icon: BarChart3, description: 'Your stats' },
 ]
 
+interface EnrollmentData {
+  currentWeek: number
+  currentDay: number
+  sessionsCompleted: number
+  totalPracticeMinutes: number
+  streakDays: number
+  phaseProgress: {
+    phase1: boolean
+    phase2: boolean
+    phase3: boolean
+    phase4: boolean
+    phase5: boolean
+    phase6: boolean
+  }
+}
+
+interface CompletedSession {
+  week: number
+  day: number
+  sessionTitle: string
+  completedAt: string
+  localDate: string
+}
+
 export function VisionHealing() {
   const [activeTab, setActiveTab] = useState<TabMode>('curriculum')
   const [isEnrolled, setIsEnrolled] = useState(false)
   const [enrolling, setEnrolling] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [enrollmentData, setEnrollmentData] = useState<EnrollmentData | null>(null)
+  const [completedSessions, setCompletedSessions] = useState<CompletedSession[]>([])
 
   // Trainer settings
   const [trainerVisionType, setTrainerVisionType] = useState<'near' | 'far'>('near')
   const [trainerExerciseType, setTrainerExerciseType] = useState<'letters' | 'e-directional'>('letters')
   const [trainerDeviceMode, setTrainerDeviceMode] = useState<'phone' | 'desktop'>('phone')
+  const [trainerActive, setTrainerActive] = useState(false)
 
   // Check enrollment status on mount
   useEffect(() => {
@@ -57,6 +89,30 @@ export function VisionHealing() {
       if (data.success && data.enrolled) {
         setIsEnrolled(true)
         setActiveTab('today')
+
+        // Store enrollment data for progress display
+        setEnrollmentData({
+          currentWeek: data.enrollment.currentWeek || data.todaySession?.week || 1,
+          currentDay: data.enrollment.currentDay || data.todaySession?.day || 1,
+          sessionsCompleted: data.enrollment.sessionsCompleted || 0,
+          totalPracticeMinutes: data.enrollment.totalPracticeMinutes || 0,
+          streakDays: data.enrollment.streakDays || 0,
+          phaseProgress: data.enrollment.phaseProgress || {
+            phase1: false, phase2: false, phase3: false,
+            phase4: false, phase5: false, phase6: false
+          }
+        })
+
+        // Store completed sessions
+        if (data.recentSessions) {
+          setCompletedSessions(data.recentSessions.map((s: any) => ({
+            week: s.week,
+            day: s.day,
+            sessionTitle: s.sessionTitle,
+            completedAt: s.completedAt,
+            localDate: s.localDate
+          })))
+        }
       }
     } catch (error) {
       console.error('Failed to check enrollment:', error)
@@ -77,12 +133,44 @@ export function VisionHealing() {
       if (data.success) {
         setIsEnrolled(true)
         setActiveTab('today')
+        // Refresh to get enrollment data
+        checkEnrollment()
       }
     } catch (error) {
       console.error('Failed to enroll:', error)
     } finally {
       setEnrolling(false)
     }
+  }
+
+  // Mark a past session as complete
+  const handleMarkPastComplete = async (week: number, day: number) => {
+    try {
+      const response = await fetch('/api/vision/program', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'complete_past_session',
+          data: { week, day }
+        })
+      })
+      const data = await response.json()
+      if (data.success) {
+        // Refresh enrollment data
+        await checkEnrollment()
+      } else {
+        console.error('Failed to mark session complete:', data.error)
+      }
+    } catch (error) {
+      console.error('Failed to mark past session complete:', error)
+    }
+  }
+
+  // Start a specific session (navigate to today's session with week/day)
+  const handleStartSession = (week: number, day: number) => {
+    // For now, just go to today's session tab
+    // In future, could pass week/day to DailyPractice
+    setActiveTab('today')
   }
 
   // Filter tabs based on enrollment status
@@ -186,7 +274,16 @@ export function VisionHealing() {
         <div className="container mx-auto px-4 pb-12 flex-1">
           <div className="max-w-6xl mx-auto">
             {activeTab === 'curriculum' && (
-              <CurriculumOverview onEnroll={handleEnroll} enrolling={enrolling} />
+              isEnrolled && enrollmentData ? (
+                <ProgramProgress
+                  enrollment={enrollmentData}
+                  completedSessions={completedSessions}
+                  onMarkComplete={handleMarkPastComplete}
+                  onStartSession={handleStartSession}
+                />
+              ) : (
+                <CurriculumOverview onEnroll={handleEnroll} enrolling={enrolling} />
+              )
             )}
 
             {activeTab === 'today' && isEnrolled && (
@@ -198,102 +295,137 @@ export function VisionHealing() {
             )}
 
             {activeTab === 'trainer' && (
-              <div className="space-y-6">
-                {/* Trainer Settings Card */}
-                <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-xl p-6 border border-primary-400/20 shadow-lg">
-                  <h3 className="text-2xl font-bold text-white mb-2 flex items-center gap-2">
-                    <Eye className="w-6 h-6 text-primary-400" />
-                    Snellen Vision Trainer
-                  </h3>
-                  <p className="text-gray-300 mb-4">
-                    Train at your edge of clarity - where text is just barely readable. As you improve, gradually increase the challenge.
-                  </p>
+              <div className="space-y-4">
+                {/* Trainer Settings Card - Compact with icons */}
+                <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-xl p-4 border border-primary-400/20 shadow-lg">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                      <Focus className="w-5 h-5 text-primary-400" />
+                      Focus Training
+                    </h3>
+                    {!trainerActive && (
+                      <button
+                        onClick={() => setTrainerActive(true)}
+                        className="px-6 py-3 rounded-xl font-bold bg-secondary-500 hover:bg-secondary-600 text-white shadow-lg shadow-secondary-500/30 flex items-center gap-2 transition-all hover:scale-105"
+                      >
+                        <Play className="w-5 h-5" />
+                        Start Training
+                      </button>
+                    )}
+                  </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {/* Device Mode */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-3">
-                        Device Mode
-                      </label>
-                      <div className="flex gap-2">
-                        {(['phone', 'desktop'] as const).map(mode => (
-                          <button
-                            key={mode}
-                            onClick={() => setTrainerDeviceMode(mode)}
-                            className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all duration-300 ${trainerDeviceMode === mode
-                              ? 'bg-primary-600 text-white shadow-lg shadow-primary-500/20'
-                              : 'bg-gray-700/30 backdrop-blur-sm text-gray-300 hover:bg-gray-600/30'
-                              }`}
-                          >
-                            {mode === 'phone' ? "Phone (arm's length)" : 'Desktop (set distance)'}
-                          </button>
-                        ))}
-                      </div>
+                  {/* Compact settings row with icons */}
+                  <div className="flex flex-wrap gap-2">
+                    {/* Device Mode - Icon buttons */}
+                    <div className="flex gap-1">
+                      <button
+                        onClick={() => setTrainerDeviceMode('phone')}
+                        title="Phone (arm's length)"
+                        className={`p-3 rounded-lg transition-all ${trainerDeviceMode === 'phone'
+                          ? 'bg-primary-600 text-white shadow-lg'
+                          : 'bg-gray-700/50 text-gray-400 hover:bg-gray-600/50'
+                          }`}
+                      >
+                        <Smartphone className="w-5 h-5" />
+                      </button>
+                      <button
+                        onClick={() => setTrainerDeviceMode('desktop')}
+                        title="Desktop (set distance)"
+                        className={`p-3 rounded-lg transition-all ${trainerDeviceMode === 'desktop'
+                          ? 'bg-primary-600 text-white shadow-lg'
+                          : 'bg-gray-700/50 text-gray-400 hover:bg-gray-600/50'
+                          }`}
+                      >
+                        <Monitor className="w-5 h-5" />
+                      </button>
                     </div>
 
-                    {/* Vision Type */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-3">
-                        Training Focus
-                      </label>
-                      <div className="flex gap-2">
-                        {(['near', 'far'] as const).map(type => (
-                          <button
-                            key={type}
-                            onClick={() => setTrainerVisionType(type)}
-                            className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all duration-300 ${trainerVisionType === type
-                              ? 'bg-primary-600 text-white shadow-lg shadow-primary-500/20'
-                              : 'bg-gray-700/30 backdrop-blur-sm text-gray-300 hover:bg-gray-600/30'
-                              }`}
-                          >
-                            {type === 'near' ? 'Nearsighted (can\'t see far)' : 'Farsighted (can\'t see close)'}
-                          </button>
-                        ))}
-                      </div>
-                      <p className="text-xs text-gray-400 mt-2">
-                        {trainerVisionType === 'near'
-                          ? "For myopia: push clarity outward from your screen"
-                          : 'For hyperopia: bring clarity closer to your screen'}
-                      </p>
+                    <div className="w-px bg-gray-600/50 mx-1" />
+
+                    {/* Vision Type - Icon buttons with visual metaphor */}
+                    {/* Near = arrows pointing OUT (pushing clarity away) */}
+                    {/* Far = arrows pointing IN (pulling clarity closer) */}
+                    <div className="flex gap-1">
+                      <button
+                        onClick={() => setTrainerVisionType('near')}
+                        title="Nearsighted - push clarity outward"
+                        className={`p-3 rounded-lg transition-all flex items-center gap-1 ${trainerVisionType === 'near'
+                          ? 'bg-blue-600 text-white shadow-lg'
+                          : 'bg-gray-700/50 text-gray-400 hover:bg-gray-600/50'
+                          }`}
+                      >
+                        {/* Eye with arrows pointing outward = myopia (can see near, training to see far) */}
+                        <Eye className="w-5 h-5" />
+                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M7 12H3M21 12h-4M12 7V3M12 21v-4" />
+                          <path d="M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2" />
+                        </svg>
+                      </button>
+                      <button
+                        onClick={() => setTrainerVisionType('far')}
+                        title="Farsighted - pull clarity closer"
+                        className={`p-3 rounded-lg transition-all flex items-center gap-1 ${trainerVisionType === 'far'
+                          ? 'bg-purple-600 text-white shadow-lg'
+                          : 'bg-gray-700/50 text-gray-400 hover:bg-gray-600/50'
+                          }`}
+                      >
+                        {/* Eye with arrows pointing inward = hyperopia (can see far, training to see near) */}
+                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M3 12h4M17 12h4M12 3v4M12 17v4" />
+                          <path d="M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2" />
+                        </svg>
+                        <Eye className="w-5 h-5" />
+                      </button>
                     </div>
+
+                    <div className="w-px bg-gray-600/50 mx-1" />
 
                     {/* Chart Type */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-3">
-                        Chart Type
-                      </label>
-                      <div className="flex gap-2">
-                        {([
-                          { id: 'letters', label: '🔤 Letters' },
-                          { id: 'e-directional', label: '👁️ E Chart' }
-                        ] as const).map(type => (
-                          <button
-                            key={type.id}
-                            onClick={() => setTrainerExerciseType(type.id)}
-                            className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all duration-300 ${trainerExerciseType === type.id
-                              ? 'bg-secondary-600 text-white shadow-lg shadow-secondary-500/20'
-                              : 'bg-gray-700/30 backdrop-blur-sm text-gray-300 hover:bg-gray-600/30'
-                              }`}
-                          >
-                            {type.label}
-                          </button>
-                        ))}
-                      </div>
-                      <p className="text-xs text-gray-400 mt-2">
-                        {trainerExerciseType === 'letters'
-                          ? 'Identify letters (E, F, P, T, O, Z, L, D)'
-                          : 'Identify E direction (up, down, left, right)'}
-                      </p>
+                    <div className="flex gap-1">
+                      <button
+                        onClick={() => setTrainerExerciseType('letters')}
+                        title="Letter Chart"
+                        className={`p-3 rounded-lg font-bold text-lg transition-all ${trainerExerciseType === 'letters'
+                          ? 'bg-secondary-600 text-white shadow-lg'
+                          : 'bg-gray-700/50 text-gray-400 hover:bg-gray-600/50'
+                          }`}
+                      >
+                        ABC
+                      </button>
+                      <button
+                        onClick={() => setTrainerExerciseType('e-directional')}
+                        title="Tumbling E Chart"
+                        className={`p-3 rounded-lg font-bold text-lg transition-all ${trainerExerciseType === 'e-directional'
+                          ? 'bg-secondary-600 text-white shadow-lg'
+                          : 'bg-gray-700/50 text-gray-400 hover:bg-gray-600/50'
+                          }`}
+                      >
+                        E→
+                      </button>
                     </div>
                   </div>
+
+                  {/* Helpful text when not active */}
+                  {!trainerActive && (
+                    <p className="text-gray-400 text-xs mt-3">
+                      {trainerDeviceMode === 'phone' ? '📱 Hold at arm\'s length' : '🖥️ Set screen distance'} •
+                      {trainerVisionType === 'near' ? ' 🔵 Myopia (push clarity out)' : ' 🟣 Hyperopia (pull clarity in)'} •
+                      {trainerExerciseType === 'letters' ? ' Letters' : ' E directions'}
+                    </p>
+                  )}
                 </div>
 
-                {/* Training Session */}
-                <TrainingSession
-                  visionType={trainerVisionType}
-                  exerciseType={trainerExerciseType}
-                  deviceMode={trainerDeviceMode}
-                />
+                {/* Training Session - only show when active */}
+                {trainerActive && (
+                  <TrainingSession
+                    visionType={trainerVisionType}
+                    exerciseType={trainerExerciseType}
+                    deviceMode={trainerDeviceMode}
+                    onActiveChange={(active) => {
+                      if (!active) setTrainerActive(false)
+                    }}
+                  />
+                )}
               </div>
             )}
 

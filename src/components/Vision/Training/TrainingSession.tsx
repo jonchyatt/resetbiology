@@ -45,7 +45,8 @@ export default function TrainingSession({
   onActiveChange
 }: TrainingSessionProps) {
   const [currentLevel, setCurrentLevel] = useState(initialLevel)
-  const [isActive, setIsActive] = useState(false)
+  // Auto-start when component mounts (parent controls when to show us)
+  const [isActive, setIsActive] = useState(true)
   const [attempts, setAttempts] = useState(0)
   const [correct, setCorrect] = useState(0)
   const [sessionDuration, setSessionDuration] = useState(0)
@@ -92,7 +93,7 @@ export default function TrainingSession({
     if (isCorrect) {
       setCorrect(prev => prev + 1)
       setFeedback('correct')
-      speak('Correct!')
+      // Audio disabled - using visual feedback instead
 
       // Distance progression for nearsightedness training
       if (distanceProgressionMode && visionType === 'near') {
@@ -100,15 +101,10 @@ export default function TrainingSession({
       }
     } else {
       setFeedback('incorrect')
-      speak('Try again')
+      // Audio disabled - using visual feedback instead
       setConsecutiveSuccessAtMax(0)
 
-      // If struggling, suggest moving closer
-      if (distanceProgressionMode && targetDistanceCm > 25) {
-        setTimeout(() => {
-          speak('Move the screen a bit closer if needed')
-        }, 1500)
-      }
+      // If struggling, visual feedback is shown (audio disabled)
     }
 
     // Clear feedback after 1 second and generate new letter
@@ -131,14 +127,14 @@ export default function TrainingSession({
             setAttempts(0)
             setCorrect(0)
             setResetTrigger(prev => prev + 1) // Generate new letter for new level
-            speak(`Level up! Now at ${DIFFICULTY_LEVELS[currentLevel]?.label} level`)
+            // Audio disabled - visual feedback shows level up
           }, 1500)
         } else {
           // Completed all levels!
           setTimeout(() => {
             setSessionComplete(true)
             setIsActive(false)
-            speak('Congratulations! Session complete.')
+            // Audio disabled - visual feedback shows completion
             saveSession(true)
           }, 1500)
         }
@@ -148,7 +144,7 @@ export default function TrainingSession({
           setAttempts(0)
           setCorrect(0)
           setResetTrigger(prev => prev + 1) // Generate new letter for retry
-          speak(`Let's try this level again. You need ${difficulty.requiredAccuracy}% accuracy.`)
+          // Audio disabled - visual feedback shows retry needed
         }, 1500)
       }
     }
@@ -170,7 +166,7 @@ export default function TrainingSession({
       if (consecutiveSuccessAtMax >= 2) {
         if (readerGlassesStage < READER_GLASSES_STAGES.length - 1) {
           setShowGlassesPrompt(true)
-          speak(`Great work! You've mastered ${maxDistance}cm. Time to add reading glasses for more challenge!`)
+          // Audio disabled - visual prompt shows glasses upgrade
         }
       }
     }
@@ -184,8 +180,7 @@ export default function TrainingSession({
       setTargetDistanceCm(25) // Reset to close distance
       setConsecutiveSuccessAtMax(0)
       setShowGlassesPrompt(false)
-      const nextStage = READER_GLASSES_STAGES[readerGlassesStage + 1]
-      speak(`Put on your ${nextStage.label}. Starting at 25 centimeters.`)
+      // Audio disabled - visual feedback shows new glasses stage
     }
   }
 
@@ -193,7 +188,7 @@ export default function TrainingSession({
   const skipGlassesUpgrade = () => {
     setShowGlassesPrompt(false)
     setConsecutiveSuccessAtMax(0)
-    speak('Continuing at current level')
+    // Audio disabled
   }
 
   const speak = (text: string) => {
@@ -302,7 +297,7 @@ export default function TrainingSession({
             deviceMode={deviceMode}
             progressionMode="line-by-line"
             onChartComplete={() => {
-              speak('Excellent! You completed the full chart.')
+              // Audio disabled - visual feedback shows chart completion
             }}
             onDistanceAdjust={(direction) => {
               if (direction === 'further') {
