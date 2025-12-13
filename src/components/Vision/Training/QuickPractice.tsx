@@ -10,10 +10,12 @@ import {
   Target,
   ChevronRight,
   Sparkles,
-  Volume2
+  Volume2,
+  Waves
 } from 'lucide-react'
 import { visionExercises, VisionExercise } from '@/data/visionExercises'
 import GuidedExercise from './GuidedExercise'
+import GaborTraining from './GaborTraining'
 
 const CATEGORY_CONFIG = {
   downshift: { icon: Eye, color: 'blue', label: 'Relaxation' },
@@ -27,6 +29,7 @@ type CategoryFilter = 'all' | VisionExercise['category']
 
 export default function QuickPractice() {
   const [selectedExercise, setSelectedExercise] = useState<VisionExercise | null>(null)
+  const [showGaborTraining, setShowGaborTraining] = useState(false)
   const [filter, setFilter] = useState<CategoryFilter>('all')
   const [completedToday, setCompletedToday] = useState<string[]>([])
 
@@ -59,8 +62,71 @@ export default function QuickPractice() {
     )
   }
 
+  // Show Gabor training if selected
+  if (showGaborTraining) {
+    return (
+      <div className="space-y-4">
+        <button
+          onClick={() => setShowGaborTraining(false)}
+          className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+        >
+          <ChevronRight className="w-4 h-4 rotate-180" />
+          Back to Quick Practice
+        </button>
+        <GaborTraining
+          onComplete={(results) => {
+            console.log('Gabor training complete:', results)
+            // Could save results here
+          }}
+        />
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-6">
+      {/* Featured: Gabor Patch Training */}
+      <div
+        onClick={() => setShowGaborTraining(true)}
+        className="relative bg-gradient-to-r from-purple-600/30 to-blue-600/30 backdrop-blur-sm rounded-xl p-6 border-2 border-purple-400/40 shadow-2xl cursor-pointer hover:border-purple-400/60 hover:shadow-purple-500/20 transition-all hover:scale-[1.01] group"
+      >
+        <div className="absolute top-3 right-3 bg-purple-500/30 text-purple-200 text-xs px-3 py-1 rounded-full font-semibold">
+          NEW: Perceptual Learning
+        </div>
+
+        <div className="flex items-start gap-4">
+          <div className="p-4 rounded-xl bg-purple-600/30 border border-purple-400/30">
+            <Waves className="w-8 h-8 text-purple-300" />
+          </div>
+
+          <div className="flex-1">
+            <h3 className="text-xl font-bold text-white mb-2 group-hover:text-purple-200 transition-colors">
+              Gabor Patch Training
+            </h3>
+            <p className="text-gray-300 text-sm mb-3">
+              Train your visual cortex with scientifically-designed stimuli used in clinical research.
+              Improves <strong>contrast sensitivity</strong>, <strong>orientation detection</strong>, and <strong>peripheral awareness</strong>.
+            </p>
+
+            <div className="flex flex-wrap gap-2">
+              <span className="text-xs px-3 py-1 bg-blue-600/30 rounded-full text-blue-200">Contrast Threshold</span>
+              <span className="text-xs px-3 py-1 bg-purple-600/30 rounded-full text-purple-200">Orientation Detection</span>
+              <span className="text-xs px-3 py-1 bg-cyan-600/30 rounded-full text-cyan-200">Crowding</span>
+              <span className="text-xs px-3 py-1 bg-green-600/30 rounded-full text-green-200">Peripheral</span>
+            </div>
+          </div>
+
+          <ChevronRight className="w-6 h-6 text-purple-400 group-hover:text-white transition-colors" />
+        </div>
+
+        {/* Visual preview - small Gabor patches */}
+        <div className="absolute bottom-3 right-3 flex gap-1 opacity-40 group-hover:opacity-60 transition-opacity">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-r from-gray-400 to-gray-600 blur-[1px]" />
+          <div className="w-8 h-8 rounded-full bg-gradient-to-b from-gray-400 to-gray-600 blur-[1px]" />
+          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-gray-400 to-gray-600 blur-[1px]" />
+        </div>
+      </div>
+
       {/* Header */}
       <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl">
         <div className="flex items-start justify-between">

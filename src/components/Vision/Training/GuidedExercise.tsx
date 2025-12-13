@@ -221,6 +221,84 @@ export default function GuidedExercise({ exercise, onComplete, onBack }: GuidedE
   }, [isPlaying, currentStep, durationSeconds, pattern, speak, playTone])
 
   // Drawing functions
+
+  /**
+   * Draw a Gabor patch on Canvas - scientifically accurate visual stimulus
+   * Used instead of simple dots for perceptual training
+   */
+  const drawGaborPatch = (
+    ctx: CanvasRenderingContext2D,
+    x: number,
+    y: number,
+    size: number,
+    orientation: number = 0,
+    frequency: number = 4,
+    contrast: number = 1,
+    phase: number = 0
+  ) => {
+    const sigma = size / 4
+    const halfSize = size / 2
+
+    // Pre-calculate rotation values
+    const theta = (orientation * Math.PI) / 180
+    const cosTheta = Math.cos(theta)
+    const sinTheta = Math.sin(theta)
+    const phaseRad = (phase * Math.PI) / 180
+    const normalizedFreq = (2 * Math.PI * frequency) / size
+
+    // Create temporary canvas for Gabor patch
+    const tempCanvas = document.createElement('canvas')
+    tempCanvas.width = size
+    tempCanvas.height = size
+    const tempCtx = tempCanvas.getContext('2d')
+    if (!tempCtx) return
+
+    const imageData = tempCtx.createImageData(size, size)
+    const data = imageData.data
+    const bgGray = 128
+
+    for (let py = 0; py < size; py++) {
+      for (let px = 0; px < size; px++) {
+        const xc = px - halfSize
+        const yc = py - halfSize
+
+        const xPrime = xc * cosTheta + yc * sinTheta
+        const yPrime = -xc * sinTheta + yc * cosTheta
+
+        const gaussian = Math.exp(-(xPrime * xPrime + yPrime * yPrime) / (2 * sigma * sigma))
+        const sinusoid = Math.cos(normalizedFreq * xPrime + phaseRad)
+        const gabor = gaussian * sinusoid * contrast
+
+        const pixelValue = Math.max(0, Math.min(255, Math.round(bgGray + gabor * 127)))
+
+        const idx = (py * size + px) * 4
+        data[idx] = pixelValue
+        data[idx + 1] = pixelValue
+        data[idx + 2] = pixelValue
+        data[idx + 3] = 255
+      }
+    }
+
+    tempCtx.putImageData(imageData, 0, 0)
+
+    // Draw with circular clip
+    ctx.save()
+    ctx.beginPath()
+    ctx.arc(x, y, halfSize, 0, Math.PI * 2)
+    ctx.clip()
+    ctx.drawImage(tempCanvas, x - halfSize, y - halfSize)
+    ctx.restore()
+
+    // Add subtle glow
+    const gradient = ctx.createRadialGradient(x, y, halfSize * 0.8, x, y, halfSize * 1.2)
+    gradient.addColorStop(0, 'transparent')
+    gradient.addColorStop(1, 'rgba(63, 191, 181, 0.15)')
+    ctx.fillStyle = gradient
+    ctx.beginPath()
+    ctx.arc(x, y, halfSize * 1.2, 0, Math.PI * 2)
+    ctx.fill()
+  }
+
   const drawInfinity = (ctx: CanvasRenderingContext2D, cx: number, cy: number, progress: number) => {
     const a = 120
     const b = 60
@@ -239,72 +317,51 @@ export default function GuidedExercise({ exercise, onComplete, onBack }: GuidedE
     }
     ctx.stroke()
 
-    // Draw moving dot
+    // Calculate position
     const dotX = cx + a * Math.cos(t) / (1 + Math.sin(t) * Math.sin(t))
     const dotY = cy + b * Math.sin(t) * Math.cos(t) / (1 + Math.sin(t) * Math.sin(t))
 
-    // Glow effect
-    const gradient = ctx.createRadialGradient(dotX, dotY, 0, dotX, dotY, 30)
-    gradient.addColorStop(0, 'rgba(63, 191, 181, 0.8)')
-    gradient.addColorStop(0.5, 'rgba(63, 191, 181, 0.3)')
-    gradient.addColorStop(1, 'transparent')
-    ctx.fillStyle = gradient
-    ctx.beginPath()
-    ctx.arc(dotX, dotY, 30, 0, Math.PI * 2)
-    ctx.fill()
+    // Draw Gabor patch instead of simple dot - orientation follows path direction
+    const nextT = t + 0.1
+    const nextX = cx + a * Math.cos(nextT) / (1 + Math.sin(nextT) * Math.sin(nextT))
+    const nextY = cy + b * Math.sin(nextT) * Math.cos(nextT) / (1 + Math.sin(nextT) * Math.sin(nextT))
+    const angle = Math.atan2(nextY - dotY, nextX - dotX) * 180 / Math.PI
 
-    // Core dot
-    ctx.fillStyle = '#3FBFB5'
-    ctx.beginPath()
-    ctx.arc(dotX, dotY, 12, 0, Math.PI * 2)
-    ctx.fill()
+    drawGaborPatch(ctx, dotX, dotY, 40, angle, 5, 0.9, progress * 360)
   }
 
   const drawSaccadeTargets = (ctx: CanvasRenderingContext2D, cx: number, cy: number, progress: number) => {
     const positions = [
-      { x: cx - 150, y: cy },
-      { x: cx + 150, y: cy },
-      { x: cx, y: cy - 100 },
-      { x: cx, y: cy + 100 },
+      { x: cx - 150, y: cy, angle: 0 },
+      { x: cx + 150, y: cy, angle: 90 },
+      { x: cx, y: cy - 100, angle: 45 },
+      { x: cx, y: cy + 100, angle: -45 },
     ]
 
-    // Draw all target positions
-    positions.forEach((pos) => {
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.1)'
-      ctx.beginPath()
-      ctx.arc(pos.x, pos.y, 20, 0, Math.PI * 2)
-      ctx.fill()
-
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)'
-      ctx.lineWidth = 2
-      ctx.stroke()
+    // Draw inactive targets as faded Gabor patches
+    positions.forEach((pos, i) => {
+      const activeIndex = Math.floor(progress * positions.length) % positions.length
+      if (i !== activeIndex) {
+        drawGaborPatch(ctx, pos.x, pos.y, 35, pos.angle, 4, 0.2, 0)
+      }
     })
 
-    // Highlight active target
+    // Highlight active target with full contrast Gabor
     const activeIndex = Math.floor(progress * positions.length) % positions.length
     const activePos = positions[activeIndex]
 
-    // Glow effect
-    const gradient = ctx.createRadialGradient(activePos.x, activePos.y, 0, activePos.x, activePos.y, 40)
-    gradient.addColorStop(0, 'rgba(114, 194, 71, 0.8)')
-    gradient.addColorStop(0.5, 'rgba(114, 194, 71, 0.3)')
-    gradient.addColorStop(1, 'transparent')
-    ctx.fillStyle = gradient
-    ctx.beginPath()
-    ctx.arc(activePos.x, activePos.y, 40, 0, Math.PI * 2)
-    ctx.fill()
+    // Animated phase for active target
+    drawGaborPatch(ctx, activePos.x, activePos.y, 45, activePos.angle, 5, 0.95, progress * 720)
 
-    // Active dot
-    ctx.fillStyle = '#72C247'
+    // Center fixation cross
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)'
+    ctx.lineWidth = 2
     ctx.beginPath()
-    ctx.arc(activePos.x, activePos.y, 15, 0, Math.PI * 2)
-    ctx.fill()
-
-    // Center fixation point
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)'
-    ctx.beginPath()
-    ctx.arc(cx, cy, 5, 0, Math.PI * 2)
-    ctx.fill()
+    ctx.moveTo(cx - 8, cy)
+    ctx.lineTo(cx + 8, cy)
+    ctx.moveTo(cx, cy - 8)
+    ctx.lineTo(cx, cy + 8)
+    ctx.stroke()
   }
 
   const drawRectanglePath = (ctx: CanvasRenderingContext2D, cx: number, cy: number, progress: number) => {
@@ -320,35 +377,27 @@ export default function GuidedExercise({ exercise, onComplete, onBack }: GuidedE
     const perimeter = 2 * (w + h)
     const dist = progress * perimeter
 
-    let x, y
+    let x, y, angle
     if (dist < w) {
       x = cx - w/2 + dist
       y = cy - h/2
+      angle = 0 // Moving right
     } else if (dist < w + h) {
       x = cx + w/2
       y = cy - h/2 + (dist - w)
+      angle = 90 // Moving down
     } else if (dist < 2*w + h) {
       x = cx + w/2 - (dist - w - h)
       y = cy + h/2
+      angle = 180 // Moving left
     } else {
       x = cx - w/2
       y = cy + h/2 - (dist - 2*w - h)
+      angle = 270 // Moving up
     }
 
-    // Glow
-    const gradient = ctx.createRadialGradient(x, y, 0, x, y, 25)
-    gradient.addColorStop(0, 'rgba(63, 191, 181, 0.8)')
-    gradient.addColorStop(1, 'transparent')
-    ctx.fillStyle = gradient
-    ctx.beginPath()
-    ctx.arc(x, y, 25, 0, Math.PI * 2)
-    ctx.fill()
-
-    // Dot
-    ctx.fillStyle = '#3FBFB5'
-    ctx.beginPath()
-    ctx.arc(x, y, 10, 0, Math.PI * 2)
-    ctx.fill()
+    // Draw Gabor patch following the rectangle path
+    drawGaborPatch(ctx, x, y, 35, angle, 5, 0.9, progress * 360)
   }
 
   const drawCrossPattern = (ctx: CanvasRenderingContext2D, cx: number, cy: number, progress: number) => {
@@ -393,50 +442,46 @@ export default function GuidedExercise({ exercise, onComplete, onBack }: GuidedE
   }
 
   const drawPeripheralExpand = (ctx: CanvasRenderingContext2D, cx: number, cy: number, progress: number) => {
-    // Expanding rings
+    // Expanding rings (subtle guide)
     const maxRadius = 180
-    const rings = 4
+    const rings = 3
 
     for (let i = 0; i < rings; i++) {
       const ringProgress = (progress + i / rings) % 1
       const radius = ringProgress * maxRadius
-      const alpha = 1 - ringProgress
+      const alpha = (1 - ringProgress) * 0.3
 
-      ctx.strokeStyle = `rgba(63, 191, 181, ${alpha * 0.5})`
-      ctx.lineWidth = 3
+      ctx.strokeStyle = `rgba(63, 191, 181, ${alpha})`
+      ctx.lineWidth = 1
       ctx.beginPath()
       ctx.arc(cx, cy, radius, 0, Math.PI * 2)
       ctx.stroke()
     }
 
-    // Center fixation
-    ctx.fillStyle = '#3FBFB5'
-    ctx.beginPath()
-    ctx.arc(cx, cy, 10, 0, Math.PI * 2)
-    ctx.fill()
+    // Center fixation Gabor patch - keep eyes here!
+    drawGaborPatch(ctx, cx, cy, 30, 0, 6, 0.8, progress * 180)
 
-    // Peripheral dots
-    const numDots = 8
-    for (let i = 0; i < numDots; i++) {
-      const angle = (i / numDots) * Math.PI * 2
+    // Peripheral Gabor patches - different orientations for each position
+    const numPatches = 8
+    for (let i = 0; i < numPatches; i++) {
+      const angle = (i / numPatches) * Math.PI * 2
       const x = cx + Math.cos(angle) * 160
       const y = cy + Math.sin(angle) * 100
+      const orientation = (i * 22.5) % 180 // Different orientation for each
 
-      ctx.fillStyle = `rgba(255, 255, 255, ${0.2 + 0.3 * Math.sin(progress * Math.PI * 2 + i)})`
-      ctx.beginPath()
-      ctx.arc(x, y, 8, 0, Math.PI * 2)
-      ctx.fill()
+      // Contrast varies with time - some fade in/out
+      const contrast = 0.3 + 0.4 * Math.sin(progress * Math.PI * 2 + i * 0.7)
+
+      drawGaborPatch(ctx, x, y, 25, orientation, 4, contrast, 0)
     }
   }
 
   const drawPulsingDot = (ctx: CanvasRenderingContext2D, cx: number, cy: number, progress: number) => {
-    const scale = 1 + 0.3 * Math.sin(progress * Math.PI * 2)
-    const radius = 15 * scale
+    // Pulsing Gabor patch instead of simple dot
+    const baseSize = 40
+    const sizeVariation = 8 * Math.sin(progress * Math.PI * 2)
 
-    ctx.fillStyle = '#3FBFB5'
-    ctx.beginPath()
-    ctx.arc(cx, cy, radius, 0, Math.PI * 2)
-    ctx.fill()
+    drawGaborPatch(ctx, cx, cy, baseSize + sizeVariation, progress * 90, 5, 0.85, progress * 360)
   }
 
   const formatTime = (seconds: number) => {
