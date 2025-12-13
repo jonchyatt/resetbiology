@@ -70,6 +70,42 @@ Before making ANY code changes, you MUST follow these steps:
 
 ---
 
+# 🚀 DEPLOYMENT - AUTO-DEPLOY ON GIT PUSH
+
+**CRITICAL: DO NOT manually deploy with `npx vercel --prod`!**
+
+Vercel is configured for **automatic deployment** on every git push to master.
+
+```bash
+# ✅ CORRECT - Just push to GitHub, Vercel deploys automatically
+git push
+
+# ❌ WRONG - Never do this, wastes time and credits
+npx vercel --prod
+```
+
+**After pushing to GitHub, deployment happens automatically. No manual action needed.**
+
+---
+
+# 🖥️ PLAYWRIGHT TESTING - ALWAYS USE CHROME
+
+**MANDATORY:** When running Playwright tests, ALWAYS use `--project="Chrome"` to use the actual Chrome browser, NOT Chromium.
+
+```bash
+# ✅ CORRECT - Use actual Chrome browser
+npx playwright test tests/your-test.spec.ts --headed --project="Chrome"
+
+# ❌ WRONG - Uses Chromium (small window, limited view)
+npx playwright test tests/your-test.spec.ts --headed --project="Desktop Chrome"
+```
+
+The "Chrome" project is configured in `playwright.config.ts` with:
+- `channel: 'chrome'` - Uses actual Chrome installation
+- `viewport: { width: 1920, height: 1080 }` - Full HD viewport
+
+---
+
 # Reset Biology Website Development
 
 ## Project Overview
