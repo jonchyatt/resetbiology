@@ -1,6 +1,6 @@
 // middleware.ts
 import type { NextRequest } from 'next/server';
-import { auth0 } from '@/lib/auth0';
+import { auth0Edge } from '@/lib/auth0-edge';
 
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
@@ -17,7 +17,7 @@ export async function middleware(request: NextRequest) {
     }
   }
   
-  return await auth0.middleware(request);
+  return await auth0Edge.middleware(request);
 }
 
 // Auth0 recommends matching (almost) everything so /auth/* always works.

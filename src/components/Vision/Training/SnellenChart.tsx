@@ -1,7 +1,51 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
-import { ChevronDown, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, MoveHorizontal } from 'lucide-react'
+import { useState, useEffect, useCallback, useRef } from 'react'
+import { ChevronDown, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, MoveHorizontal, Mic, MicOff } from 'lucide-react'
+
+// TypeScript declarations for Web Speech API
+interface SpeechRecognitionEvent extends Event {
+  results: SpeechRecognitionResultList
+  resultIndex: number
+}
+
+interface SpeechRecognitionResultList {
+  length: number
+  item(index: number): SpeechRecognitionResult
+  [index: number]: SpeechRecognitionResult
+}
+
+interface SpeechRecognitionResult {
+  length: number
+  item(index: number): SpeechRecognitionAlternative
+  [index: number]: SpeechRecognitionAlternative
+  isFinal: boolean
+}
+
+interface SpeechRecognitionAlternative {
+  transcript: string
+  confidence: number
+}
+
+interface SpeechRecognition extends EventTarget {
+  continuous: boolean
+  interimResults: boolean
+  lang: string
+  start(): void
+  stop(): void
+  abort(): void
+  onresult: ((event: SpeechRecognitionEvent) => void) | null
+  onerror: ((event: Event) => void) | null
+  onend: (() => void) | null
+  onstart: (() => void) | null
+}
+
+declare global {
+  interface Window {
+    SpeechRecognition: new () => SpeechRecognition
+    webkitSpeechRecognition: new () => SpeechRecognition
+  }
+}
 
 interface SnellenChartProps {
   chartSize: string // "20/20", "20/40", etc.
@@ -155,6 +199,13 @@ export default function SnellenChart({
   // For tracking progression - start normal, progress to thin lines
   const [strokeWeight, setStrokeWeight] = useState<'bold' | 'normal' | 'thin'>('normal')
 
+  // Voice recognition state (free - uses browser's built-in Web Speech API)
+  const [voiceEnabled, setVoiceEnabled] = useState(false)
+  const [isListening, setIsListening] = useState(false)
+  const [voiceSupported, setVoiceSupported] = useState(false)
+  const [lastHeard, setLastHeard] = useState<string>('')
+  const recognitionRef = useRef<SpeechRecognition | null>(null)
+
   // Single letter mode state (for backwards compatibility)
   const [singleDirection, setSingleDirection] = useState<EDirection>(() =>
     E_DIRECTIONS[Math.floor(Math.random() * E_DIRECTIONS.length)]
@@ -200,6 +251,110 @@ export default function SnellenChart({
       return () => clearTimeout(timer)
     }
   }, [feedback])
+
+  // Check if voice recognition is supported and set it up
+  useEffect(() => {
+    const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition
+    if (SpeechRecognitionAPI) {
+      setVoiceSupported(true)
+      recognitionRef.current = new SpeechRecognitionAPI()
+      recognitionRef.current.continuous = true
+      recognitionRef.current.interimResults = true
+      recognitionRef.current.lang = 'en-US'
+    }
+
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.abort()
+      }
+    }
+  }, [])
+
+  // Handle voice recognition results
+  useEffect(() => {
+    if (!recognitionRef.current || !voiceEnabled || exerciseType !== 'letters') return
+
+    const recognition = recognitionRef.current
+
+    recognition.onresult = (event: SpeechRecognitionEvent) => {
+      const lastResult = event.results[event.results.length - 1]
+      const transcript = lastResult[0].transcript.trim().toUpperCase()
+
+      // Get the last spoken letter (in case they said multiple)
+      const spokenLetter = transcript.slice(-1)
+      setLastHeard(spokenLetter)
+
+      // Only process final results
+      if (lastResult.isFinal) {
+        // Check if the spoken letter matches any of the choices
+        const currentLine = chartData[currentLineIndex]
+        if (currentLine) {
+          const correctLetter = currentLine.letters[currentLetterIndex]
+
+          // Check if they said a letter that's in the choices
+          if (letterChoices.includes(spokenLetter)) {
+            handleLetterAnswer(spokenLetter)
+          } else if (CONFUSABLE_LETTERS.includes(spokenLetter)) {
+            // They said a valid letter but it's not in the choices - treat as wrong
+            handleLetterAnswer(spokenLetter)
+          }
+        }
+      }
+    }
+
+    recognition.onerror = (event) => {
+      console.log('Speech recognition error:', event)
+      setIsListening(false)
+    }
+
+    recognition.onend = () => {
+      // Auto-restart if voice is still enabled
+      if (voiceEnabled && exerciseType === 'letters') {
+        try {
+          recognition.start()
+        } catch (e) {
+          // Already started or other error
+        }
+      } else {
+        setIsListening(false)
+      }
+    }
+
+    recognition.onstart = () => {
+      setIsListening(true)
+    }
+
+    // Start listening if voice is enabled
+    if (voiceEnabled) {
+      try {
+        recognition.start()
+      } catch (e) {
+        // May already be started
+      }
+    }
+
+    return () => {
+      try {
+        recognition.stop()
+      } catch (e) {
+        // May not be running
+      }
+    }
+  }, [voiceEnabled, exerciseType, chartData, currentLineIndex, currentLetterIndex, letterChoices])
+
+  // Toggle voice recognition
+  const toggleVoice = useCallback(() => {
+    if (!recognitionRef.current) return
+
+    if (voiceEnabled) {
+      recognitionRef.current.stop()
+      setVoiceEnabled(false)
+      setIsListening(false)
+      setLastHeard('')
+    } else {
+      setVoiceEnabled(true)
+    }
+  }, [voiceEnabled])
 
   // Generate new chart
   const regenerateChart = useCallback(() => {
@@ -519,11 +674,51 @@ export default function SnellenChart({
               compact={deviceMode === 'phone'}
             />
           ) : (
-            <LetterButtons
-              onSelect={(letter) => handleLetterAnswer(letter)}
-              choices={letterChoices}
-              compact={deviceMode === 'phone'}
-            />
+            <div className="space-y-3">
+              {/* Voice Control for Letters Mode */}
+              {voiceSupported && (
+                <div className="flex items-center justify-center gap-3">
+                  <button
+                    onClick={toggleVoice}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
+                      voiceEnabled
+                        ? 'bg-green-500 text-white shadow-lg shadow-green-500/30'
+                        : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                    }`}
+                  >
+                    {voiceEnabled ? (
+                      <>
+                        <Mic className={`w-5 h-5 ${isListening ? 'animate-pulse' : ''}`} />
+                        Voice ON
+                      </>
+                    ) : (
+                      <>
+                        <MicOff className="w-5 h-5" />
+                        Voice OFF
+                      </>
+                    )}
+                  </button>
+                  {isListening && lastHeard && (
+                    <span className="text-sm text-gray-500">
+                      Heard: <span className="font-bold text-primary-600">{lastHeard}</span>
+                    </span>
+                  )}
+                </div>
+              )}
+
+              {/* Instructions when voice is on */}
+              {voiceEnabled && isListening && (
+                <p className="text-xs text-green-600 text-center">
+                  🎤 Say the letter you see!
+                </p>
+              )}
+
+              <LetterButtons
+                onSelect={(letter) => handleLetterAnswer(letter)}
+                choices={letterChoices}
+                compact={deviceMode === 'phone'}
+              />
+            </div>
           )}
         </div>
       )}
