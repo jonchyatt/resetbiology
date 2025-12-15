@@ -270,35 +270,39 @@ export default function SnellenChart({
     }
   }, [])
 
-  // Handle voice recognition results
+  // Handle voice recognition results - ONLY for E-directional chart (up/down/left/right are easier to recognize than letters)
   useEffect(() => {
-    if (!recognitionRef.current || !voiceEnabled || exerciseType !== 'letters') return
+    if (!recognitionRef.current || !voiceEnabled || exerciseType !== 'e-directional') return
 
     const recognition = recognitionRef.current
 
     recognition.onresult = (event: SpeechRecognitionEvent) => {
       const lastResult = event.results[event.results.length - 1]
-      const transcript = lastResult[0].transcript.trim().toUpperCase()
+      const transcript = lastResult[0].transcript.trim().toLowerCase()
 
-      // Get the last spoken letter (in case they said multiple)
-      const spokenLetter = transcript.slice(-1)
-      setLastHeard(spokenLetter)
+      // Extract direction words from transcript
+      const words = transcript.split(/\s+/)
+      const lastWord = words[words.length - 1]
+
+      // Map common variations to directions
+      const directionMap: Record<string, EDirection> = {
+        'up': 'up',
+        'top': 'up',
+        'above': 'up',
+        'down': 'down',
+        'bottom': 'down',
+        'below': 'down',
+        'left': 'left',
+        'right': 'right',
+        'write': 'right', // Common misrecognition
+      }
+
+      const matchedDirection = directionMap[lastWord]
+      setLastHeard(lastWord)
 
       // Only process final results
-      if (lastResult.isFinal) {
-        // Check if the spoken letter matches any of the choices
-        const currentLine = chartData[currentLineIndex]
-        if (currentLine) {
-          const correctLetter = currentLine.letters[currentLetterIndex]
-
-          // Check if they said a letter that's in the choices
-          if (letterChoices.includes(spokenLetter)) {
-            handleLetterAnswer(spokenLetter)
-          } else if (CONFUSABLE_LETTERS.includes(spokenLetter)) {
-            // They said a valid letter but it's not in the choices - treat as wrong
-            handleLetterAnswer(spokenLetter)
-          }
-        }
+      if (lastResult.isFinal && matchedDirection) {
+        handleLineByLineAnswer(matchedDirection)
       }
     }
 
@@ -309,7 +313,7 @@ export default function SnellenChart({
 
     recognition.onend = () => {
       // Auto-restart if voice is still enabled
-      if (voiceEnabled && exerciseType === 'letters') {
+      if (voiceEnabled && exerciseType === 'e-directional') {
         try {
           recognition.start()
         } catch (e) {
@@ -340,7 +344,7 @@ export default function SnellenChart({
         // May not be running
       }
     }
-  }, [voiceEnabled, exerciseType, chartData, currentLineIndex, currentLetterIndex, letterChoices])
+  }, [voiceEnabled, exerciseType, chartData, currentLineIndex, currentLetterIndex])
 
   // Toggle voice recognition
   const toggleVoice = useCallback(() => {
@@ -669,13 +673,8 @@ export default function SnellenChart({
             {exerciseType === 'e-directional' ? 'Which way?' : 'Which letter?'} (Line {currentLineIndex + 1}/{CHART_LINES.length})
           </p>
           {exerciseType === 'e-directional' ? (
-            <DirectionButtons
-              onSelect={handleLineByLineAnswer}
-              compact={deviceMode === 'phone'}
-            />
-          ) : (
             <div className="space-y-3">
-              {/* Voice Control for Letters Mode */}
+              {/* Voice Control for E-directional Mode - directions are easier to recognize than letters */}
               {voiceSupported && (
                 <div className="flex items-center justify-center gap-3">
                   <button
@@ -709,16 +708,21 @@ export default function SnellenChart({
               {/* Instructions when voice is on */}
               {voiceEnabled && isListening && (
                 <p className="text-xs text-green-600 text-center">
-                  🎤 Say the letter you see!
+                  Say "up", "down", "left", or "right"
                 </p>
               )}
 
-              <LetterButtons
-                onSelect={(letter) => handleLetterAnswer(letter)}
-                choices={letterChoices}
+              <DirectionButtons
+                onSelect={handleLineByLineAnswer}
                 compact={deviceMode === 'phone'}
               />
             </div>
+          ) : (
+            <LetterButtons
+              onSelect={(letter) => handleLetterAnswer(letter)}
+              choices={letterChoices}
+              compact={deviceMode === 'phone'}
+            />
           )}
         </div>
       )}
