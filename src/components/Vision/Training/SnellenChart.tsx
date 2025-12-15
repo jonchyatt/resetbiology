@@ -207,6 +207,8 @@ export default function SnellenChart({
   const recognitionRef = useRef<SpeechRecognition | null>(null)
   const lastSubmittedRef = useRef<{ direction: string; time: number }>({ direction: '', time: 0 })
   const isProcessingRef = useRef(false)
+  // Ref to hold the latest answer handler (avoids stale closure issues)
+  const handleAnswerRef = useRef<(dir: EDirection) => void>(() => {})
 
   // Single letter mode state (for backwards compatibility)
   const [singleDirection, setSingleDirection] = useState<EDirection>(() =>
@@ -321,8 +323,8 @@ export default function SnellenChart({
               isProcessingRef.current = true
               lastSubmittedRef.current = { direction: matchedDirection, time: now }
 
-              // Submit the answer
-              handleLineByLineAnswer(matchedDirection)
+              // Submit the answer using ref (avoids stale closure)
+              handleAnswerRef.current(matchedDirection)
 
               // Reset processing flag after a short delay
               setTimeout(() => {
@@ -420,8 +422,10 @@ export default function SnellenChart({
   }, [exerciseType])
 
   // Handle answer in line-by-line mode
-  const handleLineByLineAnswer = (selectedDirection: EDirection) => {
+  const handleLineByLineAnswer = useCallback((selectedDirection: EDirection) => {
     const currentLine = chartData[currentLineIndex]
+    if (!currentLine) return
+
     const correctDirection = currentLine.directions[currentLetterIndex]
     const isCorrect = selectedDirection === correctDirection
 
@@ -460,7 +464,12 @@ export default function SnellenChart({
         }, 1500)
       }
     }
-  }
+  }, [chartData, currentLineIndex, currentLetterIndex, consecutiveFailures, onAnswer, onChartComplete, regenerateChart])
+
+  // Keep the ref updated with the latest handler (for voice recognition callback)
+  useEffect(() => {
+    handleAnswerRef.current = handleLineByLineAnswer
+  }, [handleLineByLineAnswer])
 
   // Handle answer for letter mode
   const handleLetterAnswer = (selectedLetter: string) => {
