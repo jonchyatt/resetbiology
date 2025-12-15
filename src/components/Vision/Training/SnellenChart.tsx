@@ -205,10 +205,7 @@ export default function SnellenChart({
   const [voiceSupported, setVoiceSupported] = useState(false)
   const [lastHeard, setLastHeard] = useState<string>('')
   const recognitionRef = useRef<SpeechRecognition | null>(null)
-  const lastSubmittedRef = useRef<{ direction: string; time: number }>({ direction: '', time: 0 })
-  const isProcessingRef = useRef(false)
-  // Ref to hold the latest answer handler (avoids stale closure issues)
-  const handleAnswerRef = useRef<(dir: EDirection) => void>(() => {})
+  const voiceEnabledRef = useRef(false) // Track voice state for callbacks
 
   // Single letter mode state (for backwards compatibility)
   const [singleDirection, setSingleDirection] = useState<EDirection>(() =>
@@ -256,15 +253,30 @@ export default function SnellenChart({
     }
   }, [feedback])
 
-  // Check if voice recognition is supported and set it up
+  // Direction word mapping for voice recognition
+  const directionMapRef = useRef<Record<string, EDirection>>({
+    'up': 'up',
+    'top': 'up',
+    'above': 'up',
+    'down': 'down',
+    'bottom': 'down',
+    'below': 'down',
+    'left': 'left',
+    'right': 'right',
+    'write': 'right',
+    'wright': 'right',
+  })
+
+  // Check if voice recognition is supported and set it up ONCE
   useEffect(() => {
     const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition
     if (SpeechRecognitionAPI) {
       setVoiceSupported(true)
-      recognitionRef.current = new SpeechRecognitionAPI()
-      recognitionRef.current.continuous = true
-      recognitionRef.current.interimResults = true
-      recognitionRef.current.lang = 'en-US'
+      const recognition = new SpeechRecognitionAPI()
+      recognition.continuous = true
+      recognition.interimResults = false // Only final results to reduce noise
+      recognition.lang = 'en-US'
+      recognitionRef.current = recognition
     }
 
     return () => {
@@ -274,140 +286,106 @@ export default function SnellenChart({
     }
   }, [])
 
-  // Direction word mapping - defined outside useEffect to avoid recreating
-  const directionMap: Record<string, EDirection> = {
-    'up': 'up',
-    'top': 'up',
-    'above': 'up',
-    'down': 'down',
-    'bottom': 'down',
-    'below': 'down',
-    'left': 'left',
-    'right': 'right',
-    'write': 'right', // Common misrecognition
-    'wright': 'right',
-    'rite': 'right',
-  }
-
-  // Handle voice recognition - optimized for fast single-syllable words
+  // Keep voiceEnabledRef in sync
   useEffect(() => {
-    if (!recognitionRef.current || !voiceEnabled || exerciseType !== 'e-directional') {
-      return
-    }
+    voiceEnabledRef.current = voiceEnabled
+  }, [voiceEnabled])
 
+  // Start/stop voice recognition based on voiceEnabled state
+  useEffect(() => {
     const recognition = recognitionRef.current
+    if (!recognition || exerciseType !== 'e-directional') return
 
-    recognition.onresult = (event: SpeechRecognitionEvent) => {
-      // Process ALL results, not just final (faster for short words)
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        const result = event.results[i]
+    if (voiceEnabled) {
+      // Set up handlers
+      recognition.onresult = (event: SpeechRecognitionEvent) => {
+        const result = event.results[event.results.length - 1]
         const transcript = result[0].transcript.trim().toLowerCase()
-
-        // Check all words in transcript for direction matches
         const words = transcript.split(/\s+/)
+        const lastWord = words[words.length - 1]
 
-        for (const word of words) {
-          const matchedDirection = directionMap[word]
+        setLastHeard(lastWord)
 
-          if (matchedDirection) {
-            setLastHeard(word)
-
-            // Debounce: Don't submit same direction within 600ms
-            const now = Date.now()
-            const timeSinceLastSubmit = now - lastSubmittedRef.current.time
-
-            if (
-              !isProcessingRef.current &&
-              (lastSubmittedRef.current.direction !== matchedDirection || timeSinceLastSubmit > 600)
-            ) {
-              isProcessingRef.current = true
-              lastSubmittedRef.current = { direction: matchedDirection, time: now }
-
-              // Submit the answer using ref (avoids stale closure)
-              handleAnswerRef.current(matchedDirection)
-
-              // Reset processing flag after a short delay
-              setTimeout(() => {
-                isProcessingRef.current = false
-              }, 300)
-            }
-            return // Stop processing once we find a direction
-          }
-        }
-
-        // Show last word heard even if not a direction
-        if (words.length > 0) {
-          setLastHeard(words[words.length - 1])
+        // Check if it's a direction word
+        const matchedDirection = directionMapRef.current[lastWord]
+        if (matchedDirection && result.isFinal) {
+          // Dispatch a custom event that the button handler will catch
+          window.dispatchEvent(new CustomEvent('voiceDirection', { detail: matchedDirection }))
         }
       }
-    }
 
-    recognition.onerror = (event) => {
-      console.log('Speech recognition error:', event)
-      // Don't set isListening to false on error - let it auto-restart
-    }
-
-    recognition.onend = () => {
-      // Auto-restart only if voice is still enabled and we're in e-directional mode
-      // Use setTimeout to avoid rapid restart loops that cause permission popups
-      if (voiceEnabled && exerciseType === 'e-directional') {
-        setTimeout(() => {
-          if (voiceEnabled && recognitionRef.current) {
-            try {
-              recognitionRef.current.start()
-            } catch (e) {
-              // Already started or other error - ignore
+      recognition.onend = () => {
+        // Only restart if voice is still enabled (check ref to avoid stale state)
+        if (voiceEnabledRef.current) {
+          // Longer delay to prevent permission popup spam on iOS
+          setTimeout(() => {
+            if (voiceEnabledRef.current && recognitionRef.current) {
+              try {
+                recognitionRef.current.start()
+              } catch (e) {
+                // Ignore - may already be running
+              }
             }
-          }
-        }, 100) // Small delay prevents permission popup spam on iOS
-      } else {
+          }, 500)
+        } else {
+          setIsListening(false)
+        }
+      }
+
+      recognition.onstart = () => {
+        setIsListening(true)
+      }
+
+      recognition.onerror = () => {
+        // Don't restart on error to avoid loops
         setIsListening(false)
       }
-    }
 
-    recognition.onstart = () => {
-      setIsListening(true)
-    }
-
-    // Start listening if voice is enabled (only once)
-    if (voiceEnabled && !isListening) {
+      // Start recognition
       try {
         recognition.start()
       } catch (e) {
-        // May already be started
+        // May already be running
       }
-    }
-
-    return () => {
-      // Don't stop recognition on every re-render, only on unmount or voice disabled
-    }
-  }, [voiceEnabled, exerciseType]) // Removed dependencies that change often
-
-  // Separate effect to stop recognition when voice is disabled
-  useEffect(() => {
-    if (!voiceEnabled && recognitionRef.current) {
+    } else {
+      // Stop recognition
       try {
-        recognitionRef.current.stop()
+        recognition.stop()
       } catch (e) {
         // May not be running
       }
       setIsListening(false)
+      setLastHeard('')
     }
-  }, [voiceEnabled])
+
+    return () => {
+      // Cleanup on unmount or when dependencies change
+      try {
+        recognition.stop()
+      } catch (e) {
+        // Ignore
+      }
+    }
+  }, [voiceEnabled, exerciseType])
+
+  // Listen for voice direction events
+  useEffect(() => {
+    const handleVoiceDirection = (e: Event) => {
+      const direction = (e as CustomEvent).detail as EDirection
+      if (direction && exerciseType === 'e-directional') {
+        handleLineByLineAnswer(direction)
+      }
+    }
+
+    window.addEventListener('voiceDirection', handleVoiceDirection)
+    return () => window.removeEventListener('voiceDirection', handleVoiceDirection)
+  })
 
   // Toggle voice recognition
   const toggleVoice = useCallback(() => {
     if (!recognitionRef.current) return
-
-    if (voiceEnabled) {
-      recognitionRef.current.stop()
-      setVoiceEnabled(false)
-      setIsListening(false)
-      setLastHeard('')
-    } else {
-      setVoiceEnabled(true)
-    }
-  }, [voiceEnabled])
+    setVoiceEnabled(prev => !prev)
+  }, [])
 
   // Generate new chart
   const regenerateChart = useCallback(() => {
@@ -422,7 +400,7 @@ export default function SnellenChart({
   }, [exerciseType])
 
   // Handle answer in line-by-line mode
-  const handleLineByLineAnswer = useCallback((selectedDirection: EDirection) => {
+  const handleLineByLineAnswer = (selectedDirection: EDirection) => {
     const currentLine = chartData[currentLineIndex]
     if (!currentLine) return
 
@@ -464,12 +442,7 @@ export default function SnellenChart({
         }, 1500)
       }
     }
-  }, [chartData, currentLineIndex, currentLetterIndex, consecutiveFailures, onAnswer, onChartComplete, regenerateChart])
-
-  // Keep the ref updated with the latest handler (for voice recognition callback)
-  useEffect(() => {
-    handleAnswerRef.current = handleLineByLineAnswer
-  }, [handleLineByLineAnswer])
+  }
 
   // Handle answer for letter mode
   const handleLetterAnswer = (selectedLetter: string) => {
