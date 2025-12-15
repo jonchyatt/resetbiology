@@ -315,21 +315,10 @@ export default function SnellenChart({
       }
 
       recognition.onend = () => {
-        // Only restart if voice is still enabled (check ref to avoid stale state)
-        if (voiceEnabledRef.current) {
-          // Longer delay to prevent permission popup spam on iOS
-          setTimeout(() => {
-            if (voiceEnabledRef.current && recognitionRef.current) {
-              try {
-                recognitionRef.current.start()
-              } catch (e) {
-                // Ignore - may already be running
-              }
-            }
-          }, 500)
-        } else {
-          setIsListening(false)
-        }
+        // NO auto-restart - user must tap Voice button again
+        // This prevents permission popup spam on iOS
+        setIsListening(false)
+        setVoiceEnabled(false)
       }
 
       recognition.onstart = () => {
@@ -348,12 +337,16 @@ export default function SnellenChart({
         // May already be running
       }
     } else {
-      // Stop recognition
+      // Stop recognition and clear handlers
       try {
         recognition.stop()
       } catch (e) {
         // May not be running
       }
+      recognition.onresult = null
+      recognition.onend = null
+      recognition.onstart = null
+      recognition.onerror = null
       setIsListening(false)
       setLastHeard('')
     }
