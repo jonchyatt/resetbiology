@@ -47,7 +47,7 @@ export default function OrderPage() {
   const [loading, setLoading] = useState(true);
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
   const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>({});
-  const [filter, setFilter] = useState<'all' | 'peptides' | 'packages'>('all');
+  const [filter, setFilter] = useState<'all' | 'peptides' | 'packages'>('peptides');
 
   // Fetch products on mount
   useEffect(() => {
