@@ -62,12 +62,15 @@ interface SnellenChartProps {
 // Chart lines - REMOVED top 2 rows (too big to be useful)
 // Starting at Moderate level, progressing to finer lines
 // NO medical notation - this is training, not diagnosis
+// Extra-small lines (Elite, Ultra) for high-resolution phone screens
 const CHART_LINES = [
   { level: 1, label: 'Moderate', scale: 2.0, letterCount: 3 },
   { level: 2, label: 'Building', scale: 1.6, letterCount: 4 },
   { level: 3, label: 'Challenge', scale: 1.3, letterCount: 5 },
   { level: 4, label: 'Advanced', scale: 1.0, letterCount: 5 },
   { level: 5, label: 'Peak', scale: 0.8, letterCount: 6 },
+  { level: 6, label: 'Elite', scale: 0.6, letterCount: 7 },
+  { level: 7, label: 'Ultra', scale: 0.45, letterCount: 8 },
 ]
 
 // Confusable letters for letter chart mode - letters that look similar and challenge focus
