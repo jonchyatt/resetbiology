@@ -34,7 +34,7 @@ const CHART_LINES = [
 const E_DIRECTIONS: readonly EDirection[] = ['up', 'down', 'left', 'right']
 const CONFUSABLE_LETTERS = ['O', 'Q', 'C', 'D', 'H', 'M', 'N', 'K', 'X', 'R', 'S', 'Z', 'V']
 
-// ─── Color-Configurable Tumbling E ──────────────────────────────────────────
+// ─── Color-Configurable Tumbling E (integer coords for crisp rendering) ─────
 
 function TumblingE({ direction, size, color = '#000000', visible = true }: {
   direction: EDirection
@@ -42,7 +42,6 @@ function TumblingE({ direction, size, color = '#000000', visible = true }: {
   color?: string
   visible?: boolean
 }) {
-  // Render invisible spacer to preserve layout
   if (!visible) {
     return <div style={{ width: size, height: size }} />
   }
@@ -50,8 +49,8 @@ function TumblingE({ direction, size, color = '#000000', visible = true }: {
   const rotationMap: Record<EDirection, number> = {
     right: 0, down: 90, left: 180, up: 270
   }
-  const thickness = 7
 
+  // All integer coordinates for pixel-perfect rendering at any size
   return (
     <svg
       width={size}
@@ -63,10 +62,14 @@ function TumblingE({ direction, size, color = '#000000', visible = true }: {
       }}
     >
       <g fill={color}>
-        <rect x="5" y="5" width={thickness} height="40" />
-        <rect x="5" y="5" width="40" height={thickness} />
-        <rect x="5" y={25 - thickness / 2} width="35" height={thickness} />
-        <rect x="5" y={45 - thickness} width="40" height={thickness} />
+        {/* Vertical bar (spine) */}
+        <rect x="5" y="5" width="8" height="40" />
+        {/* Top horizontal bar */}
+        <rect x="5" y="5" width="40" height="8" />
+        {/* Middle horizontal bar - integer y for clean centering */}
+        <rect x="5" y="21" width="35" height="8" />
+        {/* Bottom horizontal bar */}
+        <rect x="5" y="37" width="40" height="8" />
       </g>
     </svg>
   )
@@ -91,7 +94,7 @@ function SnellenLetter({ letter, size, color = '#000000', visible = true }: {
         fontSize: `${size * 0.8}px`,
         lineHeight: 1,
         color,
-        fontWeight: 600,
+        fontWeight: 700,
         letterSpacing: '0.02em',
         fontFamily: 'system-ui, -apple-system, sans-serif',
         textRendering: 'geometricPrecision',
@@ -273,15 +276,16 @@ export default function BinocularChart({
     return 'ring-2 ring-primary-400'
   }
 
-  const baseSize = deviceMode === 'phone' ? 28 : 45
-  const sizeMultiplier = deviceMode === 'phone' ? 0.35 : 0.55
+  // Much larger sizes - binocular charts need to fill the space and be readable
+  const baseSize = deviceMode === 'phone' ? 36 : 52
+  const sizeMultiplier = deviceMode === 'phone' ? 0.7 : 0.85
 
   const renderChart = (side: 'left' | 'right') => {
     const color = side === 'left' ? leftColor : rightColor
     const isLeft = side === 'left'
 
     return (
-      <div className="flex-1 flex flex-col items-center" style={{ gap: '1px' }}>
+      <div className="flex-1 flex flex-col items-center justify-center" style={{ gap: '2px' }}>
         {chartData.map((line, lineIdx) => (
           <div
             key={lineIdx}
@@ -290,13 +294,14 @@ export default function BinocularChart({
               : lineIdx === currentLineIndex ? 'opacity-100'
               : 'opacity-40'
             }`}
-            style={{ gap: showGrid ? 0 : '2px' }}
+            style={{ gap: showGrid ? 0 : '3px' }}
           >
             {Array.from({ length: line.letterCount }).map((_, itemIdx) => {
               const isCurrentItem = lineIdx === currentLineIndex && itemIdx === currentLetterIndex
               const isPastItem = lineIdx === currentLineIndex && itemIdx < currentLetterIndex
               const isVisible = !showAlternating || (isLeft ? itemIdx % 2 === 0 : itemIdx % 2 === 1)
-              const itemSize = baseSize * line.scale * sizeMultiplier
+              // Ensure minimum readable size (never below 14px)
+              const itemSize = Math.max(14, baseSize * line.scale * sizeMultiplier)
 
               const item = exerciseType === 'e-directional'
                 ? line.directions[itemIdx]
@@ -311,9 +316,9 @@ export default function BinocularChart({
                   style={{
                     ...(showGrid ? {
                       border: '1px solid #888',
-                      padding: '1px',
-                      minWidth: itemSize + 4,
-                      minHeight: itemSize + 4,
+                      padding: '2px',
+                      minWidth: itemSize + 6,
+                      minHeight: itemSize + 6,
                     } : {}),
                   }}
                 >
@@ -332,8 +337,8 @@ export default function BinocularChart({
 
                   {/* Current item indicator */}
                   {isCurrentItem && (
-                    <div className="absolute -top-3.5 left-1/2 transform -translate-x-1/2 z-10">
-                      <ChevronDown className="w-3 h-3 text-primary-500 animate-bounce" strokeWidth={3} />
+                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-10">
+                      <ChevronDown className="w-4 h-4 text-primary-500 animate-bounce" strokeWidth={3} />
                     </div>
                   )}
 
@@ -359,12 +364,16 @@ export default function BinocularChart({
     )
   }
 
-  // ─── Direction Button Style ───────────────────────────────────────────────
+  // ─── Button Styles ────────────────────────────────────────────────────────
 
   const btnClass = "bg-gray-900 hover:bg-primary-500 active:bg-primary-600 text-white font-bold rounded-xl shadow-lg active:scale-95 transition-all flex items-center justify-center gap-1"
   const btnSize = deviceMode === 'phone'
     ? "px-3 py-4 text-sm min-w-[90px]"
     : "px-5 py-5 text-base min-w-[120px]"
+  const letterBtnClass = "bg-gray-900 hover:bg-primary-500 active:bg-primary-600 text-white font-black rounded-xl shadow-lg active:scale-95 transition-all flex items-center justify-center"
+  const letterBtnSize = deviceMode === 'phone'
+    ? "px-3 py-3 text-xl min-w-[70px]"
+    : "px-5 py-4 text-2xl min-w-[100px]"
   const iconSize = deviceMode === 'phone' ? "w-5 h-5" : "w-6 h-6"
 
   // ─── Render ───────────────────────────────────────────────────────────────
@@ -413,35 +422,50 @@ export default function BinocularChart({
           </div>
         )}
 
-        {/* Chart + buttons layout */}
+        {/* Chart + buttons layout — buttons always on SIDES for both modes */}
         {!showDistancePrompt && (
           <div className="flex items-stretch gap-1.5">
-            {/* Left button column (Up + Left) */}
-            {exerciseType === 'e-directional' && (
-              <div className="flex flex-col justify-around shrink-0 gap-2 py-1">
-                <button
-                  onClick={() => handleDirectionAnswer('up')}
-                  className={`${btnClass} ${btnSize}`}
-                >
-                  <ArrowUp className={iconSize} strokeWidth={2.5} />
-                  Up
-                </button>
-                <button
-                  onClick={() => handleDirectionAnswer('left')}
-                  className={`${btnClass} ${btnSize}`}
-                >
-                  <ArrowLeft className={iconSize} strokeWidth={2.5} />
-                  Left
-                </button>
-              </div>
-            )}
+            {/* Left button column */}
+            <div className="flex flex-col justify-around shrink-0 gap-2 py-1">
+              {exerciseType === 'e-directional' ? (
+                <>
+                  <button
+                    onClick={() => handleDirectionAnswer('up')}
+                    className={`${btnClass} ${btnSize}`}
+                  >
+                    <ArrowUp className={iconSize} strokeWidth={2.5} />
+                    Up
+                  </button>
+                  <button
+                    onClick={() => handleDirectionAnswer('left')}
+                    className={`${btnClass} ${btnSize}`}
+                  >
+                    <ArrowLeft className={iconSize} strokeWidth={2.5} />
+                    Left
+                  </button>
+                </>
+              ) : (
+                /* Letter mode: 2 choices on left side */
+                <>
+                  {letterChoices.slice(0, 2).map(letter => (
+                    <button
+                      key={letter}
+                      onClick={() => handleLetterAnswer(letter)}
+                      className={`${letterBtnClass} ${letterBtnSize}`}
+                    >
+                      {letter}
+                    </button>
+                  ))}
+                </>
+              )}
+            </div>
 
             {/* Center: Two charts side by side */}
             <div
-              className="flex-1 bg-white rounded-lg flex gap-2 overflow-hidden"
+              className="flex-1 bg-white rounded-lg flex overflow-hidden"
               style={{
-                padding: deviceMode === 'phone' ? '6px' : '12px',
-                imageRendering: 'crisp-edges',
+                padding: deviceMode === 'phone' ? '8px' : '16px',
+                gap: deviceMode === 'phone' ? '8px' : '16px',
               }}
             >
               {renderChart('left')}
@@ -449,40 +473,40 @@ export default function BinocularChart({
               {renderChart('right')}
             </div>
 
-            {/* Right button column (Right + Down) */}
-            {exerciseType === 'e-directional' && (
-              <div className="flex flex-col justify-around shrink-0 gap-2 py-1">
-                <button
-                  onClick={() => handleDirectionAnswer('right')}
-                  className={`${btnClass} ${btnSize}`}
-                >
-                  Right
-                  <ArrowRight className={iconSize} strokeWidth={2.5} />
-                </button>
-                <button
-                  onClick={() => handleDirectionAnswer('down')}
-                  className={`${btnClass} ${btnSize}`}
-                >
-                  <ArrowDown className={iconSize} strokeWidth={2.5} />
-                  Down
-                </button>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Letter buttons (for letter mode - below charts) */}
-        {exerciseType === 'letters' && !showDistancePrompt && (
-          <div className="grid grid-cols-4 gap-2 mt-1">
-            {letterChoices.map(letter => (
-              <button
-                key={letter}
-                onClick={() => handleLetterAnswer(letter)}
-                className="bg-gray-900 hover:bg-primary-500 active:bg-primary-600 text-white font-black rounded-xl py-3 text-2xl shadow-lg active:scale-95 transition-all"
-              >
-                {letter}
-              </button>
-            ))}
+            {/* Right button column */}
+            <div className="flex flex-col justify-around shrink-0 gap-2 py-1">
+              {exerciseType === 'e-directional' ? (
+                <>
+                  <button
+                    onClick={() => handleDirectionAnswer('right')}
+                    className={`${btnClass} ${btnSize}`}
+                  >
+                    Right
+                    <ArrowRight className={iconSize} strokeWidth={2.5} />
+                  </button>
+                  <button
+                    onClick={() => handleDirectionAnswer('down')}
+                    className={`${btnClass} ${btnSize}`}
+                  >
+                    <ArrowDown className={iconSize} strokeWidth={2.5} />
+                    Down
+                  </button>
+                </>
+              ) : (
+                /* Letter mode: 2 choices on right side */
+                <>
+                  {letterChoices.slice(2, 4).map(letter => (
+                    <button
+                      key={letter}
+                      onClick={() => handleLetterAnswer(letter)}
+                      className={`${letterBtnClass} ${letterBtnSize}`}
+                    >
+                      {letter}
+                    </button>
+                  ))}
+                </>
+              )}
+            </div>
           </div>
         )}
 

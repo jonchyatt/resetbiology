@@ -193,8 +193,8 @@ export function VisionTraining() {
         </div>
 
         {/* Tab Content */}
-        <div className="container mx-auto px-4 pb-12 flex-1">
-          <div className="max-w-6xl mx-auto">
+        <div className={`mx-auto pb-12 flex-1 ${isTrainingActive && binocularMode !== 'off' ? 'px-2 w-full' : 'container px-4'}`}>
+          <div className={isTrainingActive && binocularMode !== 'off' ? 'w-full' : 'max-w-6xl mx-auto'}>
 
             {/* TODAY'S SESSION / GET STARTED TAB */}
             {activeTab === 'today' && (
