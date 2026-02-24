@@ -396,9 +396,30 @@ export function VisionTraining() {
                 )}
 
                 {/* Training Session - ONLY show when training is active */}
-                {isTrainingActive && (
+                {isTrainingActive && binocularMode !== 'off' ? (
+                  /* Fullscreen overlay for binocular — hides navbars */
+                  <div className="fixed inset-0 z-50 bg-gray-900 flex flex-col overflow-auto">
+                    <button
+                      onClick={() => setIsTrainingActive(false)}
+                      className="absolute top-2 left-2 z-[60] px-3 py-1.5 rounded-lg bg-gray-800/80 text-gray-300 hover:text-white text-sm font-medium border border-gray-600/50 backdrop-blur-sm"
+                    >
+                      <RotateCcw className="w-4 h-4 inline mr-1" />
+                      Exit
+                    </button>
+                    <div className="flex-1 flex flex-col justify-center p-2 pt-10">
+                      <TrainingSession
+                        visionType={trainerVisionType}
+                        exerciseType={trainerExerciseType}
+                        deviceMode={trainerDeviceMode}
+                        binocularMode={binocularMode}
+                        onActiveChange={(active) => {
+                          if (!active) setIsTrainingActive(false)
+                        }}
+                      />
+                    </div>
+                  </div>
+                ) : isTrainingActive ? (
                   <div className="space-y-4">
-                    {/* Back to Settings button */}
                     <button
                       onClick={() => setIsTrainingActive(false)}
                       className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
@@ -406,7 +427,6 @@ export function VisionTraining() {
                       <RotateCcw className="w-4 h-4" />
                       Back to Settings
                     </button>
-
                     <TrainingSession
                       visionType={trainerVisionType}
                       exerciseType={trainerExerciseType}
@@ -417,7 +437,7 @@ export function VisionTraining() {
                       }}
                     />
                   </div>
-                )}
+                ) : null}
               </div>
             )}
 
