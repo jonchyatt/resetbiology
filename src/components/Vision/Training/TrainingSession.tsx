@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import SnellenChart from './SnellenChart'
+import BinocularChart from './BinocularChart'
+import type { BinocularMode } from './BinocularChart'
 import DistanceGuidance from './DistanceGuidance'
 import { Play, Pause, RotateCcw, CheckCircle, XCircle, Glasses, MoveHorizontal, Trophy, ArrowRight } from 'lucide-react'
 
@@ -10,6 +12,7 @@ interface TrainingSessionProps {
   exerciseType: 'letters' | 'e-directional'
   initialLevel?: number
   deviceMode?: 'phone' | 'desktop'
+  binocularMode?: BinocularMode
   onActiveChange?: (isActive: boolean) => void
 }
 
@@ -42,8 +45,10 @@ export default function TrainingSession({
   exerciseType,
   initialLevel = 1,
   deviceMode = 'phone',
+  binocularMode = 'off',
   onActiveChange
 }: TrainingSessionProps) {
+  const isBinocular = binocularMode && binocularMode !== 'off'
   const [currentLevel, setCurrentLevel] = useState(initialLevel)
   // Auto-start when component mounts (parent controls when to show us)
   const [isActive, setIsActive] = useState(true)
@@ -289,24 +294,45 @@ export default function TrainingSession({
             </div>
           )}
 
-          <SnellenChart
-            chartSize={difficulty.label}
-            exerciseType={exerciseType}
-            onAnswer={handleAnswer}
-            resetTrigger={resetTrigger}
-            deviceMode={deviceMode}
-            progressionMode="line-by-line"
-            onChartComplete={() => {
-              // Audio disabled - visual feedback shows chart completion
-            }}
-            onDistanceAdjust={(direction) => {
-              if (direction === 'further') {
-                setTargetDistanceCm(prev => Math.min(prev + 1, 100))
-              } else {
-                setTargetDistanceCm(prev => Math.max(prev - 1, 15))
-              }
-            }}
-          />
+          {isBinocular ? (
+            <BinocularChart
+              chartSize={difficulty.label}
+              exerciseType={exerciseType}
+              binocularMode={binocularMode}
+              onAnswer={handleAnswer}
+              resetTrigger={resetTrigger}
+              deviceMode={deviceMode}
+              onChartComplete={() => {
+                // Audio disabled - visual feedback shows chart completion
+              }}
+              onDistanceAdjust={(direction) => {
+                if (direction === 'further') {
+                  setTargetDistanceCm(prev => Math.min(prev + 1, 100))
+                } else {
+                  setTargetDistanceCm(prev => Math.max(prev - 1, 15))
+                }
+              }}
+            />
+          ) : (
+            <SnellenChart
+              chartSize={difficulty.label}
+              exerciseType={exerciseType}
+              onAnswer={handleAnswer}
+              resetTrigger={resetTrigger}
+              deviceMode={deviceMode}
+              progressionMode="line-by-line"
+              onChartComplete={() => {
+                // Audio disabled - visual feedback shows chart completion
+              }}
+              onDistanceAdjust={(direction) => {
+                if (direction === 'further') {
+                  setTargetDistanceCm(prev => Math.min(prev + 1, 100))
+                } else {
+                  setTargetDistanceCm(prev => Math.max(prev - 1, 15))
+                }
+              }}
+            />
+          )}
         </div>
       )}
 

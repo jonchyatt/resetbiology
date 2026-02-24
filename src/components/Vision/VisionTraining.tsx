@@ -60,6 +60,7 @@ export function VisionTraining() {
   const [trainerVisionType, setTrainerVisionType] = useState<'near' | 'far'>('near')
   const [trainerExerciseType, setTrainerExerciseType] = useState<'letters' | 'e-directional'>('letters')
   const [trainerDeviceMode, setTrainerDeviceMode] = useState<'phone' | 'desktop'>('phone')
+  const [binocularMode, setBinocularMode] = useState<'off' | 'duplicate' | 'redgreen' | 'grid-square' | 'grid-slanted' | 'alternating'>('off')
   const [isTrainingActive, setIsTrainingActive] = useState(false)
 
   useEffect(() => {
@@ -350,6 +351,39 @@ export function VisionTraining() {
                       </div>
                     </div>
 
+                    {/* Binocular Training Mode */}
+                    <div className="border-t border-gray-700/30 pt-5">
+                      <label className="block text-sm font-medium text-gray-300 mb-1">
+                        Binocular Training
+                      </label>
+                      <p className="text-xs text-gray-500 mb-3">
+                        Cross-eye fusion exercises &mdash; hold phone in landscape
+                      </p>
+                      <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
+                        {([
+                          { value: 'off' as const, label: 'Off', desc: 'Single chart' },
+                          { value: 'duplicate' as const, label: 'Duplicate', desc: 'Identical pair' },
+                          { value: 'redgreen' as const, label: 'Red/Green', desc: 'Color split' },
+                          { value: 'grid-square' as const, label: 'Grid \u25A1', desc: 'Square grid' },
+                          { value: 'grid-slanted' as const, label: 'Grid \u25C7', desc: 'Diagonal grid' },
+                          { value: 'alternating' as const, label: 'Alternating', desc: 'Fill-in fusion' },
+                        ]).map(opt => (
+                          <button
+                            key={opt.value}
+                            onClick={() => setBinocularMode(opt.value)}
+                            className={`py-2 px-2 rounded-lg text-sm font-medium transition-all text-center ${
+                              binocularMode === opt.value
+                                ? 'bg-orange-600 text-white shadow-lg shadow-orange-500/20'
+                                : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/50'
+                            }`}
+                          >
+                            <div className="text-xs font-semibold">{opt.label}</div>
+                            <div className="text-[10px] opacity-70 mt-0.5">{opt.desc}</div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
                     {/* START BUTTON - inside settings card */}
                     <button
                       onClick={() => setIsTrainingActive(true)}
@@ -377,6 +411,7 @@ export function VisionTraining() {
                       visionType={trainerVisionType}
                       exerciseType={trainerExerciseType}
                       deviceMode={trainerDeviceMode}
+                      binocularMode={binocularMode}
                       onActiveChange={(active) => {
                         if (!active) setIsTrainingActive(false)
                       }}
