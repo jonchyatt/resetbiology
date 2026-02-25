@@ -205,16 +205,6 @@ async function sendNotifications() {
 
 // GET handler for Vercel Cron (crons use GET by default)
 export async function GET(req: NextRequest) {
-  // Check environment variables
-  if (!envCheck.valid) {
-    console.error('❌ Cannot send notifications: Missing environment variables:', envCheck.missing)
-    return NextResponse.json({
-      error: 'Server configuration error',
-      missing: envCheck.missing,
-      message: 'Required environment variables are not configured. Please set: ' + envCheck.missing.join(', ')
-    }, { status: 500 })
-  }
-
   // Verify cron secret
   const authHeader = req.headers.get('authorization')
   const querySecret = req.nextUrl.searchParams.get('secret')
