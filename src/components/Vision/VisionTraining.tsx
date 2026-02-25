@@ -63,9 +63,27 @@ export function VisionTraining() {
   const [binocularMode, setBinocularMode] = useState<'off' | 'duplicate' | 'redgreen' | 'grid-square' | 'grid-slanted' | 'alternating'>('off')
   const [isTrainingActive, setIsTrainingActive] = useState(false)
 
+  // Dispatch binocular training mode events for hiding UI elements
+  useEffect(() => {
+    const isBinocularMode = isTrainingActive && binocularMode !== 'off'
+    const event = new CustomEvent('binocular-training-mode', { detail: { active: isBinocularMode } })
+    window.dispatchEvent(event)
+  }, [isTrainingActive, binocularMode])
+
   useEffect(() => {
     checkEnrollment()
   }, [])
+
+  // Handle ESC key to exit binocular training
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isTrainingActive && binocularMode !== 'off') {
+        setIsTrainingActive(false)
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isTrainingActive, binocularMode])
 
   const checkEnrollment = async () => {
     try {
@@ -397,15 +415,20 @@ export function VisionTraining() {
 
                 {/* Training Session - ONLY show when training is active */}
                 {isTrainingActive && binocularMode !== 'off' ? (
-                  /* Fullscreen overlay for binocular — hides navbars */
+                  /* Fullscreen overlay for binocular — hides navbars and microphone */
                   <div className="fixed inset-0 z-[100] bg-gray-900 flex flex-col overflow-auto">
-                    <button
-                      onClick={() => setIsTrainingActive(false)}
-                      className="absolute top-2 left-2 z-[110] px-3 py-1.5 rounded-lg bg-gray-800/80 text-gray-300 hover:text-white text-sm font-medium border border-gray-600/50 backdrop-blur-sm"
-                    >
-                      <RotateCcw className="w-4 h-4 inline mr-1" />
-                      Exit
-                    </button>
+                    <div className="absolute top-2 left-2 z-[110] flex gap-2">
+                      <button
+                        onClick={() => setIsTrainingActive(false)}
+                        className="px-4 py-2 rounded-lg bg-red-600/80 hover:bg-red-600 text-white font-medium border border-red-500/50 backdrop-blur-sm transition-all hover:scale-105 shadow-lg"
+                      >
+                        <RotateCcw className="w-4 h-4 inline mr-2" />
+                        Exit Training
+                      </button>
+                      <div className="px-3 py-2 rounded-lg bg-gray-800/80 text-gray-300 text-sm border border-gray-600/50 backdrop-blur-sm">
+                        Press ESC to exit
+                      </div>
+                    </div>
                     <div className="flex-1 flex flex-col justify-center p-2 pt-10">
                       <TrainingSession
                         visionType={trainerVisionType}

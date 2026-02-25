@@ -91,8 +91,8 @@ export default function BinocularChart({
   const [showDistancePrompt, setShowDistancePrompt] = useState(false)
   const [letterChoices, setLetterChoices] = useState<string[]>([])
 
-  const leftColor = binocularMode === 'duplicate' ? '#000000' : '#DD0000'
-  const rightColor = binocularMode === 'duplicate' ? '#000000' : '#009500'
+  const leftColor = binocularMode === 'duplicate' ? '#FFFFFF' : '#DD0000'
+  const rightColor = binocularMode === 'duplicate' ? '#FFFFFF' : '#009500'
   const showGrid = ['grid-square', 'grid-slanted', 'alternating'].includes(binocularMode)
   const isSlantedGrid = binocularMode === 'grid-slanted'
   const showAlternating = binocularMode === 'alternating'
