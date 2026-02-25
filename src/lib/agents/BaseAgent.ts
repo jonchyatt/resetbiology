@@ -19,14 +19,16 @@ export interface LoggingIntent {
 }
 
 export abstract class BaseAgent {
-    protected openai: OpenAI;
+    private _openai: OpenAI | null = null;
     protected model: string = 'gpt-4o-mini'; // Fast model for voice
     protected maxTokens: number = 150; // Keep responses concise for voice
 
-    constructor() {
-        this.openai = new OpenAI({
-            apiKey: process.env.OPENAI_API_KEY,
-        });
+    // Lazy initialization to prevent build-time errors when env vars missing
+    protected get openai(): OpenAI {
+        if (!this._openai) {
+            this._openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+        }
+        return this._openai;
     }
 
     /**
