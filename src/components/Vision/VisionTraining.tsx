@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import {
   Play,
   Eye,
@@ -414,33 +415,36 @@ export function VisionTraining() {
                 )}
 
                 {/* Training Session - ONLY show when training is active */}
-                {isTrainingActive && binocularMode !== 'off' ? (
-                  /* Fullscreen overlay for binocular — hides navbars and microphone */
-                  <div className="fixed inset-0 z-[9999] bg-gray-900 flex flex-col overflow-auto">
-                    <div className="absolute top-2 left-2 z-[10000] flex gap-2">
-                      <button
-                        onClick={() => setIsTrainingActive(false)}
-                        className="px-4 py-2 rounded-lg bg-red-600/80 hover:bg-red-600 text-white font-medium border border-red-500/50 backdrop-blur-sm transition-all hover:scale-105 shadow-lg"
-                      >
-                        <RotateCcw className="w-4 h-4 inline mr-2" />
-                        Exit Training
-                      </button>
-                      <div className="px-3 py-2 rounded-lg bg-gray-800/80 text-gray-300 text-sm border border-gray-600/50 backdrop-blur-sm">
-                        Press ESC to exit
+                {isTrainingActive && binocularMode !== 'off' ?
+                  typeof window !== 'undefined' ? createPortal(
+                    /* Fullscreen overlay for binocular — hides navbars and microphone */
+                    <div className="fixed inset-0 w-full h-full z-[99999] bg-gray-900 flex flex-col overflow-auto">
+                      <div className="absolute top-2 left-2 z-[100000] flex gap-2">
+                        <button
+                          onClick={() => setIsTrainingActive(false)}
+                          className="px-4 py-2 rounded-lg bg-red-600/80 hover:bg-red-600 text-white font-medium border border-red-500/50 backdrop-blur-sm transition-all hover:scale-105 shadow-lg"
+                        >
+                          <RotateCcw className="w-4 h-4 inline mr-2" />
+                          Exit Training
+                        </button>
+                        <div className="px-3 py-2 rounded-lg bg-gray-800/80 text-gray-300 text-sm border border-gray-600/50 backdrop-blur-sm">
+                          Press ESC to exit
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex-1 flex flex-col justify-center p-2 pt-10">
-                      <TrainingSession
-                        visionType={trainerVisionType}
-                        exerciseType={trainerExerciseType}
-                        deviceMode={trainerDeviceMode}
-                        binocularMode={binocularMode}
-                        onActiveChange={(active) => {
-                          if (!active) setIsTrainingActive(false)
-                        }}
-                      />
-                    </div>
-                  </div>
+                      <div className="flex-1 flex flex-col justify-center p-2 pt-10">
+                        <TrainingSession
+                          visionType={trainerVisionType}
+                          exerciseType={trainerExerciseType}
+                          deviceMode={trainerDeviceMode}
+                          binocularMode={binocularMode}
+                          onActiveChange={(active) => {
+                            if (!active) setIsTrainingActive(false)
+                          }}
+                        />
+                      </div>
+                    </div>,
+                    document.body
+                  ) : null
                 ) : isTrainingActive ? (
                   <div className="space-y-4">
                     <button
