@@ -278,31 +278,31 @@ export function VisionTraining() {
                       Train at your edge of clarity - where text is just barely readable.
                     </p>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div className="space-y-6 mb-6">
                       {/* Device Mode */}
                       <div>
                         <label className="block text-sm font-medium text-gray-300 mb-3">Device Mode</label>
-                        <div className="flex gap-2">
+                        <div className="flex gap-3">
                           <button
                             onClick={() => setTrainerDeviceMode('phone')}
-                            className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all flex items-center justify-center gap-2 ${
+                            className={`flex-1 py-4 px-6 rounded-xl font-medium transition-all flex items-center justify-center gap-3 text-lg min-h-[60px] ${
                               trainerDeviceMode === 'phone'
-                                ? 'bg-primary-600 text-white shadow-lg'
-                                : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/50'
+                                ? 'bg-primary-600 text-white shadow-lg shadow-primary-500/30 scale-105'
+                                : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/50 hover:scale-102'
                             }`}
                           >
-                            <Smartphone className="w-5 h-5" />
+                            <Smartphone className="w-6 h-6" />
                             Phone
                           </button>
                           <button
                             onClick={() => setTrainerDeviceMode('desktop')}
-                            className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all flex items-center justify-center gap-2 ${
+                            className={`flex-1 py-4 px-6 rounded-xl font-medium transition-all flex items-center justify-center gap-3 text-lg min-h-[60px] ${
                               trainerDeviceMode === 'desktop'
-                                ? 'bg-primary-600 text-white shadow-lg'
-                                : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/50'
+                                ? 'bg-primary-600 text-white shadow-lg shadow-primary-500/30 scale-105'
+                                : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/50 hover:scale-102'
                             }`}
                           >
-                            <Monitor className="w-5 h-5" />
+                            <Monitor className="w-6 h-6" />
                             Desktop
                           </button>
                         </div>
@@ -311,57 +311,58 @@ export function VisionTraining() {
                       {/* Vision Type */}
                       <div>
                         <label className="block text-sm font-medium text-gray-300 mb-3">Training Focus</label>
-                        <div className="flex gap-2">
+                        <div className="flex gap-3">
                           <button
                             onClick={() => setTrainerVisionType('near')}
-                            className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all flex items-center justify-center gap-2 ${
+                            className={`flex-1 py-4 px-6 rounded-xl font-medium transition-all flex items-center justify-center gap-3 text-lg min-h-[60px] ${
                               trainerVisionType === 'near'
-                                ? 'bg-blue-600 text-white shadow-lg'
-                                : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/50'
+                                ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30 scale-105'
+                                : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/50 hover:scale-102'
                             }`}
                           >
-                            <Eye className="w-5 h-5" />
-                            Nearsighted
+                            <Eye className="w-6 h-6" />
+                            <div className="text-center">
+                              <div>Nearsighted</div>
+                              <div className="text-xs opacity-80">Push clarity out</div>
+                            </div>
                           </button>
                           <button
                             onClick={() => setTrainerVisionType('far')}
-                            className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all flex items-center justify-center gap-2 ${
+                            className={`flex-1 py-4 px-6 rounded-xl font-medium transition-all flex items-center justify-center gap-3 text-lg min-h-[60px] ${
                               trainerVisionType === 'far'
-                                ? 'bg-purple-600 text-white shadow-lg'
-                                : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/50'
+                                ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/30 scale-105'
+                                : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/50 hover:scale-102'
                             }`}
                           >
-                            <Eye className="w-5 h-5" />
-                            Farsighted
+                            <Eye className="w-6 h-6" />
+                            <div className="text-center">
+                              <div>Farsighted</div>
+                              <div className="text-xs opacity-80">Pull clarity in</div>
+                            </div>
                           </button>
                         </div>
-                        <p className="text-xs text-gray-400 mt-2 text-center">
-                          {trainerVisionType === 'near'
-                            ? 'Myopia: push clarity outward'
-                            : 'Hyperopia: pull clarity closer'}
-                        </p>
                       </div>
 
                       {/* Chart Type */}
                       <div>
                         <label className="block text-sm font-medium text-gray-300 mb-3">Chart Type</label>
-                        <div className="flex gap-2">
+                        <div className="flex gap-3">
                           <button
                             onClick={() => setTrainerExerciseType('letters')}
-                            className={`flex-1 py-3 px-4 rounded-lg font-bold transition-all ${
+                            className={`flex-1 py-4 px-6 rounded-xl font-bold transition-all text-2xl min-h-[60px] ${
                               trainerExerciseType === 'letters'
-                                ? 'bg-secondary-600 text-white shadow-lg'
-                                : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/50'
+                                ? 'bg-secondary-600 text-white shadow-lg shadow-secondary-500/30 scale-105'
+                                : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/50 hover:scale-102'
                             }`}
                           >
                             ABC
                           </button>
                           <button
                             onClick={() => setTrainerExerciseType('e-directional')}
-                            className={`flex-1 py-3 px-4 rounded-lg font-bold transition-all ${
+                            className={`flex-1 py-4 px-6 rounded-xl font-bold transition-all text-2xl min-h-[60px] ${
                               trainerExerciseType === 'e-directional'
-                                ? 'bg-secondary-600 text-white shadow-lg'
-                                : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/50'
+                                ? 'bg-secondary-600 text-white shadow-lg shadow-secondary-500/30 scale-105'
+                                : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/50 hover:scale-102'
                             }`}
                           >
                             E →
@@ -378,7 +379,7 @@ export function VisionTraining() {
                       <p className="text-xs text-gray-500 mb-3">
                         Cross-eye fusion exercises &mdash; hold phone in landscape
                       </p>
-                      <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
+                      <div className="grid grid-cols-2 gap-3">
                         {([
                           { value: 'off' as const, label: 'Off', desc: 'Single chart' },
                           { value: 'duplicate' as const, label: 'Duplicate', desc: 'Identical pair' },
@@ -390,14 +391,14 @@ export function VisionTraining() {
                           <button
                             key={opt.value}
                             onClick={() => setBinocularMode(opt.value)}
-                            className={`py-2 px-2 rounded-lg text-sm font-medium transition-all text-center ${
+                            className={`py-3 px-4 rounded-xl font-medium transition-all text-center min-h-[60px] ${
                               binocularMode === opt.value
-                                ? 'bg-orange-600 text-white shadow-lg shadow-orange-500/20'
-                                : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/50'
+                                ? 'bg-orange-600 text-white shadow-lg shadow-orange-500/30 scale-105'
+                                : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/50 hover:scale-102'
                             }`}
                           >
-                            <div className="text-xs font-semibold">{opt.label}</div>
-                            <div className="text-[10px] opacity-70 mt-0.5">{opt.desc}</div>
+                            <div className="text-sm font-semibold">{opt.label}</div>
+                            <div className="text-xs opacity-70 mt-1">{opt.desc}</div>
                           </button>
                         ))}
                       </div>
@@ -406,9 +407,9 @@ export function VisionTraining() {
                     {/* START BUTTON - inside settings card */}
                     <button
                       onClick={() => setIsTrainingActive(true)}
-                      className="w-full py-4 rounded-xl font-bold text-xl bg-secondary-500 hover:bg-secondary-600 text-white shadow-lg shadow-secondary-500/30 flex items-center justify-center gap-3 transition-all hover:scale-[1.02]"
+                      className="w-full py-6 rounded-2xl font-bold text-2xl bg-gradient-to-r from-secondary-500 to-secondary-600 hover:from-secondary-600 hover:to-secondary-700 text-white shadow-xl shadow-secondary-500/40 flex items-center justify-center gap-4 transition-all hover:scale-[1.05] active:scale-[0.98] min-h-[80px]"
                     >
-                      <Play className="w-6 h-6" />
+                      <Play className="w-8 h-8" />
                       Start Training
                     </button>
                   </div>
