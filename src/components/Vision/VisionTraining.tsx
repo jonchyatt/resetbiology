@@ -398,10 +398,10 @@ export function VisionTraining() {
                 {/* Training Session - ONLY show when training is active */}
                 {isTrainingActive && binocularMode !== 'off' ? (
                   /* Fullscreen overlay for binocular — hides navbars */
-                  <div className="fixed inset-0 z-50 bg-gray-900 flex flex-col overflow-auto">
+                  <div className="fixed inset-0 z-[100] bg-gray-900 flex flex-col overflow-auto">
                     <button
                       onClick={() => setIsTrainingActive(false)}
-                      className="absolute top-2 left-2 z-[60] px-3 py-1.5 rounded-lg bg-gray-800/80 text-gray-300 hover:text-white text-sm font-medium border border-gray-600/50 backdrop-blur-sm"
+                      className="absolute top-2 left-2 z-[110] px-3 py-1.5 rounded-lg bg-gray-800/80 text-gray-300 hover:text-white text-sm font-medium border border-gray-600/50 backdrop-blur-sm"
                     >
                       <RotateCcw className="w-4 h-4 inline mr-1" />
                       Exit

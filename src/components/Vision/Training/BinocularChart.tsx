@@ -91,8 +91,8 @@ export default function BinocularChart({
   const [showDistancePrompt, setShowDistancePrompt] = useState(false)
   const [letterChoices, setLetterChoices] = useState<string[]>([])
 
-  const leftColor = binocularMode === 'duplicate' ? '#000000' : '#EE0000'
-  const rightColor = binocularMode === 'duplicate' ? '#000000' : '#00BB00'
+  const leftColor = binocularMode === 'duplicate' ? '#000000' : '#DD0000'
+  const rightColor = binocularMode === 'duplicate' ? '#000000' : '#009500'
   const showGrid = ['grid-square', 'grid-slanted', 'alternating'].includes(binocularMode)
   const isSlantedGrid = binocularMode === 'grid-slanted'
   const showAlternating = binocularMode === 'alternating'
@@ -143,6 +143,23 @@ export default function BinocularChart({
       setConsecutiveFailures(p => { const n = p + 1; if (n >= 3) setTimeout(() => regenerateChart(), 1500); return n })
     }
   }, [chartData, currentLineIndex, currentLetterIndex, exerciseType, onAnswer, advanceToNext, regenerateChart])
+
+  // Keyboard hotkeys for E-directional mode (desktop)
+  useEffect(() => {
+    if (exerciseType !== 'e-directional' || showDistancePrompt) return
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const keyMap: Record<string, EDirection> = {
+        'w': 'up', 'ArrowUp': 'up',
+        'a': 'left', 'ArrowLeft': 'left',
+        'l': 'right', 'ArrowRight': 'right',
+        ',': 'down', 'ArrowDown': 'down',
+      }
+      const dir = keyMap[e.key]
+      if (dir) { e.preventDefault(); handleAnswer(dir) }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [exerciseType, showDistancePrompt, handleAnswer])
 
   const handleDistanceAdjust = (dir: 'closer' | 'further') => {
     setShowDistancePrompt(false); regenerateChart()
@@ -195,7 +212,7 @@ export default function BinocularChart({
           </div>
         ))}
         <p className="text-gray-500 text-[10px] text-center mt-1 select-none">
-          Which way? (Line {currentLineIndex + 1}/{CHART_LINES.length})
+          Line {currentLineIndex + 1}/{CHART_LINES.length}
         </p>
       </div>
     )
@@ -206,28 +223,28 @@ export default function BinocularChart({
   const renderButtonCol = (position: 'left' | 'right') => {
     const isEMode = exerciseType === 'e-directional'
     // Tall buttons that fill vertical space — easy to press without precision
-    const bCls = "bg-gray-900 hover:bg-primary-500 active:bg-primary-600 text-white font-bold rounded-xl shadow-lg active:scale-95 transition-all flex items-center justify-center gap-1 flex-1"
-    const bSz = deviceMode === 'phone' ? "px-2 text-xs min-w-[60px]" : "px-4 text-sm min-w-[90px]"
+    const bCls = "bg-gray-900 hover:bg-primary-500 active:bg-primary-600 text-white font-bold rounded-sm shadow-lg active:scale-95 transition-all flex items-center justify-center gap-1 flex-1"
+    const bSz = deviceMode === 'phone' ? "px-2 text-xs min-w-[44px]" : "px-4 text-sm min-w-[70px]"
     const ico = deviceMode === 'phone' ? "w-4 h-4" : "w-5 h-5"
 
     if (isEMode) {
       if (position === 'left') return (
-        <div className="flex flex-col gap-1 shrink-0 py-1" style={{ minHeight: '100%' }}>
+        <div className="flex flex-col gap-0" style={{ minWidth: deviceMode === 'phone' ? 44 : 70, minHeight: '100%' }}>
           <button onClick={() => handleAnswer('up')} className={`${bCls} ${bSz}`}>
-            <ArrowUp className={ico} strokeWidth={2.5} />Up
+            <ArrowUp className={ico} strokeWidth={2.5} />{deviceMode === 'desktop' && 'Up'}
           </button>
           <button onClick={() => handleAnswer('left')} className={`${bCls} ${bSz}`}>
-            <ArrowLeft className={ico} strokeWidth={2.5} />Left
+            <ArrowLeft className={ico} strokeWidth={2.5} />{deviceMode === 'desktop' && 'Left'}
           </button>
         </div>
       )
       return (
-        <div className="flex flex-col gap-1 shrink-0 py-1" style={{ minHeight: '100%' }}>
+        <div className="flex flex-col gap-0" style={{ minWidth: deviceMode === 'phone' ? 44 : 70, minHeight: '100%' }}>
           <button onClick={() => handleAnswer('right')} className={`${bCls} ${bSz}`}>
-            Rt<ArrowRight className={ico} strokeWidth={2.5} />
+            {deviceMode === 'desktop' && 'Rt'}<ArrowRight className={ico} strokeWidth={2.5} />
           </button>
           <button onClick={() => handleAnswer('down')} className={`${bCls} ${bSz}`}>
-            <ArrowDown className={ico} strokeWidth={2.5} />Dn
+            <ArrowDown className={ico} strokeWidth={2.5} />{deviceMode === 'desktop' && 'Dn'}
           </button>
         </div>
       )
@@ -235,7 +252,7 @@ export default function BinocularChart({
     // Letter mode — 2 letters per column
     const letters = position === 'left' ? letterChoices.slice(0, 2) : letterChoices.slice(2, 4)
     return (
-      <div className="flex flex-col gap-1 shrink-0 py-1" style={{ minHeight: '100%' }}>
+      <div className="flex flex-col gap-0" style={{ minWidth: deviceMode === 'phone' ? 44 : 70, minHeight: '100%' }}>
         {letters.map(l => (
           <button key={l} onClick={() => handleAnswer(l)}
             className={`${bCls} ${bSz} font-black text-lg`}>{l}</button>
@@ -248,8 +265,8 @@ export default function BinocularChart({
   const renderEyeUnit = (side: 'left' | 'right') => (
     <div className="flex items-stretch flex-1 gap-0.5">
       {renderButtonCol('left')}
-      <div className="flex-1 bg-white rounded-md flex items-center justify-center"
-        style={{ padding: deviceMode === 'phone' ? '4px' : '10px' }}>
+      <div className="flex-1 flex items-center justify-center"
+        style={{ padding: deviceMode === 'phone' ? '1px' : '4px' }}>
         {renderChart(side)}
       </div>
       {renderButtonCol('right')}
