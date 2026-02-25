@@ -416,8 +416,8 @@ export function VisionTraining() {
                 {/* Training Session - ONLY show when training is active */}
                 {isTrainingActive && binocularMode !== 'off' ? (
                   /* Fullscreen overlay for binocular — hides navbars and microphone */
-                  <div className="fixed inset-0 z-[100] bg-gray-900 flex flex-col overflow-auto">
-                    <div className="absolute top-2 left-2 z-[110] flex gap-2">
+                  <div className="fixed inset-0 z-[9999] bg-gray-900 flex flex-col overflow-auto">
+                    <div className="absolute top-2 left-2 z-[10000] flex gap-2">
                       <button
                         onClick={() => setIsTrainingActive(false)}
                         className="px-4 py-2 rounded-lg bg-red-600/80 hover:bg-red-600 text-white font-medium border border-red-500/50 backdrop-blur-sm transition-all hover:scale-105 shadow-lg"
