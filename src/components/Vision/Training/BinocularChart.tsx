@@ -30,20 +30,21 @@ const CHART_LINES = [
 const E_DIRECTIONS: readonly EDirection[] = ['up', 'down', 'left', 'right']
 const CONFUSABLE_LETTERS = ['O', 'Q', 'C', 'D', 'H', 'M', 'N', 'K', 'X', 'R', 'S', 'Z', 'V']
 
-// Tumbling E — integer coords for pixel-perfect rendering
+// Tumbling E — matches SnellenChart's TumblingE exactly (thickness=7, computed y positions)
 function TumblingE({ direction, size, color = '#000000', visible = true }: {
   direction: EDirection; size: number; color?: string; visible?: boolean
 }) {
   if (!visible) return <div style={{ width: size, height: size }} />
   const rot: Record<EDirection, number> = { right: 0, down: 90, left: 180, up: 270 }
+  const thickness = 7
   return (
     <svg width={size} height={size} viewBox="0 0 50 50"
-      style={{ transform: `rotate(${rot[direction]}deg)`, shapeRendering: 'crispEdges' }}>
+      style={{ transform: `rotate(${rot[direction]}deg)` }}>
       <g fill={color}>
-        <rect x="5" y="5" width="8" height="40" />
-        <rect x="5" y="5" width="40" height="8" />
-        <rect x="5" y="21" width="35" height="8" />
-        <rect x="5" y="37" width="40" height="8" />
+        <rect x="5" y="5" width={thickness} height="40" />
+        <rect x="5" y="5" width="40" height={thickness} />
+        <rect x="5" y={25 - thickness / 2} width="35" height={thickness} />
+        <rect x="5" y={45 - thickness} width="40" height={thickness} />
       </g>
     </svg>
   )
