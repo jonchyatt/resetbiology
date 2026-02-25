@@ -5,6 +5,8 @@ import { getUserFromSession } from '@/lib/getUserFromSession'
 import webpush from 'web-push'
 import { sendDoseReminderEmail } from '@/lib/email'
 
+export const dynamic = 'force-dynamic'
+
 // Set VAPID keys lazily to prevent build-time errors when env vars missing
 let vapidConfigured = false
 function ensureVapid() {

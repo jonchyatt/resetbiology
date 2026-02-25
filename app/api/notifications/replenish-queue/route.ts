@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { scheduleNotificationsForProtocol } from '@/lib/scheduleNotifications'
 
+export const dynamic = 'force-dynamic'
+
 /**
  * Replenish notification queue for active protocols
  * Runs daily at 2 AM via Vercel Cron

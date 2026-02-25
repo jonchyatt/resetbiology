@@ -4,23 +4,22 @@ import { sendDoseReminderEmail } from '@/lib/email'
 import { CronHealthMonitor } from '@/lib/cronHealthMonitoring'
 import webpush from 'web-push'
 
-// Validate required environment variables
-function validateEnvVars(): { valid: boolean; missing: string[] } {
-  const required = ['VAPID_PUBLIC_KEY', 'VAPID_PRIVATE_KEY', 'CRON_SECRET', 'RESEND_API_KEY']
-  const missing = required.filter(key => !process.env[key])
-  return { valid: missing.length === 0, missing }
-}
+export const dynamic = 'force-dynamic'
 
-// Set VAPID keys (will be configured in .env)
-const envCheck = validateEnvVars()
-if (envCheck.valid) {
-  webpush.setVapidDetails(
-    'mailto:admin@resetbiology.com',
-    process.env.VAPID_PUBLIC_KEY!,
-    process.env.VAPID_PRIVATE_KEY!
-  )
-} else {
-  console.error('❌ Missing required environment variables:', envCheck.missing)
+// Set VAPID keys lazily to prevent build-time errors when env vars missing
+let vapidConfigured = false
+function ensureVapid(): boolean {
+  if (vapidConfigured) return true
+  const pub = process.env.VAPID_PUBLIC_KEY
+  const priv = process.env.VAPID_PRIVATE_KEY
+  if (pub && pub.length > 0 && priv && priv.length > 0) {
+    try {
+      webpush.setVapidDetails('mailto:admin@resetbiology.com', pub, priv)
+      vapidConfigured = true
+      return true
+    } catch { return false }
+  }
+  return false
 }
 
 async function sendNotifications() {
@@ -65,6 +64,12 @@ async function sendNotifications() {
       let subscriptionsToDelete: string[] = []
 
       if (notification.type === 'push') {
+        if (!ensureVapid()) {
+          console.warn('⚠️  VAPID keys not configured, skipping push notification')
+          errors.push({ id: notification.id, error: 'VAPID keys not configured' })
+          continue
+        }
+
         if (notification.user.pushSubscriptions.length === 0) {
           console.warn('⚠️  No push subscriptions found for user:', notification.userId)
           errors.push({ id: notification.id, error: 'No push subscriptions' })

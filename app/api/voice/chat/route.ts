@@ -3,11 +3,30 @@ import { OpenAI } from 'openai';
 import { AgentOrchestrator } from '@/lib/agents/AgentOrchestrator';
 import { auth0 } from '@/lib/auth0';
 
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-});
+// Force dynamic rendering — skip build-time page data collection
+// (OpenAI SDK throws when OPENAI_API_KEY env var is missing at build time)
+export const dynamic = 'force-dynamic';
 
-const orchestrator = new AgentOrchestrator();
+// Lazy initialization to prevent build-time errors when env vars are missing
+let openai: OpenAI | null = null;
+function getOpenAI(): OpenAI {
+    if (!openai) {
+        if (!process.env.OPENAI_API_KEY) {
+            throw new Error('OPENAI_API_KEY is not configured');
+        }
+        openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    }
+    return openai;
+}
+
+// Lazy initialization for orchestrator (it also uses OpenAI internally)
+let orchestrator: AgentOrchestrator | null = null;
+function getOrchestrator(): AgentOrchestrator {
+    if (!orchestrator) {
+        orchestrator = new AgentOrchestrator();
+    }
+    return orchestrator;
+}
 
 export async function POST(req: NextRequest) {
     try {
@@ -52,7 +71,7 @@ export async function POST(req: NextRequest) {
             // Create a new File with proper name if needed
             const fileForWhisper = new File([audioFile], fileName, { type: audioFile.type || 'audio/webm' });
 
-            const transcription = await openai.audio.transcriptions.create({
+            const transcription = await getOpenAI().audio.transcriptions.create({
                 file: fileForWhisper,
                 model: 'whisper-1',
             });
@@ -77,7 +96,7 @@ export async function POST(req: NextRequest) {
         let agent: string;
         let agentText: string;
         try {
-            const result = await orchestrator.handleMessage(userId, userText, [], pageContext || undefined);
+            const result = await getOrchestrator().handleMessage(userId, userText, [], pageContext || undefined);
             agent = result.agent;
             agentText = result.response;
             console.log(`[VoiceAPI] Agent (${agent}) replied: "${agentText}"`);
@@ -89,7 +108,7 @@ export async function POST(req: NextRequest) {
         // 5. Generate Speech (Text-to-Speech)
         let audioArrayBuffer: ArrayBuffer;
         try {
-            const mp3 = await openai.audio.speech.create({
+            const mp3 = await getOpenAI().audio.speech.create({
                 model: 'tts-1',
                 voice: 'alloy',
                 input: agentText,

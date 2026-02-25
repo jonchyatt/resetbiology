@@ -5,6 +5,8 @@ import { prisma } from '@/lib/prisma'
 import OpenAI from 'openai'
 import { compressImageForAI, base64ToBuffer, estimateVisionCost } from '@/lib/imageUtils'
 
+export const dynamic = 'force-dynamic'
+
 // Nutrition analysis prompt (adapted from n8n workflow)
 const NUTRITION_ANALYSIS_PROMPT = `You are a professional nutrition analyst. Your goal is to analyze this food photo for each visible item and output a structured JSON with clear calorie and macro estimates.
 
