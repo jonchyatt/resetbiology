@@ -415,7 +415,7 @@ export function VisionTraining() {
                 )}
 
                 {/* Training Session - ONLY show when training is active */}
-                {isTrainingActive && binocularMode !== 'off' ?
+                {isTrainingActive && binocularMode !== 'off' ? (
                   typeof window !== 'undefined' ? createPortal(
                     /* Fullscreen overlay for binocular — hides navbars and microphone */
                     <div className="fixed inset-0 w-full h-full z-[99999] bg-gray-900 flex flex-col overflow-auto">
