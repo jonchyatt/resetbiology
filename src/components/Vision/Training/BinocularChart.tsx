@@ -300,31 +300,41 @@ export default function BinocularChart({
     )
   }
 
-  // Binocular-friendly prompt — doubled so cross-eyed fusion isn't broken
-  const renderDistancePrompt = () => {
-    const prompt = (
-      <div className="bg-gray-800/90 border border-green-500/40 rounded-lg p-3 text-center">
-        <div className="flex items-center justify-center gap-2 mb-2">
-          <MoveHorizontal className="w-4 h-4 text-green-400" />
-          <span className="text-green-400 font-bold text-sm">Chart Complete!</span>
-        </div>
-        <div className="flex gap-2 justify-center">
-          <button onClick={() => handleDistanceAdjust('further')}
-            className="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold text-sm">Move Further</button>
-          <button onClick={() => { setShowDistancePrompt(false); regenerateChart() }}
-            className="px-3 py-2 bg-gray-600 hover:bg-gray-500 text-gray-200 rounded-lg text-sm">Stay</button>
-        </div>
+  // Distance prompt — center message only (buttons are on sides)
+  const renderDistanceCenterMessage = () => {
+    const msg = (
+      <div className="flex items-center justify-center gap-2">
+        <MoveHorizontal className="w-5 h-5 text-green-400" />
+        <span className="text-green-400 font-bold text-base">Chart Complete!</span>
       </div>
     )
-    // Duplicate the prompt for binocular mode so it fuses correctly
     return (
       <div className="flex items-center gap-0.5 flex-1">
-        <div className="flex-1 flex items-center justify-center px-4">{prompt}</div>
+        <div className="flex-1 flex items-center justify-center">{msg}</div>
         <div className="w-px bg-gray-600 self-stretch shrink-0" />
-        <div className="flex-1 flex items-center justify-center px-4">{prompt}</div>
+        <div className="flex-1 flex items-center justify-center">{msg}</div>
       </div>
     )
   }
+
+  // Distance prompt side buttons — same position as direction/letter buttons
+  const renderDistanceButton = (side: 'left' | 'right') => (
+    <div className="flex flex-col w-[15%] shrink-0">
+      <button
+        onClick={side === 'left'
+          ? () => { setShowDistancePrompt(false); regenerateChart() }
+          : () => handleDistanceAdjust('further')}
+        className="flex-1 flex flex-col items-center justify-center cursor-pointer select-none active:scale-95 transition-transform gap-1"
+      >
+        <span className={`font-bold text-lg ${side === 'left' ? 'text-gray-300' : 'text-green-400'}`}>
+          {side === 'left' ? 'Stay' : 'Forward'}
+        </span>
+        <span className="text-gray-500 text-xs">
+          {side === 'left' ? '(same distance)' : '(move further)'}
+        </span>
+      </button>
+    </div>
+  )
 
   return (
     <div className="flex flex-col h-full">
@@ -381,10 +391,10 @@ export default function BinocularChart({
           )}
         </div>
 
-        {/* Content area: [buttons] [scaled charts] [buttons] */}
+        {/* Content area: [left side] [scaled charts] [right side] */}
         <div className="flex items-stretch flex-1">
-          {/* Left buttons — outside scale, pinned to screen edge */}
-          {!showDistancePrompt && renderButtonColumn('left')}
+          {/* Left side — always pinned to screen edge */}
+          {showDistancePrompt ? renderDistanceButton('left') : renderButtonColumn('left')}
 
           {/* Scaled chart area — only charts zoom */}
           <div className="flex-1 flex items-center justify-center overflow-hidden">
@@ -393,7 +403,7 @@ export default function BinocularChart({
               transformOrigin: 'center center',
             }}>
               {showDistancePrompt ? (
-                renderDistancePrompt()
+                renderDistanceCenterMessage()
               ) : (
                 <div className="flex items-stretch gap-0.5 flex-1">
                   {renderChart('left')}
@@ -413,8 +423,8 @@ export default function BinocularChart({
             </div>
           </div>
 
-          {/* Right buttons — outside scale, pinned to screen edge */}
-          {!showDistancePrompt && renderButtonColumn('right')}
+          {/* Right side — always pinned to screen edge */}
+          {showDistancePrompt ? renderDistanceButton('right') : renderButtonColumn('right')}
         </div>
 
         {consecutiveFailures >= 2 && <div className="text-orange-500 text-xs text-center pb-2">One more miss resets chart</div>}
