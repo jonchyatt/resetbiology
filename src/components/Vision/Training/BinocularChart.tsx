@@ -261,40 +261,40 @@ export default function BinocularChart({
     )
   }
 
-  // Arrow button for E-directional mode — large touch zones at corners
-  const arrowIco = deviceMode === 'phone' ? 'w-8 h-8' : 'w-10 h-10'
-  const arrowBtn = "flex items-center justify-center hover:bg-gray-700/40 active:bg-primary-600/40 rounded-xl transition-all active:scale-95 cursor-pointer select-none"
+  // Arrow button for E-directional mode — visible square zones at corners
+  const arrowIco = deviceMode === 'phone' ? 'w-10 h-10' : 'w-12 h-12'
+  const arrowBtn = "flex items-center justify-center bg-gray-700/50 hover:bg-gray-600/60 active:bg-primary-600/50 rounded-xl transition-all active:scale-95 cursor-pointer select-none"
 
-  // Letter button for letter mode — fills full column height
-  const letterBtn = "flex-1 flex items-center justify-center bg-gray-800/60 hover:bg-primary-500/80 active:bg-primary-600 text-white font-black text-2xl rounded-xl shadow-md active:scale-95 transition-all cursor-pointer select-none min-w-[56px]"
+  // Letter button for letter mode — large square zones filling column
+  const letterBtn = "flex-1 flex items-center justify-center bg-gray-700/50 hover:bg-primary-500/80 active:bg-primary-600 text-white font-black text-3xl rounded-xl shadow-md active:scale-95 transition-all cursor-pointer select-none"
 
   // One "eye unit" — arrows at 4 corners: ↑↓ top (same level), ←→ bottom (same level)
   const renderEyeUnit = (side: 'left' | 'right') => {
     const isEMode = exerciseType === 'e-directional'
 
     if (isEMode) {
+      // E mode: 3-col grid — left arrow col | chart | right arrow col
+      // Top row arrows (Up/Down) and bottom row arrows (Left/Right) at the corners
       return (
-        <div className="flex-1 flex flex-col">
-          {/* Top corners: Up (left) and Down (right) — large touch zones */}
-          <div className="flex items-stretch justify-between gap-1">
+        <div className="flex items-stretch flex-1 gap-1">
+          {/* Left column: Up top, Left bottom */}
+          <div className="flex flex-col gap-1 flex-[2]">
             <button onClick={() => handleAnswer('up')} className={`${arrowBtn} flex-1`}>
               <ArrowUp className={`${arrowIco} text-gray-300`} strokeWidth={2.5} />
             </button>
-            <div className="flex-[2]" />
-            <button onClick={() => handleAnswer('down')} className={`${arrowBtn} flex-1`}>
-              <ArrowDown className={`${arrowIco} text-gray-300`} strokeWidth={2.5} />
-            </button>
-          </div>
-          {/* Chart in the center */}
-          <div className="flex-1 flex items-center justify-center overflow-hidden">
-            {renderChart(side)}
-          </div>
-          {/* Bottom corners: Left (left) and Right (right) — large touch zones */}
-          <div className="flex items-stretch justify-between gap-1">
             <button onClick={() => handleAnswer('left')} className={`${arrowBtn} flex-1`}>
               <ArrowLeft className={`${arrowIco} text-gray-300`} strokeWidth={2.5} />
             </button>
-            <div className="flex-[2]" />
+          </div>
+          {/* Chart center */}
+          <div className="flex-[5] flex items-center justify-center overflow-hidden">
+            {renderChart(side)}
+          </div>
+          {/* Right column: Down top, Right bottom */}
+          <div className="flex flex-col gap-1 flex-[2]">
+            <button onClick={() => handleAnswer('down')} className={`${arrowBtn} flex-1`}>
+              <ArrowDown className={`${arrowIco} text-gray-300`} strokeWidth={2.5} />
+            </button>
             <button onClick={() => handleAnswer('right')} className={`${arrowBtn} flex-1`}>
               <ArrowRight className={`${arrowIco} text-gray-300`} strokeWidth={2.5} />
             </button>
@@ -303,20 +303,20 @@ export default function BinocularChart({
       )
     }
 
-    // Letter mode — 2 choices on left (full height), chart center, 2 choices on right (full height)
+    // Letter mode — square button zones on each side, chart center
     const leftLetters = letterChoices.slice(0, 2)
     const rightLetters = letterChoices.slice(2, 4)
     return (
       <div className="flex items-stretch flex-1 gap-1">
-        <div className="flex flex-col gap-1" style={{ minWidth: deviceMode === 'phone' ? 56 : 64 }}>
+        <div className="flex flex-col gap-1 flex-[2]">
           {leftLetters.map(l => (
             <button key={l} onClick={() => handleAnswer(l)} className={letterBtn}>{l}</button>
           ))}
         </div>
-        <div className="flex-1 flex items-center justify-center overflow-hidden">
+        <div className="flex-[5] flex items-center justify-center overflow-hidden">
           {renderChart(side)}
         </div>
-        <div className="flex flex-col gap-1" style={{ minWidth: deviceMode === 'phone' ? 56 : 64 }}>
+        <div className="flex flex-col gap-1 flex-[2]">
           {rightLetters.map(l => (
             <button key={l} onClick={() => handleAnswer(l)} className={letterBtn}>{l}</button>
           ))}
