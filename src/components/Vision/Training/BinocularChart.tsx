@@ -261,66 +261,41 @@ export default function BinocularChart({
     )
   }
 
-  // Arrow button for E-directional mode — visible square zones at corners
+  // Arrow icons
   const arrowIco = deviceMode === 'phone' ? 'w-10 h-10' : 'w-12 h-12'
-  const arrowBtn = "flex items-center justify-center active:bg-primary-600/40 rounded-xl transition-all active:scale-95 cursor-pointer select-none"
+  const ArrowIcons = { up: ArrowUp, down: ArrowDown, left: ArrowLeft, right: ArrowRight }
 
-  // Letter button for letter mode — large square zones filling column
-  const letterBtn = "flex-1 flex items-center justify-center active:bg-primary-600/40 text-white font-black text-3xl rounded-xl active:scale-95 transition-all cursor-pointer select-none"
-
-  // One "eye unit" — arrows at 4 corners: ↑↓ top (same level), ←→ bottom (same level)
-  const renderEyeUnit = (side: 'left' | 'right') => {
+  // Button column — lives OUTSIDE the scale transform, always at screen edge
+  const renderButtonColumn = (side: 'left' | 'right') => {
     const isEMode = exerciseType === 'e-directional'
 
     if (isEMode) {
-      // E mode: 3-col grid — left arrow col | chart | right arrow col
-      // Top row arrows (Up/Down) and bottom row arrows (Left/Right) at the corners
+      const dirs: EDirection[] = side === 'left' ? ['up', 'left'] : ['down', 'right']
       return (
-        <div className="flex items-stretch flex-1 gap-1">
-          {/* Left column: Up top, Left bottom */}
-          <div className="flex flex-col gap-1 flex-[2]">
-            <button onClick={() => handleAnswer('up')} className={`${arrowBtn} flex-1`}>
-              <ArrowUp className={`${arrowIco} text-gray-300`} strokeWidth={2.5} />
-            </button>
-            <button onClick={() => handleAnswer('left')} className={`${arrowBtn} flex-1`}>
-              <ArrowLeft className={`${arrowIco} text-gray-300`} strokeWidth={2.5} />
-            </button>
-          </div>
-          {/* Chart center */}
-          <div className="flex-[5] flex items-center justify-center overflow-hidden">
-            {renderChart(side)}
-          </div>
-          {/* Right column: Down top, Right bottom */}
-          <div className="flex flex-col gap-1 flex-[2]">
-            <button onClick={() => handleAnswer('down')} className={`${arrowBtn} flex-1`}>
-              <ArrowDown className={`${arrowIco} text-gray-300`} strokeWidth={2.5} />
-            </button>
-            <button onClick={() => handleAnswer('right')} className={`${arrowBtn} flex-1`}>
-              <ArrowRight className={`${arrowIco} text-gray-300`} strokeWidth={2.5} />
-            </button>
-          </div>
+        <div className="flex flex-col gap-1 w-[15%] shrink-0">
+          {dirs.map(dir => {
+            const Icon = ArrowIcons[dir]
+            return (
+              <button key={dir} onClick={() => handleAnswer(dir)}
+                className="flex-1 flex items-center justify-center active:scale-95 transition-transform cursor-pointer select-none">
+                <Icon className={`${arrowIco} text-gray-300`} strokeWidth={2.5} />
+              </button>
+            )
+          })}
         </div>
       )
     }
 
-    // Letter mode — square button zones on each side, chart center
-    const leftLetters = letterChoices.slice(0, 2)
-    const rightLetters = letterChoices.slice(2, 4)
+    // Letter mode
+    const letters = side === 'left' ? letterChoices.slice(0, 2) : letterChoices.slice(2, 4)
     return (
-      <div className="flex items-stretch flex-1 gap-1">
-        <div className="flex flex-col gap-1 flex-[2]">
-          {leftLetters.map(l => (
-            <button key={l} onClick={() => handleAnswer(l)} className={letterBtn}>{l}</button>
-          ))}
-        </div>
-        <div className="flex-[5] flex items-center justify-center overflow-hidden">
-          {renderChart(side)}
-        </div>
-        <div className="flex flex-col gap-1 flex-[2]">
-          {rightLetters.map(l => (
-            <button key={l} onClick={() => handleAnswer(l)} className={letterBtn}>{l}</button>
-          ))}
-        </div>
+      <div className="flex flex-col gap-1 w-[15%] shrink-0">
+        {letters.map(l => (
+          <button key={l} onClick={() => handleAnswer(l)}
+            className="flex-1 flex items-center justify-center text-white font-black text-3xl active:scale-95 transition-transform cursor-pointer select-none">
+            {l}
+          </button>
+        ))}
       </div>
     )
   }
@@ -406,31 +381,40 @@ export default function BinocularChart({
           )}
         </div>
 
-        {/* Scalable content area — centered vertically, clipped to fit */}
-        <div className="flex-1 flex items-center justify-center overflow-hidden">
-          <div className="flex flex-col w-full max-h-full" style={{
-            transform: `scale(${viewScale / 100})`,
-            transformOrigin: 'center center',
-          }}>
-            {showDistancePrompt ? (
-              renderDistancePrompt()
-            ) : (
-              <div className="flex items-stretch gap-0.5 flex-1">
-                {renderEyeUnit('left')}
-                <div className="w-px bg-gray-600 self-stretch shrink-0" />
-                {renderEyeUnit('right')}
-              </div>
-            )}
+        {/* Content area: [buttons] [scaled charts] [buttons] */}
+        <div className="flex items-stretch flex-1">
+          {/* Left buttons — outside scale, pinned to screen edge */}
+          {!showDistancePrompt && renderButtonColumn('left')}
 
-            {/* Progress dots — doubled for binocular */}
-            <div className="flex items-center justify-center gap-1.5 mt-2 pb-2">
-              {CHART_LINES.map((_, i) => (
-                <div key={i} className={`w-2.5 h-2.5 rounded-full transition-all ${
-                  i < currentLineIndex ? 'bg-green-400' : i === currentLineIndex ? 'bg-primary-500' : 'bg-gray-500'
-                }`} />
-              ))}
+          {/* Scaled chart area — only charts zoom */}
+          <div className="flex-1 flex items-center justify-center overflow-hidden">
+            <div className="flex flex-col w-full max-h-full" style={{
+              transform: `scale(${viewScale / 100})`,
+              transformOrigin: 'center center',
+            }}>
+              {showDistancePrompt ? (
+                renderDistancePrompt()
+              ) : (
+                <div className="flex items-stretch gap-0.5 flex-1">
+                  {renderChart('left')}
+                  <div className="w-px bg-gray-600 self-stretch shrink-0" />
+                  {renderChart('right')}
+                </div>
+              )}
+
+              {/* Progress dots */}
+              <div className="flex items-center justify-center gap-1.5 mt-2 pb-2">
+                {CHART_LINES.map((_, i) => (
+                  <div key={i} className={`w-2.5 h-2.5 rounded-full transition-all ${
+                    i < currentLineIndex ? 'bg-green-400' : i === currentLineIndex ? 'bg-primary-500' : 'bg-gray-500'
+                  }`} />
+                ))}
+              </div>
             </div>
           </div>
+
+          {/* Right buttons — outside scale, pinned to screen edge */}
+          {!showDistancePrompt && renderButtonColumn('right')}
         </div>
 
         {consecutiveFailures >= 2 && <div className="text-orange-500 text-xs text-center pb-2">One more miss resets chart</div>}
