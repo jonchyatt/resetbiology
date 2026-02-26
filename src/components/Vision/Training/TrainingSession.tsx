@@ -14,6 +14,7 @@ interface TrainingSessionProps {
   deviceMode?: 'phone' | 'desktop'
   binocularMode?: BinocularMode
   onActiveChange?: (isActive: boolean) => void
+  onExit?: () => void
 }
 
 // Reader glasses progression for nearsightedness training
@@ -46,7 +47,8 @@ export default function TrainingSession({
   initialLevel = 1,
   deviceMode = 'phone',
   binocularMode = 'off',
-  onActiveChange
+  onActiveChange,
+  onExit
 }: TrainingSessionProps) {
   const isBinocular = binocularMode && binocularMode !== 'off'
   const [currentLevel, setCurrentLevel] = useState(initialLevel)
@@ -247,28 +249,42 @@ export default function TrainingSession({
       {/* CHART FIRST when active - this is the main focus! */}
       {isActive && !sessionComplete && (
         <div className="relative">
-          {/* Compact stats bar */}
-          <div className="bg-gray-900/60 backdrop-blur-sm rounded-t-lg px-4 py-2 flex items-center justify-between">
+          {/* Unified stats bar — matches mockup: stats left, controls right */}
+          <div className="bg-gray-900/80 backdrop-blur-sm px-4 py-2 flex items-center justify-between">
             <div className="flex items-center gap-4 text-sm">
               <span className="text-white font-semibold">{difficulty.label}</span>
-              <span className="text-gray-400">|</span>
+              <span className="text-gray-600">|</span>
               <span className="text-gray-300">{formatTime(sessionDuration)}</span>
-              <span className="text-gray-400">|</span>
+              <span className="text-gray-600">|</span>
               <span className={accuracy >= difficulty.requiredAccuracy ? 'text-secondary-400' : 'text-yellow-400'}>
                 {accuracy.toFixed(0)}% ({attempts}/10)
               </span>
             </div>
-            <div className="flex gap-2">
+            <div className="flex items-center gap-2">
+              {onExit && (
+                <>
+                  <button
+                    onClick={onExit}
+                    className="px-4 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm font-semibold flex items-center gap-1.5 transition-all"
+                  >
+                    <RotateCcw className="w-4 h-4" />
+                    Exit Training
+                  </button>
+                  <div className="px-3 py-1.5 rounded-lg bg-gray-800 text-gray-400 text-xs border border-gray-600/50">
+                    Press ESC to exit
+                  </div>
+                </>
+              )}
               <button
                 onClick={() => setIsActive(false)}
-                className="px-3 py-1 rounded bg-yellow-500 hover:bg-yellow-600 text-gray-900 text-sm font-semibold flex items-center gap-1"
+                className="px-4 py-1.5 rounded-lg border border-gray-500 hover:border-gray-400 text-white text-sm font-semibold flex items-center gap-1.5 transition-all"
               >
                 <Pause className="w-4 h-4" />
                 Pause
               </button>
               <button
                 onClick={resetSession}
-                className="px-3 py-1 rounded bg-gray-700 hover:bg-gray-600 text-white text-sm flex items-center gap-1"
+                className="p-1.5 rounded-lg border border-gray-600 hover:border-gray-400 text-gray-300 hover:text-white transition-all"
               >
                 <RotateCcw className="w-4 h-4" />
               </button>

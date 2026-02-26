@@ -218,60 +218,65 @@ export default function BinocularChart({
     )
   }
 
-  // "Read true" button column — each chart gets its own buttons on BOTH sides
-  // When cross-eye fused, the inner buttons overlap into one perceived set
-  const renderButtonCol = (position: 'left' | 'right') => {
+  // Arrow button for E-directional mode — large standalone arrows around the chart
+  const arrowIco = deviceMode === 'phone' ? 'w-7 h-7' : 'w-10 h-10'
+  const arrowBtn = "p-2 hover:bg-gray-700/40 active:bg-primary-600/40 rounded-lg transition-all active:scale-90 cursor-pointer select-none"
+
+  // Letter button for letter mode — positioned around the chart
+  const letterBtn = "px-3 py-2 bg-gray-800/80 hover:bg-primary-500 active:bg-primary-600 text-white font-black text-lg rounded-lg shadow-md active:scale-95 transition-all cursor-pointer select-none min-w-[44px] text-center"
+
+  // One "eye unit" — cross-shaped layout: arrows at N/S/E/W around the chart
+  const renderEyeUnit = (side: 'left' | 'right') => {
     const isEMode = exerciseType === 'e-directional'
-    // Tall buttons that fill vertical space — easy to press without precision
-    const bCls = "bg-gray-900 hover:bg-primary-500 active:bg-primary-600 text-white font-bold rounded-sm shadow-lg active:scale-95 transition-all flex items-center justify-center gap-1 flex-1"
-    const bSz = deviceMode === 'phone' ? "px-2 text-xs min-w-[44px]" : "px-4 text-sm min-w-[70px]"
-    const ico = deviceMode === 'phone' ? "w-4 h-4" : "w-5 h-5"
 
     if (isEMode) {
-      if (position === 'left') return (
-        <div className="flex flex-col gap-0" style={{ minWidth: deviceMode === 'phone' ? 44 : 70, minHeight: '100%' }}>
-          <button onClick={() => handleAnswer('up')} className={`${bCls} ${bSz}`}>
-            <ArrowUp className={ico} strokeWidth={2.5} />{deviceMode === 'desktop' && 'Up'}
-          </button>
-          <button onClick={() => handleAnswer('left')} className={`${bCls} ${bSz}`}>
-            <ArrowLeft className={ico} strokeWidth={2.5} />{deviceMode === 'desktop' && 'Left'}
-          </button>
-        </div>
-      )
       return (
-        <div className="flex flex-col gap-0" style={{ minWidth: deviceMode === 'phone' ? 44 : 70, minHeight: '100%' }}>
-          <button onClick={() => handleAnswer('right')} className={`${bCls} ${bSz}`}>
-            {deviceMode === 'desktop' && 'Rt'}<ArrowRight className={ico} strokeWidth={2.5} />
+        <div className="flex-1 flex flex-col items-center justify-center">
+          {/* Up arrow */}
+          <button onClick={() => handleAnswer('up')} className={arrowBtn}>
+            <ArrowUp className={`${arrowIco} text-gray-300`} strokeWidth={2.5} />
           </button>
-          <button onClick={() => handleAnswer('down')} className={`${bCls} ${bSz}`}>
-            <ArrowDown className={ico} strokeWidth={2.5} />{deviceMode === 'desktop' && 'Dn'}
+          {/* Middle row: left arrow, chart, right arrow */}
+          <div className="flex items-center flex-1 w-full">
+            <button onClick={() => handleAnswer('left')} className={arrowBtn}>
+              <ArrowLeft className={`${arrowIco} text-gray-300`} strokeWidth={2.5} />
+            </button>
+            <div className="flex-1 flex items-center justify-center">
+              {renderChart(side)}
+            </div>
+            <button onClick={() => handleAnswer('right')} className={arrowBtn}>
+              <ArrowRight className={`${arrowIco} text-gray-300`} strokeWidth={2.5} />
+            </button>
+          </div>
+          {/* Down arrow */}
+          <button onClick={() => handleAnswer('down')} className={arrowBtn}>
+            <ArrowDown className={`${arrowIco} text-gray-300`} strokeWidth={2.5} />
           </button>
         </div>
       )
     }
-    // Letter mode — 2 letters per column
-    const letters = position === 'left' ? letterChoices.slice(0, 2) : letterChoices.slice(2, 4)
+
+    // Letter mode — 2 choices on left, chart center, 2 choices on right
+    const leftLetters = letterChoices.slice(0, 2)
+    const rightLetters = letterChoices.slice(2, 4)
     return (
-      <div className="flex flex-col gap-0" style={{ minWidth: deviceMode === 'phone' ? 44 : 70, minHeight: '100%' }}>
-        {letters.map(l => (
-          <button key={l} onClick={() => handleAnswer(l)}
-            className={`${bCls} ${bSz} font-black text-lg`}>{l}</button>
-        ))}
+      <div className="flex items-center flex-1 gap-1">
+        <div className="flex flex-col gap-2">
+          {leftLetters.map(l => (
+            <button key={l} onClick={() => handleAnswer(l)} className={letterBtn}>{l}</button>
+          ))}
+        </div>
+        <div className="flex-1 flex items-center justify-center">
+          {renderChart(side)}
+        </div>
+        <div className="flex flex-col gap-2">
+          {rightLetters.map(l => (
+            <button key={l} onClick={() => handleAnswer(l)} className={letterBtn}>{l}</button>
+          ))}
+        </div>
       </div>
     )
   }
-
-  // One "eye unit" = [left-buttons] [chart] [right-buttons]
-  const renderEyeUnit = (side: 'left' | 'right') => (
-    <div className="flex items-stretch flex-1 gap-0.5">
-      {renderButtonCol('left')}
-      <div className="flex-1 flex items-center justify-center"
-        style={{ padding: deviceMode === 'phone' ? '1px' : '4px' }}>
-        {renderChart(side)}
-      </div>
-      {renderButtonCol('right')}
-    </div>
-  )
 
   return (
     <div className="flex flex-col h-full">
@@ -313,10 +318,10 @@ export default function BinocularChart({
         )}
 
         {/* Progress dots */}
-        <div className="flex items-center justify-center gap-1 mt-1">
+        <div className="flex items-center justify-center gap-1.5 mt-2">
           {CHART_LINES.map((_, i) => (
-            <div key={i} className={`w-2 h-2 rounded-full transition-all ${
-              i < currentLineIndex ? 'bg-green-400' : i === currentLineIndex ? 'bg-primary-500' : 'bg-gray-300'
+            <div key={i} className={`w-2.5 h-2.5 rounded-full transition-all ${
+              i < currentLineIndex ? 'bg-green-400' : i === currentLineIndex ? 'bg-primary-500' : 'bg-gray-500'
             }`} />
           ))}
         </div>
