@@ -19,17 +19,22 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  // Remove webpack config when using Turbopack for development
-  // Turbopack is used in dev mode, webpack in production
-  ...(process.env.NODE_ENV === 'production' && {
-    webpack: (config, { dev, isServer }) => {
-      if (!dev) {
-        config.devtool = false;
-        config.cache = false;
+  webpack: (config: any, { dev, isServer }: any) => {
+    if (!isServer) {
+      // Ensure ONNX Runtime WASM files are served correctly (for Whisper Web Worker)
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        path: false,
+        crypto: false,
       }
-      return config;
-    },
-  }),
+    }
+    if (!dev) {
+      config.devtool = false;
+      config.cache = false;
+    }
+    return config;
+  },
 };
 
 export default nextConfig;
