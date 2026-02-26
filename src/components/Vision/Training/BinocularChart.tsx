@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { ChevronDown, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, MoveHorizontal, Smartphone } from 'lucide-react'
+import { ChevronDown, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, MoveHorizontal, Smartphone, ZoomIn, ZoomOut } from 'lucide-react'
 
 type EDirection = 'up' | 'down' | 'left' | 'right'
 export type BinocularMode = 'off' | 'duplicate' | 'redgreen' | 'grid-square' | 'grid-slanted' | 'alternating'
@@ -90,6 +90,7 @@ export default function BinocularChart({
   const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null)
   const [showDistancePrompt, setShowDistancePrompt] = useState(false)
   const [letterChoices, setLetterChoices] = useState<string[]>([])
+  const [viewScale, setViewScale] = useState(100) // percentage — allows zooming out for pupil distance
 
   const leftColor = binocularMode === 'duplicate' ? '#FFFFFF' : '#DD0000'
   const rightColor = binocularMode === 'duplicate' ? '#FFFFFF' : '#009500'
@@ -278,6 +279,32 @@ export default function BinocularChart({
     )
   }
 
+  // Binocular-friendly prompt — doubled so cross-eyed fusion isn't broken
+  const renderDistancePrompt = () => {
+    const prompt = (
+      <div className="bg-gray-800/90 border border-green-500/40 rounded-lg p-3 text-center">
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <MoveHorizontal className="w-4 h-4 text-green-400" />
+          <span className="text-green-400 font-bold text-sm">Chart Complete!</span>
+        </div>
+        <div className="flex gap-2 justify-center">
+          <button onClick={() => handleDistanceAdjust('further')}
+            className="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold text-sm">Move Further</button>
+          <button onClick={() => { setShowDistancePrompt(false); regenerateChart() }}
+            className="px-3 py-2 bg-gray-600 hover:bg-gray-500 text-gray-200 rounded-lg text-sm">Stay</button>
+        </div>
+      </div>
+    )
+    // Duplicate the prompt for binocular mode so it fuses correctly
+    return (
+      <div className="flex items-center gap-0.5 flex-1">
+        <div className="flex-1 flex items-center justify-center px-4">{prompt}</div>
+        <div className="w-px bg-gray-600 self-stretch shrink-0" />
+        <div className="flex-1 flex items-center justify-center px-4">{prompt}</div>
+      </div>
+    )
+  }
+
   return (
     <div className="flex flex-col h-full">
       {/* Portrait warning (phone only) */}
@@ -293,38 +320,50 @@ export default function BinocularChart({
 
       {/* Main layout */}
       <div className={`${deviceMode === 'phone' ? 'hidden landscape:flex' : 'flex'} flex-col gap-1 flex-1`}>
-        {showDistancePrompt ? (
-          <div className="bg-green-50 border border-green-300 rounded-lg p-3 text-center">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <MoveHorizontal className="w-4 h-4 text-green-600" />
-              <span className="text-green-600 font-bold text-sm">Chart Complete!</span>
-            </div>
-            <div className="flex gap-2 justify-center">
-              <button onClick={() => handleDistanceAdjust('further')}
-                className="px-3 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-semibold text-sm">Move Further</button>
-              <button onClick={() => { setShowDistancePrompt(false); regenerateChart() }}
-                className="px-3 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg text-sm">Stay</button>
-            </div>
-          </div>
-        ) : (
-          /* "Read true" layout: each chart flanked by its own buttons
-             [L-btns][ChartL][R-btns] | [L-btns][ChartR][R-btns]
-             Inner buttons overlap when cross-eye fused → 8 buttons → perceived as 4 */
-          <div className="flex items-stretch gap-0.5 flex-1">
-            {renderEyeUnit('left')}
-            <div className="w-px bg-gray-600 self-stretch shrink-0" />
-            {renderEyeUnit('right')}
-          </div>
-        )}
-
-        {/* Progress dots */}
-        <div className="flex items-center justify-center gap-1.5 mt-2">
-          {CHART_LINES.map((_, i) => (
-            <div key={i} className={`w-2.5 h-2.5 rounded-full transition-all ${
-              i < currentLineIndex ? 'bg-green-400' : i === currentLineIndex ? 'bg-primary-500' : 'bg-gray-500'
-            }`} />
-          ))}
+        {/* Zoom control for pupil distance adjustment */}
+        <div className="flex items-center justify-center gap-2 py-1">
+          <button
+            onClick={() => setViewScale(s => Math.max(50, s - 10))}
+            className="p-1 rounded hover:bg-gray-700/50 text-gray-400 hover:text-white transition-all"
+            title="Zoom out (narrower)"
+          >
+            <ZoomOut className="w-4 h-4" />
+          </button>
+          <span className="text-gray-500 text-xs w-10 text-center">{viewScale}%</span>
+          <button
+            onClick={() => setViewScale(s => Math.min(100, s + 10))}
+            className="p-1 rounded hover:bg-gray-700/50 text-gray-400 hover:text-white transition-all"
+            title="Zoom in (wider)"
+          >
+            <ZoomIn className="w-4 h-4" />
+          </button>
         </div>
+
+        {/* Scalable content area */}
+        <div className="flex-1 flex flex-col" style={{
+          transform: `scale(${viewScale / 100})`,
+          transformOrigin: 'center center',
+        }}>
+          {showDistancePrompt ? (
+            renderDistancePrompt()
+          ) : (
+            <div className="flex items-stretch gap-0.5 flex-1">
+              {renderEyeUnit('left')}
+              <div className="w-px bg-gray-600 self-stretch shrink-0" />
+              {renderEyeUnit('right')}
+            </div>
+          )}
+
+          {/* Progress dots — doubled for binocular */}
+          <div className="flex items-center justify-center gap-1.5 mt-2">
+            {CHART_LINES.map((_, i) => (
+              <div key={i} className={`w-2.5 h-2.5 rounded-full transition-all ${
+                i < currentLineIndex ? 'bg-green-400' : i === currentLineIndex ? 'bg-primary-500' : 'bg-gray-500'
+              }`} />
+            ))}
+          </div>
+        </div>
+
         {consecutiveFailures >= 2 && <div className="text-orange-500 text-xs text-center">One more miss resets chart</div>}
       </div>
     </div>
