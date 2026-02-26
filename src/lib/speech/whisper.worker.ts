@@ -1,8 +1,9 @@
 // src/lib/speech/whisper.worker.ts
 
-import { pipeline, type AutomaticSpeechRecognitionPipeline } from '@huggingface/transformers'
+import { pipeline } from '@huggingface/transformers'
 
-let transcriber: AutomaticSpeechRecognitionPipeline | null = null
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let transcriber: any = null
 let loading = false
 
 async function loadModel() {
@@ -12,7 +13,7 @@ async function loadModel() {
   try {
     self.postMessage({ type: 'status', status: 'loading', message: 'Loading voice model...' })
 
-    transcriber = await pipeline(
+    transcriber = await (pipeline as Function)(
       'automatic-speech-recognition',
       'onnx-community/whisper-tiny.en',
       {
