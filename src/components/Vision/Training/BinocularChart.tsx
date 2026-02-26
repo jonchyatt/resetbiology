@@ -268,15 +268,15 @@ export default function BinocularChart({
   // Letter button for letter mode — positioned around the chart
   const letterBtn = "px-3 py-2 bg-gray-800/80 hover:bg-primary-500 active:bg-primary-600 text-white font-black text-lg rounded-lg shadow-md active:scale-95 transition-all cursor-pointer select-none min-w-[44px] text-center"
 
-  // One "eye unit" — arrows: left/right same level flanking chart, up/down same level above
+  // One "eye unit" — arrows at 4 corners: ↑↓ top (same level), ←→ bottom (same level)
   const renderEyeUnit = (side: 'left' | 'right') => {
     const isEMode = exerciseType === 'e-directional'
 
     if (isEMode) {
       return (
-        <div className="flex-1 flex flex-col items-center justify-center">
-          {/* Up + Down arrows side by side above the chart */}
-          <div className="flex items-center gap-3 mb-1">
+        <div className="flex-1 flex flex-col justify-center">
+          {/* Top corners: Up (left) and Down (right) — same level */}
+          <div className="flex items-center justify-between px-1">
             <button onClick={() => handleAnswer('up')} className={arrowBtn}>
               <ArrowUp className={`${arrowIco} text-gray-300`} strokeWidth={2.5} />
             </button>
@@ -284,14 +284,15 @@ export default function BinocularChart({
               <ArrowDown className={`${arrowIco} text-gray-300`} strokeWidth={2.5} />
             </button>
           </div>
-          {/* Left arrow, chart, Right arrow — all same level */}
-          <div className="flex items-center flex-1 w-full">
+          {/* Chart in the center */}
+          <div className="flex-1 flex items-center justify-center">
+            {renderChart(side)}
+          </div>
+          {/* Bottom corners: Left (left) and Right (right) — same level */}
+          <div className="flex items-center justify-between px-1">
             <button onClick={() => handleAnswer('left')} className={arrowBtn}>
               <ArrowLeft className={`${arrowIco} text-gray-300`} strokeWidth={2.5} />
             </button>
-            <div className="flex-1 flex items-center justify-center">
-              {renderChart(side)}
-            </div>
             <button onClick={() => handleAnswer('right')} className={arrowBtn}>
               <ArrowRight className={`${arrowIco} text-gray-300`} strokeWidth={2.5} />
             </button>
