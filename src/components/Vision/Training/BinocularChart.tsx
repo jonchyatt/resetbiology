@@ -300,41 +300,53 @@ export default function BinocularChart({
     )
   }
 
-  // Distance prompt — center message only (buttons are on sides)
-  const renderDistanceCenterMessage = () => {
-    const msg = (
-      <div className="flex items-center justify-center gap-2">
-        <MoveHorizontal className="w-5 h-5 text-green-400" />
-        <span className="text-green-400 font-bold text-base">Chart Complete!</span>
+  // Distance prompt — full layout so each eye sees Stay | Chart Complete! | Forward
+  // Touch zones at screen edges match where arrow buttons are during the exercise
+  const renderDistancePromptFull = () => {
+    const stayAction = () => { setShowDistancePrompt(false); regenerateChart() }
+    const forwardAction = () => handleDistanceAdjust('further')
+
+    const renderEyeSection = () => (
+      <div className="flex items-center flex-1 min-w-0">
+        <button
+          onClick={stayAction}
+          className="shrink-0 flex flex-col items-center justify-center cursor-pointer select-none active:scale-95 transition-transform gap-0.5 px-3"
+        >
+          <span className="text-gray-300 font-bold text-lg whitespace-nowrap">Stay</span>
+          <span className="text-gray-500 text-xs whitespace-nowrap">(same distance)</span>
+        </button>
+        <div className="flex-1 flex items-center justify-center gap-2 min-w-0">
+          <MoveHorizontal className="w-5 h-5 text-green-400 shrink-0" />
+          <span className="text-green-400 font-bold text-base whitespace-nowrap">Chart Complete!</span>
+        </div>
+        <button
+          onClick={forwardAction}
+          className="shrink-0 flex flex-col items-center justify-center cursor-pointer select-none active:scale-95 transition-transform gap-0.5 px-3"
+        >
+          <span className="text-green-400 font-bold text-lg whitespace-nowrap">Forward</span>
+          <span className="text-gray-500 text-xs whitespace-nowrap">(move further)</span>
+        </button>
       </div>
     )
+
     return (
-      <div className="flex items-center gap-0.5 flex-1">
-        <div className="flex-1 flex items-center justify-center">{msg}</div>
-        <div className="w-px bg-gray-600 self-stretch shrink-0" />
-        <div className="flex-1 flex items-center justify-center">{msg}</div>
+      <div className="flex flex-col flex-1">
+        <div className="flex items-center flex-1">
+          {renderEyeSection()}
+          <div className="w-px bg-gray-600 self-stretch shrink-0" />
+          {renderEyeSection()}
+        </div>
+        {/* Progress dots */}
+        <div className="flex items-center justify-center gap-1.5 mt-2 pb-2">
+          {CHART_LINES.map((_, i) => (
+            <div key={i} className={`w-2.5 h-2.5 rounded-full transition-all ${
+              i < currentLineIndex ? 'bg-green-400' : i === currentLineIndex ? 'bg-primary-500' : 'bg-gray-500'
+            }`} />
+          ))}
+        </div>
       </div>
     )
   }
-
-  // Distance prompt side buttons — same position as direction/letter buttons
-  const renderDistanceButton = (side: 'left' | 'right') => (
-    <div className="flex flex-col w-[15%] shrink-0">
-      <button
-        onClick={side === 'left'
-          ? () => { setShowDistancePrompt(false); regenerateChart() }
-          : () => handleDistanceAdjust('further')}
-        className="flex-1 flex flex-col items-center justify-center cursor-pointer select-none active:scale-95 transition-transform gap-1"
-      >
-        <span className={`font-bold text-lg ${side === 'left' ? 'text-gray-300' : 'text-green-400'}`}>
-          {side === 'left' ? 'Stay' : 'Forward'}
-        </span>
-        <span className="text-gray-500 text-xs">
-          {side === 'left' ? '(same distance)' : '(move further)'}
-        </span>
-      </button>
-    </div>
-  )
 
   return (
     <div className="flex flex-col h-full">
@@ -391,40 +403,43 @@ export default function BinocularChart({
           )}
         </div>
 
-        {/* Content area: [left side] [scaled charts] [right side] */}
+        {/* Content area */}
         <div className="flex items-stretch flex-1">
-          {/* Left side — always pinned to screen edge */}
-          {showDistancePrompt ? renderDistanceButton('left') : renderButtonColumn('left')}
+          {showDistancePrompt ? (
+            /* Full-width distance prompt — each eye sees Stay | Complete! | Forward */
+            renderDistancePromptFull()
+          ) : (
+            <>
+              {/* Left side — always pinned to screen edge */}
+              {renderButtonColumn('left')}
 
-          {/* Scaled chart area — only charts zoom */}
-          <div className="flex-1 flex items-center justify-center overflow-hidden">
-            <div className="flex flex-col w-full max-h-full" style={{
-              transform: `scale(${viewScale / 100})`,
-              transformOrigin: 'center center',
-            }}>
-              {showDistancePrompt ? (
-                renderDistanceCenterMessage()
-              ) : (
-                <div className="flex items-stretch gap-0.5 flex-1">
-                  {renderChart('left')}
-                  <div className="w-px bg-gray-600 self-stretch shrink-0" />
-                  {renderChart('right')}
+              {/* Scaled chart area — only charts zoom */}
+              <div className="flex-1 flex items-center justify-center overflow-hidden">
+                <div className="flex flex-col w-full max-h-full" style={{
+                  transform: `scale(${viewScale / 100})`,
+                  transformOrigin: 'center center',
+                }}>
+                  <div className="flex items-stretch gap-0.5 flex-1">
+                    {renderChart('left')}
+                    <div className="w-px bg-gray-600 self-stretch shrink-0" />
+                    {renderChart('right')}
+                  </div>
+
+                  {/* Progress dots */}
+                  <div className="flex items-center justify-center gap-1.5 mt-2 pb-2">
+                    {CHART_LINES.map((_, i) => (
+                      <div key={i} className={`w-2.5 h-2.5 rounded-full transition-all ${
+                        i < currentLineIndex ? 'bg-green-400' : i === currentLineIndex ? 'bg-primary-500' : 'bg-gray-500'
+                      }`} />
+                    ))}
+                  </div>
                 </div>
-              )}
-
-              {/* Progress dots */}
-              <div className="flex items-center justify-center gap-1.5 mt-2 pb-2">
-                {CHART_LINES.map((_, i) => (
-                  <div key={i} className={`w-2.5 h-2.5 rounded-full transition-all ${
-                    i < currentLineIndex ? 'bg-green-400' : i === currentLineIndex ? 'bg-primary-500' : 'bg-gray-500'
-                  }`} />
-                ))}
               </div>
-            </div>
-          </div>
 
-          {/* Right side — always pinned to screen edge */}
-          {showDistancePrompt ? renderDistanceButton('right') : renderButtonColumn('right')}
+              {/* Right side — always pinned to screen edge */}
+              {renderButtonColumn('right')}
+            </>
+          )}
         </div>
 
         {consecutiveFailures >= 2 && <div className="text-orange-500 text-xs text-center pb-2">One more miss resets chart</div>}
