@@ -175,23 +175,23 @@ export function VisionTraining() {
         backgroundPosition: 'center',
         backgroundAttachment: 'fixed'
       }}>
-      <div className="relative z-10 min-h-screen flex flex-col pt-32">
+      <div className="relative z-10 min-h-screen flex flex-col pt-28">
         <PortalHeader
           section="Vision Training"
           secondaryBackLink="/daily-history"
           secondaryBackText="Daily History"
         />
 
-        {/* Page Title */}
-        <div className="text-center py-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-1">
-            <Eye className="inline-block w-8 h-8 mr-2 text-primary-400" />
+        {/* Page Title — compact on mobile */}
+        <div className="text-center py-2">
+          <h2 className="text-2xl md:text-4xl font-bold text-white mb-0">
+            <Eye className="inline-block w-6 h-6 md:w-8 md:h-8 mr-1 text-primary-400" />
             <span className="text-primary-400">Vision</span> Training
           </h2>
         </div>
 
         {/* Tab Navigation - 3 tabs only */}
-        <div className="flex justify-center gap-2 md:gap-4 mb-6 px-4">
+        <div className="flex justify-center gap-2 md:gap-4 mb-3 md:mb-6 px-4">
           {tabs.map(tab => {
             const Icon = tab.icon
             const isActive = activeTab === tab.id
@@ -269,15 +269,15 @@ export function VisionTraining() {
               <div className="space-y-4">
                 {/* Settings card - ONLY show when NOT training */}
                 {!isTrainingActive && (
-                  <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-xl p-6 border border-primary-400/20 shadow-lg">
+                  <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-xl p-4 sm:p-6 border border-primary-400/20 shadow-lg">
                     {/* Header with inline Start Training */}
-                    <div className="flex items-start justify-between gap-4 mb-4">
+                    <div className="flex items-start justify-between gap-3 mb-3">
                       <div>
-                        <h3 className="text-2xl font-bold text-white flex items-center gap-2">
-                          <Eye className="w-6 h-6 text-primary-400" />
+                        <h3 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
+                          <Eye className="w-5 h-5 sm:w-6 sm:h-6 text-primary-400" />
                           Focus Training
                         </h3>
-                        <p className="text-gray-300 mt-1 text-sm">
+                        <p className="text-gray-300 mt-1 text-xs sm:text-sm">
                           Train at your edge of clarity - where text is just barely readable.
                         </p>
                       </div>
@@ -290,8 +290,8 @@ export function VisionTraining() {
                       </button>
                     </div>
 
-                    {/* 3-column settings grid */}
-                    <div className="grid grid-cols-3 gap-4 mb-4">
+                    {/* Settings grid — stacks on mobile, 3-col on desktop */}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 mb-3">
                       {/* Device Mode */}
                       <div>
                         <label className="block text-sm font-medium text-gray-300 mb-2">Device Mode</label>
@@ -350,8 +350,8 @@ export function VisionTraining() {
                         </div>
                       </div>
 
-                      {/* Chart Type */}
-                      <div>
+                      {/* Chart Type — full width on 2-col mobile */}
+                      <div className="col-span-2 sm:col-span-1">
                         <label className="block text-sm font-medium text-gray-300 mb-2">Chart Type</label>
                         <div className="flex gap-2">
                           <button
@@ -379,18 +379,16 @@ export function VisionTraining() {
                     </div>
 
                     {/* Dynamic info text */}
-                    <p className="text-sm text-gray-400 mb-4">
+                    <p className="text-xs sm:text-sm text-gray-400 mb-3">
                       {trainerVisionType === 'near' ? 'Myopic: push clarity outward' : 'Hyperopic: pull clarity inward'}
                     </p>
 
                     {/* Binocular Training Mode */}
-                    <div className="border-t border-gray-700/30 pt-4">
-                      <label className="block text-sm font-medium text-gray-300 mb-1">
-                        Binocular Training
-                      </label>
-                      <p className="text-xs text-gray-500 mb-2">
-                        Cross-eye fusion exercises &mdash; hold phone in landscape
-                      </p>
+                    <div className="border-t border-gray-700/30 pt-3">
+                      <div className="flex items-center justify-between mb-2">
+                        <label className="text-sm font-medium text-gray-300">Binocular Training</label>
+                        <span className="text-[10px] text-gray-500">hold phone in landscape</span>
+                      </div>
                       <div className="grid grid-cols-3 gap-2">
                         {([
                           { value: 'off' as const, label: 'Off', desc: 'Single chart' },
