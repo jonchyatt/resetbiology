@@ -263,10 +263,10 @@ export default function BinocularChart({
 
   // Arrow button for E-directional mode — visible square zones at corners
   const arrowIco = deviceMode === 'phone' ? 'w-10 h-10' : 'w-12 h-12'
-  const arrowBtn = "flex items-center justify-center bg-gray-700/50 hover:bg-gray-600/60 active:bg-primary-600/50 rounded-xl transition-all active:scale-95 cursor-pointer select-none"
+  const arrowBtn = "flex items-center justify-center active:bg-primary-600/40 rounded-xl transition-all active:scale-95 cursor-pointer select-none"
 
   // Letter button for letter mode — large square zones filling column
-  const letterBtn = "flex-1 flex items-center justify-center bg-gray-700/50 hover:bg-primary-500/80 active:bg-primary-600 text-white font-black text-3xl rounded-xl shadow-md active:scale-95 transition-all cursor-pointer select-none"
+  const letterBtn = "flex-1 flex items-center justify-center active:bg-primary-600/40 text-white font-black text-3xl rounded-xl active:scale-95 transition-all cursor-pointer select-none"
 
   // One "eye unit" — arrows at 4 corners: ↑↓ top (same level), ←→ bottom (same level)
   const renderEyeUnit = (side: 'left' | 'right') => {
