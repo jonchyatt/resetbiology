@@ -261,30 +261,18 @@ export default function TrainingSession({
               </span>
             </div>
             <div className="flex items-center gap-2">
-              {onExit && (
-                <>
-                  <button
-                    onClick={onExit}
-                    className="px-4 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm font-semibold flex items-center gap-1.5 transition-all"
-                  >
-                    <RotateCcw className="w-4 h-4" />
-                    Exit Training
-                  </button>
-                  <div className="px-3 py-1.5 rounded-lg bg-gray-800 text-gray-400 text-xs border border-gray-600/50">
-                    Press ESC to exit
-                  </div>
-                </>
-              )}
               <button
-                onClick={() => setIsActive(false)}
-                className="px-4 py-1.5 rounded-lg border border-gray-500 hover:border-gray-400 text-white text-sm font-semibold flex items-center gap-1.5 transition-all"
+                onClick={onExit || (() => setIsActive(false))}
+                className="px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm font-semibold flex items-center gap-1.5 transition-all"
+                title="Exit training (ESC)"
               >
-                <Pause className="w-4 h-4" />
-                Pause
+                <RotateCcw className="w-4 h-4" />
+                Exit
               </button>
               <button
                 onClick={resetSession}
                 className="p-1.5 rounded-lg border border-gray-600 hover:border-gray-400 text-gray-300 hover:text-white transition-all"
+                title="Reset session"
               >
                 <RotateCcw className="w-4 h-4" />
               </button>
