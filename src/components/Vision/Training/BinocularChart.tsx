@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { ChevronDown, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, MoveHorizontal, Smartphone, ZoomIn, ZoomOut } from 'lucide-react'
+import { ChevronDown, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, MoveHorizontal, Smartphone, ZoomIn, ZoomOut, Mic, MicOff } from 'lucide-react'
+import { WhisperService, type WhisperStatus } from '@/lib/speech'
 
 type EDirection = 'up' | 'down' | 'left' | 'right'
 export type BinocularMode = 'off' | 'duplicate' | 'redgreen' | 'grid-square' | 'grid-slanted' | 'alternating'
@@ -92,6 +93,12 @@ export default function BinocularChart({
   const [letterChoices, setLetterChoices] = useState<string[]>([])
   const [viewScale, setViewScale] = useState(100) // percentage — allows zooming out for pupil distance
 
+  // Voice recognition state (Whisper)
+  const [localVoiceEnabled, setLocalVoiceEnabled] = useState(false)
+  const [voiceStatus, setVoiceStatus] = useState<WhisperStatus>('idle')
+  const [isSpeaking, setIsSpeaking] = useState(false)
+  const [lastHeard, setLastHeard] = useState('')
+
   const leftColor = binocularMode === 'duplicate' ? '#FFFFFF' : '#DD0000'
   const rightColor = binocularMode === 'duplicate' ? '#FFFFFF' : '#009500'
   const showGrid = ['grid-square', 'grid-slanted', 'alternating'].includes(binocularMode)
@@ -161,6 +168,41 @@ export default function BinocularChart({
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [exerciseType, showDistancePrompt, handleAnswer])
+
+  // Whisper voice recognition for binocular mode
+  useEffect(() => {
+    if (!localVoiceEnabled) {
+      WhisperService.stop()
+      setIsSpeaking(false)
+      setLastHeard('')
+      return
+    }
+
+    const mode = exerciseType === 'e-directional' ? 'e-directional' : 'letters'
+
+    WhisperService.start(mode, {
+      onResult: (answer, rawTranscript) => {
+        setLastHeard(rawTranscript.trim().split(/\s+/).pop() || '')
+        if (!answer) return
+        if (answer.type === 'direction') {
+          handleAnswer(answer.value)
+        } else if (answer.type === 'letter') {
+          handleAnswer(answer.value)
+        }
+      },
+      onStatusChange: (status) => {
+        setVoiceStatus(status)
+        if (status === 'error') setLocalVoiceEnabled(false)
+      },
+      onSpeechChange: (speaking) => {
+        setIsSpeaking(speaking)
+      },
+    }).catch(() => {
+      setLocalVoiceEnabled(false)
+    })
+
+    return () => { WhisperService.stop() }
+  }, [localVoiceEnabled, exerciseType, handleAnswer])
 
   const handleDistanceAdjust = (dir: 'closer' | 'further') => {
     setShowDistancePrompt(false); regenerateChart()
@@ -320,7 +362,7 @@ export default function BinocularChart({
 
       {/* Main layout */}
       <div className={`${deviceMode === 'phone' ? 'hidden landscape:flex' : 'flex'} flex-col gap-1 flex-1`}>
-        {/* Zoom control for pupil distance adjustment */}
+        {/* Zoom control + voice toggle */}
         <div className="flex items-center justify-center gap-2 py-1">
           <button
             onClick={() => setViewScale(s => Math.max(50, s - 10))}
@@ -337,6 +379,27 @@ export default function BinocularChart({
           >
             <ZoomIn className="w-4 h-4" />
           </button>
+          <div className="w-px h-4 bg-gray-600 mx-1" />
+          {/* Voice toggle */}
+          <button
+            onClick={() => setLocalVoiceEnabled(v => !v)}
+            className={`p-1 rounded transition-all ${
+              localVoiceEnabled
+                ? isSpeaking ? 'bg-green-600 text-white animate-pulse' : 'bg-primary-600 text-white'
+                : 'bg-gray-700/50 text-gray-400 hover:text-white'
+            }`}
+            title={localVoiceEnabled ? 'Voice ON' : 'Voice OFF'}
+          >
+            {localVoiceEnabled ? <Mic className="w-4 h-4" /> : <MicOff className="w-4 h-4" />}
+          </button>
+          {localVoiceEnabled && (
+            <span className="text-gray-500 text-xs">
+              {voiceStatus === 'loading' ? 'Loading...' :
+               isSpeaking ? '🔴' :
+               lastHeard ? `"${lastHeard}"` :
+               exerciseType === 'e-directional' ? 'Say direction' : 'Say letter'}
+            </span>
+          )}
         </div>
 
         {/* Scalable content area */}
