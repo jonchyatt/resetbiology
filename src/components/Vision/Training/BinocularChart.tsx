@@ -241,7 +241,7 @@ export default function BinocularChart({
     const color = side === 'left' ? leftColor : rightColor
     const isLeft = side === 'left'
     return (
-      <div className="flex-1 flex flex-col items-center justify-center" style={{ gap: '2px' }}>
+      <div className="flex-1 flex flex-col items-center justify-evenly">
         {chartData.map((line, li) => (
           <div key={li} className={`flex items-center justify-center transition-all duration-300 ${
             li < currentLineIndex ? 'opacity-20' : li === currentLineIndex ? 'opacity-100' : 'opacity-40'
@@ -325,10 +325,11 @@ export default function BinocularChart({
   // Center IPD control + midline divider — width driven by ipdGap state
   const renderIpdCenter = () => (
     <div className="flex flex-col items-center justify-center shrink-0 transition-all duration-150" style={{ width: `${Math.max(48, ipdGap)}px` }}>
-      <button onClick={() => setIpdGap(g => Math.min(120, g + 8))}
-        className="p-1.5 rounded hover:bg-gray-700/50 text-gray-400 hover:text-white transition-all"
+      {/* Widen — large touch area */}
+      <button onClick={() => setIpdGap(g => Math.min(160, g + 8))}
+        className="flex items-center justify-center w-full py-4 rounded hover:bg-gray-700/30 text-gray-400 hover:text-white transition-all active:scale-95 cursor-pointer select-none"
         title="Widen gap">
-        <MoveHorizontal className="w-5 h-5" />
+        <ArrowLeft className="w-5 h-5" /><ArrowRight className="w-5 h-5" />
       </button>
       <div className="flex-1 flex items-center">
         <div className="w-px bg-gray-600 h-full" />
@@ -337,10 +338,11 @@ export default function BinocularChart({
       <div className="flex-1 flex items-center">
         <div className="w-px bg-gray-600 h-full" />
       </div>
+      {/* Narrow — large touch area, arrows on same line pointing inward */}
       <button onClick={() => setIpdGap(g => Math.max(48, g - 8))}
-        className="p-1.5 rounded hover:bg-gray-700/50 text-gray-400 hover:text-white transition-all"
+        className="flex items-center justify-center w-full py-4 rounded hover:bg-gray-700/30 text-gray-400 hover:text-white transition-all active:scale-95 cursor-pointer select-none"
         title="Narrow gap">
-        <ArrowRight className="w-4 h-4 -mr-1" /><ArrowLeft className="w-4 h-4 -ml-1" />
+        <ArrowRight className="w-5 h-5" /><ArrowLeft className="w-5 h-5" />
       </button>
     </div>
   )
