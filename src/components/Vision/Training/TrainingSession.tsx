@@ -279,22 +279,11 @@ export default function TrainingSession({
             </div>
           </div>
 
-          {/* Feedback overlay */}
-          {feedback && (
-            <div className={`absolute top-12 right-4 z-10 flex items-center gap-2 px-4 py-2 rounded-lg font-semibold ${
-              feedback === 'correct' ? 'bg-secondary-500 text-white' : 'bg-red-500 text-white'
-            }`}>
-              {feedback === 'correct' ? (
-                <>
-                  <CheckCircle className="w-5 h-5" />
-                  Correct!
-                </>
-              ) : (
-                <>
-                  <XCircle className="w-5 h-5" />
-                  Try Again
-                </>
-              )}
+          {/* Feedback overlay - only show for incorrect answers */}
+          {feedback === 'wrong' && (
+            <div className="absolute top-12 right-4 z-10 flex items-center gap-2 px-4 py-2 rounded-lg font-semibold bg-red-500 text-white">
+              <XCircle className="w-5 h-5" />
+              Try Again
             </div>
           )}
 
