@@ -577,7 +577,14 @@ export function EnhancedDashboard() {
                 </div>
               </Link>
 
-              {/* Vision and Memory hidden - in development. Access via /vision-training and /mental-training directly */}
+              <Link href="/vision-training" className="group w-[calc(50%-0.5rem)] md:w-[calc(25%-0.75rem)]">
+                <div className="p-6 bg-gradient-to-br from-cyan-600/30 to-cyan-700/30 border border-cyan-400/30 rounded-lg hover:scale-[1.02] hover:shadow-lg hover:shadow-cyan-500/20 transition-all text-center">
+                  <Eye className="w-8 h-8 text-cyan-300 mx-auto mb-2" />
+                  <span className="text-white font-medium">Vision</span>
+                </div>
+              </Link>
+
+              {/* Memory/N-Back hidden - in development. Access via /mental-training directly */}
             </div>
 
             {/* Secondary Action */}
