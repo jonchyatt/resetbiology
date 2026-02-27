@@ -233,8 +233,8 @@ export default function BinocularChart({
     return 'ring-2 ring-primary-400'
   }
 
-  const baseSize = deviceMode === 'phone' ? 32 : 38
-  const sizeMul = deviceMode === 'phone' ? 0.55 : 0.6
+  const baseSize = deviceMode === 'phone' ? 34 : 44
+  const sizeMul = deviceMode === 'phone' ? 0.6 : 0.7
 
   // Render one chart (left or right)
   const renderChart = (side: 'left' | 'right') => {
@@ -445,31 +445,45 @@ export default function BinocularChart({
           </button>
         </div>
 
-        {/* Content area */}
+        {/* Content area — two eye-halves with IPD gap between */}
         <div className="flex items-stretch flex-1">
           {showDistancePrompt ? (
             renderDistancePromptFull()
           ) : exerciseType === 'e-directional' ? (
-            /* E-directional layout:
-               [outer UP/LEFT flex→edge] [chart] [inner DOWN/RIGHT narrow] [IPD center] [inner UP/LEFT narrow] [chart] [outer DOWN/RIGHT flex→edge]
-               Outer touch areas fill to screen edges. Inner arrows tight to charts. */
             <>
-              {renderOuterArrowCol(['up', 'left'], 'right')}
-              {renderChart('left')}
-              {renderInnerArrowCol(['down', 'right'])}
+              {/* LEFT EYE HALF — chart centered in this half, arrows tight around it */}
+              <div className="flex-1 flex items-stretch">
+                {renderOuterArrowCol(['up', 'left'], 'right')}
+                {renderChart('left')}
+                {renderInnerArrowCol(['down', 'right'])}
+              </div>
+
+              {/* CENTER — IPD control */}
               {renderIpdCenter()}
-              {renderInnerArrowCol(['up', 'left'])}
-              {renderChart('right')}
-              {renderOuterArrowCol(['down', 'right'], 'left')}
+
+              {/* RIGHT EYE HALF — mirror of left */}
+              <div className="flex-1 flex items-stretch">
+                {renderInnerArrowCol(['up', 'left'])}
+                {renderChart('right')}
+                {renderOuterArrowCol(['down', 'right'], 'left')}
+              </div>
             </>
           ) : (
-            /* Letter mode: outer letter cols (touch to edge) + center 2x2 grid with IPD below */
             <>
-              {renderOuterLetterCol(letterChoices.slice(0, 2), 'right')}
-              {renderChart('left')}
+              {/* LEFT EYE HALF */}
+              <div className="flex-1 flex items-stretch">
+                {renderOuterLetterCol(letterChoices.slice(0, 2), 'right')}
+                {renderChart('left')}
+              </div>
+
+              {/* CENTER — 2x2 letter grid + IPD */}
               {renderCenterLetterGrid()}
-              {renderChart('right')}
-              {renderOuterLetterCol(letterChoices.slice(2, 4), 'left')}
+
+              {/* RIGHT EYE HALF */}
+              <div className="flex-1 flex items-stretch">
+                {renderChart('right')}
+                {renderOuterLetterCol(letterChoices.slice(2, 4), 'left')}
+              </div>
             </>
           )}
         </div>
