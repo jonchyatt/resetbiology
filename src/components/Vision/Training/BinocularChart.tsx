@@ -93,7 +93,7 @@ export default function BinocularChart({
   const showDistancePromptRef = useRef(false)
   showDistancePromptRef.current = showDistancePrompt
   const [letterChoices, setLetterChoices] = useState<string[]>([])
-  const ipdGap = 16 // fixed px gap between left/right charts
+  const [ipdGap, setIpdGap] = useState(16) // px gap between left/right charts for pupil distance
 
   // Voice recognition state (Whisper)
   const [localVoiceEnabled, setLocalVoiceEnabled] = useState(false)
@@ -280,9 +280,24 @@ export default function BinocularChart({
   const arrowIco = deviceMode === 'phone' ? 'w-10 h-10' : 'w-12 h-12'
   const ArrowIcons = { up: ArrowUp, down: ArrowDown, left: ArrowLeft, right: ArrowRight }
 
-  // Render a 2-button column (used for arrow pairs or letter pairs)
-  const renderArrowCol = (dirs: EDirection[]) => (
-    <div className="flex flex-col gap-1 shrink-0" style={{ width: deviceMode === 'phone' ? '12%' : '8%' }}>
+  // Outer arrow column — flex-1 fills to screen edge, icon near chart side
+  const renderOuterArrowCol = (dirs: EDirection[], iconAlign: 'right' | 'left') => (
+    <div className="flex flex-col flex-1 shrink-0 min-w-0">
+      {dirs.map(dir => {
+        const Icon = ArrowIcons[dir]
+        return (
+          <button key={dir} onClick={() => handleAnswer(dir)}
+            className={`flex-1 flex items-center ${iconAlign === 'right' ? 'justify-end pr-1' : 'justify-start pl-1'} active:scale-95 transition-transform cursor-pointer select-none`}>
+            <Icon className={`${arrowIco} text-gray-300`} strokeWidth={2.5} />
+          </button>
+        )
+      })}
+    </div>
+  )
+
+  // Inner arrow column — narrow, tight to chart
+  const renderInnerArrowCol = (dirs: EDirection[]) => (
+    <div className="flex flex-col shrink-0 w-[6%]">
       {dirs.map(dir => {
         const Icon = ArrowIcons[dir]
         return (
@@ -295,26 +310,59 @@ export default function BinocularChart({
     </div>
   )
 
-  const renderLetterCol = (letters: string[]) => (
-    <div className="flex flex-col gap-1 shrink-0" style={{ width: deviceMode === 'phone' ? '12%' : '8%' }}>
+  // Outer letter column — flex-1 fills to screen edge, text near chart
+  const renderOuterLetterCol = (letters: string[], align: 'right' | 'left') => (
+    <div className="flex flex-col flex-1 shrink-0 min-w-0">
       {letters.map(l => (
         <button key={l} onClick={() => handleAnswer(l)}
-          className="flex-1 flex items-center justify-center text-white font-black text-2xl active:scale-95 transition-transform cursor-pointer select-none">
+          className={`flex-1 flex items-center ${align === 'right' ? 'justify-end pr-2' : 'justify-start pl-2'} text-white font-black text-2xl active:scale-95 transition-transform cursor-pointer select-none`}>
           {l}
         </button>
       ))}
     </div>
   )
 
-  // Center 2x2 letter grid (between charts, for letter mode)
+  // Center IPD control + midline divider
+  const renderIpdCenter = () => (
+    <div className="flex flex-col items-center justify-center shrink-0 px-1" style={{ minWidth: '48px' }}>
+      <button onClick={() => setIpdGap(g => Math.min(80, g + 4))}
+        className="p-1.5 rounded hover:bg-gray-700/50 text-gray-400 hover:text-white transition-all"
+        title="Widen gap">
+        <MoveHorizontal className="w-5 h-5" />
+      </button>
+      <div className="flex-1 flex items-center">
+        <div className="w-px bg-gray-600 h-full" />
+      </div>
+      <span className="text-gray-500 text-[10px]">IPD</span>
+      <div className="flex-1 flex items-center">
+        <div className="w-px bg-gray-600 h-full" />
+      </div>
+      <button onClick={() => setIpdGap(g => Math.max(0, g - 4))}
+        className="p-1.5 rounded hover:bg-gray-700/50 text-gray-400 hover:text-white transition-all"
+        title="Narrow gap">
+        <ArrowRight className="w-4 h-4 -mr-1" /><ArrowLeft className="w-4 h-4 -ml-1" />
+      </button>
+    </div>
+  )
+
+  // Center 2x2 letter grid + IPD control stacked
   const renderCenterLetterGrid = () => (
-    <div className="grid grid-cols-2 gap-1 shrink-0 self-center" style={{ width: deviceMode === 'phone' ? '18%' : '12%' }}>
-      {letterChoices.map(l => (
-        <button key={l} onClick={() => handleAnswer(l)}
-          className="flex items-center justify-center text-white font-black text-2xl py-4 rounded-lg bg-gray-700/40 active:scale-95 transition-transform cursor-pointer select-none">
-          {l}
-        </button>
-      ))}
+    <div className="flex flex-col items-center justify-center shrink-0 gap-1" style={{ minWidth: '80px' }}>
+      <div className="grid grid-cols-2 gap-1">
+        {letterChoices.map(l => (
+          <button key={l} onClick={() => handleAnswer(l)}
+            className="flex items-center justify-center text-white font-black text-2xl w-10 h-10 rounded-lg bg-gray-700/40 active:scale-95 transition-transform cursor-pointer select-none">
+            {l}
+          </button>
+        ))}
+      </div>
+      <div className="flex items-center gap-1">
+        <button onClick={() => setIpdGap(g => Math.max(0, g - 4))}
+          className="text-gray-500 hover:text-white text-xs px-1">-</button>
+        <span className="text-gray-500 text-[10px]">IPD</span>
+        <button onClick={() => setIpdGap(g => Math.min(80, g + 4))}
+          className="text-gray-500 hover:text-white text-xs px-1">+</button>
+      </div>
     </div>
   )
 
@@ -402,28 +450,26 @@ export default function BinocularChart({
           {showDistancePrompt ? (
             renderDistancePromptFull()
           ) : exerciseType === 'e-directional' ? (
-            /* E-directional: each eye gets all 4 arrows — outer(up,left) chart inner(down,right) | inner(up,left) chart outer(down,right) */
+            /* E-directional layout:
+               [outer UP/LEFT flex→edge] [chart] [inner DOWN/RIGHT narrow] [IPD center] [inner UP/LEFT narrow] [chart] [outer DOWN/RIGHT flex→edge]
+               Outer touch areas fill to screen edges. Inner arrows tight to charts. */
             <>
-              {renderArrowCol(['up', 'left'])}
+              {renderOuterArrowCol(['up', 'left'], 'right')}
               {renderChart('left')}
-              {renderArrowCol(['down', 'right'])}
-              <div className="flex flex-col items-center justify-center shrink-0" style={{ width: `${ipdGap}px` }}>
-                <div className="w-px bg-gray-600 h-full" />
-              </div>
-              {renderArrowCol(['up', 'left'])}
+              {renderInnerArrowCol(['down', 'right'])}
+              {renderIpdCenter()}
+              {renderInnerArrowCol(['up', 'left'])}
               {renderChart('right')}
-              {renderArrowCol(['down', 'right'])}
+              {renderOuterArrowCol(['down', 'right'], 'left')}
             </>
           ) : (
-            /* Letter mode: outer cols + center 2x2 grid between charts */
+            /* Letter mode: outer letter cols (touch to edge) + center 2x2 grid with IPD below */
             <>
-              {renderLetterCol(letterChoices.slice(0, 2))}
+              {renderOuterLetterCol(letterChoices.slice(0, 2), 'right')}
               {renderChart('left')}
-              <div className="flex flex-col items-center justify-center shrink-0" style={{ width: `${ipdGap}px` }} />
               {renderCenterLetterGrid()}
-              <div className="flex flex-col items-center justify-center shrink-0" style={{ width: `${ipdGap}px` }} />
               {renderChart('right')}
-              {renderLetterCol(letterChoices.slice(2, 4))}
+              {renderOuterLetterCol(letterChoices.slice(2, 4), 'left')}
             </>
           )}
         </div>
