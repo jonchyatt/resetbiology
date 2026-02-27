@@ -372,7 +372,18 @@ export default function DailyPractice() {
   }
 
   // Active session view
-  const session = todaySession.session!
+  const session = todaySession.session
+  if (!session) {
+    return (
+      <div className="space-y-6">
+        <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm border border-gray-600/30 rounded-xl p-8 text-center shadow-lg">
+          <Eye className="w-16 h-16 text-gray-500 mx-auto mb-4" />
+          <h3 className="text-xl font-bold text-white mb-2">No Session Available</h3>
+          <p className="text-gray-400">Session data is loading or unavailable for today. Try refreshing the page.</p>
+        </div>
+      </div>
+    )
+  }
 
   // Show Snellen trainer
   if (showSnellenTrainer) {
