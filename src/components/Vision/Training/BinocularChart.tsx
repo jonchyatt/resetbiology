@@ -385,19 +385,8 @@ export default function BinocularChart({
 
   return (
     <div className="flex flex-col h-full">
-      {/* Portrait warning (phone only) */}
-      {deviceMode === 'phone' && (
-        <div className="flex portrait:flex landscape:hidden flex-col items-center justify-center bg-gray-800/90 backdrop-blur-sm rounded-xl p-8 text-center gap-4 min-h-[200px] border border-primary-400/20">
-          <Smartphone className="w-14 h-14 text-primary-400" style={{ transform: 'rotate(90deg)' }} />
-          <div>
-            <p className="text-white font-bold text-lg">Rotate to Landscape</p>
-            <p className="text-gray-400 text-sm mt-1">Hold your phone sideways for binocular training</p>
-          </div>
-        </div>
-      )}
-
-      {/* Main layout */}
-      <div className={`${deviceMode === 'phone' ? 'hidden landscape:flex' : 'flex'} flex-col gap-1 flex-1`}>
+      {/* Main layout - always visible */}
+      <div className="flex flex-col gap-1 flex-1">
         {/* Zoom control + voice toggle */}
         <div className="flex items-center justify-center gap-2 py-1">
           <button
