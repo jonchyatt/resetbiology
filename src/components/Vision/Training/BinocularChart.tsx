@@ -272,9 +272,6 @@ export default function BinocularChart({
             })}
           </div>
         ))}
-        <p className="text-gray-500 text-[10px] text-center mt-1 select-none">
-          Line {currentLineIndex + 1}/{CHART_LINES.length}
-        </p>
       </div>
     )
   }
@@ -283,40 +280,43 @@ export default function BinocularChart({
   const arrowIco = deviceMode === 'phone' ? 'w-10 h-10' : 'w-12 h-12'
   const ArrowIcons = { up: ArrowUp, down: ArrowDown, left: ArrowLeft, right: ArrowRight }
 
-  // Button column — lives OUTSIDE the scale transform, always at screen edge
-  const renderButtonColumn = (side: 'left' | 'right') => {
-    const isEMode = exerciseType === 'e-directional'
-
-    if (isEMode) {
-      const dirs: EDirection[] = side === 'left' ? ['up', 'left'] : ['down', 'right']
-      return (
-        <div className="flex flex-col gap-1 w-[15%] shrink-0">
-          {dirs.map(dir => {
-            const Icon = ArrowIcons[dir]
-            return (
-              <button key={dir} onClick={() => handleAnswer(dir)}
-                className="flex-1 flex items-center justify-center active:scale-95 transition-transform cursor-pointer select-none">
-                <Icon className={`${arrowIco} text-gray-300`} strokeWidth={2.5} />
-              </button>
-            )
-          })}
-        </div>
-      )
-    }
-
-    // Letter mode
-    const letters = side === 'left' ? letterChoices.slice(0, 2) : letterChoices.slice(2, 4)
-    return (
-      <div className="flex flex-col gap-1 w-[15%] shrink-0">
-        {letters.map(l => (
-          <button key={l} onClick={() => handleAnswer(l)}
-            className="flex-1 flex items-center justify-center text-white font-black text-3xl active:scale-95 transition-transform cursor-pointer select-none">
-            {l}
+  // Render a 2-button column (used for arrow pairs or letter pairs)
+  const renderArrowCol = (dirs: EDirection[]) => (
+    <div className="flex flex-col gap-1 shrink-0" style={{ width: deviceMode === 'phone' ? '12%' : '8%' }}>
+      {dirs.map(dir => {
+        const Icon = ArrowIcons[dir]
+        return (
+          <button key={dir} onClick={() => handleAnswer(dir)}
+            className="flex-1 flex items-center justify-center active:scale-95 transition-transform cursor-pointer select-none">
+            <Icon className={`${arrowIco} text-gray-300`} strokeWidth={2.5} />
           </button>
-        ))}
-      </div>
-    )
-  }
+        )
+      })}
+    </div>
+  )
+
+  const renderLetterCol = (letters: string[]) => (
+    <div className="flex flex-col gap-1 shrink-0" style={{ width: deviceMode === 'phone' ? '12%' : '8%' }}>
+      {letters.map(l => (
+        <button key={l} onClick={() => handleAnswer(l)}
+          className="flex-1 flex items-center justify-center text-white font-black text-2xl active:scale-95 transition-transform cursor-pointer select-none">
+          {l}
+        </button>
+      ))}
+    </div>
+  )
+
+  // Center 2x2 letter grid (between charts, for letter mode)
+  const renderCenterLetterGrid = () => (
+    <div className="grid grid-cols-2 gap-1 shrink-0 self-center" style={{ width: deviceMode === 'phone' ? '18%' : '12%' }}>
+      {letterChoices.map(l => (
+        <button key={l} onClick={() => handleAnswer(l)}
+          className="flex items-center justify-center text-white font-black text-2xl py-4 rounded-lg bg-gray-700/40 active:scale-95 transition-transform cursor-pointer select-none">
+          {l}
+        </button>
+      ))}
+    </div>
+  )
 
   // Distance prompt — full-height side touch zones + scaled center text
   // Side zones match arrow column positions so user taps same spot
@@ -426,36 +426,44 @@ export default function BinocularChart({
         {/* Content area */}
         <div className="flex items-stretch flex-1">
           {showDistancePrompt ? (
-            /* Full-width distance prompt — each eye sees Stay | Complete! | Forward */
             renderDistancePromptFull()
-          ) : (
+          ) : exerciseType === 'e-directional' ? (
+            /* E-directional: each eye gets all 4 arrows — outer(up,left) chart inner(down,right) | inner(up,left) chart outer(down,right) */
             <>
-              {/* Left side — always pinned to screen edge */}
-              {renderButtonColumn('left')}
-
-              {/* Chart area — IPD gap adjusts midline spacing */}
-              <div className="flex-1 flex flex-col items-center justify-center overflow-hidden">
-                <div className="flex items-stretch flex-1" style={{ gap: `${ipdGap}px` }}>
-                  {renderChart('left')}
-                  <div className="w-px bg-gray-600 self-stretch shrink-0" />
-                  {renderChart('right')}
-                </div>
-
-                {/* Progress dots */}
-                <div className="flex items-center justify-center gap-1.5 mt-2 pb-2">
-                  {CHART_LINES.map((_, i) => (
-                    <div key={i} className={`w-2.5 h-2.5 rounded-full transition-all ${
-                      i < currentLineIndex ? 'bg-green-400' : i === currentLineIndex ? 'bg-primary-500' : 'bg-gray-500'
-                    }`} />
-                  ))}
-                </div>
+              {renderArrowCol(['up', 'left'])}
+              {renderChart('left')}
+              {renderArrowCol(['down', 'right'])}
+              <div className="flex flex-col items-center justify-center shrink-0" style={{ width: `${ipdGap}px` }}>
+                <div className="w-px bg-gray-600 h-full" />
               </div>
-
-              {/* Right side — always pinned to screen edge */}
-              {renderButtonColumn('right')}
+              {renderArrowCol(['up', 'left'])}
+              {renderChart('right')}
+              {renderArrowCol(['down', 'right'])}
+            </>
+          ) : (
+            /* Letter mode: outer cols + center 2x2 grid between charts */
+            <>
+              {renderLetterCol(letterChoices.slice(0, 2))}
+              {renderChart('left')}
+              <div className="flex flex-col items-center justify-center shrink-0" style={{ width: `${ipdGap}px` }} />
+              {renderCenterLetterGrid()}
+              <div className="flex flex-col items-center justify-center shrink-0" style={{ width: `${ipdGap}px` }} />
+              {renderChart('right')}
+              {renderLetterCol(letterChoices.slice(2, 4))}
             </>
           )}
         </div>
+
+        {/* Progress dots */}
+        {!showDistancePrompt && (
+          <div className="flex items-center justify-center gap-1.5 mt-1 pb-2">
+            {CHART_LINES.map((_, i) => (
+              <div key={i} className={`w-2.5 h-2.5 rounded-full transition-all ${
+                i < currentLineIndex ? 'bg-green-400' : i === currentLineIndex ? 'bg-primary-500' : 'bg-gray-500'
+              }`} />
+            ))}
+          </div>
+        )}
 
         {consecutiveFailures >= 2 && <div className="text-orange-500 text-xs text-center pb-2">One more miss resets chart</div>}
       </div>
