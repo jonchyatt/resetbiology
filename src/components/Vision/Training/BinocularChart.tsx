@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { ChevronDown, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, MoveHorizontal, Smartphone, ZoomIn, ZoomOut, Mic, MicOff } from 'lucide-react'
 import { WhisperService, type WhisperStatus } from '@/lib/speech'
 
@@ -90,6 +90,8 @@ export default function BinocularChart({
   const [consecutiveFailures, setConsecutiveFailures] = useState(0)
   const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null)
   const [showDistancePrompt, setShowDistancePrompt] = useState(false)
+  const showDistancePromptRef = useRef(false)
+  showDistancePromptRef.current = showDistancePrompt
   const [letterChoices, setLetterChoices] = useState<string[]>([])
   const [viewScale, setViewScale] = useState(100) // percentage — allows zooming out for pupil distance
 
@@ -143,7 +145,7 @@ export default function BinocularChart({
     } else {
       isCorrect = answer.toUpperCase() === cl.letters[currentLetterIndex].toUpperCase()
     }
-    setFeedback(isCorrect ? 'correct' : 'incorrect')
+    if (!isCorrect) setFeedback('incorrect')
     onAnswer(isCorrect)
     if (isCorrect) {
       setConsecutiveFailures(0); setTimeout(() => advanceToNext(), 300)
@@ -183,6 +185,16 @@ export default function BinocularChart({
     WhisperService.start(mode, {
       onResult: (answer, rawTranscript) => {
         setLastHeard(rawTranscript.trim().split(/\s+/).pop() || '')
+        // Handle distance prompt voice commands (say "stay" or "forward")
+        if (showDistancePromptRef.current) {
+          const lastWord = rawTranscript.trim().toLowerCase().split(/\s+/).pop() || ''
+          if (['stay', 'same', 'stayed', 'say'].includes(lastWord)) {
+            distanceActionsRef.current.stay()
+          } else if (['forward', 'further', 'next', 'go', 'advance', 'move'].includes(lastWord)) {
+            distanceActionsRef.current.forward()
+          }
+          return
+        }
         if (!answer) return
         if (answer.type === 'direction') {
           handleAnswer(answer.value)
@@ -209,8 +221,14 @@ export default function BinocularChart({
     if (onDistanceAdjust) onDistanceAdjust(dir)
   }
 
+  // Refs for voice-activated distance prompt commands (stable across renders)
+  const distanceActionsRef = useRef({ stay: () => {}, forward: () => {} })
+  distanceActionsRef.current = {
+    stay: () => { setShowDistancePrompt(false); regenerateChart() },
+    forward: () => handleDistanceAdjust('further'),
+  }
+
   const getFR = () => {
-    if (feedback === 'correct') return 'ring-4 ring-green-500 animate-pulse'
     if (feedback === 'incorrect') return 'ring-4 ring-red-500 animate-pulse'
     return 'ring-2 ring-primary-400'
   }
@@ -300,50 +318,67 @@ export default function BinocularChart({
     )
   }
 
-  // Distance prompt — full layout so each eye sees Stay | Chart Complete! | Forward
-  // Touch zones at screen edges match where arrow buttons are during the exercise
+  // Distance prompt — full-height side touch zones + scaled center text
+  // Side zones match arrow column positions so user taps same spot
   const renderDistancePromptFull = () => {
     const stayAction = () => { setShowDistancePrompt(false); regenerateChart() }
     const forwardAction = () => handleDistanceAdjust('further')
+    const scale = viewScale / 100
 
-    const renderEyeSection = () => (
-      <div className="flex items-center flex-1 min-w-0">
-        <button
-          onClick={stayAction}
-          className="shrink-0 flex flex-col items-center justify-center cursor-pointer select-none active:scale-95 transition-transform gap-0.5 px-3"
-        >
+    const renderEyeContent = () => (
+      <div className="flex items-center flex-1 min-w-0 gap-2">
+        <div className="flex flex-col items-center shrink-0">
           <span className="text-gray-300 font-bold text-lg whitespace-nowrap">Stay</span>
           <span className="text-gray-500 text-xs whitespace-nowrap">(same distance)</span>
-        </button>
+        </div>
         <div className="flex-1 flex items-center justify-center gap-2 min-w-0">
           <MoveHorizontal className="w-5 h-5 text-green-400 shrink-0" />
           <span className="text-green-400 font-bold text-base whitespace-nowrap">Chart Complete!</span>
         </div>
-        <button
-          onClick={forwardAction}
-          className="shrink-0 flex flex-col items-center justify-center cursor-pointer select-none active:scale-95 transition-transform gap-0.5 px-3"
-        >
+        <div className="flex flex-col items-center shrink-0">
           <span className="text-green-400 font-bold text-lg whitespace-nowrap">Forward</span>
           <span className="text-gray-500 text-xs whitespace-nowrap">(move further)</span>
-        </button>
+        </div>
       </div>
     )
 
     return (
-      <div className="flex flex-col flex-1">
-        <div className="flex items-center flex-1">
-          {renderEyeSection()}
-          <div className="w-px bg-gray-600 self-stretch shrink-0" />
-          {renderEyeSection()}
+      <div className="flex items-stretch flex-1">
+        {/* Left touch zone — full height, same width as arrow column */}
+        <button
+          onClick={stayAction}
+          className="w-[15%] shrink-0 cursor-pointer select-none active:bg-gray-700/30 transition-colors"
+          aria-label="Stay at same distance"
+        />
+
+        {/* Scaled center — each eye sees Stay | Complete! | Forward, vertically centered */}
+        <div className="flex-1 flex items-center justify-center overflow-hidden">
+          <div className="flex flex-col items-center" style={{
+            transform: `scale(${scale})`,
+            transformOrigin: 'center center',
+          }}>
+            <div className="flex items-center">
+              {renderEyeContent()}
+              <div className="w-px bg-gray-600 self-stretch shrink-0 mx-1" />
+              {renderEyeContent()}
+            </div>
+            {/* Progress dots */}
+            <div className="flex items-center justify-center gap-1.5 mt-2">
+              {CHART_LINES.map((_, i) => (
+                <div key={i} className={`w-2.5 h-2.5 rounded-full transition-all ${
+                  i < currentLineIndex ? 'bg-green-400' : i === currentLineIndex ? 'bg-primary-500' : 'bg-gray-500'
+                }`} />
+              ))}
+            </div>
+          </div>
         </div>
-        {/* Progress dots */}
-        <div className="flex items-center justify-center gap-1.5 mt-2 pb-2">
-          {CHART_LINES.map((_, i) => (
-            <div key={i} className={`w-2.5 h-2.5 rounded-full transition-all ${
-              i < currentLineIndex ? 'bg-green-400' : i === currentLineIndex ? 'bg-primary-500' : 'bg-gray-500'
-            }`} />
-          ))}
-        </div>
+
+        {/* Right touch zone — full height, same width as arrow column */}
+        <button
+          onClick={forwardAction}
+          className="w-[15%] shrink-0 cursor-pointer select-none active:bg-gray-700/30 transition-colors"
+          aria-label="Move forward"
+        />
       </div>
     )
   }
@@ -398,6 +433,7 @@ export default function BinocularChart({
               {voiceStatus === 'loading' ? 'Loading...' :
                isSpeaking ? '🔴' :
                lastHeard ? `"${lastHeard}"` :
+               showDistancePrompt ? 'Say "stay" or "forward"' :
                exerciseType === 'e-directional' ? 'Say direction' : 'Say letter'}
             </span>
           )}
