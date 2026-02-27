@@ -93,7 +93,7 @@ export default function BinocularChart({
   const showDistancePromptRef = useRef(false)
   showDistancePromptRef.current = showDistancePrompt
   const [letterChoices, setLetterChoices] = useState<string[]>([])
-  const [ipdGap, setIpdGap] = useState(8) // px gap between left/right charts for pupil distance adjustment
+  const ipdGap = 16 // fixed px gap between left/right charts
 
   // Voice recognition state (Whisper)
   const [localVoiceEnabled, setLocalVoiceEnabled] = useState(false)
@@ -233,8 +233,8 @@ export default function BinocularChart({
     return 'ring-2 ring-primary-400'
   }
 
-  const baseSize = deviceMode === 'phone' ? 36 : 52
-  const sizeMul = deviceMode === 'phone' ? 0.7 : 0.85
+  const baseSize = deviceMode === 'phone' ? 32 : 38
+  const sizeMul = deviceMode === 'phone' ? 0.55 : 0.6
 
   // Render one chart (left or right)
   const renderChart = (side: 'left' | 'right') => {
@@ -382,25 +382,8 @@ export default function BinocularChart({
     <div className="flex flex-col h-full">
       {/* Main layout - always visible */}
       <div className="flex flex-col gap-1 flex-1">
-        {/* IPD (pupil distance) control + voice toggle */}
-        <div className="flex items-center justify-center gap-2 py-1">
-          <button
-            onClick={() => setIpdGap(g => Math.max(0, g - 4))}
-            className="p-1 rounded hover:bg-gray-700/50 text-gray-400 hover:text-white transition-all"
-            title="Decrease gap"
-          >
-            <ArrowRight className="w-3 h-3" /><ArrowLeft className="w-3 h-3 -ml-1.5" />
-          </button>
-          <span className="text-gray-500 text-xs whitespace-nowrap">IPD</span>
-          <button
-            onClick={() => setIpdGap(g => Math.min(80, g + 4))}
-            className="p-1 rounded hover:bg-gray-700/50 text-gray-400 hover:text-white transition-all"
-            title="Increase gap"
-          >
-            <ArrowLeft className="w-3 h-3" /><ArrowRight className="w-3 h-3 -ml-1.5" />
-          </button>
-          <div className="w-px h-4 bg-gray-600 mx-1" />
-          {/* Voice toggle */}
+        {/* Voice toggle — small, top-right corner, outside binocular area */}
+        <div className="flex justify-end px-2 py-0.5">
           <button
             onClick={() => setLocalVoiceEnabled(v => !v)}
             className={`p-1 rounded transition-all ${
@@ -412,15 +395,6 @@ export default function BinocularChart({
           >
             {localVoiceEnabled ? <Mic className="w-4 h-4" /> : <MicOff className="w-4 h-4" />}
           </button>
-          {localVoiceEnabled && (
-            <span className="text-gray-500 text-xs">
-              {voiceStatus === 'loading' ? 'Loading...' :
-               isSpeaking ? '🔴' :
-               lastHeard ? `"${lastHeard}"` :
-               showDistancePrompt ? 'Say "stay" or "forward"' :
-               exerciseType === 'e-directional' ? 'Say direction' : 'Say letter'}
-            </span>
-          )}
         </div>
 
         {/* Content area */}
