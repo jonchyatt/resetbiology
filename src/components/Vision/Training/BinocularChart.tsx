@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { ChevronDown, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, MoveHorizontal, Smartphone, ZoomIn, ZoomOut, Mic, MicOff } from 'lucide-react'
+import { ChevronDown, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, MoveHorizontal, Mic, MicOff } from 'lucide-react'
 import { WhisperService, type WhisperStatus } from '@/lib/speech'
 
 type EDirection = 'up' | 'down' | 'left' | 'right'
@@ -93,7 +93,7 @@ export default function BinocularChart({
   const showDistancePromptRef = useRef(false)
   showDistancePromptRef.current = showDistancePrompt
   const [letterChoices, setLetterChoices] = useState<string[]>([])
-  const [viewScale, setViewScale] = useState(100) // percentage — allows zooming out for pupil distance
+  const [ipdGap, setIpdGap] = useState(8) // px gap between left/right charts for pupil distance adjustment
 
   // Voice recognition state (Whisper)
   const [localVoiceEnabled, setLocalVoiceEnabled] = useState(false)
@@ -323,8 +323,6 @@ export default function BinocularChart({
   const renderDistancePromptFull = () => {
     const stayAction = () => { setShowDistancePrompt(false); regenerateChart() }
     const forwardAction = () => handleDistanceAdjust('further')
-    const scale = viewScale / 100
-
     const renderEyeContent = () => (
       <div className="flex items-center flex-1 min-w-0 gap-2">
         <div className="flex flex-col items-center shrink-0">
@@ -353,11 +351,8 @@ export default function BinocularChart({
 
         {/* Scaled center — each eye sees Stay | Complete! | Forward, vertically centered */}
         <div className="flex-1 flex items-center justify-center overflow-hidden">
-          <div className="flex flex-col items-center" style={{
-            transform: `scale(${scale})`,
-            transformOrigin: 'center center',
-          }}>
-            <div className="flex items-center">
+          <div className="flex flex-col items-center">
+            <div className="flex items-center" style={{ gap: `${ipdGap}px` }}>
               {renderEyeContent()}
               <div className="w-px bg-gray-600 self-stretch shrink-0 mx-1" />
               {renderEyeContent()}
@@ -387,22 +382,22 @@ export default function BinocularChart({
     <div className="flex flex-col h-full">
       {/* Main layout - always visible */}
       <div className="flex flex-col gap-1 flex-1">
-        {/* Zoom control + voice toggle */}
+        {/* IPD (pupil distance) control + voice toggle */}
         <div className="flex items-center justify-center gap-2 py-1">
           <button
-            onClick={() => setViewScale(s => Math.max(50, s - 10))}
+            onClick={() => setIpdGap(g => Math.max(0, g - 4))}
             className="p-1 rounded hover:bg-gray-700/50 text-gray-400 hover:text-white transition-all"
-            title="Zoom out (narrower)"
+            title="Decrease gap"
           >
-            <ZoomOut className="w-4 h-4" />
+            <ArrowRight className="w-3 h-3" /><ArrowLeft className="w-3 h-3 -ml-1.5" />
           </button>
-          <span className="text-gray-500 text-xs w-10 text-center">{viewScale}%</span>
+          <span className="text-gray-500 text-xs whitespace-nowrap">IPD</span>
           <button
-            onClick={() => setViewScale(s => Math.min(100, s + 10))}
+            onClick={() => setIpdGap(g => Math.min(80, g + 4))}
             className="p-1 rounded hover:bg-gray-700/50 text-gray-400 hover:text-white transition-all"
-            title="Zoom in (wider)"
+            title="Increase gap"
           >
-            <ZoomIn className="w-4 h-4" />
+            <ArrowLeft className="w-3 h-3" /><ArrowRight className="w-3 h-3 -ml-1.5" />
           </button>
           <div className="w-px h-4 bg-gray-600 mx-1" />
           {/* Voice toggle */}
@@ -438,26 +433,21 @@ export default function BinocularChart({
               {/* Left side — always pinned to screen edge */}
               {renderButtonColumn('left')}
 
-              {/* Scaled chart area — only charts zoom */}
-              <div className="flex-1 flex items-center justify-center overflow-hidden">
-                <div className="flex flex-col w-full max-h-full" style={{
-                  transform: `scale(${viewScale / 100})`,
-                  transformOrigin: 'center center',
-                }}>
-                  <div className="flex items-stretch gap-0.5 flex-1">
-                    {renderChart('left')}
-                    <div className="w-px bg-gray-600 self-stretch shrink-0" />
-                    {renderChart('right')}
-                  </div>
+              {/* Chart area — IPD gap adjusts midline spacing */}
+              <div className="flex-1 flex flex-col items-center justify-center overflow-hidden">
+                <div className="flex items-stretch flex-1" style={{ gap: `${ipdGap}px` }}>
+                  {renderChart('left')}
+                  <div className="w-px bg-gray-600 self-stretch shrink-0" />
+                  {renderChart('right')}
+                </div>
 
-                  {/* Progress dots */}
-                  <div className="flex items-center justify-center gap-1.5 mt-2 pb-2">
-                    {CHART_LINES.map((_, i) => (
-                      <div key={i} className={`w-2.5 h-2.5 rounded-full transition-all ${
-                        i < currentLineIndex ? 'bg-green-400' : i === currentLineIndex ? 'bg-primary-500' : 'bg-gray-500'
-                      }`} />
-                    ))}
-                  </div>
+                {/* Progress dots */}
+                <div className="flex items-center justify-center gap-1.5 mt-2 pb-2">
+                  {CHART_LINES.map((_, i) => (
+                    <div key={i} className={`w-2.5 h-2.5 rounded-full transition-all ${
+                      i < currentLineIndex ? 'bg-green-400' : i === currentLineIndex ? 'bg-primary-500' : 'bg-gray-500'
+                    }`} />
+                  ))}
                 </div>
               </div>
 
