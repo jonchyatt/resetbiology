@@ -160,24 +160,24 @@ export default function TrainingSession({
   // Handle distance progression - the "barbell" concept
   // NOTE: Distance changes only happen when ENTIRE CHART is completed (via onChartComplete callback)
   // This function just tracks glasses progression at max distance
+  // Skip on desktop — glasses progression is for phone-based near-vision training only
   const handleDistanceProgression = (wasCorrect: boolean) => {
-    if (!wasCorrect) return
+    if (!wasCorrect || deviceMode === 'desktop') return
 
     const maxDistance = currentGlassesStage.maxDistance
 
     // At arm's length (max distance)?
     if (targetDistanceCm >= maxDistance - 5) {
-      setConsecutiveSuccessAtMax(prev => prev + 1)
+      const newCount = consecutiveSuccessAtMax + 1
+      setConsecutiveSuccessAtMax(newCount)
 
       // After 3 consecutive successes at max distance, prompt for glasses upgrade
-      if (consecutiveSuccessAtMax >= 2) {
+      if (newCount >= 3) {
         if (readerGlassesStage < READER_GLASSES_STAGES.length - 1) {
           setShowGlassesPrompt(true)
-          // Audio disabled - visual prompt shows glasses upgrade
         }
       }
     }
-    // NOTE: Removed per-answer distance increment - this now only happens after completing full chart
   }
 
   // Upgrade to next glasses stage
