@@ -2,11 +2,39 @@
 
 import Link from "next/link"
 import { useState, useEffect } from "react"
-import { Trophy, Calendar, ChevronRight, Target, Dumbbell, Apple, Brain, Wind, BookOpen, ShoppingBag, Check, Flame, Sparkles, X, Eye, Zap } from "lucide-react"
+import { Trophy, Calendar, ChevronRight, Target, Dumbbell, Apple, Brain, Wind, BookOpen, ShoppingBag, Check, Flame, Sparkles, X, Eye, Zap, type LucideIcon } from "lucide-react"
 import { PortalHeader } from "@/components/Navigation/PortalHeader"
 import { useUser } from "@auth0/nextjs-auth0"
 import { useRouter } from "next/navigation"
 import TrialSubscription from "@/components/Subscriptions/TrialSubscription"
+
+const iconMap: Record<string, LucideIcon> = {
+  Target, Dumbbell, Apple, Brain, Wind, BookOpen, Eye, Zap,
+}
+
+interface PortalModuleData {
+  slug: string
+  label: string
+  href: string
+  icon: string
+  colorFrom: string
+  colorTo: string
+  borderColor: string
+  iconColor: string
+  enabled: boolean
+  order: number
+}
+
+// Hardcoded fallback if API fails
+const fallbackModules: PortalModuleData[] = [
+  { slug: 'peptides', label: 'Peptides', href: '/peptides', icon: 'Target', colorFrom: 'from-teal-600/30', colorTo: 'to-teal-700/30', borderColor: 'border-teal-400/30', iconColor: 'text-teal-300', enabled: true, order: 1 },
+  { slug: 'workout', label: 'Workout', href: '/workout', icon: 'Dumbbell', colorFrom: 'from-green-600/30', colorTo: 'to-green-700/30', borderColor: 'border-green-400/30', iconColor: 'text-green-300', enabled: true, order: 2 },
+  { slug: 'nutrition', label: 'Nutrition', href: '/nutrition', icon: 'Apple', colorFrom: 'from-amber-600/30', colorTo: 'to-amber-700/30', borderColor: 'border-amber-400/30', iconColor: 'text-amber-300', enabled: true, order: 3 },
+  { slug: 'modules', label: 'Modules', href: '/modules', icon: 'Brain', colorFrom: 'from-purple-600/30', colorTo: 'to-purple-700/30', borderColor: 'border-purple-400/30', iconColor: 'text-purple-300', enabled: true, order: 4 },
+  { slug: 'breath', label: 'Breathe', href: '/breath', icon: 'Wind', colorFrom: 'from-blue-600/30', colorTo: 'to-blue-700/30', borderColor: 'border-blue-400/30', iconColor: 'text-blue-300', enabled: true, order: 5 },
+  { slug: 'journal', label: 'Journal', href: '#journal', icon: 'BookOpen', colorFrom: 'from-secondary-600/30', colorTo: 'to-secondary-700/30', borderColor: 'border-secondary-400/30', iconColor: 'text-secondary-300', enabled: true, order: 6 },
+  { slug: 'vision-training', label: 'Vision', href: '/vision-training', icon: 'Eye', colorFrom: 'from-cyan-600/30', colorTo: 'to-cyan-700/30', borderColor: 'border-cyan-400/30', iconColor: 'text-cyan-300', enabled: true, order: 7 },
+]
 
 interface DailyJournalData {
   weight: number | null
@@ -57,6 +85,20 @@ export function EnhancedDashboard() {
     breathNotes: "",
     moduleNotes: "",
   })
+
+  // Portal modules from DB
+  const [portalModules, setPortalModules] = useState<PortalModuleData[]>(fallbackModules)
+
+  useEffect(() => {
+    fetch('/api/admin/portal-modules?enabled=true')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data) && data.length > 0) {
+          setPortalModules(data)
+        }
+      })
+      .catch(() => { /* keep fallback */ })
+  }, [])
 
   // Mood options
   const moodOptions = ["Amazing 🚀", "Great 😊", "Good 👍", "Okay 😐", "Challenging 😔", "Tough 😟"]
@@ -533,58 +575,19 @@ export function EnhancedDashboard() {
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">📋 Daily Check-in</h2>
             </div>
 
-            {/* Quick Access Cards - Flex layout auto-centers any number of modules */}
+            {/* Quick Access Cards - Dynamic from DB */}
             <div className="flex flex-wrap justify-center gap-4 max-w-4xl mx-auto">
-              <Link href="/peptides" className="group w-[calc(50%-0.5rem)] md:w-[calc(25%-0.75rem)]">
-                <div className="p-6 bg-gradient-to-br from-teal-600/30 to-teal-700/30 border border-teal-400/30 rounded-lg hover:scale-[1.02] hover:shadow-lg hover:shadow-teal-500/20 transition-all text-center">
-                  <Target className="w-8 h-8 text-teal-300 mx-auto mb-2" />
-                  <span className="text-white font-medium">Peptides</span>
-                </div>
-              </Link>
-
-              <Link href="/workout" className="group w-[calc(50%-0.5rem)] md:w-[calc(25%-0.75rem)]">
-                <div className="p-6 bg-gradient-to-br from-green-600/30 to-green-700/30 border border-green-400/30 rounded-lg hover:scale-[1.02] hover:shadow-lg hover:shadow-green-500/20 transition-all text-center">
-                  <Dumbbell className="w-8 h-8 text-green-300 mx-auto mb-2" />
-                  <span className="text-white font-medium">Workout</span>
-                </div>
-              </Link>
-
-              <Link href="/nutrition" className="group w-[calc(50%-0.5rem)] md:w-[calc(25%-0.75rem)]">
-                <div className="p-6 bg-gradient-to-br from-amber-600/30 to-amber-700/30 border border-amber-400/30 rounded-lg hover:scale-[1.02] hover:shadow-lg hover:shadow-amber-500/20 transition-all text-center">
-                  <Apple className="w-8 h-8 text-amber-300 mx-auto mb-2" />
-                  <span className="text-white font-medium">Nutrition</span>
-                </div>
-              </Link>
-
-              <Link href="/modules" className="group w-[calc(50%-0.5rem)] md:w-[calc(25%-0.75rem)]">
-                <div className="p-6 bg-gradient-to-br from-purple-600/30 to-purple-700/30 border border-purple-400/30 rounded-lg hover:scale-[1.02] hover:shadow-lg hover:shadow-purple-500/20 transition-all text-center">
-                  <Brain className="w-8 h-8 text-purple-300 mx-auto mb-2" />
-                  <span className="text-white font-medium">Modules</span>
-                </div>
-              </Link>
-
-              <Link href="/breath" className="group w-[calc(50%-0.5rem)] md:w-[calc(25%-0.75rem)]">
-                <div className="p-6 bg-gradient-to-br from-blue-600/30 to-blue-700/30 border border-blue-400/30 rounded-lg hover:scale-[1.02] hover:shadow-lg hover:shadow-blue-500/20 transition-all text-center">
-                  <Wind className="w-8 h-8 text-blue-300 mx-auto mb-2" />
-                  <span className="text-white font-medium">Breathe</span>
-                </div>
-              </Link>
-
-              <Link href="#journal" className="group w-[calc(50%-0.5rem)] md:w-[calc(25%-0.75rem)]">
-                <div className="p-6 bg-gradient-to-br from-secondary-600/30 to-secondary-700/30 border border-secondary-400/30 rounded-lg hover:scale-[1.02] hover:shadow-lg hover:shadow-secondary-500/20 transition-all text-center">
-                  <BookOpen className="w-8 h-8 text-secondary-300 mx-auto mb-2" />
-                  <span className="text-white font-medium">Journal</span>
-                </div>
-              </Link>
-
-              <Link href="/vision-training" className="group w-[calc(50%-0.5rem)] md:w-[calc(25%-0.75rem)]">
-                <div className="p-6 bg-gradient-to-br from-cyan-600/30 to-cyan-700/30 border border-cyan-400/30 rounded-lg hover:scale-[1.02] hover:shadow-lg hover:shadow-cyan-500/20 transition-all text-center">
-                  <Eye className="w-8 h-8 text-cyan-300 mx-auto mb-2" />
-                  <span className="text-white font-medium">Vision</span>
-                </div>
-              </Link>
-
-              {/* Memory/N-Back hidden - in development. Access via /mental-training directly */}
+              {portalModules.map((mod) => {
+                const IconComponent = iconMap[mod.icon]
+                return (
+                  <Link key={mod.slug} href={mod.href} className="group w-[calc(50%-0.5rem)] md:w-[calc(25%-0.75rem)]">
+                    <div className={`p-6 bg-gradient-to-br ${mod.colorFrom} ${mod.colorTo} border ${mod.borderColor} rounded-lg hover:scale-[1.02] hover:shadow-lg transition-all text-center`}>
+                      {IconComponent && <IconComponent className={`w-8 h-8 ${mod.iconColor} mx-auto mb-2`} />}
+                      <span className="text-white font-medium">{mod.label}</span>
+                    </div>
+                  </Link>
+                )
+              })}
             </div>
 
             {/* Secondary Action */}

@@ -265,80 +265,24 @@ export default function AdminDashboard() {
 
           </div>
 
-          {/* Portal Management Section */}
+          {/* Portal Module Manager Link */}
           <div className="max-w-6xl mx-auto mt-12">
-            <div className="flex items-center mb-6">
-              <Layout className="w-8 h-8 text-indigo-400 mr-3" />
-              <h2 className="text-2xl font-bold text-white">Portal Management</h2>
-              <span className="ml-4 text-sm text-gray-400">All client-facing features</span>
-            </div>
-
-            <div className="bg-gradient-to-br from-gray-800/60 to-gray-900/60 backdrop-blur-sm rounded-xl p-6 border border-indigo-400/20">
-              {/* Live Features */}
-              <div className="mb-8">
-                <h3 className="text-lg font-semibold text-green-400 mb-4 flex items-center">
-                  <span className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
-                  Live in Portal
-                </h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                  <Link href="/peptides" className="flex items-center p-3 bg-teal-600/20 rounded-lg border border-teal-400/30 hover:bg-teal-600/30 transition-colors">
-                    <Target className="w-5 h-5 text-teal-300 mr-2" />
-                    <span className="text-white text-sm">Peptides</span>
-                  </Link>
-                  <Link href="/workout" className="flex items-center p-3 bg-green-600/20 rounded-lg border border-green-400/30 hover:bg-green-600/30 transition-colors">
-                    <Dumbbell className="w-5 h-5 text-green-300 mr-2" />
-                    <span className="text-white text-sm">Workout</span>
-                  </Link>
-                  <Link href="/nutrition" className="flex items-center p-3 bg-amber-600/20 rounded-lg border border-amber-400/30 hover:bg-amber-600/30 transition-colors">
-                    <Apple className="w-5 h-5 text-amber-300 mr-2" />
-                    <span className="text-white text-sm">Nutrition</span>
-                  </Link>
-                  <Link href="/modules" className="flex items-center p-3 bg-purple-600/20 rounded-lg border border-purple-400/30 hover:bg-purple-600/30 transition-colors">
-                    <Brain className="w-5 h-5 text-purple-300 mr-2" />
-                    <span className="text-white text-sm">Modules</span>
-                  </Link>
-                  <Link href="/breath" className="flex items-center p-3 bg-blue-600/20 rounded-lg border border-blue-400/30 hover:bg-blue-600/30 transition-colors">
-                    <Wind className="w-5 h-5 text-blue-300 mr-2" />
-                    <span className="text-white text-sm">Breathe</span>
-                  </Link>
-                  <Link href="/journal" className="flex items-center p-3 bg-secondary-600/20 rounded-lg border border-secondary-400/30 hover:bg-secondary-600/30 transition-colors">
-                    <BookOpen className="w-5 h-5 text-secondary-300 mr-2" />
-                    <span className="text-white text-sm">Journal</span>
-                  </Link>
-                  <Link href="/order" className="flex items-center p-3 bg-purple-600/20 rounded-lg border border-purple-400/30 hover:bg-purple-600/30 transition-colors">
-                    <ShoppingCart className="w-5 h-5 text-purple-300 mr-2" />
-                    <span className="text-white text-sm">Order Peptides</span>
-                  </Link>
+            <Link href="/admin/portal" className="group block">
+              <div className="bg-gradient-to-br from-indigo-600/20 to-indigo-700/20 backdrop-blur-sm rounded-xl p-6 border border-indigo-400/30 shadow-2xl hover:shadow-indigo-400/20 group-hover:scale-[1.01] transition-all">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <Layout className="w-8 h-8 text-indigo-400 mr-3" />
+                    <div>
+                      <h2 className="text-2xl font-bold text-white">Portal Module Manager</h2>
+                      <p className="text-gray-400 text-sm mt-1">Toggle modules on/off in the client portal</p>
+                    </div>
+                  </div>
+                  <div className="text-indigo-300 font-medium group-hover:text-indigo-200 transition-colors">
+                    Manage Modules →
+                  </div>
                 </div>
               </div>
-
-              {/* In Development */}
-              <div>
-                <h3 className="text-lg font-semibold text-yellow-400 mb-4 flex items-center">
-                  <span className="w-2 h-2 bg-yellow-400 rounded-full mr-2"></span>
-                  In Development (Hidden from Portal)
-                </h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                  <Link href="/vision-training" className="flex items-center p-3 bg-cyan-600/20 rounded-lg border border-cyan-400/30 hover:bg-cyan-600/30 transition-colors group">
-                    <Eye className="w-5 h-5 text-cyan-300 mr-2" />
-                    <div>
-                      <span className="text-white text-sm">Vision Training</span>
-                      <span className="block text-xs text-gray-400 group-hover:text-cyan-300">/vision-training</span>
-                    </div>
-                  </Link>
-                  <Link href="/mental-training" className="flex items-center p-3 bg-pink-600/20 rounded-lg border border-pink-400/30 hover:bg-pink-600/30 transition-colors group">
-                    <Zap className="w-5 h-5 text-pink-300 mr-2" />
-                    <div>
-                      <span className="text-white text-sm">Memory/N-Back</span>
-                      <span className="block text-xs text-gray-400 group-hover:text-pink-300">/mental-training</span>
-                    </div>
-                  </Link>
-                </div>
-                <p className="mt-4 text-sm text-gray-400">
-                  These features are accessible via direct URL but not linked from the client portal.
-                </p>
-              </div>
-            </div>
+            </Link>
           </div>
 
         </div>

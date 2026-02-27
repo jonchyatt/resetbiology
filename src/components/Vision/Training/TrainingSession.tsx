@@ -280,7 +280,7 @@ export default function TrainingSession({
           </div>
 
           {/* Feedback overlay - only show for incorrect answers */}
-          {feedback === 'wrong' && (
+          {feedback === 'incorrect' && (
             <div className="absolute top-12 right-4 z-10 flex items-center gap-2 px-4 py-2 rounded-lg font-semibold bg-red-500 text-white">
               <XCircle className="w-5 h-5" />
               Try Again
