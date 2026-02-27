@@ -93,7 +93,7 @@ export default function BinocularChart({
   const showDistancePromptRef = useRef(false)
   showDistancePromptRef.current = showDistancePrompt
   const [letterChoices, setLetterChoices] = useState<string[]>([])
-  const [ipdGap, setIpdGap] = useState(16) // px gap between left/right charts for pupil distance
+  const [ipdGap, setIpdGap] = useState(64) // px width of center column between charts
 
   // Voice recognition state (Whisper)
   const [localVoiceEnabled, setLocalVoiceEnabled] = useState(false)
@@ -322,10 +322,10 @@ export default function BinocularChart({
     </div>
   )
 
-  // Center IPD control + midline divider
+  // Center IPD control + midline divider — width driven by ipdGap state
   const renderIpdCenter = () => (
-    <div className="flex flex-col items-center justify-center shrink-0 px-1" style={{ minWidth: '48px' }}>
-      <button onClick={() => setIpdGap(g => Math.min(80, g + 4))}
+    <div className="flex flex-col items-center justify-center shrink-0 transition-all duration-150" style={{ width: `${Math.max(48, ipdGap)}px` }}>
+      <button onClick={() => setIpdGap(g => Math.min(120, g + 8))}
         className="p-1.5 rounded hover:bg-gray-700/50 text-gray-400 hover:text-white transition-all"
         title="Widen gap">
         <MoveHorizontal className="w-5 h-5" />
@@ -337,7 +337,7 @@ export default function BinocularChart({
       <div className="flex-1 flex items-center">
         <div className="w-px bg-gray-600 h-full" />
       </div>
-      <button onClick={() => setIpdGap(g => Math.max(0, g - 4))}
+      <button onClick={() => setIpdGap(g => Math.max(48, g - 8))}
         className="p-1.5 rounded hover:bg-gray-700/50 text-gray-400 hover:text-white transition-all"
         title="Narrow gap">
         <ArrowRight className="w-4 h-4 -mr-1" /><ArrowLeft className="w-4 h-4 -ml-1" />
