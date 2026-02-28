@@ -2,7 +2,6 @@ import type { ReactNode } from 'react';
 import Script from 'next/script';
 import { Header } from '@/components/Navigation/Header';
 import { ClientAuth0Provider } from '@/components/Auth/ClientAuth0Provider';
-import { VoiceAgentContainer } from '@/components/VoiceAgentContainer';
 import './globals.css';
 
 export const metadata = { title: 'ResetBiology' };
@@ -29,7 +28,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <ClientAuth0Provider>
           <Header />
           {children}
-          <VoiceAgentContainer />
         </ClientAuth0Provider>
 
         <Script id="register-sw" strategy="afterInteractive">
