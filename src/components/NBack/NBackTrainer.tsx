@@ -484,9 +484,9 @@ export default function NBackTrainer() {
       if (gameState !== 'playing') return
 
       if (e.key === 'a' || e.key === 'A') {
-        setPositionResponse(true)
-      } else if (e.key === 'l' || e.key === 'L') {
         setAudioResponse(true)
+      } else if (e.key === 'l' || e.key === 'L') {
+        setPositionResponse(true)
       } else if (gameMode === 'triple' && (e.key === 's' || e.key === 'S')) {
         setLetterResponse(true)
       }
@@ -528,7 +528,7 @@ export default function NBackTrainer() {
         {/* Title */}
         <div className="text-center py-8">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">
-            <span className="text-primary-400">N-Back</span> Mental Training
+            <span className="text-primary-400">Memory</span> Trainer
           </h1>
           <p className="text-xl text-gray-300 max-w-2xl mx-auto">
             Train your working memory and fluid intelligence with scientifically-validated dual and triple N-Back exercises.
@@ -746,127 +746,121 @@ export default function NBackTrainer() {
                     {countdown}
                   </div>
                   <p className="text-gray-400 mt-4">
-                    {gameMode === 'dual' ? 'A = Position Match | L = Audio Match' : 'A = Position | L = Audio | S = Letter'}
+                    {gameMode === 'dual' ? 'A = Audio Match | L = Position Match' : 'A = Audio | L = Position | S = Letter'}
                   </p>
                 </div>
               )}
 
-              {/* Game Board */}
+              {/* Game Board — landscape thumb-friendly layout */}
               {(gameState === 'playing' || gameState === 'paused') && (
-                <div className="space-y-6">
-                  {/* Stats Bar */}
-                  <div className="grid grid-cols-4 gap-4">
-                    <div className="bg-gray-900/60 rounded-xl p-4 text-center">
-                      <p className="text-xs text-gray-400 uppercase">Trial</p>
-                      <p className="text-2xl font-bold text-white">
-                        {currentTrialIndex + 1}/{trialsPerSession}
-                      </p>
-                    </div>
-                    <div className="bg-gray-900/60 rounded-xl p-4 text-center">
-                      <p className="text-xs text-gray-400 uppercase">N-Level</p>
-                      <p className="text-2xl font-bold text-primary-400">{nLevel}</p>
-                    </div>
-                    <div className="bg-gray-900/60 rounded-xl p-4 text-center">
-                      <p className="text-xs text-gray-400 uppercase">Accuracy</p>
-                      <p className="text-2xl font-bold text-secondary-400">{liveAccuracy}%</p>
-                    </div>
-                    <div className="bg-gray-900/60 rounded-xl p-4 text-center">
-                      <p className="text-xs text-gray-400 uppercase">Mode</p>
-                      <p className="text-2xl font-bold text-white capitalize">{gameMode}</p>
+                <div className="space-y-4">
+                  {/* Compact Stats Bar */}
+                  <div className="flex items-center justify-between gap-2 px-2">
+                    <span className="text-sm text-gray-400">Trial <span className="text-white font-bold">{currentTrialIndex + 1}/{trialsPerSession}</span></span>
+                    <span className="text-sm text-gray-400">N=<span className="text-primary-400 font-bold">{nLevel}</span></span>
+                    <span className="text-sm text-gray-400">Acc <span className="text-secondary-400 font-bold">{liveAccuracy}%</span></span>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={togglePause}
+                        className="p-2 rounded-lg bg-gray-800/60 text-gray-300 hover:bg-gray-700 transition"
+                      >
+                        {gameState === 'paused' ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
+                      </button>
+                      <button
+                        onClick={resetGame}
+                        className="p-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition"
+                      >
+                        <RotateCcw className="w-4 h-4" />
+                      </button>
                     </div>
                   </div>
 
-                  {/* Game Grid */}
-                  <div className="bg-gray-900/80 backdrop-blur-sm rounded-2xl border border-primary-400/20 p-8">
+                  {/* Main game area — buttons on outer edges, grid centered */}
+                  <div className="relative bg-gray-900/80 backdrop-blur-sm rounded-2xl border border-primary-400/20 overflow-hidden">
                     {gameState === 'paused' && (
                       <div className="absolute inset-0 bg-black/60 rounded-2xl flex items-center justify-center z-10">
                         <p className="text-3xl font-bold text-white">PAUSED</p>
                       </div>
                     )}
 
-                    {/* 3x3 Grid */}
-                    <div className="grid grid-cols-3 gap-3 max-w-xs mx-auto mb-6">
-                      {Array.from({ length: 9 }).map((_, i) => {
-                        const isActive = showStimulus && trials[currentTrialIndex]?.position === i
-                        return (
-                          <div
-                            key={i}
-                            className={`aspect-square rounded-xl border-2 flex items-center justify-center text-3xl font-bold transition-all duration-200 ${isActive
-                              ? 'bg-primary-500 border-primary-400 text-white shadow-lg shadow-primary-500/50'
-                              : 'bg-gray-800/50 border-gray-700'
-                              }`}
-                          >
-                            {isActive && gameMode === 'triple' && trials[currentTrialIndex]?.visualLetter}
-                          </div>
-                        )
-                      })}
-                    </div>
-
-                    {/* Audio Letter Display */}
-                    {showStimulus && (
-                      <div className="text-center mb-6">
-                        <p className="text-gray-400 text-sm">Audio Letter</p>
-                        <p className="text-4xl font-bold text-blue-400">
-                          {trials[currentTrialIndex]?.audioLetter}
-                        </p>
-                      </div>
-                    )}
-
-                    {/* Response Buttons */}
-                    <div className={`grid ${gameMode === 'triple' ? 'grid-cols-3' : 'grid-cols-2'} gap-4 max-w-md mx-auto`}>
-                      <button
-                        onClick={() => setPositionResponse(true)}
-                        disabled={gameState === 'paused' || currentTrialIndex < nLevel}
-                        className={`py-4 px-6 rounded-xl font-bold text-lg transition-all ${positionResponse
-                          ? 'bg-primary-500 text-white'
-                          : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                          } ${feedback.position === 'correct' ? 'ring-2 ring-green-500' : ''} ${feedback.position === 'incorrect' || feedback.position === 'missed' ? 'ring-2 ring-red-500' : ''} disabled:opacity-50`}
-                      >
-                        <Grid3X3 className="w-6 h-6 mx-auto mb-1" />
-                        Position (A)
-                      </button>
-                      <button
-                        onClick={() => setAudioResponse(true)}
-                        disabled={gameState === 'paused' || currentTrialIndex < nLevel}
-                        className={`py-4 px-6 rounded-xl font-bold text-lg transition-all ${audioResponse
-                          ? 'bg-blue-500 text-white'
-                          : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                          } ${feedback.audio === 'correct' ? 'ring-2 ring-green-500' : ''} ${feedback.audio === 'incorrect' || feedback.audio === 'missed' ? 'ring-2 ring-red-500' : ''} disabled:opacity-50`}
-                      >
-                        <Volume2 className="w-6 h-6 mx-auto mb-1" />
-                        Audio (L)
-                      </button>
-                      {gameMode === 'triple' && (
+                    <div className="flex items-stretch min-h-[280px] landscape:min-h-[200px]">
+                      {/* LEFT EDGE — left thumb: Audio (top) + Letter (bottom, triple/quad mode) */}
+                      <div className="flex flex-col w-20 landscape:w-24 shrink-0 border-r border-gray-700/50">
                         <button
-                          onClick={() => setLetterResponse(true)}
+                          onClick={() => setAudioResponse(true)}
                           disabled={gameState === 'paused' || currentTrialIndex < nLevel}
-                          className={`py-4 px-6 rounded-xl font-bold text-lg transition-all ${letterResponse
-                            ? 'bg-secondary-500 text-white'
-                            : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                            } ${feedback.letter === 'correct' ? 'ring-2 ring-green-500' : ''} ${feedback.letter === 'incorrect' || feedback.letter === 'missed' ? 'ring-2 ring-red-500' : ''} disabled:opacity-50`}
+                          className={`flex flex-col items-center justify-center flex-1 font-bold text-sm transition-all active:scale-95 select-none ${audioResponse
+                            ? 'bg-blue-500 text-white'
+                            : 'bg-gray-800/40 text-gray-300 hover:bg-gray-700/60'
+                            } ${feedback.audio === 'correct' ? 'ring-2 ring-inset ring-green-500' : ''} ${feedback.audio === 'incorrect' || feedback.audio === 'missed' ? 'ring-2 ring-inset ring-red-500' : ''} disabled:opacity-50`}
                         >
-                          <Type className="w-6 h-6 mx-auto mb-1" />
-                          Letter (S)
+                          <Volume2 className="w-7 h-7 mb-0.5" />
+                          <span>Audio</span>
+                          <kbd className="mt-0.5 px-1.5 py-0.5 bg-black/30 rounded text-xs text-gray-400">A</kbd>
                         </button>
-                      )}
-                    </div>
+                        {gameMode === 'triple' && (
+                          <button
+                            onClick={() => setLetterResponse(true)}
+                            disabled={gameState === 'paused' || currentTrialIndex < nLevel}
+                            className={`flex flex-col items-center justify-center flex-1 font-bold text-sm transition-all active:scale-95 select-none border-t border-gray-700/50 ${letterResponse
+                              ? 'bg-secondary-500 text-white'
+                              : 'bg-gray-800/40 text-gray-300 hover:bg-gray-700/60'
+                              } ${feedback.letter === 'correct' ? 'ring-2 ring-inset ring-green-500' : ''} ${feedback.letter === 'incorrect' || feedback.letter === 'missed' ? 'ring-2 ring-inset ring-red-500' : ''} disabled:opacity-50`}
+                          >
+                            <Type className="w-7 h-7 mb-0.5" />
+                            <span>Letter</span>
+                            <kbd className="mt-0.5 px-1.5 py-0.5 bg-black/30 rounded text-xs text-gray-400">S</kbd>
+                          </button>
+                        )}
+                      </div>
 
-                    {/* Control Buttons */}
-                    <div className="flex justify-center gap-4 mt-6">
-                      <button
-                        onClick={togglePause}
-                        className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gray-800 text-gray-300 hover:bg-gray-700 transition"
-                      >
-                        {gameState === 'paused' ? <Play className="w-5 h-5" /> : <Pause className="w-5 h-5" />}
-                        {gameState === 'paused' ? 'Resume' : 'Pause'}
-                      </button>
-                      <button
-                        onClick={resetGame}
-                        className="flex items-center gap-2 px-6 py-3 rounded-xl bg-red-500/20 text-red-400 hover:bg-red-500/30 transition"
-                      >
-                        <RotateCcw className="w-5 h-5" />
-                        Quit
-                      </button>
+                      {/* CENTER — Grid + Audio Letter */}
+                      <div className="flex-1 flex flex-col items-center justify-center py-4 px-2">
+                        {/* 3x3 Grid */}
+                        <div className="grid grid-cols-3 gap-2 w-fit mb-3">
+                          {Array.from({ length: 9 }).map((_, i) => {
+                            const isActive = showStimulus && trials[currentTrialIndex]?.position === i
+                            return (
+                              <div
+                                key={i}
+                                className={`w-14 h-14 landscape:w-12 landscape:h-12 rounded-xl border-2 flex items-center justify-center text-2xl font-bold transition-all duration-200 ${isActive
+                                  ? 'bg-primary-500 border-primary-400 text-white shadow-lg shadow-primary-500/50'
+                                  : 'bg-gray-800/50 border-gray-700'
+                                  }`}
+                              >
+                                {isActive && gameMode === 'triple' && trials[currentTrialIndex]?.visualLetter}
+                              </div>
+                            )
+                          })}
+                        </div>
+
+                        {/* Audio Letter Display */}
+                        {showStimulus && (
+                          <div className="text-center">
+                            <p className="text-xs text-gray-500">Audio</p>
+                            <p className="text-3xl font-bold text-blue-400">
+                              {trials[currentTrialIndex]?.audioLetter}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* RIGHT EDGE — right thumb: Position (top) + [Future: Color (bottom)] */}
+                      <div className="flex flex-col w-20 landscape:w-24 shrink-0 border-l border-gray-700/50">
+                        <button
+                          onClick={() => setPositionResponse(true)}
+                          disabled={gameState === 'paused' || currentTrialIndex < nLevel}
+                          className={`flex flex-col items-center justify-center flex-1 font-bold text-sm transition-all active:scale-95 select-none ${positionResponse
+                            ? 'bg-primary-500 text-white'
+                            : 'bg-gray-800/40 text-gray-300 hover:bg-gray-700/60'
+                            } ${feedback.position === 'correct' ? 'ring-2 ring-inset ring-green-500' : ''} ${feedback.position === 'incorrect' || feedback.position === 'missed' ? 'ring-2 ring-inset ring-red-500' : ''} disabled:opacity-50`}
+                        >
+                          <Grid3X3 className="w-7 h-7 mb-0.5" />
+                          <span>Position</span>
+                          <kbd className="mt-0.5 px-1.5 py-0.5 bg-black/30 rounded text-xs text-gray-400">L</kbd>
+                        </button>
+                        {/* Future quad mode: Color button will slot here */}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1158,8 +1152,8 @@ export default function NBackTrainer() {
                     <div>
                       <h3 className="font-semibold text-white">Respond</h3>
                       <p className="text-gray-400">
-                        Press <kbd className="px-2 py-1 bg-gray-700 rounded">A</kbd> for position match,{' '}
-                        <kbd className="px-2 py-1 bg-gray-700 rounded">L</kbd> for audio match.
+                        Press <kbd className="px-2 py-1 bg-gray-700 rounded">A</kbd> for audio match,{' '}
+                        <kbd className="px-2 py-1 bg-gray-700 rounded">L</kbd> for position match.
                         In triple mode, add <kbd className="px-2 py-1 bg-gray-700 rounded">S</kbd> for letter match.
                       </p>
                     </div>
