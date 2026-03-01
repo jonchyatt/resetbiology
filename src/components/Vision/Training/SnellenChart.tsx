@@ -1,8 +1,7 @@
 'use client'
 
-import { useState, useEffect, useCallback, useRef } from 'react'
-import { ChevronDown, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, MoveHorizontal, Mic, MicOff } from 'lucide-react'
-import { WhisperService, type WhisperStatus } from '@/lib/speech'
+import { useState, useEffect, useCallback } from 'react'
+import { ChevronDown, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, MoveHorizontal } from 'lucide-react'
 
 interface SnellenChartProps {
   chartSize: string // "20/20", "20/40", etc.
@@ -159,12 +158,6 @@ export default function SnellenChart({
   // For tracking progression - start normal, progress to thin lines
   const [strokeWeight, setStrokeWeight] = useState<'bold' | 'normal' | 'thin'>('normal')
 
-  // Voice recognition state (Whisper — runs in-browser via Web Worker)
-  const [voiceEnabled, setVoiceEnabled] = useState(false)
-  const [voiceStatus, setVoiceStatus] = useState<WhisperStatus>('idle')
-  const [isSpeaking, setIsSpeaking] = useState(false)
-  const [lastHeard, setLastHeard] = useState<string>('')
-
   // Single letter mode state (for backwards compatibility)
   const [singleDirection, setSingleDirection] = useState<EDirection>(() =>
     E_DIRECTIONS[Math.floor(Math.random() * E_DIRECTIONS.length)]
@@ -211,75 +204,8 @@ export default function SnellenChart({
     }
   }, [feedback])
 
-  // Preload Whisper model when component mounts (background, no blocking)
-  useEffect(() => {
-    WhisperService.preload()
-  }, [])
-
-  // Start/stop Whisper voice recognition
-  useEffect(() => {
-    if (!voiceEnabled) {
-      WhisperService.stop()
-      setIsSpeaking(false)
-      setLastHeard('')
-      return
-    }
-
-    const mode = exerciseType === 'e-directional' ? 'e-directional' : 'letters'
-
-    WhisperService.start(mode, {
-      onResult: (answer, rawTranscript) => {
-        setLastHeard(rawTranscript.trim().split(/\s+/).pop() || '')
-        if (!answer) return
-
-        if (answer.type === 'direction' && exerciseType === 'e-directional') {
-          window.dispatchEvent(new CustomEvent('voiceDirection', { detail: answer.value }))
-        } else if (answer.type === 'letter' && exerciseType === 'letters') {
-          window.dispatchEvent(new CustomEvent('voiceLetter', { detail: answer.value }))
-        }
-      },
-      onStatusChange: (status) => {
-        setVoiceStatus(status)
-        if (status === 'error') {
-          setVoiceEnabled(false)
-        }
-      },
-      onSpeechChange: (speaking) => {
-        setIsSpeaking(speaking)
-      },
-    }).catch(() => {
-      setVoiceEnabled(false)
-    })
-
-    return () => {
-      WhisperService.stop()
-    }
-  }, [voiceEnabled, exerciseType])
-
-  // Listen for voice direction events
-  useEffect(() => {
-    const handleVoiceDirection = (e: Event) => {
-      const direction = (e as CustomEvent).detail as EDirection
-      if (direction && exerciseType === 'e-directional') {
-        handleLineByLineAnswer(direction)
-      }
-    }
-
-    window.addEventListener('voiceDirection', handleVoiceDirection)
-    return () => window.removeEventListener('voiceDirection', handleVoiceDirection)
-  })
-
-  // Listen for voice letter events (letter chart mode)
-  useEffect(() => {
-    const handleVoiceLetter = (e: Event) => {
-      const letter = (e as CustomEvent).detail as string
-      if (letter && exerciseType === 'letters') {
-        handleLetterAnswer(letter)
-      }
-    }
-    window.addEventListener('voiceLetter', handleVoiceLetter)
-    return () => window.removeEventListener('voiceLetter', handleVoiceLetter)
-  })
+  // Voice is disabled for now — Whisper preload removed to fix crash.
+  // TODO: Re-add voice control later with on-demand loading only when user enables it.
 
   // Generate new chart
   const regenerateChart = useCallback(() => {
@@ -595,32 +521,6 @@ export default function SnellenChart({
           <p className="text-gray-500 text-xs text-center mb-2">
             {exerciseType === 'e-directional' ? 'Which way?' : 'Which letter?'} (Line {currentLineIndex + 1}/{CHART_LINES.length})
           </p>
-          {/* Voice control — works for both E-directional and letter modes */}
-          <div className="flex items-center justify-center gap-3 mb-2">
-            <button
-              onClick={() => setVoiceEnabled(!voiceEnabled)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
-                voiceEnabled
-                  ? isSpeaking
-                    ? 'bg-green-500 text-white shadow-lg shadow-green-500/30 animate-pulse'
-                    : 'bg-primary-600 text-white shadow-lg shadow-primary-500/30'
-                  : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
-              }`}
-              title={voiceEnabled ? 'Voice ON (tap to disable)' : 'Voice OFF (tap to enable)'}
-            >
-              {voiceEnabled ? <Mic className="w-5 h-5" /> : <MicOff className="w-5 h-5" />}
-              {voiceEnabled ? 'Voice ON' : 'Voice OFF'}
-            </button>
-            {voiceEnabled && (
-              <span className="text-xs text-gray-500">
-                {voiceStatus === 'loading' ? 'Loading model...' :
-                 isSpeaking ? '🔴 Hearing...' :
-                 lastHeard ? `Heard: "${lastHeard}"` :
-                 exerciseType === 'e-directional' ? 'Say up/down/left/right' : 'Say the letter name'}
-              </span>
-            )}
-          </div>
-
           {exerciseType === 'e-directional' ? (
             <DirectionButtons
               onSelect={handleLineByLineAnswer}
