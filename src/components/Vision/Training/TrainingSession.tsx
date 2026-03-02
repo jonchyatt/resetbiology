@@ -13,6 +13,7 @@ interface TrainingSessionProps {
   initialLevel?: number
   deviceMode?: 'phone' | 'desktop'
   binocularMode?: BinocularMode
+  untimed?: boolean
   onActiveChange?: (isActive: boolean) => void
   onExit?: () => void
 }
@@ -47,6 +48,7 @@ export default function TrainingSession({
   initialLevel = 1,
   deviceMode = 'phone',
   binocularMode = 'off',
+  untimed = false,
   onActiveChange,
   onExit
 }: TrainingSessionProps) {
@@ -120,6 +122,9 @@ export default function TrainingSession({
       setResetTrigger(prev => prev + 1) // Triggers new random letter
     }, 1000)
 
+    // In untimed mode, just count stats — no forced level changes
+    if (untimed) return
+
     // Check if should level up or complete session
     const newAttempts = attempts + 1
     const newCorrect = isCorrect ? correct + 1 : correct
@@ -134,14 +139,12 @@ export default function TrainingSession({
             setAttempts(0)
             setCorrect(0)
             setResetTrigger(prev => prev + 1) // Generate new letter for new level
-            // Audio disabled - visual feedback shows level up
           }, 1500)
         } else {
           // Completed all levels!
           setTimeout(() => {
             setSessionComplete(true)
             setIsActive(false)
-            // Audio disabled - visual feedback shows completion
             saveSession(true)
           }, 1500)
         }
@@ -151,7 +154,6 @@ export default function TrainingSession({
           setAttempts(0)
           setCorrect(0)
           setResetTrigger(prev => prev + 1) // Generate new letter for retry
-          // Audio disabled - visual feedback shows retry needed
         }, 1500)
       }
     }

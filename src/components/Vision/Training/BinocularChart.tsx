@@ -226,7 +226,7 @@ export default function BinocularChart({
   // Shrink chart — simulates moving further away (for headset where you can't move)
   const handleShrink = () => {
     setShowDistancePrompt(false)
-    setChartScale(prev => Math.max(0.4, prev * 0.92)) // ~8% smaller each time
+    setChartScale(prev => Math.max(0.15, prev * 0.82)) // ~18% smaller each time, floor at 0.15x
     regenerateChart()
     if (onDistanceAdjust) onDistanceAdjust('further') // still track progression
   }

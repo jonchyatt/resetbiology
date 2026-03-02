@@ -62,6 +62,7 @@ export function VisionTraining() {
   const [trainerExerciseType, setTrainerExerciseType] = useState<'letters' | 'e-directional'>('letters')
   const [trainerDeviceMode, setTrainerDeviceMode] = useState<'phone' | 'desktop'>('phone')
   const [binocularMode, setBinocularMode] = useState<'off' | 'duplicate' | 'redgreen' | 'grid-square' | 'grid-slanted' | 'alternating'>('off')
+  const [untimedMode, setUntimedMode] = useState(false)
   const [isTrainingActive, setIsTrainingActive] = useState(false)
 
   // Dispatch binocular training mode events for hiding UI elements
@@ -415,6 +416,26 @@ export function VisionTraining() {
                         ))}
                       </div>
                     </div>
+
+                    {/* Untimed mode toggle */}
+                    <div className="border-t border-gray-700/30 pt-3 mt-3">
+                      <button
+                        onClick={() => setUntimedMode(!untimedMode)}
+                        className="flex items-center justify-between w-full"
+                      >
+                        <div>
+                          <span className="text-sm font-medium text-gray-300">Free Practice</span>
+                          <p className="text-[10px] text-gray-500 mt-0.5">No level timer, no forced resets — just train</p>
+                        </div>
+                        <div className={`w-11 h-6 rounded-full transition-all relative ${
+                          untimedMode ? 'bg-secondary-500' : 'bg-gray-600'
+                        }`}>
+                          <div className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all ${
+                            untimedMode ? 'left-[22px]' : 'left-0.5'
+                          }`} />
+                        </div>
+                      </button>
+                    </div>
                   </div>
                 )}
 
@@ -429,6 +450,7 @@ export function VisionTraining() {
                           exerciseType={trainerExerciseType}
                           deviceMode={trainerDeviceMode}
                           binocularMode={binocularMode}
+                          untimed={untimedMode}
                           onExit={() => setIsTrainingActive(false)}
                           onActiveChange={(active) => {
                             if (!active) setIsTrainingActive(false)
@@ -452,6 +474,7 @@ export function VisionTraining() {
                       exerciseType={trainerExerciseType}
                       deviceMode={trainerDeviceMode}
                       binocularMode={binocularMode}
+                      untimed={untimedMode}
                       onActiveChange={(active) => {
                         if (!active) setIsTrainingActive(false)
                       }}
