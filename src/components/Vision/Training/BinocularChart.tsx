@@ -1,8 +1,7 @@
 'use client'
 
-import { useState, useEffect, useCallback, useRef } from 'react'
-import { ChevronDown, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, MoveHorizontal, Mic, MicOff } from 'lucide-react'
-import { WhisperService, type WhisperStatus } from '@/lib/speech'
+import { useState, useEffect, useCallback } from 'react'
+import { ChevronDown, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, MoveHorizontal } from 'lucide-react'
 
 type EDirection = 'up' | 'down' | 'left' | 'right'
 export type BinocularMode = 'off' | 'duplicate' | 'redgreen' | 'grid-square' | 'grid-slanted' | 'alternating'
@@ -90,18 +89,12 @@ export default function BinocularChart({
   const [consecutiveFailures, setConsecutiveFailures] = useState(0)
   const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null)
   const [showDistancePrompt, setShowDistancePrompt] = useState(false)
-  const showDistancePromptRef = useRef(false)
-  showDistancePromptRef.current = showDistancePrompt
   const [letterChoices, setLetterChoices] = useState<string[]>([])
   const [ipdGap, setIpdGap] = useState(64) // px width of center column between charts
   // Simulated distance — shrink chart instead of moving screen (for headset use)
   const [chartScale, setChartScale] = useState(1.0)
 
-  // Voice recognition state (Whisper)
-  const [localVoiceEnabled, setLocalVoiceEnabled] = useState(false)
-  const [voiceStatus, setVoiceStatus] = useState<WhisperStatus>('idle')
-  const [isSpeaking, setIsSpeaking] = useState(false)
-  const [lastHeard, setLastHeard] = useState('')
+  // Voice disabled — Whisper crashes the page. TODO: fix model loading before re-enabling.
 
   const leftColor = binocularMode === 'duplicate' ? '#FFFFFF' : '#DD0000'
   const rightColor = binocularMode === 'duplicate' ? '#FFFFFF' : '#009500'
@@ -174,51 +167,6 @@ export default function BinocularChart({
   }, [exerciseType, showDistancePrompt, handleAnswer])
 
   // Whisper voice recognition for binocular mode
-  useEffect(() => {
-    if (!localVoiceEnabled) {
-      WhisperService.stop()
-      setIsSpeaking(false)
-      setLastHeard('')
-      return
-    }
-
-    const mode = exerciseType === 'e-directional' ? 'e-directional' : 'letters'
-
-    WhisperService.start(mode, {
-      onResult: (answer, rawTranscript) => {
-        setLastHeard(rawTranscript.trim().split(/\s+/).pop() || '')
-        // Handle distance prompt voice commands (say "stay" or "shrink"/"further")
-        if (showDistancePromptRef.current) {
-          const lastWord = rawTranscript.trim().toLowerCase().split(/\s+/).pop() || ''
-          if (['stay', 'same', 'stayed', 'say'].includes(lastWord)) {
-            distanceActionsRef.current.stay()
-          } else if (['shrink', 'shrunk', 'smaller', 'small', 'think', 'drink',
-                       'forward', 'further', 'next', 'go', 'advance', 'move'].includes(lastWord)) {
-            distanceActionsRef.current.forward()
-          }
-          return
-        }
-        if (!answer) return
-        if (answer.type === 'direction') {
-          handleAnswer(answer.value)
-        } else if (answer.type === 'letter') {
-          handleAnswer(answer.value)
-        }
-      },
-      onStatusChange: (status) => {
-        setVoiceStatus(status)
-        if (status === 'error') setLocalVoiceEnabled(false)
-      },
-      onSpeechChange: (speaking) => {
-        setIsSpeaking(speaking)
-      },
-    }).catch(() => {
-      setLocalVoiceEnabled(false)
-    })
-
-    return () => { WhisperService.stop() }
-  }, [localVoiceEnabled, exerciseType, handleAnswer])
-
   const handleDistanceAdjust = (dir: 'closer' | 'further') => {
     setShowDistancePrompt(false); regenerateChart()
     if (onDistanceAdjust) onDistanceAdjust(dir)
@@ -234,13 +182,6 @@ export default function BinocularChart({
 
   // Phone/headset = shrink (can't move), desktop = physical move
   const usesShrinkMode = deviceMode === 'phone'
-
-  // Refs for voice-activated distance prompt commands (stable across renders)
-  const distanceActionsRef = useRef({ stay: () => {}, forward: () => {} })
-  distanceActionsRef.current = {
-    stay: () => { setShowDistancePrompt(false); regenerateChart() },
-    forward: () => usesShrinkMode ? handleShrink() : handleDistanceAdjust('further'),
-  }
 
   const getFR = () => {
     if (feedback === 'incorrect') return 'ring-4 ring-red-500 animate-pulse'
@@ -336,34 +277,38 @@ export default function BinocularChart({
     </div>
   )
 
-  // Center IPD control + midline divider — width driven by ipdGap state
+  // Center IPD control — entire column is a touch target
+  // Top half widens, bottom half narrows. No tiny buttons.
   const renderIpdCenter = () => (
     <div className="flex flex-col items-center justify-center shrink-0 transition-all duration-150" style={{ width: `${Math.max(48, ipdGap)}px` }}>
-      {/* Widen — large touch area */}
+      {/* Top half — tap anywhere to WIDEN */}
       <button onClick={() => setIpdGap(g => Math.min(160, g + 8))}
-        className="flex items-center justify-center w-full py-4 rounded hover:bg-gray-700/30 text-gray-400 hover:text-white transition-all active:scale-95 cursor-pointer select-none"
+        className="flex-1 w-full flex flex-col items-center justify-center cursor-pointer select-none active:bg-gray-700/30 transition-colors"
         title="Widen gap">
-        <ArrowLeft className="w-5 h-5" /><ArrowRight className="w-5 h-5" />
+        <ArrowLeft className="w-5 h-5 text-gray-500" /><ArrowRight className="w-5 h-5 text-gray-500" />
       </button>
-      <div className="flex-1 flex items-center">
-        <div className="w-px bg-gray-600 h-full" />
+      {/* Midline */}
+      <div className="w-full flex items-center justify-center py-1">
+        <span className="text-gray-600 text-[10px]">IPD</span>
       </div>
-      <span className="text-gray-500 text-[10px]">IPD</span>
-      <div className="flex-1 flex items-center">
-        <div className="w-px bg-gray-600 h-full" />
-      </div>
-      {/* Narrow — large touch area, arrows on same line pointing inward */}
-      <button onClick={() => setIpdGap(g => Math.max(48, g - 8))}
-        className="flex items-center justify-center w-full py-4 rounded hover:bg-gray-700/30 text-gray-400 hover:text-white transition-all active:scale-95 cursor-pointer select-none"
+      {/* Bottom half — tap anywhere to NARROW */}
+      <button onClick={() => setIpdGap(g => Math.max(24, g - 8))}
+        className="flex-1 w-full flex flex-col items-center justify-center cursor-pointer select-none active:bg-gray-700/30 transition-colors"
         title="Narrow gap">
-        <ArrowRight className="w-5 h-5" /><ArrowLeft className="w-5 h-5" />
+        <ArrowRight className="w-5 h-5 text-gray-500" /><ArrowLeft className="w-5 h-5 text-gray-500" />
       </button>
     </div>
   )
 
   // Center 2x2 letter grid + IPD control stacked
   const renderCenterLetterGrid = () => (
-    <div className="flex flex-col items-center justify-center shrink-0 gap-1" style={{ minWidth: '80px' }}>
+    <div className="flex flex-col items-center justify-center shrink-0" style={{ minWidth: '80px' }}>
+      {/* Top half — tap to widen IPD */}
+      <button onClick={() => setIpdGap(g => Math.min(120, g + 6))}
+        className="flex-1 w-full flex items-end justify-center pb-1 cursor-pointer select-none active:bg-gray-700/30 transition-colors">
+        <div className="flex text-gray-500"><ArrowLeft className="w-4 h-4" /><ArrowRight className="w-4 h-4" /></div>
+      </button>
+      {/* Letter grid in the middle */}
       <div className="grid grid-cols-2 gap-1">
         {letterChoices.map(l => (
           <button key={l} onClick={() => handleAnswer(l)}
@@ -372,13 +317,11 @@ export default function BinocularChart({
           </button>
         ))}
       </div>
-      <div className="flex items-center gap-1">
-        <button onClick={() => setIpdGap(g => Math.max(0, g - 4))}
-          className="text-gray-500 hover:text-white text-xs px-1">-</button>
-        <span className="text-gray-500 text-[10px]">IPD</span>
-        <button onClick={() => setIpdGap(g => Math.min(80, g + 4))}
-          className="text-gray-500 hover:text-white text-xs px-1">+</button>
-      </div>
+      {/* Bottom half — tap to narrow IPD */}
+      <button onClick={() => setIpdGap(g => Math.max(0, g - 6))}
+        className="flex-1 w-full flex items-start justify-center pt-1 cursor-pointer select-none active:bg-gray-700/30 transition-colors">
+        <div className="flex text-gray-500"><ArrowRight className="w-4 h-4" /><ArrowLeft className="w-4 h-4" /></div>
+      </button>
     </div>
   )
 
@@ -389,8 +332,6 @@ export default function BinocularChart({
     const stayAction = () => { setShowDistancePrompt(false); regenerateChart() }
     const progressAction = usesShrinkMode ? handleShrink : () => handleDistanceAdjust('further')
     const progressLabel = usesShrinkMode ? 'Shrink' : 'Further'
-    const progressVoiceHint = usesShrinkMode ? 'say "stay" or "shrink"' : 'say "stay" or "further"'
-
     // One eye's prompt — centered where chart was
     const renderEyePrompt = () => (
       <div className="flex-1 flex items-center justify-center">
@@ -409,9 +350,6 @@ export default function BinocularChart({
               {progressLabel}
             </button>
           </div>
-          {localVoiceEnabled && (
-            <span className="text-gray-500 text-xs">{progressVoiceHint}</span>
-          )}
         </div>
       </div>
     )
@@ -452,23 +390,7 @@ export default function BinocularChart({
     <div className="flex flex-col h-full">
       {/* Main layout - always visible */}
       <div className="flex flex-col gap-1 flex-1">
-        {/* Voice toggle — large tap target for headset use */}
-        <div className="flex justify-center px-2 py-1">
-          <button
-            onClick={() => setLocalVoiceEnabled(v => !v)}
-            className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-base transition-all ${
-              localVoiceEnabled
-                ? isSpeaking ? 'bg-green-600 text-white shadow-lg shadow-green-500/30 animate-pulse' : 'bg-primary-600 text-white shadow-lg shadow-primary-500/30'
-                : 'bg-gray-700/60 text-gray-300 hover:text-white hover:bg-gray-600/60'
-            }`}
-            title={localVoiceEnabled ? 'Voice ON' : 'Voice OFF'}
-          >
-            {localVoiceEnabled ? <Mic className="w-6 h-6" /> : <MicOff className="w-6 h-6" />}
-            {localVoiceEnabled
-              ? voiceStatus === 'loading' ? 'Loading...' : isSpeaking ? 'Hearing...' : 'Voice ON'
-              : 'Voice OFF'}
-          </button>
-        </div>
+        {/* Voice disabled — Whisper model crashes page. Will re-add when fixed. */}
 
         {/* Content area — two eye-halves with IPD gap between */}
         <div className="flex items-stretch flex-1">
