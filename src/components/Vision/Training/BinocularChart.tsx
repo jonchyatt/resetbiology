@@ -368,62 +368,63 @@ export default function BinocularChart({
     </div>
   )
 
-  // Distance prompt — full-height side touch zones + scaled center text
-  // Side zones match arrow column positions so user taps same spot
+  // Distance prompt — mirrors the two-eye chart layout so each eye sees
+  // "Stay" on the left and "Forward" on the right, centered where the chart was.
+  // Touch zones match the arrow column positions for muscle-memory tapping.
   const renderDistancePromptFull = () => {
     const stayAction = () => { setShowDistancePrompt(false); regenerateChart() }
     const forwardAction = () => handleDistanceAdjust('further')
-    const renderEyeContent = () => (
-      <div className="flex items-center flex-1 min-w-0 gap-2">
-        <div className="flex flex-col items-center shrink-0">
-          <span className="text-gray-300 font-bold text-lg whitespace-nowrap">Stay</span>
-          <span className="text-gray-500 text-xs whitespace-nowrap">(same distance)</span>
-        </div>
-        <div className="flex-1 flex items-center justify-center gap-2 min-w-0">
-          <MoveHorizontal className="w-5 h-5 text-green-400 shrink-0" />
-          <span className="text-green-400 font-bold text-base whitespace-nowrap">Chart Complete!</span>
-        </div>
-        <div className="flex flex-col items-center shrink-0">
-          <span className="text-green-400 font-bold text-lg whitespace-nowrap">Forward</span>
-          <span className="text-gray-500 text-xs whitespace-nowrap">(move further)</span>
+
+    // One eye's prompt — centered vertically where chart was, with Stay/Forward on each side
+    const renderEyePrompt = () => (
+      <div className="flex-1 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3 px-2">
+          <div className="flex items-center gap-1">
+            <MoveHorizontal className="w-5 h-5 text-green-400 shrink-0" />
+            <span className="text-green-400 font-bold text-sm">Complete!</span>
+          </div>
+          <div className="flex items-center gap-4">
+            <button onClick={stayAction}
+              className="px-4 py-3 rounded-lg bg-gray-700/60 text-gray-200 font-bold text-sm active:scale-95 transition-transform">
+              Stay
+            </button>
+            <button onClick={forwardAction}
+              className="px-4 py-3 rounded-lg bg-green-600/80 text-white font-bold text-sm active:scale-95 transition-transform">
+              Further
+            </button>
+          </div>
         </div>
       </div>
     )
 
     return (
       <div className="flex items-stretch flex-1">
-        {/* Left touch zone — full height, same width as arrow column */}
-        <button
-          onClick={stayAction}
-          className="w-[15%] shrink-0 cursor-pointer select-none active:bg-gray-700/30 transition-colors"
-          aria-label="Stay at same distance"
-        />
-
-        {/* Scaled center — each eye sees Stay | Complete! | Forward, vertically centered */}
-        <div className="flex-1 flex items-center justify-center overflow-hidden">
-          <div className="flex flex-col items-center">
-            <div className="flex items-center" style={{ gap: `${ipdGap}px` }}>
-              {renderEyeContent()}
-              <div className="w-px bg-gray-600 self-stretch shrink-0 mx-1" />
-              {renderEyeContent()}
-            </div>
-            {/* Progress dots */}
-            <div className="flex items-center justify-center gap-1.5 mt-2">
-              {CHART_LINES.map((_, i) => (
-                <div key={i} className={`w-2.5 h-2.5 rounded-full transition-all ${
-                  i < currentLineIndex ? 'bg-green-400' : i === currentLineIndex ? 'bg-primary-500' : 'bg-gray-500'
-                }`} />
-              ))}
-            </div>
-          </div>
+        {/* Left eye half — Stay/Forward centered where left chart was */}
+        <div className="flex-1 flex items-stretch">
+          <button onClick={stayAction}
+            className="flex-1 cursor-pointer select-none active:bg-gray-700/30 transition-colors"
+            aria-label="Stay at same distance" />
+          {renderEyePrompt()}
+          <button onClick={forwardAction}
+            className="flex-1 cursor-pointer select-none active:bg-gray-700/30 transition-colors"
+            aria-label="Move forward" />
         </div>
 
-        {/* Right touch zone — full height, same width as arrow column */}
-        <button
-          onClick={forwardAction}
-          className="w-[15%] shrink-0 cursor-pointer select-none active:bg-gray-700/30 transition-colors"
-          aria-label="Move forward"
-        />
+        {/* Center IPD divider — matches chart layout */}
+        <div className="shrink-0 flex items-center" style={{ width: `${Math.max(48, ipdGap)}px` }}>
+          <div className="w-px bg-gray-600 h-full mx-auto" />
+        </div>
+
+        {/* Right eye half — mirror of left */}
+        <div className="flex-1 flex items-stretch">
+          <button onClick={stayAction}
+            className="flex-1 cursor-pointer select-none active:bg-gray-700/30 transition-colors"
+            aria-label="Stay at same distance" />
+          {renderEyePrompt()}
+          <button onClick={forwardAction}
+            className="flex-1 cursor-pointer select-none active:bg-gray-700/30 transition-colors"
+            aria-label="Move forward" />
+        </div>
       </div>
     )
   }
@@ -432,18 +433,21 @@ export default function BinocularChart({
     <div className="flex flex-col h-full">
       {/* Main layout - always visible */}
       <div className="flex flex-col gap-1 flex-1">
-        {/* Voice toggle — small, top-right corner, outside binocular area */}
-        <div className="flex justify-end px-2 py-0.5">
+        {/* Voice toggle — large tap target for headset use */}
+        <div className="flex justify-center px-2 py-1">
           <button
             onClick={() => setLocalVoiceEnabled(v => !v)}
-            className={`p-1 rounded transition-all ${
+            className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-base transition-all ${
               localVoiceEnabled
-                ? isSpeaking ? 'bg-green-600 text-white animate-pulse' : 'bg-primary-600 text-white'
-                : 'bg-gray-700/50 text-gray-400 hover:text-white'
+                ? isSpeaking ? 'bg-green-600 text-white shadow-lg shadow-green-500/30 animate-pulse' : 'bg-primary-600 text-white shadow-lg shadow-primary-500/30'
+                : 'bg-gray-700/60 text-gray-300 hover:text-white hover:bg-gray-600/60'
             }`}
             title={localVoiceEnabled ? 'Voice ON' : 'Voice OFF'}
           >
-            {localVoiceEnabled ? <Mic className="w-4 h-4" /> : <MicOff className="w-4 h-4" />}
+            {localVoiceEnabled ? <Mic className="w-6 h-6" /> : <MicOff className="w-6 h-6" />}
+            {localVoiceEnabled
+              ? voiceStatus === 'loading' ? 'Loading...' : isSpeaking ? 'Hearing...' : 'Voice ON'
+              : 'Voice OFF'}
           </button>
         </div>
 
