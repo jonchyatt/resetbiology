@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
-import { ChevronDown, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, MoveHorizontal } from 'lucide-react'
+import { useState, useEffect, useCallback, useRef } from 'react'
+import { ChevronDown, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, MoveHorizontal, Mic, MicOff } from 'lucide-react'
+import { WhisperService, type WhisperStatus } from '@/lib/speech'
 
 type EDirection = 'up' | 'down' | 'left' | 'right'
 export type BinocularMode = 'off' | 'duplicate' | 'redgreen' | 'grid-square' | 'grid-slanted' | 'alternating'
@@ -94,7 +95,10 @@ export default function BinocularChart({
   // Simulated distance — shrink chart instead of moving screen (for headset use)
   const [chartScale, setChartScale] = useState(1.0)
 
-  // Voice disabled — Whisper crashes the page. TODO: fix model loading before re-enabling.
+  // Voice — on-demand only, NO preload. Model loads when user taps Voice ON.
+  const [voiceEnabled, setVoiceEnabled] = useState(false)
+  const [voiceStatus, setVoiceStatus] = useState<WhisperStatus>('idle')
+  const [isSpeaking, setIsSpeaking] = useState(false)
 
   const leftColor = binocularMode === 'duplicate' ? '#FFFFFF' : '#DD0000'
   const rightColor = binocularMode === 'duplicate' ? '#FFFFFF' : '#009500'
@@ -166,7 +170,54 @@ export default function BinocularChart({
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [exerciseType, showDistancePrompt, handleAnswer])
 
-  // Whisper voice recognition for binocular mode
+  // Stable ref so voice callbacks always call latest handleAnswer
+  const handleAnswerRef = useRef(handleAnswer)
+  handleAnswerRef.current = handleAnswer
+  const showDistancePromptRef = useRef(false)
+  showDistancePromptRef.current = showDistancePrompt
+
+  // On-demand Whisper — NO preload, only loads when voiceEnabled flips to true
+  useEffect(() => {
+    if (!voiceEnabled) {
+      WhisperService.stop()
+      setIsSpeaking(false)
+      return
+    }
+
+    const mode = exerciseType === 'e-directional' ? 'e-directional' : 'letters'
+
+    WhisperService.start(mode, {
+      onResult: (answer, rawTranscript) => {
+        // Distance prompt voice commands
+        if (showDistancePromptRef.current) {
+          const lastWord = rawTranscript.trim().toLowerCase().split(/\s+/).pop() || ''
+          if (['stay', 'same', 'stayed', 'say'].includes(lastWord)) {
+            distanceActionsRef.current.stay()
+          } else if (['shrink', 'shrunk', 'smaller', 'small', 'think', 'drink',
+                       'forward', 'further', 'next', 'go', 'advance', 'move'].includes(lastWord)) {
+            distanceActionsRef.current.forward()
+          }
+          return
+        }
+        if (!answer) return
+        if (answer.type === 'direction' || answer.type === 'letter') {
+          handleAnswerRef.current(answer.value)
+        }
+      },
+      onStatusChange: (status) => {
+        setVoiceStatus(status)
+        if (status === 'error') setVoiceEnabled(false)
+      },
+      onSpeechChange: (speaking) => {
+        setIsSpeaking(speaking)
+      },
+    }).catch(() => {
+      setVoiceEnabled(false)
+    })
+
+    return () => { WhisperService.stop() }
+  }, [voiceEnabled, exerciseType])
+
   const handleDistanceAdjust = (dir: 'closer' | 'further') => {
     setShowDistancePrompt(false); regenerateChart()
     if (onDistanceAdjust) onDistanceAdjust(dir)
@@ -182,6 +233,13 @@ export default function BinocularChart({
 
   // Phone/headset = shrink (can't move), desktop = physical move
   const usesShrinkMode = deviceMode === 'phone'
+
+  // Stable refs for voice-activated distance commands
+  const distanceActionsRef = useRef({ stay: () => {}, forward: () => {} })
+  distanceActionsRef.current = {
+    stay: () => { setShowDistancePrompt(false); regenerateChart() },
+    forward: () => usesShrinkMode ? handleShrink() : handleDistanceAdjust('further'),
+  }
 
   const getFR = () => {
     if (feedback === 'incorrect') return 'ring-4 ring-red-500 animate-pulse'
@@ -390,8 +448,6 @@ export default function BinocularChart({
     <div className="flex flex-col h-full">
       {/* Main layout - always visible */}
       <div className="flex flex-col gap-1 flex-1">
-        {/* Voice disabled — Whisper model crashes page. Will re-add when fixed. */}
-
         {/* Content area — two eye-halves with IPD gap between */}
         <div className="flex items-stretch flex-1">
           {showDistancePrompt ? (
@@ -447,6 +503,23 @@ export default function BinocularChart({
         )}
 
         {consecutiveFailures >= 2 && <div className="text-orange-500 text-xs text-center pb-2">One more miss resets chart</div>}
+
+        {/* Voice toggle — below charts, outside binocular area, large tap target */}
+        <div className="flex justify-center pb-2">
+          <button
+            onClick={() => setVoiceEnabled(v => !v)}
+            className={`flex items-center gap-2 px-5 py-2 rounded-xl font-semibold text-sm transition-all ${
+              voiceEnabled
+                ? isSpeaking ? 'bg-green-600 text-white animate-pulse' : 'bg-primary-600 text-white'
+                : 'bg-gray-700/60 text-gray-400 hover:text-white'
+            }`}
+          >
+            {voiceEnabled ? <Mic className="w-5 h-5" /> : <MicOff className="w-5 h-5" />}
+            {voiceEnabled
+              ? voiceStatus === 'loading' ? 'Loading voice...' : isSpeaking ? 'Hearing...' : 'Voice ON'
+              : 'Voice OFF'}
+          </button>
+        </div>
       </div>
     </div>
   )
