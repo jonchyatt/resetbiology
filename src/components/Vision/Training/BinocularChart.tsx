@@ -94,6 +94,8 @@ export default function BinocularChart({
   showDistancePromptRef.current = showDistancePrompt
   const [letterChoices, setLetterChoices] = useState<string[]>([])
   const [ipdGap, setIpdGap] = useState(64) // px width of center column between charts
+  // Simulated distance — shrink chart instead of moving screen (for headset use)
+  const [chartScale, setChartScale] = useState(1.0)
 
   // Voice recognition state (Whisper)
   const [localVoiceEnabled, setLocalVoiceEnabled] = useState(false)
@@ -185,12 +187,13 @@ export default function BinocularChart({
     WhisperService.start(mode, {
       onResult: (answer, rawTranscript) => {
         setLastHeard(rawTranscript.trim().split(/\s+/).pop() || '')
-        // Handle distance prompt voice commands (say "stay" or "forward")
+        // Handle distance prompt voice commands (say "stay" or "shrink"/"further")
         if (showDistancePromptRef.current) {
           const lastWord = rawTranscript.trim().toLowerCase().split(/\s+/).pop() || ''
           if (['stay', 'same', 'stayed', 'say'].includes(lastWord)) {
             distanceActionsRef.current.stay()
-          } else if (['forward', 'further', 'next', 'go', 'advance', 'move'].includes(lastWord)) {
+          } else if (['shrink', 'shrunk', 'smaller', 'small', 'think', 'drink',
+                       'forward', 'further', 'next', 'go', 'advance', 'move'].includes(lastWord)) {
             distanceActionsRef.current.forward()
           }
           return
@@ -221,11 +224,22 @@ export default function BinocularChart({
     if (onDistanceAdjust) onDistanceAdjust(dir)
   }
 
+  // Shrink chart — simulates moving further away (for headset where you can't move)
+  const handleShrink = () => {
+    setShowDistancePrompt(false)
+    setChartScale(prev => Math.max(0.4, prev * 0.92)) // ~8% smaller each time
+    regenerateChart()
+    if (onDistanceAdjust) onDistanceAdjust('further') // still track progression
+  }
+
+  // Phone/headset = shrink (can't move), desktop = physical move
+  const usesShrinkMode = deviceMode === 'phone'
+
   // Refs for voice-activated distance prompt commands (stable across renders)
   const distanceActionsRef = useRef({ stay: () => {}, forward: () => {} })
   distanceActionsRef.current = {
     stay: () => { setShowDistancePrompt(false); regenerateChart() },
-    forward: () => handleDistanceAdjust('further'),
+    forward: () => usesShrinkMode ? handleShrink() : handleDistanceAdjust('further'),
   }
 
   const getFR = () => {
@@ -234,7 +248,7 @@ export default function BinocularChart({
   }
 
   const baseSize = deviceMode === 'phone' ? 34 : 44
-  const sizeMul = deviceMode === 'phone' ? 0.6 : 0.7
+  const sizeMul = (deviceMode === 'phone' ? 0.6 : 0.7) * chartScale
 
   // Render one chart (left or right)
   const renderChart = (side: 'left' | 'right') => {
@@ -373,9 +387,11 @@ export default function BinocularChart({
   // Touch zones match the arrow column positions for muscle-memory tapping.
   const renderDistancePromptFull = () => {
     const stayAction = () => { setShowDistancePrompt(false); regenerateChart() }
-    const forwardAction = () => handleDistanceAdjust('further')
+    const progressAction = usesShrinkMode ? handleShrink : () => handleDistanceAdjust('further')
+    const progressLabel = usesShrinkMode ? 'Shrink' : 'Further'
+    const progressVoiceHint = usesShrinkMode ? 'say "stay" or "shrink"' : 'say "stay" or "further"'
 
-    // One eye's prompt — centered vertically where chart was, with Stay/Forward on each side
+    // One eye's prompt — centered where chart was
     const renderEyePrompt = () => (
       <div className="flex-1 flex items-center justify-center">
         <div className="flex flex-col items-center gap-3 px-2">
@@ -388,26 +404,29 @@ export default function BinocularChart({
               className="px-4 py-3 rounded-lg bg-gray-700/60 text-gray-200 font-bold text-sm active:scale-95 transition-transform">
               Stay
             </button>
-            <button onClick={forwardAction}
+            <button onClick={progressAction}
               className="px-4 py-3 rounded-lg bg-green-600/80 text-white font-bold text-sm active:scale-95 transition-transform">
-              Further
+              {progressLabel}
             </button>
           </div>
+          {localVoiceEnabled && (
+            <span className="text-gray-500 text-xs">{progressVoiceHint}</span>
+          )}
         </div>
       </div>
     )
 
     return (
       <div className="flex items-stretch flex-1">
-        {/* Left eye half — Stay/Forward centered where left chart was */}
+        {/* Left eye half */}
         <div className="flex-1 flex items-stretch">
           <button onClick={stayAction}
             className="flex-1 cursor-pointer select-none active:bg-gray-700/30 transition-colors"
-            aria-label="Stay at same distance" />
+            aria-label="Stay at same size" />
           {renderEyePrompt()}
-          <button onClick={forwardAction}
+          <button onClick={progressAction}
             className="flex-1 cursor-pointer select-none active:bg-gray-700/30 transition-colors"
-            aria-label="Move forward" />
+            aria-label={progressLabel} />
         </div>
 
         {/* Center IPD divider — matches chart layout */}
@@ -419,11 +438,11 @@ export default function BinocularChart({
         <div className="flex-1 flex items-stretch">
           <button onClick={stayAction}
             className="flex-1 cursor-pointer select-none active:bg-gray-700/30 transition-colors"
-            aria-label="Stay at same distance" />
+            aria-label="Stay at same size" />
           {renderEyePrompt()}
-          <button onClick={forwardAction}
+          <button onClick={progressAction}
             className="flex-1 cursor-pointer select-none active:bg-gray-700/30 transition-colors"
-            aria-label="Move forward" />
+            aria-label={progressLabel} />
         </div>
       </div>
     )
