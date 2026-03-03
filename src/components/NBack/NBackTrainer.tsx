@@ -253,6 +253,7 @@ export default function NBackTrainer() {
   const [soundSet, setSoundSet] = useState<SoundSet>('letters')
   const [manualMode, setManualMode] = useState(false)
   const [interference, setInterference] = useState(false)
+  const [hideAudioLabel, setHideAudioLabel] = useState(false)
 
   // ── Game state ──
   const [gameState, setGameState] = useState<GameState>('idle')
@@ -795,6 +796,25 @@ export default function NBackTrainer() {
                         )}
                       </div>
 
+                      {/* Hide Audio Label toggle */}
+                      {cfg.hasAudio && (
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm font-medium text-gray-300 flex items-center gap-2">
+                              <Headphones className="w-4 h-4 text-blue-400" />
+                              Pure Audio Mode
+                            </p>
+                            <p className="text-xs text-gray-500">Hide the note/letter — rely on your ears only</p>
+                          </div>
+                          <button
+                            onClick={() => setHideAudioLabel(h => !h)}
+                            className={`relative w-12 h-6 rounded-full transition-colors ${hideAudioLabel ? 'bg-blue-500' : 'bg-gray-600'}`}
+                          >
+                            <span className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${hideAudioLabel ? 'translate-x-6' : 'translate-x-0.5'}`} />
+                          </button>
+                        </div>
+                      )}
+
                       {/* Interference toggle */}
                       <div className="flex items-center justify-between">
                         <div>
@@ -963,15 +983,22 @@ export default function NBackTrainer() {
                           })}
                         </div>
 
-                        {/* Audio letter display */}
-                        {cfg.hasAudio && showStimulus && (
+                        {/* Audio letter display — hidden in pure-audio mode */}
+                        {cfg.hasAudio && showStimulus && !hideAudioLabel && (
                           <div className="text-center">
                             <p className="text-xs text-gray-500 uppercase tracking-wide">
                               {SOUND_SETS[soundSet].label}
                             </p>
                             <p className="text-3xl font-bold text-blue-400 leading-none">
-                              {trials[currentTrialIndex]?.audioLetter}
+                              {soundSet === 'piano'
+                                ? SOUND_SETS.piano.fileMap[trials[currentTrialIndex]?.audioLetter ?? ''] ?? trials[currentTrialIndex]?.audioLetter
+                                : trials[currentTrialIndex]?.audioLetter}
                             </p>
+                          </div>
+                        )}
+                        {cfg.hasAudio && showStimulus && hideAudioLabel && (
+                          <div className="text-center">
+                            <p className="text-xs text-gray-500 italic">🎧 Listen…</p>
                           </div>
                         )}
 
