@@ -1005,15 +1005,20 @@ model NBackSession {
   audioHits       Int      // Correct audio matches identified
   audioMisses     Int      // Missed audio matches
   audioFalse      Int      // False positives for audio
-  letterHits      Int?     // For triple mode: correct letter matches
-  letterMisses    Int?     // For triple mode: missed letter matches
-  letterFalse     Int?     // For triple mode: false positives for letter
+  letterHits      Int?     // For triple/quad mode: correct letter matches
+  letterMisses    Int?     // For triple/quad mode: missed letter matches
+  letterFalse     Int?     // For triple/quad mode: false positives for letter
+  colorHits       Int?     // For quad mode: correct color matches
+  colorMisses     Int?     // For quad mode: missed color matches
+  colorFalse      Int?     // For quad mode: false positives for color
   overallAccuracy Float    // Overall percentage (0-100)
   positionAccuracy Float   // Position-specific accuracy
   audioAccuracy   Float    // Audio-specific accuracy
-  letterAccuracy  Float?   // Letter-specific accuracy (triple mode)
+  letterAccuracy  Float?   // Letter-specific accuracy (triple/quad mode)
+  colorAccuracy   Float?   // Color-specific accuracy (quad mode)
   durationSeconds Int      // Session duration
   levelAdvanced   Boolean  // Did user advance to next level?
+  levelDecreased  Boolean  @default(false) // Did user drop a level?
   createdAt       DateTime @default(now())
   user            User     @relation(fields: [userId], references: [id])
 

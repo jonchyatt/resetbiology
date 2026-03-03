@@ -128,13 +128,21 @@ export async function POST(req: NextRequest) {
       letterHits,
       letterMisses,
       letterFalse,
+      colorHits,
+      colorMisses,
+      colorFalse,
       overallAccuracy,
       positionAccuracy,
       audioAccuracy,
       letterAccuracy,
+      colorAccuracy,
       durationSeconds,
-      levelAdvanced
+      levelAdvanced,
+      levelDecreased
     } = body
+
+    const hasLetter = gameMode === 'triple' || gameMode === 'quad'
+    const hasColor = gameMode === 'quad'
 
     // Validate required fields
     if (!gameMode || nLevel === undefined || totalTrials === undefined) {
@@ -157,15 +165,20 @@ export async function POST(req: NextRequest) {
         audioHits: audioHits || 0,
         audioMisses: audioMisses || 0,
         audioFalse: audioFalse || 0,
-        letterHits: gameMode === 'triple' ? (letterHits || 0) : null,
-        letterMisses: gameMode === 'triple' ? (letterMisses || 0) : null,
-        letterFalse: gameMode === 'triple' ? (letterFalse || 0) : null,
+        letterHits: hasLetter ? (letterHits || 0) : null,
+        letterMisses: hasLetter ? (letterMisses || 0) : null,
+        letterFalse: hasLetter ? (letterFalse || 0) : null,
+        colorHits: hasColor ? (colorHits || 0) : null,
+        colorMisses: hasColor ? (colorMisses || 0) : null,
+        colorFalse: hasColor ? (colorFalse || 0) : null,
         overallAccuracy: overallAccuracy || 0,
         positionAccuracy: positionAccuracy || 0,
         audioAccuracy: audioAccuracy || 0,
-        letterAccuracy: gameMode === 'triple' ? (letterAccuracy || 0) : null,
+        letterAccuracy: hasLetter ? (letterAccuracy || 0) : null,
+        colorAccuracy: hasColor ? (colorAccuracy || 0) : null,
         durationSeconds: durationSeconds || 0,
-        levelAdvanced: levelAdvanced || false
+        levelAdvanced: levelAdvanced || false,
+        levelDecreased: levelDecreased || false
       }
     })
 
@@ -201,10 +214,15 @@ export async function POST(req: NextRequest) {
       const newTotalTrials = existingProgress.totalTrials + totalTrials
       const newAvgAccuracy = (existingProgress.avgAccuracy * existingProgress.totalSessions + overallAccuracy) / newTotalSessions
 
+      // Compute new level: advance, decrease, or stay
+      let newCurrentLevel = existingProgress.currentNLevel
+      if (levelAdvanced) newCurrentLevel = Math.max(existingProgress.currentNLevel, nLevel + 1)
+      else if (levelDecreased) newCurrentLevel = Math.max(1, nLevel - 1)
+
       await prisma.nBackProgress.update({
         where: { id: existingProgress.id },
         data: {
-          currentNLevel: levelAdvanced ? Math.max(existingProgress.currentNLevel, nLevel + 1) : existingProgress.currentNLevel,
+          currentNLevel: newCurrentLevel,
           highestNLevel: Math.max(existingProgress.highestNLevel, nLevel),
           bestAccuracy: Math.max(existingProgress.bestAccuracy, overallAccuracy),
           totalSessions: newTotalSessions,

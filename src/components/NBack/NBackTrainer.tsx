@@ -2,222 +2,310 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import {
-  Brain,
-  Play,
-  Pause,
-  RotateCcw,
-  Volume2,
-  Grid3X3,
-  Type,
-  TrendingUp,
-  Target,
-  Clock,
-  Award,
-  ChevronUp,
-  ChevronDown,
-  Settings,
-  HelpCircle,
-  CheckCircle2,
-  XCircle,
-  Zap,
-  Calendar,
-  Flame
+  Brain, Play, Pause, RotateCcw, Volume2, Grid3X3, Type, TrendingUp,
+  Target, Clock, Award, ChevronUp, ChevronDown, Settings, HelpCircle,
+  CheckCircle2, Zap, Calendar, Flame, Lock, Unlock, Music, Palette,
+  Headphones, Eye, Shuffle
 } from 'lucide-react'
 import { PortalHeader } from '@/components/Navigation/PortalHeader'
 
-// Types
-type GameMode = 'dual' | 'triple'
+// ─── Types ───────────────────────────────────────────────────────────────────
+
+type GameMode = 'position' | 'audio' | 'dual' | 'triple' | 'quad'
+type SoundSet = 'letters' | 'nato' | 'numbers' | 'piano'
 type GameState = 'idle' | 'countdown' | 'playing' | 'paused' | 'finished'
 
+// Which modalities are active for each mode
+const MODE_CONFIG: Record<GameMode, { hasPosition: boolean; hasAudio: boolean; hasLetter: boolean; hasColor: boolean }> = {
+  position: { hasPosition: true,  hasAudio: false, hasLetter: false, hasColor: false },
+  audio:    { hasPosition: false, hasAudio: true,  hasLetter: false, hasColor: false },
+  dual:     { hasPosition: true,  hasAudio: true,  hasLetter: false, hasColor: false },
+  triple:   { hasPosition: true,  hasAudio: true,  hasLetter: true,  hasColor: false },
+  quad:     { hasPosition: true,  hasAudio: true,  hasLetter: true,  hasColor: true  },
+}
+
+// Mode display info
+const MODE_INFO: Record<GameMode, { label: string; short: string; description: string; recommended?: boolean }> = {
+  position: { label: 'Position Only', short: 'Position', description: 'Track the square location. No audio required.' },
+  audio:    { label: 'Audio Only',    short: 'Audio',    description: 'Track the spoken sounds. No grid watching.' },
+  dual:     { label: 'Dual N-Back',   short: 'Dual',     description: 'Position + Audio. The classic brain training task.', recommended: true },
+  triple:   { label: 'Triple N-Back', short: 'Triple',   description: 'Position + Audio + Visual Letter.' },
+  quad:     { label: 'Quad N-Back',   short: 'Quad',     description: 'All four: Position + Audio + Color + Letter.' },
+}
+
+// ─── Audio & Stimuli ─────────────────────────────────────────────────────────
+
+// 8 phonetically distinct letters (from Brain Workshop)
+const AUDIO_LETTERS = ['C', 'H', 'K', 'L', 'Q', 'R', 'S', 'T']
+const VISUAL_LETTERS = ['A', 'B', 'F', 'G', 'M', 'N', 'P', 'W']
+
+// Sound set: maps each letter to its filename in /public/sounds/nback/{set}/
+const SOUND_SETS: Record<SoundSet, { label: string; description: string; fileMap: Record<string, string> }> = {
+  letters: {
+    label: 'Letters',
+    description: 'Standard spoken letters (C, H, K…)',
+    fileMap: { C: 'c', H: 'h', K: 'k', L: 'l', Q: 'q', R: 'r', S: 's', T: 't' },
+  },
+  nato: {
+    label: 'NATO',
+    description: 'NATO phonetic (Charlie, Hotel, Kilo…)',
+    fileMap: { C: 'c', H: 'h', K: 'k', L: 'l', Q: 'q', R: 'r', S: 's', T: 't' },
+  },
+  numbers: {
+    label: 'Numbers',
+    description: 'Spoken numbers (1 through 8)',
+    fileMap: { C: '1', H: '2', K: '3', L: '4', Q: '5', R: '6', S: '7', T: '8' },
+  },
+  piano: {
+    label: 'Piano',
+    description: 'Musical piano notes',
+    fileMap: { C: 'C4', H: 'D4', K: 'E4', L: 'F4', Q: 'G4', R: 'A4', S: 'B4', T: 'C5' },
+  },
+}
+
+// 8 distinct colors for quad mode
+const SQUARE_COLORS = [
+  { name: 'teal',   activeClass: 'bg-teal-500 border-teal-300',     shadowClass: 'shadow-teal-500/60' },
+  { name: 'blue',   activeClass: 'bg-blue-500 border-blue-300',     shadowClass: 'shadow-blue-500/60' },
+  { name: 'green',  activeClass: 'bg-green-500 border-green-300',   shadowClass: 'shadow-green-500/60' },
+  { name: 'yellow', activeClass: 'bg-yellow-400 border-yellow-200', shadowClass: 'shadow-yellow-400/60' },
+  { name: 'red',    activeClass: 'bg-red-500 border-red-300',       shadowClass: 'shadow-red-500/60' },
+  { name: 'purple', activeClass: 'bg-purple-500 border-purple-300', shadowClass: 'shadow-purple-500/60' },
+  { name: 'orange', activeClass: 'bg-orange-500 border-orange-300', shadowClass: 'shadow-orange-500/60' },
+  { name: 'pink',   activeClass: 'bg-pink-500 border-pink-300',     shadowClass: 'shadow-pink-500/60' },
+] as const
+
+// ─── Data Interfaces ──────────────────────────────────────────────────────────
+
 interface Trial {
-  position: number // 0-8 for 3x3 grid
+  position: number
   audioLetter: string
-  visualLetter?: string // For triple mode
+  visualLetter?: string
+  colorIndex?: number
   isPositionMatch: boolean
   isAudioMatch: boolean
   isLetterMatch?: boolean
+  isColorMatch?: boolean
 }
 
 interface SessionStats {
-  positionHits: number
-  positionMisses: number
-  positionFalse: number
-  audioHits: number
-  audioMisses: number
-  audioFalse: number
-  letterHits: number
-  letterMisses: number
-  letterFalse: number
+  positionHits: number; positionMisses: number; positionFalse: number
+  audioHits: number;    audioMisses: number;    audioFalse: number
+  letterHits: number;   letterMisses: number;   letterFalse: number
+  colorHits: number;    colorMisses: number;    colorFalse: number
+}
+
+const EMPTY_STATS: SessionStats = {
+  positionHits: 0, positionMisses: 0, positionFalse: 0,
+  audioHits: 0,    audioMisses: 0,    audioFalse: 0,
+  letterHits: 0,   letterMisses: 0,   letterFalse: 0,
+  colorHits: 0,    colorMisses: 0,    colorFalse: 0,
 }
 
 interface ProgressData {
-  gameMode: string
-  currentNLevel: number
-  highestNLevel: number
-  bestAccuracy: number
-  totalSessions: number
-  streakDays: number
+  gameMode: string; currentNLevel: number; highestNLevel: number
+  bestAccuracy: number; totalSessions: number; streakDays: number
   lastSessionDate: string | null
 }
 
 interface SessionRecord {
-  id: string
-  gameMode: string
-  nLevel: number
-  overallAccuracy: number
-  positionAccuracy: number
-  audioAccuracy: number
-  letterAccuracy?: number
-  durationSeconds: number
-  levelAdvanced: boolean
-  createdAt: string
+  id: string; gameMode: string; nLevel: number; overallAccuracy: number
+  positionAccuracy: number; audioAccuracy: number; letterAccuracy?: number
+  durationSeconds: number; levelAdvanced: boolean; createdAt: string
 }
 
-// Audio letters used (phonetically distinct)
-const AUDIO_LETTERS = ['C', 'H', 'K', 'L', 'Q', 'R', 'S', 'T']
-const VISUAL_LETTERS = ['A', 'B', 'F', 'G', 'M', 'N', 'P', 'W']
+// ─── Audio System ─────────────────────────────────────────────────────────────
 
-// Generate stimuli sequence
-function generateSequence(nLevel: number, totalTrials: number, gameMode: GameMode): Trial[] {
+function speakLetter(letter: string, volume: number, soundSet: SoundSet) {
+  if (typeof window === 'undefined') return
+  const { fileMap } = SOUND_SETS[soundSet]
+  const filename = fileMap[letter]
+  const path = `/sounds/nback/${soundSet}/${filename}.wav`
+  const audio = new Audio(path)
+  audio.volume = Math.max(0, Math.min(1, volume))
+  audio.play().catch(() => {
+    // Fallback to browser TTS
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel()
+      const utt = new SpeechSynthesisUtterance(letter)
+      utt.rate = 0.9
+      utt.volume = volume
+      window.speechSynthesis.speak(utt)
+    }
+  })
+}
+
+function playFeedbackSound(type: 'advance', volume: number) {
+  if (typeof window === 'undefined') return
+  const audio = new Audio(`/sounds/nback/feedback/${type === 'advance' ? 'applause' : 'good'}.wav`)
+  audio.volume = Math.max(0, Math.min(1, volume * 0.7))
+  audio.play().catch(() => {})
+}
+
+// ─── Sequence Generator ───────────────────────────────────────────────────────
+
+function generateSequence(
+  nLevel: number,
+  totalTrials: number,
+  gameMode: GameMode,
+  interference: boolean,
+): Trial[] {
+  const cfg = MODE_CONFIG[gameMode]
+  const matchProb = 0.25
   const trials: Trial[] = []
-  const matchProbability = 0.25 // 25% chance of match per modality
 
   for (let i = 0; i < totalTrials; i++) {
-    let position: number
-    let audioLetter: string
-    let visualLetter: string | undefined
-    let isPositionMatch = false
-    let isAudioMatch = false
-    let isLetterMatch = false
+    let position = 0, audioLetter = 'C'
+    let visualLetter: string | undefined, colorIndex: number | undefined
+    let isPositionMatch = false, isAudioMatch = false
+    let isLetterMatch = false, isColorMatch = false
 
     if (i >= nLevel) {
-      // Determine if this should be a match
-      const shouldPositionMatch = Math.random() < matchProbability
-      const shouldAudioMatch = Math.random() < matchProbability
-      const shouldLetterMatch = gameMode === 'triple' ? Math.random() < matchProbability : false
+      const prev = trials[i - nLevel]
+      const lure = interference && i >= nLevel + 1 ? trials[i - nLevel - 1] : null
 
-      if (shouldPositionMatch) {
-        position = trials[i - nLevel].position
-        isPositionMatch = true
-      } else {
-        // Pick different position
-        do {
-          position = Math.floor(Math.random() * 9)
-        } while (position === trials[i - nLevel].position)
-      }
-
-      if (shouldAudioMatch) {
-        audioLetter = trials[i - nLevel].audioLetter
-        isAudioMatch = true
-      } else {
-        do {
-          audioLetter = AUDIO_LETTERS[Math.floor(Math.random() * AUDIO_LETTERS.length)]
-        } while (audioLetter === trials[i - nLevel].audioLetter)
-      }
-
-      if (gameMode === 'triple') {
-        if (shouldLetterMatch) {
-          visualLetter = trials[i - nLevel].visualLetter
-          isLetterMatch = true
+      if (cfg.hasPosition) {
+        if (Math.random() < matchProb) {
+          position = prev.position; isPositionMatch = true
+        } else if (lure && Math.random() < 0.25) {
+          // Interference: lure with N-1 position (not a real match)
+          position = lure.position
         } else {
-          do {
-            visualLetter = VISUAL_LETTERS[Math.floor(Math.random() * VISUAL_LETTERS.length)]
-          } while (visualLetter === trials[i - nLevel].visualLetter)
+          do { position = Math.floor(Math.random() * 9) } while (position === prev.position)
+        }
+      } else {
+        position = Math.floor(Math.random() * 9)
+      }
+
+      if (cfg.hasAudio) {
+        if (Math.random() < matchProb) {
+          audioLetter = prev.audioLetter; isAudioMatch = true
+        } else if (lure && Math.random() < 0.25) {
+          audioLetter = lure.audioLetter
+        } else {
+          do { audioLetter = AUDIO_LETTERS[Math.floor(Math.random() * AUDIO_LETTERS.length)] }
+          while (audioLetter === prev.audioLetter)
+        }
+      } else {
+        audioLetter = AUDIO_LETTERS[Math.floor(Math.random() * AUDIO_LETTERS.length)]
+      }
+
+      if (cfg.hasLetter) {
+        if (Math.random() < matchProb) {
+          visualLetter = prev.visualLetter; isLetterMatch = true
+        } else if (lure && Math.random() < 0.25) {
+          visualLetter = lure.visualLetter
+        } else {
+          do { visualLetter = VISUAL_LETTERS[Math.floor(Math.random() * VISUAL_LETTERS.length)] }
+          while (visualLetter === prev.visualLetter)
+        }
+      }
+
+      if (cfg.hasColor) {
+        if (Math.random() < matchProb) {
+          colorIndex = prev.colorIndex; isColorMatch = true
+        } else if (lure && Math.random() < 0.25) {
+          colorIndex = lure.colorIndex
+        } else {
+          do { colorIndex = Math.floor(Math.random() * 8) }
+          while (colorIndex === prev.colorIndex)
         }
       }
     } else {
-      // First n trials - no matches possible
+      // First N trials — no matches possible
       position = Math.floor(Math.random() * 9)
       audioLetter = AUDIO_LETTERS[Math.floor(Math.random() * AUDIO_LETTERS.length)]
-      if (gameMode === 'triple') {
-        visualLetter = VISUAL_LETTERS[Math.floor(Math.random() * VISUAL_LETTERS.length)]
-      }
+      if (cfg.hasLetter) visualLetter = VISUAL_LETTERS[Math.floor(Math.random() * VISUAL_LETTERS.length)]
+      if (cfg.hasColor) colorIndex = Math.floor(Math.random() * 8)
     }
 
     trials.push({
       position,
       audioLetter,
-      visualLetter,
-      isPositionMatch,
-      isAudioMatch,
-      isLetterMatch: gameMode === 'triple' ? isLetterMatch : undefined
+      visualLetter: cfg.hasLetter ? visualLetter : undefined,
+      colorIndex: cfg.hasColor ? colorIndex : undefined,
+      isPositionMatch: cfg.hasPosition && isPositionMatch,
+      isAudioMatch: cfg.hasAudio && isAudioMatch,
+      isLetterMatch: cfg.hasLetter ? isLetterMatch : undefined,
+      isColorMatch: cfg.hasColor ? isColorMatch : undefined,
     })
   }
 
   return trials
 }
 
-// Text-to-speech for audio stimuli
-function speakLetter(letter: string, volume: number = 0.8) {
-  if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-    const utterance = new SpeechSynthesisUtterance(letter)
-    utterance.rate = 0.9
-    utterance.pitch = 1
-    utterance.volume = volume
-    window.speechSynthesis.speak(utterance)
-  }
+// ─── Accuracy Helpers ─────────────────────────────────────────────────────────
+
+function calcAccuracy(hits: number, misses: number, falseAlarms: number): number {
+  const total = hits + misses + falseAlarms
+  return total === 0 ? 100 : (hits / total) * 100
 }
 
+// ─── Component ────────────────────────────────────────────────────────────────
+
 export default function NBackTrainer() {
-  // Game settings
+  // ── Settings ──
   const [gameMode, setGameMode] = useState<GameMode>('dual')
   const [nLevel, setNLevel] = useState(2)
   const [trialsPerSession, setTrialsPerSession] = useState(20)
   const [trialDurationMs, setTrialDurationMs] = useState(3000)
   const [audioVolume, setAudioVolume] = useState(0.8)
+  const [soundSet, setSoundSet] = useState<SoundSet>('letters')
+  const [manualMode, setManualMode] = useState(false)
+  const [interference, setInterference] = useState(false)
 
-  // Game state
+  // ── Game state ──
   const [gameState, setGameState] = useState<GameState>('idle')
   const [countdown, setCountdown] = useState(3)
   const [currentTrialIndex, setCurrentTrialIndex] = useState(0)
   const [trials, setTrials] = useState<Trial[]>([])
   const [showStimulus, setShowStimulus] = useState(false)
-  const [sessionStartTime, setSessionStartTime] = useState<number>(0)
+  const sessionStartTimeRef = useRef(0)
 
-  // User responses for current trial
-  const [positionResponse, setPositionResponse] = useState(false)
-  const [audioResponse, setAudioResponse] = useState(false)
-  const [letterResponse, setLetterResponse] = useState(false)
+  // ── Response refs (avoids stale closures in game loop) ──
+  const posResponseRef = useRef(false)
+  const audResponseRef = useRef(false)
+  const letResponseRef = useRef(false)
+  const colResponseRef = useRef(false)
 
-  // Session statistics
-  const [stats, setStats] = useState<SessionStats>({
-    positionHits: 0,
-    positionMisses: 0,
-    positionFalse: 0,
-    audioHits: 0,
-    audioMisses: 0,
-    audioFalse: 0,
-    letterHits: 0,
-    letterMisses: 0,
-    letterFalse: 0
-  })
+  // ── Visual button state ──
+  const [btnPos, setBtnPos] = useState(false)
+  const [btnAud, setBtnAud] = useState(false)
+  const [btnLet, setBtnLet] = useState(false)
+  const [btnCol, setBtnCol] = useState(false)
 
-  // Feedback display
+  // ── Session stats (ref for correctness in async callbacks) ──
+  const [stats, setStats] = useState<SessionStats>(EMPTY_STATS)
+  const statsRef = useRef<SessionStats>(EMPTY_STATS)
+  useEffect(() => { statsRef.current = stats }, [stats])
+
+  // ── Feedback display ──
   const [feedback, setFeedback] = useState<{
     position?: 'correct' | 'incorrect' | 'missed'
     audio?: 'correct' | 'incorrect' | 'missed'
     letter?: 'correct' | 'incorrect' | 'missed'
+    color?: 'correct' | 'incorrect' | 'missed'
   }>({})
 
-  // Progress and history
+  // ── Progress ──
   const [progress, setProgress] = useState<ProgressData[]>([])
   const [recentSessions, setRecentSessions] = useState<SessionRecord[]>([])
   const [weeklyStats, setWeeklyStats] = useState<any>(null)
   const [loading, setLoading] = useState(true)
 
-  // UI state
+  // ── UI ──
   const [activeTab, setActiveTab] = useState<'training' | 'progress' | 'info'>('training')
   const [showSettings, setShowSettings] = useState(false)
-  const [saveResult, setSaveResult] = useState<{ points: number; advanced: boolean } | null>(null)
+  const [saveResult, setSaveResult] = useState<{ points: number; advanced: boolean; decreased: boolean } | null>(null)
 
-  // Refs for timers
-  const trialTimerRef = useRef<NodeJS.Timeout | null>(null)
-  const stimulusTimerRef = useRef<NodeJS.Timeout | null>(null)
+  // ── Timer ref ──
+  const stimulusTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  // Fetch user progress on mount
-  useEffect(() => {
-    fetchProgress()
-  }, [])
+  // Derived config
+  const cfg = MODE_CONFIG[gameMode]
+
+  // ── Fetch progress ──────────────────────────────────────────────────────────
+  useEffect(() => { fetchProgress() }, [])
 
   const fetchProgress = async () => {
     try {
@@ -227,156 +315,117 @@ export default function NBackTrainer() {
         setProgress(data.progress || [])
         setRecentSessions(data.recentSessions || [])
         setWeeklyStats(data.weeklyStats)
-
-        // Set N-level based on user's progress
-        const modeProgress = data.progress?.find((p: ProgressData) => p.gameMode === gameMode)
-        if (modeProgress) {
-          setNLevel(modeProgress.currentNLevel)
+        if (!manualMode) {
+          const mp = data.progress?.find((p: ProgressData) => p.gameMode === gameMode)
+          if (mp) setNLevel(mp.currentNLevel)
         }
       }
-    } catch (error) {
-      console.error('Failed to fetch progress:', error)
-    } finally {
-      setLoading(false)
-    }
+    } catch { /* silent */ } finally { setLoading(false) }
   }
 
-  // Update N-level when game mode changes
+  // Auto-update N-level when mode changes (unless manual)
   useEffect(() => {
-    const modeProgress = progress.find(p => p.gameMode === gameMode)
-    if (modeProgress) {
-      setNLevel(modeProgress.currentNLevel)
-    } else {
-      setNLevel(2) // Default for new mode
-    }
-  }, [gameMode, progress])
+    if (manualMode) return
+    const mp = progress.find(p => p.gameMode === gameMode)
+    setNLevel(mp ? mp.currentNLevel : 2)
+  }, [gameMode, progress, manualMode])
 
-  // Start game
+  // ── Start game ──────────────────────────────────────────────────────────────
   const startGame = useCallback(() => {
-    const sequence = generateSequence(nLevel, trialsPerSession, gameMode)
+    const sequence = generateSequence(nLevel, trialsPerSession, gameMode, interference)
     setTrials(sequence)
     setCurrentTrialIndex(0)
-    setStats({
-      positionHits: 0,
-      positionMisses: 0,
-      positionFalse: 0,
-      audioHits: 0,
-      audioMisses: 0,
-      audioFalse: 0,
-      letterHits: 0,
-      letterMisses: 0,
-      letterFalse: 0
-    })
+    setStats(EMPTY_STATS)
+    statsRef.current = EMPTY_STATS
     setFeedback({})
+    setSaveResult(null)
+    posResponseRef.current = false
+    audResponseRef.current = false
+    letResponseRef.current = false
+    colResponseRef.current = false
+    setBtnPos(false); setBtnAud(false); setBtnLet(false); setBtnCol(false)
     setGameState('countdown')
     setCountdown(3)
-  }, [nLevel, trialsPerSession, gameMode])
+  }, [nLevel, trialsPerSession, gameMode, interference])
 
-  // Countdown effect
+  // ── Countdown ───────────────────────────────────────────────────────────────
   useEffect(() => {
     if (gameState !== 'countdown') return
-
     if (countdown > 0) {
-      const timer = setTimeout(() => setCountdown(countdown - 1), 1000)
-      return () => clearTimeout(timer)
-    } else {
-      setGameState('playing')
-      setSessionStartTime(Date.now())
-      setShowStimulus(true)
+      const t = setTimeout(() => setCountdown(c => c - 1), 1000)
+      return () => clearTimeout(t)
     }
+    setGameState('playing')
+    sessionStartTimeRef.current = Date.now()
+    setShowStimulus(true)
   }, [gameState, countdown])
 
-  // Process trial response
-  const processTrialResponse = useCallback(() => {
-    if (currentTrialIndex < nLevel) {
-      // No matches possible yet, clear responses
-      setPositionResponse(false)
-      setAudioResponse(false)
-      setLetterResponse(false)
-      return
-    }
-
-    const trial = trials[currentTrialIndex]
-    const newFeedback: typeof feedback = {}
-
-    setStats(prev => {
-      const newStats = { ...prev }
-
-      // Position
-      if (trial.isPositionMatch) {
-        if (positionResponse) {
-          newStats.positionHits++
-          newFeedback.position = 'correct'
-        } else {
-          newStats.positionMisses++
-          newFeedback.position = 'missed'
-        }
-      } else if (positionResponse) {
-        newStats.positionFalse++
-        newFeedback.position = 'incorrect'
-      }
-
-      // Audio
-      if (trial.isAudioMatch) {
-        if (audioResponse) {
-          newStats.audioHits++
-          newFeedback.audio = 'correct'
-        } else {
-          newStats.audioMisses++
-          newFeedback.audio = 'missed'
-        }
-      } else if (audioResponse) {
-        newStats.audioFalse++
-        newFeedback.audio = 'incorrect'
-      }
-
-      // Letter (triple mode)
-      if (gameMode === 'triple') {
-        if (trial.isLetterMatch) {
-          if (letterResponse) {
-            newStats.letterHits++
-            newFeedback.letter = 'correct'
-          } else {
-            newStats.letterMisses++
-            newFeedback.letter = 'missed'
-          }
-        } else if (letterResponse) {
-          newStats.letterFalse++
-          newFeedback.letter = 'incorrect'
-        }
-      }
-
-      return newStats
-    })
-
-    setFeedback(newFeedback)
-    setPositionResponse(false)
-    setAudioResponse(false)
-    setLetterResponse(false)
-  }, [currentTrialIndex, nLevel, trials, positionResponse, audioResponse, letterResponse, gameMode])
-
-  // Main game loop
+  // ── Main game loop ───────────────────────────────────────────────────────────
+  // Uses refs for responses — pressing a button does NOT restart the timer
   useEffect(() => {
     if (gameState !== 'playing' || !showStimulus) return
-
     const trial = trials[currentTrialIndex]
     if (!trial) return
 
-    // Play audio
-    speakLetter(trial.audioLetter, audioVolume)
+    if (cfg.hasAudio) speakLetter(trial.audioLetter, audioVolume, soundSet)
 
-    // Hide stimulus after display time
+    const hideAt = trialDurationMs - 500
     stimulusTimerRef.current = setTimeout(() => {
       setShowStimulus(false)
 
-      // Process response after brief delay
+      // Small delay to capture final responses, then process
       setTimeout(() => {
-        processTrialResponse()
+        const posR = posResponseRef.current
+        const audR = audResponseRef.current
+        const letR = letResponseRef.current
+        const colR = colResponseRef.current
 
-        // Move to next trial or finish
+        // Clear responses for next trial
+        posResponseRef.current = false
+        audResponseRef.current = false
+        letResponseRef.current = false
+        colResponseRef.current = false
+        setBtnPos(false); setBtnAud(false); setBtnLet(false); setBtnCol(false)
+
+        // Process this trial's responses
+        if (currentTrialIndex >= nLevel) {
+          const newFbk: typeof feedback = {}
+          setStats(prev => {
+            const s = { ...prev }
+            if (cfg.hasPosition) {
+              if (trial.isPositionMatch) {
+                if (posR) { s.positionHits++; newFbk.position = 'correct' }
+                else { s.positionMisses++; newFbk.position = 'missed' }
+              } else if (posR) { s.positionFalse++; newFbk.position = 'incorrect' }
+            }
+            if (cfg.hasAudio) {
+              if (trial.isAudioMatch) {
+                if (audR) { s.audioHits++; newFbk.audio = 'correct' }
+                else { s.audioMisses++; newFbk.audio = 'missed' }
+              } else if (audR) { s.audioFalse++; newFbk.audio = 'incorrect' }
+            }
+            if (cfg.hasLetter) {
+              if (trial.isLetterMatch) {
+                if (letR) { s.letterHits++; newFbk.letter = 'correct' }
+                else { s.letterMisses++; newFbk.letter = 'missed' }
+              } else if (letR) { s.letterFalse++; newFbk.letter = 'incorrect' }
+            }
+            if (cfg.hasColor) {
+              if (trial.isColorMatch) {
+                if (colR) { s.colorHits++; newFbk.color = 'correct' }
+                else { s.colorMisses++; newFbk.color = 'missed' }
+              } else if (colR) { s.colorFalse++; newFbk.color = 'incorrect' }
+            }
+            statsRef.current = s
+            return s
+          })
+          setFeedback(newFbk)
+        }
+
+        // Advance to next trial or finish
         if (currentTrialIndex < trials.length - 1) {
           setTimeout(() => {
-            setCurrentTrialIndex(prev => prev + 1)
+            setCurrentTrialIndex(i => i + 1)
             setShowStimulus(true)
             setFeedback({})
           }, 500)
@@ -384,45 +433,31 @@ export default function NBackTrainer() {
           finishSession()
         }
       }, 200)
-    }, trialDurationMs - 500)
+    }, hideAt)
 
-    return () => {
-      if (stimulusTimerRef.current) clearTimeout(stimulusTimerRef.current)
-    }
-  }, [gameState, showStimulus, currentTrialIndex, trials, trialDurationMs, audioVolume, processTrialResponse])
+    return () => { if (stimulusTimerRef.current) clearTimeout(stimulusTimerRef.current) }
+  }, [gameState, showStimulus, currentTrialIndex]) // Minimal deps — refs handle volatile values
 
-  // Finish session and save
+  // ── Finish session ──────────────────────────────────────────────────────────
   const finishSession = useCallback(async () => {
     setGameState('finished')
-    const durationSeconds = Math.round((Date.now() - sessionStartTime) / 1000)
+    const durationSeconds = Math.round((Date.now() - sessionStartTimeRef.current) / 1000)
+    const s = statsRef.current // Use ref for freshest stats
 
-    // Calculate accuracies
-    const totalPositionTargets = trials.filter((t, i) => i >= nLevel && t.isPositionMatch).length
-    const totalAudioTargets = trials.filter((t, i) => i >= nLevel && t.isAudioMatch).length
-    const totalLetterTargets = trials.filter((t, i) => i >= nLevel && t.isLetterMatch).length
+    const posAcc = cfg.hasPosition ? calcAccuracy(s.positionHits, s.positionMisses, s.positionFalse) : null
+    const audAcc = cfg.hasAudio    ? calcAccuracy(s.audioHits,    s.audioMisses,    s.audioFalse)    : null
+    const letAcc = cfg.hasLetter   ? calcAccuracy(s.letterHits,   s.letterMisses,   s.letterFalse)   : null
+    const colAcc = cfg.hasColor    ? calcAccuracy(s.colorHits,    s.colorMisses,    s.colorFalse)    : null
 
-    const positionAccuracy = totalPositionTargets > 0
-      ? ((stats.positionHits / (stats.positionHits + stats.positionMisses + stats.positionFalse)) * 100) || 0
-      : 100
+    const activeAccuracies = [posAcc, audAcc, letAcc, colAcc].filter(a => a !== null) as number[]
+    const overallAccuracy = activeAccuracies.length > 0
+      ? activeAccuracies.reduce((a, b) => a + b, 0) / activeAccuracies.length
+      : 0
 
-    const audioAccuracy = totalAudioTargets > 0
-      ? ((stats.audioHits / (stats.audioHits + stats.audioMisses + stats.audioFalse)) * 100) || 0
-      : 100
+    const levelAdvanced = !manualMode && overallAccuracy >= 80
+    const levelDecreased = !manualMode && overallAccuracy < 50
 
-    const letterAccuracy = gameMode === 'triple' && totalLetterTargets > 0
-      ? ((stats.letterHits / (stats.letterHits + stats.letterMisses + stats.letterFalse)) * 100) || 0
-      : gameMode === 'triple' ? 100 : undefined
-
-    // Overall accuracy - weighted average
-    let overallAccuracy: number
-    if (gameMode === 'triple') {
-      overallAccuracy = (positionAccuracy + audioAccuracy + (letterAccuracy || 0)) / 3
-    } else {
-      overallAccuracy = (positionAccuracy + audioAccuracy) / 2
-    }
-
-    // Level advancement threshold: 80% overall accuracy
-    const levelAdvanced = overallAccuracy >= 80
+    if (levelAdvanced) playFeedbackSound('advance', audioVolume)
 
     try {
       const res = await fetch('/api/nback/sessions', {
@@ -433,30 +468,26 @@ export default function NBackTrainer() {
           gameMode,
           nLevel,
           totalTrials: trialsPerSession,
-          ...stats,
-          overallAccuracy: Math.round(overallAccuracy * 10) / 10,
-          positionAccuracy: Math.round(positionAccuracy * 10) / 10,
-          audioAccuracy: Math.round(audioAccuracy * 10) / 10,
-          letterAccuracy: letterAccuracy !== undefined ? Math.round(letterAccuracy * 10) / 10 : null,
+          ...s,
+          overallAccuracy:  Math.round(overallAccuracy * 10) / 10,
+          positionAccuracy: posAcc !== null ? Math.round(posAcc * 10) / 10 : 0,
+          audioAccuracy:    audAcc !== null ? Math.round(audAcc * 10) / 10 : 0,
+          letterAccuracy:   letAcc !== null ? Math.round(letAcc * 10) / 10 : null,
+          colorAccuracy:    colAcc !== null ? Math.round(colAcc * 10) / 10 : null,
           durationSeconds,
-          levelAdvanced
-        })
+          levelAdvanced,
+          levelDecreased,
+        }),
       })
-
       const data = await res.json()
       if (data.success) {
-        setSaveResult({
-          points: data.pointsAwarded,
-          advanced: data.levelAdvanced
-        })
-        fetchProgress() // Refresh progress
+        setSaveResult({ points: data.pointsAwarded, advanced: data.levelAdvanced, decreased: levelDecreased })
+        fetchProgress()
       }
-    } catch (error) {
-      console.error('Failed to save session:', error)
-    }
-  }, [gameMode, nLevel, trialsPerSession, stats, trials, sessionStartTime])
+    } catch { /* silent */ }
+  }, [gameMode, nLevel, trialsPerSession, cfg, manualMode, audioVolume])
 
-  // Pause/Resume
+  // ── Pause / Resume ──────────────────────────────────────────────────────────
   const togglePause = () => {
     if (gameState === 'playing') {
       setGameState('paused')
@@ -466,7 +497,7 @@ export default function NBackTrainer() {
     }
   }
 
-  // Reset game
+  // ── Reset ───────────────────────────────────────────────────────────────────
   const resetGame = () => {
     setGameState('idle')
     setTrials([])
@@ -474,40 +505,66 @@ export default function NBackTrainer() {
     setShowStimulus(false)
     setFeedback({})
     setSaveResult(null)
-    if (trialTimerRef.current) clearTimeout(trialTimerRef.current)
     if (stimulusTimerRef.current) clearTimeout(stimulusTimerRef.current)
   }
 
-  // Handle key presses
+  // ── Response handlers ───────────────────────────────────────────────────────
+  const handlePos = () => {
+    if (gameState !== 'playing' || currentTrialIndex < nLevel) return
+    posResponseRef.current = true; setBtnPos(true)
+  }
+  const handleAud = () => {
+    if (gameState !== 'playing' || currentTrialIndex < nLevel) return
+    audResponseRef.current = true; setBtnAud(true)
+  }
+  const handleLet = () => {
+    if (gameState !== 'playing' || currentTrialIndex < nLevel) return
+    letResponseRef.current = true; setBtnLet(true)
+  }
+  const handleCol = () => {
+    if (gameState !== 'playing' || currentTrialIndex < nLevel) return
+    colResponseRef.current = true; setBtnCol(true)
+  }
+
+  // ── Keyboard controls ───────────────────────────────────────────────────────
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
+    const onKey = (e: KeyboardEvent) => {
       if (gameState !== 'playing') return
-
-      if (e.key === 'a' || e.key === 'A') {
-        setAudioResponse(true)
-      } else if (e.key === 'l' || e.key === 'L') {
-        setPositionResponse(true)
-      } else if (gameMode === 'triple' && (e.key === 's' || e.key === 'S')) {
-        setLetterResponse(true)
-      }
+      const k = e.key.toLowerCase()
+      if (k === 'a' && cfg.hasAudio)    handleAud()
+      if (k === 'l' && cfg.hasPosition) handlePos()
+      if (k === 's' && cfg.hasLetter)   handleLet()
+      if (k === 'd' && cfg.hasColor)    handleCol()
     }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [gameState, cfg])
 
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [gameState, gameMode])
-
-  // Current progress for display
-  const currentModeProgress = progress.find(p => p.gameMode === gameMode)
-
-  // Calculate live accuracy during game
+  // ── Live accuracy (during game) ─────────────────────────────────────────────
   const liveAccuracy = (() => {
-    const totalResponses = stats.positionHits + stats.positionMisses + stats.positionFalse +
-      stats.audioHits + stats.audioMisses + stats.audioFalse
-    if (totalResponses === 0) return 0
-    const hits = stats.positionHits + stats.audioHits
-    return Math.round((hits / totalResponses) * 100)
+    const hits = stats.positionHits + stats.audioHits + stats.letterHits + stats.colorHits
+    const total = hits + stats.positionMisses + stats.positionFalse +
+      stats.audioMisses + stats.audioFalse + stats.letterMisses + stats.letterFalse +
+      stats.colorMisses + stats.colorFalse
+    return total === 0 ? 0 : Math.round((hits / total) * 100)
   })()
 
+  const currentModeProgress = progress.find(p => p.gameMode === gameMode)
+
+  // ── Active color for the square ─────────────────────────────────────────────
+  const activeColorIndex = showStimulus && trials[currentTrialIndex]?.colorIndex !== undefined
+    ? trials[currentTrialIndex].colorIndex!
+    : 0
+  const activeColor = SQUARE_COLORS[activeColorIndex]
+
+  // ── Feedback ring helpers ───────────────────────────────────────────────────
+  const fbkRing = (fbk: 'correct' | 'incorrect' | 'missed' | undefined) =>
+    fbk === 'correct' ? 'ring-2 ring-inset ring-green-500' :
+    fbk === 'incorrect' || fbk === 'missed' ? 'ring-2 ring-inset ring-red-500' : ''
+
+  // ══════════════════════════════════════════════════════════════════════════════
+  // RENDER
+  // ══════════════════════════════════════════════════════════════════════════════
   return (
     <div
       className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 relative"
@@ -515,7 +572,7 @@ export default function NBackTrainer() {
         backgroundImage: 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url(/hero-background.jpg)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        backgroundAttachment: 'fixed'
+        backgroundAttachment: 'fixed',
       }}
     >
       <div className="relative z-10 pt-32">
@@ -531,24 +588,25 @@ export default function NBackTrainer() {
             <span className="text-primary-400">Memory</span> Trainer
           </h1>
           <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-            Train your working memory and fluid intelligence with scientifically-validated dual and triple N-Back exercises.
+            Scientifically-validated N-Back training. Sharpen your working memory and fluid intelligence.
           </p>
         </div>
 
         {/* Tab Navigation */}
         <div className="flex justify-center gap-2 mb-8 px-4">
-          {[
-            { id: 'training', label: 'Training', icon: Brain },
-            { id: 'progress', label: 'Progress', icon: TrendingUp },
-            { id: 'info', label: 'How to Play', icon: HelpCircle }
-          ].map(tab => (
+          {([
+            { id: 'training', label: 'Training',    icon: Brain       },
+            { id: 'progress', label: 'Progress',    icon: TrendingUp  },
+            { id: 'info',     label: 'How to Play', icon: HelpCircle  },
+          ] as const).map(tab => (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id as typeof activeTab)}
-              className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all ${activeTab === tab.id
-                ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/30'
-                : 'bg-gray-800/50 text-gray-300 hover:bg-gray-700/50'
-                }`}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all ${
+                activeTab === tab.id
+                  ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/30'
+                  : 'bg-gray-800/50 text-gray-300 hover:bg-gray-700/50'
+              }`}
             >
               <tab.icon className="w-5 h-5" />
               {tab.label}
@@ -557,84 +615,96 @@ export default function NBackTrainer() {
         </div>
 
         <div className="container mx-auto px-4 pb-16">
-          {/* Training Tab */}
+
+          {/* ── TRAINING TAB ────────────────────────────────────────────── */}
           {activeTab === 'training' && (
             <div className="max-w-4xl mx-auto space-y-6">
-              {/* Game Mode & Settings */}
+
+              {/* ── IDLE: Configure ─────────────────────────────────────── */}
               {gameState === 'idle' && (
                 <div className="bg-gray-900/60 backdrop-blur-sm rounded-2xl border border-primary-400/20 p-6">
                   <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
                     <div>
                       <h2 className="text-2xl font-bold text-white mb-1">Configure Session</h2>
-                      <p className="text-gray-400">Choose your training mode and difficulty</p>
+                      <p className="text-gray-400">Choose your mode and difficulty</p>
                     </div>
                     <button
-                      onClick={() => setShowSettings(!showSettings)}
+                      onClick={() => setShowSettings(s => !s)}
                       className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-800 text-gray-300 hover:bg-gray-700 transition"
                     >
                       <Settings className="w-4 h-4" />
-                      {showSettings ? 'Hide' : 'Show'} Settings
+                      {showSettings ? 'Hide' : 'Advanced'} Settings
                     </button>
                   </div>
 
-                  {/* Game Mode Selection */}
-                  <div className="grid md:grid-cols-2 gap-4 mb-6">
-                    <button
-                      onClick={() => setGameMode('dual')}
-                      className={`p-6 rounded-xl border-2 transition-all text-left ${gameMode === 'dual'
-                        ? 'border-primary-400 bg-primary-500/10'
-                        : 'border-gray-700 hover:border-gray-600'
-                        }`}
-                    >
-                      <div className="flex items-center gap-3 mb-3">
-                        <div className="p-2 rounded-lg bg-primary-500/20">
-                          <Grid3X3 className="w-6 h-6 text-primary-400" />
-                        </div>
-                        <div className="p-2 rounded-lg bg-blue-500/20">
-                          <Volume2 className="w-6 h-6 text-blue-400" />
-                        </div>
-                      </div>
-                      <h3 className="text-xl font-bold text-white mb-1">Dual N-Back</h3>
-                      <p className="text-gray-400 text-sm">
-                        Track position (visual) and audio (letters) simultaneously
-                      </p>
-                    </button>
-
-                    <button
-                      onClick={() => setGameMode('triple')}
-                      className={`p-6 rounded-xl border-2 transition-all text-left ${gameMode === 'triple'
-                        ? 'border-secondary-400 bg-secondary-500/10'
-                        : 'border-gray-700 hover:border-gray-600'
-                        }`}
-                    >
-                      <div className="flex items-center gap-3 mb-3">
-                        <div className="p-2 rounded-lg bg-primary-500/20">
-                          <Grid3X3 className="w-6 h-6 text-primary-400" />
-                        </div>
-                        <div className="p-2 rounded-lg bg-blue-500/20">
-                          <Volume2 className="w-6 h-6 text-blue-400" />
-                        </div>
-                        <div className="p-2 rounded-lg bg-secondary-500/20">
-                          <Type className="w-6 h-6 text-secondary-400" />
-                        </div>
-                      </div>
-                      <h3 className="text-xl font-bold text-white mb-1">Triple N-Back</h3>
-                      <p className="text-gray-400 text-sm">
-                        Add visual letters for an extra challenge
-                      </p>
-                    </button>
+                  {/* ── Mode Selector ──────────────────────────────────── */}
+                  <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
+                    {(Object.keys(MODE_INFO) as GameMode[]).map(mode => {
+                      const info = MODE_INFO[mode]
+                      const mc = MODE_CONFIG[mode]
+                      const isActive = gameMode === mode
+                      return (
+                        <button
+                          key={mode}
+                          onClick={() => setGameMode(mode)}
+                          className={`relative p-4 rounded-xl border-2 transition-all text-left ${
+                            isActive
+                              ? 'border-primary-400 bg-primary-500/15'
+                              : 'border-gray-700 hover:border-gray-600 bg-gray-800/30'
+                          }`}
+                        >
+                          {info.recommended && (
+                            <span className="absolute -top-2 -right-2 text-[10px] bg-primary-500 text-white px-1.5 py-0.5 rounded-full font-bold">
+                              ★ REC
+                            </span>
+                          )}
+                          {/* Modality icons */}
+                          <div className="flex flex-wrap gap-1 mb-2">
+                            {mc.hasPosition && <Grid3X3 className="w-4 h-4 text-primary-400" />}
+                            {mc.hasAudio    && <Volume2 className="w-4 h-4 text-blue-400" />}
+                            {mc.hasColor    && <Palette className="w-4 h-4 text-yellow-400" />}
+                            {mc.hasLetter   && <Type    className="w-4 h-4 text-secondary-400" />}
+                          </div>
+                          <p className={`font-bold text-sm mb-1 ${isActive ? 'text-white' : 'text-gray-300'}`}>
+                            {info.short}
+                          </p>
+                          <p className="text-gray-500 text-xs leading-tight hidden md:block">
+                            {info.description}
+                          </p>
+                        </button>
+                      )
+                    })}
                   </div>
 
-                  {/* N-Level Selection */}
+                  {/* Mode description on mobile */}
+                  <p className="md:hidden text-sm text-gray-400 mb-4 px-1">
+                    {MODE_INFO[gameMode].description}
+                  </p>
+
+                  {/* ── N-Level ─────────────────────────────────────────── */}
                   <div className="mb-6">
-                    <label className="text-sm font-semibold text-gray-300 mb-3 block">
-                      N-Level: {nLevel}-Back
-                    </label>
+                    <div className="flex items-center justify-between mb-3">
+                      <label className="text-sm font-semibold text-gray-300">
+                        N-Level: <span className="text-primary-400 text-base">{nLevel}-Back</span>
+                      </label>
+                      <button
+                        onClick={() => setManualMode(m => !m)}
+                        className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium transition ${
+                          manualMode
+                            ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/40'
+                            : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                        }`}
+                        title={manualMode ? 'Manual mode — level locked' : 'Auto mode — level adjusts by performance'}
+                      >
+                        {manualMode ? <Lock className="w-3 h-3" /> : <Unlock className="w-3 h-3" />}
+                        {manualMode ? 'Manual' : 'Auto'}
+                      </button>
+                    </div>
                     <div className="flex items-center gap-3">
                       <button
-                        onClick={() => setNLevel(Math.max(1, nLevel - 1))}
+                        onClick={() => setNLevel(n => Math.max(1, n - 1))}
                         disabled={nLevel <= 1}
-                        className="p-2 rounded-lg bg-gray-800 text-gray-300 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="p-2 rounded-lg bg-gray-800 text-gray-300 hover:bg-gray-700 disabled:opacity-40"
                       >
                         <ChevronDown className="w-5 h-5" />
                       </button>
@@ -645,137 +715,187 @@ export default function NBackTrainer() {
                         />
                       </div>
                       <button
-                        onClick={() => setNLevel(Math.min(9, nLevel + 1))}
+                        onClick={() => setNLevel(n => Math.min(9, n + 1))}
                         disabled={nLevel >= 9}
-                        className="p-2 rounded-lg bg-gray-800 text-gray-300 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="p-2 rounded-lg bg-gray-800 text-gray-300 hover:bg-gray-700 disabled:opacity-40"
                       >
                         <ChevronUp className="w-5 h-5" />
                       </button>
                     </div>
                     <p className="text-xs text-gray-500 mt-2">
-                      Match stimuli from {nLevel} trials ago. Higher = harder.
+                      {manualMode
+                        ? '🔒 Manual — level will not change automatically'
+                        : 'Auto — advances at ≥80%, drops at <50% accuracy'}
                     </p>
                   </div>
 
-                  {/* Advanced Settings */}
+                  {/* ── Advanced Settings ───────────────────────────────── */}
                   {showSettings && (
-                    <div className="grid md:grid-cols-2 gap-4 p-4 bg-gray-800/50 rounded-xl mb-6">
-                      <div>
-                        <label className="text-sm font-medium text-gray-300 mb-2 block">
-                          Trials per Session: {trialsPerSession}
-                        </label>
-                        <input
-                          type="range"
-                          min={15}
-                          max={40}
-                          step={5}
-                          value={trialsPerSession}
-                          onChange={e => setTrialsPerSession(Number(e.target.value))}
-                          className="w-full accent-primary-500"
-                        />
+                    <div className="p-4 bg-gray-800/50 rounded-xl mb-6 space-y-5">
+                      {/* Sound Set */}
+                      {cfg.hasAudio && (
+                        <div>
+                          <label className="text-sm font-medium text-gray-300 mb-2 block flex items-center gap-2">
+                            <Music className="w-4 h-4 text-blue-400" />
+                            Sound Set
+                          </label>
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                            {(Object.keys(SOUND_SETS) as SoundSet[]).map(ss => (
+                              <button
+                                key={ss}
+                                onClick={() => setSoundSet(ss)}
+                                className={`p-2 rounded-lg text-xs font-medium transition ${
+                                  soundSet === ss
+                                    ? 'bg-blue-500/30 text-blue-300 border border-blue-500/50'
+                                    : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
+                                }`}
+                              >
+                                <div className="font-bold">{SOUND_SETS[ss].label}</div>
+                                <div className="text-gray-500 mt-0.5 leading-tight hidden md:block">
+                                  {SOUND_SETS[ss].description}
+                                </div>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="text-sm font-medium text-gray-300 mb-2 block">
+                            Trials per Session: <span className="text-white">{trialsPerSession}</span>
+                          </label>
+                          <input type="range" min={15} max={40} step={5}
+                            value={trialsPerSession}
+                            onChange={e => setTrialsPerSession(Number(e.target.value))}
+                            className="w-full accent-primary-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-gray-300 mb-2 block">
+                            Trial Speed: <span className="text-white">{trialDurationMs / 1000}s</span>
+                          </label>
+                          <input type="range" min={1500} max={4000} step={250}
+                            value={trialDurationMs}
+                            onChange={e => setTrialDurationMs(Number(e.target.value))}
+                            className="w-full accent-primary-500"
+                          />
+                        </div>
+                        {cfg.hasAudio && (
+                          <div>
+                            <label className="text-sm font-medium text-gray-300 mb-2 block">
+                              Audio Volume: <span className="text-white">{Math.round(audioVolume * 100)}%</span>
+                            </label>
+                            <input type="range" min={0} max={1} step={0.1}
+                              value={audioVolume}
+                              onChange={e => setAudioVolume(Number(e.target.value))}
+                              className="w-full accent-primary-500"
+                            />
+                          </div>
+                        )}
                       </div>
-                      <div>
-                        <label className="text-sm font-medium text-gray-300 mb-2 block">
-                          Trial Speed: {trialDurationMs / 1000}s
-                        </label>
-                        <input
-                          type="range"
-                          min={2000}
-                          max={4000}
-                          step={250}
-                          value={trialDurationMs}
-                          onChange={e => setTrialDurationMs(Number(e.target.value))}
-                          className="w-full accent-primary-500"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-sm font-medium text-gray-300 mb-2 block">
-                          Audio Volume: {Math.round(audioVolume * 100)}%
-                        </label>
-                        <input
-                          type="range"
-                          min={0}
-                          max={1}
-                          step={0.1}
-                          value={audioVolume}
-                          onChange={e => setAudioVolume(Number(e.target.value))}
-                          className="w-full accent-primary-500"
-                        />
+
+                      {/* Interference toggle */}
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-gray-300 flex items-center gap-2">
+                            <Shuffle className="w-4 h-4 text-orange-400" />
+                            Interference Mode
+                          </p>
+                          <p className="text-xs text-gray-500">Adds "lure" trials one step off — harder!</p>
+                        </div>
+                        <button
+                          onClick={() => setInterference(i => !i)}
+                          className={`relative w-12 h-6 rounded-full transition-colors ${
+                            interference ? 'bg-orange-500' : 'bg-gray-600'
+                          }`}
+                        >
+                          <span className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${
+                            interference ? 'translate-x-6' : 'translate-x-0.5'
+                          }`} />
+                        </button>
                       </div>
                     </div>
                   )}
 
-                  {/* Start Button */}
+                  {/* ── Start Button ─────────────────────────────────────── */}
                   <button
                     onClick={startGame}
                     className="w-full py-4 bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 text-white font-bold text-xl rounded-xl shadow-lg shadow-primary-500/30 transition-all transform hover:scale-[1.02]"
                   >
                     <div className="flex items-center justify-center gap-3">
                       <Play className="w-6 h-6" />
-                      Start {gameMode === 'dual' ? 'Dual' : 'Triple'} {nLevel}-Back
+                      Start {MODE_INFO[gameMode].short} {nLevel}-Back
+                      {interference && <span className="text-sm font-normal opacity-80">(interference)</span>}
                     </div>
                   </button>
 
-                  {/* Current Progress */}
+                  {/* Progress badge */}
                   {currentModeProgress && (
-                    <div className="mt-6 p-4 bg-gray-800/50 rounded-xl">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <Flame className="w-5 h-5 text-orange-400" />
-                          <span className="text-gray-300">
-                            {currentModeProgress.streakDays} day streak
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <Award className="w-5 h-5 text-yellow-400" />
-                          <span className="text-gray-300">
-                            Best: {currentModeProgress.highestNLevel}-back @ {Math.round(currentModeProgress.bestAccuracy)}%
-                          </span>
-                        </div>
+                    <div className="mt-4 p-4 bg-gray-800/50 rounded-xl flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <Flame className="w-5 h-5 text-orange-400" />
+                        <span className="text-gray-300">{currentModeProgress.streakDays} day streak</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <Award className="w-5 h-5 text-yellow-400" />
+                        <span className="text-gray-300">
+                          Best: {currentModeProgress.highestNLevel}-back @ {Math.round(currentModeProgress.bestAccuracy)}%
+                        </span>
                       </div>
                     </div>
                   )}
                 </div>
               )}
 
-              {/* Countdown */}
+              {/* ── COUNTDOWN ─────────────────────────────────────────────── */}
               {gameState === 'countdown' && (
                 <div className="bg-gray-900/80 backdrop-blur-sm rounded-2xl border border-primary-400/20 p-16 text-center">
-                  <p className="text-gray-400 mb-4">Get Ready!</p>
-                  <div className="text-9xl font-bold text-primary-400 animate-pulse">
-                    {countdown}
-                  </div>
-                  <p className="text-gray-400 mt-4">
-                    {gameMode === 'dual' ? 'A = Audio Match | L = Position Match' : 'A = Audio | L = Position | S = Letter'}
+                  <p className="text-gray-400 mb-4">Get Ready — {MODE_INFO[gameMode].label}</p>
+                  <div className="text-9xl font-bold text-primary-400 animate-pulse">{countdown}</div>
+                  <p className="text-gray-400 mt-6 text-sm">
+                    {cfg.hasAudio    && <span className="mr-4"><kbd className="px-2 py-1 bg-gray-700 rounded">A</kbd> = Audio</span>}
+                    {cfg.hasPosition && <span className="mr-4"><kbd className="px-2 py-1 bg-gray-700 rounded">L</kbd> = Position</span>}
+                    {cfg.hasLetter   && <span className="mr-4"><kbd className="px-2 py-1 bg-gray-700 rounded">S</kbd> = Letter</span>}
+                    {cfg.hasColor    && <span><kbd className="px-2 py-1 bg-gray-700 rounded">D</kbd> = Color</span>}
                   </p>
                 </div>
               )}
 
-              {/* Game Board — landscape thumb-friendly layout */}
+              {/* ── GAME BOARD ────────────────────────────────────────────── */}
               {(gameState === 'playing' || gameState === 'paused') && (
                 <div className="space-y-4">
-                  {/* Compact Stats Bar */}
+                  {/* Stats bar */}
                   <div className="flex items-center justify-between gap-2 px-2">
-                    <span className="text-sm text-gray-400">Trial <span className="text-white font-bold">{currentTrialIndex + 1}/{trialsPerSession}</span></span>
-                    <span className="text-sm text-gray-400">N=<span className="text-primary-400 font-bold">{nLevel}</span></span>
-                    <span className="text-sm text-gray-400">Acc <span className="text-secondary-400 font-bold">{liveAccuracy}%</span></span>
+                    <span className="text-sm text-gray-400">
+                      Trial <span className="text-white font-bold">{currentTrialIndex + 1}/{trialsPerSession}</span>
+                    </span>
+                    <span className="text-sm text-gray-400">
+                      N=<span className="text-primary-400 font-bold">{nLevel}</span>
+                    </span>
+                    <span className="text-sm text-gray-400">
+                      Acc <span className="text-secondary-400 font-bold">{liveAccuracy}%</span>
+                    </span>
+                    {manualMode && (
+                      <span className="text-xs text-yellow-400 flex items-center gap-1">
+                        <Lock className="w-3 h-3" /> Manual
+                      </span>
+                    )}
                     <div className="flex gap-2">
-                      <button
-                        onClick={togglePause}
-                        className="p-2 rounded-lg bg-gray-800/60 text-gray-300 hover:bg-gray-700 transition"
+                      <button onClick={togglePause}
+                        className="p-2 rounded-lg bg-gray-800/60 text-gray-300 hover:bg-gray-700"
                       >
                         {gameState === 'paused' ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
                       </button>
-                      <button
-                        onClick={resetGame}
-                        className="p-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition"
+                      <button onClick={resetGame}
+                        className="p-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30"
                       >
                         <RotateCcw className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
 
-                  {/* Main game area — buttons on outer edges, grid centered */}
+                  {/* Main board */}
                   <div className="relative bg-gray-900/80 backdrop-blur-sm rounded-2xl border border-primary-400/20 overflow-hidden">
                     {gameState === 'paused' && (
                       <div className="absolute inset-0 bg-black/60 rounded-2xl flex items-center justify-center z-10">
@@ -783,95 +903,132 @@ export default function NBackTrainer() {
                       </div>
                     )}
 
-                    <div className="flex items-stretch min-h-[280px] landscape:min-h-[200px]">
-                      {/* LEFT EDGE — left thumb: Audio (top) + Letter (bottom, triple/quad mode) */}
-                      <div className="flex flex-col w-20 landscape:w-24 shrink-0 border-r border-gray-700/50">
-                        <button
-                          onClick={() => setAudioResponse(true)}
-                          disabled={gameState === 'paused' || currentTrialIndex < nLevel}
-                          className={`flex flex-col items-center justify-center flex-1 font-bold text-sm transition-all active:scale-95 select-none ${audioResponse
-                            ? 'bg-blue-500 text-white'
-                            : 'bg-gray-800/40 text-gray-300 hover:bg-gray-700/60'
-                            } ${feedback.audio === 'correct' ? 'ring-2 ring-inset ring-green-500' : ''} ${feedback.audio === 'incorrect' || feedback.audio === 'missed' ? 'ring-2 ring-inset ring-red-500' : ''} disabled:opacity-50`}
-                        >
-                          <Volume2 className="w-7 h-7 mb-0.5" />
-                          <span>Audio</span>
-                          <kbd className="mt-0.5 px-1.5 py-0.5 bg-black/30 rounded text-xs text-gray-400">A</kbd>
-                        </button>
-                        {gameMode === 'triple' && (
-                          <button
-                            onClick={() => setLetterResponse(true)}
-                            disabled={gameState === 'paused' || currentTrialIndex < nLevel}
-                            className={`flex flex-col items-center justify-center flex-1 font-bold text-sm transition-all active:scale-95 select-none border-t border-gray-700/50 ${letterResponse
-                              ? 'bg-secondary-500 text-white'
-                              : 'bg-gray-800/40 text-gray-300 hover:bg-gray-700/60'
-                              } ${feedback.letter === 'correct' ? 'ring-2 ring-inset ring-green-500' : ''} ${feedback.letter === 'incorrect' || feedback.letter === 'missed' ? 'ring-2 ring-inset ring-red-500' : ''} disabled:opacity-50`}
-                          >
-                            <Type className="w-7 h-7 mb-0.5" />
-                            <span>Letter</span>
-                            <kbd className="mt-0.5 px-1.5 py-0.5 bg-black/30 rounded text-xs text-gray-400">S</kbd>
-                          </button>
-                        )}
-                      </div>
+                    <div className="flex items-stretch min-h-[300px] landscape:min-h-[220px]">
 
-                      {/* CENTER — Grid + Audio Letter */}
-                      <div className="flex-1 flex flex-col items-center justify-center py-4 px-2">
-                        {/* 3x3 Grid */}
-                        <div className="grid grid-cols-3 gap-2 w-fit mb-3">
+                      {/* LEFT: Audio (top) + Letter (bottom if triple/quad) */}
+                      {(cfg.hasAudio || cfg.hasLetter) && (
+                        <div className="flex flex-col w-20 landscape:w-24 shrink-0 border-r border-gray-700/50">
+                          {cfg.hasAudio && (
+                            <button
+                              onClick={handleAud}
+                              disabled={gameState === 'paused' || currentTrialIndex < nLevel}
+                              className={`flex flex-col items-center justify-center font-bold text-sm transition-all active:scale-95 select-none disabled:opacity-50 ${
+                                cfg.hasLetter ? 'flex-1 border-b border-gray-700/50' : 'flex-1'
+                              } ${btnAud ? 'bg-blue-500 text-white' : 'bg-gray-800/40 text-gray-300 hover:bg-gray-700/60'} ${fbkRing(feedback.audio)}`}
+                            >
+                              <Volume2 className="w-7 h-7 mb-0.5" />
+                              <span>Audio</span>
+                              <kbd className="mt-0.5 px-1.5 py-0.5 bg-black/30 rounded text-xs text-gray-400">A</kbd>
+                            </button>
+                          )}
+                          {cfg.hasLetter && (
+                            <button
+                              onClick={handleLet}
+                              disabled={gameState === 'paused' || currentTrialIndex < nLevel}
+                              className={`flex flex-col items-center justify-center flex-1 font-bold text-sm transition-all active:scale-95 select-none disabled:opacity-50 ${
+                                btnLet ? 'bg-secondary-500 text-white' : 'bg-gray-800/40 text-gray-300 hover:bg-gray-700/60'
+                              } ${fbkRing(feedback.letter)}`}
+                            >
+                              <Type className="w-7 h-7 mb-0.5" />
+                              <span>Letter</span>
+                              <kbd className="mt-0.5 px-1.5 py-0.5 bg-black/30 rounded text-xs text-gray-400">S</kbd>
+                            </button>
+                          )}
+                        </div>
+                      )}
+
+                      {/* CENTER: Grid */}
+                      <div className="flex-1 flex flex-col items-center justify-center py-4 px-2 gap-3">
+                        {/* 3×3 Grid */}
+                        <div className="grid grid-cols-3 gap-2 w-fit">
                           {Array.from({ length: 9 }).map((_, i) => {
                             const isActive = showStimulus && trials[currentTrialIndex]?.position === i
+                            const squareColor = isActive && cfg.hasColor
+                              ? activeColor
+                              : null
                             return (
                               <div
                                 key={i}
-                                className={`w-14 h-14 landscape:w-12 landscape:h-12 rounded-xl border-2 flex items-center justify-center text-2xl font-bold transition-all duration-200 ${isActive
-                                  ? 'bg-primary-500 border-primary-400 text-white shadow-lg shadow-primary-500/50'
-                                  : 'bg-gray-800/50 border-gray-700'
-                                  }`}
+                                className={`w-14 h-14 landscape:w-12 landscape:h-12 rounded-xl border-2 flex items-center justify-center text-2xl font-bold transition-all duration-150 ${
+                                  isActive
+                                    ? squareColor
+                                      ? `${squareColor.activeClass} shadow-lg ${squareColor.shadowClass}`
+                                      : 'bg-primary-500 border-primary-400 text-white shadow-lg shadow-primary-500/50'
+                                    : 'bg-gray-800/50 border-gray-700'
+                                }`}
                               >
-                                {isActive && gameMode === 'triple' && trials[currentTrialIndex]?.visualLetter}
+                                {isActive && cfg.hasLetter && trials[currentTrialIndex]?.visualLetter}
                               </div>
                             )
                           })}
                         </div>
 
-                        {/* Audio Letter Display */}
-                        {showStimulus && (
+                        {/* Audio letter display */}
+                        {cfg.hasAudio && showStimulus && (
                           <div className="text-center">
-                            <p className="text-xs text-gray-500">Audio</p>
-                            <p className="text-3xl font-bold text-blue-400">
+                            <p className="text-xs text-gray-500 uppercase tracking-wide">
+                              {SOUND_SETS[soundSet].label}
+                            </p>
+                            <p className="text-3xl font-bold text-blue-400 leading-none">
                               {trials[currentTrialIndex]?.audioLetter}
                             </p>
                           </div>
                         )}
+
+                        {/* Color indicator for quad mode */}
+                        {cfg.hasColor && showStimulus && (
+                          <div className="text-center">
+                            <p className="text-xs text-gray-500 uppercase tracking-wide">Color</p>
+                            <div className={`w-6 h-6 rounded-full mx-auto mt-1 ${activeColor.activeClass}`} />
+                          </div>
+                        )}
                       </div>
 
-                      {/* RIGHT EDGE — right thumb: Position (top) + [Future: Color (bottom)] */}
-                      <div className="flex flex-col w-20 landscape:w-24 shrink-0 border-l border-gray-700/50">
-                        <button
-                          onClick={() => setPositionResponse(true)}
-                          disabled={gameState === 'paused' || currentTrialIndex < nLevel}
-                          className={`flex flex-col items-center justify-center flex-1 font-bold text-sm transition-all active:scale-95 select-none ${positionResponse
-                            ? 'bg-primary-500 text-white'
-                            : 'bg-gray-800/40 text-gray-300 hover:bg-gray-700/60'
-                            } ${feedback.position === 'correct' ? 'ring-2 ring-inset ring-green-500' : ''} ${feedback.position === 'incorrect' || feedback.position === 'missed' ? 'ring-2 ring-inset ring-red-500' : ''} disabled:opacity-50`}
-                        >
-                          <Grid3X3 className="w-7 h-7 mb-0.5" />
-                          <span>Position</span>
-                          <kbd className="mt-0.5 px-1.5 py-0.5 bg-black/30 rounded text-xs text-gray-400">L</kbd>
-                        </button>
-                        {/* Future quad mode: Color button will slot here */}
-                      </div>
+                      {/* RIGHT: Position (top) + Color (bottom if quad) */}
+                      {(cfg.hasPosition || cfg.hasColor) && (
+                        <div className="flex flex-col w-20 landscape:w-24 shrink-0 border-l border-gray-700/50">
+                          {cfg.hasPosition && (
+                            <button
+                              onClick={handlePos}
+                              disabled={gameState === 'paused' || currentTrialIndex < nLevel}
+                              className={`flex flex-col items-center justify-center font-bold text-sm transition-all active:scale-95 select-none disabled:opacity-50 ${
+                                cfg.hasColor ? 'flex-1 border-b border-gray-700/50' : 'flex-1'
+                              } ${btnPos ? 'bg-primary-500 text-white' : 'bg-gray-800/40 text-gray-300 hover:bg-gray-700/60'} ${fbkRing(feedback.position)}`}
+                            >
+                              <Grid3X3 className="w-7 h-7 mb-0.5" />
+                              <span>Position</span>
+                              <kbd className="mt-0.5 px-1.5 py-0.5 bg-black/30 rounded text-xs text-gray-400">L</kbd>
+                            </button>
+                          )}
+                          {cfg.hasColor && (
+                            <button
+                              onClick={handleCol}
+                              disabled={gameState === 'paused' || currentTrialIndex < nLevel}
+                              className={`flex flex-col items-center justify-center flex-1 font-bold text-sm transition-all active:scale-95 select-none disabled:opacity-50 ${
+                                btnCol ? 'bg-yellow-500 text-white' : 'bg-gray-800/40 text-gray-300 hover:bg-gray-700/60'
+                              } ${fbkRing(feedback.color)}`}
+                            >
+                              <Palette className="w-7 h-7 mb-0.5" />
+                              <span>Color</span>
+                              <kbd className="mt-0.5 px-1.5 py-0.5 bg-black/30 rounded text-xs text-gray-400">D</kbd>
+                            </button>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
               )}
 
-              {/* Results Screen */}
+              {/* ── RESULTS ───────────────────────────────────────────────── */}
               {gameState === 'finished' && (
                 <div className="bg-gray-900/80 backdrop-blur-sm rounded-2xl border border-primary-400/20 p-8">
                   <div className="text-center mb-8">
-                    <div className={`inline-flex p-4 rounded-full mb-4 ${saveResult?.advanced ? 'bg-secondary-500/20' : 'bg-primary-500/20'
-                      }`}>
+                    <div className={`inline-flex p-4 rounded-full mb-4 ${
+                      saveResult?.advanced ? 'bg-secondary-500/20' :
+                      saveResult?.decreased ? 'bg-orange-500/20' :
+                      'bg-primary-500/20'
+                    }`}>
                       {saveResult?.advanced ? (
                         <Zap className="w-12 h-12 text-secondary-400" />
                       ) : (
@@ -879,91 +1036,46 @@ export default function NBackTrainer() {
                       )}
                     </div>
                     <h2 className="text-3xl font-bold text-white mb-2">
-                      {saveResult?.advanced ? 'Level Up!' : 'Session Complete!'}
+                      {saveResult?.advanced  ? `Level Up! → ${nLevel + 1}-Back` :
+                       saveResult?.decreased ? `Dropped to ${nLevel - 1}-Back` :
+                       'Session Complete!'}
                     </h2>
                     {saveResult && (
                       <p className="text-xl text-secondary-400">+{saveResult.points} points earned</p>
                     )}
                   </div>
 
-                  {/* Stats Grid */}
-                  <div className="grid md:grid-cols-2 gap-6 mb-8">
-                    {/* Position Stats */}
-                    <div className="bg-gray-800/50 rounded-xl p-4">
-                      <div className="flex items-center gap-2 mb-3">
-                        <Grid3X3 className="w-5 h-5 text-primary-400" />
-                        <h3 className="font-semibold text-white">Position</h3>
-                      </div>
-                      <div className="space-y-2 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Hits</span>
-                          <span className="text-green-400">{stats.positionHits}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Misses</span>
-                          <span className="text-red-400">{stats.positionMisses}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">False Alarms</span>
-                          <span className="text-orange-400">{stats.positionFalse}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Audio Stats */}
-                    <div className="bg-gray-800/50 rounded-xl p-4">
-                      <div className="flex items-center gap-2 mb-3">
-                        <Volume2 className="w-5 h-5 text-blue-400" />
-                        <h3 className="font-semibold text-white">Audio</h3>
-                      </div>
-                      <div className="space-y-2 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Hits</span>
-                          <span className="text-green-400">{stats.audioHits}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Misses</span>
-                          <span className="text-red-400">{stats.audioMisses}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">False Alarms</span>
-                          <span className="text-orange-400">{stats.audioFalse}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Letter Stats (Triple mode) */}
-                    {gameMode === 'triple' && (
-                      <div className="bg-gray-800/50 rounded-xl p-4 md:col-span-2">
-                        <div className="flex items-center gap-2 mb-3">
-                          <Type className="w-5 h-5 text-secondary-400" />
-                          <h3 className="font-semibold text-white">Letter</h3>
-                        </div>
-                        <div className="grid grid-cols-3 gap-4 text-sm">
-                          <div className="flex justify-between">
-                            <span className="text-gray-400">Hits</span>
-                            <span className="text-green-400">{stats.letterHits}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-gray-400">Misses</span>
-                            <span className="text-red-400">{stats.letterMisses}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-gray-400">False Alarms</span>
-                            <span className="text-orange-400">{stats.letterFalse}</span>
-                          </div>
-                        </div>
-                      </div>
+                  {/* Stats grid */}
+                  <div className="grid md:grid-cols-2 gap-4 mb-8">
+                    {cfg.hasPosition && (
+                      <StatCard icon={<Grid3X3 className="w-5 h-5 text-primary-400" />} label="Position"
+                        hits={stats.positionHits} misses={stats.positionMisses} falses={stats.positionFalse}
+                        accuracy={calcAccuracy(stats.positionHits, stats.positionMisses, stats.positionFalse)}
+                      />
+                    )}
+                    {cfg.hasAudio && (
+                      <StatCard icon={<Volume2 className="w-5 h-5 text-blue-400" />} label="Audio"
+                        hits={stats.audioHits} misses={stats.audioMisses} falses={stats.audioFalse}
+                        accuracy={calcAccuracy(stats.audioHits, stats.audioMisses, stats.audioFalse)}
+                      />
+                    )}
+                    {cfg.hasLetter && (
+                      <StatCard icon={<Type className="w-5 h-5 text-secondary-400" />} label="Letter"
+                        hits={stats.letterHits} misses={stats.letterMisses} falses={stats.letterFalse}
+                        accuracy={calcAccuracy(stats.letterHits, stats.letterMisses, stats.letterFalse)}
+                      />
+                    )}
+                    {cfg.hasColor && (
+                      <StatCard icon={<Palette className="w-5 h-5 text-yellow-400" />} label="Color"
+                        hits={stats.colorHits} misses={stats.colorMisses} falses={stats.colorFalse}
+                        accuracy={calcAccuracy(stats.colorHits, stats.colorMisses, stats.colorFalse)}
+                      />
                     )}
                   </div>
 
-                  {/* Action Buttons */}
                   <div className="flex flex-wrap gap-4 justify-center">
                     <button
-                      onClick={() => {
-                        resetGame()
-                        startGame()
-                      }}
+                      onClick={() => { resetGame(); setTimeout(startGame, 50) }}
                       className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-primary-500 to-secondary-500 text-white font-bold rounded-xl hover:from-primary-600 hover:to-secondary-600 transition"
                     >
                       <RotateCcw className="w-5 h-5" />
@@ -981,58 +1093,45 @@ export default function NBackTrainer() {
             </div>
           )}
 
-          {/* Progress Tab */}
+          {/* ── PROGRESS TAB ─────────────────────────────────────────────── */}
           {activeTab === 'progress' && (
             <div className="max-w-4xl mx-auto space-y-6">
-              {/* Weekly Stats */}
               {weeklyStats && (
-                <div className="grid md:grid-cols-4 gap-4">
-                  <div className="bg-gray-900/60 rounded-xl p-4 border border-primary-400/20">
-                    <p className="text-xs text-gray-400 uppercase mb-1">This Week</p>
-                    <p className="text-3xl font-bold text-white">{weeklyStats.sessionsThisWeek}</p>
-                    <p className="text-sm text-gray-400">sessions</p>
-                  </div>
-                  <div className="bg-gray-900/60 rounded-xl p-4 border border-primary-400/20">
-                    <p className="text-xs text-gray-400 uppercase mb-1">Avg Accuracy</p>
-                    <p className="text-3xl font-bold text-primary-400">{weeklyStats.avgAccuracyThisWeek}%</p>
-                    <p className="text-sm text-gray-400">this week</p>
-                  </div>
-                  <div className="bg-gray-900/60 rounded-xl p-4 border border-primary-400/20">
-                    <p className="text-xs text-gray-400 uppercase mb-1">Level Ups</p>
-                    <p className="text-3xl font-bold text-secondary-400">{weeklyStats.advancementsThisWeek}</p>
-                    <p className="text-sm text-gray-400">this week</p>
-                  </div>
-                  <div className="bg-gray-900/60 rounded-xl p-4 border border-primary-400/20">
-                    <p className="text-xs text-gray-400 uppercase mb-1">Total Time</p>
-                    <p className="text-3xl font-bold text-white">
-                      {Math.round(weeklyStats.totalTimeThisWeek / 60)}
-                    </p>
-                    <p className="text-sm text-gray-400">minutes</p>
-                  </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {[
+                    { label: 'This Week',    value: weeklyStats.sessionsThisWeek,   sub: 'sessions',      color: 'text-white' },
+                    { label: 'Avg Accuracy', value: `${weeklyStats.avgAccuracyThisWeek}%`, sub: 'this week', color: 'text-primary-400' },
+                    { label: 'Level Ups',    value: weeklyStats.advancementsThisWeek, sub: 'this week',   color: 'text-secondary-400' },
+                    { label: 'Total Time',   value: `${Math.round(weeklyStats.totalTimeThisWeek / 60)}`, sub: 'minutes', color: 'text-white' },
+                  ].map(stat => (
+                    <div key={stat.label} className="bg-gray-900/60 rounded-xl p-4 border border-primary-400/20">
+                      <p className="text-xs text-gray-400 uppercase mb-1">{stat.label}</p>
+                      <p className={`text-3xl font-bold ${stat.color}`}>{stat.value}</p>
+                      <p className="text-sm text-gray-400">{stat.sub}</p>
+                    </div>
+                  ))}
                 </div>
               )}
 
-              {/* Progress Cards */}
               <div className="grid md:grid-cols-2 gap-6">
                 {progress.map(p => (
-                  <div
-                    key={p.gameMode}
-                    className="bg-gray-900/60 rounded-xl p-6 border border-primary-400/20"
-                  >
+                  <div key={p.gameMode} className="bg-gray-900/60 rounded-xl p-6 border border-primary-400/20">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-xl font-bold text-white capitalize">{p.gameMode} N-Back</h3>
+                      <h3 className="text-xl font-bold text-white capitalize">
+                        {MODE_INFO[p.gameMode as GameMode]?.short ?? p.gameMode} N-Back
+                      </h3>
                       <div className="flex items-center gap-2">
                         <Flame className="w-5 h-5 text-orange-400" />
-                        <span className="text-orange-400 font-bold">{p.streakDays} day streak</span>
+                        <span className="text-orange-400 font-bold">{p.streakDays}d</span>
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <p className="text-xs text-gray-400 uppercase">Current Level</p>
+                        <p className="text-xs text-gray-400 uppercase">Current</p>
                         <p className="text-2xl font-bold text-primary-400">{p.currentNLevel}-back</p>
                       </div>
                       <div>
-                        <p className="text-xs text-gray-400 uppercase">Highest Level</p>
+                        <p className="text-xs text-gray-400 uppercase">Highest</p>
                         <p className="text-2xl font-bold text-secondary-400">{p.highestNLevel}-back</p>
                       </div>
                       <div>
@@ -1040,63 +1139,50 @@ export default function NBackTrainer() {
                         <p className="text-2xl font-bold text-white">{Math.round(p.bestAccuracy)}%</p>
                       </div>
                       <div>
-                        <p className="text-xs text-gray-400 uppercase">Total Sessions</p>
+                        <p className="text-xs text-gray-400 uppercase">Sessions</p>
                         <p className="text-2xl font-bold text-white">{p.totalSessions}</p>
                       </div>
                     </div>
                   </div>
                 ))}
+                {progress.length === 0 && !loading && (
+                  <div className="md:col-span-2 text-center py-12 text-gray-400">
+                    No progress yet. Complete your first session!
+                  </div>
+                )}
               </div>
 
-              {/* Recent Sessions */}
               <div className="bg-gray-900/60 rounded-xl p-6 border border-primary-400/20">
                 <h3 className="text-xl font-bold text-white mb-4">Recent Sessions</h3>
                 {recentSessions.length === 0 ? (
-                  <p className="text-gray-400 text-center py-8">
-                    No sessions yet. Start training to track your progress!
-                  </p>
+                  <p className="text-gray-400 text-center py-8">No sessions yet.</p>
                 ) : (
                   <div className="space-y-3">
                     {recentSessions.slice(0, 10).map(session => (
-                      <div
-                        key={session.id}
-                        className="flex items-center justify-between p-4 bg-gray-800/50 rounded-xl"
-                      >
+                      <div key={session.id} className="flex items-center justify-between p-4 bg-gray-800/50 rounded-xl">
                         <div className="flex items-center gap-4">
-                          <div className={`p-2 rounded-lg ${session.levelAdvanced ? 'bg-secondary-500/20' : 'bg-gray-700'
-                            }`}>
-                            {session.levelAdvanced ? (
-                              <Zap className="w-5 h-5 text-secondary-400" />
-                            ) : (
-                              <Brain className="w-5 h-5 text-gray-400" />
-                            )}
+                          <div className={`p-2 rounded-lg ${session.levelAdvanced ? 'bg-secondary-500/20' : 'bg-gray-700'}`}>
+                            {session.levelAdvanced
+                              ? <Zap className="w-5 h-5 text-secondary-400" />
+                              : <Brain className="w-5 h-5 text-gray-400" />
+                            }
                           </div>
                           <div>
                             <p className="font-semibold text-white capitalize">
-                              {session.gameMode} {session.nLevel}-Back
+                              {MODE_INFO[session.gameMode as GameMode]?.short ?? session.gameMode} {session.nLevel}-Back
                             </p>
                             <p className="text-sm text-gray-400">
-                              {new Date(session.createdAt).toLocaleDateString()} at{' '}
-                              {new Date(session.createdAt).toLocaleTimeString([], {
-                                hour: '2-digit',
-                                minute: '2-digit'
-                              })}
+                              {new Date(session.createdAt).toLocaleDateString()} ·{' '}
+                              {Math.round(session.durationSeconds / 60)}min
                             </p>
                           </div>
                         </div>
-                        <div className="text-right">
-                          <p className={`text-xl font-bold ${session.overallAccuracy >= 80
-                            ? 'text-green-400'
-                            : session.overallAccuracy >= 60
-                              ? 'text-yellow-400'
-                              : 'text-red-400'
-                            }`}>
-                            {Math.round(session.overallAccuracy)}%
-                          </p>
-                          <p className="text-xs text-gray-400">
-                            {Math.round(session.durationSeconds / 60)}min
-                          </p>
-                        </div>
+                        <p className={`text-xl font-bold ${
+                          session.overallAccuracy >= 80 ? 'text-green-400' :
+                          session.overallAccuracy >= 60 ? 'text-yellow-400' : 'text-red-400'
+                        }`}>
+                          {Math.round(session.overallAccuracy)}%
+                        </p>
                       </div>
                     ))}
                   </div>
@@ -1105,111 +1191,126 @@ export default function NBackTrainer() {
             </div>
           )}
 
-          {/* Info Tab */}
+          {/* ── INFO TAB ──────────────────────────────────────────────────── */}
           {activeTab === 'info' && (
             <div className="max-w-3xl mx-auto space-y-6">
               <div className="bg-gray-900/60 rounded-xl p-6 border border-primary-400/20">
                 <h2 className="text-2xl font-bold text-white mb-4">What is N-Back?</h2>
                 <p className="text-gray-300 mb-4">
-                  N-Back is a scientifically validated working memory task that has been shown to improve
-                  fluid intelligence. You must remember stimuli from N trials ago and respond when there's a match.
+                  N-Back is a scientifically validated working memory task. A stimulus appears each trial —
+                  you must identify when it matches the stimulus from <em>N trials ago</em>.
                 </p>
                 <p className="text-gray-300">
-                  Research by Jaeggi et al. (2008) demonstrated that dual n-back training can improve
-                  fluid intelligence - the ability to reason and solve new problems.
+                  Research by Jaeggi et al. (2008) showed that dual n-back training improves fluid intelligence —
+                  the ability to reason and solve novel problems.
                 </p>
               </div>
 
               <div className="bg-gray-900/60 rounded-xl p-6 border border-primary-400/20">
-                <h2 className="text-2xl font-bold text-white mb-4">How to Play</h2>
+                <h2 className="text-2xl font-bold text-white mb-4">Game Modes</h2>
                 <div className="space-y-4">
-                  <div className="flex gap-4">
-                    <div className="flex-shrink-0 w-10 h-10 bg-primary-500/20 rounded-lg flex items-center justify-center">
-                      <span className="text-primary-400 font-bold">1</span>
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-white">Watch & Listen</h3>
-                      <p className="text-gray-400">
-                        A square lights up on the grid (position) and a letter is spoken (audio).
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex gap-4">
-                    <div className="flex-shrink-0 w-10 h-10 bg-primary-500/20 rounded-lg flex items-center justify-center">
-                      <span className="text-primary-400 font-bold">2</span>
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-white">Remember</h3>
-                      <p className="text-gray-400">
-                        Keep track of stimuli from N trials back. In 2-back, remember 2 trials ago.
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex gap-4">
-                    <div className="flex-shrink-0 w-10 h-10 bg-primary-500/20 rounded-lg flex items-center justify-center">
-                      <span className="text-primary-400 font-bold">3</span>
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-white">Respond</h3>
-                      <p className="text-gray-400">
-                        Press <kbd className="px-2 py-1 bg-gray-700 rounded">A</kbd> for audio match,{' '}
-                        <kbd className="px-2 py-1 bg-gray-700 rounded">L</kbd> for position match.
-                        In triple mode, add <kbd className="px-2 py-1 bg-gray-700 rounded">S</kbd> for letter match.
-                      </p>
-                    </div>
-                  </div>
+                  {(Object.keys(MODE_INFO) as GameMode[]).map(mode => {
+                    const info = MODE_INFO[mode]
+                    const mc = MODE_CONFIG[mode]
+                    return (
+                      <div key={mode} className="flex gap-4 p-3 rounded-xl bg-gray-800/40">
+                        <div className="flex gap-1 mt-1">
+                          {mc.hasPosition && <Grid3X3 className="w-4 h-4 text-primary-400" />}
+                          {mc.hasAudio    && <Volume2  className="w-4 h-4 text-blue-400" />}
+                          {mc.hasColor    && <Palette  className="w-4 h-4 text-yellow-400" />}
+                          {mc.hasLetter   && <Type     className="w-4 h-4 text-secondary-400" />}
+                        </div>
+                        <div>
+                          <p className="font-semibold text-white">{info.label}</p>
+                          <p className="text-gray-400 text-sm">{info.description}</p>
+                        </div>
+                      </div>
+                    )
+                  })}
                 </div>
               </div>
 
               <div className="bg-gray-900/60 rounded-xl p-6 border border-primary-400/20">
-                <h2 className="text-2xl font-bold text-white mb-4">Tips for Success</h2>
-                <ul className="space-y-3 text-gray-300">
-                  <li className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-                    Start with 2-back until you can consistently achieve 80%+ accuracy
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-                    Train daily for best results - even 10-15 minutes helps
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-                    Don't be discouraged by mistakes - they're part of learning
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-                    Train in a quiet environment for best audio recognition
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-                    Use keyboard shortcuts (A, L, S) for faster responses
-                  </li>
-                </ul>
+                <h2 className="text-2xl font-bold text-white mb-4">Controls</h2>
+                <div className="grid md:grid-cols-2 gap-3 text-sm">
+                  {[
+                    { key: 'A', label: 'Audio match', color: 'text-blue-400' },
+                    { key: 'L', label: 'Position match', color: 'text-primary-400' },
+                    { key: 'S', label: 'Letter match (triple/quad)', color: 'text-secondary-400' },
+                    { key: 'D', label: 'Color match (quad only)', color: 'text-yellow-400' },
+                  ].map(c => (
+                    <div key={c.key} className="flex items-center gap-3">
+                      <kbd className="px-3 py-1.5 bg-gray-700 rounded text-base font-bold text-white">{c.key}</kbd>
+                      <span className={c.color}>{c.label}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
 
-              <div className="bg-gray-900/60 rounded-xl p-6 border border-secondary-400/20">
-                <h2 className="text-2xl font-bold text-white mb-4">Research & Benefits</h2>
-                <div className="space-y-3 text-gray-300">
-                  <p>
-                    <strong className="text-secondary-400">Fluid Intelligence:</strong> N-back training
-                    has been linked to improvements in fluid reasoning abilities.
-                  </p>
-                  <p>
-                    <strong className="text-secondary-400">Working Memory:</strong> Consistent training
-                    strengthens your ability to hold and manipulate information.
-                  </p>
-                  <p>
-                    <strong className="text-secondary-400">Attention Control:</strong> The task requires
-                    sustained focus and attention management.
-                  </p>
-                  <p>
-                    <strong className="text-secondary-400">Transfer Effects:</strong> Some studies suggest
-                    benefits may transfer to untrained cognitive tasks.
-                  </p>
-                </div>
+              <div className="bg-gray-900/60 rounded-xl p-6 border border-primary-400/20">
+                <h2 className="text-2xl font-bold text-white mb-4">Tips</h2>
+                <ul className="space-y-3 text-gray-300">
+                  {[
+                    'Start with Position Only or Audio Only if Dual is too hard at first.',
+                    'Train daily — even 10–15 minutes makes a difference.',
+                    'Stay at 2-Back until you consistently hit 80%+ before moving up.',
+                    "Missing matches is normal — don't over-respond to avoid false alarms.",
+                    'Use keyboard shortcuts (A, L, S, D) for faster reaction times.',
+                    'Try NATO or Piano sound sets for a fresh challenge.',
+                    'Enable Interference mode once 2-back feels easy.',
+                  ].map((tip, i) => (
+                    <li key={i} className="flex items-start gap-3">
+                      <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                      {tip}
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
           )}
+
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ─── Stat Card Sub-component ──────────────────────────────────────────────────
+function StatCard({
+  icon, label, hits, misses, falses, accuracy
+}: {
+  icon: React.ReactNode
+  label: string
+  hits: number
+  misses: number
+  falses: number
+  accuracy: number
+}) {
+  return (
+    <div className="bg-gray-800/50 rounded-xl p-4">
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          {icon}
+          <h3 className="font-semibold text-white">{label}</h3>
+        </div>
+        <span className={`text-lg font-bold ${
+          accuracy >= 80 ? 'text-green-400' : accuracy >= 60 ? 'text-yellow-400' : 'text-red-400'
+        }`}>
+          {Math.round(accuracy)}%
+        </span>
+      </div>
+      <div className="grid grid-cols-3 gap-2 text-sm">
+        <div className="text-center">
+          <p className="text-gray-500 text-xs">Hits</p>
+          <p className="text-green-400 font-bold">{hits}</p>
+        </div>
+        <div className="text-center">
+          <p className="text-gray-500 text-xs">Misses</p>
+          <p className="text-red-400 font-bold">{misses}</p>
+        </div>
+        <div className="text-center">
+          <p className="text-gray-500 text-xs">False</p>
+          <p className="text-orange-400 font-bold">{falses}</p>
         </div>
       </div>
     </div>
