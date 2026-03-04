@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma"
  * NEPQ Quiz Submission API
  *
  * Saves quiz responses to database and calculates personalization scores
+ * Links to User record on first login via email match
  */
 export async function POST(req: NextRequest) {
   try {
@@ -23,6 +24,12 @@ export async function POST(req: NextRequest) {
       journey_stage,
       desired_outcome,
       biggest_obstacle,
+      biggest_obstacle_other,
+      // Challenges (NEW)
+      eating_patterns,
+      obstacles,
+      categoryScores,
+      recommendations,
       // Vision
       success_vision,
       success_feeling,
@@ -30,8 +37,8 @@ export async function POST(req: NextRequest) {
       why_change,
       readiness_scale,
       why_not_lower,
-      positive_outcomes,
-      why_important,
+      // Mental Mastery Preview (NEW)
+      completedMentalMastery,
       // Energy Spin
       completedEnergySpin,
       energySpinDuration,
@@ -78,25 +85,34 @@ export async function POST(req: NextRequest) {
 
         // Section 3: Journey
         journeyStage: journey_stage || "starting",
-        desiredOutcome: desired_outcome || "sustainable_system",
+        desiredOutcome: Array.isArray(desired_outcome) ? desired_outcome.join(", ") : (desired_outcome || "sustainable_system"),
         biggestObstacle: biggest_obstacle || "knowledge_gap",
 
         // Section 4: Vision
         successVision: success_vision || "",
         successFeeling: success_feeling || "",
 
+        // Section 4b: Challenges Assessment (NEW)
+        eatingPatterns: eating_patterns || [],
+        obstacles: obstacles || [],
+        categoryScores: categoryScores || null,
+        topRecommendations: recommendations || null,
+
         // Section 5: Amplification
         whyChange: why_change || "",
         readinessScore: readiness_scale || 5,
         whyNotLower: why_not_lower || "",
-        positiveOutcomes: positive_outcomes || "",
-        whyImportant: why_important || "",
+        positiveOutcomes: null, // Removed from quiz
+        whyImportant: null, // Removed from quiz
 
-        // Section 6: Energy Spin
+        // Section 6: Mental Mastery Preview (NEW)
+        completedMentalMastery: completedMentalMastery || false,
+
+        // Section 7: Energy Spin
         completedEnergySpin: completedEnergySpin || false,
         energySpinDuration: energySpinDuration || null,
 
-        // Section 7: Close
+        // Section 8: Close
         viewedOffers: true,
         selectedOffer: selectedOffer || null,
         otherOfferRequest: otherOfferRequest || null,
@@ -104,7 +120,7 @@ export async function POST(req: NextRequest) {
         // Analytics
         completedAt: new Date(),
         timeToComplete,
-        sectionsCompleted: 7,
+        sectionsCompleted: 8,
         lastActiveSection: "close",
 
         // UTM Tracking
@@ -115,7 +131,7 @@ export async function POST(req: NextRequest) {
         userAgent,
         ipAddress,
 
-        variant: "nepq-v1",
+        variant: "nepq-v2", // Updated version with challenges
       },
     })
 

@@ -40,6 +40,7 @@ export type ColorPreset = {
 };
 
 export const BREATH_PATTERNS: Record<string, BreathPattern> = {
+  autophagy: { label: "Autophagy 1-1", inhale: 1, hold: 0, exhale: 1, hold2: 0 },
   "4-7-8": { label: "4-7-8 Calming", inhale: 4, hold: 7, exhale: 8, hold2: 0 },
   box: { label: "Box Breathing 4-4-4-4", inhale: 4, hold: 4, exhale: 4, hold2: 4 },
   balanced: { label: "Balanced 5-5-5-1", inhale: 5, hold: 5, exhale: 5, hold2: 1 },
@@ -351,6 +352,7 @@ function NebulaOrb({
   const materialRef = useRef<THREE.ShaderMaterial>(null);
 
   // Generate particle positions with layered spherical distribution
+  // DRAMATICALLY REDUCED to make orb TINY (~10-15% of screen like Beginsmall.png)
   const { positions, sizes, phases, layers } = useMemo(() => {
     const pos = new Float32Array(particleCount * 3);
     const siz = new Float32Array(particleCount);
@@ -359,9 +361,9 @@ function NebulaOrb({
 
     for (let i = 0; i < particleCount; i++) {
       // Multiple layers of particles at different radii
-      const layer = Math.floor(Math.random() * 5); // More layers for depth
-      const baseRadius = 0.15 + layer * 0.2; // Spread out more
-      const radiusVariation = 0.25; // More variation for cloud effect
+      const layer = Math.floor(Math.random() * 5);
+      const baseRadius = 0.008 + layer * 0.01; // TINY radius for small orb
+      const radiusVariation = 0.012;
       const r = baseRadius + (Math.random() - 0.5) * radiusVariation;
 
       // Spherical distribution with some clustering
@@ -369,20 +371,20 @@ function NebulaOrb({
       const phi = Math.acos(2 * Math.random() - 1);
 
       // Add some randomness for cloud-like clustering
-      const clusterOffset = 0.1;
+      const clusterOffset = 0.005;
 
       pos[i * 3 + 0] = r * Math.sin(phi) * Math.cos(theta) + (Math.random() - 0.5) * clusterOffset;
       pos[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta) * 0.85 + (Math.random() - 0.5) * clusterOffset;
       pos[i * 3 + 2] = r * Math.cos(phi) + (Math.random() - 0.5) * clusterOffset;
 
-      // Varied particle sizes - mix of small and medium for texture
+      // Varied particle sizes - VERY SMALL
       const sizeVariation = Math.random();
       if (sizeVariation < 0.7) {
         // 70% small particles for fine detail
-        siz[i] = (0.2 + Math.random() * 0.4) * (0.7 + layer * 0.1);
+        siz[i] = (0.01 + Math.random() * 0.02) * (0.7 + layer * 0.1);
       } else {
         // 30% larger particles for glow
-        siz[i] = (0.5 + Math.random() * 0.8) * (0.9 + layer * 0.15);
+        siz[i] = (0.025 + Math.random() * 0.04) * (0.9 + layer * 0.15);
       }
 
       // Random phase for animation variety
@@ -610,23 +612,23 @@ function NebulaOrb({
             vec2 center = gl_PointCoord - 0.5;
             float dist = length(center);
 
-            // Very soft falloff for cloud-like appearance
+            // Sharp falloff to prevent glow bleed
             float alpha = smoothstep(0.5, 0.0, dist);
-            alpha = pow(alpha, 1.2); // Sharper falloff for less bleed
+            alpha = pow(alpha, 2.0); // Sharp falloff
 
             // Color gradient - inner to outer
             float colorMix = dist * 2.0 + vLayer * 0.4;
             vec3 color = mix(uColorA, uColorB, clamp(colorMix, 0.0, 1.0));
 
-            // Subtle brightness boost at center
-            float coreBrightness = exp(-dist * 6.0) * uBreath * 0.3;
+            // MINIMAL core brightness to prevent white-out
+            float coreBrightness = exp(-dist * 8.0) * uBreath * 0.05;
             color += uColorA * coreBrightness;
 
-            // Apply intensity (reduced multiplier)
-            color *= uIntensity * 0.6;
+            // Low intensity multiplier
+            color *= uIntensity * 0.25;
 
-            // Final alpha - more subtle
-            float finalAlpha = alpha * vAlpha;
+            // Low alpha for minimal additive buildup
+            float finalAlpha = alpha * vAlpha * 0.4;
 
             gl_FragColor = vec4(color, finalAlpha);
           }
@@ -705,42 +707,42 @@ export type ParticleLayerConfig = {
   peakLifetime: number;     // When peak size occurs (0.3 - 0.9)
 };
 
-// Default layer configurations - Tuned for beautiful ethereal nebula effect
-// Settings from user testing - smaller sizes with proper scaling work best
+// Default layer configurations - Tuned for TINY ethereal orb (10-15% of screen)
+// DRAMATICALLY reduced sizes to match Beginsmall.png reference
 export const DEFAULT_UNITY_LAYERS: ParticleLayerConfig[] = [
   // Layer 1: Core Glow - Dense bright center, bass-reactive
   {
     id: "additive-1",
     name: "Core Glow",
     enabled: true,
-    particleCount: 1500,
-    baseSize: 0.20,          // Smaller particles with proper scaling
-    spawnRadius: 0.05,       // Tight center spawn
-    maxSpeed: 0.04,          // Slow outward drift
+    particleCount: 400,
+    baseSize: 0.008,          // TINY - was 0.05
+    spawnRadius: 0.004,       // TINY - was 0.02
+    maxSpeed: 0.002,
     lifetime: 2.0,
     audioReactivity: 0.50,
     frequencyBand: "bass",
-    sizeAtBirth: 0.02,       // 2% at birth
-    sizeAtPeak: 1.0,         // 100% at peak
-    sizeAtDeath: 0.07,       // 7% at death
-    peakLifetime: 0.4,       // Peak at 40% lifetime
+    sizeAtBirth: 0.02,
+    sizeAtPeak: 1.0,
+    sizeAtDeath: 0.07,
+    peakLifetime: 0.4,
   },
   // Layer 2: Ethereal Mist - Soft diffuse outer cloud, mids-reactive
   {
     id: "simple-1",
     name: "Ethereal Mist",
     enabled: true,
-    particleCount: 1000,
-    baseSize: 0.20,          // Same size as core
-    spawnRadius: 0.20,       // Wider spawn for mist effect
-    maxSpeed: 0.01,          // Very slow drift
+    particleCount: 300,
+    baseSize: 0.01,           // TINY - was 0.05
+    spawnRadius: 0.01,        // TINY - was 0.05
+    maxSpeed: 0.001,
     lifetime: 2.0,
     audioReactivity: 0.60,
     frequencyBand: "mids",
-    sizeAtBirth: 0.02,       // 2% at birth
-    sizeAtPeak: 1.0,         // 100% at peak
-    sizeAtDeath: 0.02,       // 2% at death
-    peakLifetime: 0.7,       // Peak at 70% lifetime
+    sizeAtBirth: 0.02,
+    sizeAtPeak: 1.0,
+    sizeAtDeath: 0.02,
+    peakLifetime: 0.7,
   },
 ];
 
@@ -1011,19 +1013,19 @@ function UnityParticleLayer({
             vec2 center = gl_PointCoord - 0.5;
             float dist = length(center);
 
-            // Ethereal soft glow - very smooth falloff for nebula effect
+            // Sharp falloff to prevent glow bleeding
             float alpha = 1.0 - smoothstep(0.0, 0.5, dist);
-            alpha = pow(alpha, 0.8); // Softer falloff for more glow
+            alpha = pow(alpha, 1.5);
 
-            // Bright core with soft bloom
-            float core = exp(-dist * 4.0) * 0.8;
-            float bloom = exp(-dist * 1.5) * 0.3;
+            // MINIMAL brightness to prevent white-out
+            float core = exp(-dist * 6.0) * 0.15;
+            float bloom = exp(-dist * 2.0) * 0.05;
 
-            // Add subtle outer halo
-            float halo = exp(-dist * 8.0) * 0.4;
+            // Subtle outer halo
+            float halo = exp(-dist * 10.0) * 0.1;
 
-            vec3 color = vColor * uIntensity * (1.0 + core + bloom);
-            float finalAlpha = (alpha + halo) * vAlpha * 0.85;
+            vec3 color = vColor * uIntensity * (0.8 + core + bloom);
+            float finalAlpha = (alpha + halo) * vAlpha * 0.35;
 
             gl_FragColor = vec4(color, finalAlpha);
           }
@@ -1495,12 +1497,14 @@ type StarNestSkyboxProps = {
   preset?: StarNestPreset;
   audioAmplitude?: number;
   audioReactive?: boolean;
+  rotationSpeedMultiplier?: number; // Manual control: 0 = stopped, 1 = normal, 2 = double
 };
 
 function StarNestSkybox({
   preset = STAR_NEST_PRESETS[0],
   audioAmplitude = 0,
   audioReactive = false,
+  rotationSpeedMultiplier = 1.0,
 }: StarNestSkyboxProps) {
   const meshRef = useRef<THREE.Mesh>(null);
   const materialRef = useRef<THREE.ShaderMaterial>(null);
@@ -1508,6 +1512,7 @@ function StarNestSkybox({
   // Use refs to avoid stale closure issues
   const presetRef = useRef(preset);
   const audioAmplitudeRef = useRef(audioAmplitude);
+  const rotationMultRef = useRef(rotationSpeedMultiplier);
 
   useEffect(() => {
     presetRef.current = preset;
@@ -1516,6 +1521,10 @@ function StarNestSkybox({
   useEffect(() => {
     audioAmplitudeRef.current = audioAmplitude;
   }, [audioAmplitude]);
+
+  useEffect(() => {
+    rotationMultRef.current = rotationSpeedMultiplier;
+  }, [rotationSpeedMultiplier]);
 
   // Check if this is an HSV preset
   const isHSV = preset.hueSpeed !== undefined && preset.hueSpeed > 0;
@@ -1546,9 +1555,10 @@ function StarNestSkybox({
     if (!materialRef.current) return;
     const currentPreset = presetRef.current;
     const currentAudio = audioAmplitudeRef.current;
+    const rotMult = rotationMultRef.current;
 
-    // Update time
-    materialRef.current.uniforms.uTime.value = clock.elapsedTime;
+    // Update time - multiplied by rotation speed for manual control
+    materialRef.current.uniforms.uTime.value = clock.elapsedTime * rotMult;
 
     // CRITICAL FIX: Update ALL preset uniforms every frame
     // This ensures preset switching actually changes the shader
@@ -1888,6 +1898,7 @@ export type BreathingOrbCanvasProps = {
   skyboxEnabled?: boolean;
   skyboxPreset?: StarNestPreset;
   skyboxPresetKey?: string;
+  skyboxRotationSpeed?: number; // Manual rotation speed control (0-2, default 1.0)
   waterEnabled?: boolean;
   waterColor?: string;
   waterReflectivity?: number;
@@ -1919,6 +1930,7 @@ export function BreathingOrbCanvas({
   skyboxEnabled = true,
   skyboxPreset,
   skyboxPresetKey = "galaxies",
+  skyboxRotationSpeed = 1.0,
   waterEnabled = false,
   waterColor = "#0a1828",
   waterReflectivity = 0.4,
@@ -1962,7 +1974,7 @@ export function BreathingOrbCanvas({
         />
       )}
       <Canvas
-        camera={{ position: [0, 0.5, 3], fov: 60 }}
+        camera={{ position: [0, 0.2, 25], fov: 50 }}
         gl={{
           antialias: true,
           alpha: false,
@@ -1978,6 +1990,7 @@ export function BreathingOrbCanvas({
             preset={activePreset}
             audioAmplitude={audioAmplitude}
             audioReactive={mode === "audio"}
+            rotationSpeedMultiplier={skyboxRotationSpeed}
           />
         )}
 
@@ -2026,8 +2039,8 @@ export function BreathingOrbCanvas({
 
         <OrbitControls
           enablePan={false}
-          minDistance={2}
-          maxDistance={12}
+          minDistance={15}
+          maxDistance={50}
           minPolarAngle={Math.PI / 6}
           maxPolarAngle={Math.PI / 2.2}
           autoRotate

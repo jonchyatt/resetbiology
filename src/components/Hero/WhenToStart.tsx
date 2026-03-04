@@ -5,7 +5,7 @@ import Link from 'next/link'
 export function WhenToStart() {
   return (
     <Link
-      href="/quiz"
+      href="/get-started"
       className="relative overflow-visible rounded-xl bg-gradient-to-br from-gray-900/70 to-black/70 backdrop-blur-sm border border-gray-700/50 p-6 min-h-[280px] flex items-center justify-center transition-all duration-300 hover:shadow-[0_0_30px_rgba(134,239,172,0.4)] hover:border-green-400/50 cursor-pointer block"
     >
       {/* Glowing "NOW" background watermark - softer green-yellow glow */}

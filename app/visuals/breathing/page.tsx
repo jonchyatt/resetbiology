@@ -409,7 +409,7 @@ function BackgroundPresetPicker({
 export default function VisualStudioPage() {
   // State for mode and patterns
   const [mode, setMode] = useState<"breath" | "audio">("breath");
-  const [patternKey, setPatternKey] = useState("4-7-8");
+  const [patternKey, setPatternKey] = useState("autophagy");
 
   // Orb visual settings - updated defaults for better appearance
   const [colorA, setColorA] = useState("#ffdd77");
@@ -438,6 +438,7 @@ export default function VisualStudioPage() {
   // Star Nest Skybox settings
   const [skyboxEnabled, setSkyboxEnabled] = useState(true);
   const [skyboxPresetKey, setSkyboxPresetKey] = useState("darkWorld1"); // THE ONE from 1DarkWorld1.mat
+  const [skyboxRotationSpeed, setSkyboxRotationSpeed] = useState(0.5); // Manual rotation control (0-2)
 
   // Water settings
   const [waterEnabled, setWaterEnabled] = useState(false);
@@ -1189,6 +1190,15 @@ export default function VisualStudioPage() {
               />
               {skyboxEnabled && (
                 <div className="mt-4 space-y-3">
+                  <SliderControl
+                    label="Rotation Speed"
+                    value={skyboxRotationSpeed}
+                    onChange={setSkyboxRotationSpeed}
+                    min={0}
+                    max={2}
+                    step={0.1}
+                    unit="x"
+                  />
                   <span className="block text-sm text-slate-300 mb-2">Skybox Preset</span>
                   <div className="grid grid-cols-1 gap-2">
                     {STAR_NEST_PRESETS.map((preset) => (
@@ -1395,6 +1405,7 @@ export default function VisualStudioPage() {
                   turbulence={turbulence}
                   skyboxEnabled={skyboxEnabled}
                   skyboxPresetKey={skyboxPresetKey}
+                  skyboxRotationSpeed={skyboxRotationSpeed}
                   waterEnabled={waterEnabled}
                   waterReflectivity={waterReflectivity}
                   videoUrl={videoUrl || undefined}

@@ -5,6 +5,7 @@ import Image from "next/image"
 
 export function QuizCTA() {
   return (
+    <div className="text-center space-y-6">
     <Link href="/get-started">
       <div className="text-center space-y-6 cursor-pointer group">
         {/* Main heading with enhanced gradient */}
@@ -53,5 +54,16 @@ export function QuizCTA() {
         </div>
       </div>
     </Link>
+
+    {/* Skip the quiz */}
+    <div className="pt-2">
+      <Link
+        href="/auth/login"
+        className="text-gray-400 hover:text-primary-300 text-sm underline underline-offset-4 transition-colors"
+      >
+        Skip the quiz — I want in now!
+      </Link>
+    </div>
+    </div>
   )
 }

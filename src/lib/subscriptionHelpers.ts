@@ -1,17 +1,36 @@
 /**
  * Subscription helper functions for checking user subscription access
+ *
+ * Access Levels:
+ * - guest: No access (default before quiz)
+ * - introduction: 7-day limited access after quiz completion + first login
+ * - subscriber: Full paid access (will have variations later)
+ * - admin: Full access including /admin pages
+ *
+ * Introduction Tier Access (1 week):
+ * - Mental Mastery Module 1
+ * - Breathing Module 1
+ * - Nutrition tracking/planning
+ * - Journal access
+ * - Peptide tracker
+ * - NO exercise tracking
+ * - NO discounts
  */
 
 import { User } from '@prisma/client'
 
-export type SubscriptionTier = 'free' | 'premium'
+export type AccessLevel = 'guest' | 'introduction' | 'subscriber' | 'admin'
+export type SubscriptionTier = 'free' | 'introduction' | 'premium'
 
 export interface SubscriptionAccess {
   hasActiveSubscription: boolean
   tier: SubscriptionTier
+  accessLevel: AccessLevel
   expiryDate: Date | null
   daysRemaining: number | null
   isAdmin: boolean
+  isIntroduction: boolean
+  introductionExpired: boolean
 }
 
 /**
@@ -24,7 +43,22 @@ export function isAdmin(user: User | null): boolean {
 }
 
 /**
- * Check if user has an active subscription
+ * Check if user has active introduction tier access
+ */
+export function hasActiveIntroduction(user: User | null): boolean {
+  if (!user) return false
+  if (user.accessLevel !== 'introduction') return false
+
+  // Check if introduction tier has expired
+  if (user.introductionExpiresAt) {
+    return new Date() < user.introductionExpiresAt
+  }
+
+  return false
+}
+
+/**
+ * Check if user has an active subscription (paid)
  * Admin users always return true (full access)
  */
 export function hasActiveSubscription(user: User | null): boolean {
@@ -33,16 +67,27 @@ export function hasActiveSubscription(user: User | null): boolean {
   // Admin bypass - admins have full access
   if (isAdmin(user)) return true
 
-  // Check subscription status
-  if (user.subscriptionStatus !== 'active') return false
-
-  // Check if subscription has expired
-  if (user.subscriptionExpiry) {
-    return new Date() < user.subscriptionExpiry
+  // Subscriber level with active status
+  if (user.accessLevel === 'subscriber' && user.subscriptionStatus === 'active') {
+    // Check if subscription has expired
+    if (user.subscriptionExpiry) {
+      return new Date() < user.subscriptionExpiry
+    }
+    return true
   }
 
-  // Active status with no expiry means it's active
-  return true
+  return false
+}
+
+/**
+ * Check if user has any level of access (introduction OR subscription)
+ */
+export function hasAnyAccess(user: User | null): boolean {
+  if (!user) return false
+  if (isAdmin(user)) return true
+  if (hasActiveSubscription(user)) return true
+  if (hasActiveIntroduction(user)) return true
+  return false
 }
 
 /**
@@ -53,52 +98,186 @@ export function getSubscriptionAccess(user: User | null): SubscriptionAccess {
     return {
       hasActiveSubscription: false,
       tier: 'free',
+      accessLevel: 'guest',
       expiryDate: null,
       daysRemaining: null,
-      isAdmin: false
+      isAdmin: false,
+      isIntroduction: false,
+      introductionExpired: false
     }
   }
 
   const userIsAdmin = isAdmin(user)
-  const isActive = hasActiveSubscription(user)
-  const expiryDate = user.subscriptionExpiry || null
+  const isSubscriptionActive = hasActiveSubscription(user)
+  const isIntroActive = hasActiveIntroduction(user)
 
-  let daysRemaining: number | null = null
-  if (expiryDate && !userIsAdmin) {
-    const diffTime = expiryDate.getTime() - new Date().getTime()
-    daysRemaining = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+  // Determine access level
+  let accessLevel: AccessLevel = user.accessLevel as AccessLevel || 'guest'
+
+  // Determine tier for display
+  let tier: SubscriptionTier = 'free'
+  if (userIsAdmin || isSubscriptionActive) {
+    tier = 'premium'
+  } else if (isIntroActive) {
+    tier = 'introduction'
   }
+
+  // Calculate expiry and days remaining
+  let expiryDate: Date | null = null
+  let daysRemaining: number | null = null
+
+  if (!userIsAdmin) {
+    if (isSubscriptionActive && user.subscriptionExpiry) {
+      expiryDate = user.subscriptionExpiry
+    } else if (isIntroActive && user.introductionExpiresAt) {
+      expiryDate = user.introductionExpiresAt
+    }
+
+    if (expiryDate) {
+      const diffTime = expiryDate.getTime() - new Date().getTime()
+      daysRemaining = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+      if (daysRemaining < 0) daysRemaining = 0
+    }
+  }
+
+  // Check if introduction expired
+  const introductionExpired = user.accessLevel === 'introduction' &&
+    user.introductionExpiresAt !== null &&
+    new Date() >= user.introductionExpiresAt
 
   return {
-    hasActiveSubscription: isActive,
-    tier: isActive ? 'premium' : 'free',
+    hasActiveSubscription: isSubscriptionActive,
+    tier,
+    accessLevel,
     expiryDate: userIsAdmin ? null : expiryDate,
-    daysRemaining: userIsAdmin ? null : (daysRemaining && daysRemaining > 0 ? daysRemaining : null),
-    isAdmin: userIsAdmin
+    daysRemaining: userIsAdmin ? null : daysRemaining,
+    isAdmin: userIsAdmin,
+    isIntroduction: isIntroActive,
+    introductionExpired
   }
 }
 
+// ================================================
+// FEATURE ACCESS CHECKS
+// ================================================
+
 /**
- * Check if user can access premium Mental Mastery modules
+ * Check if user can access Mental Mastery Module 1
+ * Available to: introduction, subscriber, admin
+ */
+export function canAccessMentalMasteryModule1(user: User | null): boolean {
+  if (!user) return false
+  if (isAdmin(user)) return true
+  if (hasActiveSubscription(user)) return true
+  if (hasActiveIntroduction(user)) return true
+  return false
+}
+
+/**
+ * Check if user can access premium Mental Mastery modules (2+)
+ * Available to: subscriber, admin (NOT introduction)
  */
 export function canAccessPremiumMentalMastery(user: User | null): boolean {
-  return hasActiveSubscription(user)
+  if (!user) return false
+  if (isAdmin(user)) return true
+  if (hasActiveSubscription(user)) return true
+  return false
 }
 
 /**
- * Check if user can access Breathing app
+ * Check if user can access Breathing Module 1
+ * Available to: introduction, subscriber, admin
+ */
+export function canAccessBreathingModule1(user: User | null): boolean {
+  if (!user) return false
+  if (isAdmin(user)) return true
+  if (hasActiveSubscription(user)) return true
+  if (hasActiveIntroduction(user)) return true
+  return false
+}
+
+/**
+ * Check if user can access premium Breathing modules
+ * Available to: subscriber, admin (NOT introduction)
  */
 export function canAccessBreathingApp(user: User | null): boolean {
-  return hasActiveSubscription(user)
+  if (!user) return false
+  if (isAdmin(user)) return true
+  if (hasActiveSubscription(user)) return true
+  return false
 }
 
 /**
- * Get upgrade message for users without active subscription
+ * Check if user can access Nutrition Tracking
+ * Available to: introduction, subscriber, admin
  */
-export function getUpgradeMessage(feature: 'mental-mastery' | 'breathing-app'): string {
-  const featureName = feature === 'mental-mastery'
-    ? 'premium Mental Mastery modules'
-    : 'the Breathing App'
+export function canAccessNutritionTracking(user: User | null): boolean {
+  if (!user) return false
+  if (isAdmin(user)) return true
+  if (hasActiveSubscription(user)) return true
+  if (hasActiveIntroduction(user)) return true
+  return false
+}
 
-  return `Upgrade to premium to access ${featureName}. Subscribe now to unlock all features.`
+/**
+ * Check if user can access Workout/Exercise Tracking
+ * Available to: subscriber, admin (NOT introduction)
+ */
+export function canAccessWorkoutTracking(user: User | null): boolean {
+  if (!user) return false
+  if (isAdmin(user)) return true
+  if (hasActiveSubscription(user)) return true
+  return false
+}
+
+/**
+ * Check if user can access Journal
+ * Available to: introduction, subscriber, admin
+ */
+export function canAccessJournal(user: User | null): boolean {
+  if (!user) return false
+  if (isAdmin(user)) return true
+  if (hasActiveSubscription(user)) return true
+  if (hasActiveIntroduction(user)) return true
+  return false
+}
+
+/**
+ * Check if user can access Peptide Tracker
+ * Available to: introduction, subscriber, admin
+ */
+export function canAccessPeptideTracker(user: User | null): boolean {
+  if (!user) return false
+  if (isAdmin(user)) return true
+  if (hasActiveSubscription(user)) return true
+  if (hasActiveIntroduction(user)) return true
+  return false
+}
+
+/**
+ * Check if user gets peptide discounts
+ * Available to: subscriber, admin (NOT introduction)
+ */
+export function hasPeptideDiscounts(user: User | null): boolean {
+  if (!user) return false
+  if (isAdmin(user)) return true
+  if (hasActiveSubscription(user)) return true
+  return false
+}
+
+/**
+ * Get upgrade message for users without access
+ */
+export function getUpgradeMessage(feature: string, user: User | null): string {
+  const access = getSubscriptionAccess(user)
+
+  if (access.introductionExpired) {
+    return `Your 7-day introduction access has expired. Subscribe to continue using ${feature}.`
+  }
+
+  if (access.isIntroduction) {
+    return `${feature} is not included in your introduction access. Upgrade to unlock this feature.`
+  }
+
+  return `Subscribe to access ${feature}. Start your trial today!`
 }

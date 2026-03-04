@@ -116,23 +116,54 @@ interface SessionRecord {
 
 // ─── Audio System ─────────────────────────────────────────────────────────────
 
-function speakLetter(letter: string, volume: number, soundSet: SoundSet) {
+// Module-level cache so audio files are loaded once and reused across trials
+const _audioCache = new Map<string, HTMLAudioElement>()
+
+function preloadSoundSet(soundSet: SoundSet) {
   if (typeof window === 'undefined') return
   const { fileMap } = SOUND_SETS[soundSet]
-  const filename = fileMap[letter]
-  const path = `/sounds/nback/${soundSet}/${filename}.wav`
-  const audio = new Audio(path)
-  audio.volume = Math.max(0, Math.min(1, volume))
-  audio.play().catch(() => {
-    // Fallback to browser TTS
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel()
-      const utt = new SpeechSynthesisUtterance(letter)
-      utt.rate = 0.9
-      utt.volume = volume
-      window.speechSynthesis.speak(utt)
+  for (const letter of AUDIO_LETTERS) {
+    const filename = fileMap[letter]
+    const key = `${soundSet}:${letter}`
+    if (!_audioCache.has(key)) {
+      const audio = new Audio(`/sounds/nback/${soundSet}/${filename}.wav`)
+      audio.preload = 'auto'
+      _audioCache.set(key, audio)
     }
-  })
+  }
+}
+
+function speakLetter(letter: string, volume: number, soundSet: SoundSet) {
+  if (typeof window === 'undefined') return
+  const key = `${soundSet}:${letter}`
+  const cached = _audioCache.get(key)
+  const clampedVol = Math.max(0, Math.min(1, volume))
+
+  const tryPlay = (audio: HTMLAudioElement) => {
+    audio.volume = clampedVol
+    audio.currentTime = 0
+    audio.play().catch(() => {
+      // Fallback to browser TTS
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel()
+        const utt = new SpeechSynthesisUtterance(letter)
+        utt.rate = 0.9
+        utt.volume = volume
+        window.speechSynthesis.speak(utt)
+      }
+    })
+  }
+
+  if (cached) {
+    tryPlay(cached)
+  } else {
+    // Cache miss — load on demand and cache for next time
+    const { fileMap } = SOUND_SETS[soundSet]
+    const audio = new Audio(`/sounds/nback/${soundSet}/${fileMap[letter]}.wav`)
+    audio.preload = 'auto'
+    _audioCache.set(key, audio)
+    tryPlay(audio)
+  }
 }
 
 function playFeedbackSound(type: 'advance', volume: number) {
@@ -251,6 +282,10 @@ export default function NBackTrainer() {
   const [trialDurationMs, setTrialDurationMs] = useState(3000)
   const [audioVolume, setAudioVolume] = useState(0.8)
   const [soundSet, setSoundSet] = useState<SoundSet>('letters')
+
+  // Preload audio files whenever sound set changes so trials never wait on network
+  useEffect(() => { preloadSoundSet(soundSet) }, [soundSet])
+
   const [manualMode, setManualMode] = useState(false)
   const [interference, setInterference] = useState(false)
   const [hideAudioLabel, setHideAudioLabel] = useState(false)

@@ -492,7 +492,22 @@ export function EnhancedDashboard() {
             )}
           </div>
 
-          {/* Trial Subscription Banner - Only show for non-subscribers who aren't admins */}
+          {/* Satori Living Foundation Grant Banner - Show for active subscribers who aren't admins */}
+          {hasActiveSubscription && !isAdmin && (
+            <div className="mb-6 bg-gradient-to-r from-amber-600/20 via-yellow-600/20 to-amber-600/20 border border-amber-400/30 rounded-xl p-4 flex items-center gap-4 backdrop-blur-sm">
+              <div className="text-3xl">🎁</div>
+              <div>
+                <p className="text-amber-200 font-semibold text-sm">
+                  Free Access — Satori Living Foundation Grant
+                </p>
+                <p className="text-amber-100/70 text-xs">
+                  Thanks to a generous grant, your access is free through September 2026. No payment required.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Trial Subscription Banner - Fallback for users without active access */}
           {hasActiveSubscription === false && !isAdmin && showTrialBanner && (
             <div className="mb-8 bg-gradient-to-r from-green-600/20 via-emerald-600/20 to-green-600/20 border-2 border-green-400/40 rounded-xl p-6 shadow-lg backdrop-blur-sm relative overflow-hidden">
               {/* Close button */}
@@ -516,26 +531,23 @@ export function EnhancedDashboard() {
                 {/* Content */}
                 <div className="flex-1 text-center md:text-left">
                   <h3 className="text-2xl font-bold text-white mb-2">
-                    Start Your FREE 14-Day Trial
+                    Claim Your Free Access — Satori Living Foundation Grant
                   </h3>
                   <p className="text-gray-200 mb-1">
-                    Get complete access to all premium features - no charge for 14 days
+                    Thanks to a generous grant, register free and get 6 months of full access — no card required.
                   </p>
                   <p className="text-sm text-gray-300">
-                    Then $12.99/month • Cancel anytime during trial
-                  </p>
-                  <p className="text-xs text-amber-300 mt-1">
-                    We'll remind you before it ends - cancel or review!
+                    Full subscriber access through September 2026
                   </p>
                 </div>
 
                 {/* CTA Button */}
-                <button
-                  onClick={() => setShowTrialModal(true)}
-                  className="flex-shrink-0 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-bold rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-green-500/50"
+                <a
+                  href="/auth/login"
+                  className="flex-shrink-0 px-6 py-3 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-bold rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-amber-500/50"
                 >
-                  Start FREE Trial →
-                </button>
+                  Register Free Now →
+                </a>
               </div>
             </div>
           )}
