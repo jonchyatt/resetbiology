@@ -5,7 +5,7 @@
 import { matchTranscript, type VoiceAnswer } from './KeywordMatcher'
 
 export type WhisperStatus = 'idle' | 'loading' | 'ready' | 'listening' | 'error'
-export type ExerciseMode = 'e-directional' | 'letters'
+export type ExerciseMode = 'e-directional' | 'letters' | 'notes'
 
 // Web Speech API type declarations (not yet in all TypeScript DOM lib versions)
 interface SpeechRecognitionEvent extends Event {
@@ -133,6 +133,78 @@ class WebSpeechServiceImpl {
 
     rec.start()
     this.recognition = rec
+  }
+
+  /**
+   * Single-shot note recognition for pitch training.
+   *
+   * Starts a fresh, non-continuous SpeechRecognition instance. Tries up to
+   * maxAlternatives=3 hypotheses before giving up. Returns the matched note
+   * string (e.g. "C4") or null on timeout/no-match/error.
+   *
+   * IMPORTANT: call this AFTER the audio has finished playing (use audio.onended
+   * + a 200ms buffer) so the mic never picks up the piano playback.
+   */
+  async listenOnce(
+    timeoutMs = 4000,
+    onStatus?: (s: 'listening' | 'idle' | 'error') => void,
+  ): Promise<string | null> {
+    return new Promise(resolve => {
+      const w = typeof window !== 'undefined' ? (window as unknown as Record<string, unknown>) : null
+      const RecognitionAPI = w
+        ? ((w['SpeechRecognition'] || w['webkitSpeechRecognition']) as SpeechRecognitionConstructor | undefined)
+        : null
+
+      if (!RecognitionAPI) { resolve(null); return }
+
+      // Fresh instance — completely independent of the continuous-mode this.recognition
+      const rec = new RecognitionAPI()
+      rec.continuous = false       // one utterance then done
+      rec.interimResults = false   // only final results
+      rec.lang = 'en-US'
+      rec.maxAlternatives = 3      // try 3 hypotheses to beat phonetic ambiguity
+
+      let done = false
+      const finish = (note: string | null) => {
+        if (done) return
+        done = true
+        clearTimeout(timer)
+        try { rec.abort() } catch { /* ignore */ }
+        onStatus?.('idle')
+        resolve(note)
+      }
+
+      const timer = setTimeout(() => finish(null), timeoutMs)
+      onStatus?.('listening')
+
+      rec.onresult = (event: SpeechRecognitionEvent) => {
+        const result = event.results[0]
+        // Try each alternative until we get a note match
+        for (let i = 0; i < result.length; i++) {
+          const answer = matchTranscript(result[i].transcript, 'notes')
+          if (answer && answer.type === 'note') {
+            finish(answer.value)
+            return
+          }
+        }
+        // No alternative matched — wait for onend (may be more results coming)
+        // but since continuous=false, onend fires right after onresult
+        finish(null)
+      }
+
+      rec.onerror = (event: SpeechRecognitionErrorEvent) => {
+        if (event.error === 'not-allowed') onStatus?.('error')
+        finish(null)
+      }
+
+      rec.onend = () => finish(null)
+
+      try {
+        rec.start()
+      } catch {
+        finish(null)
+      }
+    })
   }
 
   stop(): void {

@@ -3,9 +3,10 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
 import {
   Music, RotateCcw, Play, Eye, EyeOff, Trophy, RefreshCw,
-  Brain, Headphones, ChevronLeft, EarIcon,
+  Brain, Headphones, ChevronLeft, EarIcon, Mic, MicOff,
 } from 'lucide-react'
 import { PortalHeader } from '@/components/Navigation/PortalHeader'
+import { WhisperService } from '@/lib/speech'
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -47,11 +48,12 @@ function preloadPiano() {
   }
 }
 
-function playPiano(note: string) {
+function playPiano(note: string): HTMLAudioElement {
   const cached = _pianoCache.get(note)
-  if (cached) { cached.currentTime = 0; cached.play().catch(() => {}); return }
+  if (cached) { cached.currentTime = 0; cached.play().catch(() => {}); return cached }
   const el = new Audio(`/sounds/nback/piano/${note}.wav`)
   el.preload = 'auto'; _pianoCache.set(note, el); el.play().catch(() => {})
+  return el
 }
 
 // ─── Spaced Repetition (Identify game only) ──────────────────────────────────
@@ -112,6 +114,12 @@ export default function PitchRecognition() {
   const progressRef = useRef(progress)
   useEffect(() => { progressRef.current = progress }, [progress])
 
+  // ── Voice mode (identify game only) ──────────────────────────────────────
+  const [voiceMode, setVoiceMode]     = useState(false)
+  const [voiceStatus, setVoiceStatus] = useState<'idle' | 'listening' | 'error'>('idle')
+  const voiceModeRef = useRef(false)
+  useEffect(() => { voiceModeRef.current = voiceMode }, [voiceMode])
+
   // ── Identify game state ───────────────────────────────────────────────────
   const [iPhase, setIPhase]         = useState<IdentPhase>('playing')
   const [iNotes, setINotes]         = useState<string[]>(['C4', 'A4'])
@@ -130,6 +138,29 @@ export default function PitchRecognition() {
     }
   }, [])
 
+  // Forward ref — initialized with stub; updated by useEffect after handleIdentifyAnswer is defined
+  const handleIdentifyAnswerRef = useRef<(chosen: string) => void>(() => {})
+
+  // Plays a note and — if voice mode is on — opens mic AFTER audio ends (gated single-shot)
+  const playIdentifyNote = useCallback((note: string) => {
+    const audio = playPiano(note)
+    iHighlight(note)
+    if (!voiceModeRef.current) return
+    const onEnded = () => {
+      setTimeout(async () => {
+        if (!voiceModeRef.current) return
+        const matched = await WhisperService.listenOnce(4000, (s) => {
+          setVoiceStatus(s === 'listening' ? 'listening' : s === 'error' ? 'error' : 'idle')
+        })
+        setVoiceStatus('idle')
+        if (matched && voiceModeRef.current) handleIdentifyAnswerRef.current(matched)
+      }, 200)
+    }
+    // Guard: if audio already ended (cached file replayed instantly), trigger immediately
+    if (audio.ended) { onEnded(); return }
+    audio.addEventListener('ended', onEnded, { once: true })
+  }, [iHighlight])
+
   const startIdentify = useCallback(() => {
     const pool  = ['C4', 'A4']
     const first = weightedPick(pool, progressRef.current, null)
@@ -137,8 +168,8 @@ export default function PitchRecognition() {
     setIConsecOk(0); setIConsecBad(0); setIStats({})
     setITotal(0); setICorrect(0); setIBtns({}); setIKeyHL(null)
     setScreen('identify')
-    playPiano(first); iHighlight(first)
-  }, [iHighlight])
+    playIdentifyNote(first)
+  }, [iHighlight, playIdentifyNote])
 
   const replayIdentify = useCallback(() => { if (iCurrent) playPiano(iCurrent) }, [iCurrent])
 
@@ -182,9 +213,12 @@ export default function PitchRecognition() {
       setIBtns({})
       const next = weightedPick(nextPool, updProg, iCurrent)
       setICurrent(next); setIPhase('playing')
-      playPiano(next); iHighlight(next)
+      playIdentifyNote(next)
     }, ok ? 800 : 1400)
-  }, [iPhase, iCurrent, iConsecOk, iConsecBad, iNotes, iTotal, iCorrect, saveProgress, iHighlight])
+  }, [iPhase, iCurrent, iConsecOk, iConsecBad, iNotes, iTotal, iCorrect, saveProgress, iHighlight, playIdentifyNote])
+
+  // Keep ref in sync so async voice callback always calls latest handleIdentifyAnswer
+  useEffect(() => { handleIdentifyAnswerRef.current = handleIdentifyAnswer }, [handleIdentifyAnswer])
 
   // ── N-Back game state ─────────────────────────────────────────────────────
   const [nbLevel, setNbLevel]         = useState<1 | 2 | 3>(1)
@@ -527,10 +561,40 @@ export default function PitchRecognition() {
               )}
 
               <div className="text-center mb-6">
+                <div className="flex items-center justify-center gap-3">
                 <button onClick={replayIdentify} disabled={iPhase === 'feedback'}
-                  className="bg-teal-600/20 hover:bg-teal-600/40 disabled:opacity-40 border border-teal-500/50 text-teal-300 font-medium px-6 py-2 rounded-lg transition flex items-center gap-2 mx-auto text-sm">
-                  <RotateCcw className="w-4 h-4" /> Replay Note
+                  className="bg-teal-600/20 hover:bg-teal-600/40 disabled:opacity-40 border border-teal-500/50 text-teal-300 font-medium px-6 py-2 rounded-lg transition flex items-center gap-2 text-sm">
+                  <RotateCcw className="w-4 h-4" /> Replay
                 </button>
+                {/* Voice mode toggle */}
+                <button
+                  onClick={() => { setVoiceMode(v => !v); setVoiceStatus('idle') }}
+                  title={voiceMode ? 'Voice ON — click to turn off' : 'Turn on voice answers'}
+                  className={`border font-medium px-4 py-2 rounded-lg transition flex items-center gap-2 text-sm ${
+                    voiceMode
+                      ? 'bg-green-600/20 border-green-500/50 text-green-300 hover:bg-green-600/30'
+                      : 'bg-gray-700/40 border-gray-600 text-gray-500 hover:border-gray-500'
+                  }`}>
+                  {voiceMode ? <Mic className="w-4 h-4" /> : <MicOff className="w-4 h-4" />}
+                  {voiceMode ? 'Voice On' : 'Voice'}
+                </button>
+              </div>
+              {/* Mic status indicator */}
+              {voiceMode && (
+                <div className={`mt-3 flex items-center justify-center gap-2 text-sm transition-all ${
+                  voiceStatus === 'listening' ? 'opacity-100' : 'opacity-30'
+                }`}>
+                  <div className={`w-2 h-2 rounded-full ${
+                    voiceStatus === 'listening' ? 'bg-green-400 animate-pulse' :
+                    voiceStatus === 'error'     ? 'bg-red-400' : 'bg-gray-600'
+                  }`} />
+                  <span className={voiceStatus === 'error' ? 'text-red-400' : 'text-gray-400'}>
+                    {voiceStatus === 'listening' ? 'Listening — say the note name…' :
+                     voiceStatus === 'error'     ? 'Mic blocked — check browser permissions' :
+                     'Say note name after it plays'}
+                  </span>
+                </div>
+              )}
               </div>
 
               <div className="grid grid-cols-4 gap-3">
