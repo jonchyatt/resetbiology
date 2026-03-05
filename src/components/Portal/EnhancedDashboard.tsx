@@ -2,14 +2,14 @@
 
 import Link from "next/link"
 import { useState, useEffect } from "react"
-import { Trophy, Calendar, ChevronRight, Target, Dumbbell, Apple, Brain, Wind, BookOpen, ShoppingBag, Check, Flame, Sparkles, X, Eye, Zap, type LucideIcon } from "lucide-react"
+import { Trophy, Calendar, ChevronRight, Target, Dumbbell, Apple, Brain, Wind, BookOpen, ShoppingBag, Check, Flame, Sparkles, X, Eye, Zap, Music, type LucideIcon } from "lucide-react"
 import { PortalHeader } from "@/components/Navigation/PortalHeader"
 import { useUser } from "@auth0/nextjs-auth0"
 import { useRouter } from "next/navigation"
 import TrialSubscription from "@/components/Subscriptions/TrialSubscription"
 
 const iconMap: Record<string, LucideIcon> = {
-  Target, Dumbbell, Apple, Brain, Wind, BookOpen, Eye, Zap,
+  Target, Dumbbell, Apple, Brain, Wind, BookOpen, Eye, Zap, Music,
 }
 
 interface PortalModuleData {
@@ -34,6 +34,7 @@ const fallbackModules: PortalModuleData[] = [
   { slug: 'breath', label: 'Breathe', href: '/breath', icon: 'Wind', colorFrom: 'from-blue-600/30', colorTo: 'to-blue-700/30', borderColor: 'border-blue-400/30', iconColor: 'text-blue-300', enabled: true, order: 5 },
   { slug: 'journal', label: 'Journal', href: '#journal', icon: 'BookOpen', colorFrom: 'from-secondary-600/30', colorTo: 'to-secondary-700/30', borderColor: 'border-secondary-400/30', iconColor: 'text-secondary-300', enabled: true, order: 6 },
   { slug: 'vision-training', label: 'Vision', href: '/vision-training', icon: 'Eye', colorFrom: 'from-cyan-600/30', colorTo: 'to-cyan-700/30', borderColor: 'border-cyan-400/30', iconColor: 'text-cyan-300', enabled: true, order: 7 },
+  { slug: 'ear-training', label: 'Ear Training', href: '/ear-training', icon: 'Music', colorFrom: 'from-rose-600/30', colorTo: 'to-pink-700/30', borderColor: 'border-rose-400/30', iconColor: 'text-rose-300', enabled: true, order: 8 },
 ]
 
 interface DailyJournalData {
