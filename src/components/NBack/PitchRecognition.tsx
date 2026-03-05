@@ -7,12 +7,17 @@ import {
 } from 'lucide-react'
 import { PortalHeader } from '@/components/Navigation/PortalHeader'
 import { WhisperService } from '@/lib/speech'
+import {
+  NOTE_COLORS, SEED_DIFFICULTY as _SEED_D, createNote, reviewNote,
+  autoGrade, currentR, pickNextNote, calcXP, type NoteMemory, type FsrsGrade,
+} from '@/lib/fsrs'
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
 const KEYBOARD_ORDER = ['C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4', 'C5']
 const INTRO_ORDER    = ['C4', 'A4', 'G4', 'E4', 'D4', 'F4', 'B4', 'C5']
 const STORAGE_KEY    = 'pitch_recognition_progress'
+const MAZE_STORAGE   = 'pitch_fsrs_memory'
 const MASTERY_ATTEMPTS = 10
 const MASTERY_ACCURACY = 0.8
 const NB_WARMUP_MS     = 2000   // delay between warmup notes
@@ -26,7 +31,7 @@ const NB_ADVANCE_ERR   = 1600   // delay after wrong n-back answer
 // hard      → no keyboard highlight, all other visuals on
 // extrahard → keyboard hidden entirely, no visual cues
 type Difficulty  = 'easy' | 'hard' | 'extrahard'
-type Screen      = 'menu' | 'identify' | 'nback'
+type Screen      = 'menu' | 'identify' | 'nback' | 'maze'
 type IdentPhase  = 'playing' | 'feedback' | 'summary'
 type NBackPhase  = 'warmup' | 'answer' | 'feedback' | 'summary'
 type BtnState    = 'default' | 'correct' | 'wrong' | 'highlight'
@@ -114,11 +119,178 @@ export default function PitchRecognition() {
   const progressRef = useRef(progress)
   useEffect(() => { progressRef.current = progress }, [progress])
 
-  // ── Voice mode (identify game only) ──────────────────────────────────────
+  // ── Voice mode (shared: identify + maze) ─────────────────────────────────
   const [voiceMode, setVoiceMode]     = useState(false)
   const [voiceStatus, setVoiceStatus] = useState<'idle' | 'listening' | 'error'>('idle')
   const voiceModeRef = useRef(false)
   useEffect(() => { voiceModeRef.current = voiceMode }, [voiceMode])
+
+  // ── Maze game state (FSRS-backed) ────────────────────────────────────────
+  type MazePhase = 'active' | 'feedback' | 'summary'
+  type GateState = 'idle' | 'correct' | 'wrong'
+  const [mazeMemory, setMazeMemory]     = useState<Record<string, NoteMemory>>({})
+  const [mazePool, setMazePool]         = useState<string[]>(['C4', 'A4'])
+  const [mazeCurrent, setMazeCurrent]   = useState<string | null>(null)
+  const [mazePhase, setMazePhase]       = useState<MazePhase>('active')
+  const [gateState, setGateState]       = useState<GateState>('idle')
+  const [mazeStreak, setMazeStreak]     = useState(0)
+  const [mazeXP, setMazeXP]            = useState(0)
+  const [mazeTotal, setMazeTotal]       = useState(0)
+  const [mazeCorrect, setMazeCorrect]   = useState(0)
+  const [mazeConsecOk, setMazeConsecOk] = useState(0)
+  const [mazeConsecBad, setMazeConsecBad] = useState(0)
+  const [mazeWrongNote, setMazeWrongNote] = useState<string | null>(null)
+  const [xpPopKey, setXpPopKey]           = useState(0)
+  const [xpPopVal, setXpPopVal]           = useState(0)
+  const mazeMemRef       = useRef<Record<string, NoteMemory>>({})
+  const mazePoolRef      = useRef<string[]>(['C4', 'A4'])
+  const mazeConsecOkRef  = useRef(0)
+  const mazeConsecBadRef = useRef(0)
+  const mazeAnswerStart  = useRef(0)
+  const mazeCurrRef      = useRef<string | null>(null)
+  const handleMazeAnswerRef = useRef<(chosen: string) => void>(() => {})
+
+  // Load FSRS memory from localStorage
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(MAZE_STORAGE)
+      if (raw) {
+        const mem = JSON.parse(raw) as Record<string, NoteMemory>
+        mazeMemRef.current = mem
+        setMazeMemory(mem)
+      }
+    } catch {}
+  }, [])
+
+  const saveMazeMemory = useCallback((m: Record<string, NoteMemory>) => {
+    mazeMemRef.current = m
+    setMazeMemory(m)
+    try { localStorage.setItem(MAZE_STORAGE, JSON.stringify(m)) } catch {}
+  }, [])
+
+  // Ensure all pool notes exist in memory
+  const ensureMemory = useCallback((pool: string[], mem: Record<string, NoteMemory>) => {
+    const updated = { ...mem }
+    let changed = false
+    for (const n of pool) {
+      if (!updated[n]) { updated[n] = createNote(n); changed = true }
+    }
+    if (changed) saveMazeMemory(updated)
+    return changed ? updated : mem
+  }, [saveMazeMemory])
+
+  // ── Maze callbacks (state declared above) ────────────────────────────────
+
+  // Plays maze gate note and optionally listens for voice answer
+  const playMazeNote = useCallback((note: string) => {
+    const audio = playPiano(note)
+    if (!voiceModeRef.current) return
+    const onEnded = () => {
+      setTimeout(async () => {
+        if (!voiceModeRef.current) return
+        const matched = await WhisperService.listenOnce(4000, (s) => {
+          setVoiceStatus(s === 'listening' ? 'listening' : s === 'error' ? 'error' : 'idle')
+        })
+        setVoiceStatus('idle')
+        if (matched && voiceModeRef.current) handleMazeAnswerRef.current(matched)
+      }, 200)
+    }
+    if (audio.ended) { onEnded(); return }
+    audio.addEventListener('ended', onEnded, { once: true })
+  }, [])
+
+  const advanceToNextGate = useCallback((pool: string[], mem: Record<string, NoteMemory>) => {
+    const prev = mazeCurrRef.current
+    const next = pickNextNote(pool, mem, prev)
+    mazeCurrRef.current = next
+    mazeAnswerStart.current = Date.now()
+    setMazeCurrent(next)
+    setGateState('idle')
+    setMazePhase('active')
+    setMazeWrongNote(null)
+    playMazeNote(next)
+  }, [playMazeNote])
+
+  const handleMazeAnswer = useCallback((chosen: string) => {
+    const current = mazeCurrRef.current
+    if (!current || mazePhase !== 'active') return
+    setMazePhase('feedback')
+
+    const latency = Date.now() - mazeAnswerStart.current
+    const ok = chosen === current
+    const grade: FsrsGrade = autoGrade(ok, latency)
+
+    // Update FSRS memory
+    const mem = { ...mazeMemRef.current }
+    if (!mem[current]) mem[current] = createNote(current)
+    mem[current] = reviewNote(mem[current], grade)
+    saveMazeMemory(mem)
+
+    setMazeTotal(t => t + 1)
+    if (ok) {
+      setMazeCorrect(c => c + 1)
+      const newStreak = mazeStreak + 1
+      setMazeStreak(newStreak)
+      const xp = calcXP(grade, newStreak)
+      setMazeXP(x => x + xp)
+      setXpPopVal(xp); setXpPopKey(k => k + 1)
+      setGateState('correct')
+
+      const newOk = mazeConsecOkRef.current + 1
+      mazeConsecOkRef.current = newOk
+      mazeConsecBadRef.current = 0
+      setMazeConsecOk(newOk); setMazeConsecBad(0)
+
+      // Unlock next note at 5 consecutive correct
+      let pool = [...mazePoolRef.current]
+      if (newOk >= 5 && pool.length < 8) {
+        const next = INTRO_ORDER.find(n => !pool.includes(n))
+        if (next) { pool = [...pool, next]; mazeConsecOkRef.current = 0; setMazeConsecOk(0) }
+      }
+      mazePoolRef.current = pool; setMazePool(pool)
+
+      setTimeout(() => advanceToNextGate(pool, mem), 700)
+    } else {
+      setMazeStreak(0)
+      setGateState('wrong')
+      setMazeWrongNote(current)
+
+      const newBad = mazeConsecBadRef.current + 1
+      mazeConsecBadRef.current = newBad
+      mazeConsecOkRef.current = 0
+      setMazeConsecBad(newBad); setMazeConsecOk(0)
+
+      // Simplify pool at 3 consecutive wrong
+      let pool = [...mazePoolRef.current]
+      if (newBad >= 3 && pool.length > 2) {
+        const drop = [...INTRO_ORDER].reverse().find(n => pool.includes(n) && n !== current)
+        if (drop) { pool = pool.filter(n => n !== drop); mazeConsecBadRef.current = 0; setMazeConsecBad(0) }
+      }
+      mazePoolRef.current = pool; setMazePool(pool)
+
+      // Replay correct note after short delay, then advance
+      setTimeout(() => playPiano(current), 400)
+      setTimeout(() => advanceToNextGate(pool, mem), 1600)
+    }
+  }, [mazePhase, mazeStreak, saveMazeMemory, advanceToNextGate])
+
+  useEffect(() => { handleMazeAnswerRef.current = handleMazeAnswer }, [handleMazeAnswer])
+
+  const startMaze = useCallback(() => {
+    const pool = ['C4', 'A4']
+    const mem = ensureMemory(pool, mazeMemRef.current)
+    mazePoolRef.current = pool; mazeConsecOkRef.current = 0; mazeConsecBadRef.current = 0
+    mazeCurrRef.current = null
+    setMazePool(pool); setMazeStreak(0); setMazeXP(0)
+    setMazeTotal(0); setMazeCorrect(0); setMazeConsecOk(0); setMazeConsecBad(0)
+    setMazeWrongNote(null); setGateState('idle')
+    setScreen('maze')
+    const first = pickNextNote(pool, mem, null)
+    mazeCurrRef.current = first
+    mazeAnswerStart.current = Date.now()
+    setMazeCurrent(first); setMazePhase('active')
+    playMazeNote(first)
+  }, [ensureMemory, playMazeNote])
 
   // ── Identify game state ───────────────────────────────────────────────────
   const [iPhase, setIPhase]         = useState<IdentPhase>('playing')
@@ -351,6 +523,13 @@ export default function PitchRecognition() {
   const nbAccuracyPct = nbTotal > 0 ? Math.round((nbCorrect / nbTotal) * 100) : 0
   const hasData       = Object.values(progress).some(p => p.total > 0)
 
+  // Maze computed display values
+  const mazeAccPct = mazeTotal > 0 ? Math.round((mazeCorrect / mazeTotal) * 100) : 0
+  const mazeColor  = NOTE_COLORS[mazeCurrent ?? 'C4'] ?? { hue: 180, name: '' }
+  const mazeMem    = mazeCurrent ? (mazeMemory[mazeCurrent] ?? createNote(mazeCurrent)) : null
+  const mazeR      = mazeMem ? currentR(mazeMem) : 1
+  const mazeMultip = mazeStreak >= 10 ? 3 : mazeStreak >= 5 ? 2 : 1
+
   // N-Back display: window of last N+1 notes (oldest = target, newest = current)
   const nbWindow     = nbHistory.slice(-(nbLevel + 1))
   const nbTarget     = nbHistory.length > nbLevel
@@ -474,6 +653,30 @@ export default function PitchRecognition() {
                   <Brain className="w-4 h-4" /> Start {nbLevel}-Back Training
                 </button>
               </div>
+
+              {/* ── Resonance Maze ── */}
+              <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-xl p-6 border border-amber-400/20 shadow-lg">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="bg-amber-600/20 p-2 rounded-lg">
+                    <EarIcon className="w-5 h-5 text-amber-400" />
+                  </div>
+                  <div>
+                    <h2 className="text-white font-bold text-lg">Resonance Maze</h2>
+                    <p className="text-gray-500 text-xs">FSRS spaced repetition · synesthesia colors</p>
+                  </div>
+                </div>
+                <p className="text-gray-400 text-sm mb-1">
+                  A note plays through a colored portal. Name it to pass through. Your memory shapes the maze.
+                </p>
+                <p className="text-gray-600 text-xs mb-4">
+                  Powered by FSRS-4.5 · Struggling notes appear more often · Pool grows with your skill
+                </p>
+                <button onClick={startMaze}
+                  className="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2">
+                  <Play className="w-4 h-4" /> Enter the Maze
+                </button>
+              </div>
+
             </div>
 
             {/* Lifetime progress */}
@@ -800,6 +1003,198 @@ export default function PitchRecognition() {
             <div className="flex gap-3">
               <button onClick={startNBack}
                 className="flex-1 bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2">
+                <Play className="w-4 h-4" /> Play Again
+              </button>
+              <button onClick={() => setScreen('menu')}
+                className="px-4 bg-gray-700/50 hover:bg-gray-700 text-gray-400 hover:text-white rounded-xl border border-gray-600 transition text-sm flex items-center gap-2">
+                <ChevronLeft className="w-4 h-4" /> Menu
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ════════════════ RESONANCE MAZE — active/feedback ════════════════ */}
+        {screen === 'maze' && (mazePhase === 'active' || mazePhase === 'feedback') && (
+          <>
+            {/* HUD */}
+            <div className="flex items-center justify-between mb-4">
+              <button onClick={() => setScreen('menu')}
+                className="text-gray-500 hover:text-gray-300 transition flex items-center gap-1 text-xs border border-gray-700 hover:border-gray-500 rounded px-2 py-1">
+                <ChevronLeft className="w-3 h-3" /> Menu
+              </button>
+              <div className="flex items-center gap-3 text-sm">
+                {mazeStreak > 0 && (
+                  <span className="text-orange-400 font-bold">
+                    🔥 {mazeStreak}{mazeMultip > 1 ? ` ×${mazeMultip}` : ''}
+                  </span>
+                )}
+                <span className="text-amber-300 font-mono font-bold">{mazeXP} XP</span>
+                <span className="text-gray-400">{mazeCorrect}/{mazeTotal}</span>
+              </div>
+              <button onClick={() => setMazePhase('summary')}
+                className="text-gray-500 hover:text-gray-300 text-xs border border-gray-700 hover:border-gray-500 rounded px-2 py-1 transition">
+                End
+              </button>
+            </div>
+
+            <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-xl p-6 border border-amber-400/20 shadow-lg mb-3 relative overflow-hidden">
+
+              {/* XP pop */}
+              {xpPopVal > 0 && (
+                <div key={xpPopKey}
+                  className="xp-pop absolute top-4 right-4 text-amber-300 font-bold text-lg pointer-events-none select-none z-10">
+                  +{xpPopVal} XP
+                </div>
+              )}
+
+              {/* Gate portal */}
+              <div className="flex flex-col items-center mb-6">
+                <p className="text-gray-500 text-xs uppercase tracking-wide mb-5">Name this note</p>
+                <div
+                  className="w-40 h-40 rounded-full flex flex-col items-center justify-center border-4 transition-colors duration-500"
+                  style={{
+                    backgroundColor: `hsla(${mazeColor.hue}, 65%, 28%, 0.4)`,
+                    borderColor: `hsl(${mazeColor.hue}, 75%, 55%)`,
+                    boxShadow: `0 0 ${Math.round(16 + mazeR * 28)}px hsla(${mazeColor.hue}, 80%, 60%, ${(0.35 + mazeR * 0.4).toFixed(2)})`,
+                    animation: gateState === 'idle'
+                      ? `gatePulse ${mazeR < 0.5 ? '0.6s' : mazeR < 0.8 ? '1.2s' : '2s'} ease-in-out infinite`
+                      : gateState === 'correct'
+                      ? 'gateCorrect 0.55s ease-out forwards'
+                      : 'gateWrong 0.5s ease-out',
+                  }}
+                >
+                  <EarIcon className="w-12 h-12" style={{ color: `hsl(${mazeColor.hue}, 75%, 78%)` }} />
+                  <span className="text-xs mt-1 font-medium"
+                    style={{ color: `hsl(${mazeColor.hue}, 60%, 70%)`, opacity: 0.65 }}>
+                    {mazeColor.name}
+                  </span>
+                </div>
+
+                {/* Wrong note reveal */}
+                {gateState === 'wrong' && mazeWrongNote && (
+                  <div className="mt-3 text-center animate-pulse">
+                    <p className="text-red-400 text-sm">
+                      It was <span className="font-mono font-bold text-red-300">{mazeWrongNote}</span>
+                    </p>
+                    <p className="text-gray-600 text-xs">Replaying…</p>
+                  </div>
+                )}
+
+                {/* Voice status */}
+                {voiceMode && (
+                  <div className={`mt-3 flex items-center gap-2 text-xs transition-opacity ${voiceStatus === 'listening' ? 'opacity-100' : 'opacity-30'}`}>
+                    <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                      voiceStatus === 'listening' ? 'bg-green-400 animate-pulse' :
+                      voiceStatus === 'error'     ? 'bg-red-400' : 'bg-gray-600'
+                    }`} />
+                    <span className={voiceStatus === 'error' ? 'text-red-400' : 'text-gray-400'}>
+                      {voiceStatus === 'listening' ? 'Listening…' :
+                       voiceStatus === 'error'     ? 'Mic blocked' : 'Say the note name'}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* Pool stats */}
+              <p className="text-center text-xs text-gray-600 mb-4">
+                {mazePool.length} note{mazePool.length !== 1 ? 's' : ''} active
+                {mazeConsecOk  > 0 && <span className="text-green-600"> · {mazeConsecOk} correct streak</span>}
+                {mazeConsecBad > 0 && <span className="text-red-600"> · {mazeConsecBad} wrong streak</span>}
+              </p>
+
+              {/* Answer buttons */}
+              <div className="grid grid-cols-4 gap-3 mb-4">
+                {[...mazePool]
+                  .sort((a, b) => KEYBOARD_ORDER.indexOf(a) - KEYBOARD_ORDER.indexOf(b))
+                  .map(note => {
+                    const col = NOTE_COLORS[note] ?? { hue: 180, name: '' }
+                    const isReveal = gateState === 'wrong' && note === mazeWrongNote
+                    return (
+                      <button
+                        key={note}
+                        onClick={() => handleMazeAnswer(note)}
+                        disabled={mazePhase === 'feedback'}
+                        style={!isReveal ? {
+                          borderColor: `hsla(${col.hue}, 55%, 50%, 0.5)`,
+                          color: `hsl(${col.hue}, 65%, 80%)`,
+                        } : undefined}
+                        className={`rounded-lg px-3 py-3 font-mono text-base font-bold border-2 transition-all duration-150 disabled:cursor-not-allowed ${
+                          isReveal
+                            ? 'bg-teal-500/25 border-teal-400/80 text-teal-300'
+                            : 'bg-gray-700/60 border-gray-600 hover:border-amber-400/60'
+                        }`}
+                      >
+                        {note}
+                      </button>
+                    )
+                  })}
+              </div>
+
+              {/* Controls */}
+              <div className="flex gap-2 justify-center">
+                <button
+                  onClick={() => { if (mazeCurrent) playPiano(mazeCurrent) }}
+                  className="bg-gray-700/40 border border-gray-600 text-gray-400 hover:text-white hover:border-gray-500 px-4 py-2 rounded-lg transition text-sm flex items-center gap-2">
+                  <RotateCcw className="w-4 h-4" /> Replay
+                </button>
+                <button
+                  onClick={() => { setVoiceMode(v => !v); setVoiceStatus('idle') }}
+                  className={`border font-medium px-4 py-2 rounded-lg transition text-sm flex items-center gap-2 ${
+                    voiceMode
+                      ? 'bg-green-600/20 border-green-500/50 text-green-300 hover:bg-green-600/30'
+                      : 'bg-gray-700/40 border-gray-600 text-gray-500 hover:border-gray-500'
+                  }`}>
+                  {voiceMode ? <Mic className="w-4 h-4" /> : <MicOff className="w-4 h-4" />}
+                  {voiceMode ? 'Voice On' : 'Voice'}
+                </button>
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* ════════════════ RESONANCE MAZE — summary ════════════════ */}
+        {screen === 'maze' && mazePhase === 'summary' && (
+          <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-xl p-8 border border-amber-400/20 shadow-lg">
+            <h2 className="text-2xl font-bold text-white text-center mb-2">Maze Session Complete</h2>
+            <p className="text-center text-5xl font-mono font-bold text-amber-400 mb-1">{mazeAccPct}%</p>
+            <p className="text-center text-gray-400 mb-1">{mazeCorrect} correct of {mazeTotal}</p>
+            <p className="text-center text-amber-300 font-bold mb-6">{mazeXP} XP earned</p>
+
+            {/* Per-note FSRS health bars */}
+            {Object.keys(mazeMemory).length > 0 && (
+              <div className="mb-6">
+                <p className="text-xs text-gray-500 uppercase tracking-wide mb-3">Note Memory Health</p>
+                <div className="space-y-2">
+                  {KEYBOARD_ORDER.filter(n => mazeMemory[n]).map(note => {
+                    const m = mazeMemory[note]!
+                    const r = currentR(m)
+                    const col = NOTE_COLORS[note] ?? { hue: 180, name: '' }
+                    return (
+                      <div key={note} className="flex items-center gap-3">
+                        <span className="font-mono text-sm w-8"
+                          style={{ color: `hsl(${col.hue}, 65%, 72%)` }}>
+                          {note}
+                        </span>
+                        <div className="flex-1 bg-gray-700/50 rounded-full h-2">
+                          <div className="h-2 rounded-full transition-all"
+                            style={{
+                              width: `${Math.round(r * 100)}%`,
+                              backgroundColor: `hsl(${col.hue}, 65%, 52%)`,
+                            }} />
+                        </div>
+                        <span className="text-xs text-gray-400 w-10 text-right">{Math.round(r * 100)}%</span>
+                        <span className="text-xs text-gray-600 w-14 text-right">S {m.S.toFixed(1)}d</span>
+                      </div>
+                    )
+                  })}
+                </div>
+                <p className="text-xs text-gray-600 mt-2 text-center">R = recall probability · S = stability in days</p>
+              </div>
+            )}
+
+            <div className="flex gap-3">
+              <button onClick={startMaze}
+                className="flex-1 bg-amber-600 hover:bg-amber-500 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2">
                 <Play className="w-4 h-4" /> Play Again
               </button>
               <button onClick={() => setScreen('menu')}

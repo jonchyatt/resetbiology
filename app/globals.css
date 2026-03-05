@@ -258,3 +258,26 @@ body {
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(180deg, #14b8a6, #22c55e);
 }
+
+/* ── Resonance Maze gate animations ───────────────────────────────────────── */
+@keyframes gatePulse {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.07); }
+}
+@keyframes gateCorrect {
+  0%   { transform: scale(1);    opacity: 1; }
+  50%  { transform: scale(1.28); opacity: 0.85; }
+  100% { transform: scale(1.12); opacity: 0; }
+}
+@keyframes gateWrong {
+  0%, 100% { transform: translateX(0)   rotate(0deg); }
+  20%      { transform: translateX(-12px) rotate(-2deg); }
+  40%      { transform: translateX(12px)  rotate(2deg); }
+  60%      { transform: translateX(-8px)  rotate(-1deg); }
+  80%      { transform: translateX(8px)   rotate(1deg); }
+}
+@keyframes xpPop {
+  0%   { transform: translateY(0);    opacity: 1; }
+  100% { transform: translateY(-40px); opacity: 0; }
+}
+.xp-pop { animation: xpPop 0.8s ease-out forwards; }
