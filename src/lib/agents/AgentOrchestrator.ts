@@ -5,7 +5,7 @@ import { BaseAgent } from './BaseAgent';
 import { BioCoachAgent } from './BioCoach';
 import { VisionTutorAgent } from './VisionTutor';
 import { ProfessorAgent } from './Professor';
-import { SalesCloserAgent } from './SalesCloser';
+// SalesCloser removed — peptide sales transitioned to info/co-op model
 import { OnboardingAgent } from './OnboardingAgent';
 import { PeptideAgent } from './PeptideAgent';
 import { ExerciseAgent } from './ExerciseAgent';
@@ -161,7 +161,8 @@ Output the agent name only (e.g., "PEPTIDE").`;
                 return new CourseAgent();
             case 'SALES':
             case 'SALES_CLOSER':
-                return new SalesCloserAgent();
+                // Sales agent removed — route to Concierge instead
+                return new ConciergeAgent();
             case 'ONBOARDING':
                 return new OnboardingAgent();
             case 'PROFESSOR':

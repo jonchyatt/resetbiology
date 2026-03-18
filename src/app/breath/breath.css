@@ -1,0 +1,14 @@
+/* Hide main site elements for clean breath training experience */
+.breath-page + div header,
+.breath-page ~ div header,
+div.fixed.top-16.bg-gradient-to-r {
+  display: none !important;
+}
+
+div.fixed.top-16[class*="from-orange-"] {
+  display: none !important;
+}
+
+main.pt-16 {
+  padding-top: 0 !important;
+}
