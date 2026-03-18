@@ -5,7 +5,7 @@ interface PortalHeaderProps {
   subtitle?: string
   secondaryBackLink?: string
   secondaryBackText?: string
-  showOrderPeptides?: boolean
+  showPeptideInfo?: boolean
 }
 
 export function PortalHeader({
@@ -13,7 +13,7 @@ export function PortalHeader({
   subtitle,
   secondaryBackLink,
   secondaryBackText,
-  showOrderPeptides = true,
+  showPeptideInfo = true,
 }: PortalHeaderProps) {
   return (
     <div
@@ -43,12 +43,12 @@ export function PortalHeader({
             </div>
           </div>
           <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
-            {showOrderPeptides && (
+            {showPeptideInfo && (
               <a
                 href="/order"
                 className="text-primary-300 hover:text-primary-200 font-medium text-xs sm:text-sm transition-colors drop-shadow-sm whitespace-nowrap"
               >
-                Order
+                Peptide Info
               </a>
             )}
             <a

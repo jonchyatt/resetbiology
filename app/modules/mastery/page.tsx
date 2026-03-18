@@ -95,7 +95,7 @@ function MasteryContent() {
           subtitle="Peptide independence & maintenance"
           secondaryBackLink="/modules"
           secondaryBackText="Back to Mental Mastery Modules"
-          showOrderPeptides={false}
+          showPeptideInfo={false}
         />
 
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

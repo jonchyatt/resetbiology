@@ -334,7 +334,7 @@ export default function NonPeptideOrderPage() {
       }}
     >
       <div className="relative z-10 min-h-screen pb-16">
-        <PortalHeader section="Order - Wellness Essentials" subtitle="Non-peptide therapeutics" showOrderPeptides={false} />
+        <PortalHeader section="Order - Wellness Essentials" subtitle="Non-peptide therapeutics" showPeptideInfo={false} />
 
         <div className="pt-28 pb-12 text-center px-4">
           <div className="max-w-4xl mx-auto space-y-6">

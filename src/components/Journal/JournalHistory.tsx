@@ -150,7 +150,7 @@ export function JournalHistory() {
         <PortalHeader
           section="Daily History"
           subtitle="Review your peptides, nutrition, workouts, breath, mindset, and notes in one place"
-          showOrderPeptides={false}
+          showPeptideInfo={false}
         />
 
         {/* Title Section - Matching Tracker Pages */}

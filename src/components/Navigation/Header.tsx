@@ -44,7 +44,7 @@ export function Header() {
             {!user && (
               <>
                 <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium transition-colors">
-                  Order
+                  Peptide Info
                 </Link>
                 <Link href="/cellular-peptide" className="text-gray-700 hover:text-primary-600 font-medium transition-colors">
                   IRB Protocols
@@ -65,7 +65,7 @@ export function Header() {
                   Portal
                 </Link>
                 <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium transition-colors">
-                  Order
+                  Peptide Info
                 </Link>
                 <Link href="/cellular-peptide" className="text-gray-700 hover:text-primary-600 font-medium transition-colors">
                   IRB Protocols
@@ -133,7 +133,7 @@ export function Header() {
               {!user ? (
                 <>
                   <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium" onClick={() => setIsMenuOpen(false)}>
-                    Order
+                    Peptide Info
                   </Link>
                   <Link href="/cellular-peptide" className="text-gray-700 hover:text-primary-600 font-medium" onClick={() => setIsMenuOpen(false)}>
                     IRB Protocols
@@ -152,7 +152,7 @@ export function Header() {
                     Portal
                   </Link>
                   <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium" onClick={() => setIsMenuOpen(false)}>
-                    Order
+                    Peptide Info
                   </Link>
                   <Link href="/cellular-peptide" className="text-gray-700 hover:text-primary-600 font-medium" onClick={() => setIsMenuOpen(false)}>
                     IRB Protocols
