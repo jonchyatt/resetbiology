@@ -1544,7 +1544,8 @@ const researchData: ResearchSection[] = [
           "Sleep quality equally important as duration",
           "Consistent sleep schedule critical for health outcomes"
         ],
-        relevance: "Underlies our emphasis on sleep optimization through breath protocols, DSIP research, and recovery tracking.",
+        relevance: "Underlies our emphasis on sleep optimization through breath protocols, DSIP research, and recovery tracking. Cross-reference: parasympathetic activation from slow breathing (see Breath Training section) improves sleep onset, and mindfulness-based stress reduction has documented sleep quality benefits (see Meditation Science section).",
+        crossReferences: ["breath-training", "meditation-science"],
         link: "https://pubmed.ncbi.nlm.nih.gov/20469800/"
       },
       {
@@ -1563,7 +1564,8 @@ const researchData: ResearchSection[] = [
           "Dopamine levels elevated by ~250% in cold water",
           "Repeated cold exposure improves cold tolerance and stress resilience"
         ],
-        relevance: "Supports cold exposure as a complementary recovery and metabolic optimization tool alongside our training protocols.",
+        relevance: "Supports cold exposure as a complementary recovery and metabolic optimization tool alongside our training protocols. Cross-reference: cold exposure enhances recovery from REHIT and resistance training (see Exercise Science section), and Wim Hof-style breathing is frequently paired with cold immersion for combined hypoxic and cold stress adaptation (see Breath Training section).",
+        crossReferences: ["exercise-protocols", "breath-training"],
         link: "https://pubmed.ncbi.nlm.nih.gov/10751106/"
       }
     ]
