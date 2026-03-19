@@ -1494,6 +1494,7 @@ const researchData: ResearchSection[] = [
     studies: [
       {
         id: "meditation-brewer-dmn-1",
+        tldr: "Meditation quiets the brain's mind-wandering network and strengthens focus circuits",
         title: "Meditation experience is associated with differences in default mode network activity and connectivity",
         authors: "Brewer JA, Worhunsky PD, Gray JR, Tang YY, Weber J, Kober H",
         journal: "Proceedings of the National Academy of Sciences U.S.A.",
@@ -1507,12 +1508,13 @@ const researchData: ResearchSection[] = [
           "Consistent with decreased mind-wandering — neural mechanism for improved focus and present-moment awareness",
           "Three meditation types tested (Concentration, Loving-Kindness, Choiceless Awareness) — all showed similar DMN suppression"
         ],
-        relevance: "The neural mechanism for why meditation improves focus: experienced meditators literally quiet the brain's default 'wandering' network and strengthen connections to cognitive control centers. This is the same attentional control pathway trained by N-Back working memory exercises (see N-Back section). Cross-reference: breath-focused meditation activates the parasympathetic system documented in our Breath Training research. Sound-based meditation practices (mantra repetition, singing bowls, tonal focus) also leverage auditory neuroplasticity pathways documented in the Ear Training section.",
+        relevance: "Why this matters: Your brain has a default 'wandering' network that activates when you are not focused. Meditators literally deactivate it across all three meditation types tested, while strengthening connections to cognitive control centers. This is the same attentional control pathway trained by N-Back exercises (see N-Back section). Cross-reference: breath-focused meditation activates the parasympathetic system in Breath Training, and sound-based meditation practices leverage auditory neuroplasticity pathways (see Ear Training section).",
         crossReferences: ["breath-training", "nback-working-memory", "ear-training"],
         link: "https://pubmed.ncbi.nlm.nih.gov/22114193/"
       },
       {
         id: "meditation-tang-graymatter-1",
+        tldr: "Just 10 hours of meditation increased gray matter volume — you do not need thousands of hours",
         title: "Brief Mindfulness Meditation Induces Gray Matter Changes in a Brain Hub",
         authors: "Tang R, Friston KJ, Tang YY",
         journal: "Neural Plasticity",
@@ -1526,12 +1528,13 @@ const researchData: ResearchSection[] = [
           "Structural brain changes after short-term practice — neuroplasticity not limited to long-term meditators",
           "Individual baseline temperament predicted magnitude of gray matter increases"
         ],
-        relevance: "Demolishes the 'you need thousands of hours' barrier. Measurable gray matter changes in just 10 hours of practice — the same structural neuroplasticity mechanism documented in working memory training (see N-Back section). If 10 hours of meditation can change brain structure, the daily breath and meditation practices at Reset Biology are operating within a biologically meaningful timeframe.",
+        relevance: "Why this matters: The 'you need to meditate for years' barrier is false. Ten hours total, spread over less than a month, produced measurable gray matter increases in the posterior cingulate cortex — a hub for self-awareness, emotion, and cognition. If 10 hours changes brain structure, daily breath and meditation practices are operating well within a biologically meaningful timeframe. Cross-reference: same structural neuroplasticity mechanism documented in N-Back working memory training (see N-Back section).",
         crossReferences: ["nback-working-memory", "breath-training"],
         link: "https://pubmed.ncbi.nlm.nih.gov/33299395/"
       },
       {
         id: "meditation-vr-chavez-1",
+        tldr: "VR meditation reduced anxiety more than audio — but did not affect cortisol (pilot only)",
         title: "Virtual Reality Meditation Among Youth Experiencing Homelessness: Pilot Randomized Controlled Trial of Feasibility",
         authors: "Chavez LJ, Kelleher K, Slesnick N, Holowacz E, Luthy E, Moore L, Ford J",
         journal: "JMIR Mental Health",
@@ -1545,12 +1548,13 @@ const researchData: ResearchSection[] = [
           "Salivary cortisol was NOT significantly affected — physiological stress reduction not yet demonstrated",
           "Pilot study (N=30) — feasibility demonstrated but efficacy requires larger trials"
         ],
-        relevance: "VR meditation is an emerging frontier with legitimate early evidence but important limitations. The moderate anxiety effect (d=0.58) is encouraging, but the absence of cortisol changes means we cannot yet claim VR meditation produces the physiological stress reduction demonstrated by traditional mindfulness (see Goyal and Grossman meta-analyses below). Honest framing: promising pilot, not proven intervention.",
+        relevance: "Why this matters: VR meditation is an emerging frontier with legitimate early evidence — but we are honest about limits. The anxiety reduction (d=0.58) is encouraging, but salivary cortisol was not affected, meaning physiological stress reduction is not yet demonstrated. Promising pilot (N=30), not a proven intervention. Compare with the established evidence from Goyal and Grossman meta-analyses below.",
         crossReferences: ["breath-training"],
         link: "https://pubmed.ncbi.nlm.nih.gov/32969834/"
       },
       {
         id: "meditation-goyal-jama-1",
+        tldr: "47 RCTs: meditation helps anxiety and depression — but is not superior to exercise or therapy",
         title: "Meditation programs for psychological stress and well-being: a systematic review and meta-analysis",
         authors: "Goyal M, Singh S, Sibinga EMS, et al.",
         journal: "JAMA Internal Medicine",
@@ -1564,12 +1568,13 @@ const researchData: ResearchSection[] = [
           "Low evidence for improved stress/distress and mental health quality of life",
           "Meditation showed no advantage over active interventions like exercise or behavioral therapy — honest framing"
         ],
-        relevance: "The definitive reality check on meditation hype. Meditation produces small to moderate reductions in anxiety and depression — real but not miraculous. Crucially, it performs comparably to exercise and therapy, not better. This supports using meditation as ONE tool in a comprehensive system (alongside exercise, breath training, and journaling) rather than a standalone cure. Cross-reference: exercise produces equivalent benefits (see Exercise Science section).",
+        relevance: "Why this matters: Meditation helps — but it is not magic. The effect sizes for anxiety (0.38) and depression (0.30) are real but modest, and meditation performed comparably to exercise and therapy, not better. This is why we use meditation as one tool in a comprehensive system alongside exercise, breath training, and journaling — not as a standalone cure. Cross-reference: exercise produces equivalent mental health benefits (see Exercise Science section).",
         crossReferences: ["exercise-protocols", "breath-training", "journaling-science"],
         link: "https://pubmed.ncbi.nlm.nih.gov/24395196/"
       },
       {
         id: "meditation-grossman-mbsr-1",
+        tldr: "MBSR works across pain, cancer, heart disease, depression, and anxiety — broad-spectrum evidence",
         title: "Mindfulness-based stress reduction and health benefits. A meta-analysis",
         authors: "Grossman P, Niemann L, Schmidt S, Walach H",
         journal: "Journal of Psychosomatic Research",
@@ -1583,7 +1588,7 @@ const researchData: ResearchSection[] = [
           "Benefits across diverse conditions: pain, cancer, heart disease, depression, anxiety, nonclinical stress",
           "MBSR may help a broad range of individuals cope with both clinical and nonclinical problems"
         ],
-        relevance: "The breadth of MBSR evidence is its strength: effect sizes of 0.5 across pain, cancer, cardiac, and psychological conditions. Unlike most interventions that work in narrow populations, mindfulness-based practice shows consistent benefits across diverse health challenges. Cross-reference: the breath-focused component of MBSR directly overlaps with our breath training protocols (see Breath Training section), and the reflective awareness component connects to journaling practice (see Journaling section).",
+        relevance: "Why this matters: Most interventions work in narrow populations. MBSR works across pain, cancer, heart disease, depression, anxiety, and nonclinical stress — with consistent effect sizes of 0.5. That breadth is its unique value. Cross-reference: the breath-focused component of MBSR directly overlaps with our breath training protocols (see Breath Training section), and the reflective awareness component connects to journaling practice (see Journaling section).",
         crossReferences: ["breath-training", "journaling-science"],
         link: "https://pubmed.ncbi.nlm.nih.gov/15256293/"
       }
