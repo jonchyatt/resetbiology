@@ -12,7 +12,7 @@ interface Study {
   year: number
   doi?: string
   pmid?: string
-  category: "breath" | "peptides" | "exercise" | "nutrition" | "general" | "cognitive"
+  category: "breath" | "peptides" | "exercise" | "nutrition" | "general" | "cognitive" | "behavioral"
   summary: string
   keyFindings: string[]
   relevance: string
@@ -24,7 +24,7 @@ interface ResearchSection {
   id: string
   title: string
   description: string
-  category: "breath" | "peptides" | "exercise" | "nutrition" | "general" | "cognitive"
+  category: "breath" | "peptides" | "exercise" | "nutrition" | "general" | "cognitive" | "behavioral"
   studies: Study[]
   practicalApplication: string
 }
@@ -1261,7 +1261,8 @@ export default function EducationPage() {
     { id: "exercise", name: "Exercise", icon: "💪" },
     { id: "nutrition", name: "Nutrition", icon: "🍎" },
     { id: "general", name: "General Health", icon: "🧬" },
-    { id: "cognitive", name: "Cognitive Science", icon: "🧠" }
+    { id: "cognitive", name: "Cognitive Science", icon: "🧠" },
+    { id: "behavioral", name: "Behavioral Science", icon: "📋" }
   ]
 
   const filteredResearch = researchData.filter(section => {
