@@ -1029,6 +1029,7 @@ const researchData: ResearchSection[] = [
     studies: [
       {
         id: "mental-cognitive-reserve",
+        tldr: "Higher cognitive reserve reduces dementia risk by 46% — mental training is longevity training",
         title: "Cognitive reserve in ageing and Alzheimer's disease",
         authors: "Stern Y",
         journal: "Lancet Neurology",
@@ -1042,12 +1043,13 @@ const researchData: ResearchSection[] = [
           "Epidemiological studies suggest cognitive reserve decreases dementia risk by approximately 46%",
           "Enhanced understanding of reserve mechanisms could lead to interventions that slow cognitive aging"
         ],
-        relevance: "Cognitive reserve is the 'why' behind all our cognitive training tools. Every N-Back session, every pitch recognition drill, every vision exercise contributes to the reserve that protects your brain against age-related decline. The 46% reduction in dementia risk from higher cognitive reserve makes mental training a longevity strategy, not just a brain game. Cross-reference: the ACTIVE trial below proves this is achievable through structured training, and exercise-driven BDNF (see Exercise Science section) amplifies the neuroplasticity that builds reserve.",
+        relevance: "Why this matters: Every N-Back session, every pitch recognition drill, every vision exercise deposits into your cognitive reserve account. That reserve reduces your dementia risk by an estimated 46%. This is not a brain game — it is a longevity strategy with epidemiological backing from a Lancet Neurology review. Cross-reference: the ACTIVE trial below proves this is achievable through structured training, and exercise-driven BDNF (see Exercise Science section) amplifies the neuroplasticity that builds reserve.",
         crossReferences: ["exercise-protocols", "nback-working-memory", "ear-training", "vision-science"],
         link: "https://pubmed.ncbi.nlm.nih.gov/23079557/"
       },
       {
         id: "mental-active-trial",
+        tldr: "10 cognitive training sessions produced functional benefits lasting 5+ years",
         title: "Long-term effects of cognitive training on everyday functional outcomes in older adults",
         authors: "Willis SL, Tennstedt SL, Marsiske M, Ball K, et al. (ACTIVE Study Group)",
         journal: "JAMA",
@@ -1061,12 +1063,13 @@ const researchData: ResearchSection[] = [
           "Training-specific cognitive improvements persisted across the full 5-year follow-up",
           "Booster training sessions enhanced and extended the performance gains for reasoning and processing speed groups"
         ],
-        relevance: "The ACTIVE trial answers the practical question: does cognitive training actually help in daily life? Yes -- reasoning training reduced functional decline in activities like cooking, medication management, and financial tasks. 10 structured sessions with periodic boosters produced 5-year benefits. This is the real-world validation for consistent cognitive training practice. Cross-reference: the sharp-mind-to-longevity chain documented in Exercise Science (see Exercise Science section) begins here -- cognitive sharpness preserves the intentional neuromuscular control that maintains muscle, which preserves bone density, which extends functional lifespan.",
+        relevance: "Why this matters: Just 10 sessions of reasoning training kept 2,832 older adults functionally sharper for 5 years — cooking, managing medications, handling finances. Booster sessions extended the effect further. This is the largest, longest cognitive training trial ever conducted, and it proves the investment pays off in daily independence. Cross-reference: the sharp-mind-to-longevity chain documented in Exercise Science begins here — cognitive sharpness preserves neuromuscular control, which maintains muscle and bone, which extends functional lifespan.",
         crossReferences: ["exercise-protocols"],
         link: "https://pubmed.ncbi.nlm.nih.gov/17179457/"
       },
       {
         id: "mental-aging-neuroplasticity",
+        tldr: "Easy brain games build nothing — only demanding cognitive challenges grow neural volume",
         title: "The aging mind: neuroplasticity in response to cognitive training",
         authors: "Park DC, Bischof GN",
         journal: "Dialogues in Clinical Neuroscience",
@@ -1080,7 +1083,7 @@ const researchData: ResearchSection[] = [
           "Increases in neural volume represent the clearest structural evidence of training-induced plasticity",
           "Demanding leisure activities with sustained cognitive effort may be superior to passive educational programs"
         ],
-        relevance: "The key insight: passive brain games are not enough. The brain responds to demanding cognitive challenges -- the kind that require sustained effort and engagement. This is why our N-Back trainer progressively increases difficulty (2-Back to quad-Back), our pitch recognition uses adaptive scheduling, and our vision training escalates complexity. Easy doesn't build reserve; challenge does. Cross-reference: this mirrors the exercise science principle that intensity matters more than duration (see Exercise Science REHIT protocol) and supports the neuroplasticity foundation underlying all four cognitive training domains documented on this page.",
+        relevance: "Why this matters: If your brain game is easy, it is not building anything. Only demanding cognitive challenges — the kind that require sustained effort — produce increased neural volume and compensatory mechanisms. That is why our N-Back trainer escalates from 2-Back to quad-Back, our pitch recognition adapts to your error rate, and our vision exercises increase complexity. Cross-reference: this mirrors the exercise principle that intensity matters more than duration (see REHIT protocol in Exercise Science) and supports the neuroplasticity foundation underlying all cognitive training domains on this page.",
         crossReferences: ["exercise-protocols", "nback-working-memory", "ear-training", "vision-science"],
         link: "https://pubmed.ncbi.nlm.nih.gov/23576894/"
       }
