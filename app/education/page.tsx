@@ -1182,6 +1182,157 @@ const researchData: ResearchSection[] = [
     ]
   },
   {
+    id: "journaling-science",
+    title: "Journaling & Expressive Writing",
+    description: "How writing about thoughts, emotions, and experiences produces measurable improvements in immune function, cardiovascular markers, and psychological well-being — from Pennebaker's foundational inhibition theory to gratitude journaling's effects on heart rate variability.",
+    category: "behavioral",
+    practicalApplication: "Our journal feature provides structured prompts for expressive writing and gratitude practice. The research shows that even brief writing sessions (15-20 minutes) produce immune and psychological benefits that accumulate over time. Try it at /journal.",
+    studies: [
+      {
+        id: "journaling-pennebaker-1",
+        title: "Disclosure of traumas and psychosomatic processes",
+        authors: "Pennebaker JW, Susman JR",
+        journal: "Social Science & Medicine",
+        year: 1988,
+        pmid: "3279521",
+        category: "behavioral",
+        summary: "Pennebaker's foundational work establishing that childhood traumatic experiences left undisclosed correlate with current health problems, and that confronting earlier traumas in writing improves health and immune system functioning through release of inhibitory stress.",
+        keyFindings: [
+          "Childhood traumatic experiences left undisclosed are highly correlated with current health problems",
+          "Confronting earlier traumas in writing improves health and immune system functioning",
+          "Actively discussing upsetting experiences produces immediate reductions in autonomic activity",
+          "Suppressing thoughts about trauma creates a cumulative physiological stressor increasing psychosomatic disease risk"
+        ],
+        relevance: "The foundational study that launched expressive writing research. Pennebaker's inhibition theory — that suppressing difficult experiences acts as a chronic physiological stressor — explains why journaling works at a biological level, not just as a coping tool. Cross-reference: the parasympathetic activation from expressive writing parallels the vagal tone benefits documented in our Breath Training research (see Breath Training section).",
+        crossReferences: ["breath-training", "meditation-science"],
+        link: "https://pubmed.ncbi.nlm.nih.gov/3279521/"
+      },
+      {
+        id: "journaling-petrie-1",
+        title: "Disclosure of trauma and immune response to a hepatitis B vaccination program",
+        authors: "Petrie KJ, Booth RJ, Pennebaker JW, Davison KP, Thomas MG",
+        journal: "Journal of Consulting and Clinical Psychology",
+        year: 1995,
+        pmid: "7593871",
+        category: "behavioral",
+        summary: "Controlled study demonstrating that writing about personal traumatic events produced significantly higher antibody levels against hepatitis B at 4-month and 6-month follow-up — objective immune evidence that emotional disclosure strengthens the body's protective response.",
+        keyFindings: [
+          "Participants who wrote about trauma developed significantly higher hepatitis B antibody levels at 4- and 6-month follow-up",
+          "Writing about trauma strengthens the body's protective immune response to vaccination",
+          "Objective biological outcome (antibody titers) — not just self-reported well-being",
+          "Further evidence linking emotional disclosure with health-protective immune outcomes"
+        ],
+        relevance: "Moves expressive writing from subjective reports to objective immune measurement. The hepatitis B antibody response is a concrete, measurable outcome that cannot be attributed to placebo — writing about difficult experiences literally strengthened immune defense.",
+        crossReferences: ["meditation-science"],
+        link: "https://pubmed.ncbi.nlm.nih.gov/7593871/"
+      },
+      {
+        id: "journaling-gratitude-1",
+        title: "Pilot Randomized Study of a Gratitude Journaling Intervention on Heart Rate Variability and Inflammatory Biomarkers in Patients With Stage B Heart Failure",
+        authors: "Redwine LS, Henry BL, Pung MA, Wilson K, Chinh K, Knight B, Jain S, Rutledge T, Greenberg B, Maisel A, Mills PJ",
+        journal: "Psychosomatic Medicine",
+        year: 2016,
+        pmid: "27187845",
+        category: "behavioral",
+        summary: "Randomized pilot study showing gratitude journaling improved trait gratitude, reduced inflammatory biomarkers, and increased parasympathetic heart rate variability — the same HRV mechanism activated by slow breathing protocols.",
+        keyFindings: [
+          "Gratitude journaling improved trait gratitude scores (F=6.0, p=.017) vs standard care",
+          "Inflammatory biomarker index decreased significantly in intervention group (F=9.7, p=.004)",
+          "Increased parasympathetic HRV responses during gratitude journaling task (F=4.2, p=.036)",
+          "Same parasympathetic/HRV mechanism activated by slow breathing — cross-domain bridge"
+        ],
+        relevance: "Bridges journaling to breath training through shared parasympathetic activation. Gratitude writing activates the same vagal tone pathway (increased HRV) as our 4-8 Vagal Reset and 4-7-8 Sleep breathing patterns — two complementary tools for the same autonomic nervous system benefit. See Breath Training section for the HRV meta-analysis.",
+        crossReferences: ["breath-training", "meditation-science"],
+        link: "https://pubmed.ncbi.nlm.nih.gov/27187845/"
+      },
+      {
+        id: "journaling-smyth-meta-1",
+        title: "Written emotional expression: effect sizes, outcome types, and moderating variables",
+        authors: "Smyth JM",
+        journal: "Journal of Consulting and Clinical Psychology",
+        year: 1998,
+        pmid: "9489272",
+        category: "behavioral",
+        summary: "Meta-analysis confirming writing tasks produce significantly improved outcomes across four domains — physical health, psychological well-being, physiological functioning, and general functioning — with an honest caveat that writing increases immediate distress but this is unrelated to long-term health outcomes.",
+        keyFindings: [
+          "Writing tasks produced significantly improved health outcomes across 4 domains: physical, psychological, physiological, general functioning",
+          "Writing increased immediate distress (pre- to post-writing) but this was unrelated to health outcomes — important honest framing",
+          "Effect sizes meaningful and moderated by participant type, gender, duration, and writing instructions",
+          "Health behaviors were unaffected — benefits operated through psychological/physiological mechanisms, not behavior change"
+        ],
+        relevance: "The meta-analytic confirmation of Pennebaker's theory across multiple studies. Honest framing: writing temporarily increases distress during the session, but this is part of the therapeutic process, not a side effect. The benefits are real and operate through direct physiological mechanisms — immune and autonomic — not through changed habits.",
+        crossReferences: ["meditation-science"],
+        link: "https://pubmed.ncbi.nlm.nih.gov/9489272/"
+      }
+    ]
+  },
+  {
+    id: "daily-accountability",
+    title: "Daily Accountability & Self-Monitoring",
+    description: "Research on why tracking your behavior — food, exercise, sleep, protocols — consistently predicts better outcomes, and how social accountability amplifies the effect from individual consistency to sustained transformation.",
+    category: "behavioral",
+    practicalApplication: "The Reset Biology portal's daily task system and progress tracking implement the self-monitoring science below. Digital tracking (as shown by Patel 2021) outperforms paper logging, and the social features help create the accountability effect documented by Wing & Jeffery. Track your daily progress at /portal.",
+    studies: [
+      {
+        id: "accountability-burke-1",
+        title: "Self-monitoring in weight loss: a systematic review of the literature",
+        authors: "Burke LE, Wang J, Sevick MA",
+        journal: "Journal of the American Dietetic Association",
+        year: 2011,
+        pmid: "21185970",
+        category: "behavioral",
+        summary: "Systematic review of 22 studies (1993-2009) finding self-monitoring is 'the centerpiece of behavioral weight loss intervention programs' with a significant, consistent association between tracking and weight loss across dietary, exercise, and self-weighing domains.",
+        keyFindings: [
+          "Significant association between self-monitoring and weight loss consistently found across 22 studies",
+          "Self-monitoring is 'the centerpiece of behavioral weight loss intervention programs'",
+          "Three domains: dietary tracking (15 studies), exercise monitoring (1 study), self-weighing (6 studies)",
+          "Evidence quality was weak due to methodological issues — honest framing warranted"
+        ],
+        relevance: "Establishes self-monitoring as the most consistently supported behavioral intervention for health outcomes. The mechanism is awareness: tracking creates a feedback loop between intention and behavior. Our daily task system applies this principle across all Reset Biology domains — breath sessions, workouts, nutrition, and peptide protocols. Cross-reference: the gamification points system (see Gamification & Stakes section) adds motivational reinforcement to this tracking foundation.",
+        crossReferences: ["gamification-stakes"],
+        link: "https://pubmed.ncbi.nlm.nih.gov/21185970/"
+      },
+      {
+        id: "accountability-patel-digital-1",
+        title: "Self-Monitoring via Digital Health in Weight Loss Interventions: A Systematic Review Among Adults with Overweight or Obesity",
+        authors: "Patel ML, Wakayama LN, Bennett GG",
+        journal: "Obesity (Silver Spring)",
+        year: 2021,
+        pmid: "33624440",
+        category: "behavioral",
+        summary: "Systematic review of 39 studies finding digital self-monitoring linked to weight loss in 74% of occurrences, with digital platforms outperforming paper-based approaches in 21 of 34 direct comparisons — validating the shift from paper journals to app-based tracking.",
+        keyFindings: [
+          "39 studies, 67 digital self-monitoring interventions reviewed",
+          "Greater digital self-monitoring linked to weight loss in 74% of occurrences",
+          "Digital platforms outperformed paper-based approaches in 21 of 34 direct comparisons",
+          "Self-monitoring via digital health consistently associated with weight loss in behavioral treatment"
+        ],
+        relevance: "Validates the digital-first approach of our portal's tracking system. Paper journals have adherence problems — digital monitoring is more consistent and produces better outcomes. This is why Reset Biology tracks everything in-app rather than asking users to keep paper logs.",
+        crossReferences: ["gamification-stakes"],
+        link: "https://pubmed.ncbi.nlm.nih.gov/33624440/"
+      },
+      {
+        id: "accountability-wing-social-1",
+        title: "Benefits of recruiting participants with friends and increasing social support for weight loss and maintenance",
+        authors: "Wing RR, Jeffery RW",
+        journal: "Journal of Consulting and Clinical Psychology",
+        year: 1999,
+        pmid: "10028217",
+        category: "behavioral",
+        summary: "Landmark RCT (n=166) demonstrating social accountability roughly tripled long-term weight loss maintenance: 66% of friend-recruited participants with social support maintained full weight loss at 10 months vs only 24% in the solo condition.",
+        keyFindings: [
+          "Friend-recruited with social support: 95% completed treatment, 66% maintained full weight loss at 10 months",
+          "Solo recruitment without social support: 76% completed treatment, 24% maintained full weight loss",
+          "Social accountability roughly tripled long-term weight loss maintenance (66% vs 24%)",
+          "Effect strongest when both recruitment method and social support intervention were combined"
+        ],
+        relevance: "The case for accountability partners. Individual motivation gets you started; social accountability keeps you going. This 2.75x maintenance difference explains why shared tracking, partner features, and community check-ins are built into the Reset Biology platform.",
+        crossReferences: ["gamification-stakes"],
+        link: "https://pubmed.ncbi.nlm.nih.gov/10028217/"
+      }
+    ]
+  },
+  {
     id: "general-health",
     title: "General Health & Longevity",
     description: "Research on sleep, stress management, cold exposure, and integrative approaches to healthspan optimization.",
