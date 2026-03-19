@@ -10,27 +10,27 @@ See: .planning/PROJECT.md (updated 2026-03-18)
 ## Current Position
 
 Phase: 1 of 5 (Foundational Physiology)
-Plan: 1 of 4 in current phase
+Plan: 2 of 4 in current phase
 Status: In progress
-Last activity: 2026-03-19 -- Completed 01-01-PLAN.md (breath-training section)
+Last activity: 2026-03-19 -- Completed 01-02-PLAN.md (exercise-protocols section)
 
-Progress: [█░░░░░░░░░░░░░░░░░░░] 6% (1/16 plans)
+Progress: [██░░░░░░░░░░░░░░░░░░] 12% (2/16 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 1
-- Average duration: 2 min
-- Total execution time: 0.03 hours
+- Total plans completed: 2
+- Average duration: 2.5 min
+- Total execution time: 0.08 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-foundational-physiology | 1 completed | 2 min | 2 min |
+| 01-foundational-physiology | 2 completed | 5 min | 2.5 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (2 min)
+- Last 5 plans: 01-01 (2 min), 01-02 (3 min)
 - Trend: --
 
 *Updated after each plan completion*
@@ -50,6 +50,9 @@ Recent decisions affecting current work:
 - [01-01]: Box breathing PMID excluded (MEDIUM confidence); covered by meta-analysis umbrella
 - [01-01]: WHM autophagy framed as mechanistic inference only — no direct WHM study proves autophagy in humans
 - [01-01]: crossReferences field renders via relevance text (no UI changes needed for Phase 1)
+- [01-02]: HIIT meta-analysis PMID 28401638 removed; replaced by specific REHIT studies that directly match our protocol
+- [01-02]: Bone health study PMID 30513557 retained and enriched — serves as final link in the longevity chain narrative
+- [01-02]: crossReferences rendered via relevance text across all 8 exercise studies; pattern consistent with 01-01
 
 ### Pending Todos
 
@@ -57,7 +60,6 @@ None yet.
 
 ### Blockers/Concerns
 
-- exercise-protocols section still has older studies — Plan 01-02 replaces them
 - nutrition-science section still has older studies — Plan 01-03 replaces them
 - Duplicate route structure (app/ vs src/app/) -- always edit in app/ directory
 
@@ -89,6 +91,6 @@ This milestone is approved for fully autonomous execution:
 
 ## Session Continuity
 
-Last session: 2026-03-19T04:46:55Z
-Stopped at: Completed 01-01-PLAN.md — breath-training section replaced with 4 verified PubMed studies
+Last session: 2026-03-19T04:52:03Z
+Stopped at: Completed 01-02-PLAN.md — exercise-protocols section replaced with 8 verified PubMed studies (Keith Baar, REHIT x2, PGC-1alpha, mind-muscle EMG, sarcopenia-cognition, NMJ biology, bone health)
 Resume file: None
