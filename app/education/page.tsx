@@ -768,6 +768,69 @@ const researchData: ResearchSection[] = [
         ],
         relevance: "Why this matters: Bone responds to mechanical loading at any age. The longevity chain ends here: sharp mind drives neuromuscular control, which recruits muscle, which loads bones, which preserves the skeletal density that keeps you independent for decades longer. Cross-reference: the Keith Baar gelatin + vitamin C protocol supports the connective tissue that anchors muscle to bone.",
         link: "https://pubmed.ncbi.nlm.nih.gov/30513557/"
+      },
+      {
+        id: "isometric-blood-pressure-1",
+        tldr: "Isometric exercise lowers blood pressure more than cardio, weights, or medication",
+        title: "Exercise training and resting blood pressure: a large-scale pairwise and network meta-analysis of randomised controlled trials",
+        authors: "Edwards JJ, Deenmamode AHP, Griffiths M, Arnold O, Cooper NJ, Wiles JD, O'Driscoll JM",
+        journal: "British Journal of Sports Medicine",
+        year: 2023,
+        doi: "10.1136/bjsports-2022-106503",
+        pmid: "37491419",
+        category: "exercise",
+        summary: "Landmark network meta-analysis of 270 RCTs (15,827 participants) showing isometric exercise training produced the largest reductions in both systolic and diastolic blood pressure compared to aerobic, dynamic resistance, combined, and HIIT training. Wall squats and leg extensions were the most effective individual modalities.",
+        keyFindings: [
+          "Isometric exercise produced the largest BP reductions of ALL exercise types — greater than aerobic, resistance, HIIT, or combined training",
+          "Systolic BP reduced by 8.24 mmHg (isometric) vs 4.49 mmHg (aerobic) vs 4.55 mmHg (dynamic resistance)",
+          "Wall squats and isometric leg extensions were the most effective individual modalities",
+          "270 RCTs with 15,827 participants — one of the largest exercise-BP meta-analyses ever conducted"
+        ],
+        relevance: "Why this matters: If your blood pressure is elevated, wall sits may do more for you than running — and the evidence is overwhelming. 270 trials confirm isometric exercise beats every other exercise type for BP reduction. A simple wall squat hold costs nothing, takes minutes, and the data says it works better than the treadmill your doctor recommended. Cross-reference: combine with the slow breathing patterns in the Breath Training section for a dual parasympathetic-vascular approach to cardiovascular health (see Breath Training section).",
+        crossReferences: ["breath-training"],
+        link: "https://pubmed.ncbi.nlm.nih.gov/37491419/"
+      },
+      {
+        id: "isometric-hypertrophy-1",
+        tldr: "Isometric holds build muscle — longer muscle lengths and higher intensity drive the most growth",
+        title: "Isometric training and long-term adaptations: Effects of muscle length, intensity, and intent: A systematic review",
+        authors: "Oranchuk DJ, Storey AG, Nelson AR, Cronin JB",
+        journal: "Scandinavian Journal of Medicine & Science in Sports",
+        year: 2019,
+        doi: "10.1111/sms.13375",
+        pmid: "30580468",
+        category: "exercise",
+        summary: "Systematic review demonstrating that isometric training produces meaningful muscle hypertrophy and strength gains, with training at longer muscle lengths producing superior results. High-intensity contractions (≥70% MVC) are required for improving tendon structure and function, connecting isometric training to connective tissue health.",
+        keyFindings: [
+          "Isometric training at longer muscle lengths produces superior hypertrophy compared to shorter lengths",
+          "High-intensity isometric contractions (≥70% MVC) required for tendon structural improvements",
+          "Ballistic intent during isometric holds resulted in greater neuromuscular activation",
+          "Isometric training produces meaningful strength and hypertrophy gains — not just a rehabilitation tool"
+        ],
+        relevance: "Why this matters: You do not have to move to build muscle. Isometric holds — especially at stretched positions — create the mechanical tension your muscles need to grow. This is not just for rehab patients; the systematic review confirms real hypertrophy from holds alone. Combined with the BP benefits above, isometrics may be the most underrated training modality in fitness. Cross-reference: high-intensity isometric contractions also improve tendon structure, complementing the Baar gelatin + vitamin C protocol for connective tissue health.",
+        crossReferences: ["exercise-protocols"],
+        link: "https://pubmed.ncbi.nlm.nih.gov/30580468/"
+      },
+      {
+        id: "movement-snacking-1",
+        tldr: "Brief squats every 30 minutes rescue your muscle protein synthesis from prolonged sitting",
+        title: "Walking or body weight squat 'activity snacks' increase dietary amino acid utilization for myofibrillar protein synthesis during prolonged sitting",
+        authors: "Moore DR, Williamson EP, Hodson N, Estafanos S, Mazzulla M, Kumbhare D, Gillen JB",
+        journal: "Journal of Applied Physiology",
+        year: 2022,
+        doi: "10.1152/japplphysiol.00106.2022",
+        pmid: "35952344",
+        category: "exercise",
+        summary: "Demonstrated that brief 'activity snacks' — bodyweight squats or short walks every 30 minutes during prolonged sitting — significantly increased dietary amino acid utilization for myofibrillar protein synthesis compared to uninterrupted sitting. The protein your body absorbs from meals is wasted if you sit still all day.",
+        keyFindings: [
+          "Bodyweight squats every 30 minutes during sitting increased myofibrillar protein synthesis rates",
+          "Walking breaks produced similar improvements in amino acid utilization",
+          "Prolonged uninterrupted sitting impairs the body's ability to use dietary protein for muscle building",
+          "Brief movement breaks — not long workouts — are sufficient to rescue protein metabolism"
+        ],
+        relevance: "Why this matters: You eat protein to build muscle, but if you sit for hours, your body wastes it. Just a few bodyweight squats every 30-45 minutes rescue your protein synthesis and keep your metabolism from downshifting. This is the easiest intervention in this entire research library — 10 deep knee bends between meetings literally saves your muscle-building machinery. Cross-reference: this complements the sarcopenia prevention research above and the protein timing evidence in the Nutrition Science section (see Nutrition Science section).",
+        crossReferences: ["nutrition-science", "exercise-protocols"],
+        link: "https://pubmed.ncbi.nlm.nih.gov/35952344/"
       }
     ]
   },
@@ -1647,6 +1710,21 @@ const researchData: ResearchSection[] = [
   }
 ]
 
+const horizonTopics = [
+  {
+    id: "bfr-training",
+    title: "Blood Flow Restricted (BFR) Training",
+    description: "Low-load resistance training with partial vascular occlusion produces hypertrophy and strength gains comparable to heavy lifting — at just 20-30% of your one-rep max. Research shows BFR activates mTOR signaling and satellite cell proliferation despite minimal mechanical load, making it ideal for injury rehabilitation, aging populations, and anyone who wants muscle growth without joint stress.",
+    status: "Research in progress"
+  },
+  {
+    id: "rebounder-training",
+    title: "Rebounder / Mini Trampoline Training",
+    description: "Rebounding on a mini trampoline provides a unique combination of lymphatic drainage, bone density stimulus, and cardiovascular conditioning. NASA research identified rebounding as one of the most efficient forms of exercise for its deceleration-acceleration forces. Studies suggest benefits for balance, proprioception, and pelvic floor strengthening — with lower joint impact than running.",
+    status: "Research in progress"
+  }
+]
+
 export default function EducationPage() {
   const [activeCategory, setActiveCategory] = useState<string>("all")
   const [searchTerm, setSearchTerm] = useState("")
@@ -1841,15 +1919,34 @@ export default function EducationPage() {
               </div>
             )}
 
-            {/* Coming Soon */}
-            <div className="mt-12 text-center bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-8 border border-primary-400/30 shadow-xl">
-              <h3 className="text-2xl font-bold text-white mb-4">🔬 Research Library Expanding</h3>
-              <p className="text-gray-300 mb-6 max-w-2xl mx-auto leading-relaxed">
-                We're continuously adding peer-reviewed studies to support every protocol, exercise, and peptide we recommend. 
-                Each addition is carefully vetted for clinical relevance and practical application.
-              </p>
-              <div className="text-sm text-primary-300">
-                Next additions: GLP-1 protocols • Cold exposure research • Micronutrient optimization
+            {/* On The Horizon */}
+            <div className="mt-12 bg-gradient-to-br from-primary-600/10 to-secondary-600/10 backdrop-blur-sm rounded-xl p-8 border border-primary-400/20 shadow-xl">
+              <h3 className="text-2xl font-bold text-white mb-2">On The Horizon</h3>
+              <p className="text-gray-400 mb-6">Research we are actively investigating — verified studies coming soon.</p>
+
+              <div className="grid md:grid-cols-2 gap-6 mb-8">
+                {horizonTopics.map(topic => (
+                  <div key={topic.id} className="bg-gray-800/40 rounded-lg p-5 border border-gray-600/20">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-xs bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full font-medium">{topic.status}</span>
+                    </div>
+                    <h4 className="font-bold text-white text-lg mb-2">{topic.title}</h4>
+                    <p className="text-gray-300 text-sm leading-relaxed">{topic.description}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="bg-gray-800/30 rounded-lg p-6 border border-primary-400/10 text-center">
+                <h4 className="font-semibold text-white mb-2">What should we research next?</h4>
+                <p className="text-gray-400 text-sm mb-4">
+                  We build this research library based on what matters to our community. If there is a protocol, supplement, or training method you want us to investigate, tell us.
+                </p>
+                <a
+                  href="mailto:research@resetbiology.com?subject=Research%20Suggestion&body=I%27d%20like%20you%20to%20research%3A%20"
+                  className="inline-block bg-primary-600/30 hover:bg-primary-500/40 text-primary-200 px-6 py-2.5 rounded-lg transition-colors font-medium"
+                >
+                  Share Your Suggestion
+                </a>
               </div>
             </div>
           </div>
