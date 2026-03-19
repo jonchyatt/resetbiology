@@ -33,7 +33,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 4 plans
 
 Plans:
-- [ ] 01-01-PLAN.md -- Breath training research: replace fabricated PMIDs with 4 verified studies covering all breathing patterns, Wim Hof/hypoxia, CO2 tolerance
+- [x] 01-01-PLAN.md -- Breath training research: replace fabricated PMIDs with 4 verified studies covering all breathing patterns, Wim Hof/hypoxia, CO2 tolerance (DONE 2026-03-19, commit 6491b491)
 - [ ] 01-02-PLAN.md -- Exercise science research: 8 verified studies covering Baar protocol, neuromuscular EMG, REHIT/VO2 max, sarcopenia-cognition chain, bone health
 - [ ] 01-03-PLAN.md -- Nutrition science research: 7 verified studies covering GKI/Dr. Boz, FGF21/autophagy, fructose signaling, anti-starvation evidence, protein timing
 - [ ] 01-04-PLAN.md -- Cross-domain integration: audit and strengthen 6 connection threads, verify portal URLs, final PMID audit
