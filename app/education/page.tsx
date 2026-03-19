@@ -598,8 +598,8 @@ const researchData: ResearchSection[] = [
           "Benefits extend bidirectionally: from cortex shaping subcortical processing and vice versa",
           "Musical training functions like exercise for the auditory brain -- conditioning it for enhanced listening abilities"
         ],
-        relevance: "Establishes that auditory training produces real neuroplastic changes -- the scientific foundation for our pitch recognition training. The 'exercise for the brain' framing parallels how physical exercise drives neuromuscular adaptation (see Exercise Science section). Cross-reference: N-Back training (see N-Back section) engages both auditory and visual working memory in dual mode, making it a complementary cross-modal training partner for dedicated ear training.",
-        crossReferences: ["nback-working-memory", "exercise-protocols"],
+        relevance: "Establishes that auditory training produces real neuroplastic changes -- the scientific foundation for our pitch recognition training. The 'exercise for the brain' framing parallels how physical exercise drives neuromuscular adaptation (see Exercise Science section). Cross-reference: N-Back training (see N-Back section) engages both auditory and visual working memory in dual mode, making it a complementary cross-modal training partner for dedicated ear training. Sound-focused breathing practices like mantra repetition and resonant humming engage the same auditory attention circuits that ear training strengthens (see Breath Training section), creating a bidirectional synergy between meditative listening and pitch discrimination.",
+        crossReferences: ["nback-working-memory", "exercise-protocols", "breath-training"],
         link: "https://pubmed.ncbi.nlm.nih.gov/20648064/"
       },
       {
