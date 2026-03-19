@@ -869,6 +869,7 @@ const researchData: ResearchSection[] = [
     studies: [
       {
         id: "nback-fluid-jaeggi",
+        tldr: "Dual N-Back training improved fluid intelligence in a dose-dependent way",
         title: "Improving fluid intelligence with training on working memory",
         authors: "Jaeggi SM, Buschkuehl M, Jonides J, Perrig WJ",
         journal: "Proceedings of the National Academy of Sciences",
@@ -883,12 +884,13 @@ const researchData: ResearchSection[] = [
           "Transfer effects occurred to untrained cognitive tasks measuring fluid intelligence",
           "Launched the modern cognitive training field and sparked the ongoing transfer debate"
         ],
-        relevance: "The foundational study behind our dual N-Back and higher-order N-Back training. While subsequent meta-analyses (see Au 2015 and Melby-Lervag 2016 below) have refined our understanding of how far these improvements transfer, the dose-dependent training effect on working memory itself remains robust. Cross-reference: neuromuscular research (see Exercise Science section) shows that intentional attentional control -- the same skill N-Back trains -- directly translates to better mind-muscle connection and motor unit recruitment (PMID 31354928). N-Back also provides dual-modality training that engages both auditory and visual working memory simultaneously (see Ear Training section).",
+        relevance: "Why this matters: The more sessions you do, the more your fluid intelligence improves — that dose-response relationship is the core finding. While subsequent meta-analyses have refined how far these improvements transfer, the training effect on working memory itself remains robust. Cross-reference: neuromuscular research (see Exercise Science section) shows that intentional attentional control — the same skill N-Back trains — directly translates to better mind-muscle connection (PMID 31354928). N-Back also provides dual-modality training that engages auditory and visual working memory simultaneously (see Ear Training section).",
         crossReferences: ["exercise-protocols", "ear-training"],
         link: "https://pubmed.ncbi.nlm.nih.gov/18443283/"
       },
       {
         id: "nback-meta-au",
+        tldr: "Meta-analysis of 20 studies confirms: N-Back transfer to fluid intelligence is real but modest",
         title: "Improving fluid intelligence with training on working memory: a meta-analysis",
         authors: "Au J, Sheehan E, Tsai N, Duncan GJ, Buschkuehl M, Jaeggi SM",
         journal: "Psychonomic Bulletin & Review",
@@ -902,11 +904,12 @@ const researchData: ResearchSection[] = [
           "Several moderating factors (training duration, control group type) affect transfer magnitude",
           "Supports the original Jaeggi finding while contextualizing its practical magnitude"
         ],
-        relevance: "Provides the meta-analytic evidence supporting N-Back transfer -- the effect is real but more modest than Jaeggi's initial single study suggested. This honest framing mirrors our approach throughout: present the evidence accurately, let users make informed decisions.",
+        relevance: "Why this matters: The cognitive transfer effect is real — 20 studies confirm it — but more modest than the initial Jaeggi study suggested. We present the evidence honestly rather than overhyping it. The practical takeaway: N-Back reliably strengthens your working memory system, and the transfer to general intelligence is a statistically significant bonus.",
         link: "https://pubmed.ncbi.nlm.nih.gov/25102926/"
       },
       {
         id: "nback-meta-counterbalance",
+        tldr: "87 studies: working memory improves reliably, far transfer to IQ is debated",
         title: "Working Memory Training Does Not Improve Performance on Measures of Intelligence or Other Measures of 'Far Transfer': Evidence From a Meta-Analytic Review",
         authors: "Melby-Lervag M, Redick TS, Hulme C",
         journal: "Perspectives on Psychological Science",
@@ -920,7 +923,7 @@ const researchData: ResearchSection[] = [
           "No convincing evidence of far transfer to fluid intelligence or real-world skills",
           "Training produces specific cognitive improvements that don't necessarily generalize to IQ"
         ],
-        relevance: "We include this study because scientific honesty matters more than marketing claims. N-Back reliably trains working memory -- the cognitive buffer you use every moment to hold and manipulate information. Whether that transfers to general intelligence is debated. What is not debated: a stronger working memory system supports better attentional control, which directly serves the neuromuscular recruitment chain (see Exercise Science section) and the multi-modal processing required in ear training (see Ear Training section).",
+        relevance: "Why this matters: We include this counterpoint because scientific honesty matters more than marketing. N-Back reliably trains your working memory — the cognitive buffer you use every moment to hold and manipulate information. Whether that transfers to IQ is debated. What is not debated: stronger working memory supports better attentional control, which directly serves the neuromuscular recruitment chain (see Exercise Science section) and the multi-modal processing required in ear training (see Ear Training section).",
         crossReferences: ["exercise-protocols", "ear-training"],
         link: "https://pubmed.ncbi.nlm.nih.gov/27474138/"
       }
