@@ -84,12 +84,12 @@ Plans:
   3. A visitor can expand the Gamification & Stakes section and find research on loss aversion, commitment devices / deposit contracts, and gamification elements in wellness apps
   4. A visitor can expand the Deep Meditation section and find research on neurological changes / default mode network, VR-enhanced meditation, and stress reduction meta-analyses (Grossman, Goyal)
   5. Cross-references connect meditation to breath training and journaling, and accountability to gamification, with explicit call-outs
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 04-01: Journaling and accountability research (Pennebaker, self-monitoring, habit formation)
-- [ ] 04-02: Gamification/stakes and deep meditation research (loss aversion, commitment devices, DMN, VR meditation)
-- [ ] 04-03: Behavioral science cross-domain integration (meditation-breath, accountability-gamification links)
+- [ ] 04-01-PLAN.md -- Add "behavioral" category type + Journaling section (Pennebaker 1988, Petrie 1995, Redwine 2016 gratitude/HRV, Smyth 1998 meta-analysis) + Accountability section (Burke 2011 self-monitoring, Patel 2021 digital tracking, Wing 1999 social accountability RCT)
+- [ ] 04-02-PLAN.md -- Gamification section (Rewley 2021 loss aversion, Volpp 2008 deposit contracts, Halpern 2015 reward vs deposit, Nishi 2024 gamification meta-analysis) + Meditation section (Brewer 2011 DMN, Tang 2020 gray matter, Chavez 2020 VR pilot, Goyal 2014 JAMA, Grossman 2004 MBSR)
+- [ ] 04-03-PLAN.md -- Cross-domain integration: wire 5 required connections (meditation-breath, meditation-ear, journaling-meditation, accountability-gamification, meditation-nback), remove duplicate Grossman from general-health, final 16-PMID audit
 
 ### Phase 5: Quality Assurance & Cross-Domain Integration
 **Goal**: Every citation on the education page is verified real, every section links to its portal feature, and cross-domain connections form a coherent web of systems
@@ -116,6 +116,6 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 |-------|---------------|--------|-----------|
 | 1. Foundational Physiology | 4/4 | Complete    | 2026-03-19 |
 | 2. Cognitive Science | 5/5 | Complete    | 2026-03-19 |
-| 3. Peptide Science | 1/3 | Complete    | 2026-03-19 |
+| 3. Peptide Science | 3/3 | Complete    | 2026-03-19 |
 | 4. Behavioral Science | 0/3 | Not started | - |
 | 5. Quality Assurance | 0/3 | Not started | - |
