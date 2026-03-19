@@ -831,6 +831,27 @@ const researchData: ResearchSection[] = [
         relevance: "Why this matters: You eat protein to build muscle, but if you sit for hours, your body wastes it. Just a few bodyweight squats every 30-45 minutes rescue your protein synthesis and keep your metabolism from downshifting. This is the easiest intervention in this entire research library — 10 deep knee bends between meetings literally saves your muscle-building machinery. Cross-reference: this complements the sarcopenia prevention research above and the protein timing evidence in the Nutrition Science section (see Nutrition Science section).",
         crossReferences: ["nutrition-science", "exercise-protocols"],
         link: "https://pubmed.ncbi.nlm.nih.gov/35952344/"
+      },
+      {
+        id: "movement-snacking-2",
+        tldr: "3-minute exercise breaks every 30 minutes lower blood sugar and insulin in diabetics",
+        title: "Benefits for Type 2 Diabetes of Interrupting Prolonged Sitting With Brief Bouts of Light Walking or Simple Resistance Activities",
+        authors: "Dempsey PC, Larsen RN, Sethi P, Sacre JW, Straznicky NE, Cohen ND, Cerin E, Lambert GW, Owen N, Kingwell BA, Dunstan DW",
+        journal: "Diabetes Care",
+        year: 2016,
+        doi: "10.2337/dc15-2336",
+        pmid: "27208318",
+        category: "exercise",
+        summary: "Randomized crossover trial with 24 overweight/obese adults with Type 2 diabetes completing 8-hour sessions of uninterrupted sitting, 3-minute walking breaks every 30 minutes, or 3-minute resistance exercises every 30 minutes. Both activity break conditions significantly reduced postprandial glucose, insulin, and C-peptide compared to continuous sitting.",
+        keyFindings: [
+          "3-minute light walks every 30 minutes significantly reduced blood glucose and insulin compared to uninterrupted sitting",
+          "3-minute resistance exercises (bodyweight squats, calf raises) produced equal or greater metabolic benefit",
+          "Resistance exercise breaks additionally lowered triglyceride responses beyond what walking achieved",
+          "No equipment needed — the resistance activities used were simple bodyweight movements"
+        ],
+        relevance: "Why this matters: If you sit at a desk all day, your blood sugar spikes after every meal — even if you work out in the morning. This clinical trial proved that 3 minutes of bodyweight squats every half hour reverses the metabolic damage of sitting. This is not a hack; it is a published Diabetes Care RCT. Combine this with the protein synthesis evidence above and you have two independent reasons to never sit for more than 30 minutes straight. Cross-reference: complements the fasting and metabolic research in the Nutrition Science section (see Nutrition Science section).",
+        crossReferences: ["nutrition-science"],
+        link: "https://pubmed.ncbi.nlm.nih.gov/27208318/"
       }
     ]
   },
