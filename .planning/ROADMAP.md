@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundational Physiology** - Research breath training, exercise science, and nutrition as an interconnected metabolic system (COMPLETE 2026-03-19)
 - [x] **Phase 2: Cognitive Science** - Research N-Back, ear training, vision training, and mental mastery through the neuroplasticity lens (5/5 plans DONE, EAR-04 gap closed 2026-03-19)
-- [ ] **Phase 3: Peptide Science** - Research all 9 peptides plus co-op documentation, building on exercise/nutrition context from Phase 1
+- [x] **Phase 3: Peptide Science** - Research all 9 peptides plus co-op documentation, building on exercise/nutrition context from Phase 1 (completed 2026-03-19)
 - [ ] **Phase 4: Behavioral Science** - Research journaling, accountability, gamification/stakes, and deep meditation
 - [ ] **Phase 5: Quality Assurance & Cross-Domain Integration** - Replace all fake PMIDs, verify every link, weave cross-domain connections, deploy
 
@@ -116,6 +116,6 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 |-------|---------------|--------|-----------|
 | 1. Foundational Physiology | 4/4 | Complete    | 2026-03-19 |
 | 2. Cognitive Science | 5/5 | Complete    | 2026-03-19 |
-| 3. Peptide Science | 1/3 | In progress | - |
+| 3. Peptide Science | 1/3 | Complete    | 2026-03-19 |
 | 4. Behavioral Science | 0/3 | Not started | - |
 | 5. Quality Assurance | 0/3 | Not started | - |
