@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { PortalHeader } from '@/components/Navigation/PortalHeader';
 
 const researchPeptides = [
   {
@@ -50,7 +51,7 @@ const researchPeptides = [
 export default function PeptideInfoPage() {
   return (
     <div
-      className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black"
+      className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black pt-28"
       style={{
         backgroundImage:
           'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url(/hero-background.jpg)',
@@ -60,6 +61,10 @@ export default function PeptideInfoPage() {
       }}
     >
       <div className="relative z-10">
+        <PortalHeader
+          section="Peptide Co-op"
+          subtitle="Research & community group purchasing"
+        />
         {/* Hero Section */}
         <section className="py-20 px-4">
           <div className="container mx-auto max-w-4xl text-center">
