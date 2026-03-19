@@ -1098,6 +1098,7 @@ const researchData: ResearchSection[] = [
     studies: [
       {
         id: "gki-metabolic-1",
+        tldr: "The Glucose Ketone Index gives you a single number for your metabolic health",
         title: "The glucose ketone index calculator: a simple tool to monitor therapeutic efficacy for metabolic management of brain cancer",
         authors: "Meidenbauer JJ, Mukherjee P, Seyfried TN",
         journal: "Nutrition & Metabolism",
@@ -1111,12 +1112,13 @@ const researchData: ResearchSection[] = [
           "Applied to both human and animal brain tumor data with clear dose-response relationship",
           "Democratizes metabolic monitoring — fingerstick glucose and ketone meters are sufficient for tracking"
         ],
-        relevance: "The GKI is the single metric that tells you where you are metabolically — Dr. Boz brought this research-grade tool to general health audiences. A low GKI indicates your body is efficiently burning ketones alongside glucose, a state achieved through intermittent fasting (see studies below) and supported by the exercise-driven mitochondrial biogenesis documented in the Exercise Science section.",
+        relevance: "Why this matters: Instead of guessing whether your fasting or diet is working, measure your GKI with two fingerstick meters. A low GKI means your body is efficiently burning ketones alongside glucose — the metabolic state Dr. Boz popularized from this research. Achieved through intermittent fasting (see studies below) and supported by exercise-driven mitochondrial biogenesis (see Exercise Science section).",
         crossReferences: ["exercise-protocols"],
         link: "https://pubmed.ncbi.nlm.nih.gov/25798181/"
       },
       {
         id: "tre-mechanisms-1",
+        tldr: "6-10 hour eating windows improve metabolic health through metabolic switching, not calorie cutting",
         title: "Time-Restricted Eating: Benefits, Mechanisms, and Challenges in Translation",
         authors: "Regmi P, Heilbronn LK",
         journal: "iScience",
@@ -1131,12 +1133,13 @@ const researchData: ResearchSection[] = [
           "Circadian alignment of eating window matters independently of caloric restriction",
           "Metabolic switch to ketone production occurs 8-16 hours into fasting"
         ],
-        relevance: "Intermittent fasting works through metabolic switching — not caloric restriction. The 8-16 hour transition to ketone production is when the GKI (study above) begins improving and the FGF21 pathway (study below) activates. Cross-reference: fasting and Wim Hof breathing both activate autophagy pathways — the fasting-breathwork synergy (see Breath Training section) is additive.",
+        relevance: "Why this matters: Intermittent fasting does not work because you eat less — it works because 8-16 hours without food triggers your body to switch fuel sources. That metabolic switch is when your GKI improves and the FGF21 autophagy pathway activates. Circadian alignment matters independently of calories. Cross-reference: fasting and Wim Hof breathing both activate autophagy pathways — the fasting-breathwork synergy (see Breath Training section) is additive.",
         crossReferences: ["breath-training"],
         link: "https://pubmed.ncbi.nlm.nih.gov/32480126/"
       },
       {
         id: "fgf21-autophagy-1",
+        tldr: "Fasting triggers FGF21, which epigenetically unlocks your cells' cleanup system",
         title: "Fasting-induced FGF21 signaling activates hepatic autophagy and lipid degradation via JMJD3 histone demethylase",
         authors: "Byun S, Seok S, Kim YC, et al.",
         journal: "Nature Communications",
@@ -1150,12 +1153,13 @@ const researchData: ResearchSection[] = [
           "FGF21 administration improved fatty liver disease in obese mice via this JMJD3-dependent mechanism",
           "NAFLD patients show substantially reduced autophagy-related gene expression — a therapeutic target"
         ],
-        relevance: "This is the molecular 'why' behind intermittent fasting: FGF21 is the key that unlocks autophagy — your cells' cleanup system. The same FGF21 pathway is activated by fructose (see study below), explaining why small targeted fructose doses can paradoxically improve metabolic health. Cross-reference: Wim Hof breathing induces acute hypoxia which activates AMPK, a parallel autophagy trigger (see Breath Training section) — combining fasting with breathwork may activate autophagy through two independent pathways simultaneously.",
+        relevance: "Why this matters: When you fast, FGF21 is the specific signal that tells your cells to start cleaning up damaged components. The pathway is epigenetic — fasting literally unlocks autophagy genes through histone modification. The same FGF21 pathway is activated by fructose (see study below), explaining why small targeted fructose doses can paradoxically improve metabolic health. Cross-reference: Wim Hof breathing activates AMPK, a parallel autophagy trigger (see Breath Training section) — combining fasting with breathwork may activate autophagy through two independent pathways.",
         crossReferences: ["breath-training"],
         link: "https://pubmed.ncbi.nlm.nih.gov/32042044/"
       },
       {
         id: "fructose-fgf21-1",
+        tldr: "Fructose triggers a 3x spike in FGF21 — the same autophagy pathway fasting activates",
         title: "The FGF21 response to fructose predicts metabolic health and persists after bariatric surgery in obese humans",
         authors: "Ter Horst KW, Gilijamse PW, Demirkiran A, et al.",
         journal: "Molecular Metabolism",
@@ -1169,11 +1173,12 @@ const researchData: ResearchSection[] = [
           "Response persisted after 28% body weight loss from bariatric surgery — signaling pathway not normalized by weight loss alone",
           "FGF21 specificity: responds to fructose much more strongly than glucose"
         ],
-        relevance: "IMPORTANT FRAMING: This is not 'eat sugar for health.' Small, targeted fructose doses activate the FGF21 pathway — the same pathway that fasting activates for autophagy and fat metabolism. The research value is in understanding FGF21 as a metabolic health biomarker and signaling mediator. Practically, this explains why fruit (natural fructose source) may have metabolic benefits beyond its vitamin content. Cross-reference: this FGF21 pathway is the mechanistic link between fasting (study above) and autophagy (FGF21 autophagy study).",
+        relevance: "Why this matters: This is NOT 'eat sugar for health.' Small, targeted fructose doses activate the same FGF21 pathway that fasting triggers for autophagy. Practically, this explains why whole fruit (a natural fructose source) may have metabolic benefits beyond its vitamin content — the fructose itself signals through FGF21. The response also serves as a metabolic health biomarker: your FGF21 spike predicts your underlying metabolic state.",
         link: "https://pubmed.ncbi.nlm.nih.gov/29107295/"
       },
       {
         id: "adaptive-thermogenesis-1",
+        tldr: "Caloric restriction permanently suppresses your metabolic rate — even years later",
         title: "Long-term persistence of adaptive thermogenesis in subjects who have maintained a reduced body weight",
         authors: "Rosenbaum M, Hirsch J, Gallagher DA, Leibel RL",
         journal: "American Journal of Clinical Nutrition",
@@ -1187,12 +1192,13 @@ const researchData: ResearchSection[] = [
           "Metabolic suppression does NOT diminish with time — it is a sustained physiological adaptation",
           "Mechanism involves leptin, thyroid, and autonomic nervous system adaptations"
         ],
-        relevance: "This is why caloric restriction diets fail: your body permanently lowers its metabolic rate in response to caloric restriction, and this suppression persists for years even after returning to normal eating. The alternative: build new mitochondria through exercise (see PGC-1alpha study in Exercise Science section), which permanently RAISES your metabolic engine instead of suppressing it. Cross-reference: protein intake preserves lean mass during any weight change (protein timing study below), protecting the metabolic rate from decline.",
+        relevance: "Why this matters: If you have ever dieted and gained the weight back, this is why. Your body permanently lowered its metabolic rate in response to caloric restriction — and that suppression persists for YEARS even after returning to normal eating. The alternative: build new mitochondria through exercise (see PGC-1alpha study in Exercise Science section), which permanently raises your metabolic engine instead of suppressing it. Cross-reference: protein intake preserves lean mass during any weight change (protein timing study below).",
         crossReferences: ["exercise-protocols"],
         link: "https://pubmed.ncbi.nlm.nih.gov/18842775/"
       },
       {
         id: "adaptive-thermogenesis-2",
+        tldr: "80% of dieters regain the weight — your body actively defends its fat stores",
         title: "Adaptive Thermogenesis in Humans",
         authors: "Rosenbaum M, Leibel RL",
         journal: "International Journal of Obesity",
@@ -1206,12 +1212,13 @@ const researchData: ResearchSection[] = [
           "Leptin mediates much of the set-point defense mechanism",
           "Obesity is an actively defended physiological state, not a willpower failure — reframes the treatment approach"
         ],
-        relevance: "Together with the Rosenbaum 2008 study above, these two papers build the complete anti-starvation-diet case. Low-calorie diets fight a biologically defended setpoint — the 80% recidivism rate is not willpower failure, it is physiology. The Reset Biology approach: raise your metabolic rate by building mitochondria through exercise and REHIT (see Exercise Science section) rather than suppress it through restriction.",
+        relevance: "Why this matters: The 80% recidivism rate is not your fault — it is biology. Your body defends its fat stores through metabolic, hormonal, and neurological adaptations that low-calorie diets cannot override long-term. The Reset Biology approach: raise your metabolic rate by building mitochondria through exercise and REHIT (see Exercise Science section) rather than fighting a biologically defended setpoint through restriction.",
         crossReferences: ["exercise-protocols"],
         link: "https://pubmed.ncbi.nlm.nih.gov/20935667/"
       },
       {
         id: "protein-mps-1",
+        tldr: "20g protein per meal maximally stimulates muscle building — spread it across your day",
         title: "Recent Perspectives Regarding the Role of Dietary Protein for the Promotion of Muscle Hypertrophy with Resistance Exercise Training",
         authors: "Stokes T, Hector AJ, Morton RW, McGlory C, Phillips SM",
         journal: "Nutrients",
@@ -1225,7 +1232,7 @@ const researchData: ResearchSection[] = [
           "Even distribution of protein across meals (rather than one large protein meal) optimizes daily MPS",
           "Higher protein protects lean mass during caloric deficit — critical for preserving metabolic rate"
         ],
-        relevance: "Protein timing is the nutritional partner to resistance training: exercise provides the stimulus (see Exercise Science section) and protein provides the building blocks. Even distribution across meals (25-40g per meal) keeps the mTOR pathway active throughout the day. Particularly important: higher protein during any weight change protects the lean mass that MAINTAINS your metabolic rate — connecting directly to the anti-starvation evidence above. Cross-reference: the Keith Baar collagen protocol (see Exercise Science section) adds vitamin C-enriched gelatin to this protein strategy for connective tissue.",
+        relevance: "Why this matters: Eating 60g of protein at dinner and 10g at breakfast is a waste — your body can only use about 20g per meal for muscle building. Distribute 25-40g across each meal to keep the mTOR pathway active all day. Higher protein during any weight change protects the lean mass that maintains your metabolic rate. Cross-reference: exercise provides the stimulus (see Exercise Science section), protein provides the building blocks. The Keith Baar collagen protocol adds gelatin + vitamin C for connective tissue.",
         crossReferences: ["exercise-protocols"],
         link: "https://pubmed.ncbi.nlm.nih.gov/29414855/"
       }
