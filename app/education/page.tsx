@@ -12,7 +12,7 @@ interface Study {
   year: number
   doi?: string
   pmid?: string
-  category: "breath" | "peptides" | "exercise" | "nutrition" | "general"
+  category: "breath" | "peptides" | "exercise" | "nutrition" | "general" | "cognitive"
   summary: string
   keyFindings: string[]
   relevance: string
@@ -24,7 +24,7 @@ interface ResearchSection {
   id: string
   title: string
   description: string
-  category: "breath" | "peptides" | "exercise" | "nutrition" | "general"
+  category: "breath" | "peptides" | "exercise" | "nutrition" | "general" | "cognitive"
   studies: Study[]
   practicalApplication: string
 }
@@ -362,7 +362,7 @@ const researchData: ResearchSection[] = [
           "Neuromuscular recruitment is a trainable cognitive skill, not just 'broscience'"
         ],
         relevance: "The mind-muscle connection is the first link in the chain: sharp mind leads to intentional neuromuscular control leads to effective muscle recruitment leads to muscle and bone preservation leads to longevity. This study demonstrates that the connection between cognitive intent and muscle activation is measurable and trainable. Cross-reference: cognitive training (N-Back, Phase 2) shares the neuroplasticity foundation that makes this attentional control trainable.",
-        crossReferences: ["mental-training"],
+        crossReferences: ["nback-working-memory"],
         link: "https://pubmed.ncbi.nlm.nih.gov/31354928/"
       },
       {
@@ -776,7 +776,8 @@ export default function EducationPage() {
     { id: "peptides", name: "Peptides", icon: "💉" },
     { id: "exercise", name: "Exercise", icon: "💪" },
     { id: "nutrition", name: "Nutrition", icon: "🍎" },
-    { id: "general", name: "General Health", icon: "🧬" }
+    { id: "general", name: "General Health", icon: "🧬" },
+    { id: "cognitive", name: "Cognitive Science", icon: "🧠" }
   ]
 
   const filteredResearch = researchData.filter(section => {
