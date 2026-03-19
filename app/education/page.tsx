@@ -1333,6 +1333,91 @@ const researchData: ResearchSection[] = [
     ]
   },
   {
+    id: "gamification-stakes",
+    title: "Gamification & Financial Stakes",
+    description: "Does putting money on the line actually work? Research on loss aversion in health behavior, deposit contracts that quadrupled short-term goal achievement, and a sobering meta-analysis showing gamified wellness apps produce modest — not transformative — improvements.",
+    category: "behavioral",
+    practicalApplication: "The Reset Biology portal uses points, streaks, and achievement tracking to apply gamification principles supported by the research below. The evidence is honest: gamification adds modest but consistent benefit to self-monitoring. The real power is combining tracking (see Daily Accountability section) with motivational reinforcement. Track your progress at /portal.",
+    studies: [
+      {
+        id: "gamification-loss-aversion-1",
+        title: "Loss Aversion Explains Physical Activity Changes in a Behavioral Gamification Trial",
+        authors: "Rewley J, Guszcza J, Dierst-Davies R, Steier D, Szwartz G, Patel M",
+        journal: "Games for Health Journal",
+        year: 2021,
+        pmid: "34860130",
+        category: "behavioral",
+        summary: "Direct empirical test of loss aversion in a gamified health intervention: participants facing potential status loss were 18.40% more likely to meet their daily step goal, but only when status was earned — not when it was given for free.",
+        keyFindings: [
+          "Participants facing potential status loss were 18.40% more likely to meet daily step goals",
+          "Loss aversion operated only for earned rewards, not endowed ones — design insight for gamification",
+          "Medium-tier participants facing advancement were 10% more likely to achieve daily step goals",
+          "Recommendation: design gamification so all levels are earned, not given — maximizes loss aversion"
+        ],
+        relevance: "Directly validates loss aversion as a mechanism in health gamification — not just economic theory. The key design insight: rewards must be EARNED to trigger loss aversion. Given rewards (like free points) don't create the same motivational pull. This informs how Reset Biology structures achievement tiers. Cross-reference: self-monitoring (see Daily Accountability section) creates the behavioral foundation that gamification reinforces.",
+        crossReferences: ["daily-accountability"],
+        link: "https://pubmed.ncbi.nlm.nih.gov/34860130/"
+      },
+      {
+        id: "gamification-volpp-weight-1",
+        title: "Financial incentive-based approaches for weight loss: a randomized trial",
+        authors: "Volpp KG, John LK, Troxel AB, Norton L, Fassbender J, Loewenstein G",
+        journal: "JAMA",
+        year: 2008,
+        pmid: "19066383",
+        category: "behavioral",
+        summary: "Landmark JAMA RCT testing deposit contracts for weight loss: the deposit contract group achieved the 16-pound target at nearly 5x the control rate (47% vs 10.5%), but gains diminished after incentive removal — the sustainability challenge is real.",
+        keyFindings: [
+          "Deposit contract group: ~47% achieved 16-pound target vs 10.5% in controls",
+          "Deposit contracts produced mean of 14.0 lb loss; lottery incentive: 13.1 lb vs control",
+          "Sustainability concern: gains diminished after incentive removal — not fully maintained at month 7",
+          "Honest framing: commitment devices work during incentive period but long-term maintenance is a challenge"
+        ],
+        relevance: "The strongest evidence that financial stakes accelerate health goals — but with an equally important caveat. Deposit contracts nearly quintupled short-term success, yet the effect fades when the money is no longer at stake. This is why Reset Biology combines stakes with habit-building tools (daily tracking, community) rather than relying on financial incentives alone.",
+        crossReferences: ["daily-accountability"],
+        link: "https://pubmed.ncbi.nlm.nih.gov/19066383/"
+      },
+      {
+        id: "gamification-halpern-smoking-1",
+        title: "Randomized trial of four financial-incentive programs for smoking cessation",
+        authors: "Halpern SD, French B, Small DS, et al.",
+        journal: "New England Journal of Medicine",
+        year: 2015,
+        pmid: "25970009",
+        category: "behavioral",
+        summary: "NEJM trial comparing reward-based vs deposit-based incentives for smoking cessation: deposits were more effective per participant but only 13.7% of people opted in vs 90% for rewards — revealing the fundamental uptake vs efficacy tradeoff in commitment device design.",
+        keyFindings: [
+          "Reward-based programs: 90% acceptance rate; deposit-based: only 13.7% acceptance",
+          "Both incentive types outperformed standard care for smoking cessation at 6 months",
+          "Deposit programs showed greater efficacy among willing participants but lower uptake limits real-world impact",
+          "Key insight: framing matters enormously — deposits are more powerful per participant but fewer will opt in"
+        ],
+        relevance: "Reveals the core paradox of commitment devices: the more skin in the game, the fewer people participate — but those who do, succeed more often. This uptake-vs-efficacy tradeoff informs how Reset Biology designs optional stake-based challenges: easy to join, meaningful to complete.",
+        crossReferences: ["daily-accountability"],
+        link: "https://pubmed.ncbi.nlm.nih.gov/25970009/"
+      },
+      {
+        id: "gamification-nishi-meta-1",
+        title: "Effect of digital health applications with or without gamification on physical activity and cardiometabolic risk factors: a systematic review and meta-analysis of randomized controlled trials",
+        authors: "Nishi SK, Kavanagh ME, Ramboanga K, et al.",
+        journal: "EClinicalMedicine",
+        year: 2024,
+        pmid: "39764571",
+        category: "behavioral",
+        summary: "Meta-analysis of 36 RCTs (10,079 participants) providing the most honest assessment of gamification: gamified apps produced trivial step count increases (+489 steps/day) but small meaningful reductions in body fat (-1.92%) and body weight (-0.70 kg), with no significant effect on blood pressure, lipids, or glucose.",
+        keyFindings: [
+          "36 RCTs, 10,079 participants — largest gamification meta-analysis to date",
+          "Gamified apps produced trivial step count increase (+489 steps/day, high certainty evidence)",
+          "Small but meaningful reductions in body fat percentage (-1.92%) and body weight (-0.70 kg)",
+          "No significant differences for blood pressure, lipids, or glucose measures — gamification is not a medical intervention"
+        ],
+        relevance: "The honest reality check: gamification improves physical activity and weight modestly, not transformatively. Points and badges are motivational supplements, not primary interventions. This is why Reset Biology uses gamification as one layer in a system that includes self-monitoring (see Daily Accountability section), social accountability, and evidence-based protocols — not as a standalone solution.",
+        crossReferences: ["daily-accountability"],
+        link: "https://pubmed.ncbi.nlm.nih.gov/39764571/"
+      }
+    ]
+  },
+  {
     id: "general-health",
     title: "General Health & Longevity",
     description: "Research on sleep, stress management, cold exposure, and integrative approaches to healthspan optimization.",
