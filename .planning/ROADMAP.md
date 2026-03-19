@@ -48,12 +48,13 @@ Plans:
   3. A visitor can expand the Vision Training section and find at least 3 verified studies on accommodation exercises, perceptual learning, and adult visual neuroplasticity
   4. A visitor can expand the Mental Mastery section and find research on structured cognitive training and cognitive reserve against age-related decline
   5. Cross-references connect these cognitive domains to each other (N-Back to ear training dual modality, mental mastery to neuromuscular recruitment from Phase 1) with explicit call-outs
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 02-01: N-Back and working memory research (Jaeggi, meta-analyses, dose-response)
-- [ ] 02-02: Ear training and vision training research (auditory/visual neuroplasticity)
-- [ ] 02-03: Mental mastery research and cognitive cross-domain integration
+- [ ] 02-01-PLAN.md -- Category type infrastructure + N-Back/working memory research (Jaeggi 2008, Au 2015 meta-analysis, Melby-Lervag 2016 honest counterbalance)
+- [ ] 02-02-PLAN.md -- Ear training research (Kraus 2010 auditory neuroplasticity, Herholz 2012 brain plasticity, Cepeda 2008 spacing effect, Roman-Caballero 2018 music therapy)
+- [ ] 02-03-PLAN.md -- Vision science PMID correction (replace 3 bogus PMIDs with Deveau 24556432, Polat 19520103/19622368, Allen 20304003)
+- [ ] 02-04-PLAN.md -- Mental mastery research (Stern 2012 cognitive reserve, Willis 2006 ACTIVE trial, Park 2013 aging neuroplasticity) + cross-domain audit
 
 ### Phase 3: Peptide Science
 **Goal**: The education page provides comprehensive, citation-backed research for all 9 tracked peptides plus co-op sourcing documentation, connecting peptide use to the exercise and nutrition science from Phase 1
@@ -113,7 +114,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | Phase | Plans Complete | Status | Completed |
 |-------|---------------|--------|-----------|
 | 1. Foundational Physiology | 4/4 | Complete    | 2026-03-19 |
-| 2. Cognitive Science | 0/3 | Not started | - |
+| 2. Cognitive Science | 0/4 | Not started | - |
 | 3. Peptide Science | 0/3 | Not started | - |
 | 4. Behavioral Science | 0/3 | Not started | - |
 | 5. Quality Assurance | 0/3 | Not started | - |
