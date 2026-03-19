@@ -121,7 +121,7 @@ const researchData: ResearchSection[] = [
     title: "Peptide Therapeutics",
     description: "Clinical and preclinical research on nine therapeutic peptides spanning tissue repair (BPC-157, TB-500), metabolic optimization (Semaglutide, 5-Amino-1MQ, MOTS-c), recovery enhancement (Ipamorelin, DSIP), longevity (Epithalon, GHK-Cu), and co-op sourcing quality standards.",
     category: "peptides",
-    practicalApplication: "Our peptide protocols are based on these dosing studies and clinical outcomes.",
+    practicalApplication: "Each peptide protocol in our /peptides portal is grounded in the research above. Note that BPC-157 and TB-500 work synergistically with the Baar tendon protocol in Exercise Science — peptides supply healing signals while gelatin + vitamin C supplies structural materials. Semaglutide users must review the sarcopenia risk evidence and pair with resistance training. MOTS-c and 5-Amino-1MQ connect to the mitochondrial biogenesis research in Nutrition Science. Co-op membership (available at /order) includes third-party COA testing — the research above explains why purity verification is non-negotiable.",
     studies: [
       {
         id: "bpc157-1",
