@@ -356,6 +356,221 @@ const researchData: ResearchSection[] = [
         ],
         relevance: "Extends Epithalon's evidence base from cell culture to tissue-level protection in vivo, supporting its role in age-related tissue health protocols. All evidence remains preclinical.",
         link: "https://pubmed.ncbi.nlm.nih.gov/12170316/"
+      },
+      {
+        id: "ghkcu-1",
+        title: "Stimulation of collagen synthesis in fibroblast cultures by the tripeptide-copper complex glycyl-L-histidyl-L-lysine-Cu2+",
+        authors: "Maquart FX, Pickart L, Laurent M, et al.",
+        journal: "FEBS Letters",
+        year: 1988,
+        pmid: "3169264",
+        category: "peptides",
+        summary: "Foundational study demonstrating that the GHK-copper complex dose-dependently stimulates collagen synthesis in human fibroblast cultures, with effects beginning at 10-12 molar concentration and peaking at 10-9 M, proposing wound-site release as the natural mechanism.",
+        keyFindings: [
+          "Dose-dependent stimulation of collagen synthesis in human fibroblast cultures",
+          "Effect begins at 10\u207b\u00b9\u00b2 M (picomolar range) \u2014 active at extremely low concentrations",
+          "Peak effect at 10\u207b\u2079 M, independent of changes in cell number",
+          "Proposed mechanism: released by proteases at wound sites to stimulate local healing",
+          "In vitro human fibroblast study; topical/systemic human clinical trials limited"
+        ],
+        relevance: "Foundational collagen synthesis evidence for GHK-Cu, explaining the molecular mechanism behind its skin repair and wound healing applications. Collagen type I and III are also primary components of tendons \u2014 connecting to the tendon repair chain in the Exercise Science section.",
+        link: "https://pubmed.ncbi.nlm.nih.gov/3169264/"
+      },
+      {
+        id: "ghkcu-2",
+        title: "GHK Peptide as a Natural Modulator of Multiple Cellular Pathways in Skin Regeneration",
+        authors: "Pickart L, Vasquez-Soltero JM, Margolina A",
+        journal: "BioMed Research International",
+        year: 2015,
+        pmid: "26236730",
+        category: "peptides",
+        summary: "Review documenting that GHK-Cu (which declines significantly with age) accelerates wound healing, stimulates collagen, elastin, and glycosaminoglycan synthesis, modulates inflammation, and can up- or down-regulate at least 4,000 human genes relevant to tissue repair and anti-aging.",
+        keyFindings: [
+          "GHK levels decline significantly with aging \u2014 from ~200 ng/mL at 20 to ~80 ng/mL at 60",
+          "Accelerates wound healing and skin repair when complexed with copper",
+          "Stimulates synthesis of collagen, elastin, and glycosaminoglycans",
+          "Modulates expression of at least 4,000 human genes",
+          "Improved skin elasticity, reduced wrinkle depth in cosmetic studies; systemic human RCTs limited"
+        ],
+        relevance: "Comprehensive mechanistic review supporting GHK-Cu for skin health, anti-aging, and wound healing protocols. The age-related decline framing positions supplementation within the broader Reset Biology longevity framework.",
+        link: "https://pubmed.ncbi.nlm.nih.gov/26236730/"
+      },
+      {
+        id: "ghkcu-3",
+        title: "The Effect of the Human Peptide GHK on Gene Expression Relevant to Nervous System Function and Cognitive Decline",
+        authors: "Pickart L, Vasquez-Soltero JM, Margolina A",
+        journal: "Brain Sciences",
+        year: 2017,
+        pmid: "28212278",
+        category: "peptides",
+        summary: "Connectivity Map analysis showing GHK modulates gene expression relevant to neurological health, demonstrating anti-oxidant, anti-inflammatory, anti-pain, and anti-anxiety effects alongside nerve growth promotion, with implications for neurodegenerative disease pathways including Alzheimer's and Parkinson's.",
+        keyFindings: [
+          "Anti-oxidant, anti-inflammatory, anti-pain, and anti-anxiety gene expression effects documented",
+          "Promotes nerve growth factor expression and neuronal regeneration pathways",
+          "Modulates genes dysregulated in Alzheimer's and Parkinson's disease pathways",
+          "Connectivity Map analysis method \u2014 computational/bioinformatic study, not a clinical trial",
+          "Suggests broader systemic effects beyond skin repair for this age-declining peptide"
+        ],
+        relevance: "Extends GHK-Cu evidence beyond collagen/skin to neurological health maintenance \u2014 connecting to the cognitive sharpness chain in Mental Training (sharp mind \u2192 neuromuscular control \u2192 longevity).",
+        link: "https://pubmed.ncbi.nlm.nih.gov/28212278/",
+        crossReferences: ["nback-working-memory"]
+      },
+      {
+        id: "dsip-1",
+        title: "The influence of synthetic DSIP (delta-sleep-inducing-peptide) on disturbed human sleep",
+        authors: "Schneider-Helmert D, Schoenenberger GA",
+        journal: "Experientia",
+        year: 1981,
+        pmid: "7028502",
+        category: "peptides",
+        summary: "Early clinical study in six chronic insomniacs showing intravenous DSIP (25 nmol/kg) produced longer sleep duration, higher sleep quality with fewer interruptions, and slightly more REM sleep with no daytime sedation, with sleep benefits primarily in the second hour post-injection.",
+        keyFindings: [
+          "Longer sleep duration and improved sleep quality in chronic insomniacs",
+          "Fewer sleep interruptions with slightly more REM sleep",
+          "No daytime sedation \u2014 normalizing rather than sedating effect",
+          "Small study (n=6); intravenous administration only; not replicated in large RCTs",
+          "Results suggest DSIP has a physiological sleep-normalizing rather than hypnotic mechanism"
+        ],
+        relevance: "Original human evidence for DSIP's sleep-normalizing effects. The GH release connection documented in preclinical research connects to ipamorelin and recovery-sleep protocols \u2014 adequate slow-wave sleep is the primary window for growth hormone secretion.",
+        link: "https://pubmed.ncbi.nlm.nih.gov/7028502/"
+      },
+      {
+        id: "dsip-2",
+        title: "Evidence for a role of delta sleep-inducing peptide in slow-wave sleep and sleep-related growth hormone release in the rat",
+        authors: "Iyer KS, Marks GA, Kastin AJ, McCann SM",
+        journal: "Proceedings of the National Academy of Sciences USA",
+        year: 1988,
+        pmid: "3368469",
+        category: "peptides",
+        summary: "Mechanistic animal study showing that when DSIP antiserum was injected into rat brains during sleep deprivation, the normal compensatory increase in both slow-wave sleep and growth hormone secretion was blocked \u2014 providing causal evidence that endogenous DSIP is necessary for sleep-related GH release.",
+        keyFindings: [
+          "DSIP antiserum blocked sleep-deprivation-induced increase in slow-wave sleep",
+          "Same antiserum blocked compensatory growth hormone secretion during recovery sleep",
+          "Demonstrates endogenous DSIP is necessary (not just sufficient) for sleep-related GH release",
+          "Animal study (rat, intraventricular injection); human mechanism extrapolated, not confirmed",
+          "Establishes DSIP as part of the GH secretion regulatory circuit during sleep"
+        ],
+        relevance: "Links DSIP's sleep effects directly to growth hormone regulation \u2014 the primary recovery hormone released during slow-wave sleep. DSIP and ipamorelin operate complementary channels: DSIP promotes the sleep stage; ipamorelin amplifies the GH pulse. See Exercise Science section for GH recovery chain.",
+        link: "https://pubmed.ncbi.nlm.nih.gov/3368469/",
+        crossReferences: ["exercise-protocols"]
+      },
+      {
+        id: "motsc-1",
+        title: "The mitochondrial-derived peptide MOTS-c promotes metabolic homeostasis and reduces obesity and insulin resistance",
+        authors: "Lee C, Zeng J, Drew BG, et al.",
+        journal: "Cell Metabolism",
+        year: 2015,
+        pmid: "25738459",
+        category: "peptides",
+        summary: "Discovery study identifying MOTS-c as a 16-amino-acid peptide encoded within mitochondrial DNA that targets skeletal muscle to enhance insulin responsiveness via AMPK activation, preventing age-related and diet-induced insulin resistance and obesity in mouse models.",
+        keyFindings: [
+          "MOTS-c is a mitochondrial-derived peptide (MDP) encoded within the 12S rRNA gene",
+          "Targets skeletal muscle to enhance insulin sensitivity via AMPK pathway activation",
+          "Inhibits folate cycle and purine biosynthesis, triggering AICAR-mediated AMPK activation",
+          "Prevented both age-related and high-fat-diet-induced insulin resistance in mice",
+          "Mouse model study; human clinical trials are ongoing but not yet published"
+        ],
+        relevance: "Foundational discovery establishing MOTS-c as a mitochondria-to-muscle signaling peptide \u2014 directly connecting to the metabolic optimization framework in Nutrition Science (AMPK activation, mitochondrial biogenesis, raising BMR). See Nutrition Science section.",
+        link: "https://pubmed.ncbi.nlm.nih.gov/25738459/",
+        crossReferences: ["nutrition-science"]
+      },
+      {
+        id: "motsc-2",
+        title: "MOTS-c: A novel mitochondrial-derived peptide regulating muscle and fat metabolism",
+        authors: "Lee C, Kim KH, Cohen P",
+        journal: "Free Radical Biology and Medicine",
+        year: 2016,
+        pmid: "27216708",
+        category: "peptides",
+        summary: "Follow-up mechanistic review showing MOTS-c targets skeletal muscle to enhance glucose metabolism, with implications for obesity, type 2 diabetes, exercise physiology, and longevity through mitochondrial signaling to the nuclear genome.",
+        keyFindings: [
+          "Targets skeletal muscle specifically to enhance glucose metabolism",
+          "Part of a broader class of mitochondria-derived peptides with systemic metabolic signaling roles",
+          "Connects mitochondrial function to nuclear genome signaling (mitonuclear communication)",
+          "Relevance to exercise physiology, obesity, diabetes, and longevity pathways",
+          "Review; primary evidence remains animal model data with emerging human genetic associations"
+        ],
+        relevance: "Establishes MOTS-c's role in the mitochondria \u2192 muscle \u2192 metabolism chain, supporting its use as a metabolic optimization peptide. Directly cross-references the 'raising BMR builds mitochondria' research thread in Nutrition Science.",
+        link: "https://pubmed.ncbi.nlm.nih.gov/27216708/",
+        crossReferences: ["nutrition-science"]
+      },
+      {
+        id: "5amino1mq-1",
+        title: "Selective and membrane-permeable small molecule inhibitors of nicotinamide N-methyltransferase reverse high fat diet-induced obesity in mice",
+        authors: "Neelakantan H, Vance V, Wetzel MD, et al.",
+        journal: "Biochemical Pharmacology",
+        year: 2018,
+        pmid: "29155147",
+        category: "peptides",
+        summary: "Preclinical study demonstrating that 5-amino-1MQ and related NNMT inhibitors reduced body weight and white adipose mass in diet-induced obese mice by elevating intracellular NAD+ and SAM, suppressing lipogenesis \u2014 with no impact on food consumption.",
+        keyFindings: [
+          "Significantly reduced body weight and white adipose tissue mass in obese mice",
+          "Decreased adipocyte size and lowered plasma total cholesterol",
+          "Mechanism: elevated intracellular NAD+ and SAM, suppressing adipocyte lipogenesis",
+          "Weight loss occurred without reduction in food intake \u2014 metabolic rather than appetite mechanism",
+          "Preclinical mouse model; no human clinical trials for this compound are published"
+        ],
+        relevance: "Primary anti-obesity evidence for NNMT inhibition via 5-amino-1MQ. The NAD+ elevation mechanism connects directly to the 'raising BMR through metabolic activation' research in Nutrition Science \u2014 this is not caloric restriction but metabolic rate enhancement. See Nutrition Science section.",
+        link: "https://pubmed.ncbi.nlm.nih.gov/29155147/",
+        crossReferences: ["nutrition-science"]
+      },
+      {
+        id: "5amino1mq-2",
+        title: "Small molecule nicotinamide N-methyltransferase inhibitor activates senescent muscle stem cells and improves regenerative capacity of aged skeletal muscle",
+        authors: "Neelakantan H, Brightwell CR, Graber TG, et al.",
+        journal: "Biochemical Pharmacology",
+        year: 2019,
+        pmid: "30753815",
+        category: "peptides",
+        summary: "Animal study showing NNMT inhibition in 24-month-old (aged) mice activated dormant muscle stem cells post-injury, increasing cross-sectional area nearly 2-fold vs. controls and improving peak torque ~70%, via SIRT1 activity restoration through NAD+ preservation.",
+        keyFindings: [
+          "Activated senescent muscle stem cells in 24-month-old (aged) mice post-injury",
+          "~2-fold greater muscle fiber cross-sectional area vs. untreated aged controls",
+          "~70% improvement in peak torque (muscle strength) post-injury",
+          "Mechanism: preserved NAD+ salvage pathway, restoring SIRT1 sirtuin activity",
+          "Aged mouse model; relevant to sarcopenia prevention \u2014 human trials not published"
+        ],
+        relevance: "Extends 5-amino-1MQ evidence from fat loss to muscle preservation and regeneration \u2014 directly relevant to the sarcopenia prevention goal and the longevity chain (muscle \u2192 bone \u2192 long life). Connects to the semaglutide muscle loss concern and the resistance training evidence in Exercise Science.",
+        link: "https://pubmed.ncbi.nlm.nih.gov/30753815/",
+        crossReferences: ["exercise-protocols", "nutrition-science"]
+      },
+      {
+        id: "coop-purity-1",
+        title: "The influence of peptide impurity profiles on functional tissue-organ bath response: the 11-mer peptide INSL6[151-161] case",
+        authors: "Verbeken M, Wynendaele E, Lefebvre RA, et al.",
+        journal: "Analytical Biochemistry",
+        year: 2012,
+        pmid: "22033292",
+        category: "peptides",
+        summary: "Analytical chemistry study demonstrating that crude peptide (~70% purity) produced strong contractile responses in biological tissue, while highly purified peptide (\u226595%) showed no effect \u2014 proving synthesis by-products create false positive biological results and that peptide quality control is essential for valid outcomes.",
+        keyFindings: [
+          "Crude peptide (~70% purity) produced false-positive biological contractile responses",
+          "Highly purified peptide (\u226595%) showed no biological effect \u2014 impurities were the active component",
+          "Synthesis by-products from peptide manufacturing can masquerade as therapeutic activity",
+          "Authors conclude: 'peptide quality is generally neglected, possibly leading to misinterpretation'",
+          "Third-party purity verification (\u226595% HPLC) is necessary for reliable outcomes"
+        ],
+        relevance: "Scientific rationale for third-party COA (Certificate of Analysis) testing in the Reset Biology co-op. Peptides from unverified sources may contain synthesis by-products that produce misleading results, mask therapeutic failures, or introduce unknown safety risks. Our direct sourcing with third-party HPLC verification ensures you receive what the study evidence was actually tested on.",
+        link: "https://pubmed.ncbi.nlm.nih.gov/22033292/"
+      },
+      {
+        id: "coop-quality-1",
+        title: "Potential risks of pharmacy compounding",
+        authors: "Gudeman J, Jozwiakowski M, Chollet J, Randell M",
+        journal: "Drugs in R&D",
+        year: 2013,
+        pmid: "23526368",
+        category: "peptides",
+        summary: "Regulatory analysis showing that independent testing by FDA and state agencies consistently finds compounded drugs fail quality specifications at significantly higher rates than FDA-approved drugs, with documented contamination outbreaks and lack of Good Manufacturing Practice (GMP) requirements.",
+        keyFindings: [
+          "FDA and state agency testing finds compounded drugs fail specifications at higher rates than FDA-approved drugs",
+          "Three documented meningitis outbreaks traced to contaminated compounded sterile injections",
+          "Compounded drugs exempt from Good Manufacturing Practice (GMP) requirements",
+          "Quality testing to assess product quality is inconsistent across compounding pharmacies",
+          "Direct sourcing with GMP-compliant manufacturing and third-party COA provides the verification layer absent from standard compounding"
+        ],
+        relevance: "Establishes the quality-control gap that the Reset Biology co-op model addresses. By sourcing directly with mandatory third-party COA testing (HPLC purity \u226595%, mass spectrometry identity confirmation), members receive the verification layer that standard compounding cannot guarantee.",
+        link: "https://pubmed.ncbi.nlm.nih.gov/23526368/"
       }
     ]
   },
