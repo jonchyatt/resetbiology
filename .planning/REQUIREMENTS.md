@@ -15,46 +15,46 @@
 ### Workout Research (WORK)
 
 - [ ] **WORK-01**: Research on Dr. Keith Baar's tendon and ligament collagen synthesis protocol (gelatin + vitamin C pre-exercise)
-- [ ] **WORK-02**: Research on neurological muscle training — neuromuscular recruitment, mind-muscle connection, motor unit activation
-- [ ] **WORK-03**: Research on VO2 max training — REHIT (Reduced Exertion High Intensity Training), sprint protocols, mitochondrial biogenesis
-- [ ] **WORK-04**: Research on the chain: cognitive sharpness → neuromuscular control → muscle preservation → bone density → longevity
+- [ ] **WORK-02**: Research on neurological muscle training -- neuromuscular recruitment, mind-muscle connection, motor unit activation
+- [ ] **WORK-03**: Research on VO2 max training -- REHIT (Reduced Exertion High Intensity Training), sprint protocols, mitochondrial biogenesis
+- [ ] **WORK-04**: Research on the chain: cognitive sharpness -> neuromuscular control -> muscle preservation -> bone density -> longevity
 - [ ] **WORK-05**: Research on resistance training for bone health and sarcopenia prevention
 - [ ] **WORK-06**: Cross-references to breath training (hypoxic conditioning improves VO2 max), nutrition (supporting recovery), and peptides (BPC-157 for tendons)
 
 ### Nutrition Research (NUTR)
 
-- [ ] **NUTR-01**: Research on Dr. Boz insulin ratio (glucose÷ketone ratio) as metabolic health marker
-- [ ] **NUTR-02**: Research on intermittent fasting — FGF21 pathway activation, autophagy, metabolic switching
-- [ ] **NUTR-03**: Research on fructose/sugar as FGF21 pathway stimulator — the counterintuitive metabolic medicine angle
+- [ ] **NUTR-01**: Research on Dr. Boz insulin ratio (glucose / ketone ratio) as metabolic health marker
+- [ ] **NUTR-02**: Research on intermittent fasting -- FGF21 pathway activation, autophagy, metabolic switching
+- [ ] **NUTR-03**: Research on fructose/sugar as FGF21 pathway stimulator -- the counterintuitive metabolic medicine angle
 - [ ] **NUTR-04**: Research on raising metabolism and BMR as key to mitochondrial biogenesis (NOT caloric restriction)
-- [ ] **NUTR-05**: Research showing low-calorie diets reduce basal metabolic rate — the anti-starvation-diet evidence
+- [ ] **NUTR-05**: Research showing low-calorie diets reduce basal metabolic rate -- the anti-starvation-diet evidence
 - [ ] **NUTR-06**: Research on protein timing/distribution for muscle protein synthesis (supports workout recovery)
 - [ ] **NUTR-07**: Cross-references to exercise (fuel for VO2 max training), breath (fasting + breathwork synergy), peptides (metabolic peptides like MOTS-c, 5-Amino-1MQ)
 
 ### Mental Mastery Modules (MMOD)
 
-- [ ] **MMOD-01**: Research on neuroplasticity — structured cognitive training improving real-world function
-- [ ] **MMOD-02**: Research on cognitive reserve — how mental training protects against age-related decline
-- [ ] **MMOD-03**: Cross-references to neuromuscular connection (sharp mind → muscle control), N-Back, ear training
+- [ ] **MMOD-01**: Research on neuroplasticity -- structured cognitive training improving real-world function
+- [ ] **MMOD-02**: Research on cognitive reserve -- how mental training protects against age-related decline
+- [ ] **MMOD-03**: Cross-references to neuromuscular connection (sharp mind -> muscle control), N-Back, ear training
 
 ### Breath Training (BRTH)
 
 - [ ] **BRTH-01**: Research for each breath pattern: Vagal Reset (4-8), Deep Relaxation (4-6), 4-7-8 Sleep, Box Breathing (4-4-4-4), Energizing (2-2)
-- [ ] **BRTH-02**: Research on Wim Hof style intermittent hypoxia — autophagy induction AND VO2 max improvement
+- [ ] **BRTH-02**: Research on Wim Hof style intermittent hypoxia -- autophagy induction AND VO2 max improvement
 - [ ] **BRTH-03**: Research on CO2 tolerance, parasympathetic activation, and growth hormone connection
 - [ ] **BRTH-04**: All existing placeholder PMIDs in Breath Training section replaced with real verified citations
 - [ ] **BRTH-05**: Cross-references to VO2 max (WORK-03), mitochondrial health (NUTR-04), and meditation (MEDT)
 
 ### Journaling (JRNL)
 
-- [ ] **JRNL-01**: Research on expressive writing benefits — Pennebaker's foundational work and subsequent studies
+- [ ] **JRNL-01**: Research on expressive writing benefits -- Pennebaker's foundational work and subsequent studies
 - [ ] **JRNL-02**: Research on self-reflection, gratitude journaling, and mood tracking improving outcomes
 - [ ] **JRNL-03**: At least 3 studies demonstrating journaling improves health and psychological outcomes
 
 ### Vision Training (VISN)
 
 - [ ] **VISN-01**: Research on accommodation exercises, Snellen acuity training, contrast sensitivity
-- [ ] **VISN-02**: Research on visual neuroplasticity in adults — perceptual learning lasting improvements
+- [ ] **VISN-02**: Research on visual neuroplasticity in adults -- perceptual learning lasting improvements
 - [ ] **VISN-03**: At least 3 studies with real PubMed links on trainability of visual function
 
 ### N-Back / Cognitive Training (NBACK)
@@ -89,7 +89,7 @@
 
 ### Deep Meditation (MEDT)
 
-- [ ] **MEDT-01**: Research on guided meditation and mindfulness — neurological changes, default mode network
+- [ ] **MEDT-01**: Research on guided meditation and mindfulness -- neurological changes, default mode network
 - [ ] **MEDT-02**: Research on VR-enhanced meditation efficacy compared to traditional
 - [ ] **MEDT-03**: Research on stress reduction meta-analyses (Grossman, Goyal)
 - [ ] **MEDT-04**: Cross-references to breath training (parasympathetic overlap), journaling (reflective practices)
@@ -113,17 +113,68 @@
 
 ## Traceability
 
-Updated during roadmap creation.
-
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| (populated by roadmapper) | | |
+| BRTH-01 | Phase 1 | Pending |
+| BRTH-02 | Phase 1 | Pending |
+| BRTH-03 | Phase 1 | Pending |
+| BRTH-04 | Phase 1 | Pending |
+| BRTH-05 | Phase 1 | Pending |
+| WORK-01 | Phase 1 | Pending |
+| WORK-02 | Phase 1 | Pending |
+| WORK-03 | Phase 1 | Pending |
+| WORK-04 | Phase 1 | Pending |
+| WORK-05 | Phase 1 | Pending |
+| WORK-06 | Phase 1 | Pending |
+| NUTR-01 | Phase 1 | Pending |
+| NUTR-02 | Phase 1 | Pending |
+| NUTR-03 | Phase 1 | Pending |
+| NUTR-04 | Phase 1 | Pending |
+| NUTR-05 | Phase 1 | Pending |
+| NUTR-06 | Phase 1 | Pending |
+| NUTR-07 | Phase 1 | Pending |
+| NBACK-01 | Phase 2 | Pending |
+| NBACK-02 | Phase 2 | Pending |
+| NBACK-03 | Phase 2 | Pending |
+| EAR-01 | Phase 2 | Pending |
+| EAR-02 | Phase 2 | Pending |
+| EAR-03 | Phase 2 | Pending |
+| EAR-04 | Phase 2 | Pending |
+| VISN-01 | Phase 2 | Pending |
+| VISN-02 | Phase 2 | Pending |
+| VISN-03 | Phase 2 | Pending |
+| MMOD-01 | Phase 2 | Pending |
+| MMOD-02 | Phase 2 | Pending |
+| MMOD-03 | Phase 2 | Pending |
+| PEPT-01 | Phase 3 | Pending |
+| PEPT-02 | Phase 3 | Pending |
+| PEPT-03 | Phase 3 | Pending |
+| PEPT-04 | Phase 3 | Pending |
+| COOP-01 | Phase 3 | Pending |
+| COOP-02 | Phase 3 | Pending |
+| JRNL-01 | Phase 4 | Pending |
+| JRNL-02 | Phase 4 | Pending |
+| JRNL-03 | Phase 4 | Pending |
+| ACCT-01 | Phase 4 | Pending |
+| ACCT-02 | Phase 4 | Pending |
+| ACCT-03 | Phase 4 | Pending |
+| GAME-01 | Phase 4 | Pending |
+| GAME-02 | Phase 4 | Pending |
+| GAME-03 | Phase 4 | Pending |
+| MEDT-01 | Phase 4 | Pending |
+| MEDT-02 | Phase 4 | Pending |
+| MEDT-03 | Phase 4 | Pending |
+| MEDT-04 | Phase 4 | Pending |
+| QUAL-01 | Phase 5 | Pending |
+| QUAL-02 | Phase 5 | Pending |
+| QUAL-03 | Phase 5 | Pending |
+| QUAL-04 | Phase 5 | Pending |
 
 **Coverage:**
-- v1 requirements: 48 total
-- Mapped to phases: 0
-- Unmapped: 48
+- v1 requirements: 54 total
+- Mapped to phases: 54
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-18*
-*Last updated: 2026-03-18 after initial definition*
+*Last updated: 2026-03-19 after roadmap creation -- all 54 requirements mapped to phases*
