@@ -35,7 +35,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 Plans:
 - [x] 01-01-PLAN.md -- Breath training research: replace fabricated PMIDs with 4 verified studies covering all breathing patterns, Wim Hof/hypoxia, CO2 tolerance (DONE 2026-03-19, commit 6491b491)
 - [x] 01-02-PLAN.md -- Exercise science research: 8 verified studies covering Baar protocol, neuromuscular EMG, REHIT/VO2 max, sarcopenia-cognition chain, bone health (DONE 2026-03-19, commit da751ff0)
-- [ ] 01-03-PLAN.md -- Nutrition science research: 7 verified studies covering GKI/Dr. Boz, FGF21/autophagy, fructose signaling, anti-starvation evidence, protein timing
+- [x] 01-03-PLAN.md -- Nutrition science research: 7 verified studies covering GKI/Dr. Boz, FGF21/autophagy, fructose signaling, anti-starvation evidence, protein timing (DONE 2026-03-19, commit 496ee62c)
 - [ ] 01-04-PLAN.md -- Cross-domain integration: audit and strengthen 6 connection threads, verify portal URLs, final PMID audit
 
 ### Phase 2: Cognitive Science
@@ -112,7 +112,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|---------------|--------|-----------|
-| 1. Foundational Physiology | 0/4 | Planned | - |
+| 1. Foundational Physiology | 3/4 | In progress | - |
 | 2. Cognitive Science | 0/3 | Not started | - |
 | 3. Peptide Science | 0/3 | Not started | - |
 | 4. Behavioral Science | 0/3 | Not started | - |

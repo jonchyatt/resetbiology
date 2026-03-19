@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-03-18)
 ## Current Position
 
 Phase: 1 of 5 (Foundational Physiology)
-Plan: 2 of 4 in current phase
+Plan: 3 of 4 in current phase
 Status: In progress
-Last activity: 2026-03-19 -- Completed 01-02-PLAN.md (exercise-protocols section)
+Last activity: 2026-03-19 -- Completed 01-03-PLAN.md (nutrition-science section)
 
-Progress: [██░░░░░░░░░░░░░░░░░░] 12% (2/16 plans)
+Progress: [███░░░░░░░░░░░░░░░░░] 19% (3/16 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 2
-- Average duration: 2.5 min
-- Total execution time: 0.08 hours
+- Total plans completed: 3
+- Average duration: 2.7 min
+- Total execution time: 0.13 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-foundational-physiology | 2 completed | 5 min | 2.5 min |
+| 01-foundational-physiology | 3 completed | 8 min | 2.7 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (2 min), 01-02 (3 min)
-- Trend: --
+- Last 5 plans: 01-01 (2 min), 01-02 (3 min), 01-03 (3 min)
+- Trend: stable
 
 *Updated after each plan completion*
 
@@ -53,6 +53,10 @@ Recent decisions affecting current work:
 - [01-02]: HIIT meta-analysis PMID 28401638 removed; replaced by specific REHIT studies that directly match our protocol
 - [01-02]: Bone health study PMID 30513557 retained and enriched — serves as final link in the longevity chain narrative
 - [01-02]: crossReferences rendered via relevance text across all 8 exercise studies; pattern consistent with 01-01
+- [01-03]: Old micronutrient study (PMID 29137137) and wrong-journal TRE study (PMID 32341528) removed; replaced by 7 verified studies covering GKI, FGF21, anti-starvation evidence, and protein MPS
+- [01-03]: Fructose study (PMID 29107295) framed explicitly as signaling pathway research — "not a recommendation for high-fructose diets"
+- [01-03]: Dr. Boz cited under Meidenbauer/Seyfried 2015 (PMID 25798181) — scientific origin of GKI, with Dr. Boz acknowledged as popularizer
+- [01-03]: PMID 29414855 author attribution corrected from Lonnie M et al. to Stokes et al. 2018
 
 ### Pending Todos
 
@@ -60,8 +64,8 @@ None yet.
 
 ### Blockers/Concerns
 
-- nutrition-science section still has older studies — Plan 01-03 replaces them
 - Duplicate route structure (app/ vs src/app/) -- always edit in app/ directory
+- One plan remaining in Phase 1 (01-04) — check ROADMAP.md for scope
 
 ## Autonomous Mode
 
@@ -91,6 +95,6 @@ This milestone is approved for fully autonomous execution:
 
 ## Session Continuity
 
-Last session: 2026-03-19T04:52:03Z
-Stopped at: Completed 01-02-PLAN.md — exercise-protocols section replaced with 8 verified PubMed studies (Keith Baar, REHIT x2, PGC-1alpha, mind-muscle EMG, sarcopenia-cognition, NMJ biology, bone health)
+Last session: 2026-03-19T04:57:40Z
+Stopped at: Completed 01-03-PLAN.md — nutrition-science section replaced with 7 verified PubMed studies (GKI/Dr. Boz, TRE mechanisms, FGF21 autophagy, fructose FGF21, adaptive thermogenesis x2, protein MPS)
 Resume file: None
