@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: in_progress
-stopped_at: Completed 05-01-PLAN.md — Phase 5 PMID sweep: all 74 PMIDs verified HTTP 200, zero duplicates, zero placeholders, 1:1 link parity. QUAL-01 and QUAL-02 satisfied. Ready for 05-02 cross-domain audit.
-last_updated: "2026-03-19T15:39:00Z"
-last_activity: "2026-03-19 -- Completed 05-01-PLAN.md (PMID verification: 74/74 PMIDs verified HTTP 200, zero issues found)"
+status: complete
+stopped_at: Completed 05-02-PLAN.md — Milestone v1.0 COMPLETE. All 4 QUAL requirements satisfied. 13/13 sections have portal URLs and cross-domain connections. Build clean.
+last_updated: "2026-03-19T15:57:37Z"
+last_activity: "2026-03-19 -- Completed 05-02-PLAN.md (cross-domain audit: QUAL-03 and QUAL-04 satisfied, Milestone v1.0 COMPLETE)"
 progress:
   total_phases: 5
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 16
   completed_plans: 16
   percent: 100
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-18)
 
 **Core value:** Every protocol and recommendation must be justified by real peer-reviewed research
-**Current focus:** Phase 5 QA — Plan 01 (PMID sweep) COMPLETE. Plan 02 (cross-domain audit) is next.
+**Current focus:** MILESTONE v1.0 COMPLETE — all 5 phases, 16 plans, 54 requirements satisfied.
 
 ## Current Position
 
-Phase: 5 of 5 (Quality Assurance — In Progress)
-Plan: 1 of 2 in phase 5 complete (05-01 PMID sweep; 05-02 cross-domain audit is next)
-Status: Phase 5 Plan 01 COMPLETE — 05-02 cross-domain audit is next
-Last activity: 2026-03-19 -- Completed 05-01-PLAN.md (PMID verification: 74/74 PMIDs verified HTTP 200, zero issues found)
+Phase: 5 of 5 (Quality Assurance — COMPLETE)
+Plan: 2 of 2 in phase 5 complete (05-01 PMID sweep; 05-02 cross-domain audit)
+Status: MILESTONE v1.0 COMPLETE — all 4 QUAL requirements satisfied, build clean, ready for production push
+Last activity: 2026-03-19 -- Completed 05-02-PLAN.md (cross-domain audit: QUAL-03 and QUAL-04 satisfied)
 
 Progress: [████████████████████] 100% (16/16 plans)
 
@@ -47,11 +47,11 @@ Progress: [████████████████████] 100% (1
 | 02-cognitive-science | 5 completed | 31 min | 6.2 min |
 | 03-peptide-science | 3 completed | 8 min | 2.7 min |
 | 04-behavioral-science | 3 completed | 14 min | 4.7 min |
-| 05-quality-assurance | 1 completed | 8 min | 8 min |
+| 05-quality-assurance | 2 completed | 26 min | 13 min |
 
 **Recent Trend:**
-- Last 5 plans: 04-01 (6 min), 04-02 (5 min), 04-03 (3 min), 05-01 (8 min)
-- Trend: stable; PMID sweep (8 min) slightly longer due to 74 HTTP verifications
+- Last 5 plans: 04-01 (6 min), 04-02 (5 min), 04-03 (3 min), 05-01 (8 min), 05-02 (18 min)
+- Trend: stable; 05-02 longer due to full build verification on Windows
 
 *Updated after each plan completion*
 
@@ -117,6 +117,10 @@ Recent decisions affecting current work:
 - [04-03]: meditation-stress-1 removed from general-health without replacement — dedicated meditation-science section provides rich coverage; general-health retains 2 strong studies
 - [04-03]: Final PMID audit: all 16 behavioral PMIDs present; zero fabricated; TypeScript clean; Phase 4 COMPLETE
 - [05-01]: Verification-only plan — all 74 PMIDs on /education returned HTTP 200; zero duplicates, zero placeholders, 1:1 pmid-link parity; no code changes required; QUAL-01 and QUAL-02 satisfied
+- [05-02]: general-health practicalApplication updated to include /breath, /workout, /portal — was the only section missing specific portal URLs
+- [05-02]: sleep-health-1 crossReferences: ["breath-training", "meditation-science"] — sleep connects to parasympathetic breath activation and MBSR
+- [05-02]: cold-exposure-1 crossReferences: ["exercise-protocols", "breath-training"] — cold exposure bridges REHIT recovery and Wim Hof breathing
+- [05-02]: Final crossReferences count: 58 (was 56); 13/13 sections now have outgoing cross-domain connections; QUAL-03 and QUAL-04 satisfied
 
 ### Pending Todos
 
@@ -154,6 +158,6 @@ This milestone is approved for fully autonomous execution:
 
 ## Session Continuity
 
-Last session: 2026-03-19T15:39:00Z
-Stopped at: Completed 05-01-PLAN.md — 74/74 PMIDs verified HTTP 200, zero issues, QUAL-01 and QUAL-02 satisfied. Ready for 05-02 cross-domain audit.
+Last session: 2026-03-19T15:57:37Z
+Stopped at: Completed 05-02-PLAN.md — Milestone v1.0 COMPLETE. All 54 requirements across 5 phases satisfied. Ready for production push (git push auto-deploys to Vercel).
 Resume file: None

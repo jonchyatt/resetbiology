@@ -16,7 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Cognitive Science** - Research N-Back, ear training, vision training, and mental mastery through the neuroplasticity lens (5/5 plans DONE, EAR-04 gap closed 2026-03-19)
 - [x] **Phase 3: Peptide Science** - Research all 9 peptides plus co-op documentation, building on exercise/nutrition context from Phase 1 (completed 2026-03-19)
 - [x] **Phase 4: Behavioral Science** - Research journaling, accountability, gamification/stakes, and deep meditation (COMPLETE 2026-03-19)
-- [ ] **Phase 5: Quality Assurance & Cross-Domain Integration** - Replace all fake PMIDs, verify every link, weave cross-domain connections, deploy
+- [x] **Phase 5: Quality Assurance & Cross-Domain Integration** - Replace all fake PMIDs, verify every link, weave cross-domain connections, deploy (COMPLETE 2026-03-19)
 
 ## Phase Details
 
@@ -104,7 +104,7 @@ Plans:
 
 Plans:
 - [x] 05-01-PLAN.md -- Full PMID verification sweep: 74 PMIDs extracted and verified HTTP 200, zero duplicates, zero placeholders, 1:1 pmid-link parity confirmed — no code changes required (DONE 2026-03-19)
-- [ ] 05-02-PLAN.md -- Practical application and cross-domain audit: verify all 13 sections have portal URLs in practicalApplication, add crossReferences to general-health studies, confirm no section is an island, final build verification
+- [x] 05-02-PLAN.md -- Practical application and cross-domain audit: fixed general-health practicalApplication (added /breath, /workout, /portal), added crossReferences to sleep-health-1 and cold-exposure-1, confirmed 13/13 sections have portal URLs and cross-domain connections, build clean (DONE 2026-03-19, commits d8bd9238/31a5da39)
 
 ## Progress
 
@@ -117,4 +117,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | 2. Cognitive Science | 5/5 | Complete    | 2026-03-19 |
 | 3. Peptide Science | 3/3 | Complete    | 2026-03-19 |
 | 4. Behavioral Science | 3/3 | Complete    | 2026-03-19 |
-| 5. Quality Assurance | 1/2 | In progress | 05-01 done 2026-03-19 |
+| 5. Quality Assurance | 2/2 | Complete    | 2026-03-19 |
