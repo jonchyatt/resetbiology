@@ -938,6 +938,7 @@ const researchData: ResearchSection[] = [
     studies: [
       {
         id: "ear-auditory-neuroplasticity",
+        tldr: "Music training rewires your auditory system from brainstem to cortex",
         title: "Music training for the development of auditory skills",
         authors: "Kraus N, Chandrasekaran B",
         journal: "Nature Reviews Neuroscience",
@@ -952,12 +953,13 @@ const researchData: ResearchSection[] = [
           "Benefits extend bidirectionally: from cortex shaping subcortical processing and vice versa",
           "Musical training functions like exercise for the auditory brain -- conditioning it for enhanced listening abilities"
         ],
-        relevance: "Establishes that auditory training produces real neuroplastic changes -- the scientific foundation for our pitch recognition training. The 'exercise for the brain' framing parallels how physical exercise drives neuromuscular adaptation (see Exercise Science section). Cross-reference: N-Back training (see N-Back section) engages both auditory and visual working memory in dual mode, making it a complementary cross-modal training partner for dedicated ear training. Sound-focused breathing practices like mantra repetition and resonant humming engage the same auditory attention circuits that ear training strengthens (see Breath Training section), creating a bidirectional synergy between meditative listening and pitch discrimination.",
+        relevance: "Why this matters: Ear training is not just about music — it rewires your entire auditory nervous system, improving speech processing, language perception, and environmental sound discrimination. The changes are structural and functional, from brainstem to cortex. Cross-reference: N-Back training (see N-Back section) engages both auditory and visual working memory in dual mode, making it a complementary cross-modal training partner. Sound-focused breathing practices engage the same auditory attention circuits (see Breath Training section).",
         crossReferences: ["nback-working-memory", "exercise-protocols", "breath-training"],
         link: "https://pubmed.ncbi.nlm.nih.gov/20648064/"
       },
       {
         id: "ear-brain-plasticity-framework",
+        tldr: "Auditory brain changes happen in days and compound over years — adults included",
         title: "Musical training as a framework for brain plasticity: behavior, function, and structure",
         authors: "Herholz SC, Zatorre RJ",
         journal: "Neuron",
@@ -972,12 +974,13 @@ const researchData: ResearchSection[] = [
           "Controlled training studies provide clear experimental evidence for training-induced plasticity in adults",
           "Synthesizes common patterns across the broader neuroplasticity research literature"
         ],
-        relevance: "Confirms that auditory neuroplasticity persists in adults and operates across multiple timescales -- from rapid skill acquisition (days) to structural brain changes (years). This multi-timescale plasticity is why consistent practice with our pitch recognition trainer produces measurable improvement. Cross-reference: the same adult neuroplasticity mechanisms that enable auditory training also underpin cognitive reserve against age-related decline (see Mental Mastery section).",
+        relevance: "Why this matters: You do not need to be a childhood musician to benefit. Controlled training studies prove adults achieve behavioral, structural, and functional brain changes — starting within days and compounding over years. Consistent practice with our pitch recognition trainer operates within this proven plasticity window. Cross-reference: the same adult neuroplasticity mechanisms underpin cognitive reserve against age-related decline (see Mental Mastery section).",
         crossReferences: ["mental-mastery"],
         link: "https://pubmed.ncbi.nlm.nih.gov/23141061/"
       },
       {
         id: "ear-spacing-effect",
+        tldr: "Optimal review spacing is 20-40% of desired retention interval — the science behind FSRS",
         title: "Spacing effects in learning: a temporal ridgeline of optimal retention",
         authors: "Cepeda NJ, Vul E, Rohrer D, Wixted JT, Pashler H",
         journal: "Psychological Science",
@@ -991,12 +994,13 @@ const researchData: ResearchSection[] = [
           "Increasing the interstudy gap first increases then gradually reduces final retention -- a temporal ridgeline",
           "Many educational practices are highly inefficient by ignoring spacing-delay interactions"
         ],
-        relevance: "The scientific foundation for our FSRS (Free Spaced Repetition Scheduler) algorithm in pitch recognition training. FSRS calculates optimal review intervals for each note based on your personal forgetting curve -- the same spacing principle Cepeda demonstrated produces maximal long-term retention. Sleep consolidation is real for pitch memory: the first review should come the next day, not the same session. Cross-reference: N-Back training (see N-Back section) exercises the working memory that holds auditory information between spaced repetition reviews.",
+        relevance: "Why this matters: Most people study too soon or too late — this study maps the exact sweet spot. Review at 20-40% of your desired retention interval for maximum long-term memory. Our FSRS algorithm uses this principle to calculate optimal review intervals for each note based on your personal forgetting curve. Sleep consolidation is real for pitch memory: first review should come the next day, not the same session. Cross-reference: N-Back training (see N-Back section) exercises the working memory that holds auditory information between reviews.",
         crossReferences: ["nback-working-memory"],
         link: "https://pubmed.ncbi.nlm.nih.gov/19076480/"
       },
       {
         id: "ear-music-therapy-aging",
+        tldr: "Musical practice protects cognitive functions that normally decline with age",
         title: "Musical practice as an enhancer of cognitive function in healthy aging - A systematic review and meta-analysis",
         authors: "Roman-Caballero R, Arnedo M, Trivino M, Lupianez J",
         journal: "PLoS One",
@@ -1010,7 +1014,7 @@ const researchData: ResearchSection[] = [
           "Protects cognitive functions that typically decline with aging",
           "Three mechanisms identified: direct skill development, improved compensatory processes, and preserved processing speed"
         ],
-        relevance: "Connects ear training directly to cognitive reserve -- the same protective mechanism documented in the Mental Mastery section. Musical practice isn't just about pitch discrimination; it's a cognitive training modality that preserves processing speed and executive function as you age. Cross-reference: this protection parallels the cognitive reserve evidence in structured cognitive training (see Mental Mastery section) and complements the N-Back working memory training that exercises the auditory processing pathway (see N-Back section).",
+        relevance: "Why this matters: Ear training is not just about hearing notes — it is a cognitive training modality that preserves processing speed and executive function as you age. Musical practice builds cognitive reserve through three mechanisms: direct skill development, improved compensatory processes, and preserved processing speed. Cross-reference: this protection parallels cognitive reserve evidence (see Mental Mastery section) and complements N-Back working memory training that exercises the auditory processing pathway (see N-Back section).",
         crossReferences: ["mental-mastery", "nback-working-memory"],
         link: "https://pubmed.ncbi.nlm.nih.gov/30481227/"
       }
