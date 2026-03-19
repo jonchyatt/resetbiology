@@ -1247,6 +1247,7 @@ const researchData: ResearchSection[] = [
     studies: [
       {
         id: "journaling-pennebaker-1",
+        tldr: "Suppressing difficult experiences acts as a chronic physiological stressor — writing releases it",
         title: "Disclosure of traumas and psychosomatic processes",
         authors: "Pennebaker JW, Susman JR",
         journal: "Social Science & Medicine",
@@ -1260,12 +1261,13 @@ const researchData: ResearchSection[] = [
           "Actively discussing upsetting experiences produces immediate reductions in autonomic activity",
           "Suppressing thoughts about trauma creates a cumulative physiological stressor increasing psychosomatic disease risk"
         ],
-        relevance: "The foundational study that launched expressive writing research. Pennebaker's inhibition theory — that suppressing difficult experiences acts as a chronic physiological stressor — explains why journaling works at a biological level, not just as a coping tool. Cross-reference: the parasympathetic activation from expressive writing parallels the vagal tone benefits documented in our Breath Training research (see Breath Training section).",
+        relevance: "Why this matters: Every undisclosed difficult experience you carry is a low-grade physiological stressor — increasing disease risk through cumulative autonomic burden. Writing about it produces immediate reductions in autonomic stress activity. This is not journaling as a coping tool; it is journaling as a physiological intervention. Cross-reference: the parasympathetic activation from expressive writing parallels vagal tone benefits in Breath Training (see Breath Training section).",
         crossReferences: ["breath-training", "meditation-science"],
         link: "https://pubmed.ncbi.nlm.nih.gov/3279521/"
       },
       {
         id: "journaling-petrie-1",
+        tldr: "Writing about trauma produced measurably higher antibody levels — objective immune boost",
         title: "Disclosure of trauma and immune response to a hepatitis B vaccination program",
         authors: "Petrie KJ, Booth RJ, Pennebaker JW, Davison KP, Thomas MG",
         journal: "Journal of Consulting and Clinical Psychology",
@@ -1279,12 +1281,13 @@ const researchData: ResearchSection[] = [
           "Objective biological outcome (antibody titers) — not just self-reported well-being",
           "Further evidence linking emotional disclosure with health-protective immune outcomes"
         ],
-        relevance: "Moves expressive writing from subjective reports to objective immune measurement. The hepatitis B antibody response is a concrete, measurable outcome that cannot be attributed to placebo — writing about difficult experiences literally strengthened immune defense.",
+        relevance: "Why this matters: This is not a self-reported 'I feel better' outcome. Participants who wrote about trauma developed significantly higher hepatitis B antibody titers at 4 and 6 months — a concrete immune measurement that cannot be attributed to placebo. Writing about difficult experiences literally strengthened their bodies' protective response.",
         crossReferences: ["meditation-science"],
         link: "https://pubmed.ncbi.nlm.nih.gov/7593871/"
       },
       {
         id: "journaling-gratitude-1",
+        tldr: "Gratitude journaling reduced inflammation and boosted parasympathetic HRV",
         title: "Pilot Randomized Study of a Gratitude Journaling Intervention on Heart Rate Variability and Inflammatory Biomarkers in Patients With Stage B Heart Failure",
         authors: "Redwine LS, Henry BL, Pung MA, Wilson K, Chinh K, Knight B, Jain S, Rutledge T, Greenberg B, Maisel A, Mills PJ",
         journal: "Psychosomatic Medicine",
@@ -1298,12 +1301,13 @@ const researchData: ResearchSection[] = [
           "Increased parasympathetic HRV responses during gratitude journaling task (F=4.2, p=.036)",
           "Same parasympathetic/HRV mechanism activated by slow breathing — cross-domain bridge"
         ],
-        relevance: "Bridges journaling to breath training through shared parasympathetic activation. Gratitude writing activates the same vagal tone pathway (increased HRV) as our 4-8 Vagal Reset and 4-7-8 Sleep breathing patterns — two complementary tools for the same autonomic nervous system benefit. See Breath Training section for the HRV meta-analysis.",
+        relevance: "Why this matters: Gratitude writing activates the same vagal tone pathway as our 4-8 Vagal Reset and 4-7-8 Sleep breathing patterns — increased parasympathetic HRV. Plus, it reduced inflammatory biomarkers. Two complementary tools (journaling + breathwork) for the same autonomic nervous system benefit. See Breath Training section for the HRV meta-analysis.",
         crossReferences: ["breath-training", "meditation-science"],
         link: "https://pubmed.ncbi.nlm.nih.gov/27187845/"
       },
       {
         id: "journaling-smyth-meta-1",
+        tldr: "Meta-analysis confirms writing improves health across 4 domains — despite temporary distress",
         title: "Written emotional expression: effect sizes, outcome types, and moderating variables",
         authors: "Smyth JM",
         journal: "Journal of Consulting and Clinical Psychology",
@@ -1317,7 +1321,7 @@ const researchData: ResearchSection[] = [
           "Effect sizes meaningful and moderated by participant type, gender, duration, and writing instructions",
           "Health behaviors were unaffected — benefits operated through psychological/physiological mechanisms, not behavior change"
         ],
-        relevance: "The meta-analytic confirmation of Pennebaker's theory across multiple studies. Honest framing: writing temporarily increases distress during the session, but this is part of the therapeutic process, not a side effect. The benefits are real and operate through direct physiological mechanisms — immune and autonomic — not through changed habits.",
+        relevance: "Why this matters: Yes, writing about difficult experiences temporarily increases distress during the session — but that is part of the therapeutic process, not a side effect. The benefits are real across physical health, psychological well-being, physiological functioning, and general functioning — and they operate through direct physiological mechanisms (immune and autonomic), not through changed habits.",
         crossReferences: ["meditation-science"],
         link: "https://pubmed.ncbi.nlm.nih.gov/9489272/"
       }
