@@ -103,7 +103,7 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 05-01-PLAN.md -- Full PMID verification sweep: extract all ~70 PMIDs, verify each resolves to real PubMed page (HTTP 200), check for duplicates/placeholders/format issues, fix any failures
+- [x] 05-01-PLAN.md -- Full PMID verification sweep: 74 PMIDs extracted and verified HTTP 200, zero duplicates, zero placeholders, 1:1 pmid-link parity confirmed — no code changes required (DONE 2026-03-19)
 - [ ] 05-02-PLAN.md -- Practical application and cross-domain audit: verify all 13 sections have portal URLs in practicalApplication, add crossReferences to general-health studies, confirm no section is an island, final build verification
 
 ## Progress
@@ -117,4 +117,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | 2. Cognitive Science | 5/5 | Complete    | 2026-03-19 |
 | 3. Peptide Science | 3/3 | Complete    | 2026-03-19 |
 | 4. Behavioral Science | 3/3 | Complete    | 2026-03-19 |
-| 5. Quality Assurance | 0/2 | Not started | - |
+| 5. Quality Assurance | 1/2 | In progress | 05-01 done 2026-03-19 |
