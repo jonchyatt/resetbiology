@@ -10,27 +10,27 @@ See: .planning/PROJECT.md (updated 2026-03-18)
 ## Current Position
 
 Phase: 1 of 5 (Foundational Physiology)
-Plan: 0 of 4 in current phase
-Status: Ready to plan
-Last activity: 2026-03-19 -- Roadmap created, 5 phases, 54 requirements mapped
+Plan: 1 of 4 in current phase
+Status: In progress
+Last activity: 2026-03-19 -- Completed 01-01-PLAN.md (breath-training section)
 
-Progress: [░░░░░░░░░░░░░░░░░░░░] 0%
+Progress: [█░░░░░░░░░░░░░░░░░░░] 6% (1/16 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 0
-- Average duration: --
-- Total execution time: 0 hours
+- Total plans completed: 1
+- Average duration: 2 min
+- Total execution time: 0.03 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| - | - | - | - |
+| 01-foundational-physiology | 1 completed | 2 min | 2 min |
 
 **Recent Trend:**
-- Last 5 plans: --
+- Last 5 plans: 01-01 (2 min)
 - Trend: --
 
 *Updated after each plan completion*
@@ -46,6 +46,10 @@ Recent decisions affecting current work:
 - [Roadmap]: Cognitive domains (N-Back, ear, vision, mental mastery) grouped as Phase 2 sharing neuroplasticity thread
 - [Roadmap]: Peptides in Phase 3 so exercise/nutrition context exists for synergy cross-references
 - [Roadmap]: QA as Phase 5 to sweep all domains after research is written
+- [01-01]: 4-7-8 dedicated PMID excluded (MEDIUM confidence); pattern covered by Laborde 2022 slow-breathing meta-analysis
+- [01-01]: Box breathing PMID excluded (MEDIUM confidence); covered by meta-analysis umbrella
+- [01-01]: WHM autophagy framed as mechanistic inference only — no direct WHM study proves autophagy in humans
+- [01-01]: crossReferences field renders via relevance text (no UI changes needed for Phase 1)
 
 ### Pending Todos
 
@@ -53,7 +57,8 @@ None yet.
 
 ### Blockers/Concerns
 
-- Education page at `app/education/page.tsx` has existing sections with some fake PMIDs -- Phase 1 must replace these
+- exercise-protocols section still has older studies — Plan 01-02 replaces them
+- nutrition-science section still has older studies — Plan 01-03 replaces them
 - Duplicate route structure (app/ vs src/app/) -- always edit in app/ directory
 
 ## Autonomous Mode
@@ -84,6 +89,6 @@ This milestone is approved for fully autonomous execution:
 
 ## Session Continuity
 
-Last session: 2026-03-19
-Stopped at: Roadmap created, ready to plan Phase 1
+Last session: 2026-03-19T04:46:55Z
+Stopped at: Completed 01-01-PLAN.md — breath-training section replaced with 4 verified PubMed studies
 Resume file: None
