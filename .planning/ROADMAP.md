@@ -67,12 +67,12 @@ Plans:
   3. Peptide-exercise synergies are explicitly documented (BPC-157/TB-500 for tendon repair referencing Baar protocol, Semaglutide muscle loss risk referencing sarcopenia research, Ipamorelin GH for recovery)
   4. The Peptide Co-op section includes documentation on third-party COA testing for purity and direct sourcing benefits, with authoritative references
   5. Zero placeholder or fabricated PMIDs remain in the Peptide Therapeutics section
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 03-01: Peptide research batch 1 (BPC-157, TB-500, Semaglutide, Ipamorelin, Epithalon)
-- [ ] 03-02: Peptide research batch 2 (GHK-Cu, DSIP, MOTS-c, 5-Amino-1MQ) plus co-op documentation
-- [ ] 03-03: Peptide-exercise synergy cross-references and existing PMID replacement
+- [ ] 03-01-PLAN.md -- Peptide research batch 1: replace 8 fabricated PMIDs with 12 verified studies for BPC-157 (3), TB-500 (2), Semaglutide (2), Ipamorelin (2), Epithalon (3) with exercise-protocol cross-references
+- [ ] 03-02-PLAN.md -- Peptide research batch 2: append 11 verified studies for GHK-Cu (3), DSIP (2), MOTS-c (2), 5-Amino-1MQ (2) plus 2 co-op sourcing studies with nutrition-science cross-references
+- [ ] 03-03-PLAN.md -- Synergy cross-references and final audit: update practicalApplication with portal links and cross-domain synergy text, verify all 23 PMIDs present with zero fabricated
 
 ### Phase 4: Behavioral Science
 **Goal**: The education page documents the science of behavior change -- journaling, accountability, gamification with financial stakes, and deep meditation -- each grounded in verified research
