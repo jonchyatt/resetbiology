@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: in_progress
-stopped_at: "Completed 04-02-PLAN.md — gamification-stakes (4 studies) and meditation-science (5 studies). 6 requirements satisfied (GAME-01 through GAME-03, MEDT-01 through MEDT-03)."
-last_updated: "2026-03-19T14:59:09Z"
-last_activity: 2026-03-19 -- Completed 04-02-PLAN.md (gamification + meditation sections; Phase 4 plan 2 of 3 complete)
+stopped_at: "Completed 04-03-PLAN.md — all 5 cross-domain connections wired, duplicate Grossman removed, 16 behavioral PMIDs verified. Phase 4 behavioral science COMPLETE (13 requirements: JRNL-01 through MEDT-04)."
+last_updated: "2026-03-19T15:08:27Z"
+last_activity: 2026-03-19 -- Completed 04-03-PLAN.md (Phase 4 audit complete; Phase 4 behavioral science DONE)
 progress:
   total_phases: 5
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 16
-  completed_plans: 14
-  percent: 88
+  completed_plans: 15
+  percent: 94
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-18)
 
 **Core value:** Every protocol and recommendation must be justified by real peer-reviewed research
-**Current focus:** Phase 3 Peptides COMPLETE — Phase 4 (QA sweep) is next
+**Current focus:** Phase 4 Behavioral Science COMPLETE — Phase 5 (QA sweep) is next
 
 ## Current Position
 
-Phase: 4 of 5 (Behavioral Science — In Progress)
-Plan: 2 of 3 in phase 4 complete (04-02 gamification + meditation)
-Status: Phase 4 in progress — Plan 04-03 (Audit & Cross-Reference Verification) is next
-Last activity: 2026-03-19 -- Completed 04-02-PLAN.md (gamification-stakes + meditation-science; 9 more verified PMIDs)
+Phase: 4 of 5 (Behavioral Science — COMPLETE)
+Plan: 3 of 3 in phase 4 complete (04-03 audit; Phase 4 fully done)
+Status: Phase 4 COMPLETE — Phase 5 (QA sweep) is next
+Last activity: 2026-03-19 -- Completed 04-03-PLAN.md (Phase 4 audit: 5 cross-domain connections wired, duplicate removed, 16 PMIDs verified)
 
-Progress: [███████████████░░░░░] 88% (14/16 plans)
+Progress: [████████████████░░░░] 94% (15/16 plans)
 
 ## Performance Metrics
 
@@ -46,11 +46,11 @@ Progress: [███████████████░░░░░] 88% (14
 | 01-foundational-physiology | 4 completed | 13 min | 3.25 min |
 | 02-cognitive-science | 5 completed | 31 min | 6.2 min |
 | 03-peptide-science | 3 completed | 8 min | 2.7 min |
-| 04-behavioral-science | 2 completed | 11 min | 5.5 min |
+| 04-behavioral-science | 3 completed | 14 min | 4.7 min |
 
 **Recent Trend:**
-- Last 5 plans: 03-02 (3 min), 03-03 (2 min), 04-01 (6 min), 04-02 (5 min)
-- Trend: stable; behavioral science plans 5-6 min due to multiple new sections + dense study data
+- Last 5 plans: 03-03 (2 min), 04-01 (6 min), 04-02 (5 min), 04-03 (3 min)
+- Trend: stable; audit plans fast (3 min) due to targeted verification work
 
 *Updated after each plan completion*
 
@@ -111,6 +111,10 @@ Recent decisions affecting current work:
 - [04-02]: meditation-science uses all 5 studies (M-1 through M-5) — 5-study section is the first in Phase 4; evidence base supported it per RESEARCH.md upgrade path
 - [04-02]: PMID 15256293 (Grossman MBSR) intentionally duplicated between meditation-science and general-health — Plan 04-03 audit will clean duplication
 - [04-02]: Goyal JAMA cross-references exercise-protocols: "no advantage over active interventions like exercise" directly links meditation and exercise evidence chains
+- [04-03]: ear-training added to Brewer DMN crossReferences — Brewer is foundational DMN/attention study, most natural bridge to auditory neuroplasticity
+- [04-03]: Sound-based meditation sentence appended to Brewer relevance text (not replacing prior content) — both breath-training and ear-training connections preserved
+- [04-03]: meditation-stress-1 removed from general-health without replacement — dedicated meditation-science section provides rich coverage; general-health retains 2 strong studies
+- [04-03]: Final PMID audit: all 16 behavioral PMIDs present; zero fabricated; TypeScript clean; Phase 4 COMPLETE
 
 ### Pending Todos
 
@@ -119,7 +123,6 @@ None yet.
 ### Blockers/Concerns
 
 - Duplicate route structure (app/ vs src/app/) -- always edit in app/ directory
-- PMID 15256293 (Grossman) duplicated: meditation-science (behavioral, rich) and general-health (general, sparse) — Plan 04-03 must remove the general-health version
 
 ## Autonomous Mode
 
@@ -149,6 +152,6 @@ This milestone is approved for fully autonomous execution:
 
 ## Session Continuity
 
-Last session: 2026-03-19T14:59:09Z
-Stopped at: Completed 04-02-PLAN.md — gamification-stakes (4 studies) and meditation-science (5 studies). 6 requirements satisfied (GAME-01 through GAME-03, MEDT-01 through MEDT-03).
+Last session: 2026-03-19T15:08:27Z
+Stopped at: Completed 04-03-PLAN.md — Phase 4 behavioral science COMPLETE. All 5 cross-domain connections wired, duplicate Grossman removed, 16 PMIDs verified. Ready for Phase 5 QA sweep.
 Resume file: None
