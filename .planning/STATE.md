@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: in_progress
-stopped_at: Completed 03-02-PLAN.md — 11 verified peptide studies (batch 2 of 2) completing full 23-study peptide-science section.
-last_updated: "2026-03-19T13:07:17Z"
-last_activity: 2026-03-19 -- Completed 03-02-PLAN.md (GHK-Cu/DSIP/MOTS-c/5-Amino-1MQ/co-op verified studies)
+stopped_at: Completed 03-03-PLAN.md — practicalApplication updated with cross-domain synergy text; Phase 3 complete (all 6 requirements satisfied).
+last_updated: "2026-03-19T13:12:30Z"
+last_activity: 2026-03-19 -- Completed 03-03-PLAN.md (practicalApplication + final audit; Phase 3 fully complete)
 progress:
   total_phases: 5
-  completed_phases: 2
-  total_plans: 11
-  completed_plans: 11
-  percent: 69
+  completed_phases: 3
+  total_plans: 16
+  completed_plans: 12
+  percent: 75
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-18)
 
 **Core value:** Every protocol and recommendation must be justified by real peer-reviewed research
-**Current focus:** Phase 3 Peptides — Plan 02 of 3 complete (full 23-study section done); 03-03 is next
+**Current focus:** Phase 3 Peptides COMPLETE — Phase 4 (QA sweep) is next
 
 ## Current Position
 
-Phase: 3 of 5 (Peptide Science — in progress)
-Plan: 2 of 3 in phase 3 complete (03-02 batch 2 verified studies)
-Status: 03-02 complete — 03-03 (practicalApplication update) is next
-Last activity: 2026-03-19 -- Completed 03-02-PLAN.md (GHK-Cu/DSIP/MOTS-c/5-Amino-1MQ/co-op verified studies)
+Phase: 3 of 5 (Peptide Science — COMPLETE)
+Plan: 3 of 3 in phase 3 complete (03-03 practicalApplication + final audit)
+Status: Phase 3 complete — Phase 4 (QA sweep) is next
+Last activity: 2026-03-19 -- Completed 03-03-PLAN.md (practicalApplication + final audit; Phase 3 fully complete)
 
-Progress: [███████████░░░░░░░░░] 69% (11/16 plans)
+Progress: [████████████░░░░░░░░] 75% (12/16 plans)
 
 ## Performance Metrics
 
@@ -45,11 +45,11 @@ Progress: [███████████░░░░░░░░░] 69% (11
 |-------|-------|-------|----------|
 | 01-foundational-physiology | 4 completed | 13 min | 3.25 min |
 | 02-cognitive-science | 5 completed | 31 min | 6.2 min |
-| 03-peptide-science | 2 completed | 6 min | 3 min |
+| 03-peptide-science | 3 completed | 8 min | 2.7 min |
 
 **Recent Trend:**
-- Last 5 plans: 02-03 (5 min), 02-04 (8 min), 02-05 (5 min), 03-01 (3 min), 03-02 (3 min)
-- Trend: stable, data-only plans consistently fast (3 min)
+- Last 5 plans: 02-04 (8 min), 02-05 (5 min), 03-01 (3 min), 03-02 (3 min), 03-03 (2 min)
+- Trend: stable, practicalApplication + audit plans consistently fast (2-3 min)
 
 *Updated after each plan completion*
 
@@ -100,6 +100,10 @@ Recent decisions affecting current work:
 - [03-02]: dsip-2 wired to exercise-protocols: causal DSIP/GH release evidence creates DSIP+ipamorelin complementary protocol framing
 - [03-02]: 5amino1mq-2 wired to both exercise-protocols and nutrition-science: spans sarcopenia prevention and NAD+/SIRT1 metabolic chains
 - [03-02]: Co-op studies placed at end of 23-study array (coop-purity-1, coop-quality-1) — COOP-01 and COOP-02 both satisfied
+- [03-03]: practicalApplication uses /peptides (not full URL) for brevity — matches other section patterns (/breath, /workout, /nutrition)
+- [03-03]: Baar tendon protocol named explicitly — closes peptide healing signals ↔ gelatin+vitamin C structural substrate loop
+- [03-03]: sarcopenia chosen over "muscle loss" — matches exact term in semaglutide-2 keyFindings (grep finds both instances)
+- [03-03]: Final audit passed first attempt — all 23 PMIDs present, zero fabricated, cross-refs exceed minimums, TypeScript clean
 
 ### Pending Todos
 
@@ -108,7 +112,7 @@ None yet.
 ### Blockers/Concerns
 
 - Duplicate route structure (app/ vs src/app/) -- always edit in app/ directory
-- Phase 3 plan 02 complete — 03-03 (practicalApplication update with cross-reference text) is next
+- Phase 3 complete — Phase 4 (QA sweep) is next
 
 ## Autonomous Mode
 
@@ -138,6 +142,6 @@ This milestone is approved for fully autonomous execution:
 
 ## Session Continuity
 
-Last session: 2026-03-19T13:07:17Z
-Stopped at: Completed 03-02-PLAN.md — 11 verified peptide studies (batch 2 of 2) completing full 23-study peptide-science section.
+Last session: 2026-03-19T13:12:30Z
+Stopped at: Completed 03-03-PLAN.md — Phase 3 Peptide Science fully complete (all 6 requirements: PEPT-01 through PEPT-04, COOP-01, COOP-02 satisfied).
 Resume file: None
