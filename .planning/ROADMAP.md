@@ -53,7 +53,7 @@ Plans:
 Plans:
 - [x] 02-01-PLAN.md -- Category type infrastructure + N-Back/working memory research (Jaeggi 2008, Au 2015 meta-analysis, Melby-Lervag 2016 honest counterbalance) (DONE 2026-03-19, commits 36b4f3a0/900bdaf7)
 - [x] 02-02-PLAN.md -- Ear training research (Kraus 2010 auditory neuroplasticity, Herholz 2012 brain plasticity, Cepeda 2008 spacing effect, Roman-Caballero 2018 music therapy) (DONE 2026-03-19, commit 9af805dc)
-- [ ] 02-03-PLAN.md -- Vision science PMID correction (replace 3 bogus PMIDs with Deveau 24556432, Polat 19520103/19622368, Allen 20304003)
+- [x] 02-03-PLAN.md -- Vision science PMID correction (replace 3 bogus PMIDs with Deveau 24556432, Polat 19520103/19622368, Allen 20304003) (DONE 2026-03-19, commit 6a6b280a)
 - [ ] 02-04-PLAN.md -- Mental mastery research (Stern 2012 cognitive reserve, Willis 2006 ACTIVE trial, Park 2013 aging neuroplasticity) + cross-domain audit
 
 ### Phase 3: Peptide Science

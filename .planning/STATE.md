@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: in_progress
-stopped_at: Completed 02-02-PLAN.md — ear-training section with 4 verified studies (Kraus/Herholz/Cepeda/Roman-Caballero) and FSRS connection deployed.
-last_updated: "2026-03-19T06:27:00Z"
-last_activity: 2026-03-19 -- Completed 02-02-PLAN.md (Ear Training auditory neuroplasticity section)
+stopped_at: Completed 02-03-PLAN.md — vision-science section rebuilt with 4 verified PMIDs; all 3 bogus PMIDs removed.
+last_updated: "2026-03-19T06:33:00Z"
+last_activity: 2026-03-19 -- Completed 02-03-PLAN.md (Vision Science verified PMIDs + accommodation training)
 progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 16
-  completed_plans: 6
-  percent: 38
+  completed_plans: 7
+  percent: 44
 ---
 
 # Project State
@@ -26,28 +26,28 @@ See: .planning/PROJECT.md (updated 2026-03-18)
 ## Current Position
 
 Phase: 2 of 5 In Progress (Cognitive Science)
-Plan: 2 of 4 in phase 2 complete (02-02 Ear Training)
-Status: In progress — 02-03 vision-science update is next
-Last activity: 2026-03-19 -- Completed 02-02-PLAN.md (Ear Training auditory neuroplasticity section)
+Plan: 3 of 4 in phase 2 complete (02-03 Vision Science)
+Status: In progress — 02-04 mental-mastery is next
+Last activity: 2026-03-19 -- Completed 02-03-PLAN.md (Vision Science 4 verified PMIDs)
 
-Progress: [██████░░░░░░░░░░░░░░] 38% (6/16 plans)
+Progress: [███████░░░░░░░░░░░░░] 44% (7/16 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 4
-- Average duration: 3.25 min
-- Total execution time: 0.22 hours
+- Total plans completed: 7
+- Average duration: ~4 min
+- Total execution time: ~0.47 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-foundational-physiology | 4 completed | 13 min | 3.25 min |
-| 02-cognitive-science | 2 completed | 13 min | 6.5 min |
+| 02-cognitive-science | 3 completed | 18 min | 6 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-02 (3 min), 01-03 (3 min), 01-04 (5 min), 02-01 (8 min), 02-02 (5 min)
+- Last 5 plans: 01-04 (5 min), 02-01 (8 min), 02-02 (5 min), 02-03 (5 min)
 - Trend: stable
 
 *Updated after each plan completion*
@@ -83,6 +83,9 @@ Recent decisions affecting current work:
 - [02-02]: Cepeda 2008 (19076480) chosen over unverified PMID 24932672 from old code — Cepeda is foundational spacing-effect study, fully PubMed-verified
 - [02-02]: Roman-Caballero 2018 meta-analysis (30481227) included as 4th study to establish EAR-04 cross-reference bridge to mental-mastery (cognitive reserve)
 - [02-02]: FSRS named explicitly in practicalApplication connecting pitch recognition algorithm to peer-reviewed spacing science
+- [02-03]: Deveau 2014 correct PMID is 24556432 (not 24508170=ant genome); Polat practical correct PMID is 19520103 (not 19084554=fish immune); Polat amblyopia 19622368 replaces Scheiman 10416930=myopia spectacles
+- [02-03]: Allen 2010 (20304003) added as 4th study -- PowerRefractor-measured objective accommodation facility training for VISN-01
+- [02-03]: vision-science category changed from "general" to "cognitive" -- visual neuroplasticity is a cognitive domain
 
 ### Pending Todos
 
@@ -91,7 +94,7 @@ None yet.
 ### Blockers/Concerns
 
 - Duplicate route structure (app/ vs src/app/) -- always edit in app/ directory
-- Phase 2 in progress — 02-03 vision-science update is next (fix 3 bogus PMIDs: Deveau 24556432, Polat 19520103/19622368, Allen 20304003)
+- Phase 2 in progress — 02-04 mental-mastery is next
 
 ## Autonomous Mode
 
@@ -121,6 +124,6 @@ This milestone is approved for fully autonomous execution:
 
 ## Session Continuity
 
-Last session: 2026-03-19T06:27:00Z
-Stopped at: Completed 02-02-PLAN.md — ear-training section with 4 verified studies (Kraus/Herholz/Cepeda/Roman-Caballero) and FSRS connection deployed.
+Last session: 2026-03-19T06:33:00Z
+Stopped at: Completed 02-03-PLAN.md — vision-science section rebuilt with 4 verified PMIDs; all 3 bogus PMIDs removed.
 Resume file: None
