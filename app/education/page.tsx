@@ -663,6 +663,72 @@ const researchData: ResearchSection[] = [
     ]
   },
   {
+    id: "mental-mastery",
+    title: "Mental Mastery & Cognitive Reserve",
+    description: "How structured cognitive training builds cognitive reserve -- the brain's resilience against age-related decline -- and why the chain from sharp mind to neuromuscular control to muscle preservation to bone density to longevity makes mental training a longevity strategy, not just a brain game.",
+    category: "cognitive",
+    practicalApplication: "Every cognitive training tool on Reset Biology -- the N-Back trainer, pitch recognition game, and vision exercises at /mental-training and /vision-training -- contributes to cognitive reserve. The ACTIVE trial showed that just 10 sessions of targeted training produced benefits lasting 5+ years. Consistency beats intensity.",
+    studies: [
+      {
+        id: "mental-cognitive-reserve",
+        title: "Cognitive reserve in ageing and Alzheimer's disease",
+        authors: "Stern Y",
+        journal: "Lancet Neurology",
+        year: 2012,
+        pmid: "23079557",
+        category: "cognitive",
+        summary: "The definitive Lancet Neurology review establishing cognitive reserve theory: lifelong experiences including education, occupation, and leisure activities build two types of reserve -- brain reserve (structural neural capital) and cognitive reserve (functional efficiency and flexibility) -- with epidemiological data suggesting cognitive reserve decreases dementia risk by approximately 46%.",
+        keyFindings: [
+          "Lifelong experiences including education, occupation, and leisure activities increase cognitive reserve",
+          "Two reserve types identified: brain reserve (structural) and cognitive reserve (functional task performance efficiency)",
+          "Epidemiological studies suggest cognitive reserve decreases dementia risk by approximately 46%",
+          "Enhanced understanding of reserve mechanisms could lead to interventions that slow cognitive aging"
+        ],
+        relevance: "Cognitive reserve is the 'why' behind all our cognitive training tools. Every N-Back session, every pitch recognition drill, every vision exercise contributes to the reserve that protects your brain against age-related decline. The 46% reduction in dementia risk from higher cognitive reserve makes mental training a longevity strategy, not just a brain game. Cross-reference: the ACTIVE trial below proves this is achievable through structured training, and exercise-driven BDNF (see Exercise Science section) amplifies the neuroplasticity that builds reserve.",
+        crossReferences: ["exercise-protocols", "nback-working-memory", "ear-training", "vision-science"],
+        link: "https://pubmed.ncbi.nlm.nih.gov/23079557/"
+      },
+      {
+        id: "mental-active-trial",
+        title: "Long-term effects of cognitive training on everyday functional outcomes in older adults",
+        authors: "Willis SL, Tennstedt SL, Marsiske M, Ball K, et al. (ACTIVE Study Group)",
+        journal: "JAMA",
+        year: 2006,
+        pmid: "17179457",
+        category: "cognitive",
+        summary: "The largest and most rigorous cognitive training trial ever conducted: 2,832 participants (mean age 73.6) followed for 5 years showed that just 10 sessions of reasoning training produced significantly less difficulty with instrumental activities of daily living -- cooking, managing medications, handling finances -- with booster sessions enhancing the effect.",
+        keyFindings: [
+          "2,832 participants with mean age 73.6 years followed for 5 years",
+          "Reasoning training group reported significantly less difficulty with instrumental activities of daily living",
+          "Training-specific cognitive improvements persisted across the full 5-year follow-up",
+          "Booster training sessions enhanced and extended the performance gains for reasoning and processing speed groups"
+        ],
+        relevance: "The ACTIVE trial answers the practical question: does cognitive training actually help in daily life? Yes -- reasoning training reduced functional decline in activities like cooking, medication management, and financial tasks. 10 structured sessions with periodic boosters produced 5-year benefits. This is the real-world validation for consistent cognitive training practice. Cross-reference: the sharp-mind-to-longevity chain documented in Exercise Science (see Exercise Science section) begins here -- cognitive sharpness preserves the intentional neuromuscular control that maintains muscle, which preserves bone density, which extends functional lifespan.",
+        crossReferences: ["exercise-protocols"],
+        link: "https://pubmed.ncbi.nlm.nih.gov/17179457/"
+      },
+      {
+        id: "mental-aging-neuroplasticity",
+        title: "The aging mind: neuroplasticity in response to cognitive training",
+        authors: "Park DC, Bischof GN",
+        journal: "Dialogues in Clinical Neuroscience",
+        year: 2013,
+        pmid: "23576894",
+        category: "cognitive",
+        summary: "Reviews evidence that the aging brain demonstrates considerable plasticity through cognitive training -- including increased neural activity, development of compensatory mechanisms, and measurable increases in neural volume -- with demanding leisure activities providing superior benefits compared to passive cognitive programs.",
+        keyFindings: [
+          "Aging brain demonstrates considerable plasticity through cognitive training interventions",
+          "Brain can increase neural activity and develop compensatory mechanisms at any age",
+          "Increases in neural volume represent the clearest structural evidence of training-induced plasticity",
+          "Demanding leisure activities with sustained cognitive effort may be superior to passive educational programs"
+        ],
+        relevance: "The key insight: passive brain games are not enough. The brain responds to demanding cognitive challenges -- the kind that require sustained effort and engagement. This is why our N-Back trainer progressively increases difficulty (2-Back to quad-Back), our pitch recognition uses adaptive scheduling, and our vision training escalates complexity. Easy doesn't build reserve; challenge does. Cross-reference: this mirrors the exercise science principle that intensity matters more than duration (see Exercise Science REHIT protocol) and supports the neuroplasticity foundation underlying all four cognitive training domains documented on this page.",
+        crossReferences: ["exercise-protocols", "nback-working-memory", "ear-training", "vision-science"],
+        link: "https://pubmed.ncbi.nlm.nih.gov/23576894/"
+      }
+    ]
+  },
+  {
     id: "nutrition-science",
     title: "Nutrition Science",
     description: "Why raising your metabolic rate through mitochondrial biogenesis beats caloric restriction every time — plus the science of the Glucose Ketone Index, fasting-triggered FGF21 and autophagy, and how protein timing fuels the muscle-bone-longevity chain.",
