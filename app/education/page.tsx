@@ -1603,6 +1603,7 @@ const researchData: ResearchSection[] = [
     studies: [
       {
         id: "sleep-health-1",
+        tldr: "1.3 million people studied: 7-8 hours of sleep is the mortality sweet spot",
         title: "Sleep Duration and All-Cause Mortality: A Systematic Review and Meta-Analysis",
         authors: "Cappuccio FP, et al.",
         journal: "Sleep",
@@ -1617,12 +1618,13 @@ const researchData: ResearchSection[] = [
           "Sleep quality equally important as duration",
           "Consistent sleep schedule critical for health outcomes"
         ],
-        relevance: "Underlies our emphasis on sleep optimization through breath protocols, DSIP research, and recovery tracking. Cross-reference: parasympathetic activation from slow breathing (see Breath Training section) improves sleep onset, and mindfulness-based stress reduction has documented sleep quality benefits (see Meditation Science section).",
+        relevance: "Why this matters: Sleep under 6 hours increases your mortality risk by 12%. Getting 7-8 hours is not a luxury — it is a survival variable with data from 1.3 million people behind it. Our breath protocols improve sleep onset through parasympathetic activation (see Breath Training section), and mindfulness-based stress reduction has documented sleep quality benefits (see Meditation Science section).",
         crossReferences: ["breath-training", "meditation-science"],
         link: "https://pubmed.ncbi.nlm.nih.gov/20469800/"
       },
       {
         id: "cold-exposure-1",
+        tldr: "Cold water boosts norepinephrine 200-300% and dopamine ~250% — measurable stress resilience",
         title: "Human Physiological Responses to Immersion into Water of Different Temperatures",
         authors: "Srámek P, et al.",
         journal: "European Journal of Applied Physiology",
@@ -1637,7 +1639,7 @@ const researchData: ResearchSection[] = [
           "Dopamine levels elevated by ~250% in cold water",
           "Repeated cold exposure improves cold tolerance and stress resilience"
         ],
-        relevance: "Supports cold exposure as a complementary recovery and metabolic optimization tool alongside our training protocols. Cross-reference: cold exposure enhances recovery from REHIT and resistance training (see Exercise Science section), and Wim Hof-style breathing is frequently paired with cold immersion for combined hypoxic and cold stress adaptation (see Breath Training section).",
+        relevance: "Why this matters: A 200-300% norepinephrine increase and ~250% dopamine elevation from cold water exposure explains the mood and alertness boost cold plungers report — it is biochemistry, not bravado. Repeated exposure improves cold tolerance and builds stress resilience. Cross-reference: cold exposure enhances recovery from REHIT and resistance training (see Exercise Science section), and Wim Hof breathing is frequently paired with cold immersion for combined hypoxic and cold stress adaptation (see Breath Training section).",
         crossReferences: ["exercise-protocols", "breath-training"],
         link: "https://pubmed.ncbi.nlm.nih.gov/10751106/"
       }
