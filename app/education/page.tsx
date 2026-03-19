@@ -1526,7 +1526,7 @@ const researchData: ResearchSection[] = [
     title: "General Health & Longevity",
     description: "Research on sleep, stress management, cold exposure, and integrative approaches to healthspan optimization.",
     category: "general",
-    practicalApplication: "These studies inform the holistic approach across all Reset Biology modules — connecting breath, movement, nutrition, and recovery.",
+    practicalApplication: "These studies inform the holistic approach across all Reset Biology modules — connecting breath, movement, nutrition, and recovery. Sleep optimization is directly supported by our breath protocols at /breath (parasympathetic activation for sleep onset) and the DSIP peptide research in the Peptide Science section. Cold exposure complements recovery protocols at /workout. Explore the full integrated system at /portal.",
     studies: [
       {
         id: "sleep-health-1",
