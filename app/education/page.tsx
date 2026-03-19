@@ -1439,8 +1439,8 @@ const researchData: ResearchSection[] = [
           "Consistent with decreased mind-wandering — neural mechanism for improved focus and present-moment awareness",
           "Three meditation types tested (Concentration, Loving-Kindness, Choiceless Awareness) — all showed similar DMN suppression"
         ],
-        relevance: "The neural mechanism for why meditation improves focus: experienced meditators literally quiet the brain's default 'wandering' network and strengthen connections to cognitive control centers. This is the same attentional control pathway trained by N-Back working memory exercises (see N-Back section). Cross-reference: breath-focused meditation activates the parasympathetic system documented in our Breath Training research.",
-        crossReferences: ["breath-training", "nback-working-memory"],
+        relevance: "The neural mechanism for why meditation improves focus: experienced meditators literally quiet the brain's default 'wandering' network and strengthen connections to cognitive control centers. This is the same attentional control pathway trained by N-Back working memory exercises (see N-Back section). Cross-reference: breath-focused meditation activates the parasympathetic system documented in our Breath Training research. Sound-based meditation practices (mantra repetition, singing bowls, tonal focus) also leverage auditory neuroplasticity pathways documented in the Ear Training section.",
+        crossReferences: ["breath-training", "nback-working-memory", "ear-training"],
         link: "https://pubmed.ncbi.nlm.nih.gov/22114193/"
       },
       {
@@ -1565,25 +1565,6 @@ const researchData: ResearchSection[] = [
         ],
         relevance: "Supports cold exposure as a complementary recovery and metabolic optimization tool alongside our training protocols.",
         link: "https://pubmed.ncbi.nlm.nih.gov/10751106/"
-      },
-      {
-        id: "meditation-stress-1",
-        title: "Mindfulness-Based Stress Reduction and Health Benefits: A Meta-Analysis",
-        authors: "Grossman P, et al.",
-        journal: "Journal of Psychosomatic Research",
-        year: 2004,
-        doi: "10.1016/S0022-3999(03)00573-7",
-        pmid: "15256293",
-        category: "general",
-        summary: "Meta-analysis showing mindfulness-based stress reduction improves both mental and physical health outcomes across diverse populations.",
-        keyFindings: [
-          "Mindfulness practice reduces cortisol and stress markers",
-          "Consistent practice improves immune function",
-          "Benefits extend to pain management and emotional regulation",
-          "Breath-focused meditation produces the most consistent results"
-        ],
-        relevance: "Connects our breath training protocols to broader stress reduction and health optimization outcomes.",
-        link: "https://pubmed.ncbi.nlm.nih.gov/15256293/"
       }
     ]
   }
