@@ -556,6 +556,93 @@ const researchData: ResearchSection[] = [
     ]
   },
   {
+    id: "ear-training",
+    title: "Ear Training & Auditory Neuroplasticity",
+    description: "How structured auditory training rewires the brain's sound processing systems -- from pitch recognition to speech perception -- demonstrating that auditory neuroplasticity persists throughout adulthood and is amplified by spaced repetition.",
+    category: "cognitive",
+    practicalApplication: "Our Pitch Recognition game at /mental-training uses an FSRS (Free Spaced Repetition Scheduler) system to train note identification across the C4-C5 octave. The spacing algorithm is built on the same evidence base documented below -- optimal review intervals maximize long-term auditory memory consolidation.",
+    studies: [
+      {
+        id: "ear-auditory-neuroplasticity",
+        title: "Music training for the development of auditory skills",
+        authors: "Kraus N, Chandrasekaran B",
+        journal: "Nature Reviews Neuroscience",
+        year: 2010,
+        doi: "10.1038/nrn2882",
+        pmid: "20648064",
+        category: "cognitive",
+        summary: "Landmark Nature Reviews Neuroscience article establishing that music training leads to measurable changes throughout the auditory system -- from brainstem to cortex -- priming the brain for listening challenges that extend far beyond music into speech processing, language, and cognitive function.",
+        keyFindings: [
+          "Music training leads to structural and functional changes throughout the auditory nervous system",
+          "These changes prime musicians for listening challenges beyond music -- speech, language, and environmental sounds",
+          "Benefits extend bidirectionally: from cortex shaping subcortical processing and vice versa",
+          "Musical training functions like exercise for the auditory brain -- conditioning it for enhanced listening abilities"
+        ],
+        relevance: "Establishes that auditory training produces real neuroplastic changes -- the scientific foundation for our pitch recognition training. The 'exercise for the brain' framing parallels how physical exercise drives neuromuscular adaptation (see Exercise Science section). Cross-reference: N-Back training (see N-Back section) engages both auditory and visual working memory in dual mode, making it a complementary cross-modal training partner for dedicated ear training.",
+        crossReferences: ["nback-working-memory", "exercise-protocols"],
+        link: "https://pubmed.ncbi.nlm.nih.gov/20648064/"
+      },
+      {
+        id: "ear-brain-plasticity-framework",
+        title: "Musical training as a framework for brain plasticity: behavior, function, and structure",
+        authors: "Herholz SC, Zatorre RJ",
+        journal: "Neuron",
+        year: 2012,
+        doi: "10.1016/j.neuron.2012.10.011",
+        pmid: "23141061",
+        category: "cognitive",
+        summary: "Published in Neuron, this review synthesizes evidence that musical training involves multiple modalities and higher-order cognitive functions, resulting in behavioral, structural, and functional brain changes detectable on timescales from days to years -- providing the strongest evidence that auditory skills are genuinely trainable in adults.",
+        keyFindings: [
+          "Musical training involves multiple modalities (auditory, motor, visual) and higher-order cognitive functions simultaneously",
+          "Results in behavioral, structural, and functional brain changes on timescales of days to years",
+          "Controlled training studies provide clear experimental evidence for training-induced plasticity in adults",
+          "Synthesizes common patterns across the broader neuroplasticity research literature"
+        ],
+        relevance: "Confirms that auditory neuroplasticity persists in adults and operates across multiple timescales -- from rapid skill acquisition (days) to structural brain changes (years). This multi-timescale plasticity is why consistent practice with our pitch recognition trainer produces measurable improvement. Cross-reference: the same adult neuroplasticity mechanisms that enable auditory training also underpin cognitive reserve against age-related decline (see Mental Mastery section).",
+        crossReferences: ["mental-mastery"],
+        link: "https://pubmed.ncbi.nlm.nih.gov/23141061/"
+      },
+      {
+        id: "ear-spacing-effect",
+        title: "Spacing effects in learning: a temporal ridgeline of optimal retention",
+        authors: "Cepeda NJ, Vul E, Rohrer D, Wixted JT, Pashler H",
+        journal: "Psychological Science",
+        year: 2008,
+        pmid: "19076480",
+        category: "cognitive",
+        summary: "The definitive study on spacing effects: over 1,350 participants studied across gaps up to 3.5 months, tested up to 1 year later, revealing a temporal ridgeline of optimal retention where the ideal study gap is approximately 20-40% of the desired retention interval.",
+        keyFindings: [
+          "Over 1,350 participants studied across interstudy gaps up to 3.5 months",
+          "Optimal study gap is approximately 20-40% of the desired retention interval",
+          "Increasing the interstudy gap first increases then gradually reduces final retention -- a temporal ridgeline",
+          "Many educational practices are highly inefficient by ignoring spacing-delay interactions"
+        ],
+        relevance: "The scientific foundation for our FSRS (Free Spaced Repetition Scheduler) algorithm in pitch recognition training. FSRS calculates optimal review intervals for each note based on your personal forgetting curve -- the same spacing principle Cepeda demonstrated produces maximal long-term retention. Sleep consolidation is real for pitch memory: the first review should come the next day, not the same session. Cross-reference: N-Back training (see N-Back section) exercises the working memory that holds auditory information between spaced repetition reviews.",
+        crossReferences: ["nback-working-memory"],
+        link: "https://pubmed.ncbi.nlm.nih.gov/19076480/"
+      },
+      {
+        id: "ear-music-therapy-aging",
+        title: "Musical practice as an enhancer of cognitive function in healthy aging - A systematic review and meta-analysis",
+        authors: "Roman-Caballero R, Arnedo M, Trivino M, Lupianez J",
+        journal: "PLoS One",
+        year: 2018,
+        pmid: "30481227",
+        category: "cognitive",
+        summary: "Systematic review and meta-analysis of 13 studies (9 cross-sectional, 4 short-term training RCTs) demonstrating that musical practice yields cognitive and cerebral benefits that protect functions typically declining with aging -- through direct skill development, improved compensatory processes, and preserved processing speed.",
+        keyFindings: [
+          "13 studies analyzed: 9 cross-sectional (musicians vs non-musicians) and 4 short-term training RCTs",
+          "Musical practice yields cognitive benefits in both domain-specific and general cognitive functions",
+          "Protects cognitive functions that typically decline with aging",
+          "Three mechanisms identified: direct skill development, improved compensatory processes, and preserved processing speed"
+        ],
+        relevance: "Connects ear training directly to cognitive reserve -- the same protective mechanism documented in the Mental Mastery section. Musical practice isn't just about pitch discrimination; it's a cognitive training modality that preserves processing speed and executive function as you age. Cross-reference: this protection parallels the cognitive reserve evidence in structured cognitive training (see Mental Mastery section) and complements the N-Back working memory training that exercises the auditory processing pathway (see N-Back section).",
+        crossReferences: ["mental-mastery", "nback-working-memory"],
+        link: "https://pubmed.ncbi.nlm.nih.gov/30481227/"
+      }
+    ]
+  },
+  {
     id: "nutrition-science",
     title: "Nutrition Science",
     description: "Why raising your metabolic rate through mitochondrial biogenesis beats caloric restriction every time — plus the science of the Glucose Ketone Index, fasting-triggered FGF21 and autophagy, and how protein timing fuels the muscle-bone-longevity chain.",
