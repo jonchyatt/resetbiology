@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: in_progress
-stopped_at: Completed 03-01-PLAN.md — 12 verified peptide studies (batch 1 of 2) replacing 8 fabricated entries.
-last_updated: "2026-03-19T12:59:34Z"
-last_activity: 2026-03-19 -- Completed 03-01-PLAN.md (BPC-157/TB-500/Semaglutide/Ipamorelin/Epithalon verified studies)
+stopped_at: Completed 03-02-PLAN.md — 11 verified peptide studies (batch 2 of 2) completing full 23-study peptide-science section.
+last_updated: "2026-03-19T13:07:17Z"
+last_activity: 2026-03-19 -- Completed 03-02-PLAN.md (GHK-Cu/DSIP/MOTS-c/5-Amino-1MQ/co-op verified studies)
 progress:
   total_phases: 5
   completed_phases: 2
-  total_plans: 10
-  completed_plans: 10
-  percent: 63
+  total_plans: 11
+  completed_plans: 11
+  percent: 69
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-18)
 
 **Core value:** Every protocol and recommendation must be justified by real peer-reviewed research
-**Current focus:** Phase 3 Peptides — Plan 01 of 3 complete (batch 1 verified studies)
+**Current focus:** Phase 3 Peptides — Plan 02 of 3 complete (full 23-study section done); 03-03 is next
 
 ## Current Position
 
 Phase: 3 of 5 (Peptide Science — in progress)
-Plan: 1 of 3 in phase 3 complete (03-01 batch 1 verified studies)
-Status: 03-01 complete — 03-02 (remaining 4 peptides) is next
-Last activity: 2026-03-19 -- Completed 03-01-PLAN.md (BPC-157/TB-500/Semaglutide/Ipamorelin/Epithalon verified studies)
+Plan: 2 of 3 in phase 3 complete (03-02 batch 2 verified studies)
+Status: 03-02 complete — 03-03 (practicalApplication update) is next
+Last activity: 2026-03-19 -- Completed 03-02-PLAN.md (GHK-Cu/DSIP/MOTS-c/5-Amino-1MQ/co-op verified studies)
 
-Progress: [██████████░░░░░░░░░░] 63% (10/16 plans)
+Progress: [███████████░░░░░░░░░] 69% (11/16 plans)
 
 ## Performance Metrics
 
@@ -45,11 +45,11 @@ Progress: [██████████░░░░░░░░░░] 63% (10
 |-------|-------|-------|----------|
 | 01-foundational-physiology | 4 completed | 13 min | 3.25 min |
 | 02-cognitive-science | 5 completed | 31 min | 6.2 min |
-| 03-peptide-science | 1 completed | 3 min | 3 min |
+| 03-peptide-science | 2 completed | 6 min | 3 min |
 
 **Recent Trend:**
-- Last 5 plans: 02-02 (5 min), 02-03 (5 min), 02-04 (8 min), 02-05 (5 min), 03-01 (3 min)
-- Trend: stable, slightly faster (data-only plan)
+- Last 5 plans: 02-03 (5 min), 02-04 (8 min), 02-05 (5 min), 03-01 (3 min), 03-02 (3 min)
+- Trend: stable, data-only plans consistently fast (3 min)
 
 *Updated after each plan completion*
 
@@ -96,6 +96,10 @@ Recent decisions affecting current work:
 - [03-01]: semaglutide-1 is the only Phase 3 RCT in peptide section; semaglutide-2 frames muscle loss as making resistance training "non-optional"
 - [03-01]: Epithalon studies note single Khavinson group provenance and absent independent replication — honest framing matches WHM autophagy pattern
 - [03-01]: practicalApplication left unchanged — Plan 03-03 will update with full cross-reference text
+- [03-02]: ghkcu-3 wired to nback-working-memory: GHK neurological gene expression (NGF, Alzheimer's/Parkinson's pathways) connects brain health chain
+- [03-02]: dsip-2 wired to exercise-protocols: causal DSIP/GH release evidence creates DSIP+ipamorelin complementary protocol framing
+- [03-02]: 5amino1mq-2 wired to both exercise-protocols and nutrition-science: spans sarcopenia prevention and NAD+/SIRT1 metabolic chains
+- [03-02]: Co-op studies placed at end of 23-study array (coop-purity-1, coop-quality-1) — COOP-01 and COOP-02 both satisfied
 
 ### Pending Todos
 
@@ -104,7 +108,7 @@ None yet.
 ### Blockers/Concerns
 
 - Duplicate route structure (app/ vs src/app/) -- always edit in app/ directory
-- Phase 3 plan 01 complete — 03-02 (GHK-Cu, DSIP, MOTS-c, 5-Amino-1MQ) is next
+- Phase 3 plan 02 complete — 03-03 (practicalApplication update with cross-reference text) is next
 
 ## Autonomous Mode
 
@@ -134,6 +138,6 @@ This milestone is approved for fully autonomous execution:
 
 ## Session Continuity
 
-Last session: 2026-03-19T12:59:34Z
-Stopped at: Completed 03-01-PLAN.md — 12 verified peptide studies (batch 1 of 2) replacing 8 fabricated entries.
+Last session: 2026-03-19T13:07:17Z
+Stopped at: Completed 03-02-PLAN.md — 11 verified peptide studies (batch 2 of 2) completing full 23-study peptide-science section.
 Resume file: None
