@@ -44,10 +44,7 @@ export function Header() {
             {!user && (
               <>
                 <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium transition-colors">
-                  Peptide Info
-                </Link>
-                <Link href="/cellular-peptide" className="text-gray-700 hover:text-primary-600 font-medium transition-colors">
-                  IRB Protocols
+                  Peptide Co-op
                 </Link>
                 <a
                   href="/auth/login?returnTo=/portal"
@@ -65,10 +62,10 @@ export function Header() {
                   Portal
                 </Link>
                 <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium transition-colors">
-                  Peptide Info
+                  Peptide Co-op
                 </Link>
-                <Link href="/cellular-peptide" className="text-gray-700 hover:text-primary-600 font-medium transition-colors">
-                  IRB Protocols
+                <Link href="/education" className="text-gray-700 hover:text-primary-600 font-medium transition-colors">
+                  Education
                 </Link>
                 <Link href="/profile" className="text-gray-700 hover:text-teal-600 font-medium transition-colors flex items-center">
                   <Settings className="w-4 h-4 mr-1" />
@@ -133,10 +130,7 @@ export function Header() {
               {!user ? (
                 <>
                   <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium" onClick={() => setIsMenuOpen(false)}>
-                    Peptide Info
-                  </Link>
-                  <Link href="/cellular-peptide" className="text-gray-700 hover:text-primary-600 font-medium" onClick={() => setIsMenuOpen(false)}>
-                    IRB Protocols
+                    Peptide Co-op
                   </Link>
                   <a
                     href="/auth/login?returnTo=/portal"
@@ -152,10 +146,10 @@ export function Header() {
                     Portal
                   </Link>
                   <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium" onClick={() => setIsMenuOpen(false)}>
-                    Peptide Info
+                    Peptide Co-op
                   </Link>
-                  <Link href="/cellular-peptide" className="text-gray-700 hover:text-primary-600 font-medium" onClick={() => setIsMenuOpen(false)}>
-                    IRB Protocols
+                  <Link href="/education" className="text-gray-700 hover:text-primary-600 font-medium" onClick={() => setIsMenuOpen(false)}>
+                    Education
                   </Link>
                   <Link href="/profile" className="text-gray-700 hover:text-teal-600 font-medium" onClick={() => setIsMenuOpen(false)}>
                     Profile

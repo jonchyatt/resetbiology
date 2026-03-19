@@ -35,6 +35,7 @@ const fallbackModules: PortalModuleData[] = [
   { slug: 'journal', label: 'Journal', href: '#journal', icon: 'BookOpen', colorFrom: 'from-secondary-600/30', colorTo: 'to-secondary-700/30', borderColor: 'border-secondary-400/30', iconColor: 'text-secondary-300', enabled: true, order: 6 },
   { slug: 'vision-training', label: 'Vision', href: '/vision-training', icon: 'Eye', colorFrom: 'from-cyan-600/30', colorTo: 'to-cyan-700/30', borderColor: 'border-cyan-400/30', iconColor: 'text-cyan-300', enabled: true, order: 7 },
   { slug: 'ear-training', label: 'Ear Training', href: '/ear-training', icon: 'Music', colorFrom: 'from-rose-600/30', colorTo: 'to-pink-700/30', borderColor: 'border-rose-400/30', iconColor: 'text-rose-300', enabled: true, order: 8 },
+  { slug: 'education', label: 'Education', href: '/education', icon: 'BookOpen', colorFrom: 'from-indigo-600/30', colorTo: 'to-indigo-700/30', borderColor: 'border-indigo-400/30', iconColor: 'text-indigo-300', enabled: true, order: 9 },
 ]
 
 interface DailyJournalData {

@@ -40,12 +40,12 @@ export default async function Home() {
   return (
     <main>
       {/* Satori Living Foundation Grant Announcement */}
-      <div className="bg-gradient-to-r from-amber-500/20 to-yellow-500/20 border-b border-amber-400/30 py-3 px-4 text-center">
-        <p className="text-amber-200 text-sm font-medium">
-          🎁 <strong>Free Access Available</strong> — Thanks to a generous grant from the{' '}
-          <span className="text-amber-300 font-semibold">Satori Living Foundation</span>,
-          register today and get 6 months of full access — completely free.{' '}
-          <Link href="/auth/login" className="underline text-amber-300 hover:text-amber-200">
+      <div className="bg-gradient-to-r from-teal-700 to-emerald-700 border-b border-teal-400/50 py-4 px-4 text-center shadow-lg">
+        <p className="text-white text-base font-semibold">
+          🎁 <strong className="text-yellow-300">FREE for 6 Months</strong> — Thanks to a generous grant from the{' '}
+          <span className="text-yellow-200 font-bold">Satori Living Foundation</span>,
+          register today and get full access — completely free.{' '}
+          <Link href="/auth/login" className="underline text-yellow-300 hover:text-white font-bold ml-1">
             Register now →
           </Link>
         </p>

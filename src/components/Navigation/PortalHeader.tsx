@@ -48,14 +48,14 @@ export function PortalHeader({
                 href="/order"
                 className="text-primary-300 hover:text-primary-200 font-medium text-xs sm:text-sm transition-colors drop-shadow-sm whitespace-nowrap"
               >
-                Peptide Info
+                Peptide Co-op
               </a>
             )}
             <a
-              href="/daily-history"
+              href="/portal"
               className="text-primary-300 hover:text-primary-200 font-medium text-xs sm:text-sm transition-colors drop-shadow-sm whitespace-nowrap hidden sm:block"
             >
-              Daily History
+              Dashboard
             </a>
             {secondaryBackLink && (
               <a
