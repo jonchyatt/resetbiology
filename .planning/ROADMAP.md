@@ -100,12 +100,11 @@ Plans:
   2. Zero placeholder PMIDs remain anywhere on the page -- a search for "PMID: 00000000" or similar patterns returns zero results
   3. Each research section includes a "Practical Application" note that links to the relevant portal feature (e.g., Breath Training research links to /breath)
   4. Cross-domain connections are called out in every section -- the web of systems (breath-exercise-nutrition triangle, cognitive chain, peptide-exercise synergies, meditation-breath overlap) is explicitly visible to readers
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 05-01: Full PMID verification sweep and link testing
-- [ ] 05-02: Practical application links and cross-domain connection audit
-- [ ] 05-03: Final review and deploy
+- [ ] 05-01-PLAN.md -- Full PMID verification sweep: extract all ~70 PMIDs, verify each resolves to real PubMed page (HTTP 200), check for duplicates/placeholders/format issues, fix any failures
+- [ ] 05-02-PLAN.md -- Practical application and cross-domain audit: verify all 13 sections have portal URLs in practicalApplication, add crossReferences to general-health studies, confirm no section is an island, final build verification
 
 ## Progress
 
@@ -118,4 +117,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | 2. Cognitive Science | 5/5 | Complete    | 2026-03-19 |
 | 3. Peptide Science | 3/3 | Complete    | 2026-03-19 |
 | 4. Behavioral Science | 3/3 | Complete    | 2026-03-19 |
-| 5. Quality Assurance | 0/3 | Not started | - |
+| 5. Quality Assurance | 0/2 | Not started | - |
