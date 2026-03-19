@@ -1418,6 +1418,110 @@ const researchData: ResearchSection[] = [
     ]
   },
   {
+    id: "meditation-science",
+    title: "Deep Meditation & Mindfulness",
+    description: "From fMRI evidence of default mode network suppression to structural gray matter changes after just 10 hours of practice — the neuroscience of meditation is moving from 'it probably helps' to measurable brain changes. Includes two landmark meta-analyses (Goyal, Grossman) and emerging VR meditation evidence.",
+    category: "behavioral",
+    practicalApplication: "Our breath training protocols share the parasympathetic mechanism documented in meditation research — slow breathing and mindfulness both activate vagal tone and suppress the default mode network. The breath training app at /breath implements the physiological overlap between breathwork and meditation. Pair with journaling (see Journaling section) for the reflective-practices connection.",
+    studies: [
+      {
+        id: "meditation-brewer-dmn-1",
+        title: "Meditation experience is associated with differences in default mode network activity and connectivity",
+        authors: "Brewer JA, Worhunsky PD, Gray JR, Tang YY, Weber J, Kober H",
+        journal: "Proceedings of the National Academy of Sciences U.S.A.",
+        year: 2011,
+        pmid: "22114193",
+        category: "behavioral",
+        summary: "Landmark fMRI study demonstrating that experienced meditators show consistent deactivation of default mode network (DMN) hubs — the brain regions associated with mind-wandering and self-referential thinking — across three distinct meditation types, with enhanced connectivity to cognitive control regions.",
+        keyFindings: [
+          "Main DMN nodes (medial prefrontal and posterior cingulate cortices) deactivated in experienced meditators across all meditation types",
+          "Enhanced coupling between posterior cingulate, dorsal anterior cingulate, and dorsolateral prefrontal cortex",
+          "Consistent with decreased mind-wandering — neural mechanism for improved focus and present-moment awareness",
+          "Three meditation types tested (Concentration, Loving-Kindness, Choiceless Awareness) — all showed similar DMN suppression"
+        ],
+        relevance: "The neural mechanism for why meditation improves focus: experienced meditators literally quiet the brain's default 'wandering' network and strengthen connections to cognitive control centers. This is the same attentional control pathway trained by N-Back working memory exercises (see N-Back section). Cross-reference: breath-focused meditation activates the parasympathetic system documented in our Breath Training research.",
+        crossReferences: ["breath-training", "nback-working-memory"],
+        link: "https://pubmed.ncbi.nlm.nih.gov/22114193/"
+      },
+      {
+        id: "meditation-tang-graymatter-1",
+        title: "Brief Mindfulness Meditation Induces Gray Matter Changes in a Brain Hub",
+        authors: "Tang R, Friston KJ, Tang YY",
+        journal: "Neural Plasticity",
+        year: 2020,
+        pmid: "33299395",
+        category: "behavioral",
+        summary: "Brief integrative body-mind training (IBMT, just 10 hours total over under 30 days) increased ventral posterior cingulate cortex volume compared to relaxation training — demonstrating that structural brain changes from meditation are not limited to monks with thousands of hours of practice.",
+        keyFindings: [
+          "Brief IBMT (10 hours total, under 30 days) increased ventral posterior cingulate cortex volume vs relaxation training",
+          "PCC is 'a key hub associated with self-awareness, emotion, cognition, and aging'",
+          "Structural brain changes after short-term practice — neuroplasticity not limited to long-term meditators",
+          "Individual baseline temperament predicted magnitude of gray matter increases"
+        ],
+        relevance: "Demolishes the 'you need thousands of hours' barrier. Measurable gray matter changes in just 10 hours of practice — the same structural neuroplasticity mechanism documented in working memory training (see N-Back section). If 10 hours of meditation can change brain structure, the daily breath and meditation practices at Reset Biology are operating within a biologically meaningful timeframe.",
+        crossReferences: ["nback-working-memory", "breath-training"],
+        link: "https://pubmed.ncbi.nlm.nih.gov/33299395/"
+      },
+      {
+        id: "meditation-vr-chavez-1",
+        title: "Virtual Reality Meditation Among Youth Experiencing Homelessness: Pilot Randomized Controlled Trial of Feasibility",
+        authors: "Chavez LJ, Kelleher K, Slesnick N, Holowacz E, Luthy E, Moore L, Ford J",
+        journal: "JMIR Mental Health",
+        year: 2020,
+        pmid: "32969834",
+        category: "behavioral",
+        summary: "Pilot RCT (N=30) comparing VR meditation, audio meditation, and VR historical imagery: VR meditation showed larger anxiety reduction (Cohen's d=0.58) vs audio meditation, but did NOT significantly affect physiological stress (salivary cortisol). Emerging evidence only — not yet a proven modality.",
+        keyFindings: [
+          "VR meditation showed larger anxiety reduction (difference=10.8, d=0.58) vs audio meditation",
+          "Moderate effect size for anxiety improvement between VR and audio conditions",
+          "Salivary cortisol was NOT significantly affected — physiological stress reduction not yet demonstrated",
+          "Pilot study (N=30) — feasibility demonstrated but efficacy requires larger trials"
+        ],
+        relevance: "VR meditation is an emerging frontier with legitimate early evidence but important limitations. The moderate anxiety effect (d=0.58) is encouraging, but the absence of cortisol changes means we cannot yet claim VR meditation produces the physiological stress reduction demonstrated by traditional mindfulness (see Goyal and Grossman meta-analyses below). Honest framing: promising pilot, not proven intervention.",
+        crossReferences: ["breath-training"],
+        link: "https://pubmed.ncbi.nlm.nih.gov/32969834/"
+      },
+      {
+        id: "meditation-goyal-jama-1",
+        title: "Meditation programs for psychological stress and well-being: a systematic review and meta-analysis",
+        authors: "Goyal M, Singh S, Sibinga EMS, et al.",
+        journal: "JAMA Internal Medicine",
+        year: 2014,
+        pmid: "24395196",
+        category: "behavioral",
+        summary: "JAMA meta-analysis of 47 RCTs (3,515 participants): mindfulness meditation produced moderate evidence of improved anxiety and depression (effect sizes 0.22-0.38), but showed no advantage over active interventions like exercise or behavioral therapy — meditation helps, but it is not uniquely superior.",
+        keyFindings: [
+          "47 RCTs, 3,515 participants — the gold-standard systematic review of meditation evidence",
+          "Moderate evidence of improved anxiety (effect size 0.38) and depression (effect size 0.30)",
+          "Low evidence for improved stress/distress and mental health quality of life",
+          "Meditation showed no advantage over active interventions like exercise or behavioral therapy — honest framing"
+        ],
+        relevance: "The definitive reality check on meditation hype. Meditation produces small to moderate reductions in anxiety and depression — real but not miraculous. Crucially, it performs comparably to exercise and therapy, not better. This supports using meditation as ONE tool in a comprehensive system (alongside exercise, breath training, and journaling) rather than a standalone cure. Cross-reference: exercise produces equivalent benefits (see Exercise Science section).",
+        crossReferences: ["exercise-protocols", "breath-training", "journaling-science"],
+        link: "https://pubmed.ncbi.nlm.nih.gov/24395196/"
+      },
+      {
+        id: "meditation-grossman-mbsr-1",
+        title: "Mindfulness-based stress reduction and health benefits. A meta-analysis",
+        authors: "Grossman P, Niemann L, Schmidt S, Walach H",
+        journal: "Journal of Psychosomatic Research",
+        year: 2004,
+        pmid: "15256293",
+        category: "behavioral",
+        summary: "Meta-analysis of 64 studies (20 meeting quality criteria): MBSR produced consistent effect sizes of approximately 0.5 (p<.0001) across both controlled and uncontrolled studies, with benefits spanning pain, cancer, heart disease, depression, anxiety, and nonclinical stress — broader clinical applications than any single intervention type.",
+        keyFindings: [
+          "64 studies reviewed, 20 met quality criteria; effect sizes approximately 0.5 (p<.0001)",
+          "Both controlled and uncontrolled studies showed similar effect sizes — consistent finding",
+          "Benefits across diverse conditions: pain, cancer, heart disease, depression, anxiety, nonclinical stress",
+          "MBSR may help a broad range of individuals cope with both clinical and nonclinical problems"
+        ],
+        relevance: "The breadth of MBSR evidence is its strength: effect sizes of 0.5 across pain, cancer, cardiac, and psychological conditions. Unlike most interventions that work in narrow populations, mindfulness-based practice shows consistent benefits across diverse health challenges. Cross-reference: the breath-focused component of MBSR directly overlaps with our breath training protocols (see Breath Training section), and the reflective awareness component connects to journaling practice (see Journaling section).",
+        crossReferences: ["breath-training", "journaling-science"],
+        link: "https://pubmed.ncbi.nlm.nih.gov/15256293/"
+      }
+    ]
+  },
+  {
     id: "general-health",
     title: "General Health & Longevity",
     description: "Research on sleep, stress management, cold exposure, and integrative approaches to healthspan optimization.",
