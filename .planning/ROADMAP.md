@@ -13,7 +13,7 @@ This milestone transforms the Reset Biology platform from a feature-rich wellnes
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundational Physiology** - Research breath training, exercise science, and nutrition as an interconnected metabolic system (COMPLETE 2026-03-19)
-- [ ] **Phase 2: Cognitive Science** - Research N-Back, ear training, vision training, and mental mastery through the neuroplasticity lens (4/4 original plans DONE, 1 gap closure plan pending)
+- [x] **Phase 2: Cognitive Science** - Research N-Back, ear training, vision training, and mental mastery through the neuroplasticity lens (5/5 plans DONE, EAR-04 gap closed 2026-03-19)
 - [x] **Phase 3: Peptide Science** - Research all 9 peptides plus co-op documentation, building on exercise/nutrition context from Phase 1
 - [ ] **Phase 4: Behavioral Science** - Research journaling, accountability, gamification/stakes, and deep meditation (completed 2026-03-19)
 - [ ] **Phase 5: Quality Assurance & Cross-Domain Integration** - Replace all fake PMIDs, verify every link, weave cross-domain connections, deploy
@@ -55,7 +55,7 @@ Plans:
 - [x] 02-02-PLAN.md -- Ear training research (Kraus 2010 auditory neuroplasticity, Herholz 2012 brain plasticity, Cepeda 2008 spacing effect, Roman-Caballero 2018 music therapy) (DONE 2026-03-19, commit 9af805dc)
 - [x] 02-03-PLAN.md -- Vision science PMID correction (replace 3 bogus PMIDs with Deveau 24556432, Polat 19520103/19622368, Allen 20304003) (DONE 2026-03-19, commit 6a6b280a)
 - [x] 02-04-PLAN.md -- Mental mastery research (Stern 23079557, Willis ACTIVE 17179457, Park 23576894) + all 7 cross-domain connections verified present (DONE 2026-03-19, commits 5f32dde8/3fda1389)
-- [ ] 02-05-PLAN.md -- Gap closure: add missing EAR-04 meditation/sound-based practices cross-reference from ear-training to breath-training
+- [x] 02-05-PLAN.md -- Gap closure: added "breath-training" to Kraus 2010 crossReferences + meditative listening/pitch discrimination synergy sentence (DONE 2026-03-19, commit dbe4fc61)
 
 ### Phase 3: Peptide Science
 **Goal**: The education page provides comprehensive, citation-backed research for all 9 tracked peptides plus co-op sourcing documentation, connecting peptide use to the exercise and nutrition science from Phase 1
@@ -115,7 +115,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | Phase | Plans Complete | Status | Completed |
 |-------|---------------|--------|-----------|
 | 1. Foundational Physiology | 4/4 | Complete    | 2026-03-19 |
-| 2. Cognitive Science | 4/5 | Gap closure pending | - |
+| 2. Cognitive Science | 5/5 | Complete | 2026-03-19 |
 | 3. Peptide Science | 0/3 | Not started | - |
 | 4. Behavioral Science | 0/3 | Not started | - |
 | 5. Quality Assurance | 0/3 | Not started | - |

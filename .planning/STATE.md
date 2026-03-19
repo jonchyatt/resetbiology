@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: in_progress
-stopped_at: Completed 02-04-PLAN.md — mental-mastery section added with 3 verified studies; Phase 2 complete (14 verified studies, 7 cross-domain connections).
-last_updated: "2026-03-19T07:01:00Z"
-last_activity: 2026-03-19 -- Completed 02-04-PLAN.md (Mental Mastery cognitive reserve + Phase 2 cross-domain audit)
+stopped_at: Completed 02-05-PLAN.md — EAR-04 gap closed; Kraus 2010 ear-training study now cross-references breath-training (meditation/sound-based practices half of EAR-04 satisfied).
+last_updated: "2026-03-19T07:10:00Z"
+last_activity: 2026-03-19 -- Completed 02-05-PLAN.md (EAR-04 gap closure -- breath-training cross-reference added to ear-training Kraus 2010 study)
 progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 16
-  completed_plans: 8
-  percent: 50
+  completed_plans: 9
+  percent: 56
 ---
 
 # Project State
@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-03-18)
 
 ## Current Position
 
-Phase: 2 of 5 Complete (Cognitive Science)
-Plan: 4 of 4 in phase 2 complete (02-04 Mental Mastery)
-Status: Phase 2 complete — Phase 3 peptides is next
-Last activity: 2026-03-19 -- Completed 02-04-PLAN.md (Mental Mastery + Phase 2 audit)
+Phase: 2 of 5 (Cognitive Science — gap closure complete)
+Plan: 5 of 5 in phase 2 complete (02-05 EAR-04 Gap Closure)
+Status: Phase 2 fully complete including gap closure — Phase 3 peptides is next
+Last activity: 2026-03-19 -- Completed 02-05-PLAN.md (EAR-04 gap closure, breath-training cross-reference)
 
-Progress: [████████░░░░░░░░░░░░] 50% (8/16 plans)
+Progress: [█████████░░░░░░░░░░░] 56% (9/16 plans)
 
 ## Performance Metrics
 
@@ -44,10 +44,10 @@ Progress: [████████░░░░░░░░░░░░] 50% (8/
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-foundational-physiology | 4 completed | 13 min | 3.25 min |
-| 02-cognitive-science | 4 completed | 26 min | 6.5 min |
+| 02-cognitive-science | 5 completed | 31 min | 6.2 min |
 
 **Recent Trend:**
-- Last 5 plans: 02-01 (8 min), 02-02 (5 min), 02-03 (5 min), 02-04 (8 min)
+- Last 5 plans: 02-01 (8 min), 02-02 (5 min), 02-03 (5 min), 02-04 (8 min), 02-05 (5 min)
 - Trend: stable
 
 *Updated after each plan completion*
@@ -89,6 +89,7 @@ Recent decisions affecting current work:
 - [02-04]: mental-mastery section placed after ear-training and before nutrition-science -- all 4 cognitive sections grouped together
 - [02-04]: Task 2 audit found all 7 cross-domain connections already present from prior plans -- no code changes required for audit
 - [02-04]: Phase 2 complete with 14 verified studies across 4 cognitive domains (3+4+4+3)
+- [02-05]: Kraus 2010 chosen as EAR-04 gap target -- "music training as exercise for the brain" framing naturally extends to sound-based breath practices; relevance text appended (not replaced) to preserve N-Back cross-reference
 
 ### Pending Todos
 
@@ -127,6 +128,6 @@ This milestone is approved for fully autonomous execution:
 
 ## Session Continuity
 
-Last session: 2026-03-19T07:01:00Z
-Stopped at: Completed 02-04-PLAN.md — mental-mastery section with 3 verified studies; Phase 2 complete.
+Last session: 2026-03-19T07:10:00Z
+Stopped at: Completed 02-05-PLAN.md — EAR-04 gap closed; Phase 2 fully complete including gap closure plan.
 Resume file: None
