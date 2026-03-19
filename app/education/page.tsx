@@ -266,45 +266,161 @@ const researchData: ResearchSection[] = [
   {
     id: "exercise-protocols",
     title: "Exercise & Movement Science",
-    description: "Research on optimal training protocols for metabolic health, body composition, and muscle preservation.",
+    description: "Research on how resistance training, sprint protocols, and intentional neuromuscular recruitment build the chain from sharp mind to strong muscles to dense bones to long life — and why raising your metabolic rate through exercise beats caloric restriction every time.",
     category: "exercise",
-    practicalApplication: "Our workout programs integrate these evidence-based training principles for maximum metabolic benefit.",
+    practicalApplication: "Our workout tracking system at /workout implements these evidence-based principles: REHIT sprint protocols for time-efficient VO2 max gains, progressive resistance training for bone and muscle health, and the Keith Baar gelatin + vitamin C protocol for tendon and ligament strength. Track your sessions and see your progress.",
     studies: [
       {
-        id: "resistance-1",
+        id: "baar-collagen-1",
+        title: "Vitamin C-enriched gelatin supplementation before intermittent activity augments collagen synthesis",
+        authors: "Shaw G, Lee-Barthel A, Ross MLR, Wang B, Baar K",
+        journal: "American Journal of Clinical Nutrition",
+        year: 2017,
+        pmid: "27852613",
+        category: "exercise",
+        summary: "The landmark Keith Baar study demonstrating that 15g of vitamin C-enriched gelatin consumed 1 hour before brief exercise doubled collagen synthesis markers — establishing a simple, evidence-based protocol for tendon and ligament health.",
+        keyFindings: [
+          "15g vitamin C-enriched gelatin 1 hour before exercise doubled collagen synthesis markers (aminoterminal propeptide of collagen I)",
+          "5g dose showed intermediate effect — dose-dependent response confirmed",
+          "Just 6 minutes of rope-skipping sufficient to stimulate tendon/ligament collagen production when combined with gelatin",
+          "Establishes the Baar protocol: gelatin + vitamin C + brief mechanical loading = enhanced connective tissue repair"
+        ],
+        relevance: "The Keith Baar protocol is one of the most actionable findings in exercise science — a simple pre-workout gelatin + vitamin C dose measurably enhances tendon and ligament repair. Cross-reference: BPC-157 peptide therapy (Phase 3) works through complementary tissue repair pathways, and protein timing research in the Nutrition Science section supports this collagen synthesis window.",
+        crossReferences: ["nutrition-science"],
+        link: "https://pubmed.ncbi.nlm.nih.gov/27852613/"
+      },
+      {
+        id: "pgc1a-mitochondria-1",
+        title: "Exercise induces transient transcriptional activation of the PGC-1alpha gene in human skeletal muscle",
+        authors: "Pilegaard H, Saltin B, Neufer PD",
+        journal: "Journal of Physiology",
+        year: 2003,
+        pmid: "12563009",
+        category: "exercise",
+        summary: "Demonstrates that a single exercise bout triggers a 10- to 40-fold increase in PGC-1alpha transcription — the master regulator of mitochondrial biogenesis — establishing the molecular mechanism by which exercise builds new mitochondria and raises metabolic rate.",
+        keyFindings: [
+          "Single acute exercise bout triggered 10- to 40-fold increase in PGC-1alpha transcription in human muscle",
+          "Peak response at 2 hours post-exercise",
+          "Trained muscle showed greater PGC-1alpha response at same absolute workload — training amplifies the effect",
+          "PGC-1alpha is the master regulator coordinating mitochondrial biogenesis genes in response to exercise"
+        ],
+        relevance: "This is the mechanistic anchor for the 'raise metabolism by building mitochondria through exercise' narrative. Instead of cutting calories (which triggers persistent metabolic suppression — see Nutrition Science section), exercise builds new mitochondria via PGC-1alpha, permanently raising your metabolic engine. Cross-reference: Wim Hof intermittent hypoxia (see Breath Training section) activates AMPK, which is upstream of PGC-1alpha — the same pathway.",
+        crossReferences: ["nutrition-science", "breath-training"],
+        link: "https://pubmed.ncbi.nlm.nih.gov/12563009/"
+      },
+      {
+        id: "rehit-original-1",
+        title: "Towards the minimal amount of exercise for improving metabolic health: beneficial effects of reduced-exertion high-intensity interval training",
+        authors: "Metcalfe RS, Babraj JA, Fawkner SG, Vollaard NBJ",
+        journal: "European Journal of Applied Physiology",
+        year: 2012,
+        pmid: "22124524",
+        category: "exercise",
+        summary: "The original REHIT study showing that just 10-minute sessions with 2 all-out sprints, performed 3 times per week for 6 weeks, improved insulin sensitivity by 28% and VO2 max by 12-15% — despite dramatically lower time commitment and perceived exertion than traditional HIIT.",
+        keyFindings: [
+          "10-minute REHIT sessions with 2 all-out sprints, 3x/week for 6 weeks",
+          "Insulin sensitivity improved 28% in males",
+          "VO2 max improved 15% male / 12% female",
+          "Comparable metabolic adaptations to longer HIIT protocols despite low perceived exertion"
+        ],
+        relevance: "REHIT is the time-efficient frontier of VO2 max and mitochondrial biogenesis training — 10 minutes, twice-weekly sprints producing comparable metabolic gains to much longer protocols. This is exercise as metabolic medicine. Cross-reference: intermittent hypoxia from Wim Hof breathing (see Breath Training section) activates the same AMPK pathway that REHIT sprints trigger.",
+        crossReferences: ["breath-training"],
+        link: "https://pubmed.ncbi.nlm.nih.gov/22124524/"
+      },
+      {
+        id: "rehit-diabetes-1",
+        title: "A comparison of the health benefits of reduced-exertion high-intensity interval training (REHIT) and moderate-intensity walking in type 2 diabetes patients",
+        authors: "Ruffino JS, Songsorn P, Haggett M, et al.",
+        journal: "Applied Physiology, Nutrition, and Metabolism",
+        year: 2017,
+        pmid: "28121184",
+        category: "exercise",
+        summary: "Confirms REHIT's superiority for aerobic fitness improvement even in metabolically compromised individuals — 7% VO2 max improvement versus just 1% for moderate-intensity walking in type 2 diabetes patients.",
+        keyFindings: [
+          "REHIT produced 7% VO2 max improvement vs 1% for moderate-intensity walking",
+          "Both produced similar blood pressure and fructosamine reductions",
+          "Confirms REHIT effectiveness in metabolically compromised population",
+          "Time-efficient protocol particularly valuable for clinical populations with adherence challenges"
+        ],
+        relevance: "Extends the REHIT evidence to clinical populations with metabolic disease, reinforcing that sprint-based training is effective across fitness levels. Cross-reference: metabolic disease management connects to the Glucose Ketone Index and fasting research in the Nutrition Science section.",
+        crossReferences: ["nutrition-science"],
+        link: "https://pubmed.ncbi.nlm.nih.gov/28121184/"
+      },
+      {
+        id: "mind-muscle-emg-1",
+        title: "Mind-muscle connection: effects of verbal instructions on muscle activity during bench press exercise",
+        authors: "Paoli A, Mancin L, Saoncella M, et al.",
+        journal: "European Journal of Translational Myology",
+        year: 2019,
+        pmid: "31354928",
+        category: "exercise",
+        summary: "EMG-verified evidence that the mind-muscle connection is real and trainable — specific attentional cues measurably alter muscle activation patterns during resistance exercise, demonstrating that neuromuscular recruitment is an intentional, cognitive skill.",
+        keyFindings: [
+          "Specific attentional cues measurably altered EMG-measured muscle activation during bench press",
+          "Triceps activation increased significantly with triceps-focused cueing at both 50% and 80% of 1RM",
+          "Mind-muscle connection is real and asymmetric — some muscles respond to attentional cues more than others",
+          "Neuromuscular recruitment is a trainable cognitive skill, not just 'broscience'"
+        ],
+        relevance: "The mind-muscle connection is the first link in the chain: sharp mind leads to intentional neuromuscular control leads to effective muscle recruitment leads to muscle and bone preservation leads to longevity. This study demonstrates that the connection between cognitive intent and muscle activation is measurable and trainable. Cross-reference: cognitive training (N-Back, Phase 2) shares the neuroplasticity foundation that makes this attentional control trainable.",
+        crossReferences: ["mental-training"],
+        link: "https://pubmed.ncbi.nlm.nih.gov/31354928/"
+      },
+      {
+        id: "sarcopenia-cognition-1",
+        title: "Sarcopenia and Cognitive Decline in Older Adults: Targeting the Muscle-Brain Axis",
+        authors: "Arosio B, Calvani R, Ferri E, et al.",
+        journal: "Nutrients",
+        year: 2023,
+        pmid: "37111070",
+        category: "exercise",
+        summary: "Documents the shared biological mechanisms between muscle loss and cognitive impairment — mitochondrial dysfunction, chronic inflammation, and metabolic alterations — establishing that the muscle-brain axis is a bidirectional system where training one side benefits the other.",
+        keyFindings: [
+          "Shared biological mechanisms between muscle loss and cognitive impairment: mitochondrial dysfunction, inflammation, metabolic alterations",
+          "Myokines (muscle-derived signaling molecules) mediate muscle-brain communication",
+          "Neuromuscular junctions are the critical junction between nervous system and muscle tissue",
+          "Behavioral interventions targeting the muscle-brain axis address both physical and cognitive decline simultaneously"
+        ],
+        relevance: "The primary citation for 'the chain' — sharp mind, neuromuscular control, muscle preservation, bone density, longevity. This study proves the chain is bidirectional: cognitive decline accelerates sarcopenia AND sarcopenia accelerates cognitive decline. Breaking the cycle with resistance training benefits both ends. Cross-reference: breathwork supports mitochondrial health through hypoxic conditioning (see Breath Training section), and protein timing preserves lean mass (see Nutrition Science section).",
+        crossReferences: ["breath-training", "nutrition-science"],
+        link: "https://pubmed.ncbi.nlm.nih.gov/37111070/"
+      },
+      {
+        id: "neuromuscular-sarcopenia-1",
+        title: "A neuromuscular perspective of sarcopenia pathogenesis: deciphering the signaling pathways involved",
+        authors: "Moreira-Pais A, Ferreira R, Oliveira PA, Duarte JA",
+        journal: "Geroscience",
+        year: 2022,
+        pmid: "34981273",
+        category: "exercise",
+        summary: "Details the neuromuscular junction (NMJ) degeneration that drives age-related muscle loss — identifying biomarkers (CAF, BDNF) and therapeutic targets (acetylcholine signaling, CGRP) that explain why maintaining neural drive to muscle is as important as the muscle tissue itself.",
+        keyFindings: [
+          "Age-related degeneration of neuromuscular junctions (NMJ) is a primary driver of sarcopenia",
+          "Biomarkers CAF and BDNF identified as key indicators of NMJ health",
+          "Acetylcholine signaling and CGRP are therapeutic targets for NMJ preservation",
+          "Reinnervation failure and impaired NMJ signal transmission underlie both strength and mass loss"
+        ],
+        relevance: "Extends the longevity chain with the cellular mechanism: it is not just muscle mass that declines with age, but the neuromuscular junctions that connect brain to muscle. Resistance training maintains NMJ health. Cross-reference: protein intake for muscle protein synthesis (see Nutrition Science section) provides the building blocks, while the mind-muscle connection research above shows the neural pathway is trainable.",
+        crossReferences: ["nutrition-science"],
+        link: "https://pubmed.ncbi.nlm.nih.gov/34981273/"
+      },
+      {
+        id: "resistance-bone-1",
         title: "Effects of Resistance Exercise on Bone Health",
-        authors: "Hong AR, Kim SW.",
+        authors: "Hong AR, Kim SW",
         journal: "Endocrinology and Metabolism",
         year: 2018,
         doi: "10.3803/EnM.2018.33.4.435",
         pmid: "30513557",
         category: "exercise",
-        summary: "Comprehensive review of how resistance exercise affects bone mineral density, muscle-bone crosstalk, and skeletal health across the lifespan.",
+        summary: "Comprehensive review demonstrating that resistance exercise increases bone mineral density through mechanical loading, with progressive overload essential for continued skeletal adaptation — the bone density link in the muscle-bone-longevity chain.",
         keyFindings: [
           "Resistance training increases bone mineral density through mechanical loading",
           "Progressive overload is essential for continued skeletal adaptation",
-          "Combined resistance and weight-bearing exercise optimal for bone health"
+          "Combined resistance and weight-bearing exercise optimal for bone health",
+          "Bone responds to exercise throughout the lifespan — it is never too late to start"
         ],
-        relevance: "Supports our emphasis on progressive resistance training for long-term metabolic and skeletal health.",
+        relevance: "The bone density link in the longevity chain: sharp mind (attentional control) drives neuromuscular recruitment (mind-muscle connection) which builds and preserves muscle (sarcopenia prevention) which loads bones (this study) which extends healthspan. Cross-reference: the Keith Baar gelatin + vitamin C protocol supports the connective tissue that anchors muscle to bone.",
         link: "https://pubmed.ncbi.nlm.nih.gov/30513557/"
-      },
-      {
-        id: "hiit-metabolic-1",
-        title: "High-Intensity Interval Training and Isocaloric Moderate-Intensity Continuous Training Result in Similar Improvements in Body Composition and Fitness",
-        authors: "Wewege M, et al.",
-        journal: "Obesity Reviews",
-        year: 2017,
-        doi: "10.1111/obr.12532",
-        pmid: "28401638",
-        category: "exercise",
-        summary: "Meta-analysis comparing HIIT vs moderate continuous training showing both effective for body composition, with HIIT requiring less time commitment.",
-        keyFindings: [
-          "HIIT and moderate continuous training produce similar fat loss outcomes",
-          "HIIT achieves results in ~40% less time commitment",
-          "Both modalities improve cardiovascular fitness markers"
-        ],
-        relevance: "Validates our inclusion of both HIIT and steady-state protocols in workout programming.",
-        link: "https://pubmed.ncbi.nlm.nih.gov/28401638/"
       }
     ]
   },
