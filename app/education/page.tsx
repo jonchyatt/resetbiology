@@ -557,67 +557,143 @@ const researchData: ResearchSection[] = [
   },
   {
     id: "nutrition-science",
-    title: "Nutrition & Metabolic Optimization",
-    description: "Research on dietary strategies, micronutrients, and metabolic health for body composition and longevity.",
+    title: "Nutrition Science",
+    description: "Why raising your metabolic rate through mitochondrial biogenesis beats caloric restriction every time — plus the science of the Glucose Ketone Index, fasting-triggered FGF21 and autophagy, and how protein timing fuels the muscle-bone-longevity chain.",
     category: "nutrition",
-    practicalApplication: "Our Nutrition tracking module helps implement these evidence-based dietary strategies.",
+    practicalApplication: "Our Nutrition tracking module at /nutrition helps you implement these strategies: monitor your eating windows for intermittent fasting, track protein distribution across meals for optimal muscle protein synthesis, and log foods that support your metabolic health rather than restrict calories.",
     studies: [
       {
-        id: "protein-timing-1",
-        title: "Dietary Protein and Muscle Mass: Translating Science to Application and Health Benefit",
-        authors: "Lonnie M, et al.",
+        id: "gki-metabolic-1",
+        title: "The glucose ketone index calculator: a simple tool to monitor therapeutic efficacy for metabolic management of brain cancer",
+        authors: "Meidenbauer JJ, Mukherjee P, Seyfried TN",
+        journal: "Nutrition & Metabolism",
+        year: 2015,
+        pmid: "25798181",
+        category: "nutrition",
+        summary: "The original scientific paper behind what Dr. Annette Bosworth (Dr. Boz) popularized as the 'Dr. Boz Ratio' — the Glucose Ketone Index (GKI = blood glucose / blood ketones) as a single metric for metabolic health. GKI approaching 1.0 indicates maximum therapeutic metabolic state, measurable with simple fingerstick meters.",
+        keyFindings: [
+          "Developed the Glucose Ketone Index (GKI = blood glucose molar / blood ketones molar) as a unified metabolic marker",
+          "GKI approaching 1.0 associated with maximum therapeutic efficacy in ketogenic metabolic therapy",
+          "Applied to both human and animal brain tumor data with clear dose-response relationship",
+          "Democratizes metabolic monitoring — fingerstick glucose and ketone meters are sufficient for tracking"
+        ],
+        relevance: "The GKI is the single metric that tells you where you are metabolically — Dr. Boz brought this research-grade tool to general health audiences. A low GKI indicates your body is efficiently burning ketones alongside glucose, a state achieved through intermittent fasting (see studies below) and supported by the exercise-driven mitochondrial biogenesis documented in the Exercise Science section.",
+        crossReferences: ["exercise-protocols"],
+        link: "https://pubmed.ncbi.nlm.nih.gov/25798181/"
+      },
+      {
+        id: "tre-mechanisms-1",
+        title: "Time-Restricted Eating: Benefits, Mechanisms, and Challenges in Translation",
+        authors: "Regmi P, Heilbronn LK",
+        journal: "iScience",
+        year: 2020,
+        pmid: "32480126",
+        doi: "10.1016/j.isci.2020.101161",
+        category: "nutrition",
+        summary: "Comprehensive review showing that 6-10 hour eating windows reduce body weight, improve glucose tolerance, and increase metabolic flexibility — with benefits driven by circadian alignment and metabolic switching to ketone production, not just caloric reduction.",
+        keyFindings: [
+          "6-10 hour eating windows reduce body weight, improve glucose tolerance, and protect against hepatosteatosis",
+          "Reduces atherogenic lipids and blood pressure while improving gut health",
+          "Circadian alignment of eating window matters independently of caloric restriction",
+          "Metabolic switch to ketone production occurs 8-16 hours into fasting"
+        ],
+        relevance: "Intermittent fasting works through metabolic switching — not caloric restriction. The 8-16 hour transition to ketone production is when the GKI (study above) begins improving and the FGF21 pathway (study below) activates. Cross-reference: fasting and Wim Hof breathing both activate autophagy pathways — the fasting-breathwork synergy (see Breath Training section) is additive.",
+        crossReferences: ["breath-training"],
+        link: "https://pubmed.ncbi.nlm.nih.gov/32480126/"
+      },
+      {
+        id: "fgf21-autophagy-1",
+        title: "Fasting-induced FGF21 signaling activates hepatic autophagy and lipid degradation via JMJD3 histone demethylase",
+        authors: "Byun S, Seok S, Kim YC, et al.",
+        journal: "Nature Communications",
+        year: 2020,
+        pmid: "32042044",
+        category: "nutrition",
+        summary: "Reveals the molecular mechanism connecting fasting to cellular cleanup: fasting triggers FGF21 signaling, which activates JMJD3 enzyme, which epigenetically unlocks autophagy genes (Atg7, Tfeb, Atgl) — the specific pathway by which your body cleans up damaged cellular components during a fast.",
+        keyFindings: [
+          "Fasting triggers FGF21 signaling which activates JMJD3 enzyme for epigenetic autophagy gene activation",
+          "Specific pathway: PKA phosphorylates JMJD3, enabling nuclear entry and partnership with PPARalpha",
+          "FGF21 administration improved fatty liver disease in obese mice via this JMJD3-dependent mechanism",
+          "NAFLD patients show substantially reduced autophagy-related gene expression — a therapeutic target"
+        ],
+        relevance: "This is the molecular 'why' behind intermittent fasting: FGF21 is the key that unlocks autophagy — your cells' cleanup system. The same FGF21 pathway is activated by fructose (see study below), explaining why small targeted fructose doses can paradoxically improve metabolic health. Cross-reference: Wim Hof breathing induces acute hypoxia which activates AMPK, a parallel autophagy trigger (see Breath Training section) — combining fasting with breathwork may activate autophagy through two independent pathways simultaneously.",
+        crossReferences: ["breath-training"],
+        link: "https://pubmed.ncbi.nlm.nih.gov/32042044/"
+      },
+      {
+        id: "fructose-fgf21-1",
+        title: "The FGF21 response to fructose predicts metabolic health and persists after bariatric surgery in obese humans",
+        authors: "Ter Horst KW, Gilijamse PW, Demirkiran A, et al.",
+        journal: "Molecular Metabolism",
+        year: 2017,
+        pmid: "29107295",
+        category: "nutrition",
+        summary: "The counterintuitive discovery that fructose powerfully activates the FGF21 pathway — the same pathway that triggers autophagy during fasting. FGF21 levels rose 3-fold after fructose ingestion, and the response correlated with underlying metabolic health. This is a research-grade finding about metabolic signaling pathways, not a recommendation for high-fructose diets.",
+        keyFindings: [
+          "FGF21 levels rose 3-fold at 120 minutes after fructose ingestion in obese humans",
+          "FGF21 response correlated with underlying metabolic health — poorer health produced higher spike",
+          "Response persisted after 28% body weight loss from bariatric surgery — signaling pathway not normalized by weight loss alone",
+          "FGF21 specificity: responds to fructose much more strongly than glucose"
+        ],
+        relevance: "IMPORTANT FRAMING: This is not 'eat sugar for health.' Small, targeted fructose doses activate the FGF21 pathway — the same pathway that fasting activates for autophagy and fat metabolism. The research value is in understanding FGF21 as a metabolic health biomarker and signaling mediator. Practically, this explains why fruit (natural fructose source) may have metabolic benefits beyond its vitamin content. Cross-reference: this FGF21 pathway is the mechanistic link between fasting (study above) and autophagy (FGF21 autophagy study).",
+        link: "https://pubmed.ncbi.nlm.nih.gov/29107295/"
+      },
+      {
+        id: "adaptive-thermogenesis-1",
+        title: "Long-term persistence of adaptive thermogenesis in subjects who have maintained a reduced body weight",
+        authors: "Rosenbaum M, Hirsch J, Gallagher DA, Leibel RL",
+        journal: "American Journal of Clinical Nutrition",
+        year: 2008,
+        pmid: "18842775",
+        category: "nutrition",
+        summary: "The definitive anti-starvation-diet evidence: metabolic suppression from caloric restriction persists for YEARS — both 'recently lost weight' and 'maintained weight loss over 1 year' groups showed significantly lower total energy expenditure than never-dieted controls. Low-calorie diets permanently damage your metabolic rate.",
+        keyFindings: [
+          "Declines in total energy expenditure (TEE) and non-resting energy expenditure (NREE) persist well beyond active weight loss period",
+          "Both 'recently lost' and 'maintained 1+ year' groups showed significantly lower TEE vs never-dieted controls",
+          "Metabolic suppression does NOT diminish with time — it is a sustained physiological adaptation",
+          "Mechanism involves leptin, thyroid, and autonomic nervous system adaptations"
+        ],
+        relevance: "This is why caloric restriction diets fail: your body permanently lowers its metabolic rate in response to caloric restriction, and this suppression persists for years even after returning to normal eating. The alternative: build new mitochondria through exercise (see PGC-1alpha study in Exercise Science section), which permanently RAISES your metabolic engine instead of suppressing it. Cross-reference: protein intake preserves lean mass during any weight change (protein timing study below), protecting the metabolic rate from decline.",
+        crossReferences: ["exercise-protocols"],
+        link: "https://pubmed.ncbi.nlm.nih.gov/18842775/"
+      },
+      {
+        id: "adaptive-thermogenesis-2",
+        title: "Adaptive Thermogenesis in Humans",
+        authors: "Rosenbaum M, Leibel RL",
+        journal: "International Journal of Obesity",
+        year: 2010,
+        pmid: "20935667",
+        category: "nutrition",
+        summary: "Completes the anti-starvation-diet case: over 80% of dieters return to pre-diet weight because the body actively DEFENDS its fat stores through metabolic, behavioral, neuroendocrine, and autonomic adaptations. Obesity is an actively defended physiological state — fighting it with caloric restriction is fighting biology.",
+        keyFindings: [
+          "Over 80% recidivism rate to pre-weight-loss body fatness — the body actively defends against weight loss",
+          "Adaptive responses span metabolic, behavioral, neuroendocrine, and autonomic systems",
+          "Leptin mediates much of the set-point defense mechanism",
+          "Obesity is an actively defended physiological state, not a willpower failure — reframes the treatment approach"
+        ],
+        relevance: "Together with the Rosenbaum 2008 study above, these two papers build the complete anti-starvation-diet case. Low-calorie diets fight a biologically defended setpoint — the 80% recidivism rate is not willpower failure, it is physiology. The Reset Biology approach: raise your metabolic rate by building mitochondria through exercise and REHIT (see Exercise Science section) rather than suppress it through restriction.",
+        crossReferences: ["exercise-protocols"],
+        link: "https://pubmed.ncbi.nlm.nih.gov/20935667/"
+      },
+      {
+        id: "protein-mps-1",
+        title: "Recent Perspectives Regarding the Role of Dietary Protein for the Promotion of Muscle Hypertrophy with Resistance Exercise Training",
+        authors: "Stokes T, Hector AJ, Morton RW, McGlory C, Phillips SM",
         journal: "Nutrients",
         year: 2018,
-        doi: "10.3390/nu10020180",
         pmid: "29414855",
         category: "nutrition",
-        summary: "Comprehensive review on optimal protein intake for muscle protein synthesis, preservation of lean mass, and the role of protein distribution across meals.",
+        summary: "Establishes the science of protein timing for muscle protein synthesis: 20g whey protein maximally stimulates MPS, leucine is the primary mTOR trigger, even distribution across meals beats one large protein meal, and higher protein protects lean mass during caloric deficit — the nutritional support for the muscle-bone-longevity chain.",
         keyFindings: [
-          "1.6-2.2 g/kg/day protein optimal for muscle protein synthesis",
-          "Even distribution across meals (25-40g per meal) maximizes muscle benefit",
-          "Protein quality (leucine content) matters for anabolic signaling",
-          "Higher protein intake protects lean mass during caloric deficit"
+          "20g whey protein sufficient to maximally stimulate muscle protein synthesis (MPS) in most adults — 40g adds no further stimulation",
+          "Leucine is the primary trigger for mTOR pathway activation and MPS initiation (dose-dependent)",
+          "Even distribution of protein across meals (rather than one large protein meal) optimizes daily MPS",
+          "Higher protein protects lean mass during caloric deficit — critical for preserving metabolic rate"
         ],
-        relevance: "Guides our nutrition tracking recommendations for protein intake and meal distribution.",
+        relevance: "Protein timing is the nutritional partner to resistance training: exercise provides the stimulus (see Exercise Science section) and protein provides the building blocks. Even distribution across meals (25-40g per meal) keeps the mTOR pathway active throughout the day. Particularly important: higher protein during any weight change protects the lean mass that MAINTAINS your metabolic rate — connecting directly to the anti-starvation evidence above. Cross-reference: the Keith Baar collagen protocol (see Exercise Science section) adds vitamin C-enriched gelatin to this protein strategy for connective tissue.",
+        crossReferences: ["exercise-protocols"],
         link: "https://pubmed.ncbi.nlm.nih.gov/29414855/"
-      },
-      {
-        id: "time-restricted-1",
-        title: "Effects of Time-Restricted Eating on Weight Loss and Other Metabolic Parameters",
-        authors: "Regmi P, Heilbronn LK.",
-        journal: "Nature Reviews Endocrinology",
-        year: 2020,
-        doi: "10.1038/s41574-020-0339-y",
-        pmid: "32341528",
-        category: "nutrition",
-        summary: "Reviews the metabolic effects of time-restricted eating including improvements in insulin sensitivity, body composition, and circadian rhythm alignment.",
-        keyFindings: [
-          "8-10 hour eating windows improve metabolic markers",
-          "Time-restricted eating enhances insulin sensitivity",
-          "Circadian alignment of meals improves metabolic health",
-          "Benefits observed independent of caloric restriction"
-        ],
-        relevance: "Supports meal timing strategies tracked in our Nutrition module.",
-        link: "https://pubmed.ncbi.nlm.nih.gov/32341528/"
-      },
-      {
-        id: "micronutrient-1",
-        title: "Micronutrient Inadequacies in the US Population: An Overview",
-        authors: "Bird JK, et al.",
-        journal: "Nutrients",
-        year: 2017,
-        doi: "10.3390/nu9121243",
-        pmid: "29137137",
-        category: "nutrition",
-        summary: "Documents widespread micronutrient deficiencies in the US population and their health implications, supporting targeted supplementation strategies.",
-        keyFindings: [
-          "Vitamin D, magnesium, and omega-3 are most commonly deficient",
-          "Micronutrient gaps worsen with age and dietary restriction",
-          "Targeted supplementation can address population-wide deficiencies",
-          "Whole-food-first approach with strategic supplementation is optimal"
-        ],
-        relevance: "Informs our emphasis on tracking micronutrient-dense food intake in the Nutrition module.",
-        link: "https://pubmed.ncbi.nlm.nih.gov/29137137/"
       }
     ]
   },
