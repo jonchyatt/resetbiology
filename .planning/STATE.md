@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: completed
-stopped_at: "Completed 03-03-PLAN.md — Phase 3 Peptide Science fully complete (all 6 requirements: PEPT-01 through PEPT-04, COOP-01, COOP-02 satisfied)."
-last_updated: "2026-03-19T13:23:40.452Z"
-last_activity: 2026-03-19 -- Completed 03-03-PLAN.md (practicalApplication + final audit; Phase 3 fully complete)
+status: in_progress
+stopped_at: "Completed 04-01-PLAN.md — journaling-science (4 studies) and daily-accountability (3 studies) with behavioral category type. 6 requirements satisfied (JRNL-01 through JRNL-03, ACCT-01 through ACCT-03)."
+last_updated: "2026-03-19T14:48:22Z"
+last_activity: 2026-03-19 -- Completed 04-01-PLAN.md (journaling + accountability sections; Phase 4 plan 1 of 3 complete)
 progress:
   total_phases: 5
   completed_phases: 3
-  total_plans: 12
-  completed_plans: 12
-  percent: 75
+  total_plans: 16
+  completed_plans: 13
+  percent: 81
 ---
 
 # Project State
@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-03-18)
 
 ## Current Position
 
-Phase: 3 of 5 (Peptide Science — COMPLETE)
-Plan: 3 of 3 in phase 3 complete (03-03 practicalApplication + final audit)
-Status: Phase 3 complete — Phase 4 (QA sweep) is next
-Last activity: 2026-03-19 -- Completed 03-03-PLAN.md (practicalApplication + final audit; Phase 3 fully complete)
+Phase: 4 of 5 (Behavioral Science — In Progress)
+Plan: 1 of 3 in phase 4 complete (04-01 journaling + accountability)
+Status: Phase 4 in progress — Plan 04-02 (Gamification & Stakes) is next
+Last activity: 2026-03-19 -- Completed 04-01-PLAN.md (journaling + accountability; behavioral category type added)
 
-Progress: [████████████░░░░░░░░] 75% (12/16 plans)
+Progress: [██████████████░░░░░░] 81% (13/16 plans)
 
 ## Performance Metrics
 
@@ -46,10 +46,11 @@ Progress: [████████████░░░░░░░░] 75% (12
 | 01-foundational-physiology | 4 completed | 13 min | 3.25 min |
 | 02-cognitive-science | 5 completed | 31 min | 6.2 min |
 | 03-peptide-science | 3 completed | 8 min | 2.7 min |
+| 04-behavioral-science | 1 completed | 6 min | 6 min |
 
 **Recent Trend:**
-- Last 5 plans: 02-04 (8 min), 02-05 (5 min), 03-01 (3 min), 03-02 (3 min), 03-03 (2 min)
-- Trend: stable, practicalApplication + audit plans consistently fast (2-3 min)
+- Last 5 plans: 03-01 (3 min), 03-02 (3 min), 03-03 (2 min), 04-01 (6 min)
+- Trend: stable; 04-01 slightly longer due to 2 new sections + 7 studies
 
 *Updated after each plan completion*
 
@@ -104,6 +105,9 @@ Recent decisions affecting current work:
 - [03-03]: Baar tendon protocol named explicitly — closes peptide healing signals ↔ gelatin+vitamin C structural substrate loop
 - [03-03]: sarcopenia chosen over "muscle loss" — matches exact term in semaglutide-2 keyFindings (grep finds both instances)
 - [03-03]: Final audit passed first attempt — all 23 PMIDs present, zero fabricated, cross-refs exceed minimums, TypeScript clean
+- [04-01]: behavioral union type added to BOTH Study and ResearchSection interfaces — same dual-interface pattern as cognitive in 02-01
+- [04-01]: journaling-petrie cross-references only meditation-science (not breath-training) — Petrie 1995 is immune antibody RCT, no HRV component; only Pennebaker and Redwine bridge to breath-training
+- [04-01]: accountability studies forward-wire to gamification-stakes before Plan 02 lands — valid since all plans modify same file; cross-references resolve when 04-02 adds that section
 
 ### Pending Todos
 
@@ -112,7 +116,7 @@ None yet.
 ### Blockers/Concerns
 
 - Duplicate route structure (app/ vs src/app/) -- always edit in app/ directory
-- Phase 3 complete — Phase 4 (QA sweep) is next
+- Cross-references from journaling→meditation-science and accountability→gamification-stakes will be forward-wired until Plans 04-02 and 04-03 add those sections
 
 ## Autonomous Mode
 
@@ -142,6 +146,6 @@ This milestone is approved for fully autonomous execution:
 
 ## Session Continuity
 
-Last session: 2026-03-19T13:12:30Z
-Stopped at: Completed 03-03-PLAN.md — Phase 3 Peptide Science fully complete (all 6 requirements: PEPT-01 through PEPT-04, COOP-01, COOP-02 satisfied).
+Last session: 2026-03-19T14:48:22Z
+Stopped at: Completed 04-01-PLAN.md — journaling-science (4 studies) and daily-accountability (3 studies) with behavioral category type. 6 requirements satisfied (JRNL-01 through JRNL-03, ACCT-01 through ACCT-03).
 Resume file: None

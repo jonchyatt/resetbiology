@@ -87,7 +87,7 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 04-01-PLAN.md -- Add "behavioral" category type + Journaling section (Pennebaker 1988, Petrie 1995, Redwine 2016 gratitude/HRV, Smyth 1998 meta-analysis) + Accountability section (Burke 2011 self-monitoring, Patel 2021 digital tracking, Wing 1999 social accountability RCT)
+- [x] 04-01-PLAN.md -- Add "behavioral" category type + Journaling section (Pennebaker 1988, Petrie 1995, Redwine 2016 gratitude/HRV, Smyth 1998 meta-analysis) + Accountability section (Burke 2011 self-monitoring, Patel 2021 digital tracking, Wing 1999 social accountability RCT) (DONE 2026-03-19, commits 873c12cd/79d3dfbe)
 - [ ] 04-02-PLAN.md -- Gamification section (Rewley 2021 loss aversion, Volpp 2008 deposit contracts, Halpern 2015 reward vs deposit, Nishi 2024 gamification meta-analysis) + Meditation section (Brewer 2011 DMN, Tang 2020 gray matter, Chavez 2020 VR pilot, Goyal 2014 JAMA, Grossman 2004 MBSR)
 - [ ] 04-03-PLAN.md -- Cross-domain integration: wire 5 required connections (meditation-breath, meditation-ear, journaling-meditation, accountability-gamification, meditation-nback), remove duplicate Grossman from general-health, final 16-PMID audit
 
@@ -117,5 +117,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | 1. Foundational Physiology | 4/4 | Complete    | 2026-03-19 |
 | 2. Cognitive Science | 5/5 | Complete    | 2026-03-19 |
 | 3. Peptide Science | 3/3 | Complete    | 2026-03-19 |
-| 4. Behavioral Science | 0/3 | Not started | - |
+| 4. Behavioral Science | 1/3 | In progress | - |
 | 5. Quality Assurance | 0/3 | Not started | - |
