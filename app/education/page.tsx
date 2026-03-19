@@ -1405,6 +1405,7 @@ const researchData: ResearchSection[] = [
     studies: [
       {
         id: "gamification-loss-aversion-1",
+        tldr: "Fear of losing earned status made people 18% more likely to hit their step goal",
         title: "Loss Aversion Explains Physical Activity Changes in a Behavioral Gamification Trial",
         authors: "Rewley J, Guszcza J, Dierst-Davies R, Steier D, Szwartz G, Patel M",
         journal: "Games for Health Journal",
@@ -1418,12 +1419,13 @@ const researchData: ResearchSection[] = [
           "Medium-tier participants facing advancement were 10% more likely to achieve daily step goals",
           "Recommendation: design gamification so all levels are earned, not given — maximizes loss aversion"
         ],
-        relevance: "Directly validates loss aversion as a mechanism in health gamification — not just economic theory. The key design insight: rewards must be EARNED to trigger loss aversion. Given rewards (like free points) don't create the same motivational pull. This informs how Reset Biology structures achievement tiers. Cross-reference: self-monitoring (see Daily Accountability section) creates the behavioral foundation that gamification reinforces.",
+        relevance: "Why this matters: Free points do nothing for motivation. But earn a status and face losing it? That drives an 18% increase in goal completion. The design insight is clear: gamification works when rewards are earned, not given. This informs how Reset Biology structures achievement tiers. Cross-reference: self-monitoring (see Daily Accountability section) creates the behavioral foundation that gamification reinforces.",
         crossReferences: ["daily-accountability"],
         link: "https://pubmed.ncbi.nlm.nih.gov/34860130/"
       },
       {
         id: "gamification-volpp-weight-1",
+        tldr: "Deposit contracts quintupled weight loss goal achievement — but gains faded after removal",
         title: "Financial incentive-based approaches for weight loss: a randomized trial",
         authors: "Volpp KG, John LK, Troxel AB, Norton L, Fassbender J, Loewenstein G",
         journal: "JAMA",
@@ -1437,12 +1439,13 @@ const researchData: ResearchSection[] = [
           "Sustainability concern: gains diminished after incentive removal — not fully maintained at month 7",
           "Honest framing: commitment devices work during incentive period but long-term maintenance is a challenge"
         ],
-        relevance: "The strongest evidence that financial stakes accelerate health goals — but with an equally important caveat. Deposit contracts nearly quintupled short-term success, yet the effect fades when the money is no longer at stake. This is why Reset Biology combines stakes with habit-building tools (daily tracking, community) rather than relying on financial incentives alone.",
+        relevance: "Why this matters: Putting money on the line works — 47% hit their target vs 10.5% in controls. But when the money was removed, gains faded. Financial stakes accelerate results, but they do not build habits alone. That is why Reset Biology combines optional stake-based challenges with daily tracking and community accountability rather than relying on any single motivational lever.",
         crossReferences: ["daily-accountability"],
         link: "https://pubmed.ncbi.nlm.nih.gov/19066383/"
       },
       {
         id: "gamification-halpern-smoking-1",
+        tldr: "Deposit programs work better per person — but only 13.7% of people opt in",
         title: "Randomized trial of four financial-incentive programs for smoking cessation",
         authors: "Halpern SD, French B, Small DS, et al.",
         journal: "New England Journal of Medicine",
@@ -1456,12 +1459,13 @@ const researchData: ResearchSection[] = [
           "Deposit programs showed greater efficacy among willing participants but lower uptake limits real-world impact",
           "Key insight: framing matters enormously — deposits are more powerful per participant but fewer will opt in"
         ],
-        relevance: "Reveals the core paradox of commitment devices: the more skin in the game, the fewer people participate — but those who do, succeed more often. This uptake-vs-efficacy tradeoff informs how Reset Biology designs optional stake-based challenges: easy to join, meaningful to complete.",
+        relevance: "Why this matters: The more skin in the game, the fewer people sign up — but those who do succeed more often. This uptake-vs-efficacy tradeoff is the central design challenge for commitment devices. Reset Biology solves it by making stake-based challenges optional and easy to join, so you get the motivational power without the participation barrier.",
         crossReferences: ["daily-accountability"],
         link: "https://pubmed.ncbi.nlm.nih.gov/25970009/"
       },
       {
         id: "gamification-nishi-meta-1",
+        tldr: "36 RCTs: gamification adds modest benefit (+489 steps, -1.92% body fat) — not transformative",
         title: "Effect of digital health applications with or without gamification on physical activity and cardiometabolic risk factors: a systematic review and meta-analysis of randomized controlled trials",
         authors: "Nishi SK, Kavanagh ME, Ramboanga K, et al.",
         journal: "EClinicalMedicine",
@@ -1475,7 +1479,7 @@ const researchData: ResearchSection[] = [
           "Small but meaningful reductions in body fat percentage (-1.92%) and body weight (-0.70 kg)",
           "No significant differences for blood pressure, lipids, or glucose measures — gamification is not a medical intervention"
         ],
-        relevance: "The honest reality check: gamification improves physical activity and weight modestly, not transformatively. Points and badges are motivational supplements, not primary interventions. This is why Reset Biology uses gamification as one layer in a system that includes self-monitoring (see Daily Accountability section), social accountability, and evidence-based protocols — not as a standalone solution.",
+        relevance: "Why this matters: We include this reality check because honesty matters. Gamification adds a modest but consistent behavioral boost — not a miracle transformation. Points and badges are one motivational layer in a system that includes self-monitoring (see Daily Accountability section), social accountability, and evidence-based protocols. No single motivational tool is sufficient; the combination is what works.",
         crossReferences: ["daily-accountability"],
         link: "https://pubmed.ncbi.nlm.nih.gov/39764571/"
       }
