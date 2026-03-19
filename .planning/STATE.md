@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: completed
-stopped_at: Completed 01-04-PLAN.md — cross-domain audit confirmed all 6 connections present, zero fabricated PMIDs, all portal URLs correct. Phase 1 complete.
-last_updated: "2026-03-19T05:28:06.712Z"
-last_activity: 2026-03-19 -- Completed 01-04-PLAN.md (cross-domain integration audit)
+status: in_progress
+stopped_at: Completed 02-01-PLAN.md — nback-working-memory section with 3 verified studies, cognitive category type, Cognitive Science filter button deployed.
+last_updated: "2026-03-19T06:18:43Z"
+last_activity: 2026-03-19 -- Completed 02-01-PLAN.md (N-Back working memory section)
 progress:
   total_phases: 5
   completed_phases: 1
-  total_plans: 4
-  completed_plans: 4
-  percent: 25
+  total_plans: 16
+  completed_plans: 5
+  percent: 31
 ---
 
 # Project State
@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-03-18)
 
 ## Current Position
 
-Phase: 1 of 5 COMPLETE (Foundational Physiology)
-Plan: 4 of 4 in phase 1 — PHASE 1 COMPLETE
-Status: Phase 1 complete — advancing to Phase 2
-Last activity: 2026-03-19 -- Completed 01-04-PLAN.md (cross-domain integration audit)
+Phase: 2 of 5 In Progress (Cognitive Science)
+Plan: 1 of 4 in phase 2 complete (02-01 N-Back)
+Status: In progress — Phase 2 started, 02-02 ear-training is next
+Last activity: 2026-03-19 -- Completed 02-01-PLAN.md (N-Back working memory section)
 
-Progress: [████░░░░░░░░░░░░░░░░] 25% (4/16 plans)
+Progress: [█████░░░░░░░░░░░░░░░] 31% (5/16 plans)
 
 ## Performance Metrics
 
@@ -44,9 +44,10 @@ Progress: [████░░░░░░░░░░░░░░░░] 25% (4/
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-foundational-physiology | 4 completed | 13 min | 3.25 min |
+| 02-cognitive-science | 1 completed | 8 min | 8 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (2 min), 01-02 (3 min), 01-03 (3 min), 01-04 (5 min)
+- Last 5 plans: 01-01 (2 min), 01-02 (3 min), 01-03 (3 min), 01-04 (5 min), 02-01 (8 min)
 - Trend: stable
 
 *Updated after each plan completion*
@@ -75,6 +76,10 @@ Recent decisions affecting current work:
 - [01-03]: PMID 29414855 author attribution corrected from Lonnie M et al. to Stokes et al. 2018
 - [01-04]: Verification-only plan — all 6 cross-domain connections and 19 verified PMIDs were already present from 01-01 through 01-03; no code changes required
 - [01-04]: Phase 1 audit confirmed: 'see Exercise Science section' (4x), 'see Nutrition Science section' (5x), 'see Breath Training section' (5x) — all exceed minimum of 2
+- [02-01]: All 3 PMIDs in old mental-training section were bogus (18378733=nursing article, 24932672=unverified, 23424073=unverified); replaced with verified Jaeggi 18443283, Au 25102926, Melby-Lervag 27474138
+- [02-01]: Melby-Lervag 2016 counterbalance included intentionally — honest framing (near transfer reliable, far transfer debated) matches Phase 1 WHM autophagy pattern
+- [02-01]: Section renamed mental-training → nback-working-memory to accurately scope before ear-training section arrives in 02-02
+- [02-01]: cognitive category union type established — all Phase 2 plans can now use category: "cognitive" without TypeScript errors
 
 ### Pending Todos
 
@@ -83,7 +88,7 @@ None yet.
 ### Blockers/Concerns
 
 - Duplicate route structure (app/ vs src/app/) -- always edit in app/ directory
-- Phase 1 complete — ready to start Phase 2 (cognitive domains)
+- Phase 2 in progress — 02-02 ear-training is next (ear-training section + Kraus/Herholz/Cepeda studies)
 
 ## Autonomous Mode
 
@@ -113,6 +118,6 @@ This milestone is approved for fully autonomous execution:
 
 ## Session Continuity
 
-Last session: 2026-03-19T05:17:00Z
-Stopped at: Completed 01-04-PLAN.md — cross-domain audit confirmed all 6 connections present, zero fabricated PMIDs, all portal URLs correct. Phase 1 complete.
+Last session: 2026-03-19T06:18:43Z
+Stopped at: Completed 02-01-PLAN.md — nback-working-memory section with 3 verified studies, cognitive category type, Cognitive Science filter button deployed.
 Resume file: None
