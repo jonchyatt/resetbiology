@@ -490,68 +490,68 @@ const researchData: ResearchSection[] = [
     ]
   },
   {
-    id: "mental-training",
-    title: "Cognitive Training & Working Memory",
-    description: "Research on N-Back training, pitch recognition, spaced repetition, and neuroplasticity of cognitive function.",
-    category: "general",
-    practicalApplication: "Our N-Back trainer and Pitch Recognition game implement these evidence-based cognitive training principles.",
+    id: "nback-working-memory",
+    title: "N-Back Training & Working Memory",
+    description: "How systematic dual N-Back practice trains the working memory system -- the cognitive buffer that holds and manipulates information -- and the active scientific debate about how far these improvements transfer.",
+    category: "cognitive",
+    practicalApplication: "Our N-Back trainer at /mental-training implements dual and higher-order N-Back tasks from the Jaeggi protocol with 5 game modes (position, audio, dual, triple, quad). Begin with 2-Back and progress when you achieve >80% accuracy consistently.",
     studies: [
       {
-        id: "nback-fluid-1",
-        title: "Improving Fluid Intelligence with Training on Working Memory",
-        authors: "Jaeggi SM, et al.",
+        id: "nback-fluid-jaeggi",
+        title: "Improving fluid intelligence with training on working memory",
+        authors: "Jaeggi SM, Buschkuehl M, Jonides J, Perrig WJ",
         journal: "Proceedings of the National Academy of Sciences",
         year: 2008,
         doi: "10.1073/pnas.0801268105",
-        pmid: "18378733",
-        category: "general",
-        summary: "The landmark study showing that N-Back working memory training can transfer to improvements in fluid intelligence, a finding that launched the modern cognitive training field.",
+        pmid: "18443283",
+        category: "cognitive",
+        summary: "The landmark PNAS study that launched modern cognitive training research by demonstrating that dual N-Back working memory training can transfer to improvements in fluid intelligence -- the ability to reason and solve novel problems independent of acquired knowledge.",
         keyFindings: [
-          "Dual N-Back training improved fluid intelligence scores",
-          "Gains were dose-dependent — more training produced larger improvements",
-          "Transfer effects observed on untrained cognitive tasks",
-          "Working memory training is a viable approach to cognitive enhancement"
+          "Dual N-Back training improved fluid intelligence (Gf) scores in a dose-dependent manner",
+          "More training sessions produced larger Gf improvements -- dose-response confirmed",
+          "Transfer effects occurred to untrained cognitive tasks measuring fluid intelligence",
+          "Launched the modern cognitive training field and sparked the ongoing transfer debate"
         ],
-        relevance: "The foundational study behind our Dual N-Back and higher-order N-Back training modules.",
-        link: "https://pubmed.ncbi.nlm.nih.gov/18378733/"
+        relevance: "The foundational study behind our dual N-Back and higher-order N-Back training. While subsequent meta-analyses (see Au 2015 and Melby-Lervag 2016 below) have refined our understanding of how far these improvements transfer, the dose-dependent training effect on working memory itself remains robust. Cross-reference: neuromuscular research (see Exercise Science section) shows that intentional attentional control -- the same skill N-Back trains -- directly translates to better mind-muscle connection and motor unit recruitment (PMID 31354928). N-Back also provides dual-modality training that engages both auditory and visual working memory simultaneously (see Ear Training section).",
+        crossReferences: ["exercise-protocols", "ear-training"],
+        link: "https://pubmed.ncbi.nlm.nih.gov/18443283/"
       },
       {
-        id: "spaced-repetition-1",
-        title: "A Model of How Spaced Practice Improves Learning: The Spacing Effect and Retrieval Practice",
-        authors: "Lindsey RV, et al.",
-        journal: "Psychological Review",
-        year: 2014,
-        doi: "10.1037/a0036399",
-        pmid: "24932672",
-        category: "general",
-        summary: "Models how spaced practice and retrieval strengthen long-term memory through optimally timed review intervals.",
+        id: "nback-meta-au",
+        title: "Improving fluid intelligence with training on working memory: a meta-analysis",
+        authors: "Au J, Sheehan E, Tsai N, Duncan GJ, Buschkuehl M, Jaeggi SM",
+        journal: "Psychonomic Bulletin & Review",
+        year: 2015,
+        pmid: "25102926",
+        category: "cognitive",
+        summary: "Meta-analysis of 20 N-back training studies confirming a modest but statistically significant positive effect on fluid intelligence, with several moderating factors identified that affect the strength of cognitive transfer.",
         keyFindings: [
-          "Spaced repetition outperforms massed practice for long-term retention",
-          "Optimal spacing intervals depend on individual learning curves",
-          "Retrieval practice strengthens memory more than re-study",
-          "Adaptive scheduling algorithms maximize learning efficiency"
+          "Meta-analysis of 20 N-back training studies confirmed positive transfer to fluid intelligence",
+          "Effect is modest but statistically significant across studies",
+          "Several moderating factors (training duration, control group type) affect transfer magnitude",
+          "Supports the original Jaeggi finding while contextualizing its practical magnitude"
         ],
-        relevance: "The theoretical basis for our FSRS spaced repetition system used in Pitch Recognition training.",
-        link: "https://pubmed.ncbi.nlm.nih.gov/24932672/"
+        relevance: "Provides the meta-analytic evidence supporting N-Back transfer -- the effect is real but more modest than Jaeggi's initial single study suggested. This honest framing mirrors our approach throughout: present the evidence accurately, let users make informed decisions.",
+        link: "https://pubmed.ncbi.nlm.nih.gov/25102926/"
       },
       {
-        id: "pitch-training-1",
-        title: "Absolute Pitch May Not Be So Absolute",
-        authors: "Hedger SC, et al.",
-        journal: "Psychological Science",
-        year: 2013,
-        doi: "10.1177/0956797612473310",
-        pmid: "23424073",
-        category: "general",
-        summary: "Demonstrates that pitch perception is more plastic than previously thought, with training-induced improvements in pitch labeling and discrimination.",
+        id: "nback-meta-counterbalance",
+        title: "Working Memory Training Does Not Improve Performance on Measures of Intelligence or Other Measures of 'Far Transfer': Evidence From a Meta-Analytic Review",
+        authors: "Melby-Lervag M, Redick TS, Hulme C",
+        journal: "Perspectives on Psychological Science",
+        year: 2016,
+        pmid: "27474138",
+        category: "cognitive",
+        summary: "The most comprehensive counterpoint: 87 publications and 145 experimental comparisons found reliable near-transfer (working memory tasks improve) but no convincing evidence of far transfer to intelligence or real-world cognitive skills. The value of N-Back training lies in strengthening the working memory process itself.",
         keyFindings: [
-          "Pitch perception abilities are trainable in adults",
-          "Training improves pitch labeling accuracy significantly",
-          "Relative pitch skills benefit from structured ear training",
-          "Auditory cortex shows plasticity in response to pitch training"
+          "87 publications with 145 experimental comparisons analyzed",
+          "Reliable improvements on working memory tasks themselves (near transfer confirmed)",
+          "No convincing evidence of far transfer to fluid intelligence or real-world skills",
+          "Training produces specific cognitive improvements that don't necessarily generalize to IQ"
         ],
-        relevance: "Supports the trainability of pitch recognition — the core skill in our ear training game.",
-        link: "https://pubmed.ncbi.nlm.nih.gov/23424073/"
+        relevance: "We include this study because scientific honesty matters more than marketing claims. N-Back reliably trains working memory -- the cognitive buffer you use every moment to hold and manipulate information. Whether that transfers to general intelligence is debated. What is not debated: a stronger working memory system supports better attentional control, which directly serves the neuromuscular recruitment chain (see Exercise Science section) and the multi-modal processing required in ear training (see Ear Training section).",
+        crossReferences: ["exercise-protocols", "ear-training"],
+        link: "https://pubmed.ncbi.nlm.nih.gov/27474138/"
       }
     ]
   },
