@@ -115,7 +115,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | Phase | Plans Complete | Status | Completed |
 |-------|---------------|--------|-----------|
 | 1. Foundational Physiology | 4/4 | Complete    | 2026-03-19 |
-| 2. Cognitive Science | 5/5 | Complete | 2026-03-19 |
+| 2. Cognitive Science | 5/5 | Complete    | 2026-03-19 |
 | 3. Peptide Science | 0/3 | Not started | - |
 | 4. Behavioral Science | 0/3 | Not started | - |
 | 5. Quality Assurance | 0/3 | Not started | - |
