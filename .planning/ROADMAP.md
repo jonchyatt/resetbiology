@@ -70,7 +70,7 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 03-01-PLAN.md -- Peptide research batch 1: replace 8 fabricated PMIDs with 12 verified studies for BPC-157 (3), TB-500 (2), Semaglutide (2), Ipamorelin (2), Epithalon (3) with exercise-protocol cross-references
+- [x] 03-01-PLAN.md -- Peptide research batch 1: replace 8 fabricated PMIDs with 12 verified studies for BPC-157 (3), TB-500 (2), Semaglutide (2), Ipamorelin (2), Epithalon (3) with exercise-protocol cross-references (DONE 2026-03-19, commit d59ae13c)
 - [ ] 03-02-PLAN.md -- Peptide research batch 2: append 11 verified studies for GHK-Cu (3), DSIP (2), MOTS-c (2), 5-Amino-1MQ (2) plus 2 co-op sourcing studies with nutrition-science cross-references
 - [ ] 03-03-PLAN.md -- Synergy cross-references and final audit: update practicalApplication with portal links and cross-domain synergy text, verify all 23 PMIDs present with zero fabricated
 
@@ -116,6 +116,6 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 |-------|---------------|--------|-----------|
 | 1. Foundational Physiology | 4/4 | Complete    | 2026-03-19 |
 | 2. Cognitive Science | 5/5 | Complete    | 2026-03-19 |
-| 3. Peptide Science | 0/3 | Not started | - |
+| 3. Peptide Science | 1/3 | In progress | - |
 | 4. Behavioral Science | 0/3 | Not started | - |
 | 5. Quality Assurance | 0/3 | Not started | - |

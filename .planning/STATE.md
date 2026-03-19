@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: completed
-stopped_at: Completed 02-05-PLAN.md — EAR-04 gap closed; Phase 2 fully complete including gap closure plan.
-last_updated: "2026-03-19T12:24:06.341Z"
-last_activity: 2026-03-19 -- Completed 02-05-PLAN.md (EAR-04 gap closure, breath-training cross-reference)
+status: in_progress
+stopped_at: Completed 03-01-PLAN.md — 12 verified peptide studies (batch 1 of 2) replacing 8 fabricated entries.
+last_updated: "2026-03-19T12:59:34Z"
+last_activity: 2026-03-19 -- Completed 03-01-PLAN.md (BPC-157/TB-500/Semaglutide/Ipamorelin/Epithalon verified studies)
 progress:
   total_phases: 5
   completed_phases: 2
-  total_plans: 9
-  completed_plans: 9
-  percent: 56
+  total_plans: 10
+  completed_plans: 10
+  percent: 63
 ---
 
 # Project State
@@ -21,23 +21,23 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-18)
 
 **Core value:** Every protocol and recommendation must be justified by real peer-reviewed research
-**Current focus:** Phase 2 COMPLETE — Next: Phase 3 Peptides
+**Current focus:** Phase 3 Peptides — Plan 01 of 3 complete (batch 1 verified studies)
 
 ## Current Position
 
-Phase: 2 of 5 (Cognitive Science — gap closure complete)
-Plan: 5 of 5 in phase 2 complete (02-05 EAR-04 Gap Closure)
-Status: Phase 2 fully complete including gap closure — Phase 3 peptides is next
-Last activity: 2026-03-19 -- Completed 02-05-PLAN.md (EAR-04 gap closure, breath-training cross-reference)
+Phase: 3 of 5 (Peptide Science — in progress)
+Plan: 1 of 3 in phase 3 complete (03-01 batch 1 verified studies)
+Status: 03-01 complete — 03-02 (remaining 4 peptides) is next
+Last activity: 2026-03-19 -- Completed 03-01-PLAN.md (BPC-157/TB-500/Semaglutide/Ipamorelin/Epithalon verified studies)
 
-Progress: [█████████░░░░░░░░░░░] 56% (9/16 plans)
+Progress: [██████████░░░░░░░░░░] 63% (10/16 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 8
-- Average duration: ~4.6 min
-- Total execution time: ~0.62 hours
+- Total plans completed: 10
+- Average duration: ~4.4 min
+- Total execution time: ~0.68 hours
 
 **By Phase:**
 
@@ -45,10 +45,11 @@ Progress: [█████████░░░░░░░░░░░] 56% (9/
 |-------|-------|-------|----------|
 | 01-foundational-physiology | 4 completed | 13 min | 3.25 min |
 | 02-cognitive-science | 5 completed | 31 min | 6.2 min |
+| 03-peptide-science | 1 completed | 3 min | 3 min |
 
 **Recent Trend:**
-- Last 5 plans: 02-01 (8 min), 02-02 (5 min), 02-03 (5 min), 02-04 (8 min), 02-05 (5 min)
-- Trend: stable
+- Last 5 plans: 02-02 (5 min), 02-03 (5 min), 02-04 (8 min), 02-05 (5 min), 03-01 (3 min)
+- Trend: stable, slightly faster (data-only plan)
 
 *Updated after each plan completion*
 
@@ -90,6 +91,11 @@ Recent decisions affecting current work:
 - [02-04]: Task 2 audit found all 7 cross-domain connections already present from prior plans -- no code changes required for audit
 - [02-04]: Phase 2 complete with 14 verified studies across 4 cognitive domains (3+4+4+3)
 - [02-05]: Kraus 2010 chosen as EAR-04 gap target -- "music training as exercise for the brain" framing naturally extends to sound-based breath practices; relevance text appended (not replaced) to preserve N-Back cross-reference
+- [03-01]: All 8 fabricated PMIDs removed (37456789 used twice, 35789234, 37891234, 38123456, 36789456, 35678912, 38567890); 12 verified PMIDs inserted for 5 peptides
+- [03-01]: Study ordering: BPC-157 (3) → TB-500 (2) → Semaglutide (2) → Ipamorelin (2) → Epithalon (3) — highest cross-reference priority first
+- [03-01]: semaglutide-1 is the only Phase 3 RCT in peptide section; semaglutide-2 frames muscle loss as making resistance training "non-optional"
+- [03-01]: Epithalon studies note single Khavinson group provenance and absent independent replication — honest framing matches WHM autophagy pattern
+- [03-01]: practicalApplication left unchanged — Plan 03-03 will update with full cross-reference text
 
 ### Pending Todos
 
@@ -98,7 +104,7 @@ None yet.
 ### Blockers/Concerns
 
 - Duplicate route structure (app/ vs src/app/) -- always edit in app/ directory
-- Phase 2 complete — Phase 3 peptides is next
+- Phase 3 plan 01 complete — 03-02 (GHK-Cu, DSIP, MOTS-c, 5-Amino-1MQ) is next
 
 ## Autonomous Mode
 
@@ -128,6 +134,6 @@ This milestone is approved for fully autonomous execution:
 
 ## Session Continuity
 
-Last session: 2026-03-19T07:10:00Z
-Stopped at: Completed 02-05-PLAN.md — EAR-04 gap closed; Phase 2 fully complete including gap closure plan.
+Last session: 2026-03-19T12:59:34Z
+Stopped at: Completed 03-01-PLAN.md — 12 verified peptide studies (batch 1 of 2) replacing 8 fabricated entries.
 Resume file: None
