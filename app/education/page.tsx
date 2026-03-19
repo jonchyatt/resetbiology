@@ -426,66 +426,86 @@ const researchData: ResearchSection[] = [
   },
   {
     id: "vision-science",
-    title: "Vision Training & Eye Health",
-    description: "Research on visual acuity training, accommodation exercises, and neuroplasticity of the visual system.",
-    category: "general",
-    practicalApplication: "Our Vision Training module uses Snellen charts, contrast sensitivity, and accommodation exercises backed by this research.",
+    title: "Vision Training & Visual Neuroplasticity",
+    description: "How perceptual learning rewires the adult visual cortex -- from contrast sensitivity to accommodation flexibility -- demonstrating that visual function remains trainable throughout life, not just during childhood critical periods.",
+    category: "cognitive",
+    practicalApplication: "Our Vision Training module at /vision-training uses Snellen charts, contrast sensitivity exercises, and near-far accommodation drills backed by this research. Perceptual learning drives the same cortical plasticity mechanisms documented below.",
     studies: [
       {
-        id: "vision-perceptual-1",
-        title: "Improved Vision and On-Field Performance in Baseball Through Perceptual Learning",
-        authors: "Deveau J, Ozer DJ, Seitz AR.",
+        id: "vision-perceptual-baseball",
+        title: "Improved vision and on-field performance in baseball through perceptual learning",
+        authors: "Deveau J, Ozer DJ, Seitz AR",
         journal: "Current Biology",
         year: 2014,
         doi: "10.1016/j.cub.2014.01.004",
-        pmid: "24508170",
-        category: "general",
-        summary: "Demonstrated that perceptual learning exercises significantly improved visual acuity and real-world sports performance in college baseball players.",
+        pmid: "24556432",
+        category: "cognitive",
+        summary: "Demonstrated that a perceptual learning program significantly improved visual acuity in University of California Riverside baseball players, with trained players showing decreased strikeouts and creating more runs -- one of the strongest examples of vision training transferring to real-world performance.",
         keyFindings: [
-          "Vision training improved visual acuity by an average of 31%",
-          "On-field batting performance improved significantly",
-          "Perceptual learning transferred to real-world visual tasks",
-          "Effects maintained over the competitive season"
+          "Perceptual learning program improved visual acuity in college baseball players",
+          "Trained players had decreased strikeouts and created more runs during the season",
+          "Training led to an estimated 4-5 additional team wins over the season",
+          "Perceptual learning transfers from laboratory tasks to real-world visual performance"
         ],
-        relevance: "Demonstrates that structured vision training can meaningfully improve visual acuity — the foundation of our Snellen-based training.",
-        link: "https://pubmed.ncbi.nlm.nih.gov/24508170/"
+        relevance: "The strongest demonstration that vision training transfers to real-world performance. If perceptual learning can improve a 95-mph fastball read, it can improve your daily visual processing. Cross-reference: this transfer from trained skill to real-world function parallels the near-transfer findings in N-Back research (see N-Back section) -- both demonstrate that structured practice rewires specific neural pathways.",
+        crossReferences: ["nback-working-memory"],
+        link: "https://pubmed.ncbi.nlm.nih.gov/24556432/"
       },
       {
-        id: "vision-accommodation-1",
-        title: "Accommodation and Vergence Facility: Normative Data and Their Relationship to Binocular Vision",
-        authors: "Scheiman M, et al.",
-        journal: "Optometry and Vision Science",
-        year: 1999,
-        pmid: "10416930",
-        category: "general",
-        summary: "Establishes normative values for accommodative facility and demonstrates the importance of accommodation training for binocular vision health.",
-        keyFindings: [
-          "Accommodation facility is trainable and improves with practice",
-          "Near-far focusing exercises improve accommodative flexibility",
-          "Binocular vision quality directly correlates with accommodation facility",
-          "Regular eye exercises can maintain visual performance with aging"
-        ],
-        relevance: "Validates our near-far accommodation exercises in the Vision Training module.",
-        link: "https://pubmed.ncbi.nlm.nih.gov/10416930/"
-      },
-      {
-        id: "vision-neuroplasticity-1",
-        title: "Perceptual Learning as a Possible New Approach for Remediation and Prevention of Amblyopia",
-        authors: "Polat U.",
+        id: "vision-perceptual-practical",
+        title: "Making perceptual learning practical to improve visual functions",
+        authors: "Polat U",
         journal: "Vision Research",
         year: 2009,
-        doi: "10.1016/j.visres.2008.11.011",
-        pmid: "19084554",
-        category: "general",
-        summary: "Reviews how perceptual learning drives neuroplastic changes in the adult visual cortex, demonstrating that visual function remains trainable throughout life.",
+        pmid: "19520103",
+        category: "cognitive",
+        summary: "Reviews how contrast detection training transfers to unrelated visual functions -- improving contrast sensitivity in amblyopia and presbyopia cases, with some presbyopia subjects eliminating their need for reading glasses entirely through perceptual learning alone.",
         keyFindings: [
-          "Visual cortex retains significant neuroplasticity in adults",
-          "Contrast sensitivity is trainable through repeated practice",
-          "Perceptual learning produces lasting improvements in visual function",
-          "Transfer of training occurs across untrained visual tasks"
+          "Contrast detection training transfers to improvement in unrelated visual functions",
+          "Improved contrast sensitivity in both amblyopia and presbyopia cases",
+          "Some presbyopia subjects eliminated their need for reading glasses through training alone",
+          "Perceptual learning is a practical, non-invasive method for people with impaired or blurred vision"
         ],
-        relevance: "Supports the scientific basis for our contrast sensitivity and visual acuity training protocols.",
-        link: "https://pubmed.ncbi.nlm.nih.gov/19084554/"
+        relevance: "Demonstrates that visual neuroplasticity operates in adults even for age-related vision changes (presbyopia). The fact that structured contrast training can reduce or eliminate the need for reading glasses in some cases underscores the practical value of our vision training exercises. Cross-reference: this adult neuroplasticity for visual function shares the same cortical plasticity mechanisms that make cognitive training effective for building cognitive reserve (see Mental Mastery section).",
+        crossReferences: ["mental-mastery"],
+        link: "https://pubmed.ncbi.nlm.nih.gov/19520103/"
+      },
+      {
+        id: "vision-perceptual-amblyopia",
+        title: "Treatment of children with amblyopia by perceptual learning",
+        authors: "Polat U, Ma-Naim T, Spierer A",
+        journal: "Vision Research",
+        year: 2009,
+        pmid: "19622368",
+        category: "cognitive",
+        summary: "Perceptual learning improved visual acuity by 1.5 Snellen lines and enhanced contrast sensitivity to normal levels in amblyopic children -- notably succeeding where conventional patching treatment had failed, demonstrating that the visual cortex retains plasticity even after the traditional critical period.",
+        keyFindings: [
+          "Perceptual learning improved visual acuity by 1.5 Snellen lines (2.12 ETDRS lines)",
+          "Enhanced contrast sensitivity to normal levels in amblyopic children",
+          "Computer-based visual training succeeded after conventional patching treatment failed",
+          "Visual cortex retains plasticity even after the traditional developmental critical period"
+        ],
+        relevance: "If the visual cortex retains enough plasticity to recover from amblyopia after the critical period, it retains enough plasticity for healthy adults to improve their visual processing. This study provides the strongest evidence that visual training is not just for children -- the neural mechanisms for visual improvement persist throughout life.",
+        link: "https://pubmed.ncbi.nlm.nih.gov/19622368/"
+      },
+      {
+        id: "vision-accommodation-training",
+        title: "Changes in dynamics of accommodation after accommodative facility training in myopes and emmetropes",
+        authors: "Allen PM, Charman WN, Radhakrishnan H",
+        journal: "Vision Research",
+        year: 2010,
+        pmid: "20304003",
+        category: "cognitive",
+        summary: "Objectively demonstrated that accommodation facility training improves accommodation dynamics in both myopes and emmetropes using PowerRefractor measurements -- a 3-day protocol of just 5 minutes monocular + 5 minutes binocular training produced measurable improvements in accommodation time constants and peak velocity.",
+        keyFindings: [
+          "Accommodation facility training improved facility rates in both myopes and emmetropes",
+          "Improvements correlated with objectively measured changes in accommodation time constants and peak velocity",
+          "Just 3 days of training (5 min monocular right + 5 min left + 5 min binocular) produced measurable results",
+          "PowerRefractor measurements confirmed training-induced changes -- not just subjective improvement"
+        ],
+        relevance: "Provides the objective, instrument-verified evidence that our near-far accommodation exercises produce real physiological changes. The brief training protocol (15 minutes/day for 3 days) demonstrates that accommodation training doesn't require marathon sessions -- consistency matters more than duration. Cross-reference: this parallels the dose-response pattern in N-Back training (see N-Back section) where regular brief sessions outperform occasional long sessions.",
+        crossReferences: ["nback-working-memory"],
+        link: "https://pubmed.ncbi.nlm.nih.gov/20304003/"
       }
     ]
   },
