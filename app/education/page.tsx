@@ -780,6 +780,7 @@ const researchData: ResearchSection[] = [
     studies: [
       {
         id: "vision-perceptual-baseball",
+        tldr: "Vision training helped baseball players read 95-mph fastballs and create more runs",
         title: "Improved vision and on-field performance in baseball through perceptual learning",
         authors: "Deveau J, Ozer DJ, Seitz AR",
         journal: "Current Biology",
@@ -794,12 +795,13 @@ const researchData: ResearchSection[] = [
           "Training led to an estimated 4-5 additional team wins over the season",
           "Perceptual learning transfers from laboratory tasks to real-world visual performance"
         ],
-        relevance: "The strongest demonstration that vision training transfers to real-world performance. If perceptual learning can improve a 95-mph fastball read, it can improve your daily visual processing. Cross-reference: this transfer from trained skill to real-world function parallels the near-transfer findings in N-Back research (see N-Back section) -- both demonstrate that structured practice rewires specific neural pathways.",
+        relevance: "Why this matters: If vision training can improve a 95-mph fastball read and translate to 4-5 extra team wins, it can improve your daily visual processing too. This is the strongest evidence that perceptual learning transfers from lab to life. Cross-reference: this transfer from trained skill to real-world function parallels the near-transfer findings in N-Back research (see N-Back section) — both demonstrate that structured practice rewires specific neural pathways.",
         crossReferences: ["nback-working-memory"],
         link: "https://pubmed.ncbi.nlm.nih.gov/24556432/"
       },
       {
         id: "vision-perceptual-practical",
+        tldr: "Some presbyopia patients ditched their reading glasses through training alone",
         title: "Making perceptual learning practical to improve visual functions",
         authors: "Polat U",
         journal: "Vision Research",
@@ -813,12 +815,13 @@ const researchData: ResearchSection[] = [
           "Some presbyopia subjects eliminated their need for reading glasses through training alone",
           "Perceptual learning is a practical, non-invasive method for people with impaired or blurred vision"
         ],
-        relevance: "Demonstrates that visual neuroplasticity operates in adults even for age-related vision changes (presbyopia). The fact that structured contrast training can reduce or eliminate the need for reading glasses in some cases underscores the practical value of our vision training exercises. Cross-reference: this adult neuroplasticity for visual function shares the same cortical plasticity mechanisms that make cognitive training effective for building cognitive reserve (see Mental Mastery section).",
+        relevance: "Why this matters: Age-related vision decline (presbyopia) is not irreversible. Some subjects eliminated their need for reading glasses entirely through structured contrast training. Your visual cortex retains plasticity well into adulthood — and our vision exercises leverage that plasticity. Cross-reference: this adult neuroplasticity shares the same cortical plasticity mechanisms that make cognitive training effective for building cognitive reserve (see Mental Mastery section).",
         crossReferences: ["mental-mastery"],
         link: "https://pubmed.ncbi.nlm.nih.gov/19520103/"
       },
       {
         id: "vision-perceptual-amblyopia",
+        tldr: "Perceptual learning fixed amblyopia after patching failed — visual plasticity persists past childhood",
         title: "Treatment of children with amblyopia by perceptual learning",
         authors: "Polat U, Ma-Naim T, Spierer A",
         journal: "Vision Research",
@@ -832,11 +835,12 @@ const researchData: ResearchSection[] = [
           "Computer-based visual training succeeded after conventional patching treatment failed",
           "Visual cortex retains plasticity even after the traditional developmental critical period"
         ],
-        relevance: "If the visual cortex retains enough plasticity to recover from amblyopia after the critical period, it retains enough plasticity for healthy adults to improve their visual processing. This study provides the strongest evidence that visual training is not just for children -- the neural mechanisms for visual improvement persist throughout life.",
+        relevance: "Why this matters: If perceptual learning can recover vision from amblyopia after conventional treatment failed and after the critical period ended, your healthy adult visual system is absolutely trainable. The neural mechanisms for visual improvement persist throughout life — the 'critical period is over' excuse does not hold up.",
         link: "https://pubmed.ncbi.nlm.nih.gov/19622368/"
       },
       {
         id: "vision-accommodation-training",
+        tldr: "15 minutes of near-far drills for 3 days produced objectively measured focus improvements",
         title: "Changes in dynamics of accommodation after accommodative facility training in myopes and emmetropes",
         authors: "Allen PM, Charman WN, Radhakrishnan H",
         journal: "Vision Research",
@@ -850,7 +854,7 @@ const researchData: ResearchSection[] = [
           "Just 3 days of training (5 min monocular right + 5 min left + 5 min binocular) produced measurable results",
           "PowerRefractor measurements confirmed training-induced changes -- not just subjective improvement"
         ],
-        relevance: "Provides the objective, instrument-verified evidence that our near-far accommodation exercises produce real physiological changes. The brief training protocol (15 minutes/day for 3 days) demonstrates that accommodation training doesn't require marathon sessions -- consistency matters more than duration. Cross-reference: this parallels the dose-response pattern in N-Back training (see N-Back section) where regular brief sessions outperform occasional long sessions.",
+        relevance: "Why this matters: PowerRefractor measurements confirmed it — your eyes' focus speed and peak velocity genuinely improve with accommodation training. Just 15 minutes a day for 3 days produced measurable results. Consistency matters more than duration. Cross-reference: this parallels the dose-response pattern in N-Back training (see N-Back section) where regular brief sessions outperform occasional long sessions.",
         crossReferences: ["nback-working-memory"],
         link: "https://pubmed.ncbi.nlm.nih.gov/20304003/"
       }
