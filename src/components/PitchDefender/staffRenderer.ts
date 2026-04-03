@@ -37,8 +37,10 @@ export interface StaffLayout {
 
 export function computeLayout(width: number, height: number): StaffLayout {
   const padding = 36
-  const clefAreaWidth = 56
-  const timeSigAreaWidth = 28
+  // Reserve space proportional to staff size (bounded for small/large screens)
+  const lineSpacingEst = (height * 0.62 * 0.82 / 2) / 4  // estimate before full calc
+  const clefAreaWidth = Math.max(Math.min(lineSpacingEst * 1.8, 82), 46)
+  const timeSigAreaWidth = Math.max(Math.min(lineSpacingEst * 0.85, 38), 22)
   const staffX = padding + clefAreaWidth + timeSigAreaWidth
   const staffRight = width - padding - 44
 
@@ -309,15 +311,15 @@ function drawTrebleClef(ctx: CanvasRenderingContext2D, layout: StaffLayout) {
   // 6. The spiral: curve right and below G line
   ctx.bezierCurveTo(
     cx - ls * 0.25, gY + ls * 1.0,
-    cx + ls * 0.4, gY + ls * 1.4,
-    cx + ls * 0.75, gY + ls * 0.7,
+    cx + ls * 0.35, gY + ls * 1.3,
+    cx + ls * 0.6, gY + ls * 0.65,
   )
 
-  // 7. Spiral continues: up past G line going right
+  // 7. Spiral continues: up past G line going right (tighter)
   ctx.bezierCurveTo(
-    cx + ls * 1.0, gY + ls * 0.1,
-    cx + ls * 0.8, gY - ls * 0.6,
-    cx + ls * 0.3, gY - ls * 0.55,
+    cx + ls * 0.8, gY + ls * 0.05,
+    cx + ls * 0.65, gY - ls * 0.55,
+    cx + ls * 0.25, gY - ls * 0.5,
   )
 
   // 8. Spiral closes: curves left and slightly down
@@ -397,27 +399,27 @@ export function drawClefs(ctx: CanvasRenderingContext2D, layout: StaffLayout) {
 
 function drawTimeSignature(ctx: CanvasRenderingContext2D, layout: StaffLayout) {
   const ls = layout.lineSpacing
-  const fontSize = Math.max(ls * 2.0, 18)
-  const x = layout.timeSigX + Math.min(ls * 0.5, 12)
+  const fontSize = Math.max(ls * 1.5, 16)
+  const x = layout.timeSigX + Math.min(ls * 0.45, 12)
 
   ctx.save()
-  ctx.fillStyle = 'rgba(200, 215, 245, 0.82)'
-  ctx.font = `bold ${fontSize}px 'Georgia', 'Times New Roman', serif`
+  ctx.fillStyle = 'rgba(200, 215, 245, 0.78)'
+  ctx.font = `${fontSize}px 'Georgia', 'Times New Roman', serif`
   ctx.textAlign = 'center'
 
   // Treble staff: "4" on top half, "4" on bottom half
   const trebleMid = (layout.trebleLines[0] + layout.trebleLines[4]) / 2
   ctx.textBaseline = 'bottom'
-  ctx.fillText('4', x, trebleMid + 1)
+  ctx.fillText('4', x, trebleMid + 2)
   ctx.textBaseline = 'top'
-  ctx.fillText('4', x, trebleMid - 1)
+  ctx.fillText('4', x, trebleMid - 2)
 
   // Bass staff: "4" on top half, "4" on bottom half
   const bassMid = (layout.bassLines[0] + layout.bassLines[4]) / 2
   ctx.textBaseline = 'bottom'
-  ctx.fillText('4', x, bassMid + 1)
+  ctx.fillText('4', x, bassMid + 2)
   ctx.textBaseline = 'top'
-  ctx.fillText('4', x, bassMid - 1)
+  ctx.fillText('4', x, bassMid - 2)
 
   ctx.restore()
 }
