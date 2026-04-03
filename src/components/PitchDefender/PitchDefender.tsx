@@ -19,6 +19,7 @@ import GameHUD from './GameHUD'
 import WaveIntro from './WaveIntro'
 import GameOver from './GameOver'
 import { usePitchDetection, notesMatch } from './usePitchDetection'
+import ParentSettings, { DEFAULT_SETTINGS, type GameSettings } from './ParentSettings'
 import './animations.css'
 
 export type GameMode = 'noteBlaster' | 'echoCannon' | 'staffDefender' | 'sequenceAssault'
@@ -148,6 +149,8 @@ export default function PitchDefender() {
   const [countdown, setCountdown] = useState<number | null>(null)
   const [starPreset, setStarPreset] = useState('darkWorld1')
   const [gameMode, setGameMode] = useState<GameMode>('noteBlaster')
+  const [showSettings, setShowSettings] = useState(false)
+  const [gameSettings, setGameSettings] = useState<GameSettings>(DEFAULT_SETTINGS)
   const [screenShake, setScreenShake] = useState(false)
   const [lockProgress, setLockProgress] = useState(0)
   const [laser, setLaser] = useState<{ fromX: number; fromY: number; toX: number; toY: number; hue: number } | null>(null)
@@ -841,7 +844,24 @@ export default function PitchDefender() {
           <p className="text-xs text-gray-600 mt-6 text-center">
             {KEYBOARD_ORDER.length} notes &middot; 10 waves &middot; {gameMode === 'echoCannon' ? 'Sing to match pitch' : 'FSRS-powered learning'}
           </p>
+
+          {/* Settings gear */}
+          <button
+            onClick={() => setShowSettings(true)}
+            className="mt-4 text-xs text-gray-500 hover:text-gray-300 transition-colors"
+          >
+            Parent / Teacher Settings
+          </button>
         </div>
+      )}
+
+      {/* Settings modal */}
+      {showSettings && (
+        <ParentSettings
+          settings={gameSettings}
+          onSave={setGameSettings}
+          onClose={() => setShowSettings(false)}
+        />
       )}
 
       {/* ─── COUNTDOWN ─────────────────────────────────────────────────── */}
