@@ -14,7 +14,7 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { PitchFusion, type FusedPitch, DEFAULT_FUSION_CONFIG } from './pitchFusion'
-import { computeLayout, renderStaff, drawTargetNote, drawVoiceOrb, drawCentsIndicator, staffPositionToY, type TrailPoint, type StaffLayout } from './staffRenderer'
+import { computeLayout, renderStaff, drawTargetNote, drawVoiceOrb, drawCentsIndicator, drawNoteHeadWithStem, staffPositionToY, type TrailPoint, type StaffLayout } from './staffRenderer'
 import { NOTE_COLORS } from '@/lib/fsrs'
 import { initAudio, playPianoNote } from './audioEngine'
 
@@ -279,13 +279,15 @@ export default function NoteRunner() {
       const isWaiting = note.state === 'waiting'
       const isMatched = note.state === 'matched'
 
-      // Note circle
-      const radius = isWaiting ? 14 : 10
+      // Note head (proper musical notation shape)
+      const noteScale = isWaiting ? 1.2 : 0.9
       const alpha = isMatched ? 0.3 : note.state === 'waiting' ? 1 : 0.7
+      const noteRx = layout.noteHeadRx * noteScale
+      const noteRy = layout.noteHeadRy * noteScale
 
       // Glow
       if (isWaiting || isMatched) {
-        const glowR = radius * 3
+        const glowR = Math.max(noteRx, noteRy) * 3.5
         const glow = ctx.createRadialGradient(noteX, noteY, 0, noteX, noteY, glowR)
         glow.addColorStop(0, `hsla(${hue}, 80%, 60%, ${0.3 * alpha})`)
         glow.addColorStop(1, 'hsla(0, 0%, 0%, 0)')
@@ -293,22 +295,26 @@ export default function NoteRunner() {
         ctx.fillRect(noteX - glowR, noteY - glowR, glowR * 2, glowR * 2)
       }
 
-      // Fill
-      ctx.beginPath()
-      ctx.arc(noteX, noteY, radius, 0, Math.PI * 2)
-      const grad = ctx.createRadialGradient(noteX - 2, noteY - 2, 0, noteX, noteY, radius)
-      grad.addColorStop(0, `hsla(${hue}, 70%, 80%, ${alpha})`)
-      grad.addColorStop(1, `hsla(${hue}, 80%, 50%, ${alpha * 0.8})`)
-      ctx.fillStyle = isMatched ? `hsla(120, 80%, 60%, 0.8)` : grad
-      ctx.fill()
+      // Note head with stem
+      const fillColor = isMatched
+        ? `hsla(120, 80%, 60%, 0.8)`
+        : `hsla(${hue}, 80%, 55%, ${alpha})`
+      const strokeColor = `hsla(${hue}, 70%, 70%, ${alpha * 0.8})`
+      drawNoteHeadWithStem(ctx, noteX, noteY, layout, fillColor, strokeColor, {
+        filled: true,
+        showStem: !isMatched,
+        scale: noteScale,
+        alpha: 1,  // alpha already encoded in color strings
+      })
 
       // Match progress ring
       if (isWaiting && note.matchProgress > 0) {
         const progress = note.matchProgress / HOLD_DURATION[difficulty]
+        const ringR = Math.max(noteRx, noteRy) + 5
         ctx.strokeStyle = `hsla(120, 80%, 60%, ${0.8 * progress})`
         ctx.lineWidth = 3
         ctx.beginPath()
-        ctx.arc(noteX, noteY, radius + 4, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * progress)
+        ctx.arc(noteX, noteY, ringR, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * progress)
         ctx.stroke()
       }
 
@@ -318,7 +324,7 @@ export default function NoteRunner() {
         ctx.fillStyle = `hsla(${hue}, 70%, 85%, ${alpha * 0.9})`
         ctx.textAlign = 'center'
         ctx.textBaseline = 'top'
-        ctx.fillText(note.name, noteX, noteY + radius + 4)
+        ctx.fillText(note.name, noteX, noteY + noteRy + 6)
       }
     }
 

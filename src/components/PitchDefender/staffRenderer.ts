@@ -2,8 +2,12 @@
 // Staff Renderer — Pure Canvas 2D Drawing Functions
 // ═══════════════════════════════════════════════════════════════════════════════
 //
-// Renders a musically-accurate grand staff with synesthesia colors,
-// voice orb, pitch ribbon trail, accuracy rings, and note labels.
+// Renders a musically-accurate grand staff with proper engraving:
+// - Canvas-drawn treble & bass clefs (not Unicode)
+// - 4/4 time signature
+// - Curly brace connecting staves
+// - Proper filled note heads with stems
+// - Synesthesia colors, voice orb, pitch ribbon trail
 //
 // Pure functions — no React, no state. Takes canvas context + data, draws.
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -15,7 +19,7 @@ import { NOTE_COLORS } from '@/lib/fsrs'
 export interface StaffLayout {
   width: number
   height: number
-  staffX: number            // left edge of staff lines
+  staffX: number            // left edge of staff lines (music area)
   staffRight: number        // right edge of staff lines
   trebleTop: number         // Y of top treble staff line
   bassBottom: number        // Y of bottom bass staff line
@@ -24,17 +28,23 @@ export interface StaffLayout {
   bassLines: number[]       // Y positions of 5 bass lines
   middleCY: number          // Y position of middle C (between staves)
   clefWidth: number         // space reserved for clef symbols
+  clefX: number             // X where clef drawing starts
+  timeSigX: number          // X where time signature starts
+  braceX: number            // X for the curly brace
+  noteHeadRx: number        // note head ellipse horizontal radius
+  noteHeadRy: number        // note head ellipse vertical radius
 }
 
 export function computeLayout(width: number, height: number): StaffLayout {
-  const padding = 40
-  const clefWidth = 60
-  const staffX = padding + clefWidth  // room for clef symbols
-  const staffRight = width - padding - 40  // room for note labels
+  const padding = 36
+  const clefAreaWidth = 56
+  const timeSigAreaWidth = 28
+  const staffX = padding + clefAreaWidth + timeSigAreaWidth
+  const staffRight = width - padding - 44
 
   // Grand staff: treble on top, bass on bottom, gap in middle for middle C
-  const totalStaffHeight = height * 0.65
-  const staffGap = totalStaffHeight * 0.18  // gap between treble and bass
+  const totalStaffHeight = height * 0.62
+  const staffGap = totalStaffHeight * 0.18
   const singleStaffHeight = (totalStaffHeight - staffGap) / 2
 
   const centerY = height * 0.48
@@ -55,7 +65,12 @@ export function computeLayout(width: number, height: number): StaffLayout {
     trebleLines,
     bassLines,
     middleCY: centerY,
-    clefWidth,
+    clefWidth: clefAreaWidth,
+    clefX: padding + 4,
+    timeSigX: padding + clefAreaWidth + 4,
+    braceX: padding - 2,
+    noteHeadRx: lineSpacing * 0.62,
+    noteHeadRy: lineSpacing * 0.44,
   }
 }
 
@@ -126,10 +141,9 @@ function getNoteColor(semitones: number): { hue: number; r: number; g: number; b
   }
 }
 
-// ─── Drawing Functions ──────────────────────────────────────────────────────
+// ─── Background ─────────────────────────────────────────────────────────────
 
 export function drawBackground(ctx: CanvasRenderingContext2D, layout: StaffLayout) {
-  // Deep dark background with subtle gradient
   const grad = ctx.createLinearGradient(0, 0, 0, layout.height)
   grad.addColorStop(0, '#08080f')
   grad.addColorStop(0.5, '#0a0a14')
@@ -138,9 +152,55 @@ export function drawBackground(ctx: CanvasRenderingContext2D, layout: StaffLayou
   ctx.fillRect(0, 0, layout.width, layout.height)
 }
 
+// ─── Curly Brace ────────────────────────────────────────────────────────────
+
+function drawBrace(ctx: CanvasRenderingContext2D, layout: StaffLayout) {
+  const x = layout.braceX
+  const topY = layout.trebleLines[0]
+  const bottomY = layout.bassLines[4]
+  const midY = (topY + bottomY) / 2
+  const halfH = (bottomY - topY) / 2
+
+  ctx.save()
+  ctx.strokeStyle = 'rgba(180, 195, 230, 0.6)'
+  ctx.lineWidth = 2.5
+  ctx.lineCap = 'round'
+  ctx.lineJoin = 'round'
+
+  // Upper half of brace
+  ctx.beginPath()
+  ctx.moveTo(x + 4, topY)
+  ctx.bezierCurveTo(
+    x - 4, topY + halfH * 0.3,
+    x - 4, midY - halfH * 0.15,
+    x - 8, midY,
+  )
+  ctx.stroke()
+
+  // Lower half of brace
+  ctx.beginPath()
+  ctx.moveTo(x - 8, midY)
+  ctx.bezierCurveTo(
+    x - 4, midY + halfH * 0.15,
+    x - 4, bottomY - halfH * 0.3,
+    x + 4, bottomY,
+  )
+  ctx.stroke()
+
+  // Tip at center
+  ctx.beginPath()
+  ctx.arc(x - 9, midY, 1.5, 0, Math.PI * 2)
+  ctx.fillStyle = 'rgba(180, 195, 230, 0.6)'
+  ctx.fill()
+
+  ctx.restore()
+}
+
+// ─── Staff Lines ────────────────────────────────────────────────────────────
+
 export function drawStaffLines(ctx: CanvasRenderingContext2D, layout: StaffLayout) {
-  ctx.strokeStyle = 'rgba(140, 150, 180, 0.4)'
-  ctx.lineWidth = 1.5
+  ctx.strokeStyle = 'rgba(160, 172, 210, 0.6)'
+  ctx.lineWidth = 1.8
 
   // Treble staff lines
   for (const y of layout.trebleLines) {
@@ -158,42 +218,213 @@ export function drawStaffLines(ctx: CanvasRenderingContext2D, layout: StaffLayou
     ctx.stroke()
   }
 
-  // Middle C ledger line (short, dashed)
-  ctx.strokeStyle = 'rgba(120, 130, 160, 0.15)'
-  ctx.setLineDash([6, 4])
+  // Middle C ledger line (short, dashed, more visible than before)
+  ctx.strokeStyle = 'rgba(140, 155, 190, 0.22)'
+  ctx.lineWidth = 1.5
+  ctx.setLineDash([8, 5])
   ctx.beginPath()
-  const ledgerWidth = 40
+  const ledgerWidth = 50
   const cx = (layout.staffX + layout.staffRight) / 2
   ctx.moveTo(cx - ledgerWidth, layout.middleCY)
   ctx.lineTo(cx + ledgerWidth, layout.middleCY)
   ctx.stroke()
   ctx.setLineDash([])
 
-  // Barline at left edge
-  ctx.strokeStyle = 'rgba(120, 130, 160, 0.3)'
-  ctx.lineWidth = 2
+  // Barline at left edge — thin + thick double barline
+  ctx.strokeStyle = 'rgba(160, 172, 210, 0.45)'
+  ctx.lineWidth = 1.5
   ctx.beginPath()
   ctx.moveTo(layout.staffX, layout.trebleLines[0])
+  ctx.lineTo(layout.staffX, layout.trebleLines[4])
+  ctx.stroke()
+  ctx.beginPath()
+  ctx.moveTo(layout.staffX, layout.bassLines[0])
   ctx.lineTo(layout.staffX, layout.bassLines[4])
+  ctx.stroke()
+
+  // Connecting barline between staves (thin)
+  ctx.strokeStyle = 'rgba(140, 155, 190, 0.25)'
+  ctx.lineWidth = 1
+  ctx.beginPath()
+  ctx.moveTo(layout.staffX, layout.trebleLines[4])
+  ctx.lineTo(layout.staffX, layout.bassLines[0])
   ctx.stroke()
 }
 
-export function drawClefs(ctx: CanvasRenderingContext2D, layout: StaffLayout) {
-  // Treble clef (𝄞) — sized to span the 5 treble staff lines
-  const trebleSize = layout.lineSpacing * 3.8
-  ctx.font = `${trebleSize}px serif`
-  ctx.fillStyle = 'rgba(180, 190, 220, 0.6)'
-  ctx.textBaseline = 'middle'
-  ctx.fillText('𝄞', layout.staffX - layout.clefWidth + 10, layout.trebleLines[2] + layout.lineSpacing * 0.2)
+// ─── Treble Clef (Canvas Path) ──────────────────────────────────────────────
 
-  // Bass clef (𝄢) — sized to span the 5 bass staff lines
-  const bassSize = layout.lineSpacing * 2.2
-  ctx.font = `${bassSize}px serif`
-  ctx.fillText('𝄢', layout.staffX - layout.clefWidth + 14, layout.bassLines[1])
+function drawTrebleClef(ctx: CanvasRenderingContext2D, layout: StaffLayout) {
+  // G line = 2nd from bottom of treble staff = trebleLines[3]
+  const gY = layout.trebleLines[3]
+  const ls = layout.lineSpacing
+  // Center the clef horizontally in the clef area
+  const cx = layout.clefX + Math.min(ls * 0.9, 28)
+
+  ctx.save()
+  ctx.strokeStyle = 'rgba(200, 215, 245, 0.88)'
+  ctx.fillStyle = 'rgba(200, 215, 245, 0.88)'
+  ctx.lineWidth = Math.max(ls * 0.13, 2.2)
+  ctx.lineCap = 'round'
+  ctx.lineJoin = 'round'
+
+  // === One continuous stroke: bottom hook → up → top cap → down → spiral ===
+  ctx.beginPath()
+
+  // 1. Bottom hook
+  ctx.moveTo(cx + ls * 0.3, gY + ls * 3.0)
+  ctx.bezierCurveTo(
+    cx - ls * 0.1, gY + ls * 3.15,
+    cx - ls * 0.35, gY + ls * 2.5,
+    cx - ls * 0.1, gY + ls * 1.8,
+  )
+
+  // 2. Rise up through the staff curving gently right
+  ctx.bezierCurveTo(
+    cx + ls * 0.15, gY + ls * 0.8,
+    cx + ls * 0.45, gY - ls * 0.3,
+    cx + ls * 0.35, gY - ls * 1.8,
+  )
+
+  // 3. Continue up past top of staff, curving left
+  ctx.bezierCurveTo(
+    cx + ls * 0.25, gY - ls * 3.0,
+    cx - ls * 0.1, gY - ls * 4.0,
+    cx + ls * 0.05, gY - ls * 4.3,
+  )
+
+  // 4. Top cap — small hook curving right then back
+  ctx.bezierCurveTo(
+    cx + ls * 0.35, gY - ls * 4.65,
+    cx + ls * 0.45, gY - ls * 4.0,
+    cx + ls * 0.15, gY - ls * 3.4,
+  )
+
+  // 5. Descend back down through center of staff
+  ctx.bezierCurveTo(
+    cx - ls * 0.15, gY - ls * 2.3,
+    cx - ls * 0.5, gY - ls * 0.8,
+    cx - ls * 0.4, gY + ls * 0.2,
+  )
+
+  // 6. The spiral: curve right and below G line
+  ctx.bezierCurveTo(
+    cx - ls * 0.25, gY + ls * 1.0,
+    cx + ls * 0.4, gY + ls * 1.4,
+    cx + ls * 0.75, gY + ls * 0.7,
+  )
+
+  // 7. Spiral continues: up past G line going right
+  ctx.bezierCurveTo(
+    cx + ls * 1.0, gY + ls * 0.1,
+    cx + ls * 0.8, gY - ls * 0.6,
+    cx + ls * 0.3, gY - ls * 0.55,
+  )
+
+  // 8. Spiral closes: curves left and slightly down
+  ctx.bezierCurveTo(
+    cx - ls * 0.05, gY - ls * 0.45,
+    cx - ls * 0.35, gY - ls * 0.1,
+    cx - ls * 0.3, gY + ls * 0.15,
+  )
+
+  ctx.stroke()
+
+  // Bottom dot
+  ctx.beginPath()
+  ctx.arc(cx + ls * 0.15, gY + ls * 3.1, Math.max(ls * 0.16, 2.5), 0, Math.PI * 2)
+  ctx.fill()
+
+  ctx.restore()
 }
 
+// ─── Bass Clef (Canvas Path) ────────────────────────────────────────────────
+
+function drawBassClef(ctx: CanvasRenderingContext2D, layout: StaffLayout) {
+  // F line = 2nd from top of bass staff = bassLines[1]
+  const fY = layout.bassLines[1]
+  const ls = layout.lineSpacing
+  const cx = layout.clefX + Math.min(ls * 0.7, 22)
+
+  ctx.save()
+  ctx.strokeStyle = 'rgba(200, 215, 245, 0.88)'
+  ctx.fillStyle = 'rgba(200, 215, 245, 0.88)'
+  ctx.lineCap = 'round'
+  ctx.lineJoin = 'round'
+
+  // Main body: filled dot at F line
+  const dotR = Math.max(ls * 0.3, 4)
+  ctx.beginPath()
+  ctx.arc(cx, fY, dotR, 0, Math.PI * 2)
+  ctx.fill()
+
+  // Curved tail going right then down
+  ctx.lineWidth = Math.max(ls * 0.12, 2)
+  ctx.beginPath()
+  ctx.moveTo(cx + dotR, fY - ls * 0.1)
+  ctx.bezierCurveTo(
+    cx + ls * 0.9, fY - ls * 0.5,
+    cx + ls * 1.1, fY + ls * 0.3,
+    cx + ls * 0.7, fY + ls * 1.3,
+  )
+  ctx.bezierCurveTo(
+    cx + ls * 0.4, fY + ls * 2.0,
+    cx - ls * 0.2, fY + ls * 2.3,
+    cx - ls * 0.5, fY + ls * 1.8,
+  )
+  ctx.stroke()
+
+  // Two dots flanking the F line
+  const dotPairX = cx + ls * 1.15
+  const dotPairR = Math.max(ls * 0.12, 2)
+  ctx.beginPath()
+  ctx.arc(dotPairX, fY - ls * 0.42, dotPairR, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.beginPath()
+  ctx.arc(dotPairX, fY + ls * 0.42, dotPairR, 0, Math.PI * 2)
+  ctx.fill()
+
+  ctx.restore()
+}
+
+// ─── Clefs (combined) ───────────────────────────────────────────────────────
+
+export function drawClefs(ctx: CanvasRenderingContext2D, layout: StaffLayout) {
+  drawTrebleClef(ctx, layout)
+  drawBassClef(ctx, layout)
+}
+
+// ─── Time Signature ─────────────────────────────────────────────────────────
+
+function drawTimeSignature(ctx: CanvasRenderingContext2D, layout: StaffLayout) {
+  const ls = layout.lineSpacing
+  const fontSize = Math.max(ls * 2.0, 18)
+  const x = layout.timeSigX + Math.min(ls * 0.5, 12)
+
+  ctx.save()
+  ctx.fillStyle = 'rgba(200, 215, 245, 0.82)'
+  ctx.font = `bold ${fontSize}px 'Georgia', 'Times New Roman', serif`
+  ctx.textAlign = 'center'
+
+  // Treble staff: "4" on top half, "4" on bottom half
+  const trebleMid = (layout.trebleLines[0] + layout.trebleLines[4]) / 2
+  ctx.textBaseline = 'bottom'
+  ctx.fillText('4', x, trebleMid + 1)
+  ctx.textBaseline = 'top'
+  ctx.fillText('4', x, trebleMid - 1)
+
+  // Bass staff: "4" on top half, "4" on bottom half
+  const bassMid = (layout.bassLines[0] + layout.bassLines[4]) / 2
+  ctx.textBaseline = 'bottom'
+  ctx.fillText('4', x, bassMid + 1)
+  ctx.textBaseline = 'top'
+  ctx.fillText('4', x, bassMid - 1)
+
+  ctx.restore()
+}
+
+// ─── Note Labels ────────────────────────────────────────────────────────────
+
 export function drawNoteLabels(ctx: CanvasRenderingContext2D, layout: StaffLayout) {
-  // Label note names on the right edge of the staff
   const labels = [
     { name: 'C3', semi: -12 }, { name: 'E3', semi: -8 }, { name: 'G3', semi: -5 },
     { name: 'A3', semi: -3 }, { name: 'C4', semi: 0 },
@@ -209,23 +440,133 @@ export function drawNoteLabels(ctx: CanvasRenderingContext2D, layout: StaffLayou
   for (const { name, semi } of labels) {
     const y = staffPositionToY(semi, layout)
     const color = getNoteColor(semi)
-    ctx.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, 0.6)`
-    ctx.fillText(name, layout.staffRight + 8, y)
+    ctx.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, 0.7)`
+    ctx.fillText(name, layout.staffRight + 10, y)
   }
 }
 
+// ─── Synesthesia Glow ───────────────────────────────────────────────────────
+
 export function drawSynesthesiaGlow(ctx: CanvasRenderingContext2D, layout: StaffLayout) {
-  // Subtle color wash across the staff — each region tinted by its note color
   for (let semi = -15; semi <= 22; semi++) {
     const y = staffPositionToY(semi, layout)
     const color = getNoteColor(semi)
     const grad = ctx.createLinearGradient(layout.staffX, 0, layout.staffRight, 0)
     grad.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`)
-    grad.addColorStop(0.3, `rgba(${color.r}, ${color.g}, ${color.b}, 0.02)`)
-    grad.addColorStop(0.7, `rgba(${color.r}, ${color.g}, ${color.b}, 0.02)`)
+    grad.addColorStop(0.3, `rgba(${color.r}, ${color.g}, ${color.b}, 0.025)`)
+    grad.addColorStop(0.7, `rgba(${color.r}, ${color.g}, ${color.b}, 0.025)`)
     grad.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`)
     ctx.fillStyle = grad
     ctx.fillRect(layout.staffX, y - layout.lineSpacing / 4, layout.staffRight - layout.staffX, layout.lineSpacing / 2)
+  }
+}
+
+// ─── Note Head Drawing ──────────────────────────────────────────────────────
+
+const NOTE_ROTATION = -0.32  // ~-18 degrees, standard music engraving tilt
+
+export function drawNoteHeadWithStem(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  layout: StaffLayout,
+  fillColor: string,
+  strokeColor: string,
+  options: {
+    filled?: boolean
+    showStem?: boolean
+    scale?: number
+    alpha?: number
+  } = {},
+) {
+  const { filled = true, showStem = true, scale = 1, alpha = 1 } = options
+  const rx = layout.noteHeadRx * scale
+  const ry = layout.noteHeadRy * scale
+
+  // Note head — tilted filled/hollow ellipse
+  ctx.save()
+  ctx.globalAlpha = alpha
+  ctx.translate(x, y)
+  ctx.rotate(NOTE_ROTATION)
+
+  ctx.beginPath()
+  ctx.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2)
+
+  if (filled) {
+    ctx.fillStyle = fillColor
+    ctx.fill()
+  }
+  ctx.strokeStyle = strokeColor
+  ctx.lineWidth = Math.max(ry * 0.18, 1.2)
+  ctx.stroke()
+  ctx.restore()
+
+  // Stem
+  if (showStem) {
+    // Stem direction: notes below middle of visible area → stem up, above → stem down
+    const stemUp = y >= layout.middleCY
+    const stemLength = layout.lineSpacing * 3.5 * scale
+    const stemX = stemUp
+      ? x + rx * 0.88  // right edge for stem up
+      : x - rx * 0.88  // left edge for stem down
+
+    ctx.save()
+    ctx.globalAlpha = alpha
+    ctx.strokeStyle = strokeColor
+    ctx.lineWidth = Math.max(1.5 * scale, 1)
+    ctx.lineCap = 'round'
+    ctx.beginPath()
+    ctx.moveTo(stemX, y)
+    ctx.lineTo(stemX, stemUp ? y - stemLength : y + stemLength)
+    ctx.stroke()
+    ctx.restore()
+  }
+}
+
+// ─── Ledger Lines ───────────────────────────────────────────────────────────
+
+function drawLedgerLinesAt(ctx: CanvasRenderingContext2D, layout: StaffLayout, semi: number, centerX: number) {
+  ctx.strokeStyle = 'rgba(160, 172, 210, 0.4)'
+  ctx.lineWidth = 1.8
+  const ledgerW = layout.noteHeadRx * 1.6
+
+  // Notes above treble staff
+  const topStaffSemi = 17 // F5 = top treble line
+  if (semi > topStaffSemi) {
+    for (let s = topStaffSemi + 2; s <= semi + 1; s += 2) {
+      const diatonicCheck = SEMITONE_TO_DIATONIC[((s % 12) + 12) % 12]
+      if (diatonicCheck !== undefined && diatonicCheck % 1 === 0) {
+        const ly = staffPositionToY(s, layout)
+        ctx.beginPath()
+        ctx.moveTo(centerX - ledgerW, ly)
+        ctx.lineTo(centerX + ledgerW, ly)
+        ctx.stroke()
+      }
+    }
+  }
+
+  // Notes below bass staff
+  const bottomStaffSemi = -17 // G2 = bottom bass line
+  if (semi < bottomStaffSemi) {
+    for (let s = bottomStaffSemi - 2; s >= semi - 1; s -= 2) {
+      const diatonicCheck = SEMITONE_TO_DIATONIC[((s % 12) + 12) % 12]
+      if (diatonicCheck !== undefined && diatonicCheck % 1 === 0) {
+        const ly = staffPositionToY(s, layout)
+        ctx.beginPath()
+        ctx.moveTo(centerX - ledgerW, ly)
+        ctx.lineTo(centerX + ledgerW, ly)
+        ctx.stroke()
+      }
+    }
+  }
+
+  // Middle C ledger line (between staves)
+  if (Math.abs(semi) <= 1) {
+    ctx.strokeStyle = 'rgba(160, 172, 210, 0.35)'
+    ctx.beginPath()
+    ctx.moveTo(centerX - ledgerW, layout.middleCY)
+    ctx.lineTo(centerX + ledgerW, layout.middleCY)
+    ctx.stroke()
   }
 }
 
@@ -234,7 +575,7 @@ export function drawSynesthesiaGlow(ctx: CanvasRenderingContext2D, layout: Staff
 export function drawVoiceOrb(
   ctx: CanvasRenderingContext2D,
   layout: StaffLayout,
-  staffPosition: number,  // semitones from C4
+  staffPosition: number,
   confidence: number,
   isSettled: boolean,
   isVibrato: boolean,
@@ -242,7 +583,7 @@ export function drawVoiceOrb(
   const y = staffPositionToY(staffPosition, layout)
   const x = (layout.staffX + layout.staffRight) / 2
   const color = getNoteColor(staffPosition)
-  const radius = 12 + confidence * 6  // 12-18px based on confidence
+  const radius = 12 + confidence * 6
 
   // Outer glow
   const glowRadius = radius * 3
@@ -282,45 +623,8 @@ export function drawVoiceOrb(
     ctx.stroke()
   }
 
-  // Ledger lines for the orb position (if outside staff)
+  // Ledger lines for the orb position
   drawLedgerLinesAt(ctx, layout, staffPosition, x)
-}
-
-function drawLedgerLinesAt(ctx: CanvasRenderingContext2D, layout: StaffLayout, semi: number, centerX: number) {
-  ctx.strokeStyle = 'rgba(120, 130, 160, 0.3)'
-  ctx.lineWidth = 1.5
-  const ledgerW = 24
-
-  // Notes above treble staff
-  const topStaffSemi = 17 // F5 = top treble line
-  if (semi > topStaffSemi) {
-    for (let s = topStaffSemi + 2; s <= semi + 1; s += 2) {
-      // Only draw on line positions (even diatonic steps from a line)
-      const diatonicCheck = SEMITONE_TO_DIATONIC[((s % 12) + 12) % 12]
-      if (diatonicCheck !== undefined && diatonicCheck % 1 === 0) {
-        const ly = staffPositionToY(s, layout)
-        ctx.beginPath()
-        ctx.moveTo(centerX - ledgerW, ly)
-        ctx.lineTo(centerX + ledgerW, ly)
-        ctx.stroke()
-      }
-    }
-  }
-
-  // Notes below bass staff (similar logic)
-  const bottomStaffSemi = -17 // G2 = bottom bass line
-  if (semi < bottomStaffSemi) {
-    for (let s = bottomStaffSemi - 2; s >= semi - 1; s -= 2) {
-      const diatonicCheck = SEMITONE_TO_DIATONIC[((s % 12) + 12) % 12]
-      if (diatonicCheck !== undefined && diatonicCheck % 1 === 0) {
-        const ly = staffPositionToY(s, layout)
-        ctx.beginPath()
-        ctx.moveTo(centerX - ledgerW, ly)
-        ctx.lineTo(centerX + ledgerW, ly)
-        ctx.stroke()
-      }
-    }
-  }
 }
 
 // ─── Pitch Ribbon Trail ─────────────────────────────────────────────────────
@@ -341,9 +645,8 @@ export function drawPitchTrail(
 
   const now = performance.now()
   const startX = layout.staffX + layout.clefWidth + 20
-  const endX = (layout.staffX + layout.staffRight) / 2 - 30  // stop before voice orb
+  const endX = (layout.staffX + layout.staffRight) / 2 - 30
 
-  ctx.lineWidth = 3
   ctx.lineCap = 'round'
   ctx.lineJoin = 'round'
 
@@ -354,9 +657,8 @@ export function drawPitchTrail(
     if (age > trailDurationMs) continue
 
     const alpha = Math.max(0, 1 - age / trailDurationMs) * curr.confidence * 0.6
-    const t = 1 - age / trailDurationMs  // 0 = old, 1 = new
+    const t = 1 - age / trailDurationMs
 
-    // X position based on age (newest = rightmost, oldest = leftmost)
     const x1 = startX + (endX - startX) * (1 - (now - prev.timestamp) / trailDurationMs)
     const x2 = startX + (endX - startX) * t
 
@@ -380,30 +682,31 @@ export function drawTargetNote(
   ctx: CanvasRenderingContext2D,
   layout: StaffLayout,
   semitones: number,
-  proximityFactor: number,  // 0 = far, 1 = matched (drives bloom effect)
+  proximityFactor: number,
 ) {
   const y = staffPositionToY(semitones, layout)
   const x = (layout.staffX + layout.staffRight) / 2
   const color = getNoteColor(semitones)
+  const colorStr = `rgb(${color.r}, ${color.g}, ${color.b})`
 
-  // Accuracy rings (bullseye)
+  // Accuracy rings (subtle bullseye)
   const rings = [
-    { radius: 40, color: `rgba(${color.r}, ${color.g}, ${color.b}, 0.05)`, label: '±50c' },
-    { radius: 28, color: `rgba(${color.r}, ${color.g}, ${color.b}, 0.08)`, label: '±25c' },
-    { radius: 16, color: `rgba(${color.r}, ${color.g}, ${color.b}, 0.12)`, label: '±10c' },
+    { radius: 40, alpha: 0.04 },
+    { radius: 28, alpha: 0.06 },
+    { radius: 16, alpha: 0.10 },
   ]
 
   for (const ring of rings) {
     ctx.beginPath()
     ctx.arc(x, y, ring.radius, 0, Math.PI * 2)
-    ctx.fillStyle = ring.color
+    ctx.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${ring.alpha})`
     ctx.fill()
-    ctx.strokeStyle = `rgba(${color.r}, ${color.g}, ${color.b}, 0.15)`
+    ctx.strokeStyle = `rgba(${color.r}, ${color.g}, ${color.b}, 0.12)`
     ctx.lineWidth = 1
     ctx.stroke()
   }
 
-  // Proximity bloom — target glows brighter as voice approaches
+  // Proximity bloom
   if (proximityFactor > 0) {
     const bloomRadius = 50 * proximityFactor
     const bloom = ctx.createRadialGradient(x, y, 0, x, y, bloomRadius)
@@ -413,12 +716,14 @@ export function drawTargetNote(
     ctx.fillRect(x - bloomRadius, y - bloomRadius, bloomRadius * 2, bloomRadius * 2)
   }
 
-  // Note head (hollow oval)
-  ctx.strokeStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${0.5 + 0.5 * proximityFactor})`
-  ctx.lineWidth = 2
-  ctx.beginPath()
-  ctx.ellipse(x, y, 8, 6, -0.3, 0, Math.PI * 2)
-  ctx.stroke()
+  // Proper note head with stem
+  const noteAlpha = 0.5 + 0.5 * proximityFactor
+  drawNoteHeadWithStem(
+    ctx, x, y, layout,
+    `rgba(${color.r}, ${color.g}, ${color.b}, ${noteAlpha})`,
+    `rgba(${color.r}, ${color.g}, ${color.b}, ${noteAlpha * 0.9})`,
+    { filled: true, showStem: true, alpha: 1 },
+  )
 
   // Note name label
   const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
@@ -430,7 +735,7 @@ export function drawTargetNote(
   ctx.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${0.6 + 0.4 * proximityFactor})`
   ctx.textAlign = 'center'
   ctx.textBaseline = 'top'
-  ctx.fillText(name, x, y + 14)
+  ctx.fillText(name, x, y + layout.noteHeadRy + 16)
 
   // Ledger lines if needed
   drawLedgerLinesAt(ctx, layout, semitones, x)
@@ -479,13 +784,13 @@ export function drawCentsIndicator(
 
 export interface StaffRenderData {
   voiceActive: boolean
-  staffPosition: number     // semitones from C4
+  staffPosition: number
   confidence: number
   cents: number
   isSettled: boolean
   isVibrato: boolean
   trail: TrailPoint[]
-  targetNote?: number       // semitones from C4 (optional target)
+  targetNote?: number
 }
 
 export function renderStaff(
@@ -497,8 +802,10 @@ export function renderStaff(
 
   drawBackground(ctx, layout)
   drawSynesthesiaGlow(ctx, layout)
+  drawBrace(ctx, layout)
   drawStaffLines(ctx, layout)
   drawClefs(ctx, layout)
+  drawTimeSignature(ctx, layout)
   drawNoteLabels(ctx, layout)
 
   // Pitch trail (draw before orb so orb is on top)
