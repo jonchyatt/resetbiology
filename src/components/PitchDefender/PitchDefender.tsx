@@ -394,18 +394,16 @@ export default function PitchDefender() {
       setShowScorePop(true)
       setTimeout(() => setShowScorePop(false), 300)
 
-      // Laser beam + explosion particles (mathematical position — no DOM measurement needed)
+      // Laser beam + explosion particles — DOM measurement for exact visual position
       const fieldEl2 = fieldRef.current
-      if (fieldEl2) {
-        const fw = fieldEl2.clientWidth
-        const fh = fieldEl2.clientHeight
-        const lanePercent = 15 + alien.lane * 17.5
-        const ax = fw * lanePercent / 100
-        const elapsed = (Date.now() - alien.spawnTime) / 1000
-        const progress = Math.min(elapsed / alien.descentDuration, 1)
-        const ay = progress * (fh - 80) + 36
-        const fx = fw / 2
-        const fy = fh
+      const alienEl = fieldEl2?.querySelector(`[data-alien-id="${alienId}"]`)
+      if (fieldEl2 && alienEl) {
+        const fieldRect = fieldEl2.getBoundingClientRect()
+        const alienRect = alienEl.getBoundingClientRect()
+        const ax = alienRect.left - fieldRect.left + alienRect.width / 2
+        const ay = alienRect.top - fieldRect.top + alienRect.height / 2
+        const fx = fieldRect.width / 2
+        const fy = fieldRect.height
 
         setLaser({ fromX: fx, fromY: fy, toX: ax, toY: ay, hue: alien.noteHue })
         setTimeout(() => setLaser(null), 350)
@@ -713,7 +711,7 @@ export default function PitchDefender() {
             {state.aliens
               .filter(a => a.lifecycle !== 'escaped')
               .map((alien) => (
-                <div key={alien.id} data-alien-id={alien.id}>
+                <div key={alien.id}>
                   <Alien
                     alien={alien}
                     fieldHeight={fieldHeight - 180}

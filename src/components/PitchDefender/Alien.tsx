@@ -43,6 +43,7 @@ export default function Alien({ alien, fieldHeight, isActive, onAnimationEnd }: 
     >
       {/* Inner animation container — separate from positioning to avoid transform clobber */}
       <div
+        data-alien-id={alien.id}
         style={{
           // Descent animation
           ...(isDescending && mounted ? {
