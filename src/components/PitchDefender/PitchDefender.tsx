@@ -14,13 +14,14 @@ import {
 import Alien from './Alien'
 import NoteButtons from './NoteButtons'
 import PitchGuidance from './PitchGuidance'
+import StaffDisplay from './StaffDisplay'
 import GameHUD from './GameHUD'
 import WaveIntro from './WaveIntro'
 import GameOver from './GameOver'
 import { usePitchDetection, notesMatch } from './usePitchDetection'
 import './animations.css'
 
-export type GameMode = 'noteBlaster' | 'echoCannon'
+export type GameMode = 'noteBlaster' | 'echoCannon' | 'staffDefender'
 
 // Lazy-load Star Nest (heavy WebGL)
 const StarNestBackground = dynamic(() => import('./StarNestBackground'), { ssr: false })
@@ -170,7 +171,7 @@ export default function PitchDefender() {
   const lockDurationRef = useRef(600)     // ms needed to hold pitch (beginner: 600ms)
 
   // Pitch detection for Echo Cannon mode
-  const { isListening, pitch, pitchRef: livePitchRef, startListening, stopListening } = usePitchDetection()
+  const { isListening, pitch, error: micError, pitchRef: livePitchRef, startListening, stopListening } = usePitchDetection()
   const countdownTimersRef = useRef<ReturnType<typeof setTimeout>[]>([])
 
   // Keep ref in sync
@@ -376,8 +377,8 @@ export default function PitchDefender() {
       const newAliens = [...prev.aliens, { ...alien, lifecycle: 'descending' as const }]
       const isFirstAlien = prev.activeAlienIndex < 0
 
-      // Play note for first/new active alien
-      if (isFirstAlien) {
+      // Play note for first/new active alien (skip in Staff Defender — player reads notation)
+      if (isFirstAlien && gameMode !== 'staffDefender') {
         setTimeout(() => playNote(pianoRef.current, alien.note), 400)
         notePlayTimeRef.current = Date.now() + 400
       }
@@ -744,6 +745,23 @@ export default function PitchDefender() {
               ECHO CANNON
               <div className="text-xs font-normal mt-0.5 opacity-70">Sing to destroy</div>
             </button>
+            <button
+              onClick={() => setGameMode('staffDefender')}
+              className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
+              style={{
+                background: gameMode === 'staffDefender'
+                  ? 'linear-gradient(135deg, #E8A838, #b87a1a)'
+                  : 'rgba(40, 40, 60, 0.6)',
+                color: gameMode === 'staffDefender' ? 'white' : '#888',
+                border: gameMode === 'staffDefender'
+                  ? '2px solid #E8A838'
+                  : '2px solid rgba(80, 80, 100, 0.3)',
+                boxShadow: gameMode === 'staffDefender' ? '0 0 15px #E8A83830' : 'none',
+              }}
+            >
+              STAFF DEFENDER
+              <div className="text-xs font-normal mt-0.5 opacity-70">Read notation</div>
+            </button>
           </div>
 
           <button
@@ -752,10 +770,10 @@ export default function PitchDefender() {
             style={{
               background: gameMode === 'echoCannon'
                 ? 'linear-gradient(135deg, #C060E0, #8a3aaa)'
+                : gameMode === 'staffDefender'
+                ? 'linear-gradient(135deg, #E8A838, #b87a1a)'
                 : 'linear-gradient(135deg, #3FBFB5, #2a8a82)',
-              boxShadow: gameMode === 'echoCannon'
-                ? '0 0 30px #C060E040, 0 4px 20px rgba(0,0,0,0.4)'
-                : '0 0 30px #3FBFB540, 0 4px 20px rgba(0,0,0,0.4)',
+              boxShadow: '0 0 30px rgba(100,100,100,0.3), 0 4px 20px rgba(0,0,0,0.4)',
             }}
           >
             START MISSION
@@ -830,6 +848,17 @@ export default function PitchDefender() {
                       }))
                     }}
                   />
+                  {/* Staff display — Staff Defender only, active alien */}
+                  {gameMode === 'staffDefender' && isActiveAlien && (
+                    <div className="absolute pointer-events-none" style={{ left: -10, top: -10 }}>
+                      <StaffDisplay
+                        note={alien.note}
+                        clef="treble"
+                        size={1}
+                        glowColor={`hsl(${alien.noteHue}, 80%, 60%)`}
+                      />
+                    </div>
+                  )}
                   {/* Pitch guidance overlay — Echo Cannon only, active alien only */}
                   {gameMode === 'echoCannon' && isActiveAlien && (
                     <PitchGuidance
@@ -922,8 +951,10 @@ export default function PitchDefender() {
             {gameMode === 'echoCannon' ? (
               /* ── Echo Cannon: mic pitch display ── */
               <div className="text-center py-4 px-4">
-                <div className="text-xs text-gray-500 uppercase tracking-wider mb-2">
-                  {isListening ? 'LISTENING' : 'MIC OFF'}
+                <div className="text-xs uppercase tracking-wider mb-2" style={{
+                  color: micError ? '#f87171' : isListening ? '#4ade80' : '#666',
+                }}>
+                  {micError ? `MIC ERROR: ${micError}` : isListening ? 'LISTENING' : 'MIC OFF'}
                 </div>
                 {pitch?.isActive ? (
                   <div className="flex items-center justify-center gap-4">
