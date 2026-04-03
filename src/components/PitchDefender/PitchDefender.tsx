@@ -22,7 +22,7 @@ import { usePitchDetection, notesMatch } from './usePitchDetection'
 import ParentSettings, { DEFAULT_SETTINGS, type GameSettings } from './ParentSettings'
 import './animations.css'
 
-export type GameMode = 'noteBlaster' | 'echoCannon' | 'staffDefender' | 'sequenceAssault'
+export type GameMode = 'noteBlaster' | 'echoCannon' | 'staffDefender' | 'sequenceAssault' | 'intervalHunter' | 'survival'
 
 // Lazy-load Star Nest (heavy WebGL)
 const StarNestBackground = dynamic(() => import('./StarNestBackground'), { ssr: false })
@@ -399,6 +399,7 @@ export default function PitchDefender() {
 
     const seqLen = spawnBoss ? Math.min(3 + Math.floor(s.wave / 2), 5)
       : gameMode === 'sequenceAssault' ? Math.min(2 + Math.floor(s.wave / 3), 4)
+      : gameMode === 'intervalHunter' ? 2
       : 1
     const alien = spawnAlien(s, config, fsrsRef.current, seqLen)
     if (spawnBoss) {
@@ -670,7 +671,10 @@ export default function PitchDefender() {
     setTimeout(() => {
       const s = stateRef.current
       if (s.phase !== 'wave_complete') return // guard: game already restarted
-      if (s.wave >= 10) {
+      if (gameMode === 'survival') {
+        // Survival: endless waves, never ends from wave count
+        startWave(s.wave + 1)
+      } else if (s.wave >= gameSettings.maxWaves) {
         endGame(true) // Victory!
       } else {
         startWave(s.wave + 1)
@@ -840,6 +844,40 @@ export default function PitchDefender() {
             >
               SEQUENCE
               <div className="text-xs font-normal mt-0.5 opacity-70">Multi-note aliens</div>
+            </button>
+          </div>
+          <div className="flex gap-3 mb-6">
+            <button
+              onClick={() => setGameMode('intervalHunter')}
+              className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
+              style={{
+                background: gameMode === 'intervalHunter'
+                  ? 'linear-gradient(135deg, #72C247, #4a8a2a)'
+                  : 'rgba(40, 40, 60, 0.6)',
+                color: gameMode === 'intervalHunter' ? 'white' : '#888',
+                border: gameMode === 'intervalHunter'
+                  ? '2px solid #72C247'
+                  : '2px solid rgba(80, 80, 100, 0.3)',
+              }}
+            >
+              INTERVAL
+              <div className="text-xs font-normal mt-0.5 opacity-70">Sing jumps</div>
+            </button>
+            <button
+              onClick={() => setGameMode('survival')}
+              className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
+              style={{
+                background: gameMode === 'survival'
+                  ? 'linear-gradient(135deg, #f59e0b, #b45309)'
+                  : 'rgba(40, 40, 60, 0.6)',
+                color: gameMode === 'survival' ? 'white' : '#888',
+                border: gameMode === 'survival'
+                  ? '2px solid #f59e0b'
+                  : '2px solid rgba(80, 80, 100, 0.3)',
+              }}
+            >
+              SURVIVAL
+              <div className="text-xs font-normal mt-0.5 opacity-70">Endless waves</div>
             </button>
           </div>
 
