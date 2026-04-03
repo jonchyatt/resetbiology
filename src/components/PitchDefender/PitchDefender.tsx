@@ -354,13 +354,18 @@ export default function PitchDefender() {
   // ─── Keyboard Support ─────────────────────────────────────────────────────
   useEffect(() => {
     const keyMap: Record<string, string> = {
+      // Number keys → octave 4
       '1': 'C4', '2': 'D4', '3': 'E4', '4': 'F4',
       '5': 'G4', '6': 'A4', '7': 'B4', '8': 'C5',
+      // Letter keys → octave 4
       'c': 'C4', 'd': 'D4', 'e': 'E4', 'f': 'F4',
       'g': 'G4', 'a': 'A4', 'b': 'B4',
+      // Shift+letter → octave 3
+      'C': 'C3', 'D': 'D3', 'E': 'E3', 'F': 'F3',
+      'G': 'G3', 'A': 'A3', 'B': 'B3',
     }
     function onKeyDown(ev: KeyboardEvent) {
-      const note = keyMap[ev.key.toLowerCase()]
+      const note = keyMap[ev.key] || keyMap[ev.key.toLowerCase()]
       if (note && stateRef.current.phase === 'wave_active') {
         handleAnswerInner(note)
       }

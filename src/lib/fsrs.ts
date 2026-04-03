@@ -30,6 +30,15 @@ export interface NoteMemory {
 // Each note → an HSL hue. Intensity driven by FSRS retrievability at runtime.
 // Based on documented synesthesia associations + Western music color tradition.
 export const NOTE_COLORS: Record<string, { hue: number; name: string }> = {
+  // Octave 3 — related hues to octave 4 (same letter = similar color family)
+  'C3': { hue: 350, name: 'Ruby'     },
+  'D3': { hue: 20,  name: 'Rust'     },
+  'E3': { hue: 50,  name: 'Bronze'   },
+  'F3': { hue: 130, name: 'Forest'   },
+  'G3': { hue: 175, name: 'Teal'     },
+  'A3': { hue: 210, name: 'Steel'    },
+  'B3': { hue: 260, name: 'Indigo'   },
+  // Octave 4
   'C4': { hue: 0,   name: 'Crimson'  },
   'D4': { hue: 30,  name: 'Amber'    },
   'E4': { hue: 60,  name: 'Gold'     },
@@ -51,6 +60,9 @@ export const SEED_DIFFICULTY: Record<string, number> = {
   'F4': 5,  // perfect 4th
   'C5': 4,  // octave — obvious once reference is learned
   'B4': 6,  // major 7th — dissonant, unusual
+  // Octave 3 — harder because cross-octave discrimination is advanced
+  'C3': 5,  'D3': 6,  'E3': 6,  'F3': 7,
+  'G3': 5,  'A3': 5,  'B3': 7,
 }
 
 // ─── Math helpers ─────────────────────────────────────────────────────────────
