@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic'
 import { NOTE_COLORS, createNote, reviewNote, autoGrade, type NoteMemory } from '@/lib/fsrs'
 import {
   type GameState, type AlienState, type GameProgress,
-  INTRO_ORDER, KEYBOARD_ORDER,
+  INTRO_ORDER, KEYBOARD_ORDER, UNLOCK_THRESHOLDS,
 } from './types'
 import {
   createInitialState, getWaveConfig, spawnAlien,
@@ -352,128 +352,125 @@ export default function PitchDefender() {
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [])
 
+  // ─── Processing lock to prevent double-clicks ────────────────────────────
+  const processingRef = useRef(false)
+
   // ─── Handle Player Answer ────────────────────────────────────────────────
   const handleAnswerInner = useCallback((answeredNote: string) => {
-    const s = stateRef.current
-    if (s.phase !== 'wave_active') return
+    // Use functional setState to always read fresh state — no stale refs
+    if (processingRef.current) return
+    processingRef.current = true
+    setTimeout(() => { processingRef.current = false }, 150) // debounce
 
-    // Find the current active alien — any living descending alien
-    let alienIdx = s.activeAlienIndex
-    if (alienIdx < 0 || !s.aliens[alienIdx] || s.aliens[alienIdx].lifecycle === 'exploding' || s.aliens[alienIdx].lifecycle === 'escaped') {
-      alienIdx = s.aliens.findIndex(a => a.lifecycle === 'descending' || a.lifecycle === 'spawning')
-    }
-    if (alienIdx < 0) return
-    const alien = s.aliens[alienIdx]
-    if (!alien) return
+    setState(prev => {
+      if (prev.phase !== 'wave_active') return prev
 
-    const result = processAnswer(s, alien.id, answeredNote)
-    const latency = notePlayTimeRef.current > 0 ? Date.now() - notePlayTimeRef.current : 2000
+      // Find the first DESCENDING alien (the active target)
+      const alienIdx = prev.aliens.findIndex(a => a.lifecycle === 'descending')
+      if (alienIdx < 0) return prev
+      const alien = prev.aliens[alienIdx]
 
-    // FSRS grade
-    const grade = autoGrade(result.correct, latency)
-    if (!fsrsRef.current[alien.note]) fsrsRef.current[alien.note] = createNote(alien.note)
-    fsrsRef.current[alien.note] = reviewNote(fsrsRef.current[alien.note], grade)
-    saveFsrs()
+      const correct = answeredNote === alien.note
+      const latency = notePlayTimeRef.current > 0 ? Date.now() - notePlayTimeRef.current : 2000
 
-    if (result.correct) {
-      // ─── CORRECT ───
-      playSfx('correct')
-      setTimeout(() => playSfx('explosion'), 100)
+      // FSRS grade
+      const grade = autoGrade(correct, latency)
+      if (!fsrsRef.current[alien.note]) fsrsRef.current[alien.note] = createNote(alien.note)
+      fsrsRef.current[alien.note] = reviewNote(fsrsRef.current[alien.note], grade)
+      try { localStorage.setItem(FSRS_KEY, JSON.stringify(fsrsRef.current)) } catch {}
 
-      // Flash feedback
-      setLastCorrectNote(answeredNote)
-      setTimeout(() => setLastCorrectNote(null), 300)
-      setShowScorePop(true)
-      setTimeout(() => setShowScorePop(false), 300)
+      if (correct) {
+        // ─── CORRECT ───
+        playSfx('correct')
+        setTimeout(() => playSfx('explosion'), 100)
+        setLastCorrectNote(answeredNote)
+        setTimeout(() => setLastCorrectNote(null), 300)
+        setShowScorePop(true)
+        setTimeout(() => setShowScorePop(false), 300)
 
-      // Floating score
-      const fieldEl = fieldRef.current
-      if (fieldEl) {
-        const fid = ++floatIdRef.current
-        const alienEl = fieldEl.querySelector(`[data-alien-id="${alien.id}"]`)
-        const rect = alienEl?.getBoundingClientRect()
-        const fieldRect = fieldEl.getBoundingClientRect()
-        setFloatingScores(prev => [...prev, {
-          id: fid,
-          score: result.scoreGained,
-          x: rect ? rect.left - fieldRect.left + rect.width / 2 : fieldRect.width / 2,
-          y: rect ? rect.top - fieldRect.top : fieldRect.height / 2,
-        }])
-        setTimeout(() => setFloatingScores(prev => prev.filter(f => f.id !== fid)), 800)
-      }
+        // Floating score
+        const comboMult = prev.combo >= 20 ? 4 : prev.combo >= 10 ? 3 : prev.combo >= 5 ? 2 : 1
+        const scoreGained = 100 * comboMult
+        const fieldEl = fieldRef.current
+        if (fieldEl) {
+          const fid = ++floatIdRef.current
+          setFloatingScores(fs => [...fs, { id: fid, score: scoreGained, x: fieldEl.clientWidth / 2, y: fieldEl.clientHeight / 3 }])
+          setTimeout(() => setFloatingScores(fs => fs.filter(f => f.id !== fid)), 800)
+        }
 
-      // Update state: alien hit → exploding
-      setState(prev => {
-        const newAliens = prev.aliens.map(a =>
-          a.id === alien.id ? { ...a, lifecycle: 'hit' as const } : a
+        // Mark alien as exploding immediately (no intermediate 'hit' state)
+        const newAliens = prev.aliens.map((a, i) =>
+          i === alienIdx ? { ...a, lifecycle: 'exploding' as const } : a
         )
 
-        // After brief hit flash, explode
+        // Remove exploded alien after animation
         setTimeout(() => {
           setState(inner => ({
             ...inner,
-            aliens: inner.aliens.map(a =>
-              a.id === alien.id ? { ...a, lifecycle: 'exploding' as const } : a
-            ),
+            aliens: inner.aliens.filter(a => a.id !== alien.id),
           }))
-        }, 200)
+        }, 500)
 
-        const newConsecutive = prev.consecutiveCorrect + 1
-        let newUnlocked = [...prev.unlockedNotes]
-        let noteUnlocked = result.noteUnlocked
-
-        if (noteUnlocked && !newUnlocked.includes(noteUnlocked)) {
-          newUnlocked = [...newUnlocked, noteUnlocked]
-          playSfx('levelup')
-        }
-
-        // Find next active alien — if none exists yet, spawn one immediately
-        let nextIdx = getNextActiveIndex(newAliens, prev.activeAlienIndex)
-        if (nextIdx < 0) {
-          // Force immediate spawn if wave isn't done
+        // Find next descending alien and play its note
+        const nextAlien = newAliens.find(a => a.lifecycle === 'descending')
+        if (nextAlien) {
+          setTimeout(() => playNote(pianoRef.current, nextAlien.note), 400)
+          notePlayTimeRef.current = Date.now() + 400
+        } else {
+          // No alien available yet — force spawn
           setTimeout(() => spawnNextAlien(), 200)
         }
-        if (nextIdx >= 0 && newAliens[nextIdx]) {
-          setTimeout(() => playNote(pianoRef.current, newAliens[nextIdx].note), 500)
-          notePlayTimeRef.current = Date.now() + 500
+
+        // Check note unlock
+        const newConsecutive = prev.consecutiveCorrect + 1
+        const currentPool = prev.unlockedNotes.length
+        let newUnlocked = prev.unlockedNotes
+        let noteUnlocked: string | null = null
+        if (currentPool < INTRO_ORDER.length) {
+          const threshold = UNLOCK_THRESHOLDS[currentPool] ?? 5
+          if (newConsecutive >= threshold) {
+            noteUnlocked = INTRO_ORDER[currentPool]
+            newUnlocked = [...prev.unlockedNotes, noteUnlocked]
+            playSfx('levelup')
+          }
         }
 
+        const newCombo = prev.combo + 1
         return {
           ...prev,
           aliens: newAliens,
-          score: prev.score + result.scoreGained,
-          combo: result.newCombo,
-          maxCombo: Math.max(prev.maxCombo, result.newCombo),
+          score: prev.score + scoreGained,
+          combo: newCombo,
+          maxCombo: Math.max(prev.maxCombo, newCombo),
           consecutiveCorrect: noteUnlocked ? 0 : newConsecutive,
           totalCorrect: prev.totalCorrect + 1,
           totalAttempts: prev.totalAttempts + 1,
           lastAnswerCorrect: true,
           unlockedNotes: newUnlocked,
           newNoteUnlocked: noteUnlocked,
-          waveScore: prev.waveScore + result.scoreGained,
-          activeAlienIndex: nextIdx,
+          waveScore: prev.waveScore + scoreGained,
+          activeAlienIndex: newAliens.findIndex(a => a.lifecycle === 'descending'),
         }
-      })
+      } else {
+        // ─── WRONG ───
+        playSfx('wrong')
+        setLastWrongNote(answeredNote)
+        setTimeout(() => setLastWrongNote(null), 400)
 
-    } else {
-      // ─── WRONG ───
-      playSfx('wrong')
-      setLastWrongNote(answeredNote)
-      setTimeout(() => setLastWrongNote(null), 400)
+        // Replay the correct note
+        setTimeout(() => playNote(pianoRef.current, alien.note), 600)
+        notePlayTimeRef.current = Date.now() + 600
 
-      // Replay the correct note after a beat
-      setTimeout(() => playNote(pianoRef.current, alien.note), 600)
-      notePlayTimeRef.current = Date.now() + 600
-
-      setState(prev => ({
-        ...prev,
-        combo: 0,
-        consecutiveCorrect: 0,
-        totalAttempts: prev.totalAttempts + 1,
-        lastAnswerCorrect: false,
-      }))
-    }
-  }, [saveFsrs])
+        return {
+          ...prev,
+          combo: 0,
+          consecutiveCorrect: 0,
+          totalAttempts: prev.totalAttempts + 1,
+          lastAnswerCorrect: false,
+        }
+      }
+    })
+  }, [])
 
   // Wrap for both click and keyboard use
   const handleAnswer = useCallback((note: string) => handleAnswerInner(note), [handleAnswerInner])

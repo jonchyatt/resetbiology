@@ -271,8 +271,9 @@ export default function StarNestBackground({ presetKey = 'darkWorld1' }: { prese
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
       <Canvas
-        camera={{ position: [0, 0, 0.01], fov: 120 }}
-        gl={{ antialias: true, alpha: false }}
+        camera={{ position: [0, 2, 10], fov: 50 }}
+        dpr={[1, 2]}
+        gl={{ antialias: true, powerPreference: 'high-performance', preserveDrawingBuffer: true }}
         style={{ background: '#000', pointerEvents: 'none' }}
         events={undefined as never}
       >
