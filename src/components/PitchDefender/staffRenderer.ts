@@ -505,8 +505,16 @@ export function drawNoteHeadWithStem(
 
   // Stem
   if (showStem) {
-    // Stem direction: notes below middle of visible area → stem up, above → stem down
-    const stemUp = y >= layout.middleCY
+    // Stem direction: standard engraving — on/below staff middle line → up, above → down
+    const staffDivide = (layout.trebleLines[4] + layout.bassLines[0]) / 2
+    let stemUp: boolean
+    if (y <= staffDivide) {
+      // Treble staff region: middle line = B4 (trebleLines[2])
+      stemUp = y >= layout.trebleLines[2]
+    } else {
+      // Bass staff region: middle line = D3 (bassLines[2])
+      stemUp = y >= layout.bassLines[2]
+    }
     const stemLength = layout.lineSpacing * 3.5 * scale
     const stemX = stemUp
       ? x + rx * 0.88  // right edge for stem up
