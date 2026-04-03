@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import type { AlienState } from './types'
-import { NOTE_LABELS } from './types'
 
 interface AlienProps {
   alien: AlienState

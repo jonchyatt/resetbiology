@@ -33,13 +33,18 @@ export default function GameHUD({
           </div>
           {combo >= 3 && (
             <div
-              className="text-sm font-bold"
+              className="font-bold"
               style={{
+                fontSize: combo >= 20 ? 18 : combo >= 10 ? 16 : 14,
                 color: comboMultiplier >= 4 ? '#ff4060' : comboMultiplier >= 3 ? '#e8a838' : '#72C247',
                 animation: 'comboFlash 1s ease-in-out infinite',
+                textShadow: combo >= 10
+                  ? `0 0 12px currentColor, 0 0 24px currentColor`
+                  : '0 0 8px currentColor',
+                letterSpacing: combo >= 10 ? '0.1em' : undefined,
               }}
             >
-              {combo} COMBO {comboMultiplier > 1 ? `\u00d7${comboMultiplier}` : ''}
+              {combo >= 20 ? 'UNSTOPPABLE' : combo >= 10 ? 'ON FIRE' : ''} {combo} COMBO {comboMultiplier > 1 ? `\u00d7${comboMultiplier}` : ''}
             </div>
           )}
         </div>

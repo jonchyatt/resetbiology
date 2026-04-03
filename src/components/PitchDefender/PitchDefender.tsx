@@ -9,7 +9,7 @@ import {
 } from './types'
 import {
   createInitialState, getWaveConfig, spawnAlien,
-  processAnswer, checkAlienEscaped, ensureNoteMemory,
+  checkAlienEscaped, ensureNoteMemory,
 } from './gameEngine'
 import Alien from './Alien'
 import NoteButtons from './NoteButtons'
@@ -142,6 +142,9 @@ export default function PitchDefender() {
   const [lastWrongNote, setLastWrongNote] = useState<string | null>(null)
   const [countdown, setCountdown] = useState<number | null>(null)
   const [starPreset, setStarPreset] = useState('darkWorld1')
+  const [screenShake, setScreenShake] = useState(false)
+  const [laser, setLaser] = useState<{ fromX: number; fromY: number; toX: number; toY: number; hue: number } | null>(null)
+  const [particles, setParticles] = useState<{ id: number; x: number; y: number; tx: number; ty: number; size: number; hue: number; duration: number }[]>([])
 
   // Refs for mutable data
   const stateRef = useRef(state)
@@ -155,6 +158,7 @@ export default function PitchDefender() {
   const spawnTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const fieldRef = useRef<HTMLDivElement>(null)
   const floatIdRef = useRef(0)
+  const particleIdRef = useRef(0)
   const notePlayTimeRef = useRef(0)
   const countdownTimersRef = useRef<ReturnType<typeof setTimeout>[]>([])
 
@@ -388,6 +392,40 @@ export default function PitchDefender() {
       setShowScorePop(true)
       setTimeout(() => setShowScorePop(false), 300)
 
+      // Laser beam + explosion particles
+      const fieldEl2 = fieldRef.current
+      const alienEl = fieldEl2?.querySelector(`[data-alien-id="${alienId}"]`)
+      if (fieldEl2 && alienEl) {
+        const fieldRect = fieldEl2.getBoundingClientRect()
+        const alienRect = alienEl.getBoundingClientRect()
+        const ax = alienRect.left - fieldRect.left + alienRect.width / 2
+        const ay = alienRect.top - fieldRect.top + alienRect.height / 2
+        const fx = fieldRect.width / 2
+        const fy = fieldRect.height
+
+        setLaser({ fromX: fx, fromY: fy, toX: ax, toY: ay, hue: alien.noteHue })
+        setTimeout(() => setLaser(null), 350)
+
+        const newIds: number[] = []
+        const newParts: typeof particles = []
+        for (let i = 0; i < 16; i++) {
+          const angle = (i / 16) * Math.PI * 2 + (Math.random() - 0.5) * 0.5
+          const dist = 30 + Math.random() * 90
+          const id = ++particleIdRef.current
+          newIds.push(id)
+          newParts.push({
+            id, x: ax, y: ay,
+            tx: Math.cos(angle) * dist,
+            ty: Math.sin(angle) * dist,
+            size: 2 + Math.random() * 5,
+            hue: alien.noteHue,
+            duration: 350 + Math.random() * 300,
+          })
+        }
+        setParticles(prev => [...prev, ...newParts])
+        setTimeout(() => setParticles(prev => prev.filter(p => !newIds.includes(p.id))), 700)
+      }
+
       // Remove alien after explosion animation
       setTimeout(() => {
         setState(inner => ({ ...inner, aliens: inner.aliens.filter(a => a.id !== alienId) }))
@@ -464,9 +502,11 @@ export default function PitchDefender() {
       setTimeout(() => playNote(pianoRef.current, alienNote), 600)
       notePlayTimeRef.current = Date.now() + 600
 
-      // Flash city damage on wrong answer (per spec)
+      // Flash city damage + screen shake on wrong answer
       setCityFlash(true)
       setTimeout(() => setCityFlash(false), 400)
+      setScreenShake(true)
+      setTimeout(() => setScreenShake(false), 400)
       playSfx('damage')
 
       // ─── WRONG — pure state update ───
@@ -551,7 +591,7 @@ export default function PitchDefender() {
   const isNewHighScore = state.score > (progressRef.current.highScore ?? 0) && state.score > 0
 
   return (
-    <div className="fixed inset-0 overflow-hidden select-none" style={{ background: '#000' }}>
+    <div className="fixed inset-0 overflow-hidden select-none" style={{ background: '#000', animation: screenShake ? 'screenShake 0.4s ease-out' : undefined }}>
       {/* Star Nest Background */}
       <StarNestBackground presetKey={starPreset} />
 
@@ -559,6 +599,19 @@ export default function PitchDefender() {
       {cityFlash && (
         <div className="fixed inset-0 z-40 pointer-events-none"
           style={{ animation: 'cityDamage 0.4s ease-out forwards' }} />
+      )}
+
+      {/* Combo intensity border glow */}
+      {state.combo >= 5 && state.phase === 'wave_active' && (
+        <div className="fixed inset-0 pointer-events-none" style={{
+          zIndex: 35,
+          boxShadow: `inset 0 0 ${Math.min(30 + state.combo * 3, 80)}px ${
+            state.combo >= 20 ? 'rgba(255, 64, 96, 0.3)' :
+            state.combo >= 10 ? 'rgba(232, 168, 56, 0.25)' :
+            'rgba(114, 194, 71, 0.2)'
+          }`,
+          animation: 'comboGlow 1.5s ease-in-out infinite',
+        }} />
       )}
 
       {/* ─── MENU ──────────────────────────────────────────────────────── */}
@@ -678,6 +731,46 @@ export default function PitchDefender() {
               >
                 +{fs.score}
               </div>
+            ))}
+
+            {/* Laser beam */}
+            {laser && (
+              <svg className="absolute inset-0 w-full h-full pointer-events-none"
+                style={{ zIndex: 25, animation: 'laserFlash 0.3s ease-out forwards' }}>
+                <line x1={laser.fromX} y1={laser.fromY} x2={laser.toX} y2={laser.toY}
+                  stroke={`hsl(${laser.hue}, 70%, 50%)`} strokeWidth="8" opacity="0.3" strokeLinecap="round" />
+                <line x1={laser.fromX} y1={laser.fromY} x2={laser.toX} y2={laser.toY}
+                  stroke={`hsl(${laser.hue}, 80%, 70%)`} strokeWidth="4" opacity="0.6" strokeLinecap="round" />
+                <line x1={laser.fromX} y1={laser.fromY} x2={laser.toX} y2={laser.toY}
+                  stroke="white" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            )}
+
+            {/* Shockwave ring at impact */}
+            {laser && (
+              <div className="absolute rounded-full pointer-events-none"
+                style={{
+                  left: laser.toX, top: laser.toY,
+                  width: 100, height: 100,
+                  border: `2px solid hsl(${laser.hue}, 80%, 70%)`,
+                  zIndex: 26,
+                  animation: 'shockwave 0.4s ease-out forwards',
+                }} />
+            )}
+
+            {/* Explosion particles */}
+            {particles.map(p => (
+              <div key={p.id} className="absolute rounded-full pointer-events-none"
+                style={{
+                  left: p.x, top: p.y,
+                  width: p.size, height: p.size,
+                  background: `hsl(${p.hue}, 80%, 70%)`,
+                  boxShadow: `0 0 ${p.size * 2}px hsl(${p.hue}, 80%, 60%)`,
+                  '--tx': `${p.tx}px`,
+                  '--ty': `${p.ty}px`,
+                  animation: `particleFly ${p.duration}ms ease-out forwards`,
+                } as React.CSSProperties}
+              />
             ))}
           </div>
 

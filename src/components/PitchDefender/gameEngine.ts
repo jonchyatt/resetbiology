@@ -3,7 +3,7 @@
 import { NOTE_COLORS, createNote, pickNextNote, type NoteMemory } from '@/lib/fsrs'
 import {
   type AlienState, type WaveConfig, type GameState,
-  INTRO_ORDER, UNLOCK_THRESHOLDS, WORLD_CONFIG,
+  INTRO_ORDER, WORLD_CONFIG,
 } from './types'
 
 let _nextId = 0
@@ -87,50 +87,6 @@ export function spawnAlien(
     lane,
     noteHue: color.hue,
   }
-}
-
-// ─── Answer Processing ───────────────────────────────────────────────────────
-
-export interface AnswerResult {
-  correct: boolean
-  scoreGained: number
-  newCombo: number
-  comboMultiplier: number
-  cityDamage: number
-  noteUnlocked: string | null
-}
-
-export function processAnswer(
-  state: GameState,
-  alienId: string,
-  answeredNote: string,
-): AnswerResult {
-  const alien = state.aliens.find(a => a.id === alienId)
-  if (!alien) return { correct: false, scoreGained: 0, newCombo: 0, comboMultiplier: 1, cityDamage: 0, noteUnlocked: null }
-
-  const correct = answeredNote === alien.note
-  const comboMultiplier = state.combo >= 20 ? 4 : state.combo >= 10 ? 3 : state.combo >= 5 ? 2 : 1
-  const newCombo = correct ? state.combo + 1 : 0
-
-  // Score: base 100 + combo bonus
-  const baseScore = 100
-  const scoreGained = correct ? baseScore * comboMultiplier : 0
-  const cityDamage = correct ? 0 : 0 // wrong answers don't damage city (only escapes do)
-
-  // Check note unlock
-  let noteUnlocked: string | null = null
-  if (correct) {
-    const newConsecutive = state.consecutiveCorrect + 1
-    const currentPool = state.unlockedNotes.length
-    if (currentPool < INTRO_ORDER.length) {
-      const threshold = UNLOCK_THRESHOLDS[currentPool] ?? 5
-      if (newConsecutive >= threshold) {
-        noteUnlocked = INTRO_ORDER[currentPool]
-      }
-    }
-  }
-
-  return { correct, scoreGained, newCombo, comboMultiplier, cityDamage, noteUnlocked }
 }
 
 // ─── Alien Lifecycle ─────────────────────────────────────────────────────────

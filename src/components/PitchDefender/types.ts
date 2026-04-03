@@ -68,8 +68,8 @@ export const INTRO_ORDER = ['C4', 'A4', 'G4', 'E4', 'D4', 'F4', 'B4', 'C5'] as c
 export const KEYBOARD_ORDER = ['C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4', 'C5'] as const
 
 export const NOTE_LABELS: Record<string, string> = {
-  'C4': 'C', 'D4': 'D', 'E4': 'E', 'F4': 'F',
-  'G4': 'G', 'A4': 'A', 'B4': 'B', 'C5': 'C\u2075',
+  'C4': 'C4', 'D4': 'D4', 'E4': 'E4', 'F4': 'F4',
+  'G4': 'G4', 'A4': 'A4', 'B4': 'B4', 'C5': 'C5',
 }
 
 // Unlock thresholds: poolSize -> consecutive correct needed
