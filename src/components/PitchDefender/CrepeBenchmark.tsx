@@ -235,7 +235,12 @@ export default function CrepeBenchmark() {
   return (
     <div className="min-h-screen bg-gray-950 text-white p-6">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold mb-2">pitchy vs CREPE vs PESTO — Pitch Detection Benchmark</h1>
+        <div className="flex items-center justify-between mb-2">
+          <h1 className="text-3xl font-bold">pitchy vs CREPE vs PESTO — Pitch Detection Benchmark</h1>
+          <a href="/pitch-defender" className="text-xs text-gray-600 hover:text-gray-400 transition-colors">
+            &larr; Back to Pitch Defender
+          </a>
+        </div>
         <p className="text-gray-400 mb-6">Side-by-side comparison: same mic input, three detectors</p>
 
         {/* Controls */}

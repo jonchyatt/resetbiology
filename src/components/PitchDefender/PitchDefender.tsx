@@ -814,13 +814,51 @@ export default function PitchDefender() {
             {KEYBOARD_ORDER.length} notes &middot; 10 waves &middot; {gameMode === 'echoCannon' ? 'Sing to match pitch' : 'FSRS-powered learning'}
           </p>
 
-          {/* Settings gear */}
-          <button
-            onClick={() => setShowSettings(true)}
-            className="mt-4 text-xs text-gray-500 hover:text-gray-300 transition-colors"
-          >
-            Parent / Teacher Settings
-          </button>
+          {/* ─── Studio & Practice Tools ─────────────────────────────── */}
+          <div className="mt-8 flex flex-col items-center gap-3">
+            <p className="text-xs text-gray-600 uppercase tracking-widest">Studio & Practice</p>
+            <div className="flex gap-3">
+              <a
+                href="/pitch-defender/sheet-music"
+                className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
+                style={{
+                  background: 'rgba(40, 40, 60, 0.6)',
+                  color: '#94a3b8',
+                  border: '2px solid rgba(99, 102, 241, 0.3)',
+                }}
+              >
+                Sheet Music Studio
+                <div className="text-xs font-normal mt-0.5 opacity-60">Load &amp; study notation</div>
+              </a>
+              <a
+                href="/pitch-defender/note-runner"
+                className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
+                style={{
+                  background: 'rgba(40, 40, 60, 0.6)',
+                  color: '#94a3b8',
+                  border: '2px solid rgba(99, 102, 241, 0.3)',
+                }}
+              >
+                Note Runner
+                <div className="text-xs font-normal mt-0.5 opacity-60">Sing scrolling melodies</div>
+              </a>
+            </div>
+          </div>
+
+          {/* Settings + dev tools */}
+          <div className="mt-6 flex flex-col items-center gap-2">
+            <button
+              onClick={() => setShowSettings(true)}
+              className="text-xs text-gray-500 hover:text-gray-300 transition-colors"
+            >
+              Parent / Teacher Settings
+            </button>
+            <div className="flex gap-3 text-[10px] text-gray-700">
+              <a href="/pitch-defender/staff-tester" className="hover:text-gray-500 transition-colors">Staff Tester</a>
+              <span>&middot;</span>
+              <a href="/pitch-defender/crepe-benchmark" className="hover:text-gray-500 transition-colors">Pitch Benchmark</a>
+            </div>
+          </div>
         </div>
       )}
 

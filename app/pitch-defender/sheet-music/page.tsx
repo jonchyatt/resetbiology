@@ -25,7 +25,7 @@ export default function SheetMusicPage() {
           </p>
         </div>
         <a href="/pitch-defender" className="text-xs text-gray-600 hover:text-gray-400 transition-colors">
-          &larr; Back to Game
+          &larr; Back to Pitch Defender
         </a>
       </div>
 

@@ -123,7 +123,7 @@ export default function PitchTester() {
 
           {/* Back link */}
           <a href="/pitch-defender" className="text-xs text-gray-600 hover:text-gray-400 transition-colors">
-            ← Back to Game
+            ← Back to Pitch Defender
           </a>
         </div>
       </div>
