@@ -30,6 +30,7 @@ const StarNestBackground = dynamic(() => import('./StarNestBackground'), { ssr: 
 // ─── Storage Keys ────────────────────────────────────────────────────────────
 const FSRS_KEY = 'pitch_fsrs_memory'
 const PROGRESS_KEY = 'pitch_defender_progress'
+const SETTINGS_KEY = 'pitch_defender_settings'
 
 // ─── Audio ───────────────────────────────────────────────────────────────────
 let _audioCtx: AudioContext | null = null
@@ -194,6 +195,12 @@ export default function PitchDefender() {
       if (raw) progressRef.current = JSON.parse(raw)
     } catch { /* fresh start */ }
 
+    // Game settings
+    try {
+      const raw = localStorage.getItem(SETTINGS_KEY)
+      if (raw) setGameSettings(JSON.parse(raw))
+    } catch { /* defaults */ }
+
     // Preload piano samples
     loadPianoSamples().then(cache => { pianoRef.current = cache })
   }, [])
@@ -270,10 +277,12 @@ export default function PitchDefender() {
       const activeAlien = s.aliens.find(a => a.lifecycle === 'descending')
       const currentPitch = livePitchRef.current
       if (activeAlien && currentPitch?.isActive) {
+        const tolerance = gameSettings.pitchTolerance === 'beginner' ? 50
+          : gameSettings.pitchTolerance === 'intermediate' ? 30 : 15
         const isMatch = notesMatch(currentPitch.note, activeAlien.note, {
-          octaveFlexible: true, // beginner: any octave counts
-          centsThreshold: 50,
-        }) && Math.abs(currentPitch.cents) <= 50
+          octaveFlexible: gameSettings.pitchTolerance === 'beginner',
+          centsThreshold: tolerance,
+        }) && Math.abs(currentPitch.cents) <= tolerance
 
         if (isMatch) {
           if (lockStartRef.current === 0) lockStartRef.current = Date.now()
@@ -309,7 +318,12 @@ export default function PitchDefender() {
     getAudioCtx()
     // Start microphone for Echo Cannon
     if (gameMode === 'echoCannon') startListening()
-    setState({ ...createInitialState(), phase: 'countdown' })
+    // Apply parent settings: override starting notes with enabled pool
+    const initial = createInitialState()
+    const enabledPool = gameSettings.enabledNotes.length >= 2
+      ? gameSettings.enabledNotes
+      : initial.unlockedNotes
+    setState({ ...initial, phase: 'countdown', unlockedNotes: enabledPool as string[] })
     setStarPreset('darkWorld1')
     setCountdown(3)
 
@@ -332,6 +346,9 @@ export default function PitchDefender() {
   // ─── Start Wave ──────────────────────────────────────────────────────────
   const startWave = useCallback((waveNum: number) => {
     const config = getWaveConfig(waveNum)
+    // Apply parent descent speed setting
+    const speedMult = gameSettings.descentSpeed === 'slow' ? 1.5 : gameSettings.descentSpeed === 'fast' ? 0.7 : 1
+    config.descentDuration *= speedMult
 
     // Ensure FSRS memory exists for all unlocked notes
     const currentState = stateRef.current
@@ -859,7 +876,7 @@ export default function PitchDefender() {
       {showSettings && (
         <ParentSettings
           settings={gameSettings}
-          onSave={setGameSettings}
+          onSave={(s) => { setGameSettings(s); try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)) } catch {} }}
           onClose={() => setShowSettings(false)}
         />
       )}
@@ -920,6 +937,7 @@ export default function PitchDefender() {
                     alien={alien}
                     fieldHeight={fieldHeight - 180}
                     isActive={isActiveAlien}
+                    showLabel={gameSettings.showNoteLabels}
                     onAnimationEnd={() => {
                       setState(prev => ({
                         ...prev,
@@ -932,7 +950,7 @@ export default function PitchDefender() {
                     <div className="absolute pointer-events-none" style={{ left: -10, top: -10 }}>
                       <StaffDisplay
                         note={alien.note}
-                        clef="treble"
+                        clef={gameSettings.clef === 'both' ? (Math.random() > 0.5 ? 'treble' : 'bass') : gameSettings.clef}
                         size={1}
                         glowColor={`hsl(${alien.noteHue}, 80%, 60%)`}
                       />

@@ -7,10 +7,11 @@ interface AlienProps {
   alien: AlienState
   fieldHeight: number
   isActive: boolean
+  showLabel?: boolean
   onAnimationEnd?: () => void
 }
 
-export default function Alien({ alien, fieldHeight, isActive, onAnimationEnd }: AlienProps) {
+export default function Alien({ alien, fieldHeight, isActive, showLabel, onAnimationEnd }: AlienProps) {
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
@@ -134,6 +135,14 @@ export default function Alien({ alien, fieldHeight, isActive, onAnimationEnd }: 
               opacity: isActive ? 0.9 : 0.5,
             }}
           />
+        )}
+
+        {/* Note label (training mode) */}
+        {showLabel && (
+          <div className="absolute text-xs font-bold text-white z-10"
+            style={{ textShadow: '0 0 4px rgba(0,0,0,0.8)', bottom: -2, left: '50%', transform: 'translateX(-50%)' }}>
+            {alien.note}
+          </div>
         )}
 
         {/* Geometric accent lines */}
