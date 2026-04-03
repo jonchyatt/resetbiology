@@ -81,8 +81,9 @@ export default function Alien({ alien, fieldHeight, isActive, onAnimationEnd }: 
       <div
         className="relative flex items-center justify-center"
         style={{
-          width: 72, height: 72,
-          borderRadius: '50%',
+          width: alien.isBoss ? 110 : 72,
+          height: alien.isBoss ? 110 : 72,
+          borderRadius: alien.isBoss ? '20%' : '50%',
           background: `radial-gradient(circle at 40% 35%, ${hslBright}, ${hsl} 50%, ${hslDim} 100%)`,
           boxShadow: isActive
             ? `0 0 20px ${hsl}, 0 0 40px ${hsl}, 0 0 60px ${hsl}40`

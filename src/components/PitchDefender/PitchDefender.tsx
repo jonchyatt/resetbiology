@@ -371,8 +371,21 @@ export default function PitchDefender() {
     if (s.aliensSpawned >= config.alienCount) return
 
     fsrsRef.current = ensureNoteMemory(fsrsRef.current, s.unlockedNotes)
-    const seqLen = gameMode === 'sequenceAssault' ? Math.min(2 + Math.floor(s.wave / 3), 4) : 1
+
+    // Boss alien: last alien of even-numbered waves
+    const isLastAlien = s.aliensSpawned + 1 >= config.alienCount
+    const isBossWave = s.wave % 2 === 0
+    const spawnBoss = isLastAlien && isBossWave
+
+    const seqLen = spawnBoss ? Math.min(3 + Math.floor(s.wave / 2), 5)
+      : gameMode === 'sequenceAssault' ? Math.min(2 + Math.floor(s.wave / 3), 4)
+      : 1
     const alien = spawnAlien(s, config, fsrsRef.current, seqLen)
+    if (spawnBoss) {
+      alien.isBoss = true
+      alien.descentDuration *= 1.5 // bosses are slower
+      setStarPreset('hsvCrazyFractal') // dramatic skybox for boss
+    }
 
     setState(prev => {
       const newAliens = [...prev.aliens, { ...alien, lifecycle: 'descending' as const }]

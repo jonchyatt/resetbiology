@@ -26,6 +26,8 @@ export interface AlienState {
   // Sequence Assault: multi-note aliens
   sequence?: string[]     // ordered notes (e.g., ['C4', 'E4', 'G4'])
   coresDestroyed?: number // how many cores have been answered correctly
+  // Boss aliens
+  isBoss?: boolean        // large alien with special visuals
 }
 
 export interface WaveConfig {
