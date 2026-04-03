@@ -13,10 +13,14 @@ import {
 } from './gameEngine'
 import Alien from './Alien'
 import NoteButtons from './NoteButtons'
+import PitchGuidance from './PitchGuidance'
 import GameHUD from './GameHUD'
 import WaveIntro from './WaveIntro'
 import GameOver from './GameOver'
+import { usePitchDetection, notesMatch } from './usePitchDetection'
 import './animations.css'
+
+export type GameMode = 'noteBlaster' | 'echoCannon'
 
 // Lazy-load Star Nest (heavy WebGL)
 const StarNestBackground = dynamic(() => import('./StarNestBackground'), { ssr: false })
@@ -142,7 +146,9 @@ export default function PitchDefender() {
   const [lastWrongNote, setLastWrongNote] = useState<string | null>(null)
   const [countdown, setCountdown] = useState<number | null>(null)
   const [starPreset, setStarPreset] = useState('darkWorld1')
+  const [gameMode, setGameMode] = useState<GameMode>('noteBlaster')
   const [screenShake, setScreenShake] = useState(false)
+  const [lockProgress, setLockProgress] = useState(0)
   const [laser, setLaser] = useState<{ fromX: number; fromY: number; toX: number; toY: number; hue: number } | null>(null)
   const [particles, setParticles] = useState<{ id: number; x: number; y: number; tx: number; ty: number; size: number; hue: number; duration: number }[]>([])
 
@@ -160,6 +166,11 @@ export default function PitchDefender() {
   const floatIdRef = useRef(0)
   const particleIdRef = useRef(0)
   const notePlayTimeRef = useRef(0)
+  const lockStartRef = useRef(0)          // when pitch lock began
+  const lockDurationRef = useRef(600)     // ms needed to hold pitch (beginner: 600ms)
+
+  // Pitch detection for Echo Cannon mode
+  const { isListening, pitch, pitchRef: livePitchRef, startListening, stopListening } = usePitchDetection()
   const countdownTimersRef = useRef<ReturnType<typeof setTimeout>[]>([])
 
   // Keep ref in sync
@@ -249,7 +260,39 @@ export default function PitchDefender() {
     if (s.aliensSpawned >= s.aliensInWave && livingAliens.length === 0) {
       completeWave()
     }
-  }, [])
+
+    // ─── Echo Cannon: check pitch match ─────────────────────────────────
+    if (gameMode === 'echoCannon') {
+      const activeAlien = s.aliens.find(a => a.lifecycle === 'descending')
+      const currentPitch = livePitchRef.current
+      if (activeAlien && currentPitch?.isActive) {
+        const isMatch = notesMatch(currentPitch.note, activeAlien.note, {
+          octaveFlexible: true, // beginner: any octave counts
+          centsThreshold: 50,
+        }) && Math.abs(currentPitch.cents) <= 50
+
+        if (isMatch) {
+          if (lockStartRef.current === 0) lockStartRef.current = Date.now()
+          const held = Date.now() - lockStartRef.current
+          const progress = Math.min(held / lockDurationRef.current, 1)
+          setLockProgress(progress)
+
+          if (progress >= 1) {
+            // FIRE! Treat as correct answer
+            lockStartRef.current = 0
+            setLockProgress(0)
+            handleAnswerInner(activeAlien.note)
+          }
+        } else {
+          lockStartRef.current = 0
+          setLockProgress(0)
+        }
+      } else {
+        lockStartRef.current = 0
+        setLockProgress(0)
+      }
+    }
+  }, [gameMode])
 
   // ─── Start Game ──────────────────────────────────────────────────────────
   const startGame = useCallback(() => {
@@ -260,6 +303,8 @@ export default function PitchDefender() {
     if (spawnTimerRef.current) { clearTimeout(spawnTimerRef.current); spawnTimerRef.current = null }
 
     getAudioCtx()
+    // Start microphone for Echo Cannon
+    if (gameMode === 'echoCannon') startListening()
     setState({ ...createInitialState(), phase: 'countdown' })
     setStarPreset('darkWorld1')
     setCountdown(3)
@@ -581,6 +626,7 @@ export default function PitchDefender() {
 
     setState(prev => ({ ...prev, phase: 'game_over', didWin: victory, isNewHighScore: newHighScore }))
     setStarPreset('galaxies')
+    stopListening()
 
     // Update progress (after snapshotting high score comparison)
     const p = progressRef.current
@@ -662,19 +708,61 @@ export default function PitchDefender() {
             </div>
           )}
 
+          {/* Mode selector */}
+          <div className="flex gap-3 mb-6">
+            <button
+              onClick={() => setGameMode('noteBlaster')}
+              className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
+              style={{
+                background: gameMode === 'noteBlaster'
+                  ? 'linear-gradient(135deg, #3FBFB5, #2a8a82)'
+                  : 'rgba(40, 40, 60, 0.6)',
+                color: gameMode === 'noteBlaster' ? 'white' : '#888',
+                border: gameMode === 'noteBlaster'
+                  ? '2px solid #3FBFB5'
+                  : '2px solid rgba(80, 80, 100, 0.3)',
+                boxShadow: gameMode === 'noteBlaster' ? '0 0 15px #3FBFB530' : 'none',
+              }}
+            >
+              NOTE BLASTER
+              <div className="text-xs font-normal mt-0.5 opacity-70">Tap to identify</div>
+            </button>
+            <button
+              onClick={() => setGameMode('echoCannon')}
+              className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
+              style={{
+                background: gameMode === 'echoCannon'
+                  ? 'linear-gradient(135deg, #C060E0, #8a3aaa)'
+                  : 'rgba(40, 40, 60, 0.6)',
+                color: gameMode === 'echoCannon' ? 'white' : '#888',
+                border: gameMode === 'echoCannon'
+                  ? '2px solid #C060E0'
+                  : '2px solid rgba(80, 80, 100, 0.3)',
+                boxShadow: gameMode === 'echoCannon' ? '0 0 15px #C060E030' : 'none',
+              }}
+            >
+              ECHO CANNON
+              <div className="text-xs font-normal mt-0.5 opacity-70">Sing to destroy</div>
+            </button>
+          </div>
+
           <button
             onClick={startGame}
             className="px-10 py-4 rounded-2xl text-xl font-bold text-white transition-all active:scale-95"
             style={{
-              background: 'linear-gradient(135deg, #3FBFB5, #2a8a82)',
-              boxShadow: '0 0 30px #3FBFB540, 0 4px 20px rgba(0,0,0,0.4)',
+              background: gameMode === 'echoCannon'
+                ? 'linear-gradient(135deg, #C060E0, #8a3aaa)'
+                : 'linear-gradient(135deg, #3FBFB5, #2a8a82)',
+              boxShadow: gameMode === 'echoCannon'
+                ? '0 0 30px #C060E040, 0 4px 20px rgba(0,0,0,0.4)'
+                : '0 0 30px #3FBFB540, 0 4px 20px rgba(0,0,0,0.4)',
             }}
           >
             START MISSION
           </button>
 
           <p className="text-xs text-gray-600 mt-6 text-center">
-            {KEYBOARD_ORDER.length} notes &middot; 10 waves &middot; FSRS-powered learning
+            {KEYBOARD_ORDER.length} notes &middot; 10 waves &middot; {gameMode === 'echoCannon' ? 'Sing to match pitch' : 'FSRS-powered learning'}
           </p>
         </div>
       )}
@@ -727,22 +815,32 @@ export default function PitchDefender() {
           >
             {state.aliens
               .filter(a => a.lifecycle !== 'escaped')
-              .map((alien) => (
-                <div key={alien.id}>
+              .map((alien) => {
+                const isActiveAlien = alien.lifecycle === 'descending' && alien === state.aliens.find(a => a.lifecycle === 'descending')
+                return (
+                <div key={alien.id} className="relative">
                   <Alien
                     alien={alien}
                     fieldHeight={fieldHeight - 180}
-                    isActive={alien.lifecycle === 'descending' && alien === state.aliens.find(a => a.lifecycle === 'descending')}
+                    isActive={isActiveAlien}
                     onAnimationEnd={() => {
-                      // Remove fully animated aliens
                       setState(prev => ({
                         ...prev,
                         aliens: prev.aliens.filter(a => a.id !== alien.id),
                       }))
                     }}
                   />
+                  {/* Pitch guidance overlay — Echo Cannon only, active alien only */}
+                  {gameMode === 'echoCannon' && isActiveAlien && (
+                    <PitchGuidance
+                      targetNote={alien.note}
+                      pitch={pitch}
+                      isLocking={lockProgress > 0}
+                      lockProgress={lockProgress}
+                    />
+                  )}
                 </div>
-              ))}
+              )})}
 
             {/* Floating score numbers */}
             {floatingScores.map(fs => (
@@ -817,28 +915,72 @@ export default function PitchDefender() {
             </div>
           )}
 
-          {/* Bottom panel: Note buttons + replay */}
+          {/* Bottom panel: Note buttons (Note Blaster) or Mic status (Echo Cannon) */}
           <div className="absolute bottom-0 left-0 right-0 z-20"
             style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.8) 60%, transparent)' }}>
 
-            {/* Replay button */}
-            <div className="text-center mb-1">
-              <button
-                onClick={replayNote}
-                className="text-xs text-gray-500 hover:text-gray-300 transition-colors px-3 py-1"
-                disabled={state.phase !== 'wave_active'}
-              >
-                TAP TO REPLAY NOTE
-              </button>
-            </div>
-
-            <NoteButtons
-              unlockedNotes={state.unlockedNotes}
-              onNoteSelected={handleAnswer}
-              disabled={state.phase !== 'wave_active'}
-              lastCorrectNote={lastCorrectNote}
-              lastWrongNote={lastWrongNote}
-            />
+            {gameMode === 'echoCannon' ? (
+              /* ── Echo Cannon: mic pitch display ── */
+              <div className="text-center py-4 px-4">
+                <div className="text-xs text-gray-500 uppercase tracking-wider mb-2">
+                  {isListening ? 'LISTENING' : 'MIC OFF'}
+                </div>
+                {pitch?.isActive ? (
+                  <div className="flex items-center justify-center gap-4">
+                    <div className="text-3xl font-bold text-white" style={{
+                      textShadow: lockProgress > 0
+                        ? `0 0 ${10 + lockProgress * 20}px #4ade80`
+                        : '0 0 8px rgba(255,255,255,0.3)',
+                      color: lockProgress > 0.5 ? '#4ade80' : 'white',
+                    }}>
+                      {pitch.note}
+                    </div>
+                    <div className="text-sm" style={{
+                      color: Math.abs(pitch.cents) <= 15 ? '#4ade80' : Math.abs(pitch.cents) <= 30 ? '#e8a838' : '#f87171',
+                    }}>
+                      {pitch.cents > 0 ? '+' : ''}{pitch.cents}c
+                    </div>
+                    {lockProgress > 0 && (
+                      <div className="w-20 h-2 rounded-full overflow-hidden" style={{ background: 'rgba(40,40,60,0.6)' }}>
+                        <div className="h-full rounded-full transition-all" style={{
+                          width: `${lockProgress * 100}%`,
+                          background: lockProgress >= 0.8 ? '#4ade80' : '#3FBFB5',
+                          boxShadow: `0 0 8px ${lockProgress >= 0.8 ? '#4ade80' : '#3FBFB5'}`,
+                        }} />
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-lg text-gray-600">Sing a note...</div>
+                )}
+                <button
+                  onClick={replayNote}
+                  className="text-xs text-gray-500 hover:text-gray-300 transition-colors px-3 py-1 mt-2"
+                >
+                  TAP TO REPLAY TARGET
+                </button>
+              </div>
+            ) : (
+              /* ── Note Blaster: tap buttons ── */
+              <>
+                <div className="text-center mb-1">
+                  <button
+                    onClick={replayNote}
+                    className="text-xs text-gray-500 hover:text-gray-300 transition-colors px-3 py-1"
+                    disabled={state.phase !== 'wave_active'}
+                  >
+                    TAP TO REPLAY NOTE
+                  </button>
+                </div>
+                <NoteButtons
+                  unlockedNotes={state.unlockedNotes}
+                  onNoteSelected={handleAnswer}
+                  disabled={state.phase !== 'wave_active'}
+                  lastCorrectNote={lastCorrectNote}
+                  lastWrongNote={lastWrongNote}
+                />
+              </>
+            )}
           </div>
         </>
       )}
