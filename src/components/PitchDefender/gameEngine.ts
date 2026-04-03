@@ -52,6 +52,8 @@ export function createInitialState(): GameState {
     lastAnswerCorrect: null,
     newNoteUnlocked: null,
     waveScore: 0,
+    didWin: false,
+    isNewHighScore: false,
   }
 }
 

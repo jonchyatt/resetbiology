@@ -54,6 +54,8 @@ export interface GameState {
   lastAnswerCorrect: boolean | null
   newNoteUnlocked: string | null
   waveScore: number
+  didWin: boolean
+  isNewHighScore: boolean
 }
 
 export interface GameProgress {

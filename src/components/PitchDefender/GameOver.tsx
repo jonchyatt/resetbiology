@@ -12,13 +12,14 @@ interface GameOverProps {
   unlockedNotes: string[]
   fsrsMemory: Record<string, NoteMemory>
   isNewHighScore: boolean
+  didWin: boolean
   onPlayAgain: () => void
   onMenu: () => void
 }
 
 export default function GameOver({
   score, wave, totalCorrect, totalAttempts, maxCombo,
-  unlockedNotes, fsrsMemory, isNewHighScore,
+  unlockedNotes, fsrsMemory, isNewHighScore, didWin,
   onPlayAgain, onMenu,
 }: GameOverProps) {
   const accuracy = totalAttempts > 0 ? Math.round((totalCorrect / totalAttempts) * 100) : 0
@@ -35,7 +36,7 @@ export default function GameOver({
           textShadow: '0 0 30px rgba(255,255,255,0.3)',
         }}
       >
-        {wave >= 10 ? 'VICTORY' : 'GAME OVER'}
+        {didWin ? 'VICTORY' : 'GAME OVER'}
       </div>
 
       {isNewHighScore && (

@@ -39,24 +39,29 @@ export default function Alien({ alien, fieldHeight, isActive, onAnimationEnd }: 
         top: 0,
         transform: 'translateX(-50%)',
         zIndex: isActive ? 20 : 10,
-        // Descent animation
-        ...(isDescending && mounted ? {
-          animation: `alienDescend ${alien.descentDuration}s linear forwards`,
-          '--field-height': `${fieldHeight}px`,
-        } as React.CSSProperties : {}),
-        // Explode
-        ...(isExploding ? {
-          animation: 'alienExplode 0.5s ease-out forwards',
-        } : {}),
-        // Escape
-        ...(isEscaped ? {
-          animation: 'alienEscape 0.4s ease-in forwards',
-        } : {}),
-      }}
-      onAnimationEnd={() => {
-        if (isExploding || isEscaped) onAnimationEnd?.()
       }}
     >
+      {/* Inner animation container — separate from positioning to avoid transform clobber */}
+      <div
+        style={{
+          // Descent animation
+          ...(isDescending && mounted ? {
+            animation: `alienDescend ${alien.descentDuration}s linear forwards`,
+            '--field-height': `${fieldHeight}px`,
+          } as React.CSSProperties : {}),
+          // Explode
+          ...(isExploding ? {
+            animation: 'alienExplode 0.5s ease-out forwards',
+          } : {}),
+          // Escape
+          ...(isEscaped ? {
+            animation: 'alienEscape 0.4s ease-in forwards',
+          } : {}),
+        }}
+        onAnimationEnd={() => {
+          if (isExploding || isEscaped) onAnimationEnd?.()
+        }}
+      >
       {/* Outer decorative rings */}
       <div
         className="absolute inset-0 rounded-full"
@@ -129,6 +134,7 @@ export default function Alien({ alien, fieldHeight, isActive, onAnimationEnd }: 
           }}
         />
       )}
+      </div>
     </div>
   )
 }

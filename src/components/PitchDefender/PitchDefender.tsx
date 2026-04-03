@@ -253,9 +253,11 @@ export default function PitchDefender() {
 
   // ─── Start Game ──────────────────────────────────────────────────────────
   const startGame = useCallback(() => {
-    // Clear any existing countdown timers (prevents overlap on rapid taps)
+    // Clear ALL pending timers to prevent ghost callbacks from previous game
     countdownTimersRef.current.forEach(clearTimeout)
     countdownTimersRef.current = []
+    if (tickRef.current) { clearInterval(tickRef.current); tickRef.current = null }
+    if (spawnTimerRef.current) { clearTimeout(spawnTimerRef.current); spawnTimerRef.current = null }
 
     getAudioCtx()
     setState({ ...createInitialState(), phase: 'countdown' })
@@ -392,16 +394,18 @@ export default function PitchDefender() {
       setShowScorePop(true)
       setTimeout(() => setShowScorePop(false), 300)
 
-      // Laser beam + explosion particles
+      // Laser beam + explosion particles (mathematical position — no DOM measurement needed)
       const fieldEl2 = fieldRef.current
-      const alienEl = fieldEl2?.querySelector(`[data-alien-id="${alienId}"]`)
-      if (fieldEl2 && alienEl) {
-        const fieldRect = fieldEl2.getBoundingClientRect()
-        const alienRect = alienEl.getBoundingClientRect()
-        const ax = alienRect.left - fieldRect.left + alienRect.width / 2
-        const ay = alienRect.top - fieldRect.top + alienRect.height / 2
-        const fx = fieldRect.width / 2
-        const fy = fieldRect.height
+      if (fieldEl2) {
+        const fw = fieldEl2.clientWidth
+        const fh = fieldEl2.clientHeight
+        const lanePercent = 15 + alien.lane * 17.5
+        const ax = fw * lanePercent / 100
+        const elapsed = (Date.now() - alien.spawnTime) / 1000
+        const progress = Math.min(elapsed / alien.descentDuration, 1)
+        const ay = progress * (fh - 80) + 36
+        const fx = fw / 2
+        const fy = fh
 
         setLaser({ fromX: fx, fromY: fy, toX: ax, toY: ay, hue: alien.noteHue })
         setTimeout(() => setLaser(null), 350)
@@ -491,6 +495,8 @@ export default function PitchDefender() {
         setTimeout(() => playNote(pianoRef.current, nextAlien.note), 400)
         notePlayTimeRef.current = Date.now() + 400
       } else {
+        // Cancel any pending spawn timer to prevent double-fire
+        if (spawnTimerRef.current) { clearTimeout(spawnTimerRef.current); spawnTimerRef.current = null }
         setTimeout(() => spawnNextAlien(), 150)
       }
 
@@ -512,7 +518,9 @@ export default function PitchDefender() {
       // ─── WRONG — pure state update ───
       setState(prev => {
         const newHealth = Math.max(0, prev.cityHealth - 1)
-        if (newHealth <= 0) setTimeout(() => endGame(), 300)
+        if (newHealth <= 0) setTimeout(() => {
+          if (stateRef.current.phase === 'wave_active') endGame()
+        }, 300)
         return {
           ...prev,
           combo: 0,
@@ -538,9 +546,9 @@ export default function PitchDefender() {
     // Brief pause then next wave
     setTimeout(() => {
       const s = stateRef.current
+      if (s.phase !== 'wave_complete') return // guard: game already restarted
       if (s.wave >= 10) {
-        // Victory!
-        endGame()
+        endGame(true) // Victory!
       } else {
         startWave(s.wave + 1)
       }
@@ -548,15 +556,18 @@ export default function PitchDefender() {
   }, [startWave])
 
   // ─── End Game ────────────────────────────────────────────────────────────
-  const endGame = useCallback(() => {
+  const endGame = useCallback((victory: boolean = false) => {
     if (tickRef.current) { clearInterval(tickRef.current); tickRef.current = null }
     if (spawnTimerRef.current) { clearTimeout(spawnTimerRef.current); spawnTimerRef.current = null }
 
-    setState(prev => ({ ...prev, phase: 'game_over' }))
+    // Compute high score BEFORE mutating progress
+    const s = stateRef.current
+    const newHighScore = s.score > progressRef.current.highScore && s.score > 0
+
+    setState(prev => ({ ...prev, phase: 'game_over', didWin: victory, isNewHighScore: newHighScore }))
     setStarPreset('galaxies')
 
-    // Update progress
-    const s = stateRef.current
+    // Update progress (after snapshotting high score comparison)
     const p = progressRef.current
     p.totalGamesPlayed++
     p.totalAliensDestroyed += s.totalCorrect
@@ -579,8 +590,9 @@ export default function PitchDefender() {
   // ─── Replay note on tap ──────────────────────────────────────────────────
   const replayNote = useCallback(() => {
     const s = stateRef.current
-    if (s.activeAlienIndex >= 0 && s.aliens[s.activeAlienIndex]) {
-      playNote(pianoRef.current, s.aliens[s.activeAlienIndex].note)
+    const activeAlien = s.aliens.find(a => a.lifecycle === 'descending')
+    if (activeAlien) {
+      playNote(pianoRef.current, activeAlien.note)
       notePlayTimeRef.current = Date.now()
     }
   }, [])
@@ -588,7 +600,7 @@ export default function PitchDefender() {
   // ─── Render ──────────────────────────────────────────────────────────────
   const config = getWaveConfig(state.wave || 1)
   const fieldHeight = typeof window !== 'undefined' ? window.innerHeight : 700
-  const isNewHighScore = state.score > (progressRef.current.highScore ?? 0) && state.score > 0
+  const isNewHighScore = state.isNewHighScore
 
   return (
     <div className="fixed inset-0 overflow-hidden select-none" style={{ background: '#000', animation: screenShake ? 'screenShake 0.4s ease-out' : undefined }}>
@@ -827,6 +839,7 @@ export default function PitchDefender() {
           unlockedNotes={state.unlockedNotes}
           fsrsMemory={fsrsRef.current}
           isNewHighScore={isNewHighScore}
+          didWin={state.didWin}
           onPlayAgain={startGame}
           onMenu={() => setState(createInitialState())}
         />
