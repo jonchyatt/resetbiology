@@ -1,24 +1,46 @@
 'use client'
 
-// ═══════════════════════════════════════════════════════════════════════════════
+// =============================================================================
 // SheetMusicViewer — Professional Notation via OpenSheetMusicDisplay
-// ═══════════════════════════════════════════════════════════════════════════════
+// =============================================================================
 //
-// Renders MusicXML with professional engraving quality using OSMD (VexFlow-based).
-// Supports all clef types: treble, bass, alto (C3), tenor (C4), soprano, mezzo-soprano.
+// Production-quality OSMD wrapper with:
+// - Native dark mode (EngravingRules colors, no CSS invert)
+// - MusicXML file upload (drag-and-drop + file picker)
+// - Part isolation (toggle SATB voices)
+// - Cursor/playback (step through notes, auto-play with tempo)
+//
 // This is the PROFESSIONAL tier — game modes use the custom Canvas renderer.
-//
-// Architecture: OSMD renders the notation → our study overlay adds pitch tracking,
-// synesthesia colors, voice guidance on top.
-// ═══════════════════════════════════════════════════════════════════════════════
+// =============================================================================
 
 import { useRef, useEffect, useState, useCallback } from 'react'
 
 interface SheetMusicViewerProps {
-  musicXML?: string       // MusicXML string to render
-  musicXMLUrl?: string    // OR a URL to fetch MusicXML from
-  zoom?: number           // zoom level (default 1.0)
-  darkMode?: boolean      // dark background mode
+  musicXML?: string
+  musicXMLUrl?: string
+  zoom?: number
+  darkMode?: boolean
+}
+
+// Dark mode color palette — matches the site's #0a0a14 background
+const DARK_COLORS = {
+  background: '#0a0a14',
+  music: '#c8d7f5',         // soft blue-white for notes/stems
+  staff: '#4a5578',         // muted staff lines
+  title: '#e2e8f4',         // bright for titles
+  label: '#8898c0',         // part names, dynamics
+  cursor: '#6366f1',        // indigo cursor highlight
+  cursorAlpha: 0.3,
+}
+
+const LIGHT_COLORS = {
+  background: '#ffffff',
+  music: '#000000',
+  staff: '#000000',
+  title: '#000000',
+  label: '#333333',
+  cursor: '#3b82f6',
+  cursorAlpha: 0.2,
 }
 
 export default function SheetMusicViewer({
@@ -29,17 +51,60 @@ export default function SheetMusicViewer({
 }: SheetMusicViewerProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const osmdRef = useRef<any>(null)
+  const playIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading')
   const [error, setError] = useState<string | null>(null)
+  const [fileName, setFileName] = useState<string | null>(null)
 
-  const initOSMD = useCallback(async () => {
+  // Part visibility state
+  const [parts, setParts] = useState<{ name: string; visible: boolean }[]>([])
+
+  // Cursor state
+  const [cursorVisible, setCursorVisible] = useState(false)
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [tempo, setTempo] = useState(80) // BPM for auto-play
+
+  // Drag state
+  const [isDragging, setIsDragging] = useState(false)
+
+  // ─── Apply Colors ──────────────────────────────────────────────────
+  const applyColors = useCallback((osmd: any, dark: boolean) => {
+    const colors = dark ? DARK_COLORS : LIGHT_COLORS
+    const rules = osmd.EngravingRules
+
+    rules.PageBackgroundColor = colors.background
+    rules.DefaultColorMusic = colors.music
+    rules.DefaultColorNotehead = colors.music
+    rules.DefaultColorStem = colors.music
+    rules.DefaultColorRest = colors.music
+    rules.DefaultColorLabel = colors.label
+    rules.DefaultColorTitle = colors.title
+    rules.DefaultColorCursor = colors.cursor
+    // Staff lines — use hex with alpha suffix for OSMD/VexFlow
+    rules.StaffLineColor = colors.staff
+    rules.LedgerLineColorDefault = colors.staff
+  }, [])
+
+  // ─── Initialize OSMD ──────────────────────────────────────────────
+  const loadScore = useCallback(async (xmlData: string, name?: string) => {
     if (!containerRef.current) return
 
     try {
       setStatus('loading')
+      setIsPlaying(false)
+      if (playIntervalRef.current) {
+        clearInterval(playIntervalRef.current)
+        playIntervalRef.current = null
+      }
 
-      // Dynamic import to avoid SSR issues
       const { OpenSheetMusicDisplay } = await import('opensheetmusicdisplay')
+
+      // Clear previous instance
+      if (osmdRef.current) {
+        try { osmdRef.current.clear() } catch { /* ok */ }
+      }
+      containerRef.current.innerHTML = ''
 
       const osmd = new OpenSheetMusicDisplay(containerRef.current, {
         autoResize: true,
@@ -50,41 +115,59 @@ export default function SheetMusicViewer({
         drawPartNames: true,
         drawPartAbbreviations: true,
         drawingParameters: 'default',
+        disableCursor: false,
+        cursorsOptions: [{
+          type: 0,
+          color: darkMode ? DARK_COLORS.cursor : LIGHT_COLORS.cursor,
+          alpha: darkMode ? DARK_COLORS.cursorAlpha : LIGHT_COLORS.cursorAlpha,
+          follow: true,
+        }],
       })
 
-      // Apply zoom
       osmd.Zoom = zoom
+      applyColors(osmd, darkMode)
+
+      await osmd.load(xmlData)
+      osmd.render()
 
       osmdRef.current = osmd
 
-      // Load MusicXML
+      // Extract part info
+      const sheetParts = osmd.Sheet?.Parts || osmd.Sheet?.Instruments || []
+      const partInfo = sheetParts.map((p: any) => ({
+        name: p.Name || p.NameLabel?.text || 'Part',
+        visible: true,
+      }))
+      setParts(partInfo)
+      setCursorVisible(false)
+
+      if (name) setFileName(name)
+      setStatus('ready')
+    } catch (err: any) {
+      console.error('OSMD load error:', err)
+      setError(err.message || 'Failed to load sheet music')
+      setStatus('error')
+    }
+  }, [zoom, darkMode, applyColors])
+
+  // ─── Initial Load ─────────────────────────────────────────────────
+  useEffect(() => {
+    const init = async () => {
       let xmlData = musicXML
       if (!xmlData && musicXMLUrl) {
         const resp = await fetch(musicXMLUrl)
         xmlData = await resp.text()
       }
-
       if (!xmlData) {
-        // Load the built-in demo if no data provided
         xmlData = DEMO_SATB_MUSICXML
+        setFileName('Ode to Joy — SATB Demo')
       }
-
-      await osmd.load(xmlData)
-      osmd.render()
-
-      setStatus('ready')
-    } catch (err: any) {
-      console.error('OSMD init error:', err)
-      setError(err.message || 'Failed to load sheet music')
-      setStatus('error')
+      await loadScore(xmlData)
     }
-  }, [musicXML, musicXMLUrl, zoom])
+    init()
+  }, [musicXML, musicXMLUrl, loadScore])
 
-  useEffect(() => {
-    initOSMD()
-  }, [initOSMD])
-
-  // Handle resize
+  // ─── Handle Resize ────────────────────────────────────────────────
   useEffect(() => {
     const handleResize = () => {
       if (osmdRef.current && status === 'ready') {
@@ -95,41 +178,383 @@ export default function SheetMusicViewer({
     return () => window.removeEventListener('resize', handleResize)
   }, [status])
 
+  // ─── Cleanup on unmount ───────────────────────────────────────────
+  useEffect(() => {
+    return () => {
+      if (playIntervalRef.current) clearInterval(playIntervalRef.current)
+    }
+  }, [])
+
+  // ─── File Upload Handler ──────────────────────────────────────────
+  const handleFile = useCallback(async (file: File) => {
+    const ext = file.name.split('.').pop()?.toLowerCase()
+    if (!ext || !['xml', 'musicxml', 'mxl'].includes(ext)) {
+      setError('Please upload a MusicXML file (.xml, .musicxml, or .mxl)')
+      setStatus('error')
+      return
+    }
+
+    if (ext === 'mxl') {
+      // Compressed MusicXML — OSMD can load from ArrayBuffer
+      const buf = await file.arrayBuffer()
+      try {
+        setStatus('loading')
+        const { OpenSheetMusicDisplay } = await import('opensheetmusicdisplay')
+
+        if (osmdRef.current) {
+          try { osmdRef.current.clear() } catch { /* ok */ }
+        }
+        if (containerRef.current) containerRef.current.innerHTML = ''
+
+        const osmd = new OpenSheetMusicDisplay(containerRef.current!, {
+          autoResize: true,
+          drawTitle: true,
+          drawSubtitle: true,
+          drawComposer: true,
+          drawCredits: true,
+          drawPartNames: true,
+          drawPartAbbreviations: true,
+          drawingParameters: 'default',
+          disableCursor: false,
+          cursorsOptions: [{
+            type: 0,
+            color: darkMode ? DARK_COLORS.cursor : LIGHT_COLORS.cursor,
+            alpha: darkMode ? DARK_COLORS.cursorAlpha : LIGHT_COLORS.cursorAlpha,
+            follow: true,
+          }],
+        })
+
+        osmd.Zoom = zoom
+        applyColors(osmd, darkMode)
+
+        // OSMD can load MXL from ArrayBuffer
+        await osmd.load(new Uint8Array(buf) as any)
+        osmd.render()
+
+        osmdRef.current = osmd
+
+        const sheetParts = osmd.Sheet?.Parts || osmd.Sheet?.Instruments || []
+        setParts(sheetParts.map((p: any) => ({
+          name: p.Name || p.NameLabel?.text || 'Part',
+          visible: true,
+        })))
+        setCursorVisible(false)
+        setFileName(file.name)
+        setStatus('ready')
+      } catch (err: any) {
+        console.error('MXL load error:', err)
+        setError(err.message || 'Failed to load compressed MusicXML')
+        setStatus('error')
+      }
+      return
+    }
+
+    // Plain XML text
+    const text = await file.text()
+    await loadScore(text, file.name)
+  }, [loadScore, zoom, darkMode, applyColors])
+
+  // ─── Drag and Drop ────────────────────────────────────────────────
+  const onDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(true)
+  }, [])
+
+  const onDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(false)
+  }, [])
+
+  const onDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(false)
+    const file = e.dataTransfer.files?.[0]
+    if (file) handleFile(file)
+  }, [handleFile])
+
+  const onFileInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) handleFile(file)
+    e.target.value = '' // reset so same file can be re-uploaded
+  }, [handleFile])
+
+  // ─── Part Visibility Toggle ───────────────────────────────────────
+  const togglePart = useCallback((index: number) => {
+    const osmd = osmdRef.current
+    if (!osmd) return
+
+    const sheetParts = osmd.Sheet?.Parts || osmd.Sheet?.Instruments || []
+    if (index >= sheetParts.length) return
+
+    const newVisible = !parts[index].visible
+    sheetParts[index].Visible = newVisible
+
+    // Must have at least one visible part
+    const wouldBeVisible = parts.filter((p, i) => i === index ? newVisible : p.visible)
+    if (wouldBeVisible.every(p => !p.visible)) return // don't allow hiding all
+
+    setParts(prev => prev.map((p, i) => i === index ? { ...p, visible: newVisible } : p))
+
+    try {
+      osmd.updateGraphic()
+      osmd.render()
+    } catch {
+      // Fallback: full re-render
+      osmd.render()
+    }
+  }, [parts])
+
+  // ─── Cursor Controls ──────────────────────────────────────────────
+  const showCursor = useCallback(() => {
+    const osmd = osmdRef.current
+    if (!osmd?.cursor) return
+    osmd.cursor.show()
+    osmd.cursor.reset()
+    setCursorVisible(true)
+  }, [])
+
+  const hideCursor = useCallback(() => {
+    const osmd = osmdRef.current
+    if (!osmd?.cursor) return
+    osmd.cursor.hide()
+    setCursorVisible(false)
+    setIsPlaying(false)
+    if (playIntervalRef.current) {
+      clearInterval(playIntervalRef.current)
+      playIntervalRef.current = null
+    }
+  }, [])
+
+  const cursorNext = useCallback(() => {
+    const osmd = osmdRef.current
+    if (!osmd?.cursor) return
+    osmd.cursor.next()
+  }, [])
+
+  const cursorPrev = useCallback(() => {
+    const osmd = osmdRef.current
+    if (!osmd?.cursor) return
+    osmd.cursor.previous()
+  }, [])
+
+  const cursorReset = useCallback(() => {
+    const osmd = osmdRef.current
+    if (!osmd?.cursor) return
+    osmd.cursor.reset()
+  }, [])
+
+  const togglePlay = useCallback(() => {
+    if (isPlaying) {
+      setIsPlaying(false)
+      if (playIntervalRef.current) {
+        clearInterval(playIntervalRef.current)
+        playIntervalRef.current = null
+      }
+      return
+    }
+
+    const osmd = osmdRef.current
+    if (!osmd?.cursor) return
+
+    if (!cursorVisible) {
+      osmd.cursor.show()
+      osmd.cursor.reset()
+      setCursorVisible(true)
+    }
+
+    setIsPlaying(true)
+    const msPerBeat = 60000 / tempo
+    playIntervalRef.current = setInterval(() => {
+      const cursor = osmdRef.current?.cursor
+      if (!cursor) return
+
+      // Check if we've reached the end
+      const iter = cursor.Iterator
+      if (iter?.EndReached) {
+        setIsPlaying(false)
+        if (playIntervalRef.current) {
+          clearInterval(playIntervalRef.current)
+          playIntervalRef.current = null
+        }
+        return
+      }
+
+      cursor.next()
+    }, msPerBeat)
+  }, [isPlaying, cursorVisible, tempo])
+
+  // ─── Load Demo Score ──────────────────────────────────────────────
+  const loadDemo = useCallback(() => {
+    setFileName('Ode to Joy — SATB Demo')
+    loadScore(DEMO_SATB_MUSICXML)
+  }, [loadScore])
+
+  // ─── Render ───────────────────────────────────────────────────────
+  const colors = darkMode ? DARK_COLORS : LIGHT_COLORS
+  const bgClass = darkMode ? 'bg-[#0a0a14]' : 'bg-white'
+  const textClass = darkMode ? 'text-gray-300' : 'text-gray-700'
+  const mutedClass = darkMode ? 'text-gray-500' : 'text-gray-400'
+  const borderClass = darkMode ? 'border-gray-800/50' : 'border-gray-200'
+  const btnBase = `px-3 py-1.5 rounded text-xs font-medium transition-colors`
+  const btnPrimary = darkMode
+    ? `${btnBase} bg-indigo-600/80 hover:bg-indigo-500 text-white`
+    : `${btnBase} bg-indigo-500 hover:bg-indigo-600 text-white`
+  const btnSecondary = darkMode
+    ? `${btnBase} bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700`
+    : `${btnBase} bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300`
+
   return (
-    <div className={`relative ${darkMode ? 'bg-[#0a0a14]' : 'bg-white'}`}>
+    <div
+      className={`relative ${bgClass}`}
+      onDragOver={onDragOver}
+      onDragLeave={onDragLeave}
+      onDrop={onDrop}
+    >
+      {/* ── Toolbar ────────────────────────────────────────────────── */}
+      <div className={`flex flex-wrap items-center gap-3 px-4 py-2 border-b ${borderClass}`}>
+        {/* File upload */}
+        <label className={btnSecondary + ' cursor-pointer'}>
+          Open File
+          <input
+            type="file"
+            accept=".xml,.musicxml,.mxl"
+            onChange={onFileInput}
+            className="hidden"
+          />
+        </label>
+
+        {fileName && (
+          <span className={`text-xs ${mutedClass} truncate max-w-[200px]`} title={fileName}>
+            {fileName}
+          </span>
+        )}
+
+        {/* Demo button */}
+        <button onClick={loadDemo} className={btnSecondary}>
+          Demo Score
+        </button>
+
+        {/* Separator */}
+        <div className={`w-px h-5 ${darkMode ? 'bg-gray-700' : 'bg-gray-300'}`} />
+
+        {/* Part toggles */}
+        {parts.length > 0 && (
+          <div className="flex items-center gap-1">
+            <span className={`text-xs ${mutedClass} mr-1`}>Parts:</span>
+            {parts.map((part, i) => (
+              <button
+                key={i}
+                onClick={() => togglePart(i)}
+                className={`${btnBase} ${
+                  part.visible
+                    ? (darkMode ? 'bg-indigo-600/60 text-indigo-200 border border-indigo-500/50' : 'bg-indigo-100 text-indigo-700 border border-indigo-300')
+                    : (darkMode ? 'bg-gray-800/50 text-gray-600 border border-gray-700/50' : 'bg-gray-50 text-gray-400 border border-gray-200')
+                }`}
+                title={part.visible ? `Hide ${part.name}` : `Show ${part.name}`}
+              >
+                {part.name}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Separator */}
+        {parts.length > 0 && (
+          <div className={`w-px h-5 ${darkMode ? 'bg-gray-700' : 'bg-gray-300'}`} />
+        )}
+
+        {/* Cursor controls */}
+        <div className="flex items-center gap-1">
+          {!cursorVisible ? (
+            <button onClick={showCursor} className={btnSecondary}>
+              Show Cursor
+            </button>
+          ) : (
+            <>
+              <button onClick={cursorReset} className={btnSecondary} title="Reset to start">
+                |&laquo;
+              </button>
+              <button onClick={cursorPrev} className={btnSecondary} title="Previous note">
+                &laquo;
+              </button>
+              <button
+                onClick={togglePlay}
+                className={isPlaying ? `${btnBase} bg-red-600/80 hover:bg-red-500 text-white` : btnPrimary}
+                title={isPlaying ? 'Stop' : 'Play'}
+              >
+                {isPlaying ? 'Stop' : 'Play'}
+              </button>
+              <button onClick={cursorNext} className={btnSecondary} title="Next note">
+                &raquo;
+              </button>
+              <button onClick={hideCursor} className={btnSecondary} title="Hide cursor">
+                Hide
+              </button>
+
+              {/* Tempo control */}
+              <div className="flex items-center gap-1 ml-2">
+                <input
+                  type="range"
+                  min={30}
+                  max={200}
+                  value={tempo}
+                  onChange={(e) => setTempo(Number(e.target.value))}
+                  className="w-16 h-1 accent-indigo-500"
+                  title={`Tempo: ${tempo} BPM`}
+                />
+                <span className={`text-xs ${mutedClass} w-12`}>{tempo} bpm</span>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* ── Status Messages ────────────────────────────────────────── */}
       {status === 'loading' && (
         <div className="flex items-center justify-center py-20">
-          <div className="text-gray-400 text-sm">Loading sheet music...</div>
+          <div className={`text-sm animate-pulse ${mutedClass}`}>Loading sheet music...</div>
         </div>
       )}
 
       {status === 'error' && (
-        <div className="flex items-center justify-center py-20">
+        <div className="flex items-center justify-center py-20 flex-col gap-3">
           <div className="text-red-400 text-sm">Error: {error}</div>
+          <button onClick={loadDemo} className={btnPrimary}>Load Demo Score</button>
         </div>
       )}
 
+      {/* ── Drag Overlay ───────────────────────────────────────────── */}
+      {isDragging && (
+        <div className="absolute inset-0 z-50 bg-indigo-900/40 border-2 border-dashed border-indigo-400 flex items-center justify-center rounded">
+          <div className="text-indigo-200 text-lg font-medium">Drop MusicXML file here</div>
+        </div>
+      )}
+
+      {/* ── OSMD Container ─────────────────────────────────────────── */}
       <div
         ref={containerRef}
         className="w-full overflow-x-auto"
         style={{
-          // OSMD renders SVG — in dark mode, invert the colors
-          ...(darkMode ? { filter: 'invert(0.88) hue-rotate(180deg)' } : {}),
           minHeight: status === 'ready' ? undefined : 0,
         }}
       />
+
+      {/* ── Empty state / instructions ─────────────────────────────── */}
+      {status === 'ready' && !musicXML && !musicXMLUrl && !fileName?.includes('Demo') && (
+        <div className={`text-center py-4 ${mutedClass} text-xs`}>
+          Drag and drop a MusicXML file or click Open File to load your sheet music
+        </div>
+      )}
     </div>
   )
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
+// =============================================================================
 // Demo Score — SATB "Ode to Joy" with 4 clef types
-// ═══════════════════════════════════════════════════════════════════════════════
-// Soprano: Treble clef (G on line 2)
-// Alto: Alto clef (C on line 3) — demonstrates movable C clef
-// Tenor: Tenor clef (C on line 4) — demonstrates second C clef position
-// Bass: Bass clef (F on line 4)
-// ═══════════════════════════════════════════════════════════════════════════════
+// =============================================================================
 
 const DEMO_SATB_MUSICXML = `<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE score-partwise PUBLIC "-//Recordare//DTD MusicXML 4.0 Partwise//EN" "http://www.musicxml.org/dtds/partwise.dtd">
@@ -160,7 +585,7 @@ const DEMO_SATB_MUSICXML = `<?xml version="1.0" encoding="UTF-8"?>
     </score-part>
   </part-list>
 
-  <!-- SOPRANO — Treble Clef -->
+  <!-- SOPRANO - Treble Clef -->
   <part id="P1">
     <measure number="1">
       <attributes>
@@ -193,7 +618,7 @@ const DEMO_SATB_MUSICXML = `<?xml version="1.0" encoding="UTF-8"?>
     </measure>
   </part>
 
-  <!-- ALTO — Alto Clef (C clef on line 3) -->
+  <!-- ALTO - Alto Clef (C clef on line 3) -->
   <part id="P2">
     <measure number="1">
       <attributes>
@@ -226,7 +651,7 @@ const DEMO_SATB_MUSICXML = `<?xml version="1.0" encoding="UTF-8"?>
     </measure>
   </part>
 
-  <!-- TENOR — Tenor Clef (C clef on line 4) -->
+  <!-- TENOR - Tenor Clef (C clef on line 4) -->
   <part id="P3">
     <measure number="1">
       <attributes>
@@ -259,7 +684,7 @@ const DEMO_SATB_MUSICXML = `<?xml version="1.0" encoding="UTF-8"?>
     </measure>
   </part>
 
-  <!-- BASS — Bass Clef -->
+  <!-- BASS - Bass Clef -->
   <part id="P4">
     <measure number="1">
       <attributes>

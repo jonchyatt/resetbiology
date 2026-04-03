@@ -19,18 +19,18 @@ export default function SheetMusicPage() {
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-3 border-b border-gray-800/50">
         <div>
-          <h1 className="text-xl font-bold text-white">Sheet Music Viewer</h1>
-          <p className="text-xs text-gray-500">Professional notation — OSMD spike (Ode to Joy SATB, 4 clef types)</p>
+          <h1 className="text-xl font-bold text-white">Sheet Music Studio</h1>
+          <p className="text-xs text-gray-500">
+            Professional notation viewer — load MusicXML, isolate parts, step through notes
+          </p>
         </div>
         <a href="/pitch-defender" className="text-xs text-gray-600 hover:text-gray-400 transition-colors">
           &larr; Back to Game
         </a>
       </div>
 
-      {/* Sheet Music */}
-      <div className="p-4">
-        <SheetMusicViewer darkMode={true} zoom={1.0} />
-      </div>
+      {/* Sheet Music Viewer */}
+      <SheetMusicViewer darkMode={true} zoom={1.0} />
     </div>
   )
 }
