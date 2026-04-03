@@ -20,6 +20,10 @@ import WaveIntro from './WaveIntro'
 import GameOver from './GameOver'
 import { usePitchDetection, notesMatch } from './usePitchDetection'
 import ParentSettings, { DEFAULT_SETTINGS, type GameSettings } from './ParentSettings'
+import {
+  initAudio, playSfx as _sfx, loadPianoSamples as _loadSamples,
+  playPianoNote, startMusic, stopMusic, changeMusic, setMicActive,
+} from './audioEngine'
 import './animations.css'
 
 export type GameMode = 'noteBlaster' | 'echoCannon' | 'staffDefender' | 'sequenceAssault' | 'intervalHunter' | 'survival'
@@ -32,111 +36,11 @@ const FSRS_KEY = 'pitch_fsrs_memory'
 const PROGRESS_KEY = 'pitch_defender_progress'
 const SETTINGS_KEY = 'pitch_defender_settings'
 
-// ─── Audio ───────────────────────────────────────────────────────────────────
-let _audioCtx: AudioContext | null = null
-function getAudioCtx(): AudioContext {
-  if (!_audioCtx) _audioCtx = new AudioContext()
-  if (_audioCtx.state === 'suspended') _audioCtx.resume()
-  return _audioCtx
+// ─── Audio (delegated to audioEngine.ts — rich layered synthesis + music) ────
+function playSfx(type: 'correct' | 'wrong' | 'levelup' | 'damage' | 'explosion', opts?: { combo?: number }) {
+  _sfx(type, opts)
 }
-
-function playSfx(type: 'correct' | 'wrong' | 'levelup' | 'damage' | 'explosion') {
-  try {
-    const ctx = getAudioCtx()
-    const osc = ctx.createOscillator()
-    const gain = ctx.createGain()
-    osc.connect(gain)
-    gain.connect(ctx.destination)
-    const now = ctx.currentTime
-
-    switch (type) {
-      case 'correct':
-        osc.type = 'sine'
-        osc.frequency.setValueAtTime(880, now)
-        osc.frequency.exponentialRampToValueAtTime(1320, now + 0.08)
-        gain.gain.setValueAtTime(0.1, now)
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15)
-        osc.start(now); osc.stop(now + 0.15)
-        break
-      case 'wrong':
-        osc.type = 'sawtooth'
-        osc.frequency.setValueAtTime(220, now)
-        osc.frequency.exponentialRampToValueAtTime(140, now + 0.15)
-        gain.gain.setValueAtTime(0.06, now)
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25)
-        osc.start(now); osc.stop(now + 0.25)
-        break
-      case 'levelup':
-        osc.type = 'sine'
-        osc.frequency.setValueAtTime(523, now)
-        osc.frequency.setValueAtTime(659, now + 0.1)
-        osc.frequency.setValueAtTime(784, now + 0.2)
-        osc.frequency.setValueAtTime(1047, now + 0.3)
-        gain.gain.setValueAtTime(0.12, now)
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5)
-        osc.start(now); osc.stop(now + 0.5)
-        break
-      case 'damage':
-        osc.type = 'square'
-        osc.frequency.setValueAtTime(100, now)
-        osc.frequency.exponentialRampToValueAtTime(60, now + 0.3)
-        gain.gain.setValueAtTime(0.08, now)
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35)
-        osc.start(now); osc.stop(now + 0.35)
-        break
-      case 'explosion': {
-        // White noise burst
-        const bufferSize = ctx.sampleRate * 0.15
-        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate)
-        const data = buffer.getChannelData(0)
-        for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1
-        const noise = ctx.createBufferSource()
-        noise.buffer = buffer
-        const noiseGain = ctx.createGain()
-        noise.connect(noiseGain)
-        noiseGain.connect(ctx.destination)
-        noiseGain.gain.setValueAtTime(0.1, now)
-        noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.15)
-        noise.start(now); noise.stop(now + 0.15)
-        break
-      }
-    }
-  } catch { /* Audio not available */ }
-}
-
-// ─── Piano Sample Loader ─────────────────────────────────────────────────────
-async function loadPianoSamples(): Promise<Map<string, AudioBuffer>> {
-  const ctx = getAudioCtx()
-  const cache = new Map<string, AudioBuffer>()
-  const notes = KEYBOARD_ORDER
-
-  await Promise.all(notes.map(async (note) => {
-    try {
-      const resp = await fetch(`/sounds/nback/piano/${note}.wav`)
-      const buf = await resp.arrayBuffer()
-      const audio = await ctx.decodeAudioData(buf)
-      cache.set(note, audio)
-    } catch { /* Skip missing samples */ }
-  }))
-
-  return cache
-}
-
-function playNote(cache: Map<string, AudioBuffer>, note: string) {
-  try {
-    const buf = cache.get(note)
-    if (!buf) return
-    const ctx = getAudioCtx()
-    const src = ctx.createBufferSource()
-    const gain = ctx.createGain()
-    src.buffer = buf
-    src.connect(gain)
-    gain.connect(ctx.destination)
-    gain.gain.setValueAtTime(0.25, ctx.currentTime)
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.5)
-    src.start()
-  } catch { /* Audio not available */ }
-}
+function playNote(_cache: any, note: string) { playPianoNote(note) }
 
 // ─── Main Component ──────────────────────────────────────────────────────────
 
@@ -175,11 +79,16 @@ export default function PitchDefender() {
   const lockDurationRef = useRef(600)     // ms needed to hold pitch (beginner: 600ms)
 
   // Pitch detection for Echo Cannon mode
-  const { isListening, pitch, error: micError, pitchRef: livePitchRef, startListening, stopListening } = usePitchDetection()
+  // Noise gate: beginner=permissive (catches quiet singing), advanced=strict (rejects more noise)
+  const noiseGateDb = gameSettings.pitchTolerance === 'beginner' ? -50 : gameSettings.pitchTolerance === 'advanced' ? -35 : -40
+  const { isListening, pitch, error: micError, pitchRef: livePitchRef, startListening, stopListening } = usePitchDetection({ noiseGateDb })
   const countdownTimersRef = useRef<ReturnType<typeof setTimeout>[]>([])
 
   // Keep ref in sync
   useEffect(() => { stateRef.current = state }, [state])
+
+  // Mute music when mic is active (prevents speaker→mic feedback in Echo Cannon)
+  useEffect(() => { setMicActive(isListening) }, [isListening])
 
   // ─── Load persisted data ─────────────────────────────────────────────────
   useEffect(() => {
@@ -201,8 +110,8 @@ export default function PitchDefender() {
       if (raw) setGameSettings(JSON.parse(raw))
     } catch { /* defaults */ }
 
-    // Preload piano samples
-    loadPianoSamples().then(cache => { pianoRef.current = cache })
+    // Preload piano samples (cache managed by audioEngine)
+    _loadSamples()
   }, [])
 
   // ─── Persist FSRS memory ─────────────────────────────────────────────────
@@ -315,7 +224,7 @@ export default function PitchDefender() {
     if (tickRef.current) { clearInterval(tickRef.current); tickRef.current = null }
     if (spawnTimerRef.current) { clearTimeout(spawnTimerRef.current); spawnTimerRef.current = null }
 
-    getAudioCtx()
+    initAudio()
     // Start microphone for Echo Cannon
     if (gameMode === 'echoCannon') startListening()
     // Apply parent settings: override starting notes with enabled pool
@@ -330,7 +239,7 @@ export default function PitchDefender() {
     countdownTimersRef.current = [
       setTimeout(() => setCountdown(2), 1000),
       setTimeout(() => setCountdown(1), 2000),
-      setTimeout(() => { setCountdown(null); startWave(1) }, 3000),
+      setTimeout(() => { setCountdown(null); startMusic('Sound Scouts'); startWave(1) }, 3000),
     ]
   }, [])
 
@@ -354,8 +263,9 @@ export default function PitchDefender() {
     const currentState = stateRef.current
     fsrsRef.current = ensureNoteMemory(fsrsRef.current, currentState.unlockedNotes)
 
-    // Change skybox per world
+    // Change skybox + music per world
     setStarPreset(WORLD_PRESETS[config.worldName] ?? 'darkWorld1')
+    changeMusic(config.worldName)
 
     setState(prev => ({
       ...prev,
@@ -374,6 +284,7 @@ export default function PitchDefender() {
   // ─── Wave Intro Complete → Start Spawning ────────────────────────────────
   const onWaveIntroComplete = useCallback(() => {
     setState(prev => ({ ...prev, phase: 'wave_active' }))
+    _sfx('waveStart')
 
     // Start game tick
     if (tickRef.current) clearInterval(tickRef.current)
@@ -406,6 +317,7 @@ export default function PitchDefender() {
       alien.isBoss = true
       alien.descentDuration *= 1.5 // bosses are slower
       setStarPreset('hsvCrazyFractal') // dramatic skybox for boss
+      _sfx('bossAppear')
     }
 
     setState(prev => {
@@ -491,7 +403,7 @@ export default function PitchDefender() {
 
     if (correct) {
       // ─── CORRECT — side effects first ───
-      playSfx('correct')
+      playSfx('correct', { combo: s.combo })
       setTimeout(() => playSfx('explosion'), 100)
       setLastCorrectNote(answeredNote)
       setTimeout(() => setLastCorrectNote(null), 300)
@@ -664,6 +576,7 @@ export default function PitchDefender() {
   const completeWave = useCallback(() => {
     if (tickRef.current) { clearInterval(tickRef.current); tickRef.current = null }
     if (spawnTimerRef.current) { clearTimeout(spawnTimerRef.current); spawnTimerRef.current = null }
+    _sfx('waveClear')
 
     setState(prev => ({ ...prev, phase: 'wave_complete' }))
 
@@ -693,6 +606,7 @@ export default function PitchDefender() {
 
     setState(prev => ({ ...prev, phase: 'game_over', didWin: victory, isNewHighScore: newHighScore }))
     setStarPreset('galaxies')
+    stopMusic()
     stopListening()
 
     // Update progress (after snapshotting high score comparison)
