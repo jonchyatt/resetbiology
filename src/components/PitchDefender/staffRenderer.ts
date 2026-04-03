@@ -515,7 +515,7 @@ export function drawNoteHeadWithStem(
     ctx.save()
     ctx.globalAlpha = alpha
     ctx.strokeStyle = strokeColor
-    ctx.lineWidth = Math.max(1.5 * scale, 1)
+    ctx.lineWidth = Math.max(2.0 * scale, 1.5)
     ctx.lineCap = 'round'
     ctx.beginPath()
     ctx.moveTo(stemX, y)
@@ -564,7 +564,8 @@ function drawLedgerLinesAt(ctx: CanvasRenderingContext2D, layout: StaffLayout, s
 
   // Middle C ledger line (between staves)
   if (Math.abs(semi) <= 1) {
-    ctx.strokeStyle = 'rgba(160, 172, 210, 0.35)'
+    ctx.strokeStyle = 'rgba(180, 192, 225, 0.5)'
+    ctx.lineWidth = 2
     ctx.beginPath()
     ctx.moveTo(centerX - ledgerW, layout.middleCY)
     ctx.lineTo(centerX + ledgerW, layout.middleCY)
@@ -718,12 +719,13 @@ export function drawTargetNote(
     ctx.fillRect(x - bloomRadius, y - bloomRadius, bloomRadius * 2, bloomRadius * 2)
   }
 
-  // Proper note head with stem
-  const noteAlpha = 0.5 + 0.5 * proximityFactor
+  // Proper note head with stem — ensure minimum visibility even without voice
+  const noteAlpha = 0.55 + 0.45 * proximityFactor
+  const stemAlpha = Math.max(noteAlpha, 0.6)
   drawNoteHeadWithStem(
     ctx, x, y, layout,
     `rgba(${color.r}, ${color.g}, ${color.b}, ${noteAlpha})`,
-    `rgba(${color.r}, ${color.g}, ${color.b}, ${noteAlpha * 0.9})`,
+    `rgba(${color.r}, ${color.g}, ${color.b}, ${stemAlpha})`,
     { filled: true, showStem: true, alpha: 1 },
   )
 
