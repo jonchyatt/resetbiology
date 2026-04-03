@@ -156,6 +156,7 @@ export default function PitchDefender() {
   const fieldRef = useRef<HTMLDivElement>(null)
   const floatIdRef = useRef(0)
   const notePlayTimeRef = useRef(0)
+  const countdownTimersRef = useRef<ReturnType<typeof setTimeout>[]>([])
 
   // Keep ref in sync
   useEffect(() => { stateRef.current = state }, [state])
@@ -248,22 +249,20 @@ export default function PitchDefender() {
 
   // ─── Start Game ──────────────────────────────────────────────────────────
   const startGame = useCallback(() => {
-    // Ensure audio context is active (requires user gesture)
-    getAudioCtx()
+    // Clear any existing countdown timers (prevents overlap on rapid taps)
+    countdownTimersRef.current.forEach(clearTimeout)
+    countdownTimersRef.current = []
 
-    // Countdown
-    setState(prev => ({ ...createInitialState(), phase: 'countdown' }))
+    getAudioCtx()
+    setState({ ...createInitialState(), phase: 'countdown' })
     setStarPreset('darkWorld1')
     setCountdown(3)
 
-    const c2 = setTimeout(() => setCountdown(2), 1000)
-    const c1 = setTimeout(() => setCountdown(1), 2000)
-    const go = setTimeout(() => {
-      setCountdown(null)
-      startWave(1)
-    }, 3000)
-
-    return () => { clearTimeout(c2); clearTimeout(c1); clearTimeout(go) }
+    countdownTimersRef.current = [
+      setTimeout(() => setCountdown(2), 1000),
+      setTimeout(() => setCountdown(1), 2000),
+      setTimeout(() => { setCountdown(null); startWave(1) }, 3000),
+    ]
   }, [])
 
   // ─── Start Wave ──────────────────────────────────────────────────────────
@@ -357,40 +356,50 @@ export default function PitchDefender() {
 
   // ─── Handle Player Answer ────────────────────────────────────────────────
   const handleAnswerInner = useCallback((answeredNote: string) => {
-    // Use functional setState to always read fresh state — no stale refs
     if (processingRef.current) return
     processingRef.current = true
-    setTimeout(() => { processingRef.current = false }, 150) // debounce
+    setTimeout(() => { processingRef.current = false }, 120)
 
-    setState(prev => {
-      if (prev.phase !== 'wave_active') return prev
+    // Read state snapshot for decision-making
+    const s = stateRef.current
+    if (s.phase !== 'wave_active') { processingRef.current = false; return }
 
-      // Find the first DESCENDING alien (the active target)
-      const alienIdx = prev.aliens.findIndex(a => a.lifecycle === 'descending')
-      if (alienIdx < 0) return prev
-      const alien = prev.aliens[alienIdx]
+    // Find the first DESCENDING alien
+    const alien = s.aliens.find(a => a.lifecycle === 'descending')
+    if (!alien) { processingRef.current = false; return }
 
-      const correct = answeredNote === alien.note
-      const latency = notePlayTimeRef.current > 0 ? Date.now() - notePlayTimeRef.current : 2000
+    const correct = answeredNote === alien.note
+    const latency = notePlayTimeRef.current > 0 ? Date.now() - notePlayTimeRef.current : 2000
+    const alienId = alien.id
+    const alienNote = alien.note
 
-      // FSRS grade
-      const grade = autoGrade(correct, latency)
-      if (!fsrsRef.current[alien.note]) fsrsRef.current[alien.note] = createNote(alien.note)
-      fsrsRef.current[alien.note] = reviewNote(fsrsRef.current[alien.note], grade)
-      try { localStorage.setItem(FSRS_KEY, JSON.stringify(fsrsRef.current)) } catch {}
+    // FSRS grade (side effect — outside setState)
+    const grade = autoGrade(correct, latency)
+    if (!fsrsRef.current[alienNote]) fsrsRef.current[alienNote] = createNote(alienNote)
+    fsrsRef.current[alienNote] = reviewNote(fsrsRef.current[alienNote], grade)
+    try { localStorage.setItem(FSRS_KEY, JSON.stringify(fsrsRef.current)) } catch {}
 
-      if (correct) {
-        // ─── CORRECT ───
-        playSfx('correct')
-        setTimeout(() => playSfx('explosion'), 100)
-        setLastCorrectNote(answeredNote)
-        setTimeout(() => setLastCorrectNote(null), 300)
-        setShowScorePop(true)
-        setTimeout(() => setShowScorePop(false), 300)
+    if (correct) {
+      // ─── CORRECT — side effects first ───
+      playSfx('correct')
+      setTimeout(() => playSfx('explosion'), 100)
+      setLastCorrectNote(answeredNote)
+      setTimeout(() => setLastCorrectNote(null), 300)
+      setShowScorePop(true)
+      setTimeout(() => setShowScorePop(false), 300)
+
+      // Remove alien after explosion animation
+      setTimeout(() => {
+        setState(inner => ({ ...inner, aliens: inner.aliens.filter(a => a.id !== alienId) }))
+      }, 500)
+
+      // ─── CORRECT — pure state update ───
+      setState(prev => {
+        const newCombo = prev.combo + 1
+        const comboMult = newCombo >= 20 ? 4 : newCombo >= 10 ? 3 : newCombo >= 5 ? 2 : 1
+        const scoreGained = 100 * comboMult
 
         // Floating score
-        const comboMult = prev.combo >= 20 ? 4 : prev.combo >= 10 ? 3 : prev.combo >= 5 ? 2 : 1
-        const scoreGained = 100 * comboMult
         const fieldEl = fieldRef.current
         if (fieldEl) {
           const fid = ++floatIdRef.current
@@ -398,28 +407,9 @@ export default function PitchDefender() {
           setTimeout(() => setFloatingScores(fs => fs.filter(f => f.id !== fid)), 800)
         }
 
-        // Mark alien as exploding immediately (no intermediate 'hit' state)
-        const newAliens = prev.aliens.map((a, i) =>
-          i === alienIdx ? { ...a, lifecycle: 'exploding' as const } : a
+        const newAliens = prev.aliens.map(a =>
+          a.id === alienId ? { ...a, lifecycle: 'exploding' as const } : a
         )
-
-        // Remove exploded alien after animation
-        setTimeout(() => {
-          setState(inner => ({
-            ...inner,
-            aliens: inner.aliens.filter(a => a.id !== alien.id),
-          }))
-        }, 500)
-
-        // Find next descending alien and play its note
-        const nextAlien = newAliens.find(a => a.lifecycle === 'descending')
-        if (nextAlien) {
-          setTimeout(() => playNote(pianoRef.current, nextAlien.note), 400)
-          notePlayTimeRef.current = Date.now() + 400
-        } else {
-          // No alien available yet — force spawn
-          setTimeout(() => spawnNextAlien(), 200)
-        }
 
         // Check note unlock
         const newConsecutive = prev.consecutiveCorrect + 1
@@ -431,11 +421,9 @@ export default function PitchDefender() {
           if (newConsecutive >= threshold) {
             noteUnlocked = INTRO_ORDER[currentPool]
             newUnlocked = [...prev.unlockedNotes, noteUnlocked]
-            playSfx('levelup')
           }
         }
 
-        const newCombo = prev.combo + 1
         return {
           ...prev,
           aliens: newAliens,
@@ -449,27 +437,52 @@ export default function PitchDefender() {
           unlockedNotes: newUnlocked,
           newNoteUnlocked: noteUnlocked,
           waveScore: prev.waveScore + scoreGained,
-          activeAlienIndex: newAliens.findIndex(a => a.lifecycle === 'descending'),
+          activeAlienIndex: -1, // recalculated by render
         }
+      })
+
+      // Post-state side effects
+      if (s.unlockedNotes.length < INTRO_ORDER.length) {
+        const threshold = UNLOCK_THRESHOLDS[s.unlockedNotes.length] ?? 5
+        if (s.consecutiveCorrect + 1 >= threshold) playSfx('levelup')
+      }
+
+      // Play next alien's note or spawn one
+      const nextAlien = s.aliens.find(a => a.id !== alienId && a.lifecycle === 'descending')
+      if (nextAlien) {
+        setTimeout(() => playNote(pianoRef.current, nextAlien.note), 400)
+        notePlayTimeRef.current = Date.now() + 400
       } else {
-        // ─── WRONG ───
-        playSfx('wrong')
-        setLastWrongNote(answeredNote)
-        setTimeout(() => setLastWrongNote(null), 400)
+        setTimeout(() => spawnNextAlien(), 150)
+      }
 
-        // Replay the correct note
-        setTimeout(() => playNote(pianoRef.current, alien.note), 600)
-        notePlayTimeRef.current = Date.now() + 600
+    } else {
+      // ─── WRONG — side effects first ───
+      playSfx('wrong')
+      setLastWrongNote(answeredNote)
+      setTimeout(() => setLastWrongNote(null), 400)
+      setTimeout(() => playNote(pianoRef.current, alienNote), 600)
+      notePlayTimeRef.current = Date.now() + 600
 
+      // Flash city damage on wrong answer (per spec)
+      setCityFlash(true)
+      setTimeout(() => setCityFlash(false), 400)
+      playSfx('damage')
+
+      // ─── WRONG — pure state update ───
+      setState(prev => {
+        const newHealth = Math.max(0, prev.cityHealth - 1)
+        if (newHealth <= 0) setTimeout(() => endGame(), 300)
         return {
           ...prev,
           combo: 0,
           consecutiveCorrect: 0,
           totalAttempts: prev.totalAttempts + 1,
           lastAnswerCorrect: false,
+          cityHealth: newHealth,
         }
-      }
-    })
+      })
+    }
   }, [])
 
   // Wrap for both click and keyboard use
@@ -534,7 +547,7 @@ export default function PitchDefender() {
 
   // ─── Render ──────────────────────────────────────────────────────────────
   const config = getWaveConfig(state.wave || 1)
-  const fieldHeight = typeof window !== 'undefined' ? window.innerHeight - 160 : 600
+  const fieldHeight = typeof window !== 'undefined' ? window.innerHeight : 700
   const isNewHighScore = state.score > (progressRef.current.highScore ?? 0) && state.score > 0
 
   return (
@@ -630,16 +643,16 @@ export default function PitchDefender() {
           <div
             ref={fieldRef}
             className="absolute left-0 right-0"
-            style={{ top: 60, bottom: 100, overflow: 'hidden' }}
+            style={{ top: 60, bottom: 120, overflow: 'hidden' }}
           >
             {state.aliens
               .filter(a => a.lifecycle !== 'escaped')
-              .map((alien, i) => (
+              .map((alien) => (
                 <div key={alien.id} data-alien-id={alien.id}>
                   <Alien
                     alien={alien}
-                    fieldHeight={fieldHeight - 160}
-                    isActive={state.aliens.indexOf(alien) === state.activeAlienIndex}
+                    fieldHeight={fieldHeight - 180}
+                    isActive={alien.lifecycle === 'descending' && alien === state.aliens.find(a => a.lifecycle === 'descending')}
                     onAnimationEnd={() => {
                       // Remove fully animated aliens
                       setState(prev => ({
@@ -668,10 +681,10 @@ export default function PitchDefender() {
             ))}
           </div>
 
-          {/* Note unlock notification */}
+          {/* Note unlock notification — pointer-events: none so it never blocks buttons */}
           {state.newNoteUnlocked && (
             <div
-              className="absolute left-0 right-0 z-30 text-center"
+              className="absolute left-0 right-0 z-30 text-center pointer-events-none"
               style={{ bottom: 110, animation: 'noteUnlock 0.6s ease-out forwards' }}
             >
               <span className="px-4 py-2 rounded-full text-sm font-bold text-white"
