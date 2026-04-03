@@ -23,6 +23,9 @@ export interface AlienState {
   descentDuration: number
   lane: number            // horizontal position 0-4
   noteHue: number         // from synesthesia color map
+  // Sequence Assault: multi-note aliens
+  sequence?: string[]     // ordered notes (e.g., ['C4', 'E4', 'G4'])
+  coresDestroyed?: number // how many cores have been answered correctly
 }
 
 export interface WaveConfig {

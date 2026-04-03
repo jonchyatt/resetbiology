@@ -63,6 +63,7 @@ export function spawnAlien(
   state: GameState,
   waveConfig: WaveConfig,
   fsrsMemory: Record<string, NoteMemory>,
+  sequenceLength: number = 1,
 ): AlienState {
   // Pick note via FSRS — prioritizes overdue/weak notes
   const lastNote = state.aliens.length > 0
@@ -70,6 +71,18 @@ export function spawnAlien(
     : null
   const note = pickNextNote(state.unlockedNotes, fsrsMemory, lastNote)
   const color = NOTE_COLORS[note] ?? { hue: 0, name: 'Unknown' }
+
+  // Build sequence for multi-note aliens
+  let sequence: string[] | undefined
+  if (sequenceLength > 1) {
+    sequence = [note]
+    let prev = note
+    for (let i = 1; i < sequenceLength; i++) {
+      const next = pickNextNote(state.unlockedNotes, fsrsMemory, prev)
+      sequence.push(next)
+      prev = next
+    }
+  }
 
   // Random lane (0-4) avoiding last alien's lane
   let lane = Math.floor(Math.random() * 5)
@@ -85,9 +98,10 @@ export function spawnAlien(
     note,
     lifecycle: 'spawning',
     spawnTime: Date.now(),
-    descentDuration: waveConfig.descentDuration,
+    descentDuration: waveConfig.descentDuration + (sequenceLength > 1 ? sequenceLength * 2 : 0), // extra time for sequences
     lane,
     noteHue: color.hue,
+    ...(sequence ? { sequence, coresDestroyed: 0 } : {}),
   }
 }
 

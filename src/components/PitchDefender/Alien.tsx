@@ -100,17 +100,40 @@ export default function Alien({ alien, fieldHeight, isActive, onAnimationEnd }: 
           } : {}),
         } as React.CSSProperties}
       >
-        {/* Inner core */}
-        <div
-          className="absolute rounded-full"
-          style={{
-            width: 32, height: 32,
-            background: `radial-gradient(circle, white 0%, ${hslBright} 60%, transparent 100%)`,
-            opacity: isActive ? 0.9 : 0.5,
-          }}
-        />
-
-        {/* No label — player must identify by EAR, not by reading */}
+        {/* Inner core(s) — single for normal, multiple for sequence aliens */}
+        {alien.sequence && alien.sequence.length > 1 ? (
+          // Multi-core: stacked dots showing sequence progress
+          <div className="absolute flex flex-col items-center gap-1" style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
+            {alien.sequence.map((_, i) => {
+              const destroyed = i < (alien.coresDestroyed ?? 0)
+              const current = i === (alien.coresDestroyed ?? 0)
+              return (
+                <div key={i} className="rounded-full" style={{
+                  width: current ? 14 : 10,
+                  height: current ? 14 : 10,
+                  background: destroyed
+                    ? 'rgba(60, 60, 80, 0.4)'
+                    : current
+                    ? `radial-gradient(circle, white, ${hslBright})`
+                    : `radial-gradient(circle, ${hsl}, ${hslDim})`,
+                  boxShadow: current && isActive ? `0 0 8px ${hsl}` : 'none',
+                  border: destroyed ? '1px solid rgba(80,80,100,0.3)' : 'none',
+                  transition: 'all 0.3s',
+                }} />
+              )
+            })}
+          </div>
+        ) : (
+          // Single core
+          <div
+            className="absolute rounded-full"
+            style={{
+              width: 32, height: 32,
+              background: `radial-gradient(circle, white 0%, ${hslBright} 60%, transparent 100%)`,
+              opacity: isActive ? 0.9 : 0.5,
+            }}
+          />
+        )}
 
         {/* Geometric accent lines */}
         <div

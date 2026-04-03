@@ -21,7 +21,7 @@ import GameOver from './GameOver'
 import { usePitchDetection, notesMatch } from './usePitchDetection'
 import './animations.css'
 
-export type GameMode = 'noteBlaster' | 'echoCannon' | 'staffDefender'
+export type GameMode = 'noteBlaster' | 'echoCannon' | 'staffDefender' | 'sequenceAssault'
 
 // Lazy-load Star Nest (heavy WebGL)
 const StarNestBackground = dynamic(() => import('./StarNestBackground'), { ssr: false })
@@ -371,7 +371,8 @@ export default function PitchDefender() {
     if (s.aliensSpawned >= config.alienCount) return
 
     fsrsRef.current = ensureNoteMemory(fsrsRef.current, s.unlockedNotes)
-    const alien = spawnAlien(s, config, fsrsRef.current)
+    const seqLen = gameMode === 'sequenceAssault' ? Math.min(2 + Math.floor(s.wave / 3), 4) : 1
+    const alien = spawnAlien(s, config, fsrsRef.current, seqLen)
 
     setState(prev => {
       const newAliens = [...prev.aliens, { ...alien, lifecycle: 'descending' as const }]
@@ -437,10 +438,16 @@ export default function PitchDefender() {
     const alien = s.aliens.find(a => a.lifecycle === 'descending')
     if (!alien) { processingRef.current = false; return }
 
-    const correct = answeredNote === alien.note
+    // For sequence aliens, target the current core's note
+    const isSequence = alien.sequence && alien.sequence.length > 1
+    const currentCoreIdx = alien.coresDestroyed ?? 0
+    const targetNote = isSequence ? alien.sequence![currentCoreIdx] : alien.note
+    const isLastCore = !isSequence || currentCoreIdx >= alien.sequence!.length - 1
+
+    const correct = answeredNote === targetNote
     const latency = notePlayTimeRef.current > 0 ? Date.now() - notePlayTimeRef.current : 2000
     const alienId = alien.id
-    const alienNote = alien.note
+    const alienNote = targetNote
 
     // FSRS grade (side effect — outside setState)
     const grade = autoGrade(correct, latency)
@@ -491,6 +498,28 @@ export default function PitchDefender() {
         setTimeout(() => setParticles(prev => prev.filter(p => !newIds.includes(p.id))), 700)
       }
 
+      // Sequence alien: crack core or destroy
+      if (isSequence && !isLastCore) {
+        // Core cracked — increment coresDestroyed, play next note
+        playSfx('levelup')
+        setState(prev => ({
+          ...prev,
+          aliens: prev.aliens.map(a =>
+            a.id === alienId ? { ...a, coresDestroyed: (a.coresDestroyed ?? 0) + 1 } : a
+          ),
+          score: prev.score + 50, // partial score per core
+          totalCorrect: prev.totalCorrect + 1,
+          totalAttempts: prev.totalAttempts + 1,
+        }))
+        // Play next core's note
+        const nextNote = alien.sequence![currentCoreIdx + 1]
+        if (nextNote) {
+          setTimeout(() => playNote(pianoRef.current, nextNote), 300)
+          notePlayTimeRef.current = Date.now() + 300
+        }
+        return // don't destroy yet
+      }
+
       // Remove alien after explosion animation
       setTimeout(() => {
         setState(inner => ({ ...inner, aliens: inner.aliens.filter(a => a.id !== alienId) }))
@@ -500,7 +529,7 @@ export default function PitchDefender() {
       setState(prev => {
         const newCombo = prev.combo + 1
         const comboMult = newCombo >= 20 ? 4 : newCombo >= 10 ? 3 : newCombo >= 5 ? 2 : 1
-        const scoreGained = 100 * comboMult
+        const scoreGained = 100 * comboMult * (isSequence ? alien.sequence!.length : 1)
 
         // Floating score
         const fieldEl = fieldRef.current
@@ -761,6 +790,23 @@ export default function PitchDefender() {
             >
               STAFF DEFENDER
               <div className="text-xs font-normal mt-0.5 opacity-70">Read notation</div>
+            </button>
+            <button
+              onClick={() => setGameMode('sequenceAssault')}
+              className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
+              style={{
+                background: gameMode === 'sequenceAssault'
+                  ? 'linear-gradient(135deg, #E04060, #a82040)'
+                  : 'rgba(40, 40, 60, 0.6)',
+                color: gameMode === 'sequenceAssault' ? 'white' : '#888',
+                border: gameMode === 'sequenceAssault'
+                  ? '2px solid #E04060'
+                  : '2px solid rgba(80, 80, 100, 0.3)',
+                boxShadow: gameMode === 'sequenceAssault' ? '0 0 15px #E0406030' : 'none',
+              }}
+            >
+              SEQUENCE
+              <div className="text-xs font-normal mt-0.5 opacity-70">Multi-note aliens</div>
             </button>
           </div>
 
