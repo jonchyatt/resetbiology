@@ -1,11 +1,12 @@
 'use client'
 
-// CREPE vs pitchy — Side-by-side pitch detection benchmark
-// Feeds identical audio to both detectors and compares accuracy + latency
+// CREPE vs pitchy vs PESTO — Side-by-side pitch detection benchmark
+// Feeds identical audio to all three detectors and compares accuracy + latency
 
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { PitchDetector } from 'pitchy'
 import { loadCrepeModel, isModelLoaded, isModelLoading, detectPitchCrepe, type CrepeResult } from './crepeDetector'
+import { loadPestoModel, isPestoLoaded, isPestoLoading, detectPitchPesto, type PestoResult } from './pestoDetector'
 
 // ─── Note lookup (same as usePitchDetection) ────────────────────────────────
 const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
@@ -46,7 +47,9 @@ export default function CrepeBenchmark() {
   const [micState, setMicState] = useState<'off' | 'starting' | 'on'>('off')
   const [pitchyResult, setPitchyResult] = useState<PitchyResult | null>(null)
   const [crepeResult, setCrepeResult] = useState<CrepeResult | null>(null)
-  const [stats, setStats] = useState({ total: 0, agree: 0, pitchyAvgMs: 0, crepeAvgMs: 0 })
+  const [pestoResult, setPestoResult] = useState<PestoResult | null>(null)
+  const [pestoState, setPestoState] = useState<'idle' | 'loading' | 'ready' | 'error'>('idle')
+  const [stats, setStats] = useState({ total: 0, agree: 0, pitchyAvgMs: 0, crepeAvgMs: 0, pestoAvgMs: 0 })
   const [testTone, setTestTone] = useState<number | null>(null)
   const [log, setLog] = useState<LogEntry[]>([])
 
@@ -56,8 +59,9 @@ export default function CrepeBenchmark() {
   const rafRef = useRef<number>(0)
   const detectorRef = useRef<PitchDetector<Float32Array> | null>(null)
   const crepeRunningRef = useRef(false)
+  const pestoRunningRef = useRef(false)
   const toneOscRef = useRef<OscillatorNode | null>(null)
-  const statsRef = useRef({ total: 0, agreeCount: 0, pitchySumMs: 0, crepeSumMs: 0 })
+  const statsRef = useRef({ total: 0, agreeCount: 0, pitchySumMs: 0, crepeSumMs: 0, pestoSumMs: 0 })
 
   // ─── Load CREPE model ───────────────────────────────────────────────────
   const handleLoadModel = useCallback(async () => {
@@ -68,6 +72,17 @@ export default function CrepeBenchmark() {
     } catch (err) {
       console.error('CREPE load failed:', err)
       setModelState('error')
+    }
+  }, [])
+
+  const handleLoadPesto = useCallback(async () => {
+    setPestoState('loading')
+    try {
+      await loadPestoModel()
+      setPestoState('ready')
+    } catch (err) {
+      console.error('PESTO load failed:', err)
+      setPestoState('error')
     }
   }, [])
 
@@ -120,6 +135,20 @@ export default function CrepeBenchmark() {
         }
         setCrepeResult(crepeRes)
 
+        // ── PESTO (async — skip if previous still running) ──
+        if (isPestoLoaded() && !pestoRunningRef.current) {
+          pestoRunningRef.current = true
+          detectPitchPesto(buffer, ctx.sampleRate).then(pestoRes => {
+            pestoRunningRef.current = false
+            if (pestoRes && pestoRes.confidence < 0.3) pestoRes = null
+            setPestoResult(pestoRes)
+            // Update PESTO stats
+            if (pestoRes) {
+              statsRef.current.pestoSumMs += pestoRes.latencyMs
+            }
+          }).catch(() => { pestoRunningRef.current = false })
+        }
+
         // ── Stats ──
         if (pitchyRes || crepeRes) {
           const s = statsRef.current
@@ -136,6 +165,7 @@ export default function CrepeBenchmark() {
             agree: s.total > 0 ? Math.round((s.agreeCount / s.total) * 100) : 0,
             pitchyAvgMs: s.total > 0 ? Math.round(s.pitchySumMs / s.total * 10) / 10 : 0,
             crepeAvgMs: s.total > 0 ? Math.round(s.crepeSumMs / s.total * 10) / 10 : 0,
+            pestoAvgMs: s.total > 0 ? Math.round(s.pestoSumMs / s.total * 10) / 10 : 0,
           })
 
           // Log last 50 entries
@@ -205,8 +235,8 @@ export default function CrepeBenchmark() {
   return (
     <div className="min-h-screen bg-gray-950 text-white p-6">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold mb-2">CREPE vs pitchy — Pitch Detection Benchmark</h1>
-        <p className="text-gray-400 mb-6">Side-by-side comparison: same mic input, both detectors</p>
+        <h1 className="text-3xl font-bold mb-2">pitchy vs CREPE vs PESTO — Pitch Detection Benchmark</h1>
+        <p className="text-gray-400 mb-6">Side-by-side comparison: same mic input, three detectors</p>
 
         {/* Controls */}
         <div className="flex gap-3 mb-6">
@@ -224,8 +254,21 @@ export default function CrepeBenchmark() {
           </button>
 
           <button
+            onClick={handleLoadPesto}
+            disabled={pestoState === 'loading' || pestoState === 'ready'}
+            className="px-4 py-2 rounded-lg font-medium transition-all"
+            style={{
+              background: pestoState === 'ready' ? '#22c55e20' : pestoState === 'loading' ? '#f59e0b20' : '#10b98120',
+              border: `2px solid ${pestoState === 'ready' ? '#22c55e' : pestoState === 'loading' ? '#f59e0b' : '#10b981'}`,
+              color: pestoState === 'ready' ? '#22c55e' : pestoState === 'loading' ? '#f59e0b' : '#10b981',
+            }}
+          >
+            {pestoState === 'idle' ? 'Load PESTO (8.5MB)' : pestoState === 'loading' ? 'Loading...' : pestoState === 'ready' ? 'PESTO Ready' : 'Load Failed'}
+          </button>
+
+          <button
             onClick={micState === 'on' ? handleStopMic : handleStartMic}
-            disabled={modelState !== 'ready' || micState === 'starting'}
+            disabled={(modelState !== 'ready' && pestoState !== 'ready') || micState === 'starting'}
             className="px-4 py-2 rounded-lg font-medium transition-all"
             style={{
               background: micState === 'on' ? '#ef444420' : '#22c55e20',
@@ -238,7 +281,7 @@ export default function CrepeBenchmark() {
           </button>
 
           <button
-            onClick={() => { statsRef.current = { total: 0, agreeCount: 0, pitchySumMs: 0, crepeSumMs: 0 }; setStats({ total: 0, agree: 0, pitchyAvgMs: 0, crepeAvgMs: 0 }); setLog([]) }}
+            onClick={() => { statsRef.current = { total: 0, agreeCount: 0, pitchySumMs: 0, crepeSumMs: 0, pestoSumMs: 0 }; setStats({ total: 0, agree: 0, pitchyAvgMs: 0, crepeAvgMs: 0, pestoAvgMs: 0 }); setLog([]) }}
             className="px-4 py-2 rounded-lg font-medium border-2 border-gray-600 text-gray-400 hover:text-white transition-all"
           >
             Reset Stats
@@ -272,7 +315,7 @@ export default function CrepeBenchmark() {
         )}
 
         {/* Side-by-side results */}
-        <div className="grid grid-cols-2 gap-4 mb-6">
+        <div className="grid grid-cols-3 gap-4 mb-6">
           <DetectorCard
             title="pitchy (McLeod)"
             subtitle="Autocorrelation — current engine"
@@ -288,7 +331,7 @@ export default function CrepeBenchmark() {
           />
           <DetectorCard
             title="CREPE (CNN)"
-            subtitle="ML model — 360-bin CNN"
+            subtitle="TF.js — 1.6M params, 360 bins"
             color="#8b5cf6"
             result={crepeResult ? {
               note: crepeResult.note,
@@ -299,16 +342,30 @@ export default function CrepeBenchmark() {
             } : null}
             testToneHz={testTone}
           />
+          <DetectorCard
+            title="PESTO (ONNX)"
+            subtitle="ONNX Runtime — 130K params, CQT baked in"
+            color="#10b981"
+            result={pestoResult ? {
+              note: pestoResult.note,
+              frequency: pestoResult.frequency,
+              cents: pestoResult.cents,
+              confidence: pestoResult.confidence,
+              latencyMs: pestoResult.latencyMs,
+            } : null}
+            testToneHz={testTone}
+          />
         </div>
 
         {/* Stats summary */}
         <div className="rounded-xl p-4 mb-6" style={{ background: '#111827', border: '1px solid #1f2937' }}>
           <div className="text-xs text-gray-500 uppercase tracking-wider mb-3">Running Stats ({stats.total} samples)</div>
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-5 gap-4">
             <Stat label="Note Agreement" value={`${stats.agree}%`} color={stats.agree > 90 ? '#22c55e' : stats.agree > 70 ? '#f59e0b' : '#ef4444'} />
-            <Stat label="pitchy Avg Latency" value={`${stats.pitchyAvgMs}ms`} color="#3b82f6" />
-            <Stat label="CREPE Avg Latency" value={`${stats.crepeAvgMs}ms`} color="#8b5cf6" />
-            <Stat label="CREPE/pitchy Ratio" value={stats.pitchyAvgMs > 0 ? `${(stats.crepeAvgMs / stats.pitchyAvgMs).toFixed(1)}x` : '-'} color="#9ca3af" />
+            <Stat label="pitchy Avg" value={`${stats.pitchyAvgMs}ms`} color="#3b82f6" />
+            <Stat label="CREPE Avg" value={`${stats.crepeAvgMs}ms`} color="#8b5cf6" />
+            <Stat label="PESTO Avg" value={`${stats.pestoAvgMs}ms`} color="#10b981" />
+            <Stat label="Fastest ML" value={stats.pestoAvgMs > 0 && stats.crepeAvgMs > 0 ? (stats.pestoAvgMs < stats.crepeAvgMs ? 'PESTO' : 'CREPE') : '-'} color={stats.pestoAvgMs < stats.crepeAvgMs ? '#10b981' : '#8b5cf6'} />
           </div>
         </div>
 
