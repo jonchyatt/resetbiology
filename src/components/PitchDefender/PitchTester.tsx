@@ -88,7 +88,7 @@ export default function PitchTester() {
   }, [])
 
   return (
-    <div className="fixed inset-0 bg-[#08080f] flex flex-col">
+    <div className="fixed inset-0 z-50 bg-[#08080f] flex flex-col overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-3 border-b border-gray-800/50">
         <div>
@@ -128,8 +128,8 @@ export default function PitchTester() {
         </div>
       </div>
 
-      {/* Staff Canvas (fills remaining space) */}
-      <div className="flex-1 relative">
+      {/* Staff Canvas (fills remaining space — min-h-0 prevents flex overflow) */}
+      <div className="flex-1 relative min-h-0">
         <StaffCanvas
           targetNote={targetNote}
           fusionConfig={{ enableML: showML, noiseGateDb: -45 }}

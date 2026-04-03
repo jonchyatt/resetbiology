@@ -27,10 +27,10 @@ export interface StaffLayout {
 }
 
 export function computeLayout(width: number, height: number): StaffLayout {
-  const padding = 60
-  const staffX = padding + 50  // room for clef
-  const staffRight = width - padding
-  const clefWidth = 50
+  const padding = 40
+  const clefWidth = 60
+  const staffX = padding + clefWidth  // room for clef symbols
+  const staffRight = width - padding - 40  // room for note labels
 
   // Grand staff: treble on top, bass on bottom, gap in middle for middle C
   const totalStaffHeight = height * 0.65
@@ -139,7 +139,7 @@ export function drawBackground(ctx: CanvasRenderingContext2D, layout: StaffLayou
 }
 
 export function drawStaffLines(ctx: CanvasRenderingContext2D, layout: StaffLayout) {
-  ctx.strokeStyle = 'rgba(120, 130, 160, 0.25)'
+  ctx.strokeStyle = 'rgba(140, 150, 180, 0.4)'
   ctx.lineWidth = 1.5
 
   // Treble staff lines
@@ -179,15 +179,17 @@ export function drawStaffLines(ctx: CanvasRenderingContext2D, layout: StaffLayou
 }
 
 export function drawClefs(ctx: CanvasRenderingContext2D, layout: StaffLayout) {
-  // Treble clef (𝄞)
-  ctx.font = `${layout.lineSpacing * 6}px serif`
-  ctx.fillStyle = 'rgba(180, 190, 220, 0.5)'
+  // Treble clef (𝄞) — sized to span the 5 treble staff lines
+  const trebleSize = layout.lineSpacing * 3.8
+  ctx.font = `${trebleSize}px serif`
+  ctx.fillStyle = 'rgba(180, 190, 220, 0.6)'
   ctx.textBaseline = 'middle'
-  ctx.fillText('𝄞', layout.staffX - layout.clefWidth + 5, layout.trebleLines[2] + layout.lineSpacing * 0.3)
+  ctx.fillText('𝄞', layout.staffX - layout.clefWidth + 10, layout.trebleLines[2] + layout.lineSpacing * 0.2)
 
-  // Bass clef (𝄢)
-  ctx.font = `${layout.lineSpacing * 3.5}px serif`
-  ctx.fillText('𝄢', layout.staffX - layout.clefWidth + 8, layout.bassLines[1] + layout.lineSpacing * 0.1)
+  // Bass clef (𝄢) — sized to span the 5 bass staff lines
+  const bassSize = layout.lineSpacing * 2.2
+  ctx.font = `${bassSize}px serif`
+  ctx.fillText('𝄢', layout.staffX - layout.clefWidth + 14, layout.bassLines[1])
 }
 
 export function drawNoteLabels(ctx: CanvasRenderingContext2D, layout: StaffLayout) {
@@ -207,7 +209,7 @@ export function drawNoteLabels(ctx: CanvasRenderingContext2D, layout: StaffLayou
   for (const { name, semi } of labels) {
     const y = staffPositionToY(semi, layout)
     const color = getNoteColor(semi)
-    ctx.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, 0.35)`
+    ctx.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, 0.6)`
     ctx.fillText(name, layout.staffRight + 8, y)
   }
 }
