@@ -271,6 +271,15 @@ export default function PitchDefender() {
     ]
   }, [])
 
+  // ─── World → Star Nest preset mapping ────────────────────────────────────
+  const WORLD_PRESETS: Record<string, string> = {
+    'Sound Scouts': 'darkWorld1',
+    'Frequency Fighters': 'greenNebula1',
+    'Echo Station': 'hotSuns',
+    'Harmonic Ridge': 'purple2',
+    'The Frontier': 'crazyFractal',
+  }
+
   // ─── Start Wave ──────────────────────────────────────────────────────────
   const startWave = useCallback((waveNum: number) => {
     const config = getWaveConfig(waveNum)
@@ -278,6 +287,9 @@ export default function PitchDefender() {
     // Ensure FSRS memory exists for all unlocked notes
     const currentState = stateRef.current
     fsrsRef.current = ensureNoteMemory(fsrsRef.current, currentState.unlockedNotes)
+
+    // Change skybox per world
+    setStarPreset(WORLD_PRESETS[config.worldName] ?? 'darkWorld1')
 
     setState(prev => ({
       ...prev,
