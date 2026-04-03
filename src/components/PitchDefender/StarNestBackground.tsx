@@ -269,11 +269,12 @@ export default function StarNestBackground({ presetKey = 'darkWorld1' }: { prese
   const preset = PRESETS[presetKey] ?? PRESETS.darkWorld1
 
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 0 }}>
+    <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
       <Canvas
-        camera={{ position: [0, 0, 0.01], fov: 90 }}
-        gl={{ antialias: false, alpha: false, powerPreference: 'high-performance' }}
-        style={{ background: '#000' }}
+        camera={{ position: [0, 0, 0.01], fov: 120 }}
+        gl={{ antialias: true, alpha: false }}
+        style={{ background: '#000', pointerEvents: 'none' }}
+        events={undefined as never}
       >
         <SkyboxMesh preset={preset} />
       </Canvas>

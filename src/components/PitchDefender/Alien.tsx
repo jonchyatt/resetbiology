@@ -105,17 +105,7 @@ export default function Alien({ alien, fieldHeight, isActive, onAnimationEnd }: 
           }}
         />
 
-        {/* Note label */}
-        <span
-          className="relative z-10 font-bold text-white select-none"
-          style={{
-            fontSize: 18,
-            textShadow: `0 0 8px ${hsl}, 0 0 16px ${hsl}`,
-            letterSpacing: '0.05em',
-          }}
-        >
-          {NOTE_LABELS[alien.note] ?? alien.note}
-        </span>
+        {/* No label — player must identify by EAR, not by reading */}
 
         {/* Geometric accent lines */}
         <div

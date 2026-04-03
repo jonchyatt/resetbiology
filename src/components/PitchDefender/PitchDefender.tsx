@@ -334,13 +334,37 @@ export default function PitchDefender() {
     }
   }, [])
 
-  // ─── Handle Player Answer ────────────────────────────────────────────────
-  const handleAnswer = useCallback((answeredNote: string) => {
-    const s = stateRef.current
-    if (s.phase !== 'wave_active' || s.activeAlienIndex < 0) return
+  // ─── Keyboard Support ─────────────────────────────────────────────────────
+  useEffect(() => {
+    const keyMap: Record<string, string> = {
+      '1': 'C4', '2': 'D4', '3': 'E4', '4': 'F4',
+      '5': 'G4', '6': 'A4', '7': 'B4', '8': 'C5',
+      'c': 'C4', 'd': 'D4', 'e': 'E4', 'f': 'F4',
+      'g': 'G4', 'a': 'A4', 'b': 'B4',
+    }
+    function onKeyDown(ev: KeyboardEvent) {
+      const note = keyMap[ev.key.toLowerCase()]
+      if (note && stateRef.current.phase === 'wave_active') {
+        handleAnswerInner(note)
+      }
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [])
 
-    const alien = s.aliens[s.activeAlienIndex]
-    if (!alien || alien.lifecycle === 'exploding' || alien.lifecycle === 'escaped') return
+  // ─── Handle Player Answer ────────────────────────────────────────────────
+  const handleAnswerInner = useCallback((answeredNote: string) => {
+    const s = stateRef.current
+    if (s.phase !== 'wave_active') return
+
+    // Find the current active alien — any living descending alien
+    let alienIdx = s.activeAlienIndex
+    if (alienIdx < 0 || !s.aliens[alienIdx] || s.aliens[alienIdx].lifecycle === 'exploding' || s.aliens[alienIdx].lifecycle === 'escaped') {
+      alienIdx = s.aliens.findIndex(a => a.lifecycle === 'descending' || a.lifecycle === 'spawning')
+    }
+    if (alienIdx < 0) return
+    const alien = s.aliens[alienIdx]
+    if (!alien) return
 
     const result = processAnswer(s, alien.id, answeredNote)
     const latency = notePlayTimeRef.current > 0 ? Date.now() - notePlayTimeRef.current : 2000
@@ -403,8 +427,12 @@ export default function PitchDefender() {
           playSfx('levelup')
         }
 
-        // Find next active alien
-        const nextIdx = getNextActiveIndex(newAliens, prev.activeAlienIndex)
+        // Find next active alien — if none exists yet, spawn one immediately
+        let nextIdx = getNextActiveIndex(newAliens, prev.activeAlienIndex)
+        if (nextIdx < 0) {
+          // Force immediate spawn if wave isn't done
+          setTimeout(() => spawnNextAlien(), 200)
+        }
         if (nextIdx >= 0 && newAliens[nextIdx]) {
           setTimeout(() => playNote(pianoRef.current, newAliens[nextIdx].note), 500)
           notePlayTimeRef.current = Date.now() + 500
@@ -446,6 +474,9 @@ export default function PitchDefender() {
       }))
     }
   }, [saveFsrs])
+
+  // Wrap for both click and keyboard use
+  const handleAnswer = useCallback((note: string) => handleAnswerInner(note), [handleAnswerInner])
 
   // ─── Wave Complete ───────────────────────────────────────────────────────
   const completeWave = useCallback(() => {
@@ -674,7 +705,7 @@ export default function PitchDefender() {
             <NoteButtons
               unlockedNotes={state.unlockedNotes}
               onNoteSelected={handleAnswer}
-              disabled={state.phase !== 'wave_active' || state.activeAlienIndex < 0}
+              disabled={state.phase !== 'wave_active'}
               lastCorrectNote={lastCorrectNote}
               lastWrongNote={lastWrongNote}
             />
