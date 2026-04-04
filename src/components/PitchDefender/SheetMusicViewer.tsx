@@ -552,10 +552,28 @@ export default function SheetMusicViewer({
           </span>
         )}
 
-        {/* Demo button */}
-        <button onClick={loadDemo} className={btnSecondary}>
-          Demo Score
-        </button>
+        {/* Sample scores */}
+        <select
+          onChange={async (e) => {
+            const val = e.target.value
+            if (val === 'demo') { loadDemo(); e.target.value = ''; return }
+            if (!val) return
+            const label = e.target.options[e.target.selectedIndex].text
+            e.target.value = ''
+            const resp = await fetch(`/musicxml/${val}`)
+            const xml = await resp.text()
+            await loadScore(xml, label)
+          }}
+          className={`${btnSecondary} cursor-pointer bg-transparent`}
+          value=""
+        >
+          <option value="" disabled>Sample Scores</option>
+          <option value="demo">Ode to Joy (SATB Demo)</option>
+          <option value="amazing-grace-hymn.xml">Amazing Grace (Hymn)</option>
+          <option value="bach-bwv-244-03-chorale.musicxml">Bach — St. Matthew Passion</option>
+          <option value="bach-bwv-140-07-chorale.musicxml">Bach — Sleepers Awake</option>
+          <option value="mozart-requiem-kyrie-satb.musicxml">Mozart — Requiem Kyrie</option>
+        </select>
 
         {/* Separator */}
         <div className={`w-px h-5 ${darkMode ? 'bg-gray-700' : 'bg-gray-300'}`} />
