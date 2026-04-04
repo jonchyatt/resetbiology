@@ -16,6 +16,54 @@
 import { useRef, useEffect, useState, useCallback } from 'react'
 import { usePitchDetection, type PitchInfo } from './usePitchDetection'
 
+// ─── Note-to-Frequency lookup ───────────────────────────────────────────────
+const NOTE_NAMES_ALL = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+function noteToFreq(note: string): number {
+  const match = note.match(/^([A-G])(#|b)?(\d)$/)
+  if (!match) return 440
+  let semitone = NOTE_NAMES_ALL.indexOf(match[1])
+  if (match[2] === '#') semitone++
+  if (match[2] === 'b') semitone--
+  const octave = parseInt(match[3])
+  return 440 * Math.pow(2, (octave - 4) + (semitone - 9) / 12)
+}
+
+// Hint note playback via Web Audio — synthesized piano-like tone
+let _hintCtx: AudioContext | null = null
+function playHintNote(note: string, durationMs = 1200) {
+  const freq = noteToFreq(note)
+  if (!_hintCtx) _hintCtx = new AudioContext()
+  const ctx = _hintCtx
+  const now = ctx.currentTime
+
+  // Oscillator: triangle wave for warm piano-ish timbre
+  const osc = ctx.createOscillator()
+  osc.type = 'triangle'
+  osc.frequency.setValueAtTime(freq, now)
+
+  // Slight detune for richness
+  const osc2 = ctx.createOscillator()
+  osc2.type = 'sine'
+  osc2.frequency.setValueAtTime(freq, now)
+  osc2.detune.setValueAtTime(3, now)
+
+  // Envelope
+  const gain = ctx.createGain()
+  gain.gain.setValueAtTime(0, now)
+  gain.gain.linearRampToValueAtTime(0.18, now + 0.02)   // fast attack
+  gain.gain.exponentialRampToValueAtTime(0.1, now + 0.15) // quick decay to sustain
+  gain.gain.exponentialRampToValueAtTime(0.001, now + durationMs / 1000) // release
+
+  osc.connect(gain)
+  osc2.connect(gain)
+  gain.connect(ctx.destination)
+
+  osc.start(now)
+  osc2.start(now)
+  osc.stop(now + durationMs / 1000)
+  osc2.stop(now + durationMs / 1000)
+}
+
 interface SheetMusicViewerProps {
   musicXML?: string
   musicXMLUrl?: string
@@ -76,6 +124,8 @@ export default function SheetMusicViewer({
   const [practiceScore, setPracticeScore] = useState({ perfect: 0, good: 0, miss: 0, total: 0 })
   const holdTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const matchStartRef = useRef<number>(0)
+  const [autoPlayHint, setAutoPlayHint] = useState(true)
+  const smoothedCentsRef = useRef(0)
 
   // Pitch detection
   const { isListening, pitch, startListening, stopListening } = usePitchDetection({ noiseGateDb: -45 })
@@ -435,11 +485,13 @@ export default function SheetMusicViewer({
     setPracticeScore({ perfect: 0, good: 0, miss: 0, total: 0 })
     startListening()
 
-    // Get first target
+    // Get first target and play hint
     const target = getTargetNoteFromCursor()
     setCurrentTarget(target)
     matchStartRef.current = 0
-  }, [startListening, getTargetNoteFromCursor])
+    smoothedCentsRef.current = 0
+    if (target && autoPlayHint) playHintNote(target)
+  }, [startListening, getTargetNoteFromCursor, autoPlayHint])
 
   const stopPractice = useCallback(() => {
     setPracticeActive(false)
@@ -453,7 +505,15 @@ export default function SheetMusicViewer({
 
   // Practice: check pitch against target and advance cursor
   useEffect(() => {
-    if (!practiceActive || !pitch || !currentTarget || !pitch.isActive) return
+    if (!practiceActive || !pitch || !currentTarget) return
+
+    // Smooth the cents display (EMA: 0.25 = very smooth, less jitter)
+    if (pitch.isActive) {
+      smoothedCentsRef.current = smoothedCentsRef.current * 0.75 + pitch.cents * 0.25
+    } else {
+      smoothedCentsRef.current = smoothedCentsRef.current * 0.9 // decay toward zero
+      return // not singing — skip matching
+    }
 
     const detectedBase = pitch.note.replace(/\d+$/, '')
     const targetBase = currentTarget.replace(/\d+$/, '')
@@ -468,8 +528,8 @@ export default function SheetMusicViewer({
       // Hold for 400ms to confirm
       const held = Date.now() - matchStartRef.current
       if (held >= 400) {
-        // Grade accuracy
-        const accuracy: 'perfect' | 'good' = centsOff <= 15 ? 'perfect' : 'good'
+        // Grade accuracy (more forgiving thresholds)
+        const accuracy: 'perfect' | 'good' = centsOff <= 20 ? 'perfect' : 'good'
 
         // Color the note in the score
         const osmd = osmdRef.current
@@ -493,8 +553,9 @@ export default function SheetMusicViewer({
           total: prev.total + 1,
         }))
 
-        // Advance cursor
+        // Advance cursor + play next hint
         matchStartRef.current = 0
+        smoothedCentsRef.current = 0
         if (osmd?.cursor) {
           const iter = osmd.cursor.Iterator
           if (iter?.EndReached) {
@@ -504,13 +565,17 @@ export default function SheetMusicViewer({
           osmd.cursor.next()
           const next = getTargetNoteFromCursor()
           setCurrentTarget(next)
-          if (!next) stopPractice()
+          if (!next) {
+            stopPractice()
+          } else if (autoPlayHint) {
+            playHintNote(next)
+          }
         }
       }
     } else {
       matchStartRef.current = 0
     }
-  }, [practiceActive, pitch, currentTarget, getTargetNoteFromCursor, stopPractice])
+  }, [practiceActive, pitch, currentTarget, getTargetNoteFromCursor, stopPractice, autoPlayHint])
 
   // ─── Render ───────────────────────────────────────────────────────
   const colors = darkMode ? DARK_COLORS : LIGHT_COLORS
@@ -718,50 +783,62 @@ export default function SheetMusicViewer({
       {/* ── Practice Pitch Feedback ──────────────────────────────── */}
       {practiceActive && (
         <div className={`sticky bottom-0 z-40 px-4 py-3 border-t ${borderClass} ${bgClass}`}>
-          <div className="flex items-center justify-between max-w-2xl mx-auto">
-            {/* Target note */}
-            <div className="text-center">
-              <div className={`text-xs ${mutedClass}`}>Target</div>
-              <div className="text-2xl font-bold text-white">
+          <div className="flex items-center justify-between max-w-3xl mx-auto gap-4">
+            {/* Target note + Hear button */}
+            <div className="text-center min-w-[80px]">
+              <div className={`text-xs ${mutedClass} mb-0.5`}>Sing This</div>
+              <div className="text-3xl font-black text-white tracking-tight">
                 {currentTarget || '—'}
               </div>
+              <button
+                onClick={() => currentTarget && playHintNote(currentTarget)}
+                className="mt-1 px-2 py-0.5 text-[10px] rounded bg-indigo-600/60 hover:bg-indigo-500 text-indigo-200 transition-colors"
+                title="Hear the target note"
+              >
+                Hear it
+              </button>
             </div>
 
-            {/* Pitch indicator */}
-            <div className="flex-1 mx-6">
-              {pitch?.isActive ? (
-                <div className="flex items-center gap-3">
-                  {/* Visual pitch bar */}
-                  <div className="flex-1 h-3 bg-gray-800 rounded-full overflow-hidden relative">
-                    <div className="absolute inset-y-0 left-1/2 w-0.5 bg-emerald-500/50" />
-                    <div
-                      className="absolute inset-y-0 w-3 rounded-full transition-all duration-75"
-                      style={{
-                        left: `${Math.max(5, Math.min(95, 50 + (pitch.cents / 50) * 45))}%`,
-                        transform: 'translateX(-50%)',
-                        background: Math.abs(pitch.cents) <= 15
-                          ? '#22c55e'
-                          : Math.abs(pitch.cents) <= 30
-                          ? '#eab308'
-                          : '#ef4444',
-                      }}
-                    />
+            {/* Pitch indicator — smoothed */}
+            <div className="flex-1">
+              {pitch?.isActive ? (() => {
+                const sc = Math.round(smoothedCentsRef.current)
+                const absSc = Math.abs(sc)
+                return (
+                  <div className="flex items-center gap-3">
+                    <div className="flex-1 h-4 bg-gray-800 rounded-full overflow-hidden relative">
+                      {/* Center target line */}
+                      <div className="absolute inset-y-0 left-1/2 w-0.5 bg-emerald-500/40" />
+                      {/* "Good" zone highlight */}
+                      <div className="absolute inset-y-0 bg-emerald-900/20 rounded-full"
+                        style={{ left: '35%', width: '30%' }} />
+                      {/* Pitch marker — smoothed */}
+                      <div
+                        className="absolute inset-y-0 w-4 rounded-full transition-all duration-150"
+                        style={{
+                          left: `${Math.max(5, Math.min(95, 50 + (sc / 50) * 40))}%`,
+                          transform: 'translateX(-50%)',
+                          background: absSc <= 20 ? '#22c55e' : absSc <= 35 ? '#eab308' : '#ef4444',
+                          boxShadow: absSc <= 20 ? '0 0 8px #22c55e80' : 'none',
+                        }}
+                      />
+                    </div>
+                    <span className="text-xs font-mono w-12 text-right" style={{
+                      color: absSc <= 20 ? '#22c55e' : absSc <= 35 ? '#eab308' : '#ef4444'
+                    }}>
+                      {sc > 0 ? '+' : ''}{sc}c
+                    </span>
                   </div>
-                  <span className="text-xs font-mono w-10 text-right" style={{
-                    color: Math.abs(pitch.cents) <= 15 ? '#22c55e' : Math.abs(pitch.cents) <= 30 ? '#eab308' : '#ef4444'
-                  }}>
-                    {pitch.cents > 0 ? '+' : ''}{pitch.cents}c
-                  </span>
-                </div>
-              ) : (
-                <div className={`text-center text-xs ${mutedClass}`}>
-                  Sing the target note...
+                )
+              })() : (
+                <div className={`text-center text-sm ${mutedClass}`}>
+                  Sing the note — or tap <span className="text-indigo-400">Hear it</span> first
                 </div>
               )}
             </div>
 
             {/* Your note */}
-            <div className="text-center">
+            <div className="text-center min-w-[60px]">
               <div className={`text-xs ${mutedClass}`}>You</div>
               <div className={`text-2xl font-bold ${
                 pitch?.isActive
@@ -774,16 +851,24 @@ export default function SheetMusicViewer({
               </div>
             </div>
 
-            {/* Score summary */}
-            <div className="ml-6 text-center">
-              <div className={`text-xs ${mutedClass}`}>Score</div>
-              <div className="text-sm">
+            {/* Score + auto-play toggle */}
+            <div className="text-center min-w-[70px]">
+              <div className="text-sm mb-1">
                 <span className="text-emerald-400 font-bold">{practiceScore.perfect}</span>
-                <span className="text-gray-600 mx-1">/</span>
+                <span className="text-gray-600 mx-0.5">/</span>
                 <span className="text-yellow-400 font-bold">{practiceScore.good}</span>
-                <span className="text-gray-600 mx-1">/</span>
+                <span className="text-gray-600 mx-0.5">/</span>
                 <span className="text-gray-500">{practiceScore.total}</span>
               </div>
+              <label className="flex items-center gap-1 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={autoPlayHint}
+                  onChange={(e) => setAutoPlayHint(e.target.checked)}
+                  className="w-3 h-3 accent-indigo-500"
+                />
+                <span className="text-[10px] text-gray-500">Auto-play</span>
+              </label>
             </div>
           </div>
         </div>
