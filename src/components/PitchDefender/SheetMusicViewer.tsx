@@ -14,6 +14,7 @@
 // =============================================================================
 
 import { useRef, useEffect, useState, useCallback } from 'react'
+import { usePitchDetection, type PitchInfo } from './usePitchDetection'
 
 interface SheetMusicViewerProps {
   musicXML?: string
@@ -67,6 +68,17 @@ export default function SheetMusicViewer({
 
   // Drag state
   const [isDragging, setIsDragging] = useState(false)
+
+  // Practice mode state
+  const [practiceActive, setPracticeActive] = useState(false)
+  const [practiceResults, setPracticeResults] = useState<{ note: string; accuracy: 'perfect' | 'good' | 'miss' | 'pending' }[]>([])
+  const [currentTarget, setCurrentTarget] = useState<string | null>(null)
+  const [practiceScore, setPracticeScore] = useState({ perfect: 0, good: 0, miss: 0, total: 0 })
+  const holdTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const matchStartRef = useRef<number>(0)
+
+  // Pitch detection
+  const { isListening, pitch, startListening, stopListening } = usePitchDetection({ noiseGateDb: -45 })
 
   // ─── Apply Colors ──────────────────────────────────────────────────
   const applyColors = useCallback((osmd: any, dark: boolean) => {
@@ -392,6 +404,114 @@ export default function SheetMusicViewer({
     loadScore(DEMO_SATB_MUSICXML)
   }, [loadScore])
 
+  // ─── Practice Mode ────────────────────────────────────────────────
+  const getTargetNoteFromCursor = useCallback((): string | null => {
+    const osmd = osmdRef.current
+    if (!osmd?.cursor) return null
+    try {
+      const notes = osmd.cursor.NotesUnderCursor()
+      if (!notes || notes.length === 0) return null
+      // Get the first note's pitch — format: "C4", "D#5", etc.
+      const note = notes[0]
+      if (!note?.Pitch) return null
+      const step = ['C', 'D', 'E', 'F', 'G', 'A', 'B'][note.Pitch.FundamentalNote] || 'C'
+      const accidental = note.Pitch.Accidental > 0 ? '#' : note.Pitch.Accidental < 0 ? 'b' : ''
+      const octave = note.Pitch.Octave + 3 // OSMD octave offset
+      return `${step}${accidental}${octave}`
+    } catch {
+      return null
+    }
+  }, [])
+
+  const startPractice = useCallback(() => {
+    const osmd = osmdRef.current
+    if (!osmd?.cursor) return
+
+    osmd.cursor.show()
+    osmd.cursor.reset()
+    setCursorVisible(true)
+    setPracticeActive(true)
+    setPracticeResults([])
+    setPracticeScore({ perfect: 0, good: 0, miss: 0, total: 0 })
+    startListening()
+
+    // Get first target
+    const target = getTargetNoteFromCursor()
+    setCurrentTarget(target)
+    matchStartRef.current = 0
+  }, [startListening, getTargetNoteFromCursor])
+
+  const stopPractice = useCallback(() => {
+    setPracticeActive(false)
+    setCurrentTarget(null)
+    stopListening()
+    if (holdTimerRef.current) {
+      clearTimeout(holdTimerRef.current)
+      holdTimerRef.current = null
+    }
+  }, [stopListening])
+
+  // Practice: check pitch against target and advance cursor
+  useEffect(() => {
+    if (!practiceActive || !pitch || !currentTarget || !pitch.isActive) return
+
+    const detectedBase = pitch.note.replace(/\d+$/, '')
+    const targetBase = currentTarget.replace(/\d+$/, '')
+    const centsOff = Math.abs(pitch.cents)
+
+    // Check note match (octave-flexible for beginners)
+    if (detectedBase === targetBase) {
+      if (matchStartRef.current === 0) {
+        matchStartRef.current = Date.now()
+      }
+
+      // Hold for 400ms to confirm
+      const held = Date.now() - matchStartRef.current
+      if (held >= 400) {
+        // Grade accuracy
+        const accuracy: 'perfect' | 'good' = centsOff <= 15 ? 'perfect' : 'good'
+
+        // Color the note in the score
+        const osmd = osmdRef.current
+        if (osmd?.cursor) {
+          try {
+            const gNotes = osmd.cursor.GNotesUnderCursor()
+            if (gNotes?.length > 0) {
+              const color = accuracy === 'perfect' ? '#22c55e' : '#eab308'
+              gNotes[0].setColor(color, {
+                applyToNoteheads: true,
+                applyToStem: true,
+              })
+            }
+          } catch { /* ok */ }
+        }
+
+        setPracticeResults(prev => [...prev, { note: currentTarget, accuracy }])
+        setPracticeScore(prev => ({
+          ...prev,
+          [accuracy]: prev[accuracy] + 1,
+          total: prev.total + 1,
+        }))
+
+        // Advance cursor
+        matchStartRef.current = 0
+        if (osmd?.cursor) {
+          const iter = osmd.cursor.Iterator
+          if (iter?.EndReached) {
+            stopPractice()
+            return
+          }
+          osmd.cursor.next()
+          const next = getTargetNoteFromCursor()
+          setCurrentTarget(next)
+          if (!next) stopPractice()
+        }
+      }
+    } else {
+      matchStartRef.current = 0
+    }
+  }, [practiceActive, pitch, currentTarget, getTargetNoteFromCursor, stopPractice])
+
   // ─── Render ───────────────────────────────────────────────────────
   const colors = darkMode ? DARK_COLORS : LIGHT_COLORS
   const bgClass = darkMode ? 'bg-[#0a0a14]' : 'bg-white'
@@ -468,11 +588,11 @@ export default function SheetMusicViewer({
 
         {/* Cursor controls */}
         <div className="flex items-center gap-1">
-          {!cursorVisible ? (
+          {!cursorVisible && !practiceActive ? (
             <button onClick={showCursor} className={btnSecondary}>
               Show Cursor
             </button>
-          ) : (
+          ) : !practiceActive ? (
             <>
               <button onClick={cursorReset} className={btnSecondary} title="Reset to start">
                 |&laquo;
@@ -508,8 +628,42 @@ export default function SheetMusicViewer({
                 <span className={`text-xs ${mutedClass} w-12`}>{tempo} bpm</span>
               </div>
             </>
-          )}
+          ) : null}
         </div>
+
+        {/* Separator */}
+        <div className={`w-px h-5 ${darkMode ? 'bg-gray-700' : 'bg-gray-300'}`} />
+
+        {/* Practice mode */}
+        {!practiceActive ? (
+          <button
+            onClick={startPractice}
+            className={`${btnBase} bg-emerald-600/80 hover:bg-emerald-500 text-white`}
+            title="Sing along with the score — mic-based pitch tracking"
+          >
+            Practice
+          </button>
+        ) : (
+          <div className="flex items-center gap-2">
+            <button
+              onClick={stopPractice}
+              className={`${btnBase} bg-red-600/80 hover:bg-red-500 text-white`}
+            >
+              Stop Practice
+            </button>
+            <span className="text-xs text-emerald-400 font-mono">
+              {practiceScore.perfect}
+            </span>
+            <span className="text-xs text-yellow-400 font-mono">
+              {practiceScore.good}
+            </span>
+            {practiceScore.total > 0 && (
+              <span className={`text-xs ${mutedClass}`}>
+                / {practiceScore.total}
+              </span>
+            )}
+          </div>
+        )}
       </div>
 
       {/* ── Status Messages ────────────────────────────────────────── */}
@@ -542,8 +696,82 @@ export default function SheetMusicViewer({
         }}
       />
 
+      {/* ── Practice Pitch Feedback ──────────────────────────────── */}
+      {practiceActive && (
+        <div className={`sticky bottom-0 z-40 px-4 py-3 border-t ${borderClass} ${bgClass}`}>
+          <div className="flex items-center justify-between max-w-2xl mx-auto">
+            {/* Target note */}
+            <div className="text-center">
+              <div className={`text-xs ${mutedClass}`}>Target</div>
+              <div className="text-2xl font-bold text-white">
+                {currentTarget || '—'}
+              </div>
+            </div>
+
+            {/* Pitch indicator */}
+            <div className="flex-1 mx-6">
+              {pitch?.isActive ? (
+                <div className="flex items-center gap-3">
+                  {/* Visual pitch bar */}
+                  <div className="flex-1 h-3 bg-gray-800 rounded-full overflow-hidden relative">
+                    <div className="absolute inset-y-0 left-1/2 w-0.5 bg-emerald-500/50" />
+                    <div
+                      className="absolute inset-y-0 w-3 rounded-full transition-all duration-75"
+                      style={{
+                        left: `${Math.max(5, Math.min(95, 50 + (pitch.cents / 50) * 45))}%`,
+                        transform: 'translateX(-50%)',
+                        background: Math.abs(pitch.cents) <= 15
+                          ? '#22c55e'
+                          : Math.abs(pitch.cents) <= 30
+                          ? '#eab308'
+                          : '#ef4444',
+                      }}
+                    />
+                  </div>
+                  <span className="text-xs font-mono w-10 text-right" style={{
+                    color: Math.abs(pitch.cents) <= 15 ? '#22c55e' : Math.abs(pitch.cents) <= 30 ? '#eab308' : '#ef4444'
+                  }}>
+                    {pitch.cents > 0 ? '+' : ''}{pitch.cents}c
+                  </span>
+                </div>
+              ) : (
+                <div className={`text-center text-xs ${mutedClass}`}>
+                  Sing the target note...
+                </div>
+              )}
+            </div>
+
+            {/* Your note */}
+            <div className="text-center">
+              <div className={`text-xs ${mutedClass}`}>You</div>
+              <div className={`text-2xl font-bold ${
+                pitch?.isActive
+                  ? pitch.note.replace(/\d+$/, '') === currentTarget?.replace(/\d+$/, '')
+                    ? 'text-emerald-400'
+                    : 'text-red-400'
+                  : 'text-gray-600'
+              }`}>
+                {pitch?.isActive ? pitch.note : '—'}
+              </div>
+            </div>
+
+            {/* Score summary */}
+            <div className="ml-6 text-center">
+              <div className={`text-xs ${mutedClass}`}>Score</div>
+              <div className="text-sm">
+                <span className="text-emerald-400 font-bold">{practiceScore.perfect}</span>
+                <span className="text-gray-600 mx-1">/</span>
+                <span className="text-yellow-400 font-bold">{practiceScore.good}</span>
+                <span className="text-gray-600 mx-1">/</span>
+                <span className="text-gray-500">{practiceScore.total}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ── Empty state / instructions ─────────────────────────────── */}
-      {status === 'ready' && !musicXML && !musicXMLUrl && !fileName?.includes('Demo') && (
+      {status === 'ready' && !musicXML && !musicXMLUrl && !fileName?.includes('Demo') && !practiceActive && (
         <div className={`text-center py-4 ${mutedClass} text-xs`}>
           Drag and drop a MusicXML file or click Open File to load your sheet music
         </div>
