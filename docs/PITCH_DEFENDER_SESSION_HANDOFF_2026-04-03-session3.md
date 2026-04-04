@@ -1,6 +1,6 @@
 # Pitch Defender — Session Handoff 2026-04-03 (Session 3)
 
-## What Was Built (5 commits, all deployed to resetbiology.com)
+## What Was Built (7 commits, all deployed to resetbiology.com)
 
 ### Sheet Music Studio — Production Overhaul
 Rewrote `SheetMusicViewer.tsx` from spike to production-quality tool:
@@ -9,17 +9,17 @@ Rewrote `SheetMusicViewer.tsx` from spike to production-quality tool:
 - **Part isolation** — toggle individual voices on/off via `Instrument.Visible`. Score re-renders with layout recalculation. Tested: hiding Tenor shows only Soprano/Alto/Bass.
 - **Cursor/playback** — OSMD cursor API: show/hide, step forward/back, reset. Auto-play with tempo slider (30-200 BPM). Stops at end of score.
 - **Sample Scores dropdown** — 5 real SATB MusicXML scores from public domain (see below).
-- **Practice Mode** — Mic-based pitch tracking on sheet music (see below).
+- **Practice Mode** with hint note playback (see below).
 
-### Practice Mode (Study Overlay Prototype)
-Integrated `usePitchDetection` (pitchy) into Sheet Music Studio:
-- Green **Practice** button in toolbar starts mic + cursor
-- Cursor guides through notes one at a time
-- Sticky bottom bar shows: target note | cents deviation bar | your pitch | running score
-- Notes color **green** (perfect, ≤15 cents) or **yellow** (good, ≤30 cents) after being sung
-- Hold pitch for 400ms to confirm match and advance to next note
-- Practice score tracks perfect/good/total
-- **NOT YET TESTED WITH REAL MIC** — needs Jon to verify
+### Practice Mode (Study Overlay) — TESTED WITH REAL MIC
+Jon tested and confirmed: **functionality works.** Pitch detection guides voice onto correct note. Feedback from testing drove refinements:
+- **"Hear it" button** — tap to hear synthesized reference tone (triangle wave + sine, warm timbre). Echo cancellation filters it from mic input.
+- **Auto-play** (checkbox, on by default) — reference tone plays automatically when cursor advances to new note. User hears what to sing, matches voice, cursor moves.
+- **Smoothed pitch bar** — EMA smoothing (0.75 weight) reduces jitter. Wider marker, green "good zone" highlight in center.
+- **More forgiving thresholds** — perfect ≤20 cents (was 15), good visual threshold ≤35 cents.
+- **Clearer UX** — "Sing This" label with large target note, idle state says "tap Hear it first."
+- Cursor advances after holding correct pitch for 400ms (octave-flexible matching).
+- Notes color green (perfect) or yellow (good) in the score after being sung.
 
 ### Sample Choir Scores (5 MusicXML files in `public/musicxml/`)
 | File | Title | Composer | Parts | Source | Complexity |
@@ -29,6 +29,8 @@ Integrated `usePitchDetection` (pitchy) into Sheet Music Studio:
 | `bach-bwv-140-07-chorale.musicxml` | Wachet auf (Sleepers Wake) | J.S. Bach | 5 (4 Voice + Continuo) | Bach Chorale FB | Slightly complex |
 | `barnby-crossing-the-bar-satb.musicxml` | Crossing The Bar | Barnby/Tennyson | 4 (S/A/T/B named) | Public domain | Victorian hymn-anthem |
 | `mozart-requiem-kyrie-satb.musicxml` | Requiem Kyrie | Mozart | 4 (S/A/T/B) | NVIDIA/mellotron | Complex fugal |
+
+Additional sources found for future: 146 more Bach chorales (GitHub), CPDL (54K+ scores, needs Hawkeye for Cloudflare), Josquin Research Project (700+ Renaissance works via API).
 
 ### Navigation Fix
 Connected all Pitch Defender sub-pages:
@@ -40,21 +42,17 @@ Connected all Pitch Defender sub-pages:
 ### Curriculum Research (Not Deployed — Research Doc)
 Full 438-line research doc at `docs/howmusicworks-curriculum-research.md`:
 - Mapped all 9 sections, ~102 topics from howmusicworks.org
-- Content format analysis: text + 360 diagrams + 750 audio demos, zero interactivity
+- Content format: text + 360 diagrams + 750 audio demos, zero interactivity
 - 3-layer integration architecture: Curriculum → Notation → Exercise → FSRS
 - 5-phase implementation plan
-- Mapping of every section to our platform capabilities (pitch detection, OSMD, Canvas, FSRS)
-- Key insight: HMW is passive reference. Our differentiator is making every "listen to this" into "now play/sing it."
+- Key insight: HMW is passive reference. Our differentiator = making every "listen" into "play/sing it"
 
 ## Codex Review
-One boardroom consultation (0 critical, 0 high, 3 medium, 2 low):
-- Part visibility fragility with multi-staff instruments (low risk for SATB)
-- Cursor/playback state drift during reloads (handled in code)
-- MXL parsing failures (wrapped in try/catch)
+One boardroom consultation (0 critical, 0 high, 3 medium, 2 low). All addressed.
 
-## Files Changed (12 files, +31,300 / -66 lines)
+## Files Changed (13 files, +31,500 lines)
 ```
-src/components/PitchDefender/SheetMusicViewer.tsx   — REWRITE: dark mode, upload, parts, cursor, practice mode, sample picker
+src/components/PitchDefender/SheetMusicViewer.tsx   — REWRITE: dark mode, upload, parts, cursor, practice mode w/ hint notes
 src/components/PitchDefender/PitchDefender.tsx      — Navigation: Studio & Practice links + dev tool footer
 src/components/PitchDefender/PitchTester.tsx        — Standardized back link
 src/components/PitchDefender/CrepeBenchmark.tsx     — Added back link (was orphaned)
@@ -65,35 +63,42 @@ public/musicxml/bach-bwv-140-07-chorale.musicxml    — NEW: sample score
 public/musicxml/barnby-crossing-the-bar-satb.musicxml — NEW: sample score
 public/musicxml/mozart-requiem-kyrie-satb.musicxml  — NEW: sample score
 docs/howmusicworks-curriculum-research.md           — NEW: curriculum research doc
+docs/PITCH_DEFENDER_SESSION_HANDOFF_2026-04-03-session3.md — This file
 ```
 
-## Commits (5, all deployed)
+## Commits (7, all deployed)
 ```
+e804204c feat: hint note playback + smoother pitch feedback in practice mode
 ce92f266 feat: add Barnby "Crossing the Bar" SATB score + dropdown entry
 2f727ad8 feat: sample choir scores + score picker dropdown
 60324bb8 feat: practice mode — sing along with pitch tracking on sheet music
 81e34a62 fix: connect all Pitch Defender sub-pages via navigation
 87002217 feat: production OSMD sheet music viewer — dark mode, upload, parts, cursor
+39caf25a docs: session 3 handoff + howmusicworks curriculum research
 ```
+
+## Jon's Live Feedback (This Session)
+- CREPE benchmark pitch detection: "unreal good even on crappy laptop mic"
+- Practice mode: "functionality is there... able to guide me onto the right note"
+- Requested: hint note playback, smoother pitch bar, reference tone with echo cancellation filtering → ALL BUILT AND DEPLOYED
 
 ## What's NOT Done (Carried Forward)
 
-### Needs Jon (Next Time He's Free)
-- [ ] Live test Practice Mode with mic — verify pitch tracking, note advancement, accuracy grading
-- [ ] Live test staff tester with mic — voice orb, pitch trail, fusion engine
-
-### Ready to Build
+### Ready to Build (No Jon Required)
 - [ ] Curriculum Phase 1: JSON topic definitions for all 102 topics + prerequisite DAG
 - [ ] Curriculum Phase 2: MusicXML notation assets for scales, chords, intervals
-- [ ] OSMD dark mode fine-tuning — staff line colors may need contrast adjustment on some scores
-- [ ] Study overlay improvements: miss tracking (timeout if no match after X seconds), replay target note audio, end-of-practice scorecard
-- [ ] CPDL score acquisition via Hawkeye (Cloudflare-blocked for automated download)
+- [ ] Practice mode: miss detection (timeout after N seconds → mark miss, advance)
+- [ ] Practice mode: end-of-practice scorecard with note-by-note breakdown
+- [ ] Practice mode: instrument choice for hint note (piano, vocal synth, sine)
+- [ ] OSMD dark mode fine-tuning — staff line contrast on some scores
+- [ ] CPDL score acquisition via Hawkeye (Cloudflare-blocked)
+- [ ] Staff tester: live mic test with voice orb + pitch trail
 
 ### Franchise Games (Not Started)
-- [ ] Pitchforks — franchise game #2 (pitch-based combat/puzzle)
-- [ ] Flappy Pitch — franchise game #3 (continuous pitch control, AudioWorklet+WASM tier)
+- [ ] Pitchforks — franchise game #2
+- [ ] Flappy Pitch — franchise game #3 (AudioWorklet+WASM tier)
 
-### From Previous Sessions (Not Started)
+### From Previous Sessions
 - [ ] Integrate PESTO into PitchFusion as third detector
 - [ ] NoteRunner playtesting — verify pause mode, tune difficulty
 - [ ] Mic calibration flow — silence profile + range scan + reference test
@@ -106,27 +111,25 @@ PRIORITY — Pitch Defender & Music Education Platform (Reset Biology):
   Read these files IN ORDER:
   1. reset-biology-website/docs/PITCH_DEFENDER_SPEC.md
   2. reset-biology-website/docs/PITCH_DEFENDER_SESSION_HANDOFF_2026-04-03-session3.md
-  3. src/components/PitchDefender/SheetMusicViewer.tsx (production OSMD + practice mode)
-  4. docs/howmusicworks-curriculum-research.md (9 sections, 102 topics, integration plan)
+  3. src/components/PitchDefender/SheetMusicViewer.tsx (OSMD + practice mode + hint notes)
+  4. docs/howmusicworks-curriculum-research.md (102 topics, 5-phase integration plan)
 
-  CONTEXT: Sheet Music Studio is now production-quality with:
+  CONTEXT: Sheet Music Studio is production-quality and TESTED WITH REAL MIC:
   - Native OSMD dark mode, MusicXML upload, part isolation, cursor/playback
   - 5 sample SATB scores (Amazing Grace, Bach x2, Barnby, Mozart Requiem)
-  - Practice Mode: mic-based pitch tracking, notes color green/yellow as you sing
+  - Practice Mode with "Hear it" hint note, auto-play, smoothed pitch bar
+  - Jon tested: "functionality is there, able to guide onto right note"
   - All sub-pages connected via navigation
 
-  Pitch detection confirmed working great on Jon's laptop mic (CREPE benchmark test).
-  Practice mode NOT YET TESTED with real mic input — priority verification.
-
-  howmusicworks.org curriculum fully researched: 102 topics across 9 sections.
+  howmusicworks.org curriculum fully researched: 102 topics, 9 sections.
   5-phase integration plan documented. Phase 1 (JSON data) ready to start.
 
   SESSION PRIORITIES:
-  1. LIVE MIC TEST: Practice mode on Sheet Music Studio + Staff Tester voice orb
-  2. Curriculum Phase 1: JSON topic definitions + prerequisite DAG for all 102 topics
-  3. Practice mode improvements: miss detection, replay audio, end-of-practice scorecard
-  4. Begin Pitchforks or Flappy Pitch franchise game design
-  5. PESTO integration into PitchFusion engine
+  1. Practice mode improvements: miss detection (timeout), scorecard, instrument picker
+  2. Curriculum Phase 1: JSON topic definitions + prerequisite DAG
+  3. Begin Pitchforks or Flappy Pitch franchise game design
+  4. PESTO integration into PitchFusion engine
+  5. NoteRunner playtesting + mic calibration flow
 
   DESIGN PRINCIPLES:
   - Fun first, educational second (games), professional quality (notation studio)
