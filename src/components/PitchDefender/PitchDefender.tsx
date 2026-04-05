@@ -817,7 +817,19 @@ export default function PitchDefender() {
           {/* ─── Studio & Practice Tools ─────────────────────────────── */}
           <div className="mt-8 flex flex-col items-center gap-3">
             <p className="text-xs text-gray-600 uppercase tracking-widest">Studio & Practice</p>
-            <div className="flex gap-3">
+            <div className="flex gap-3 flex-wrap justify-center">
+              <a
+                href="/pitch-defender/drill"
+                className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
+                style={{
+                  background: 'rgba(40, 60, 55, 0.6)',
+                  color: '#3FBFB5',
+                  border: '2px solid rgba(60, 191, 181, 0.4)',
+                }}
+              >
+                Note Drill
+                <div className="text-xs font-normal mt-0.5 opacity-60">SRS flashcard practice</div>
+              </a>
               <a
                 href="/pitch-defender/sheet-music"
                 className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
