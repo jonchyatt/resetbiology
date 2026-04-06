@@ -462,9 +462,9 @@ export default function ChoirPractice() {
 
     if (cfg.mode === 'pause') {
       // ── Pause Mode: wait until pitch matches ──
-      if (pitch?.isActive && pitch.isSettled) {
+      if (pitch?.isActive) {
         const deviation = Math.abs(pitch.staffPosition - currentNote.semitones)
-        if (deviation <= 1.5) { // ~1.5 semitone tolerance
+        if (deviation <= 2.5) { // ~2.5 semitone tolerance (forgiving for practice)
           if (matchStartRef.current === 0) matchStartRef.current = performance.now()
           const held = performance.now() - matchStartRef.current
           const holdNeeded = Math.max(300, currentNote.duration * msPerBeat * 0.4) // at least 300ms, or 40% of note duration
@@ -488,9 +488,9 @@ export default function ChoirPractice() {
       flowTimerRef.current += dt * 1000
       const noteDurationMs = currentNote.duration * msPerBeat
 
-      if (pitch?.isActive && pitch.isSettled) {
+      if (pitch?.isActive) {
         const deviation = Math.abs(pitch.staffPosition - currentNote.semitones)
-        if (deviation <= 1.5) {
+        if (deviation <= 2.5) {
           setMatchProgress(prev => Math.min(1, prev + dt * 4))
         } else {
           setMatchProgress(prev => Math.max(0, prev - dt * 2))
@@ -904,8 +904,8 @@ export default function ChoirPractice() {
   const currentMeasure = currentNote?.measure ?? 0
   const currentHue = currentNote ? (NOTE_COLORS[currentNote.pitch]?.hue ?? 200) : 200
   const voicePitch = pitchRef.current
-  const isOnPitch = voicePitch?.isActive && voicePitch.isSettled &&
-    currentNote && Math.abs(voicePitch.staffPosition - currentNote.semitones) <= 1.5
+  const isOnPitch = voicePitch?.isActive &&
+    currentNote && Math.abs(voicePitch.staffPosition - currentNote.semitones) <= 2.5
 
   return (
     <div className="fixed inset-0 bg-[#08080f] flex flex-col">

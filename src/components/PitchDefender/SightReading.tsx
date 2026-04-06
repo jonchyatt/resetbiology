@@ -268,9 +268,9 @@ export default function SightReading() {
     const pitch = pitchRef.current
 
     if (mode === 'pause') {
-      if (pitch?.isActive && pitch.isSettled) {
+      if (pitch?.isActive) {
         const deviation = Math.abs(pitch.staffPosition - target.semitones)
-        if (deviation <= 1.5) {
+        if (deviation <= 2.5) {
           if (matchStartRef.current === 0) matchStartRef.current = performance.now()
           const held = performance.now() - matchStartRef.current
           const progress = Math.min(1, held / 500) // 500ms hold
@@ -289,9 +289,9 @@ export default function SightReading() {
     } else {
       // Flow mode — 2 seconds per note
       flowTimerRef.current += dt * 1000
-      if (pitch?.isActive && pitch.isSettled) {
+      if (pitch?.isActive) {
         const deviation = Math.abs(pitch.staffPosition - target.semitones)
-        if (deviation <= 1.5) {
+        if (deviation <= 2.5) {
           setMatchProgress(prev => Math.min(1, prev + dt * 4))
         }
       }
@@ -694,8 +694,8 @@ export default function SightReading() {
   const current = phrase[currentIdx]
   const currentHue = current ? (NOTE_COLORS[current.name]?.hue ?? 200) : 200
   const voicePitch = pitchRef.current
-  const isOnPitch = voicePitch?.isActive && voicePitch.isSettled && current &&
-    Math.abs(voicePitch.staffPosition - current.semitones) <= 1.5
+  const isOnPitch = voicePitch?.isActive && current &&
+    Math.abs(voicePitch.staffPosition - current.semitones) <= 2.5
 
   return (
     <div className="fixed inset-0 bg-[#08080f] flex flex-col">
