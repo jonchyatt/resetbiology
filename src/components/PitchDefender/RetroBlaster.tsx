@@ -349,9 +349,9 @@ export default function RetroBlaster() {
     try { localStorage.setItem(FSRS_KEY, JSON.stringify(fsrsRef.current)) } catch {}
 
     if (correct) {
-      // Fire laser
+      // Fire laser — aim at the active alien's center column
       sfxShoot()
-      gs.laser = { x: gs.playerX, y: H - PLAYER_H - 4, hue: alien.hue, active: true }
+      gs.laser = { x: alien.x + ALIEN_W / 2, y: H - PLAYER_H - 4, hue: alien.hue, active: true }
       gs.combo++
       gs.maxCombo = Math.max(gs.maxCombo, gs.combo)
       const mult = gs.combo >= 10 ? 3 : gs.combo >= 5 ? 2 : 1
@@ -570,21 +570,34 @@ export default function RetroBlaster() {
       const sprite = alien.frame === 0 ? ALIEN_SPRITE_A : ALIEN_SPRITE_B
       const color = isActive
         ? `hsl(${alien.hue}, 90%, 70%)`
-        : `hsl(${alien.hue}, 50%, 40%)`
+        : `hsl(${alien.hue}, 40%, 30%)`
+
+      // Draw alien — active ones slightly bigger
+      if (isActive) {
+        // Glow behind active alien
+        ctx.fillStyle = `hsla(${alien.hue}, 80%, 50%, 0.15)`
+        ctx.fillRect(alien.x - 3, alien.y - 3, ALIEN_W + 6, ALIEN_H + 6)
+      }
       drawSprite(ctx, sprite, alien.x, alien.y, color)
 
-      // Note label on active alien
+      // Note label — always show note name, bigger on active
       if (isActive) {
+        // Big "?" above + pulsing border
         ctx.fillStyle = '#fff'
-        ctx.font = '5px monospace'
+        ctx.font = 'bold 8px monospace'
         ctx.textAlign = 'center'
-        ctx.fillText('?', alien.x + ALIEN_W / 2, alien.y - 2)
+        ctx.fillText('?', alien.x + ALIEN_W / 2, alien.y - 4)
 
-        // Pulsing indicator
         const pulse = Math.sin(now / 200) * 0.3 + 0.7
         ctx.strokeStyle = `hsla(${alien.hue}, 80%, 60%, ${pulse})`
-        ctx.lineWidth = 0.5
-        ctx.strokeRect(alien.x - 1, alien.y - 1, ALIEN_W + 2, ALIEN_H + 2)
+        ctx.lineWidth = 1
+        ctx.strokeRect(alien.x - 2, alien.y - 2, ALIEN_W + 4, ALIEN_H + 4)
+      } else {
+        // Show note name on inactive aliens too (dimmed)
+        ctx.fillStyle = `hsla(${alien.hue}, 50%, 50%, 0.5)`
+        ctx.font = '5px monospace'
+        ctx.textAlign = 'center'
+        ctx.fillText(alien.note.replace(/\d/, ''), alien.x + ALIEN_W / 2, alien.y - 1)
       }
     }
 
@@ -614,22 +627,32 @@ export default function RetroBlaster() {
       ctx.fillRect(sx, H - 2, 30, 2)
     }
 
-    // HUD text
-    ctx.fillStyle = '#888'
-    ctx.font = '5px monospace'
+    // HUD text — bigger and readable
+    ctx.fillStyle = '#aaa'
+    ctx.font = 'bold 9px monospace'
     ctx.textAlign = 'left'
-    ctx.fillText(`SCORE ${gs.score}`, 4, 8)
+    ctx.fillText(`SCORE ${gs.score}`, 4, 10)
     ctx.textAlign = 'right'
-    ctx.fillText(`WAVE ${gs.wave}`, W - 4, 8)
+    ctx.fillText(`WAVE ${gs.wave}`, W - 4, 10)
     if (gs.combo >= 3) {
       ctx.fillStyle = gs.combo >= 10 ? '#ff6090' : '#ffc83c'
       ctx.textAlign = 'center'
-      ctx.fillText(`${gs.combo}x COMBO`, W / 2, 8)
+      ctx.font = 'bold 10px monospace'
+      ctx.fillText(`${gs.combo}x COMBO`, W / 2, 10)
+    }
+    // Health display
+    ctx.fillStyle = '#888'
+    ctx.font = '7px monospace'
+    ctx.textAlign = 'left'
+    ctx.fillText(`SHIELDS`, 4, H - 22)
+    for (let h = 0; h < 5; h++) {
+      ctx.fillStyle = h < gs.cityHealth ? '#3FBFB5' : '#333'
+      ctx.fillRect(50 + h * 14, H - 26, 12, 5)
     }
 
     // Note buttons at bottom (rendered in canvas for retro feel)
     const unlocked = gs.unlockedNotes
-    const btnW = Math.min(20, (W - 20) / unlocked.length - 2)
+    const btnW = Math.min(26, (W - 20) / unlocked.length - 2)
     const btnStartX = (W - unlocked.length * (btnW + 2)) / 2
     const btnY = H - 18
 
@@ -649,11 +672,11 @@ export default function RetroBlaster() {
       ctx.lineWidth = 0.5
       ctx.strokeRect(bx, btnY, btnW, 10)
 
-      // Label
+      // Label — readable
       ctx.fillStyle = '#fff'
-      ctx.font = '4px monospace'
+      ctx.font = 'bold 7px monospace'
       ctx.textAlign = 'center'
-      ctx.fillText(note.replace(/\d/, ''), bx + btnW / 2, btnY + 7)
+      ctx.fillText(note.replace(/\d/, ''), bx + btnW / 2, btnY + 8)
     }
 
     rafRef.current = requestAnimationFrame(gameLoop)
