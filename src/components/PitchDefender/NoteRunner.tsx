@@ -208,20 +208,24 @@ export default function NoteRunner() {
     setPhase('playing')
     setDisplayState({ score: 0, streak: 0, notesHit: 0, totalNotes: notes.length })
 
-    // Start fusion engine (ML enabled, no Star Nest competition)
-    const fusion = new PitchFusion({ enableML: true, noiseGateDb: -45 })
-    fusionRef.current = fusion
-    await fusion.start((pitch) => {
-      pitchRef.current = pitch
-      if (pitch.isActive) {
-        trailRef.current.push({
-          staffPosition: pitch.staffPosition,
-          confidence: pitch.confidence,
-          timestamp: performance.now(),
-        })
-        if (trailRef.current.length > 200) trailRef.current.shift()
-      }
-    })
+    // Start fusion engine — try ML first, fall back to basic pitchy
+    try {
+      const fusion = new PitchFusion({ enableML: false, noiseGateDb: -45 }) // disable ML for reliability
+      fusionRef.current = fusion
+      await fusion.start((pitch) => {
+        pitchRef.current = pitch
+        if (pitch.isActive) {
+          trailRef.current.push({
+            staffPosition: pitch.staffPosition,
+            confidence: pitch.confidence,
+            timestamp: performance.now(),
+          })
+          if (trailRef.current.length > 200) trailRef.current.shift()
+        }
+      })
+    } catch (err) {
+      console.error('PitchFusion failed, game will run without mic:', err)
+    }
 
     lastTimeRef.current = performance.now()
     gameLoop()
