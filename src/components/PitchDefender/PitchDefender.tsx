@@ -819,6 +819,19 @@ export default function PitchDefender() {
             <p className="text-xs text-gray-600 uppercase tracking-widest">Studio & Practice</p>
             <div className="flex gap-3 flex-wrap justify-center">
               <a
+                href="/pitch-defender/choir-practice"
+                className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
+                style={{
+                  background: 'rgba(99, 102, 241, 0.15)',
+                  color: '#a5b4fc',
+                  border: '2px solid rgba(99, 102, 241, 0.4)',
+                  boxShadow: '0 0 12px rgba(99,102,241,0.15)',
+                }}
+              >
+                Choir Practice
+                <div className="text-xs font-normal mt-0.5 opacity-60">Guided sing-along coach</div>
+              </a>
+              <a
                 href="/pitch-defender/drill"
                 className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
                 style={{
