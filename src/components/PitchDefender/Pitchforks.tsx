@@ -185,12 +185,17 @@ function generateDefaultIntervals(level: number): IntervalPattern[] {
   // Level 2: steps (1-2 semitones)
   // Level 3-4: skips (3-4 semitones)
   // Level 5+: leaps (5+ semitones)
-  const maxInterval = level <= 1 ? 1 : level <= 2 ? 2 : level <= 4 ? 4 : 7 + level
+  // Level 1: whole steps only (2 semitones) — clearly different notes
+  // Level 2: steps (2-3 semitones)
+  // Level 3-4: skips (2-5 semitones)
+  // Level 5+: leaps
+  const maxInterval = level <= 1 ? 2 : level <= 2 ? 3 : level <= 4 ? 5 : 7 + level
 
   for (let i = 0; i < count; i++) {
-    const interval = Math.floor(Math.random() * maxInterval) + 1
+    const minInterval = level <= 2 ? 2 : 1 // at least a whole step on early levels
+    const interval = Math.floor(Math.random() * (maxInterval - minInterval + 1)) + minInterval
     const direction = Math.random() < 0.5 ? 1 : -1
-    const from = Math.floor(Math.random() * 12) - 6 // centered around C4
+    const from = Math.floor(Math.random() * 8) - 4 // centered around C4, tighter range
     const to = from + interval * direction
 
     patterns.push({
@@ -403,14 +408,17 @@ export default function Pitchforks() {
     }
 
     // ── Pitch matching for current attacking villager ──
-    if (cv?.alive && cv.phase === 'attacking' && pitch?.isActive && pitch.isSettled) {
+    // REMOVED isSettled requirement — too strict for casual singing. isActive is enough.
+    if (cv?.alive && cv.phase === 'attacking' && pitch?.isActive) {
       const targetSemi = attackPhaseRef.current === 'from' ? cv.fromSemi : cv.toSemi
       const deviation = Math.abs(pitch.staffPosition - targetSemi)
 
-      if (deviation <= 1.5) {
+      // Wider tolerance: 2.5 semitones (generous for children/beginners)
+      if (deviation <= 2.5) {
         if (matchStartRef.current === 0) matchStartRef.current = performance.now()
         const held = performance.now() - matchStartRef.current
-        const progress = Math.min(1, held / 400)
+        // Shorter hold: 300ms for responsiveness
+        const progress = Math.min(1, held / 300)
         setMatchProgress(progress)
 
         if (progress >= 1) {
@@ -418,10 +426,16 @@ export default function Pitchforks() {
           setMatchProgress(0)
 
           if (attackPhaseRef.current === 'from') {
-            // First note matched — now sing the target note
+            // First note matched — pause, then prompt second note
             attackPhaseRef.current = 'to'
-            setCurrentPrompt(cv.guideLevel === 'none' ? 'Sing the next note!' : `Now: ${cv.toName}`)
-            if (cv.guideLevel === 'full') playTone(cv.toSemi, 1000)
+            setCurrentPrompt(cv.guideLevel === 'none' ? 'Now the SECOND note!' : `Now sing: ${cv.toName}`)
+            // Play the target note so they know what to aim for
+            if (cv.guideLevel !== 'none') {
+              playTone(cv.toSemi, 1000)
+            }
+            // Brief cooldown so the first note doesn't immediately match the second
+            matchStartRef.current = -1 // sentinel: skip next few frames
+            setTimeout(() => { matchStartRef.current = 0 }, 500) // 500ms pause between notes
           } else {
             // Both notes matched — villager defeated!
             cv.alive = false
@@ -440,8 +454,11 @@ export default function Pitchforks() {
           }
         }
       } else {
-        matchStartRef.current = 0
-        setMatchProgress(prev => Math.max(0, prev - dt * 3))
+        // Only reset if we weren't in the cooldown period
+        if (matchStartRef.current >= 0) {
+          matchStartRef.current = 0
+          setMatchProgress(prev => Math.max(0, prev - dt * 2))
+        }
       }
     } else if (cv?.alive) {
       matchStartRef.current = 0
