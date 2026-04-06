@@ -17,6 +17,7 @@ import { PitchFusion, type FusedPitch, DEFAULT_FUSION_CONFIG } from './pitchFusi
 import { computeLayout, renderStaff, drawTargetNote, drawVoiceOrb, drawCentsIndicator, drawNoteHeadWithStem, staffPositionToY, type TrailPoint, type StaffLayout } from './staffRenderer'
 import { NOTE_COLORS } from '@/lib/fsrs'
 import { initAudio, playPianoNote } from './audioEngine'
+import { extractNotesFromXML, notesToSemitoneArray, type ExtractionResult } from './extractNotes'
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -89,6 +90,74 @@ export default function NoteRunner() {
   const [currentNoteName, setCurrentNoteName] = useState('')
   const [matchProgress, setMatchProgress] = useState(0)
 
+  // ─── Custom MusicXML songs ──────────────────────────────────────────
+  const [customSongs, setCustomSongs] = useState<{ name: string; notes: number[]; description: string }[]>([])
+  const [loadingXML, setLoadingXML] = useState(false)
+  const [xmlParts, setXmlParts] = useState<string[]>([])
+  const [xmlResult, setXmlResult] = useState<ExtractionResult | null>(null)
+  const [showPartPicker, setShowPartPicker] = useState(false)
+
+  const handleMusicXML = useCallback(async (file: File) => {
+    setLoadingXML(true)
+    try {
+      const ext = file.name.split('.').pop()?.toLowerCase()
+      let data: string | Uint8Array
+      if (ext === 'mxl') {
+        data = new Uint8Array(await file.arrayBuffer())
+      } else {
+        data = await file.text()
+      }
+      const result = await extractNotesFromXML(data)
+      setXmlResult(result)
+      setXmlParts(result.parts)
+      if (result.parts.length > 1) {
+        setShowPartPicker(true)
+      } else {
+        addCustomSong(result, 0)
+      }
+    } catch (err) {
+      console.error('MusicXML parse error:', err)
+    }
+    setLoadingXML(false)
+  }, [])
+
+  const addCustomSong = useCallback((result: ExtractionResult, partIdx: number) => {
+    const semis = notesToSemitoneArray(result.notes, partIdx)
+    if (semis.length === 0) return
+    const partLabel = result.parts.length > 1 ? ` (${result.parts[partIdx]})` : ''
+    const song = {
+      name: `${result.title}${partLabel}`,
+      notes: semis,
+      description: `Imported · ${semis.length} notes`,
+    }
+    setCustomSongs(prev => [...prev, song])
+    setSelectedSong(SONGS.length + customSongs.length) // select the new song
+    setShowPartPicker(false)
+    setXmlResult(null)
+  }, [customSongs.length])
+
+  const loadSampleScore = useCallback(async (url: string, name: string) => {
+    setLoadingXML(true)
+    try {
+      const resp = await fetch(url)
+      const text = await resp.text()
+      const result = await extractNotesFromXML(text)
+      setXmlResult(result)
+      setXmlParts(result.parts)
+      if (result.parts.length > 1) {
+        setShowPartPicker(true)
+      } else {
+        addCustomSong(result, 0)
+      }
+    } catch (err) {
+      console.error('Sample load error:', err)
+    }
+    setLoadingXML(false)
+  }, [addCustomSong])
+
+  // Merge built-in + custom songs
+  const allSongs = [...SONGS, ...customSongs]
+
   // Difficulty settings
   const HOLD_DURATION: Record<Difficulty, number> = { easy: 400, medium: 600, hard: 800 }
   const TOLERANCE: Record<Difficulty, number> = { easy: 1.5, medium: 1.0, hard: 0.6 } // semitones
@@ -115,7 +184,7 @@ export default function NoteRunner() {
 
   // ─── Start Game ─────────────────────────────────────────────────────────
   const startGame = useCallback(async () => {
-    const song = SONGS[selectedSong]
+    const song = allSongs[selectedSong]
     initAudio()
 
     // Build note objects
@@ -366,19 +435,19 @@ export default function NoteRunner() {
         {/* Song selector */}
         <div className="w-full max-w-md mb-6">
           <div className="text-xs text-gray-500 uppercase tracking-wider mb-2">Choose a Song</div>
-          <div className="space-y-1.5">
-            {SONGS.map((song, i) => (
+          <div className="space-y-1.5" style={{ maxHeight: 280, overflowY: 'auto' }}>
+            {allSongs.map((song, i) => (
               <button
                 key={i}
                 onClick={() => setSelectedSong(i)}
                 className="w-full text-left px-4 py-2.5 rounded-xl transition-all"
                 style={{
                   background: selectedSong === i ? 'rgba(139,92,246,0.15)' : 'rgba(20,20,35,0.6)',
-                  border: `1px solid ${selectedSong === i ? 'rgba(139,92,246,0.4)' : 'rgba(40,40,60,0.3)'}`,
+                  border: `1px solid ${selectedSong === i ? 'rgba(139,92,246,0.4)' : i >= SONGS.length ? 'rgba(99,102,241,0.3)' : 'rgba(40,40,60,0.3)'}`,
                 }}
               >
-                <div className="font-medium" style={{ color: selectedSong === i ? '#c4b5fd' : '#aaa' }}>
-                  {song.name}
+                <div className="font-medium" style={{ color: selectedSong === i ? '#c4b5fd' : i >= SONGS.length ? '#a5b4fc' : '#aaa' }}>
+                  {i >= SONGS.length ? '🎵 ' : ''}{song.name}
                 </div>
                 <div className="text-xs" style={{ color: selectedSong === i ? '#8b8b9e' : '#555' }}>
                   {song.description} · {song.notes.length} notes
@@ -386,6 +455,50 @@ export default function NoteRunner() {
               </button>
             ))}
           </div>
+
+          {/* Import from MusicXML */}
+          <div className="mt-3 pt-3" style={{ borderTop: '1px solid rgba(60,60,80,0.2)' }}>
+            <div className="text-xs text-gray-600 mb-2">Load Your Music</div>
+            <div className="flex gap-2">
+              <label className="flex-1 cursor-pointer px-3 py-2 rounded-xl text-center text-xs font-medium transition-all hover:bg-indigo-500/10"
+                style={{ background: 'rgba(99,102,241,0.08)', border: '1px dashed rgba(99,102,241,0.3)', color: '#818cf8' }}>
+                Upload MusicXML
+                <input type="file" accept=".xml,.musicxml,.mxl" className="hidden"
+                  onChange={e => { const f = e.target.files?.[0]; if (f) handleMusicXML(f); e.target.value = '' }} />
+              </label>
+              <select onChange={e => {
+                if (!e.target.value) return
+                const [url, name] = e.target.value.split('|')
+                loadSampleScore(url, name)
+                e.target.value = ''
+              }}
+                className="px-3 py-2 rounded-xl text-xs bg-transparent cursor-pointer"
+                style={{ background: 'rgba(20,20,35,0.6)', border: '1px solid rgba(60,60,80,0.3)', color: '#888' }}
+                value="">
+                <option value="">Sample Scores</option>
+                <option value="/musicxml/barnby-crossing-the-bar-satb.musicxml|Crossing the Bar">Crossing the Bar</option>
+                <option value="/musicxml/bach-bwv-244-03-chorale.musicxml|St. Matthew Passion">Bach — St. Matthew</option>
+                <option value="/musicxml/amazing-grace-hymn.xml|Amazing Grace">Amazing Grace</option>
+              </select>
+            </div>
+            {loadingXML && <div className="text-xs text-indigo-400 mt-1 animate-pulse">Parsing score...</div>}
+          </div>
+
+          {/* Part picker modal */}
+          {showPartPicker && xmlResult && (
+            <div className="mt-3 p-3 rounded-xl" style={{ background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.3)' }}>
+              <div className="text-xs text-indigo-300 mb-2">Pick a voice part:</div>
+              <div className="flex gap-2 flex-wrap">
+                {xmlParts.map((name, i) => (
+                  <button key={i} onClick={() => addCustomSong(xmlResult, i)}
+                    className="px-3 py-1.5 rounded-lg text-xs font-medium transition-all hover:bg-indigo-500/20"
+                    style={{ border: '1px solid rgba(99,102,241,0.4)', color: '#a5b4fc' }}>
+                    {name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Difficulty */}
@@ -450,7 +563,7 @@ export default function NoteRunner() {
           </div>
           <div className="text-center">
             <div className="text-xs text-gray-500">SONG</div>
-            <div className="text-lg font-medium text-gray-300">{SONGS[selectedSong].name}</div>
+            <div className="text-lg font-medium text-gray-300">{allSongs[selectedSong].name}</div>
           </div>
         </div>
         <div className="flex gap-4">
@@ -481,7 +594,7 @@ export default function NoteRunner() {
       </div>
 
       <div className="absolute top-3 right-4 text-right">
-        <div className="text-xs text-gray-500">{SONGS[selectedSong].name}</div>
+        <div className="text-xs text-gray-500">{allSongs[selectedSong].name}</div>
         <div className="text-sm text-gray-400">{displayState.notesHit} / {displayState.totalNotes}</div>
       </div>
 
