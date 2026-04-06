@@ -868,6 +868,19 @@ export default function PitchDefender() {
                 <div className="text-xs font-normal mt-0.5 opacity-60">SRS flashcard practice</div>
               </a>
               <a
+                href="/pitch-defender/pitchforks"
+                className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
+                style={{
+                  background: 'rgba(74, 222, 128, 0.1)',
+                  color: '#4ade80',
+                  border: '2px solid rgba(74, 222, 128, 0.3)',
+                  fontFamily: 'monospace',
+                }}
+              >
+                Pitchforks
+                <div className="text-xs font-normal mt-0.5 opacity-60">Frankenstein interval game</div>
+              </a>
+              <a
                 href="/pitch-defender/retro"
                 className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
                 style={{
