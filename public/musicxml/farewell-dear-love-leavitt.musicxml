@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE score-partwise PUBLIC "-//Recordare//DTD MusicXML 4.0 Partwise//EN" "http://www.musicxml.org/dtds/partwise.dtd">
+<score-partwise version="4.0">
+  <work>
+    <work-title>Farewell, Dear Love</work-title>
+  </work>
+  <identification>
+    <creator type="composer">Robert Jones (1577-1617)</creator>
+    <creator type="arranger">John Leavitt</creator>
+    <encoding>
+      <encoding-date>2026-04-06</encoding-date>
+      <software>Jarvis — transcribed from sheet music photos</software>
+    </encoding>
+  </identification>
+  <part-list>
+    <score-part id="P1">
+      <part-name>Tenor</part-name>
+      <part-abbreviation>T</part-abbreviation>
+    </score-part>
+  </part-list>
+  <part id="P1">
+    <!-- ============ FAREWELL BLOCK (mm. 1-5) ============ -->
+    <measure number="1">
+      <attributes>
+        <divisions>4</divisions>
+        <key><fifths>4</fifths><mode>major</mode></key>
+        <time><beats>4</beats><beat-type>4</beat-type></time>
+        <clef><sign>G</sign><line>2</line><clef-octave-change>-1</clef-octave-change></clef>
+      </attributes>
+      <direction placement="above">
+        <direction-type><words default-y="15" font-size="10" font-weight="bold">Andante</words></direction-type>
+        <sound tempo="62"/>
+      </direction>
+      <direction placement="below">
+        <direction-type><dynamics><mp/></dynamics></direction-type>
+      </direction>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>8</duration><voice>1</voice><type>half</type>
+        <lyric number="1"><syllabic>begin</syllabic><text>Fare</text></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>8</duration><voice>1</voice><type>half</type>
+        <lyric number="1"><syllabic>end</syllabic><text>well,</text></lyric></note>
+    </measure>
+
+    <measure number="2">
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>8</duration><voice>1</voice><type>half</type>
+        <lyric number="1"><syllabic>begin</syllabic><text>Fare</text></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>8</duration><voice>1</voice><type>half</type>
+        <lyric number="1"><syllabic>end</syllabic><text>well,</text></lyric></note>
+    </measure>
+
+    <measure number="3">
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>8</duration><voice>1</voice><type>half</type>
+        <lyric number="1"><syllabic>begin</syllabic><text>Fare</text></lyric></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>8</duration><voice>1</voice><type>half</type>
+        <lyric number="1"><syllabic>end</syllabic><text>well,</text></lyric></note>
+    </measure>
+
+    <measure number="4">
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>8</duration><voice>1</voice><type>half</type>
+        <lyric number="1"><syllabic>begin</syllabic><text>Fare</text></lyric></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>8</duration><voice>1</voice><type>half</type>
+        <lyric number="1"><syllabic>end</syllabic><text>well,</text></lyric></note>
+    </measure>
+
+    <measure number="5">
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>8</duration><voice>1</voice><type>half</type>
+        <lyric number="1"><syllabic>begin</syllabic><text>Fare</text></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>8</duration><voice>1</voice><type>half</type>
+        <lyric number="1"><syllabic>end</syllabic><text>well,</text></lyric></note>
+    </measure>
+
+    <!-- ============ VERSE 1a: "dear love, since thou wilt needs be gone" ============ -->
+    <measure number="6">
+      <note><rest/><duration>8</duration><voice>1</voice><type>half</type></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type>
+        <lyric number="1"><syllabic>single</syllabic><text>dear</text></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type>
+        <lyric number="1"><syllabic>single</syllabic><text>love,</text></lyric></note>
+    </measure>
+
+    <measure number="7">
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type>
+        <lyric number="1"><syllabic>single</syllabic><text>since</text></lyric></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type>
+        <lyric number="1"><syllabic>single</syllabic><text>thou</text></lyric></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type>
+        <lyric number="1"><syllabic>single</syllabic><text>wilt</text></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type>
+        <lyric number="1"><syllabic>single</syllabic><text>needs</text></lyric></note>
+    </measure>
+
+    <measure number="8">
+      <note><pitch><step>F</step><alter>1</alter><octave>3</octave></pitch><duration>8</duration><voice>1</voice><type>half</type>
+        <lyric number="1"><syllabic>single</syllabic><text>be</text></lyric></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>8</duration><voice>1</voice><type>half</type>
+        <lyric number="1"><syllabic>single</syllabic><text>gone,</text></lyric></note>
+    </measure>
+
+    <!-- ============ VERSE 1b: "Mine eyes do show my life is almost done" ============ -->
+    <measure number="9">
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type>
+        <lyric number="1"><syllabic>single</syllabic><text>Mine</text></lyric></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type>
+        <lyric number="1"><syllabic>single</syllabic><text>eyes</text></lyric></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type>
+        <lyric number="1"><syllabic>single</syllabic><text>do</text></lyric></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type>
+        <lyric number="1"><syllabic>single</syllabic><text>show</text></lyric></note>
+    </measure>
+
+    <measure number="10">
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type>
+        <lyric number="1"><syllabic>single</syllabic><text>my</text></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type>
+        <lyric number="1"><syllabic>single</syllabic><text>life</text></lyric></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>3</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type>
+        <lyric number="1"><syllabic>single</syllabic><text>is</text></lyric></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type>
+        <lyric number="1"><syllabic>begin</syllabic><text>al</text></lyric></note>
+    </measure>
+
+    <measure number="11">
+      <note><pitch><step>F</step><alter>1</alter><octave>3</octave></pitch><duration>8</duration><voice>1</voice><type>half</type>
+        <lyric number="1"><syllabic>end</syllabic><text>most</text></lyric></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>8</duration><voice>1</voice><type>half</type>
+        <lyric number="1"><syllabic>single</syllabic><text>done.</text></lyric></note>
+    </measure>
+
+    <measure number="12">
+      <note><rest/><duration>16</duration><voice>1</voice><type>whole</type></note>
+    </measure>
+
+    <!-- ============ REFRAIN: "Nay, I will never die" ============ -->
+    <measure number="13">
+      <direction placement="below">
+        <direction-type><dynamics><mf/></dynamics></direction-type>
+      </direction>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>8</duration><voice>1</voice><type>half</type>
+        <lyric number="1"><syllabic>single</syllabic><text>Nay,</text></lyric></note>
+      <note><rest/><duration>4</duration><voice>1</voice><type>quarter</type></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type>
+        <lyric number="1"><syllabic>single</syllabic><text>I</text></lyric></note>
+    </measure>
+
+    <measure number="14">
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type>
+        <lyric number="1"><syllabic>single</syllabic><text>will</text></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type>
+        <lyric number="1"><syllabic>begin</syllabic><text>nev</text></lyric></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type>
+        <lyric number="1"><syllabic>end</syllabic><text>er</text></lyric></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type>
+        <lyric number="1"><syllabic>single</syllabic><text>die,</text></lyric></note>
+    </measure>
+
+    <measure number="15">
+      <note><rest/><duration>16</duration><voice>1</voice><type>whole</type></note>
+    </measure>
+
+    <!-- ============ "so long as I can spy" ============ -->
+    <measure number="16">
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type>
+        <lyric number="1"><syllabic>single</syllabic><text>so</text></lyric></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type>
+        <lyric number="1"><syllabic>single</syllabic><text>long</text></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type>
+        <lyric number="1"><syllabic>single</syllabic><text>as</text></lyric></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>3</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type>
+        <lyric number="1"><syllabic>single</syllabic><text>I</text></lyric></note>
+    </measure>
+
+    <measure number="17">
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>8</duration><voice>1</voice><type>half</type>
+        <lyric number="1"><syllabic>single</syllabic><text>can</text></lyric></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>8</duration><voice>1</voice><type>half</type>
+        <lyric number="1"><syllabic>single</syllabic><text>spy,</text></lyric></note>
+    </measure>
+
+    <measure number="18">
+      <note><rest/><duration>16</duration><voice>1</voice><type>whole</type></note>
+    </measure>
+
+    <!-- ============ "There be many more, though that she do go" ============ -->
+    <measure number="19">
+      <direction placement="below">
+        <direction-type><dynamics><mp/></dynamics></direction-type>
+      </direction>
+      <note><rest/><duration>4</duration><voice>1</voice><type>quarter</type></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type>
+        <lyric number="1"><syllabic>single</syllabic><text>There</text></lyric></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type>
+        <lyric number="1"><syllabic>single</syllabic><text>be</text></lyric></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type>
+        <lyric number="1"><syllabic>begin</syllabic><text>ma</text></lyric></note>
+    </measure>
+
+    <measure number="20">
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>8</duration><voice>1</voice><type>half</type>
+        <lyric number="1"><syllabic>end</syllabic><text>ny</text></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>8</duration><voice>1</voice><type>half</type>
+        <lyric number="1"><syllabic>single</syllabic><text>more,</text></lyric></note>
+    </measure>
+
+    <measure number="21">
+      <note><rest/><duration>4</duration><voice>1</voice><type>quarter</type></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type>
+        <lyric number="1"><syllabic>single</syllabic><text>though</text></lyric></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type>
+        <lyric number="1"><syllabic>single</syllabic><text>that</text></lyric></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type>
+        <lyric number="1"><syllabic>single</syllabic><text>she</text></lyric></note>
+    </measure>
+
+    <measure number="22">
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type>
+        <lyric number="1"><syllabic>single</syllabic><text>do</text></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type>
+        <lyric number="1"><syllabic>single</syllabic><text>go,</text></lyric></note>
+      <note><rest/><duration>8</duration><voice>1</voice><type>half</type></note>
+    </measure>
+
+    <measure number="23">
+      <note><rest/><duration>16</duration><voice>1</voice><type>whole</type></note>
+    </measure>
+
+    <!-- ============ "There be many more, I fear not" ============ -->
+    <measure number="24">
+      <note><rest/><duration>4</duration><voice>1</voice><type>quarter</type></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type>
+        <lyric number="1"><syllabic>single</syllabic><text>There</text></lyric></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type>
+        <lyric number="1"><syllabic>single</syllabic><text>be</text></lyric></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type>
+        <lyric number="1"><syllabic>begin</syllabic><text>ma</text></lyric></note>
+    </measure>
+
+    <measure number="25">
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>8</duration><voice>1</voice><type>half</type>
+        <lyric number="1"><syllabic>end</syllabic><text>ny</text></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>8</duration><voice>1</voice><type>half</type>
+        <lyric number="1"><syllabic>single</syllabic><text>more,</text></lyric></note>
+    </measure>
+
+    <measure number="26">
+      <note><rest/><duration>8</duration><voice>1</voice><type>half</type></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type>
+        <lyric number="1"><syllabic>single</syllabic><text>I</text></lyric></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>3</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type>
+        <lyric number="1"><syllabic>single</syllabic><text>fear</text></lyric></note>
+    </measure>
+
+    <measure number="27">
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>8</duration><voice>1</voice><type>half</type>
+        <lyric number="1"><syllabic>single</syllabic><text>not.</text></lyric></note>
+      <note><rest/><duration>8</duration><voice>1</voice><type>half</type></note>
+    </measure>
+
+    <measure number="28">
+      <note><rest/><duration>16</duration><voice>1</voice><type>whole</type></note>
+    </measure>
+
+    <!-- ============ "Why then let her go, I care not" ============ -->
+    <measure number="29">
+      <direction placement="below">
+        <direction-type><dynamics><p/></dynamics></direction-type>
+      </direction>
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type>
+        <lyric number="1"><syllabic>single</syllabic><text>Why</text></lyric></note>
+      <note><rest/><duration>4</duration><voice>1</voice><type>quarter</type></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type>
+        <lyric number="1"><syllabic>single</syllabic><text>then</text></lyric></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type>
+        <lyric number="1"><syllabic>single</syllabic><text>let</text></lyric></note>
+    </measure>
+
+    <measure number="30">
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type>
+        <lyric number="1"><syllabic>single</syllabic><text>her</text></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type>
+        <lyric number="1"><syllabic>single</syllabic><text>go,</text></lyric></note>
+      <note><rest/><duration>8</duration><voice>1</voice><type>half</type></note>
+    </measure>
+
+    <measure number="31">
+      <note><rest/><duration>4</duration><voice>1</voice><type>quarter</type></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type>
+        <lyric number="1"><syllabic>single</syllabic><text>I</text></lyric></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>3</octave></pitch><duration>8</duration><voice>1</voice><type>half</type>
+        <lyric number="1"><syllabic>single</syllabic><text>care</text></lyric></note>
+    </measure>
+
+    <measure number="32">
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>16</duration><voice>1</voice><type>whole</type>
+        <notations><fermata type="upright"/></notations>
+        <lyric number="1"><syllabic>single</syllabic><text>not.</text></lyric></note>
+      <barline location="right"><bar-style>light-heavy</bar-style></barline>
+    </measure>
+  </part>
+</score-partwise>

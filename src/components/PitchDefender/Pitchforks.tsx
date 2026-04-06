@@ -725,6 +725,8 @@ export default function Pitchforks() {
           {/* Sample scores */}
           <div className="flex gap-1">
             {[
+              { url: '/musicxml/farewell-dear-love-leavitt.musicxml', label: 'Farewell (Leavitt)' },
+              { url: '/musicxml/false-phyllis-wilson.musicxml', label: 'False Phyllis' },
               { url: '/musicxml/barnby-crossing-the-bar-satb.musicxml', label: 'Crossing the Bar' },
               { url: '/musicxml/amazing-grace-hymn.xml', label: 'Amazing Grace' },
             ].map(s => (

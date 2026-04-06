@@ -570,7 +570,7 @@ export default function RetroBlaster() {
       const sprite = alien.frame === 0 ? ALIEN_SPRITE_A : ALIEN_SPRITE_B
       const color = isActive
         ? `hsl(${alien.hue}, 90%, 70%)`
-        : `hsl(${alien.hue}, 40%, 30%)`
+        : `hsl(${alien.hue}, 60%, 45%)`
 
       // Draw alien — active ones slightly bigger
       if (isActive) {
@@ -695,7 +695,7 @@ export default function RetroBlaster() {
 
     // Check if clicked on a note button
     const unlocked = gs.unlockedNotes
-    const btnW = Math.min(20, (W - 20) / unlocked.length - 2)
+    const btnW = Math.min(26, (W - 20) / unlocked.length - 2)
     const btnStartX = (W - unlocked.length * (btnW + 2)) / 2
     const btnY = H - 18
 

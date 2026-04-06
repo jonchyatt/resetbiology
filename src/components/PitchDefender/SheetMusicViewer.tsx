@@ -637,7 +637,9 @@ export default function SheetMusicViewer({
           <option value="amazing-grace-hymn.xml">Amazing Grace (Hymn)</option>
           <option value="bach-bwv-244-03-chorale.musicxml">Bach — St. Matthew Passion</option>
           <option value="bach-bwv-140-07-chorale.musicxml">Bach — Sleepers Awake</option>
-          <option value="farewell-dear-love-jones.mxl">Farewell, Dear Love — Jones</option>
+          <option value="farewell-dear-love-leavitt.musicxml">Farewell — Leavitt arr. (Tenor)</option>
+          <option value="false-phyllis-wilson.musicxml">False Phyllis — Wilson (Tenor)</option>
+          <option value="farewell-dear-love-jones.mxl">Farewell — Jones original (SATB)</option>
           <option value="barnby-crossing-the-bar-satb.musicxml">Barnby — Crossing the Bar</option>
           <option value="mozart-requiem-kyrie-satb.musicxml">Mozart — Requiem Kyrie</option>
         </select>

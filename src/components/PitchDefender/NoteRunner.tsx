@@ -159,9 +159,9 @@ export default function NoteRunner() {
   const allSongs = [...SONGS, ...customSongs]
 
   // Difficulty settings
-  const HOLD_DURATION: Record<Difficulty, number> = { easy: 400, medium: 600, hard: 800 }
-  const TOLERANCE: Record<Difficulty, number> = { easy: 1.5, medium: 1.0, hard: 0.6 } // semitones
-  const SCROLL_SPEED: Record<Difficulty, number> = { easy: 0.08, medium: 0.12, hard: 0.15 } // per second
+  const HOLD_DURATION: Record<Difficulty, number> = { easy: 300, medium: 500, hard: 700 }
+  const TOLERANCE: Record<Difficulty, number> = { easy: 2.5, medium: 1.5, hard: 0.8 } // semitones
+  const SCROLL_SPEED: Record<Difficulty, number> = { easy: 0.06, medium: 0.10, hard: 0.14 } // per second
 
   // ─── Canvas Setup ───────────────────────────────────────────────────────
   const updateLayout = useCallback(() => {
@@ -281,7 +281,7 @@ export default function NoteRunner() {
         setCurrentNoteName(note.name)
 
         // Check if player is singing the right pitch
-        if (pitch?.isActive && pitch.isSettled) {
+        if (pitch?.isActive) {
           const deviation = Math.abs(pitch.staffPosition - note.semitones)
           if (deviation <= TOLERANCE[difficulty]) {
             // Correct pitch — accumulate match progress
@@ -480,6 +480,8 @@ export default function NoteRunner() {
                 style={{ background: 'rgba(20,20,35,0.6)', border: '1px solid rgba(60,60,80,0.3)', color: '#888' }}
                 value="">
                 <option value="">Sample Scores</option>
+                <option value="/musicxml/farewell-dear-love-leavitt.musicxml|Farewell Dear Love (Leavitt)">Farewell — Leavitt (Tenor)</option>
+                <option value="/musicxml/false-phyllis-wilson.musicxml|False Phyllis (Wilson)">False Phyllis — Wilson (Tenor)</option>
                 <option value="/musicxml/barnby-crossing-the-bar-satb.musicxml|Crossing the Bar">Crossing the Bar</option>
                 <option value="/musicxml/bach-bwv-244-03-chorale.musicxml|St. Matthew Passion">Bach — St. Matthew</option>
                 <option value="/musicxml/amazing-grace-hymn.xml|Amazing Grace">Amazing Grace</option>
