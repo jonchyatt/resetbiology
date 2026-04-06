@@ -621,6 +621,7 @@ export default function ChoirPractice() {
           <div className="text-xs text-gray-600 uppercase tracking-wider mb-2 text-center">Or try a sample</div>
           <div className="space-y-1.5">
             {[
+              { url: '/musicxml/farewell-dear-love-jones.mxl', name: 'Farewell, Dear Love — Robert Jones (SATB)' },
               { url: '/musicxml/barnby-crossing-the-bar-satb.musicxml', name: 'Barnby — Crossing the Bar (SATB)' },
               { url: '/musicxml/bach-bwv-244-03-chorale.musicxml', name: 'Bach — St. Matthew Passion Chorale' },
               { url: '/musicxml/bach-bwv-140-07-chorale.musicxml', name: 'Bach — Sleepers Awake Chorale' },
