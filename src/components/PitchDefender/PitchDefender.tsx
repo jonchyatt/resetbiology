@@ -929,6 +929,8 @@ export default function PitchDefender() {
               Parent / Teacher Settings
             </button>
             <div className="flex gap-3 text-[10px] text-gray-700">
+              <a href="/pitch-defender/note-entry" className="hover:text-gray-500 transition-colors">Note Entry</a>
+              <span>&middot;</span>
               <a href="/pitch-defender/staff-tester" className="hover:text-gray-500 transition-colors">Staff Tester</a>
               <span>&middot;</span>
               <a href="/pitch-defender/crepe-benchmark" className="hover:text-gray-500 transition-colors">Pitch Benchmark</a>
