@@ -531,8 +531,8 @@ export default function Pitchforks() {
 
         // Attack timer bar — wider, more visible
         const barW = 40
-        const baseTime = level <= 1 ? 25 : level <= 2 ? 18 : 12
-        const barPct = Math.max(0, v.attackTimer / (baseTime + gs.villagers.indexOf(v) * (level <= 2 ? 6 : 4)))
+        const baseTime = gs.level <= 1 ? 25 : gs.level <= 2 ? 18 : 12
+        const barPct = Math.max(0, v.attackTimer / (baseTime + gs.villagers.indexOf(v) * (gs.level <= 2 ? 6 : 4)))
         ctx.fillStyle = barPct > 0.3 ? '#fbbf24' : '#ef4444'
         ctx.fillRect(v.x - 5, v.y - 3, barW * barPct, 3)
         ctx.strokeStyle = '#555'
