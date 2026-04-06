@@ -416,7 +416,7 @@ export default function ChoirPractice() {
     flowTimerRef.current = 0
 
     // Start pitch detection
-    const fusion = new PitchFusion({ enableML: true, noiseGateDb: -45 })
+    const fusion = new PitchFusion({ enableML: false, noiseGateDb: -45 }) // ML disabled — CREPE hangs in production
     fusionRef.current = fusion
     await fusion.start(p => { pitchRef.current = p })
 
