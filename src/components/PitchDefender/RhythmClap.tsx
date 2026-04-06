@@ -588,62 +588,149 @@ export default function RhythmClap() {
         }} />
       </div>
 
-      {/* Rhythm notation display */}
+      {/* Staff notation display */}
       <div className="px-4 mt-4 pointer-events-none">
-        <div className="relative h-20 overflow-hidden rounded-xl" style={{ background: 'rgba(15,15,25,0.6)' }}>
-          {/* Beat grid lines */}
-          {Array.from({ length: totalBeats + 1 }).map((_, i) => {
-            const x = (i / totalBeats) * 100
-            const isMeasure = i % pattern.timeSignature[0] === 0
+        <div className="relative overflow-hidden rounded-xl" style={{ background: 'rgba(15,15,25,0.6)', height: 100, padding: '8px 0' }}>
+          {/* 5 staff lines */}
+          {[0, 1, 2, 3, 4].map(line => (
+            <div key={`staff-${line}`} className="absolute left-0 right-0" style={{
+              top: `${20 + line * 15}%`,
+              height: 1,
+              background: 'rgba(120,120,160,0.25)',
+            }} />
+          ))}
+
+          {/* Time signature */}
+          <div className="absolute flex flex-col items-center justify-center" style={{
+            left: 4, top: '18%', height: '64%', width: 20,
+          }}>
+            <span className="text-xs font-bold text-gray-500 leading-none">{pattern.timeSignature[0]}</span>
+            <span className="text-xs font-bold text-gray-500 leading-none">{pattern.timeSignature[1]}</span>
+          </div>
+
+          {/* Barlines at measure boundaries */}
+          {Array.from({ length: pattern.measures + 1 }).map((_, i) => {
+            const x = (i * pattern.timeSignature[0] / totalBeats) * 100
             return (
-              <div key={i} className="absolute top-0 bottom-0" style={{
+              <div key={`bar-${i}`} className="absolute" style={{
                 left: `${x}%`,
+                top: '18%', height: '64%',
+                width: i === pattern.measures ? 3 : 1,
+                background: i === pattern.measures ? 'rgba(140,140,180,0.5)' : 'rgba(120,120,160,0.35)',
+              }} />
+            )
+          })}
+
+          {/* Beat tick marks (light, below staff) */}
+          {Array.from({ length: totalBeats }).map((_, i) => {
+            const x = (i / totalBeats) * 100
+            const isBeat1 = i % pattern.timeSignature[0] === 0
+            if (isBeat1) return null
+            return (
+              <div key={`tick-${i}`} className="absolute" style={{
+                left: `${x}%`,
+                top: '82%', height: '8%',
                 width: 1,
-                background: isMeasure ? 'rgba(100,100,140,0.3)' : 'rgba(60,60,80,0.15)',
+                background: 'rgba(80,80,110,0.2)',
               }} />
             )
           })}
 
           {/* Now line */}
-          <div className="absolute top-0 bottom-0 z-10 transition-all" style={{
+          <div className="absolute z-10 transition-all" style={{
             left: `${progress * 100}%`,
+            top: '10%', bottom: '5%',
             width: 2,
             background: '#ef4444',
             boxShadow: '0 0 8px rgba(239,68,68,0.5)',
           }} />
 
-          {/* Rhythm events */}
+          {/* Rhythm events as staff notation */}
           {pattern.events.map((event, i) => {
             const x = (event.beat / totalBeats) * 100
             const w = (event.duration / totalBeats) * 100
             const isPast = event.beat < currentBeat
             const isNote = event.type === 'note'
+            const noteColor = event.hitQuality
+              ? qualityColors[event.hitQuality]
+              : isPast ? 'rgba(239,68,68,0.35)' : '#f87171'
+
+            if (!isNote) {
+              // Rest — show rest symbol centered on staff
+              return (
+                <div key={i} className="absolute flex items-center justify-center" style={{
+                  left: `${x}%`, width: `${Math.max(w, 2)}%`,
+                  top: '30%', height: '40%',
+                  opacity: isPast ? 0.3 : 0.7,
+                }}>
+                  <span className="text-sm" style={{ color: 'rgba(150,150,180,0.6)' }}>
+                    {restSymbol(event.duration)}
+                  </span>
+                </div>
+              )
+            }
+
+            // Note head on middle staff line (line 3 = 50%)
+            const stemUp = true
+            const noteY = 50 // middle line (percent)
+            const isFilled = event.duration <= 1 // quarter and shorter = filled
+            const hasDot = event.duration === 1.5 || event.duration === 0.75
 
             return (
-              <div key={i} className="absolute flex items-center justify-center" style={{
-                left: `${x}%`,
-                width: `${Math.max(w, 1.5)}%`,
-                top: isNote ? '20%' : '35%',
-                height: isNote ? '60%' : '30%',
+              <div key={i} className="absolute" style={{
+                left: `${x}%`, width: `${Math.max(w, 2)}%`,
+                top: 0, bottom: 0,
                 opacity: isPast ? 0.4 : 1,
               }}>
-                {isNote ? (
-                  <div className="w-full h-full rounded-lg flex items-center justify-center" style={{
-                    background: event.hitQuality
-                      ? `${qualityColors[event.hitQuality]}20`
-                      : isPast ? 'rgba(239,68,68,0.1)' : 'rgba(239,68,68,0.15)',
-                    border: `2px solid ${event.hitQuality
-                      ? qualityColors[event.hitQuality]
-                      : isPast ? 'rgba(239,68,68,0.2)' : 'rgba(239,68,68,0.4)'}`,
+                {/* Note head (ellipse) */}
+                <div className="absolute" style={{
+                  left: '50%', top: `${noteY}%`,
+                  transform: 'translate(-50%, -50%) rotate(-10deg)',
+                  width: 10, height: 7,
+                  borderRadius: '50%',
+                  background: isFilled ? noteColor : 'transparent',
+                  border: `2px solid ${noteColor}`,
+                  boxShadow: event.hitQuality === 'perfect' ? `0 0 6px ${noteColor}` : 'none',
+                }} />
+                {/* Dot for dotted notes */}
+                {hasDot && (
+                  <div className="absolute" style={{
+                    left: 'calc(50% + 9px)', top: `${noteY - 4}%`,
+                    width: 3, height: 3, borderRadius: '50%',
+                    background: noteColor,
+                  }} />
+                )}
+                {/* Stem */}
+                {event.duration < 4 && (
+                  <div className="absolute" style={{
+                    left: 'calc(50% + 4px)',
+                    top: stemUp ? `${noteY - 28}%` : `${noteY + 4}%`,
+                    width: 1.5, height: '28%',
+                    background: noteColor,
+                  }} />
+                )}
+                {/* Flag for eighth notes */}
+                {event.duration === 0.5 && (
+                  <div className="absolute" style={{
+                    left: 'calc(50% + 5px)', top: `${noteY - 28}%`,
+                    fontSize: 10, color: noteColor, lineHeight: 1,
+                  }}>𝅘𝅥𝅮</div>
+                )}
+                {/* Double flag for sixteenth notes */}
+                {event.duration === 0.25 && (
+                  <div className="absolute" style={{
+                    left: 'calc(50% + 5px)', top: `${noteY - 28}%`,
+                    fontSize: 10, color: noteColor, lineHeight: 1,
+                  }}>𝅘𝅥𝅯</div>
+                )}
+                {/* Beat number below staff (for count-in feel) */}
+                {event.beat % 1 === 0 && event.beat < pattern.timeSignature[0] && (
+                  <div className="absolute text-center" style={{
+                    left: '50%', transform: 'translateX(-50%)',
+                    bottom: '2%', fontSize: 9, color: 'rgba(150,150,180,0.4)',
                   }}>
-                    <span className="text-lg" style={{
-                      color: event.hitQuality ? qualityColors[event.hitQuality] : '#f87171',
-                    }}>
-                      {noteSymbol(event.duration)}
-                    </span>
+                    {(event.beat % pattern.timeSignature[0]) + 1}
                   </div>
-                ) : (
-                  <span className="text-sm text-gray-600">{restSymbol(event.duration)}</span>
                 )}
               </div>
             )
