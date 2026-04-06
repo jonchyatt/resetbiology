@@ -832,6 +832,18 @@ export default function PitchDefender() {
                 <div className="text-xs font-normal mt-0.5 opacity-60">Guided sing-along coach</div>
               </a>
               <a
+                href="/pitch-defender/sight-reading"
+                className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
+                style={{
+                  background: 'rgba(234, 179, 8, 0.1)',
+                  color: '#fbbf24',
+                  border: '2px solid rgba(234, 179, 8, 0.3)',
+                }}
+              >
+                Sight Reading
+                <div className="text-xs font-normal mt-0.5 opacity-60">Cold-read audition prep</div>
+              </a>
+              <a
                 href="/pitch-defender/drill"
                 className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
                 style={{
