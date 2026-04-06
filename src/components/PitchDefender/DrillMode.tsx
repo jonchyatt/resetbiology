@@ -73,6 +73,7 @@ export default function DrillMode() {
   const lockDurationRef = useRef(600)
   const processingRef = useRef(false)        // [FIX HIGH] double-answer guard
   const pendingTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]) // [FIX HIGH] timer cleanup
+  const processAnswerRef = useRef<(note: string) => void>(() => {}) // stable ref for mic tick
   const sessionStatsRef = useRef<SessionStats>({ correct: 0, wrong: 0, streak: 0, maxStreak: 0, startTime: 0, cardsReviewed: 0 }) // [FIX MEDIUM] avoid stale closure
   const unlockedNotesRef = useRef<string[]>([INTRO_ORDER[0], INTRO_ORDER[1]]) // [FIX LOW] stale closure on unlock
 
@@ -175,7 +176,7 @@ export default function DrillMode() {
         if (progress >= 1) {
           lockStartRef.current = 0
           setLockProgress(0)
-          processAnswer(currentNote)
+          processAnswerRef.current(currentNote)
         }
       } else {
         lockStartRef.current = 0
@@ -184,7 +185,8 @@ export default function DrillMode() {
     }, 50)
 
     return () => clearInterval(interval)
-  }, [inputMode, phase, isListening, currentNote, processAnswer])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inputMode, phase, isListening, currentNote])
 
   // ─── Start Session ────────────────────────────────────────────────────
   const startSession = useCallback(() => {
@@ -317,6 +319,9 @@ export default function DrillMode() {
       }, 700)
     }, feedbackDuration)
   }, [currentNote, consecutiveCorrect, sessionTarget, inputMode, autoPlay, scheduleTimer])
+
+  // Keep ref in sync so mic tick always calls latest version
+  useEffect(() => { processAnswerRef.current = processAnswer }, [processAnswer])
 
   // ─── Replay Note ──────────────────────────────────────────────────────
   const replayNote = useCallback(() => {
