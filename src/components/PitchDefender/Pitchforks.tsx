@@ -22,11 +22,11 @@ import { initAudio, playPianoNote } from './audioEngine'
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
-const W = 320
-const H = 240
+const W = 480      // bigger canvas for readability
+const H = 320
 const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
 
-type Phase = 'menu' | 'playing' | 'level_intro' | 'game_over'
+type Phase = 'menu' | 'tutorial' | 'playing' | 'level_intro' | 'game_over'
 type GuideLevel = 'full' | 'partial' | 'none'
 
 interface Villager {
@@ -101,12 +101,12 @@ const PITCHFORK_SPRITE = [
   '...1...',
 ]
 
-function drawSprite(ctx: CanvasRenderingContext2D, sprite: string[], x: number, y: number, color: string) {
+function drawSprite(ctx: CanvasRenderingContext2D, sprite: string[], x: number, y: number, color: string, scale = 2) {
   ctx.fillStyle = color
   for (let row = 0; row < sprite.length; row++) {
     for (let col = 0; col < sprite[row].length; col++) {
       if (sprite[row][col] === '1') {
-        ctx.fillRect(Math.floor(x + col), Math.floor(y + row), 1, 1)
+        ctx.fillRect(Math.floor(x + col * scale), Math.floor(y + row * scale), scale, scale)
       }
     }
   }
@@ -179,12 +179,13 @@ function semiToName(s: number): string {
 
 function generateDefaultIntervals(level: number): IntervalPattern[] {
   const patterns: IntervalPattern[] = []
-  const count = 4 + level * 2
+  const count = level <= 1 ? 3 : level <= 2 ? 4 : 4 + level  // fewer villagers on early levels
 
-  // Level 1-2: steps (1-2 semitones)
+  // Level 1: unison + steps only (easiest possible)
+  // Level 2: steps (1-2 semitones)
   // Level 3-4: skips (3-4 semitones)
-  // Level 5+: leaps (5-12 semitones)
-  const maxInterval = level <= 2 ? 2 : level <= 4 ? 4 : 7 + level
+  // Level 5+: leaps (5+ semitones)
+  const maxInterval = level <= 1 ? 1 : level <= 2 ? 2 : level <= 4 ? 4 : 7 + level
 
   for (let i = 0; i < count; i++) {
     const interval = Math.floor(Math.random() * maxInterval) + 1
@@ -310,9 +311,13 @@ export default function Pitchforks() {
     // Determine guide level based on level progression
     const guide: GuideLevel = level <= 2 ? 'full' : level <= 5 ? 'partial' : 'none'
 
+    // Level 1-2: very slow, lots of time. Level 3+: gradually faster.
+    const baseAttackTime = level <= 1 ? 25 : level <= 2 ? 18 : level <= 4 ? 12 : 8
+    const stagger = level <= 2 ? 6 : 4
+
     const villagers: Villager[] = intervals.map((intv, i) => ({
-      x: W + 40 + i * 50,
-      y: 100 + Math.sin(i * 1.3) * 40,
+      x: W + 60 + i * 70,
+      y: 140 + Math.sin(i * 1.3) * 50,
       fromSemi: intv.from,
       toSemi: intv.to,
       fromName: intv.fromName,
@@ -322,7 +327,7 @@ export default function Pitchforks() {
       alive: true,
       hitTimer: 0,
       phase: 'approaching' as const,
-      attackTimer: 8 + i * 3, // staggered approach times
+      attackTimer: baseAttackTime + i * stagger,
       guideLevel: guide,
     }))
 
@@ -331,12 +336,12 @@ export default function Pitchforks() {
     gs.level = level
     setDisplayLevel(level)
 
-    // Play the first interval as a hint if guided
+    // Play the first interval as a hint if guided — 1 second each, clear gap
     if (guide !== 'none' && villagers.length > 0) {
       const v = villagers[0]
       setTimeout(() => {
-        playTone(v.fromSemi, 600)
-        setTimeout(() => playTone(v.toSemi, 600), 700)
+        playTone(v.fromSemi, 1000)
+        setTimeout(() => playTone(v.toSemi, 1000), 1200)
       }, 500)
     }
     attackPhaseRef.current = 'from'
@@ -365,10 +370,10 @@ export default function Pitchforks() {
         if (v.hitTimer > 0) v.hitTimer -= dt
         continue
       }
-      // Approach monster
+      // Approach monster — slow walk, not a sprint
       if (v.phase === 'approaching') {
-        v.x -= 15 * dt
-        if (v.x <= 80) {
+        v.x -= 10 * dt  // slower approach
+        if (v.x <= 120) {
           v.phase = 'attacking'
           sfxVillagerAttack()
         }
@@ -416,7 +421,7 @@ export default function Pitchforks() {
             // First note matched — now sing the target note
             attackPhaseRef.current = 'to'
             setCurrentPrompt(cv.guideLevel === 'none' ? 'Sing the next note!' : `Now: ${cv.toName}`)
-            if (cv.guideLevel === 'full') playTone(cv.toSemi, 500)
+            if (cv.guideLevel === 'full') playTone(cv.toSemi, 1000)
           } else {
             // Both notes matched — villager defeated!
             cv.alive = false
@@ -461,13 +466,13 @@ export default function Pitchforks() {
     ctx.fillStyle = '#1a2810'
     ctx.fillRect(0, H * 0.75, W, H * 0.25)
 
-    // Monster (left side)
-    const monsterY = H * 0.75 - 14 - 4
-    drawSprite(ctx, MONSTER_SPRITE, 30, monsterY, '#4a8a3a')
+    // Monster (left side) — scaled 2x
+    const monsterY = H * 0.7 - 28
+    drawSprite(ctx, MONSTER_SPRITE, 30, monsterY, '#4a8a3a', 2)
     // Monster health bar
     for (let i = 0; i < 5; i++) {
       ctx.fillStyle = i < gs.monsterHealth ? '#4ade80' : '#333'
-      ctx.fillRect(28 + i * 6, monsterY - 4, 5, 2)
+      ctx.fillRect(28 + i * 12, monsterY - 6, 10, 4)
     }
 
     // Villagers
@@ -492,52 +497,129 @@ export default function Pitchforks() {
         ? `hsl(0, 70%, 60%)`
         : `hsl(${hue}, 40%, 40%)`
 
-      drawSprite(ctx, VILLAGER_SPRITE_A, v.x, v.y, color)
+      // 2x scaled sprites
+      drawSprite(ctx, VILLAGER_SPRITE_A, v.x, v.y, color, 2)
 
-      // Pitchfork
+      // Pitchfork (2x)
       if (v.alive) {
-        drawSprite(ctx, PITCHFORK_SPRITE, v.x - 8, v.y + 2, isActive ? '#fbbf24' : '#888')
+        drawSprite(ctx, PITCHFORK_SPRITE, v.x - 16, v.y + 4, isActive ? '#fbbf24' : '#888', 2)
       }
 
-      // Interval label on active villager
+      // Interval label on active villager — BIG readable text
       if (isActive && v.phase === 'attacking') {
-        ctx.fillStyle = '#fff'
-        ctx.font = '5px monospace'
         ctx.textAlign = 'center'
+        const labelX = v.x + 11 // center of 2x sprite
 
         if (v.guideLevel !== 'none') {
-          ctx.fillText(`${v.fromName}→${v.toName}`, v.x + 5, v.y - 6)
+          // From note
+          ctx.fillStyle = attackPhaseRef.current === 'from' ? '#fff' : '#888'
+          ctx.font = 'bold 12px monospace'
+          ctx.fillText(v.fromName, labelX - 20, v.y - 12)
+          // Arrow
+          ctx.fillStyle = '#fbbf24'
+          ctx.font = '10px monospace'
+          ctx.fillText('→', labelX, v.y - 12)
+          // To note
+          ctx.fillStyle = attackPhaseRef.current === 'to' ? '#fff' : '#888'
+          ctx.font = 'bold 12px monospace'
+          ctx.fillText(v.toName, labelX + 20, v.y - 12)
         } else {
-          ctx.fillText(`? → ?`, v.x + 5, v.y - 6)
+          ctx.fillStyle = '#888'
+          ctx.font = 'bold 10px monospace'
+          ctx.fillText('? → ?', labelX, v.y - 10)
         }
 
-        // Attack timer bar
-        const barW = 20
-        const barPct = Math.max(0, v.attackTimer / (8 + gs.villagers.indexOf(v) * 3))
+        // Attack timer bar — wider, more visible
+        const barW = 40
+        const baseTime = level <= 1 ? 25 : level <= 2 ? 18 : 12
+        const barPct = Math.max(0, v.attackTimer / (baseTime + gs.villagers.indexOf(v) * (level <= 2 ? 6 : 4)))
         ctx.fillStyle = barPct > 0.3 ? '#fbbf24' : '#ef4444'
-        ctx.fillRect(v.x - 2, v.y - 2, barW * barPct, 1)
+        ctx.fillRect(v.x - 5, v.y - 3, barW * barPct, 3)
+        ctx.strokeStyle = '#555'
+        ctx.lineWidth = 0.5
+        ctx.strokeRect(v.x - 5, v.y - 3, barW, 3)
       }
     }
 
-    // HUD
+    // HUD — bigger text
     ctx.fillStyle = '#888'
-    ctx.font = '5px monospace'
+    ctx.font = 'bold 10px monospace'
     ctx.textAlign = 'left'
-    ctx.fillText(`SCORE ${gs.score}`, 4, 8)
+    ctx.fillText(`SCORE ${gs.score}`, 8, 14)
     ctx.textAlign = 'right'
-    ctx.fillText(`LEVEL ${gs.level}`, W - 4, 8)
+    ctx.fillText(`LEVEL ${gs.level}`, W - 8, 14)
     if (gs.combo >= 3) {
       ctx.fillStyle = gs.combo >= 10 ? '#ff6090' : '#ffc83c'
       ctx.textAlign = 'center'
-      ctx.fillText(`${gs.combo}x COMBO`, W / 2, 8)
+      ctx.font = 'bold 12px monospace'
+      ctx.fillText(`${gs.combo}x COMBO`, W / 2, 14)
     }
 
-    // Current prompt
+    // ── Pitch feedback bar at bottom ──
+    const pitchBarY = H - 30
+    const pitchBarH = 12
+    ctx.fillStyle = 'rgba(20,20,30,0.7)'
+    ctx.fillRect(20, pitchBarY, W - 40, pitchBarH)
+    ctx.strokeStyle = '#333'
+    ctx.lineWidth = 1
+    ctx.strokeRect(20, pitchBarY, W - 40, pitchBarH)
+
+    // Target zone (center)
+    ctx.fillStyle = 'rgba(74,222,128,0.15)'
+    ctx.fillRect(W / 2 - 30, pitchBarY, 60, pitchBarH)
+
+    if (pitch?.isActive && cv?.alive) {
+      const targetSemi = attackPhaseRef.current === 'from' ? cv.fromSemi : cv.toSemi
+      const deviation = pitch.staffPosition - targetSemi
+      // Map deviation to bar position (clamp to ±6 semitones)
+      const clampedDev = Math.max(-6, Math.min(6, deviation))
+      const barCenter = W / 2
+      const barRange = (W - 40) / 2
+      const dotX = barCenter + (clampedDev / 6) * barRange
+      const onTarget = Math.abs(deviation) <= 1.5
+
+      // Dot
+      ctx.fillStyle = onTarget ? '#4ade80' : '#f87171'
+      ctx.beginPath()
+      ctx.arc(dotX, pitchBarY + pitchBarH / 2, 5, 0, Math.PI * 2)
+      ctx.fill()
+
+      // Glow
+      if (onTarget) {
+        ctx.fillStyle = 'rgba(74,222,128,0.3)'
+        ctx.beginPath()
+        ctx.arc(dotX, pitchBarY + pitchBarH / 2, 10, 0, Math.PI * 2)
+        ctx.fill()
+      }
+
+      // Label
+      ctx.fillStyle = onTarget ? '#4ade80' : '#f87171'
+      ctx.font = 'bold 8px monospace'
+      ctx.textAlign = 'center'
+      ctx.fillText(pitch.note || '', dotX, pitchBarY - 3)
+    } else {
+      ctx.fillStyle = '#555'
+      ctx.font = '7px monospace'
+      ctx.textAlign = 'center'
+      ctx.fillText('sing...', W / 2, pitchBarY + pitchBarH / 2 + 3)
+    }
+
+    // Center label
+    if (cv?.alive) {
+      const targetSemi = attackPhaseRef.current === 'from' ? cv.fromSemi : cv.toSemi
+      const targetName = semiToName(targetSemi)
+      ctx.fillStyle = '#4ade80'
+      ctx.font = '7px monospace'
+      ctx.textAlign = 'center'
+      ctx.fillText(`target: ${targetName}`, W / 2, pitchBarY + pitchBarH + 10)
+    }
+
+    // Current prompt — bigger
     if (currentPrompt && cv?.alive) {
       ctx.fillStyle = '#fff'
-      ctx.font = '6px monospace'
+      ctx.font = 'bold 10px monospace'
       ctx.textAlign = 'center'
-      ctx.fillText(currentPrompt, W / 2, H - 10)
+      ctx.fillText(currentPrompt, W / 2, H - 50)
     }
 
     rafRef.current = requestAnimationFrame(gameLoop)
@@ -566,10 +648,10 @@ export default function Pitchforks() {
 
     const v = gs.villagers[nextIdx]
     if (v.guideLevel === 'full') {
-      playTone(v.fromSemi, 500)
-      setTimeout(() => playTone(v.toSemi, 500), 600)
+      playTone(v.fromSemi, 1000)
+      setTimeout(() => playTone(v.toSemi, 1000), 1200)
     } else if (v.guideLevel === 'partial') {
-      playTone(v.fromSemi, 500) // only play first note
+      playTone(v.fromSemi, 1000)
     }
     setCurrentPrompt(v.guideLevel === 'none' ? 'Listen and respond!' : `Sing: ${v.fromName}`)
   }, [spawnLevel])
@@ -639,7 +721,7 @@ export default function Pitchforks() {
           {loadingXML && <div className="text-xs text-indigo-400 mt-1 animate-pulse">Parsing...</div>}
         </div>
 
-        <button onClick={startGame}
+        <button onClick={() => setPhase('tutorial')}
           className="px-8 py-3 text-lg font-bold tracking-widest transition-all active:scale-95"
           style={{
             background: '#4ade80',
@@ -653,6 +735,76 @@ export default function Pitchforks() {
         <a href="/pitch-defender" className="mt-8 text-xs text-gray-700 hover:text-gray-500 transition-colors tracking-wider">
           ← BACK TO PITCH DEFENDER
         </a>
+      </div>
+    )
+  }
+
+  // ─── TUTORIAL ──────────────────────────────────────────────────────────
+  if (phase === 'tutorial') {
+    return (
+      <div className="fixed inset-0 bg-[#0a0812] flex flex-col items-center justify-center px-6"
+        style={{ fontFamily: 'monospace' }}>
+        <h2 className="text-2xl font-black text-[#4ade80] mb-4" style={{ textShadow: '0 0 15px rgba(74,222,128,0.3)' }}>
+          HOW TO PLAY
+        </h2>
+
+        <div className="max-w-md space-y-4 mb-8">
+          <div className="flex items-start gap-3">
+            <div className="text-2xl">🧟</div>
+            <div>
+              <div className="text-sm text-green-300 font-bold">You are the Monster</div>
+              <div className="text-xs text-gray-400">Villagers attack with musical pitchforks. Defend yourself by singing!</div>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-3">
+            <div className="text-2xl">🔊</div>
+            <div>
+              <div className="text-sm text-yellow-300 font-bold">Listen to the Two Notes</div>
+              <div className="text-xs text-gray-400">Each villager attacks with an interval — two notes played in sequence. Listen carefully! You can click "Replay" anytime to hear them again.</div>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-3">
+            <div className="text-2xl">🎤</div>
+            <div>
+              <div className="text-sm text-purple-300 font-bold">Sing Both Notes Back</div>
+              <div className="text-xs text-gray-400">First sing the starting note and hold it until the ring fills. Then sing the target note. Match the pitch to defeat the villager!</div>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-3">
+            <div className="text-2xl">📊</div>
+            <div>
+              <div className="text-sm text-cyan-300 font-bold">Watch the Pitch Bar</div>
+              <div className="text-xs text-gray-400">The bar at the bottom shows your current pitch. Green = on target. Keep it steady!</div>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-3">
+            <div className="text-2xl">🐢</div>
+            <div>
+              <div className="text-sm text-gray-300 font-bold">Level 1 is Slow</div>
+              <div className="text-xs text-gray-400">Only 3 villagers, simple steps, lots of time. Take it easy. Levels get harder gradually.</div>
+            </div>
+          </div>
+        </div>
+
+        <button onClick={startGame}
+          className="px-10 py-4 text-lg font-bold tracking-widest transition-all active:scale-95"
+          style={{
+            background: '#4ade80',
+            color: '#0a0812',
+            border: '2px solid #6ee7a0',
+            boxShadow: '0 0 20px rgba(74,222,128,0.3)',
+          }}>
+          START GAME
+        </button>
+
+        <button onClick={() => setPhase('menu')}
+          className="mt-4 text-xs text-gray-600 hover:text-gray-400 transition-colors">
+          ← Back to menu
+        </button>
       </div>
     )
   }
@@ -707,18 +859,10 @@ export default function Pitchforks() {
         style={{ imageRendering: 'pixelated' }}
       />
 
-      {/* Overlay: current target + match progress */}
-      <div className="absolute bottom-16 left-1/2 -translate-x-1/2 text-center pointer-events-none">
-        {currentPrompt && (
-          <div className="text-sm font-bold text-white mb-1" style={{
-            textShadow: '0 0 10px rgba(74,222,128,0.5)',
-            fontFamily: 'monospace',
-          }}>
-            {currentPrompt}
-          </div>
-        )}
+      {/* Overlay: replay + match progress */}
+      <div className="absolute bottom-20 left-1/2 -translate-x-1/2 text-center" style={{ fontFamily: 'monospace' }}>
         {matchProgress > 0 && (
-          <div className="w-32 h-1.5 mx-auto rounded-full overflow-hidden" style={{ background: 'rgba(40,40,60,0.6)' }}>
+          <div className="w-40 h-2 mx-auto rounded-full overflow-hidden mb-2" style={{ background: 'rgba(40,40,60,0.6)' }}>
             <div className="h-full rounded-full" style={{
               width: `${matchProgress * 100}%`,
               background: matchProgress >= 0.8 ? '#4ade80' : '#fbbf24',
@@ -726,10 +870,24 @@ export default function Pitchforks() {
             }} />
           </div>
         )}
+        {/* Replay button — always visible during play */}
+        <button onClick={() => {
+          const gs = stateRef.current
+          if (!gs) return
+          const v = gs.villagers[gs.currentVillager]
+          if (v?.alive) {
+            playTone(v.fromSemi, 1000)
+            setTimeout(() => playTone(v.toSemi, 1000), 1200)
+          }
+        }}
+          className="px-4 py-2 rounded-lg text-xs font-bold text-yellow-300 border border-yellow-600 active:scale-95 transition-all hover:bg-yellow-600/20"
+          style={{ background: 'rgba(0,0,0,0.5)' }}>
+          🔊 REPLAY NOTES
+        </button>
       </div>
 
-      {/* Stop button */}
-      <div className="absolute bottom-4 right-4">
+      {/* Bottom buttons */}
+      <div className="absolute bottom-4 flex gap-3 left-1/2 -translate-x-1/2">
         <button onClick={() => {
           if (rafRef.current) cancelAnimationFrame(rafRef.current)
           fusionRef.current?.stop()
