@@ -37,23 +37,27 @@ export interface StaffLayout {
 
 export function computeLayout(width: number, height: number): StaffLayout {
   const padding = 36
+
+  // Grand staff geometry — derived so notes ALIGN with staff lines.
+  // Constraint: middle C sits on a ledger line exactly one space (= lineSpacing)
+  // below the bottom treble line and one space above the top bass line. That
+  // means staffGap = 2 * lineSpacing. With 4 spaces per staff, the total
+  // visible height is 8*lineSpacing (two staves) + 2*lineSpacing (gap) =
+  // 10 * lineSpacing. Pick lineSpacing first, derive everything else.
+  const totalStaffHeight = height * 0.62
+  const lineSpacing = totalStaffHeight / 10           // 10 = 8 lines + 2 for gap
+  const staffGap = lineSpacing * 2                    // exact: 2 spaces between staves
+  const singleStaffHeight = lineSpacing * 4           // 5 lines, 4 spaces
+
   // Reserve space proportional to staff size (bounded for small/large screens)
-  const lineSpacingEst = (height * 0.62 * 0.82 / 2) / 4  // estimate before full calc
-  const clefAreaWidth = Math.max(Math.min(lineSpacingEst * 1.8, 82), 46)
-  const timeSigAreaWidth = Math.max(Math.min(lineSpacingEst * 0.85, 38), 22)
+  const clefAreaWidth = Math.max(Math.min(lineSpacing * 7.2, 82), 46)
+  const timeSigAreaWidth = Math.max(Math.min(lineSpacing * 3.4, 38), 22)
   const staffX = padding + clefAreaWidth + timeSigAreaWidth
   const staffRight = width - padding - 44
-
-  // Grand staff: treble on top, bass on bottom, gap in middle for middle C
-  const totalStaffHeight = height * 0.62
-  const staffGap = totalStaffHeight * 0.18
-  const singleStaffHeight = (totalStaffHeight - staffGap) / 2
 
   const centerY = height * 0.48
   const trebleBottom = centerY - staffGap / 2
   const bassTop = centerY + staffGap / 2
-
-  const lineSpacing = singleStaffHeight / 4  // 5 lines = 4 spaces
 
   const trebleLines = Array.from({ length: 5 }, (_, i) => trebleBottom - (4 - i) * lineSpacing)
   const bassLines = Array.from({ length: 5 }, (_, i) => bassTop + i * lineSpacing)

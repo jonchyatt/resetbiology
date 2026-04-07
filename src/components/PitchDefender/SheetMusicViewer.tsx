@@ -15,6 +15,7 @@
 
 import { useRef, useEffect, useState, useCallback } from 'react'
 import { usePitchDetection, type PitchInfo } from './usePitchDetection'
+import { computeLayout, renderStaff, type TrailPoint } from './staffRenderer'
 
 // ─── Note-to-Frequency lookup ───────────────────────────────────────────────
 const NOTE_NAMES_ALL = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
@@ -786,6 +787,16 @@ export default function SheetMusicViewer({
       {/* ── Practice Pitch Feedback ──────────────────────────────── */}
       {practiceActive && (
         <div className={`sticky bottom-0 z-40 px-4 py-3 border-t ${borderClass} ${bgClass}`}>
+          {/* Live grand-staff indicator — same engine as Staff Tester */}
+          <div className="max-w-3xl mx-auto mb-3 flex justify-center">
+            <LivePitchStaff
+              pitch={pitch}
+              targetNote={currentTarget}
+              width={520}
+              height={180}
+            />
+          </div>
+
           <div className="flex items-center justify-between max-w-3xl mx-auto gap-4">
             {/* Target note + Hear button */}
             <div className="text-center min-w-[80px]">
@@ -884,6 +895,109 @@ export default function SheetMusicViewer({
         </div>
       )}
     </div>
+  )
+}
+
+// =============================================================================
+// LivePitchStaff — Compact grand-staff "where my voice lands" indicator
+// =============================================================================
+//
+// Drops the StaffTester visualizer (staffRenderer + voice orb) into the
+// SheetMusicViewer practice panel. No mic of its own — feeds off the existing
+// usePitchDetection pitch from the parent so we don't double-init the mic.
+// =============================================================================
+
+interface LivePitchStaffProps {
+  pitch: PitchInfo | null
+  targetNote?: string | null
+  width?: number
+  height?: number
+}
+
+function LivePitchStaff({ pitch, targetNote, width = 480, height = 200 }: LivePitchStaffProps) {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const trailRef = useRef<TrailPoint[]>([])
+  const rafRef = useRef<number>(0)
+
+  // Convert pitch info → staffPosition (continuous semitones from C4).
+  // Use frequency for continuity (smoother orb motion than discrete note name).
+  const pitchToStaffPos = (p: PitchInfo | null): number => {
+    if (!p || !p.isActive || !p.frequency) return 0
+    return 12 * Math.log2(p.frequency / 261.63)
+  }
+
+  // Convert target note name (e.g. "E4") → semitones from C4
+  const targetToSemi = (n: string | null | undefined): number | undefined => {
+    if (!n) return undefined
+    const m = n.match(/^([A-G])(#|b)?(\d)$/)
+    if (!m) return undefined
+    const stepMap: Record<string, number> = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 }
+    let semi = stepMap[m[1]] ?? 0
+    if (m[2] === '#') semi++
+    if (m[2] === 'b') semi--
+    const octave = parseInt(m[3])
+    return semi + (octave - 4) * 12
+  }
+
+  // DPR setup
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const dpr = window.devicePixelRatio || 1
+    canvas.width = width * dpr
+    canvas.height = height * dpr
+    canvas.style.width = `${width}px`
+    canvas.style.height = `${height}px`
+    const ctx = canvas.getContext('2d')
+    if (ctx) ctx.scale(dpr, dpr)
+  }, [width, height])
+
+  // Draw loop
+  useEffect(() => {
+    const draw = () => {
+      const canvas = canvasRef.current
+      if (!canvas) { rafRef.current = requestAnimationFrame(draw); return }
+      const ctx = canvas.getContext('2d')
+      if (!ctx) return
+      const layout = computeLayout(width, height)
+
+      // Update trail
+      const now = performance.now()
+      const sp = pitchToStaffPos(pitch)
+      if (pitch?.isActive) {
+        trailRef.current.push({
+          staffPosition: sp,
+          confidence: pitch.confidence ?? 0.8,
+          timestamp: now,
+        })
+        if (trailRef.current.length > 200) trailRef.current.shift()
+      }
+      // Prune old trail
+      while (trailRef.current.length > 0 && now - trailRef.current[0].timestamp > 3000) {
+        trailRef.current.shift()
+      }
+
+      renderStaff(ctx, layout, {
+        voiceActive: pitch?.isActive ?? false,
+        staffPosition: sp,
+        confidence: pitch?.confidence ?? 0,
+        cents: pitch?.cents ?? 0,
+        isSettled: pitch?.isActive ?? false,
+        isVibrato: false,
+        trail: trailRef.current,
+        targetNote: targetToSemi(targetNote),
+      })
+      rafRef.current = requestAnimationFrame(draw)
+    }
+    rafRef.current = requestAnimationFrame(draw)
+    return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current) }
+  }, [pitch, targetNote, width, height])
+
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{ display: 'block', borderRadius: 8 }}
+    />
   )
 }
 
