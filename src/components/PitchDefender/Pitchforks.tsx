@@ -375,10 +375,10 @@ export default function Pitchforks() {
         if (v.hitTimer > 0) v.hitTimer -= dt
         continue
       }
-      // Approach monster — slow walk, not a sprint
+      // Approach monster — walk at a reasonable pace
       if (v.phase === 'approaching') {
-        v.x -= 10 * dt  // slower approach
-        if (v.x <= 120) {
+        v.x -= 60 * dt  // 60 px/s — crosses canvas in ~10s
+        if (v.x <= 200) {
           v.phase = 'attacking'
           sfxVillagerAttack()
         }
@@ -407,9 +407,12 @@ export default function Pitchforks() {
       }
     }
 
-    // ── Pitch matching for current attacking villager ──
-    // REMOVED isSettled requirement — too strict for casual singing. isActive is enough.
-    if (cv?.alive && cv.phase === 'attacking' && pitch?.isActive) {
+    // ── Pitch matching for current villager (approaching OR attacking) ──
+    // CRITICAL: must allow matching during 'approaching' phase too. Previously
+    // gated to 'attacking' only, which meant the prompt said "sing the note"
+    // but the matching code silently ignored input until the villager walked
+    // across the whole canvas (~50 seconds). Player thought game was broken.
+    if (cv?.alive && (cv.phase === 'approaching' || cv.phase === 'attacking') && pitch?.isActive) {
       const targetSemi = attackPhaseRef.current === 'from' ? cv.fromSemi : cv.toSemi
       // Octave-flexible: fold both into pitch class space (0-11), find shortest distance
       const targetMod = ((targetSemi % 12) + 12) % 12
