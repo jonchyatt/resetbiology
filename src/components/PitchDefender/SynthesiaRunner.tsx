@@ -21,7 +21,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { PitchFusion, type FusedPitch } from './pitchFusion'
 import { NOTE_COLORS } from '@/lib/fsrs'
-import { initAudio, playPianoNote } from './audioEngine'
+import { initAudio, playPianoNote, loadPianoSamples } from './audioEngine'
 import { extractNotesFromXML, notesToSemitoneArray, type ExtractionResult } from './extractNotes'
 
 // ─── Constants ──────────────────────────────────────────────────────────────
@@ -473,9 +473,105 @@ export default function SynthesiaRunner() {
       }
     }
 
+    // Pitch measurement bar (horizontal, sits just above the keyboard)
+    drawPitchBar(ctx, pitch, blocks[currentIdx])
+
     // Keyboard at bottom
     drawKeyboard(ctx, whiteKeys, keyW, blocks[currentIdx])
   }, [])
+
+  // ─── Pitch bar (Pitchforks-style horizontal indicator) ───────────────────
+  const drawPitchBar = (
+    ctx: CanvasRenderingContext2D,
+    pitch: FusedPitch | null,
+    currentBlock?: FallingBlock,
+  ) => {
+    const barH = 22
+    const margin = 16
+    const barY = FALL_AREA_H - barH - 6
+    const barX = margin
+    const barW = CANVAS_W - margin * 2
+
+    // Background panel
+    ctx.fillStyle = 'rgba(8,8,15,0.85)'
+    ctx.fillRect(barX - 2, barY - 14, barW + 4, barH + 18)
+    ctx.strokeStyle = 'rgba(100,200,255,0.35)'
+    ctx.lineWidth = 1
+    ctx.strokeRect(barX - 2, barY - 14, barW + 4, barH + 18)
+
+    // Bar track
+    ctx.fillStyle = 'rgba(20,20,40,0.9)'
+    ctx.fillRect(barX, barY, barW, barH)
+    ctx.strokeStyle = 'rgba(80,80,120,0.6)'
+    ctx.strokeRect(barX, barY, barW, barH)
+
+    // Center "target" zone
+    const centerX = barX + barW / 2
+    ctx.fillStyle = 'rgba(74,222,128,0.20)'
+    ctx.fillRect(centerX - 28, barY, 56, barH)
+    ctx.strokeStyle = 'rgba(74,222,128,0.6)'
+    ctx.beginPath()
+    ctx.moveTo(centerX, barY)
+    ctx.lineTo(centerX, barY + barH)
+    ctx.stroke()
+
+    // Title text above bar
+    ctx.fillStyle = '#9ca3af'
+    ctx.font = '10px monospace'
+    ctx.textAlign = 'left'
+    ctx.textBaseline = 'alphabetic'
+    ctx.fillText('YOUR PITCH', barX, barY - 3)
+
+    if (currentBlock) {
+      const targetName = currentBlock.name
+      ctx.fillStyle = '#86efac'
+      ctx.textAlign = 'right'
+      ctx.fillText(`target: ${targetName}`, barX + barW, barY - 3)
+    }
+
+    // Pitch indicator dot
+    if (pitch?.isActive && currentBlock) {
+      // Octave-flexible deviation in semitones
+      const sungSemi = pitch.staffPosition
+      const targetSemi = currentBlock.semitones
+      const tMod = ((targetSemi % 12) + 12) % 12
+      const sMod = ((Math.round(sungSemi) % 12) + 12) % 12
+      const rawDiff = Math.abs(tMod - sMod)
+      const pcDiff = Math.min(rawDiff, 12 - rawDiff)
+      const rawDev = sungSemi - targetSemi
+      // Use signed direction from raw, magnitude from pcDiff for the dot position
+      const sign = rawDev === 0 ? 0 : Math.sign(rawDev)
+      const magnitude = Math.min(pcDiff, Math.abs(rawDev))
+      const clampedDev = Math.max(-6, Math.min(6, sign * magnitude))
+      const dotX = centerX + (clampedDev / 6) * (barW / 2 - 8)
+      const onTarget = magnitude <= TOLERANCE
+
+      // Glow when on target
+      if (onTarget) {
+        ctx.fillStyle = 'rgba(74,222,128,0.35)'
+        ctx.beginPath()
+        ctx.arc(dotX, barY + barH / 2, 14, 0, Math.PI * 2)
+        ctx.fill()
+      }
+
+      // Dot
+      ctx.fillStyle = onTarget ? '#4ade80' : '#f87171'
+      ctx.beginPath()
+      ctx.arc(dotX, barY + barH / 2, 7, 0, Math.PI * 2)
+      ctx.fill()
+
+      // Sung-note label below dot
+      ctx.fillStyle = onTarget ? '#86efac' : '#fca5a5'
+      ctx.font = 'bold 10px monospace'
+      ctx.textAlign = 'center'
+      ctx.fillText(pitch.note || '', dotX, barY + barH + 11)
+    } else {
+      ctx.fillStyle = '#6b7280'
+      ctx.font = '10px monospace'
+      ctx.textAlign = 'center'
+      ctx.fillText('sing...', centerX, barY + barH / 2 + 3)
+    }
+  }
 
   // ─── Helper: rounded rect ─────────────────────────────────────────────────
   const roundedRect = (ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) => {
@@ -621,6 +717,14 @@ export default function SynthesiaRunner() {
   useEffect(() => () => {
     fusionRef.current?.stop()
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
+  }, [])
+
+  // ─── Preload piano samples on mount ───────────────────────────────────────
+  // Required for playPianoNote to make sound — without this, tapping a key
+  // is silent because the sample cache is empty.
+  useEffect(() => {
+    initAudio()
+    loadPianoSamples().catch(err => console.error('Piano sample load failed:', err))
   }, [])
 
   // ─── Canvas DPR setup ─────────────────────────────────────────────────────
@@ -877,30 +981,8 @@ export default function SynthesiaRunner() {
           TAP ANY KEY TO HEAR IT
         </div>
 
-        {/* Pitch hint side bar (right side) */}
-        {currentTarget && (
-          <div className="absolute top-2 right-2 flex flex-col items-center"
-            style={{ height: FALL_AREA_H - 16 }}>
-            <div className="text-xs text-gray-400 mb-1">YOU</div>
-            <div
-              className="w-3 rounded-full transition-all"
-              style={{
-                flex: 1,
-                background: pitchHint === 'on'
-                  ? 'linear-gradient(to bottom, rgba(60,60,90,0.4), rgba(74,222,128,0.9), rgba(60,60,90,0.4))'
-                  : pitchHint === 'high'
-                    ? 'linear-gradient(to bottom, rgba(255,160,80,0.9), rgba(60,60,90,0.4))'
-                    : pitchHint === 'low'
-                      ? 'linear-gradient(to top, rgba(255,160,80,0.9), rgba(60,60,90,0.4))'
-                      : 'rgba(60,60,90,0.4)',
-                boxShadow: pitchHint === 'on' ? '0 0 12px rgba(74,222,128,0.6)' : 'none',
-              }}
-            />
-            <div className="text-xs mt-1" style={{ color: pitchHint === 'on' ? '#86efac' : '#888' }}>
-              {pitchHint === 'on' ? 'ON' : pitchHint === 'high' ? '↓' : pitchHint === 'low' ? '↑' : '·'}
-            </div>
-          </div>
-        )}
+        {/* Old vertical right-side hint bar removed — replaced by canvas-drawn
+            horizontal pitch bar (Pitchforks-style). See drawPitchBar above. */}
 
         {/* Sing-this-note prompt overlay */}
         {currentTarget && (
