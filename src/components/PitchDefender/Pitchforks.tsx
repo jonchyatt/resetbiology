@@ -18,7 +18,7 @@ import { useState, useRef, useCallback, useEffect } from 'react'
 import { NOTE_COLORS } from '@/lib/fsrs'
 import { PitchFusion, type FusedPitch } from './pitchFusion'
 import { extractNotesFromXML, extractIntervals, type IntervalPattern } from './extractNotes'
-import { initAudio, playPianoNote } from './audioEngine'
+import { initAudio, playPianoNote, markToneEmitted } from './audioEngine'
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
@@ -167,6 +167,10 @@ function playTone(semi: number, durationMs: number) {
   g.gain.setValueAtTime(0.12, n + durationMs / 1000 * 0.8)
   g.gain.exponentialRampToValueAtTime(0.001, n + durationMs / 1000)
   o.connect(g); g.connect(c.destination); o.start(n); o.stop(n + durationMs / 1000)
+  // ECHO SUPPRESSION: tell pitch detectors to ignore mic input while this
+  // tone is sounding (plus a small tail). Without this, the speaker bleed
+  // gets picked up by the mic and falsely matches the target.
+  markToneEmitted(durationMs + 200)
 }
 
 function semiToName(s: number): string {
@@ -281,7 +285,9 @@ export default function Pitchforks() {
 
     // Start pitch detection
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
-    const fusion = new PitchFusion({ enableML: false, noiseGateDb: -55 }) // ML disabled — CREPE hangs. Lower gate so quiet singing registers.
+    // Noise gate at -45 dB. -55 was too permissive — every fan/typing/hum
+    // sample registered as a valid pitch and false-matched the target.
+    const fusion = new PitchFusion({ enableML: false, noiseGateDb: -45 })
     fusionRef.current = fusion
     await fusion.start(p => { pitchRef.current = p })
 
@@ -410,73 +416,81 @@ export default function Pitchforks() {
     }
 
     // ── Pitch matching for current villager (approaching OR attacking) ──
-    // CRITICAL: must allow matching during 'approaching' phase too. Previously
-    // gated to 'attacking' only, which meant the prompt said "sing the note"
-    // but the matching code silently ignored input until the villager walked
-    // across the whole canvas (~50 seconds). Player thought game was broken.
-    if (cv?.alive && (cv.phase === 'approaching' || cv.phase === 'attacking') && pitch?.isActive) {
-      const targetSemi = attackPhaseRef.current === 'from' ? cv.fromSemi : cv.toSemi
-      // Octave-flexible: fold both into pitch class space (0-11), find shortest distance
-      const targetMod = ((targetSemi % 12) + 12) % 12
-      const sungMod = ((Math.round(pitch.staffPosition) % 12) + 12) % 12
-      const rawDiff = Math.abs(targetMod - sungMod)
-      const pitchClassDiff = Math.min(rawDiff, 12 - rawDiff)
-      // Also check raw deviation in case octave matches
-      const rawDeviation = Math.abs(pitch.staffPosition - targetSemi)
-      const deviation = Math.min(rawDeviation, pitchClassDiff)
+    // Two principles, both learned the hard way:
+    // 1. The original "match doesn't fire" bug was pitch.isActive FLICKERING
+    //    between frames and resetting matchStart. Solution: keep matchStart
+    //    valid across detection gaps; ONLY reset on a CONFIDENT WRONG pitch.
+    // 2. The "villagers randomly die" bug was a too-broad tolerance:
+    //    Math.min(rawDev, pitchClassDiff) at 2.5 semitones meant ~5/12 notes
+    //    matched the target, AND a single in-range frame started the hold.
+    //    Solution: octave-fold ONCE into a signed semitone offset and use a
+    //    tight 0.7 semitone (70 cents) tolerance, which is the actual ear-
+    //    training standard.
+    if (cv?.alive && (cv.phase === 'approaching' || cv.phase === 'attacking')) {
+      // Require minimum confidence (~3/4 of max). isActive can fire on ambient
+      // noise above the gate; the confidence floor weeds out non-vocal signals.
+      if (pitch?.isActive && pitch.confidence >= 0.75) {
+        const targetSemi = attackPhaseRef.current === 'from' ? cv.fromSemi : cv.toSemi
+        // Signed pitch-class deviation in [-6, 6] — treats octaves as equivalent
+        // (musically correct) but does NOT widen the per-note tolerance.
+        const rawDiff = pitch.staffPosition - targetSemi
+        const pcDev = ((rawDiff % 12) + 18) % 12 - 6  // → (-6, 6]
+        const absPcDev = Math.abs(pcDev)
 
-      // Wider tolerance: 2.5 semitones (generous for children/beginners)
-      if (deviation <= 2.5) {
-        if (matchStartRef.current === 0) matchStartRef.current = performance.now()
-        const held = performance.now() - matchStartRef.current
-        // Shorter hold: 300ms for responsiveness
-        const progress = Math.min(1, held / 300)
-        setMatchProgress(progress)
+        const TOLERANCE = 0.7 // 70 cents — ear-training standard
 
-        if (progress >= 1) {
-          matchStartRef.current = 0
-          setMatchProgress(0)
+        if (absPcDev <= TOLERANCE) {
+          // In tolerance — start or continue the hold
+          if (matchStartRef.current === 0) matchStartRef.current = performance.now()
+          if (matchStartRef.current > 0) {
+            const held = performance.now() - matchStartRef.current
+            const progress = Math.min(1, held / 300)
+            setMatchProgress(progress)
 
-          if (attackPhaseRef.current === 'from') {
-            // First note matched — pause, then prompt second note
-            attackPhaseRef.current = 'to'
-            setCurrentPrompt(cv.guideLevel === 'none' ? 'Now the SECOND note!' : `Now sing: ${cv.toName}`)
-            // Play the target note so they know what to aim for
-            if (cv.guideLevel !== 'none') {
-              playTone(cv.toSemi, 1000)
+            if (progress >= 1) {
+              matchStartRef.current = 0
+              setMatchProgress(0)
+
+              if (attackPhaseRef.current === 'from') {
+                attackPhaseRef.current = 'to'
+                setCurrentPrompt(cv.guideLevel === 'none' ? 'Now the SECOND note!' : `Now sing: ${cv.toName}`)
+                if (cv.guideLevel !== 'none') {
+                  playTone(cv.toSemi, 1000)
+                }
+                // Cooldown sentinel — playTone already triggers echo suppression,
+                // but we ALSO disable matching for 600ms to be safe.
+                matchStartRef.current = -1
+                setTimeout(() => { matchStartRef.current = 0 }, 600)
+              } else {
+                cv.alive = false
+                cv.phase = 'defeated'
+                cv.hitTimer = 0.5
+                sfxDefeat()
+                sfxMonsterRoar()
+                gs.combo++
+                gs.maxCombo = Math.max(gs.maxCombo, gs.combo)
+                const mult = gs.combo >= 10 ? 3 : gs.combo >= 5 ? 2 : 1
+                gs.score += (100 + cv.interval * 20) * mult
+                gs.villagersDefeated++
+                setDisplayScore(gs.score)
+                setDisplayCombo(gs.combo)
+                advanceVillager(gs)
+              }
             }
-            // Brief cooldown so the first note doesn't immediately match the second
-            matchStartRef.current = -1 // sentinel: skip next few frames
-            setTimeout(() => { matchStartRef.current = 0 }, 500) // 500ms pause between notes
-          } else {
-            // Both notes matched — villager defeated!
-            cv.alive = false
-            cv.phase = 'defeated'
-            cv.hitTimer = 0.5
-            sfxDefeat()
-            sfxMonsterRoar()
-            gs.combo++
-            gs.maxCombo = Math.max(gs.maxCombo, gs.combo)
-            const mult = gs.combo >= 10 ? 3 : gs.combo >= 5 ? 2 : 1
-            gs.score += (100 + cv.interval * 20) * mult
-            gs.villagersDefeated++
-            setDisplayScore(gs.score)
-            setDisplayCombo(gs.combo)
-            advanceVillager(gs)
+          }
+        } else {
+          // CONFIDENT wrong pitch (player IS singing, just the wrong note) —
+          // hard-reset progress. This is what stops false positives from
+          // accumulating over time.
+          if (matchStartRef.current > 0) {
+            matchStartRef.current = 0
+            setMatchProgress(0)
           }
         }
-      } else {
-        // Wrong pitch — slow decay, don't fully reset (gives a grace window)
-        if (matchStartRef.current >= 0) {
-          matchStartRef.current = 0
-          setMatchProgress(prev => Math.max(0, prev - dt * 2))
-        }
       }
+      // else: pitch.isActive is false (silence or detection gap) —
+      // do NOTHING. Don't reset matchStart. This is the flicker fix.
     }
-    // NOTE: removed the `else if (cv?.alive)` reset block — pitch.isActive flickers
-    // between detection frames, and resetting on every flicker prevents progress
-    // from EVER accumulating to 1. Now progress only decays on wrong-pitch frames,
-    // not on detection gaps.
 
     // ── Render ──
     ctx.fillStyle = '#0a0812'
