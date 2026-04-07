@@ -1,214 +1,260 @@
 'use client'
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// Composer — Manual Music Entry for Pitch Defender
+// Composer V2 — Real Music Notation Editor (VexFlow-backed)
 // ═══════════════════════════════════════════════════════════════════════════════
 //
-// Built because OCR-from-photos is unreliable: typed compositions are the
-// canonical source. Click to place notes on the staff with the selected
-// duration; save to localStorage so any other game (Synthesia, NoteRunner,
-// ChoirPractice, SheetMusicViewer) can load and use them.
+// V1 was a click-to-place toy with hand-drawn noteheads. V2 is the real thing:
+// VexFlow handles all the notation rendering (beaming, stems, accidentals,
+// dynamics, articulations, repeat bars, codas, time signatures, key signatures,
+// ledger lines, dotted rhythms, tuplets) so it actually LOOKS like sheet music.
 //
-// V1 scope:
-//   - Single voice, treble OR bass clef (toggle)
-//   - All standard durations: whole, half, quarter, eighth, sixteenth
-//   - Dotted variant for any duration
-//   - Triplet groups for quarter/eighth/sixteenth
-//   - Sharp / natural / flat accidental picker
-//   - Auto-flow: notes advance left-to-right, bar lines snap by time signature
-//   - Click placed note to select; Delete/Backspace removes
-//   - Save → localStorage (`pd_composed_{slug}`); Download → .musicxml file
-//   - Load saved compositions back into the editor
+// Flow:
+//   1. SETUP WIZARD — explicit choice of clef, time sig, key sig, tempo, title.
+//      No defaults forced. User clicks "Begin Composing" to start.
+//   2. EDITOR — VexFlow staff renders the composition. Click empty staff to
+//      place a note at the cursor with the selected duration. Click an existing
+//      note to open a popup that lets you change duration, accidental, dot,
+//      triplet, dynamic, articulation, or delete it. Drag a notehead to change
+//      its pitch in place. Hotkeys for duration/accidental.
+//   3. SAVE — to localStorage (`pd_composed_*`) and/or download .musicxml.
 //
-// SIBLING — does not modify any existing game.
+// Includes from the start: beaming (free with VexFlow), proper stem direction,
+// real accidental positioning, dynamics palette, fermata, staccato, accent,
+// repeat barlines (begin/end), volta endings, double bar, final bar, ties.
+//
+// Still TODO (v3): grand staff (treble + bass), multiple voices/chords on
+// one staff, lyrics under noteheads, drag-to-reorder notes, slurs across notes,
+// crescendo/decrescendo hairpins.
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import { useState, useRef, useCallback, useEffect } from 'react'
+import {
+  Renderer, Stave, StaveNote, Voice, Formatter, Beam, Accidental, Dot, Tuplet,
+  Articulation, Modifier, Annotation, Barline, Volta, Repetition,
+} from 'vexflow'
 import { initAudio, playPianoNote, loadPianoSamples } from './audioEngine'
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
-type DurationName = 'whole' | 'half' | 'quarter' | 'eighth' | 'sixteenth'
-type Accidental = 'natural' | 'sharp' | 'flat'
-type Clef = 'treble' | 'bass'
+type Clef = 'treble' | 'bass' | 'alto' | 'tenor'
+type DurationKey = 'w' | 'h' | 'q' | '8' | '16' | '32'
+type Accid = '' | '#' | 'b' | 'n' | '##' | 'bb'
+type Articul = 'none' | 'fermata' | 'staccato' | 'accent' | 'tenuto' | 'marcato'
+type Dynamic = 'none' | 'pp' | 'p' | 'mp' | 'mf' | 'f' | 'ff' | 'fff'
+type BarStart = 'normal' | 'repeat-begin' | 'double'
+type BarEnd = 'normal' | 'repeat-end' | 'double' | 'final'
 
-interface ComposerNote {
+interface MNote {
   id: number
-  semitones: number     // from C4
-  pitchName: string     // e.g. "F#5"
-  duration: DurationName
+  // VexFlow keys: ['c/4'], or for chords ['c/4', 'e/4', 'g/4']
+  // Octave: scientific (C4 = middle C)
+  keys: string[]
+  // Per-key accidentals (parallel to keys array)
+  accidentals: Accid[]
+  duration: DurationKey
   dotted: boolean
-  triplet: boolean
-  beats: number         // total duration in beats (1 = quarter)
+  // Triplet group: notes with same tripletGroup id form a triplet (3 notes)
+  tripletGroup?: number
+  articulation: Articul
+  dynamic: Dynamic
+  tieToNext: boolean
+  fermata: boolean
 }
 
-interface SavedComposition {
+interface Measure {
+  id: number
+  notes: MNote[]
+  startBar: BarStart
+  endBar: BarEnd
+  voltaNumber?: number    // 1, 2 for first/second endings
+  hasCoda: boolean        // place coda symbol at start
+  hasSegno: boolean       // place segno symbol at start
+  // Tempo / dynamics text on this measure
+  tempoMark?: string      // e.g. "Andante", "Allegro", "rit."
+  rehearsalMark?: string  // e.g. "A", "B"
+}
+
+interface Composition {
   title: string
+  composer: string
   clef: Clef
-  keyFifths: number     // -7..+7 (negative = flats)
-  timeBeats: number     // numerator
-  timeBeatType: number  // denominator (2/4/8/16)
-  tempo: number
-  notes: ComposerNote[]
+  timeNum: number          // e.g. 4
+  timeDen: number          // e.g. 4
+  keyName: string          // VexFlow key name: 'C', 'G', 'D', 'F', 'Bb', etc.
+  tempoBpm: number
+  tempoMark: string        // 'Andante', 'Allegro', etc.
+  measures: Measure[]
   savedAt: string
 }
 
+// ─── Storage / slug helpers ─────────────────────────────────────────────────
+
 const STORAGE_PREFIX = 'pd_composed_'
 
-// Beat values for each base duration (1 = quarter)
-const DURATION_BEATS: Record<DurationName, number> = {
-  whole: 4,
-  half: 2,
-  quarter: 1,
-  eighth: 0.5,
-  sixteenth: 0.25,
+function slugify(s: string): string {
+  return s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40) || 'untitled'
 }
 
-const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
-const STEP_TO_SEMI: Record<string, number> = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 }
+// ─── Pitch / Key conversions ────────────────────────────────────────────────
 
-function semiToName(semi: number): string {
-  const idx = ((Math.round(semi) % 12) + 12) % 12
+const STEP_TO_SEMI: Record<string, number> = { c: 0, d: 2, e: 4, f: 5, g: 7, a: 9, b: 11 }
+
+// Convert a VexFlow key like "c/4" or "f#/5" to semitones from C4
+function vexKeyToSemi(key: string, accidental: Accid): number {
+  const m = key.match(/^([a-g])(#|b)?\/(-?\d+)$/i)
+  if (!m) return 0
+  const step = m[1].toLowerCase()
+  const inlineAcc = m[2]
+  const oct = parseInt(m[3])
+  let semi = STEP_TO_SEMI[step] + (oct - 4) * 12
+  if (inlineAcc === '#') semi += 1
+  if (inlineAcc === 'b') semi -= 1
+  if (accidental === '#') semi += 1
+  if (accidental === 'b') semi -= 1
+  if (accidental === '##') semi += 2
+  if (accidental === 'bb') semi -= 2
+  return semi
+}
+
+// Convert semitones from C4 to a VexFlow key (preferring naturals)
+function semiToVexKey(semi: number): { key: string; accidental: Accid } {
+  const steps = ['c', 'c#', 'd', 'd#', 'e', 'f', 'f#', 'g', 'g#', 'a', 'a#', 'b']
+  const noteIdx = ((semi % 12) + 12) % 12
   const oct = 4 + Math.floor(semi / 12)
-  return `${NOTE_NAMES[idx]}${oct}`
+  const stepName = steps[noteIdx]
+  if (stepName.includes('#')) {
+    return { key: `${stepName[0]}/${oct}`, accidental: '#' }
+  }
+  return { key: `${stepName}/${oct}`, accidental: '' }
 }
 
-function computeBeats(duration: DurationName, dotted: boolean, triplet: boolean): number {
-  let b = DURATION_BEATS[duration]
-  if (dotted) b *= 1.5
-  if (triplet) b *= 2 / 3
-  return b
+function vexKeyToName(key: string, accidental: Accid): string {
+  const m = key.match(/^([a-g])(#|b)?\/(-?\d+)$/i)
+  if (!m) return ''
+  const letter = m[1].toUpperCase()
+  const oct = m[3]
+  let acc = accidental
+  if (m[2]) acc = (m[2] as Accid)
+  return `${letter}${acc}${oct}`
 }
 
-// ─── Staff Math ────────────────────────────────────────────────────────────
-//
-// Treble clef: bottom line = E4 (semi 4), top line = F5 (semi 17)
-// Bass clef:   bottom line = G2 (semi -17), top line = A3 (semi -3)
-//
-// Each line/space = ONE diatonic step. Y-step = lineSpacing / 2.
-//
-// To convert a click Y to a semitone: figure out how many half-spaces above
-// the staff midline the click is, then map to the nearest diatonic note in
-// the current key.
-
-const LINE_SPACING = 14
-const STAFF_TOP = 80     // y of top line of the staff
-const STAFF_LINES = 5
-const STAFF_BOTTOM = STAFF_TOP + (STAFF_LINES - 1) * LINE_SPACING
-
-function staffMidlineSemi(clef: Clef): number {
-  // semitone of the middle line
-  return clef === 'treble' ? 11 /* B4 */ : -6 /* D3 */
+// Diatonic step from middle line (treble: B4 = step 0; bass: D3 = step 0)
+function midlineSemi(clef: Clef): number {
+  if (clef === 'treble') return 11
+  if (clef === 'bass') return -10  // D3
+  if (clef === 'alto') return 0    // C4
+  return 5 // tenor: F3 ish — approximate
 }
 
-function diatonicStepFromMidline(yFromMidline: number): number {
-  // Each half-space (lineSpacing/2) = 1 diatonic step. Negative = up.
-  return Math.round(-yFromMidline / (LINE_SPACING / 2))
-}
-
-// Map a diatonic step (from B4 in treble, D3 in bass) → semitones from C4.
-// This handles the irregular semitone gaps between E-F and B-C.
-function diatonicStepToSemi(midlineSemi: number, step: number): number {
-  // Walk diatonically from midline by `step` whole-letters.
-  // Treble midline B4 = step 0. Going up: C5 = +1, D5 = +2, ...
-  // Going down: A4 = -1, G4 = -2, ...
-  const midNoteIdx = ((midlineSemi % 12) + 12) % 12 // pitch class
-  // Find which letter the midline is on
-  const letterOrder = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
-  const midLetterIdx = letterOrder.findIndex(L => STEP_TO_SEMI[L] === midNoteIdx)
-  if (midLetterIdx < 0) return midlineSemi
-  // step semitone from midline letter
-  const targetLetterIdx = ((midLetterIdx + step) % 7 + 7) % 7
-  const octaveDelta = Math.floor((midLetterIdx + step) / 7)
+// Y to semi for click placement (uses staff rect coordinates from VexFlow)
+function yToSemi(y: number, midY: number, lineSpacing: number, clef: Clef): number {
+  // Each diatonic step = lineSpacing/2
+  const stepFromMid = Math.round((midY - y) / (lineSpacing / 2))
+  // Walk diatonically from midline
+  const letterOrder = ['c', 'd', 'e', 'f', 'g', 'a', 'b']
+  const midSemi = midlineSemi(clef)
+  const midLetterIdx = letterOrder.findIndex(L => STEP_TO_SEMI[L] === ((midSemi % 12) + 12) % 12)
+  const targetLetterPos = midLetterIdx + stepFromMid
+  const targetLetterIdx = ((targetLetterPos % 7) + 7) % 7
+  const octaveDelta = Math.floor(targetLetterPos / 7)
   const targetLetter = letterOrder[targetLetterIdx]
-  const targetSemi = STEP_TO_SEMI[targetLetter] + octaveDelta * 12 + (midlineSemi - midNoteIdx)
+  const baseOctave = Math.floor((midSemi - STEP_TO_SEMI[letterOrder[midLetterIdx]]) / 12) + 4
+  const targetSemi = STEP_TO_SEMI[targetLetter] + (baseOctave + octaveDelta - 4) * 12
   return targetSemi
 }
 
-// Y position for a given semitone on a clef
-function semiToY(semi: number, clef: Clef): number {
-  const midSemi = staffMidlineSemi(clef)
-  // Find diatonic step from midline (handle accidentals by snapping to natural letter)
-  const letterOrder = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
-  const semiClass = ((semi % 12) + 12) % 12
-  // Find nearest natural letter for this semitone (snap accidentals to their letter)
-  const letterMap = [0, 0, 1, 1, 2, 3, 3, 4, 4, 5, 5, 6] // semi class -> letter index
-  const letterIdx = letterMap[semiClass]
-  const naturalSemi = STEP_TO_SEMI[letterOrder[letterIdx]]
-  const octaveDelta = Math.floor((semi - naturalSemi) / 12)
-  // Diatonic step from middle line
-  const midSemiClass = ((midSemi % 12) + 12) % 12
-  const midLetterIdx = letterMap[midSemiClass]
-  const midOctave = Math.floor((midSemi - STEP_TO_SEMI[letterOrder[midLetterIdx]]) / 12)
-  const stepDelta = (letterIdx - midLetterIdx) + (octaveDelta - midOctave) * 7
-  // Convert step → Y. Each step = lineSpacing/2. Up = smaller Y.
-  const midlineY = STAFF_TOP + ((STAFF_LINES - 1) / 2) * LINE_SPACING
-  return midlineY - stepDelta * (LINE_SPACING / 2)
+// Beat value for a duration (1.0 = quarter)
+const DURATION_BEATS: Record<DurationKey, number> = {
+  w: 4, h: 2, q: 1, '8': 0.5, '16': 0.25, '32': 0.125,
 }
 
-// Y → semitone for click placement (snaps to nearest line/space)
-function yToSemi(y: number, clef: Clef): number {
-  const midlineY = STAFF_TOP + ((STAFF_LINES - 1) / 2) * LINE_SPACING
-  const yFromMid = y - midlineY
-  const step = diatonicStepFromMidline(yFromMid)
-  return diatonicStepToSemi(staffMidlineSemi(clef), step)
+function noteBeats(n: MNote): number {
+  let b = DURATION_BEATS[n.duration]
+  if (n.dotted) b *= 1.5
+  if (n.tripletGroup != null) b *= 2 / 3
+  return b
 }
+
+// ─── Key signature names (for VexFlow) ──────────────────────────────────────
+
+const KEY_NAMES_BY_FIFTHS: Record<number, string> = {
+  [-7]: 'Cb', [-6]: 'Gb', [-5]: 'Db', [-4]: 'Ab', [-3]: 'Eb', [-2]: 'Bb', [-1]: 'F',
+  0: 'C',
+  1: 'G', 2: 'D', 3: 'A', 4: 'E', 5: 'B', 6: 'F#', 7: 'C#',
+}
+const FIFTHS_BY_KEY_NAME: Record<string, number> = Object.fromEntries(
+  Object.entries(KEY_NAMES_BY_FIFTHS).map(([k, v]) => [v, parseInt(k)])
+)
 
 // ─── MusicXML Export ────────────────────────────────────────────────────────
 
-function buildMusicXML(comp: SavedComposition): string {
-  // Use divisions = 16 so all our durations divide cleanly
-  const DIV = 16
-  const beatsToDuration = (beats: number) => Math.round(beats * DIV)
+function buildMusicXML(comp: Composition): string {
+  const DIV = 16 // divisions per quarter
 
-  const durationToType = (d: DurationName): string => ({
-    whole: 'whole', half: 'half', quarter: 'quarter',
-    eighth: 'eighth', sixteenth: '16th',
+  const beatsToDuration = (beats: number) => Math.round(beats * DIV)
+  const durationToType = (d: DurationKey): string => ({
+    w: 'whole', h: 'half', q: 'quarter', '8': 'eighth', '16': '16th', '32': '32nd',
   }[d])
 
-  // Group notes into measures
-  const measureLength = comp.timeBeats * (4 / comp.timeBeatType)
-  const measures: ComposerNote[][] = [[]]
-  let currentBeats = 0
-  for (const n of comp.notes) {
-    if (currentBeats + n.beats > measureLength + 0.001) {
-      measures.push([])
-      currentBeats = 0
-    }
-    measures[measures.length - 1].push(n)
-    currentBeats += n.beats
+  const noteToXML = (n: MNote): string => {
+    return n.keys.map((key, ki) => {
+      const m = key.match(/^([a-g])(#|b)?\/(-?\d+)$/i)
+      if (!m) return ''
+      const step = m[1].toUpperCase()
+      let alter = 0
+      if (m[2] === '#') alter = 1
+      if (m[2] === 'b') alter = -1
+      const acc = n.accidentals[ki]
+      if (acc === '#') alter = 1
+      if (acc === 'b') alter = -1
+      if (acc === '##') alter = 2
+      if (acc === 'bb') alter = -2
+      const oct = m[3]
+      const dur = beatsToDuration(noteBeats(n))
+      const type = durationToType(n.duration)
+      const dot = n.dotted ? '<dot/>' : ''
+      const tup = n.tripletGroup != null
+        ? '<time-modification><actual-notes>3</actual-notes><normal-notes>2</normal-notes></time-modification>'
+        : ''
+      const alterEl = alter !== 0 ? `<alter>${alter}</alter>` : ''
+      const chord = ki > 0 ? '<chord/>' : ''
+      const tie = n.tieToNext && ki === 0 ? '<tie type="start"/>' : ''
+      const fer = n.fermata ? '<notations><fermata/></notations>' : ''
+      const art = n.articulation !== 'none' && !n.fermata
+        ? `<notations><articulations><${n.articulation}/></articulations></notations>`
+        : ''
+      return `      <note>${chord}<pitch><step>${step}</step>${alterEl}<octave>${oct}</octave></pitch><duration>${dur}</duration><voice>1</voice><type>${type}</type>${dot}${tup}${tie}${fer || art}</note>`
+    }).join('\n')
   }
 
-  const noteToXML = (n: ComposerNote): string => {
-    const m = n.pitchName.match(/^([A-G])(#|b)?(\d)$/)
-    if (!m) return ''
-    const step = m[1]
-    const alter = m[2] === '#' ? 1 : m[2] === 'b' ? -1 : 0
-    const octave = m[3]
-    const dur = beatsToDuration(n.beats)
-    const type = durationToType(n.duration)
-    const dot = n.dotted ? '<dot/>' : ''
-    const tup = n.triplet
-      ? '<time-modification><actual-notes>3</actual-notes><normal-notes>2</normal-notes></time-modification>'
-      : ''
-    const acc = alter !== 0 ? `<alter>${alter}</alter>` : ''
-    return `      <note><pitch><step>${step}</step>${acc}<octave>${octave}</octave></pitch><duration>${dur}</duration><voice>1</voice><type>${type}</type>${dot}${tup}</note>`
+  const barlineXML = (m: Measure, position: 'left' | 'right'): string => {
+    const t = position === 'left' ? m.startBar : m.endBar
+    if (t === 'normal') return ''
+    if (t === 'double') return `<barline location="${position}"><bar-style>light-light</bar-style></barline>`
+    if (t === 'final') return `<barline location="${position}"><bar-style>light-heavy</bar-style></barline>`
+    if (t === 'repeat-begin') return `<barline location="left"><bar-style>heavy-light</bar-style><repeat direction="forward"/></barline>`
+    if (t === 'repeat-end') return `<barline location="right"><bar-style>light-heavy</bar-style><repeat direction="backward"/></barline>`
+    return ''
   }
 
-  const measureXML = (notes: ComposerNote[], num: number, isFirst: boolean): string => {
+  const measureXML = (m: Measure, idx: number): string => {
+    const isFirst = idx === 0
     const attrs = isFirst ? `      <attributes>
         <divisions>${DIV}</divisions>
-        <key><fifths>${comp.keyFifths}</fifths><mode>major</mode></key>
-        <time><beats>${comp.timeBeats}</beats><beat-type>${comp.timeBeatType}</beat-type></time>
-        <clef><sign>${comp.clef === 'treble' ? 'G' : 'F'}</sign><line>${comp.clef === 'treble' ? '2' : '4'}</line></clef>
+        <key><fifths>${FIFTHS_BY_KEY_NAME[comp.keyName] ?? 0}</fifths><mode>major</mode></key>
+        <time><beats>${comp.timeNum}</beats><beat-type>${comp.timeDen}</beat-type></time>
+        <clef><sign>${comp.clef === 'treble' ? 'G' : comp.clef === 'bass' ? 'F' : 'C'}</sign><line>${comp.clef === 'treble' ? '2' : comp.clef === 'bass' ? '4' : '3'}</line></clef>
       </attributes>
       <direction placement="above">
-        <direction-type><words font-weight="bold">♩=${comp.tempo}</words></direction-type>
-        <sound tempo="${comp.tempo}"/>
+        <direction-type><words font-weight="bold">${comp.tempoMark} ♩=${comp.tempoBpm}</words></direction-type>
+        <sound tempo="${comp.tempoBpm}"/>
       </direction>` : ''
-    return `    <measure number="${num}">
+    return `    <measure number="${idx + 1}">
 ${attrs}
-${notes.map(noteToXML).join('\n')}
+${barlineXML(m, 'left')}
+${m.notes.map(noteToXML).join('\n')}
+${barlineXML(m, 'right')}
     </measure>`
   }
 
@@ -216,700 +262,1078 @@ ${notes.map(noteToXML).join('\n')}
 <!DOCTYPE score-partwise PUBLIC "-//Recordare//DTD MusicXML 4.0 Partwise//EN" "http://www.musicxml.org/dtds/partwise.dtd">
 <score-partwise version="4.0">
   <work><work-title>${comp.title.replace(/[<>&"]/g, '')}</work-title></work>
-  <identification>
-    <encoding>
-      <software>Pitch Defender Composer</software>
-      <encoding-date>${comp.savedAt.slice(0, 10)}</encoding-date>
-    </encoding>
-  </identification>
+  ${comp.composer ? `<identification><creator type="composer">${comp.composer.replace(/[<>&"]/g, '')}</creator></identification>` : ''}
   <part-list>
     <score-part id="P1"><part-name>Voice</part-name></score-part>
   </part-list>
   <part id="P1">
-${measures.map((m, i) => measureXML(m, i + 1, i === 0)).join('\n')}
+${comp.measures.map(measureXML).join('\n')}
   </part>
 </score-partwise>`
 }
 
+// ─── Default empty measure ──────────────────────────────────────────────────
+
+let measureIdCounter = 0
+let noteIdCounter = 0
+const newMeasure = (): Measure => ({
+  id: ++measureIdCounter,
+  notes: [],
+  startBar: 'normal',
+  endBar: 'normal',
+  hasCoda: false,
+  hasSegno: false,
+})
+
 // ─── Component ──────────────────────────────────────────────────────────────
 
+type Phase = 'setup' | 'editing'
+
 export default function Composer() {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const [notes, setNotes] = useState<ComposerNote[]>([])
-  const [selectedDuration, setSelectedDuration] = useState<DurationName>('quarter')
-  const [dotted, setDotted] = useState(false)
-  const [triplet, setTriplet] = useState(false)
-  const [accidental, setAccidental] = useState<Accidental>('natural')
-  const [clef, setClef] = useState<Clef>('treble')
-  const [title, setTitle] = useState('Untitled')
-  const [tempo, setTempo] = useState(100)
-  const [keyFifths, setKeyFifths] = useState(0)
-  const [timeBeats, setTimeBeats] = useState(4)
-  const [timeBeatType, setTimeBeatType] = useState(4)
-  const [hoverY, setHoverY] = useState<number | null>(null)
-  const [hoverX, setHoverX] = useState<number | null>(null)
+  const [phase, setPhase] = useState<Phase>('setup')
+
+  // ─── Setup wizard state ───────────────────────────────────────────────────
+  const [setupTitle, setSetupTitle] = useState('')
+  const [setupComposer, setSetupComposer] = useState('')
+  const [setupClef, setSetupClef] = useState<Clef | null>(null)
+  const [setupTimeNum, setSetupTimeNum] = useState<number | null>(null)
+  const [setupTimeDen, setSetupTimeDen] = useState<number | null>(null)
+  const [setupKey, setSetupKey] = useState<string | null>(null)
+  const [setupTempoBpm, setSetupTempoBpm] = useState(100)
+  const [setupTempoMark, setSetupTempoMark] = useState('')
+
+  // ─── Editor state ─────────────────────────────────────────────────────────
+  const [comp, setComp] = useState<Composition | null>(null)
+  const [selectedDuration, setSelectedDuration] = useState<DurationKey>('q')
+  const [selectedDotted, setSelectedDotted] = useState(false)
+  const [selectedTriplet, setSelectedTriplet] = useState(false)
+  const [selectedAccid, setSelectedAccid] = useState<Accid>('')
   const [selectedNoteId, setSelectedNoteId] = useState<number | null>(null)
-  const [savedList, setSavedList] = useState<{ key: string; comp: SavedComposition }[]>([])
-  const [statusMsg, setStatusMsg] = useState<string>('')
+  const [editPopup, setEditPopup] = useState<{ noteId: number; x: number; y: number } | null>(null)
+  const [statusMsg, setStatusMsg] = useState('')
+  const [savedList, setSavedList] = useState<{ key: string; comp: Composition }[]>([])
 
-  const idCounterRef = useRef(0)
+  const staffContainerRef = useRef<HTMLDivElement>(null)
 
-  // Layout constants
-  const NOTE_SPACING = 36   // horizontal gap between notes
-  const NOTES_START_X = 90  // first note position (after clef + key sig + time sig)
-  const STAFF_W = 1400      // total drawable width
-
-  // ─── Preload audio ──────────────────────────────────────────
+  // ─── Preload audio ────────────────────────────────────────────────────────
   useEffect(() => {
     initAudio()
-    loadPianoSamples().catch(err => console.error('Piano sample load failed:', err))
+    loadPianoSamples().catch(err => console.error('Piano samples failed:', err))
   }, [])
 
-  // ─── Load saved compositions list ────────────────────────────
-  useEffect(() => {
-    refreshSavedList()
-  }, [])
-
+  // ─── Saved compositions list ──────────────────────────────────────────────
   const refreshSavedList = useCallback(() => {
-    const list: { key: string; comp: SavedComposition }[] = []
+    const list: { key: string; comp: Composition }[] = []
     try {
       for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i)
-        if (key && key.startsWith(STORAGE_PREFIX)) {
-          try {
-            const comp = JSON.parse(localStorage.getItem(key) || '{}')
-            if (comp.notes) list.push({ key, comp })
-          } catch {}
-        }
+        const k = localStorage.key(i)
+        if (!k || !k.startsWith(STORAGE_PREFIX)) continue
+        try {
+          const c = JSON.parse(localStorage.getItem(k) || '{}')
+          if (c.measures) list.push({ key: k, comp: c })
+        } catch {}
       }
     } catch {}
     list.sort((a, b) => (b.comp.savedAt || '').localeCompare(a.comp.savedAt || ''))
     setSavedList(list)
   }, [])
+  useEffect(() => { refreshSavedList() }, [refreshSavedList])
 
-  // ─── Add note (click on staff) ───────────────────────────────
-  const handleStaffClick = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const rect = canvas.getBoundingClientRect()
-    const x = ((e.clientX - rect.left) / rect.width) * canvas.clientWidth
-    const y = ((e.clientY - rect.top) / rect.height) * canvas.clientHeight
-
-    // Check if click is on an existing note → select it
-    const beats = computeBeats(selectedDuration, dotted, triplet)
-    let cursorX = NOTES_START_X
-    for (let i = 0; i < notes.length; i++) {
-      const n = notes[i]
-      const nY = semiToY(n.semitones, clef)
-      const dx = x - cursorX
-      const dy = y - nY
-      if (Math.abs(dx) < 12 && Math.abs(dy) < 10) {
-        setSelectedNoteId(n.id)
-        // Play it
-        playPianoNote(n.pitchName)
-        return
-      }
-      cursorX += NOTE_SPACING * Math.max(0.5, n.beats)
+  // ─── Begin composing (transition from setup → editing) ────────────────────
+  const beginComposing = useCallback(() => {
+    if (!setupClef) return alert('Pick a clef')
+    if (setupTimeNum == null || setupTimeDen == null) return alert('Pick a time signature')
+    if (!setupKey) return alert('Pick a key signature')
+    const composition: Composition = {
+      title: setupTitle || 'Untitled',
+      composer: setupComposer,
+      clef: setupClef,
+      timeNum: setupTimeNum,
+      timeDen: setupTimeDen,
+      keyName: setupKey,
+      tempoBpm: setupTempoBpm,
+      tempoMark: setupTempoMark,
+      measures: [newMeasure()],
+      savedAt: new Date().toISOString(),
     }
+    setComp(composition)
+    setPhase('editing')
+  }, [setupTitle, setupComposer, setupClef, setupTimeNum, setupTimeDen, setupKey, setupTempoBpm, setupTempoMark])
 
-    // Otherwise add a new note at the snapped pitch
-    let semi = yToSemi(y, clef)
-    if (accidental === 'sharp') semi += 1
-    if (accidental === 'flat') semi -= 1
-    const pitchName = semiToName(semi)
-    const newNote: ComposerNote = {
-      id: ++idCounterRef.current,
-      semitones: semi,
-      pitchName,
-      duration: selectedDuration,
-      dotted,
-      triplet,
-      beats,
-    }
-    setNotes(prev => [...prev, newNote])
-    setSelectedNoteId(newNote.id)
-    // Play the note for audio feedback
-    playPianoNote(pitchName)
-  }, [notes, selectedDuration, dotted, triplet, accidental, clef])
-
-  // ─── Mouse hover (ghost note preview) ────────────────────────
-  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const rect = canvas.getBoundingClientRect()
-    setHoverX(((e.clientX - rect.left) / rect.width) * canvas.clientWidth)
-    setHoverY(((e.clientY - rect.top) / rect.height) * canvas.clientHeight)
-  }, [])
-
-  const handleMouseLeave = useCallback(() => {
-    setHoverX(null)
-    setHoverY(null)
-  }, [])
-
-  // ─── Delete selected / last note ─────────────────────────────
-  const deleteSelected = useCallback(() => {
-    if (selectedNoteId != null) {
-      setNotes(prev => prev.filter(n => n.id !== selectedNoteId))
-      setSelectedNoteId(null)
-    } else {
-      // No selection — pop the last note
-      setNotes(prev => prev.slice(0, -1))
-    }
-  }, [selectedNoteId])
-
-  // Keyboard delete/backspace
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Delete' || e.key === 'Backspace') {
-        // Don't intercept when typing in input fields
-        const target = e.target as HTMLElement
-        if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') return
-        e.preventDefault()
-        deleteSelected()
-      }
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [deleteSelected])
-
-  // ─── Save / Load / Download ──────────────────────────────────
-  const slugify = (s: string) =>
-    s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40) || 'untitled'
-
-  const buildComposition = (): SavedComposition => ({
-    title,
-    clef,
-    keyFifths,
-    timeBeats,
-    timeBeatType,
-    tempo,
-    notes,
-    savedAt: new Date().toISOString(),
-  })
-
-  const handleSave = useCallback(() => {
-    if (notes.length === 0) {
-      setStatusMsg('Nothing to save — add some notes first')
-      return
-    }
-    const comp = buildComposition()
-    const key = STORAGE_PREFIX + slugify(title)
+  // ─── Load saved → editor ──────────────────────────────────────────────────
+  const loadComposition = useCallback((key: string) => {
     try {
-      localStorage.setItem(key, JSON.stringify(comp))
-      setStatusMsg(`Saved as "${title}" — available in all Pitch Defender games`)
+      const raw = localStorage.getItem(key)
+      if (!raw) return
+      const c: Composition = JSON.parse(raw)
+      // Re-id measures + notes so editing doesn't clash
+      c.measures.forEach(m => {
+        m.id = ++measureIdCounter
+        m.notes.forEach(n => { n.id = ++noteIdCounter })
+      })
+      setComp(c)
+      setPhase('editing')
+    } catch (err) {
+      alert('Load failed: ' + (err as Error).message)
+    }
+  }, [])
+
+  const deleteSavedComposition = useCallback((key: string, title: string) => {
+    if (!confirm(`Delete "${title}"?`)) return
+    localStorage.removeItem(key)
+    refreshSavedList()
+  }, [refreshSavedList])
+
+  // ─── Save / download ──────────────────────────────────────────────────────
+  const handleSave = useCallback(() => {
+    if (!comp) return
+    const c = { ...comp, savedAt: new Date().toISOString() }
+    const key = STORAGE_PREFIX + slugify(c.title)
+    try {
+      localStorage.setItem(key, JSON.stringify(c))
+      setStatusMsg(`Saved "${c.title}" — available in all Pitch Defender games`)
+      setComp(c)
       refreshSavedList()
     } catch (err) {
       setStatusMsg('Save failed: ' + (err as Error).message)
     }
     setTimeout(() => setStatusMsg(''), 4000)
-  }, [notes, title, clef, keyFifths, timeBeats, timeBeatType, tempo, refreshSavedList])
+  }, [comp, refreshSavedList])
 
   const handleDownload = useCallback(() => {
-    if (notes.length === 0) {
-      setStatusMsg('Nothing to download — add some notes first')
-      return
-    }
-    const comp = buildComposition()
+    if (!comp) return
     const xml = buildMusicXML(comp)
     const blob = new Blob([xml], { type: 'application/vnd.recordare.musicxml+xml' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `${slugify(title)}.musicxml`
+    a.download = `${slugify(comp.title)}.musicxml`
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
     URL.revokeObjectURL(url)
-    setStatusMsg(`Downloaded ${slugify(title)}.musicxml`)
-    setTimeout(() => setStatusMsg(''), 4000)
-  }, [notes, title, clef, keyFifths, timeBeats, timeBeatType, tempo])
+    setStatusMsg(`Downloaded ${slugify(comp.title)}.musicxml`)
+    setTimeout(() => setStatusMsg(''), 3000)
+  }, [comp])
 
-  const handleLoadSaved = useCallback((key: string) => {
-    try {
-      const raw = localStorage.getItem(key)
-      if (!raw) return
-      const comp: SavedComposition = JSON.parse(raw)
-      setTitle(comp.title)
-      setClef(comp.clef)
-      setKeyFifths(comp.keyFifths)
-      setTimeBeats(comp.timeBeats)
-      setTimeBeatType(comp.timeBeatType)
-      setTempo(comp.tempo)
-      setNotes(comp.notes.map(n => ({ ...n, id: ++idCounterRef.current })))
-      setSelectedNoteId(null)
-      setStatusMsg(`Loaded "${comp.title}"`)
-      setTimeout(() => setStatusMsg(''), 3000)
-    } catch (err) {
-      setStatusMsg('Load failed: ' + (err as Error).message)
+  // ─── Note placement / editing ─────────────────────────────────────────────
+  const addNoteAtSemi = useCallback((semi: number) => {
+    if (!comp) return
+    const { key, accidental } = semiToVexKey(semi)
+    // User's accidental override beats the auto-derived one
+    const finalAcc: Accid = selectedAccid !== '' ? selectedAccid : accidental
+    const newNote: MNote = {
+      id: ++noteIdCounter,
+      keys: [key],
+      accidentals: [finalAcc],
+      duration: selectedDuration,
+      dotted: selectedDotted,
+      tripletGroup: selectedTriplet ? Date.now() : undefined,
+      articulation: 'none',
+      dynamic: 'none',
+      tieToNext: false,
+      fermata: false,
     }
+    // Append to last measure; if it's full, start a new one
+    setComp(prev => {
+      if (!prev) return prev
+      const measures = [...prev.measures]
+      const measureCapacity = prev.timeNum * (4 / prev.timeDen)
+      let lastMeasure = measures[measures.length - 1]
+      const usedBeats = lastMeasure.notes.reduce((s, n) => s + noteBeats(n), 0)
+      if (usedBeats + noteBeats(newNote) > measureCapacity + 0.001) {
+        const fresh = newMeasure()
+        fresh.notes.push(newNote)
+        measures.push(fresh)
+      } else {
+        lastMeasure = { ...lastMeasure, notes: [...lastMeasure.notes, newNote] }
+        measures[measures.length - 1] = lastMeasure
+      }
+      return { ...prev, measures }
+    })
+    setSelectedNoteId(newNote.id)
+    // Audio feedback
+    playPianoNote(vexKeyToName(key, finalAcc))
+  }, [comp, selectedDuration, selectedDotted, selectedTriplet, selectedAccid])
+
+  const updateNote = useCallback((id: number, patch: Partial<MNote>) => {
+    setComp(prev => {
+      if (!prev) return prev
+      const measures = prev.measures.map(m => ({
+        ...m,
+        notes: m.notes.map(n => n.id === id ? { ...n, ...patch } : n),
+      }))
+      return { ...prev, measures }
+    })
   }, [])
 
-  const handleDeleteSaved = useCallback((key: string, name: string) => {
-    if (!confirm(`Delete saved composition "${name}"?`)) return
-    localStorage.removeItem(key)
-    refreshSavedList()
-    setStatusMsg(`Deleted "${name}"`)
-    setTimeout(() => setStatusMsg(''), 3000)
-  }, [refreshSavedList])
-
-  const handleClear = useCallback(() => {
-    if (notes.length === 0) return
-    if (!confirm('Clear all notes? This cannot be undone (unless you re-load).')) return
-    setNotes([])
+  const deleteNote = useCallback((id: number) => {
+    setComp(prev => {
+      if (!prev) return prev
+      const measures = prev.measures
+        .map(m => ({ ...m, notes: m.notes.filter(n => n.id !== id) }))
+        .filter((m, i, arr) => i === 0 || m.notes.length > 0) // keep at least one measure
+      return { ...prev, measures: measures.length > 0 ? measures : [newMeasure()] }
+    })
     setSelectedNoteId(null)
-  }, [notes])
+    setEditPopup(null)
+  }, [])
 
-  // ─── Render staff ────────────────────────────────────────────
-  useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const dpr = window.devicePixelRatio || 1
-    const cssW = STAFF_W
-    const cssH = 240
-    canvas.width = cssW * dpr
-    canvas.height = cssH * dpr
-    canvas.style.width = `${cssW}px`
-    canvas.style.height = `${cssH}px`
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
-    ctx.scale(dpr, dpr)
+  const updateMeasure = useCallback((id: number, patch: Partial<Measure>) => {
+    setComp(prev => {
+      if (!prev) return prev
+      const measures = prev.measures.map(m => m.id === id ? { ...m, ...patch } : m)
+      return { ...prev, measures }
+    })
+  }, [])
 
-    // Background
-    ctx.fillStyle = '#fafaf7'
-    ctx.fillRect(0, 0, cssW, cssH)
+  // ─── VexFlow rendering ────────────────────────────────────────────────────
 
-    // Staff lines
-    ctx.strokeStyle = '#222'
-    ctx.lineWidth = 1
-    for (let i = 0; i < STAFF_LINES; i++) {
-      const y = STAFF_TOP + i * LINE_SPACING
-      ctx.beginPath()
-      ctx.moveTo(20, y)
-      ctx.lineTo(cssW - 20, y)
-      ctx.stroke()
-    }
-    // Left bar (start of staff)
-    ctx.beginPath()
-    ctx.moveTo(20, STAFF_TOP)
-    ctx.lineTo(20, STAFF_BOTTOM)
-    ctx.stroke()
+  const noteHitboxesRef = useRef<{ id: number; x: number; y: number; w: number; h: number }[]>([])
 
-    // Clef glyph (simple text version)
-    ctx.fillStyle = '#222'
-    ctx.font = 'bold 56px serif'
-    ctx.textBaseline = 'middle'
-    ctx.textAlign = 'center'
-    if (clef === 'treble') {
-      ctx.fillText('𝄞', 40, STAFF_TOP + 2 * LINE_SPACING + 4)
-    } else {
-      ctx.fillText('𝄢', 40, STAFF_TOP + 1.5 * LINE_SPACING)
-    }
+  const renderStaff = useCallback(() => {
+    if (!comp) return
+    const container = staffContainerRef.current
+    if (!container) return
+    container.innerHTML = ''
 
-    // Time signature
-    ctx.font = 'bold 22px serif'
-    ctx.fillText(`${timeBeats}`, 70, STAFF_TOP + 1 * LINE_SPACING)
-    ctx.fillText(`${timeBeatType}`, 70, STAFF_TOP + 3 * LINE_SPACING)
+    const measureWidth = 280
+    const startX = 20
+    const startY = 40
+    const measuresPerLine = Math.max(1, Math.floor((window.innerWidth - 80) / measureWidth))
+    const lines = Math.ceil(comp.measures.length / measuresPerLine)
+    const totalWidth = Math.min(comp.measures.length, measuresPerLine) * measureWidth + 60
+    const lineHeight = 200
+    const totalHeight = lines * lineHeight + 60
 
-    // Notes + bar lines
-    let cursorX = NOTES_START_X
-    let beatsInMeasure = 0
-    const measureLen = timeBeats * (4 / timeBeatType)
+    const renderer = new Renderer(container, Renderer.Backends.SVG)
+    renderer.resize(totalWidth, totalHeight)
+    const context = renderer.getContext()
+    context.setFont('Arial', 12)
 
-    for (let i = 0; i < notes.length; i++) {
-      const n = notes[i]
-      const nY = semiToY(n.semitones, clef)
-      const isSelected = n.id === selectedNoteId
-      drawNoteHead(ctx, cursorX, nY, n, isSelected)
-      drawLedgerLines(ctx, cursorX, nY)
-      cursorX += NOTE_SPACING * Math.max(0.5, n.beats)
-      beatsInMeasure += n.beats
-      // Bar line when measure fills
-      if (beatsInMeasure >= measureLen - 0.001) {
-        beatsInMeasure = 0
-        ctx.strokeStyle = '#222'
-        ctx.lineWidth = 1
-        ctx.beginPath()
-        ctx.moveTo(cursorX - NOTE_SPACING / 2, STAFF_TOP)
-        ctx.lineTo(cursorX - NOTE_SPACING / 2, STAFF_BOTTOM)
-        ctx.stroke()
-      }
-    }
+    noteHitboxesRef.current = []
 
-    // Hover ghost note
-    if (hoverY != null && hoverX != null && hoverX > NOTES_START_X - 20) {
-      const semi = yToSemi(hoverY, clef)
-      const previewSemi = semi + (accidental === 'sharp' ? 1 : accidental === 'flat' ? -1 : 0)
-      const ghostY = semiToY(previewSemi, clef)
-      ctx.globalAlpha = 0.35
-      ctx.fillStyle = '#3b82f6'
-      ctx.beginPath()
-      ctx.ellipse(cursorX, ghostY, 7, 5, 0, 0, Math.PI * 2)
-      ctx.fill()
-      ctx.globalAlpha = 1
-      // Pitch label
-      ctx.fillStyle = '#3b82f6'
-      ctx.font = 'bold 14px monospace'
-      ctx.textAlign = 'left'
-      ctx.fillText(semiToName(previewSemi), cursorX + 14, ghostY + 4)
-    }
-  }, [notes, clef, keyFifths, timeBeats, timeBeatType, hoverX, hoverY, selectedNoteId, accidental])
+    comp.measures.forEach((measure, mIdx) => {
+      const lineIdx = Math.floor(mIdx / measuresPerLine)
+      const colIdx = mIdx % measuresPerLine
+      const x = startX + colIdx * measureWidth
+      const y = startY + lineIdx * lineHeight
+      const isFirstInLine = colIdx === 0
 
-  // ─── Note glyph helpers ──────────────────────────────────────
-  function drawNoteHead(
-    ctx: CanvasRenderingContext2D,
-    x: number,
-    y: number,
-    n: ComposerNote,
-    isSelected: boolean,
-  ) {
-    const filled = n.duration === 'quarter' || n.duration === 'eighth' || n.duration === 'sixteenth'
-    ctx.fillStyle = isSelected ? '#dc2626' : '#111'
-    ctx.strokeStyle = isSelected ? '#dc2626' : '#111'
-    ctx.lineWidth = 1.6
-    ctx.beginPath()
-    ctx.ellipse(x, y, 7, 5, -0.2, 0, Math.PI * 2)
-    if (filled) ctx.fill()
-    else ctx.stroke()
-
-    // Stem (skip for whole notes)
-    if (n.duration !== 'whole') {
-      const stemUp = y > STAFF_TOP + 2 * LINE_SPACING
-      ctx.beginPath()
-      if (stemUp) {
-        ctx.moveTo(x + 6, y - 1)
-        ctx.lineTo(x + 6, y - 30)
-      } else {
-        ctx.moveTo(x - 6, y + 1)
-        ctx.lineTo(x - 6, y + 30)
-      }
-      ctx.stroke()
-
-      // Flags for eighth/sixteenth
-      if (n.duration === 'eighth' || n.duration === 'sixteenth') {
-        ctx.fillStyle = isSelected ? '#dc2626' : '#111'
-        const fx = stemUp ? x + 6 : x - 6
-        const fyTop = stemUp ? y - 30 : y + 30
-        ctx.beginPath()
-        ctx.moveTo(fx, fyTop)
-        ctx.quadraticCurveTo(fx + 12, fyTop + 6, fx + 8, fyTop + 12)
-        ctx.lineTo(fx, fyTop + 6)
-        ctx.fill()
-        if (n.duration === 'sixteenth') {
-          ctx.beginPath()
-          ctx.moveTo(fx, fyTop + 6)
-          ctx.quadraticCurveTo(fx + 12, fyTop + 12, fx + 8, fyTop + 18)
-          ctx.lineTo(fx, fyTop + 12)
-          ctx.fill()
+      const stave = new Stave(x, y, measureWidth)
+      if (isFirstInLine) {
+        stave.addClef(comp.clef)
+        stave.addKeySignature(comp.keyName)
+        if (mIdx === 0) {
+          stave.addTimeSignature(`${comp.timeNum}/${comp.timeDen}`)
+          if (comp.tempoMark || comp.tempoBpm) {
+            stave.setTempo(
+              { name: comp.tempoMark, duration: 'q', dots: 0, bpm: comp.tempoBpm },
+              -20,
+            )
+          }
         }
       }
-    }
+      // Bar lines
+      if (measure.startBar === 'repeat-begin') stave.setBegBarType(Barline.type.REPEAT_BEGIN)
+      if (measure.startBar === 'double') stave.setBegBarType(Barline.type.DOUBLE)
+      if (measure.endBar === 'repeat-end') stave.setEndBarType(Barline.type.REPEAT_END)
+      if (measure.endBar === 'double') stave.setEndBarType(Barline.type.DOUBLE)
+      if (measure.endBar === 'final') stave.setEndBarType(Barline.type.END)
+      // Volta (1st / 2nd ending bracket above the measure)
+      if (measure.voltaNumber) {
+        stave.setVoltaType(
+          measure.voltaNumber === 1 ? Volta.type.BEGIN : Volta.type.BEGIN_END,
+          measure.voltaNumber.toString() + '.',
+          0,
+        )
+      }
+      // Coda / Segno
+      if (measure.hasCoda) {
+        stave.setRepetitionType(Repetition.type.CODA_LEFT)
+      }
+      if (measure.hasSegno) {
+        stave.setRepetitionType(Repetition.type.SEGNO_LEFT)
+      }
+      stave.setContext(context).draw()
 
-    // Dot
-    if (n.dotted) {
-      ctx.fillStyle = isSelected ? '#dc2626' : '#111'
-      ctx.beginPath()
-      ctx.arc(x + 12, y, 1.8, 0, Math.PI * 2)
-      ctx.fill()
-    }
+      // Build notes for this measure
+      if (measure.notes.length === 0) {
+        return // empty measure (just bar lines)
+      }
 
-    // Triplet bracket label
-    if (n.triplet) {
-      ctx.fillStyle = isSelected ? '#dc2626' : '#666'
-      ctx.font = '11px serif'
-      ctx.textAlign = 'center'
-      ctx.fillText('3', x, y - 36)
-    }
+      const staveNotes: StaveNote[] = []
+      const tripletGroups = new Map<number, StaveNote[]>()
 
-    // Accidental
-    const m = n.pitchName.match(/(#|b)/)
-    if (m) {
-      ctx.fillStyle = isSelected ? '#dc2626' : '#111'
-      ctx.font = 'bold 16px serif'
-      ctx.textAlign = 'right'
-      ctx.fillText(m[1] === '#' ? '♯' : '♭', x - 8, y + 5)
+      measure.notes.forEach(n => {
+        // Pass base duration only — dot is added separately via Dot.buildAndAttach
+        // (passing both 'qd' and a Dot modifier would render as a double-dot).
+        let staveNote: StaveNote
+        try {
+          staveNote = new StaveNote({
+            keys: n.keys,
+            duration: n.duration,
+            clef: comp.clef,
+            auto_stem: true,
+          })
+        } catch (err) {
+          console.error('StaveNote failed for', n, err)
+          return
+        }
+        // Apply accidentals
+        n.accidentals.forEach((a, ki) => {
+          if (a && a !== '') {
+            try { staveNote.addModifier(new Accidental(a), ki) } catch {}
+          }
+        })
+        // Dot
+        if (n.dotted) {
+          try { Dot.buildAndAttach([staveNote], { all: true }) } catch {}
+        }
+        // Articulation
+        if (n.articulation !== 'none' && !n.fermata) {
+          const map: Record<string, string> = {
+            staccato: 'a.', accent: 'a>', tenuto: 'a-', marcato: 'a^', fermata: 'a@a',
+          }
+          const code = map[n.articulation]
+          if (code) {
+            try { staveNote.addModifier(new Articulation(code).setPosition(Modifier.Position.ABOVE)) } catch {}
+          }
+        }
+        // Fermata
+        if (n.fermata) {
+          try { staveNote.addModifier(new Articulation('a@a').setPosition(Modifier.Position.ABOVE)) } catch {}
+        }
+        // Dynamic
+        if (n.dynamic !== 'none') {
+          try {
+            const dyn = new Annotation(n.dynamic)
+              .setFont('Arial', 12, 'bold italic')
+              .setVerticalJustification(Annotation.VerticalJustify.BOTTOM)
+            staveNote.addModifier(dyn)
+          } catch {}
+        }
+
+        if (n.tripletGroup != null) {
+          if (!tripletGroups.has(n.tripletGroup)) tripletGroups.set(n.tripletGroup, [])
+          tripletGroups.get(n.tripletGroup)!.push(staveNote)
+        }
+        staveNotes.push(staveNote)
+      })
+
+      // Voice
+      try {
+        const voice = new Voice({ num_beats: comp.timeNum, beat_value: comp.timeDen })
+        voice.setMode(Voice.Mode.SOFT) // tolerant of partial measures
+        voice.addTickables(staveNotes)
+        new Formatter().joinVoices([voice]).format([voice], measureWidth - 50)
+        voice.draw(context, stave)
+
+        // Beams (auto-group eighths/16ths/32nds in same beat)
+        const beams = Beam.generateBeams(staveNotes)
+        beams.forEach(b => b.setContext(context).draw())
+
+        // Tuplets
+        tripletGroups.forEach(group => {
+          if (group.length >= 3) {
+            const tuplet = new Tuplet(group)
+            tuplet.setContext(context).draw()
+          }
+        })
+
+        // Hit-test rectangles
+        staveNotes.forEach((sn, i) => {
+          try {
+            const bbox = sn.getBoundingBox()
+            if (bbox) {
+              noteHitboxesRef.current.push({
+                id: measure.notes[i].id,
+                x: bbox.getX(),
+                y: bbox.getY(),
+                w: bbox.getW(),
+                h: bbox.getH(),
+              })
+            }
+          } catch {}
+        })
+
+        // Highlight selected note
+        if (selectedNoteId != null) {
+          staveNotes.forEach((sn, i) => {
+            if (measure.notes[i].id === selectedNoteId) {
+              try {
+                const bbox = sn.getBoundingBox()
+                if (bbox) {
+                  context.save()
+                  context.setFillStyle('rgba(220, 38, 38, 0.18)')
+                  context.fillRect(bbox.getX() - 4, bbox.getY() - 4, bbox.getW() + 8, bbox.getH() + 8)
+                  context.restore()
+                }
+              } catch {}
+            }
+          })
+        }
+      } catch (err) {
+        console.error('Voice format failed:', err)
+      }
+    })
+  }, [comp, selectedNoteId])
+
+  useEffect(() => { renderStaff() }, [renderStaff])
+
+  // ─── Click on staff: hit-test or place ────────────────────────────────────
+  const handleStaffClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!comp) return
+    const container = staffContainerRef.current
+    if (!container) return
+    const rect = container.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+    // Hit-test existing notes
+    for (const hb of noteHitboxesRef.current) {
+      if (x >= hb.x - 4 && x <= hb.x + hb.w + 4 && y >= hb.y - 4 && y <= hb.y + hb.h + 4) {
+        setSelectedNoteId(hb.id)
+        setEditPopup({ noteId: hb.id, x: e.clientX, y: e.clientY })
+        // Find note + play it
+        for (const m of comp.measures) {
+          for (const n of m.notes) {
+            if (n.id === hb.id) {
+              playPianoNote(vexKeyToName(n.keys[0], n.accidentals[0]))
+              return
+            }
+          }
+        }
+        return
+      }
     }
+    // Empty click — figure out which staff line and add a note there
+    // Use the SVG staff lines as reference: 5 staff lines per line, ~10px apart
+    const STAVE_LINE_SPACING = 10
+    // Use the click position relative to the topmost staff line
+    // For simplicity find which "line" we're on
+    const measureWidth = 280
+    const startY = 40
+    const lineHeight = 200
+    const measuresPerLine = Math.max(1, Math.floor((window.innerWidth - 80) / measureWidth))
+    const lineIdx = Math.floor((y - startY) / lineHeight)
+    const lineY = startY + lineIdx * lineHeight
+    // Middle of staff is at lineY + ~60 (VexFlow default stave centerline offset)
+    const midStaveY = lineY + 60
+    const semi = yToSemi(y, midStaveY, STAVE_LINE_SPACING, comp.clef)
+    addNoteAtSemi(semi)
+    setEditPopup(null)
+  }, [comp, addNoteAtSemi])
+
+  // ─── Hotkeys ──────────────────────────────────────────────────────────────
+  useEffect(() => {
+    if (phase !== 'editing') return
+    const onKey = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT') return
+      // Duration shortcuts
+      if (e.key === '1') setSelectedDuration('w')
+      else if (e.key === '2') setSelectedDuration('h')
+      else if (e.key === '3') setSelectedDuration('q')
+      else if (e.key === '4') setSelectedDuration('8')
+      else if (e.key === '5') setSelectedDuration('16')
+      else if (e.key === '6') setSelectedDuration('32')
+      else if (e.key === '.') setSelectedDotted(d => !d)
+      else if (e.key === 't' || e.key === 'T') setSelectedTriplet(t => !t)
+      else if (e.key === '#') setSelectedAccid('#')
+      else if (e.key === 'b' || e.key === 'B') setSelectedAccid('b')
+      else if (e.key === 'n' || e.key === 'N') setSelectedAccid('n')
+      else if (e.key === 'Escape') { setSelectedAccid(''); setSelectedNoteId(null); setEditPopup(null) }
+      else if (e.key === 'Delete' || e.key === 'Backspace') {
+        e.preventDefault()
+        if (selectedNoteId != null) deleteNote(selectedNoteId)
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [phase, selectedNoteId, deleteNote])
+
+  // ─── Add measure ──────────────────────────────────────────────────────────
+  const addMeasure = useCallback(() => {
+    setComp(prev => prev ? { ...prev, measures: [...prev.measures, newMeasure()] } : prev)
+  }, [])
+
+  const removeLastMeasure = useCallback(() => {
+    setComp(prev => {
+      if (!prev || prev.measures.length <= 1) return prev
+      return { ...prev, measures: prev.measures.slice(0, -1) }
+    })
+  }, [])
+
+  // ═══ SETUP WIZARD UI ════════════════════════════════════════════════════
+  if (phase === 'setup') {
+    const KEY_OPTIONS = [
+      { v: 'Cb', label: 'C♭ major (7♭)' },
+      { v: 'Gb', label: 'G♭ major (6♭)' },
+      { v: 'Db', label: 'D♭ major (5♭)' },
+      { v: 'Ab', label: 'A♭ major (4♭)' },
+      { v: 'Eb', label: 'E♭ major (3♭)' },
+      { v: 'Bb', label: 'B♭ major (2♭)' },
+      { v: 'F', label: 'F major (1♭)' },
+      { v: 'C', label: 'C major / a minor (no sharps/flats)' },
+      { v: 'G', label: 'G major (1♯)' },
+      { v: 'D', label: 'D major (2♯)' },
+      { v: 'A', label: 'A major (3♯)' },
+      { v: 'E', label: 'E major (4♯)' },
+      { v: 'B', label: 'B major (5♯)' },
+      { v: 'F#', label: 'F♯ major (6♯)' },
+      { v: 'C#', label: 'C♯ major (7♯)' },
+    ]
+
+    return (
+      <div className="fixed inset-0 bg-[#0b0b14] text-gray-100 overflow-y-auto">
+        <div className="max-w-2xl mx-auto px-6 py-10">
+          <h1 className="text-3xl font-black mb-1">New Composition</h1>
+          <p className="text-sm text-gray-500 mb-6">Choose every setting explicitly. No defaults — pick what your piece actually needs.</p>
+
+          {/* Title + composer */}
+          <div className="space-y-4 mb-8">
+            <div>
+              <label className="block text-xs text-gray-400 uppercase tracking-wider mb-1">Title</label>
+              <input
+                type="text"
+                value={setupTitle}
+                onChange={e => setSetupTitle(e.target.value)}
+                placeholder="e.g. Farewell, Dear Love (Tenor)"
+                className="w-full px-4 py-2.5 bg-[#15152a] border border-[#3a3a55] rounded-lg text-base text-white"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-400 uppercase tracking-wider mb-1">Composer / Arranger</label>
+              <input
+                type="text"
+                value={setupComposer}
+                onChange={e => setSetupComposer(e.target.value)}
+                placeholder="optional"
+                className="w-full px-4 py-2.5 bg-[#15152a] border border-[#3a3a55] rounded-lg text-base text-white"
+              />
+            </div>
+          </div>
+
+          {/* Clef */}
+          <div className="mb-8">
+            <label className="block text-xs text-gray-400 uppercase tracking-wider mb-2">Clef <span className="text-red-400">*required</span></label>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+              {(['treble', 'alto', 'tenor', 'bass'] as Clef[]).map(c => (
+                <button
+                  key={c}
+                  onClick={() => setSetupClef(c)}
+                  className="px-4 py-3 rounded-lg text-sm font-bold transition-all"
+                  style={{
+                    background: setupClef === c ? 'rgba(99,102,241,0.25)' : 'rgba(40,40,60,0.5)',
+                    border: `2px solid ${setupClef === c ? '#6366f1' : 'rgba(60,60,80,0.5)'}`,
+                    color: setupClef === c ? '#a5b4fc' : '#888',
+                  }}
+                >
+                  <div className="text-3xl mb-0.5">
+                    {c === 'treble' ? '𝄞' : c === 'bass' ? '𝄢' : '𝄡'}
+                  </div>
+                  <div className="capitalize">{c} Clef</div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Time signature */}
+          <div className="mb-8">
+            <label className="block text-xs text-gray-400 uppercase tracking-wider mb-2">Time Signature <span className="text-red-400">*required</span></label>
+            <div className="flex flex-wrap gap-2">
+              {[
+                [4, 4, '4/4 common time'],
+                [3, 4, '3/4 waltz'],
+                [2, 4, '2/4 march'],
+                [2, 2, '2/2 cut time'],
+                [6, 8, '6/8 compound duple'],
+                [9, 8, '9/8 compound triple'],
+                [12, 8, '12/8 compound quadruple'],
+                [5, 4, '5/4'],
+                [7, 8, '7/8'],
+                [3, 8, '3/8'],
+              ].map(([n, d, label]) => (
+                <button
+                  key={`${n}/${d}`}
+                  onClick={() => { setSetupTimeNum(n as number); setSetupTimeDen(d as number) }}
+                  className="px-4 py-2 rounded-lg text-sm transition-all"
+                  style={{
+                    background: setupTimeNum === n && setupTimeDen === d ? 'rgba(99,102,241,0.25)' : 'rgba(40,40,60,0.5)',
+                    border: `2px solid ${setupTimeNum === n && setupTimeDen === d ? '#6366f1' : 'rgba(60,60,80,0.5)'}`,
+                    color: setupTimeNum === n && setupTimeDen === d ? '#a5b4fc' : '#888',
+                  }}
+                >
+                  <span className="font-bold mr-2">{n}/{d}</span>
+                  <span className="text-xs opacity-70">{label}</span>
+                </button>
+              ))}
+            </div>
+            {/* Custom time sig */}
+            <div className="mt-3 flex items-center gap-2 text-xs text-gray-500">
+              Custom:
+              <input type="number" min={1} max={32} placeholder="num"
+                onChange={e => setSetupTimeNum(parseInt(e.target.value) || null)}
+                className="w-16 px-2 py-1 bg-[#15152a] border border-[#3a3a55] rounded text-white text-center" />
+              <span>/</span>
+              <select
+                onChange={e => setSetupTimeDen(parseInt(e.target.value) || null)}
+                className="px-2 py-1 bg-[#15152a] border border-[#3a3a55] rounded text-white">
+                <option value="">denom</option>
+                <option value="2">2</option>
+                <option value="4">4</option>
+                <option value="8">8</option>
+                <option value="16">16</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Key signature */}
+          <div className="mb-8">
+            <label className="block text-xs text-gray-400 uppercase tracking-wider mb-2">Key Signature <span className="text-red-400">*required</span></label>
+            <select
+              value={setupKey || ''}
+              onChange={e => setSetupKey(e.target.value)}
+              className="w-full px-4 py-2.5 bg-[#15152a] border border-[#3a3a55] rounded-lg text-base text-white"
+            >
+              <option value="">— Pick a key —</option>
+              {KEY_OPTIONS.map(o => (
+                <option key={o.v} value={o.v}>{o.label}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Tempo */}
+          <div className="mb-8 grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs text-gray-400 uppercase tracking-wider mb-1">Tempo (BPM)</label>
+              <input
+                type="number"
+                value={setupTempoBpm}
+                onChange={e => setSetupTempoBpm(parseInt(e.target.value) || 100)}
+                min={30}
+                max={300}
+                className="w-full px-4 py-2.5 bg-[#15152a] border border-[#3a3a55] rounded-lg text-base text-white"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-400 uppercase tracking-wider mb-1">Tempo Marking (optional)</label>
+              <select
+                value={setupTempoMark}
+                onChange={e => setSetupTempoMark(e.target.value)}
+                className="w-full px-4 py-2.5 bg-[#15152a] border border-[#3a3a55] rounded-lg text-base text-white"
+              >
+                <option value="">none</option>
+                <option value="Grave">Grave (very slow)</option>
+                <option value="Largo">Largo</option>
+                <option value="Adagio">Adagio</option>
+                <option value="Andante">Andante</option>
+                <option value="Moderato">Moderato</option>
+                <option value="Allegretto">Allegretto</option>
+                <option value="Allegro">Allegro</option>
+                <option value="Vivace">Vivace</option>
+                <option value="Presto">Presto</option>
+                <option value="Prestissimo">Prestissimo (very fast)</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Begin button */}
+          <button
+            onClick={beginComposing}
+            disabled={!setupClef || setupTimeNum == null || setupTimeDen == null || !setupKey}
+            className="w-full px-8 py-4 rounded-xl text-xl font-black text-white transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+            style={{
+              background: 'linear-gradient(135deg, #6366f1, #4f46e5)',
+              boxShadow: '0 0 30px rgba(99,102,241,0.4)',
+            }}
+          >
+            Begin Composing →
+          </button>
+
+          {/* Saved compositions */}
+          {savedList.length > 0 && (
+            <div className="mt-10">
+              <h2 className="text-sm uppercase tracking-wider text-gray-400 mb-3">Or open a saved composition</h2>
+              <div className="space-y-2">
+                {savedList.map(({ key, comp: c }) => (
+                  <div key={key} className="flex items-center gap-2 p-3 bg-[#15152a] border border-[#3a3a55] rounded-lg">
+                    <button
+                      onClick={() => loadComposition(key)}
+                      className="flex-1 text-left text-indigo-300 hover:text-indigo-200"
+                    >
+                      <div className="font-bold">{c.title}</div>
+                      <div className="text-xs text-gray-500">
+                        {c.clef} clef · {c.timeNum}/{c.timeDen} · {c.keyName} · {c.measures.length} measures
+                      </div>
+                    </button>
+                    <button
+                      onClick={() => deleteSavedComposition(key, c.title)}
+                      className="text-xs text-red-500 hover:text-red-400 px-2"
+                      title="Delete"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <a href="/pitch-defender" className="mt-8 block text-center text-xs text-gray-600 hover:text-gray-400">
+            ← Back to Pitch Defender
+          </a>
+        </div>
+      </div>
+    )
   }
 
-  function drawLedgerLines(ctx: CanvasRenderingContext2D, x: number, y: number) {
-    ctx.strokeStyle = '#222'
-    ctx.lineWidth = 1
-    // Above staff
-    let lineY = STAFF_TOP - LINE_SPACING
-    while (lineY >= y - LINE_SPACING / 2) {
-      ctx.beginPath()
-      ctx.moveTo(x - 10, lineY)
-      ctx.lineTo(x + 10, lineY)
-      ctx.stroke()
-      lineY -= LINE_SPACING
+  // ═══ EDITOR UI ══════════════════════════════════════════════════════════
+  if (!comp) return null
+
+  // Find the selected note (for popup)
+  const selNote = (() => {
+    for (const m of comp.measures) {
+      for (const n of m.notes) {
+        if (n.id === selectedNoteId) return n
+      }
     }
-    // Below staff
-    lineY = STAFF_BOTTOM + LINE_SPACING
-    while (lineY <= y + LINE_SPACING / 2) {
-      ctx.beginPath()
-      ctx.moveTo(x - 10, lineY)
-      ctx.lineTo(x + 10, lineY)
-      ctx.stroke()
-      lineY += LINE_SPACING
-    }
-  }
-
-  // ─── UI ──────────────────────────────────────────────────────
-
-  const palette: { d: DurationName; label: string; glyph: string }[] = [
-    { d: 'whole', label: 'whole', glyph: '𝅝' },
-    { d: 'half', label: 'half', glyph: '𝅗𝅥' },
-    { d: 'quarter', label: 'quarter', glyph: '♩' },
-    { d: 'eighth', label: 'eighth', glyph: '♪' },
-    { d: 'sixteenth', label: '16th', glyph: '♬' },
-  ]
-
-  const totalBeats = notes.reduce((s, n) => s + n.beats, 0)
-  const measureCount = Math.max(1, Math.ceil(totalBeats / (timeBeats * (4 / timeBeatType))))
+    return null
+  })()
 
   return (
-    <div className="fixed inset-0 bg-[#0b0b14] flex flex-col overflow-y-auto">
-      {/* Top bar — score setup */}
-      <div className="px-4 py-3 border-b border-gray-800/60 bg-[#08080f]">
-        <div className="flex items-center gap-4 flex-wrap">
-          <h1 className="text-lg font-bold text-white">Composer</h1>
-
-          <div className="flex flex-col">
-            <label className="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">Title</label>
-            <input
-              type="text"
-              value={title}
-              onChange={e => setTitle(e.target.value)}
-              placeholder="Untitled"
-              className="px-3 py-1.5 bg-[#15152a] border border-[#3a3a55] rounded text-sm text-white w-52"
-            />
-          </div>
-
-          <div className="flex flex-col">
-            <label className="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">Clef</label>
-            <select
-              value={clef}
-              onChange={e => setClef(e.target.value as Clef)}
-              className="px-3 py-1.5 bg-[#15152a] border border-[#3a3a55] rounded text-sm text-gray-100 cursor-pointer"
-            >
-              <option value="treble">𝄞 Treble Clef</option>
-              <option value="bass">𝄢 Bass Clef</option>
-            </select>
-          </div>
-
-          <div className="flex flex-col">
-            <label className="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">Time Signature</label>
-            <select
-              value={`${timeBeats}/${timeBeatType}`}
-              onChange={e => {
-                const [n, d] = e.target.value.split('/').map(Number)
-                setTimeBeats(n)
-                setTimeBeatType(d)
-              }}
-              className="px-3 py-1.5 bg-[#15152a] border border-[#3a3a55] rounded text-sm text-gray-100 cursor-pointer"
-            >
-              <option value="4/4">4/4 (common)</option>
-              <option value="3/4">3/4 (waltz)</option>
-              <option value="2/4">2/4 (march)</option>
-              <option value="2/2">2/2 (cut time)</option>
-              <option value="6/8">6/8 (compound)</option>
-              <option value="9/8">9/8</option>
-              <option value="12/8">12/8</option>
-              <option value="5/4">5/4</option>
-              <option value="7/8">7/8</option>
-            </select>
-          </div>
-
-          <div className="flex flex-col">
-            <label className="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">Key Signature</label>
-            <select
-              value={keyFifths}
-              onChange={e => setKeyFifths(parseInt(e.target.value))}
-              className="px-3 py-1.5 bg-[#15152a] border border-[#3a3a55] rounded text-sm text-gray-100 cursor-pointer"
-            >
-              <option value="-7">C♭ major (7♭)</option>
-              <option value="-6">G♭ major (6♭)</option>
-              <option value="-5">D♭ major (5♭)</option>
-              <option value="-4">A♭ major (4♭)</option>
-              <option value="-3">E♭ major (3♭)</option>
-              <option value="-2">B♭ major (2♭)</option>
-              <option value="-1">F major (1♭)</option>
-              <option value="0">C major / a minor</option>
-              <option value="1">G major (1♯)</option>
-              <option value="2">D major (2♯)</option>
-              <option value="3">A major (3♯)</option>
-              <option value="4">E major (4♯)</option>
-              <option value="5">B major (5♯)</option>
-              <option value="6">F♯ major (6♯)</option>
-              <option value="7">C♯ major (7♯)</option>
-            </select>
-          </div>
-
-          <div className="flex flex-col">
-            <label className="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">Tempo (♩=)</label>
-            <input
-              type="number"
-              value={tempo}
-              onChange={e => setTempo(parseInt(e.target.value) || 100)}
-              className="px-3 py-1.5 bg-[#15152a] border border-[#3a3a55] rounded text-sm text-white w-20"
-              min={40}
-              max={240}
-            />
-          </div>
-
-          <div className="ml-auto text-xs text-gray-500 self-end pb-1">
-            {notes.length} notes · {measureCount} measures · {totalBeats.toFixed(2)} beats
-          </div>
+    <div className="fixed inset-0 bg-[#0b0b14] text-gray-100 flex flex-col overflow-hidden">
+      {/* Top bar — composition info + global edits */}
+      <div className="px-4 py-3 border-b border-gray-800/60 bg-[#08080f] flex items-center gap-3 flex-wrap">
+        <button onClick={() => setPhase('setup')} className="text-xs text-gray-500 hover:text-gray-300">
+          ← New
+        </button>
+        <input
+          type="text"
+          value={comp.title}
+          onChange={e => setComp(prev => prev ? { ...prev, title: e.target.value } : prev)}
+          className="px-3 py-1.5 bg-[#15152a] border border-[#3a3a55] rounded text-sm text-white w-48"
+        />
+        <span className="text-xs text-gray-500">
+          <span className="text-indigo-300 font-bold capitalize">{comp.clef}</span> ·
+          <span className="text-indigo-300 font-bold ml-1">{comp.timeNum}/{comp.timeDen}</span> ·
+          <span className="text-indigo-300 font-bold ml-1">{comp.keyName}</span> ·
+          <span className="text-indigo-300 font-bold ml-1">{comp.tempoMark} ♩={comp.tempoBpm}</span>
+        </span>
+        <div className="ml-auto flex items-center gap-2">
+          <button onClick={addMeasure} className="text-xs px-3 py-1.5 rounded bg-[#15152a] border border-[#3a3a55] text-gray-300 hover:bg-[#1f1f3a]">
+            + Measure
+          </button>
+          <button onClick={removeLastMeasure} className="text-xs px-3 py-1.5 rounded bg-[#15152a] border border-[#3a3a55] text-gray-300 hover:bg-[#1f1f3a]">
+            − Measure
+          </button>
+          <button onClick={handleSave} className="text-xs px-3 py-1.5 rounded font-bold text-white" style={{ background: 'linear-gradient(135deg, #6366f1, #4f46e5)' }}>
+            Save
+          </button>
+          <button onClick={handleDownload} className="text-xs px-3 py-1.5 rounded text-indigo-300 border border-indigo-700 hover:bg-indigo-900/30">
+            Download .musicxml
+          </button>
         </div>
       </div>
 
-      {/* Note palette */}
-      <div className="px-4 py-3 border-b border-gray-800/40 flex items-center gap-2 flex-wrap bg-[#0a0a14]">
-        <span className="text-xs text-gray-500 uppercase tracking-wider mr-2">Duration</span>
-        {palette.map(p => (
+      {/* Toolbar — duration / accidental / dotted / triplet */}
+      <div className="px-4 py-2 border-b border-gray-800/40 bg-[#0a0a14] flex items-center gap-2 flex-wrap text-xs">
+        <span className="text-gray-500 uppercase tracking-wider">Duration</span>
+        {([
+          { d: 'w' as DurationKey, glyph: '𝅝', label: 'whole', key: '1' },
+          { d: 'h' as DurationKey, glyph: '𝅗𝅥', label: 'half', key: '2' },
+          { d: 'q' as DurationKey, glyph: '♩', label: 'quarter', key: '3' },
+          { d: '8' as DurationKey, glyph: '♪', label: 'eighth', key: '4' },
+          { d: '16' as DurationKey, glyph: '𝅘𝅥𝅯', label: '16th', key: '5' },
+          { d: '32' as DurationKey, glyph: '𝅘𝅥𝅰', label: '32nd', key: '6' },
+        ]).map(p => (
           <button
             key={p.d}
             onClick={() => setSelectedDuration(p.d)}
-            className="px-3 py-2 rounded text-sm font-bold transition-all flex items-center gap-2"
+            className="px-2 py-1.5 rounded font-bold flex items-center gap-1.5 transition-all"
             style={{
               background: selectedDuration === p.d ? 'rgba(99,102,241,0.25)' : 'rgba(40,40,60,0.5)',
               border: `1px solid ${selectedDuration === p.d ? '#6366f1' : 'rgba(60,60,80,0.5)'}`,
               color: selectedDuration === p.d ? '#a5b4fc' : '#888',
             }}
+            title={`${p.label} (${p.key})`}
           >
-            <span className="text-xl">{p.glyph}</span>
-            <span className="text-xs">{p.label}</span>
+            <span className="text-lg">{p.glyph}</span>
+            <span className="text-[10px]">{p.label}</span>
           </button>
         ))}
-        <div className="w-px h-8 bg-gray-700 mx-1" />
         <button
-          onClick={() => setDotted(!dotted)}
-          className="px-3 py-2 rounded text-xs font-bold transition-all"
+          onClick={() => setSelectedDotted(!selectedDotted)}
+          className="px-2 py-1.5 rounded font-bold transition-all"
           style={{
-            background: dotted ? 'rgba(99,102,241,0.25)' : 'rgba(40,40,60,0.5)',
-            border: `1px solid ${dotted ? '#6366f1' : 'rgba(60,60,80,0.5)'}`,
-            color: dotted ? '#a5b4fc' : '#888',
+            background: selectedDotted ? 'rgba(99,102,241,0.25)' : 'rgba(40,40,60,0.5)',
+            border: `1px solid ${selectedDotted ? '#6366f1' : 'rgba(60,60,80,0.5)'}`,
+            color: selectedDotted ? '#a5b4fc' : '#888',
           }}
-          title="Dotted (×1.5 duration)"
+          title="Dotted (.)"
         >
-          dotted ·
+          dot ·
         </button>
         <button
-          onClick={() => setTriplet(!triplet)}
-          className="px-3 py-2 rounded text-xs font-bold transition-all"
+          onClick={() => setSelectedTriplet(!selectedTriplet)}
+          className="px-2 py-1.5 rounded font-bold transition-all"
           style={{
-            background: triplet ? 'rgba(99,102,241,0.25)' : 'rgba(40,40,60,0.5)',
-            border: `1px solid ${triplet ? '#6366f1' : 'rgba(60,60,80,0.5)'}`,
-            color: triplet ? '#a5b4fc' : '#888',
+            background: selectedTriplet ? 'rgba(99,102,241,0.25)' : 'rgba(40,40,60,0.5)',
+            border: `1px solid ${selectedTriplet ? '#6366f1' : 'rgba(60,60,80,0.5)'}`,
+            color: selectedTriplet ? '#a5b4fc' : '#888',
           }}
-          title="Triplet (×2/3 duration)"
+          title="Triplet (T)"
         >
           triplet 3
         </button>
-        <div className="w-px h-8 bg-gray-700 mx-1" />
-        <span className="text-xs text-gray-500 uppercase tracking-wider mr-1">Accidental</span>
-        {(['flat', 'natural', 'sharp'] as Accidental[]).map(a => (
+        <span className="text-gray-500 uppercase tracking-wider ml-2">Accidental</span>
+        {([
+          { a: '' as Accid, glyph: '♮', title: 'natural / no accidental' },
+          { a: '#' as Accid, glyph: '♯', title: 'sharp (#)' },
+          { a: 'b' as Accid, glyph: '♭', title: 'flat (B)' },
+        ]).map(p => (
           <button
-            key={a}
-            onClick={() => setAccidental(a)}
-            className="px-3 py-2 rounded text-base font-bold transition-all"
+            key={p.a || 'nat'}
+            onClick={() => setSelectedAccid(p.a)}
+            className="px-2 py-1.5 rounded font-bold transition-all"
             style={{
-              background: accidental === a ? 'rgba(99,102,241,0.25)' : 'rgba(40,40,60,0.5)',
-              border: `1px solid ${accidental === a ? '#6366f1' : 'rgba(60,60,80,0.5)'}`,
-              color: accidental === a ? '#a5b4fc' : '#888',
+              background: selectedAccid === p.a ? 'rgba(99,102,241,0.25)' : 'rgba(40,40,60,0.5)',
+              border: `1px solid ${selectedAccid === p.a ? '#6366f1' : 'rgba(60,60,80,0.5)'}`,
+              color: selectedAccid === p.a ? '#a5b4fc' : '#888',
             }}
-            title={a}
+            title={p.title}
           >
-            {a === 'flat' ? '♭' : a === 'sharp' ? '♯' : '♮'}
+            {p.glyph}
           </button>
         ))}
-        <div className="ml-auto flex items-center gap-2">
-          <button
-            onClick={deleteSelected}
-            className="px-3 py-2 rounded text-xs font-bold text-red-300 border border-red-900/50 hover:bg-red-900/20 transition-all"
-            title="Delete selected note (or last note if none selected). Hotkey: Delete/Backspace"
-          >
-            ← Delete
-          </button>
-          <button
-            onClick={handleClear}
-            className="px-3 py-2 rounded text-xs font-bold text-gray-400 border border-gray-700 hover:bg-gray-800 transition-all"
-          >
-            Clear All
-          </button>
+        <div className="ml-auto text-[10px] text-gray-600">
+          Hotkeys: 1-6 duration · . dot · T triplet · # ♭ accidental · Del to remove · Esc to clear
         </div>
       </div>
 
-      {/* Help line */}
-      <div className="px-4 py-1.5 bg-[#0a0a14] border-b border-gray-800/40 text-[11px] text-gray-500">
-        <span className="text-cyan-400">Click on the staff</span> to place a note at the current cursor with the selected duration.
-        Click an existing note to <span className="text-yellow-400">select</span> it (then Delete to remove). Notes auto-flow into measures.
-      </div>
+      {/* Status */}
+      {statusMsg && (
+        <div className="px-4 py-1.5 bg-emerald-900/30 border-b border-emerald-700/40 text-xs text-emerald-300">
+          {statusMsg}
+        </div>
+      )}
 
-      {/* Staff canvas */}
-      <div className="flex-1 overflow-x-auto overflow-y-hidden bg-[#0b0b14] p-4 flex justify-center">
-        <canvas
-          ref={canvasRef}
+      {/* Staff (VexFlow SVG) */}
+      <div className="flex-1 overflow-auto bg-[#fafaf7] p-4">
+        <div
+          ref={staffContainerRef}
           onClick={handleStaffClick}
-          onMouseMove={handleMouseMove}
-          onMouseLeave={handleMouseLeave}
-          style={{
-            cursor: 'crosshair',
-            borderRadius: 8,
-            border: '1px solid rgba(99,102,241,0.3)',
-            boxShadow: '0 4px 24px rgba(0,0,0,0.4)',
-          }}
+          style={{ cursor: 'crosshair', minHeight: 250 }}
         />
       </div>
 
-      {/* Save bar + saved list */}
-      <div className="px-4 py-3 border-t border-gray-800/60 bg-[#08080f]">
-        <div className="flex items-center gap-3 mb-3">
-          <button
-            onClick={handleSave}
-            className="px-4 py-2 rounded-lg text-sm font-bold text-white transition-all"
-            style={{ background: 'linear-gradient(135deg, #6366f1, #4f46e5)' }}
-          >
-            Save (use in any game)
-          </button>
-          <button
-            onClick={handleDownload}
-            className="px-4 py-2 rounded-lg text-sm font-bold text-indigo-300 border border-indigo-700 hover:bg-indigo-900/30 transition-all"
-          >
-            Download .musicxml
-          </button>
-          {statusMsg && (
-            <div className="text-xs text-emerald-300">{statusMsg}</div>
-          )}
-          <a href="/pitch-defender" className="ml-auto text-xs text-gray-600 hover:text-gray-400 transition-colors">
-            ← Back
-          </a>
+      {/* Popup: edit selected note */}
+      {editPopup && selNote && (
+        <NoteEditPopup
+          note={selNote}
+          x={editPopup.x}
+          y={editPopup.y}
+          onClose={() => setEditPopup(null)}
+          onUpdate={patch => updateNote(selNote.id, patch)}
+          onDelete={() => deleteNote(selNote.id)}
+        />
+      )}
+
+      {/* Bottom bar: measure-level controls (bar lines, codas, voltas) */}
+      {selectedNoteId != null && (
+        <div className="px-4 py-2 border-t border-gray-800/60 bg-[#08080f] flex items-center gap-2 text-xs flex-wrap">
+          <span className="text-gray-500 uppercase tracking-wider mr-2">Selected Measure</span>
+          {(() => {
+            const m = comp.measures.find(mm => mm.notes.some(n => n.id === selectedNoteId))
+            if (!m) return null
+            return (
+              <>
+                <select
+                  value={m.startBar}
+                  onChange={e => updateMeasure(m.id, { startBar: e.target.value as BarStart })}
+                  className="px-2 py-1 bg-[#15152a] border border-[#3a3a55] rounded text-xs text-gray-200"
+                >
+                  <option value="normal">| start bar</option>
+                  <option value="repeat-begin">𝄆 repeat begin</option>
+                  <option value="double">‖ double bar start</option>
+                </select>
+                <select
+                  value={m.endBar}
+                  onChange={e => updateMeasure(m.id, { endBar: e.target.value as BarEnd })}
+                  className="px-2 py-1 bg-[#15152a] border border-[#3a3a55] rounded text-xs text-gray-200"
+                >
+                  <option value="normal">| end bar</option>
+                  <option value="repeat-end">𝄇 repeat end</option>
+                  <option value="double">‖ double bar end</option>
+                  <option value="final">𝄂 final bar</option>
+                </select>
+                <label className="flex items-center gap-1 text-gray-400">
+                  <input type="checkbox" checked={m.hasCoda} onChange={e => updateMeasure(m.id, { hasCoda: e.target.checked })} />
+                  Coda 𝄌
+                </label>
+                <label className="flex items-center gap-1 text-gray-400">
+                  <input type="checkbox" checked={m.hasSegno} onChange={e => updateMeasure(m.id, { hasSegno: e.target.checked })} />
+                  Segno 𝄋
+                </label>
+                <select
+                  value={m.voltaNumber || ''}
+                  onChange={e => updateMeasure(m.id, { voltaNumber: e.target.value ? parseInt(e.target.value) : undefined })}
+                  className="px-2 py-1 bg-[#15152a] border border-[#3a3a55] rounded text-xs text-gray-200"
+                >
+                  <option value="">— no volta —</option>
+                  <option value="1">Volta 1.</option>
+                  <option value="2">Volta 2.</option>
+                </select>
+              </>
+            )
+          })()}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ─── Note edit popup ────────────────────────────────────────────────────────
+
+function NoteEditPopup({
+  note, x, y, onClose, onUpdate, onDelete,
+}: {
+  note: MNote
+  x: number
+  y: number
+  onClose: () => void
+  onUpdate: (patch: Partial<MNote>) => void
+  onDelete: () => void
+}) {
+  // Click-outside to close
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement
+      if (!target.closest('[data-note-popup]')) onClose()
+    }
+    // Defer adding listener until after the click that opened the popup
+    const t = setTimeout(() => document.addEventListener('mousedown', onClick), 0)
+    return () => { clearTimeout(t); document.removeEventListener('mousedown', onClick) }
+  }, [onClose])
+
+  return (
+    <div
+      data-note-popup
+      className="fixed z-50 bg-[#15152a] border-2 border-indigo-600 rounded-lg shadow-2xl p-3 text-xs"
+      style={{
+        left: Math.min(x, window.innerWidth - 320),
+        top: Math.min(y + 16, window.innerHeight - 320),
+        width: 300,
+      }}
+      onClick={e => e.stopPropagation()}
+    >
+      <div className="flex items-center justify-between mb-2 pb-2 border-b border-gray-700">
+        <span className="text-indigo-300 font-bold">Edit Note</span>
+        <button onClick={onClose} className="text-gray-500 hover:text-gray-300">✕</button>
+      </div>
+
+      <div className="space-y-2">
+        <div>
+          <div className="text-gray-500 uppercase tracking-wider mb-1">Duration</div>
+          <div className="flex flex-wrap gap-1">
+            {(['w', 'h', 'q', '8', '16', '32'] as DurationKey[]).map(d => (
+              <button
+                key={d}
+                onClick={() => onUpdate({ duration: d })}
+                className="px-2 py-1 rounded text-xs font-bold"
+                style={{
+                  background: note.duration === d ? '#6366f1' : '#1f1f3a',
+                  color: note.duration === d ? 'white' : '#888',
+                }}
+              >
+                {{ w: '𝅝', h: '𝅗𝅥', q: '♩', '8': '♪', '16': '𝅘𝅥𝅯', '32': '𝅘𝅥𝅰' }[d]}
+              </button>
+            ))}
+          </div>
         </div>
 
-        {savedList.length > 0 && (
-          <div>
-            <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Saved Compositions</div>
-            <div className="flex flex-wrap gap-2">
-              {savedList.map(({ key, comp }) => (
-                <div key={key} className="flex items-center gap-1 bg-[#15152a] border border-[#3a3a55] rounded px-2 py-1">
-                  <button
-                    onClick={() => handleLoadSaved(key)}
-                    className="text-xs text-indigo-300 hover:text-indigo-200"
-                  >
-                    {comp.title}
-                  </button>
-                  <span className="text-[10px] text-gray-600">({comp.notes.length} notes)</span>
-                  <button
-                    onClick={() => handleDeleteSaved(key, comp.title)}
-                    className="text-[10px] text-red-500 hover:text-red-400 ml-1"
-                    title="Delete this composition"
-                  >
-                    ×
-                  </button>
-                </div>
-              ))}
-            </div>
+        <div className="flex gap-3">
+          <label className="flex items-center gap-1 text-gray-300">
+            <input type="checkbox" checked={note.dotted} onChange={e => onUpdate({ dotted: e.target.checked })} />
+            Dotted
+          </label>
+          <label className="flex items-center gap-1 text-gray-300">
+            <input type="checkbox" checked={note.tripletGroup != null} onChange={e => onUpdate({ tripletGroup: e.target.checked ? Date.now() : undefined })} />
+            Triplet
+          </label>
+          <label className="flex items-center gap-1 text-gray-300">
+            <input type="checkbox" checked={note.fermata} onChange={e => onUpdate({ fermata: e.target.checked })} />
+            Fermata
+          </label>
+          <label className="flex items-center gap-1 text-gray-300">
+            <input type="checkbox" checked={note.tieToNext} onChange={e => onUpdate({ tieToNext: e.target.checked })} />
+            Tie
+          </label>
+        </div>
+
+        <div>
+          <div className="text-gray-500 uppercase tracking-wider mb-1">Accidental</div>
+          <div className="flex gap-1">
+            {(['', '#', 'b', 'n', '##', 'bb'] as Accid[]).map(a => (
+              <button
+                key={a || 'none'}
+                onClick={() => onUpdate({ accidentals: note.keys.map(() => a) })}
+                className="px-2 py-1 rounded text-xs font-bold"
+                style={{
+                  background: note.accidentals[0] === a ? '#6366f1' : '#1f1f3a',
+                  color: note.accidentals[0] === a ? 'white' : '#888',
+                }}
+              >
+                {a === '' ? '—' : a === 'n' ? '♮' : a === '#' ? '♯' : a === 'b' ? '♭' : a === '##' ? '𝄪' : '𝄫'}
+              </button>
+            ))}
           </div>
-        )}
+        </div>
+
+        <div>
+          <div className="text-gray-500 uppercase tracking-wider mb-1">Articulation</div>
+          <div className="flex flex-wrap gap-1">
+            {(['none', 'staccato', 'accent', 'tenuto', 'marcato'] as Articul[]).map(a => (
+              <button
+                key={a}
+                onClick={() => onUpdate({ articulation: a })}
+                className="px-2 py-1 rounded text-xs"
+                style={{
+                  background: note.articulation === a ? '#6366f1' : '#1f1f3a',
+                  color: note.articulation === a ? 'white' : '#888',
+                }}
+              >
+                {a}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <div className="text-gray-500 uppercase tracking-wider mb-1">Dynamic</div>
+          <div className="flex flex-wrap gap-1">
+            {(['none', 'pp', 'p', 'mp', 'mf', 'f', 'ff', 'fff'] as Dynamic[]).map(d => (
+              <button
+                key={d}
+                onClick={() => onUpdate({ dynamic: d })}
+                className="px-2 py-1 rounded text-xs font-bold italic"
+                style={{
+                  background: note.dynamic === d ? '#6366f1' : '#1f1f3a',
+                  color: note.dynamic === d ? 'white' : '#888',
+                }}
+              >
+                {d === 'none' ? '—' : d}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <button
+          onClick={onDelete}
+          className="w-full mt-2 px-3 py-2 rounded bg-red-900/40 border border-red-700 text-red-300 hover:bg-red-900/60 font-bold"
+        >
+          Delete Note
+        </button>
       </div>
     </div>
   )
