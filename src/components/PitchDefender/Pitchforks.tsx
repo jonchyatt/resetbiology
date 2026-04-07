@@ -461,16 +461,17 @@ export default function Pitchforks() {
           }
         }
       } else {
-        // Only reset if we weren't in the cooldown period
+        // Wrong pitch — slow decay, don't fully reset (gives a grace window)
         if (matchStartRef.current >= 0) {
           matchStartRef.current = 0
           setMatchProgress(prev => Math.max(0, prev - dt * 2))
         }
       }
-    } else if (cv?.alive) {
-      matchStartRef.current = 0
-      setMatchProgress(prev => Math.max(0, prev - dt * 2))
     }
+    // NOTE: removed the `else if (cv?.alive)` reset block — pitch.isActive flickers
+    // between detection frames, and resetting on every flicker prevents progress
+    // from EVER accumulating to 1. Now progress only decays on wrong-pitch frames,
+    // not on detection gaps.
 
     // ── Render ──
     ctx.fillStyle = '#0a0812'

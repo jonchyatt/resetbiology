@@ -488,10 +488,10 @@ export default function ChoirPractice() {
           matchStartRef.current = 0
           setMatchProgress(prev => Math.max(0, prev - dt * 3))
         }
-      } else {
-        matchStartRef.current = 0
-        setMatchProgress(prev => Math.max(0, prev - dt * 2))
       }
+      // NOTE: removed `else` reset on !pitch.isActive — pitch flickers between
+      // detection frames and resetting on every flicker prevented progress from
+      // ever accumulating to 1. Now progress only decays on wrong-pitch frames.
     } else {
       // ── Flow Mode: note plays for its duration, score timing ──
       flowTimerRef.current += dt * 1000

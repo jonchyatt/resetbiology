@@ -314,11 +314,10 @@ export default function NoteRunner() {
             note.matchProgress = Math.max(0, note.matchProgress - dt * 500)
             setMatchProgress(Math.max(0, note.matchProgress / HOLD_DURATION[difficulty]))
           }
-        } else {
-          // Not singing — slow decay
-          note.matchProgress = Math.max(0, note.matchProgress - dt * 200)
-          setMatchProgress(Math.max(0, note.matchProgress / HOLD_DURATION[difficulty]))
         }
+        // NOTE: removed `else` decay on !pitch.isActive — pitch flickers between
+        // detection frames; decaying on every flicker prevented progress from
+        // ever accumulating to 1. matchProgress is preserved across detection gaps.
       }
     }
 

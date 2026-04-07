@@ -282,10 +282,10 @@ export default function SightReading() {
           matchStartRef.current = 0
           setMatchProgress(prev => Math.max(0, prev - dt * 3))
         }
-      } else {
-        matchStartRef.current = 0
-        setMatchProgress(prev => Math.max(0, prev - dt * 2))
       }
+      // NOTE: removed `else` reset on !pitch.isActive — pitch flickers between
+      // detection frames; resetting on every flicker prevents progress from
+      // ever accumulating to 1.
     } else {
       // Flow mode — 2 seconds per note
       flowTimerRef.current += dt * 1000
