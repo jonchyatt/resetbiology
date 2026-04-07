@@ -51,16 +51,36 @@ function isBlackKey(semi: number): boolean {
 }
 
 // ─── Songs (built-in) ────────────────────────────────────────────────────────
+// Each note is [semitones, beats] — duration drives block height like real
+// Synthesia. 1 = quarter, 2 = half, 4 = whole, 0.5 = eighth.
 
-const SONGS: { name: string; notes: number[]; description: string }[] = [
-  { name: 'C Major Scale', notes: [0, 2, 4, 5, 7, 9, 11, 12], description: 'Start here — 8 notes ascending' },
-  { name: 'Twinkle Twinkle', notes: [0, 0, 7, 7, 9, 9, 7, 5, 5, 4, 4, 2, 2, 0], description: 'The classic — 14 notes' },
-  { name: 'Ode to Joy', notes: [4, 4, 5, 7, 7, 5, 4, 2, 0, 0, 2, 4, 4, 2, 2], description: 'Beethoven — 15 notes' },
-  { name: 'Mary Had a Little Lamb', notes: [4, 2, 0, 2, 4, 4, 4, 2, 2, 2, 4, 7, 7], description: 'Simple — 13 notes' },
+type SongNote = [number, number] // [semitones from C4, beats]
+
+const SONGS: { name: string; notes: SongNote[]; description: string }[] = [
+  {
+    name: 'C Major Scale',
+    notes: [[0,1],[2,1],[4,1],[5,1],[7,1],[9,1],[11,1],[12,2]],
+    description: 'Start here — 8 notes, last is held',
+  },
+  {
+    name: 'Twinkle Twinkle',
+    notes: [[0,1],[0,1],[7,1],[7,1],[9,1],[9,1],[7,2],[5,1],[5,1],[4,1],[4,1],[2,1],[2,1],[0,2]],
+    description: 'The classic — quarters + halves',
+  },
+  {
+    name: 'Ode to Joy',
+    notes: [[4,1],[4,1],[5,1],[7,1],[7,1],[5,1],[4,1],[2,1],[0,1],[0,1],[2,1],[4,1],[4,1.5],[2,0.5],[2,2]],
+    description: 'Beethoven — mixed durations',
+  },
+  {
+    name: 'Mary Had a Little Lamb',
+    notes: [[4,1],[2,1],[0,1],[2,1],[4,1],[4,1],[4,2],[2,1],[2,1],[2,2],[4,1],[7,1],[7,2]],
+    description: 'Quarters + halves',
+  },
 ]
 
-// Tutorial: 3 slow notes
-const TUTORIAL_NOTES = [0, 4, 7] // C4, E4, G4
+// Tutorial: 3 slow notes — generous half-note holds so beginners can settle in
+const TUTORIAL_NOTES: SongNote[] = [[0,2],[4,2],[7,2]] // C4, E4, G4 — each held 2 beats
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -109,7 +129,7 @@ export default function SynthesiaRunner() {
   const [pitchHint, setPitchHint] = useState<'low' | 'on' | 'high' | null>(null)
 
   // Custom MusicXML songs
-  const [customSongs, setCustomSongs] = useState<{ name: string; notes: number[]; description: string }[]>([])
+  const [customSongs, setCustomSongs] = useState<{ name: string; notes: SongNote[]; description: string }[]>([])
   const [loadingXML, setLoadingXML] = useState(false)
   const [xmlParts, setXmlParts] = useState<string[]>([])
   const [xmlResult, setXmlResult] = useState<ExtractionResult | null>(null)
@@ -124,14 +144,15 @@ export default function SynthesiaRunner() {
 
   // ─── MusicXML import ──────────────────────────────────────────────────────
   const addCustomSong = useCallback((result: ExtractionResult, partIdx: number) => {
-    const semis = notesToSemitoneArray(result.notes, partIdx)
-    if (semis.length === 0) return
-    // Clamp to keyboard range (C4..C6)
-    const clamped = semis.map(s => {
-      let v = s
+    // Pull notes WITH durations (not stripping via notesToSemitoneArray)
+    const partNotes = result.notes.filter(n => n.partIndex === partIdx && !n.isRest)
+    if (partNotes.length === 0) return
+    // Clamp pitch to keyboard range (C4..C6) and keep duration
+    const clamped: SongNote[] = partNotes.map(n => {
+      let v = n.semitones
       while (v < KEYBOARD_LOW) v += 12
       while (v > KEYBOARD_HIGH) v -= 12
-      return v
+      return [v, n.duration || 1] as SongNote
     })
     const partLabel = result.parts.length > 1 ? ` (${result.parts[partIdx]})` : ''
     const song = {
@@ -180,25 +201,30 @@ export default function SynthesiaRunner() {
   }, [addCustomSong])
 
   // ─── Build blocks from a note list ────────────────────────────────────────
-  const buildBlocks = useCallback((notes: number[]): FallingBlock[] => {
+  // Block HEIGHT scales with note duration (1 beat ≈ 56 px). That's the
+  // whole point of Synthesia — half notes are tall, eighths are short.
+  // The gap between blocks is constant so the rhythm reads cleanly.
+  const PIXELS_PER_BEAT = 56
+  const MIN_BLOCK_H = 28
+  const BLOCK_GAP = 18
+  const buildBlocks = useCallback((notes: SongNote[]): FallingBlock[] => {
     const out: FallingBlock[] = []
     // Stagger blocks vertically above the canvas; first block enters first
-    let cursorY = -60
+    let cursorY = -40
     for (let i = 0; i < notes.length; i++) {
-      const semi = notes[i]
-      const blockH = 70 // uniform height (could vary by duration in MusicXML version)
-      const gap = 30
+      const [semi, beats] = notes[i]
+      const blockH = Math.max(MIN_BLOCK_H, beats * PIXELS_PER_BEAT)
       out.push({
         id: i,
         semitones: semi,
         name: semiToName(semi),
-        duration: 1,
-        y: cursorY,
+        duration: beats,
+        y: cursorY - blockH, // top edge above canvas
         height: blockH,
         state: 'falling',
         matchProgress: 0,
       })
-      cursorY -= (blockH + gap)
+      cursorY -= (blockH + BLOCK_GAP)
     }
     return out
   }, [])
@@ -206,7 +232,7 @@ export default function SynthesiaRunner() {
   // ─── Start game ───────────────────────────────────────────────────────────
   const startGame = useCallback(async (useTutorial = false) => {
     initAudio()
-    const noteList = useTutorial ? TUTORIAL_NOTES : allSongs[selectedSong].notes
+    const noteList: SongNote[] = useTutorial ? TUTORIAL_NOTES : allSongs[selectedSong].notes
     const blocks = buildBlocks(noteList)
     blocksRef.current = blocks
     currentIdxRef.current = 0
@@ -297,11 +323,10 @@ export default function SynthesiaRunner() {
       if (b.state === 'cleared' || b.state === 'matched') continue
       if (b.state === 'waiting') continue
 
-      // Followers stop above the waiting block
+      // Followers stop above the waiting block (preserve constant gap)
       if (paused && i > currentIdx) {
-        // Don't pile on top — keep relative spacing
         const ahead = blocks[i - 1]
-        const desiredTop = ahead.y - 30 - b.height
+        const desiredTop = ahead.y - BLOCK_GAP - b.height
         if (b.y < desiredTop) {
           b.y += fallSpeed * dt
           if (b.y > desiredTop) b.y = desiredTop
