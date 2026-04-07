@@ -420,9 +420,12 @@ export default function RetroBlaster() {
 
     if (correct) {
       sfxShoot()
-      // Laser fires from player up to alien's center
+      // AUTO-AIM: slide the player ship under the active alien before firing,
+      // then push the laser from that position so it visually connects.
+      const aimX = alien.x + ALIEN_W / 2
+      gs.playerX = aimX
       gs.lasers.push({
-        x: gs.playerX,
+        x: aimX,
         y: H - PLAYER_H - 8,
         hue: alien.hue,
         active: true,
@@ -461,9 +464,11 @@ export default function RetroBlaster() {
       setDisplayHealth(gs.cityHealth)
       setDisplayCombo(0)
 
-      // Visual: laser fires but stops short (miss visual)
+      // Visual: laser fires but stops short (miss visual) — also auto-aim so it goes under the alien
+      const aimX = alien.x + ALIEN_W / 2
+      gs.playerX = aimX
       gs.lasers.push({
-        x: gs.playerX,
+        x: aimX,
         y: H - PLAYER_H - 8,
         hue: 0,
         active: true,

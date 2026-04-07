@@ -110,6 +110,27 @@ export function usePitchDetection(options?: PitchDetectionOptions) {
 
         analyserRef.current.getFloatTimeDomainData(buffer)
 
+        // ─── ECHO SUPPRESSION ──────────────────────────────────────
+        // Skip detection briefly after audioEngine plays a piano tone, so
+        // speaker bleed doesn't get reported as a singing match.
+        if (typeof window !== 'undefined') {
+          const last = (window as any).__pdLastToneAt as number | undefined
+          const span = (window as any).__pdToneSuppressMs as number | undefined
+          if (last && span && performance.now() - last < span) {
+            const info: PitchInfo = {
+              note: lastStableNoteRef.current,
+              frequency: 0,
+              cents: 0,
+              confidence: 0,
+              isActive: false,
+            }
+            pitchRef.current = info
+            setState(prev => ({ ...prev, pitch: info }))
+            rafRef.current = requestAnimationFrame(analyze)
+            return
+          }
+        }
+
         // ─── NOISE GATE: compute RMS, reject quiet signals ──────────
         let sumSq = 0
         for (let i = 0; i < buffer.length; i++) sumSq += buffer[i] * buffer[i]

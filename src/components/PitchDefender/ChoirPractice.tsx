@@ -309,6 +309,10 @@ export default function ChoirPractice() {
   const [scoreTitle, setScoreTitle] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  // Raw score data so OSMD can render the sheet during practice
+  const [scoreXml, setScoreXml] = useState<string | Uint8Array | null>(null)
+  const sheetContainerRef = useRef<HTMLDivElement>(null)
+  const sheetOsmdRef = useRef<any>(null)
 
   // Practice state
   const [currentIdx, setCurrentIdx] = useState(0)
@@ -361,6 +365,7 @@ export default function ChoirPractice() {
       setAllNotes(result.notes)
       setPartNames(result.parts)
       setScoreTitle(result.title)
+      setScoreXml(data) // keep raw XML so OSMD can render the sheet later
       setConfig(prev => ({ ...prev, baseTempo: result.tempo }))
       setPhase('setup')
     } catch (err: any) {
@@ -374,11 +379,16 @@ export default function ChoirPractice() {
     setError(null)
     try {
       const resp = await fetch(url)
-      const text = await resp.text()
-      const result = await extractNotesFromXML(text)
+      // Handle both .musicxml/.xml (text) and .mxl (binary)
+      const isBinary = url.toLowerCase().endsWith('.mxl')
+      const data: string | Uint8Array = isBinary
+        ? new Uint8Array(await resp.arrayBuffer())
+        : await resp.text()
+      const result = await extractNotesFromXML(data)
       setAllNotes(result.notes)
       setPartNames(result.parts)
       setScoreTitle(name)
+      setScoreXml(data)
       setConfig(prev => ({ ...prev, baseTempo: result.tempo }))
       setPhase('setup')
     } catch (err: any) {
@@ -386,6 +396,74 @@ export default function ChoirPractice() {
     }
     setLoading(false)
   }, [])
+
+  // Render the sheet via OSMD when entering practice phase.
+  // Highlights stay in sync via the cursor as currentIdx changes.
+  useEffect(() => {
+    if (phase !== 'practicing' || !scoreXml || !sheetContainerRef.current) return
+    let cancelled = false
+    ;(async () => {
+      try {
+        const { OpenSheetMusicDisplay } = await import('opensheetmusicdisplay')
+        if (cancelled || !sheetContainerRef.current) return
+        // Clean previous render if any
+        sheetContainerRef.current.innerHTML = ''
+        const osmd = new OpenSheetMusicDisplay(sheetContainerRef.current, {
+          autoResize: true,
+          drawTitle: false,
+          drawSubtitle: false,
+          drawComposer: false,
+          drawCredits: false,
+          drawPartNames: false,
+          drawingParameters: 'compact',
+          backend: 'svg',
+          followCursor: true,
+        })
+        if (scoreXml instanceof Uint8Array) {
+          await osmd.load(scoreXml as any)
+        } else {
+          await osmd.load(scoreXml)
+        }
+        if (cancelled) return
+        osmd.render()
+        try { osmd.cursor.show(); osmd.cursor.reset() } catch {}
+        sheetOsmdRef.current = osmd
+      } catch (err) {
+        console.error('Sheet render failed:', err)
+      }
+    })()
+    return () => { cancelled = true }
+  }, [phase, scoreXml])
+
+  // Advance the OSMD cursor to follow currentIdx (rough sync — one tick per practice note).
+  useEffect(() => {
+    const osmd = sheetOsmdRef.current
+    if (!osmd || phase !== 'practicing') return
+    try {
+      osmd.cursor.reset()
+      // step the cursor forward currentIdx times
+      for (let i = 0; i < currentIdx; i++) {
+        if (osmd.cursor.Iterator?.EndReached) break
+        osmd.cursor.next()
+      }
+    } catch {}
+  }, [currentIdx, phase])
+
+  // Space replays the current guide tone — promised in the help banner.
+  useEffect(() => {
+    if (phase !== 'practicing') return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.code !== 'Space') return
+      e.preventDefault()
+      const note = practiceNotesRef.current[currentIdxRef.current]
+      if (!note) return
+      const cfg = configRef.current
+      const msPerBeat = (60000 / cfg.baseTempo) / cfg.speed
+      playGuideNote(note.semitones, note.duration * msPerBeat, cfg.guideVolume, cfg.guidePan)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [phase])
 
   // ─── Start Practice ───────────────────────────────────────────────────
   const startPractice = useCallback(async () => {
@@ -917,9 +995,26 @@ export default function ChoirPractice() {
     currentNote && Math.abs(voicePitch.staffPosition - currentNote.semitones) <= 2.5
 
   return (
-    <div className="fixed inset-0 bg-[#08080f] flex flex-col">
+    <div className="fixed inset-0 bg-[#08080f] flex flex-col overflow-y-auto">
+      {/* HELP / GUIDE BANNER */}
+      <div className="px-4 pt-2 pb-1">
+        <div className="rounded-lg px-3 py-2 text-[11px] leading-snug"
+          style={{ background: 'rgba(99,102,241,0.10)', border: '1px solid rgba(99,102,241,0.30)', color: '#c7d2fe' }}>
+          <span className="font-bold text-white">HOW IT WORKS:</span> Sing the highlighted note.
+          The orb turns <span className="text-green-300 font-bold">GREEN</span> when you're on pitch — hold for ~½ sec to advance.
+          Mode <span className="text-green-300 font-bold">PAUSE</span> waits for you; <span className="text-yellow-300 font-bold">FLOW</span> keeps moving.
+          The guide tone plays the target note. Press <kbd className="px-1 rounded bg-black/40 border border-white/10">Space</kbd> to replay it.
+        </div>
+      </div>
+
+      {/* SHEET MUSIC (OSMD-rendered) */}
+      <div className="mx-4 mt-1 mb-2 rounded-xl p-2"
+        style={{ background: 'rgba(255,255,255,0.97)', border: '1px solid rgba(99,102,241,0.30)', maxHeight: '34vh', overflowY: 'auto' }}>
+        <div ref={sheetContainerRef} style={{ width: '100%' }} />
+      </div>
+
       {/* Top bar */}
-      <div className="flex items-center justify-between px-4 pt-3 pb-2">
+      <div className="flex items-center justify-between px-4 pt-1 pb-2">
         <div className="text-sm text-gray-400">
           m.{currentMeasure} · {currentIdx + 1}/{practiceNotes.length}
         </div>

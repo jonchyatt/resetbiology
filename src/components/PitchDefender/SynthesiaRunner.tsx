@@ -220,6 +220,17 @@ export default function SynthesiaRunner() {
     phaseRef.current = 'playing'  // set ref FIRST so loop survives initial schedule
     setPhase('playing')
 
+    // STARTER NOTE: play the first note(s) as a pitch reference before anything falls.
+    // Without this the player has no anchor and is guessing the opening pitch cold.
+    const firstBlock = blocks[0]
+    if (firstBlock && !firstBlock.name.includes('#')) {
+      setCurrentTarget(firstBlock.name)
+      // Play the first note immediately so the player hears the starting pitch
+      setTimeout(() => playPianoNote(firstBlock.name), 250)
+      // Then play it again ~700ms later for reinforcement
+      setTimeout(() => playPianoNote(firstBlock.name), 950)
+    }
+
     // Start pitch detection — enableML: false (CREPE hangs in production)
     try {
       const fusion = new PitchFusion({ enableML: false, noiseGateDb: -45 })

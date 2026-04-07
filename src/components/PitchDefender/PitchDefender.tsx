@@ -181,8 +181,10 @@ export default function PitchDefender() {
       completeWave()
     }
 
-    // ─── Echo Cannon: check pitch match ─────────────────────────────────
-    if (gameMode === 'echoCannon') {
+    // ─── Mic-driven modes: Echo Cannon & Staff Defender check pitch match ──
+    // Both modes fire by sung pitch. Echo Cannon shows the note name; Staff
+    // Defender shows the note on a staff. Same firing mechanism either way.
+    if (gameMode === 'echoCannon' || gameMode === 'staffDefender') {
       const activeAlien = s.aliens.find(a => a.lifecycle === 'descending')
       const currentPitch = livePitchRef.current
       if (activeAlien && currentPitch?.isActive) {
@@ -225,8 +227,8 @@ export default function PitchDefender() {
     if (spawnTimerRef.current) { clearTimeout(spawnTimerRef.current); spawnTimerRef.current = null }
 
     initAudio()
-    // Start microphone for Echo Cannon
-    if (gameMode === 'echoCannon') startListening()
+    // Start microphone for any mic-driven mode (Echo Cannon, Staff Defender)
+    if (gameMode === 'echoCannon' || gameMode === 'staffDefender') startListening()
     // Apply parent settings: override starting notes with enabled pool
     const initial = createInitialState()
     const enabledPool = gameSettings.enabledNotes.length >= 2
@@ -241,7 +243,10 @@ export default function PitchDefender() {
       setTimeout(() => setCountdown(1), 2000),
       setTimeout(() => { setCountdown(null); startMusic('Sound Scouts'); startWave(1) }, 3000),
     ]
-  }, [])
+  // CRITICAL: depend on gameMode so the closure doesn't capture a stale value.
+  // Without this, switching to Echo Cannon / Staff Defender from the menu
+  // never actually started the mic — the closure used the initial 'noteBlaster'.
+  }, [gameMode, gameSettings, startListening])
 
   // ─── World → Star Nest preset mapping ────────────────────────────────────
   const WORLD_PRESETS: Record<string, string> = {

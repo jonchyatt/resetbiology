@@ -309,6 +309,21 @@ export class PitchFusion {
 
     this.analyser.getFloatTimeDomainData(this.buffer)
 
+    // ─── Echo suppression ──────────────────────────────────────────────
+    // Browser AEC handles speakers vs mic well, but laptop speakers + no
+    // headphones still leak generated piano tones into the mic, causing
+    // false-positive matches. Skip pitch detection briefly after a tone.
+    if (typeof window !== 'undefined') {
+      const last = (window as any).__pdLastToneAt as number | undefined
+      const span = (window as any).__pdToneSuppressMs as number | undefined
+      if (last && span && performance.now() - last < span) {
+        this.smoothedFreq = 0
+        this.emitSilence()
+        this.rafId = requestAnimationFrame(this.tick)
+        return
+      }
+    }
+
     // ─── Noise gate ───────────────────────────────────────────────────
     let sumSq = 0
     for (let i = 0; i < this.buffer.length; i++) sumSq += this.buffer[i] * this.buffer[i]

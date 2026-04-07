@@ -375,9 +375,11 @@ export default function Pitchforks() {
         if (v.hitTimer > 0) v.hitTimer -= dt
         continue
       }
-      // Approach monster — walk at a reasonable pace
+      // Approach monster — walk speed scales with level so level 1 is gentle
       if (v.phase === 'approaching') {
-        v.x -= 60 * dt  // 60 px/s — crosses canvas in ~10s
+        // Level 1 ≈ 22 px/s (~25s to cross), each level adds ~6 px/s, capped at 60
+        const walkSpeed = Math.min(60, 22 + (gs.level - 1) * 6)
+        v.x -= walkSpeed * dt
         if (v.x <= 200) {
           v.phase = 'attacking'
           sfxVillagerAttack()

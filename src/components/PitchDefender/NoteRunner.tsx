@@ -182,6 +182,15 @@ export default function NoteRunner() {
     return () => window.removeEventListener('resize', updateLayout)
   }, [updateLayout])
 
+  // CRITICAL FIX: canvas only mounts when phase === 'playing'.
+  // Without this, layoutRef stays null and the gameLoop renders nothing (blank screen).
+  useEffect(() => {
+    if (phase === 'playing') {
+      // Wait one tick for React to mount the canvas, then size it
+      requestAnimationFrame(() => updateLayout())
+    }
+  }, [phase, updateLayout])
+
   // ─── Start Game ─────────────────────────────────────────────────────────
   const startGame = useCallback(async () => {
     const song = allSongs[selectedSong]

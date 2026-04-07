@@ -96,7 +96,33 @@ export function playPianoNote(note: string) {
     gain.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 1.5)
     src.start()
     duckMusic(800)
+    // Echo-suppression hint for pitch detectors:
+    // Mark the global "tone is currently sounding" window so that microphone-fed
+    // pitch detection can ignore the speaker bleed. Browser AEC handles most of
+    // it, but cheap laptop speakers + no headphones still cause false positives.
+    if (typeof window !== 'undefined') {
+      ;(window as any).__pdLastToneAt = performance.now()
+      ;(window as any).__pdToneSuppressMs = 350 // duration to suppress mic input
+    }
   } catch { /* Audio unavailable */ }
+}
+
+// Generic helper any system can call (e.g. ChoirPractice's playGuideNote) to
+// announce "I just made noise; ignore mic input briefly" for echo suppression.
+export function markToneEmitted(suppressMs = 350) {
+  if (typeof window !== 'undefined') {
+    ;(window as any).__pdLastToneAt = performance.now()
+    ;(window as any).__pdToneSuppressMs = suppressMs
+  }
+}
+
+// True if a tone was emitted recently and pitch input should be ignored.
+export function isWithinToneSuppressionWindow(): boolean {
+  if (typeof window === 'undefined') return false
+  const last = (window as any).__pdLastToneAt as number | undefined
+  const span = (window as any).__pdToneSuppressMs as number | undefined
+  if (!last || !span) return false
+  return performance.now() - last < span
 }
 
 // ─── Background Music ────────────────────────────────────────────────────────
