@@ -235,10 +235,20 @@ export default function SynthesiaRunner() {
 
   // ─── Game loop ────────────────────────────────────────────────────────────
   const gameLoop = useCallback(() => {
+    // Exit if game ended
+    if (phaseRef.current !== 'playing') return
+
     const canvas = canvasRef.current
-    if (!canvas) return
+    if (!canvas) {
+      // Canvas not mounted yet — reschedule until React renders the playing phase
+      rafRef.current = requestAnimationFrame(gameLoop)
+      return
+    }
     const ctx = canvas.getContext('2d')
-    if (!ctx) return
+    if (!ctx) {
+      rafRef.current = requestAnimationFrame(gameLoop)
+      return
+    }
 
     const now = performance.now()
     const dt = Math.min(0.05, (now - lastTimeRef.current) / 1000)
