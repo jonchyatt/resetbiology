@@ -1,0 +1,40 @@
+{
+  "generated_by": "scripts/generate-pitchforks-sprites.py",
+  "scale_in_canvas": 3,
+  "views": {
+    "side": {
+      "description": "Default arcade view. Frankenstein center-back, villagers walk in from sides.",
+      "frankenstein": {
+        "idle": "frankenstein_idle.png",
+        "charging": "frankenstein_charging.png",
+        "meta": "frankenstein.json"
+      },
+      "villagers": {
+        "facing_right": "villager_<n>tine_walk.png",
+        "facing_left": "villager_<n>tine_walk_left.png",
+        "burned": "villager_<n>tine_burned_<k>.png",
+        "ash": "villager_<n>tine_ash.png",
+        "meta": "villager_<n>tine.json"
+      },
+      "forks": {
+        "normal": "fork_<n>tine_b<k>.png",
+        "glow": "fork_<n>tine_b<k>_glow.png",
+        "meta": "forks.json"
+      }
+    },
+    "fps": {
+      "description": "Camera-toward-Frankenstein view. Villagers approach from depth.",
+      "frankenstein": "frankenstein_fps.png",
+      "frankenstein_meta": "frankenstein_fps.json",
+      "villagers": "villager_fps_<scale>.png",
+      "villagers_meta": "villager_fps.json"
+    }
+  },
+  "notes_for_artist": [
+    "All sprites are AI-generated placeholders. Recognizable shapes \u2014 polish the pixel art later.",
+    "Native pixel size only (no pre-scaling). Canvas scales x3 at draw time.",
+    "Forks are SEPARATE layer \u2014 change tine count / burn state without touching the villager.",
+    "fork_base in villager.json = where the fork handle attaches (handle_base in forks.json).",
+    "rod_tip in frankenstein.json = the bolt routing pivot. Every lightning bolt bounces here."
+  ]
+}

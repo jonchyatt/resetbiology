@@ -1,0 +1,21 @@
+{
+  "frame_w": 32,
+  "frame_h": 48,
+  "frames": 4,
+  "rod_tip": {
+    "x": 16,
+    "y": 0
+  },
+  "left_bolt": {
+    "x": 8,
+    "y": 23
+  },
+  "right_bolt": {
+    "x": 23,
+    "y": 23
+  },
+  "head_center": {
+    "x": 16,
+    "y": 14
+  }
+}

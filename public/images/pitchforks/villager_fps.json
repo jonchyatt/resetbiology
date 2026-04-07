@@ -1,0 +1,24 @@
+{
+  "scales": {
+    "far": {
+      "frame_w": 16,
+      "frame_h": 24,
+      "frames": 4,
+      "z": 0.3
+    },
+    "mid": {
+      "frame_w": 24,
+      "frame_h": 32,
+      "frames": 4,
+      "z": 0.6
+    },
+    "near": {
+      "frame_w": 32,
+      "frame_h": 48,
+      "frames": 4,
+      "z": 1.0
+    }
+  },
+  "fork_overhead": true,
+  "note": "FPS villagers hold fork overhead. Bolt routes from rod_tip down to fork tine top."
+}
