@@ -281,7 +281,7 @@ export default function Pitchforks() {
 
     // Start pitch detection
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
-    const fusion = new PitchFusion({ enableML: false, noiseGateDb: -45 }) // ML disabled — CREPE hangs in production
+    const fusion = new PitchFusion({ enableML: false, noiseGateDb: -55 }) // ML disabled — CREPE hangs. Lower gate so quiet singing registers.
     fusionRef.current = fusion
     await fusion.start(p => { pitchRef.current = p })
 
@@ -411,7 +411,14 @@ export default function Pitchforks() {
     // REMOVED isSettled requirement — too strict for casual singing. isActive is enough.
     if (cv?.alive && cv.phase === 'attacking' && pitch?.isActive) {
       const targetSemi = attackPhaseRef.current === 'from' ? cv.fromSemi : cv.toSemi
-      const deviation = Math.abs(pitch.staffPosition - targetSemi)
+      // Octave-flexible: fold both into pitch class space (0-11), find shortest distance
+      const targetMod = ((targetSemi % 12) + 12) % 12
+      const sungMod = ((Math.round(pitch.staffPosition) % 12) + 12) % 12
+      const rawDiff = Math.abs(targetMod - sungMod)
+      const pitchClassDiff = Math.min(rawDiff, 12 - rawDiff)
+      // Also check raw deviation in case octave matches
+      const rawDeviation = Math.abs(pitch.staffPosition - targetSemi)
+      const deviation = Math.min(rawDeviation, pitchClassDiff)
 
       // Wider tolerance: 2.5 semitones (generous for children/beginners)
       if (deviation <= 2.5) {
@@ -514,12 +521,12 @@ export default function Pitchforks() {
         ? `hsl(0, 70%, 60%)`
         : `hsl(${hue}, 40%, 40%)`
 
-      // 2x scaled sprites
-      drawSprite(ctx, VILLAGER_SPRITE_A, v.x, v.y, color, 2)
+      // 3x scaled sprites — much more visible
+      drawSprite(ctx, VILLAGER_SPRITE_A, v.x, v.y, color, 3)
 
-      // Pitchfork (2x)
+      // Pitchfork (3x)
       if (v.alive) {
-        drawSprite(ctx, PITCHFORK_SPRITE, v.x - 16, v.y + 4, isActive ? '#fbbf24' : '#888', 2)
+        drawSprite(ctx, PITCHFORK_SPRITE, v.x - 24, v.y + 6, isActive ? '#fbbf24' : '#888', 3)
       }
 
       // Interval label on active villager — BIG readable text

@@ -416,7 +416,7 @@ export default function ChoirPractice() {
     flowTimerRef.current = 0
 
     // Start pitch detection
-    const fusion = new PitchFusion({ enableML: false, noiseGateDb: -45 }) // ML disabled — CREPE hangs in production
+    const fusion = new PitchFusion({ enableML: false, noiseGateDb: -55 }) // ML disabled. Lower gate so quiet singing registers.
     fusionRef.current = fusion
     await fusion.start(p => { pitchRef.current = p })
 
@@ -460,10 +460,19 @@ export default function ChoirPractice() {
     const pitch = pitchRef.current
     const msPerBeat = (60000 / cfg.baseTempo) / cfg.speed
 
+    // Octave-flexible deviation: kid might sing C4 when target is C3
+    function octaveFlexDev(sung: number, target: number): number {
+      const tMod = ((target % 12) + 12) % 12
+      const sMod = ((Math.round(sung) % 12) + 12) % 12
+      const raw = Math.abs(tMod - sMod)
+      const pcDiff = Math.min(raw, 12 - raw)
+      return Math.min(Math.abs(sung - target), pcDiff)
+    }
+
     if (cfg.mode === 'pause') {
       // ── Pause Mode: wait until pitch matches ──
       if (pitch?.isActive) {
-        const deviation = Math.abs(pitch.staffPosition - currentNote.semitones)
+        const deviation = octaveFlexDev(pitch.staffPosition, currentNote.semitones)
         if (deviation <= 2.5) { // ~2.5 semitone tolerance (forgiving for practice)
           if (matchStartRef.current === 0) matchStartRef.current = performance.now()
           const held = performance.now() - matchStartRef.current
@@ -489,7 +498,7 @@ export default function ChoirPractice() {
       const noteDurationMs = currentNote.duration * msPerBeat
 
       if (pitch?.isActive) {
-        const deviation = Math.abs(pitch.staffPosition - currentNote.semitones)
+        const deviation = octaveFlexDev(pitch.staffPosition, currentNote.semitones)
         if (deviation <= 2.5) {
           setMatchProgress(prev => Math.min(1, prev + dt * 4))
         } else {
