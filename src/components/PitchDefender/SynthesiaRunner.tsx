@@ -495,6 +495,51 @@ export default function SynthesiaRunner() {
     return keys.indexOf(s)
   }
 
+  // Convert canvas (x, y) → semitone index (with black-key priority).
+  // Returns null if click was not on the keyboard.
+  const semiFromCanvasXY = (x: number, y: number): number | null => {
+    const keyboardY = FALL_AREA_H
+    if (y < keyboardY) return null
+    const whiteKeys = getWhiteKeys()
+    const keyW = CANVAS_W / whiteKeys.length
+    const blackKeyW = keyW * 0.6
+    const blackKeyH = (KEYBOARD_H - 8) * 0.62
+
+    // Black keys first (they sit on top of white keys, so they take priority)
+    if (y < keyboardY + 4 + blackKeyH) {
+      for (let i = 0; i < whiteKeys.length - 1; i++) {
+        const semi = whiteKeys[i]
+        const nextSemi = whiteKeys[i + 1]
+        if (nextSemi - semi !== 2) continue
+        const blackSemi = semi + 1
+        const bx = (i + 1) * keyW - blackKeyW / 2
+        if (x >= bx && x <= bx + blackKeyW) {
+          return blackSemi
+        }
+      }
+    }
+
+    // White keys
+    const whiteIdx = Math.floor(x / keyW)
+    if (whiteIdx >= 0 && whiteIdx < whiteKeys.length) {
+      return whiteKeys[whiteIdx]
+    }
+    return null
+  }
+
+  const handleKeyboardClick = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const rect = canvas.getBoundingClientRect()
+    const x = ((e.clientX - rect.left) / rect.width) * CANVAS_W
+    const y = ((e.clientY - rect.top) / rect.height) * CANVAS_H
+    const semi = semiFromCanvasXY(x, y)
+    if (semi == null) return
+    // Play the hint
+    initAudio()
+    playPianoNote(semiToName(semi))
+  }, [])
+
   const drawKeyboard = (
     ctx: CanvasRenderingContext2D,
     whiteKeys: number[],
@@ -799,13 +844,27 @@ export default function SynthesiaRunner() {
       <div className="relative">
         <canvas
           ref={canvasRef}
+          onClick={handleKeyboardClick}
           style={{
             display: 'block',
             border: '1px solid rgba(60,60,90,0.4)',
             borderRadius: 12,
             boxShadow: '0 0 40px rgba(139,92,246,0.15)',
+            cursor: 'pointer',
           }}
         />
+
+        {/* Tap hint banner */}
+        <div className="absolute left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-[10px] font-semibold tracking-wider"
+          style={{
+            top: FALL_AREA_H - 30,
+            background: 'rgba(8,8,15,0.85)',
+            border: '1px solid rgba(100,200,255,0.4)',
+            color: '#7dd3fc',
+            pointerEvents: 'none',
+          }}>
+          TAP ANY KEY TO HEAR IT
+        </div>
 
         {/* Pitch hint side bar (right side) */}
         {currentTarget && (
