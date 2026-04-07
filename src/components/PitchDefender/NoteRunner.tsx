@@ -155,8 +155,30 @@ export default function NoteRunner() {
     setLoadingXML(false)
   }, [addCustomSong])
 
-  // Merge built-in + custom songs
-  const allSongs = [...SONGS, ...customSongs]
+  // Compositions saved via the Composer tool (read from localStorage)
+  const [composedSongs, setComposedSongs] = useState<{ name: string; notes: number[]; description: string }[]>([])
+  useEffect(() => {
+    try {
+      const out: { name: string; notes: number[]; description: string }[] = []
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i)
+        if (!key || !key.startsWith('pd_composed_')) continue
+        try {
+          const comp = JSON.parse(localStorage.getItem(key) || '{}')
+          if (!Array.isArray(comp.notes) || comp.notes.length === 0) continue
+          out.push({
+            name: `★ ${comp.title}`,
+            notes: comp.notes.map((n: any) => n.semitones),
+            description: `Composed · ${comp.notes.length} notes`,
+          })
+        } catch {}
+      }
+      setComposedSongs(out)
+    } catch {}
+  }, [])
+
+  // Merge built-in + composed + custom songs
+  const allSongs = [...SONGS, ...composedSongs, ...customSongs]
 
   // Difficulty settings
   const HOLD_DURATION: Record<Difficulty, number> = { easy: 300, medium: 500, hard: 700 }
@@ -488,14 +510,15 @@ export default function NoteRunner() {
                 style={{ background: 'rgba(20,20,35,0.6)', border: '1px solid rgba(60,60,80,0.3)', color: '#888' }}
                 value="">
                 <option value="">Sample Scores</option>
-                <option value="/musicxml/farewell-dear-love-leavitt.musicxml|Farewell Dear Love (Leavitt)">Farewell — Leavitt (Tenor)</option>
-                <option value="/musicxml/false-phyllis-wilson.musicxml|False Phyllis (Wilson)">False Phyllis — Wilson (Tenor)</option>
                 <option value="/musicxml/barnby-crossing-the-bar-satb.musicxml|Crossing the Bar">Crossing the Bar</option>
                 <option value="/musicxml/bach-bwv-244-03-chorale.musicxml|St. Matthew Passion">Bach — St. Matthew</option>
                 <option value="/musicxml/amazing-grace-hymn.xml|Amazing Grace">Amazing Grace</option>
               </select>
             </div>
             {loadingXML && <div className="text-xs text-indigo-400 mt-1 animate-pulse">Parsing score...</div>}
+            <div className="text-[10px] text-gray-600 mt-2 text-center">
+              ★ Songs you save in <a href="/pitch-defender/composer" className="text-indigo-400 hover:text-indigo-300">Composer</a> appear in the song list above
+            </div>
           </div>
 
           {/* Part picker modal */}

@@ -934,6 +934,18 @@ export default function PitchDefender() {
                 Synthesia Runner
                 <div className="text-xs font-normal mt-0.5 opacity-60">Falling blocks → keyboard</div>
               </a>
+              <a
+                href="/pitch-defender/composer"
+                className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
+                style={{
+                  background: 'rgba(99, 102, 241, 0.15)',
+                  color: '#a5b4fc',
+                  border: '2px solid rgba(99, 102, 241, 0.5)',
+                }}
+              >
+                Composer
+                <div className="text-xs font-normal mt-0.5 opacity-60">Type music in by hand · save once, use everywhere</div>
+              </a>
             </div>
           </div>
 

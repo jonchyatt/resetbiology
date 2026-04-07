@@ -313,6 +313,8 @@ export default function ChoirPractice() {
   const [scoreXml, setScoreXml] = useState<string | Uint8Array | null>(null)
   const sheetContainerRef = useRef<HTMLDivElement>(null)
   const sheetOsmdRef = useRef<any>(null)
+  // Compositions saved via the Composer tool
+  const [composedList, setComposedList] = useState<{ key: string; title: string; noteCount: number }[]>([])
 
   // Practice state
   const [currentIdx, setCurrentIdx] = useState(0)
@@ -348,6 +350,54 @@ export default function ChoirPractice() {
   useEffect(() => { configRef.current = config }, [config])
   useEffect(() => { statsRef.current = practiceStats }, [practiceStats])
   useEffect(() => { currentIdxRef.current = currentIdx }, [currentIdx])
+
+  // Refresh saved-composition list whenever we're in upload phase
+  useEffect(() => {
+    if (phase !== 'upload') return
+    try {
+      const out: { key: string; title: string; noteCount: number }[] = []
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i)
+        if (!key || !key.startsWith('pd_composed_')) continue
+        try {
+          const c = JSON.parse(localStorage.getItem(key) || '{}')
+          if (Array.isArray(c.notes) && c.notes.length > 0) {
+            out.push({ key, title: c.title || 'Untitled', noteCount: c.notes.length })
+          }
+        } catch {}
+      }
+      out.sort((a, b) => a.title.localeCompare(b.title))
+      setComposedList(out)
+    } catch {}
+  }, [phase])
+
+  // Load a composition from localStorage as if it were a sample score
+  const loadComposition = useCallback((storageKey: string) => {
+    try {
+      const raw = localStorage.getItem(storageKey)
+      if (!raw) return
+      const c = JSON.parse(raw)
+      // Convert composer notes to ExtractedNote shape
+      const extracted: ExtractedNote[] = c.notes.map((n: any, i: number) => ({
+        pitch: n.pitchName || 'C4',
+        semitones: n.semitones || 0,
+        frequency: 261.63 * Math.pow(2, (n.semitones || 0) / 12),
+        duration: n.beats || 1,
+        measure: 1 + Math.floor(i / (c.timeBeats || 4)),
+        partIndex: 0,
+        partName: 'Voice',
+        isRest: false,
+      }))
+      setAllNotes(extracted)
+      setPartNames(['Voice'])
+      setScoreTitle(c.title || 'Untitled')
+      setScoreXml(null) // composer compositions don't have raw XML
+      setConfig(prev => ({ ...prev, baseTempo: c.tempo || 100 }))
+      setPhase('setup')
+    } catch (err: any) {
+      setError(err.message || 'Failed to load composition')
+    }
+  }, [])
 
   // ─── File Upload ──────────────────────────────────────────────────────
   const handleFile = useCallback(async (file: File) => {
@@ -703,13 +753,31 @@ export default function ChoirPractice() {
           }} className="hidden" />
         </label>
 
-        {/* Sample scores */}
+        {/* Composer-saved compositions (canonical user library) */}
+        {composedList.length > 0 && (
+          <div className="w-full max-w-md mb-4">
+            <div className="text-xs text-indigo-300 uppercase tracking-wider mb-2 text-center">★ Your Compositions</div>
+            <div className="space-y-1.5">
+              {composedList.map(c => (
+                <button key={c.key} onClick={() => loadComposition(c.key)}
+                  className="w-full text-left px-4 py-2.5 rounded-xl transition-all hover:bg-indigo-500/15"
+                  style={{ background: 'rgba(99,102,241,0.10)', border: '1px solid rgba(99,102,241,0.40)' }}>
+                  <div className="text-sm text-indigo-200">★ {c.title}</div>
+                  <div className="text-[10px] text-indigo-400">Composed · {c.noteCount} notes</div>
+                </button>
+              ))}
+            </div>
+            <div className="text-[10px] text-gray-500 mt-2 text-center">
+              Composed in <a href="/pitch-defender/composer" className="text-indigo-400 hover:text-indigo-300">Composer</a>
+            </div>
+          </div>
+        )}
+
+        {/* Sample scores (public-domain SATB) */}
         <div className="w-full max-w-md">
           <div className="text-xs text-gray-600 uppercase tracking-wider mb-2 text-center">Or try a sample</div>
           <div className="space-y-1.5">
             {[
-              { url: '/musicxml/farewell-dear-love-leavitt.musicxml', name: 'Farewell, Dear Love — Leavitt arr. (Tenor)' },
-              { url: '/musicxml/false-phyllis-wilson.musicxml', name: 'False Phyllis — Wilson arr. (Tenor)' },
               { url: '/musicxml/farewell-dear-love-jones.mxl', name: 'Farewell, Dear Love — Jones original (SATB)' },
               { url: '/musicxml/barnby-crossing-the-bar-satb.musicxml', name: 'Barnby — Crossing the Bar (SATB)' },
               { url: '/musicxml/bach-bwv-244-03-chorale.musicxml', name: 'Bach — St. Matthew Passion Chorale' },
@@ -723,6 +791,10 @@ export default function ChoirPractice() {
                 <div className="text-sm text-gray-300">{s.name}</div>
               </button>
             ))}
+          </div>
+          <div className="text-[10px] text-gray-600 mt-3 text-center">
+            Don't see your piece?{' '}
+            <a href="/pitch-defender/composer" className="text-indigo-400 hover:text-indigo-300">Type it in by hand →</a>
           </div>
         </div>
 

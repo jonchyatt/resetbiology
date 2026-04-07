@@ -135,7 +135,36 @@ export default function SynthesiaRunner() {
   const [xmlResult, setXmlResult] = useState<ExtractionResult | null>(null)
   const [showPartPicker, setShowPartPicker] = useState(false)
 
-  const allSongs = [...SONGS, ...customSongs]
+  // Compositions saved from the Composer tool (read from localStorage)
+  const [composedSongs, setComposedSongs] = useState<{ name: string; notes: SongNote[]; description: string }[]>([])
+  useEffect(() => {
+    try {
+      const out: { name: string; notes: SongNote[]; description: string }[] = []
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i)
+        if (!key || !key.startsWith('pd_composed_')) continue
+        try {
+          const comp = JSON.parse(localStorage.getItem(key) || '{}')
+          if (!Array.isArray(comp.notes) || comp.notes.length === 0) continue
+          // Composer notes have { semitones, beats } — clamp to keyboard range
+          const clamped: SongNote[] = comp.notes.map((n: any) => {
+            let v = n.semitones
+            while (v < KEYBOARD_LOW) v += 12
+            while (v > KEYBOARD_HIGH) v -= 12
+            return [v, n.beats || 1] as SongNote
+          })
+          out.push({
+            name: `★ ${comp.title}`,
+            notes: clamped,
+            description: `Composed · ${clamped.length} notes`,
+          })
+        } catch {}
+      }
+      setComposedSongs(out)
+    } catch {}
+  }, [])
+
+  const allSongs = [...SONGS, ...composedSongs, ...customSongs]
 
   // Tolerance for casual singing
   const TOLERANCE = 2.5 // semitones
@@ -916,13 +945,14 @@ export default function SynthesiaRunner() {
                 style={{ background: 'rgba(20,20,35,0.6)', border: '1px solid rgba(60,60,80,0.3)', color: '#888' }}
                 value="">
                 <option value="">Sample Scores</option>
-                <option value="/musicxml/farewell-dear-love-leavitt.musicxml">Farewell — Leavitt (Tenor)</option>
-                <option value="/musicxml/false-phyllis-wilson.musicxml">False Phyllis — Wilson</option>
                 <option value="/musicxml/barnby-crossing-the-bar-satb.musicxml">Crossing the Bar (SATB)</option>
                 <option value="/musicxml/amazing-grace-hymn.xml">Amazing Grace</option>
               </select>
             </div>
             {loadingXML && <div className="text-xs text-indigo-400 mt-1 animate-pulse">Parsing score...</div>}
+            <div className="text-[10px] text-gray-600 mt-2 text-center">
+              ★ Songs you save in <a href="/pitch-defender/composer" className="text-indigo-400 hover:text-indigo-300">Composer</a> appear above automatically
+            </div>
           </div>
 
           {/* Part picker */}
