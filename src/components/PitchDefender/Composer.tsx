@@ -668,68 +668,97 @@ export default function Composer() {
 
   return (
     <div className="fixed inset-0 bg-[#0b0b14] flex flex-col overflow-y-auto">
-      {/* Top bar */}
-      <div className="px-4 py-3 border-b border-gray-800/60 flex items-center gap-3 flex-wrap bg-[#08080f]">
-        <h1 className="text-lg font-bold text-white mr-4">Composer</h1>
-        <input
-          type="text"
-          value={title}
-          onChange={e => setTitle(e.target.value)}
-          placeholder="Title"
-          className="px-3 py-1.5 bg-[#15152a] border border-[#3a3a55] rounded text-sm text-white w-48"
-        />
-        <select
-          value={clef}
-          onChange={e => setClef(e.target.value as Clef)}
-          className="px-2 py-1.5 bg-[#15152a] border border-[#3a3a55] rounded text-xs text-gray-200"
-        >
-          <option value="treble">Treble Clef</option>
-          <option value="bass">Bass Clef</option>
-        </select>
-        <select
-          value={`${timeBeats}/${timeBeatType}`}
-          onChange={e => {
-            const [n, d] = e.target.value.split('/').map(Number)
-            setTimeBeats(n)
-            setTimeBeatType(d)
-          }}
-          className="px-2 py-1.5 bg-[#15152a] border border-[#3a3a55] rounded text-xs text-gray-200"
-        >
-          <option>4/4</option>
-          <option>3/4</option>
-          <option>2/4</option>
-          <option>6/8</option>
-          <option>2/2</option>
-        </select>
-        <select
-          value={keyFifths}
-          onChange={e => setKeyFifths(parseInt(e.target.value))}
-          className="px-2 py-1.5 bg-[#15152a] border border-[#3a3a55] rounded text-xs text-gray-200"
-        >
-          <option value="-4">A♭ major (4♭)</option>
-          <option value="-3">E♭ major (3♭)</option>
-          <option value="-2">B♭ major (2♭)</option>
-          <option value="-1">F major (1♭)</option>
-          <option value="0">C major</option>
-          <option value="1">G major (1♯)</option>
-          <option value="2">D major (2♯)</option>
-          <option value="3">A major (3♯)</option>
-          <option value="4">E major (4♯)</option>
-          <option value="5">B major (5♯)</option>
-        </select>
-        <label className="text-xs text-gray-400 flex items-center gap-1">
-          ♩=
-          <input
-            type="number"
-            value={tempo}
-            onChange={e => setTempo(parseInt(e.target.value) || 100)}
-            className="px-2 py-1 bg-[#15152a] border border-[#3a3a55] rounded text-xs text-white w-16"
-            min={40}
-            max={240}
-          />
-        </label>
-        <div className="ml-auto text-xs text-gray-500">
-          {notes.length} notes · {measureCount} measures · {totalBeats.toFixed(2)} beats
+      {/* Top bar — score setup */}
+      <div className="px-4 py-3 border-b border-gray-800/60 bg-[#08080f]">
+        <div className="flex items-center gap-4 flex-wrap">
+          <h1 className="text-lg font-bold text-white">Composer</h1>
+
+          <div className="flex flex-col">
+            <label className="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">Title</label>
+            <input
+              type="text"
+              value={title}
+              onChange={e => setTitle(e.target.value)}
+              placeholder="Untitled"
+              className="px-3 py-1.5 bg-[#15152a] border border-[#3a3a55] rounded text-sm text-white w-52"
+            />
+          </div>
+
+          <div className="flex flex-col">
+            <label className="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">Clef</label>
+            <select
+              value={clef}
+              onChange={e => setClef(e.target.value as Clef)}
+              className="px-3 py-1.5 bg-[#15152a] border border-[#3a3a55] rounded text-sm text-gray-100 cursor-pointer"
+            >
+              <option value="treble">𝄞 Treble Clef</option>
+              <option value="bass">𝄢 Bass Clef</option>
+            </select>
+          </div>
+
+          <div className="flex flex-col">
+            <label className="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">Time Signature</label>
+            <select
+              value={`${timeBeats}/${timeBeatType}`}
+              onChange={e => {
+                const [n, d] = e.target.value.split('/').map(Number)
+                setTimeBeats(n)
+                setTimeBeatType(d)
+              }}
+              className="px-3 py-1.5 bg-[#15152a] border border-[#3a3a55] rounded text-sm text-gray-100 cursor-pointer"
+            >
+              <option value="4/4">4/4 (common)</option>
+              <option value="3/4">3/4 (waltz)</option>
+              <option value="2/4">2/4 (march)</option>
+              <option value="2/2">2/2 (cut time)</option>
+              <option value="6/8">6/8 (compound)</option>
+              <option value="9/8">9/8</option>
+              <option value="12/8">12/8</option>
+              <option value="5/4">5/4</option>
+              <option value="7/8">7/8</option>
+            </select>
+          </div>
+
+          <div className="flex flex-col">
+            <label className="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">Key Signature</label>
+            <select
+              value={keyFifths}
+              onChange={e => setKeyFifths(parseInt(e.target.value))}
+              className="px-3 py-1.5 bg-[#15152a] border border-[#3a3a55] rounded text-sm text-gray-100 cursor-pointer"
+            >
+              <option value="-7">C♭ major (7♭)</option>
+              <option value="-6">G♭ major (6♭)</option>
+              <option value="-5">D♭ major (5♭)</option>
+              <option value="-4">A♭ major (4♭)</option>
+              <option value="-3">E♭ major (3♭)</option>
+              <option value="-2">B♭ major (2♭)</option>
+              <option value="-1">F major (1♭)</option>
+              <option value="0">C major / a minor</option>
+              <option value="1">G major (1♯)</option>
+              <option value="2">D major (2♯)</option>
+              <option value="3">A major (3♯)</option>
+              <option value="4">E major (4♯)</option>
+              <option value="5">B major (5♯)</option>
+              <option value="6">F♯ major (6♯)</option>
+              <option value="7">C♯ major (7♯)</option>
+            </select>
+          </div>
+
+          <div className="flex flex-col">
+            <label className="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">Tempo (♩=)</label>
+            <input
+              type="number"
+              value={tempo}
+              onChange={e => setTempo(parseInt(e.target.value) || 100)}
+              className="px-3 py-1.5 bg-[#15152a] border border-[#3a3a55] rounded text-sm text-white w-20"
+              min={40}
+              max={240}
+            />
+          </div>
+
+          <div className="ml-auto text-xs text-gray-500 self-end pb-1">
+            {notes.length} notes · {measureCount} measures · {totalBeats.toFixed(2)} beats
+          </div>
         </div>
       </div>
 
