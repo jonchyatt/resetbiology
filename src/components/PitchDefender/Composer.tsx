@@ -1140,6 +1140,90 @@ export default function Composer() {
     return () => window.removeEventListener('keydown', onKey)
   }, [phase, selectedNoteId, deleteNote])
 
+  // ─── Rebalance measures ──────────────────────────────────────────────────
+  // Flatten all notes in order, then re-split across measures so each bar
+  // respects the time signature capacity. Preserves measure metadata by
+  // index (startBar, endBar, volta, coda, segno). Lossy if the new layout
+  // has fewer/more measures than the old one — the user will see a status
+  // message telling them how the count changed.
+  const rebalanceMeasures = useCallback(() => {
+    if (!comp) return
+    const fullCapacity = comp.timeNum * (4 / comp.timeDen)
+
+    const splitIntoMeasures = (notes: MNote[]): MNote[][] => {
+      const result: MNote[][] = []
+      let current: MNote[] = []
+      let used = 0
+      let isFirst = true
+      for (const note of notes) {
+        const nb = noteBeats(note)
+        const cap = (isFirst && comp.pickupBeats > 0) ? comp.pickupBeats : fullCapacity
+        if (used + nb > cap + 0.001) {
+          if (current.length > 0) result.push(current)
+          current = []
+          used = 0
+          isFirst = false
+        }
+        current.push(note)
+        used += nb
+      }
+      if (current.length > 0) result.push(current)
+      return result
+    }
+
+    let newGroups: MNote[][]
+    if (!comp.grandStaff) {
+      const all: MNote[] = []
+      comp.measures.forEach(m => m.notes.forEach(n => all.push(n)))
+      if (all.length === 0) return
+      newGroups = splitIntoMeasures(all)
+    } else {
+      // Grand staff: rebalance top + bottom independently, then merge by index
+      const top: MNote[] = []
+      const bot: MNote[] = []
+      comp.measures.forEach(m => m.notes.forEach(n => {
+        if ((n.staff ?? 0) === 0) top.push(n)
+        else bot.push(n)
+      }))
+      if (top.length === 0 && bot.length === 0) return
+      const topSplit = splitIntoMeasures(top)
+      const botSplit = splitIntoMeasures(bot)
+      const maxCount = Math.max(topSplit.length, botSplit.length, 1)
+      newGroups = []
+      for (let i = 0; i < maxCount; i++) {
+        const merged: MNote[] = []
+        if (topSplit[i]) merged.push(...topSplit[i])
+        if (botSplit[i]) merged.push(...botSplit[i])
+        newGroups.push(merged)
+      }
+    }
+
+    const newMeasures: Measure[] = newGroups.map((notes, i) => {
+      const orig = comp.measures[i]
+      return {
+        id: ++measureIdCounter,
+        notes,
+        startBar: orig?.startBar ?? 'normal',
+        endBar: orig?.endBar ?? 'normal',
+        voltaNumber: orig?.voltaNumber,
+        hasCoda: orig?.hasCoda ?? false,
+        hasSegno: orig?.hasSegno ?? false,
+        tempoMark: orig?.tempoMark,
+        rehearsalMark: orig?.rehearsalMark,
+      }
+    })
+
+    const oldCount = comp.measures.length
+    const newCount = newMeasures.length
+    setComp(prev => prev ? { ...prev, measures: newMeasures } : prev)
+    setStatusMsg(
+      oldCount === newCount
+        ? `Balanced ${newCount} bars — notes redistributed`
+        : `Balanced: ${oldCount} → ${newCount} bars`
+    )
+    setTimeout(() => setStatusMsg(''), 3500)
+  }, [comp])
+
   // ─── Add measure ──────────────────────────────────────────────────────────
   const addMeasure = useCallback(() => {
     setComp(prev => prev ? { ...prev, measures: [...prev.measures, newMeasure()] } : prev)
@@ -1489,6 +1573,13 @@ export default function Composer() {
           </button>
           <button onClick={removeLastMeasure} className="text-xs px-3 py-1.5 rounded bg-[#15152a] border border-[#3a3a55] text-gray-300 hover:bg-[#1f1f3a]">
             − Measure
+          </button>
+          <button
+            onClick={rebalanceMeasures}
+            className="text-xs px-3 py-1.5 rounded bg-[#15152a] border border-amber-700 text-amber-300 hover:bg-amber-950/40"
+            title="Flatten all notes and re-split them across measures to fit the time signature"
+          >
+            ⚖ Balance Bars
           </button>
           <button onClick={handleSave} className="text-xs px-3 py-1.5 rounded font-bold text-white" style={{ background: 'linear-gradient(135deg, #6366f1, #4f46e5)' }}>
             Save
