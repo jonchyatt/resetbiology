@@ -29,10 +29,22 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import { useState, useRef, useCallback, useEffect } from 'react'
-import {
+// VexFlow 4.x's package type entry does `export * from` + `export * as default from`
+// which breaks TypeScript's named-import resolution in Next.js. Import the
+// entire namespace and destructure to sidestep the re-export chain issue.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+import * as VexFlowNS from 'vexflow'
+const VF = VexFlowNS as unknown as {
+  Renderer: any; Stave: any; StaveNote: any; Voice: any; Formatter: any;
+  Beam: any; Accidental: any; Dot: any; Tuplet: any; Articulation: any;
+  Modifier: any; Annotation: any; Barline: any; Volta: any; Repetition: any;
+  StaveConnector: any; Curve: any; StaveHairpin: any;
+}
+const {
   Renderer, Stave, StaveNote, Voice, Formatter, Beam, Accidental, Dot, Tuplet,
   Articulation, Modifier, Annotation, Barline, Volta, Repetition,
-} from 'vexflow'
+  StaveConnector, Curve, StaveHairpin,
+} = VF
 import { initAudio, playPianoNote, loadPianoSamples } from './audioEngine'
 
 // ─── Types ──────────────────────────────────────────────────────────────────
