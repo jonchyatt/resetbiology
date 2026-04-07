@@ -140,7 +140,10 @@ export default function SynthesiaRunner() {
   // Tolerance for casual singing
   const TOLERANCE = 2.5 // semitones
   const BASE_FALL_SPEED = 90 // px/sec at 100% speed
-  const HOLD_DURATION_MS = 280 // brief confirm hold
+  const HOLD_DURATION_MS = 280 // brief confirm hold (practice mode)
+  // Flow mode: scoring window around the hit line + required in-tolerance time
+  const FLOW_WINDOW_PX = 60     // bottom edge ±60 px around HIT_LINE_Y counts as "in window"
+  const FLOW_HIT_MS = 180       // must be on pitch ≥180 ms while in window for credit
 
   // ─── MusicXML import ──────────────────────────────────────────────────────
   const addCustomSong = useCallback((result: ExtractionResult, partIdx: number) => {
@@ -301,7 +304,7 @@ export default function SynthesiaRunner() {
     const currentIdx = currentIdxRef.current
     const currentBlock = blocks[currentIdx]
 
-    // Detect waiting state
+    // Detect waiting state (PRACTICE MODE only — pause the leader on the hit line)
     if (currentBlock && practiceRef.current) {
       // Has the current block reached the hit line?
       const blockBottom = currentBlock.y + currentBlock.height
@@ -312,6 +315,16 @@ export default function SynthesiaRunner() {
         const refName = currentBlock.name
         if (!refName.includes('#')) playPianoNote(refName)
         setCurrentTarget(refName)
+      }
+    }
+
+    // FLOW MODE: as soon as the current block's bottom enters the scoring
+    // window, expose it as the live target so the player has something to
+    // sing toward. The block keeps falling — no pause.
+    if (currentBlock && !practiceRef.current && currentBlock.state === 'falling') {
+      const blockBottom = currentBlock.y + currentBlock.height
+      if (blockBottom >= HIT_LINE_Y - FLOW_WINDOW_PX) {
+        setCurrentTarget(currentBlock.name)
       }
     }
 
@@ -380,7 +393,63 @@ export default function SynthesiaRunner() {
       currentBlock.matchProgress = Math.max(0, currentBlock.matchProgress - dt * 200)
     }
 
-    // ── Flow mode: blocks past hit line are missed ──
+    // ── FLOW MODE: continuous scoring as blocks cross the hit window ──
+    // The block's BOTTOM edge enters the window (HIT_LINE_Y ± FLOW_WINDOW_PX).
+    // While inside, accumulate in-tolerance time on matchProgress. Once the
+    // block leaves the window (bottom past HIT_LINE_Y + FLOW_WINDOW_PX), score
+    // it: hit if matchProgress meets FLOW_HIT_MS, else miss.
+    if (!practiceRef.current && currentBlock && currentBlock.state === 'falling') {
+      const blockBottom = currentBlock.y + currentBlock.height
+      const inWindow = blockBottom >= HIT_LINE_Y - FLOW_WINDOW_PX &&
+                       blockBottom <= HIT_LINE_Y + FLOW_WINDOW_PX
+      const pastWindow = blockBottom > HIT_LINE_Y + FLOW_WINDOW_PX
+
+      if (inWindow) {
+        // Live pitch evaluation while crossing the line
+        if (pitch?.isActive) {
+          const deviation = pitch.staffPosition - currentBlock.semitones
+          const absDev = Math.abs(deviation)
+          if (absDev <= TOLERANCE) {
+            currentBlock.matchProgress += dt * 1000
+            setPitchHint('on')
+          } else {
+            setPitchHint(deviation < 0 ? 'low' : 'high')
+          }
+        } else {
+          setPitchHint(null)
+        }
+      } else if (pastWindow) {
+        // Score the block now — too late to get more credit
+        const hitThreshold = FLOW_HIT_MS
+        const wasHit = currentBlock.matchProgress >= hitThreshold
+        if (wasHit) {
+          currentBlock.state = 'matched'
+          notesHitRef.current++
+          // Score scales with how cleanly the note was held
+          const cleanness = Math.min(1, currentBlock.matchProgress / (hitThreshold * 2))
+          scoreRef.current += Math.round(60 + 40 * cleanness)
+          setTimeout(() => { currentBlock.state = 'cleared' }, 250)
+        } else {
+          currentBlock.state = 'cleared'
+        }
+        setDisplayState({
+          score: scoreRef.current,
+          hit: notesHitRef.current,
+          total: totalNotesRef.current,
+        })
+        currentIdxRef.current++
+        setCurrentTarget('')
+        setPitchHint(null)
+        if (currentIdxRef.current >= blocks.length) {
+          setPhase('complete')
+          fusionRef.current?.stop()
+          return
+        }
+      }
+    }
+
+    // Safety net: any falling block that drops off the bottom is cleared
+    // (covers non-current blocks if anything ever gets out of order)
     if (!practiceRef.current) {
       for (let i = 0; i < blocks.length; i++) {
         const b = blocks[i]
@@ -430,6 +499,24 @@ export default function SynthesiaRunner() {
       const x = i * keyW
       ctx.fillStyle = i % 2 === 0 ? 'rgba(20,20,40,0.4)' : 'rgba(15,15,30,0.6)'
       ctx.fillRect(x, 0, keyW, FALL_AREA_H)
+    }
+
+    // Flow-mode scoring window — visible green band so the player knows
+    // exactly where they need to be on pitch. Only drawn in flow mode.
+    if (!practiceRef.current) {
+      ctx.fillStyle = 'rgba(74,222,128,0.10)'
+      ctx.fillRect(0, HIT_LINE_Y - FLOW_WINDOW_PX, CANVAS_W, FLOW_WINDOW_PX * 2)
+      // Top edge of window
+      ctx.strokeStyle = 'rgba(74,222,128,0.30)'
+      ctx.lineWidth = 1
+      ctx.setLineDash([4, 4])
+      ctx.beginPath()
+      ctx.moveTo(0, HIT_LINE_Y - FLOW_WINDOW_PX)
+      ctx.lineTo(CANVAS_W, HIT_LINE_Y - FLOW_WINDOW_PX)
+      ctx.moveTo(0, HIT_LINE_Y + FLOW_WINDOW_PX)
+      ctx.lineTo(CANVAS_W, HIT_LINE_Y + FLOW_WINDOW_PX)
+      ctx.stroke()
+      ctx.setLineDash([])
     }
 
     // Hit line
