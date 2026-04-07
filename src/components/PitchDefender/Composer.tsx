@@ -72,6 +72,20 @@ interface MNote {
   dynamic: Dynamic
   tieToNext: boolean
   fermata: boolean
+  lyric?: string          // syllable shown under the notehead
+  staff?: 0 | 1           // for grand staff: 0=top, 1=bottom
+  isRest?: boolean        // true → render as rest at this duration
+}
+
+interface Slur {
+  fromId: number
+  toId: number
+}
+
+interface Hairpin {
+  fromId: number
+  toId: number
+  type: 'cresc' | 'dim'
 }
 
 interface Measure {
@@ -90,13 +104,18 @@ interface Measure {
 interface Composition {
   title: string
   composer: string
-  clef: Clef
+  clef: Clef               // top staff clef (or only-staff clef if not grand staff)
+  bassClef: Clef           // bottom staff clef (only used when grandStaff is true)
+  grandStaff: boolean      // render treble + bass with brace
+  pickupBeats: number      // anacrusis: 0 = no pickup, otherwise beat count
   timeNum: number          // e.g. 4
   timeDen: number          // e.g. 4
   keyName: string          // VexFlow key name: 'C', 'G', 'D', 'F', 'Bb', etc.
   tempoBpm: number
   tempoMark: string        // 'Andante', 'Allegro', etc.
   measures: Measure[]
+  slurs: Slur[]
+  hairpins: Hairpin[]
   savedAt: string
 }
 
@@ -308,6 +327,9 @@ export default function Composer() {
   const [setupTitle, setSetupTitle] = useState('')
   const [setupComposer, setSetupComposer] = useState('')
   const [setupClef, setSetupClef] = useState<Clef | null>(null)
+  const [setupBassClef, setSetupBassClef] = useState<Clef>('bass')
+  const [setupGrandStaff, setSetupGrandStaff] = useState(false)
+  const [setupPickupBeats, setSetupPickupBeats] = useState(0)
   const [setupTimeNum, setSetupTimeNum] = useState<number | null>(null)
   const [setupTimeDen, setSetupTimeDen] = useState<number | null>(null)
   const [setupKey, setSetupKey] = useState<string | null>(null)
@@ -325,7 +347,21 @@ export default function Composer() {
   const [statusMsg, setStatusMsg] = useState('')
   const [savedList, setSavedList] = useState<{ key: string; comp: Composition }[]>([])
 
+  // Pending slur / hairpin in progress (set first endpoint, click second to commit)
+  const [pendingSlurFromId, setPendingSlurFromId] = useState<number | null>(null)
+  const [pendingHairpin, setPendingHairpin] = useState<{ fromId: number; type: 'cresc' | 'dim' } | null>(null)
+  // Tools: 'place' = click empty staff to drop a note, 'rest' = drop a rest instead
+  const [toolMode, setToolMode] = useState<'place' | 'rest'>('place')
+
   const staffContainerRef = useRef<HTMLDivElement>(null)
+  // Drag-pitch state — held in a ref so mousemove doesn't trigger setState every frame
+  const dragRef = useRef<{
+    noteId: number
+    startY: number
+    startKey: string
+    startAcc: Accid
+    moved: boolean
+  } | null>(null)
 
   // ─── Preload audio ────────────────────────────────────────────────────────
   useEffect(() => {
@@ -360,29 +396,46 @@ export default function Composer() {
       title: setupTitle || 'Untitled',
       composer: setupComposer,
       clef: setupClef,
+      bassClef: setupBassClef,
+      grandStaff: setupGrandStaff,
+      pickupBeats: setupPickupBeats,
       timeNum: setupTimeNum,
       timeDen: setupTimeDen,
       keyName: setupKey,
       tempoBpm: setupTempoBpm,
       tempoMark: setupTempoMark,
       measures: [newMeasure()],
+      slurs: [],
+      hairpins: [],
       savedAt: new Date().toISOString(),
     }
     setComp(composition)
     setPhase('editing')
-  }, [setupTitle, setupComposer, setupClef, setupTimeNum, setupTimeDen, setupKey, setupTempoBpm, setupTempoMark])
+  }, [setupTitle, setupComposer, setupClef, setupBassClef, setupGrandStaff, setupPickupBeats, setupTimeNum, setupTimeDen, setupKey, setupTempoBpm, setupTempoMark])
 
   // ─── Load saved → editor ──────────────────────────────────────────────────
   const loadComposition = useCallback((key: string) => {
     try {
       const raw = localStorage.getItem(key)
       if (!raw) return
-      const c: Composition = JSON.parse(raw)
+      const parsed = JSON.parse(raw)
+      // Backfill fields added in later versions so old saves still load
+      const c: Composition = {
+        bassClef: 'bass',
+        grandStaff: false,
+        pickupBeats: 0,
+        slurs: [],
+        hairpins: [],
+        ...parsed,
+      }
       // Re-id measures + notes so editing doesn't clash
       c.measures.forEach(m => {
         m.id = ++measureIdCounter
         m.notes.forEach(n => { n.id = ++noteIdCounter })
       })
+      // Old slurs/hairpins reference old IDs — strip them since IDs were rewritten
+      c.slurs = []
+      c.hairpins = []
       setComp(c)
       setPhase('editing')
     } catch (err) {
@@ -429,7 +482,7 @@ export default function Composer() {
   }, [comp])
 
   // ─── Note placement / editing ─────────────────────────────────────────────
-  const addNoteAtSemi = useCallback((semi: number) => {
+  const addNoteAtSemi = useCallback((semi: number, staff: 0 | 1 = 0) => {
     if (!comp) return
     const { key, accidental } = semiToVexKey(semi)
     // User's accidental override beats the auto-derived one
@@ -445,14 +498,26 @@ export default function Composer() {
       dynamic: 'none',
       tieToNext: false,
       fermata: false,
+      isRest: toolMode === 'rest',
+      staff: comp.grandStaff ? staff : undefined,
     }
     // Append to last measure; if it's full, start a new one
     setComp(prev => {
       if (!prev) return prev
       const measures = [...prev.measures]
-      const measureCapacity = prev.timeNum * (4 / prev.timeDen)
+      // Pickup measure has reduced capacity; otherwise full bar capacity
+      const fullCapacity = prev.timeNum * (4 / prev.timeDen)
       let lastMeasure = measures[measures.length - 1]
-      const usedBeats = lastMeasure.notes.reduce((s, n) => s + noteBeats(n), 0)
+      const isFirstMeasure = measures.length === 1
+      const measureCapacity = (isFirstMeasure && prev.pickupBeats > 0)
+        ? prev.pickupBeats
+        : fullCapacity
+      // For grand staff, only count notes on the same staff toward fill (each
+      // staff fills independently)
+      const sameStaffNotes = prev.grandStaff
+        ? lastMeasure.notes.filter(n => (n.staff ?? 0) === staff)
+        : lastMeasure.notes
+      const usedBeats = sameStaffNotes.reduce((s, n) => s + noteBeats(n), 0)
       if (usedBeats + noteBeats(newNote) > measureCapacity + 0.001) {
         const fresh = newMeasure()
         fresh.notes.push(newNote)
@@ -464,9 +529,53 @@ export default function Composer() {
       return { ...prev, measures }
     })
     setSelectedNoteId(newNote.id)
-    // Audio feedback
-    playPianoNote(vexKeyToName(key, finalAcc))
-  }, [comp, selectedDuration, selectedDotted, selectedTriplet, selectedAccid])
+    // Audio feedback (skip for rests)
+    if (toolMode !== 'rest') playPianoNote(vexKeyToName(key, finalAcc))
+  }, [comp, selectedDuration, selectedDotted, selectedTriplet, selectedAccid, toolMode])
+
+  // Add a note to an existing note's keys array (chord build)
+  const addChordTone = useCallback((noteId: number, semi: number) => {
+    setComp(prev => {
+      if (!prev) return prev
+      const { key, accidental } = semiToVexKey(semi)
+      const measures = prev.measures.map(m => ({
+        ...m,
+        notes: m.notes.map(n => {
+          if (n.id !== noteId) return n
+          if (n.isRest) return n
+          if (n.keys.includes(key)) return n // already in chord
+          return {
+            ...n,
+            keys: [...n.keys, key],
+            accidentals: [...n.accidentals, accidental],
+          }
+        }),
+      }))
+      return { ...prev, measures }
+    })
+    const { key, accidental } = semiToVexKey(semi)
+    playPianoNote(vexKeyToName(key, accidental))
+  }, [])
+
+  // Remove one tone from a chord (or whole note if last tone)
+  const removeChordTone = useCallback((noteId: number, keyIdx: number) => {
+    setComp(prev => {
+      if (!prev) return prev
+      const measures = prev.measures.map(m => ({
+        ...m,
+        notes: m.notes.map(n => {
+          if (n.id !== noteId) return n
+          if (n.keys.length <= 1) return n // refuse — use deleteNote instead
+          return {
+            ...n,
+            keys: n.keys.filter((_, i) => i !== keyIdx),
+            accidentals: n.accidentals.filter((_, i) => i !== keyIdx),
+          }
+        }),
+      }))
+      return { ...prev, measures }
+    })
+  }, [])
 
   const updateNote = useCallback((id: number, patch: Partial<MNote>) => {
     setComp(prev => {
@@ -485,10 +594,54 @@ export default function Composer() {
       const measures = prev.measures
         .map(m => ({ ...m, notes: m.notes.filter(n => n.id !== id) }))
         .filter((m, i, arr) => i === 0 || m.notes.length > 0) // keep at least one measure
-      return { ...prev, measures: measures.length > 0 ? measures : [newMeasure()] }
+      // Drop slurs / hairpins that referenced the deleted note
+      const slurs = prev.slurs.filter(s => s.fromId !== id && s.toId !== id)
+      const hairpins = prev.hairpins.filter(h => h.fromId !== id && h.toId !== id)
+      return { ...prev, measures: measures.length > 0 ? measures : [newMeasure()], slurs, hairpins }
     })
     setSelectedNoteId(null)
     setEditPopup(null)
+  }, [])
+
+  // Commit a slur from pendingSlurFromId → toId
+  const commitSlur = useCallback((toId: number) => {
+    if (pendingSlurFromId == null || pendingSlurFromId === toId) {
+      setPendingSlurFromId(null)
+      return
+    }
+    setComp(prev => {
+      if (!prev) return prev
+      // Avoid duplicates
+      if (prev.slurs.some(s => s.fromId === pendingSlurFromId && s.toId === toId)) return prev
+      return { ...prev, slurs: [...prev.slurs, { fromId: pendingSlurFromId, toId }] }
+    })
+    setPendingSlurFromId(null)
+    setStatusMsg('Slur added')
+    setTimeout(() => setStatusMsg(''), 1500)
+  }, [pendingSlurFromId])
+
+  // Commit a hairpin from pendingHairpin → toId
+  const commitHairpin = useCallback((toId: number) => {
+    if (!pendingHairpin || pendingHairpin.fromId === toId) {
+      setPendingHairpin(null)
+      return
+    }
+    setComp(prev => {
+      if (!prev) return prev
+      if (prev.hairpins.some(h => h.fromId === pendingHairpin.fromId && h.toId === toId)) return prev
+      return { ...prev, hairpins: [...prev.hairpins, { fromId: pendingHairpin.fromId, toId, type: pendingHairpin.type }] }
+    })
+    setPendingHairpin(null)
+    setStatusMsg(`${pendingHairpin.type === 'cresc' ? 'Crescendo' : 'Decrescendo'} added`)
+    setTimeout(() => setStatusMsg(''), 1500)
+  }, [pendingHairpin])
+
+  const removeSlur = useCallback((fromId: number, toId: number) => {
+    setComp(prev => prev ? { ...prev, slurs: prev.slurs.filter(s => !(s.fromId === fromId && s.toId === toId)) } : prev)
+  }, [])
+
+  const removeHairpin = useCallback((fromId: number, toId: number) => {
+    setComp(prev => prev ? { ...prev, hairpins: prev.hairpins.filter(h => !(h.fromId === fromId && h.toId === toId)) } : prev)
   }, [])
 
   const updateMeasure = useCallback((id: number, patch: Partial<Measure>) => {
@@ -501,7 +654,31 @@ export default function Composer() {
 
   // ─── VexFlow rendering ────────────────────────────────────────────────────
 
-  const noteHitboxesRef = useRef<{ id: number; x: number; y: number; w: number; h: number }[]>([])
+  // Hit-test record stores everything needed for click routing + drag
+  const noteHitboxesRef = useRef<{
+    id: number
+    x: number
+    y: number
+    w: number
+    h: number
+    staffIdx: 0 | 1
+    midY: number
+    lineSpacing: number
+    clef: Clef
+  }[]>([])
+
+  // Per-row staff geometry — used to find which staff a click landed on
+  const staffRectsRef = useRef<{
+    rowIdx: number
+    staffIdx: 0 | 1
+    x: number
+    y: number      // top of stave
+    w: number
+    h: number      // approx full stave height (5 lines)
+    midY: number   // center line
+    lineSpacing: number
+    clef: Clef
+  }[]>([])
 
   const renderStaff = useCallback(() => {
     if (!comp) return
@@ -515,8 +692,9 @@ export default function Composer() {
     const measuresPerLine = Math.max(1, Math.floor((window.innerWidth - 80) / measureWidth))
     const lines = Math.ceil(comp.measures.length / measuresPerLine)
     const totalWidth = Math.min(comp.measures.length, measuresPerLine) * measureWidth + 60
-    const lineHeight = 200
-    const totalHeight = lines * lineHeight + 60
+    // Grand staff needs more vertical room per row (two staves + brace + space)
+    const rowHeight = comp.grandStaff ? 280 : 200
+    const totalHeight = lines * rowHeight + 80
 
     const renderer = new Renderer(container, Renderer.Backends.SVG)
     renderer.resize(totalWidth, totalHeight)
@@ -524,192 +702,394 @@ export default function Composer() {
     context.setFont('Arial', 12)
 
     noteHitboxesRef.current = []
+    staffRectsRef.current = []
 
+    // staveNoteByMNoteId — map from MNote.id to {staveNote, stave} for slur/hairpin lookup later
+    const staveNoteByMNoteId = new Map<number, { sn: any; stave: any; staffIdx: 0 | 1 }>()
+
+    // Iterate measures, but for each measure render up to 2 staves if grandStaff
     comp.measures.forEach((measure, mIdx) => {
       const lineIdx = Math.floor(mIdx / measuresPerLine)
       const colIdx = mIdx % measuresPerLine
       const x = startX + colIdx * measureWidth
-      const y = startY + lineIdx * lineHeight
+      const yTop = startY + lineIdx * rowHeight
       const isFirstInLine = colIdx === 0
 
-      const stave = new Stave(x, y, measureWidth)
-      if (isFirstInLine) {
-        stave.addClef(comp.clef)
-        stave.addKeySignature(comp.keyName)
-        if (mIdx === 0) {
-          stave.addTimeSignature(`${comp.timeNum}/${comp.timeDen}`)
-          if (comp.tempoMark || comp.tempoBpm) {
-            stave.setTempo(
-              { name: comp.tempoMark, duration: 'q', dots: 0, bpm: comp.tempoBpm },
-              -20,
-            )
+      // Determine stave Y positions for this row
+      const staffYs: number[] = comp.grandStaff ? [yTop, yTop + 110] : [yTop]
+      const staffClefs: Clef[] = comp.grandStaff ? [comp.clef, comp.bassClef] : [comp.clef]
+
+      const stavesThisMeasure: any[] = []
+
+      staffYs.forEach((sy, staffIdx) => {
+        const stave = new Stave(x, sy, measureWidth)
+        if (isFirstInLine) {
+          stave.addClef(staffClefs[staffIdx])
+          stave.addKeySignature(comp.keyName)
+          if (mIdx === 0) {
+            stave.addTimeSignature(`${comp.timeNum}/${comp.timeDen}`)
+            if (staffIdx === 0 && (comp.tempoMark || comp.tempoBpm)) {
+              stave.setTempo(
+                { name: comp.tempoMark, duration: 'q', dots: 0, bpm: comp.tempoBpm },
+                -20,
+              )
+            }
           }
         }
-      }
-      // Bar lines
-      if (measure.startBar === 'repeat-begin') stave.setBegBarType(Barline.type.REPEAT_BEGIN)
-      if (measure.startBar === 'double') stave.setBegBarType(Barline.type.DOUBLE)
-      if (measure.endBar === 'repeat-end') stave.setEndBarType(Barline.type.REPEAT_END)
-      if (measure.endBar === 'double') stave.setEndBarType(Barline.type.DOUBLE)
-      if (measure.endBar === 'final') stave.setEndBarType(Barline.type.END)
-      // Volta (1st / 2nd ending bracket above the measure)
-      if (measure.voltaNumber) {
-        stave.setVoltaType(
-          measure.voltaNumber === 1 ? Volta.type.BEGIN : Volta.type.BEGIN_END,
-          measure.voltaNumber.toString() + '.',
-          0,
-        )
-      }
-      // Coda / Segno
-      if (measure.hasCoda) {
-        stave.setRepetitionType(Repetition.type.CODA_LEFT)
-      }
-      if (measure.hasSegno) {
-        stave.setRepetitionType(Repetition.type.SEGNO_LEFT)
-      }
-      stave.setContext(context).draw()
-
-      // Build notes for this measure
-      if (measure.notes.length === 0) {
-        return // empty measure (just bar lines)
-      }
-
-      const staveNotes: StaveNote[] = []
-      const tripletGroups = new Map<number, StaveNote[]>()
-
-      measure.notes.forEach(n => {
-        // Pass base duration only — dot is added separately via Dot.buildAndAttach
-        // (passing both 'qd' and a Dot modifier would render as a double-dot).
-        let staveNote: StaveNote
-        try {
-          staveNote = new StaveNote({
-            keys: n.keys,
-            duration: n.duration,
-            clef: comp.clef,
-            auto_stem: true,
-          })
-        } catch (err) {
-          console.error('StaveNote failed for', n, err)
-          return
+        // Bar lines
+        if (measure.startBar === 'repeat-begin') stave.setBegBarType(Barline.type.REPEAT_BEGIN)
+        if (measure.startBar === 'double') stave.setBegBarType(Barline.type.DOUBLE)
+        if (measure.endBar === 'repeat-end') stave.setEndBarType(Barline.type.REPEAT_END)
+        if (measure.endBar === 'double') stave.setEndBarType(Barline.type.DOUBLE)
+        if (measure.endBar === 'final') stave.setEndBarType(Barline.type.END)
+        // Volta on top stave only
+        if (measure.voltaNumber && staffIdx === 0) {
+          stave.setVoltaType(
+            measure.voltaNumber === 1 ? Volta.type.BEGIN : Volta.type.BEGIN_END,
+            measure.voltaNumber.toString() + '.',
+            0,
+          )
         }
-        // Apply accidentals
-        n.accidentals.forEach((a, ki) => {
-          if (a && a !== '') {
-            try { staveNote.addModifier(new Accidental(a), ki) } catch {}
-          }
+        if (measure.hasCoda && staffIdx === 0) stave.setRepetitionType(Repetition.type.CODA_LEFT)
+        if (measure.hasSegno && staffIdx === 0) stave.setRepetitionType(Repetition.type.SEGNO_LEFT)
+
+        stave.setContext(context).draw()
+        stavesThisMeasure.push(stave)
+
+        // Record stave geometry for click hit-testing
+        const STAVE_LINE_SPACING_PX = 10 // VexFlow default
+        const staveTopLineY = sy + 40    // VexFlow draws first line ~40px below stave Y
+        const staveMidY = staveTopLineY + STAVE_LINE_SPACING_PX * 2
+        staffRectsRef.current.push({
+          rowIdx: lineIdx,
+          staffIdx: staffIdx as 0 | 1,
+          x,
+          y: staveTopLineY,
+          w: measureWidth,
+          h: STAVE_LINE_SPACING_PX * 4 + 20,
+          midY: staveMidY,
+          lineSpacing: STAVE_LINE_SPACING_PX,
+          clef: staffClefs[staffIdx],
         })
-        // Dot
-        if (n.dotted) {
-          try { Dot.buildAndAttach([staveNote], { all: true }) } catch {}
-        }
-        // Articulation
-        if (n.articulation !== 'none' && !n.fermata) {
-          const map: Record<string, string> = {
-            staccato: 'a.', accent: 'a>', tenuto: 'a-', marcato: 'a^', fermata: 'a@a',
-          }
-          const code = map[n.articulation]
-          if (code) {
-            try { staveNote.addModifier(new Articulation(code).setPosition(Modifier.Position.ABOVE)) } catch {}
-          }
-        }
-        // Fermata
-        if (n.fermata) {
-          try { staveNote.addModifier(new Articulation('a@a').setPosition(Modifier.Position.ABOVE)) } catch {}
-        }
-        // Dynamic
-        if (n.dynamic !== 'none') {
-          try {
-            const dyn = new Annotation(n.dynamic)
-              .setFont('Arial', 12, 'bold italic')
-              .setVerticalJustification(Annotation.VerticalJustify.BOTTOM)
-            staveNote.addModifier(dyn)
-          } catch {}
-        }
-
-        if (n.tripletGroup != null) {
-          if (!tripletGroups.has(n.tripletGroup)) tripletGroups.set(n.tripletGroup, [])
-          tripletGroups.get(n.tripletGroup)!.push(staveNote)
-        }
-        staveNotes.push(staveNote)
       })
 
-      // Voice
-      try {
-        const voice = new Voice({ num_beats: comp.timeNum, beat_value: comp.timeDen })
-        voice.setMode(Voice.Mode.SOFT) // tolerant of partial measures
-        voice.addTickables(staveNotes)
-        new Formatter().joinVoices([voice]).format([voice], measureWidth - 50)
-        voice.draw(context, stave)
+      // Connect grand staff with brace + thin lines on first measure of each row
+      if (comp.grandStaff && stavesThisMeasure.length === 2) {
+        try {
+          const brace = new StaveConnector(stavesThisMeasure[0], stavesThisMeasure[1])
+          // SINGLE_LEFT thin line, BRACE
+          brace.setType(StaveConnector.type.BRACE).setContext(context).draw()
+          new StaveConnector(stavesThisMeasure[0], stavesThisMeasure[1])
+            .setType(StaveConnector.type.SINGLE_LEFT).setContext(context).draw()
+          new StaveConnector(stavesThisMeasure[0], stavesThisMeasure[1])
+            .setType(StaveConnector.type.SINGLE_RIGHT).setContext(context).draw()
+        } catch {}
+      }
 
-        // Beams (auto-group eighths/16ths/32nds in same beat)
-        const beams = Beam.generateBeams(staveNotes)
-        beams.forEach(b => b.setContext(context).draw())
+      if (measure.notes.length === 0) return
 
-        // Tuplets
-        tripletGroups.forEach(group => {
-          if (group.length >= 3) {
-            const tuplet = new Tuplet(group)
-            tuplet.setContext(context).draw()
-          }
-        })
-
-        // Hit-test rectangles
-        staveNotes.forEach((sn, i) => {
+      // Build notes per staff
+      stavesThisMeasure.forEach((stave, staffIdx) => {
+        const staffNotes = comp.grandStaff
+          ? measure.notes.filter(n => (n.staff ?? 0) === staffIdx)
+          : measure.notes
+        if (staffNotes.length === 0) {
+          // Render a whole rest as visual placeholder so VexFlow doesn't blow up
           try {
-            const bbox = sn.getBoundingBox()
-            if (bbox) {
-              noteHitboxesRef.current.push({
-                id: measure.notes[i].id,
-                x: bbox.getX(),
-                y: bbox.getY(),
-                w: bbox.getW(),
-                h: bbox.getH(),
-              })
-            }
+            const rest = new StaveNote({
+              keys: ['b/4'],
+              duration: 'wr',
+              clef: staffClefs[staffIdx],
+            })
+            const v = new Voice({ num_beats: comp.timeNum, beat_value: comp.timeDen })
+            v.setMode(Voice.Mode.SOFT)
+            v.addTickables([rest])
+            new Formatter().joinVoices([v]).format([v], measureWidth - 50)
+            v.draw(context, stave)
           } catch {}
+          return
+        }
+        const staveNotes: any[] = []
+        const tripletGroups = new Map<number, any[]>()
+
+        staffNotes.forEach(n => {
+          let staveNote: any
+          try {
+            // Rest: append 'r' to duration. VexFlow uses key 'b/4' for centered rests.
+            const dur = n.isRest ? `${n.duration}r` : n.duration
+            const restKeys = staffClefs[staffIdx] === 'treble' ? ['b/4']
+              : staffClefs[staffIdx] === 'bass' ? ['d/3']
+              : ['c/4']
+            staveNote = new StaveNote({
+              keys: n.isRest ? restKeys : n.keys,
+              duration: dur,
+              clef: staffClefs[staffIdx],
+              auto_stem: true,
+            })
+          } catch (err) {
+            console.error('StaveNote failed for', n, err)
+            return
+          }
+          if (!n.isRest) {
+            n.accidentals.forEach((a, ki) => {
+              if (a) {
+                try { staveNote.addModifier(new Accidental(a), ki) } catch {}
+              }
+            })
+          }
+          if (n.dotted) {
+            try { Dot.buildAndAttach([staveNote], { all: true }) } catch {}
+          }
+          if (n.articulation !== 'none' && !n.fermata && !n.isRest) {
+            const map: Record<string, string> = {
+              staccato: 'a.', accent: 'a>', tenuto: 'a-', marcato: 'a^', fermata: 'a@a',
+            }
+            const code = map[n.articulation]
+            if (code) {
+              try { staveNote.addModifier(new Articulation(code).setPosition(Modifier.Position.ABOVE)) } catch {}
+            }
+          }
+          if (n.fermata) {
+            try { staveNote.addModifier(new Articulation('a@a').setPosition(Modifier.Position.ABOVE)) } catch {}
+          }
+          if (n.dynamic !== 'none') {
+            try {
+              const dyn = new Annotation(n.dynamic)
+                .setFont('Arial', 12, 'bold italic')
+                .setVerticalJustification(Annotation.VerticalJustify.BOTTOM)
+              staveNote.addModifier(dyn)
+            } catch {}
+          }
+          // Lyric (under the note)
+          if (n.lyric && !n.isRest) {
+            try {
+              const lyr = new Annotation(n.lyric)
+                .setFont('Arial', 11)
+                .setVerticalJustification(Annotation.VerticalJustify.BOTTOM)
+              staveNote.addModifier(lyr)
+            } catch {}
+          }
+          if (n.tripletGroup != null) {
+            if (!tripletGroups.has(n.tripletGroup)) tripletGroups.set(n.tripletGroup, [])
+            tripletGroups.get(n.tripletGroup)!.push(staveNote)
+          }
+          staveNotes.push(staveNote)
+          staveNoteByMNoteId.set(n.id, { sn: staveNote, stave, staffIdx: staffIdx as 0 | 1 })
         })
 
-        // Highlight selected note
-        if (selectedNoteId != null) {
+        try {
+          const voice = new Voice({ num_beats: comp.timeNum, beat_value: comp.timeDen })
+          voice.setMode(Voice.Mode.SOFT)
+          voice.addTickables(staveNotes)
+          new Formatter().joinVoices([voice]).format([voice], measureWidth - 50)
+          voice.draw(context, stave)
+
+          const beams = Beam.generateBeams(staveNotes)
+          beams.forEach((b: any) => b.setContext(context).draw())
+
+          tripletGroups.forEach((group: any[]) => {
+            if (group.length >= 3) {
+              const tuplet = new Tuplet(group)
+              tuplet.setContext(context).draw()
+            }
+          })
+
+          // Hit-test rectangles + selection highlight
           staveNotes.forEach((sn, i) => {
-            if (measure.notes[i].id === selectedNoteId) {
-              try {
-                const bbox = sn.getBoundingBox()
-                if (bbox) {
+            try {
+              const bbox = sn.getBoundingBox()
+              if (bbox) {
+                const rect = staffRectsRef.current.find(r => r.staffIdx === staffIdx && r.x === x && r.y >= yTop && r.y <= yTop + 200)
+                noteHitboxesRef.current.push({
+                  id: staffNotes[i].id,
+                  x: bbox.getX(),
+                  y: bbox.getY(),
+                  w: bbox.getW(),
+                  h: bbox.getH(),
+                  staffIdx: staffIdx as 0 | 1,
+                  midY: rect?.midY ?? 0,
+                  lineSpacing: rect?.lineSpacing ?? 10,
+                  clef: staffClefs[staffIdx],
+                })
+                if (staffNotes[i].id === selectedNoteId) {
                   context.save()
-                  context.setFillStyle('rgba(220, 38, 38, 0.18)')
+                  // Different highlight if it's the slur/hairpin start
+                  const isSlurStart = pendingSlurFromId === staffNotes[i].id
+                  const isHpStart = pendingHairpin?.fromId === staffNotes[i].id
+                  context.setFillStyle(
+                    isSlurStart ? 'rgba(34,197,94,0.25)'
+                    : isHpStart ? 'rgba(251,146,60,0.25)'
+                    : 'rgba(220, 38, 38, 0.18)'
+                  )
                   context.fillRect(bbox.getX() - 4, bbox.getY() - 4, bbox.getW() + 8, bbox.getH() + 8)
                   context.restore()
                 }
-              } catch {}
-            }
+              }
+            } catch {}
           })
+        } catch (err) {
+          console.error('Voice format failed:', err)
         }
+      })
+    })
+
+    // ─── Slurs (Curve) ──────────────────────────────────────────────────────
+    comp.slurs.forEach(slur => {
+      const a = staveNoteByMNoteId.get(slur.fromId)
+      const b = staveNoteByMNoteId.get(slur.toId)
+      if (!a || !b) return
+      try {
+        const curve = new Curve(a.sn, b.sn, {
+          spacing: 2, thickness: 2, x_shift: 0, y_shift: 10,
+          position: 1, // 1 = NEAR_HEAD
+          invert: false,
+          cps: [{ x: 0, y: 10 }, { x: 0, y: 10 }],
+        })
+        curve.setContext(context).draw()
       } catch (err) {
-        console.error('Voice format failed:', err)
+        console.error('Slur draw failed:', err)
       }
     })
-  }, [comp, selectedNoteId])
+
+    // ─── Hairpins (StaveHairpin) ────────────────────────────────────────────
+    comp.hairpins.forEach(hp => {
+      const a = staveNoteByMNoteId.get(hp.fromId)
+      const b = staveNoteByMNoteId.get(hp.toId)
+      if (!a || !b) return
+      try {
+        const hairpin = new StaveHairpin(
+          { first_note: a.sn, last_note: b.sn },
+          hp.type === 'cresc' ? StaveHairpin.type.CRESC : StaveHairpin.type.DECRESC,
+        )
+        hairpin.setContext(context).setPosition(Modifier.Position.BELOW).draw()
+      } catch (err) {
+        console.error('Hairpin draw failed:', err)
+      }
+    })
+  }, [comp, selectedNoteId, pendingSlurFromId, pendingHairpin])
 
   useEffect(() => { renderStaff() }, [renderStaff])
 
-  // ─── Click on staff: hit-test or place ────────────────────────────────────
-  const handleStaffClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+  // ─── Mouse handlers — supports click, shift-click chord, drag-pitch ───────
+  // mousedown: pick up a note for drag, OR record start of click
+  const handleMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     if (!comp) return
+    if (e.button !== 0) return
     const container = staffContainerRef.current
     if (!container) return
     const rect = container.getBoundingClientRect()
     const x = e.clientX - rect.left
     const y = e.clientY - rect.top
+    for (const hb of noteHitboxesRef.current) {
+      if (x >= hb.x - 4 && x <= hb.x + hb.w + 4 && y >= hb.y - 4 && y <= hb.y + hb.h + 4) {
+        // Find the note's first key/accidental for drag origin
+        for (const m of comp.measures) {
+          for (const n of m.notes) {
+            if (n.id === hb.id && !n.isRest) {
+              dragRef.current = {
+                noteId: hb.id,
+                startY: e.clientY,
+                startKey: n.keys[0],
+                startAcc: n.accidentals[0],
+                moved: false,
+              }
+              return
+            }
+          }
+        }
+        return
+      }
+    }
+  }, [comp])
+
+  // mousemove: if dragging, update pitch live
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    const drag = dragRef.current
+    if (!drag || !comp) return
+    const dy = e.clientY - drag.startY
+    if (Math.abs(dy) < 4 && !drag.moved) return
+    drag.moved = true
+    // ~5 px per diatonic step (half a line spacing). Compute new semi from start.
+    const stepDelta = -Math.round(dy / 5) // up = negative dy = positive step
+    const startSemi = vexKeyToSemi(drag.startKey, drag.startAcc)
+    // Walk diatonically: each step changes letter by 1, semis variable
+    const letterOrder = ['c', 'd', 'e', 'f', 'g', 'a', 'b']
+    const startLetter = drag.startKey.match(/^([a-g])/i)![1].toLowerCase()
+    const startLetterIdx = letterOrder.indexOf(startLetter)
+    const startOctave = parseInt(drag.startKey.match(/\/(-?\d+)$/)![1])
+    const newLetterPos = startLetterIdx + stepDelta
+    const newLetterIdx = ((newLetterPos % 7) + 7) % 7
+    const octaveDelta = Math.floor(newLetterPos / 7)
+    const newLetter = letterOrder[newLetterIdx]
+    const newOctave = startOctave + octaveDelta
+    let newAcc: Accid = ''
+    if (drag.startKey.includes('#')) newAcc = '#'
+    else if (drag.startKey.includes('b/') === false && drag.startAcc === '#') newAcc = '#'
+    // Update the note's first key. Keep accidental neutral by default after drag.
+    setComp(prev => {
+      if (!prev) return prev
+      const measures = prev.measures.map(m => ({
+        ...m,
+        notes: m.notes.map(n => {
+          if (n.id !== drag.noteId) return n
+          if (n.isRest) return n
+          const newKeys = [`${newLetter}/${newOctave}`, ...n.keys.slice(1)]
+          const newAccs = ['' as Accid, ...n.accidentals.slice(1)]
+          return { ...n, keys: newKeys, accidentals: newAccs }
+        }),
+      }))
+      return { ...prev, measures }
+    })
+  }, [comp])
+
+  // mouseup: finalize drag or treat as click
+  const handleMouseUp = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!comp) return
+    const drag = dragRef.current
+    if (drag && drag.moved) {
+      // Drag finished — find the note and play its new pitch
+      for (const m of comp.measures) {
+        for (const n of m.notes) {
+          if (n.id === drag.noteId && !n.isRest) {
+            playPianoNote(vexKeyToName(n.keys[0], n.accidentals[0]))
+          }
+        }
+      }
+      dragRef.current = null
+      return
+    }
+    dragRef.current = null
+
+    // Plain click — same logic as before
+    const container = staffContainerRef.current
+    if (!container) return
+    const rect = container.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+
     // Hit-test existing notes
     for (const hb of noteHitboxesRef.current) {
       if (x >= hb.x - 4 && x <= hb.x + hb.w + 4 && y >= hb.y - 4 && y <= hb.y + hb.h + 4) {
+        // Pending slur or hairpin endpoint?
+        if (pendingSlurFromId != null) {
+          commitSlur(hb.id)
+          return
+        }
+        if (pendingHairpin) {
+          commitHairpin(hb.id)
+          return
+        }
+        // Shift-click → add to chord using staff Y
+        if (e.shiftKey) {
+          const semi = yToSemi(y, hb.midY, hb.lineSpacing, hb.clef)
+          addChordTone(hb.id, semi)
+          return
+        }
         setSelectedNoteId(hb.id)
         setEditPopup({ noteId: hb.id, x: e.clientX, y: e.clientY })
-        // Find note + play it
         for (const m of comp.measures) {
           for (const n of m.notes) {
-            if (n.id === hb.id) {
+            if (n.id === hb.id && !n.isRest) {
               playPianoNote(vexKeyToName(n.keys[0], n.accidentals[0]))
               return
             }
@@ -718,23 +1098,19 @@ export default function Composer() {
         return
       }
     }
-    // Empty click — figure out which staff line and add a note there
-    // Use the SVG staff lines as reference: 5 staff lines per line, ~10px apart
-    const STAVE_LINE_SPACING = 10
-    // Use the click position relative to the topmost staff line
-    // For simplicity find which "line" we're on
-    const measureWidth = 280
-    const startY = 40
-    const lineHeight = 200
-    const measuresPerLine = Math.max(1, Math.floor((window.innerWidth - 80) / measureWidth))
-    const lineIdx = Math.floor((y - startY) / lineHeight)
-    const lineY = startY + lineIdx * lineHeight
-    // Middle of staff is at lineY + ~60 (VexFlow default stave centerline offset)
-    const midStaveY = lineY + 60
-    const semi = yToSemi(y, midStaveY, STAVE_LINE_SPACING, comp.clef)
-    addNoteAtSemi(semi)
+
+    // Empty click — find which staff this click landed on by Y proximity
+    let closestStaff: typeof staffRectsRef.current[number] | null = null
+    let bestDist = Infinity
+    for (const sr of staffRectsRef.current) {
+      const d = Math.abs(y - sr.midY)
+      if (d < bestDist) { bestDist = d; closestStaff = sr }
+    }
+    if (!closestStaff) return
+    const semi = yToSemi(y, closestStaff.midY, closestStaff.lineSpacing, closestStaff.clef)
+    addNoteAtSemi(semi, closestStaff.staffIdx)
     setEditPopup(null)
-  }, [comp, addNoteAtSemi])
+  }, [comp, addNoteAtSemi, addChordTone, pendingSlurFromId, pendingHairpin, commitSlur, commitHairpin])
 
   // ─── Hotkeys ──────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -826,9 +1202,44 @@ export default function Composer() {
             </div>
           </div>
 
-          {/* Clef */}
+          {/* Grand staff toggle */}
+          <div className="mb-6">
+            <label className="block text-xs text-gray-400 uppercase tracking-wider mb-2">Staff Layout</label>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => setSetupGrandStaff(false)}
+                className="px-4 py-3 rounded-lg text-sm font-bold transition-all"
+                style={{
+                  background: !setupGrandStaff ? 'rgba(99,102,241,0.25)' : 'rgba(40,40,60,0.5)',
+                  border: `2px solid ${!setupGrandStaff ? '#6366f1' : 'rgba(60,60,80,0.5)'}`,
+                  color: !setupGrandStaff ? '#a5b4fc' : '#888',
+                }}
+              >
+                <div className="text-2xl mb-0.5">𝄚</div>
+                <div>Single Staff</div>
+                <div className="text-[10px] opacity-70">one voice / instrument</div>
+              </button>
+              <button
+                onClick={() => { setSetupGrandStaff(true); if (!setupClef) setSetupClef('treble') }}
+                className="px-4 py-3 rounded-lg text-sm font-bold transition-all"
+                style={{
+                  background: setupGrandStaff ? 'rgba(99,102,241,0.25)' : 'rgba(40,40,60,0.5)',
+                  border: `2px solid ${setupGrandStaff ? '#6366f1' : 'rgba(60,60,80,0.5)'}`,
+                  color: setupGrandStaff ? '#a5b4fc' : '#888',
+                }}
+              >
+                <div className="text-2xl mb-0.5">𝄞𝄢</div>
+                <div>Grand Staff (Piano)</div>
+                <div className="text-[10px] opacity-70">treble + bass with brace</div>
+              </button>
+            </div>
+          </div>
+
+          {/* Clef (top staff) */}
           <div className="mb-8">
-            <label className="block text-xs text-gray-400 uppercase tracking-wider mb-2">Clef <span className="text-red-400">*required</span></label>
+            <label className="block text-xs text-gray-400 uppercase tracking-wider mb-2">
+              {setupGrandStaff ? 'Top Staff Clef' : 'Clef'} <span className="text-red-400">*required</span>
+            </label>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
               {(['treble', 'alto', 'tenor', 'bass'] as Clef[]).map(c => (
                 <button
@@ -848,6 +1259,28 @@ export default function Composer() {
                 </button>
               ))}
             </div>
+            {setupGrandStaff && (
+              <div className="mt-3">
+                <label className="block text-xs text-gray-400 uppercase tracking-wider mb-2">Bottom Staff Clef</label>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                  {(['treble', 'alto', 'tenor', 'bass'] as Clef[]).map(c => (
+                    <button
+                      key={c}
+                      onClick={() => setSetupBassClef(c)}
+                      className="px-3 py-2 rounded text-xs font-bold transition-all"
+                      style={{
+                        background: setupBassClef === c ? 'rgba(99,102,241,0.25)' : 'rgba(40,40,60,0.5)',
+                        border: `2px solid ${setupBassClef === c ? '#6366f1' : 'rgba(60,60,80,0.5)'}`,
+                        color: setupBassClef === c ? '#a5b4fc' : '#888',
+                      }}
+                    >
+                      <div className="text-2xl">{c === 'treble' ? '𝄞' : c === 'bass' ? '𝄢' : '𝄡'}</div>
+                      <div className="capitalize">{c}</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Time signature */}
@@ -947,6 +1380,24 @@ export default function Composer() {
                 <option value="Presto">Presto</option>
                 <option value="Prestissimo">Prestissimo (very fast)</option>
               </select>
+            </div>
+          </div>
+
+          {/* Pickup measure */}
+          <div className="mb-8">
+            <label className="block text-xs text-gray-400 uppercase tracking-wider mb-1">Pickup Measure (Anacrusis)</label>
+            <p className="text-[11px] text-gray-500 mb-2">Many hymns + folk songs start on a partial measure. Set to 0 if your piece starts on the downbeat.</p>
+            <div className="flex items-center gap-2">
+              <input
+                type="number"
+                min={0}
+                max={8}
+                step={0.5}
+                value={setupPickupBeats}
+                onChange={e => setSetupPickupBeats(parseFloat(e.target.value) || 0)}
+                className="w-24 px-3 py-2 bg-[#15152a] border border-[#3a3a55] rounded text-base text-white text-center"
+              />
+              <span className="text-xs text-gray-500">beats (in quarters)</span>
             </div>
           </div>
 
@@ -1118,8 +1569,108 @@ export default function Composer() {
             {p.glyph}
           </button>
         ))}
+        <span className="text-gray-500 uppercase tracking-wider ml-2">Tool</span>
+        {([
+          { t: 'place' as const, glyph: '♩', title: 'Place note (click to add at clicked pitch)' },
+          { t: 'rest' as const, glyph: '𝄽', title: 'Place rest (click to add a rest at current duration)' },
+        ]).map(p => (
+          <button
+            key={p.t}
+            onClick={() => setToolMode(p.t)}
+            className="px-2 py-1.5 rounded font-bold transition-all"
+            style={{
+              background: toolMode === p.t ? 'rgba(99,102,241,0.25)' : 'rgba(40,40,60,0.5)',
+              border: `1px solid ${toolMode === p.t ? '#6366f1' : 'rgba(60,60,80,0.5)'}`,
+              color: toolMode === p.t ? '#a5b4fc' : '#888',
+            }}
+            title={p.title}
+          >
+            <span className="text-lg">{p.glyph}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* Second toolbar row — slurs, hairpins, hints */}
+      <div className="px-4 py-1.5 border-b border-gray-800/40 bg-[#0a0a14] flex items-center gap-2 flex-wrap text-xs">
+        <span className="text-gray-500 uppercase tracking-wider">Phrase Marks</span>
+        <button
+          onClick={() => {
+            if (selectedNoteId == null) return setStatusMsg('Click a note first, then click Slur')
+            setPendingSlurFromId(selectedNoteId)
+            setPendingHairpin(null)
+            setStatusMsg('Slur start set — click the END note')
+            setTimeout(() => setStatusMsg(''), 3500)
+          }}
+          className="px-2 py-1 rounded font-bold transition-all"
+          style={{
+            background: pendingSlurFromId != null ? 'rgba(34,197,94,0.25)' : 'rgba(40,40,60,0.5)',
+            border: `1px solid ${pendingSlurFromId != null ? '#22c55e' : 'rgba(60,60,80,0.5)'}`,
+            color: pendingSlurFromId != null ? '#86efac' : '#888',
+          }}
+          title="Click to start slur from selected note, then click end note"
+        >
+          ⌒ Slur
+        </button>
+        <button
+          onClick={() => {
+            if (selectedNoteId == null) return setStatusMsg('Click a note first, then click Crescendo')
+            setPendingHairpin({ fromId: selectedNoteId, type: 'cresc' })
+            setPendingSlurFromId(null)
+            setStatusMsg('Crescendo start set — click the END note')
+            setTimeout(() => setStatusMsg(''), 3500)
+          }}
+          className="px-2 py-1 rounded font-bold transition-all"
+          style={{
+            background: pendingHairpin?.type === 'cresc' ? 'rgba(251,146,60,0.25)' : 'rgba(40,40,60,0.5)',
+            border: `1px solid ${pendingHairpin?.type === 'cresc' ? '#fb923c' : 'rgba(60,60,80,0.5)'}`,
+            color: pendingHairpin?.type === 'cresc' ? '#fdba74' : '#888',
+          }}
+          title="Crescendo hairpin"
+        >
+          &lt; cresc.
+        </button>
+        <button
+          onClick={() => {
+            if (selectedNoteId == null) return setStatusMsg('Click a note first, then click Decrescendo')
+            setPendingHairpin({ fromId: selectedNoteId, type: 'dim' })
+            setPendingSlurFromId(null)
+            setStatusMsg('Decrescendo start set — click the END note')
+            setTimeout(() => setStatusMsg(''), 3500)
+          }}
+          className="px-2 py-1 rounded font-bold transition-all"
+          style={{
+            background: pendingHairpin?.type === 'dim' ? 'rgba(251,146,60,0.25)' : 'rgba(40,40,60,0.5)',
+            border: `1px solid ${pendingHairpin?.type === 'dim' ? '#fb923c' : 'rgba(60,60,80,0.5)'}`,
+            color: pendingHairpin?.type === 'dim' ? '#fdba74' : '#888',
+          }}
+          title="Decrescendo hairpin"
+        >
+          &gt; dim.
+        </button>
+        {(pendingSlurFromId != null || pendingHairpin) && (
+          <button
+            onClick={() => { setPendingSlurFromId(null); setPendingHairpin(null) }}
+            className="px-2 py-1 rounded text-red-300 border border-red-700 hover:bg-red-900/30"
+          >
+            Cancel
+          </button>
+        )}
+
+        <span className="text-gray-500 uppercase tracking-wider ml-3">Pickup</span>
+        <input
+          type="number"
+          min={0}
+          max={8}
+          step={0.5}
+          value={comp.pickupBeats}
+          onChange={e => setComp(prev => prev ? { ...prev, pickupBeats: parseFloat(e.target.value) || 0 } : prev)}
+          className="w-14 px-2 py-1 bg-[#15152a] border border-[#3a3a55] rounded text-white text-center"
+          title="Pickup measure (anacrusis) beats"
+        />
+        <span className="text-gray-600">beats</span>
+
         <div className="ml-auto text-[10px] text-gray-600">
-          Hotkeys: 1-6 duration · . dot · T triplet · # ♭ accidental · Del to remove · Esc to clear
+          Click empty staff = add note · Click note = edit · Drag note = change pitch · Shift-click note = add to chord · 1-6 dur · . dot · T triplet · # ♭ accidental
         </div>
       </div>
 
@@ -1134,8 +1685,11 @@ export default function Composer() {
       <div className="flex-1 overflow-auto bg-[#fafaf7] p-4">
         <div
           ref={staffContainerRef}
-          onClick={handleStaffClick}
-          style={{ cursor: 'crosshair', minHeight: 250 }}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={() => { dragRef.current = null }}
+          style={{ cursor: pendingSlurFromId != null ? 'crosshair' : pendingHairpin ? 'crosshair' : 'pointer', minHeight: 250 }}
         />
       </div>
 
@@ -1148,6 +1702,25 @@ export default function Composer() {
           onClose={() => setEditPopup(null)}
           onUpdate={patch => updateNote(selNote.id, patch)}
           onDelete={() => deleteNote(selNote.id)}
+          onRemoveChordTone={(ki) => removeChordTone(selNote.id, ki)}
+          onStartSlur={() => {
+            setPendingSlurFromId(selNote.id)
+            setStatusMsg('Slur start set — click the END note')
+            setTimeout(() => setStatusMsg(''), 3500)
+            setEditPopup(null)
+          }}
+          onStartCresc={() => {
+            setPendingHairpin({ fromId: selNote.id, type: 'cresc' })
+            setStatusMsg('Crescendo start set — click the END note')
+            setTimeout(() => setStatusMsg(''), 3500)
+            setEditPopup(null)
+          }}
+          onStartDim={() => {
+            setPendingHairpin({ fromId: selNote.id, type: 'dim' })
+            setStatusMsg('Decrescendo start set — click the END note')
+            setTimeout(() => setStatusMsg(''), 3500)
+            setEditPopup(null)
+          }}
         />
       )}
 
@@ -1208,7 +1781,8 @@ export default function Composer() {
 // ─── Note edit popup ────────────────────────────────────────────────────────
 
 function NoteEditPopup({
-  note, x, y, onClose, onUpdate, onDelete,
+  note, x, y, onClose, onUpdate, onDelete, onRemoveChordTone,
+  onStartSlur, onStartCresc, onStartDim,
 }: {
   note: MNote
   x: number
@@ -1216,6 +1790,10 @@ function NoteEditPopup({
   onClose: () => void
   onUpdate: (patch: Partial<MNote>) => void
   onDelete: () => void
+  onRemoveChordTone: (keyIdx: number) => void
+  onStartSlur: () => void
+  onStartCresc: () => void
+  onStartDim: () => void
 }) {
   // Click-outside to close
   useEffect(() => {
@@ -1233,18 +1811,56 @@ function NoteEditPopup({
       data-note-popup
       className="fixed z-50 bg-[#15152a] border-2 border-indigo-600 rounded-lg shadow-2xl p-3 text-xs"
       style={{
-        left: Math.min(x, window.innerWidth - 320),
-        top: Math.min(y + 16, window.innerHeight - 320),
-        width: 300,
+        left: Math.min(x, window.innerWidth - 360),
+        top: Math.min(y + 16, window.innerHeight - 480),
+        width: 340,
+        maxHeight: '80vh',
+        overflowY: 'auto',
       }}
       onClick={e => e.stopPropagation()}
     >
       <div className="flex items-center justify-between mb-2 pb-2 border-b border-gray-700">
-        <span className="text-indigo-300 font-bold">Edit Note</span>
+        <span className="text-indigo-300 font-bold">
+          Edit {note.isRest ? 'Rest' : note.keys.length > 1 ? 'Chord' : 'Note'}
+          {note.staff != null && (
+            <span className="ml-2 text-[10px] text-gray-500">
+              {note.staff === 0 ? 'top staff' : 'bottom staff'}
+            </span>
+          )}
+        </span>
         <button onClick={onClose} className="text-gray-500 hover:text-gray-300">✕</button>
       </div>
 
       <div className="space-y-2">
+        {/* Chord tones — only when there are multiple */}
+        {!note.isRest && note.keys.length > 0 && (
+          <div>
+            <div className="text-gray-500 uppercase tracking-wider mb-1">Pitches in chord</div>
+            <div className="flex flex-wrap gap-1">
+              {note.keys.map((k, ki) => (
+                <span
+                  key={`${k}-${ki}`}
+                  className="inline-flex items-center gap-1 px-2 py-1 rounded bg-indigo-900/30 border border-indigo-700 text-indigo-200 font-mono"
+                >
+                  {k.toUpperCase()}{note.accidentals[ki] || ''}
+                  {note.keys.length > 1 && (
+                    <button
+                      onClick={() => onRemoveChordTone(ki)}
+                      className="ml-1 text-red-400 hover:text-red-300"
+                      title="Remove this tone"
+                    >
+                      ×
+                    </button>
+                  )}
+                </span>
+              ))}
+            </div>
+            <div className="text-[10px] text-gray-600 mt-1">
+              Tip: shift-click on the staff to add another pitch to this chord.
+            </div>
+          </div>
+        )}
+
         <div>
           <div className="text-gray-500 uppercase tracking-wider mb-1">Duration</div>
           <div className="flex flex-wrap gap-1">
@@ -1264,7 +1880,7 @@ function NoteEditPopup({
           </div>
         </div>
 
-        <div className="flex gap-3">
+        <div className="flex gap-3 flex-wrap">
           <label className="flex items-center gap-1 text-gray-300">
             <input type="checkbox" checked={note.dotted} onChange={e => onUpdate({ dotted: e.target.checked })} />
             Dotted
@@ -1273,78 +1889,133 @@ function NoteEditPopup({
             <input type="checkbox" checked={note.tripletGroup != null} onChange={e => onUpdate({ tripletGroup: e.target.checked ? Date.now() : undefined })} />
             Triplet
           </label>
+          {!note.isRest && (
+            <>
+              <label className="flex items-center gap-1 text-gray-300">
+                <input type="checkbox" checked={note.fermata} onChange={e => onUpdate({ fermata: e.target.checked })} />
+                Fermata
+              </label>
+              <label className="flex items-center gap-1 text-gray-300">
+                <input type="checkbox" checked={note.tieToNext} onChange={e => onUpdate({ tieToNext: e.target.checked })} />
+                Tie
+              </label>
+            </>
+          )}
           <label className="flex items-center gap-1 text-gray-300">
-            <input type="checkbox" checked={note.fermata} onChange={e => onUpdate({ fermata: e.target.checked })} />
-            Fermata
-          </label>
-          <label className="flex items-center gap-1 text-gray-300">
-            <input type="checkbox" checked={note.tieToNext} onChange={e => onUpdate({ tieToNext: e.target.checked })} />
-            Tie
+            <input type="checkbox" checked={note.isRest === true} onChange={e => onUpdate({ isRest: e.target.checked })} />
+            Rest
           </label>
         </div>
 
-        <div>
-          <div className="text-gray-500 uppercase tracking-wider mb-1">Accidental</div>
-          <div className="flex gap-1">
-            {(['', '#', 'b', 'n', '##', 'bb'] as Accid[]).map(a => (
-              <button
-                key={a || 'none'}
-                onClick={() => onUpdate({ accidentals: note.keys.map(() => a) })}
-                className="px-2 py-1 rounded text-xs font-bold"
-                style={{
-                  background: note.accidentals[0] === a ? '#6366f1' : '#1f1f3a',
-                  color: note.accidentals[0] === a ? 'white' : '#888',
-                }}
-              >
-                {a === '' ? '—' : a === 'n' ? '♮' : a === '#' ? '♯' : a === 'b' ? '♭' : a === '##' ? '𝄪' : '𝄫'}
-              </button>
-            ))}
-          </div>
-        </div>
+        {!note.isRest && (
+          <>
+            <div>
+              <div className="text-gray-500 uppercase tracking-wider mb-1">Accidental (top tone)</div>
+              <div className="flex gap-1">
+                {(['', '#', 'b', 'n', '##', 'bb'] as Accid[]).map(a => (
+                  <button
+                    key={a || 'none'}
+                    onClick={() => {
+                      // Update only the first key's accidental, leave chord tones alone
+                      const newAccs = [...note.accidentals]
+                      newAccs[0] = a
+                      onUpdate({ accidentals: newAccs })
+                    }}
+                    className="px-2 py-1 rounded text-xs font-bold"
+                    style={{
+                      background: note.accidentals[0] === a ? '#6366f1' : '#1f1f3a',
+                      color: note.accidentals[0] === a ? 'white' : '#888',
+                    }}
+                  >
+                    {a === '' ? '—' : a === 'n' ? '♮' : a === '#' ? '♯' : a === 'b' ? '♭' : a === '##' ? '𝄪' : '𝄫'}
+                  </button>
+                ))}
+              </div>
+            </div>
 
-        <div>
-          <div className="text-gray-500 uppercase tracking-wider mb-1">Articulation</div>
-          <div className="flex flex-wrap gap-1">
-            {(['none', 'staccato', 'accent', 'tenuto', 'marcato'] as Articul[]).map(a => (
-              <button
-                key={a}
-                onClick={() => onUpdate({ articulation: a })}
-                className="px-2 py-1 rounded text-xs"
-                style={{
-                  background: note.articulation === a ? '#6366f1' : '#1f1f3a',
-                  color: note.articulation === a ? 'white' : '#888',
-                }}
-              >
-                {a}
-              </button>
-            ))}
-          </div>
-        </div>
+            <div>
+              <div className="text-gray-500 uppercase tracking-wider mb-1">Articulation</div>
+              <div className="flex flex-wrap gap-1">
+                {(['none', 'staccato', 'accent', 'tenuto', 'marcato'] as Articul[]).map(a => (
+                  <button
+                    key={a}
+                    onClick={() => onUpdate({ articulation: a })}
+                    className="px-2 py-1 rounded text-xs"
+                    style={{
+                      background: note.articulation === a ? '#6366f1' : '#1f1f3a',
+                      color: note.articulation === a ? 'white' : '#888',
+                    }}
+                  >
+                    {a}
+                  </button>
+                ))}
+              </div>
+            </div>
 
-        <div>
-          <div className="text-gray-500 uppercase tracking-wider mb-1">Dynamic</div>
-          <div className="flex flex-wrap gap-1">
-            {(['none', 'pp', 'p', 'mp', 'mf', 'f', 'ff', 'fff'] as Dynamic[]).map(d => (
-              <button
-                key={d}
-                onClick={() => onUpdate({ dynamic: d })}
-                className="px-2 py-1 rounded text-xs font-bold italic"
-                style={{
-                  background: note.dynamic === d ? '#6366f1' : '#1f1f3a',
-                  color: note.dynamic === d ? 'white' : '#888',
-                }}
-              >
-                {d === 'none' ? '—' : d}
-              </button>
-            ))}
-          </div>
-        </div>
+            <div>
+              <div className="text-gray-500 uppercase tracking-wider mb-1">Dynamic</div>
+              <div className="flex flex-wrap gap-1">
+                {(['none', 'pp', 'p', 'mp', 'mf', 'f', 'ff', 'fff'] as Dynamic[]).map(d => (
+                  <button
+                    key={d}
+                    onClick={() => onUpdate({ dynamic: d })}
+                    className="px-2 py-1 rounded text-xs font-bold italic"
+                    style={{
+                      background: note.dynamic === d ? '#6366f1' : '#1f1f3a',
+                      color: note.dynamic === d ? 'white' : '#888',
+                    }}
+                  >
+                    {d === 'none' ? '—' : d}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <div className="text-gray-500 uppercase tracking-wider mb-1">Lyric (syllable)</div>
+              <input
+                type="text"
+                value={note.lyric || ''}
+                onChange={e => onUpdate({ lyric: e.target.value })}
+                placeholder="e.g. love, mer-, -cy"
+                className="w-full px-2 py-1.5 bg-[#1f1f3a] border border-[#3a3a55] rounded text-sm text-white"
+              />
+            </div>
+
+            <div>
+              <div className="text-gray-500 uppercase tracking-wider mb-1">Phrase Marks</div>
+              <div className="flex gap-1">
+                <button
+                  onClick={onStartSlur}
+                  className="px-2 py-1 rounded text-[11px] font-bold bg-[#1f1f3a] hover:bg-[#2d2d4f] text-emerald-300 border border-emerald-800"
+                  title="Start slur from this note — then click the end note"
+                >
+                  ⌒ Slur
+                </button>
+                <button
+                  onClick={onStartCresc}
+                  className="px-2 py-1 rounded text-[11px] font-bold bg-[#1f1f3a] hover:bg-[#2d2d4f] text-orange-300 border border-orange-800"
+                  title="Start crescendo from this note"
+                >
+                  &lt; cresc.
+                </button>
+                <button
+                  onClick={onStartDim}
+                  className="px-2 py-1 rounded text-[11px] font-bold bg-[#1f1f3a] hover:bg-[#2d2d4f] text-orange-300 border border-orange-800"
+                  title="Start decrescendo from this note"
+                >
+                  &gt; dim.
+                </button>
+              </div>
+            </div>
+          </>
+        )}
 
         <button
           onClick={onDelete}
           className="w-full mt-2 px-3 py-2 rounded bg-red-900/40 border border-red-700 text-red-300 hover:bg-red-900/60 font-bold"
         >
-          Delete Note
+          Delete {note.isRest ? 'Rest' : 'Note'}
         </button>
       </div>
     </div>
