@@ -149,18 +149,24 @@ export default function DrillMode() {
     try { localStorage.setItem(DRILL_PROGRESS_KEY, JSON.stringify(progressRef.current)) } catch {}
   }, [])
 
-  // ─── Mic tick — charge-decay pitch matching (PitchforksII pattern) ──
-  // Replaces the previous
-  // hard-reset silent lock. Accumulator builds while singing on-pitch and
-  // DECAYS (not resets) when off-pitch — forgiving of brief wobble. Reuses
-  // lockStartRef as the accumulator (ms 0..fullMs); PitchGuidance still
-  // reads lockProgress so the visual marker keeps working.
+  // ─── Mic tick — Pitchforks v1 pattern (THE canonical reference) ──
+  // Port from src/components/PitchDefender/Pitchforks.tsx:418-493.
+  // Two principles, both load-bearing:
+  //   1. Silent or low-confidence frames preserve the in-progress lock.
+  //      DO NOTHING. pitch.isActive flickers in normal singing.
+  //   2. ONLY a confidently wrong note (confidence >= 0.75 AND outside the
+  //      70-cent tolerance) hard-resets the lock.
+  // Reuses lockStartRef as the matchStart timestamp (Pitchforks v1 convention):
+  //   0  = not currently locking
+  //   > 0 = locking, value is performance.now() of first in-tolerance frame
+  //   -1 = post-fire cooldown (don't accept new locks for 600ms)
   useEffect(() => {
     if (inputMode !== 'mic' || phase !== 'answering' || !isListening) return
 
     const TICK_MS = 50
-    const DECAY_PER_SEC = 400         // ms drained per real second when off-pitch
-    const SILENT_DECAY_PER_SEC = 200  // slower drain when mic is silent
+    const HOLD_MS = 300
+    const TOLERANCE_CENTS = 70
+    const CONFIDENCE_FLOOR = 0.75
 
     const interval = setInterval(() => {
       if (processingRef.current) return
@@ -170,31 +176,38 @@ export default function DrillMode() {
         return
       }
 
-      const fullMs = lockDurationRef.current  // 600ms by default
-      const currentPitch = livePitchRef.current
-      let progressMs = lockStartRef.current
+      // Cooldown sentinel — wait it out
+      if (lockStartRef.current === -1) return
 
-      if (currentPitch?.isActive && currentPitch.frequency > 0) {
+      const p = livePitchRef.current
+      if (p?.isActive && p.confidence >= CONFIDENCE_FLOOR && p.frequency > 0) {
         const targetFreq = noteToFreq(currentNote)
-        const centsOff = octaveFoldedCents(currentPitch.frequency, targetFreq)
-        const isOn = Math.abs(centsOff) <= PITCH_ON_TOLERANCE_CENTS
-        if (isOn) {
-          progressMs = Math.min(fullMs, progressMs + TICK_MS)
+        const centsOff = octaveFoldedCents(p.frequency, targetFreq)
+        if (Math.abs(centsOff) <= TOLERANCE_CENTS) {
+          // IN tolerance — start or continue the lock
+          if (lockStartRef.current === 0) lockStartRef.current = performance.now()
+          if (lockStartRef.current > 0) {
+            const held = performance.now() - lockStartRef.current
+            const progress = Math.min(1, held / HOLD_MS)
+            setLockProgress(progress)
+            if (progress >= 1) {
+              // FIRE — set cooldown sentinel
+              lockStartRef.current = -1
+              setLockProgress(0)
+              setTimeout(() => { if (lockStartRef.current === -1) lockStartRef.current = 0 }, 600)
+              processAnswerRef.current(currentNote)
+            }
+          }
         } else {
-          progressMs = Math.max(0, progressMs - (DECAY_PER_SEC * TICK_MS) / 1000)
+          // CONFIDENTLY wrong — hard reset
+          if (lockStartRef.current > 0) {
+            lockStartRef.current = 0
+            setLockProgress(0)
+          }
         }
-      } else {
-        progressMs = Math.max(0, progressMs - (SILENT_DECAY_PER_SEC * TICK_MS) / 1000)
       }
-
-      lockStartRef.current = progressMs
-      setLockProgress(progressMs / fullMs)
-
-      if (progressMs >= fullMs) {
-        lockStartRef.current = 0
-        setLockProgress(0)
-        processAnswerRef.current(currentNote)
-      }
+      // else: silent or low confidence — DO NOTHING. preserve in-progress lock.
+      // (This is the load-bearing flicker fix from Pitchforks v1.)
     }, TICK_MS)
 
     return () => clearInterval(interval)
