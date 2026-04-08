@@ -821,10 +821,28 @@ export default function PitchDefender() {
 
           {/* ─── Studio & Practice Tools ─────────────────────────────── */}
           <div className="mt-8 flex flex-col items-center gap-3">
-            <p className="text-xs text-gray-600 uppercase tracking-widest">Studio & Practice</p>
-            <div className="flex gap-3 flex-wrap justify-center">
+            <p className="text-xs text-gray-500 uppercase tracking-widest">Studio &amp; Practice</p>
+            <p className="text-[11px] text-gray-600 max-w-xl text-center -mt-1 mb-1">
+              Each tool trains a different skill. Hover any card to see what it does — or jump in and try it.
+            </p>
+            <div className="flex gap-3 flex-wrap justify-center max-w-5xl">
+              <a
+                href="/pitch-defender/drill"
+                title="The flagship spaced-repetition note-recognition trainer. Hear a note, choose its name, and the system tracks your retention with FSRS scheduling — harder notes appear more often, mastered notes still recur so they don't decay. Click OR sing."
+                className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
+                style={{
+                  background: 'rgba(40, 60, 55, 0.85)',
+                  color: '#5dddd3',
+                  border: '2px solid #3FBFB5',
+                  boxShadow: '0 0 14px rgba(60,191,181,0.35)',
+                }}
+              >
+                Note Drill 🎓
+                <div className="text-[11px] font-normal mt-0.5 opacity-80">Hear → identify → spaced repetition. The flagship trainer.</div>
+              </a>
               <a
                 href="/pitch-defender/choir-practice"
+                title="Sing along to a full audition piece with guided pitch tracking. Lyrics scroll, your voice highlights the matching notes."
                 className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
                 style={{
                   background: 'rgba(99, 102, 241, 0.15)',
@@ -834,10 +852,11 @@ export default function PitchDefender() {
                 }}
               >
                 Choir Practice
-                <div className="text-xs font-normal mt-0.5 opacity-60">Guided sing-along coach</div>
+                <div className="text-[11px] font-normal mt-0.5 opacity-70">Sing along to a full song with pitch tracking.</div>
               </a>
               <a
                 href="/pitch-defender/rhythm"
+                title="Tap out rhythm patterns on the spacebar — no pitch needed. Builds tempo and timing in isolation."
                 className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
                 style={{
                   background: 'rgba(239, 68, 68, 0.1)',
@@ -846,10 +865,11 @@ export default function PitchDefender() {
                 }}
               >
                 Rhythm Clap
-                <div className="text-xs font-normal mt-0.5 opacity-60">Tap out rhythms</div>
+                <div className="text-[11px] font-normal mt-0.5 opacity-70">Tap rhythms on the spacebar. Tempo + timing only.</div>
               </a>
               <a
                 href="/pitch-defender/sight-reading"
+                title="Cold-read random sheet music passages — exactly what an audition asks you to do. Each round picks a new piece."
                 className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
                 style={{
                   background: 'rgba(234, 179, 8, 0.1)',
@@ -858,22 +878,11 @@ export default function PitchDefender() {
                 }}
               >
                 Sight Reading
-                <div className="text-xs font-normal mt-0.5 opacity-60">Cold-read audition prep</div>
-              </a>
-              <a
-                href="/pitch-defender/drill"
-                className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
-                style={{
-                  background: 'rgba(40, 60, 55, 0.6)',
-                  color: '#3FBFB5',
-                  border: '2px solid rgba(60, 191, 181, 0.4)',
-                }}
-              >
-                Note Drill
-                <div className="text-xs font-normal mt-0.5 opacity-60">SRS flashcard practice</div>
+                <div className="text-[11px] font-normal mt-0.5 opacity-70">Cold-read a new piece every round. Audition prep.</div>
               </a>
               <a
                 href="/pitch-defender/pitchforks"
+                title="Sing the matching note to fire lightning bolts at angry villagers carrying labeled pitchforks. The original interval-training arcade game."
                 className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
                 style={{
                   background: 'rgba(74, 222, 128, 0.1)',
@@ -883,10 +892,25 @@ export default function PitchDefender() {
                 }}
               >
                 Pitchforks
-                <div className="text-xs font-normal mt-0.5 opacity-60">Frankenstein interval game</div>
+                <div className="text-[11px] font-normal mt-0.5 opacity-70">Sing notes → zap labeled pitchforks. Interval arcade.</div>
+              </a>
+              <a
+                href="/pitch-defender/pitchforks-2"
+                title="Sprite-based v2 of Pitchforks. Frankenstein is the lightning rod, villagers approach from both sides. Side-view + first-person camera modes."
+                className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
+                style={{
+                  background: 'rgba(74, 222, 128, 0.18)',
+                  color: '#86efac',
+                  border: '2px solid rgba(74, 222, 128, 0.5)',
+                  fontFamily: 'monospace',
+                }}
+              >
+                Pitchforks II
+                <div className="text-[11px] font-normal mt-0.5 opacity-70">Sprite remake — Frankenstein storm rod. Side + FPS view.</div>
               </a>
               <a
                 href="/pitch-defender/retro"
+                title="Pixel-art Space Invaders for pitch identification. Sing OR click any alien's note — cannon auto-aims to the most-urgent matching alien. EASY mode caps difficulty for training; TRUE PLAY ramps faster."
                 className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
                 style={{
                   background: 'rgba(40, 40, 40, 0.8)',
@@ -896,22 +920,11 @@ export default function PitchDefender() {
                 }}
               >
                 Retro Blaster
-                <div className="text-xs font-normal mt-0.5 opacity-60">Pixel-art arcade</div>
-              </a>
-              <a
-                href="/pitch-defender/sheet-music"
-                className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
-                style={{
-                  background: 'rgba(40, 40, 60, 0.6)',
-                  color: '#94a3b8',
-                  border: '2px solid rgba(99, 102, 241, 0.3)',
-                }}
-              >
-                Sheet Music Studio
-                <div className="text-xs font-normal mt-0.5 opacity-60">Load &amp; study notation</div>
+                <div className="text-[11px] font-normal mt-0.5 opacity-70">Pixel Space Invaders. Sing any alien&apos;s note. EASY + TRUE.</div>
               </a>
               <a
                 href="/pitch-defender/note-runner"
+                title="Notes scroll right-to-left along the staff. When a note reaches the target zone, scrolling pauses until you sing the correct pitch. Self-paced accuracy drill — no time pressure."
                 className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
                 style={{
                   background: 'rgba(40, 40, 60, 0.6)',
@@ -920,10 +933,11 @@ export default function PitchDefender() {
                 }}
               >
                 Note Runner
-                <div className="text-xs font-normal mt-0.5 opacity-60">Sing scrolling melodies</div>
+                <div className="text-[11px] font-normal mt-0.5 opacity-70">Pause-and-wait staff scroll. Self-paced accuracy.</div>
               </a>
               <a
                 href="/pitch-defender/synthesia"
+                title="Synthesia-style falling note blocks land on a piano keyboard. Match each block as it lands. Reads any song from the library."
                 className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
                 style={{
                   background: 'rgba(40, 40, 60, 0.6)',
@@ -932,10 +946,37 @@ export default function PitchDefender() {
                 }}
               >
                 Synthesia Runner
-                <div className="text-xs font-normal mt-0.5 opacity-60">Falling blocks → keyboard</div>
+                <div className="text-[11px] font-normal mt-0.5 opacity-70">Falling blocks → piano keyboard. Match as they land.</div>
+              </a>
+              <a
+                href="/pitch-defender/sheet-music"
+                title="Load any MusicXML file and study the rendered staff notation. Reference tool, not a practice game — read the music, prepare to sing it elsewhere."
+                className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
+                style={{
+                  background: 'rgba(40, 40, 60, 0.6)',
+                  color: '#94a3b8',
+                  border: '2px solid rgba(99, 102, 241, 0.3)',
+                }}
+              >
+                Sheet Music Studio
+                <div className="text-[11px] font-normal mt-0.5 opacity-70">Load &amp; study notation. Reference, not practice.</div>
+              </a>
+              <a
+                href="/pitch-defender/vocal-trainer"
+                title="Diction training. Drag-drop a recording, BasicPitch extracts the melody, then practice in dichotic mode — recorded voice in your LEFT ear, your live mic in your RIGHT ear. Saves every track to the Synthesia library too."
+                className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
+                style={{
+                  background: 'rgba(20, 100, 130, 0.25)',
+                  color: '#67e8f9',
+                  border: '2px solid rgba(34, 211, 238, 0.45)',
+                }}
+              >
+                Vocal Trainer
+                <div className="text-[11px] font-normal mt-0.5 opacity-70">Diction practice. Upload audio → dichotic L/R sing-along.</div>
               </a>
               <a
                 href="/pitch-defender/composer"
+                title="Type music in by hand: notes, lyrics, chords, slurs, dynamics. Saves once and is read by every other game. The canonical score path."
                 className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
                 style={{
                   background: 'rgba(99, 102, 241, 0.15)',
@@ -944,7 +985,7 @@ export default function PitchDefender() {
                 }}
               >
                 Composer
-                <div className="text-xs font-normal mt-0.5 opacity-60">Type music in by hand · save once, use everywhere</div>
+                <div className="text-[11px] font-normal mt-0.5 opacity-70">Type music in by hand. Saves once, used by every game.</div>
               </a>
             </div>
           </div>
@@ -953,16 +994,17 @@ export default function PitchDefender() {
           <div className="mt-6 flex flex-col items-center gap-2">
             <button
               onClick={() => setShowSettings(true)}
-              className="text-xs text-gray-500 hover:text-gray-300 transition-colors"
+              className="text-xs text-gray-400 hover:text-gray-200 transition-colors"
             >
               Parent / Teacher Settings
             </button>
-            <div className="flex gap-3 text-[10px] text-gray-700">
-              <a href="/pitch-defender/note-entry" className="hover:text-gray-500 transition-colors">Note Entry</a>
-              <span>&middot;</span>
-              <a href="/pitch-defender/staff-tester" className="hover:text-gray-500 transition-colors">Staff Tester</a>
-              <span>&middot;</span>
-              <a href="/pitch-defender/crepe-benchmark" className="hover:text-gray-500 transition-colors">Pitch Benchmark</a>
+            <div className="flex gap-3 text-[11px] text-gray-500">
+              <span className="text-gray-600 uppercase tracking-wider">Dev tools:</span>
+              <a href="/pitch-defender/note-entry" className="hover:text-gray-300 transition-colors">Note Entry</a>
+              <span className="text-gray-700">&middot;</span>
+              <a href="/pitch-defender/staff-tester" className="hover:text-gray-300 transition-colors">Staff Tester</a>
+              <span className="text-gray-700">&middot;</span>
+              <a href="/pitch-defender/crepe-benchmark" className="hover:text-gray-300 transition-colors">Pitch Benchmark</a>
             </div>
           </div>
         </div>
