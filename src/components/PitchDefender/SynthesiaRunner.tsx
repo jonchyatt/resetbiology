@@ -95,6 +95,26 @@ interface FallingBlock {
   height: number        // block height in px
   state: 'falling' | 'waiting' | 'matched' | 'cleared'
   matchProgress: number // 0..1 (small hold to confirm)
+  matchFlash: number    // seconds remaining of post-hit glow
+}
+
+// Sparkle particle for correct-hit feedback (Synthesia-style)
+interface Particle {
+  x: number
+  y: number
+  vx: number
+  vy: number
+  life: number
+  maxLife: number
+  hue: number
+  size: number
+}
+
+// Per-key flash state — keyboard key lights up briefly when struck
+interface KeyFlash {
+  semitones: number
+  remaining: number
+  hue: number
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────
@@ -115,6 +135,9 @@ export default function SynthesiaRunner() {
   const phaseRef = useRef<Phase>('menu')
   const speedRef = useRef(0.75)
   const practiceRef = useRef(true)
+  // Visual feedback for correct hits — Synthesia-style sparkle + key flash
+  const particlesRef = useRef<Particle[]>([])
+  const keyFlashesRef = useRef<KeyFlash[]>([])
 
   // Tunables (persisted via React state for UI control)
   const [phase, setPhase] = useState<Phase>('menu')
@@ -136,8 +159,63 @@ export default function SynthesiaRunner() {
   const [showPartPicker, setShowPartPicker] = useState(false)
 
   // Compositions saved from the Composer tool (read from localStorage)
+  // Composer's canonical format is { measures: [{ notes: [{ keys, accidentals,
+  // duration, dotted, tripletGroup, isRest }] }] } — NOT a flat notes[]. The
+  // previous reader expected `comp.notes` and silently dropped every save.
   const [composedSongs, setComposedSongs] = useState<{ name: string; notes: SongNote[]; description: string }[]>([])
   useEffect(() => {
+    const STEP_TO_SEMI: Record<string, number> = { c: 0, d: 2, e: 4, f: 5, g: 7, a: 9, b: 11 }
+    const DUR_BEATS: Record<string, number> = { w: 4, h: 2, q: 1, '8': 0.5, '16': 0.25, '32': 0.125 }
+    const vexKeyToSemiC4 = (key: string, accidental?: string): number => {
+      const m = key.match(/^([a-g])(#|b)?\/(-?\d+)$/i)
+      if (!m) return 0
+      const step = m[1].toLowerCase()
+      const inline = m[2]
+      const oct = parseInt(m[3])
+      let semi = (STEP_TO_SEMI[step] ?? 0) + (oct - 4) * 12
+      if (inline === '#') semi += 1
+      if (inline === 'b') semi -= 1
+      if (accidental === '#') semi += 1
+      if (accidental === 'b') semi -= 1
+      return semi
+    }
+    const flattenComposerNotes = (comp: any): SongNote[] => {
+      // New canonical format: walk measures → notes
+      if (Array.isArray(comp.measures)) {
+        const flat: SongNote[] = []
+        for (const m of comp.measures) {
+          if (!Array.isArray(m.notes)) continue
+          for (const n of m.notes) {
+            if (n.isRest) continue
+            if (!Array.isArray(n.keys) || n.keys.length === 0) continue
+            // Topmost (highest) pitch in a chord = melody line
+            let bestSemi = -Infinity
+            for (let i = 0; i < n.keys.length; i++) {
+              const s = vexKeyToSemiC4(n.keys[i], n.accidentals?.[i])
+              if (s > bestSemi) bestSemi = s
+            }
+            let beats = DUR_BEATS[n.duration] ?? 1
+            if (n.dotted) beats *= 1.5
+            if (n.tripletGroup != null) beats *= 2 / 3
+            // Clamp to keyboard range by octave-shifting
+            while (bestSemi < KEYBOARD_LOW) bestSemi += 12
+            while (bestSemi > KEYBOARD_HIGH) bestSemi -= 12
+            flat.push([bestSemi, beats])
+          }
+        }
+        return flat
+      }
+      // Legacy flat format kept as fallback
+      if (Array.isArray(comp.notes)) {
+        return comp.notes.map((n: any) => {
+          let v = n.semitones
+          while (v < KEYBOARD_LOW) v += 12
+          while (v > KEYBOARD_HIGH) v -= 12
+          return [v, n.beats || 1] as SongNote
+        })
+      }
+      return []
+    }
     try {
       const out: { name: string; notes: SongNote[]; description: string }[] = []
       for (let i = 0; i < localStorage.length; i++) {
@@ -145,18 +223,12 @@ export default function SynthesiaRunner() {
         if (!key || !key.startsWith('pd_composed_')) continue
         try {
           const comp = JSON.parse(localStorage.getItem(key) || '{}')
-          if (!Array.isArray(comp.notes) || comp.notes.length === 0) continue
-          // Composer notes have { semitones, beats } — clamp to keyboard range
-          const clamped: SongNote[] = comp.notes.map((n: any) => {
-            let v = n.semitones
-            while (v < KEYBOARD_LOW) v += 12
-            while (v > KEYBOARD_HIGH) v -= 12
-            return [v, n.beats || 1] as SongNote
-          })
+          const notes = flattenComposerNotes(comp)
+          if (notes.length === 0) continue
           out.push({
-            name: `★ ${comp.title}`,
-            notes: clamped,
-            description: `Composed · ${clamped.length} notes`,
+            name: `★ ${comp.title || 'Untitled'}`,
+            notes,
+            description: `Composed · ${notes.length} notes`,
           })
         } catch {}
       }
@@ -255,11 +327,50 @@ export default function SynthesiaRunner() {
         height: blockH,
         state: 'falling',
         matchProgress: 0,
+        matchFlash: 0,
       })
       cursorY -= (blockH + BLOCK_GAP)
     }
     return out
   }, [])
+
+  // ─── Sparkle / hit feedback helpers ───────────────────────────────────────
+  // Synthesia-style: when a note is matched, burst particles + flash the key
+  // + glow the block briefly. Hue inherits the block's color so each note has
+  // its own visual signature.
+  const spawnSparkles = useCallback((x: number, y: number, hue: number, count = 28) => {
+    for (let i = 0; i < count; i++) {
+      const ang = Math.random() * Math.PI * 2
+      const sp = 60 + Math.random() * 240
+      particlesRef.current.push({
+        x, y,
+        vx: Math.cos(ang) * sp,
+        vy: Math.sin(ang) * sp - 80, // upward bias
+        life: 0,
+        maxLife: 0.5 + Math.random() * 0.5,
+        hue: hue + (Math.random() - 0.5) * 50,
+        size: 2 + Math.random() * 3,
+      })
+    }
+  }, [])
+
+  const flashKey = useCallback((semitones: number, hue: number) => {
+    keyFlashesRef.current.push({ semitones, remaining: 0.45, hue })
+  }, [])
+
+  const onBlockMatched = useCallback((b: FallingBlock) => {
+    const colorInfo = NOTE_COLORS[b.name]
+    const hue = colorInfo?.hue ?? (b.semitones * 30) % 360
+    const whiteKeys = getWhiteKeys()
+    const keyW = CANVAS_W / whiteKeys.length
+    const keyIdx = whiteKeyIndexFor(b.semitones)
+    const cx = (keyIdx >= 0 ? keyIdx * keyW + keyW / 2 : CANVAS_W / 2)
+    const cy = b.y + b.height / 2
+    spawnSparkles(cx, cy, hue, 32)
+    spawnSparkles(cx, HIT_LINE_Y, hue, 18) // second burst at the hit line
+    flashKey(b.semitones, hue)
+    b.matchFlash = 0.45
+  }, [spawnSparkles, flashKey])
 
   // ─── Start game ───────────────────────────────────────────────────────────
   const startGame = useCallback(async (useTutorial = false) => {
@@ -395,6 +506,7 @@ export default function SynthesiaRunner() {
         if (currentBlock.matchProgress >= HOLD_DURATION_MS) {
           // MATCH!
           currentBlock.state = 'matched'
+          onBlockMatched(currentBlock)
           notesHitRef.current++
           scoreRef.current += 100
           currentIdxRef.current++
@@ -453,6 +565,7 @@ export default function SynthesiaRunner() {
         const wasHit = currentBlock.matchProgress >= hitThreshold
         if (wasHit) {
           currentBlock.state = 'matched'
+          onBlockMatched(currentBlock)
           notesHitRef.current++
           // Score scales with how cleanly the note was held
           const cleanness = Math.min(1, currentBlock.matchProgress / (hitThreshold * 2))
@@ -495,6 +608,26 @@ export default function SynthesiaRunner() {
           }
         }
       }
+    }
+
+    // ── Update sparkles + per-key flashes (Synthesia-style hit feedback) ──
+    const ps = particlesRef.current
+    for (let i = ps.length - 1; i >= 0; i--) {
+      const p = ps[i]
+      p.life += dt
+      if (p.life >= p.maxLife) { ps.splice(i, 1); continue }
+      p.x += p.vx * dt
+      p.y += p.vy * dt
+      p.vy += 520 * dt // gravity
+    }
+    const kf = keyFlashesRef.current
+    for (let i = kf.length - 1; i >= 0; i--) {
+      kf[i].remaining -= dt
+      if (kf[i].remaining <= 0) kf.splice(i, 1)
+    }
+    // Decay each block's matched-glow timer
+    for (const b of blocks) {
+      if (b.matchFlash > 0) b.matchFlash = Math.max(0, b.matchFlash - dt)
     }
 
     // ── Render ──
@@ -575,6 +708,22 @@ export default function SynthesiaRunner() {
         ctx.fillRect(blockX - 6, b.y - 6, w + 12, b.height + 12)
       }
 
+      // BIG correct-hit glow burst (Synthesia-style success feedback)
+      if (b.matchFlash > 0) {
+        const t = b.matchFlash / 0.45
+        const ringR = (1 - t) * 60 + 10
+        ctx.save()
+        ctx.globalAlpha = t * 0.9
+        ctx.strokeStyle = `hsla(${hue}, 100%, 75%, 1)`
+        ctx.lineWidth = 4
+        ctx.beginPath()
+        ctx.arc(blockX + w / 2, b.y + b.height / 2, ringR, 0, Math.PI * 2)
+        ctx.stroke()
+        ctx.fillStyle = `hsla(60, 100%, 90%, ${t * 0.8})`
+        ctx.fillRect(blockX - 4, b.y - 4, w + 8, b.height + 8)
+        ctx.restore()
+      }
+
       // Block fill (rounded rectangle)
       const isMatched = b.state === 'matched'
       const fillAlpha = isMatched ? 0.4 : (b.state === 'waiting' ? 1.0 : 0.85)
@@ -614,10 +763,25 @@ export default function SynthesiaRunner() {
       }
     }
 
+    // Sparkle particles (drawn on top of blocks, below the UI bar)
+    ctx.save()
+    ctx.globalCompositeOperation = 'lighter'
+    for (const p of particlesRef.current) {
+      const a = 1 - (p.life / p.maxLife)
+      ctx.fillStyle = `hsla(${p.hue}, 100%, 72%, ${a})`
+      ctx.fillRect(p.x - p.size / 2, p.y - p.size / 2, p.size, p.size)
+      // small white core for the brightest sparkles
+      if (p.size > 3) {
+        ctx.fillStyle = `rgba(255,255,255,${a * 0.9})`
+        ctx.fillRect(p.x - 0.5, p.y - 0.5, 1, 1)
+      }
+    }
+    ctx.restore()
+
     // Pitch measurement bar (horizontal, sits just above the keyboard)
     drawPitchBar(ctx, pitch, blocks[currentIdx])
 
-    // Keyboard at bottom
+    // Keyboard at bottom (passes flashes so struck keys glow)
     drawKeyboard(ctx, whiteKeys, keyW, blocks[currentIdx])
   }, [])
 
@@ -811,13 +975,27 @@ export default function SynthesiaRunner() {
       const x = i * keyW
       const isTarget = currentBlock?.state === 'waiting' && whiteKeyIndexFor(currentBlock.semitones) === i
 
+      // Per-key correct-hit flash (Synthesia-style: struck key glows briefly)
+      const flash = keyFlashesRef.current.find(f => f.semitones === semi)
+      const flashAmt = flash ? flash.remaining / 0.45 : 0
+
       // Key body
-      if (isTarget) {
+      if (flashAmt > 0) {
+        ctx.fillStyle = `hsla(${flash!.hue}, 100%, ${65 + flashAmt * 25}%, 1)`
+      } else if (isTarget) {
         ctx.fillStyle = 'rgba(100,200,255,0.85)'
       } else {
         ctx.fillStyle = '#f4f4f8'
       }
       ctx.fillRect(x + 1, keyboardY + 4, keyW - 2, KEYBOARD_H - 8)
+      // Glow halo above the flashed key
+      if (flashAmt > 0) {
+        ctx.save()
+        ctx.globalAlpha = flashAmt * 0.6
+        ctx.fillStyle = `hsla(${flash!.hue}, 100%, 80%, 1)`
+        ctx.fillRect(x - 4, keyboardY - 12, keyW + 8, 16)
+        ctx.restore()
+      }
 
       // Key border
       ctx.strokeStyle = '#1a1a2a'
@@ -846,8 +1024,16 @@ export default function SynthesiaRunner() {
       const blackSemi = semi + 1
       const x = (i + 1) * keyW - blackKeyW / 2
       const isTarget = currentBlock?.state === 'waiting' && currentBlock.semitones === blackSemi
+      const flash = keyFlashesRef.current.find(f => f.semitones === blackSemi)
+      const flashAmt = flash ? flash.remaining / 0.45 : 0
 
-      ctx.fillStyle = isTarget ? 'rgba(100,200,255,0.95)' : '#0a0a14'
+      if (flashAmt > 0) {
+        ctx.fillStyle = `hsla(${flash!.hue}, 100%, ${50 + flashAmt * 30}%, 1)`
+      } else if (isTarget) {
+        ctx.fillStyle = 'rgba(100,200,255,0.95)'
+      } else {
+        ctx.fillStyle = '#0a0a14'
+      }
       ctx.fillRect(x, keyboardY + 4, blackKeyW, blackKeyH)
       ctx.strokeStyle = '#2a2a3a'
       ctx.strokeRect(x, keyboardY + 4, blackKeyW, blackKeyH)
@@ -1111,16 +1297,16 @@ export default function SynthesiaRunner() {
           }}
         />
 
-        {/* Tap hint banner */}
-        <div className="absolute left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-[10px] font-semibold tracking-wider"
+        {/* Tap hint banner — moved to top-right of canvas so it never overlaps
+            the pitch bar / vocal target feedback that lives above the keyboard. */}
+        <div className="absolute right-2 top-2 px-3 py-1 rounded-full text-[10px] font-semibold tracking-wider"
           style={{
-            top: FALL_AREA_H - 30,
             background: 'rgba(8,8,15,0.85)',
             border: '1px solid rgba(100,200,255,0.4)',
             color: '#7dd3fc',
             pointerEvents: 'none',
           }}>
-          TAP ANY KEY TO HEAR IT
+          TAP A KEY TO HEAR IT
         </div>
 
         {/* Old vertical right-side hint bar removed — replaced by canvas-drawn
