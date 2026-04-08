@@ -29,6 +29,7 @@ import { initAudio, loadPianoSamples, playPianoNote } from './audioEngine'
 
 const FSRS_KEY = 'pitch_fsrs_memory'
 const TUTORIAL_KEY = 'retro_tutorial_seen'
+const RETRO_DIFFICULTY_KEY = 'retro_difficulty'
 const W = 480      // logical width — bigger for readability
 const H = 320      // logical height
 const ALIEN_W = 24
@@ -37,10 +38,8 @@ const PLAYER_W = 28
 const PLAYER_H = 14
 const LASER_W = 3
 const LASER_H = 12
-const DESCENT_SPEED = 6   // pixels per second base
 const LASER_SPEED = 480   // pixels per second
 const INITIAL_UNLOCK = 4  // start with 4 notes (C4, D4, E4, F4)
-const MAX_ALIENS = 15
 const STARTING_SHIELDS = 5
 
 // Mic charge mechanic — ported from PitchforksII (on-pitch accumulates, off-pitch decays)
@@ -102,6 +101,15 @@ interface Particle {
   hue: number
 }
 
+type Difficulty = 'easy' | 'true'
+
+interface WaveParams {
+  alienCount: number
+  maxConcurrent: number
+  descentSpeed: number   // px/sec
+  spawnInterval: number  // ms between spawns
+}
+
 interface GameState {
   aliens: Alien[]
   lasers: Laser[]
@@ -123,6 +131,12 @@ interface GameState {
   // Mic charge mechanic
   chargeProgress: number // 0..CHARGE_FULL_MS — accumulated on-pitch time
   pitchHint: 'on' | 'low' | 'high' | null  // current singer position vs target
+  // Difficulty + staggered spawner (Phase 3)
+  difficulty: Difficulty
+  spawnQueue: string[]         // notes still to spawn this wave
+  spawnedThisWave: number      // total aliens spawned so far this wave
+  alienCountThisWave: number   // total this wave will spawn
+  nextSpawnAt: number          // performance.now() target for next spawn
 }
 
 // ─── Pixel Sprite Data (1-bit bitmaps) ──────────────────────────────────────
@@ -294,6 +308,86 @@ function shuffle<T>(arr: T[], seed: number): T[] {
   return a
 }
 
+// ─── Difficulty curve (Codex boardroom verdict) ─────────────────────────────
+// EASY: gentle training. Every wave must be beatable. Caps concurrency AND
+//       descent speed instead of compounding both.
+// TRUE: harder play mode. Faster ramp, more concurrent, no fail-safe.
+function waveParams(wave: number, difficulty: Difficulty): WaveParams {
+  if (difficulty === 'easy') {
+    return {
+      alienCount:    Math.min(2 + Math.floor((wave - 1) / 2), 7),
+      maxConcurrent: Math.min(2 + Math.floor((wave - 1) / 3), 4),
+      descentSpeed:  Math.min(4 + 0.6 * (wave - 1), 8),
+      spawnInterval: 1100,
+    }
+  }
+  return {
+    alienCount:    Math.min(3 + wave, 12),
+    maxConcurrent: Math.min(3 + Math.floor((wave - 1) / 2), 7),
+    descentSpeed:  Math.min(5.5 + 1.1 * (wave - 1), 14),
+    spawnInterval: 800,
+  }
+}
+
+// ─── Spawn lane picker ──────────────────────────────────────────────────────
+// Aliens spawn one at a time (not in formation). 5 evenly-spaced lanes; pick
+// the lane whose topmost alien is FARTHEST DOWN (or empty). Skip lanes whose
+// topmost alien is still too close to the spawn point to avoid overlap.
+const SPAWN_LANES_X = [W * 0.14, W * 0.30, W * 0.46, W * 0.62, W * 0.86]
+const SPAWN_Y = 70
+const SPAWN_LANE_GAP = 16  // min vertical clearance from existing alien in lane
+
+function pickSpawnX(aliens: Alien[], laneOrderSeed: number): number | null {
+  // Score each lane by topmost alien y (or H if empty). Higher score = more room.
+  // Randomize the iteration order for visual variety so equal-score lanes don't always win the same way.
+  const order = shuffle([0, 1, 2, 3, 4], laneOrderSeed)
+  let bestLane = -1
+  let bestY = -Infinity
+  for (const i of order) {
+    const lx = SPAWN_LANES_X[i]
+    let topY = H  // empty lane = no obstruction
+    for (const a of aliens) {
+      if (!a.alive) continue
+      if (Math.abs(a.x + ALIEN_W / 2 - lx) < ALIEN_W) {
+        if (a.y < topY) topY = a.y
+      }
+    }
+    // Disallow lanes where the topmost alien is still too fresh
+    if (topY < SPAWN_Y + ALIEN_H + SPAWN_LANE_GAP) continue
+    if (topY > bestY) { bestY = topY; bestLane = i }
+  }
+  if (bestLane < 0) return null
+  return Math.floor(SPAWN_LANES_X[bestLane] - ALIEN_W / 2)
+}
+
+// ─── Wave queue builder ─────────────────────────────────────────────────────
+// Phase 3: simple deterministic shuffle of unlocked notes.
+// Phase 4 will replace this with FSRS-weighted selection.
+function buildWaveQueue(gs: GameState): void {
+  const params = waveParams(gs.wave, gs.difficulty)
+  const pool = gs.unlockedNotes
+  const queue: string[] = []
+  if (params.alienCount <= pool.length) {
+    const shuffled = shuffle(pool, gs.wave * 7919)
+    for (let i = 0; i < params.alienCount; i++) queue.push(shuffled[i])
+  } else {
+    queue.push(...pool)
+    while (queue.length < params.alienCount) {
+      const extra = shuffle(pool, gs.wave * 7919 + queue.length)
+      for (let i = 0; i < extra.length && queue.length < params.alienCount; i++) {
+        queue.push(extra[i])
+      }
+    }
+    const finalOrder = shuffle(queue, gs.wave * 104729)
+    queue.length = 0
+    queue.push(...finalOrder)
+  }
+  gs.spawnQueue = queue
+  gs.spawnedThisWave = 0
+  gs.alienCountThisWave = params.alienCount
+  gs.nextSpawnAt = performance.now() + (gs.waveIntroTimer * 1000) + 600
+}
+
 // ─── Component ──────────────────────────────────────────────────────────────
 
 export default function RetroBlaster() {
@@ -306,6 +400,7 @@ export default function RetroBlaster() {
 
   const [phase, setPhase] = useState<Phase>('menu')
   const [inputMode, setInputMode] = useState<InputMode>('click')
+  const [difficulty, setDifficulty] = useState<Difficulty>('easy')
   const [displayScore, setDisplayScore] = useState(0)
   const [displayWave, setDisplayWave] = useState(0)
   const [displayCombo, setDisplayCombo] = useState(0)
@@ -317,84 +412,29 @@ export default function RetroBlaster() {
   const { isListening, startListening, stopListening, pitchRef: livePitchRef } = usePitchDetection({ noiseGateDb: -45 })
   const hitProcessingRef = useRef(false)
 
-  // Load FSRS + piano samples
+  // Load FSRS + piano samples + persisted difficulty
   useEffect(() => {
     try {
       const raw = localStorage.getItem(FSRS_KEY)
       if (raw) fsrsRef.current = JSON.parse(raw)
     } catch {}
+    try {
+      const d = localStorage.getItem(RETRO_DIFFICULTY_KEY)
+      if (d === 'easy' || d === 'true') setDifficulty(d)
+    } catch {}
     loadPianoSamples()
   }, [])
 
-  // ─── Spawn Wave ───────────────────────────────────────────────────────
-  // Wave 1 = 1 alien, wave 2 = 2 aliens, etc, capped at MAX_ALIENS.
-  // Variety: ensure all unlocked notes appear (round-robin) before repeats.
-  const spawnWave = useCallback((gs: GameState) => {
-    const aliens: Alien[] = []
-    const count = Math.min(gs.wave, MAX_ALIENS)
-    const pool = gs.unlockedNotes
-
-    // Build a deterministic varied note sequence:
-    // 1. Take all unlocked notes (each once)
-    // 2. Pad with shuffled extras until count is met
-    // 3. Shuffle the whole list with a wave-seeded RNG
-    const notes: string[] = []
-    if (count <= pool.length) {
-      // Fewer aliens than notes — just pick a varied subset
-      const shuffled = shuffle(pool, gs.wave * 7919)
-      for (let i = 0; i < count; i++) notes.push(shuffled[i])
-    } else {
-      // More aliens than notes — start with one of each, then fill
-      notes.push(...pool)
-      while (notes.length < count) {
-        const extra = shuffle(pool, gs.wave * 7919 + notes.length)
-        for (let i = 0; i < extra.length && notes.length < count; i++) {
-          notes.push(extra[i])
-        }
-      }
-      // Final shuffle for visual variety (active alien won't always be leftmost)
-      const finalOrder = shuffle(notes, gs.wave * 104729)
-      notes.length = 0
-      notes.push(...finalOrder)
-    }
-
-    // Layout: try to fit in rows of 5; vertical position scales with wave
-    const cols = Math.min(5, count)
-    const rows = Math.ceil(count / cols)
-    const rowSpacing = ALIEN_H + 14
-    const colSpacing = ALIEN_W + 22
-    const totalW = cols * colSpacing - 22
-    const startX = Math.floor((W - totalW) / 2)
-    const startY = 70
-
-    for (let i = 0; i < count; i++) {
-      const r = Math.floor(i / cols)
-      const c = i % cols
-      const note = notes[i]
-      const color = NOTE_COLORS[note]
-      aliens.push({
-        x: startX + c * colSpacing,
-        y: startY + r * rowSpacing,
-        note,
-        hue: color?.hue ?? 0,
-        alive: true,
-        frame: (r + c) % 2,
-        hitTimer: 0,
-      })
-    }
-
-    gs.aliens = aliens
-    // Spotlight = most urgent alive alien (any-target aim selects from any matching note,
-    // but the spotlight tells the player which one is most pressing).
-    gs.activeIdx = pickSpotlightIdx(aliens, gs.playerX)
-    // Play the spotlighted alien's note
-    if (gs.activeIdx >= 0) {
-      const spotlightNote = aliens[gs.activeIdx].note
-      setTimeout(() => {
-        playPianoNote(spotlightNote)
-        notePlayTimeRef.current = Date.now()
-      }, 600)
-    }
+  // ─── Begin Wave ────────────────────────────────────────────────────────
+  // Builds the wave queue (notes still to spawn) and clears any dead bodies
+  // from the previous wave. Aliens are NOT spawned here — the spawner tick
+  // inside gameLoop handles that staggered over time per waveParams().
+  const beginWave = useCallback((gs: GameState) => {
+    gs.aliens = []
+    gs.activeIdx = -1
+    gs.chargeProgress = 0
+    gs.pitchHint = null
+    buildWaveQueue(gs)
   }, [])
 
   // ─── Build Initial Game State ──────────────────────────────────────────
@@ -428,7 +468,7 @@ export default function RetroBlaster() {
       maxCombo: 0,
       wave: 1,
       cityHealth: STARTING_SHIELDS,
-      activeIdx: 0,
+      activeIdx: -1,
       unlockedNotes: unlocked,
       consecutiveCorrect: 0,
       selectedNote: null,
@@ -438,8 +478,13 @@ export default function RetroBlaster() {
       wrongTimer: 0,
       chargeProgress: 0,
       pitchHint: null,
+      difficulty,
+      spawnQueue: [],
+      spawnedThisWave: 0,
+      alienCountThisWave: 0,
+      nextSpawnAt: 0,
     }
-  }, [])
+  }, [difficulty])
 
   // ─── Start Game ───────────────────────────────────────────────────────
   const startGame = useCallback(() => {
@@ -456,11 +501,11 @@ export default function RetroBlaster() {
     setDisplayCombo(0)
     setDisplayUnlocked(gs.unlockedNotes)
 
-    spawnWave(gs)
+    beginWave(gs)
     lastTimeRef.current = performance.now()
     gameLoop()
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inputMode, spawnWave, buildInitialState])
+  }, [inputMode, beginWave, buildInitialState])
 
   const handleInsertCoin = useCallback(() => {
     let seen = false
@@ -610,8 +655,48 @@ export default function RetroBlaster() {
       if (gs.wrongTimer <= 0) gs.wrongMessage = ''
     }
 
-    // Alien descent
-    const speed = DESCENT_SPEED + gs.wave * 1.5
+    // ── Spawner tick: stagger aliens into the field per waveParams ──
+    // Spawns one alien at a time when the field is below maxConcurrent and the
+    // next-spawn cooldown has elapsed. The first alien of each wave plays its
+    // note and becomes the spotlight so the player has an immediate target.
+    const params = waveParams(gs.wave, gs.difficulty)
+    if (gs.spawnQueue.length > 0 && gs.waveIntroTimer <= 0 && now >= gs.nextSpawnAt) {
+      const aliveCount = gs.aliens.filter(a => a.alive).length
+      if (aliveCount < params.maxConcurrent) {
+        const x = pickSpawnX(gs.aliens, gs.wave * 31 + gs.spawnedThisWave)
+        if (x !== null) {
+          const note = gs.spawnQueue.shift()!
+          const colorInfo = NOTE_COLORS[note]
+          gs.aliens.push({
+            x,
+            y: SPAWN_Y,
+            note,
+            hue: colorInfo?.hue ?? 0,
+            alive: true,
+            frame: gs.spawnedThisWave % 2,
+            hitTimer: 0,
+          })
+          gs.spawnedThisWave++
+          gs.nextSpawnAt = now + params.spawnInterval
+
+          // First spawn of the wave: refresh spotlight + play the piano cue
+          if (gs.spawnedThisWave === 1) {
+            gs.activeIdx = gs.aliens.length - 1
+            const cueNote = note
+            setTimeout(() => {
+              const cur = stateRef.current
+              if (cur && cur.aliens.some(a => a.alive && a.note === cueNote)) {
+                playPianoNote(cueNote)
+                notePlayTimeRef.current = Date.now()
+              }
+            }, 200)
+          }
+        }
+      }
+    }
+
+    // Alien descent (uses difficulty-aware speed from waveParams)
+    const speed = params.descentSpeed
     for (const alien of gs.aliens) {
       if (!alien.alive && alien.hitTimer <= 0) continue
       if (alien.hitTimer > 0) {
@@ -707,12 +792,13 @@ export default function RetroBlaster() {
       }
     }
 
-    // Wave complete check
-    if (gs.aliens.length > 0 && gs.aliens.every(a => !a.alive && a.hitTimer <= 0)) {
+    // Wave complete check — queue empty AND no alive aliens AND no exploding ones
+    if (gs.spawnQueue.length === 0 && gs.aliens.length > 0 &&
+        gs.aliens.every(a => !a.alive && a.hitTimer <= 0)) {
       gs.wave++
       gs.waveIntroTimer = 1.6
       setDisplayWave(gs.wave)
-      spawnWave(gs)
+      beginWave(gs)
     }
 
     // ── Mic mode — any-target charge-decay pitch matching ──
@@ -778,7 +864,7 @@ export default function RetroBlaster() {
       ctx.fillText(`WAVE ${gs.wave}`, W / 2, H / 2 - 8)
       ctx.fillStyle = '#3FBFB5'
       ctx.font = 'bold 12px monospace'
-      const count = Math.min(gs.wave, MAX_ALIENS)
+      const count = gs.alienCountThisWave
       ctx.fillText(`${count} ${count === 1 ? 'ALIEN' : 'ALIENS'}`, W / 2, H / 2 + 10)
     }
 
@@ -1005,7 +1091,7 @@ export default function RetroBlaster() {
     }
 
     rafRef.current = requestAnimationFrame(gameLoop)
-  }, [inputMode, isListening, spawnWave, processHit, livePitchRef])
+  }, [inputMode, isListening, beginWave, processHit, livePitchRef])
 
   // ─── Canvas click handler (note buttons + replay button) ──────────────
   const handleCanvasClick = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -1081,7 +1167,7 @@ export default function RetroBlaster() {
         <p className="text-gray-500 text-xs mb-8 tracking-wider">PIXEL-ART EAR TRAINING</p>
 
         {/* Input toggle */}
-        <div className="flex gap-2 mb-6">
+        <div className="flex gap-2 mb-3">
           <button onClick={() => setInputMode('click')}
             className="px-4 py-2 text-xs tracking-wider transition-all"
             style={{
@@ -1101,6 +1187,43 @@ export default function RetroBlaster() {
             MICROPHONE
           </button>
         </div>
+
+        {/* Difficulty selector — EASY = gentle training, TRUE = full speed */}
+        <div className="flex gap-2 mb-1">
+          <button
+            onClick={() => {
+              setDifficulty('easy')
+              try { localStorage.setItem(RETRO_DIFFICULTY_KEY, 'easy') } catch {}
+            }}
+            className="px-4 py-2 text-xs tracking-wider transition-all"
+            style={{
+              background: difficulty === 'easy' ? '#7dffb0' : '#111',
+              color: difficulty === 'easy' ? '#000' : '#555',
+              border: `1px solid ${difficulty === 'easy' ? '#7dffb0' : '#333'}`,
+            }}
+          >
+            EASY
+          </button>
+          <button
+            onClick={() => {
+              setDifficulty('true')
+              try { localStorage.setItem(RETRO_DIFFICULTY_KEY, 'true') } catch {}
+            }}
+            className="px-4 py-2 text-xs tracking-wider transition-all"
+            style={{
+              background: difficulty === 'true' ? '#ff6090' : '#111',
+              color: difficulty === 'true' ? '#fff' : '#555',
+              border: `1px solid ${difficulty === 'true' ? '#ff6090' : '#333'}`,
+            }}
+          >
+            TRUE PLAY
+          </button>
+        </div>
+        <p className="text-[10px] text-gray-600 mb-6 tracking-wider text-center max-w-xs">
+          {difficulty === 'easy'
+            ? 'Gentle training — slower descent, fewer aliens, every wave beatable.'
+            : 'Full speed — faster ramp, more aliens, harder formations. No mercy.'}
+        </p>
 
         <button onClick={handleInsertCoin}
           className="px-10 py-3 text-lg font-bold tracking-widest transition-all active:scale-95"
@@ -1182,8 +1305,15 @@ export default function RetroBlaster() {
           <div className="flex items-start gap-3">
             <div className="text-2xl">🐢</div>
             <div>
-              <div className="text-sm text-gray-300 font-bold">Wave 1 is just one alien</div>
-              <div className="text-xs text-gray-400">Take your time. Wave 2 has 2 aliens, wave 3 has 3, and so on. The notes get faster as you progress.</div>
+              <div className="text-sm text-gray-300 font-bold">Aliens come one at a time</div>
+              <div className="text-xs text-gray-400">Aliens drop in slowly. EASY mode caps how many are on screen so every wave is beatable. TRUE PLAY ramps up faster — try EASY first.</div>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <div className="text-2xl">🎯</div>
+            <div>
+              <div className="text-sm text-cyan-300 font-bold">Aim is automatic</div>
+              <div className="text-xs text-gray-400">Sing or click ANY alien&apos;s note — the cannon swings to the most-urgent matching alien and fires. The glowing alien is the one to beat.</div>
             </div>
           </div>
         </div>
