@@ -22,9 +22,9 @@ import {
   type NoteMemory,
 } from '@/lib/fsrs'
 import { INTRO_ORDER, UNLOCK_THRESHOLDS } from './types'
-import { usePitchDetection, notesMatch } from './usePitchDetection'
+import { usePitchDetection } from './usePitchDetection'
 import { initAudio, loadPianoSamples, playPianoNote } from './audioEngine'
-import { noteToFreq, octaveFoldedCents, PITCH_ON_TOLERANCE_CENTS } from './pitchMath'
+import { noteToFreq, octaveFoldedCents } from './pitchMath'
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
@@ -40,12 +40,24 @@ const PLAYER_H = 14
 const LASER_W = 3
 const LASER_H = 12
 const LASER_SPEED = 480   // pixels per second
+
+// Vertical layout (canvas-relative). Order from bottom up:
+//   note buttons (290-312)  →  player ship (270-284)  →  charge bar (258-262)
+// Keeping these as constants so we never accidentally render the ship under
+// the note buttons again.
+const NOTE_BUTTONS_Y = 290         // matches H - 30 in old code
+const PLAYER_Y = 270               // ship sprite top — was H - PLAYER_H - 8 = 298 (overlapped buttons)
 const INITIAL_UNLOCK = 4  // start with 4 notes (C4, D4, E4, F4)
 const STARTING_SHIELDS = 5
 
-// Mic charge mechanic — ported from PitchforksII (on-pitch accumulates, off-pitch decays)
-const CHARGE_FULL_MS = 600        // ms of sustained on-pitch singing to fire
-const CHARGE_DECAY_PER_SEC = 400  // ms drained per real second when off-pitch
+// Mic match mechanic — ported from PITCHFORKS v1 (Pitchforks.tsx:418-493).
+// Time-based hold. Silent/flickering frames preserve the in-progress lock.
+// Only a CONFIDENTLY WRONG note resets it. See:
+//   memory/reference/reference_pitch_charge_decay_pattern.md
+const MIC_HOLD_MS = 300            // sustained on-pitch time before fire (Pitchforks v1)
+const MIC_TOLERANCE_CENTS = 70     // 0.7 semitones — ear-training standard
+const MIC_CONFIDENCE_FLOOR = 0.75  // pitchy clarity required to consider matching
+const CHARGE_FULL_MS = MIC_HOLD_MS // alias kept so existing render code works
 
 type InputMode = 'click' | 'mic'
 type Phase = 'menu' | 'tutorial' | 'playing' | 'game_over'
@@ -106,9 +118,8 @@ interface GameState {
   flashTimer: number     // red screen flash on wrong
   wrongMessage: string   // "WRONG! That was D" text
   wrongTimer: number     // how long to show the wrong message
-  // Mic charge mechanic
-  chargeProgress: number // 0..CHARGE_FULL_MS — accumulated on-pitch time
-  pitchHint: 'on' | 'low' | 'high' | null  // current singer position vs target
+  // Mic charge mechanic (visualization only — actual lock state lives in matchStartRef)
+  chargeProgress: number // 0..CHARGE_FULL_MS — for the HUD bar fill animation
   // Difficulty + staggered spawner (Phase 3)
   difficulty: Difficulty
   spawnQueue: string[]         // notes still to spawn this wave
@@ -425,6 +436,12 @@ export default function RetroBlaster() {
   // Mic detection
   const { isListening, startListening, stopListening, pitchRef: livePitchRef } = usePitchDetection({ noiseGateDb: -45 })
   const hitProcessingRef = useRef(false)
+  // Pitchforks v1 lock pattern: matchStartRef holds the time the current
+  // in-tolerance hold began (ms timestamp from performance.now()), or 0 when
+  // not locking, or -1 during the post-fire cooldown. matchTargetIdxRef tracks
+  // which alien the lock is currently against (any-target aim).
+  const matchStartRef = useRef(0)
+  const matchTargetIdxRef = useRef(-1)
 
   // Load FSRS + piano samples + persisted difficulty
   useEffect(() => {
@@ -448,7 +465,8 @@ export default function RetroBlaster() {
     gs.aliens = []
     gs.activeIdx = -1
     gs.chargeProgress = 0
-    gs.pitchHint = null
+    matchStartRef.current = 0
+    matchTargetIdxRef.current = -1
     gs.lastProgressAt = performance.now()
     gs.hintCount = 0
     buildWaveQueue(gs, fsrsRef.current)
@@ -494,7 +512,6 @@ export default function RetroBlaster() {
       wrongMessage: '',
       wrongTimer: 0,
       chargeProgress: 0,
-      pitchHint: null,
       difficulty,
       spawnQueue: [],
       spawnedThisWave: 0,
@@ -580,7 +597,7 @@ export default function RetroBlaster() {
       gs.playerX = aimX
       gs.lasers.push({
         x: aimX,
-        y: H - PLAYER_H - 8,
+        y: PLAYER_Y,
         hue: target.hue,
         active: true,
         hits: true,
@@ -626,7 +643,7 @@ export default function RetroBlaster() {
         gs.playerX = aimX
         gs.lasers.push({
           x: aimX,
-          y: H - PLAYER_H - 8,
+          y: PLAYER_Y,
           hue: 0,
           active: true,
           hits: false,
@@ -814,7 +831,7 @@ export default function RetroBlaster() {
 
     // Check alien escape (reached bottom)
     for (const alien of gs.aliens) {
-      if (alien.alive && alien.y >= H - PLAYER_H - 18) {
+      if (alien.alive && alien.y >= PLAYER_Y - 10) {
         alien.alive = false
         gs.cityHealth = Math.max(0, gs.cityHealth - 1)
         gs.combo = 0
@@ -839,47 +856,76 @@ export default function RetroBlaster() {
       beginWave(gs)
     }
 
-    // ── Mic mode — any-target charge-decay pitch matching ──
-    // Find an alive alien matching the singer's pitch class. Charge accumulates
-    // while on-pitch, decays when off. Spotlight follows the singer's charge
-    // target so the highlighted alien is always the one being aimed at.
+    // ── Mic mode — Pitchforks v1 pattern (THE canonical reference) ──
+    // Port from src/components/PitchDefender/Pitchforks.tsx:418-493.
+    // Two principles, both learned the hard way:
+    //   1. The "match doesn't fire" bug was pitch.isActive flickering between
+    //      frames and resetting the lock. Fix: silent/low-confidence frames
+    //      preserve the in-progress lock — DO NOTHING.
+    //   2. The "false hits" bug was loose tolerance. Fix: 70-cent tolerance,
+    //      confidence floor 0.75, ONLY hard-reset on a confidently wrong note.
+    //
+    // Any-target aim variant: each frame we pick the alive alien with the
+    // smallest cents-off, then lock against that one. Switching target aliens
+    // resets the lock so build-up doesn't bleed across aliens.
     if (inputMode === 'mic' && isListening) {
       const p = livePitchRef.current
-      if (p?.isActive && p.frequency > 0) {
-        // Octave-flexible class match → most-urgent alien with that note class
-        const pick = pickTargetForNote(gs.aliens, p.note, gs.playerX)
-        if (pick) {
-          // If the singer's chosen target changed, reset charge so we don't
-          // carry build-up across aliens.
-          if (gs.activeIdx !== pick.index) {
-            gs.activeIdx = pick.index
-            gs.chargeProgress = 0
+      if (p?.isActive && p.confidence >= MIC_CONFIDENCE_FLOOR && p.frequency > 0) {
+        // Find the alive alien with smallest cents-off
+        let bestIdx = -1
+        let bestCentsOff = Infinity
+        for (let i = 0; i < gs.aliens.length; i++) {
+          const a = gs.aliens[i]
+          if (!a.alive) continue
+          const cents = octaveFoldedCents(p.frequency, noteToFreq(a.note))
+          if (Math.abs(cents) < Math.abs(bestCentsOff)) {
+            bestCentsOff = cents
+            bestIdx = i
           }
-          const targetFreq = noteToFreq(pick.alien.note)
-          const centsOff = octaveFoldedCents(p.frequency, targetFreq)
-          const isOn = Math.abs(centsOff) <= PITCH_ON_TOLERANCE_CENTS
-          if (isOn) {
-            gs.pitchHint = 'on'
-            gs.chargeProgress = Math.min(CHARGE_FULL_MS, gs.chargeProgress + dt * 1000)
-            if (gs.chargeProgress >= CHARGE_FULL_MS) {
+        }
+
+        if (bestIdx >= 0 && Math.abs(bestCentsOff) <= MIC_TOLERANCE_CENTS) {
+          // IN TOLERANCE — start or continue lock against this alien
+          if (matchStartRef.current === -1) {
+            // post-fire cooldown — do nothing
+          } else if (matchTargetIdxRef.current !== bestIdx) {
+            // Switching target → reset and re-lock against the new alien
+            matchTargetIdxRef.current = bestIdx
+            matchStartRef.current = performance.now()
+          } else if (matchStartRef.current === 0) {
+            matchStartRef.current = performance.now()
+            matchTargetIdxRef.current = bestIdx
+          }
+
+          // Spotlight follows the locked target (visual feedback)
+          if (matchStartRef.current > 0) gs.activeIdx = bestIdx
+
+          if (matchStartRef.current > 0) {
+            const held = performance.now() - matchStartRef.current
+            const progress = Math.min(1, held / MIC_HOLD_MS)
+            gs.chargeProgress = progress * CHARGE_FULL_MS
+
+            if (progress >= 1) {
+              const target = gs.aliens[bestIdx]
+              matchStartRef.current = -1
+              matchTargetIdxRef.current = -1
               gs.chargeProgress = 0
-              gs.pitchHint = null
-              processHit(pick.alien.note)
+              setTimeout(() => { matchStartRef.current = 0 }, 600)
+              processHit(target.note)
             }
-          } else {
-            gs.pitchHint = centsOff < 0 ? 'low' : 'high'
-            gs.chargeProgress = Math.max(0, gs.chargeProgress - dt * CHARGE_DECAY_PER_SEC)
           }
         } else {
-          // Singer's pitch matches no alive alien — drain, no hint
-          gs.pitchHint = null
-          gs.chargeProgress = Math.max(0, gs.chargeProgress - dt * CHARGE_DECAY_PER_SEC)
+          // CONFIDENTLY WRONG — singer is voicing a note that doesn't match
+          // any alive alien within tolerance. Hard reset.
+          if (matchStartRef.current > 0) {
+            matchStartRef.current = 0
+            matchTargetIdxRef.current = -1
+            gs.chargeProgress = 0
+          }
         }
-      } else {
-        // Mic silent or unstable — slow drain to preserve in-progress charge
-        gs.pitchHint = null
-        gs.chargeProgress = Math.max(0, gs.chargeProgress - dt * (CHARGE_DECAY_PER_SEC * 0.5))
       }
+      // else: silent or low confidence — DO NOTHING. preserve in-progress lock.
+      // (This is the load-bearing flicker fix from Pitchforks v1.)
     }
 
     // ── Render ──
@@ -982,16 +1028,15 @@ export default function RetroBlaster() {
     if (inputMode === 'mic' && gs.chargeProgress > CHARGE_FULL_MS * 0.7) {
       const chargePct = gs.chargeProgress / CHARGE_FULL_MS
       const glowAlpha = (chargePct - 0.7) / 0.3   // 0..1 from 70%..100%
-      const cannonTipY = H - PLAYER_H - 8
       // Outer halo
-      ctx.fillStyle = `rgba(125,255,176,${glowAlpha * 0.35})`
-      ctx.fillRect(gs.playerX - 6, cannonTipY - 6, 12, 6)
+      ctx.fillStyle = `rgba(74,222,128,${glowAlpha * 0.35})`
+      ctx.fillRect(gs.playerX - 6, PLAYER_Y - 6, 12, 6)
       // Inner pulse
       const pulse = 0.5 + Math.sin(now / 80) * 0.3
-      ctx.fillStyle = `rgba(125,255,176,${glowAlpha * pulse})`
-      ctx.fillRect(gs.playerX - 3, cannonTipY - 4, 6, 4)
+      ctx.fillStyle = `rgba(74,222,128,${glowAlpha * pulse})`
+      ctx.fillRect(gs.playerX - 3, PLAYER_Y - 4, 6, 4)
     }
-    drawSprite(ctx, PLAYER_SPRITE, gs.playerX - PLAYER_W / 2, H - PLAYER_H - 8, '#3FBFB5', 2)
+    drawSprite(ctx, PLAYER_SPRITE, gs.playerX - PLAYER_W / 2, PLAYER_Y, '#3FBFB5', 2)
 
     // HUD bar background
     ctx.fillStyle = 'rgba(0,0,0,0.7)'
@@ -1044,49 +1089,29 @@ export default function RetroBlaster() {
       ctx.fillRect(0, 0, W, H)
     }
 
-    // ── Mic charge HUD strip (only visible in mic mode, below shields) ──
-    // Shows: build/decay bar + low/high/on-pitch hint. Bottom-center.
+    // ── Mic charge slider bar (Pitchforks v1 style) ──
+    // Visible only when matchStart > 0 (gated, like Pitchforks v1's bar).
+    // Yellow under 80%, green at/above 80%. No note+cents readout, no hint
+    // text — Pitchforks v1 doesn't have those. The active alien glow + the
+    // cannon-tip glow are the rest of the feedback.
     if (inputMode === 'mic') {
-      const stripY = H - 56
-      const barW = 140
-      const barH = 5
-      const barX = Math.floor((W - barW) / 2)
-      // Track
-      ctx.fillStyle = 'rgba(0,0,0,0.6)'
-      ctx.fillRect(barX - 2, stripY - 2, barW + 4, barH + 4)
-      ctx.strokeStyle = '#244'
-      ctx.lineWidth = 1
-      ctx.strokeRect(barX - 2, stripY - 2, barW + 4, barH + 4)
-      // Fill
       const pct = Math.min(1, gs.chargeProgress / CHARGE_FULL_MS)
-      const fillColor = pct >= 0.95 ? '#7dffb0' : pct >= 0.5 ? '#5dddd3' : '#3FBFB5'
-      ctx.fillStyle = fillColor
-      ctx.fillRect(barX, stripY, barW * pct, barH)
-      // Glow on near-full
-      if (pct > 0.7) {
-        ctx.fillStyle = `rgba(125,255,176,${(pct - 0.7) * 0.6})`
-        ctx.fillRect(barX - 1, stripY - 1, barW * pct + 2, barH + 2)
-      }
-
-      // Hint text below the bar
-      const tgt = gs.aliens[gs.activeIdx]
-      if (tgt?.alive) {
-        const noteLabel = tgt.note.replace(/\d/, '')
-        const hintY = stripY + 14
-        ctx.font = 'bold 10px monospace'
-        ctx.textAlign = 'center'
-        if (gs.pitchHint === 'on') {
-          ctx.fillStyle = '#7dffb0'
-          ctx.fillText(`✓ ON PITCH — ${noteLabel}`, W / 2, hintY)
-        } else if (gs.pitchHint === 'low') {
-          ctx.fillStyle = '#ffd166'
-          ctx.fillText(`↑ HIGHER — sing ${noteLabel}`, W / 2, hintY)
-        } else if (gs.pitchHint === 'high') {
-          ctx.fillStyle = '#ff8a8a'
-          ctx.fillText(`↓ LOWER — sing ${noteLabel}`, W / 2, hintY)
-        } else {
-          ctx.fillStyle = '#888'
-          ctx.fillText(`SING ${noteLabel}`, W / 2, hintY)
+      if (pct > 0) {
+        const barY = PLAYER_Y - 12
+        const barW = 100
+        const barH = 4
+        const barX = Math.floor((W - barW) / 2)
+        ctx.fillStyle = 'rgba(0,0,0,0.6)'
+        ctx.fillRect(barX - 2, barY - 2, barW + 4, barH + 4)
+        ctx.strokeStyle = '#3a3a4a'
+        ctx.lineWidth = 1
+        ctx.strokeRect(barX - 2, barY - 2, barW + 4, barH + 4)
+        const fillColor = pct >= 0.8 ? '#4ade80' : '#fbbf24'
+        ctx.fillStyle = fillColor
+        ctx.fillRect(barX, barY, barW * pct, barH)
+        if (pct > 0.7) {
+          ctx.fillStyle = `rgba(74,222,128,${(pct - 0.7) * 0.6})`
+          ctx.fillRect(barX - 1, barY - 1, barW * pct + 2, barH + 2)
         }
       }
     }
