@@ -18,7 +18,7 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react'
 import {
-  NOTE_COLORS, createNote, reviewNote, autoGrade,
+  NOTE_COLORS, createNote, reviewNote, autoGrade, currentR,
   type NoteMemory,
 } from '@/lib/fsrs'
 import { INTRO_ORDER, UNLOCK_THRESHOLDS } from './types'
@@ -137,6 +137,9 @@ interface GameState {
   spawnedThisWave: number      // total aliens spawned so far this wave
   alienCountThisWave: number   // total this wave will spawn
   nextSpawnAt: number          // performance.now() target for next spawn
+  // Fail-safe unlock (Phase 4 — EASY mode only)
+  lastProgressAt: number       // performance.now() of last processHit or wave start
+  hintCount: number            // number of hints shown this wave (debug/stats)
 }
 
 // ─── Pixel Sprite Data (1-bit bitmaps) ──────────────────────────────────────
@@ -360,31 +363,64 @@ function pickSpawnX(aliens: Alien[], laneOrderSeed: number): number | null {
   return Math.floor(SPAWN_LANES_X[bestLane] - ALIEN_W / 2)
 }
 
-// ─── Wave queue builder ─────────────────────────────────────────────────────
-// Phase 3: simple deterministic shuffle of unlocked notes.
-// Phase 4 will replace this with FSRS-weighted selection.
-function buildWaveQueue(gs: GameState): void {
+// ─── Wave queue builder (FSRS-weighted) ─────────────────────────────────────
+// Codex's hard line: FSRS belongs in spawning, not in real-time arbitration.
+// Notes the player struggles with (low retention R) appear MORE often. Notes
+// they've mastered (high R) still appear occasionally so they don't decay.
+//
+// Variety guarantees:
+//   - If alienCount >= unlockedPool.length, every unlocked note appears at
+//     least once (so no note gets fully starved out)
+//   - No 3 consecutive identical notes (rotating the offender out)
+function buildWaveQueue(
+  gs: GameState,
+  fsrs: Record<string, NoteMemory>,
+): void {
   const params = waveParams(gs.wave, gs.difficulty)
   const pool = gs.unlockedNotes
-  const queue: string[] = []
-  if (params.alienCount <= pool.length) {
-    const shuffled = shuffle(pool, gs.wave * 7919)
-    for (let i = 0; i < params.alienCount; i++) queue.push(shuffled[i])
-  } else {
-    queue.push(...pool)
-    while (queue.length < params.alienCount) {
-      const extra = shuffle(pool, gs.wave * 7919 + queue.length)
-      for (let i = 0; i < extra.length && queue.length < params.alienCount; i++) {
-        queue.push(extra[i])
-      }
+  const count = params.alienCount
+
+  // Guarantee at-least-once for variety on full-pool waves
+  const must: string[] = count >= pool.length ? [...pool] : []
+  const remaining = Math.max(0, count - must.length)
+
+  // Inverse-R weights (clamped to [0.2, 1.2] so even mastered notes still appear)
+  const weights = pool.map(n => {
+    const m = fsrs[n]
+    const r = m ? currentR(m) : 0
+    return Math.max(0.2, 1.2 - r)
+  })
+  const totalWeight = weights.reduce((a, b) => a + b, 0)
+
+  // Weighted samples with replacement
+  const sampled: string[] = []
+  let rng = gs.wave * 1000003 + 17
+  for (let i = 0; i < remaining; i++) {
+    rng = (rng * 1664525 + 1013904223) % 0x100000000
+    const target = (rng / 0x100000000) * totalWeight
+    let acc = 0
+    let chosen = pool[0]
+    for (let j = 0; j < pool.length; j++) {
+      acc += weights[j]
+      if (target <= acc) { chosen = pool[j]; break }
     }
-    const finalOrder = shuffle(queue, gs.wave * 104729)
-    queue.length = 0
-    queue.push(...finalOrder)
+    sampled.push(chosen)
   }
-  gs.spawnQueue = queue
+
+  // Combine + shuffle so guaranteed-once notes aren't always at the start
+  const combined = shuffle([...must, ...sampled], gs.wave * 104729)
+
+  // No 3-in-a-row constraint
+  for (let i = 2; i < combined.length; i++) {
+    if (combined[i] === combined[i - 1] && combined[i] === combined[i - 2]) {
+      const alt = pool.find(p => p !== combined[i])
+      if (alt) combined[i] = alt
+    }
+  }
+
+  gs.spawnQueue = combined
   gs.spawnedThisWave = 0
-  gs.alienCountThisWave = params.alienCount
+  gs.alienCountThisWave = combined.length
   gs.nextSpawnAt = performance.now() + (gs.waveIntroTimer * 1000) + 600
 }
 
@@ -429,12 +465,15 @@ export default function RetroBlaster() {
   // Builds the wave queue (notes still to spawn) and clears any dead bodies
   // from the previous wave. Aliens are NOT spawned here — the spawner tick
   // inside gameLoop handles that staggered over time per waveParams().
+  // FSRS-weighted note selection happens inside buildWaveQueue.
   const beginWave = useCallback((gs: GameState) => {
     gs.aliens = []
     gs.activeIdx = -1
     gs.chargeProgress = 0
     gs.pitchHint = null
-    buildWaveQueue(gs)
+    gs.lastProgressAt = performance.now()
+    gs.hintCount = 0
+    buildWaveQueue(gs, fsrsRef.current)
   }, [])
 
   // ─── Build Initial Game State ──────────────────────────────────────────
@@ -483,6 +522,8 @@ export default function RetroBlaster() {
       spawnedThisWave: 0,
       alienCountThisWave: 0,
       nextSpawnAt: 0,
+      lastProgressAt: 0,
+      hintCount: 0,
     }
   }, [difficulty])
 
@@ -540,6 +581,9 @@ export default function RetroBlaster() {
 
     const gs = stateRef.current
     if (!gs) { hitProcessingRef.current = false; return }
+
+    // Engagement = progress (resets the EASY-mode fail-safe hint timer)
+    gs.lastProgressAt = performance.now()
 
     const pick = pickTargetForNote(gs.aliens, answeredNote, gs.playerX)
     const latency = notePlayTimeRef.current > 0 ? Date.now() - notePlayTimeRef.current : 2000
@@ -693,6 +737,22 @@ export default function RetroBlaster() {
           }
         }
       }
+    }
+
+    // ── Fail-safe unlock (EASY mode only) ──
+    // If 60 seconds elapse with no engagement (no answer attempts) while there
+    // are alive aliens, replay the spotlight's note as a hint and reset the
+    // timer. Helps a stuck child get unstuck without nuking the score.
+    if (gs.difficulty === 'easy' && now - gs.lastProgressAt > 60000) {
+      const spotlight = gs.aliens[gs.activeIdx]
+      if (spotlight?.alive) {
+        playPianoNote(spotlight.note)
+        notePlayTimeRef.current = Date.now()
+        gs.wrongMessage = `Hint: try ${spotlight.note.replace(/\d/, '')}`
+        gs.wrongTimer = 2.5
+        gs.hintCount++
+      }
+      gs.lastProgressAt = now
     }
 
     // Alien descent (uses difficulty-aware speed from waveParams)
