@@ -88,8 +88,9 @@ interface Laser {
   y: number
   hue: number
   active: boolean
-  hits: boolean    // true = will hit (correct), false = miss visual only
-  targetY: number  // for misses, where it stops
+  hits: boolean      // true = will hit (correct), false = miss visual only
+  targetY: number    // for misses, where it stops
+  targetIdx: number  // index of the specific alien this laser is flying toward (-1 for misses)
 }
 
 interface Particle {
@@ -230,6 +231,56 @@ function sfxExplosion() {
   src.connect(g); g.connect(c.destination); src.start(now)
 }
 
+// ─── Target arbitration (any-target aim) ────────────────────────────────────
+//
+// When the player answers a note (click, key, or sing), find the most urgent
+// alive alien with that note class. Hybrid rule per Codex boardroom verdict:
+//   primary    = highest y on screen (closest to bottom = most urgent)
+//   tiebreaker = nearest to player's current x (spatial continuity)
+//
+// FSRS difficulty intentionally NOT used here — learning intelligence lives in
+// spawning, not in real-time combat arbitration.
+function noteClass(name: string): string {
+  return name.replace(/\d+$/, '')
+}
+function pickTargetForNote(aliens: Alien[], answeredNote: string, playerX: number): { alien: Alien; index: number } | null {
+  const targetClass = noteClass(answeredNote)
+  let best: Alien | null = null
+  let bestIdx = -1
+  for (let i = 0; i < aliens.length; i++) {
+    const a = aliens[i]
+    if (!a.alive || noteClass(a.note) !== targetClass) continue
+    if (!best) { best = a; bestIdx = i; continue }
+    // Y delta > 4px → use urgency. Otherwise → use x proximity.
+    const dy = a.y - best.y
+    if (Math.abs(dy) > 4) {
+      if (dy > 0) { best = a; bestIdx = i }
+    } else if (Math.abs(a.x - playerX) < Math.abs(best.x - playerX)) {
+      best = a; bestIdx = i
+    }
+  }
+  return best ? { alien: best, index: bestIdx } : null
+}
+// Recommended-next spotlight: just the most-urgent alive alien (any note).
+// Used to drive the active highlight + the auto-replay piano cue.
+function pickSpotlightIdx(aliens: Alien[], playerX: number): number {
+  let bestIdx = -1
+  let bestY = -Infinity
+  let bestDx = Infinity
+  for (let i = 0; i < aliens.length; i++) {
+    const a = aliens[i]
+    if (!a.alive) continue
+    const dy = a.y - bestY
+    if (dy > 4) {
+      bestIdx = i; bestY = a.y; bestDx = Math.abs(a.x - playerX)
+    } else if (Math.abs(dy) <= 4) {
+      const dx = Math.abs(a.x - playerX)
+      if (dx < bestDx) { bestIdx = i; bestY = a.y; bestDx = dx }
+    }
+  }
+  return bestIdx
+}
+
 // ─── Deterministic shuffle (Fisher-Yates with seed) ─────────────────────────
 
 function shuffle<T>(arr: T[], seed: number): T[] {
@@ -333,11 +384,14 @@ export default function RetroBlaster() {
     }
 
     gs.aliens = aliens
-    gs.activeIdx = 0
-    // Play first alien's note
-    if (aliens.length > 0) {
+    // Spotlight = most urgent alive alien (any-target aim selects from any matching note,
+    // but the spotlight tells the player which one is most pressing).
+    gs.activeIdx = pickSpotlightIdx(aliens, gs.playerX)
+    // Play the spotlighted alien's note
+    if (gs.activeIdx >= 0) {
+      const spotlightNote = aliens[gs.activeIdx].note
       setTimeout(() => {
-        playPianoNote(aliens[0].note)
+        playPianoNote(spotlightNote)
         notePlayTimeRef.current = Date.now()
       }, 600)
     }
@@ -430,38 +484,41 @@ export default function RetroBlaster() {
     notePlayTimeRef.current = Date.now()
   }, [])
 
-  // ─── Answer Logic ─────────────────────────────────────────────────────
+  // ─── Answer Logic (any-target aim) ────────────────────────────────────
+  // Player answers a note → scan ALL alive aliens for a match → pick most-urgent
+  // matching alien (highest y, tiebreak nearest x) → fire at it. If no alien
+  // matches the answered note → wrong answer, lose a shield, replay the
+  // currently-spotlighted alien's correct note as a learning cue.
   const processHit = useCallback((answeredNote: string) => {
     if (hitProcessingRef.current) return
     hitProcessingRef.current = true
 
     const gs = stateRef.current
     if (!gs) { hitProcessingRef.current = false; return }
-    const alien = gs.aliens[gs.activeIdx]
-    if (!alien?.alive) { hitProcessingRef.current = false; return }
 
-    const correct = answeredNote === alien.note
+    const pick = pickTargetForNote(gs.aliens, answeredNote, gs.playerX)
     const latency = notePlayTimeRef.current > 0 ? Date.now() - notePlayTimeRef.current : 2000
-    const grade = autoGrade(correct, latency)
 
-    // FSRS update
-    if (!fsrsRef.current[alien.note]) fsrsRef.current[alien.note] = createNote(alien.note)
-    fsrsRef.current[alien.note] = reviewNote(fsrsRef.current[alien.note], grade)
-    try { localStorage.setItem(FSRS_KEY, JSON.stringify(fsrsRef.current)) } catch {}
+    if (pick) {
+      const { alien: target, index: targetIdx } = pick
+      const grade = autoGrade(true, latency)
+      // FSRS update against the alien actually shot
+      if (!fsrsRef.current[target.note]) fsrsRef.current[target.note] = createNote(target.note)
+      fsrsRef.current[target.note] = reviewNote(fsrsRef.current[target.note], grade)
+      try { localStorage.setItem(FSRS_KEY, JSON.stringify(fsrsRef.current)) } catch {}
 
-    if (correct) {
       sfxShoot()
-      // AUTO-AIM: slide the player ship under the active alien before firing,
-      // then push the laser from that position so it visually connects.
-      const aimX = alien.x + ALIEN_W / 2
+      // Auto-aim: slide ship under the chosen alien, fire from there
+      const aimX = target.x + ALIEN_W / 2
       gs.playerX = aimX
       gs.lasers.push({
         x: aimX,
         y: H - PLAYER_H - 8,
-        hue: alien.hue,
+        hue: target.hue,
         active: true,
         hits: true,
-        targetY: alien.y + ALIEN_H / 2,
+        targetY: target.y + ALIEN_H / 2,
+        targetIdx,
       })
       gs.combo++
       gs.maxCombo = Math.max(gs.maxCombo, gs.combo)
@@ -484,31 +541,40 @@ export default function RetroBlaster() {
       setDisplayCombo(gs.combo)
       setTimeout(() => { hitProcessingRef.current = false }, 150)
     } else {
+      // No alive alien matches that note → wrong
       sfxWrong()
       gs.combo = 0
       gs.consecutiveCorrect = 0
       gs.cityHealth = Math.max(0, gs.cityHealth - 1)
       gs.flashTimer = 0.4
-      const correctName = NOTE_COLORS[alien.note]?.name ?? alien.note
-      gs.wrongMessage = `WRONG! That was ${alien.note.replace(/\d/, '')} (${correctName})`
-      gs.wrongTimer = 1.8
+      // Use the spotlighted alien (most urgent) as the "correct answer" cue
+      const spotlight = gs.aliens[gs.activeIdx]
+      if (spotlight?.alive) {
+        const correctName = NOTE_COLORS[spotlight.note]?.name ?? spotlight.note
+        gs.wrongMessage = `WRONG! Try ${spotlight.note.replace(/\d/, '')} (${correctName})`
+        gs.wrongTimer = 1.8
+
+        // Visual: aim a miss-laser at the spotlighted alien
+        const aimX = spotlight.x + ALIEN_W / 2
+        gs.playerX = aimX
+        gs.lasers.push({
+          x: aimX,
+          y: H - PLAYER_H - 8,
+          hue: 0,
+          active: true,
+          hits: false,
+          targetY: spotlight.y + ALIEN_H + 30,
+          targetIdx: -1,
+        })
+
+        // Replay the correct note so they learn
+        setTimeout(() => playPianoNote(spotlight.note), 350)
+      } else {
+        gs.wrongMessage = 'WRONG!'
+        gs.wrongTimer = 1.0
+      }
       setDisplayHealth(gs.cityHealth)
       setDisplayCombo(0)
-
-      // Visual: laser fires but stops short (miss visual) — also auto-aim so it goes under the alien
-      const aimX = alien.x + ALIEN_W / 2
-      gs.playerX = aimX
-      gs.lasers.push({
-        x: aimX,
-        y: H - PLAYER_H - 8,
-        hue: 0,
-        active: true,
-        hits: false,
-        targetY: alien.y + ALIEN_H + 30, // stops below alien
-      })
-
-      // Play correct note so they learn
-      setTimeout(() => playPianoNote(alien.note), 350)
 
       hitProcessingRef.current = false
 
@@ -564,13 +630,13 @@ export default function RetroBlaster() {
 
     // Active alien bobbing — handled in render via sin()
 
-    // Lasers
+    // Lasers — each carries its own targetIdx (any-target aim)
     for (const laser of gs.lasers) {
       if (!laser.active) continue
       laser.y -= LASER_SPEED * dt
 
       if (laser.hits) {
-        const target = gs.aliens[gs.activeIdx]
+        const target = gs.aliens[laser.targetIdx]
         if (target?.alive &&
             laser.y <= target.y + ALIEN_H &&
             laser.x >= target.x - 4 && laser.x <= target.x + ALIEN_W + 4) {
@@ -592,17 +658,13 @@ export default function RetroBlaster() {
             })
           }
 
-          // Advance to next alive alien
-          let nextIdx = -1
-          for (let i = 0; i < gs.aliens.length; i++) {
-            if (gs.aliens[i].alive) { nextIdx = i; break }
-          }
+          // Recompute spotlight (most-urgent alive alien) and replay its note
+          const nextIdx = pickSpotlightIdx(gs.aliens, gs.playerX)
           gs.activeIdx = nextIdx
-
           if (nextIdx >= 0) {
             setTimeout(() => {
               const cur = stateRef.current
-              if (cur && cur.aliens[nextIdx]?.alive) {
+              if (cur && cur.aliens[nextIdx]?.alive && cur.activeIdx === nextIdx) {
                 playPianoNote(cur.aliens[nextIdx].note)
                 notePlayTimeRef.current = Date.now()
               }
@@ -653,17 +715,23 @@ export default function RetroBlaster() {
       spawnWave(gs)
     }
 
-    // ── Mic mode — charge-decay pitch matching (PitchforksII pattern) ──
-    // Accumulator builds while singing on-pitch, decays when off-pitch.
-    // Forgiving of brief wobble. Provides low/high hints for self-correction.
-    // Targets the lowest-y alive alien (closest to danger) — see Phase 2 for
-    // any-target aim; for Phase 1 we still use activeIdx as the charge anchor.
+    // ── Mic mode — any-target charge-decay pitch matching ──
+    // Find an alive alien matching the singer's pitch class. Charge accumulates
+    // while on-pitch, decays when off. Spotlight follows the singer's charge
+    // target so the highlighted alien is always the one being aimed at.
     if (inputMode === 'mic' && isListening) {
       const p = livePitchRef.current
-      const target = gs.aliens[gs.activeIdx]
-      if (target?.alive) {
-        if (p?.isActive && p.frequency > 0) {
-          const targetFreq = noteToFreq(target.note)
+      if (p?.isActive && p.frequency > 0) {
+        // Octave-flexible class match → most-urgent alien with that note class
+        const pick = pickTargetForNote(gs.aliens, p.note, gs.playerX)
+        if (pick) {
+          // If the singer's chosen target changed, reset charge so we don't
+          // carry build-up across aliens.
+          if (gs.activeIdx !== pick.index) {
+            gs.activeIdx = pick.index
+            gs.chargeProgress = 0
+          }
+          const targetFreq = noteToFreq(pick.alien.note)
           const centsOff = octaveFoldedCents(p.frequency, targetFreq)
           const isOn = Math.abs(centsOff) <= CHARGE_ON_TOLERANCE_CENTS
           if (isOn) {
@@ -672,20 +740,21 @@ export default function RetroBlaster() {
             if (gs.chargeProgress >= CHARGE_FULL_MS) {
               gs.chargeProgress = 0
               gs.pitchHint = null
-              processHit(target.note)
+              processHit(pick.alien.note)
             }
           } else {
             gs.pitchHint = centsOff < 0 ? 'low' : 'high'
             gs.chargeProgress = Math.max(0, gs.chargeProgress - dt * CHARGE_DECAY_PER_SEC)
           }
         } else {
-          // Mic silent or unstable — slow drain, clear hint
+          // Singer's pitch matches no alive alien — drain, no hint
           gs.pitchHint = null
-          gs.chargeProgress = Math.max(0, gs.chargeProgress - dt * (CHARGE_DECAY_PER_SEC * 0.5))
+          gs.chargeProgress = Math.max(0, gs.chargeProgress - dt * CHARGE_DECAY_PER_SEC)
         }
       } else {
-        gs.chargeProgress = 0
+        // Mic silent or unstable — slow drain to preserve in-progress charge
         gs.pitchHint = null
+        gs.chargeProgress = Math.max(0, gs.chargeProgress - dt * (CHARGE_DECAY_PER_SEC * 0.5))
       }
     }
 
