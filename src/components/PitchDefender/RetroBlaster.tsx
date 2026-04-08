@@ -43,6 +43,33 @@ const INITIAL_UNLOCK = 4  // start with 4 notes (C4, D4, E4, F4)
 const MAX_ALIENS = 15
 const STARTING_SHIELDS = 5
 
+// Mic charge mechanic — ported from PitchforksII (on-pitch accumulates, off-pitch decays)
+const CHARGE_FULL_MS = 600        // ms of sustained on-pitch singing to fire
+const CHARGE_DECAY_PER_SEC = 400  // ms drained per real second when off-pitch
+const CHARGE_ON_TOLERANCE_CENTS = 50  // ±50¢ = within half a semitone = "on pitch"
+
+// Note→frequency lookup (octaves 2-6, used for low/high pitch hints in mic mode)
+const NOTE_NAMES_CHROMA = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+const NOTE_FREQ_LOOKUP: Record<string, number> = {}
+for (let octave = 2; octave <= 6; octave++) {
+  for (let i = 0; i < 12; i++) {
+    NOTE_FREQ_LOOKUP[`${NOTE_NAMES_CHROMA[i]}${octave}`] =
+      440 * Math.pow(2, (octave - 4) + (i - 9) / 12)
+  }
+}
+function noteToFreq(name: string): number {
+  return NOTE_FREQ_LOOKUP[name] ?? 440
+}
+// Octave-folded cents deviation: how far the singer's frequency is from the
+// target in cents, ignoring octave (so a kid can sing C5 to a C4 alien).
+function octaveFoldedCents(detectedFreq: number, targetFreq: number): number {
+  if (detectedFreq <= 0 || targetFreq <= 0) return 0
+  let cents = 1200 * Math.log2(detectedFreq / targetFreq)
+  while (cents > 600) cents -= 1200
+  while (cents < -600) cents += 1200
+  return cents
+}
+
 type InputMode = 'click' | 'mic'
 type Phase = 'menu' | 'tutorial' | 'playing' | 'game_over'
 
@@ -92,6 +119,9 @@ interface GameState {
   flashTimer: number     // red screen flash on wrong
   wrongMessage: string   // "WRONG! That was D" text
   wrongTimer: number     // how long to show the wrong message
+  // Mic charge mechanic
+  chargeProgress: number // 0..CHARGE_FULL_MS — accumulated on-pitch time
+  pitchHint: 'on' | 'low' | 'high' | null  // current singer position vs target
 }
 
 // ─── Pixel Sprite Data (1-bit bitmaps) ──────────────────────────────────────
@@ -234,7 +264,6 @@ export default function RetroBlaster() {
 
   // Mic detection
   const { isListening, startListening, stopListening, pitchRef: livePitchRef } = usePitchDetection({ noiseGateDb: -45 })
-  const lockStartRef = useRef(0)
   const hitProcessingRef = useRef(false)
 
   // Load FSRS + piano samples
@@ -353,6 +382,8 @@ export default function RetroBlaster() {
       flashTimer: 0,
       wrongMessage: '',
       wrongTimer: 0,
+      chargeProgress: 0,
+      pitchHint: null,
     }
   }, [])
 
@@ -622,21 +653,39 @@ export default function RetroBlaster() {
       spawnWave(gs)
     }
 
-    // Mic mode — pitch check
+    // ── Mic mode — charge-decay pitch matching (PitchforksII pattern) ──
+    // Accumulator builds while singing on-pitch, decays when off-pitch.
+    // Forgiving of brief wobble. Provides low/high hints for self-correction.
+    // Targets the lowest-y alive alien (closest to danger) — see Phase 2 for
+    // any-target aim; for Phase 1 we still use activeIdx as the charge anchor.
     if (inputMode === 'mic' && isListening) {
       const p = livePitchRef.current
       const target = gs.aliens[gs.activeIdx]
-      if (p?.isActive && target?.alive) {
-        const match = notesMatch(p.note, target.note, { octaveFlexible: true }) && Math.abs(p.cents) <= 50
-        if (match) {
-          if (lockStartRef.current === 0) lockStartRef.current = Date.now()
-          if (Date.now() - lockStartRef.current >= 500) {
-            lockStartRef.current = 0
-            processHit(target.note)
+      if (target?.alive) {
+        if (p?.isActive && p.frequency > 0) {
+          const targetFreq = noteToFreq(target.note)
+          const centsOff = octaveFoldedCents(p.frequency, targetFreq)
+          const isOn = Math.abs(centsOff) <= CHARGE_ON_TOLERANCE_CENTS
+          if (isOn) {
+            gs.pitchHint = 'on'
+            gs.chargeProgress = Math.min(CHARGE_FULL_MS, gs.chargeProgress + dt * 1000)
+            if (gs.chargeProgress >= CHARGE_FULL_MS) {
+              gs.chargeProgress = 0
+              gs.pitchHint = null
+              processHit(target.note)
+            }
+          } else {
+            gs.pitchHint = centsOff < 0 ? 'low' : 'high'
+            gs.chargeProgress = Math.max(0, gs.chargeProgress - dt * CHARGE_DECAY_PER_SEC)
           }
         } else {
-          lockStartRef.current = 0
+          // Mic silent or unstable — slow drain, clear hint
+          gs.pitchHint = null
+          gs.chargeProgress = Math.max(0, gs.chargeProgress - dt * (CHARGE_DECAY_PER_SEC * 0.5))
         }
+      } else {
+        gs.chargeProgress = 0
+        gs.pitchHint = null
       }
     }
 
@@ -736,7 +785,19 @@ export default function RetroBlaster() {
       ctx.fillRect(Math.floor(p.x), Math.floor(p.y), 3, 3)
     }
 
-    // Player ship
+    // Player ship — cannon-tip glow when mic charge is near full
+    if (inputMode === 'mic' && gs.chargeProgress > CHARGE_FULL_MS * 0.7) {
+      const chargePct = gs.chargeProgress / CHARGE_FULL_MS
+      const glowAlpha = (chargePct - 0.7) / 0.3   // 0..1 from 70%..100%
+      const cannonTipY = H - PLAYER_H - 8
+      // Outer halo
+      ctx.fillStyle = `rgba(125,255,176,${glowAlpha * 0.35})`
+      ctx.fillRect(gs.playerX - 6, cannonTipY - 6, 12, 6)
+      // Inner pulse
+      const pulse = 0.5 + Math.sin(now / 80) * 0.3
+      ctx.fillStyle = `rgba(125,255,176,${glowAlpha * pulse})`
+      ctx.fillRect(gs.playerX - 3, cannonTipY - 4, 6, 4)
+    }
     drawSprite(ctx, PLAYER_SPRITE, gs.playerX - PLAYER_W / 2, H - PLAYER_H - 8, '#3FBFB5', 2)
 
     // HUD bar background
@@ -788,6 +849,53 @@ export default function RetroBlaster() {
     if (gs.flashTimer > 0) {
       ctx.fillStyle = `rgba(255,0,0,${(gs.flashTimer / 0.4) * 0.3})`
       ctx.fillRect(0, 0, W, H)
+    }
+
+    // ── Mic charge HUD strip (only visible in mic mode, below shields) ──
+    // Shows: build/decay bar + low/high/on-pitch hint. Bottom-center.
+    if (inputMode === 'mic') {
+      const stripY = H - 56
+      const barW = 140
+      const barH = 5
+      const barX = Math.floor((W - barW) / 2)
+      // Track
+      ctx.fillStyle = 'rgba(0,0,0,0.6)'
+      ctx.fillRect(barX - 2, stripY - 2, barW + 4, barH + 4)
+      ctx.strokeStyle = '#244'
+      ctx.lineWidth = 1
+      ctx.strokeRect(barX - 2, stripY - 2, barW + 4, barH + 4)
+      // Fill
+      const pct = Math.min(1, gs.chargeProgress / CHARGE_FULL_MS)
+      const fillColor = pct >= 0.95 ? '#7dffb0' : pct >= 0.5 ? '#5dddd3' : '#3FBFB5'
+      ctx.fillStyle = fillColor
+      ctx.fillRect(barX, stripY, barW * pct, barH)
+      // Glow on near-full
+      if (pct > 0.7) {
+        ctx.fillStyle = `rgba(125,255,176,${(pct - 0.7) * 0.6})`
+        ctx.fillRect(barX - 1, stripY - 1, barW * pct + 2, barH + 2)
+      }
+
+      // Hint text below the bar
+      const tgt = gs.aliens[gs.activeIdx]
+      if (tgt?.alive) {
+        const noteLabel = tgt.note.replace(/\d/, '')
+        const hintY = stripY + 14
+        ctx.font = 'bold 10px monospace'
+        ctx.textAlign = 'center'
+        if (gs.pitchHint === 'on') {
+          ctx.fillStyle = '#7dffb0'
+          ctx.fillText(`✓ ON PITCH — ${noteLabel}`, W / 2, hintY)
+        } else if (gs.pitchHint === 'low') {
+          ctx.fillStyle = '#ffd166'
+          ctx.fillText(`↑ HIGHER — sing ${noteLabel}`, W / 2, hintY)
+        } else if (gs.pitchHint === 'high') {
+          ctx.fillStyle = '#ff8a8a'
+          ctx.fillText(`↓ LOWER — sing ${noteLabel}`, W / 2, hintY)
+        } else {
+          ctx.fillStyle = '#888'
+          ctx.fillText(`SING ${noteLabel}`, W / 2, hintY)
+        }
+      }
     }
 
     // Note buttons at bottom — bigger and clearly labelled
