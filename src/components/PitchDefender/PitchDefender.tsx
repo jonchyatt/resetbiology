@@ -18,7 +18,8 @@ import StaffDisplay from './StaffDisplay'
 import GameHUD from './GameHUD'
 import WaveIntro from './WaveIntro'
 import GameOver from './GameOver'
-import { usePitchDetection, notesMatch } from './usePitchDetection'
+import { usePitchDetection } from './usePitchDetection'
+import { noteToFreq, octaveFoldedCents } from './pitchMath'
 import ParentSettings, { DEFAULT_SETTINGS, type GameSettings } from './ParentSettings'
 import {
   initAudio, playSfx as _sfx, loadPianoSamples as _loadSamples,
@@ -181,42 +182,68 @@ export default function PitchDefender() {
       completeWave()
     }
 
-    // ─── Mic-driven modes: Echo Cannon & Staff Defender check pitch match ──
-    // Both modes fire by sung pitch. Echo Cannon shows the note name; Staff
-    // Defender shows the note on a staff. Same firing mechanism either way.
-    if (gameMode === 'echoCannon' || gameMode === 'staffDefender') {
+    // ─── Mic input — Pitchforks v1 pattern (THE canonical reference) ──
+    // Port from src/components/PitchDefender/Pitchforks.tsx:418-493.
+    //
+    // Now runs for ALL game modes (was gated to echoCannon/staffDefender only).
+    // Per Jon 2026-04-08: every mode needs vocal feedback. Click/key input
+    // still works in all modes — this is strictly additive.
+    //
+    // Two principles, both load-bearing:
+    //   1. Silent or low-confidence frames preserve the in-progress lock.
+    //      pitch.isActive flickers in normal singing — resetting on flicker
+    //      means the lock never builds. THE LOAD-BEARING FLICKER FIX.
+    //   2. ONLY a confidently wrong note (confidence >= 0.75 AND outside the
+    //      tolerance) hard-resets the lock.
+    //
+    // lockStartRef encodes the matchStart timestamp:
+    //   0  = not currently locking
+    //   > 0 = locking, value is performance.now() of first in-tolerance frame
+    //   -1 = post-fire cooldown (don't accept new locks for 600ms)
+    {
       const activeAlien = s.aliens.find(a => a.lifecycle === 'descending')
-      const currentPitch = livePitchRef.current
-      if (activeAlien && currentPitch?.isActive) {
-        const tolerance = gameSettings.pitchTolerance === 'beginner' ? 50
-          : gameSettings.pitchTolerance === 'intermediate' ? 30 : 15
-        const isMatch = notesMatch(currentPitch.note, activeAlien.note, {
-          octaveFlexible: gameSettings.pitchTolerance === 'beginner',
-          centsThreshold: tolerance,
-        }) && Math.abs(currentPitch.cents) <= tolerance
-
-        if (isMatch) {
-          if (lockStartRef.current === 0) lockStartRef.current = Date.now()
-          const held = Date.now() - lockStartRef.current
-          const progress = Math.min(held / lockDurationRef.current, 1)
-          setLockProgress(progress)
-
-          if (progress >= 1) {
-            // FIRE! Treat as correct answer
-            lockStartRef.current = 0
-            setLockProgress(0)
-            handleAnswerInner(activeAlien.note)
-          }
-        } else {
+      const p = livePitchRef.current
+      if (!activeAlien) {
+        // No active target — clear lock so it doesn't bleed into the next alien
+        if (lockStartRef.current > 0) {
           lockStartRef.current = 0
           setLockProgress(0)
         }
-      } else {
-        lockStartRef.current = 0
-        setLockProgress(0)
+      } else if (lockStartRef.current === -1) {
+        // Cooldown sentinel — wait
+      } else if (p?.isActive && p.confidence >= 0.75 && p.frequency > 0) {
+        // Tolerance scales with parent setting (beginner is more forgiving)
+        const TOLERANCE_CENTS = gameSettings.pitchTolerance === 'beginner' ? 100
+          : gameSettings.pitchTolerance === 'intermediate' ? 70 : 40
+        const targetFreq = noteToFreq(activeAlien.note)
+        const centsOff = octaveFoldedCents(p.frequency, targetFreq)
+        if (Math.abs(centsOff) <= TOLERANCE_CENTS) {
+          // IN tolerance — start or continue the lock
+          if (lockStartRef.current === 0) lockStartRef.current = performance.now()
+          if (lockStartRef.current > 0) {
+            const held = performance.now() - lockStartRef.current
+            const progress = Math.min(1, held / 300)
+            setLockProgress(progress)
+            if (progress >= 1) {
+              // FIRE — set cooldown sentinel
+              lockStartRef.current = -1
+              setLockProgress(0)
+              setTimeout(() => { if (lockStartRef.current === -1) lockStartRef.current = 0 }, 600)
+              handleAnswerInner(activeAlien.note)
+            }
+          }
+        } else {
+          // CONFIDENTLY wrong note — hard reset
+          if (lockStartRef.current > 0) {
+            lockStartRef.current = 0
+            setLockProgress(0)
+          }
+        }
       }
+      // else: silent or low confidence — DO NOTHING. preserve in-progress lock.
+      // (This is the load-bearing flicker fix from Pitchforks v1.)
     }
-  }, [gameMode])
+  }, [gameMode, gameSettings.pitchTolerance])
 
   // ─── Start Game ──────────────────────────────────────────────────────────
   const startGame = useCallback(() => {
@@ -227,8 +254,10 @@ export default function PitchDefender() {
     if (spawnTimerRef.current) { clearTimeout(spawnTimerRef.current); spawnTimerRef.current = null }
 
     initAudio()
-    // Start microphone for any mic-driven mode (Echo Cannon, Staff Defender)
-    if (gameMode === 'echoCannon' || gameMode === 'staffDefender') startListening()
+    // Start microphone for ALL modes — vocal feedback is universal now (the
+    // 10x ask). Click/key input still works in every mode; the mic is
+    // strictly additive.
+    startListening()
     // Apply parent settings: override starting notes with enabled pool
     const initial = createInitialState()
     const enabledPool = gameSettings.enabledNotes.length >= 2
@@ -1058,6 +1087,27 @@ export default function PitchDefender() {
             maxCityHealth={state.maxCityHealth}
             showScorePop={showScorePop}
           />
+
+          {/* ── Global mic charge slider bar (Pitchforks v1 style) ──
+              Visible in ALL game modes when the singer is currently locking.
+              Yellow under 80%, green at/above. Gated to lockProgress > 0 so an
+              empty bar isn't visual noise. */}
+          {lockProgress > 0 && (
+            <div className="absolute left-1/2 -translate-x-1/2 z-30 pointer-events-none"
+                 style={{ bottom: 110 }}>
+              <div className="w-40 h-2 rounded-full overflow-hidden"
+                   style={{ background: 'rgba(40,40,60,0.7)', boxShadow: '0 0 12px rgba(0,0,0,0.6)' }}>
+                <div className="h-full rounded-full transition-[width] duration-75 ease-linear"
+                     style={{
+                       width: `${lockProgress * 100}%`,
+                       background: lockProgress >= 0.8 ? '#4ade80' : '#fbbf24',
+                       boxShadow: lockProgress >= 0.8
+                         ? '0 0 10px #4ade80'
+                         : '0 0 6px #fbbf24',
+                     }} />
+              </div>
+            </div>
+          )}
 
           {/* Alien field */}
           <div
