@@ -24,6 +24,7 @@ import {
 import { INTRO_ORDER, UNLOCK_THRESHOLDS } from './types'
 import { usePitchDetection, notesMatch } from './usePitchDetection'
 import { initAudio, loadPianoSamples, playPianoNote } from './audioEngine'
+import { noteToFreq, octaveFoldedCents, PITCH_ON_TOLERANCE_CENTS } from './pitchMath'
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
@@ -45,29 +46,6 @@ const STARTING_SHIELDS = 5
 // Mic charge mechanic — ported from PitchforksII (on-pitch accumulates, off-pitch decays)
 const CHARGE_FULL_MS = 600        // ms of sustained on-pitch singing to fire
 const CHARGE_DECAY_PER_SEC = 400  // ms drained per real second when off-pitch
-const CHARGE_ON_TOLERANCE_CENTS = 50  // ±50¢ = within half a semitone = "on pitch"
-
-// Note→frequency lookup (octaves 2-6, used for low/high pitch hints in mic mode)
-const NOTE_NAMES_CHROMA = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
-const NOTE_FREQ_LOOKUP: Record<string, number> = {}
-for (let octave = 2; octave <= 6; octave++) {
-  for (let i = 0; i < 12; i++) {
-    NOTE_FREQ_LOOKUP[`${NOTE_NAMES_CHROMA[i]}${octave}`] =
-      440 * Math.pow(2, (octave - 4) + (i - 9) / 12)
-  }
-}
-function noteToFreq(name: string): number {
-  return NOTE_FREQ_LOOKUP[name] ?? 440
-}
-// Octave-folded cents deviation: how far the singer's frequency is from the
-// target in cents, ignoring octave (so a kid can sing C5 to a C4 alien).
-function octaveFoldedCents(detectedFreq: number, targetFreq: number): number {
-  if (detectedFreq <= 0 || targetFreq <= 0) return 0
-  let cents = 1200 * Math.log2(detectedFreq / targetFreq)
-  while (cents > 600) cents -= 1200
-  while (cents < -600) cents += 1200
-  return cents
-}
 
 type InputMode = 'click' | 'mic'
 type Phase = 'menu' | 'tutorial' | 'playing' | 'game_over'
@@ -879,7 +857,7 @@ export default function RetroBlaster() {
           }
           const targetFreq = noteToFreq(pick.alien.note)
           const centsOff = octaveFoldedCents(p.frequency, targetFreq)
-          const isOn = Math.abs(centsOff) <= CHARGE_ON_TOLERANCE_CENTS
+          const isOn = Math.abs(centsOff) <= PITCH_ON_TOLERANCE_CENTS
           if (isOn) {
             gs.pitchHint = 'on'
             gs.chargeProgress = Math.min(CHARGE_FULL_MS, gs.chargeProgress + dt * 1000)

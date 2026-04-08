@@ -19,8 +19,9 @@ import {
 import { INTRO_ORDER, UNLOCK_THRESHOLDS } from './types'
 import NoteButtons from './NoteButtons'
 import PitchGuidance from './PitchGuidance'
-import { usePitchDetection, notesMatch } from './usePitchDetection'
+import { usePitchDetection } from './usePitchDetection'
 import { initAudio, loadPianoSamples, playPianoNote } from './audioEngine'
+import { noteToFreq, octaveFoldedCents, PITCH_ON_TOLERANCE_CENTS } from './pitchMath'
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
@@ -148,41 +149,53 @@ export default function DrillMode() {
     try { localStorage.setItem(DRILL_PROGRESS_KEY, JSON.stringify(progressRef.current)) } catch {}
   }, [])
 
-  // ─── Mic tick — check pitch match in mic mode ─────────��──────────────
+  // ─── Mic tick — charge-decay pitch matching (PitchforksII pattern) ──
+  // Replaces the previous
+  // hard-reset silent lock. Accumulator builds while singing on-pitch and
+  // DECAYS (not resets) when off-pitch — forgiving of brief wobble. Reuses
+  // lockStartRef as the accumulator (ms 0..fullMs); PitchGuidance still
+  // reads lockProgress so the visual marker keeps working.
   useEffect(() => {
     if (inputMode !== 'mic' || phase !== 'answering' || !isListening) return
 
-    const interval = setInterval(() => {
-      // [FIX HIGH] Respect processing lock — don't fire during transition
-      if (processingRef.current) return
+    const TICK_MS = 50
+    const DECAY_PER_SEC = 400         // ms drained per real second when off-pitch
+    const SILENT_DECAY_PER_SEC = 200  // slower drain when mic is silent
 
-      const currentPitch = livePitchRef.current
-      if (!currentPitch?.isActive || !currentNote) {
+    const interval = setInterval(() => {
+      if (processingRef.current) return
+      if (!currentNote) {
         lockStartRef.current = 0
         setLockProgress(0)
         return
       }
 
-      const isMatch = notesMatch(currentPitch.note, currentNote, {
-        octaveFlexible: true,
-      }) && Math.abs(currentPitch.cents) <= 50
+      const fullMs = lockDurationRef.current  // 600ms by default
+      const currentPitch = livePitchRef.current
+      let progressMs = lockStartRef.current
 
-      if (isMatch) {
-        if (lockStartRef.current === 0) lockStartRef.current = Date.now()
-        const held = Date.now() - lockStartRef.current
-        const progress = Math.min(held / lockDurationRef.current, 1)
-        setLockProgress(progress)
-
-        if (progress >= 1) {
-          lockStartRef.current = 0
-          setLockProgress(0)
-          processAnswerRef.current(currentNote)
+      if (currentPitch?.isActive && currentPitch.frequency > 0) {
+        const targetFreq = noteToFreq(currentNote)
+        const centsOff = octaveFoldedCents(currentPitch.frequency, targetFreq)
+        const isOn = Math.abs(centsOff) <= PITCH_ON_TOLERANCE_CENTS
+        if (isOn) {
+          progressMs = Math.min(fullMs, progressMs + TICK_MS)
+        } else {
+          progressMs = Math.max(0, progressMs - (DECAY_PER_SEC * TICK_MS) / 1000)
         }
       } else {
+        progressMs = Math.max(0, progressMs - (SILENT_DECAY_PER_SEC * TICK_MS) / 1000)
+      }
+
+      lockStartRef.current = progressMs
+      setLockProgress(progressMs / fullMs)
+
+      if (progressMs >= fullMs) {
         lockStartRef.current = 0
         setLockProgress(0)
+        processAnswerRef.current(currentNote)
       }
-    }, 50)
+    }, TICK_MS)
 
     return () => clearInterval(interval)
   // eslint-disable-next-line react-hooks/exhaustive-deps
