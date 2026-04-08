@@ -1815,6 +1815,23 @@ export default function Composer() {
         />
       )}
 
+      {/* ── Floating SAVE button — always visible, bottom-right ──
+          Jon's ask 2x: the small Save button in the top toolbar is easy to
+          miss. This big floating one can't be missed, and it stays put no
+          matter what you scroll or how the toolbar wraps. */}
+      <button
+        onClick={handleSave}
+        className="fixed bottom-6 right-6 z-40 px-6 py-4 rounded-2xl font-bold text-white text-base shadow-2xl transition-transform active:scale-95 hover:scale-105"
+        style={{
+          background: 'linear-gradient(135deg, #4ade80, #22c55e)',
+          boxShadow: '0 0 24px rgba(74,222,128,0.5), 0 8px 24px rgba(0,0,0,0.6)',
+          border: '2px solid #86efac',
+        }}
+        title="Save composition to localStorage — reads in all Pitch Defender games"
+      >
+        💾 SAVE
+      </button>
+
       {/* Bottom bar: measure-level controls (bar lines, codas, voltas) */}
       {selectedNoteId != null && (
         <div className="px-4 py-2 border-t border-gray-800/60 bg-[#08080f] flex items-center gap-2 text-xs flex-wrap">
@@ -1897,20 +1914,39 @@ function NoteEditPopup({
     return () => { clearTimeout(t); document.removeEventListener('mousedown', onClick) }
   }, [onClose])
 
+  // ─── Compute placement: flip above if no room below, clamp height to fit ──
+  const MARGIN = 16
+  const WIDTH = 340
+  const PREFERRED_H = 560
+  const MIN_H = 240
+  const winW = typeof window !== 'undefined' ? window.innerWidth : 1200
+  const winH = typeof window !== 'undefined' ? window.innerHeight : 800
+  const spaceBelow = winH - y - MARGIN * 2
+  const spaceAbove = y - MARGIN * 2
+  const openBelow = spaceBelow >= MIN_H || spaceBelow >= spaceAbove
+  const popupMaxHeight = Math.min(
+    PREFERRED_H,
+    Math.max(MIN_H, openBelow ? spaceBelow : spaceAbove)
+  )
+  const computedTop = openBelow
+    ? Math.min(y + MARGIN, winH - popupMaxHeight - MARGIN)
+    : Math.max(MARGIN, y - MARGIN - popupMaxHeight)
+  const computedLeft = Math.min(Math.max(MARGIN, x), winW - WIDTH - MARGIN)
+
   return (
     <div
       data-note-popup
-      className="fixed z-50 bg-[#15152a] border-2 border-indigo-600 rounded-lg shadow-2xl p-3 text-xs"
+      className="fixed z-50 bg-[#15152a] border-2 border-indigo-600 rounded-lg shadow-2xl text-xs flex flex-col"
       style={{
-        left: Math.min(x, window.innerWidth - 360),
-        top: Math.min(y + 16, window.innerHeight - 480),
-        width: 340,
-        maxHeight: '80vh',
-        overflowY: 'auto',
+        left: computedLeft,
+        top: computedTop,
+        width: WIDTH,
+        maxHeight: popupMaxHeight,
       }}
       onClick={e => e.stopPropagation()}
     >
-      <div className="flex items-center justify-between mb-2 pb-2 border-b border-gray-700">
+      {/* Sticky header */}
+      <div className="flex items-center justify-between px-3 py-2 border-b border-gray-700 bg-[#15152a] rounded-t-lg flex-shrink-0">
         <span className="text-indigo-300 font-bold">
           Edit {note.isRest ? 'Rest' : note.keys.length > 1 ? 'Chord' : 'Note'}
           {note.staff != null && (
@@ -1919,10 +1955,11 @@ function NoteEditPopup({
             </span>
           )}
         </span>
-        <button onClick={onClose} className="text-gray-500 hover:text-gray-300">✕</button>
+        <button onClick={onClose} className="text-gray-500 hover:text-gray-300 text-base leading-none">✕</button>
       </div>
 
-      <div className="space-y-2">
+      {/* Scrollable body */}
+      <div className="space-y-2 px-3 py-2 overflow-y-auto flex-1">
         {/* Chord tones — only when there are multiple */}
         {!note.isRest && note.keys.length > 0 && (
           <div>
@@ -2102,11 +2139,19 @@ function NoteEditPopup({
           </>
         )}
 
+      </div>
+
+      {/* ── Sticky footer — Delete button always visible regardless of scroll ──
+          Jon's ask 2x: previously the Delete button was inside the scrollable
+          body (last child), so when the popup content exceeded popupMaxHeight
+          the button fell below the body scroll fold and you had to scroll
+          inside the popup to reach it. Sticky footer fixes that permanently. */}
+      <div className="flex-shrink-0 border-t border-red-900/50 bg-[#15152a] rounded-b-lg px-3 py-2">
         <button
           onClick={onDelete}
-          className="w-full mt-2 px-3 py-2 rounded bg-red-900/40 border border-red-700 text-red-300 hover:bg-red-900/60 font-bold"
+          className="w-full px-3 py-2 rounded bg-red-900/60 border border-red-600 text-red-200 hover:bg-red-900/80 font-bold text-sm"
         >
-          Delete {note.isRest ? 'Rest' : 'Note'}
+          🗑  Delete {note.isRest ? 'Rest' : 'Note'}
         </button>
       </div>
     </div>
