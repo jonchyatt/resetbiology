@@ -346,6 +346,7 @@ export default function Composer() {
   const [editPopup, setEditPopup] = useState<{ noteId: number; x: number; y: number } | null>(null)
   const [statusMsg, setStatusMsg] = useState('')
   const [savedList, setSavedList] = useState<{ key: string; comp: Composition }[]>([])
+  const [showOpenModal, setShowOpenModal] = useState(false)
 
   // Pending slur / hairpin in progress (set first endpoint, click second to commit)
   const [pendingSlurFromId, setPendingSlurFromId] = useState<number | null>(null)
@@ -414,6 +415,10 @@ export default function Composer() {
   }, [setupTitle, setupComposer, setupClef, setupBassClef, setupGrandStaff, setupPickupBeats, setupTimeNum, setupTimeDen, setupKey, setupTempoBpm, setupTempoMark])
 
   // ─── Load saved → editor ──────────────────────────────────────────────────
+  // Re-IDs measures + notes so re-loading the same composition doesn't clash
+  // with the existing ID counters. Builds a id-translation map so slurs and
+  // hairpins (which reference note IDs) get remapped instead of stripped —
+  // previously they were silently dropped on load.
   const loadComposition = useCallback((key: string) => {
     try {
       const raw = localStorage.getItem(key)
@@ -428,16 +433,35 @@ export default function Composer() {
         hairpins: [],
         ...parsed,
       }
-      // Re-id measures + notes so editing doesn't clash
+      // Re-ID measures + notes, building old→new id map for slur/hairpin remap
+      const noteIdMap = new Map<number, number>()
       c.measures.forEach(m => {
         m.id = ++measureIdCounter
-        m.notes.forEach(n => { n.id = ++noteIdCounter })
+        m.notes.forEach(n => {
+          const newId = ++noteIdCounter
+          noteIdMap.set(n.id, newId)
+          n.id = newId
+        })
       })
-      // Old slurs/hairpins reference old IDs — strip them since IDs were rewritten
-      c.slurs = []
-      c.hairpins = []
+      // Remap slur/hairpin endpoints. Drop any that reference notes that
+      // didn't survive the re-ID (corrupted saves).
+      c.slurs = (c.slurs || [])
+        .map(s => ({ fromId: noteIdMap.get(s.fromId) ?? -1, toId: noteIdMap.get(s.toId) ?? -1 }))
+        .filter(s => s.fromId !== -1 && s.toId !== -1)
+      c.hairpins = (c.hairpins || [])
+        .map(h => ({
+          fromId: noteIdMap.get(h.fromId) ?? -1,
+          toId: noteIdMap.get(h.toId) ?? -1,
+          type: h.type,
+        }))
+        .filter(h => h.fromId !== -1 && h.toId !== -1)
       setComp(c)
       setPhase('editing')
+      setShowOpenModal(false)
+      setSelectedNoteId(null)
+      setEditPopup(null)
+      setStatusMsg(`Loaded "${c.title || 'Untitled'}"`)
+      setTimeout(() => setStatusMsg(''), 2500)
     } catch (err) {
       alert('Load failed: ' + (err as Error).message)
     }
@@ -1143,14 +1167,61 @@ export default function Composer() {
   // ─── Rebalance measures ──────────────────────────────────────────────────
   // Flatten all notes in order, then re-split across measures so each bar
   // respects the time signature capacity. Preserves measure metadata by
-  // index (startBar, endBar, volta, coda, segno). Lossy if the new layout
-  // has fewer/more measures than the old one — the user will see a status
-  // message telling them how the count changed.
+  // index (startBar, endBar, volta, coda, segno).
+  //
+  // 2026-04-08 fixes (Jon: "struggled with rest beats"):
+  //   - Trailing underfilled measure is auto-padded with rests so the last
+  //     bar always sums to full capacity. Without this, VexFlow renders
+  //     a half-empty bar that LOOKS like rest beats were dropped.
+  //   - Tightened epsilon from 0.001 to 1e-6 (the old value was loose
+  //     enough that a 4-beat measure could overflow without triggering).
+  //   - Grand staff now pads top + bot voices to the SAME measure count
+  //     before merging, so neither voice silently truncates the other.
   const rebalanceMeasures = useCallback(() => {
     if (!comp) return
     const fullCapacity = comp.timeNum * (4 / comp.timeDen)
+    const EPS = 1e-6
 
-    const splitIntoMeasures = (notes: MNote[]): MNote[][] => {
+    // Build a properly-shaped rest of an arbitrary beat count by stacking
+    // the largest power-of-two duration that fits. Used to pad underfilled
+    // trailing measures so the score always renders cleanly.
+    const REST_DURATIONS: { dur: DurationKey; beats: number; dotted: boolean }[] = [
+      { dur: 'w',  beats: 4,    dotted: false },
+      { dur: 'h',  beats: 3,    dotted: true  },
+      { dur: 'h',  beats: 2,    dotted: false },
+      { dur: 'q',  beats: 1.5,  dotted: true  },
+      { dur: 'q',  beats: 1,    dotted: false },
+      { dur: '8',  beats: 0.75, dotted: true  },
+      { dur: '8',  beats: 0.5,  dotted: false },
+      { dur: '16', beats: 0.25, dotted: false },
+      { dur: '32', beats: 0.125, dotted: false },
+    ]
+    const buildRestsForBeats = (beats: number, staff?: 0 | 1): MNote[] => {
+      const out: MNote[] = []
+      let remaining = beats
+      let safety = 32  // hard cap to prevent any infinite loop on weird inputs
+      while (remaining > EPS && safety-- > 0) {
+        const fit = REST_DURATIONS.find(r => r.beats <= remaining + EPS)
+        if (!fit) break  // smaller than 32nd note — round down (acceptable rounding loss)
+        out.push({
+          id: ++noteIdCounter,
+          keys: ['b/4'],
+          accidentals: [''],
+          duration: fit.dur,
+          dotted: fit.dotted,
+          articulation: 'none',
+          dynamic: 'none',
+          tieToNext: false,
+          fermata: false,
+          isRest: true,
+          staff: comp.grandStaff ? (staff ?? 0) : undefined,
+        })
+        remaining -= fit.beats
+      }
+      return out
+    }
+
+    const splitIntoMeasures = (notes: MNote[], staffForPad?: 0 | 1): MNote[][] => {
       const result: MNote[][] = []
       let current: MNote[] = []
       let used = 0
@@ -1158,7 +1229,7 @@ export default function Composer() {
       for (const note of notes) {
         const nb = noteBeats(note)
         const cap = (isFirst && comp.pickupBeats > 0) ? comp.pickupBeats : fullCapacity
-        if (used + nb > cap + 0.001) {
+        if (used + nb > cap + EPS) {
           if (current.length > 0) result.push(current)
           current = []
           used = 0
@@ -1168,6 +1239,24 @@ export default function Composer() {
         used += nb
       }
       if (current.length > 0) result.push(current)
+
+      // Pad the trailing measure with rests so it sums to full capacity.
+      // Without this, the last bar renders half-empty and Jon's complaint
+      // ("struggled with rest beats") shows up as missing tail rests.
+      if (result.length > 0) {
+        const last = result[result.length - 1]
+        const lastUsed = last.reduce((s, n) => s + noteBeats(n), 0)
+        // Determine the capacity this final bar SHOULD have (pickup if it's
+        // also the first measure, otherwise full)
+        const finalCap = (result.length === 1 && comp.pickupBeats > 0)
+          ? comp.pickupBeats
+          : fullCapacity
+        const shortBy = finalCap - lastUsed
+        if (shortBy > EPS) {
+          const padding = buildRestsForBeats(shortBy, staffForPad)
+          last.push(...padding)
+        }
+      }
       return result
     }
 
@@ -1178,7 +1267,9 @@ export default function Composer() {
       if (all.length === 0) return
       newGroups = splitIntoMeasures(all)
     } else {
-      // Grand staff: rebalance top + bottom independently, then merge by index
+      // Grand staff: rebalance top + bottom independently. Then PAD whichever
+      // voice has fewer measures with whole-bar rests so the merge produces a
+      // matching pair for every bar (otherwise one voice silently truncates).
       const top: MNote[] = []
       const bot: MNote[] = []
       comp.measures.forEach(m => m.notes.forEach(n => {
@@ -1186,14 +1277,14 @@ export default function Composer() {
         else bot.push(n)
       }))
       if (top.length === 0 && bot.length === 0) return
-      const topSplit = splitIntoMeasures(top)
-      const botSplit = splitIntoMeasures(bot)
+      const topSplit = splitIntoMeasures(top, 0)
+      const botSplit = splitIntoMeasures(bot, 1)
       const maxCount = Math.max(topSplit.length, botSplit.length, 1)
+      while (topSplit.length < maxCount) topSplit.push(buildRestsForBeats(fullCapacity, 0))
+      while (botSplit.length < maxCount) botSplit.push(buildRestsForBeats(fullCapacity, 1))
       newGroups = []
       for (let i = 0; i < maxCount; i++) {
-        const merged: MNote[] = []
-        if (topSplit[i]) merged.push(...topSplit[i])
-        if (botSplit[i]) merged.push(...botSplit[i])
+        const merged: MNote[] = [...(topSplit[i] || []), ...(botSplit[i] || [])]
         newGroups.push(merged)
       }
     }
@@ -1581,6 +1672,13 @@ export default function Composer() {
           >
             ⚖ Balance Bars
           </button>
+          <button
+            onClick={() => { refreshSavedList(); setShowOpenModal(true) }}
+            className="text-xs px-3 py-1.5 rounded font-bold text-amber-300 border border-amber-700 hover:bg-amber-950/40"
+            title="Open a previously saved composition (loads it into this editor for further editing)"
+          >
+            📂 Open…
+          </button>
           <button onClick={handleSave} className="text-xs px-3 py-1.5 rounded font-bold text-white" style={{ background: 'linear-gradient(135deg, #6366f1, #4f46e5)' }}>
             Save
           </button>
@@ -1813,6 +1911,69 @@ export default function Composer() {
             setEditPopup(null)
           }}
         />
+      )}
+
+      {/* ── Open Saved Composition modal ──
+          Triggered by the 📂 Open… button in the top toolbar. Lists every
+          pd_composed_* entry in localStorage and lets the user click one to
+          load it into the current editor (without going back to the setup
+          phase). loadComposition() handles the re-ID, slur/hairpin remap,
+          and modal close. */}
+      {showOpenModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70"
+          onClick={() => setShowOpenModal(false)}
+        >
+          <div
+            className="bg-[#15152a] border-2 border-amber-700 rounded-xl shadow-2xl w-[min(640px,90vw)] max-h-[80vh] flex flex-col"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-700">
+              <h2 className="text-lg font-bold text-amber-300">📂 Open Saved Composition</h2>
+              <button
+                onClick={() => setShowOpenModal(false)}
+                className="text-gray-500 hover:text-gray-300 text-2xl leading-none"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto p-4 space-y-2">
+              {savedList.length === 0 ? (
+                <div className="text-center text-gray-500 py-8">
+                  No saved compositions yet. Save one with the 💾 SAVE button first.
+                </div>
+              ) : (
+                savedList.map(({ key, comp: c }) => (
+                  <div
+                    key={key}
+                    className="flex items-center gap-2 p-3 bg-[#0a0a14] border border-[#3a3a55] rounded-lg hover:border-amber-700 transition-colors"
+                  >
+                    <button
+                      onClick={() => loadComposition(key)}
+                      className="flex-1 text-left text-indigo-300 hover:text-indigo-200"
+                    >
+                      <div className="font-bold text-base">{c.title || 'Untitled'}</div>
+                      <div className="text-xs text-gray-500 mt-0.5">
+                        {c.clef} clef · {c.timeNum}/{c.timeDen} · {c.keyName} · {c.measures?.length || 0} measures
+                        {c.savedAt && ` · saved ${new Date(c.savedAt).toLocaleDateString()}`}
+                      </div>
+                    </button>
+                    <button
+                      onClick={() => deleteSavedComposition(key, c.title)}
+                      className="text-xs text-red-500 hover:text-red-400 px-3 py-1 rounded border border-red-900 hover:bg-red-950/40"
+                      title="Delete this saved composition"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+            <div className="px-4 py-3 border-t border-gray-700 text-xs text-gray-500">
+              Loading replaces what&apos;s currently in the editor. Save your current work first if you want to keep it.
+            </div>
+          </div>
+        </div>
       )}
 
       {/* ── Floating SAVE button — always visible, bottom-right ──
