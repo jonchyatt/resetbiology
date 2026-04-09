@@ -619,33 +619,67 @@ export default function SynthesiaRunner() {
       ctx.fillRect(x, 0, keyW, FALL_AREA_H)
     }
 
-    // Flow-mode scoring window — visible green band so the player knows
-    // exactly where they need to be on pitch. Only drawn in flow mode.
-    if (!practiceRef.current) {
-      ctx.fillStyle = 'rgba(74,222,128,0.10)'
-      ctx.fillRect(0, HIT_LINE_Y - FLOW_WINDOW_PX, CANVAS_W, FLOW_WINDOW_PX * 2)
-      // Top edge of window
-      ctx.strokeStyle = 'rgba(74,222,128,0.30)'
-      ctx.lineWidth = 1
-      ctx.setLineDash([4, 4])
-      ctx.beginPath()
-      ctx.moveTo(0, HIT_LINE_Y - FLOW_WINDOW_PX)
-      ctx.lineTo(CANVAS_W, HIT_LINE_Y - FLOW_WINDOW_PX)
-      ctx.moveTo(0, HIT_LINE_Y + FLOW_WINDOW_PX)
-      ctx.lineTo(CANVAS_W, HIT_LINE_Y + FLOW_WINDOW_PX)
-      ctx.stroke()
-      ctx.setLineDash([])
-    }
-
-    // Hit line
-    ctx.strokeStyle = 'rgba(100,200,255,0.4)'
-    ctx.lineWidth = 2
+    // Hit line (dim, full width — still useful as a visual reference for the
+    // overall "this is where blocks land" plane)
+    ctx.strokeStyle = 'rgba(100,200,255,0.18)'
+    ctx.lineWidth = 1
     ctx.setLineDash([8, 6])
     ctx.beginPath()
     ctx.moveTo(0, HIT_LINE_Y)
     ctx.lineTo(CANVAS_W, HIT_LINE_Y)
     ctx.stroke()
     ctx.setLineDash([])
+
+    // ── Key-aligned target column ─────────────────────────────────────────
+    // Jon 2026-04-09: "the green target zone should match the key in
+    // location that we are aiming for... hard to think you are doing it
+    // correctly when the target is a different direction than the note
+    // you are going for." Replaced the full-width green band with a
+    // narrow column aligned to the active block's key. The column slides
+    // horizontally as the active note changes, so the singer aims their
+    // voice at the literal key below. See
+    // memory/feedback/feedback_feedback_must_be_spatially_co_located_with_target.md
+    const activeBlock = blocks[currentIdx]
+    if (activeBlock && activeBlock.state !== 'cleared') {
+      const targetKeyIdx = whiteKeyIndexFor(activeBlock.semitones)
+      if (targetKeyIdx >= 0) {
+        const targetX = targetKeyIdx * keyW
+        const colorInfo = NOTE_COLORS[activeBlock.name]
+        const hue = colorInfo?.hue ?? 140
+        // Vertical column from hit-line zone down to the keyboard top
+        ctx.fillStyle = `hsla(${hue}, 80%, 55%, 0.12)`
+        ctx.fillRect(targetX, HIT_LINE_Y - FLOW_WINDOW_PX, keyW, FALL_AREA_H - (HIT_LINE_Y - FLOW_WINDOW_PX))
+        // Scoring window (more opaque, narrower vertical range — the hit zone itself)
+        ctx.fillStyle = `hsla(${hue}, 85%, 60%, 0.22)`
+        ctx.fillRect(targetX, HIT_LINE_Y - FLOW_WINDOW_PX, keyW, FLOW_WINDOW_PX * 2)
+        // Left and right column borders — cleaner vertical lines
+        ctx.strokeStyle = `hsla(${hue}, 90%, 65%, 0.6)`
+        ctx.lineWidth = 2
+        ctx.setLineDash([6, 4])
+        ctx.beginPath()
+        ctx.moveTo(targetX, HIT_LINE_Y - FLOW_WINDOW_PX)
+        ctx.lineTo(targetX, HIT_LINE_Y + FLOW_WINDOW_PX)
+        ctx.moveTo(targetX + keyW, HIT_LINE_Y - FLOW_WINDOW_PX)
+        ctx.lineTo(targetX + keyW, HIT_LINE_Y + FLOW_WINDOW_PX)
+        ctx.stroke()
+        ctx.setLineDash([])
+        // Crosshair line at exact hit line, within the column only
+        ctx.strokeStyle = `hsla(${hue}, 95%, 75%, 0.9)`
+        ctx.lineWidth = 2
+        ctx.beginPath()
+        ctx.moveTo(targetX + 2, HIT_LINE_Y)
+        ctx.lineTo(targetX + keyW - 2, HIT_LINE_Y)
+        ctx.stroke()
+        // Glowing arrow pointing down at the key (removes "which key?" ambiguity)
+        ctx.fillStyle = `hsla(${hue}, 95%, 75%, 0.85)`
+        ctx.beginPath()
+        ctx.moveTo(targetX + keyW / 2, FALL_AREA_H - 4)
+        ctx.lineTo(targetX + keyW / 2 - 8, FALL_AREA_H - 14)
+        ctx.lineTo(targetX + keyW / 2 + 8, FALL_AREA_H - 14)
+        ctx.closePath()
+        ctx.fill()
+      }
+    }
 
     // Falling blocks
     for (const b of blocks) {
