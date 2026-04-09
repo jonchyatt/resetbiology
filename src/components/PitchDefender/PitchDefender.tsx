@@ -965,6 +965,20 @@ export default function PitchDefender() {
                 <div className="text-[11px] font-normal mt-0.5 opacity-70">Pause-and-wait staff scroll. Self-paced accuracy.</div>
               </a>
               <a
+                href="/pitch-defender/simply-sing"
+                title="Karaoke-style sing-along to your composer-saved songs. Pitch ribbons scroll horizontally past a playhead, your voice lights up the current note when on-pitch. Continuous play — never pauses. Plays the piano backing while your son sings along."
+                className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
+                style={{
+                  background: 'rgba(125, 240, 255, 0.12)',
+                  color: '#7df0ff',
+                  border: '2px solid rgba(125, 240, 255, 0.5)',
+                  boxShadow: '0 0 12px rgba(125,240,255,0.15)',
+                }}
+              >
+                Simply Sing
+                <div className="text-[11px] font-normal mt-0.5 opacity-80">Karaoke pitch ribbons + piano backing for composer songs.</div>
+              </a>
+              <a
                 href="/pitch-defender/synthesia"
                 title="Synthesia-style falling note blocks land on a piano keyboard. Match each block as it lands. Reads any song from the library."
                 className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
