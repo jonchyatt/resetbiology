@@ -2,14 +2,30 @@
 
 import Link from "next/link"
 import { useState, useEffect } from "react"
+import { usePathname } from "next/navigation"
 import { Menu, X, ChevronDown, User, Settings, Shield } from "lucide-react"
 import { useUser } from '@auth0/nextjs-auth0'
 
+// Routes where the Header is hidden entirely (full-screen immersive tools).
+// Pitch Defender and all its sub-routes use fixed inset-0 layouts that don't
+// leave room for a nav bar — past sessions had Jon deleting the header via
+// devtools just to reach the Composer's Save button. Hide instead of covering.
+const HEADER_HIDDEN_PREFIXES = ['/pitch-defender']
+function shouldHideHeader(pathname: string | null): boolean {
+  if (!pathname) return false
+  return HEADER_HIDDEN_PREFIXES.some(p => pathname === p || pathname.startsWith(`${p}/`))
+}
+
 export function Header() {
+  const pathname = usePathname()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
   const { user, isLoading } = useUser()
   const isAdmin = user?.role === 'admin'
+
+  // Hide on full-screen immersive routes so the fixed nav bar doesn't cover
+  // the content. Each such route owns its own navigation (← Back links).
+  if (shouldHideHeader(pathname)) return null
 
   // Close menus when clicking outside
   useEffect(() => {

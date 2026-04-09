@@ -82,9 +82,33 @@ export async function loadPianoSamples(): Promise<void> {
   }))
 }
 
+// Piano sample set covers C3-C5 only (15 notes, see KEYBOARD_ORDER in types.ts).
+// When a caller requests a note outside this range (e.g. Simply Sing playing a
+// composition with notes up in C6), fall back to the same note-class one octave
+// down, then two octaves, until something plays or we give up. Users hear the
+// right note class in a nearby octave instead of silence — way better UX for
+// backing playback. Games that stay within the sample range never trigger this.
+function findPianoBuffer(note: string): AudioBuffer | undefined {
+  const direct = _pianoCache.get(note)
+  if (direct) return direct
+  const m = note.match(/^([A-G]#?)(\d+)$/)
+  if (!m) return undefined
+  const className = m[1]
+  const octave = parseInt(m[2], 10)
+  // Try same note class at lower and higher octaves, nearest first
+  for (let delta = 1; delta <= 4; delta++) {
+    for (const sign of [-1, 1]) {
+      const tryNote = `${className}${octave + sign * delta}`
+      const hit = _pianoCache.get(tryNote)
+      if (hit) return hit
+    }
+  }
+  return undefined
+}
+
 export function playPianoNote(note: string) {
   try {
-    const buf = _pianoCache.get(note)
+    const buf = findPianoBuffer(note)
     if (!buf || !_sfxBus) return
     const c = ctx()
     const src = c.createBufferSource()

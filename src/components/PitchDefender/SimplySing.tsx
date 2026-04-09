@@ -59,12 +59,13 @@ const SING_TOLERANCE_CENTS = 90
 // ─── Types ──────────────────────────────────────────────────────────────────
 
 interface Song {
-  key: string                      // localStorage key
+  key: string                      // localStorage key (or __demo_* for built-ins)
   title: string
   tempoBpm: number
   notes: ExtractedNote[]           // includes rests for timing accuracy
   totalBeats: number
   medianSemi: number               // for centering the field vertically
+  isDemo: boolean                  // true for hardcoded demo songs
 }
 
 interface PitchTrailPoint {
@@ -87,8 +88,78 @@ function semiToName(semi: number): string {
   return `${NOTE_NAMES[idx]}${oct}`
 }
 
-function loadAllComposerSongs(): Song[] {
-  const out: Song[] = []
+// ─── Built-in demo songs ────────────────────────────────────────────────────
+// Hardcoded so Jon can test Simply Sing without needing to compose first.
+// Note: semitones are relative to C4 (0 = C4, 2 = D4, 4 = E4, etc.)
+//
+// Shape note: [semiFromC4, beats, lyricOrNull]. Simple sequential melody.
+type DemoNote = [number, number, string | null]
+
+const DEMO_TWINKLE: DemoNote[] = [
+  [0, 1, 'Twin'], [0, 1, 'kle'], [7, 1, 'twin'], [7, 1, 'kle'],
+  [9, 1, 'lit'], [9, 1, 'tle'], [7, 2, 'star'],
+  [5, 1, 'how'], [5, 1, 'I'], [4, 1, 'won'], [4, 1, 'der'],
+  [2, 1, 'what'], [2, 1, 'you'], [0, 2, 'are'],
+  [7, 1, 'Up'], [7, 1, 'a'], [5, 1, 'bove'], [5, 1, 'the'],
+  [4, 1, 'world'], [4, 1, 'so'], [2, 2, 'high'],
+  [7, 1, 'Like'], [7, 1, 'a'], [5, 1, 'dia'], [5, 1, 'mond'],
+  [4, 1, 'in'], [4, 1, 'the'], [2, 2, 'sky'],
+]
+
+const DEMO_MARY: DemoNote[] = [
+  [4, 1, 'Ma'], [2, 1, 'ry'], [0, 1, 'had'], [2, 1, 'a'],
+  [4, 1, 'lit'], [4, 1, 'tle'], [4, 2, 'lamb'],
+  [2, 1, 'lit'], [2, 1, 'tle'], [2, 2, 'lamb'],
+  [4, 1, 'lit'], [4, 1, 'tle'], [4, 2, 'lamb'],
+  [4, 1, 'Ma'], [2, 1, 'ry'], [0, 1, 'had'], [2, 1, 'a'],
+  [4, 1, 'lit'], [4, 1, 'tle'], [4, 1, 'lamb,'], [4, 1, 'its'],
+  [2, 1, 'fleece'], [2, 1, 'was'], [4, 1, 'white'], [2, 1, 'as'],
+  [0, 4, 'snow'],
+]
+
+const DEMO_ODE_TO_JOY: DemoNote[] = [
+  [4, 1, 'Joy'], [4, 1, 'ful'], [5, 1, 'joy'], [7, 1, 'ful'],
+  [7, 1, 'we'], [5, 1, 'a'], [4, 1, 'dore'], [2, 1, 'thee'],
+  [0, 1, 'God'], [0, 1, 'of'], [2, 1, 'glo'], [4, 1, 'ry'],
+  [4, 1.5, 'lord'], [2, 0.5, 'of'], [2, 2, 'love'],
+]
+
+function buildDemoSong(title: string, notes: DemoNote[], tempoBpm: number): Song {
+  const extracted: ExtractedNote[] = []
+  let beatOffset = 0
+  for (const [semi, beats, lyric] of notes) {
+    extracted.push({
+      semi,
+      beats,
+      pitchName: '',  // filled at playback via semiToName + shift
+      isRest: false,
+      lyric: lyric ?? undefined,
+      measureIdx: Math.floor(beatOffset / 4) + 1,
+      beatOffset,
+    })
+    beatOffset += beats
+  }
+  const sorted = extracted.map(n => n.semi).sort((a, b) => a - b)
+  const medianSemi = sorted[Math.floor(sorted.length / 2)]
+  return {
+    key: `__demo_${title.toLowerCase().replace(/\s+/g, '_')}`,
+    title,
+    tempoBpm,
+    notes: extracted,
+    totalBeats: beatOffset,
+    medianSemi,
+    isDemo: true,
+  }
+}
+
+function loadAllSongs(): Song[] {
+  // Built-in demos come first so new users have something to click immediately
+  const out: Song[] = [
+    buildDemoSong('Twinkle Twinkle Little Star', DEMO_TWINKLE, 100),
+    buildDemoSong('Mary Had a Little Lamb', DEMO_MARY, 110),
+    buildDemoSong('Ode to Joy', DEMO_ODE_TO_JOY, 95),
+  ]
+  // Then everything the user has saved in Composer
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i)
     if (!key || !key.startsWith('pd_composed_')) continue
@@ -110,10 +181,10 @@ function loadAllComposerSongs(): Song[] {
         notes,
         totalBeats,
         medianSemi,
+        isDemo: false,
       })
     } catch {}
   }
-  out.sort((a, b) => a.title.localeCompare(b.title))
   return out
 }
 
@@ -146,12 +217,12 @@ export default function SimplySing() {
   // Load composer songs on mount
   useEffect(() => {
     loadPianoSamples()
-    setSongs(loadAllComposerSongs())
+    setSongs(loadAllSongs())
   }, [])
 
   // Refresh song list when returning to menu
   useEffect(() => {
-    if (phase === 'menu') setSongs(loadAllComposerSongs())
+    if (phase === 'menu') setSongs(loadAllSongs())
   }, [phase])
 
   // ─── Mic startup / teardown ───────────────────────────────────────────────
@@ -335,16 +406,32 @@ export default function SimplySing() {
       return FIELD_BOTTOM - norm * FIELD_HEIGHT
     }
 
-    // Faint horizontal gridlines every 12 semis (octave markers)
-    ctx.strokeStyle = 'rgba(255,255,255,0.04)'
+    // ── Staff-like pitch reference lines ──
+    // Horizontal line for every semitone in the song's note set, plus octave
+    // markers. User asked for "lines that correspond with the notes to be
+    // played." Draw a line at every unique semi actually used in the song.
+    const uniqueSemis = new Set<number>()
+    for (const n of song.notes) {
+      if (!n.isRest) uniqueSemis.add(n.semi + semitoneShift)
+    }
+    // Per-note reference lines (dim, for context)
     ctx.lineWidth = 1
-    for (let s = -SEMI_RANGE; s <= SEMI_RANGE; s += 12) {
-      const y = semiToY(fieldMidSemi + s)
+    uniqueSemis.forEach(s => {
+      const y = semiToY(s)
+      if (y < FIELD_TOP || y > FIELD_BOTTOM) return
+      // Brighter for octave Cs so the kid has an anchor
+      const isC = ((s % 12) + 12) % 12 === 0
+      ctx.strokeStyle = isC ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.07)'
       ctx.beginPath()
       ctx.moveTo(0, y)
       ctx.lineTo(W, y)
       ctx.stroke()
-    }
+      // Note name label on the left gutter
+      ctx.fillStyle = isC ? 'rgba(255,255,255,0.65)' : 'rgba(255,255,255,0.35)'
+      ctx.font = isC ? 'bold 11px monospace' : '10px monospace'
+      ctx.textAlign = 'left'
+      ctx.fillText(semiToName(s), 4, y - 2)
+    })
 
     // ── Ribbons ──
     for (let i = 0; i < song.notes.length; i++) {
@@ -450,19 +537,40 @@ export default function SimplySing() {
     ctx.arc(PLAYHEAD_X, FIELD_BOTTOM + 8, 3, 0, Math.PI * 2)
     ctx.fill()
 
-    // ── Top bar: section + title ──
-    ctx.fillStyle = 'rgba(0,0,0,0.4)'
+    // ── Top bar: title + current note + tempo + score ──
+    ctx.fillStyle = 'rgba(0,0,0,0.5)'
     ctx.fillRect(0, 0, W, TOP_PAD)
     ctx.fillStyle = '#ffffff'
     ctx.font = 'bold 22px sans-serif'
     ctx.textAlign = 'left'
     ctx.fillText(song.title, 24, 36)
-    ctx.font = '13px sans-serif'
+    // Current note being sung (the ribbon at the playhead)
+    let currentNoteLabel = ''
+    for (const n of song.notes) {
+      if (n.isRest) continue
+      if (beat >= n.beatOffset && beat < n.beatOffset + n.beats) {
+        currentNoteLabel = semiToName(n.semi + semitoneShift)
+        break
+      }
+    }
+    if (currentNoteLabel) {
+      ctx.font = 'bold 18px monospace'
+      ctx.fillStyle = '#7df0ff'
+      ctx.fillText(`♪ ${currentNoteLabel}`, 24, 56)
+    }
+    // Tempo readout
+    const effBpm = Math.round(song.tempoBpm * tempoMul)
+    ctx.font = '12px monospace'
     ctx.fillStyle = '#a78bfa'
-    ctx.fillText(`SCORE  ${score}%`, W - 140, 28)
+    ctx.textAlign = 'right'
+    ctx.fillText(`♩ = ${effBpm}`, W - 24, 20)
+    ctx.fillStyle = '#ffffff'
+    ctx.font = 'bold 14px sans-serif'
+    ctx.fillText(`SCORE  ${score}%`, W - 24, 38)
     ctx.fillStyle = '#7df0ff'
-    ctx.fillText(`${Math.round(progress * 100)}% complete`, W - 140, 46)
-  }, [score, progress, semitoneShift])
+    ctx.font = '12px sans-serif'
+    ctx.fillText(`${Math.round(progress * 100)}% complete`, W - 24, 54)
+  }, [score, progress, semitoneShift, tempoMul])
 
   // Cleanup on unmount
   useEffect(() => {
