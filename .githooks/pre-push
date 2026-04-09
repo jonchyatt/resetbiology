@@ -1,0 +1,79 @@
+#!/bin/bash
+# ─────────────────────────────────────────────────────────────────────────────
+# Vercel duplicate-project guard (Layer 2 of the defense stack).
+#
+# This repo's directory name (`reset-biology-website`) collides with a Vercel
+# project name. The Vercel CLI auto-creates a project named after the
+# directory whenever it runs unlinked, and that duplicate project then
+# subscribes to this same GitHub repo and double-deploys every commit. It has
+# happened at least twice and cost Jon real money each time.
+#
+# This hook runs before every `git push` and aborts if `reset-biology-website`
+# appears in `vercel projects ls`. Don't bypass with --no-verify; if this
+# hook fires, the duplicate is back and you need to delete it before pushing.
+#
+# Recovery (run from the JARVIS dir, NEVER from this dir):
+#   cd /c/Users/jonch/Projects/jarvis
+#   echo y | vercel projects rm reset-biology-website
+#   cd -
+#   git push   # this hook will then pass
+#
+# Bypass strategy if vercel CLI is unavailable: set VERCEL_GUARD_SKIP=1
+# in your env. ONLY do this if you have already manually verified via the
+# dashboard that no duplicate exists.
+# ─────────────────────────────────────────────────────────────────────────────
+
+set -u
+
+if [ "${VERCEL_GUARD_SKIP:-0}" = "1" ]; then
+  echo "[pre-push] VERCEL_GUARD_SKIP=1 set; skipping duplicate check (be sure)."
+  exit 0
+fi
+
+if ! command -v vercel >/dev/null 2>&1; then
+  echo "[pre-push] WARNING: vercel CLI not found; cannot check for duplicate project."
+  echo "[pre-push] Manually verify at https://vercel.com/jonchyatts-projects that"
+  echo "[pre-push] only the 'app' project exists. Press ENTER to continue, Ctrl-C to abort."
+  read -r _
+  exit 0
+fi
+
+# List projects from a NEUTRAL directory so we never trigger the auto-link trap
+# from the current repo's directory. /tmp is a safe placeless cwd.
+projects_output=$(cd /tmp && vercel projects ls 2>&1)
+if [ $? -ne 0 ]; then
+  echo "[pre-push] WARNING: vercel projects ls failed (auth issue?). Output:"
+  echo "$projects_output"
+  echo "[pre-push] Cannot verify. Press ENTER to continue at your own risk, Ctrl-C to abort."
+  read -r _
+  exit 0
+fi
+
+if echo "$projects_output" | grep -E '^\s*reset-biology-website\s' >/dev/null; then
+  cat <<'EOF' >&2
+
+╔═══════════════════════════════════════════════════════════════════════╗
+║                                                                       ║
+║   ABORTED — DUPLICATE VERCEL PROJECT DETECTED                         ║
+║                                                                       ║
+║   The 'reset-biology-website' Vercel project exists alongside 'app'. ║
+║   Pushing now would deploy this commit TWICE and double-bill.        ║
+║                                                                       ║
+║   FIX (run from the JARVIS directory, NEVER from this one):          ║
+║                                                                       ║
+║       cd /c/Users/jonch/Projects/jarvis                              ║
+║       echo y | vercel projects rm reset-biology-website              ║
+║                                                                       ║
+║   Then re-run your push.                                              ║
+║                                                                       ║
+║   Past sessions cost Jon a quarter of his monthly Vercel allowance   ║
+║   each time this slipped through. Do not push around this hook.      ║
+║                                                                       ║
+╚═══════════════════════════════════════════════════════════════════════╝
+
+EOF
+  exit 1
+fi
+
+echo "[pre-push] Vercel duplicate guard: clean ✓ (only 'app' project found)"
+exit 0

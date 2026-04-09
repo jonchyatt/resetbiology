@@ -1,7 +1,31 @@
 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-**Last Updated:** November 30, 2025
+**Last Updated:** April 8, 2026
+
+---
+
+# 🚨 VERCEL SAFETY — READ FIRST, BEFORE ANY OTHER ACTION
+
+**This directory's name (`reset-biology-website`) is a Vercel CLI auto-create trap.** When the Vercel CLI runs in any unlinked or stale state in this directory, it offers to create a project, **defaulting the project name to the directory basename** — `reset-biology-website`. Pressing enter through the prompts creates a duplicate Vercel project bound to this same GitHub repo, deploying every commit twice. **It has happened at least twice and cost Jon real money each time** ("a quarter of the month's allowance" per occurrence).
+
+## HARD RULES — NO EXCEPTIONS
+
+1. **NEVER run any `vercel` CLI command from `/c/Users/jonch/reset-biology-website`.** Forbidden commands: `vercel`, `vercel deploy`, `vercel link`, `vercel link --yes`, `vercel pull`, `vercel env pull`, `vercel build`. Even read-only commands risk re-linking. Just don't.
+2. **Deploys = `git push origin master` only.** Vercel's GitHub integration handles deploys automatically. The `app` project (production URL `resetbiology.com`) is correctly bound to this repo.
+3. **If you need a Vercel CLI command** (env vars, blob storage, project config — things git push can't do), run it **from `/c/Users/jonch/Projects/jarvis`**, with `--scope jonchyatts-projects` and `--project app` passed explicitly. Never let the CLI auto-detect or auto-name.
+4. **Before the first edit of any session**, run `vercel projects ls` from the jarvis dir to verify only `app` exists. If you see `reset-biology-website` in the list, **STOP**, tell Jon, and delete it before doing anything else.
+5. **There is a pre-push git hook** at `.githooks/pre-push` (wired via `core.hooksPath = .githooks`) that runs `vercel projects ls` before allowing any push and aborts if the duplicate exists. **Do not bypass this hook with `--no-verify`.** If it fires, the duplicate is back — fix it, don't push around it.
+6. **Recovery procedure** if duplicate is detected:
+   ```bash
+   cd /c/Users/jonch/Projects/jarvis     # NEVER from this dir
+   echo y | vercel projects rm reset-biology-website
+   vercel projects ls                    # verify only `app` remains
+   ```
+
+Past sessions cost real money by ignoring this. **Do not be that session.** The full reference is in the user's memory at `feedback/feedback_vercel_reset_biology_duplicate_trap.md` and `projects/project_resetbiology_vercel_layout.md`.
+
+---
 
 # ⚡ FIRST ACTION EVERY SESSION
 
@@ -9,7 +33,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This file contains:
 - HOS sub-agent rules (silent, no report back)
-- Playwright MCP location
+- Browser automation (Chrome DevTools MCP — see global skill)
 - Project structure and existing analysis
 - Common tasks and commands
 - What NOT to recreate
@@ -278,32 +302,27 @@ These are manual tasks the user needs to complete outside of Claude Code. Mark a
 ## Development Environment & Capabilities
 - **Operating System**: Windows (moved from WSL2 September 30, 2025)
 - **Development Tool**: Claude Code running in Windows VS Code
-- **Browser Testing**: ChromeMCP (preferred) or Playwright MCP
+- **Browser Testing**: Chrome DevTools MCP (`mcp__chrome__*` tools — see `~/.claude/skills/chrome-mcp/SKILL.md`)
 - **Production Site**: https://resetbiology.com
-- **Testing Preference**: Test on production site when possible using ChromeMCP
+- **Testing Preference**: Test on production site when possible using Chrome DevTools MCP
 - **Screenshots Location**: `C:\Users\jonch\Pictures\Screenshots\` - Check here first for deployment/UI screenshots
 - **Note**: Moved out of WSL2 due to Docker conflicts and performance issues
 
-## Testing Strategy - USE CHROME-DEVTOOLS MCP
+## Testing Strategy - Chrome DevTools MCP
 
-### Setup Check (RUN FIRST EACH SESSION):
-```bash
-claude mcp list  # Should show: chrome-devtools: ✓ Connected
-```
+**Full reference:** `~/.claude/skills/chrome-mcp/SKILL.md` (global skill — READ THIS before any browser work)
+
+**CRITICAL RULES:**
+- ALWAYS use `mcp__chrome__*` tools. NEVER use `mcp__claude-in-chrome__*` (extension removed).
+- Use `evaluate_script` as primary interaction method (low tokens), NOT `take_snapshot`.
+- Follow the evaluate_script-first workflow: screenshot → evaluate_script → JS interaction.
+- See the global skill for the 10 Operating Rules, troubleshooting, and nuclear reset procedure.
 
 ### Preferred Testing Workflow:
 1. **Make changes locally**
-2. **Deploy to production** (Vercel) 
-3. **Use chrome-devtools MCP to test on production site**
-4. **Visual verification directly in Chrome**
-5. **No need for complex Playwright scripts**
-
-### Chrome-DevTools MCP Advantages:
-- Test on actual production environment
-- See real user experience
-- Faster than writing test scripts
-- Visual debugging in browser
-- Direct interaction with live site
+2. **Deploy to production** (Vercel)
+3. **Use `mcp__chrome__*` tools to test on production site**
+4. **Visual verification via `mcp__chrome__take_screenshot`**
 
 ### When to Use Localhost:
 - Only for initial development

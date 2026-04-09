@@ -43,8 +43,11 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
-# vercel
+# vercel — keep project.json TRACKED to make the link sticky across clones.
+# The directory name is a CLI auto-create trap; missing project.json triggers
+# duplicate-project recreation. See CLAUDE.md "VERCEL SAFETY" block.
 .vercel
+!.vercel/project.json
 
 # typescript
 *.tsbuildinfo
@@ -52,3 +55,10 @@ next-env.d.ts
 
 # playwright auth
 auth-state.json
+
+# vocal trainer dev test vectors — large binaries, live in Vercel Blob in prod
+data/vocal-trainer/*.m4a
+data/vocal-trainer/*.mp3
+data/vocal-trainer/*.wav
+
+.env*.local
