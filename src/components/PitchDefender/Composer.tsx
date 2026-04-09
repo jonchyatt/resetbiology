@@ -958,16 +958,45 @@ export default function Composer() {
     })
 
     // ─── Slurs (Curve) ──────────────────────────────────────────────────────
+    // VexFlow's Curve takes two endpoint notes and auto-spans whatever's
+    // between them on the rendered staff — so the DATA only needs {fromId, toId}
+    // to cover 2, 3, 4, or N notes. Jon's complaint ("can only join 2 notes")
+    // was actually a visual rendering issue: position: 1 (NEAR_HEAD) put the
+    // curve near the notehead which looked wrong for multi-note spans, and
+    // the fixed y:10 control points produced a flat line regardless of span.
+    //
+    // Fix: always arch ABOVE the notes (position: 2 = NEAR_TOP), and scale
+    // the control-point y offset by the count of notes between the endpoints
+    // so 4-note slurs arch higher than 2-note slurs. We count intermediate
+    // notes by walking the flattened melody in composition order.
+    const allNotesInOrder: { id: number }[] = []
+    comp.measures.forEach(m => m.notes.forEach(n => allNotesInOrder.push({ id: n.id })))
+    const noteIdxById = new Map<number, number>()
+    allNotesInOrder.forEach((n, i) => noteIdxById.set(n.id, i))
+
     comp.slurs.forEach(slur => {
       const a = staveNoteByMNoteId.get(slur.fromId)
       const b = staveNoteByMNoteId.get(slur.toId)
       if (!a || !b) return
       try {
+        // How many notes does this slur span (including endpoints)?
+        const fromIdx = noteIdxById.get(slur.fromId) ?? 0
+        const toIdx = noteIdxById.get(slur.toId) ?? 0
+        const span = Math.max(2, Math.abs(toIdx - fromIdx) + 1)
+        // Curve arc depth scales with span — clamped so it doesn't go crazy
+        // for very long slurs. 2 notes → 14, 4 notes → 22, 6+ notes → 30.
+        const arcDepth = Math.min(30, 10 + span * 3.5)
         const curve = new Curve(a.sn, b.sn, {
-          spacing: 2, thickness: 2, x_shift: 0, y_shift: 10,
-          position: 1, // 1 = NEAR_HEAD
+          spacing: 2,
+          thickness: 2,
+          x_shift: 0,
+          y_shift: -arcDepth,       // negative = above the notes
+          position: 2,              // 2 = NEAR_TOP (curve above the staff)
           invert: false,
-          cps: [{ x: 0, y: 10 }, { x: 0, y: 10 }],
+          cps: [
+            { x: 0, y: -arcDepth },
+            { x: 0, y: -arcDepth },
+          ],
         })
         curve.setContext(context).draw()
       } catch (err) {
