@@ -24,6 +24,7 @@ import { useState, useRef, useCallback, useEffect } from 'react'
 import { NOTE_COLORS } from '@/lib/fsrs'
 import { PitchFusion, type FusedPitch, DEFAULT_FUSION_CONFIG } from './pitchFusion'
 import { initAudio, playPianoNote } from './audioEngine'
+import { extractMelodyFromComposition, compositionHasNotes } from './composerExtract'
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -351,7 +352,10 @@ export default function ChoirPractice() {
   useEffect(() => { statsRef.current = practiceStats }, [practiceStats])
   useEffect(() => { currentIdxRef.current = currentIdx }, [currentIdx])
 
-  // Refresh saved-composition list whenever we're in upload phase
+  // Refresh saved-composition list whenever we're in upload phase.
+  // Uses the shared composerExtract module — handles BOTH the new measures
+  // format AND the legacy flat-notes fallback. Previous reader only checked
+  // c.notes (legacy) and silently dropped every modern Composer save.
   useEffect(() => {
     if (phase !== 'upload') return
     try {
@@ -361,9 +365,11 @@ export default function ChoirPractice() {
         if (!key || !key.startsWith('pd_composed_')) continue
         try {
           const c = JSON.parse(localStorage.getItem(key) || '{}')
-          if (Array.isArray(c.notes) && c.notes.length > 0) {
-            out.push({ key, title: c.title || 'Untitled', noteCount: c.notes.length })
-          }
+          if (!compositionHasNotes(c)) continue
+          // Note count via the extractor so the displayed count matches what
+          // ChoirPractice will actually load.
+          const extracted = extractMelodyFromComposition(c, { skipRests: true })
+          out.push({ key, title: c.title || 'Untitled', noteCount: extracted.length })
         } catch {}
       }
       out.sort((a, b) => a.title.localeCompare(b.title))
@@ -377,22 +383,30 @@ export default function ChoirPractice() {
       const raw = localStorage.getItem(storageKey)
       if (!raw) return
       const c = JSON.parse(raw)
-      // Convert composer notes to ExtractedNote shape
-      const extracted: ExtractedNote[] = c.notes.map((n: any, i: number) => ({
+      // Convert via the shared extractor (handles both new measures format
+      // AND legacy flat notes). Includes rests so timing in Choir Practice
+      // stays correct — singer needs the silent beats too.
+      const melody = extractMelodyFromComposition(c, { skipRests: false })
+      const extracted: ExtractedNote[] = melody.map(n => ({
         pitch: n.pitchName || 'C4',
-        semitones: n.semitones || 0,
-        frequency: 261.63 * Math.pow(2, (n.semitones || 0) / 12),
-        duration: n.beats || 1,
-        measure: 1 + Math.floor(i / (c.timeBeats || 4)),
+        semitones: n.semi,
+        frequency: 261.63 * Math.pow(2, n.semi / 12),
+        duration: n.beats,
+        measure: n.measureIdx,
         partIndex: 0,
         partName: 'Voice',
-        isRest: false,
+        isRest: n.isRest,
       }))
+      if (extracted.length === 0) {
+        setError('Composition has no playable notes')
+        return
+      }
       setAllNotes(extracted)
       setPartNames(['Voice'])
       setScoreTitle(c.title || 'Untitled')
       setScoreXml(null) // composer compositions don't have raw XML
-      setConfig(prev => ({ ...prev, baseTempo: c.tempo || 100 }))
+      // Composer's tempo field is `tempoBpm` (new) or `tempo` (legacy fallback)
+      setConfig(prev => ({ ...prev, baseTempo: c.tempoBpm || c.tempo || 100 }))
       setPhase('setup')
     } catch (err: any) {
       setError(err.message || 'Failed to load composition')

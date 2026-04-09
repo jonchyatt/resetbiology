@@ -18,6 +18,7 @@ import { computeLayout, renderStaff, drawTargetNote, drawVoiceOrb, drawCentsIndi
 import { NOTE_COLORS } from '@/lib/fsrs'
 import { initAudio, playPianoNote } from './audioEngine'
 import { extractNotesFromXML, notesToSemitoneArray, type ExtractionResult } from './extractNotes'
+import { extractMelodyFromComposition } from './composerExtract'
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -155,7 +156,10 @@ export default function NoteRunner() {
     setLoadingXML(false)
   }, [addCustomSong])
 
-  // Compositions saved via the Composer tool (read from localStorage)
+  // Compositions saved via the Composer tool (read from localStorage).
+  // Uses the shared composerExtract module — handles BOTH the new measures
+  // format AND the legacy flat-notes fallback. Previous reader only worked
+  // with legacy format and silently dropped every modern Composer save.
   const [composedSongs, setComposedSongs] = useState<{ name: string; notes: number[]; description: string }[]>([])
   useEffect(() => {
     try {
@@ -165,11 +169,12 @@ export default function NoteRunner() {
         if (!key || !key.startsWith('pd_composed_')) continue
         try {
           const comp = JSON.parse(localStorage.getItem(key) || '{}')
-          if (!Array.isArray(comp.notes) || comp.notes.length === 0) continue
+          const extracted = extractMelodyFromComposition(comp, { skipRests: true })
+          if (extracted.length === 0) continue
           out.push({
-            name: `★ ${comp.title}`,
-            notes: comp.notes.map((n: any) => n.semitones),
-            description: `Composed · ${comp.notes.length} notes`,
+            name: `★ ${comp.title || 'Untitled'}`,
+            notes: extracted.map(n => n.semi),
+            description: `Composed · ${extracted.length} notes`,
           })
         } catch {}
       }

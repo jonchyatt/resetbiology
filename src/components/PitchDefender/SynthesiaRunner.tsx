@@ -23,6 +23,7 @@ import { PitchFusion, type FusedPitch } from './pitchFusion'
 import { NOTE_COLORS } from '@/lib/fsrs'
 import { initAudio, playPianoNote, loadPianoSamples } from './audioEngine'
 import { extractNotesFromXML, notesToSemitoneArray, type ExtractionResult } from './extractNotes'
+import { extractMelodyFromComposition } from './composerExtract'
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
@@ -158,63 +159,16 @@ export default function SynthesiaRunner() {
   const [xmlResult, setXmlResult] = useState<ExtractionResult | null>(null)
   const [showPartPicker, setShowPartPicker] = useState(false)
 
-  // Compositions saved from the Composer tool (read from localStorage)
-  // Composer's canonical format is { measures: [{ notes: [{ keys, accidentals,
-  // duration, dotted, tripletGroup, isRest }] }] } — NOT a flat notes[]. The
-  // previous reader expected `comp.notes` and silently dropped every save.
+  // Compositions saved from the Composer tool (read from localStorage).
+  // Uses the shared composerExtract module so every consumer reads the same
+  // way (handles both new measures format AND legacy flat-notes fallback).
   const [composedSongs, setComposedSongs] = useState<{ name: string; notes: SongNote[]; description: string }[]>([])
   useEffect(() => {
-    const STEP_TO_SEMI: Record<string, number> = { c: 0, d: 2, e: 4, f: 5, g: 7, a: 9, b: 11 }
-    const DUR_BEATS: Record<string, number> = { w: 4, h: 2, q: 1, '8': 0.5, '16': 0.25, '32': 0.125 }
-    const vexKeyToSemiC4 = (key: string, accidental?: string): number => {
-      const m = key.match(/^([a-g])(#|b)?\/(-?\d+)$/i)
-      if (!m) return 0
-      const step = m[1].toLowerCase()
-      const inline = m[2]
-      const oct = parseInt(m[3])
-      let semi = (STEP_TO_SEMI[step] ?? 0) + (oct - 4) * 12
-      if (inline === '#') semi += 1
-      if (inline === 'b') semi -= 1
-      if (accidental === '#') semi += 1
-      if (accidental === 'b') semi -= 1
-      return semi
-    }
-    const flattenComposerNotes = (comp: any): SongNote[] => {
-      // New canonical format: walk measures → notes
-      if (Array.isArray(comp.measures)) {
-        const flat: SongNote[] = []
-        for (const m of comp.measures) {
-          if (!Array.isArray(m.notes)) continue
-          for (const n of m.notes) {
-            if (n.isRest) continue
-            if (!Array.isArray(n.keys) || n.keys.length === 0) continue
-            // Topmost (highest) pitch in a chord = melody line
-            let bestSemi = -Infinity
-            for (let i = 0; i < n.keys.length; i++) {
-              const s = vexKeyToSemiC4(n.keys[i], n.accidentals?.[i])
-              if (s > bestSemi) bestSemi = s
-            }
-            let beats = DUR_BEATS[n.duration] ?? 1
-            if (n.dotted) beats *= 1.5
-            if (n.tripletGroup != null) beats *= 2 / 3
-            // Clamp to keyboard range by octave-shifting
-            while (bestSemi < KEYBOARD_LOW) bestSemi += 12
-            while (bestSemi > KEYBOARD_HIGH) bestSemi -= 12
-            flat.push([bestSemi, beats])
-          }
-        }
-        return flat
-      }
-      // Legacy flat format kept as fallback
-      if (Array.isArray(comp.notes)) {
-        return comp.notes.map((n: any) => {
-          let v = n.semitones
-          while (v < KEYBOARD_LOW) v += 12
-          while (v > KEYBOARD_HIGH) v -= 12
-          return [v, n.beats || 1] as SongNote
-        })
-      }
-      return []
+    const clampToKeyboard = (semi: number): number => {
+      let v = semi
+      while (v < KEYBOARD_LOW) v += 12
+      while (v > KEYBOARD_HIGH) v -= 12
+      return v
     }
     try {
       const out: { name: string; notes: SongNote[]; description: string }[] = []
@@ -223,8 +177,10 @@ export default function SynthesiaRunner() {
         if (!key || !key.startsWith('pd_composed_')) continue
         try {
           const comp = JSON.parse(localStorage.getItem(key) || '{}')
-          const notes = flattenComposerNotes(comp)
-          if (notes.length === 0) continue
+          const extracted = extractMelodyFromComposition(comp, { skipRests: true })
+          if (extracted.length === 0) continue
+          // Convert to Synthesia's [semi, beats] tuple shape with keyboard clamping
+          const notes: SongNote[] = extracted.map(n => [clampToKeyboard(n.semi), n.beats])
           out.push({
             name: `★ ${comp.title || 'Untitled'}`,
             notes,
