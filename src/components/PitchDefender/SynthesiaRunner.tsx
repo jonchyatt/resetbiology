@@ -21,7 +21,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { PitchFusion, type FusedPitch } from './pitchFusion'
 import { NOTE_COLORS } from '@/lib/fsrs'
-import { initAudio, playPianoNote, loadPianoSamples } from './audioEngine'
+import { initAudio, playPianoNote, loadPianoSamples, setPianoVolume } from './audioEngine'
 import { extractNotesFromXML, notesToSemitoneArray, type ExtractionResult } from './extractNotes'
 import { extractMelodyFromComposition } from './composerExtract'
 
@@ -146,6 +146,7 @@ export default function SynthesiaRunner() {
   const [speedMul, setSpeedMul] = useState(0.75) // 25/50/75/100/125/150 %
   const [practiceMode, setPracticeMode] = useState(true) // pause-on-correct
   const [tutorialMode, setTutorialMode] = useState(false)
+  const [pianoVol, setPianoVol] = useState(100)  // 0-200 percent — plunk track volume
 
   // HUD display state (synced from refs)
   const [displayState, setDisplayState] = useState({ score: 0, hit: 0, total: 0 })
@@ -598,6 +599,9 @@ export default function SynthesiaRunner() {
   useEffect(() => { phaseRef.current = phase }, [phase])
   useEffect(() => { speedRef.current = speedMul }, [speedMul])
   useEffect(() => { practiceRef.current = practiceMode }, [practiceMode])
+
+  // Push plunk track volume into the shared audio engine piano bus.
+  useEffect(() => { setPianoVolume(pianoVol) }, [pianoVol])
 
   // ─── Render ───────────────────────────────────────────────────────────────
   const render = useCallback((
@@ -1260,17 +1264,32 @@ export default function SynthesiaRunner() {
           <div className="text-xl font-bold tabular-nums">{displayState.score}</div>
           <div className="text-xs text-gray-500">{displayState.hit}/{displayState.total}</div>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-gray-500">Speed</span>
-          <select
-            value={speedMul}
-            onChange={e => setSpeedMul(parseFloat(e.target.value))}
-            className="text-xs px-2 py-1 rounded bg-[#15152a] border border-[#3a3a55] text-gray-200 cursor-pointer"
-          >
-            {[0.25, 0.5, 0.75, 1.0, 1.25, 1.5].map(s => (
-              <option key={s} value={s}>{Math.round(s * 100)}%</option>
-            ))}
-          </select>
+        <div className="flex items-center gap-3">
+          <label className="flex items-center gap-1.5">
+            <span className="text-xs text-gray-500">Plunk</span>
+            <input
+              type="range"
+              min="0"
+              max="200"
+              step="1"
+              value={pianoVol}
+              onChange={e => setPianoVol(parseInt(e.target.value))}
+              className="w-20 accent-purple-500"
+            />
+            <span className="text-xs text-cyan-300 font-mono w-9">{pianoVol}%</span>
+          </label>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-gray-500">Speed</span>
+            <select
+              value={speedMul}
+              onChange={e => setSpeedMul(parseFloat(e.target.value))}
+              className="text-xs px-2 py-1 rounded bg-[#15152a] border border-[#3a3a55] text-gray-200 cursor-pointer"
+            >
+              {[0.25, 0.5, 0.75, 1.0, 1.25, 1.5].map(s => (
+                <option key={s} value={s}>{Math.round(s * 100)}%</option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
 

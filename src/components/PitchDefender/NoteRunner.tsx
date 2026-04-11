@@ -16,7 +16,7 @@ import { useState, useRef, useCallback, useEffect } from 'react'
 import { PitchFusion, type FusedPitch, DEFAULT_FUSION_CONFIG } from './pitchFusion'
 import { computeLayout, renderStaff, drawTargetNote, drawVoiceOrb, drawCentsIndicator, drawNoteHeadWithStem, staffPositionToY, type TrailPoint, type StaffLayout } from './staffRenderer'
 import { NOTE_COLORS } from '@/lib/fsrs'
-import { initAudio, playPianoNote } from './audioEngine'
+import { initAudio, playPianoNote, setPianoVolume } from './audioEngine'
 import { extractNotesFromXML, notesToSemitoneArray, type ExtractionResult } from './extractNotes'
 import { extractMelodyFromComposition } from './composerExtract'
 
@@ -90,6 +90,10 @@ export default function NoteRunner() {
   const [displayState, setDisplayState] = useState({ score: 0, streak: 0, notesHit: 0, totalNotes: 0 })
   const [currentNoteName, setCurrentNoteName] = useState('')
   const [matchProgress, setMatchProgress] = useState(0)
+  const [pianoVol, setPianoVol] = useState(100)  // 0-200 percent — plunk track volume
+
+  // Push plunk track volume into the shared audio engine piano bus.
+  useEffect(() => { setPianoVolume(pianoVol) }, [pianoVol])
 
   // ─── Custom MusicXML songs ──────────────────────────────────────────
   const [customSongs, setCustomSongs] = useState<{ name: string; notes: number[]; description: string }[]>([])
@@ -638,6 +642,19 @@ export default function NoteRunner() {
       <div className="absolute top-3 right-4 text-right">
         <div className="text-xs text-gray-500">{allSongs[selectedSong].name}</div>
         <div className="text-sm text-gray-400">{displayState.notesHit} / {displayState.totalNotes}</div>
+        <label className="mt-1 flex items-center justify-end gap-1.5">
+          <span className="text-[10px] uppercase tracking-wider text-gray-500">Plunk</span>
+          <input
+            type="range"
+            min="0"
+            max="200"
+            step="1"
+            value={pianoVol}
+            onChange={e => setPianoVol(parseInt(e.target.value))}
+            className="w-20 accent-purple-500"
+          />
+          <span className="text-[10px] font-mono text-cyan-300 w-9 text-left">{pianoVol}%</span>
+        </label>
       </div>
 
       {/* Current note prompt */}
