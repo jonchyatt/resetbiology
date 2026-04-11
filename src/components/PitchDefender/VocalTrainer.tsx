@@ -91,19 +91,36 @@ export default function VocalTrainer() {
   const [zoom, setZoom] = useState(80); // px per second
 
   // ─── Dichotic player state (shared between Quick Play and template practice) ──
+  // Three independent tracks:
+  //   1. Vocals  — hard-LEFT   (Jon's vocal-only stem)
+  //   2. Music   — CENTER      (Jon's instrumental/backing stem, optional)
+  //   3. Mic     — hard-RIGHT  (live voice)
   const [playbackState, setPlaybackState] = useState<'idle' | 'playing' | 'paused'>('idle');
   const [practiceTime, setPracticeTime] = useState(0);
   const [playbackLabel, setPlaybackLabel] = useState('');
-  const [trackVol, setTrackVol] = useState(100);  // 0-200 percent
+  const [vocalVol, setVocalVol] = useState(100);  // 0-200 percent
+  const [musicVol, setMusicVol] = useState(100);  // 0-200 percent
   const [micVol, setMicVol] = useState(100);      // 0-200 percent
   const [micProfile, setMicProfile] = useState<MicProfile>('usb');
   const [micEnabled, setMicEnabled] = useState(false);
 
+  const [musicFile, setMusicFile] = useState<File | null>(null);
+  const [musicFileName, setMusicFileName] = useState<string>('');
+
   const audioCtxRef = useRef<AudioContext | null>(null);
-  const trackGainNodeRef = useRef<GainNode | null>(null);
-  const trackPanNodeRef = useRef<StereoPannerNode | null>(null);
-  const sourceRef = useRef<AudioBufferSourceNode | null>(null);
-  const playbackBufRef = useRef<AudioBuffer | null>(null);
+
+  // Vocal chain (hard-left)
+  const vocalGainNodeRef = useRef<GainNode | null>(null);
+  const vocalPanNodeRef = useRef<StereoPannerNode | null>(null);
+  const vocalSourceRef = useRef<AudioBufferSourceNode | null>(null);
+  const vocalBufRef = useRef<AudioBuffer | null>(null);
+
+  // Music chain (center, optional)
+  const musicGainNodeRef = useRef<GainNode | null>(null);
+  const musicPanNodeRef = useRef<StereoPannerNode | null>(null);
+  const musicSourceRef = useRef<AudioBufferSourceNode | null>(null);
+  const musicBufRef = useRef<AudioBuffer | null>(null);
+
   const playbackDurationRef = useRef(0);
   const startedAtRef = useRef(0);
   const pauseOffsetRef = useRef(0);
@@ -117,18 +134,34 @@ export default function VocalTrainer() {
 
   // Mirrors of state used inside stable callbacks so those callbacks don't
   // rebuild on every volume/profile tweak (which would retrigger useEffects).
-  const trackVolRef = useRef(100);
+  const vocalVolRef = useRef(100);
+  const musicVolRef = useRef(100);
   const micVolRef = useRef(100);
   const micProfileRef = useRef<MicProfile>('usb');
-  useEffect(() => { trackVolRef.current = trackVol; }, [trackVol]);
+  useEffect(() => { vocalVolRef.current = vocalVol; }, [vocalVol]);
+  useEffect(() => { musicVolRef.current = musicVol; }, [musicVol]);
   useEffect(() => { micVolRef.current = micVol; }, [micVol]);
   useEffect(() => { micProfileRef.current = micProfile; }, [micProfile]);
 
-  // Pitch detection for the "show my tone" live readout. Uses its own mic
+  // Pitchforks v1 lock state — the ONE canonical feedback meter.
+  // matchStartRef === 0 → idle. > 0 → locked at that timestamp.
+  const [matchProgress, setMatchProgress] = useState(0);
+  const matchStartRef = useRef(0);
+  const currentTargetRef = useRef<RawNote | null>(null);
+  const livePitchFrameRef = useRef<number | null>(null);
+
+  // Editor scroll container for auto-scrolling the piano-roll with the playhead.
+  const editorScrollRef = useRef<HTMLDivElement | null>(null);
+
+  // Pitch detection for the Pitchforks v1 slider bar. Uses its own mic
   // stream with AEC/noise-suppression ON (opposite of the routing stream,
   // which keeps AEC off for zero-latency monitoring). Both streams coexist.
-  const { pitch: livePitch, startListening: startPitchDetect, stopListening: stopPitchDetect } =
-    usePitchDetection({ noiseGateDb: -45 });
+  const {
+    pitch: livePitch,
+    pitchRef: livePitchRef,
+    startListening: startPitchDetect,
+    stopListening: stopPitchDetect,
+  } = usePitchDetection({ noiseGateDb: -45 });
 
   // ───────────────────────────────────────────────────────────────────────
   // Library fetch
@@ -302,8 +335,8 @@ export default function VocalTrainer() {
   // Dichotic player — quick-play OR template practice, shared audio graph
   // ───────────────────────────────────────────────────────────────────────
 
-  // Build AudioContext + track chain (gain → pan → destination) on first use.
-  // Reads initial track volume / mic profile from refs so its identity stays
+  // Build AudioContext + vocal/music chains on first use.
+  // Reads initial volumes / mic profile from refs so its identity stays
   // stable across UI tweaks — downstream callbacks would otherwise rebuild.
   const ensureAudioGraph = useCallback(() => {
     if (!audioCtxRef.current) {
@@ -312,25 +345,40 @@ export default function VocalTrainer() {
       });
     }
     const ctx = audioCtxRef.current!;
-    if (!trackGainNodeRef.current) {
+    if (!vocalGainNodeRef.current) {
       const gain = ctx.createGain();
-      gain.gain.value = trackVolRef.current / 100;
+      gain.gain.value = vocalVolRef.current / 100;
       const pan = ctx.createStereoPanner();
       pan.pan.value = -1; // hard-left
       gain.connect(pan).connect(ctx.destination);
-      trackGainNodeRef.current = gain;
-      trackPanNodeRef.current = pan;
+      vocalGainNodeRef.current = gain;
+      vocalPanNodeRef.current = pan;
+    }
+    if (!musicGainNodeRef.current) {
+      const gain = ctx.createGain();
+      gain.gain.value = musicVolRef.current / 100;
+      const pan = ctx.createStereoPanner();
+      pan.pan.value = 0; // center — music sits in both ears
+      gain.connect(pan).connect(ctx.destination);
+      musicGainNodeRef.current = gain;
+      musicPanNodeRef.current = pan;
     }
     return ctx;
   }, []);
 
-  // Stop any in-flight BufferSource + cancel the RAF tick.
+  // Stop any in-flight BufferSources (both vocal + music) + cancel the RAF tick.
   const stopAudioSource = useCallback(() => {
-    if (sourceRef.current) {
-      try { sourceRef.current.onended = null; } catch {}
-      try { sourceRef.current.stop(); } catch {}
-      try { sourceRef.current.disconnect(); } catch {}
-      sourceRef.current = null;
+    if (vocalSourceRef.current) {
+      try { vocalSourceRef.current.onended = null; } catch {}
+      try { vocalSourceRef.current.stop(); } catch {}
+      try { vocalSourceRef.current.disconnect(); } catch {}
+      vocalSourceRef.current = null;
+    }
+    if (musicSourceRef.current) {
+      try { musicSourceRef.current.onended = null; } catch {}
+      try { musicSourceRef.current.stop(); } catch {}
+      try { musicSourceRef.current.disconnect(); } catch {}
+      musicSourceRef.current = null;
     }
     if (rafRef.current) {
       cancelAnimationFrame(rafRef.current);
@@ -338,39 +386,67 @@ export default function VocalTrainer() {
     }
   }, []);
 
-  // Start playback from pauseOffsetRef. Shared by Play (from idle) and Resume (from paused).
+  // Start playback from pauseOffsetRef. Fires both vocal + music sources in
+  // lockstep so they stay synchronized even under pause/resume.
   const startAudioSource = useCallback(async () => {
-    const buf = playbackBufRef.current;
-    if (!buf) {
-      setStatusMsg('Nothing loaded — pick a library template or drop an audio file for Quick Play.');
+    const vocBuf = vocalBufRef.current;
+    const musBuf = musicBufRef.current;
+    if (!vocBuf && !musBuf) {
+      setStatusMsg('Nothing loaded — upload a vocal track, a music track, or pick a library template.');
       return;
     }
     const ctx = ensureAudioGraph();
     if (ctx.state === 'suspended') await ctx.resume();
 
-    // If a source is already running, cancel it cleanly (no state change).
-    if (sourceRef.current) {
-      try { sourceRef.current.onended = null; } catch {}
-      try { sourceRef.current.stop(); } catch {}
-      try { sourceRef.current.disconnect(); } catch {}
-      sourceRef.current = null;
+    // Clean up any lingering sources (no state change).
+    stopAudioSource();
+
+    const offset = Math.max(0, Math.min(
+      pauseOffsetRef.current,
+      playbackDurationRef.current - 0.01,
+    ));
+
+    // Fire both sources at the SAME ctx.currentTime so they stay aligned.
+    const startAt = ctx.currentTime + 0.02; // tiny lookahead to align both
+
+    if (vocBuf) {
+      const src = ctx.createBufferSource();
+      src.buffer = vocBuf;
+      src.connect(vocalGainNodeRef.current!);
+      const vocOffset = Math.min(offset, vocBuf.duration - 0.01);
+      src.start(startAt, Math.max(0, vocOffset));
+      vocalSourceRef.current = src;
+      src.onended = () => {
+        if (vocalSourceRef.current === src) {
+          // Natural end of vocal — let the music/tick continue; the tick will
+          // stop at playbackDurationRef.current.
+          vocalSourceRef.current = null;
+        }
+      };
+    }
+    if (musBuf) {
+      const src = ctx.createBufferSource();
+      src.buffer = musBuf;
+      src.connect(musicGainNodeRef.current!);
+      const musOffset = Math.min(offset, musBuf.duration - 0.01);
+      src.start(startAt, Math.max(0, musOffset));
+      musicSourceRef.current = src;
+      src.onended = () => {
+        if (musicSourceRef.current === src) {
+          musicSourceRef.current = null;
+        }
+      };
     }
 
-    const offset = Math.max(0, Math.min(pauseOffsetRef.current, buf.duration - 0.01));
-    const src = ctx.createBufferSource();
-    src.buffer = buf;
-    src.connect(trackGainNodeRef.current!);
-    src.start(0, offset);
-    sourceRef.current = src;
-    // Offset the start anchor so (currentTime - startedAt) = elapsed in buffer.
-    startedAtRef.current = ctx.currentTime - offset;
+    // startedAt encodes (ctx.currentTime - offset) as-of the start moment.
+    startedAtRef.current = startAt - offset;
     setPlaybackState('playing');
 
     const tick = () => {
       const c = audioCtxRef.current;
       if (!c) return;
       const elapsed = c.currentTime - startedAtRef.current;
-      setPracticeTime(elapsed);
+      setPracticeTime(Math.max(0, elapsed));
       if (elapsed >= playbackDurationRef.current) {
         stopAudioSource();
         pauseOffsetRef.current = 0;
@@ -381,16 +457,6 @@ export default function VocalTrainer() {
       rafRef.current = requestAnimationFrame(tick);
     };
     rafRef.current = requestAnimationFrame(tick);
-
-    src.onended = () => {
-      // Natural end only (pause/stop nulls sourceRef before this can fire).
-      if (sourceRef.current === src) {
-        stopAudioSource();
-        pauseOffsetRef.current = 0;
-        setPracticeTime(0);
-        setPlaybackState('idle');
-      }
-    };
   }, [ensureAudioGraph, stopAudioSource]);
 
   const pausePlayback = useCallback(() => {
@@ -415,26 +481,64 @@ export default function VocalTrainer() {
     await startAudioSource();
   }, [playbackState, startAudioSource]);
 
-  // Load a raw uploaded file for Quick Play (no extraction required).
+  // Recompute the effective playback duration from whichever tracks are loaded.
+  const recomputeDuration = useCallback(() => {
+    const vocDur = vocalBufRef.current?.duration ?? 0;
+    const musDur = musicBufRef.current?.duration ?? 0;
+    playbackDurationRef.current = Math.max(vocDur, musDur);
+  }, []);
+
+  // Load a raw uploaded file as the VOCAL track (Quick Play — no extraction).
   const loadQuickFile = useCallback(async (file: File) => {
     stopAudioSource();
     pauseOffsetRef.current = 0;
     setPracticeTime(0);
     setPlaybackState('idle');
-    playbackBufRef.current = null;
-    playbackDurationRef.current = 0;
+    vocalBufRef.current = null;
     try {
       const ctx = ensureAudioGraph();
       const ab = await file.arrayBuffer();
       const buf = await ctx.decodeAudioData(ab);
-      playbackBufRef.current = buf;
-      playbackDurationRef.current = buf.duration;
+      vocalBufRef.current = buf;
+      recomputeDuration();
       setPlaybackLabel(`Quick: ${file.name}`);
-      setStatusMsg(`Loaded "${file.name}" for Quick Play (${buf.duration.toFixed(1)}s). Press Play.`);
+      setStatusMsg(`Loaded "${file.name}" as the vocal track (${buf.duration.toFixed(1)}s). Press Play.`);
     } catch (e) {
       setStatusMsg(`Could not decode audio: ${e instanceof Error ? e.message : e}`);
     }
-  }, [ensureAudioGraph, stopAudioSource]);
+  }, [ensureAudioGraph, stopAudioSource, recomputeDuration]);
+
+  // Load the secondary MUSIC/instrumental track (optional third channel).
+  const loadMusicFile = useCallback(async (file: File) => {
+    stopAudioSource();
+    pauseOffsetRef.current = 0;
+    setPracticeTime(0);
+    setPlaybackState('idle');
+    musicBufRef.current = null;
+    try {
+      const ctx = ensureAudioGraph();
+      const ab = await file.arrayBuffer();
+      const buf = await ctx.decodeAudioData(ab);
+      musicBufRef.current = buf;
+      setMusicFileName(file.name);
+      recomputeDuration();
+      setStatusMsg(`Loaded "${file.name}" as the music track (${buf.duration.toFixed(1)}s). Press Play.`);
+    } catch (e) {
+      setStatusMsg(`Could not decode music track: ${e instanceof Error ? e.message : e}`);
+    }
+  }, [ensureAudioGraph, stopAudioSource, recomputeDuration]);
+
+  // Clear the music track.
+  const clearMusicFile = useCallback(() => {
+    stopAudioSource();
+    pauseOffsetRef.current = 0;
+    setPracticeTime(0);
+    setPlaybackState('idle');
+    musicBufRef.current = null;
+    setMusicFile(null);
+    setMusicFileName('');
+    recomputeDuration();
+  }, [stopAudioSource, recomputeDuration]);
 
   // Load a template's audio URL (called from the template-selection useEffect).
   const loadTemplateAudio = useCallback(async (url: string, title: string) => {
@@ -442,20 +546,19 @@ export default function VocalTrainer() {
     pauseOffsetRef.current = 0;
     setPracticeTime(0);
     setPlaybackState('idle');
-    playbackBufRef.current = null;
-    playbackDurationRef.current = 0;
+    vocalBufRef.current = null;
     try {
       const ctx = ensureAudioGraph();
       const r = await fetch(url);
       const ab = await r.arrayBuffer();
       const buf = await ctx.decodeAudioData(ab);
-      playbackBufRef.current = buf;
-      playbackDurationRef.current = buf.duration;
+      vocalBufRef.current = buf;
+      recomputeDuration();
       setPlaybackLabel(`Template: ${title}`);
     } catch (e) {
       setStatusMsg(`Could not load template audio: ${e instanceof Error ? e.message : e}`);
     }
-  }, [ensureAudioGraph, stopAudioSource]);
+  }, [ensureAudioGraph, stopAudioSource, recomputeDuration]);
 
   // Mic monitor (right channel), with separate profile-gain and user-gain nodes.
   // Also starts/stops the pitch-detection stream so Jon sees live "You: D4 +12¢".
@@ -519,12 +622,21 @@ export default function VocalTrainer() {
     loadTemplateAudio(currentTemplate.audioUrl, currentTemplate.title);
   }, [currentTemplate, loadTemplateAudio]);
 
-  // Update track volume live (without restarting playback).
-  const handleTrackVolChange = useCallback((pct: number) => {
+  // Update vocal track volume live (without restarting playback).
+  const handleVocalVolChange = useCallback((pct: number) => {
     const clamped = Math.max(0, Math.min(200, pct));
-    setTrackVol(clamped);
-    if (trackGainNodeRef.current) {
-      trackGainNodeRef.current.gain.value = clamped / 100;
+    setVocalVol(clamped);
+    if (vocalGainNodeRef.current) {
+      vocalGainNodeRef.current.gain.value = clamped / 100;
+    }
+  }, []);
+
+  // Update music track volume live.
+  const handleMusicVolChange = useCallback((pct: number) => {
+    const clamped = Math.max(0, Math.min(200, pct));
+    setMusicVol(clamped);
+    if (musicGainNodeRef.current) {
+      musicGainNodeRef.current.gain.value = clamped / 100;
     }
   }, []);
 
@@ -570,6 +682,79 @@ export default function VocalTrainer() {
     if (!livePitch?.isActive || livePitch.frequency <= 0) return null;
     return freqToMidi(livePitch.frequency);
   }, [livePitch]);
+
+  // Keep a ref to the current target so the lock-tick loop reads the latest
+  // value without re-subscribing on every target change.
+  useEffect(() => { currentTargetRef.current = currentTargetNote; }, [currentTargetNote]);
+
+  // ── Pitchforks v1 mic lock loop (THE canonical feedback meter) ──
+  // Runs only while playing AND a target note exists. Resets matchStart on
+  // note boundary; uses confident-wrong hard-reset + silence-preserves-lock
+  // flicker fix from src/components/PitchDefender/Pitchforks.tsx:418-493.
+  useEffect(() => {
+    if (playbackState !== 'playing') {
+      matchStartRef.current = 0;
+      setMatchProgress(0);
+      return;
+    }
+    let raf = 0;
+    let lastTarget: RawNote | null = null;
+    const HOLD_MS = 300;
+    const CONFIDENCE_FLOOR = 0.75;
+    const TOLERANCE_CENTS = 70;
+
+    const tick = () => {
+      const tgt = currentTargetRef.current;
+      if (!tgt) {
+        if (matchStartRef.current !== 0) {
+          matchStartRef.current = 0;
+          setMatchProgress(0);
+        }
+        lastTarget = null;
+      } else {
+        // Reset on target note change (new rect under playhead)
+        if (lastTarget !== tgt) {
+          matchStartRef.current = 0;
+          setMatchProgress(0);
+          lastTarget = tgt;
+        }
+        const p = livePitchRef.current;
+        if (p?.isActive && p.confidence >= CONFIDENCE_FLOOR && p.frequency > 0) {
+          const targetFreq = 440 * Math.pow(2, (tgt.pitchMidi - 69) / 12);
+          const rawCents = 1200 * Math.log2(p.frequency / targetFreq);
+          // Octave-fold to [-600, 600] so C5 singing C4 target still counts.
+          const folded = ((rawCents + 600) % 1200 + 1200) % 1200 - 600;
+          if (Math.abs(folded) <= TOLERANCE_CENTS) {
+            if (matchStartRef.current === 0) matchStartRef.current = performance.now();
+            if (matchStartRef.current > 0) {
+              const held = performance.now() - matchStartRef.current;
+              setMatchProgress(Math.min(1, held / HOLD_MS));
+            }
+          } else {
+            // CONFIDENT wrong — hard reset
+            if (matchStartRef.current > 0) {
+              matchStartRef.current = 0;
+              setMatchProgress(0);
+            }
+          }
+        }
+        // else silence / low confidence — DO NOTHING. Preserve the lock.
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [playbackState, livePitchRef]);
+
+  // ── Auto-scroll the piano-roll so the playhead stays visible ──
+  useEffect(() => {
+    if (playbackState !== 'playing') return;
+    const el = editorScrollRef.current;
+    if (!el) return;
+    const playheadX = practiceTime * zoom;
+    const target = Math.max(0, playheadX - el.clientWidth / 3);
+    el.scrollLeft = target;
+  }, [practiceTime, zoom, playbackState]);
 
   // ───────────────────────────────────────────────────────────────────────
   // Render
@@ -627,28 +812,70 @@ export default function VocalTrainer() {
         {/* ─── Upload + extraction ───────────────────────────────────── */}
         <section className="bg-gray-900/60 border border-amber-500/20 rounded-lg p-4">
           <h2 className="text-lg font-semibold text-amber-300 mb-3">Upload + Extract</h2>
-          <div
-            onDrop={onDrop}
-            onDragOver={(e) => e.preventDefault()}
-            className="border-2 border-dashed border-gray-700 rounded-lg p-6 text-center hover:border-amber-500/40 transition"
-          >
-            {uploadFile ? (
-              <div>
-                <div className="text-amber-200 font-medium">{uploadFile.name}</div>
-                <div className="text-xs text-gray-500 mt-1">{(uploadFile.size / 1024 / 1024).toFixed(2)} MB</div>
-              </div>
-            ) : (
-              <div className="text-gray-500 text-sm">
-                Drag-drop an audio file here<br/>
-                <span className="text-xs">(m4a, mp3, wav, ogg)</span>
-              </div>
-            )}
-            <input
-              type="file"
-              accept="audio/*,.m4a,.mp3,.wav,.ogg"
-              onChange={(e) => e.target.files?.[0] && handleFileChosen(e.target.files[0])}
-              className="mt-3 text-xs text-gray-400 file:mr-2 file:py-1 file:px-3 file:rounded file:border-0 file:bg-amber-600 file:text-white hover:file:bg-amber-500"
-            />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {/* Vocals stem (primary) */}
+            <div
+              onDrop={onDrop}
+              onDragOver={(e) => e.preventDefault()}
+              className="border-2 border-dashed border-gray-700 rounded-lg p-4 text-center hover:border-amber-500/40 transition"
+            >
+              <div className="text-[10px] uppercase tracking-wider text-amber-400 mb-1">Track 1 · Vocals (LEFT ear)</div>
+              {uploadFile ? (
+                <div>
+                  <div className="text-amber-200 font-medium truncate">{uploadFile.name}</div>
+                  <div className="text-xs text-gray-500 mt-1">{(uploadFile.size / 1024 / 1024).toFixed(2)} MB</div>
+                </div>
+              ) : (
+                <div className="text-gray-500 text-sm">
+                  Drag-drop the vocal stem<br/>
+                  <span className="text-xs">(m4a, mp3, wav, ogg)</span>
+                </div>
+              )}
+              <input
+                type="file"
+                accept="audio/*,.m4a,.mp3,.wav,.ogg"
+                onChange={(e) => e.target.files?.[0] && handleFileChosen(e.target.files[0])}
+                className="mt-3 text-xs text-gray-400 file:mr-2 file:py-1 file:px-3 file:rounded file:border-0 file:bg-amber-600 file:text-white hover:file:bg-amber-500"
+              />
+            </div>
+
+            {/* Music stem (optional third channel) */}
+            <div
+              onDrop={(e) => {
+                e.preventDefault();
+                const f = e.dataTransfer.files?.[0];
+                if (f) { setMusicFile(f); loadMusicFile(f); }
+              }}
+              onDragOver={(e) => e.preventDefault()}
+              className="border-2 border-dashed border-gray-700 rounded-lg p-4 text-center hover:border-purple-500/40 transition"
+            >
+              <div className="text-[10px] uppercase tracking-wider text-purple-400 mb-1">Track 2 · Music / Instrumental (CENTER)</div>
+              {musicFile || musicFileName ? (
+                <div>
+                  <div className="text-purple-200 font-medium truncate">{musicFileName || musicFile?.name}</div>
+                  <button
+                    onClick={clearMusicFile}
+                    className="mt-1 text-[10px] text-gray-500 hover:text-red-400 underline"
+                  >
+                    clear
+                  </button>
+                </div>
+              ) : (
+                <div className="text-gray-500 text-sm">
+                  Drag-drop the instrumental stem<br/>
+                  <span className="text-xs">Optional — plays alongside vocals</span>
+                </div>
+              )}
+              <input
+                type="file"
+                accept="audio/*,.m4a,.mp3,.wav,.ogg"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) { setMusicFile(f); loadMusicFile(f); }
+                }}
+                className="mt-3 text-xs text-gray-400 file:mr-2 file:py-1 file:px-3 file:rounded file:border-0 file:bg-purple-600 file:text-white hover:file:bg-purple-500"
+              />
+            </div>
           </div>
 
           {uploadFile && (
@@ -739,7 +966,11 @@ export default function VocalTrainer() {
                 <span>{extractedNotes.length} notes</span>
               </div>
             </div>
-            <div className="overflow-auto bg-black/50 rounded border border-gray-800" style={{ maxHeight: '400px' }}>
+            <div
+              ref={editorScrollRef}
+              className="overflow-auto bg-black/50 rounded border border-gray-800"
+              style={{ maxHeight: '400px' }}
+            >
               <svg width={editorWidth} height={editorHeight} style={{ display: 'block' }}>
                 {/* Horizontal grid lines (octaves highlighted) */}
                 {Array.from({ length: PITCH_MAX - PITCH_MIN + 1 }).map((_, i) => {
@@ -805,19 +1036,19 @@ export default function VocalTrainer() {
           </section>
         )}
 
-        {/* ─── Dichotic Player (quick-play OR template practice) ─────── */}
+        {/* ─── Dichotic Player (three independent channels) ───────────── */}
         <section className="bg-gray-900/60 border border-amber-500/20 rounded-lg p-4">
-          <h2 className="text-lg font-semibold text-amber-300 mb-1">Dichotic Player (L/R)</h2>
+          <h2 className="text-lg font-semibold text-amber-300 mb-1">Dichotic Player</h2>
           <p className="text-xs text-gray-500 mb-3">
-            Reference audio plays on the LEFT channel (hard-pan). Your mic monitors on the RIGHT channel.
-            Headphones strongly recommended. Works for Quick Play (raw file, no extraction) AND saved templates.
+            Three independent channels — Vocals hard-LEFT, Music center, Mic hard-RIGHT. Upload
+            separate stems above; adjust each volume independently. Headphones required.
           </p>
 
           <div className="mb-3 text-xs">
             {playbackLabel ? (
               <span className="text-amber-300">{playbackLabel}</span>
             ) : (
-              <span className="text-gray-500">Nothing loaded. Use Quick Play above or pick a library template.</span>
+              <span className="text-gray-500">Nothing loaded. Drop a vocal or music stem above, or pick a library template.</span>
             )}
             {playbackState !== 'idle' && (
               <span className="ml-3 text-gray-500">
@@ -827,49 +1058,46 @@ export default function VocalTrainer() {
             )}
           </div>
 
-          {/* Live pitch readout: what Jon is singing vs what the track wants */}
-          <div className="mb-3 text-xs bg-black/40 border border-gray-800 rounded px-3 py-2 flex flex-wrap items-center gap-x-5 gap-y-1">
-            <span className="text-gray-500 uppercase tracking-wider">Pitch match</span>
-            <span>
-              <span className="text-gray-500">You: </span>
-              {livePitch?.isActive && livePitch.frequency > 0 ? (
-                <span className="text-cyan-300 font-mono">
-                  {livePitch.note} {livePitch.cents > 0 ? '+' : ''}{livePitch.cents}¢
-                </span>
-              ) : (
-                <span className="text-gray-600 font-mono">{micEnabled ? '—' : '(mic off)'}</span>
-              )}
-            </span>
-            <span>
-              <span className="text-gray-500">Target: </span>
-              {currentTargetNote ? (
-                <span className="text-amber-300 font-mono">{midiToName(currentTargetNote.pitchMidi)}</span>
-              ) : (
-                <span className="text-gray-600 font-mono">{extractedNotes.length > 0 ? 'rest' : '(no extraction)'}</span>
-              )}
-            </span>
-            {livePitch?.isActive && currentTargetNote && (() => {
-              // Octave-folded cents distance from user's freq to target's freq.
-              const targetFreq = 440 * Math.pow(2, (currentTargetNote.pitchMidi - 69) / 12);
-              const raw = 1200 * Math.log2(livePitch.frequency / targetFreq);
-              const folded = ((raw + 600) % 1200 + 1200) % 1200 - 600;
-              const abs = Math.abs(folded);
-              const color = abs <= 30 ? '#4ade80' : abs <= 70 ? '#fbbf24' : '#f87171';
-              return (
-                <span>
-                  <span className="text-gray-500">Δ </span>
-                  <span className="font-mono" style={{ color }}>
-                    {folded > 0 ? '+' : ''}{Math.round(folded)}¢
-                  </span>
-                </span>
-              );
-            })()}
+          {/* Pitchforks v1 slider bar — THE canonical mic feedback meter.
+              Gated to matchProgress > 0: only visible while singing on-pitch.
+              Yellow under 80%, green at/above. Resets on target note change. */}
+          <div className="mb-3 h-6 flex items-center justify-center">
+            {matchProgress > 0 ? (
+              <div
+                style={{
+                  width: 160,
+                  height: 6,
+                  background: 'rgba(10,10,20,0.6)',
+                  border: '1px solid rgba(60,60,90,0.6)',
+                  borderRadius: 3,
+                  overflow: 'hidden',
+                }}
+              >
+                <div
+                  style={{
+                    width: `${matchProgress * 100}%`,
+                    height: '100%',
+                    background: matchProgress >= 0.8 ? '#4ade80' : '#fbbf24',
+                    boxShadow: matchProgress >= 0.8
+                      ? '0 0 10px #4ade80, 0 0 20px #4ade8060'
+                      : '0 0 8px #fbbf2460',
+                    transition: 'width 0.05s linear',
+                  }}
+                />
+              </div>
+            ) : (
+              <span className="text-[10px] text-gray-600 uppercase tracking-wider">
+                {playbackState === 'playing'
+                  ? (micEnabled ? 'Sing to lock the target note' : 'Start mic monitor →')
+                  : 'Press play to begin'}
+              </span>
+            )}
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-3">
             <button
               onClick={playOrResume}
-              disabled={playbackState === 'playing' || !playbackLabel}
+              disabled={playbackState === 'playing' || (!vocalBufRef.current && !musicBufRef.current)}
               className="px-3 py-2 bg-amber-600 hover:bg-amber-500 disabled:bg-gray-700 disabled:text-gray-500 rounded text-sm font-semibold"
             >
               {playbackState === 'paused' ? 'Resume ▶' : 'Play ▶'}
@@ -890,29 +1118,42 @@ export default function VocalTrainer() {
             </button>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+          {/* Three-channel volume sliders */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
             <label className="text-xs text-gray-400">
               <div className="flex justify-between items-baseline mb-1">
-                <span>Track volume (LEFT ear)</span>
-                <span className="text-amber-300 font-mono">{trackVol}%</span>
+                <span className="text-amber-400">Vocals (LEFT)</span>
+                <span className="text-amber-300 font-mono">{vocalVol}%</span>
               </div>
               <input
                 type="range" min={0} max={200} step={1}
-                value={trackVol}
-                onChange={(e) => handleTrackVolChange(Number(e.target.value))}
+                value={vocalVol}
+                onChange={(e) => handleVocalVolChange(Number(e.target.value))}
                 className="w-full accent-amber-500"
               />
             </label>
             <label className="text-xs text-gray-400">
               <div className="flex justify-between items-baseline mb-1">
-                <span>Mic / voice volume (RIGHT ear)</span>
-                <span className="text-amber-300 font-mono">{micVol}%</span>
+                <span className="text-purple-400">Music (CENTER)</span>
+                <span className="text-purple-300 font-mono">{musicVol}%</span>
+              </div>
+              <input
+                type="range" min={0} max={200} step={1}
+                value={musicVol}
+                onChange={(e) => handleMusicVolChange(Number(e.target.value))}
+                className="w-full accent-purple-500"
+              />
+            </label>
+            <label className="text-xs text-gray-400">
+              <div className="flex justify-between items-baseline mb-1">
+                <span className="text-cyan-400">Mic / voice (RIGHT)</span>
+                <span className="text-cyan-300 font-mono">{micVol}%</span>
               </div>
               <input
                 type="range" min={0} max={200} step={1}
                 value={micVol}
                 onChange={(e) => handleMicVolChange(Number(e.target.value))}
-                className="w-full accent-amber-500"
+                className="w-full accent-cyan-500"
               />
             </label>
           </div>
