@@ -83,18 +83,39 @@ export default function VocalTrainer() {
   // ─── Editor state ───────────────────────────────────────────────────────
   const [zoom, setZoom] = useState(80); // px per second
 
-  // ─── Practice mode state ────────────────────────────────────────────────
-  const [practicePlaying, setPracticePlaying] = useState(false);
+  // ─── Dichotic player state (shared between Quick Play and template practice) ──
+  const [playbackState, setPlaybackState] = useState<'idle' | 'playing' | 'paused'>('idle');
   const [practiceTime, setPracticeTime] = useState(0);
+  const [playbackLabel, setPlaybackLabel] = useState('');
+  const [trackVol, setTrackVol] = useState(100);  // 0-200 percent
+  const [micVol, setMicVol] = useState(100);      // 0-200 percent
   const [micProfile, setMicProfile] = useState<MicProfile>('usb');
   const [micEnabled, setMicEnabled] = useState(false);
+
   const audioCtxRef = useRef<AudioContext | null>(null);
-  const audioBufRef = useRef<AudioBuffer | null>(null);
+  const trackGainNodeRef = useRef<GainNode | null>(null);
+  const trackPanNodeRef = useRef<StereoPannerNode | null>(null);
   const sourceRef = useRef<AudioBufferSourceNode | null>(null);
+  const playbackBufRef = useRef<AudioBuffer | null>(null);
+  const playbackDurationRef = useRef(0);
   const startedAtRef = useRef(0);
+  const pauseOffsetRef = useRef(0);
   const rafRef = useRef<number | null>(null);
+
   const micStreamRef = useRef<MediaStream | null>(null);
-  const micNodesRef = useRef<{ src: MediaStreamAudioSourceNode; gain: GainNode; pan: StereoPannerNode } | null>(null);
+  const micSourceNodeRef = useRef<MediaStreamAudioSourceNode | null>(null);
+  const micProfileGainNodeRef = useRef<GainNode | null>(null);
+  const micUserGainNodeRef = useRef<GainNode | null>(null);
+  const micPanNodeRef = useRef<StereoPannerNode | null>(null);
+
+  // Mirrors of state used inside stable callbacks so those callbacks don't
+  // rebuild on every volume/profile tweak (which would retrigger useEffects).
+  const trackVolRef = useRef(100);
+  const micVolRef = useRef(100);
+  const micProfileRef = useRef<MicProfile>('usb');
+  useEffect(() => { trackVolRef.current = trackVol; }, [trackVol]);
+  useEffect(() => { micVolRef.current = micVol; }, [micVol]);
+  useEffect(() => { micProfileRef.current = micProfile; }, [micProfile]);
 
   // ───────────────────────────────────────────────────────────────────────
   // Library fetch
@@ -114,30 +135,19 @@ export default function VocalTrainer() {
 
   useEffect(() => { refreshLibrary(); }, [refreshLibrary]);
 
-  // Load a template (audio + notes) when selected
+  // Load a template (notes + metadata) when selected. The audio decode runs
+  // in a separate useEffect below — that one is defined after loadTemplateAudio
+  // to avoid a temporal-dead-zone reference.
   useEffect(() => {
     if (!selectedId) { setCurrentTemplate(null); return; }
     const lib = library.find(l => l.id === selectedId);
     if (!lib) return;
+    let cancelled = false;
     (async () => {
       try {
         const r = await fetch(lib.templateUrl, { cache: 'no-store' });
         const tpl = await r.json();
-        // Invalidate any decoded buffer from the previous template and stop
-        // playback — otherwise clicking Play after switching templates would
-        // play the OLD audio.
-        if (sourceRef.current) {
-          try { sourceRef.current.stop(); } catch {}
-          try { sourceRef.current.disconnect(); } catch {}
-          sourceRef.current = null;
-        }
-        audioBufRef.current = null;
-        if (rafRef.current) {
-          cancelAnimationFrame(rafRef.current);
-          rafRef.current = null;
-        }
-        setPracticePlaying(false);
-        setPracticeTime(0);
+        if (cancelled) return;
         setCurrentTemplate(tpl);
         setExtractedNotes(tpl.notes || []);
         setExtractedDuration(tpl.durationSec || 0);
@@ -147,6 +157,7 @@ export default function VocalTrainer() {
         console.error('[VocalTrainer] template load failed:', e);
       }
     })();
+    return () => { cancelled = true; };
   }, [selectedId, library]);
 
   // Auto-publish loaded template to Synthesia localStorage
@@ -275,19 +286,35 @@ export default function VocalTrainer() {
   }, [currentTemplate, extractedNotes, tempo, extractedDuration, refreshLibrary]);
 
   // ───────────────────────────────────────────────────────────────────────
-  // Practice mode — dichotic L/R + visual cursor
+  // Dichotic player — quick-play OR template practice, shared audio graph
   // ───────────────────────────────────────────────────────────────────────
-  const ensureAudioContext = useCallback(() => {
+
+  // Build AudioContext + track chain (gain → pan → destination) on first use.
+  // Reads initial track volume / mic profile from refs so its identity stays
+  // stable across UI tweaks — downstream callbacks would otherwise rebuild.
+  const ensureAudioGraph = useCallback(() => {
     if (!audioCtxRef.current) {
       audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({
-        latencyHint: MIC_PROFILES[micProfile].latencyHint,
+        latencyHint: MIC_PROFILES[micProfileRef.current].latencyHint,
       });
     }
-    return audioCtxRef.current!;
-  }, [micProfile]);
+    const ctx = audioCtxRef.current!;
+    if (!trackGainNodeRef.current) {
+      const gain = ctx.createGain();
+      gain.gain.value = trackVolRef.current / 100;
+      const pan = ctx.createStereoPanner();
+      pan.pan.value = -1; // hard-left
+      gain.connect(pan).connect(ctx.destination);
+      trackGainNodeRef.current = gain;
+      trackPanNodeRef.current = pan;
+    }
+    return ctx;
+  }, []);
 
-  const stopPractice = useCallback(() => {
+  // Stop any in-flight BufferSource + cancel the RAF tick.
+  const stopAudioSource = useCallback(() => {
     if (sourceRef.current) {
+      try { sourceRef.current.onended = null; } catch {}
       try { sourceRef.current.stop(); } catch {}
       try { sourceRef.current.disconnect(); } catch {}
       sourceRef.current = null;
@@ -296,64 +323,134 @@ export default function VocalTrainer() {
       cancelAnimationFrame(rafRef.current);
       rafRef.current = null;
     }
-    setPracticePlaying(false);
   }, []);
 
-  const startPractice = useCallback(async () => {
-    const audioUrl = currentTemplate?.audioUrl;
-    if (!audioUrl) {
-      setStatusMsg('Practice needs a saved template with audio. Save first or pick from library.');
+  // Start playback from pauseOffsetRef. Shared by Play (from idle) and Resume (from paused).
+  const startAudioSource = useCallback(async () => {
+    const buf = playbackBufRef.current;
+    if (!buf) {
+      setStatusMsg('Nothing loaded — pick a library template or drop an audio file for Quick Play.');
       return;
     }
-    const ctx = ensureAudioContext();
+    const ctx = ensureAudioGraph();
     if (ctx.state === 'suspended') await ctx.resume();
 
-    // Lazy decode
-    if (!audioBufRef.current) {
-      try {
-        const r = await fetch(audioUrl);
-        const ab = await r.arrayBuffer();
-        audioBufRef.current = await ctx.decodeAudioData(ab);
-      } catch (e) {
-        setStatusMsg(`Could not load practice audio: ${e instanceof Error ? e.message : e}`);
-        return;
-      }
+    // If a source is already running, cancel it cleanly (no state change).
+    if (sourceRef.current) {
+      try { sourceRef.current.onended = null; } catch {}
+      try { sourceRef.current.stop(); } catch {}
+      try { sourceRef.current.disconnect(); } catch {}
+      sourceRef.current = null;
     }
 
+    const offset = Math.max(0, Math.min(pauseOffsetRef.current, buf.duration - 0.01));
     const src = ctx.createBufferSource();
-    src.buffer = audioBufRef.current;
-    const pan = ctx.createStereoPanner();
-    pan.pan.value = -1; // hard-left
-    src.connect(pan).connect(ctx.destination);
-    src.start();
+    src.buffer = buf;
+    src.connect(trackGainNodeRef.current!);
+    src.start(0, offset);
     sourceRef.current = src;
-    startedAtRef.current = ctx.currentTime;
-    setPracticePlaying(true);
+    // Offset the start anchor so (currentTime - startedAt) = elapsed in buffer.
+    startedAtRef.current = ctx.currentTime - offset;
+    setPlaybackState('playing');
 
     const tick = () => {
-      const elapsed = ctx.currentTime - startedAtRef.current;
+      const c = audioCtxRef.current;
+      if (!c) return;
+      const elapsed = c.currentTime - startedAtRef.current;
       setPracticeTime(elapsed);
-      if (elapsed >= (audioBufRef.current?.duration || 0)) {
-        stopPractice();
+      if (elapsed >= playbackDurationRef.current) {
+        stopAudioSource();
+        pauseOffsetRef.current = 0;
+        setPracticeTime(0);
+        setPlaybackState('idle');
         return;
       }
       rafRef.current = requestAnimationFrame(tick);
     };
     rafRef.current = requestAnimationFrame(tick);
 
-    src.onended = () => stopPractice();
-  }, [currentTemplate, ensureAudioContext, stopPractice]);
+    src.onended = () => {
+      // Natural end only (pause/stop nulls sourceRef before this can fire).
+      if (sourceRef.current === src) {
+        stopAudioSource();
+        pauseOffsetRef.current = 0;
+        setPracticeTime(0);
+        setPlaybackState('idle');
+      }
+    };
+  }, [ensureAudioGraph, stopAudioSource]);
 
-  // Mic monitor (right channel)
+  const pausePlayback = useCallback(() => {
+    const ctx = audioCtxRef.current;
+    if (!ctx || playbackState !== 'playing') return;
+    const elapsed = ctx.currentTime - startedAtRef.current;
+    pauseOffsetRef.current = Math.max(0, Math.min(elapsed, playbackDurationRef.current));
+    stopAudioSource();
+    setPracticeTime(pauseOffsetRef.current);
+    setPlaybackState('paused');
+  }, [playbackState, stopAudioSource]);
+
+  const stopPlayback = useCallback(() => {
+    stopAudioSource();
+    pauseOffsetRef.current = 0;
+    setPracticeTime(0);
+    setPlaybackState('idle');
+  }, [stopAudioSource]);
+
+  const playOrResume = useCallback(async () => {
+    if (playbackState === 'playing') return;
+    await startAudioSource();
+  }, [playbackState, startAudioSource]);
+
+  // Load a raw uploaded file for Quick Play (no extraction required).
+  const loadQuickFile = useCallback(async (file: File) => {
+    stopAudioSource();
+    pauseOffsetRef.current = 0;
+    setPracticeTime(0);
+    setPlaybackState('idle');
+    playbackBufRef.current = null;
+    playbackDurationRef.current = 0;
+    try {
+      const ctx = ensureAudioGraph();
+      const ab = await file.arrayBuffer();
+      const buf = await ctx.decodeAudioData(ab);
+      playbackBufRef.current = buf;
+      playbackDurationRef.current = buf.duration;
+      setPlaybackLabel(`Quick: ${file.name}`);
+      setStatusMsg(`Loaded "${file.name}" for Quick Play (${buf.duration.toFixed(1)}s). Press Play.`);
+    } catch (e) {
+      setStatusMsg(`Could not decode audio: ${e instanceof Error ? e.message : e}`);
+    }
+  }, [ensureAudioGraph, stopAudioSource]);
+
+  // Load a template's audio URL (called from the template-selection useEffect).
+  const loadTemplateAudio = useCallback(async (url: string, title: string) => {
+    stopAudioSource();
+    pauseOffsetRef.current = 0;
+    setPracticeTime(0);
+    setPlaybackState('idle');
+    playbackBufRef.current = null;
+    playbackDurationRef.current = 0;
+    try {
+      const ctx = ensureAudioGraph();
+      const r = await fetch(url);
+      const ab = await r.arrayBuffer();
+      const buf = await ctx.decodeAudioData(ab);
+      playbackBufRef.current = buf;
+      playbackDurationRef.current = buf.duration;
+      setPlaybackLabel(`Template: ${title}`);
+    } catch (e) {
+      setStatusMsg(`Could not load template audio: ${e instanceof Error ? e.message : e}`);
+    }
+  }, [ensureAudioGraph, stopAudioSource]);
+
+  // Mic monitor (right channel), with separate profile-gain and user-gain nodes.
   const toggleMicMonitor = useCallback(async () => {
     if (micEnabled) {
-      // Stop
-      if (micNodesRef.current) {
-        try { micNodesRef.current.src.disconnect(); } catch {}
-        try { micNodesRef.current.gain.disconnect(); } catch {}
-        try { micNodesRef.current.pan.disconnect(); } catch {}
-        micNodesRef.current = null;
-      }
+      if (micSourceNodeRef.current) { try { micSourceNodeRef.current.disconnect(); } catch {} micSourceNodeRef.current = null; }
+      if (micProfileGainNodeRef.current) { try { micProfileGainNodeRef.current.disconnect(); } catch {} micProfileGainNodeRef.current = null; }
+      if (micUserGainNodeRef.current) { try { micUserGainNodeRef.current.disconnect(); } catch {} micUserGainNodeRef.current = null; }
+      if (micPanNodeRef.current) { try { micPanNodeRef.current.disconnect(); } catch {} micPanNodeRef.current = null; }
       if (micStreamRef.current) {
         micStreamRef.current.getTracks().forEach(t => t.stop());
         micStreamRef.current = null;
@@ -370,34 +467,64 @@ export default function VocalTrainer() {
         },
       });
       micStreamRef.current = stream;
-      const ctx = ensureAudioContext();
+      const ctx = ensureAudioGraph();
       if (ctx.state === 'suspended') await ctx.resume();
       const src = ctx.createMediaStreamSource(stream);
-      const gain = ctx.createGain();
-      gain.gain.value = MIC_PROFILES[micProfile].gain;
+      const profileGain = ctx.createGain();
+      profileGain.gain.value = MIC_PROFILES[micProfileRef.current].gain;
+      const userGain = ctx.createGain();
+      userGain.gain.value = micVolRef.current / 100;
       const pan = ctx.createStereoPanner();
       pan.pan.value = 1; // hard-right
-      src.connect(gain).connect(pan).connect(ctx.destination);
-      micNodesRef.current = { src, gain, pan };
+      src.connect(profileGain).connect(userGain).connect(pan).connect(ctx.destination);
+      micSourceNodeRef.current = src;
+      micProfileGainNodeRef.current = profileGain;
+      micUserGainNodeRef.current = userGain;
+      micPanNodeRef.current = pan;
       setMicEnabled(true);
     } catch (e) {
       setStatusMsg(`Mic access failed: ${e instanceof Error ? e.message : e}`);
     }
-  }, [micEnabled, micProfile, ensureAudioContext]);
+  }, [micEnabled, ensureAudioGraph]);
 
-  // Update mic gain when profile changes
+  // Update mic profile gain live when profile changes (while mic is running).
   useEffect(() => {
-    if (micNodesRef.current) {
-      micNodesRef.current.gain.gain.value = MIC_PROFILES[micProfile].gain;
+    if (micProfileGainNodeRef.current) {
+      micProfileGainNodeRef.current.gain.value = MIC_PROFILES[micProfile].gain;
     }
   }, [micProfile]);
 
+  // Decode template audio when the current template changes. Split out from the
+  // template-metadata effect so loadTemplateAudio is defined by this point.
+  useEffect(() => {
+    if (!currentTemplate?.audioUrl) return;
+    loadTemplateAudio(currentTemplate.audioUrl, currentTemplate.title);
+  }, [currentTemplate, loadTemplateAudio]);
+
+  // Update track volume live (without restarting playback).
+  const handleTrackVolChange = useCallback((pct: number) => {
+    const clamped = Math.max(0, Math.min(200, pct));
+    setTrackVol(clamped);
+    if (trackGainNodeRef.current) {
+      trackGainNodeRef.current.gain.value = clamped / 100;
+    }
+  }, []);
+
+  // Update mic user volume live.
+  const handleMicVolChange = useCallback((pct: number) => {
+    const clamped = Math.max(0, Math.min(200, pct));
+    setMicVol(clamped);
+    if (micUserGainNodeRef.current) {
+      micUserGainNodeRef.current.gain.value = clamped / 100;
+    }
+  }, []);
+
   // Cleanup on unmount
   useEffect(() => () => {
-    stopPractice();
+    stopAudioSource();
     if (micStreamRef.current) micStreamRef.current.getTracks().forEach(t => t.stop());
     if (audioCtxRef.current) { try { audioCtxRef.current.close(); } catch {} }
-  }, [stopPractice]);
+  }, [stopAudioSource]);
 
   // ───────────────────────────────────────────────────────────────────────
   // Editor: click-to-delete a note
@@ -515,6 +642,14 @@ export default function VocalTrainer() {
 
           <div className="mt-4 flex flex-wrap gap-2">
             <button
+              onClick={() => uploadFile && loadQuickFile(uploadFile)}
+              disabled={!uploadFile}
+              className="px-4 py-2 bg-purple-600 hover:bg-purple-500 disabled:bg-gray-700 disabled:text-gray-500 rounded font-semibold text-sm"
+              title="Skip extraction — load this file straight into the Dichotic Player below."
+            >
+              Quick Play (no extraction)
+            </button>
+            <button
               onClick={runExtraction}
               disabled={!uploadFile || extracting}
               className="px-4 py-2 bg-amber-600 hover:bg-amber-500 disabled:bg-gray-700 disabled:text-gray-500 rounded font-semibold text-sm"
@@ -611,7 +746,7 @@ export default function VocalTrainer() {
                   );
                 })}
                 {/* Playhead cursor in practice mode */}
-                {practicePlaying && (
+                {playbackState !== 'idle' && (
                   <line x1={practiceTime * zoom} y1={0} x2={practiceTime * zoom} y2={editorHeight}
                     stroke="#ff5577" strokeWidth={2} />
                 )}
@@ -620,14 +755,80 @@ export default function VocalTrainer() {
           </section>
         )}
 
-        {/* ─── Practice mode ─────────────────────────────────────────── */}
+        {/* ─── Dichotic Player (quick-play OR template practice) ─────── */}
         <section className="bg-gray-900/60 border border-amber-500/20 rounded-lg p-4">
-          <h2 className="text-lg font-semibold text-amber-300 mb-3">Practice (Dichotic L/R)</h2>
+          <h2 className="text-lg font-semibold text-amber-300 mb-1">Dichotic Player (L/R)</h2>
           <p className="text-xs text-gray-500 mb-3">
             Reference audio plays on the LEFT channel (hard-pan). Your mic monitors on the RIGHT channel.
-            Headphones strongly recommended. The dichotic split lets your brain compare the two streams without interference.
+            Headphones strongly recommended. Works for Quick Play (raw file, no extraction) AND saved templates.
           </p>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
+
+          <div className="mb-3 text-xs">
+            {playbackLabel ? (
+              <span className="text-amber-300">{playbackLabel}</span>
+            ) : (
+              <span className="text-gray-500">Nothing loaded. Use Quick Play above or pick a library template.</span>
+            )}
+            {playbackState !== 'idle' && (
+              <span className="ml-3 text-gray-500">
+                {playbackState === 'paused' ? '⏸' : '▶'} {practiceTime.toFixed(2)}s
+                {playbackDurationRef.current > 0 && ` / ${playbackDurationRef.current.toFixed(2)}s`}
+              </span>
+            )}
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-3">
+            <button
+              onClick={playOrResume}
+              disabled={playbackState === 'playing' || !playbackLabel}
+              className="px-3 py-2 bg-amber-600 hover:bg-amber-500 disabled:bg-gray-700 disabled:text-gray-500 rounded text-sm font-semibold"
+            >
+              {playbackState === 'paused' ? 'Resume ▶' : 'Play ▶'}
+            </button>
+            <button
+              onClick={pausePlayback}
+              disabled={playbackState !== 'playing'}
+              className="px-3 py-2 bg-yellow-600 hover:bg-yellow-500 disabled:bg-gray-700 disabled:text-gray-500 rounded text-sm font-semibold"
+            >
+              Pause ⏸
+            </button>
+            <button
+              onClick={stopPlayback}
+              disabled={playbackState === 'idle'}
+              className="px-3 py-2 bg-red-600 hover:bg-red-500 disabled:bg-gray-700 disabled:text-gray-500 rounded text-sm font-semibold"
+            >
+              Stop ■
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+            <label className="text-xs text-gray-400">
+              <div className="flex justify-between items-baseline mb-1">
+                <span>Track volume (LEFT ear)</span>
+                <span className="text-amber-300 font-mono">{trackVol}%</span>
+              </div>
+              <input
+                type="range" min={0} max={200} step={1}
+                value={trackVol}
+                onChange={(e) => handleTrackVolChange(Number(e.target.value))}
+                className="w-full accent-amber-500"
+              />
+            </label>
+            <label className="text-xs text-gray-400">
+              <div className="flex justify-between items-baseline mb-1">
+                <span>Mic / voice volume (RIGHT ear)</span>
+                <span className="text-amber-300 font-mono">{micVol}%</span>
+              </div>
+              <input
+                type="range" min={0} max={200} step={1}
+                value={micVol}
+                onChange={(e) => handleMicVolChange(Number(e.target.value))}
+                className="w-full accent-amber-500"
+              />
+            </label>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             <label className="text-xs text-gray-400">
               Mic profile
               <select
@@ -650,27 +851,7 @@ export default function VocalTrainer() {
                 {micEnabled ? 'Stop mic monitor' : 'Start mic monitor'}
               </button>
             </div>
-            <div className="flex items-end">
-              <button
-                onClick={practicePlaying ? stopPractice : startPractice}
-                disabled={!currentTemplate?.audioUrl}
-                className="w-full px-3 py-2 bg-amber-600 hover:bg-amber-500 disabled:bg-gray-700 disabled:text-gray-500 rounded text-sm font-semibold"
-              >
-                {practicePlaying ? 'Stop practice' : 'Play reference (left ear)'}
-              </button>
-            </div>
           </div>
-          {currentTemplate && (
-            <div className="text-xs text-gray-500">
-              Current: <span className="text-amber-300">{currentTemplate.title}</span>
-              {practicePlaying && (
-                <span className="ml-3">t = {practiceTime.toFixed(2)}s</span>
-              )}
-            </div>
-          )}
-          {!currentTemplate && (
-            <div className="text-xs text-gray-500">Pick a template from the library to enable practice playback.</div>
-          )}
         </section>
       </div>
     </div>
