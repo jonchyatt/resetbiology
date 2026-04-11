@@ -123,6 +123,21 @@ export default function VocalTrainer() {
       try {
         const r = await fetch(lib.templateUrl, { cache: 'no-store' });
         const tpl = await r.json();
+        // Invalidate any decoded buffer from the previous template and stop
+        // playback — otherwise clicking Play after switching templates would
+        // play the OLD audio.
+        if (sourceRef.current) {
+          try { sourceRef.current.stop(); } catch {}
+          try { sourceRef.current.disconnect(); } catch {}
+          sourceRef.current = null;
+        }
+        audioBufRef.current = null;
+        if (rafRef.current) {
+          cancelAnimationFrame(rafRef.current);
+          rafRef.current = null;
+        }
+        setPracticePlaying(false);
+        setPracticeTime(0);
         setCurrentTemplate(tpl);
         setExtractedNotes(tpl.notes || []);
         setExtractedDuration(tpl.durationSec || 0);

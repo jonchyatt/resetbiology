@@ -1210,6 +1210,35 @@ export default function ChoirPractice() {
               />
             </svg>
           )}
+
+          {/* Pitchforks v1 slider bar — canonical mic lock feedback.
+              Gated to matchProgress > 0 so it only shows while singing on-pitch. */}
+          {matchProgress > 0 && (
+            <div
+              className="absolute left-1/2 -translate-x-1/2"
+              style={{
+                bottom: -14,
+                width: 100,
+                height: 4,
+                background: 'rgba(10,10,20,0.6)',
+                border: '1px solid rgba(60,60,90,0.6)',
+                borderRadius: 2,
+                overflow: 'hidden',
+              }}
+            >
+              <div
+                style={{
+                  width: `${matchProgress * 100}%`,
+                  height: '100%',
+                  background: matchProgress >= 0.8 ? '#4ade80' : '#fbbf24',
+                  boxShadow: matchProgress >= 0.8
+                    ? '0 0 8px #4ade80, 0 0 16px #4ade8060'
+                    : '0 0 6px #fbbf2460',
+                  transition: 'width 0.05s linear',
+                }}
+              />
+            </div>
+          )}
         </div>
 
         {/* Voice feedback */}

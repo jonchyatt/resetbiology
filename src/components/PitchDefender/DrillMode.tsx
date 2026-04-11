@@ -667,6 +667,35 @@ export default function DrillMode() {
               lockProgress={lockProgress}
             />
           )}
+
+          {/* Pitchforks v1 slider bar — canonical mic lock feedback.
+              Gated to lockProgress > 0 so it only appears while singing on-pitch. */}
+          {inputMode === 'mic' && isAnswering && lockProgress > 0 && (
+            <div
+              className="absolute left-1/2 -translate-x-1/2"
+              style={{
+                bottom: -14,
+                width: 100,
+                height: 4,
+                background: 'rgba(10,10,20,0.6)',
+                border: '1px solid rgba(60,60,90,0.6)',
+                borderRadius: 2,
+                overflow: 'hidden',
+              }}
+            >
+              <div
+                style={{
+                  width: `${lockProgress * 100}%`,
+                  height: '100%',
+                  background: lockProgress >= 0.8 ? '#4ade80' : '#fbbf24',
+                  boxShadow: lockProgress >= 0.8
+                    ? '0 0 8px #4ade80, 0 0 16px #4ade8060'
+                    : '0 0 6px #fbbf2460',
+                  transition: 'width 0.05s linear',
+                }}
+              />
+            </div>
+          )}
         </div>
 
         {/* New note unlocked banner */}
