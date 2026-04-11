@@ -25,6 +25,13 @@ import {
   type RawNote,
   type ExtractionProgress,
 } from './extractNotesFromAudio';
+import { usePitchDetection } from './usePitchDetection';
+
+// Convert a frequency (Hz) to a MIDI note number (69 = A4 = 440 Hz).
+function freqToMidi(freq: number): number {
+  if (freq <= 0) return 0;
+  return 69 + 12 * Math.log2(freq / 440);
+}
 
 interface LibraryItem {
   id: string;
@@ -116,6 +123,12 @@ export default function VocalTrainer() {
   useEffect(() => { trackVolRef.current = trackVol; }, [trackVol]);
   useEffect(() => { micVolRef.current = micVol; }, [micVol]);
   useEffect(() => { micProfileRef.current = micProfile; }, [micProfile]);
+
+  // Pitch detection for the "show my tone" live readout. Uses its own mic
+  // stream with AEC/noise-suppression ON (opposite of the routing stream,
+  // which keeps AEC off for zero-latency monitoring). Both streams coexist.
+  const { pitch: livePitch, startListening: startPitchDetect, stopListening: stopPitchDetect } =
+    usePitchDetection({ noiseGateDb: -45 });
 
   // ───────────────────────────────────────────────────────────────────────
   // Library fetch
@@ -445,6 +458,7 @@ export default function VocalTrainer() {
   }, [ensureAudioGraph, stopAudioSource]);
 
   // Mic monitor (right channel), with separate profile-gain and user-gain nodes.
+  // Also starts/stops the pitch-detection stream so Jon sees live "You: D4 +12¢".
   const toggleMicMonitor = useCallback(async () => {
     if (micEnabled) {
       if (micSourceNodeRef.current) { try { micSourceNodeRef.current.disconnect(); } catch {} micSourceNodeRef.current = null; }
@@ -455,6 +469,7 @@ export default function VocalTrainer() {
         micStreamRef.current.getTracks().forEach(t => t.stop());
         micStreamRef.current = null;
       }
+      stopPitchDetect();
       setMicEnabled(false);
       return;
     }
@@ -482,10 +497,13 @@ export default function VocalTrainer() {
       micUserGainNodeRef.current = userGain;
       micPanNodeRef.current = pan;
       setMicEnabled(true);
+      // Kick off pitch detection on its own stream (AEC on) so the readout
+      // and piano-roll overlay have live data.
+      startPitchDetect();
     } catch (e) {
       setStatusMsg(`Mic access failed: ${e instanceof Error ? e.message : e}`);
     }
-  }, [micEnabled, ensureAudioGraph]);
+  }, [micEnabled, ensureAudioGraph, startPitchDetect, stopPitchDetect]);
 
   // Update mic profile gain live when profile changes (while mic is running).
   useEffect(() => {
@@ -536,6 +554,22 @@ export default function VocalTrainer() {
   const editorWidth = useMemo(() => Math.max(800, extractedDuration * zoom), [extractedDuration, zoom]);
   const editorRowHeight = 6; // px per semitone
   const editorHeight = (PITCH_MAX - PITCH_MIN + 1) * editorRowHeight;
+
+  // Find the extracted note that contains the current playhead time.
+  // Null for Quick Play (no extracted notes) or between notes.
+  const currentTargetNote = useMemo(() => {
+    if (extractedNotes.length === 0) return null;
+    const t = practiceTime;
+    return extractedNotes.find(
+      n => n.startTimeSeconds <= t && t < n.startTimeSeconds + n.durationSeconds,
+    ) ?? null;
+  }, [extractedNotes, practiceTime]);
+
+  // Live pitch as a MIDI number — used for the piano-roll marker.
+  const liveMidi = useMemo(() => {
+    if (!livePitch?.isActive || livePitch.frequency <= 0) return null;
+    return freqToMidi(livePitch.frequency);
+  }, [livePitch]);
 
   // ───────────────────────────────────────────────────────────────────────
   // Render
@@ -733,11 +767,14 @@ export default function VocalTrainer() {
                   const x = n.startTimeSeconds * zoom;
                   const w = Math.max(2, n.durationSeconds * zoom);
                   const y = (PITCH_MAX - n.pitchMidi) * editorRowHeight;
+                  const isCurrent = currentTargetNote === n;
                   return (
                     <rect key={idx}
                       x={x} y={y} width={w} height={editorRowHeight - 1}
                       fill={`hsl(${(n.pitchMidi * 7) % 360}, 70%, 55%)`}
                       opacity={0.5 + Math.min(0.5, n.amplitude * 0.7)}
+                      stroke={isCurrent ? '#fde047' : undefined}
+                      strokeWidth={isCurrent ? 1.5 : 0}
                       onClick={() => deleteNote(idx)}
                       style={{ cursor: 'pointer' }}
                     >
@@ -745,6 +782,19 @@ export default function VocalTrainer() {
                     </rect>
                   );
                 })}
+                {/* Live detected pitch — cyan dot at the playhead x, y = detected semitone */}
+                {liveMidi !== null && liveMidi >= PITCH_MIN && liveMidi <= PITCH_MAX && (() => {
+                  const y = (PITCH_MAX - liveMidi) * editorRowHeight + editorRowHeight / 2;
+                  const cx = playbackState !== 'idle' ? practiceTime * zoom : 0;
+                  return (
+                    <g pointerEvents="none">
+                      <line x1={0} y1={y} x2={editorWidth} y2={y}
+                        stroke="#22d3ee" strokeWidth={0.75} strokeDasharray="3 3" opacity={0.35} />
+                      <circle cx={cx} cy={y} r={5}
+                        fill="#22d3ee" stroke="#0f172a" strokeWidth={1} />
+                    </g>
+                  );
+                })()}
                 {/* Playhead cursor in practice mode */}
                 {playbackState !== 'idle' && (
                   <line x1={practiceTime * zoom} y1={0} x2={practiceTime * zoom} y2={editorHeight}
@@ -775,6 +825,45 @@ export default function VocalTrainer() {
                 {playbackDurationRef.current > 0 && ` / ${playbackDurationRef.current.toFixed(2)}s`}
               </span>
             )}
+          </div>
+
+          {/* Live pitch readout: what Jon is singing vs what the track wants */}
+          <div className="mb-3 text-xs bg-black/40 border border-gray-800 rounded px-3 py-2 flex flex-wrap items-center gap-x-5 gap-y-1">
+            <span className="text-gray-500 uppercase tracking-wider">Pitch match</span>
+            <span>
+              <span className="text-gray-500">You: </span>
+              {livePitch?.isActive && livePitch.frequency > 0 ? (
+                <span className="text-cyan-300 font-mono">
+                  {livePitch.note} {livePitch.cents > 0 ? '+' : ''}{livePitch.cents}¢
+                </span>
+              ) : (
+                <span className="text-gray-600 font-mono">{micEnabled ? '—' : '(mic off)'}</span>
+              )}
+            </span>
+            <span>
+              <span className="text-gray-500">Target: </span>
+              {currentTargetNote ? (
+                <span className="text-amber-300 font-mono">{midiToName(currentTargetNote.pitchMidi)}</span>
+              ) : (
+                <span className="text-gray-600 font-mono">{extractedNotes.length > 0 ? 'rest' : '(no extraction)'}</span>
+              )}
+            </span>
+            {livePitch?.isActive && currentTargetNote && (() => {
+              // Octave-folded cents distance from user's freq to target's freq.
+              const targetFreq = 440 * Math.pow(2, (currentTargetNote.pitchMidi - 69) / 12);
+              const raw = 1200 * Math.log2(livePitch.frequency / targetFreq);
+              const folded = ((raw + 600) % 1200 + 1200) % 1200 - 600;
+              const abs = Math.abs(folded);
+              const color = abs <= 30 ? '#4ade80' : abs <= 70 ? '#fbbf24' : '#f87171';
+              return (
+                <span>
+                  <span className="text-gray-500">Δ </span>
+                  <span className="font-mono" style={{ color }}>
+                    {folded > 0 ? '+' : ''}{Math.round(folded)}¢
+                  </span>
+                </span>
+              );
+            })()}
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-3">
