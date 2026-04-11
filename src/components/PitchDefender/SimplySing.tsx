@@ -28,7 +28,7 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { PitchFusion, type FusedPitch } from './pitchFusion'
-import { initAudio, loadPianoSamples, playPianoNote, markToneEmitted } from './audioEngine'
+import { initAudio, loadPianoSamples, playPianoNote, markToneEmitted, setPianoVolume } from './audioEngine'
 import { extractMelodyFromComposition, type ExtractedNote, compositionHasNotes } from './composerExtract'
 import { noteToFreq, octaveFoldedCents, PITCH_ON_TOLERANCE_CENTS } from './pitchMath'
 
@@ -198,6 +198,7 @@ export default function SimplySing() {
   const [tempoMul, setTempoMul] = useState(1.0)         // 0.5..1.5 multiplier on song's tempo
   const [semitoneShift, setSemitoneShift] = useState(0) // -12..+12 transposition
   const [micEnabled, setMicEnabled] = useState(true)
+  const [pianoVol, setPianoVol] = useState(100)         // 0..200 percent — the "plunk track" volume
   const [score, setScore] = useState(0)
   const [progress, setProgress] = useState(0)            // 0..1 fraction of song
   const [finalScore, setFinalScore] = useState(0)
@@ -219,6 +220,11 @@ export default function SimplySing() {
     loadPianoSamples()
     setSongs(loadAllSongs())
   }, [])
+
+  // Push the piano ("plunk") volume to the shared audio engine whenever it changes.
+  useEffect(() => {
+    setPianoVolume(pianoVol)
+  }, [pianoVol])
 
   // Refresh song list when returning to menu
   useEffect(() => {
@@ -627,7 +633,7 @@ export default function SimplySing() {
             </div>
 
             {/* Tempo + transpose pre-game tweaks */}
-            <div className="mt-6 flex items-center gap-4 text-xs text-gray-400">
+            <div className="mt-6 flex flex-wrap items-center gap-4 text-xs text-gray-400">
               <label className="flex items-center gap-2">
                 Tempo
                 <input
@@ -653,6 +659,19 @@ export default function SimplySing() {
                   className="w-32"
                 />
                 <span className="text-cyan-300 font-mono w-10">{semitoneShift > 0 ? '+' : ''}{semitoneShift}</span>
+              </label>
+              <label className="flex items-center gap-2">
+                Plunk vol
+                <input
+                  type="range"
+                  min="0"
+                  max="200"
+                  step="1"
+                  value={pianoVol}
+                  onChange={e => setPianoVol(parseInt(e.target.value))}
+                  className="w-32"
+                />
+                <span className="text-cyan-300 font-mono w-10">{pianoVol}%</span>
               </label>
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
@@ -746,6 +765,19 @@ export default function SimplySing() {
             className="w-24"
           />
           <span className="font-mono text-cyan-300 w-10">{semitoneShift > 0 ? '+' : ''}{semitoneShift}</span>
+        </label>
+        <label className="flex items-center gap-2 text-xs text-gray-400">
+          Plunk vol
+          <input
+            type="range"
+            min="0"
+            max="200"
+            step="1"
+            value={pianoVol}
+            onChange={e => setPianoVol(parseInt(e.target.value))}
+            className="w-24"
+          />
+          <span className="font-mono text-cyan-300 w-10">{pianoVol}%</span>
         </label>
       </div>
     </div>

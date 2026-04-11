@@ -10,6 +10,7 @@ let _ctx: AudioContext | null = null
 let _master: GainNode | null = null
 let _sfxBus: GainNode | null = null
 let _musicBus: GainNode | null = null
+let _pianoBus: GainNode | null = null
 let _pianoCache: Map<string, AudioBuffer> = new Map()
 
 // Music state
@@ -31,6 +32,14 @@ function ctx(): AudioContext {
     _sfxBus = _ctx.createGain()
     _sfxBus.gain.value = 0.8
     _sfxBus.connect(_master)
+
+    // Piano bus sits between individual piano notes and the SFX bus so games
+    // (SimplySing's backing track, Synthesia guide tones, etc.) can scale
+    // piano loudness independently of the other SFX. Default 1.0 preserves
+    // existing behavior for every caller that doesn't call setPianoVolume.
+    _pianoBus = _ctx.createGain()
+    _pianoBus.gain.value = 1.0
+    _pianoBus.connect(_sfxBus)
 
     _musicBus = _ctx.createGain()
     _musicBus.gain.value = 0.12
@@ -109,13 +118,13 @@ function findPianoBuffer(note: string): AudioBuffer | undefined {
 export function playPianoNote(note: string) {
   try {
     const buf = findPianoBuffer(note)
-    if (!buf || !_sfxBus) return
+    if (!buf || !_pianoBus) return
     const c = ctx()
     const src = c.createBufferSource()
     const gain = c.createGain()
     src.buffer = buf
     src.connect(gain)
-    gain.connect(_sfxBus)
+    gain.connect(_pianoBus)
     gain.gain.setValueAtTime(0.3, c.currentTime)
     gain.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 1.5)
     src.start()
@@ -129,6 +138,22 @@ export function playPianoNote(note: string) {
       ;(window as any).__pdToneSuppressMs = 350 // duration to suppress mic input
     }
   } catch { /* Audio unavailable */ }
+}
+
+// Piano bus volume control — used by backing-track games (SimplySing, etc.)
+// to scale how loud the piano plunks are relative to other audio sources.
+// pct: 0-200 (0% silent, 100% default, 200% double). Clamped to [0, 2].
+export function setPianoVolume(pct: number) {
+  if (!_pianoBus) ctx() // lazy init
+  if (_pianoBus) {
+    const v = Math.max(0, Math.min(2, pct / 100))
+    _pianoBus.gain.setValueAtTime(v, _ctx!.currentTime)
+  }
+}
+
+export function getPianoVolume(): number {
+  if (!_pianoBus) return 100
+  return Math.round(_pianoBus.gain.value * 100)
 }
 
 // Generic helper any system can call (e.g. ChoirPractice's playGuideNote) to
