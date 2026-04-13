@@ -679,7 +679,7 @@ export default function PitchDefender() {
   const isNewHighScore = state.isNewHighScore
 
   return (
-    <div className="fixed inset-0 overflow-hidden select-none" style={{ background: '#000', animation: screenShake ? 'screenShake 0.4s ease-out' : undefined }}>
+    <div className="fixed inset-0 overflow-auto select-none" style={{ background: '#000', animation: screenShake ? 'screenShake 0.4s ease-out' : undefined }}>
       {/* Star Nest Background */}
       <StarNestBackground presetKey={starPreset} />
 

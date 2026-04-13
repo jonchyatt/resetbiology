@@ -24,6 +24,7 @@ import {
   publishToSynthesia,
   type RawNote,
   type ExtractionProgress,
+  type PitchContourPoint,
 } from './extractNotesFromAudio';
 import { usePitchDetection } from './usePitchDetection';
 
@@ -83,6 +84,7 @@ export default function VocalTrainer() {
   const [extractProgress, setExtractProgress] = useState<ExtractionProgress | null>(null);
   const [extractedNotes, setExtractedNotes] = useState<RawNote[]>([]);
   const [extractedDuration, setExtractedDuration] = useState(0);
+  const [vocalContour, setVocalContour] = useState<PitchContourPoint[]>([]);
   const [tempo, setTempo] = useState(100);
   const [saving, setSaving] = useState(false);
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
@@ -98,8 +100,8 @@ export default function VocalTrainer() {
   const [playbackState, setPlaybackState] = useState<'idle' | 'playing' | 'paused'>('idle');
   const [practiceTime, setPracticeTime] = useState(0);
   const [playbackLabel, setPlaybackLabel] = useState('');
-  const [vocalVol, setVocalVol] = useState(100);  // 0-200 percent
-  const [musicVol, setMusicVol] = useState(100);  // 0-200 percent
+  const [vocalVol, setVocalVol] = useState(150);  // 0-200 percent, start loud (stems are quieter than masters)
+  const [musicVol, setMusicVol] = useState(150);  // 0-200 percent
   const [micVol, setMicVol] = useState(100);      // 0-200 percent
   const [micProfile, setMicProfile] = useState<MicProfile>('usb');
   const [micEnabled, setMicEnabled] = useState(false);
@@ -134,8 +136,8 @@ export default function VocalTrainer() {
 
   // Mirrors of state used inside stable callbacks so those callbacks don't
   // rebuild on every volume/profile tweak (which would retrigger useEffects).
-  const vocalVolRef = useRef(100);
-  const musicVolRef = useRef(100);
+  const vocalVolRef = useRef(150);
+  const musicVolRef = useRef(150);
   const micVolRef = useRef(100);
   const micProfileRef = useRef<MicProfile>('usb');
   useEffect(() => { vocalVolRef.current = vocalVol; }, [vocalVol]);
@@ -251,7 +253,7 @@ export default function VocalTrainer() {
     setExtracting(true);
     setStatusMsg(null);
     try {
-      const { rawNotes, durationSec } = await extractNotesFromAudio(uploadFile, {
+      const { rawNotes, durationSec, pitchContour } = await extractNotesFromAudio(uploadFile, {
         onProgress: setExtractProgress,
         midiMin: PITCH_MIN,
         midiMax: PITCH_MAX,
@@ -260,7 +262,8 @@ export default function VocalTrainer() {
       const melody = extractMelodyLine(rawNotes, 0.05);
       setExtractedNotes(melody);
       setExtractedDuration(durationSec);
-      setStatusMsg(`Extracted ${rawNotes.length} notes → ${melody.length} after melody filter. Edit obvious garbage, then Save.`);
+      setVocalContour(pitchContour);
+      setStatusMsg(`Extracted ${rawNotes.length} notes → ${melody.length} after melody filter + ${pitchContour.length}-point pitch curve. Edit obvious garbage, then Save.`);
     } catch (e) {
       console.error('[VocalTrainer] extract failed:', e);
       setStatusMsg(`Extraction failed: ${e instanceof Error ? e.message : String(e)}`);
@@ -349,7 +352,8 @@ export default function VocalTrainer() {
       const gain = ctx.createGain();
       gain.gain.value = vocalVolRef.current / 100;
       const pan = ctx.createStereoPanner();
-      pan.pan.value = -1; // hard-left
+      pan.pan.value = -0.7; // mostly left but audible in both ears — avoids the
+      // 50% perceived loudness drop that hard-left (-1) causes vs native stereo
       gain.connect(pan).connect(ctx.destination);
       vocalGainNodeRef.current = gain;
       vocalPanNodeRef.current = pan;
@@ -691,6 +695,12 @@ export default function VocalTrainer() {
   // Runs only while playing AND a target note exists. Resets matchStart on
   // note boundary; uses confident-wrong hard-reset + silence-preserves-lock
   // flicker fix from src/components/PitchDefender/Pitchforks.tsx:418-493.
+  // Pitchforks v1 lock tick — works in TWO modes:
+  // A) With target (extracted notes + playhead): standard lock-to-target,
+  //    resets on target boundary, confident-wrong hard-reset, silence preserves.
+  // B) Without target (Quick Play, no extraction): shows pitch stability —
+  //    bar fills while ANY confident pitch is sustained, hard-resets on silence.
+  //    Gives visual "mic is working" feedback even without extraction.
   useEffect(() => {
     if (playbackState !== 'playing') {
       matchStartRef.current = 0;
@@ -705,24 +715,18 @@ export default function VocalTrainer() {
 
     const tick = () => {
       const tgt = currentTargetRef.current;
-      if (!tgt) {
-        if (matchStartRef.current !== 0) {
-          matchStartRef.current = 0;
-          setMatchProgress(0);
-        }
-        lastTarget = null;
-      } else {
-        // Reset on target note change (new rect under playhead)
+      const p = livePitchRef.current;
+
+      if (tgt) {
+        // ── Mode A: lock-to-target ──
         if (lastTarget !== tgt) {
           matchStartRef.current = 0;
           setMatchProgress(0);
           lastTarget = tgt;
         }
-        const p = livePitchRef.current;
         if (p?.isActive && p.confidence >= CONFIDENCE_FLOOR && p.frequency > 0) {
           const targetFreq = 440 * Math.pow(2, (tgt.pitchMidi - 69) / 12);
           const rawCents = 1200 * Math.log2(p.frequency / targetFreq);
-          // Octave-fold to [-600, 600] so C5 singing C4 target still counts.
           const folded = ((rawCents + 600) % 1200 + 1200) % 1200 - 600;
           if (Math.abs(folded) <= TOLERANCE_CENTS) {
             if (matchStartRef.current === 0) matchStartRef.current = performance.now();
@@ -731,14 +735,29 @@ export default function VocalTrainer() {
               setMatchProgress(Math.min(1, held / HOLD_MS));
             }
           } else {
-            // CONFIDENT wrong — hard reset
             if (matchStartRef.current > 0) {
               matchStartRef.current = 0;
               setMatchProgress(0);
             }
           }
         }
-        // else silence / low confidence — DO NOTHING. Preserve the lock.
+        // silence → preserve lock
+      } else {
+        // ── Mode B: no target — show pitch stability ──
+        lastTarget = null;
+        if (p?.isActive && p.confidence >= CONFIDENCE_FLOOR && p.frequency > 0) {
+          if (matchStartRef.current === 0) matchStartRef.current = performance.now();
+          if (matchStartRef.current > 0) {
+            const held = performance.now() - matchStartRef.current;
+            setMatchProgress(Math.min(1, held / HOLD_MS));
+          }
+        } else {
+          // No pitch → reset (in targetless mode, silence = reset is correct)
+          if (matchStartRef.current > 0) {
+            matchStartRef.current = 0;
+            setMatchProgress(0);
+          }
+        }
       }
       raf = requestAnimationFrame(tick);
     };
@@ -1013,14 +1032,30 @@ export default function VocalTrainer() {
                     </rect>
                   );
                 })}
-                {/* Live detected pitch — cyan dot at the playhead x, y = detected semitone */}
+                {/* Recording's continuous pitch contour — orange polyline showing
+                    exactly where the vocalist goes melodically over time. This is
+                    the F0 curve Jon asked for: graph out where the vocals are going. */}
+                {vocalContour.length > 0 && (
+                  <polyline
+                    pointerEvents="none"
+                    fill="none"
+                    stroke="#f97316"
+                    strokeWidth={1.5}
+                    opacity={0.8}
+                    points={vocalContour.map(pt => {
+                      const x = pt.time * zoom;
+                      const y = (PITCH_MAX - pt.midi) * editorRowHeight + editorRowHeight / 2;
+                      return `${x},${y}`;
+                    }).join(' ')}
+                  />
+                )}
+                {/* Live detected pitch — cyan dot + trailing polyline showing
+                    where YOUR voice is compared to the recording's contour. */}
                 {liveMidi !== null && liveMidi >= PITCH_MIN && liveMidi <= PITCH_MAX && (() => {
                   const y = (PITCH_MAX - liveMidi) * editorRowHeight + editorRowHeight / 2;
                   const cx = playbackState !== 'idle' ? practiceTime * zoom : 0;
                   return (
                     <g pointerEvents="none">
-                      <line x1={0} y1={y} x2={editorWidth} y2={y}
-                        stroke="#22d3ee" strokeWidth={0.75} strokeDasharray="3 3" opacity={0.35} />
                       <circle cx={cx} cy={y} r={5}
                         fill="#22d3ee" stroke="#0f172a" strokeWidth={1} />
                     </g>

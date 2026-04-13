@@ -80,10 +80,18 @@ async function decodeToMono22050(file: File | Blob): Promise<{ samples: Float32A
 /**
  * Run BasicPitch over decoded samples and return raw notes.
  */
+// A single point on the continuous F0 pitch curve of the uploaded recording.
+// time = seconds from start, midi = fractional MIDI (e.g., 64.3 = slightly sharp E4).
+export interface PitchContourPoint {
+  time: number;
+  midi: number;
+  confidence: number;
+}
+
 export async function extractNotesFromAudio(
   file: File | Blob,
   opts: ExtractAudioOptions = {}
-): Promise<{ rawNotes: RawNote[]; durationSec: number }> {
+): Promise<{ rawNotes: RawNote[]; durationSec: number; pitchContour: PitchContourPoint[] }> {
   const onProgress = opts.onProgress;
 
   onProgress?.({ stage: 'decoding', pct: 0, message: 'Decoding audio…' });
@@ -126,8 +134,34 @@ export async function extractNotesFromAudio(
   // Sort by time so the editor + practice cursor work correctly
   timed.sort((a, b) => a.startTimeSeconds - b.startTimeSeconds);
 
-  onProgress?.({ stage: 'done', pct: 1, message: `Extracted ${timed.length} notes` });
-  return { rawNotes: timed, durationSec };
+  // ── Build continuous F0 contour from BasicPitch's raw contour frames ──
+  // Each frame has 264 bins (MIDI 21..108 at 3 bins per semitone).
+  // We take the peak bin per frame to get a single pitch estimate.
+  const BINS_PER_SEMI = 3;
+  const CONTOUR_MIDI_OFFSET = 21; // MIDI number of bin 0
+  const hopSec = durationSec / Math.max(1, contours.length);
+  const pitchContour: PitchContourPoint[] = [];
+  const contourMinConf = 0.25;
+  for (let f = 0; f < contours.length; f++) {
+    const frame = contours[f];
+    let maxConf = 0;
+    let maxBin = 0;
+    for (let b = 0; b < frame.length; b++) {
+      if (frame[b] > maxConf) {
+        maxConf = frame[b];
+        maxBin = b;
+      }
+    }
+    if (maxConf >= contourMinConf) {
+      const midi = CONTOUR_MIDI_OFFSET + maxBin / BINS_PER_SEMI;
+      if (midi >= midiMin && midi <= midiMax) {
+        pitchContour.push({ time: f * hopSec, midi, confidence: maxConf });
+      }
+    }
+  }
+
+  onProgress?.({ stage: 'done', pct: 1, message: `Extracted ${timed.length} notes + ${pitchContour.length}-point pitch contour` });
+  return { rawNotes: timed, durationSec, pitchContour };
 }
 
 // ─── Conversion to SongNote format used by SynthesiaRunner ──────────────────
