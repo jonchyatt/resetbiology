@@ -287,6 +287,10 @@ export default function NoteTutor() {
   const notePlayedAtRef = useRef(0)
   const timersRef = useRef<ReturnType<typeof setTimeout>[]>([])
   const processAnswerRef = useRef<(note: string) => void>(() => {})
+  // Sequence-round state tracked synchronously so rapid double-keypresses
+  // can't race a stale `answerIdx === 0` through React state.
+  const sequenceStepRef = useRef<0 | 1>(0)
+  const firstPickRef = useRef<string | null>(null)
 
   const currentNote = currentNotes[answerIdx] ?? ''  // mic-lock + staff target
   const notes = useMemo(() => windowNotes(state.baseOctave), [state.baseOctave])
@@ -417,6 +421,9 @@ export default function NoteTutor() {
     setAnswerIdx(0)
     setFirstPick(null)
     setRoundType(round.type)
+    // Reset synchronous sequence refs before the first keypress can fire.
+    sequenceStepRef.current = 0
+    firstPickRef.current = null
     setPhase('listening')
     const playTones = round.type === 'sequence' || mode !== 'sing'
     if (playTones) {
@@ -462,7 +469,11 @@ export default function NoteTutor() {
     if (processingRef.current) return
 
     // Sequence round, first key → store and wait for the second.
-    if (roundType === 'sequence' && answerIdx === 0) {
+    // Use refs (not React state) so two near-simultaneous keypresses can't
+    // both observe `answerIdx === 0` through stale closures.
+    if (roundType === 'sequence' && sequenceStepRef.current === 0) {
+      sequenceStepRef.current = 1
+      firstPickRef.current = answer
       setFirstPick(answer)
       setAnswerIdx(1)
       return
@@ -471,7 +482,7 @@ export default function NoteTutor() {
     processingRef.current = true
 
     if (roundType === 'sequence') {
-      const picks = [firstPick ?? '', answer]
+      const picks = [firstPickRef.current ?? '', answer]
       const correct = picks[0] === currentNotes[0] && picks[1] === currentNotes[1]
       const sid = seqId(currentNotes[0], currentNotes[1])
       const seqItem = state.engine.items[sid]
@@ -555,7 +566,13 @@ export default function NoteTutor() {
 
     // Single-note expansion is blocked while the horizontal gate is active —
     // the tutor has to prove sequence mastery before the pool grows further.
-    if (!horizontalGateActive(state) && canExpandPool(state.engine, state.pool)) {
+    // EXCEPTION: sing mode is exempt. Sing mode tests pitch PRODUCTION (can
+    // the learner sing the correct pitch), not pattern discrimination — the
+    // leaps/skips argument for pair training doesn't apply. Without this
+    // exemption, sing mode would deadlock at pool=7 since pickRoundType
+    // never schedules pair rounds in sing, so the gate could never clear.
+    const gateBlocks = horizontalGateActive(state) && mode !== 'sing'
+    if (!gateBlocks && canExpandPool(state.engine, state.pool)) {
       const added = expandPool(
         state.engine, state.pool, 'note',
         (id) => ({ note: id }),
@@ -563,7 +580,8 @@ export default function NoteTutor() {
       )
       if (added) {
         setExpandedNote(added)
-        // Crossing the gate threshold → spawn sequence pool now.
+        // Crossing the gate threshold → spawn sequence pool for future
+        // staff/tone-mode sessions.
         ensureSequencePoolForState(state)
       }
     } else if (horizontalGateActive(state) && !state.sequencePool) {
@@ -763,8 +781,9 @@ export default function NoteTutor() {
       <div className="flex items-center justify-between px-4 pt-3 pb-2">
         <div className="flex items-center gap-2">
           <div className="text-xs text-gray-400 font-mono">{MODE_LABEL[mode]}</div>
-          {/* Round-type chip — only shows when pairs are in play */}
-          {horizontalGateActive(state) && (
+          {/* Round-type chip — only shows when pairs can actually run
+              (sing mode is gate-exempt, so no chip there). */}
+          {horizontalGateActive(state) && mode !== 'sing' && (
             <span className="text-[10px] font-mono px-2 py-0.5 rounded-full"
               style={{
                 background: isPairRound ? 'rgba(251,191,36,0.15)' : 'rgba(139,92,246,0.12)',
