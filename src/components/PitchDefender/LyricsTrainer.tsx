@@ -13,7 +13,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   MonologueState, ReviewSpan, createMonologueState, pickNextSpan,
-  gradeSpan, canAdvance, advance, lineId, transId, knownRange,
+  gradeSpan, canAdvance, advance, advanceHalf, completeLine,
+  lineId, transId, knownRange, lineText, isPartial,
 } from './engine/backwardChain'
 
 const STORAGE_KEY = 'lt_v1_state'
@@ -146,6 +147,8 @@ export default function LyricsTrainer() {
 
   const recRef = useRef<Rec | null>(null)
   const peekTimersRef = useRef<Map<number, ReturnType<typeof setTimeout>>>(new Map())
+  // Pending Retry restart — tracked so Cancel / rapid Retry can clear it.
+  const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const speechOk = useMemo(() => !!getSpeechRecognition(), [])
 
   // ─── Persistence ────────────────────────────────────────────────────────
@@ -155,6 +158,11 @@ export default function LyricsTrainer() {
       const raw = window.localStorage.getItem(STORAGE_KEY)
       if (raw) {
         const parsed = JSON.parse(raw) as Persisted
+        // Forward-compat: legacy saves lack partialStart. Default to {} so
+        // advanceHalf/completeLine can write safely without crashing.
+        if (parsed.monologue && !parsed.monologue.partialStart) {
+          parsed.monologue.partialStart = {}
+        }
         setState(parsed)
       }
     } catch { /* fresh */ }
@@ -184,8 +192,19 @@ export default function LyricsTrainer() {
   }, [pasteText, titleDraft, loadFromText])
 
   const loadHamlet = useCallback(() => {
+    // If the user is already partway through Hamlet, never wipe — just open
+    // the intro on the existing state. If a DIFFERENT monologue is in
+    // progress, confirm before replacing. If nothing is saved, fresh load.
+    if (state.monologue && state.title === HAMLET_ROGUE.title) {
+      setPhase('intro')
+      return
+    }
+    if (state.monologue && state.title !== HAMLET_ROGUE.title) {
+      const ok = confirm(`Replace "${state.title}" progress with a fresh Hamlet session?`)
+      if (!ok) return
+    }
     loadFromText(HAMLET_ROGUE.title, HAMLET_ROGUE.text)
-  }, [loadFromText])
+  }, [loadFromText, state.monologue, state.title])
 
   // ─── Start round ────────────────────────────────────────────────────────
   // Respects `manualStart` (GO FROM picker) — one-shot override that scopes
@@ -259,12 +278,40 @@ export default function LyricsTrainer() {
     recRef.current = null
   }, [])
 
-  useEffect(() => () => { stopListening() }, [stopListening])
+  const clearRetryTimer = useCallback(() => {
+    if (retryTimerRef.current) {
+      clearTimeout(retryTimerRef.current)
+      retryTimerRef.current = null
+    }
+  }, [])
+
+  // Retry = "I know I flubbed that, let me say it again" without losing the
+  // round scope. Must stop+restart the recognizer because Web Speech's
+  // `e.results` is cumulative and the stateless transcript derivation would
+  // just re-emit what was there. ~250ms mic blip is acceptable. The timer
+  // is tracked on a ref so rapid Retry clicks don't pile up restarts and
+  // Cancel-after-Retry can't accidentally re-open the mic.
+  const retryRecitation = useCallback(() => {
+    clearRetryTimer()
+    stopListening()
+    setTranscript('')
+    setSpeechError(null)
+    retryTimerRef.current = setTimeout(() => {
+      retryTimerRef.current = null
+      startListening()
+    }, 250)
+  }, [clearRetryTimer, stopListening, startListening])
+
+  useEffect(() => () => {
+    clearRetryTimer()
+    stopListening()
+  }, [clearRetryTimer, stopListening])
 
   // ─── Grade recitation ───────────────────────────────────────────────────
   const gradeRecitation = useCallback(() => {
-    stopListening()
     if (!state.monologue || !currentSpan) return
+    clearRetryTimer()
+    stopListening()
     const result = gradeSpan(state.monologue, currentSpan, transcript)
     const next: Persisted = { ...state, monologue: state.monologue, lastSpanPassed: result.spanPassed }
     setState(next); persist(next)
@@ -279,7 +326,7 @@ export default function LyricsTrainer() {
     })
     setGrading(result)
     setPhase('feedback')
-  }, [state, currentSpan, transcript, persist, stopListening])
+  }, [state, currentSpan, transcript, persist, stopListening, clearRetryTimer])
 
   // ─── Peek helper (temporary full-line reveal during recitation) ─────────
   const peekLine = useCallback((idx: number) => {
@@ -314,6 +361,34 @@ export default function LyricsTrainer() {
     setState(next); persist(next)
     return newIdx
   }, [state, persist])
+
+  const tryAdvanceHalf = useCallback(() => {
+    if (!state.monologue) return
+    const newIdx = advanceHalf(state.monologue)
+    const next = { ...state, monologue: state.monologue }
+    setState(next); persist(next)
+    return newIdx
+  }, [state, persist])
+
+  const completeAndPersist = useCallback((idx: number) => {
+    if (!state.monologue) return
+    const ok = completeLine(state.monologue, idx)
+    if (!ok) return
+    // Reset the session-local miss counter for that line — the material
+    // just changed, old miss counts don't apply to the longer version.
+    setRecentMisses(prev => {
+      const { [idx]: _dropped, ...rest } = prev
+      return rest
+    })
+    const next = { ...state, monologue: state.monologue }
+    setState(next); persist(next)
+  }, [state, persist])
+
+  // Used by the intro view to decide whether the "Complete line N" row shows.
+  const hasAnyPartial = (mono: MonologueState): boolean => {
+    if (!mono.partialStart) return false
+    return Object.values(mono.partialStart).some(v => v > 0)
+  }
 
   // ─── Reset monologue ────────────────────────────────────────────────────
   const resetMonologue = useCallback(() => {
@@ -378,7 +453,9 @@ export default function LyricsTrainer() {
             background: 'rgba(30,25,45,0.8)',
             border: '1px solid rgba(139,92,246,0.35)',
           }}>
-          🎭 Load preset — Hamlet, &ldquo;Rogue and peasant slave&rdquo;
+          {state.monologue && state.title === HAMLET_ROGUE.title
+            ? '🎭 Resume Hamlet — "Rogue and peasant slave"'
+            : '🎭 Load preset — Hamlet, "Rogue and peasant slave"'}
         </button>
 
         <a href="/pitch-defender" className="mt-8 text-xs text-gray-700 hover:text-gray-500">← Back to Pitch Defender</a>
@@ -431,10 +508,12 @@ export default function LyricsTrainer() {
           </div>
         )}
 
-        {/* Line/transition heatmap — dots per line, bars between = transitions */}
+        {/* Line/transition heatmap — dots per line, bars between = transitions.
+            Partial lines render with a ½ badge and display only the sliced
+            tail (the text the learner is actually practicing). */}
         <div className="max-w-xl w-full p-4 rounded-xl mb-4"
           style={{ background: 'rgba(20,20,32,0.6)', border: '1px solid rgba(60,60,80,0.3)' }}>
-          {mono.lines.slice(knownStart, knownEnd + 1).map((l, i) => {
+          {mono.lines.slice(knownStart, knownEnd + 1).map((_l, i) => {
             const idx = knownStart + i
             const lineItem = mono.engine.items[lineId(idx)]
             const transItem = idx < knownEnd ? mono.engine.items[transId(idx)] : null
@@ -443,6 +522,7 @@ export default function LyricsTrainer() {
             const miss = recentMisses[idx] ?? 0
             const lineColor = lm > 0.8 ? '#4ade80' : lm > 0.5 ? '#fbbf24' : '#666'
             const transColor = tm > 0.8 ? '#4ade80' : tm > 0.5 ? '#fbbf24' : '#555'
+            const partial = isPartial(mono, idx)
             return (
               <div key={idx}>
                 <button onClick={() => setManualStart(idx)}
@@ -452,7 +532,13 @@ export default function LyricsTrainer() {
                   }}>
                   <div className="text-[10px] font-mono text-gray-500 w-6 text-right">{idx + 1}</div>
                   <div className="w-2 h-4 rounded-sm" style={{ background: lineColor }} />
-                  <div className="text-sm text-gray-200 truncate flex-1">{l}</div>
+                  {partial && (
+                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded"
+                      style={{ background: 'rgba(251,191,36,0.15)', color: '#fbbf24', border: '1px solid rgba(251,191,36,0.35)' }}>
+                      ½
+                    </span>
+                  )}
+                  <div className="text-sm text-gray-200 truncate flex-1">{lineText(mono, idx)}</div>
                   {miss > 1 && (
                     <span className="text-[10px] text-orange-400 font-mono">·{miss} miss</span>
                   )}
@@ -484,12 +570,38 @@ export default function LyricsTrainer() {
           )}
         </div>
 
+        {/* Prepend options — full line (green) or half-step (amber). */}
         {canAdvance(mono) && knownStart > 0 && (
-          <button onClick={() => { tryAdvance(); setPhase('intro') }}
-            className="px-6 py-2 rounded-lg text-sm font-bold text-white mb-3"
-            style={{ background: 'linear-gradient(135deg,#4ade80,#16a34a)' }}>
-            + Prepend line {knownStart}
-          </button>
+          <div className="flex gap-2 flex-wrap justify-center mb-3">
+            <button onClick={() => { tryAdvance(); setPhase('intro') }}
+              className="px-5 py-2 rounded-lg text-sm font-bold text-white active:scale-95"
+              style={{ background: 'linear-gradient(135deg,#4ade80,#16a34a)' }}>
+              + Prepend line {knownStart}
+            </button>
+            <button onClick={() => { tryAdvanceHalf(); setPhase('intro') }}
+              className="px-5 py-2 rounded-lg text-sm font-bold text-white active:scale-95"
+              title="Add only the tail half of the next line — useful when the full line is too much to chain yet."
+              style={{ background: 'linear-gradient(135deg,#fbbf24,#d97706)' }}>
+              + Half line {knownStart}
+            </button>
+          </div>
+        )}
+
+        {/* Promote any partial line in the known range to full. */}
+        {hasAnyPartial(mono) && (
+          <div className="flex flex-wrap gap-2 justify-center mb-3 max-w-xl">
+            {mono.lines.slice(knownStart, knownEnd + 1).map((_l, i) => {
+              const idx = knownStart + i
+              if (!isPartial(mono, idx)) return null
+              return (
+                <button key={idx} onClick={() => completeAndPersist(idx)}
+                  className="px-3 py-1.5 rounded-lg text-xs font-medium text-white active:scale-95"
+                  style={{ background: 'rgba(251,191,36,0.25)', border: '1px solid rgba(251,191,36,0.45)' }}>
+                  Complete line {idx + 1} (currently ½)
+                </button>
+              )
+            })}
+          </div>
         )}
 
         <button onClick={() => setPhase('menu')}
@@ -516,10 +628,12 @@ export default function LyricsTrainer() {
             on lines you've missed recently. Tap PEEK to reveal briefly. */}
         <div className="max-w-xl w-full p-4 rounded-xl mb-4"
           style={{ background: 'rgba(20,20,32,0.6)', border: '1px solid rgba(60,60,80,0.3)' }}>
-          {mono.lines.slice(currentSpan.startIdx, currentSpan.endIdx + 1).map((l, i) => {
+          {mono.lines.slice(currentSpan.startIdx, currentSpan.endIdx + 1).map((_l, i) => {
             const idx = currentSpan.startIdx + i
             const miss = recentMisses[idx] ?? 0
-            const words = splitWords(l)
+            const effective = lineText(mono, idx)  // honor partialStart
+            const partial = isPartial(mono, idx)
+            const words = splitWords(effective)
             const peeked = peekSet.has(idx)
             const show = peeked ? words.length : Math.min(words.length, scaffoldWords(miss))
             const shown = words.slice(0, show).join(' ')
@@ -527,6 +641,10 @@ export default function LyricsTrainer() {
             return (
               <div key={idx} className="flex items-start gap-2 py-1">
                 <div className="text-[10px] font-mono text-gray-500 w-6 text-right pt-0.5">{idx + 1}</div>
+                {partial && (
+                  <span className="text-[10px] font-mono px-1 rounded mt-0.5"
+                    style={{ background: 'rgba(251,191,36,0.15)', color: '#fbbf24' }}>½</span>
+                )}
                 <div className="flex-1 text-sm">
                   <span className={peeked ? 'text-gray-200' : 'text-gray-300'}>{shown}</span>
                   {hiddenCount > 0 && (
@@ -558,13 +676,19 @@ export default function LyricsTrainer() {
 
         {speechError && <div className="text-xs text-red-400 mb-3">Mic: {speechError}</div>}
 
-        <div className="flex gap-3">
+        <div className="flex gap-3 flex-wrap justify-center">
           <button onClick={gradeRecitation} disabled={!transcript}
             className="px-6 py-2 rounded-lg font-bold text-white active:scale-95 disabled:opacity-30"
             style={{ background: 'linear-gradient(135deg,#8b5cf6,#6d28d9)' }}>
             Grade
           </button>
-          <button onClick={() => { stopListening(); setPhase('intro') }}
+          <button onClick={retryRecitation}
+            className="px-4 py-2 rounded-lg text-sm font-medium text-amber-200 active:scale-95"
+            style={{ background: 'rgba(251,191,36,0.15)', border: '1px solid rgba(251,191,36,0.4)' }}
+            title="Clear what you just said and try again without leaving this round">
+            ↺ Retry
+          </button>
+          <button onClick={() => { clearRetryTimer(); stopListening(); setPhase('intro') }}
             className="px-4 py-2 rounded-lg text-sm text-gray-400 border border-gray-700">
             Cancel
           </button>
@@ -594,7 +718,7 @@ export default function LyricsTrainer() {
                       background: r.passed ? 'rgba(74,222,128,0.25)' : 'rgba(251,146,60,0.25)',
                       color: r.passed ? '#4ade80' : '#fb923c',
                     }}>{r.passed ? '✓' : '✗'}</div>
-                  <div className="text-sm text-gray-200 flex-1 truncate">{mono.lines[r.idx]}</div>
+                  <div className="text-sm text-gray-200 flex-1 truncate">{lineText(mono, r.idx)}</div>
                   <div className="text-[10px] text-gray-500 font-mono">{Math.round(r.score * 100)}%</div>
                 </div>
                 {transAfter && !transAfter.passed && (

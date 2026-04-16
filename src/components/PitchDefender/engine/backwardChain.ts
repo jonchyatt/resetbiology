@@ -30,6 +30,12 @@ export interface MonologueState {
   lastWorkingPassed: boolean
   lastMediumPassed: boolean
   lastFullPassed: boolean
+  // Per-line word offset — half-step chaining support. When
+  // partialStart[idx] > 0, lineText returns only the words from that offset
+  // onward, so the learner can "shorten the link being added to the chain"
+  // (Jon's phrasing). A future "user-editable splits" feature can write any
+  // offset here; for now, advanceHalf picks a midpoint.
+  partialStart: Record<number, number>
   engine: EngineState
 }
 
@@ -50,6 +56,7 @@ export function createMonologueState(
     lastWorkingPassed: false,
     lastMediumPassed: true,  // no medium yet = don't block advancement
     lastFullPassed: true,
+    partialStart: {},
     engine: createEngine({
       masteryAlpha: 0.3,
       recentWindow: 6,
@@ -73,6 +80,51 @@ export function createMonologueState(
 
 export function lineId(i: number) { return `L:${i}` }
 export function transId(i: number) { return `T:${i}` }
+
+/** Word-aware split of a line — keeps apostrophes/contractions together. */
+export function splitLineWords(line: string): string[] {
+  return line.split(/\s+/).filter(w => w.length > 0)
+}
+
+/**
+ * Effective text for line `idx`, honoring partialStart. When the line is a
+ * partial, this returns only the tail slice the learner is currently
+ * practicing. All other engine/UI code reads through this, not
+ * `state.lines[idx]` directly.
+ */
+export function lineText(state: MonologueState, idx: number): string {
+  const full = state.lines[idx] ?? ''
+  const off = state.partialStart?.[idx] ?? 0
+  if (off <= 0) return full
+  const words = splitLineWords(full)
+  if (off >= words.length) return full  // defensive: bad offset → full line
+  return words.slice(off).join(' ')
+}
+
+/** Is this line currently a partial (half-step) slice? */
+export function isPartial(state: MonologueState, idx: number): boolean {
+  const off = state.partialStart?.[idx] ?? 0
+  return off > 0
+}
+
+/**
+ * Pick a word-index midpoint to split a line at — prefers a nearby
+ * punctuation boundary so the split lands between clauses rather than
+ * mid-phrase. Falls back to the literal word-count midpoint.
+ */
+export function midpointSplit(line: string): number {
+  const words = splitLineWords(line)
+  if (words.length < 4) return Math.max(1, Math.floor(words.length / 2))
+  const mid = Math.floor(words.length / 2)
+  // Look for a word ending in punctuation within ±2 of the midpoint.
+  for (let d = 0; d <= 2; d++) {
+    for (const cand of [mid + d, mid - d]) {
+      if (cand <= 0 || cand >= words.length) continue
+      if (/[,;:.!?—]$/.test(words[cand - 1])) return cand
+    }
+  }
+  return mid
+}
 
 export function knownRange(state: MonologueState): [number, number] {
   return [state.currentStart, state.lines.length - 1]
@@ -145,6 +197,9 @@ export const LINE_PASS_THRESHOLD = 0.82
  * Grade a span attempt against the user's spoken transcript. The transcript
  * spans the whole recitation; we segment it by finding best-match offsets.
  * Returns per-line + per-transition pass/fail. Mutates engine mastery.
+ *
+ * Lines are read via `lineText(state, i)` — a partial line is graded only
+ * against its sliced tail, not the full original line.
  */
 export function gradeSpan(
   state: MonologueState,
@@ -155,14 +210,13 @@ export function gradeSpan(
   transitionResults: { fromIdx: number; passed: boolean }[]
   spanPassed: boolean
 } {
-  const { lines } = state
   const tokens = normalize(transcript).split(' ').filter(Boolean)
   // Greedy segmentation: for each expected line, find the window of tokens
   // in `tokens` that maximizes similarity, consuming left-to-right.
   let cursor = 0
   const lineResults: { idx: number; score: number; passed: boolean }[] = []
   for (let i = span.startIdx; i <= span.endIdx; i++) {
-    const expected = lines[i]
+    const expected = lineText(state, i)
     const expTokenCount = normalize(expected).split(' ').filter(Boolean).length
     // Scan candidate windows of +/- 50% around expected length.
     let bestScore = 0
@@ -251,4 +305,69 @@ export function advance(state: MonologueState): number {
   })
   state.lastWorkingPassed = false
   return newIdx
+}
+
+/**
+ * Half-step prepend: advance by one line, but flag that line as a partial
+ * starting at its word-count midpoint. The learner recites only the tail
+ * slice until they call `completeLine` to promote it to full.
+ *
+ * Use when the next line is long/hard and the learner needs a shorter
+ * "link" added to the chain before committing to the whole line.
+ */
+export function advanceHalf(state: MonologueState): number {
+  if (!canAdvance(state)) return state.currentStart
+  state.currentStart -= 1
+  const newIdx = state.currentStart
+  const split = midpointSplit(state.lines[newIdx])
+  state.partialStart[newIdx] = split
+  const lid = lineId(newIdx)
+  state.engine.items[lid] = createItem(lid, 'line', { lineIdx: newIdx, partial: true })
+  const tid = transId(newIdx)
+  state.engine.items[tid] = createItem(tid, 'transition', {
+    fromIdx: newIdx, toIdx: newIdx + 1,
+  })
+  state.lastWorkingPassed = false
+  return newIdx
+}
+
+/**
+ * Promote a partial line to full. The material just got longer, so per-line
+ * mastery AND BOTH adjacent transitions reset — old passes were scored
+ * against the shorter tail and don't certify the full line.
+ *
+ * Why reset BOTH transitions, not just the outgoing one:
+ *   - Outgoing (idx → idx+1): the sliced tail ended at line idx's last word,
+ *     which is the same last word the full line ends on — so in principle
+ *     this handoff is identical. Reset anyway for consistency; the relearn
+ *     cost is trivial.
+ *   - Incoming (idx-1 → idx): line idx's FIRST practiced word just changed
+ *     from the partial slice's first word to the full line's original first
+ *     word. Any prior passes scored the handoff into a different starting
+ *     phrase — those passes are no longer valid.
+ *
+ * Returns true if the line was a partial and was promoted; false if it was
+ * already full or unknown.
+ */
+export function completeLine(state: MonologueState, idx: number): boolean {
+  if (!state.partialStart || !state.partialStart[idx]) return false
+  delete state.partialStart[idx]
+  const lid = lineId(idx)
+  state.engine.items[lid] = createItem(lid, 'line', { lineIdx: idx })
+  // Outgoing transition idx → idx+1
+  const tidOut = transId(idx)
+  if (state.engine.items[tidOut]) {
+    state.engine.items[tidOut] = createItem(tidOut, 'transition', {
+      fromIdx: idx, toIdx: idx + 1,
+    })
+  }
+  // Incoming transition idx-1 → idx (if an earlier line was already added)
+  const tidIn = transId(idx - 1)
+  if (idx > 0 && state.engine.items[tidIn]) {
+    state.engine.items[tidIn] = createItem(tidIn, 'transition', {
+      fromIdx: idx - 1, toIdx: idx,
+    })
+  }
+  state.lastWorkingPassed = false
+  return true
 }
