@@ -128,15 +128,20 @@ export function canExpandPool(
 ): boolean {
   if (pool.items.length === 0) return true
   if (pool.candidates.length === 0) return false
-  const { poolStabilityAttempts, poolAccuracyThreshold, perItemMasteryFloor } = engine.config
-  if (pool.attemptsSinceExpansion < poolStabilityAttempts) return false
+  const {
+    poolStabilityAttempts, poolStabilityPerItem,
+    poolAccuracyThreshold, perItemMasteryFloor, perItemMinAttempts,
+  } = engine.config
+  // Stability threshold scales with pool size so a 2-note max-separation pool
+  // can't unlock on 12 easy hits, and a 6-note pool has to prove wider stability.
+  const extra = Math.max(0, pool.items.length - 2)
+  const requiredAttempts = poolStabilityAttempts + poolStabilityPerItem * extra
+  if (pool.attemptsSinceExpansion < requiredAttempts) return false
   let total = 0, correct = 0
   for (const id of pool.items) {
     const it = engine.items[id]
     if (!it) return false
-    if (it.attempts < Math.max(3, Math.floor(poolStabilityAttempts / pool.items.length))) {
-      return false
-    }
+    if (it.attempts < perItemMinAttempts) return false
     if (it.mastery < perItemMasteryFloor) return false
     total += it.attempts
     correct += it.correct

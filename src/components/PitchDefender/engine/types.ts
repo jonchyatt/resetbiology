@@ -27,9 +27,14 @@ export interface QueueConfig {
   midDepth: [number, number]       // medium mastery
   deepDepth: [number, number]      // strong, mastered
   // Pool expansion gate
-  poolStabilityAttempts: number    // attempts across pool before adding
+  poolStabilityAttempts: number    // base attempts across pool before adding
+  poolStabilityPerItem: number     // extra attempts required per note beyond the first 2
   poolAccuracyThreshold: number    // required active-pool accuracy
   perItemMasteryFloor: number      // every item must be at/above this
+  perItemMinAttempts: number       // every item must have at least this many attempts
+  // Horizontal progression — once single-note pool reaches this size, sequence
+  // mode kicks in and further note additions require sequence mastery too.
+  horizontalGatePoolSize: number
 }
 
 export const DEFAULT_QUEUE_CONFIG: QueueConfig = {
@@ -42,8 +47,11 @@ export const DEFAULT_QUEUE_CONFIG: QueueConfig = {
   midDepth: [4, 7],
   deepDepth: [8, 14],
   poolStabilityAttempts: 12,
+  poolStabilityPerItem: 3,
   poolAccuracyThreshold: 0.85,
-  perItemMasteryFloor: 0.7,
+  perItemMasteryFloor: 0.8,
+  perItemMinAttempts: 5,
+  horizontalGatePoolSize: 7,
 }
 
 export interface ActivePool<T = string> {
