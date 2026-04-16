@@ -10,7 +10,12 @@ import {
   EngineState, createEngine, createItem, recordResult, pickDepth, reinsert,
 } from './masteryQueue'
 
-export type ReviewSpanType = 'working' | 'medium' | 'full'
+export type ReviewSpanType =
+  | 'ramp-solo'       // the newly-added line, by itself (fresh-card front-load)
+  | 'ramp-cluster'    // the new line + next 2 neighbors (bridge)
+  | 'working'         // normal working window from currentStart
+  | 'medium'          // medium continuity check
+  | 'full'            // full tail review
 
 export interface ReviewSpan {
   type: ReviewSpanType
@@ -36,6 +41,12 @@ export interface MonologueState {
   // (Jon's phrasing). A future "user-editable splits" feature can write any
   // offset here; for now, advanceHalf picks a midpoint.
   partialStart: Record<number, number>
+  // Fresh-line front-load counter. On every advance/advanceHalf, set to 4.
+  // Decrements on each ramp span graded. Steers the next few spans away
+  // from the full working window so the newest line gets concentrated
+  // exposure before the normal rotation resumes. Leitner "weakest card to
+  // the front of the deck" made literal at the span-picker level.
+  rampRemaining: number
   engine: EngineState
 }
 
@@ -57,6 +68,7 @@ export function createMonologueState(
     lastMediumPassed: true,  // no medium yet = don't block advancement
     lastFullPassed: true,
     partialStart: {},
+    rampRemaining: 0,
     engine: createEngine({
       masteryAlpha: 0.3,
       recentWindow: 6,
@@ -152,8 +164,29 @@ export function fullSpan(state: MonologueState): ReviewSpan {
   return { type: 'full', startIdx: start, endIdx: end }
 }
 
-/** Pick which review type to run next based on cycle counters. */
+/**
+ * Ramp spans — the newest line alone, then the newest line plus 2 neighbors,
+ * used as the first 4 rounds after advance/advanceHalf. Read-only (the
+ * decrement happens in gradeSpan so the picker stays pure).
+ */
+export function rampSpan(state: MonologueState): ReviewSpan {
+  const start = state.currentStart
+  const end = state.lines.length - 1
+  // First half of the ramp → solo; second half → cluster of 3.
+  const solo = state.rampRemaining > 2
+  const endIdx = solo ? start : Math.min(end, start + 2)
+  return {
+    type: solo ? 'ramp-solo' : 'ramp-cluster',
+    startIdx: start,
+    endIdx,
+  }
+}
+
+/** Pick which review type to run next based on cycle counters + ramp. */
 export function pickNextSpan(state: MonologueState): ReviewSpan {
+  // Fresh-line front-load takes priority over every other schedule. Once
+  // the ramp drains, normal working/medium/full rotation resumes.
+  if (state.rampRemaining > 0) return rampSpan(state)
   const [start, end] = knownRange(state)
   const knownLines = end - start + 1
   // Can't do meaningful medium/full if we don't know enough lines yet.
@@ -262,7 +295,15 @@ export function gradeSpan(
     && transitionResults.every(r => r.passed)
 
   // Update cycle counters + last-passed flags
-  if (span.type === 'working') {
+  if (span.type === 'ramp-solo' || span.type === 'ramp-cluster') {
+    // Consume one ramp round. Deliberately do NOT touch lastWorkingPassed —
+    // ramp spans are 1-3 lines and don't prove mastery of the full 5-7 line
+    // working window. Otherwise a learner could chain-advance by passing
+    // only short ramp spans, never running a full window recitation. The
+    // user must pass one real working span after the ramp drains before
+    // canAdvance will allow the next prepend.
+    state.rampRemaining = Math.max(0, state.rampRemaining - 1)
+  } else if (span.type === 'working') {
     state.lastWorkingPassed = spanPassed
     state.workingCycle += 1
   } else if (span.type === 'medium') {
@@ -304,6 +345,9 @@ export function advance(state: MonologueState): number {
     fromIdx: newIdx, toIdx: newIdx + 1,
   })
   state.lastWorkingPassed = false
+  // Front-load the fresh line: next 4 rounds are focused ramp spans
+  // before the normal working window resumes.
+  state.rampRemaining = 4
   return newIdx
 }
 
@@ -328,6 +372,7 @@ export function advanceHalf(state: MonologueState): number {
     fromIdx: newIdx, toIdx: newIdx + 1,
   })
   state.lastWorkingPassed = false
+  state.rampRemaining = 4
   return newIdx
 }
 

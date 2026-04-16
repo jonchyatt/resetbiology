@@ -141,7 +141,10 @@ export default function LyricsTrainer() {
   // Session-local: consecutive-miss counts per line idx for adaptive scaffolding.
   const [recentMisses, setRecentMisses] = useState<Record<number, number>>({})
   // Which lines the learner is currently peeking at (temporary full reveal).
-  const [peekSet, setPeekSet] = useState<Set<number>>(new Set())
+  // Staged peek: first click = 'hint' (≥3 words), second click = 'full'.
+  // Auto-resets after 3s so the learner doesn't accidentally keep the
+  // reveal on for the next line.
+  const [peekStage, setPeekStage] = useState<Record<number, 'hint' | 'full'>>({})
   // Override the next round's span start (GO FROM picker).
   const [manualStart, setManualStart] = useState<number | null>(null)
 
@@ -158,10 +161,10 @@ export default function LyricsTrainer() {
       const raw = window.localStorage.getItem(STORAGE_KEY)
       if (raw) {
         const parsed = JSON.parse(raw) as Persisted
-        // Forward-compat: legacy saves lack partialStart. Default to {} so
-        // advanceHalf/completeLine can write safely without crashing.
-        if (parsed.monologue && !parsed.monologue.partialStart) {
-          parsed.monologue.partialStart = {}
+        // Forward-compat: legacy saves may lack newer MonologueState fields.
+        if (parsed.monologue) {
+          if (!parsed.monologue.partialStart) parsed.monologue.partialStart = {}
+          if (typeof parsed.monologue.rampRemaining !== 'number') parsed.monologue.rampRemaining = 0
         }
         setState(parsed)
       }
@@ -182,7 +185,7 @@ export default function LyricsTrainer() {
     const next: Persisted = { title: title || 'Untitled', monologue: mono, sessions: 0, lastSpanPassed: false }
     setState(next); persist(next)
     setRecentMisses({})
-    setPeekSet(new Set())
+    setPeekStage({})
     setManualStart(null)
     setPhase('intro')
   }, [persist])
@@ -224,7 +227,7 @@ export default function LyricsTrainer() {
     setTranscript('')
     setGrading(null)
     setSpeechError(null)
-    setPeekSet(new Set())
+    setPeekStage({})
     setPhase('reciting')
     startListening()
   }, [state.monologue, manualStart])
@@ -328,19 +331,32 @@ export default function LyricsTrainer() {
     setPhase('feedback')
   }, [state, currentSpan, transcript, persist, stopListening, clearRetryTimer])
 
-  // ─── Peek helper (temporary full-line reveal during recitation) ─────────
+  // ─── Peek helper (staged hint → full reveal) ────────────────────────────
+  // Click cadence per line:
+  //   undefined → 'hint' (shows ≥3 words, overrides baseline scaffold)
+  //   'hint'    → 'full' (shows the complete line)
+  //   'full'    → undefined (fresh cycle)
+  // Auto-reset after 3s of inactivity so the reveal can't bleed into the
+  // next round.
   const peekLine = useCallback((idx: number) => {
-    setPeekSet(prev => {
-      const next = new Set(prev)
-      next.add(idx)
+    setPeekStage(prev => {
+      const current = prev[idx]
+      const nextStage: 'hint' | 'full' | undefined =
+        current === undefined ? 'hint'
+        : current === 'hint' ? 'full'
+        : undefined
+      const next = { ...prev }
+      if (nextStage === undefined) delete next[idx]
+      else next[idx] = nextStage
       return next
     })
     const prior = peekTimersRef.current.get(idx)
     if (prior) clearTimeout(prior)
     const t = setTimeout(() => {
-      setPeekSet(prev => {
-        const next = new Set(prev)
-        next.delete(idx)
+      setPeekStage(prev => {
+        if (!(idx in prev)) return prev
+        const next = { ...prev }
+        delete next[idx]
         return next
       })
       peekTimersRef.current.delete(idx)
@@ -615,7 +631,9 @@ export default function LyricsTrainer() {
       <div className="fixed inset-0 bg-[#06060c] flex flex-col items-center justify-start px-6 py-5 overflow-y-auto">
         <div className="text-xs text-gray-500 mb-1">{state.title}</div>
         <div className="text-xl font-bold text-white mb-1">
-          {currentSpan.type === 'working' ? 'Working window'
+          {currentSpan.type === 'ramp-solo' ? 'Fresh line — solo'
+            : currentSpan.type === 'ramp-cluster' ? 'Fresh line + next 2'
+            : currentSpan.type === 'working' ? 'Working window'
             : currentSpan.type === 'medium' ? 'Medium continuity'
             : 'Full tail review'}
         </div>
@@ -634,10 +652,18 @@ export default function LyricsTrainer() {
             const effective = lineText(mono, idx)  // honor partialStart
             const partial = isPartial(mono, idx)
             const words = splitWords(effective)
-            const peeked = peekSet.has(idx)
-            const show = peeked ? words.length : Math.min(words.length, scaffoldWords(miss))
+            const stage = peekStage[idx]
+            // Stage resolution: full beats everything, hint forces ≥3 words
+            // over baseline scaffold, no stage = baseline miss-driven scaffold.
+            const HINT_WORDS = 3
+            const show = stage === 'full' ? words.length
+              : stage === 'hint' ? Math.min(words.length, Math.max(HINT_WORDS, scaffoldWords(miss)))
+              : Math.min(words.length, scaffoldWords(miss))
             const shown = words.slice(0, show).join(' ')
             const hiddenCount = words.length - show
+            const peekLabel = stage === undefined ? 'hint'
+              : stage === 'hint' ? 'more'
+              : 'hide'
             return (
               <div key={idx} className="flex items-start gap-2 py-1">
                 <div className="text-[10px] font-mono text-gray-500 w-6 text-right pt-0.5">{idx + 1}</div>
@@ -646,20 +672,24 @@ export default function LyricsTrainer() {
                     style={{ background: 'rgba(251,191,36,0.15)', color: '#fbbf24' }}>½</span>
                 )}
                 <div className="flex-1 text-sm">
-                  <span className={peeked ? 'text-gray-200' : 'text-gray-300'}>{shown}</span>
+                  <span className={stage === 'full' ? 'text-gray-200' : stage === 'hint' ? 'text-amber-200' : 'text-gray-300'}>{shown}</span>
                   {hiddenCount > 0 && (
                     <span className="text-gray-600"> {Array(Math.min(hiddenCount, 12)).fill('___').join(' ')}
                       {hiddenCount > 12 && <span> …</span>}
                     </span>
                   )}
-                  {miss >= 2 && !peeked && (
+                  {miss >= 2 && stage !== 'full' && (
                     <span className="ml-2 text-[10px] text-orange-400">({miss} miss)</span>
                   )}
                 </div>
                 <button onClick={() => peekLine(idx)}
-                  className="text-[10px] font-mono px-2 py-0.5 rounded border text-gray-400 border-gray-700 hover:text-amber-300 hover:border-amber-500/40 active:scale-95"
-                  title="Reveal line for 3 seconds">
-                  peek
+                  className="text-[10px] font-mono px-2 py-0.5 rounded border active:scale-95"
+                  style={{
+                    color: stage === 'full' ? '#fbbf24' : stage === 'hint' ? '#fde68a' : '#9ca3af',
+                    borderColor: stage === undefined ? 'rgba(75,85,99,0.6)' : 'rgba(251,191,36,0.4)',
+                  }}
+                  title={stage === undefined ? 'Reveal first 3 words' : stage === 'hint' ? 'Reveal full line' : 'Hide again'}>
+                  {peekLabel}
                 </button>
               </div>
             )
