@@ -264,7 +264,7 @@ export default function NoteTutor() {
   // ─── Play current tone ──────────────────────────────────────────────────
   const playCurrent = useCallback(() => {
     if (!currentNote) return
-    playPianoNote(currentNote)
+    playPianoNote(currentNote, { exact: true })
     notePlayedAtRef.current = Date.now()
   }, [currentNote])
 
@@ -282,7 +282,7 @@ export default function NoteTutor() {
     setCurrentNote(first)
     setPhase('listening')
     if (mode !== 'sing') {
-      scheduleTimer(() => { playPianoNote(first); notePlayedAtRef.current = Date.now() }, 300)
+      scheduleTimer(() => { playPianoNote(first, { exact: true }); notePlayedAtRef.current = Date.now() }, 300)
       scheduleTimer(() => setPhase('answering'), 800)
     } else {
       // sing mode: no tone play — prompt user to produce the note
@@ -306,7 +306,7 @@ export default function NoteTutor() {
 
     setLastAnswer({ note: answer, correct })
     playSfx(correct ? 'correct' : 'wrong')
-    if (!correct) scheduleTimer(() => playPianoNote(currentNote), 400)
+    if (!correct) scheduleTimer(() => playPianoNote(currentNote, { exact: true }), 400)
 
     setSessionStats(prev => {
       const streak = correct ? prev.streak + 1 : 0
@@ -343,7 +343,7 @@ export default function NoteTutor() {
       setCurrentNote(next)
       setPhase('listening')
       if (mode !== 'sing') {
-        scheduleTimer(() => { playPianoNote(next); notePlayedAtRef.current = Date.now() }, 250)
+        scheduleTimer(() => { playPianoNote(next, { exact: true }); notePlayedAtRef.current = Date.now() }, 250)
         scheduleTimer(() => { setPhase('answering'); processingRef.current = false }, 650)
       } else {
         scheduleTimer(() => { setPhase('answering'); processingRef.current = false }, 250)

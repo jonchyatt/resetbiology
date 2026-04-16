@@ -115,14 +115,60 @@ function findPianoBuffer(note: string): AudioBuffer | undefined {
   return undefined
 }
 
-export function playPianoNote(note: string) {
+const SEMI_OF: Record<string, number> = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 }
+function noteToMidi(note: string): number | null {
+  const m = note.match(/^([A-G])(#?)(\d+)$/)
+  if (!m) return null
+  return 12 * (parseInt(m[3], 10) + 1) + SEMI_OF[m[1]] + (m[2] ? 1 : 0)
+}
+
+// Find nearest-by-semitones cached sample. Returns { buf, semitones } where
+// semitones is the target-minus-source offset (positive = target is higher).
+function findNearestBySemitones(note: string): { buf: AudioBuffer; semitones: number } | null {
+  const targetMidi = noteToMidi(note)
+  if (targetMidi === null) return null
+  let best: { buf: AudioBuffer; semitones: number; abs: number } | null = null
+  for (const [cacheName, cacheBuf] of _pianoCache.entries()) {
+    const srcMidi = noteToMidi(cacheName)
+    if (srcMidi === null) continue
+    const diff = targetMidi - srcMidi
+    const abs = Math.abs(diff)
+    if (!best || abs < best.abs) best = { buf: cacheBuf, semitones: diff, abs }
+  }
+  return best ? { buf: best.buf, semitones: best.semitones } : null
+}
+
+interface PlayPianoOptions {
+  // When true, play at the requested PITCH even if the exact sample is missing
+  // (pitch-shift the nearest cached sample). When false (default), fall back to
+  // the same note class in a nearby octave — wrong pitch but preserves piano
+  // timbre. Tutor/training uses exact=true; SimplySing / backing playback uses
+  // the default so octave overflow degrades gracefully.
+  exact?: boolean
+}
+
+export function playPianoNote(note: string, options?: PlayPianoOptions) {
   try {
-    const buf = findPianoBuffer(note)
-    if (!buf || !_pianoBus) return
+    if (!_pianoBus) return
     const c = ctx()
+    let buf: AudioBuffer | undefined
+    let playbackRate = 1
+    const direct = _pianoCache.get(note)
+    if (direct) {
+      buf = direct
+    } else if (options?.exact) {
+      const near = findNearestBySemitones(note)
+      if (!near) return
+      buf = near.buf
+      playbackRate = Math.pow(2, near.semitones / 12)
+    } else {
+      buf = findPianoBuffer(note)
+    }
+    if (!buf) return
     const src = c.createBufferSource()
     const gain = c.createGain()
     src.buffer = buf
+    src.playbackRate.value = playbackRate
     src.connect(gain)
     gain.connect(_pianoBus)
     gain.gain.setValueAtTime(0.3, c.currentTime)
