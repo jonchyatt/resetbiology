@@ -870,6 +870,34 @@ export default function PitchDefender() {
                 <div className="text-[11px] font-normal mt-0.5 opacity-80">Hear → identify → spaced repetition. The flagship trainer.</div>
               </a>
               <a
+                href="/pitch-defender/note-tutor"
+                title="Mastery-gated note tutor — three modes (staff + tone, tone only, name → sing), 9-note window on number keys 1-9, queue-based ordinal spacing (NOT time). Pool starts with max separation and grows only when you're genuinely stable. Pitchforks v1 mic lock in Sing mode."
+                className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
+                style={{
+                  background: 'rgba(50, 30, 70, 0.85)',
+                  color: '#c4b5fd',
+                  border: '2px solid #8b5cf6',
+                  boxShadow: '0 0 14px rgba(139,92,246,0.35)',
+                }}
+              >
+                Note Tutor ✦
+                <div className="text-[11px] font-normal mt-0.5 opacity-80">3 modes · keys 1-9 · mastery-gated curriculum.</div>
+              </a>
+              <a
+                href="/pitch-defender/lyrics-trainer"
+                title="Memorize monologues &amp; speeches by backward chaining — master the last line, then prepend one earlier line at a time. Per-line + per-transition scoring, rolling 5-7 line window, periodic continuity reviews. Mic-only recall via Web Speech."
+                className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
+                style={{
+                  background: 'rgba(70, 45, 10, 0.85)',
+                  color: '#fbbf24',
+                  border: '2px solid #d97706',
+                  boxShadow: '0 0 14px rgba(251,191,36,0.3)',
+                }}
+              >
+                Lyrics Trainer 🎭
+                <div className="text-[11px] font-normal mt-0.5 opacity-80">Backward-chain monologues. Mic-only recall.</div>
+              </a>
+              <a
                 href="/pitch-defender/choir-practice"
                 title="Sing along to a full audition piece with guided pitch tracking. Lyrics scroll, your voice highlights the matching notes."
                 className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
