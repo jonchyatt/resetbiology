@@ -205,13 +205,24 @@ export function pickExpansionItem(
   }
 }
 
-/** Expand pool with one item. Mutates pool. */
+/**
+ * Expand pool with one item. Mutates pool AND injects the new item into the
+ * queue at a shallow depth.
+ *
+ * Critical: without the queue injection, pool expansion is silent as far as
+ * round scheduling is concerned. The queue never empties (reinsert keeps
+ * recycling existing items), so refill never fires, and the new item never
+ * gets presented. Jon observed this as "C4/D5 alternated 33+ times after C5
+ * was added." This is the Leitner contract — new items enter with
+ * high-frequency / shallow depth — made literal in the queue.
+ */
 export function expandPool(
   engine: EngineState,
   pool: ActivePool<string>,
   kind: ItemKind,
   payloadFor: (id: string) => unknown,
   distance: (a: string, b: string) => number,
+  queueName: string = DEFAULT_QUEUE,
 ): string | null {
   const addId = pickExpansionItem(engine, pool, distance)
   if (!addId) return null
@@ -222,6 +233,12 @@ export function expandPool(
   if (!engine.items[addId]) {
     engine.items[addId] = createItem(addId, kind, payloadFor(addId))
   }
+  // Seed the new item into the queue within the shallow band so it appears
+  // in the next 1-3 rounds rather than hiding behind whatever reinsert order
+  // the existing items were stuck in.
+  const [lo, hi] = engine.config.shallowDepth
+  const depth = lo + Math.floor(Math.random() * (hi - lo + 1))
+  reinsert(engine, addId, depth, queueName)
   return addId
 }
 

@@ -70,11 +70,17 @@ interface Persisted {
   horizontalGateCleared: boolean
   baseOctave: number
   octaveTolerant: boolean
+  // When true, each note gets its own hue (prompt orb, buttons, staff). Kids
+  // love it. When false, everything goes neutral slate so identification
+  // can't be cheated by color-matching alone.
+  colorHints: boolean
   preferredMode: Mode
   totalCorrect: number
   totalAttempts: number
   sessions: number
 }
+
+const NEUTRAL_HUE = 220  // slate when colorHints is off
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -196,7 +202,9 @@ function initialState(): Persisted {
     sequencePool: null,
     horizontalGateCleared: false,
     baseOctave: DEFAULT_BASE_OCTAVE,
-    octaveTolerant: true, preferredMode: 'staff',
+    octaveTolerant: true,
+    colorHints: true,  // starts on for first use; easy to flip on menu.
+    preferredMode: 'staff',
     totalCorrect: 0, totalAttempts: 0, sessions: 0,
   }
 }
@@ -305,8 +313,12 @@ export default function NoteTutor() {
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY)
       if (raw) {
-        const parsed = JSON.parse(raw) as Persisted
-        setState(ensurePoolForOctave(parsed))
+        const parsed = JSON.parse(raw) as Partial<Persisted>
+        // Forward-compat: default new fields if an older v2 payload exists.
+        // Without this, colorHints would be `undefined` → falsy → hints OFF
+        // for existing users who never toggled, silently stripping color.
+        if (parsed.colorHints === undefined) parsed.colorHints = true
+        setState(ensurePoolForOctave(parsed as Persisted))
         setMode(parsed.preferredMode ?? 'staff')
       }
     } catch { /* fresh start */ }
@@ -516,6 +528,7 @@ export default function NoteTutor() {
           state.engine, state.sequencePool, 'sequence',
           (id) => ({ notes: parseSeqId(id) ?? [] }),
           sequenceDistance,
+          QUEUE_SEQS,
         )
         if (added) setExpandedNote(added)
       }
@@ -577,6 +590,7 @@ export default function NoteTutor() {
         state.engine, state.pool, 'note',
         (id) => ({ note: id }),
         semitoneDist,
+        QUEUE_NOTES,
       )
       if (added) {
         setExpandedNote(added)
@@ -644,10 +658,19 @@ export default function NoteTutor() {
 
   // ─── Render helpers ─────────────────────────────────────────────────────
 
+  // Central color-hint gate: when state.colorHints is OFF, every hue used
+  // anywhere in the tutor collapses to a single neutral slate so the learner
+  // can't match "orange orb → press orange button." Past-performance shading
+  // still works (saturation/lightness unchanged, just hue is uniform).
+  const hintHue = (note: string): number => {
+    if (!state.colorHints) return NEUTRAL_HUE
+    return NOTE_COLORS[note]?.hue ?? 210
+  }
+
   const memoryBar = (note: string) => {
     const m = state.engine.items[note]
     const mastery = m?.mastery ?? 0
-    const color = NOTE_COLORS[note] ?? { hue: 200 }
+    const hue = hintHue(note)
     const active = state.pool.items.includes(note)
     const isCurrent = note === currentNote && phase !== 'menu' && phase !== 'session_end'
     return (
@@ -655,23 +678,23 @@ export default function NoteTutor() {
         <div className="relative rounded-full overflow-hidden" style={{
           width: 18, height: 38,
           background: 'rgba(18,18,28,0.8)',
-          border: isCurrent ? `2px solid hsl(${color.hue},70%,60%)` : '1px solid rgba(80,80,100,0.3)',
-          boxShadow: isCurrent ? `0 0 10px hsl(${color.hue},70%,55%)` : 'none',
+          border: isCurrent ? `2px solid hsl(${hue},70%,60%)` : '1px solid rgba(80,80,100,0.3)',
+          boxShadow: isCurrent ? `0 0 10px hsl(${hue},70%,55%)` : 'none',
           opacity: active ? 1 : 0.35,
         }}>
           <div className="absolute bottom-0 left-0 right-0 rounded-full transition-all duration-500" style={{
             height: `${mastery * 100}%`,
-            background: `linear-gradient(to top, hsl(${color.hue},60%,35%), hsl(${color.hue},70%,55%))`,
+            background: `linear-gradient(to top, hsl(${hue},60%,35%), hsl(${hue},70%,55%))`,
           }} />
         </div>
-        <div className="text-[10px] mt-1 font-mono" style={{ color: isCurrent ? `hsl(${color.hue},70%,75%)` : '#666' }}>
+        <div className="text-[10px] mt-1 font-mono" style={{ color: isCurrent ? `hsl(${hue},70%,75%)` : '#666' }}>
           {note.replace(/\d/, '')}
         </div>
       </div>
     )
   }
 
-  const noteHue = NOTE_COLORS[currentNote]?.hue ?? 210
+  const noteHue = hintHue(currentNote)
   const noteColor = `hsl(${noteHue}, 70%, 60%)`
 
   // ─── MENU ───────────────────────────────────────────────────────────────
@@ -713,13 +736,28 @@ export default function NoteTutor() {
 
         {/* Octave tolerance toggle — only relevant in sing mode */}
         {mode === 'sing' && (
-          <label className="flex items-center gap-2 mb-3 cursor-pointer">
+          <label className="flex items-center gap-2 mb-2 cursor-pointer">
             <input type="checkbox" checked={state.octaveTolerant}
               onChange={e => setState(s => ({ ...s, octaveTolerant: e.target.checked }))}
               className="w-4 h-4 accent-purple-500" />
             <span className="text-xs text-gray-400">Octave tolerant (any C counts as C4)</span>
           </label>
         )}
+
+        {/* Color hints toggle — beginner crutch vs. honest ear-training. */}
+        <label className="flex items-center gap-2 mb-3 cursor-pointer">
+          <input type="checkbox" checked={state.colorHints}
+            onChange={e => setState(s => {
+              const next = { ...s, colorHints: e.target.checked }
+              persist(next)
+              return next
+            })}
+            className="w-4 h-4 accent-purple-500" />
+          <span className="text-xs text-gray-400">
+            Color hints <span className="text-gray-600">(kids: on · real practice: off)</span>
+          </span>
+        </label>
+
 
         <button onClick={startSession}
           className="px-10 py-4 rounded-2xl text-xl font-bold text-white transition-all active:scale-95 mt-2"
@@ -901,7 +939,7 @@ export default function NoteTutor() {
         {mode === 'sing' && !isPairRound && isAnswering && (
           <div className="mb-3 text-xs h-5">
             {pitch?.isActive ? (
-              <span style={{ color: `hsl(${NOTE_COLORS[pitch.note]?.hue ?? 200},60%,65%)` }}>
+              <span style={{ color: `hsl(${hintHue(pitch.note)},60%,65%)` }}>
                 Hearing: <b>{pitch.note}</b> ({pitch.cents > 0 ? '+' : ''}{pitch.cents}¢)
               </span>
             ) : <span className="text-gray-600">Sing the note…</span>}
@@ -957,12 +995,16 @@ export default function NoteTutor() {
           <div className="flex flex-wrap justify-center gap-2 max-w-lg">
             {notes.map((n, i) => {
               const unlocked = state.pool.items.includes(n)
-              const color = NOTE_COLORS[n] ?? { hue: 210 }
+              const hue = hintHue(n)
               const wasPick = lastAnswer?.picks.includes(n)
               const wasTarget = lastAnswer?.notes.includes(n)
               const lastCorrect = lastAnswer?.correct && wasPick
               const lastWrong = lastAnswer && !lastAnswer.correct && wasPick && !wasTarget
               const firstLockedIn = isPairRound && isAnswering && firstPick === n
+              // With color hints OFF, correct-feedback uses universal green
+              // (not note-hue glow) — otherwise the post-hoc color telegraphs
+              // which note it was, defeating the exercise on the very next round.
+              const correctGlowHue = state.colorHints ? hue : 140
               return (
                 <button key={n} disabled={!isAnswering || !unlocked}
                   onClick={() => processAnswer(n)}
@@ -971,17 +1013,17 @@ export default function NoteTutor() {
                     width: 56, height: 64, borderRadius: 12,
                     color: unlocked ? 'white' : '#555',
                     background: unlocked
-                      ? `linear-gradient(135deg, hsl(${color.hue},60%,25%), hsl(${color.hue},50%,14%))`
+                      ? `linear-gradient(135deg, hsl(${hue},60%,25%), hsl(${hue},50%,14%))`
                       : 'rgba(30,30,40,0.5)',
                     border: `2px solid ${
                       firstLockedIn ? '#fbbf24'
-                      : unlocked ? `hsl(${color.hue},70%,50%)`
+                      : unlocked ? `hsl(${hue},70%,50%)`
                       : 'rgba(60,60,80,0.3)'}`,
                     opacity: unlocked ? 1 : 0.35,
                     boxShadow: firstLockedIn
                       ? '0 0 14px #fbbf24, inset 0 0 8px #fbbf2440'
                       : lastCorrect
-                      ? `0 0 22px hsl(${color.hue},80%,60%), inset 0 0 14px hsl(${color.hue},80%,60%)`
+                      ? `0 0 22px hsl(${correctGlowHue},80%,60%), inset 0 0 14px hsl(${correctGlowHue},80%,60%)`
                       : lastWrong
                       ? '0 0 22px hsl(0,80%,55%), inset 0 0 10px hsl(0,80%,55%)'
                       : undefined,
