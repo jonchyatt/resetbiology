@@ -12,9 +12,12 @@ import {
   MasteryItem, ItemKind, QueueConfig, ActivePool, DEFAULT_QUEUE_CONFIG,
 } from './types'
 
+/** Default queue id. NoteTutor uses 'notes' and 'sequences' for its two pools. */
+export const DEFAULT_QUEUE = 'main'
+
 export interface EngineState {
   items: Record<string, MasteryItem>  // id → item
-  queue: string[]                      // upcoming ids; head = next to present
+  queues: Record<string, string[]>    // queue id → upcoming item ids; head = next to present
   config: QueueConfig
   totalAttempts: number
 }
@@ -29,10 +32,15 @@ export function createItem(id: string, kind: ItemKind, payload: unknown): Master
 export function createEngine(config: Partial<QueueConfig> = {}): EngineState {
   return {
     items: {},
-    queue: [],
+    queues: { [DEFAULT_QUEUE]: [] },
     config: { ...DEFAULT_QUEUE_CONFIG, ...config },
     totalAttempts: 0,
   }
+}
+
+function getQueue(engine: EngineState, queueName: string): string[] {
+  if (!engine.queues[queueName]) engine.queues[queueName] = []
+  return engine.queues[queueName]
 }
 
 /** Score a result and update per-item stats. Returns the updated item. */
@@ -73,42 +81,46 @@ export function pickDepth(
   return lo + Math.floor(Math.random() * (hi - lo + 1))
 }
 
-/** Insert id back into the queue at the given ordinal depth. */
-export function reinsert(engine: EngineState, id: string, depth: number) {
-  const target = Math.min(depth, engine.queue.length)
-  engine.queue.splice(target, 0, id)
+/** Insert id back into the given queue at the chosen ordinal depth. */
+export function reinsert(
+  engine: EngineState, id: string, depth: number, queueName: string = DEFAULT_QUEUE,
+) {
+  const q = getQueue(engine, queueName)
+  const target = Math.min(depth, q.length)
+  q.splice(target, 0, id)
 }
 
 /**
- * Pop the next item id to present. If queue is empty, refill it from the
- * given active pool using weighted-weakest selection. Excludes `avoidId`
- * when possible to avoid showing the same item back-to-back (ordinal spacing
- * implies something else runs in between).
+ * Pop the next item id to present. If the queue is empty, refill it from
+ * the given active pool using weighted-weakest selection. Excludes `avoidId`
+ * when possible so the same item doesn't appear back-to-back (ordinal
+ * spacing implies something else runs in between). Callers can maintain
+ * separate queues per pool via `queueName` — e.g. notes vs. sequences.
  */
 export function pickNext(
   engine: EngineState,
   activeIds: string[],
   avoidId: string | null,
+  queueName: string = DEFAULT_QUEUE,
 ): string | null {
   if (activeIds.length === 0) return null
-  if (engine.queue.length === 0) refill(engine, activeIds)
-  // Prefer first id that isn't avoidId. If only avoidId is available, fine.
+  const q = getQueue(engine, queueName)
+  if (q.length === 0) refill(engine, activeIds, queueName)
   let idx = 0
   if (avoidId) {
-    const found = engine.queue.findIndex(q => q !== avoidId && activeIds.includes(q))
+    const found = q.findIndex(qId => qId !== avoidId && activeIds.includes(qId))
     if (found >= 0) idx = found
   }
-  const id = engine.queue.splice(idx, 1)[0]
+  const id = q.splice(idx, 1)[0]
   if (!activeIds.includes(id)) {
     // Item no longer active (e.g. pool shrank) — try again.
-    return pickNext(engine, activeIds, avoidId)
+    return pickNext(engine, activeIds, avoidId, queueName)
   }
   return id
 }
 
-/** Seed queue with a weighted shuffle of active ids. Weaker items first. */
-function refill(engine: EngineState, activeIds: string[]) {
-  // Weight = (1 - mastery) + small bias for fewer attempts.
+/** Seed a named queue with a weighted shuffle of active ids. Weaker first. */
+function refill(engine: EngineState, activeIds: string[], queueName: string = DEFAULT_QUEUE) {
   const weighted = activeIds.map(id => {
     const it = engine.items[id]
     const m = it?.mastery ?? 0
@@ -117,8 +129,7 @@ function refill(engine: EngineState, activeIds: string[]) {
     return { id, weight }
   })
   weighted.sort((a, b) => b.weight - a.weight)
-  // Weakest come first (shallow depth) — that's the engine's whole point.
-  engine.queue = weighted.map(w => w.id)
+  engine.queues[queueName] = weighted.map(w => w.id)
 }
 
 /** Whether the active pool is mastery-stable enough to expand. */
@@ -230,9 +241,16 @@ export function loadState(
   try {
     const raw = window.localStorage.getItem(key)
     if (!raw) return defaults()
-    const parsed = JSON.parse(raw) as PersistedState
+    const parsed = JSON.parse(raw) as PersistedState & { engine: { queue?: string[] } }
     // Merge config defaults for forward-compat when we tune knobs later.
     parsed.engine.config = { ...DEFAULT_QUEUE_CONFIG, ...parsed.engine.config }
+    // Back-compat: early persisted state used `engine.queue: string[]`.
+    // Migrate to the named-queues shape so existing learners don't lose state.
+    const eng = parsed.engine as EngineState & { queue?: string[] }
+    if (!eng.queues) {
+      eng.queues = { [DEFAULT_QUEUE]: Array.isArray(eng.queue) ? eng.queue : [] }
+      delete eng.queue
+    }
     return parsed
   } catch {
     return defaults()

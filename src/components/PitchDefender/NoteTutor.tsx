@@ -13,6 +13,15 @@
 // Pool starts with keys 1 + 9 (max separation) and expands by mastery-gated
 // strategy alternating "far from weakest" (discrimination) and "neighbor of
 // newest" (climb training). Queue-based ordinal reinsertion — NOT time-based.
+//
+// HORIZONTAL PROGRESSION (Jon's spec from the ChatGPT/Leitner thread):
+// Once the single-note pool has hit `horizontalGatePoolSize` (default 7),
+// expansion to note #8 is blocked. Instead the tutor auto-spawns a sequence
+// pool (2-note pairs drawn from the 7 mastered notes) and interleaves
+// "PAIRS" rounds — play two notes in order, user presses two keys. Pool
+// growth resumes only after the sequence pool hits its own mastery target.
+// Horizontal-before-vertical: deeper mastery with the same notes before
+// adding more pitch categories.
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -28,7 +37,9 @@ import { noteToFreq, octaveFoldedCents } from './pitchMath'
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
-const STORAGE_KEY = 'nt_v1_state'
+const STORAGE_KEY = 'nt_v2_state'     // bumped for dual-queue engine
+const QUEUE_NOTES = 'notes'
+const QUEUE_SEQS = 'sequences'
 const WINDOW_SIZE = 9                 // keys 1-9 = 9 notes (octave + 1)
 const NOTE_CLASSES = ['C', 'D', 'E', 'F', 'G', 'A', 'B', 'C', 'D'] as const
 const CLASS_OFFSET = [0, 1, 2, 3, 4, 5, 6, 7, 8]  // 0 = baseOctave, 7+ = next octave
@@ -39,6 +50,7 @@ const STEP_OF: Record<string, number> = { C: 0, D: 1, E: 2, F: 3, G: 4, A: 5, B:
 
 type Mode = 'staff' | 'tone' | 'sing'
 type Phase = 'menu' | 'listening' | 'answering' | 'feedback' | 'session_end'
+type RoundType = 'single' | 'sequence'
 
 const MODE_LABEL: Record<Mode, string> = {
   staff: 'A · Staff + Tone',
@@ -46,9 +58,16 @@ const MODE_LABEL: Record<Mode, string> = {
   sing: 'C · Name → Sing',
 }
 
+// Sequence tuning — 8 mastered pairs closes the horizontal gate.
+const SEQUENCE_TARGET_SIZE = 8
+const SEQUENCE_MIX_RATIO = 0.7  // 70% pair rounds, 30% single-note review when gate is active
+const SEQUENCE_PAUSE_MS = 380   // gap between tone 1 and tone 2 in a pair
+
 interface Persisted {
   engine: EngineState
   pool: ActivePool<string>
+  sequencePool: ActivePool<string> | null
+  horizontalGateCleared: boolean
   baseOctave: number
   octaveTolerant: boolean
   preferredMode: Mode
@@ -74,6 +93,95 @@ function semitoneDist(a: string, b: string): number {
   return Math.abs(12 * Math.log2(freqA / freqB))
 }
 
+// ─── Sequence helpers (horizontal progression) ──────────────────────────────
+
+function seqId(a: string, b: string): string { return `seq:${a}>${b}` }
+function parseSeqId(id: string): [string, string] | null {
+  const m = id.match(/^seq:([A-G]#?\d+)>([A-G]#?\d+)$/)
+  return m ? [m[1], m[2]] : null
+}
+function sortByPitch(notes: string[]): string[] {
+  return [...notes].sort((a, b) => (noteToFreq(a) ?? 0) - (noteToFreq(b) ?? 0))
+}
+function sequenceDistance(a: string, b: string): number {
+  const pa = parseSeqId(a), pb = parseSeqId(b)
+  if (!pa || !pb) return 0
+  return semitoneDist(pa[0], pb[0]) + semitoneDist(pa[1], pb[1])
+}
+
+function horizontalGateActive(s: Persisted): boolean {
+  return s.pool.items.length >= s.engine.config.horizontalGatePoolSize
+    && !s.horizontalGateCleared
+}
+
+function sequencePoolGoalReached(s: Persisted): boolean {
+  if (!s.sequencePool) return false
+  if (s.sequencePool.items.length < SEQUENCE_TARGET_SIZE) return false
+  const floor = s.engine.config.perItemMasteryFloor
+  return s.sequencePool.items.every(id =>
+    (s.engine.items[id]?.mastery ?? 0) >= floor)
+}
+
+/**
+ * Seed (or re-seed) the sequence pool from the current single-note pool.
+ * Initial pairs: smallest ascending neighbor + biggest ascending skip
+ * (max pitch distance). Every other ascending pair becomes a candidate.
+ * Idempotent — called whenever the horizontal gate activates or the
+ * octave window changes.
+ */
+function seedSequencePool(s: Persisted): Persisted {
+  const notes = sortByPitch(s.pool.items)
+  if (notes.length < 2) return s
+  const neighbor = seqId(notes[0], notes[1])
+  const biggest = seqId(notes[0], notes[notes.length - 1])
+  const seeds = neighbor === biggest ? [neighbor] : [neighbor, biggest]
+  const candidates: string[] = []
+  for (let i = 0; i < notes.length; i++) {
+    for (let j = i + 1; j < notes.length; j++) {
+      const id = seqId(notes[i], notes[j])
+      if (!seeds.includes(id)) candidates.push(id)
+    }
+  }
+  s.sequencePool = {
+    items: seeds,
+    candidates,
+    attemptsSinceExpansion: 0,
+    createdAt: Date.now(),
+    expansionCycle: 0,
+  }
+  for (const id of seeds) {
+    if (!s.engine.items[id]) {
+      const parsed = parseSeqId(id)!
+      s.engine.items[id] = createItem(id, 'sequence', { notes: parsed })
+    }
+  }
+  return s
+}
+
+function ensureSequencePoolForState(s: Persisted): Persisted {
+  if (!horizontalGateActive(s)) return s
+  if (!s.sequencePool) return seedSequencePool(s)
+  // Defensive: candidates must reference only notes currently in pool.
+  const activeNotes = new Set(s.pool.items)
+  const validId = (id: string) => {
+    const p = parseSeqId(id); if (!p) return false
+    return activeNotes.has(p[0]) && activeNotes.has(p[1])
+  }
+  s.sequencePool.items = s.sequencePool.items.filter(validId)
+  s.sequencePool.candidates = s.sequencePool.candidates.filter(validId)
+  if (s.sequencePool.items.length === 0) return seedSequencePool(s)
+  return s
+}
+
+function pickRoundType(s: Persisted, mode: Mode): RoundType {
+  // Sing mode skips pair rounds for v1 — singing two pitches in strict
+  // order is a different-enough skill that it deserves its own mode later.
+  if (mode === 'sing') return 'single'
+  if (!horizontalGateActive(s) || !s.sequencePool) return 'single'
+  if (s.sequencePool.items.length === 0) return 'single'
+  return Math.random() < SEQUENCE_MIX_RATIO ? 'sequence' : 'single'
+}
+
 function initialState(): Persisted {
   const pool: ActivePool<string> = {
     items: [],
@@ -84,7 +192,10 @@ function initialState(): Persisted {
   }
   const engine = createEngine()
   return {
-    engine, pool, baseOctave: DEFAULT_BASE_OCTAVE,
+    engine, pool,
+    sequencePool: null,
+    horizontalGateCleared: false,
+    baseOctave: DEFAULT_BASE_OCTAVE,
     octaveTolerant: true, preferredMode: 'staff',
     totalCorrect: 0, totalAttempts: 0, sessions: 0,
   }
@@ -108,12 +219,15 @@ function ensurePoolForOctave(s: Persisted): Persisted {
     s.pool.candidates = notes.slice(1, 8)
     s.pool.attemptsSinceExpansion = 0
     s.pool.expansionCycle = 0
+    // Octave shift invalidates the sequence pool too — notes moved.
+    s.sequencePool = null
+    s.horizontalGateCleared = false
   } else {
     // Reconcile candidates with current window (they drift if octave changed
     // and was then changed back — defensive refresh).
     s.pool.candidates = notes.filter(n => !s.pool.items.includes(n))
   }
-  return s
+  return ensureSequencePoolForState(s)
 }
 
 // ─── Staff SVG ──────────────────────────────────────────────────────────────
@@ -158,11 +272,15 @@ export default function NoteTutor() {
   const [state, setState] = useState<Persisted>(() => ensurePoolForOctave(initialState()))
   const [mode, setMode] = useState<Mode>('staff')
   const [phase, setPhase] = useState<Phase>('menu')
-  const [currentNote, setCurrentNote] = useState<string>('')
-  const [lastAnswer, setLastAnswer] = useState<{ note: string; correct: boolean } | null>(null)
+  const [currentNotes, setCurrentNotes] = useState<string[]>([])
+  const [answerIdx, setAnswerIdx] = useState(0)
+  const [roundType, setRoundType] = useState<RoundType>('single')
+  const [firstPick, setFirstPick] = useState<string | null>(null)
+  const [lastAnswer, setLastAnswer] = useState<{ notes: string[]; picks: string[]; correct: boolean; type: RoundType } | null>(null)
   const [sessionStats, setSessionStats] = useState({ correct: 0, attempts: 0, streak: 0, best: 0 })
   const [lockProgress, setLockProgress] = useState(0)
   const [expandedNote, setExpandedNote] = useState<string | null>(null)
+  const [gateClearedBanner, setGateClearedBanner] = useState(false)
 
   const processingRef = useRef(false)
   const lockStartRef = useRef(0)
@@ -170,6 +288,7 @@ export default function NoteTutor() {
   const timersRef = useRef<ReturnType<typeof setTimeout>[]>([])
   const processAnswerRef = useRef<(note: string) => void>(() => {})
 
+  const currentNote = currentNotes[answerIdx] ?? ''  // mic-lock + staff target
   const notes = useMemo(() => windowNotes(state.baseOctave), [state.baseOctave])
 
   // Mic only activates in sing mode
@@ -214,8 +333,10 @@ export default function NoteTutor() {
   useEffect(() => () => clearAllTimers(), [clearAllTimers])
 
   // ─── Mic lock (Pitchforks v1 canonical pattern) ─────────────────────────
+  // Sing+sequence isn't a v1 path, so mic lock only fires on single rounds.
   useEffect(() => {
     if (mode !== 'sing' || phase !== 'answering' || !isListening) return
+    if (roundType !== 'single') return
     const TICK_MS = 50
     const HOLD_MS = 300
     const TOLERANCE_CENTS = 70
@@ -259,14 +380,68 @@ export default function NoteTutor() {
       // silent / low confidence → DO NOTHING. preserve in-progress lock.
     }, TICK_MS)
     return () => clearInterval(interval)
-  }, [mode, phase, isListening, currentNote, state.octaveTolerant, pitchRef])
+  }, [mode, phase, isListening, currentNote, state.octaveTolerant, pitchRef, roundType])
 
-  // ─── Play current tone ──────────────────────────────────────────────────
+  // ─── Play current tone(s) ───────────────────────────────────────────────
+  // Single → one tone. Sequence → tone A, pause, tone B.
   const playCurrent = useCallback(() => {
-    if (!currentNote) return
-    playPianoNote(currentNote, { exact: true })
+    if (currentNotes.length === 0) return
+    playPianoNote(currentNotes[0], { exact: true })
     notePlayedAtRef.current = Date.now()
-  }, [currentNote])
+    if (currentNotes.length > 1) {
+      scheduleTimer(() => playPianoNote(currentNotes[1], { exact: true }), SEQUENCE_PAUSE_MS)
+    }
+  }, [currentNotes, scheduleTimer])
+
+  // ─── Round picker (dual-queue: notes + sequences) ───────────────────────
+  // Returns the descriptor for the next round, honoring horizontal gating.
+  const pickNextRound = useCallback((s: Persisted, avoidId: string | null): {
+    type: RoundType
+    id: string
+    notes: string[]
+  } | null => {
+    const type = pickRoundType(s, mode)
+    if (type === 'sequence' && s.sequencePool && s.sequencePool.items.length > 0) {
+      const id = pickNext(s.engine, s.sequencePool.items, avoidId, QUEUE_SEQS)
+      const parsed = id ? parseSeqId(id) : null
+      if (id && parsed) return { type: 'sequence', id, notes: parsed }
+    }
+    const id = pickNext(s.engine, s.pool.items, avoidId, QUEUE_NOTES)
+    if (!id) return null
+    return { type: 'single', id, notes: [id] }
+  }, [mode])
+
+  // Start a new round — set state and play tones.
+  const beginRound = useCallback((round: { type: RoundType; notes: string[] }) => {
+    setCurrentNotes(round.notes)
+    setAnswerIdx(0)
+    setFirstPick(null)
+    setRoundType(round.type)
+    setPhase('listening')
+    const playTones = round.type === 'sequence' || mode !== 'sing'
+    if (playTones) {
+      scheduleTimer(() => {
+        playPianoNote(round.notes[0], { exact: true })
+        notePlayedAtRef.current = Date.now()
+        if (round.notes.length > 1) {
+          scheduleTimer(() =>
+            playPianoNote(round.notes[1], { exact: true }), SEQUENCE_PAUSE_MS)
+        }
+      }, 280)
+      const answerDelay = round.notes.length > 1
+        ? 280 + SEQUENCE_PAUSE_MS + 480  // second tone finishes → brief beat → answer
+        : 780
+      scheduleTimer(() => {
+        setPhase('answering')
+        processingRef.current = false
+      }, answerDelay)
+    } else {
+      scheduleTimer(() => {
+        setPhase('answering')
+        processingRef.current = false
+      }, 300)
+    }
+  }, [mode, scheduleTimer])
 
   // ─── Start session ──────────────────────────────────────────────────────
   const startSession = useCallback(() => {
@@ -276,37 +451,97 @@ export default function NoteTutor() {
     initAudio()
     if (mode === 'sing') startListening()
     setSessionStats({ correct: 0, attempts: 0, streak: 0, best: 0 })
-    const ids = state.pool.items
-    const first = pickNext(state.engine, ids, null)
-    if (!first) return
-    setCurrentNote(first)
-    setPhase('listening')
-    if (mode !== 'sing') {
-      scheduleTimer(() => { playPianoNote(first, { exact: true }); notePlayedAtRef.current = Date.now() }, 300)
-      scheduleTimer(() => setPhase('answering'), 800)
-    } else {
-      // sing mode: no tone play — prompt user to produce the note
-      scheduleTimer(() => setPhase('answering'), 300)
-    }
-  }, [mode, state, startListening, clearAllTimers, scheduleTimer])
+    ensureSequencePoolForState(state)
+    const next = pickNextRound(state, null)
+    if (!next) return
+    beginRound(next)
+  }, [mode, state, startListening, clearAllTimers, pickNextRound, beginRound])
 
-  // ─── Process answer ─────────────────────────────────────────────────────
+  // ─── Process answer (single OR second key of a sequence round) ──────────
   const processAnswer = useCallback((answer: string) => {
     if (processingRef.current) return
+
+    // Sequence round, first key → store and wait for the second.
+    if (roundType === 'sequence' && answerIdx === 0) {
+      setFirstPick(answer)
+      setAnswerIdx(1)
+      return
+    }
+
     processingRef.current = true
-    const correct = answer === currentNote
-    const item = state.engine.items[currentNote]
+
+    if (roundType === 'sequence') {
+      const picks = [firstPick ?? '', answer]
+      const correct = picks[0] === currentNotes[0] && picks[1] === currentNotes[1]
+      const sid = seqId(currentNotes[0], currentNotes[1])
+      const seqItem = state.engine.items[sid]
+      if (seqItem) {
+        recordResult(state.engine, sid, correct)
+        reinsert(state.engine, sid, pickDepth(state.engine, seqItem, correct), QUEUE_SEQS)
+      }
+      if (state.sequencePool) state.sequencePool.attemptsSinceExpansion += 1
+      state.totalAttempts += 1
+      if (correct) state.totalCorrect += 1
+
+      setLastAnswer({ notes: [...currentNotes], picks, correct, type: 'sequence' })
+      playSfx(correct ? 'correct' : 'wrong')
+      if (!correct) {
+        scheduleTimer(() => playPianoNote(currentNotes[0], { exact: true }), 400)
+        scheduleTimer(() => playPianoNote(currentNotes[1], { exact: true }), 400 + SEQUENCE_PAUSE_MS)
+      }
+      setSessionStats(prev => {
+        const streak = correct ? prev.streak + 1 : 0
+        return {
+          correct: prev.correct + (correct ? 1 : 0),
+          attempts: prev.attempts + 1,
+          streak,
+          best: Math.max(prev.best, streak),
+        }
+      })
+
+      // Sequence pool expansion
+      if (state.sequencePool && canExpandPool(state.engine, state.sequencePool)) {
+        const added = expandPool(
+          state.engine, state.sequencePool, 'sequence',
+          (id) => ({ notes: parseSeqId(id) ?? [] }),
+          sequenceDistance,
+        )
+        if (added) setExpandedNote(added)
+      }
+      // Clear the horizontal gate if we've hit the sequence mastery target.
+      if (sequencePoolGoalReached(state) && !state.horizontalGateCleared) {
+        state.horizontalGateCleared = true
+        setGateClearedBanner(true)
+        scheduleTimer(() => setGateClearedBanner(false), 3600)
+      }
+      persist(state)
+      setPhase('feedback')
+      const feedbackMs = correct ? 900 : 1800
+      scheduleTimer(() => {
+        setLastAnswer(null)
+        setExpandedNote(null)
+        const next = pickNextRound(state, sid)
+        if (!next) { processingRef.current = false; setPhase('session_end'); return }
+        beginRound(next)
+      }, feedbackMs)
+      return
+    }
+
+    // Single round (default)
+    const target = currentNotes[0]
+    const correct = answer === target
+    const item = state.engine.items[target]
     if (item) {
-      recordResult(state.engine, currentNote, correct)
-      reinsert(state.engine, currentNote, pickDepth(state.engine, item, correct))
+      recordResult(state.engine, target, correct)
+      reinsert(state.engine, target, pickDepth(state.engine, item, correct), QUEUE_NOTES)
     }
     state.pool.attemptsSinceExpansion += 1
     state.totalAttempts += 1
     if (correct) state.totalCorrect += 1
 
-    setLastAnswer({ note: answer, correct })
+    setLastAnswer({ notes: [target], picks: [answer], correct, type: 'single' })
     playSfx(correct ? 'correct' : 'wrong')
-    if (!correct) scheduleTimer(() => playPianoNote(currentNote, { exact: true }), 400)
+    if (!correct) scheduleTimer(() => playPianoNote(target, { exact: true }), 400)
 
     setSessionStats(prev => {
       const streak = correct ? prev.streak + 1 : 0
@@ -318,14 +553,21 @@ export default function NoteTutor() {
       }
     })
 
-    // Pool expansion check
-    if (canExpandPool(state.engine, state.pool)) {
+    // Single-note expansion is blocked while the horizontal gate is active —
+    // the tutor has to prove sequence mastery before the pool grows further.
+    if (!horizontalGateActive(state) && canExpandPool(state.engine, state.pool)) {
       const added = expandPool(
         state.engine, state.pool, 'note',
         (id) => ({ note: id }),
         semitoneDist,
       )
-      if (added) setExpandedNote(added)
+      if (added) {
+        setExpandedNote(added)
+        // Crossing the gate threshold → spawn sequence pool now.
+        ensureSequencePoolForState(state)
+      }
+    } else if (horizontalGateActive(state) && !state.sequencePool) {
+      ensureSequencePoolForState(state)
     }
 
     persist(state)
@@ -334,22 +576,12 @@ export default function NoteTutor() {
     scheduleTimer(() => {
       setLastAnswer(null)
       setExpandedNote(null)
-      const next = pickNext(state.engine, state.pool.items, currentNote)
-      if (!next) {
-        processingRef.current = false
-        setPhase('session_end')
-        return
-      }
-      setCurrentNote(next)
-      setPhase('listening')
-      if (mode !== 'sing') {
-        scheduleTimer(() => { playPianoNote(next, { exact: true }); notePlayedAtRef.current = Date.now() }, 250)
-        scheduleTimer(() => { setPhase('answering'); processingRef.current = false }, 650)
-      } else {
-        scheduleTimer(() => { setPhase('answering'); processingRef.current = false }, 250)
-      }
+      const next = pickNextRound(state, target)
+      if (!next) { processingRef.current = false; setPhase('session_end'); return }
+      beginRound(next)
     }, feedbackMs)
-  }, [currentNote, state, mode, persist, scheduleTimer])
+  }, [state, mode, currentNotes, roundType, answerIdx, firstPick,
+      persist, scheduleTimer, pickNextRound, beginRound])
 
   useEffect(() => { processAnswerRef.current = processAnswer }, [processAnswer])
 
@@ -516,12 +748,33 @@ export default function NoteTutor() {
   const isFeedback = phase === 'feedback'
   const acc = sessionStats.attempts > 0
     ? Math.round((sessionStats.correct / sessionStats.attempts) * 100) : 0
+  const isPairRound = roundType === 'sequence'
+  // Sequence mastery progress (for the gate-clearance mini-meter)
+  const seqMastered = state.sequencePool
+    ? state.sequencePool.items.filter(id =>
+        (state.engine.items[id]?.mastery ?? 0) >= state.engine.config.perItemMasteryFloor
+      ).length
+    : 0
+  const seqTotal = state.sequencePool?.items.length ?? 0
 
   return (
     <div className="fixed inset-0 bg-[#06060c] flex flex-col">
       {/* Top bar */}
       <div className="flex items-center justify-between px-4 pt-3 pb-2">
-        <div className="text-xs text-gray-400 font-mono">{MODE_LABEL[mode]}</div>
+        <div className="flex items-center gap-2">
+          <div className="text-xs text-gray-400 font-mono">{MODE_LABEL[mode]}</div>
+          {/* Round-type chip — only shows when pairs are in play */}
+          {horizontalGateActive(state) && (
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full"
+              style={{
+                background: isPairRound ? 'rgba(251,191,36,0.15)' : 'rgba(139,92,246,0.12)',
+                color: isPairRound ? '#fbbf24' : '#a78bfa',
+                border: `1px solid ${isPairRound ? 'rgba(251,191,36,0.35)' : 'rgba(139,92,246,0.3)'}`,
+              }}>
+              {isPairRound ? `PAIRS ${seqMastered}/${SEQUENCE_TARGET_SIZE}` : 'SINGLES'}
+            </span>
+          )}
+        </div>
         <div className="flex items-center gap-3 text-xs">
           {sessionStats.streak >= 3 && (
             <span className="font-bold" style={{
@@ -535,7 +788,8 @@ export default function NoteTutor() {
 
       {/* Main card */}
       <div className="flex-1 flex flex-col items-center justify-center px-4">
-        {mode === 'staff' && currentNote && (
+        {/* Staff display — singles only (pair staffs would be cluttered; tone-only for pairs) */}
+        {mode === 'staff' && !isPairRound && currentNote && (
           <div className="mb-4 p-3 rounded-xl" style={{
             background: 'rgba(20,20,32,0.6)',
             border: `1px solid hsl(${noteHue},40%,30%)`,
@@ -559,11 +813,34 @@ export default function NoteTutor() {
                 : `0 0 25px hsl(${noteHue},60%,40%,0.35)`,
             }}>
             {isFeedback ? (
-              <div className="text-center">
-                <div className="text-4xl font-black" style={{ color: lastAnswer?.correct ? '#64ffa0' : '#ff5050' }}>
-                  {lastAnswer?.correct ? '✓' : currentNote}
+              lastAnswer?.type === 'sequence' ? (
+                <div className="text-center">
+                  <div className="text-2xl font-black flex items-center gap-2 justify-center"
+                    style={{ color: lastAnswer.correct ? '#64ffa0' : '#ff5050' }}>
+                    <span>{lastAnswer.notes[0]}</span>
+                    <span className="text-gray-500 text-lg">→</span>
+                    <span>{lastAnswer.notes[1]}</span>
+                  </div>
+                  {!lastAnswer.correct && (
+                    <div className="text-[10px] text-gray-400 mt-1 font-mono">
+                      you said {lastAnswer.picks[0] || '—'} → {lastAnswer.picks[1] || '—'}
+                    </div>
+                  )}
                 </div>
-                {!lastAnswer?.correct && <div className="text-xs text-gray-400 mt-1">was the answer</div>}
+              ) : (
+                <div className="text-center">
+                  <div className="text-4xl font-black" style={{ color: lastAnswer?.correct ? '#64ffa0' : '#ff5050' }}>
+                    {lastAnswer?.correct ? '✓' : currentNotes[0]}
+                  </div>
+                  {!lastAnswer?.correct && <div className="text-xs text-gray-400 mt-1">was the answer</div>}
+                </div>
+              )
+            ) : isPairRound ? (
+              <div className="text-center">
+                <div className="text-xs text-gray-400 mb-1">
+                  {phase === 'listening' ? 'Listen to BOTH…' : answerIdx === 0 ? 'First note?' : 'Second note?'}
+                </div>
+                <button onClick={playCurrent} className="text-3xl" style={{ color: '#fbbf24' }}>🔊🔊</button>
               </div>
             ) : mode === 'sing' ? (
               <div className="text-center">
@@ -581,7 +858,7 @@ export default function NoteTutor() {
           </div>
 
           {/* Pitchforks v1 mic meter (sing mode only, while locking) */}
-          {mode === 'sing' && isAnswering && lockProgress > 0 && (
+          {mode === 'sing' && !isPairRound && isAnswering && lockProgress > 0 && (
             <div className="absolute left-1/2 -translate-x-1/2"
               style={{
                 bottom: -18, width: 120, height: 5,
@@ -601,14 +878,21 @@ export default function NoteTutor() {
           )}
         </div>
 
-        {/* Hearing readout in sing mode */}
-        {mode === 'sing' && isAnswering && (
+        {/* Hearing readout in sing mode (singles only) */}
+        {mode === 'sing' && !isPairRound && isAnswering && (
           <div className="mb-3 text-xs h-5">
             {pitch?.isActive ? (
               <span style={{ color: `hsl(${NOTE_COLORS[pitch.note]?.hue ?? 200},60%,65%)` }}>
                 Hearing: <b>{pitch.note}</b> ({pitch.cents > 0 ? '+' : ''}{pitch.cents}¢)
               </span>
             ) : <span className="text-gray-600">Sing the note…</span>}
+          </div>
+        )}
+
+        {/* First-pick indicator during a pair round */}
+        {isPairRound && isAnswering && firstPick && (
+          <div className="mb-3 text-xs font-mono text-gray-400">
+            1st: <span className="text-amber-300 font-bold">{firstPick}</span> · now pick the 2nd
           </div>
         )}
 
@@ -620,26 +904,46 @@ export default function NoteTutor() {
               border: '1px solid rgba(100,255,160,0.35)',
               color: '#64ffa0',
             }}>
-            New note unlocked: {expandedNote}
+            {expandedNote.startsWith('seq:')
+              ? (() => {
+                  const p = parseSeqId(expandedNote)
+                  return p ? `New pair: ${p[0]} → ${p[1]}` : 'New pair unlocked'
+                })()
+              : `New note unlocked: ${expandedNote}`}
+          </div>
+        )}
+
+        {/* Horizontal gate cleared celebration */}
+        {gateClearedBanner && (
+          <div className="mb-3 px-4 py-2 rounded-xl text-sm font-bold animate-pulse"
+            style={{
+              background: 'rgba(251,191,36,0.12)',
+              border: '1px solid rgba(251,191,36,0.4)',
+              color: '#fbbf24',
+            }}>
+            Pair mastery reached — new notes unlocked!
           </div>
         )}
 
         {/* Replay button (not in sing mode — no pre-played tone) */}
-        {mode !== 'sing' && (
+        {(mode !== 'sing' || isPairRound) && (
           <button onClick={playCurrent} disabled={!isAnswering}
             className="px-4 py-2 rounded-xl text-xs text-gray-400 border border-gray-700 active:scale-95 disabled:opacity-30 mb-3">
-            Replay tone
+            Replay {isPairRound ? 'pair' : 'tone'}
           </button>
         )}
 
-        {/* Number-key buttons (hidden in sing mode) */}
-        {mode !== 'sing' && (
+        {/* Number-key buttons (hidden in sing mode singles; shown for pair rounds) */}
+        {(mode !== 'sing' || isPairRound) && (
           <div className="flex flex-wrap justify-center gap-2 max-w-lg">
             {notes.map((n, i) => {
               const unlocked = state.pool.items.includes(n)
               const color = NOTE_COLORS[n] ?? { hue: 210 }
-              const lastCorrect = lastAnswer?.correct && lastAnswer.note === n
-              const lastWrong = lastAnswer && !lastAnswer.correct && lastAnswer.note === n
+              const wasPick = lastAnswer?.picks.includes(n)
+              const wasTarget = lastAnswer?.notes.includes(n)
+              const lastCorrect = lastAnswer?.correct && wasPick
+              const lastWrong = lastAnswer && !lastAnswer.correct && wasPick && !wasTarget
+              const firstLockedIn = isPairRound && isAnswering && firstPick === n
               return (
                 <button key={n} disabled={!isAnswering || !unlocked}
                   onClick={() => processAnswer(n)}
@@ -650,9 +954,14 @@ export default function NoteTutor() {
                     background: unlocked
                       ? `linear-gradient(135deg, hsl(${color.hue},60%,25%), hsl(${color.hue},50%,14%))`
                       : 'rgba(30,30,40,0.5)',
-                    border: `2px solid ${unlocked ? `hsl(${color.hue},70%,50%)` : 'rgba(60,60,80,0.3)'}`,
+                    border: `2px solid ${
+                      firstLockedIn ? '#fbbf24'
+                      : unlocked ? `hsl(${color.hue},70%,50%)`
+                      : 'rgba(60,60,80,0.3)'}`,
                     opacity: unlocked ? 1 : 0.35,
-                    boxShadow: lastCorrect
+                    boxShadow: firstLockedIn
+                      ? '0 0 14px #fbbf24, inset 0 0 8px #fbbf2440'
+                      : lastCorrect
                       ? `0 0 22px hsl(${color.hue},80%,60%), inset 0 0 14px hsl(${color.hue},80%,60%)`
                       : lastWrong
                       ? '0 0 22px hsl(0,80%,55%), inset 0 0 10px hsl(0,80%,55%)'
