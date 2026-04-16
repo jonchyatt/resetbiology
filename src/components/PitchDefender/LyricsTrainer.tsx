@@ -214,20 +214,30 @@ export default function LyricsTrainer() {
   const startListening = useCallback(() => {
     const Rec = getSpeechRecognition()
     if (!Rec) { setSpeechError('Speech recognition not supported on this browser. Use Chrome on Android or desktop.'); return }
+    // Defensive: if a prior rec is still alive (rapid Cancel→Recite), stop it
+    // so we don't stack two live recognizers feeding the same state.
+    try { recRef.current?.stop() } catch { /* already stopped */ }
+    recRef.current = null
     try {
       const rec = new Rec()
       rec.continuous = true
       rec.interimResults = true
       rec.lang = 'en-US'
-      let finalText = ''
+      // Rebuild the transcript from scratch on every onresult fire. The
+      // previous implementation kept a closure-scoped `finalText` and
+      // iterated `e.results` from 0 each time, which re-appended every
+      // already-final result on every event — classic Web Speech bug that
+      // manifests as an exponential echo loop once the speaker goes past
+      // one short utterance. Stateless derivation avoids the whole class.
       rec.onresult = (e: any) => {
-        let interim = ''
+        let finalPart = ''
+        let interimPart = ''
         for (let i = 0; i < e.results.length; i++) {
           const r = e.results[i]
-          if (r.isFinal) finalText += r[0].transcript + ' '
-          else interim += r[0].transcript + ' '
+          if (r.isFinal) finalPart += r[0].transcript + ' '
+          else interimPart += r[0].transcript + ' '
         }
-        setTranscript((finalText + interim).trim())
+        setTranscript((finalPart + interimPart).trim())
       }
       rec.onerror = (e: any) => {
         setSpeechError(String(e?.error ?? 'mic error'))
