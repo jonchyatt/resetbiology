@@ -7,8 +7,7 @@
 // lives.
 
 import {
-  EngineState, MasteryItem, createEngine, createItem, recordResult,
-  pickDepth, reinsert,
+  EngineState, createEngine, createItem, recordResult, pickDepth, reinsert,
 } from './masteryQueue'
 
 export type ReviewSpanType = 'working' | 'medium' | 'full'
