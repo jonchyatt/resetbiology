@@ -92,6 +92,57 @@ I know my course. The play's the thing
 Wherein I'll catch the conscience of the king.`,
 }
 
+// Vecna / Henry Creel monologue — Stranger Things 4 finale. The speech Jon's
+// son is currently rehearsing. Pre-split at sentence boundaries so the
+// backward-chain window represents coherent practice chunks instead of one
+// paragraph-sized wall-of-text per "line."
+const VECNA_MONOLOGUE: { title: string; text: string } = {
+  title: 'Vecna — "You think you need them"',
+  text: `You think you need them, but you don't.
+You don't.
+Oh, but I know you're just scared.
+I was scared once too.
+I know what it's like to be different.
+To be alone in this world.
+Like you, I didn't fit in with the other children.
+Something was wrong with me.
+All the teachers and the doctors said I was…
+"Broken," they said.
+My parents thought a change of scenery, a fresh start in Hawkins, might just cure me.
+It was absurd.
+As if the world would be any different here.
+But then… to my surprise, our new home provided a discovery.
+And a newfound sense of purpose.
+I found a nest of black widows living inside a vent.
+Most people fear spiders.
+They detest them.
+And yet, I found them endlessly fascinating.
+More than that, I found a great comfort in them.
+A kinship.
+Like me, they are solitary creatures.
+And deeply misunderstood.
+They are gods of our world.
+The most important of all predators.
+They immobilize and feed on the weak, bringing balance and order to an unstable ecosystem.
+But the human world was disrupting this harmony.
+You see, humans are a unique type of pest, multiplying and poisoning our world, all while enforcing a structure of their own.
+A deeply unnatural structure.
+Where others saw order, I saw a straitjacket.
+A cruel, oppressive world dictated by made-up rules.
+Seconds, minutes, hours, days, weeks, months, years, decades.
+Each life a faded, lesser copy of the one before.
+Wake up, eat, work, sleep, reproduce, and die.
+Everyone is just waiting.
+Waiting for it all to be over.
+All while performing in a silly, terrible play, day after day.
+I could not do that.
+I could not close off my mind and join in the madness.
+I could not pretend.
+And I realized I didn't have to.`,
+}
+
+const PRESETS = [HAMLET_ROGUE, VECNA_MONOLOGUE] as const
+
 // ─── Scaffolding helpers ────────────────────────────────────────────────────
 // Per-PDF: "successful-but-effortful recall." Hide full text by default;
 // reveal the first N words when a line is missed enough times.
@@ -106,6 +157,37 @@ function scaffoldWords(miss: number): number {
 
 function splitWords(line: string): string[] {
   return line.split(/\s+/).filter(w => w.length > 0)
+}
+
+// Auto-split paragraph-length "lines" into sentences. Backward-chain works
+// best when each "line" is a coherent sentence-sized practice unit — a raw
+// paragraph as one line creates a huge first recitation target, which Jon
+// reported feeling like "starting from the beginning" because he was looking
+// at a paragraph-sized wall of text at the end of the speech.
+//
+// Splits on sentence-terminators (. ? ! —) while preserving the terminator
+// on the left fragment. Leaves short lines alone. Tunable threshold.
+function autoSplitLongLines(lines: string[], maxWords = 14): string[] {
+  const out: string[] = []
+  for (const line of lines) {
+    if (splitWords(line).length <= maxWords) {
+      out.push(line)
+      continue
+    }
+    // Sentence-terminator split. Keep the terminator on the fragment that
+    // owns it. Em-dash treated as terminator too. Ellipses are kept intact.
+    const parts = line
+      .replace(/\.{3,}/g, '\u2026')  // ellipsis → single char so it doesn't split
+      .split(/(?<=[.!?—])\s+/)
+      .map(p => p.replace(/\u2026/g, '...').trim())
+      .filter(p => p.length > 0)
+    if (parts.length <= 1) {
+      out.push(line)  // no sentence boundary found — leave it
+    } else {
+      for (const p of parts) out.push(p)
+    }
+  }
+  return out
 }
 
 // ─── SpeechRecognition types (Web Speech is non-standard) ──────────────────
@@ -197,9 +279,12 @@ export default function LyricsTrainer() {
   }, [])
 
   // ─── Load monologue from paste OR preset ────────────────────────────────
+  // Applies auto-split at sentence boundaries so paragraph-as-one-line pastes
+  // don't produce huge practice chunks that defeat the backward-chain model.
   const loadFromText = useCallback((title: string, text: string) => {
-    const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0)
-    if (lines.length === 0) return
+    const rawLines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0)
+    if (rawLines.length === 0) return
+    const lines = autoSplitLongLines(rawLines)
     const mono = createMonologueState(lines)
     const next: Persisted = { title: title || 'Untitled', monologue: mono, sessions: 0, lastSpanPassed: false }
     setState(next); persist(next)
@@ -213,19 +298,19 @@ export default function LyricsTrainer() {
     loadFromText(titleDraft, pasteText)
   }, [pasteText, titleDraft, loadFromText])
 
-  const loadHamlet = useCallback(() => {
-    // If the user is already partway through Hamlet, never wipe — just open
-    // the intro on the existing state. If a DIFFERENT monologue is in
-    // progress, confirm before replacing. If nothing is saved, fresh load.
-    if (state.monologue && state.title === HAMLET_ROGUE.title) {
+  // Generic preset loader. If the user is already mid-preset (title match),
+  // resume without wiping. If a DIFFERENT monologue is in progress, confirm
+  // replace. Else fresh load.
+  const loadPreset = useCallback((preset: { title: string; text: string }) => {
+    if (state.monologue && state.title === preset.title) {
       setPhase('intro')
       return
     }
-    if (state.monologue && state.title !== HAMLET_ROGUE.title) {
-      const ok = confirm(`Replace "${state.title}" progress with a fresh Hamlet session?`)
+    if (state.monologue && state.title !== preset.title) {
+      const ok = confirm(`Replace "${state.title}" progress with a fresh "${preset.title}" session?`)
       if (!ok) return
     }
-    loadFromText(HAMLET_ROGUE.title, HAMLET_ROGUE.text)
+    loadFromText(preset.title, preset.text)
   }, [loadFromText, state.monologue, state.title])
 
   // ─── Speech recognition ─────────────────────────────────────────────────
@@ -539,16 +624,21 @@ export default function LyricsTrainer() {
           {hasSaved ? 'New monologue' : 'Paste monologue'}
         </button>
 
-        <button onClick={loadHamlet}
-          className="mt-3 px-6 py-2 rounded-xl text-sm font-medium text-gray-200 active:scale-95"
-          style={{
-            background: 'rgba(30,25,45,0.8)',
-            border: '1px solid rgba(139,92,246,0.35)',
-          }}>
-          {state.monologue && state.title === HAMLET_ROGUE.title
-            ? '🎭 Resume Hamlet — "Rogue and peasant slave"'
-            : '🎭 Load preset — Hamlet, "Rogue and peasant slave"'}
-        </button>
+        <div className="mt-3 flex flex-col gap-2 w-full max-w-md">
+          {PRESETS.map(preset => {
+            const isCurrent = state.monologue && state.title === preset.title
+            return (
+              <button key={preset.title} onClick={() => loadPreset(preset)}
+                className="px-6 py-2 rounded-xl text-sm font-medium text-gray-200 active:scale-95"
+                style={{
+                  background: isCurrent ? 'rgba(60,40,70,0.8)' : 'rgba(30,25,45,0.8)',
+                  border: `1px solid ${isCurrent ? 'rgba(167,139,250,0.5)' : 'rgba(139,92,246,0.35)'}`,
+                }}>
+                {isCurrent ? '🎭 Resume' : '🎭 Load preset'} — {preset.title}
+              </button>
+            )
+          })}
+        </div>
 
         <a href="/pitch-defender" className="mt-8 text-xs text-gray-700 hover:text-gray-500">← Back to Pitch Defender</a>
       </div>
@@ -590,9 +680,12 @@ export default function LyricsTrainer() {
       <div className="fixed inset-0 bg-[#06060c] flex flex-col items-center justify-start px-6 py-6 overflow-y-auto">
         <div className="text-xs text-gray-500 mb-1">{state.title}</div>
         <div className="text-2xl font-black text-white mb-1">Ready to practice</div>
-        <div className="text-sm text-gray-400 mb-2">
+        <div className="text-sm text-gray-400 mb-1">
           You know lines {knownStart + 1} through {knownEnd + 1}
           {' '}({knownEnd - knownStart + 1} of {mono.lines.length})
+        </div>
+        <div className="text-[11px] text-gray-500 mb-2 font-mono tracking-wide">
+          backward chain · last line first → prepending toward line 1
         </div>
         {manualStart !== null && (
           <div className="mb-2 text-xs text-amber-300 font-mono">
