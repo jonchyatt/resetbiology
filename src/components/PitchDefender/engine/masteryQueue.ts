@@ -43,6 +43,35 @@ function getQueue(engine: EngineState, queueName: string): string[] {
   return engine.queues[queueName]
 }
 
+/**
+ * Reconcile a queue with its pool. Purges stale entries (items in the queue
+ * that are no longer in the pool — typical after an octave shift) and
+ * injects missing entries (items in the pool that aren't in the queue —
+ * typical from legacy state saved before the expandPool queue-injection
+ * fix landed). Run on load and on octave change.
+ *
+ * Without this, a pool can grow but the queue stays stale at 1-2 items.
+ * Because `reinsert` caps depth at queue.length, a single-item queue stays
+ * single-item forever and `refill` never runs — the same note cycles
+ * indefinitely. Jon observed this as "only plays middle C over and over."
+ */
+export function syncQueueWithPool(
+  engine: EngineState, queueName: string, poolItems: string[],
+): void {
+  const q = getQueue(engine, queueName)
+  const poolSet = new Set(poolItems)
+  // Purge stale
+  const filtered = q.filter(id => poolSet.has(id))
+  engine.queues[queueName] = filtered
+  // Inject missing at shallow depth
+  const have = new Set(filtered)
+  for (const id of poolItems) {
+    if (have.has(id)) continue
+    const depth = 1 + Math.floor(Math.random() * 3)  // [1,3]
+    reinsert(engine, id, depth, queueName)
+  }
+}
+
 /** Score a result and update per-item stats. Returns the updated item. */
 export function recordResult(
   engine: EngineState,

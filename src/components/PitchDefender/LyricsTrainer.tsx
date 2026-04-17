@@ -149,9 +149,28 @@ export default function LyricsTrainer() {
   const [manualStart, setManualStart] = useState<number | null>(null)
 
   const recRef = useRef<Rec | null>(null)
+  // Synchronously-tracked liveness flag — flips false in rec.onend so
+  // startRound can distinguish a live recognizer from a zombie ref that
+  // Chrome auto-ended. React state's `listening` is too lagged for this.
+  const recAliveRef = useRef(false)
   const peekTimersRef = useRef<Map<number, ReturnType<typeof setTimeout>>>(new Map())
   // Pending Retry restart — tracked so Cancel / rapid Retry can clear it.
   const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  // Phone mic-popup reduction: we keep ONE SpeechRecognition instance alive
+  // across Recite → Grade → feedback → Recite (instead of stop+restart per
+  // round). Chrome's Web Speech e.results is cumulative across the life of
+  // the recognizer; resultOffsetRef tracks "transcript is from this index
+  // onward" so each round sees a clean transcript without tearing down the
+  // mic. resultCountRef stores the last-observed e.results.length so
+  // startRound/retry can shift the offset without needing an event.
+  const resultOffsetRef = useRef(0)
+  const resultCountRef = useRef(0)
+  // Trailing-speech lockout: after a shift (Grade → next round, or Retry),
+  // Chrome may still finalize speech that started before the shift. For a
+  // short lockout window we absorb any new results into the offset so
+  // trailing speech doesn't leak into the next round's transcript.
+  const transcriptLockoutUntilRef = useRef(0)
+  const SHIFT_LOCKOUT_MS = 500
   const speechOk = useMemo(() => !!getSpeechRecognition(), [])
 
   // ─── Persistence ────────────────────────────────────────────────────────
@@ -209,29 +228,6 @@ export default function LyricsTrainer() {
     loadFromText(HAMLET_ROGUE.title, HAMLET_ROGUE.text)
   }, [loadFromText, state.monologue, state.title])
 
-  // ─── Start round ────────────────────────────────────────────────────────
-  // Respects `manualStart` (GO FROM picker) — one-shot override that scopes
-  // the round to a specific starting line, then reverts to the scheduler.
-  const startRound = useCallback(() => {
-    if (!state.monologue) return
-    const mono = state.monologue
-    let span: ReviewSpan
-    if (manualStart !== null && manualStart >= 0 && manualStart < mono.lines.length) {
-      const endIdx = Math.min(mono.lines.length - 1, manualStart + mono.windowMax - 1)
-      span = { type: 'working', startIdx: manualStart, endIdx }
-      setManualStart(null)  // one-shot
-    } else {
-      span = pickNextSpan(mono)
-    }
-    setCurrentSpan(span)
-    setTranscript('')
-    setGrading(null)
-    setSpeechError(null)
-    setPeekStage({})
-    setPhase('reciting')
-    startListening()
-  }, [state.monologue, manualStart])
-
   // ─── Speech recognition ─────────────────────────────────────────────────
   const startListening = useCallback(() => {
     const Rec = getSpeechRecognition()
@@ -252,9 +248,21 @@ export default function LyricsTrainer() {
       // manifests as an exponential echo loop once the speaker goes past
       // one short utterance. Stateless derivation avoids the whole class.
       rec.onresult = (e: any) => {
+        resultCountRef.current = e.results.length
+        // Lockout window absorbs any trailing-speech events that arrive
+        // after a round boundary: bump the offset forward so the next
+        // round's transcript starts clean regardless of what Chrome finalizes
+        // in the first ~500ms after Grade/Retry/Practice Again.
+        if (performance.now() < transcriptLockoutUntilRef.current) {
+          resultOffsetRef.current = e.results.length
+          setTranscript('')
+          return
+        }
         let finalPart = ''
         let interimPart = ''
-        for (let i = 0; i < e.results.length; i++) {
+        // Start at resultOffsetRef so previous-round results don't re-emit.
+        const from = Math.min(resultOffsetRef.current, e.results.length)
+        for (let i = from; i < e.results.length; i++) {
           const r = e.results[i]
           if (r.isFinal) finalPart += r[0].transcript + ' '
           else interimPart += r[0].transcript + ' '
@@ -267,9 +275,21 @@ export default function LyricsTrainer() {
       }
       rec.onend = () => {
         setListening(false)
+        // Chrome auto-ends continuous recognition after ~60s of silence or
+        // on certain errors. If we didn't call stopListening ourselves, our
+        // ref still points at the now-dead instance — clear it so the next
+        // round's startRound creates a fresh recognizer instead of thinking
+        // this one is still live.
+        if (recRef.current === rec) {
+          recRef.current = null
+          recAliveRef.current = false
+        }
       }
       rec.start()
       recRef.current = rec
+      recAliveRef.current = true
+      resultOffsetRef.current = 0
+      resultCountRef.current = 0
       setListening(true)
     } catch (err) {
       setSpeechError(err instanceof Error ? err.message : 'mic error')
@@ -279,7 +299,58 @@ export default function LyricsTrainer() {
   const stopListening = useCallback(() => {
     try { recRef.current?.stop() } catch { /* already stopped */ }
     recRef.current = null
+    recAliveRef.current = false
+    resultOffsetRef.current = 0
+    resultCountRef.current = 0
+    transcriptLockoutUntilRef.current = 0
   }, [])
+
+  // Non-destructive reset — drops visible transcript without tearing down
+  // the SpeechRecognition. Used when moving to the next round so Chrome's
+  // mic indicator doesn't flash every round. The lockout window absorbs
+  // trailing-speech results that Chrome might finalize just after the shift.
+  const shiftTranscriptWindow = useCallback(() => {
+    resultOffsetRef.current = resultCountRef.current
+    transcriptLockoutUntilRef.current = performance.now() + SHIFT_LOCKOUT_MS
+    setTranscript('')
+    setSpeechError(null)
+  }, [])
+
+  // ─── Start round ────────────────────────────────────────────────────────
+  // Respects `manualStart` (GO FROM picker) — one-shot override that scopes
+  // the round to a specific starting line, then reverts to the scheduler.
+  // Starts the SpeechRecognition only if it isn't already running. On
+  // subsequent rounds the recognizer stays alive; we just shift the
+  // transcript offset forward so Chrome's in-use popup doesn't re-animate.
+  const startRound = useCallback(() => {
+    if (!state.monologue) return
+    const mono = state.monologue
+    let span: ReviewSpan
+    if (manualStart !== null && manualStart >= 0 && manualStart < mono.lines.length) {
+      const endIdx = Math.min(mono.lines.length - 1, manualStart + mono.windowMax - 1)
+      span = { type: 'working', startIdx: manualStart, endIdx }
+      setManualStart(null)  // one-shot
+    } else {
+      span = pickNextSpan(mono)
+    }
+    setCurrentSpan(span)
+    setGrading(null)
+    setPeekStage({})
+    setPhase('reciting')
+    // Check recAliveRef (synchronous) not just recRef.current — Chrome's
+    // auto-end may have killed the recognizer without the React ref being
+    // cleared in time to beat this branch.
+    if (recRef.current && recAliveRef.current) {
+      // Live recognizer — drop the previous round's transcript without
+      // tearing down the mic.
+      shiftTranscriptWindow()
+    } else {
+      // Zombie ref or first round — null any stale ref, restart cleanly.
+      recRef.current = null
+      setTranscript('')
+      startListening()
+    }
+  }, [state.monologue, manualStart, shiftTranscriptWindow, startListening])
 
   const clearRetryTimer = useCallback(() => {
     if (retryTimerRef.current) {
@@ -289,32 +360,37 @@ export default function LyricsTrainer() {
   }, [])
 
   // Retry = "I know I flubbed that, let me say it again" without losing the
-  // round scope. Must stop+restart the recognizer because Web Speech's
-  // `e.results` is cumulative and the stateless transcript derivation would
-  // just re-emit what was there. ~250ms mic blip is acceptable. The timer
-  // is tracked on a ref so rapid Retry clicks don't pile up restarts and
-  // Cancel-after-Retry can't accidentally re-open the mic.
+  // round scope. Shift the transcript window forward rather than stopping
+  // and restarting the recognizer — keeps the mic alive so Chrome doesn't
+  // flash its in-use indicator every retry on mobile.
   const retryRecitation = useCallback(() => {
     clearRetryTimer()
-    stopListening()
-    setTranscript('')
-    setSpeechError(null)
-    retryTimerRef.current = setTimeout(() => {
-      retryTimerRef.current = null
-      startListening()
-    }, 250)
-  }, [clearRetryTimer, stopListening, startListening])
+    shiftTranscriptWindow()
+  }, [clearRetryTimer, shiftTranscriptWindow])
 
   useEffect(() => () => {
     clearRetryTimer()
     stopListening()
   }, [clearRetryTimer, stopListening])
 
+  // Teardown the mic when leaving the reciting/feedback loop. Keeping it
+  // alive through Recite → Grade → feedback → Practice-again saves a
+  // Chrome mic-popup per round, but once the user is back on intro/menu
+  // we release it so no orange recording indicator hangs around.
+  useEffect(() => {
+    if (phase === 'intro' || phase === 'menu' || phase === 'paste') {
+      if (recRef.current) stopListening()
+    }
+  }, [phase, stopListening])
+
   // ─── Grade recitation ───────────────────────────────────────────────────
   const gradeRecitation = useCallback(() => {
     if (!state.monologue || !currentSpan) return
     clearRetryTimer()
-    stopListening()
+    // NOTE: we deliberately do NOT stop the recognizer here. Keeping it alive
+    // through feedback → next round prevents Chrome's mic-in-use indicator
+    // from re-animating every round on phone. stopListening is called only
+    // on Cancel, full exit to intro/menu, or component unmount.
     const result = gradeSpan(state.monologue, currentSpan, transcript)
     const next: Persisted = { ...state, monologue: state.monologue, lastSpanPassed: result.spanPassed }
     setState(next); persist(next)
@@ -329,7 +405,7 @@ export default function LyricsTrainer() {
     })
     setGrading(result)
     setPhase('feedback')
-  }, [state, currentSpan, transcript, persist, stopListening, clearRetryTimer])
+  }, [state, currentSpan, transcript, persist, clearRetryTimer])
 
   // ─── Peek helper (staged hint → full reveal) ────────────────────────────
   // Click cadence per line:

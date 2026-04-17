@@ -28,7 +28,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { NOTE_COLORS } from '@/lib/fsrs'
 import {
   EngineState, createEngine, createItem, recordResult, pickDepth, reinsert,
-  pickNext, canExpandPool, expandPool,
+  pickNext, canExpandPool, expandPool, syncQueueWithPool,
 } from './engine/masteryQueue'
 import { ActivePool } from './engine/types'
 import { usePitchDetection } from './usePitchDetection'
@@ -74,13 +74,20 @@ interface Persisted {
   // love it. When false, everything goes neutral slate so identification
   // can't be cheated by color-matching alone.
   colorHints: boolean
+  // Fresh-note front-load: same Leitner rule as LyricsTrainer's ramp spans.
+  // When a new note unlocks via expansion, the next 4 rounds concentrate on
+  // it — 2 solo (forced target), 2 cluster (70% target / 30% nearest pool
+  // neighbor). Then null, normal queue-weighted picking resumes.
+  noteRamp: { target: string; remaining: number } | null
   preferredMode: Mode
   totalCorrect: number
   totalAttempts: number
   sessions: number
 }
 
-const NEUTRAL_HUE = 220  // slate when colorHints is off
+const NEUTRAL_HUE = 220           // slate when colorHints is off
+const NOTE_RAMP_TOTAL = 4         // 2 solo + 2 cluster rounds per new note
+const NOTE_RAMP_CLUSTER_BIAS = 0.7  // chance the cluster round picks target vs neighbor
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -204,9 +211,23 @@ function initialState(): Persisted {
     baseOctave: DEFAULT_BASE_OCTAVE,
     octaveTolerant: true,
     colorHints: true,  // starts on for first use; easy to flip on menu.
+    noteRamp: null,
     preferredMode: 'staff',
     totalCorrect: 0, totalAttempts: 0, sessions: 0,
   }
+}
+
+/** Nearest pool member (by semitone distance) other than `target`. */
+function nearestNeighborInPool(target: string, poolItems: string[]): string | null {
+  const candidates = poolItems.filter(n => n !== target)
+  if (candidates.length === 0) return null
+  let nearest = candidates[0]
+  let minDist = semitoneDist(target, candidates[0])
+  for (let i = 1; i < candidates.length; i++) {
+    const d = semitoneDist(target, candidates[i])
+    if (d < minDist) { minDist = d; nearest = candidates[i] }
+  }
+  return nearest
 }
 
 function ensurePoolForOctave(s: Persisted): Persisted {
@@ -230,10 +251,27 @@ function ensurePoolForOctave(s: Persisted): Persisted {
     // Octave shift invalidates the sequence pool too — notes moved.
     s.sequencePool = null
     s.horizontalGateCleared = false
+    // Force a fresh queue: stale entries would just get filtered out anyway.
+    s.engine.queues[QUEUE_NOTES] = []
+    s.engine.queues[QUEUE_SEQS] = []
   } else {
     // Reconcile candidates with current window (they drift if octave changed
     // and was then changed back — defensive refresh).
     s.pool.candidates = notes.filter(n => !s.pool.items.includes(n))
+  }
+  // Clear a dead-target ramp — if the octave shifted, ramp.target may no
+  // longer be in the pool, which would leave a stale chip and a picker
+  // branch that silently does nothing.
+  if (s.noteRamp && !s.pool.items.includes(s.noteRamp.target)) {
+    s.noteRamp = null
+  }
+  // Queue/pool reconciliation — the bug Jon observed as "only plays Middle C":
+  // legacy states (saved before the expandPool queue-injection fix) can have
+  // pool.items.length > queue.length, which with reinsert's length-clamped
+  // splice leaves a stuck single-item cycle. Fix by syncing on every load.
+  syncQueueWithPool(s.engine, QUEUE_NOTES, s.pool.items)
+  if (s.sequencePool) {
+    syncQueueWithPool(s.engine, QUEUE_SEQS, s.sequencePool.items)
   }
   return ensureSequencePoolForState(s)
 }
@@ -299,6 +337,9 @@ export default function NoteTutor() {
   // can't race a stale `answerIdx === 0` through React state.
   const sequenceStepRef = useRef<0 | 1>(0)
   const firstPickRef = useRef<string | null>(null)
+  // Whether the current round is a ramp-driven pick (for processAnswer to
+  // know whether to decrement state.noteRamp when grading).
+  const currentRoundRampRef = useRef(false)
 
   const currentNote = currentNotes[answerIdx] ?? ''  // mic-lock + staff target
   const notes = useMemo(() => windowNotes(state.baseOctave), [state.baseOctave])
@@ -314,10 +355,11 @@ export default function NoteTutor() {
       const raw = window.localStorage.getItem(STORAGE_KEY)
       if (raw) {
         const parsed = JSON.parse(raw) as Partial<Persisted>
-        // Forward-compat: default new fields if an older v2 payload exists.
-        // Without this, colorHints would be `undefined` → falsy → hints OFF
-        // for existing users who never toggled, silently stripping color.
+        // Forward-compat defaults for fields added after this STORAGE_KEY
+        // was bumped. Without these, undefined → falsy → silent behavior
+        // changes for existing learners.
         if (parsed.colorHints === undefined) parsed.colorHints = true
+        if (parsed.noteRamp === undefined) parsed.noteRamp = null
         setState(ensurePoolForOctave(parsed as Persisted))
         setMode(parsed.preferredMode ?? 'staff')
       }
@@ -410,12 +452,32 @@ export default function NoteTutor() {
   }, [currentNotes, scheduleTimer])
 
   // ─── Round picker (dual-queue: notes + sequences) ───────────────────────
-  // Returns the descriptor for the next round, honoring horizontal gating.
+  // Honors noteRamp (fresh-note front-load) before falling through to the
+  // normal pair/single selection path.
   const pickNextRound = useCallback((s: Persisted, avoidId: string | null): {
     type: RoundType
     id: string
     notes: string[]
+    ramp?: boolean
   } | null => {
+    // Fresh-note front-load takes priority. Only valid if target is still in
+    // the pool (defensive — octave shifts and pool resets can invalidate).
+    if (s.noteRamp && s.noteRamp.remaining > 0
+        && s.pool.items.includes(s.noteRamp.target)) {
+      const { target, remaining } = s.noteRamp
+      const isSolo = remaining > 2
+      if (isSolo) {
+        return { type: 'single', id: target, notes: [target], ramp: true }
+      }
+      // Cluster: bias toward target, otherwise nearest neighbor.
+      const pickTarget = Math.random() < NOTE_RAMP_CLUSTER_BIAS
+      if (pickTarget) {
+        return { type: 'single', id: target, notes: [target], ramp: true }
+      }
+      const neighbor = nearestNeighborInPool(target, s.pool.items)
+      const id = neighbor ?? target
+      return { type: 'single', id, notes: [id], ramp: true }
+    }
     const type = pickRoundType(s, mode)
     if (type === 'sequence' && s.sequencePool && s.sequencePool.items.length > 0) {
       const id = pickNext(s.engine, s.sequencePool.items, avoidId, QUEUE_SEQS)
@@ -428,7 +490,7 @@ export default function NoteTutor() {
   }, [mode])
 
   // Start a new round — set state and play tones.
-  const beginRound = useCallback((round: { type: RoundType; notes: string[] }) => {
+  const beginRound = useCallback((round: { type: RoundType; notes: string[]; ramp?: boolean }) => {
     setCurrentNotes(round.notes)
     setAnswerIdx(0)
     setFirstPick(null)
@@ -436,6 +498,7 @@ export default function NoteTutor() {
     // Reset synchronous sequence refs before the first keypress can fire.
     sequenceStepRef.current = 0
     firstPickRef.current = null
+    currentRoundRampRef.current = !!round.ramp
     setPhase('listening')
     const playTones = round.type === 'sequence' || mode !== 'sing'
     if (playTones) {
@@ -577,6 +640,12 @@ export default function NoteTutor() {
       }
     })
 
+    // Decrement the fresh-note ramp counter if this round was a ramp pick.
+    if (currentRoundRampRef.current && state.noteRamp) {
+      state.noteRamp.remaining -= 1
+      if (state.noteRamp.remaining <= 0) state.noteRamp = null
+    }
+
     // Single-note expansion is blocked while the horizontal gate is active —
     // the tutor has to prove sequence mastery before the pool grows further.
     // EXCEPTION: sing mode is exempt. Sing mode tests pitch PRODUCTION (can
@@ -594,6 +663,10 @@ export default function NoteTutor() {
       )
       if (added) {
         setExpandedNote(added)
+        // Front-load the fresh note: next 4 rounds concentrate on it before
+        // normal queue rotation resumes. Overwrites any still-draining ramp
+        // — the newest note is now the weakest, it gets the spotlight.
+        state.noteRamp = { target: added, remaining: NOTE_RAMP_TOTAL }
         // Crossing the gate threshold → spawn sequence pool for future
         // staff/tone-mode sessions.
         ensureSequencePoolForState(state)
@@ -655,6 +728,29 @@ export default function NoteTutor() {
     })
     setPhase('menu')
   }, [clearAllTimers, stopListening, persist])
+
+  // Escape hatch: wipes all saved progress and rebuilds fresh state. Guards
+  // against an unrecoverable stuck queue, legacy state drift, or a child
+  // account wanting a clean slate.
+  const resetProgress = useCallback(() => {
+    if (!confirm('Wipe all Note Tutor progress and start over? Mastery, pool, sequence training, and the color-hints toggle all reset.')) return
+    try {
+      if (typeof window !== 'undefined') window.localStorage.removeItem(STORAGE_KEY)
+    } catch { /* quota or private mode */ }
+    clearAllTimers()
+    processingRef.current = false
+    currentRoundRampRef.current = false
+    sequenceStepRef.current = 0
+    firstPickRef.current = null
+    setState(ensurePoolForOctave(initialState()))
+    setSessionStats({ correct: 0, attempts: 0, streak: 0, best: 0 })
+    setCurrentNotes([])
+    setAnswerIdx(0)
+    setLastAnswer(null)
+    setExpandedNote(null)
+    setGateClearedBanner(false)
+    setPhase('menu')
+  }, [clearAllTimers])
 
   // ─── Render helpers ─────────────────────────────────────────────────────
 
@@ -771,6 +867,13 @@ export default function NoteTutor() {
             {state.sessions} sessions · {state.totalAttempts} answers · {accuracy}% lifetime
           </div>
         )}
+        {state.totalAttempts > 0 && (
+          <button onClick={resetProgress}
+            className="mt-3 text-[10px] text-gray-600 hover:text-red-400 border border-gray-800 hover:border-red-500/40 rounded px-2 py-1 font-mono"
+            title="Wipe all saved progress for the Note Tutor and start fresh">
+            reset progress
+          </button>
+        )}
         <a href="/pitch-defender" className="mt-6 text-xs text-gray-700 hover:text-gray-500">← Back to Pitch Defender</a>
       </div>
     )
@@ -829,6 +932,20 @@ export default function NoteTutor() {
                 border: `1px solid ${isPairRound ? 'rgba(251,191,36,0.35)' : 'rgba(139,92,246,0.3)'}`,
               }}>
               {isPairRound ? `PAIRS ${seqMastered}/${SEQUENCE_TARGET_SIZE}` : 'SINGLES'}
+            </span>
+          )}
+          {/* Fresh-note ramp chip — only shows when the ramp target is
+              actually in the current pool (guards against a stale chip
+              after an octave shift). */}
+          {state.noteRamp && state.noteRamp.remaining > 0
+           && state.pool.items.includes(state.noteRamp.target) && (
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full"
+              style={{
+                background: 'rgba(74,222,128,0.12)',
+                color: '#4ade80',
+                border: '1px solid rgba(74,222,128,0.35)',
+              }}>
+              FRESH {state.noteRamp.target} · {state.noteRamp.remaining} left
             </span>
           )}
         </div>
