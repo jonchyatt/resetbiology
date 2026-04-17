@@ -442,6 +442,14 @@ export default function RetroBlaster() {
   // which alien the lock is currently against (any-target aim).
   const matchStartRef = useRef(0)
   const matchTargetIdxRef = useRef(-1)
+  // React mirror of gs.chargeProgress so the JSX overlay bar can render.
+  // Pitchforks v1 uses state here (Pitchforks.tsx:239 / 448 / 452) and lets
+  // React re-render every frame while locking. The bar is gated to > 0 so
+  // silent frames don't force unnecessary updates.
+  const [matchProgress, setMatchProgress] = useState(0)
+  // Target note for the overlay label — follows whichever alien the mic is
+  // currently locked onto, so the learner sees exactly what they're aiming at.
+  const [matchTargetNote, setMatchTargetNote] = useState<string | null>(null)
 
   // Load FSRS + piano samples + persisted difficulty
   useEffect(() => {
@@ -467,6 +475,8 @@ export default function RetroBlaster() {
     gs.chargeProgress = 0
     matchStartRef.current = 0
     matchTargetIdxRef.current = -1
+    setMatchProgress(0)
+    setMatchTargetNote(null)
     gs.lastProgressAt = performance.now()
     gs.hintCount = 0
     buildWaveQueue(gs, fsrsRef.current)
@@ -904,12 +914,17 @@ export default function RetroBlaster() {
             const held = performance.now() - matchStartRef.current
             const progress = Math.min(1, held / MIC_HOLD_MS)
             gs.chargeProgress = progress * CHARGE_FULL_MS
+            // Mirror to React state so the JSX overlay bar renders.
+            setMatchProgress(progress)
+            setMatchTargetNote(gs.aliens[bestIdx]?.note ?? null)
 
             if (progress >= 1) {
               const target = gs.aliens[bestIdx]
               matchStartRef.current = -1
               matchTargetIdxRef.current = -1
               gs.chargeProgress = 0
+              setMatchProgress(0)
+              setMatchTargetNote(null)
               setTimeout(() => { matchStartRef.current = 0 }, 600)
               processHit(target.note)
             }
@@ -921,6 +936,8 @@ export default function RetroBlaster() {
             matchStartRef.current = 0
             matchTargetIdxRef.current = -1
             gs.chargeProgress = 0
+            setMatchProgress(0)
+            setMatchTargetNote(null)
           }
         }
       }
@@ -1089,32 +1106,14 @@ export default function RetroBlaster() {
       ctx.fillRect(0, 0, W, H)
     }
 
-    // ── Mic charge slider bar (Pitchforks v1 style) ──
-    // Visible only when matchStart > 0 (gated, like Pitchforks v1's bar).
-    // Yellow under 80%, green at/above 80%. No note+cents readout, no hint
-    // text — Pitchforks v1 doesn't have those. The active alien glow + the
-    // cannon-tip glow are the rest of the feedback.
-    if (inputMode === 'mic') {
-      const pct = Math.min(1, gs.chargeProgress / CHARGE_FULL_MS)
-      if (pct > 0) {
-        const barY = PLAYER_Y - 12
-        const barW = 100
-        const barH = 4
-        const barX = Math.floor((W - barW) / 2)
-        ctx.fillStyle = 'rgba(0,0,0,0.6)'
-        ctx.fillRect(barX - 2, barY - 2, barW + 4, barH + 4)
-        ctx.strokeStyle = '#3a3a4a'
-        ctx.lineWidth = 1
-        ctx.strokeRect(barX - 2, barY - 2, barW + 4, barH + 4)
-        const fillColor = pct >= 0.8 ? '#4ade80' : '#fbbf24'
-        ctx.fillStyle = fillColor
-        ctx.fillRect(barX, barY, barW * pct, barH)
-        if (pct > 0.7) {
-          ctx.fillStyle = `rgba(74,222,128,${(pct - 0.7) * 0.6})`
-          ctx.fillRect(barX - 1, barY - 1, barW * pct + 2, barH + 2)
-        }
-      }
-    }
+    // NOTE: The Pitchforks v1 slider bar is now rendered as a JSX overlay
+    // BELOW the canvas (see the "Vocal feedback meter" block in the return
+    // block of this component). Canvas-rendered bars on a 320px-tall canvas
+    // scaled to phone width end up 4-8 pixels tall and get lost next to the
+    // note buttons. JSX overlay is the canonical Pitchforks v1 placement
+    // anyway (Pitchforks.tsx:908-918 renders its bar as a JSX absolute-
+    // positioned element over the canvas). The cannon-tip glow above the
+    // ship stays as supplementary juice.
 
     // Note buttons at bottom — bigger and clearly labelled
     const unlocked = gs.unlockedNotes
@@ -1488,6 +1487,44 @@ export default function RetroBlaster() {
           maxHeight: 'calc(100vh - 180px)',
         }}
       />
+
+      {/* Vocal feedback meter (Pitchforks v1 pattern, JSX overlay).
+          Gated on matchProgress > 0 — invisible when not actively locking,
+          per Pitchforks.tsx:910. Yellow under 80% hold, green at/above.
+          Target-note label on the left so the learner sees which alien the
+          mic is currently locked onto. Lives below the canvas so it can't
+          be hidden behind note buttons or shrunk out of view on phone. */}
+      {inputMode === 'mic' && matchProgress > 0 && (
+        <div className="mt-2 w-full max-w-[960px] flex items-center justify-center gap-3"
+          style={{ fontFamily: 'monospace' }}>
+          {matchTargetNote && (
+            <span className="text-[12px] font-bold tracking-widest"
+              style={{
+                color: matchProgress >= 0.8 ? '#4ade80' : '#fbbf24',
+                textShadow: matchProgress >= 0.8
+                  ? '0 0 8px rgba(74,222,128,0.7)'
+                  : '0 0 6px rgba(251,191,36,0.5)',
+              }}>
+              SING {matchTargetNote.replace(/\d/, '')}
+            </span>
+          )}
+          <div className="h-3 w-48 rounded-full overflow-hidden border"
+            style={{
+              background: 'rgba(20,20,35,0.85)',
+              borderColor: 'rgba(80,80,120,0.6)',
+            }}>
+            <div className="h-full rounded-full"
+              style={{
+                width: `${matchProgress * 100}%`,
+                background: matchProgress >= 0.8 ? '#4ade80' : '#fbbf24',
+                boxShadow: matchProgress >= 0.8
+                  ? '0 0 10px #4ade80, 0 0 20px rgba(74,222,128,0.4)'
+                  : '0 0 8px rgba(251,191,36,0.45)',
+                transition: 'width 0.05s linear',
+              }} />
+          </div>
+        </div>
+      )}
 
       {/* Replay button + quit */}
       <div className="mt-3 flex gap-3">
