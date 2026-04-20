@@ -1046,6 +1046,19 @@ export default function PitchDefender() {
                 <div className="text-[11px] font-normal mt-0.5 opacity-70">Diction practice. Upload audio → dichotic L/R sing-along.</div>
               </a>
               <a
+                href="/pitch-defender/vocal-trainer-2"
+                title="Backward-chain song mastery. Master the LAST phrase, prepend earlier phrases one at a time. Lyrics shown as scaffolding, only PITCH is graded — uses the same pitch detector as Pitchforks v1."
+                className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
+                style={{
+                  background: 'rgba(20, 100, 130, 0.25)',
+                  color: '#67e8f9',
+                  border: '2px solid rgba(34, 211, 238, 0.45)',
+                }}
+              >
+                Vocal Trainer II
+                <div className="text-[11px] font-normal mt-0.5 opacity-70">Backward-chain pitch mastery. Pick a V1 template → learn it phrase-by-phrase.</div>
+              </a>
+              <a
                 href="/pitch-defender/composer"
                 title="Type music in by hand: notes, lyrics, chords, slurs, dynamics. Saves once and is read by every other game. The canonical score path."
                 className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
