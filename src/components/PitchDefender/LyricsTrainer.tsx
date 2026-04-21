@@ -318,6 +318,17 @@ export default function LyricsTrainer() {
   // startRound/retry can shift the offset without needing an event.
   const resultOffsetRef = useRef(0)
   const resultCountRef = useRef(0)
+  // Committed finals for the current round. Android Chrome emits each new
+  // word in an utterance as a separate final result whose transcript is the
+  // CUMULATIVE text from utterance start (quirk not present on desktop). If
+  // we naively concatenate every final in e.results we get duplicated stacks
+  // like "1 12 123 1234 12345" for a spoken "1 2 3 4 5". Instead we maintain
+  // an ordered array of committed finals and dedupe/merge defensively:
+  //   - exact duplicate of prior committed  → skip
+  //   - prior committed is a prefix of this → replace (Android cumulative)
+  //   - otherwise                           → push (desktop multi-utterance)
+  // Cleared on round shift / stop / start so each round begins clean.
+  const committedFinalsRef = useRef<string[]>([])
   // Trailing-speech lockout: after a shift (Grade → next round, or Retry),
   // Chrome may still finalize speech that started before the shift. For a
   // short lockout window we absorb any new results into the offset so
@@ -325,6 +336,11 @@ export default function LyricsTrainer() {
   const transcriptLockoutUntilRef = useRef(0)
   const SHIFT_LOCKOUT_MS = 500
   const speechOk = useMemo(() => !!getSpeechRecognition(), [])
+  // Debug instrumentation — enable via `?debug=lt` URL param. Logs each
+  // onresult fire's resultIndex / committed / interim / output transcript
+  // to the console so Android-specific emission patterns can be verified
+  // from the phone's remote-devtools session.
+  const debugRef = useRef(false)
 
   // ─── Persistence ────────────────────────────────────────────────────────
   useEffect(() => {
@@ -397,33 +413,67 @@ export default function LyricsTrainer() {
       rec.continuous = true
       rec.interimResults = true
       rec.lang = 'en-US'
-      // Rebuild the transcript from scratch on every onresult fire. The
-      // previous implementation kept a closure-scoped `finalText` and
-      // iterated `e.results` from 0 each time, which re-appended every
-      // already-final result on every event — classic Web Speech bug that
-      // manifests as an exponential echo loop once the speaker goes past
-      // one short utterance. Stateless derivation avoids the whole class.
+      // Defensive result merger — handles Chrome Android's noisy result
+      // emission without assuming a single quirk. Observed patterns on
+      // mobile:
+      //   (1) each new word added to the utterance produces a NEW final
+      //       whose transcript is the CUMULATIVE text from utterance start
+      //       ("1", "1 2", "1 2 3", …). Naive concatenation of every final
+      //       stacks these: "1 1 2 1 2 3 1 2 3 4" → Jon's "112123 12312345".
+      //   (2) duplicate finals with identical text.
+      //   (3) extra finals beyond resultIndex and interim results marked
+      //       final with low confidence.
+      // Strategy: respect e.resultIndex (API-intended changed-start marker)
+      // and maintain an append-only committedFinalsRef with three merge
+      // rules (exact-dupe skip, prefix-merge, push-new). Latest interim is
+      // never accumulated.
       rec.onresult = (e: any) => {
         resultCountRef.current = e.results.length
         // Lockout window absorbs any trailing-speech events that arrive
-        // after a round boundary: bump the offset forward so the next
-        // round's transcript starts clean regardless of what Chrome finalizes
-        // in the first ~500ms after Grade/Retry/Practice Again.
+        // after a round boundary: clear committed+interim and bump the
+        // offset so the next round's transcript starts clean regardless
+        // of what Chrome finalizes in the first ~500ms after Grade/Retry.
         if (performance.now() < transcriptLockoutUntilRef.current) {
           resultOffsetRef.current = e.results.length
+          committedFinalsRef.current = []
           setTranscript('')
           return
         }
-        let finalPart = ''
-        let interimPart = ''
-        // Start at resultOffsetRef so previous-round results don't re-emit.
-        const from = Math.min(resultOffsetRef.current, e.results.length)
-        for (let i = from; i < e.results.length; i++) {
+        // Start at the greater of resultIndex (API marker) and our own
+        // offset (for cross-round clean starts on one long-lived rec).
+        const apiStart = typeof e.resultIndex === 'number' ? e.resultIndex : 0
+        const startIdx = Math.max(apiStart, resultOffsetRef.current)
+        let latestInterim = ''
+        for (let i = startIdx; i < e.results.length; i++) {
           const r = e.results[i]
-          if (r.isFinal) finalPart += r[0].transcript + ' '
-          else interimPart += r[0].transcript + ' '
+          const text = String(r[0]?.transcript ?? '').trim()
+          if (!text) continue
+          if (r.isFinal) {
+            const committed = committedFinalsRef.current
+            const last = committed[committed.length - 1] ?? ''
+            if (text === last) continue
+            if (last && (text === last + ' ' || text.startsWith(last + ' ') || text.startsWith(last))) {
+              committed[committed.length - 1] = text
+            } else {
+              committed.push(text)
+            }
+          } else {
+            latestInterim = text
+          }
         }
-        setTranscript((finalPart + interimPart).trim())
+        const out = (committedFinalsRef.current.join(' ') + ' ' + latestInterim).replace(/\s+/g, ' ').trim()
+        setTranscript(out)
+        if (debugRef.current) {
+
+          console.log('[LT.onresult]', {
+            resultIndex: e.resultIndex,
+            len: e.results.length,
+            startIdx,
+            committed: [...committedFinalsRef.current],
+            interim: latestInterim,
+            out,
+          })
+        }
       }
       rec.onerror = (e: any) => {
         setSpeechError(String(e?.error ?? 'mic error'))
@@ -446,6 +496,7 @@ export default function LyricsTrainer() {
       recAliveRef.current = true
       resultOffsetRef.current = 0
       resultCountRef.current = 0
+      committedFinalsRef.current = []
       setListening(true)
     } catch (err) {
       setSpeechError(err instanceof Error ? err.message : 'mic error')
@@ -458,6 +509,7 @@ export default function LyricsTrainer() {
     recAliveRef.current = false
     resultOffsetRef.current = 0
     resultCountRef.current = 0
+    committedFinalsRef.current = []
     transcriptLockoutUntilRef.current = 0
   }, [])
 
@@ -468,8 +520,22 @@ export default function LyricsTrainer() {
   const shiftTranscriptWindow = useCallback(() => {
     resultOffsetRef.current = resultCountRef.current
     transcriptLockoutUntilRef.current = performance.now() + SHIFT_LOCKOUT_MS
+    committedFinalsRef.current = []
     setTranscript('')
     setSpeechError(null)
+  }, [])
+
+  // Enable verbose onresult logging via `?debug=lt` URL param.
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    try {
+      const sp = new URLSearchParams(window.location.search)
+      if (sp.get('debug') === 'lt') {
+        debugRef.current = true
+        // eslint-disable-next-line no-console
+        console.log('[LyricsTrainer] debug logging ON — Android mic pattern will log to console')
+      }
+    } catch { /* ignore */ }
   }, [])
 
   // ─── Start round ────────────────────────────────────────────────────────
