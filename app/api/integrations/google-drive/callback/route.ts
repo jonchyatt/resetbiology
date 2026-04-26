@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { google } from 'googleapis'
 import { prisma } from '@/lib/prisma'
+import { auth0 } from '@/lib/auth0'
+import { getUserFromSession } from '@/lib/getUserFromSession'
 import { encryptToken } from '@/lib/vault-encryption'
 import { migratePeptidesToVault } from '@/lib/migratePeptidesToVault'
 
@@ -62,6 +64,23 @@ export async function GET(req: NextRequest) {
       return redirectToReturn(returnTo, 'drive=error&reason=missing_params')
     }
     const state = stateDecoded.userId
+
+    // P2.5-HIGH-1 fix: bind state.userId to the current Auth0 session so a
+    // crafted state param can't redirect another user's tokens into our DB.
+    // The connect route signed state with the *current session* user.id;
+    // verify the same session is in play here.
+    const session = await auth0.getSession()
+    const sessionUser = await getUserFromSession(session)
+    if (!sessionUser) {
+      return redirectToReturn(returnTo, 'drive=error&reason=session_required')
+    }
+    if (sessionUser.id !== state) {
+      console.warn('[oauth-callback] state.userId does not match session user — refusing', {
+        sessionUserId: sessionUser.id,
+        stateUserId: state,
+      })
+      return redirectToReturn(returnTo, 'drive=error&reason=session_mismatch')
+    }
 
     if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
       return redirectToReturn(returnTo, 'drive=error&reason=not_configured')

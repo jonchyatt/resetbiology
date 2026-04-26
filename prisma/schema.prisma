@@ -41,6 +41,7 @@ model User {
   googleDriveRefreshToken String?                  // Encrypted OAuth refresh token
   googleDriveConnectedAt  DateTime?                // When Drive was connected
   googleDriveSyncEnabled  Boolean                  @default(false)
+  vaultMigrationStartedAt DateTime?                // P2.5 advisory lock — claimed for the duration of a peptide migration. Stale locks (>5min) are reclaimable.
   profileData             Json?
   irbApprovalStatus       String?
   irbSubmissionDate       DateTime?
