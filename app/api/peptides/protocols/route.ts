@@ -1,385 +1,219 @@
-import { NextResponse } from "next/server";
-import { auth0 } from "@/lib/auth0";
-import { prisma } from "@/lib/prisma";
-import { getUserFromSession } from "@/lib/getUserFromSession";
+import { NextResponse } from 'next/server'
+import { auth0 } from '@/lib/auth0'
+import { prisma } from '@/lib/prisma'
+import { getUserFromSession } from '@/lib/getUserFromSession'
 import {
   scheduleNotificationsForProtocol,
   cancelNotificationsForProtocol,
-} from "@/lib/scheduleNotifications";
+} from '@/lib/scheduleNotifications'
+import {
+  archiveProtocol,
+  createProtocol,
+  listActiveProtocols,
+  updateProtocol,
+} from '@/lib/protocols-store'
+import { isVaultConnected } from '@/lib/vaultService'
 
-// GET: Load user's active peptide protocols
-export async function GET(request: Request) {
+// GET: Load user's active peptide protocols (Drive-primary when connected)
+export async function GET() {
   try {
-    const session = await auth0.getSession();
-    const user = await getUserFromSession(session);
+    const session = await auth0.getSession()
+    const user = await getUserFromSession(session)
 
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Load active protocols with their doses
-    const protocols = await prisma.user_peptide_protocols.findMany({
-      where: {
-        userId: user.id,
-        isActive: true,
-      },
-      include: {
-        peptides: true,
-        peptide_doses: {
-          orderBy: {
-            doseDate: "desc",
-          },
-          take: 10, // Last 10 doses per protocol
-        },
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
-
-    return NextResponse.json({
-      success: true,
-      protocols,
-    });
+    const protocols = await listActiveProtocols(user.id)
+    return NextResponse.json({ success: true, protocols })
   } catch (error) {
-    console.error("GET /api/peptides/protocols error:", error);
+    console.error('GET /api/peptides/protocols error:', error)
     return NextResponse.json(
       {
-        error: "Failed to load peptide protocols",
-        details: error instanceof Error ? error.message : "Unknown error",
+        error: 'Failed to load peptide protocols',
+        details: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 },
-    );
+    )
   }
 }
 
 // POST: Create new peptide protocol
 export async function POST(request: Request) {
   try {
-    const session = await auth0.getSession();
-    const user = await getUserFromSession(session);
+    const session = await auth0.getSession()
+    const user = await getUserFromSession(session)
 
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const body = await request.json();
-    const {
-      peptideId,
-      peptideName, // May provide name instead of ID
-      dosage,
-      frequency,
-      timing,
-      notes,
-      startDate,
-      endDate,
-      timezone,
-      administrationType, // "injection" | "oral" | "nasal" | "topical"
-    } = body;
+    const body = await request.json()
+    const result = await createProtocol(user.id, {
+      peptideId: body.peptideId,
+      peptideName: body.peptideName,
+      dosage: body.dosage,
+      frequency: body.frequency,
+      timing: body.timing,
+      notes: body.notes,
+      startDate: body.startDate,
+      endDate: body.endDate,
+      timezone: body.timezone || body.clientTimezone,
+      administrationType: body.administrationType,
+    })
 
-    if (!peptideId && !peptideName) {
-      return NextResponse.json(
-        {
-          error: "Must provide either peptideId or peptideName",
-        },
-        { status: 400 },
-      );
+    if (!result.ok) {
+      return NextResponse.json({ error: result.error }, { status: result.status })
     }
 
-    if (!dosage || !frequency) {
-      return NextResponse.json(
-        {
-          error: "Missing required fields: dosage, frequency",
-        },
-        { status: 400 },
-      );
-    }
+    const userTimezone = body.timezone || body.clientTimezone || null
+    const driveConnected = await isVaultConnected(user.id)
 
-    // Find or create peptide by ID or name
-    let peptide;
-    if (peptideId) {
-      peptide = await prisma.peptide.findUnique({
-        where: { id: peptideId },
-      });
-    } else if (peptideName) {
-      // Try to find existing peptide by name
-      peptide = await prisma.peptide.findFirst({
-        where: {
-          name: {
-            equals: peptideName,
-            mode: "insensitive",
-          },
-        },
-      });
-
-      // If not found, create a new peptide entry (for storefront products or custom peptides)
-      if (!peptide) {
-        console.log(`📝 Creating new peptide entry for: ${peptideName}`);
-
-        // Generate a slug from the peptide name
-        const slug = peptideName
-          .toLowerCase()
-          .replace(/[^a-z0-9]+/g, "-")
-          .replace(/(^-|-$)/g, "");
-
-        peptide = await prisma.peptide.create({
-          data: {
-            name: peptideName,
-            slug: slug,
-            category: "Custom",
-            dosage: dosage || "250mcg",
-            price: 0, // Required field, set to 0 for custom peptides
-            updatedAt: new Date(),
-          },
-        });
-      }
-    }
-
-    if (!peptide) {
-      return NextResponse.json(
-        {
-          error: "Peptide not found and unable to create",
-        },
-        { status: 404 },
-      );
-    }
-
-    // Create protocol
-    const protocol = await prisma.user_peptide_protocols.create({
-      data: {
-        userId: user.id,
-        peptideId: peptide.id,
-        dosage,
-        frequency,
-        timing: timing || "AM",
-        notes: notes || null,
-        startDate: startDate ? new Date(startDate) : new Date(),
-        endDate: endDate ? new Date(endDate) : null,
-        isActive: true,
-        administrationType: administrationType || "injection",
-        updatedAt: new Date(),
-      },
-      include: {
-        peptides: true,
-      },
-    });
-
-    // Create default notification preferences (enabled by default)
-    const userTimezone = timezone || body?.clientTimezone || null;
-
+    // Notification preferences are stored in Mongo regardless of storage path
+    // — they're per-user UI state, not protocol definition data.
     try {
       await prisma.notificationPreference.create({
         data: {
           userId: user.id,
-          protocolId: protocol.id,
+          protocolId: result.protocol.id,
           pushEnabled: true,
           emailEnabled: false,
           reminderMinutes: 15,
           timezone: userTimezone,
         },
-      });
+      })
 
-      // Schedule notifications for the next 30 days
-      await scheduleNotificationsForProtocol(user.id, protocol.id, {
-        daysAhead: 30,
-        timezone: userTimezone ?? undefined,
-      });
+      // P2.3 contract: for Drive-connected users we DO NOT pre-generate
+      // ScheduledNotification rows. P2.4 will compute reminders on-demand
+      // from Drive data on each /api/notifications/send tick.
+      if (!driveConnected) {
+        await scheduleNotificationsForProtocol(user.id, result.protocol.id, {
+          daysAhead: 30,
+          timezone: userTimezone ?? undefined,
+        })
+      }
     } catch (error) {
-      console.error("Error setting up notifications for new protocol:", error);
+      console.error('Error setting up notifications for new protocol:', error)
       // Don't fail the request if notification setup fails
     }
 
     return NextResponse.json({
       success: true,
-      protocol,
-    });
+      protocol: result.protocol,
+    })
   } catch (error) {
-    console.error("POST /api/peptides/protocols error:", error);
+    console.error('POST /api/peptides/protocols error:', error)
     return NextResponse.json(
       {
-        error: "Failed to create peptide protocol",
-        details: error instanceof Error ? error.message : "Unknown error",
+        error: 'Failed to create peptide protocol',
+        details: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 },
-    );
+    )
   }
 }
 
 // PATCH: Update protocol (pause/resume/modify)
 export async function PATCH(request: Request) {
   try {
-    const session = await auth0.getSession();
-    const user = await getUserFromSession(session);
+    const session = await auth0.getSession()
+    const user = await getUserFromSession(session)
 
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const body = await request.json();
-    const {
-      protocolId,
-      isActive,
-      dosage,
-      frequency,
-      timing,
-      notes,
-      endDate,
-      administrationType,
-    } = body;
+    const body = await request.json()
+    const protocolId: string | undefined = body.protocolId
 
     if (!protocolId) {
-      return NextResponse.json(
-        {
-          error: "Missing protocolId",
-        },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: 'Missing protocolId' }, { status: 400 })
     }
 
-    // Verify ownership
-    const protocol = await prisma.user_peptide_protocols.findUnique({
-      where: { id: protocolId },
-    });
+    const result = await updateProtocol(user.id, protocolId, {
+      isActive: typeof body.isActive === 'boolean' ? body.isActive : undefined,
+      dosage: body.dosage,
+      frequency: body.frequency,
+      timing: body.timing,
+      notes: body.notes,
+      endDate: body.endDate,
+      administrationType: body.administrationType,
+    })
 
-    if (!protocol || protocol.userId !== user.id) {
-      return NextResponse.json(
-        {
-          error: "Protocol not found or access denied",
-        },
-        { status: 404 },
-      );
+    if (!result.ok) {
+      return NextResponse.json({ error: result.error }, { status: result.status })
     }
 
-    // Build update data
-    const updateData: any = {
-      updatedAt: new Date(),
-    };
+    const driveConnected = await isVaultConnected(user.id)
 
-    if (typeof isActive === "boolean") updateData.isActive = isActive;
-    if (dosage) updateData.dosage = dosage;
-    if (frequency) updateData.frequency = frequency;
-    if (timing !== undefined) updateData.timing = timing;
-    if (notes !== undefined) updateData.notes = notes;
-    if (administrationType !== undefined)
-      updateData.administrationType = administrationType;
-    if (endDate !== undefined)
-      updateData.endDate = endDate ? new Date(endDate) : null;
-
-    // Track if timing changed
-    const timingChanged = timing !== undefined && protocol.timing !== timing;
-
-    // Update protocol
-    const updatedProtocol = await prisma.user_peptide_protocols.update({
-      where: { id: protocolId },
-      data: updateData,
-      include: {
-        peptides: true,
-      },
-    });
-
-    // Handle notification scheduling when protocol is activated/deactivated or timing changed
-    if (typeof isActive === "boolean" || timingChanged) {
+    if (typeof body.isActive === 'boolean' || result.timingChanged) {
       try {
-        if (isActive === false) {
-          // Protocol paused - cancel future notifications
-          await cancelNotificationsForProtocol(user.id, protocolId);
-        } else if (isActive === true || timingChanged) {
-          // Protocol reactivated or timing changed - reschedule notifications
+        if (body.isActive === false) {
+          await cancelNotificationsForProtocol(user.id, protocolId)
+        } else if (!driveConnected && (body.isActive === true || result.timingChanged)) {
           await scheduleNotificationsForProtocol(user.id, protocolId, {
             daysAhead: 30,
             forceReschedule: true,
-          });
+          })
         }
       } catch (error) {
-        console.error(
-          "Error updating notifications after protocol change:",
-          error,
-        );
-        // Don't fail the request if notification update fails
+        console.error('Error updating notifications after protocol change:', error)
       }
     }
 
-    return NextResponse.json({
-      success: true,
-      protocol: updatedProtocol,
-    });
+    return NextResponse.json({ success: true, protocol: result.protocol })
   } catch (error) {
-    console.error("PATCH /api/peptides/protocols error:", error);
+    console.error('PATCH /api/peptides/protocols error:', error)
     return NextResponse.json(
       {
-        error: "Failed to update peptide protocol",
-        details: error instanceof Error ? error.message : "Unknown error",
+        error: 'Failed to update peptide protocol',
+        details: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 },
-    );
+    )
   }
 }
 
-// DELETE: Remove a protocol
+// DELETE: Archive a protocol (preserves dose history)
 export async function DELETE(request: Request) {
   try {
-    const session = await auth0.getSession();
-    const user = await getUserFromSession(session);
+    const session = await auth0.getSession()
+    const user = await getUserFromSession(session)
 
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { searchParams } = new URL(request.url);
-    const protocolId = searchParams.get("id");
+    const { searchParams } = new URL(request.url)
+    const protocolId = searchParams.get('id')
 
     if (!protocolId) {
-      return NextResponse.json(
-        { error: "Protocol ID required" },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: 'Protocol ID required' }, { status: 400 })
     }
 
-    // Verify protocol belongs to user
-    const protocol = await prisma.user_peptide_protocols.findUnique({
-      where: { id: protocolId },
-    });
-
-    if (!protocol) {
-      return NextResponse.json(
-        { error: "Protocol not found" },
-        { status: 404 },
-      );
+    const result = await archiveProtocol(user.id, protocolId)
+    if (!result.ok) {
+      return NextResponse.json({ error: result.error }, { status: result.status })
     }
 
-    if (protocol.userId !== user.id) {
-      return NextResponse.json({ error: "Access denied" }, { status: 403 });
-    }
-
-    // Set protocol to inactive instead of deleting to preserve dose history
-    await prisma.user_peptide_protocols.update({
-      where: { id: protocolId },
-      data: {
-        isActive: false,
-        updatedAt: new Date(),
-      },
-    });
-
-    // Cancel all future notifications for this protocol
     try {
-      await cancelNotificationsForProtocol(user.id, protocolId);
+      await cancelNotificationsForProtocol(user.id, protocolId)
     } catch (error) {
-      console.error("Error canceling notifications:", error);
-      // Don't fail the request if cancellation fails
+      console.error('Error canceling notifications:', error)
     }
 
     return NextResponse.json({
       success: true,
-      message: "Protocol archived successfully. Dose history preserved.",
-    });
+      message: 'Protocol archived successfully. Dose history preserved.',
+    })
   } catch (error) {
-    console.error("DELETE /api/peptides/protocols error:", error);
+    console.error('DELETE /api/peptides/protocols error:', error)
     return NextResponse.json(
       {
-        error: "Failed to delete protocol",
-        details: error instanceof Error ? error.message : "Unknown error",
+        error: 'Failed to delete protocol',
+        details: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 },
-    );
+    )
   }
 }

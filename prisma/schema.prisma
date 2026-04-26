@@ -339,6 +339,12 @@ model user_peptide_protocols {
   id                     String                  @id @default(auto()) @map("_id") @db.ObjectId
   userId                 String                  @db.ObjectId
   peptideId              String                  @db.ObjectId
+  // Drive-primary pointer (Phase 2.3). When set, the canonical protocol
+  // definition lives in the user's Drive at Profile/protocols.json keyed
+  // by this id. Mongo row is kept as a thin pointer to preserve existing
+  // dose / notification relations. Null for legacy users still on the
+  // pure-Mongo storage path.
+  driveProtocolId        String?
   startDate              DateTime                @default(now())
   endDate                DateTime?
   dosage                 String
