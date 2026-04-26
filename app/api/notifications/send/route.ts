@@ -37,10 +37,16 @@ function ensureVapid(): boolean {
 async function sendMongoNotifications() {
   const now = new Date()
 
+  // Defensive: exclude any pre-generated row whose protocol now routes to
+  // Drive. The Drive on-demand pass is the source of truth for those, and
+  // `createProtocol`/`updateProtocol` already skip pre-generation when
+  // connected — but a future migration / replenish bug could leave stragglers.
+  // Codex P2.4-HIGH-2 fix.
   const notifications = await prisma.scheduledNotification.findMany({
     where: {
       reminderTime: { lte: now },
       sent: false,
+      protocol: { driveProtocolId: null },
     },
     include: {
       user: {

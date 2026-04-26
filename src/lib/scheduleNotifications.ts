@@ -200,9 +200,55 @@ export function toUtcFromLocal(date: Date, time: string, timeZone: string): Date
 }
 
 /**
- * Generate dose dates based on protocol frequency
+ * Pure rule: should a dose fire on this calendar day given the protocol's
+ * frequency? Exported so the on-demand Drive cron can reuse the same logic
+ * as the legacy Mongo path without duplication.
  */
-export function generateDoseDates(protocol: { startDate?: Date | null; frequency: string }, daysAhead: number): Date[] {
+export function shouldScheduleOnDate(
+  protocol: { startDate?: Date | null; frequency: string },
+  date: Date,
+): boolean {
+  const frequency = (protocol.frequency || '').toLowerCase()
+  const startDate = protocol.startDate ? new Date(protocol.startDate) : new Date()
+  startDate.setHours(0, 0, 0, 0)
+
+  if (frequency.includes('daily') || frequency.includes('every day')) {
+    return true
+  }
+  if (frequency.includes('every other day')) {
+    const daysSinceStart = Math.floor((date.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))
+    return daysSinceStart >= 0 && daysSinceStart % 2 === 0
+  }
+  const dayOfWeek = date.getDay()
+  if (frequency.includes('3x per week') || frequency.includes('3x/week')) {
+    return [1, 3, 5].includes(dayOfWeek)
+  }
+  if (frequency.includes('2x per week') || frequency.includes('2x/week')) {
+    return [1, 4].includes(dayOfWeek)
+  }
+  if (frequency.includes('mon-fri') || frequency.includes('5 days on')) {
+    return dayOfWeek >= 1 && dayOfWeek <= 5
+  }
+  if (frequency.includes('once per week')) {
+    return dayOfWeek === 1
+  }
+  // Default to daily if frequency is unrecognized
+  return true
+}
+
+/**
+ * Generate dose dates based on protocol frequency.
+ *
+ * `daysBefore` lets the on-demand Drive cron look back across UTC midnight
+ * for users in negative-offset timezones whose late-evening local dose
+ * lands on the next UTC day. The legacy Mongo replenish path leaves it at
+ * 0 (the default) and behaves exactly as before.
+ */
+export function generateDoseDates(
+  protocol: { startDate?: Date | null; frequency: string },
+  daysAhead: number,
+  daysBefore: number = 0,
+): Date[] {
   const dates: Date[] = []
   const today = new Date()
   today.setHours(0, 0, 0, 0)
@@ -210,42 +256,14 @@ export function generateDoseDates(protocol: { startDate?: Date | null; frequency
   const startDate = protocol.startDate ? new Date(protocol.startDate) : new Date()
   startDate.setHours(0, 0, 0, 0)
 
-  const frequency = (protocol.frequency || '').toLowerCase()
-  let currentDate = new Date(Math.max(today.getTime(), startDate.getTime()))
-  const endDate = new Date(currentDate)
-  endDate.setDate(endDate.getDate() + daysAhead)
+  const earliest = new Date(today.getTime() - daysBefore * 24 * 60 * 60 * 1000)
+  let currentDate = new Date(Math.max(earliest.getTime(), startDate.getTime()))
+  const endDate = new Date(today.getTime() + daysAhead * 24 * 60 * 60 * 1000)
 
   while (currentDate <= endDate) {
-    let shouldSchedule = false
-
-    // Determine if dose should be scheduled based on frequency
-    if (frequency.includes('daily') || frequency.includes('every day')) {
-      shouldSchedule = true
-    } else if (frequency.includes('every other day')) {
-      const daysSinceStart = Math.floor((currentDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))
-      shouldSchedule = daysSinceStart % 2 === 0
-    } else if (frequency.includes('3x per week') || frequency.includes('3x/week')) {
-      const dayOfWeek = currentDate.getDay()
-      shouldSchedule = [1, 3, 5].includes(dayOfWeek) // Mon, Wed, Fri
-    } else if (frequency.includes('2x per week') || frequency.includes('2x/week')) {
-      const dayOfWeek = currentDate.getDay()
-      shouldSchedule = [1, 4].includes(dayOfWeek) // Mon, Thu
-    } else if (frequency.includes('mon-fri') || frequency.includes('5 days on')) {
-      const dayOfWeek = currentDate.getDay()
-      shouldSchedule = dayOfWeek >= 1 && dayOfWeek <= 5 // Mon-Fri
-    } else if (frequency.includes('once per week')) {
-      const dayOfWeek = currentDate.getDay()
-      shouldSchedule = dayOfWeek === 1 // Monday
-    } else {
-      // Default to daily if can't parse frequency
-      shouldSchedule = true
-    }
-
-    if (shouldSchedule) {
+    if (shouldScheduleOnDate(protocol, currentDate)) {
       dates.push(new Date(currentDate))
     }
-
-    // Move to next day
     currentDate = new Date(currentDate.getTime() + 24 * 60 * 60 * 1000)
   }
 

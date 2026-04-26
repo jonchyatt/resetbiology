@@ -88,7 +88,7 @@ export function computeDueReminders(args: {
   // local time) to handle reminders that cross UTC midnight after timezone
   // conversion. generateDoseDates respects frequency rules (daily, every
   // other day, 3x/week, etc.) so we still honor the same cadence.
-  const candidates = generateDoseDatesWindow(protocol, windowStart, windowEnd)
+  const candidates = generateDoseDatesWindow(protocol)
 
   const due: DueReminder[] = []
   const staleCutoff = new Date(windowEnd.getTime() - staleMinutes * 60 * 1000)
@@ -113,25 +113,20 @@ export function computeDueReminders(args: {
 }
 
 /**
- * Re-uses generateDoseDates but bounded to a tight 3-day window relative to
- * windowEnd. The legacy Mongo helper iterates from today → today+30; here we
- * just need yesterday/today/tomorrow.
+ * Yesterday + today + tomorrow (UTC midnights), filtered through the same
+ * frequency rules used by the legacy Mongo path. Yesterday is required to
+ * catch users in negative-offset timezones whose late-evening local dose
+ * converts to the NEXT UTC day — without yesterday-as-base, those reminders
+ * would silently disappear (Codex P2.4-HIGH-1).
  */
 function generateDoseDatesWindow(
   protocol: ReminderProtocolInput,
-  windowStart: Date,
-  windowEnd: Date,
 ): Date[] {
-  const startDate = protocol.startDate ?? new Date(windowStart.getTime() - 24 * 60 * 60 * 1000)
-  const allDates = generateDoseDates(
-    { startDate, frequency: protocol.frequency },
-    Math.ceil((windowEnd.getTime() - new Date().setHours(0, 0, 0, 0)) / (24 * 60 * 60 * 1000)) + 2,
+  return generateDoseDates(
+    { startDate: protocol.startDate, frequency: protocol.frequency },
+    1, // tomorrow
+    1, // yesterday
   )
-
-  // Filter to the small candidate window
-  const lower = new Date(windowStart.getTime() - 36 * 60 * 60 * 1000)
-  const upper = new Date(windowEnd.getTime() + 12 * 60 * 60 * 1000)
-  return allDates.filter((d) => d >= lower && d <= upper)
 }
 
 /**
