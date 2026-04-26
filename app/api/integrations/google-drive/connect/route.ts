@@ -27,6 +27,17 @@ export async function GET(req: NextRequest) {
       }, { status: 500 })
     }
 
+    // Optional returnTo: relative path the callback should land on after success.
+    // Defaults to /profile so legacy callers behave identically.
+    const requestedReturnTo = req.nextUrl.searchParams.get('returnTo') || '/profile'
+    const safeReturnTo = requestedReturnTo.startsWith('/') ? requestedReturnTo : '/profile'
+
+    // Encode userId + returnTo into the OAuth state param (Google echoes this verbatim).
+    const state = Buffer.from(
+      JSON.stringify({ u: user.id, r: safeReturnTo }),
+      'utf-8',
+    ).toString('base64url')
+
     // Build Google OAuth URL
     const params = new URLSearchParams({
       client_id: GOOGLE_CLIENT_ID,
@@ -35,7 +46,7 @@ export async function GET(req: NextRequest) {
       scope: SCOPES,
       access_type: 'offline', // Get refresh token
       prompt: 'consent', // Force consent to get refresh token
-      state: user.id, // Pass user ID to callback
+      state,
     })
 
     const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`

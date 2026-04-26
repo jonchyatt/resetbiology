@@ -7,6 +7,7 @@ import { PortalHeader } from "@/components/Navigation/PortalHeader"
 import { useUser } from "@auth0/nextjs-auth0"
 import { useRouter } from "next/navigation"
 import TrialSubscription from "@/components/Subscriptions/TrialSubscription"
+import { VaultBanner } from "@/components/Vault/VaultBanner"
 
 const iconMap: Record<string, LucideIcon> = {
   Target, Dumbbell, Apple, Brain, Wind, BookOpen, Eye, Zap, Music,
@@ -493,6 +494,9 @@ export function EnhancedDashboard() {
               </div>
             )}
           </div>
+
+          {/* Vault Setup Banner - Show for users without Drive connected (top priority) */}
+          <VaultBanner />
 
           {/* Satori Living Foundation Grant Banner - Show for active subscribers who aren't admins */}
           {hasActiveSubscription && !isAdmin && (

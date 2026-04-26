@@ -379,9 +379,17 @@ export default function ProfilePage() {
                         </div>
                         <div className="flex-1">
                           <h4 className="font-bold text-white text-lg mb-1">Google Drive Sync</h4>
-                          <p className="text-sm text-gray-300 mb-4">
+                          <p className="text-sm text-gray-300 mb-2">
                             Automatically sync your daily journal entries, food photos, workout summaries, and progress reports to your Google Drive.
                           </p>
+                          {!driveConnected && (
+                            <p className="text-xs text-primary-300 mb-4">
+                              First time?{" "}
+                              <a href="/connect-drive" className="underline hover:text-primary-200">
+                                Visit Vault Setup for the full walk-through →
+                              </a>
+                            </p>
+                          )}
 
                           {driveConnected ? (
                             <div className="space-y-3">
