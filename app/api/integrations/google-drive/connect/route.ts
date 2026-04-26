@@ -12,6 +12,19 @@ const SCOPES = [
   'https://www.googleapis.com/auth/userinfo.email', // Get user email for folder naming
 ].join(' ')
 
+/**
+ * Validate that a returnTo path cannot trigger an open-redirect.
+ * Must start with single "/", must not start with "//" (protocol-relative)
+ * or "/\\" (backslash), and must not contain a scheme via ":".
+ */
+function isSafeReturnTo(value: string): boolean {
+  if (!value || typeof value !== 'string') return false
+  if (!value.startsWith('/')) return false
+  if (value.startsWith('//') || value.startsWith('/\\')) return false
+  if (value.includes(':')) return false
+  return true
+}
+
 export async function GET(req: NextRequest) {
   try {
     const session = await auth0.getSession()
@@ -29,8 +42,10 @@ export async function GET(req: NextRequest) {
 
     // Optional returnTo: relative path the callback should land on after success.
     // Defaults to /profile so legacy callers behave identically.
+    // Open-redirect guard: must be a single-segment-prefixed pathname,
+    // never protocol-relative ("//evil.com"), absolute URL, or backslash-escaped.
     const requestedReturnTo = req.nextUrl.searchParams.get('returnTo') || '/profile'
-    const safeReturnTo = requestedReturnTo.startsWith('/') ? requestedReturnTo : '/profile'
+    const safeReturnTo = isSafeReturnTo(requestedReturnTo) ? requestedReturnTo : '/profile'
 
     // Encode userId + returnTo into the OAuth state param (Google echoes this verbatim).
     const state = Buffer.from(

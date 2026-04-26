@@ -7,6 +7,15 @@ const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET
 const GOOGLE_REDIRECT_URI = process.env.NEXT_PUBLIC_BASE_URL + '/api/integrations/google-drive/callback'
 
 export async function GET(req: NextRequest) {
+  // Validate returnTo can't trigger an open-redirect.
+  function isSafeReturnTo(value: unknown): value is string {
+    if (typeof value !== 'string' || !value) return false
+    if (!value.startsWith('/')) return false
+    if (value.startsWith('//') || value.startsWith('/\\')) return false
+    if (value.includes(':')) return false
+    return true
+  }
+
   // Decode state into { userId, returnTo }. Falls back to legacy "raw user id" form
   // for any OAuth round-trip that started before this deploy.
   function decodeState(raw: string | null): { userId: string; returnTo: string } | null {
@@ -15,8 +24,7 @@ export async function GET(req: NextRequest) {
       const decoded = Buffer.from(raw, 'base64url').toString('utf-8')
       const parsed = JSON.parse(decoded)
       if (typeof parsed?.u === 'string') {
-        const returnTo =
-          typeof parsed?.r === 'string' && parsed.r.startsWith('/') ? parsed.r : '/profile'
+        const returnTo = isSafeReturnTo(parsed?.r) ? parsed.r : '/profile'
         return { userId: parsed.u, returnTo }
       }
     } catch {
