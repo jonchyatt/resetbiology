@@ -105,20 +105,36 @@ export async function GET(req: NextRequest) {
     // Create a folder in user's Google Drive
     const drive = google.drive({ version: 'v3', auth: oauth2Client })
 
-    // Check if folder already exists
-    const existingFolders = await drive.files.list({
-      q: "name='Reset Biology Data' and mimeType='application/vnd.google-apps.folder' and trashed=false",
-      fields: 'files(id, name)',
+    // The drive.file scope only grants access to files THIS app has created
+    // — `drive.files.list({ q: "name=..." })` against the whole Drive throws
+    // insufficient_scope. So we can't search-by-name to reuse a folder a
+    // previous session created. Instead: look up the user's stored folderId
+    // in Mongo (set on a prior connect), validate it still exists with a
+    // scoped `files.get`, and fall back to creating a fresh folder + the
+    // subfolder tree if the stored id is missing/deleted.
+    const existingUser = await prisma.user.findUnique({
+      where: { id: state },
+      select: { driveFolder: true },
     })
 
-    let folderId: string
+    let folderId: string | null = null
+    if (existingUser?.driveFolder) {
+      try {
+        const probe = await drive.files.get({
+          fileId: existingUser.driveFolder,
+          fields: 'id, trashed',
+        })
+        if (probe.data.id && !probe.data.trashed) {
+          folderId = probe.data.id
+          console.log('Reusing existing Reset Biology folder:', folderId)
+        }
+      } catch (err: any) {
+        // 404 / 403 / token-mismatch: fall through to fresh create
+        console.log('Stored driveFolder no longer reachable, will create fresh:', err?.code || err?.message)
+      }
+    }
 
-    if (existingFolders.data.files && existingFolders.data.files.length > 0) {
-      // Use existing folder
-      folderId = existingFolders.data.files[0].id!
-      console.log('Using existing Reset Biology folder:', folderId)
-    } else {
-      // Create new folder
+    if (!folderId) {
       const folderResponse = await drive.files.create({
         requestBody: {
           name: 'Reset Biology Data',
@@ -130,7 +146,6 @@ export async function GET(req: NextRequest) {
       folderId = folderResponse.data.id!
       console.log('Created new Reset Biology folder:', folderId)
 
-      // Create subfolders
       const subfolders = ['Journal', 'Nutrition', 'Workouts', 'Breath Sessions', 'Peptides', 'Vision Training', 'Memory Training', 'Profile', 'Progress Reports']
       for (const subfolder of subfolders) {
         await drive.files.create({
