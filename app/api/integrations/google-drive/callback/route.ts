@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { google } from 'googleapis'
 import { prisma } from '@/lib/prisma'
+import { encryptToken } from '@/lib/vault-encryption'
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET
@@ -122,11 +123,13 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    // Update user with Drive credentials
+    // Update user with Drive credentials. Refresh token is encrypted at rest
+    // via VAULT_TOKEN_KEY (AES-256-GCM); falls through to plaintext if the env
+    // var isn't set yet — see vault-encryption.ts for graceful-degradation contract.
     await prisma.user.update({
       where: { id: state },
       data: {
-        googleDriveRefreshToken: tokens.refresh_token,
+        googleDriveRefreshToken: encryptToken(tokens.refresh_token),
         driveFolder: folderId,
         googleDriveConnectedAt: new Date(),
         googleDriveSyncEnabled: true,

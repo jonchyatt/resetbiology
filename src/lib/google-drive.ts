@@ -1,10 +1,13 @@
 import { google, drive_v3 } from 'googleapis'
 import { prisma } from '@/lib/prisma'
+import { decryptToken, encryptToken } from '@/lib/vault-encryption'
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET
 
-// Get authenticated Drive client for a user
+// Get authenticated Drive client for a user.
+// Decrypts the stored refresh token; lazily re-encrypts if it was stored
+// in the legacy plaintext format AND the encryption key is now provisioned.
 export async function getDriveClient(userId: string): Promise<drive_v3.Drive | null> {
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -18,13 +21,38 @@ export async function getDriveClient(userId: string): Promise<drive_v3.Drive | n
     return null
   }
 
+  let refreshToken: string
+  try {
+    const decrypted = decryptToken(user.googleDriveRefreshToken)
+    refreshToken = decrypted.plaintext
+
+    // Lazy migration: if we read a plaintext token AND a key is now configured,
+    // re-encrypt it in the background. Don't block the request on this.
+    if (!decrypted.wasEncrypted) {
+      const reEncrypted = encryptToken(refreshToken)
+      if (reEncrypted !== refreshToken) {
+        prisma.user
+          .update({
+            where: { id: userId },
+            data: { googleDriveRefreshToken: reEncrypted },
+          })
+          .catch((err) =>
+            console.error('[google-drive] lazy re-encryption failed:', err),
+          )
+      }
+    }
+  } catch (err) {
+    console.error('[google-drive] token decryption failed:', err)
+    return null
+  }
+
   const oauth2Client = new google.auth.OAuth2(
     GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET
   )
 
   oauth2Client.setCredentials({
-    refresh_token: user.googleDriveRefreshToken,
+    refresh_token: refreshToken,
   })
 
   return google.drive({ version: 'v3', auth: oauth2Client })
