@@ -48,7 +48,7 @@ const PRINCIPLES: Array<{ icon: typeof Shield; title: string; body: string }> = 
 export function ConnectDriveSetup() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { loading, connected, refresh } = useVaultStatus()
+  const { loading, connected, folderId, refresh } = useVaultStatus()
   const [connecting, setConnecting] = useState(false)
 
   const driveQueryStatus = searchParams.get("drive")
@@ -144,7 +144,7 @@ export function ConnectDriveSetup() {
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3">
                   <a
-                    href="https://drive.google.com"
+                    href={folderId ? `https://drive.google.com/drive/folders/${folderId}` : "https://drive.google.com"}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="action-btn-secondary inline-flex items-center justify-center gap-2 px-6 py-3 font-semibold rounded-lg transition-all"
