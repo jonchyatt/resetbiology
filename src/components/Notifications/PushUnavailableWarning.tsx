@@ -70,6 +70,13 @@ export default function PushUnavailableWarning() {
 
   if (!availability.isSupported) {
     message = 'Push notifications are not supported in this browser. Use Chrome, Firefox, or Edge for push reminders.'
+  } else if (availability.blockReason === 'INVALID_STATE') {
+    // Browser-side SW corruption — refresh DOES NOT fix this. User must
+    // clear site data via DevTools to recover the document state.
+    message = 'Browser blocked notifications for this site. To re-enable: press F12 → Application → Storage → "Clear site data" → reload.'
+    // No action button — the fix has to happen in DevTools, can't be
+    // triggered from page JS (storage cleanup itself throws InvalidStateError
+    // when in this state).
   } else if (!availability.isServiceWorkerReady) {
     message = 'Service worker not ready. Refresh the page to enable push notifications.'
     actionButton = (

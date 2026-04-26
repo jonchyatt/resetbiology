@@ -63,13 +63,32 @@ export function usePushAvailability(): PushAvailability {
         return
       }
 
-      // Check service worker registration
+      // Check service worker registration. If the call ITSELF throws
+      // InvalidStateError, the browser has poisoned the document context for
+      // this origin (cookies blocked / site data partially cleared mid-session
+      // / Chrome SW corruption). Refresh won't fix it — the user has to clear
+      // site data via DevTools. Surface that exact instruction.
       let isServiceWorkerReady = false
+      let invalidState = false
       try {
         const registration = await navigator.serviceWorker.getRegistration()
         isServiceWorkerReady = !!registration
-      } catch (error) {
+      } catch (error: any) {
         console.warn('Service worker check failed:', error)
+        if (error?.name === 'InvalidStateError') {
+          invalidState = true
+        }
+      }
+
+      if (invalidState) {
+        setAvailability({
+          isSupported: true,
+          isPermissionGranted,
+          isServiceWorkerReady: false,
+          canShowPrompt: false,
+          blockReason: 'INVALID_STATE'
+        })
+        return
       }
 
       if (!isServiceWorkerReady) {
