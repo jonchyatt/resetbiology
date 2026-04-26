@@ -8,6 +8,10 @@
     {
       "path": "/api/notifications/replenish-queue",
       "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/notifications/cleanup",
+      "schedule": "0 3 * * *"
     }
   ]
 }
