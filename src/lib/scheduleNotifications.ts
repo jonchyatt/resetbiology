@@ -152,7 +152,7 @@ export async function scheduleNotificationsForProtocol(
  * Examples: "08:00", "08:00/20:00", "Daily 08:00", "Mon-Fri 08:00/20:00"
  * Also handles: "AM & PM (twice daily)", "AM", "PM", "twice daily"
  */
-function parseDoseTimes(text: string): string[] {
+export function parseDoseTimes(text: string): string[] {
   const times: string[] = []
 
   // First, try to match explicit time patterns like 08:00, 8:00 AM, etc.
@@ -202,7 +202,7 @@ export function toUtcFromLocal(date: Date, time: string, timeZone: string): Date
 /**
  * Generate dose dates based on protocol frequency
  */
-function generateDoseDates(protocol: any, daysAhead: number): Date[] {
+export function generateDoseDates(protocol: { startDate?: Date | null; frequency: string }, daysAhead: number): Date[] {
   const dates: Date[] = []
   const today = new Date()
   today.setHours(0, 0, 0, 0)

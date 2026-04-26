@@ -754,6 +754,27 @@ model PushSubscription {
   @@map("push_subscriptions")
 }
 
+// P2.4 idempotency log for Drive-primary on-demand notification compute.
+// Drive-connected users do NOT pre-generate ScheduledNotification rows; the
+// cron computes due reminders fresh each tick from protocols.json. This row
+// records "we already sent (user, protocol, doseTime, type)" so a second
+// tick within the same window doesn't double-send.
+//
+// Bounded daily cardinality (~3-10 rows/user/day vs 180+ pre-gen rows). The
+// daily cleanup cron (3 AM UTC) deletes rows older than 48h.
+model NotificationDelivery {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String   @db.ObjectId
+  protocolId String   @db.ObjectId
+  doseTime   DateTime
+  type       String // "push" | "email"
+  sentAt     DateTime @default(now())
+
+  @@unique([userId, protocolId, doseTime, type])
+  @@index([sentAt])
+  @@map("notification_deliveries")
+}
+
 // --- NOTIFICATION MONITORING MODELS ---
 
 // Tracks every cron job execution for health monitoring

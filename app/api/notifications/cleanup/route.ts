@@ -4,15 +4,20 @@ import { prisma } from '@/lib/prisma'
 export const dynamic = 'force-dynamic'
 
 const RETENTION_DAYS = 7
+// Drive on-demand idempotency rows are tiny but only useful within a few
+// ticks of the dose. 48h is enough to cover any clock skew / late retry.
+const DELIVERY_RETENTION_HOURS = 48
 
 /**
- * Cleanup stale scheduled notifications
- * Runs daily at 3 AM UTC via Vercel Cron (after replenish-queue at 2 AM)
+ * Cleanup stale notification rows. Runs daily at 3 AM UTC via Vercel Cron.
  *
- * Deletes scheduledNotification rows where reminderTime is older than RETENTION_DAYS.
- * Without this, the queue grows unbounded as the daily replenish cron adds 30-days-ahead
- * for every active protocol, which exhausted Atlas M0's 512MB quota and blocked all
- * peptide-tracker writes (root cause of the 2026-04-26 outage).
+ * - scheduledNotification: legacy Mongo path, deleted after RETENTION_DAYS.
+ *   Without this the queue grows unbounded (replenish adds 30-days-ahead per
+ *   active protocol, which exhausted Atlas M0's 512MB on 2026-04-26).
+ *
+ * - notificationDelivery: P2.4 idempotency log for Drive-primary users,
+ *   deleted after DELIVERY_RETENTION_HOURS. Bounded daily cardinality so
+ *   it never grows large, but no reason to keep it forever.
  */
 export async function GET(req: NextRequest) {
   const authHeader = req.headers.get('authorization')
@@ -29,26 +34,49 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const cutoff = new Date(Date.now() - RETENTION_DAYS * 24 * 60 * 60 * 1000)
+  const scheduledCutoff = new Date(Date.now() - RETENTION_DAYS * 24 * 60 * 60 * 1000)
+  const deliveryCutoff = new Date(Date.now() - DELIVERY_RETENTION_HOURS * 60 * 60 * 1000)
 
   try {
-    const before = await prisma.scheduledNotification.count()
-    const deleted = await prisma.scheduledNotification.deleteMany({
-      where: { reminderTime: { lt: cutoff } },
-    })
-    const after = await prisma.scheduledNotification.count()
+    const [scheduledBefore, deliveryBefore] = await Promise.all([
+      prisma.scheduledNotification.count(),
+      prisma.notificationDelivery.count(),
+    ])
+
+    const [scheduledDeleted, deliveryDeleted] = await Promise.all([
+      prisma.scheduledNotification.deleteMany({
+        where: { reminderTime: { lt: scheduledCutoff } },
+      }),
+      prisma.notificationDelivery.deleteMany({
+        where: { sentAt: { lt: deliveryCutoff } },
+      }),
+    ])
+
+    const [scheduledAfter, deliveryAfter] = await Promise.all([
+      prisma.scheduledNotification.count(),
+      prisma.notificationDelivery.count(),
+    ])
 
     console.log(
-      `🧹 cleanup: deleted ${deleted.count} stale notifications older than ${cutoff.toISOString()} (${before} → ${after})`,
+      `🧹 cleanup: scheduled ${scheduledBefore}→${scheduledAfter} (-${scheduledDeleted.count}), delivery ${deliveryBefore}→${deliveryAfter} (-${deliveryDeleted.count})`,
     )
 
     return NextResponse.json({
       success: true,
-      retentionDays: RETENTION_DAYS,
-      cutoff: cutoff.toISOString(),
-      before,
-      deleted: deleted.count,
-      after,
+      scheduled: {
+        retentionDays: RETENTION_DAYS,
+        cutoff: scheduledCutoff.toISOString(),
+        before: scheduledBefore,
+        deleted: scheduledDeleted.count,
+        after: scheduledAfter,
+      },
+      delivery: {
+        retentionHours: DELIVERY_RETENTION_HOURS,
+        cutoff: deliveryCutoff.toISOString(),
+        before: deliveryBefore,
+        deleted: deliveryDeleted.count,
+        after: deliveryAfter,
+      },
     })
   } catch (error: any) {
     console.error('💥 cleanup cron failed:', error)
