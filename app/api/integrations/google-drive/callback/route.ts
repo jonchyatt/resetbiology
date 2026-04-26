@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { google } from 'googleapis'
 import { prisma } from '@/lib/prisma'
 import { encryptToken } from '@/lib/vault-encryption'
+import { migratePeptidesToVault } from '@/lib/migratePeptidesToVault'
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET
@@ -135,6 +136,18 @@ export async function GET(req: NextRequest) {
         googleDriveSyncEnabled: true,
       },
     })
+
+    // P2.5 — opportunistic migration of existing Mongo-canonical peptide
+    // protocols into the Vault. Idempotent; failures don't block the connect
+    // (the user can retry from a future tracker visit, or hit the explicit
+    // POST /api/vault/migrate-peptides endpoint). Awaited because serverless
+    // tears down after the response, no fire-and-forget option.
+    try {
+      const migration = await migratePeptidesToVault(state)
+      console.log('[oauth-callback] post-connect migration:', migration)
+    } catch (migrationError: any) {
+      console.error('[oauth-callback] migration failed (non-fatal):', migrationError?.message)
+    }
 
     // Redirect back to the requested return path with success
     return redirectToReturn(returnTo, 'drive=connected')
