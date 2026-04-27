@@ -89,8 +89,12 @@ export function EnhancedDashboard() {
     moduleNotes: "",
   })
 
-  // Portal modules from DB
-  const [portalModules, setPortalModules] = useState<PortalModuleData[]>(fallbackModules)
+  // Portal modules from DB. Initialised to `null` (loading) instead of the
+  // fallback list so we don't render a stale tile set on first paint that
+  // then gets replaced by the DB list — that swap is what made it look like
+  // "Education shows up then gets erased by another tab" (the fallback had
+  // Education; the DB list has Mental Training instead).
+  const [portalModules, setPortalModules] = useState<PortalModuleData[] | null>(null)
 
   useEffect(() => {
     fetch('/api/admin/portal-modules?enabled=true')
@@ -98,9 +102,11 @@ export function EnhancedDashboard() {
       .then(data => {
         if (Array.isArray(data) && data.length > 0) {
           setPortalModules(data)
+        } else {
+          setPortalModules(fallbackModules)
         }
       })
-      .catch(() => { /* keep fallback */ })
+      .catch(() => setPortalModules(fallbackModules))
   }, [])
 
   // Mood options
@@ -486,7 +492,19 @@ export function EnhancedDashboard() {
           {/* Welcome Header */}
           <div className="text-center mb-8">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 text-shadow-lg animate-fade-in">
-              Welcome back, <span className="text-primary-400">{user?.name || user?.nickname || (user?.email ? user.email.split('@')[0] : "Wellness Warrior")}</span>
+              Welcome back, <span className="text-primary-400">{
+                // Auth0 default for email/password signups is name === email,
+                // which makes this headline read as the user's full email
+                // address — not what we want plastered across /portal in 6xl.
+                // Prefer real first name, then nickname, then email-prefix
+                // (jonchyatt@gmail.com → "jonchyatt"), and only fall back to
+                // the generic label if nothing identifying is available.
+                (user as any)?.given_name
+                  || user?.nickname
+                  || (user?.email ? user.email.split('@')[0] : null)
+                  || (user?.name && !user.name.includes('@') ? user.name : null)
+                  || "Wellness Warrior"
+              }</span>
             </h1>
             {currentStreak > 0 && (
               <div className="mt-3 inline-flex items-center px-4 py-2 bg-secondary-600/20 rounded-full border border-secondary-400/30">
@@ -593,19 +611,31 @@ export function EnhancedDashboard() {
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">📋 Daily Check-in</h2>
             </div>
 
-            {/* Quick Access Cards - Dynamic from DB */}
+            {/* Quick Access Cards - Dynamic from DB. While loading, show
+                placeholder tiles in the same shape so the layout doesn't
+                jump when the real list arrives. */}
             <div className="flex flex-wrap justify-center gap-4 max-w-4xl mx-auto">
-              {portalModules.map((mod) => {
-                const IconComponent = iconMap[mod.icon]
-                return (
-                  <Link key={mod.slug} href={mod.href} className="group w-[calc(50%-0.5rem)] md:w-[calc(25%-0.75rem)]">
-                    <div className={`p-6 bg-gradient-to-br ${mod.colorFrom} ${mod.colorTo} border ${mod.borderColor} rounded-lg hover:scale-[1.02] hover:shadow-lg transition-all text-center`}>
-                      {IconComponent && <IconComponent className={`w-8 h-8 ${mod.iconColor} mx-auto mb-2`} />}
-                      <span className="text-white font-medium">{mod.label}</span>
+              {portalModules === null
+                ? Array.from({ length: 8 }).map((_, i) => (
+                    <div
+                      key={`skeleton-${i}`}
+                      className="w-[calc(50%-0.5rem)] md:w-[calc(25%-0.75rem)] p-6 bg-gray-700/20 border border-gray-600/20 rounded-lg animate-pulse"
+                    >
+                      <div className="w-8 h-8 bg-gray-600/30 rounded mx-auto mb-2" />
+                      <div className="h-4 bg-gray-600/30 rounded w-2/3 mx-auto" />
                     </div>
-                  </Link>
-                )
-              })}
+                  ))
+                : portalModules.map((mod) => {
+                    const IconComponent = iconMap[mod.icon]
+                    return (
+                      <Link key={mod.slug} href={mod.href} className="group w-[calc(50%-0.5rem)] md:w-[calc(25%-0.75rem)]">
+                        <div className={`p-6 bg-gradient-to-br ${mod.colorFrom} ${mod.colorTo} border ${mod.borderColor} rounded-lg hover:scale-[1.02] hover:shadow-lg transition-all text-center`}>
+                          {IconComponent && <IconComponent className={`w-8 h-8 ${mod.iconColor} mx-auto mb-2`} />}
+                          <span className="text-white font-medium">{mod.label}</span>
+                        </div>
+                      </Link>
+                    )
+                  })}
             </div>
 
             {/* Secondary Action */}
