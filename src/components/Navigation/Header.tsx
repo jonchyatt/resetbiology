@@ -56,8 +56,11 @@ export function Header() {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            {/* Public/Logged Out Navigation */}
-            {!user && (
+            {/* Public/Logged Out Navigation — only renders once auth has resolved
+                (isLoading=false), otherwise the logged-out nav flashes before
+                Auth0 confirms the user is signed in, which makes Education
+                appear to "get erased by another tab" on first paint. */}
+            {!isLoading && !user && (
               <>
                 <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium transition-colors">
                   Peptide Co-op
@@ -72,7 +75,7 @@ export function Header() {
             )}
             
             {/* Logged In Navigation */}
-            {user && (
+            {!isLoading && user && (
               <>
                 <Link href="/portal" className="text-gray-700 hover:text-teal-600 font-medium transition-colors">
                   Portal
