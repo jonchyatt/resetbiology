@@ -101,12 +101,22 @@ export function Header() {
                     className="flex items-center space-x-2 text-gray-700 hover:text-teal-600 font-medium transition-colors"
                   >
                     <User className="w-4 h-4" />
-                    <span>{user.name || user.email || 'Account'}</span>
+                    <span>Account</span>
                     <ChevronDown className={`w-4 h-4 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
                   </button>
 
                   {isUserMenuOpen && (
                     <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2">
+                      {/* Show which account is signed in (the email used to be in
+                          the trigger button itself, but it widened the nav bar
+                          enough to cause a visible layout shift on auth resolve). */}
+                      <div className="px-4 py-2 text-xs text-gray-500 truncate" title={user.email || ''}>
+                        Signed in as<br />
+                        <span className="text-gray-800 font-medium">{user.name || user.email}</span>
+                      </div>
+
+                      <hr className="my-2 border-gray-200" />
+
                       {isAdmin && (
                         <Link
                           href="/admin"
@@ -117,11 +127,11 @@ export function Header() {
                           Admin Dashboard
                         </Link>
                       )}
-                      
-                      <hr className="my-2 border-gray-200" />
-                      
-                      <a 
-                        href="/auth/logout" 
+
+                      {isAdmin && <hr className="my-2 border-gray-200" />}
+
+                      <a
+                        href="/auth/logout"
                         className="flex items-center px-4 py-2 text-red-600 hover:bg-red-50 transition-colors"
                       >
                         Logout
