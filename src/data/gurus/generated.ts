@@ -57,7 +57,7 @@ export function getGuru(slug: string): GuruProfile | null {
 
 export function listGuruSlugs(): string[] {
   return readdirSync(DATA_DIR)
-    .filter(f => f.endsWith('.json'))
+    .filter(f => f.endsWith('.json') && f !== 'peptide-names.json')
     .map(f => f.replace(/\.json$/, ''));
 }
 
