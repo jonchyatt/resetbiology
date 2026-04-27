@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { getPeptide, listPeptideSlugs } from '@/data/peptide-education/generated';
+import PeptideChatBox from '@/components/PeptideChat/PeptideChatBox';
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -214,6 +215,9 @@ export default async function PeptidePage({ params }: Props) {
               )}
             </ExpertColumn>
           </section>
+
+          {/* In-app chat widget — Cloudflare Workers AI free tier, citation-bound */}
+          <PeptideChatBox slug={card.slug} peptide={card.peptide} />
 
           {/* Disclaimer */}
           <section className="bg-red-900/20 border border-red-500/30 rounded-2xl p-6">
