@@ -123,11 +123,34 @@
     }
   },
   "reset_biology_synthesis": {
-    "status": "pending-codex-distillation",
-    "recommendation": null,
-    "caveats": null,
-    "cross_expert_consensus": null,
-    "cross_expert_disagreement": null
+    "status": "distilled",
+    "recommendation": "Reset Biology suggests asking the practitioner to consider DADA (diisopropylamine dichloroacetate) as an injectable or transdermal pre-workout PDK4-inhibiting metabolic modulator that pushes the lactate threshold back, with Hunter (threadId 19cc568b0b452c4f 2026-03-06): \"It has quietly become one of the staples in my own pre-workout injection stack\" and Taylor (JC1poI1OEog 01:18:16.280): \"it will increase the threshold to which your body will start to build up lactic acid, which makes it good for endurance, makes it good for weightlifting, and you definitely don't get as sore.\" We'd ask the prescribing physician to weigh route, ceiling, and the injury-risk caveat because Hunter's deep-dive is explicit that oral underperforms for performance and that 200 mg/day removes the metabolic governor in a way that can outrun what joints/connective tissue can handle.",
+    "caveats": "- Avoid 200 mg/day ceiling: Hunter (threadId 19cc568b0b452c4f 2026-03-06): \"Absolutely works but I think it's too much\" and \"Removing the metabolic governor → push body beyond what joints/connective tissue can handle → injury risk.\"\n- Side-effect surface from clinical literature (Hunter, threadId 19cc568b0b452c4f 2026-03-06): \"Headache · GI upset · Appetite changes · Dry mouth · ⚠ At extremely high DCA exposures: peripheral neuropathy (clinical trials, much higher doses than discussed here).\"\n- Lactate-suppression theoretical caveat: Hunter (threadId 19cc568b0b452c4f 2026-03-06): \"Lactate isn't purely bad — it's a signaling molecule + fuel source\" and \"Suppressing too aggressively could theoretically alter training adaptations → dosing matters.\"\n- Oral underperforms for performance per Hunter (threadId 19cc568b0b452c4f 2026-03-06): \"Hunter's experience: oral doesn't produce noticeable performance effect — Injectable preferred for performance.\" Hunter's later podcast tempers this — Hunter (JgktB39WB_A 00:33:54.080): \"Yeah, the oral works pretty good, too. I like injecting the data, but the transmal does work well.\"\n- Trevor Bachmeyer has zero DADA mentions in the corpus — no SmashweRx-side validation or dissent on file.\n- Sourcing: Hunter (threadId 19cc568b0b452c4f 2026-03-06): \"BLL does NOT carry DADA · Parabolic Peptides — oral, transdermal, OR injectable forms.\"",
+    "cross_expert_consensus": "Hunter and Taylor agree DADA's mechanism shifts the lactate threshold and improves training output. Hunter (threadId 19cc568b0b452c4f 2026-03-06): \"Reduced lactate accumulation during intense training — pushes the threshold back · More reps before fatigue · Improved cardio capacity · Better pumps + training output.\" Taylor (JC1poI1OEog 01:18:16.280): \"it will increase the threshold to which your body will start to build up lactic acid, which makes it good for endurance, makes it good for weightlifting, and you definitely don't get as sore.\" Both also confirm transdermal works well — Hunter (JgktB39WB_A 00:33:44.799): \"And then Dada is great too. We've used a transdermal version of Dada that ... that's been I've been liking that the transermal data\"; Taylor (JC1poI1OEog 01:18:24.360): \"I've actually been using the transdermal one lately, and that's worked to me just as well, I think, as the injectable milligram for milligram.\" No Trevor data in the corpus.",
+    "cross_expert_disagreement": "No direct contradiction — Trevor is silent (zero DADA mentions across the corpus). The only intra-Hunter tension is between his 2026-03-06 email (\"Hunter's experience: oral doesn't produce noticeable performance effect — Injectable preferred for performance\") and his later 2026-04-10 podcast (JgktB39WB_A 00:33:54.080): \"Yeah, the oral works pretty good, too. I like injecting the data, but the transmal does work well.\" Newer podcast softens the older email's oral-doesn't-work stance; both are surfaced with dates so the practitioner can read the trajectory. Taylor never specifies a DADA dose on record (her top_doses \"60 mg\" is a same-window collision with an Accutane question, not a DADA dose).",
+    "acute_chronic_split": {
+      "acute": {
+        "dose": "Hunter (threadId 19cc568b0b452c4f 2026-03-06): \"Start: 50 mg/day · Standard performance dose: 100 mg/day\" — injectable, pre-workout. Hunter (threadId 19cc568b0b452c4f 2026-03-06): \"Avoid 200 mg/day · Absolutely works but I think it's too much.\"",
+        "route": "Hunter (threadId 19cc568b0b452c4f 2026-03-06): \"Injectable preferred for performance.\" Transdermal also accepted: Hunter (JgktB39WB_A 00:33:44.799): \"We've used a transdermal version of Dada that ... that's been I've been liking that\"; Taylor (JC1poI1OEog 01:18:24.360): \"I've actually been using the transdermal one lately, and that's worked to me just as well, I think, as the injectable milligram for milligram.\"",
+        "frequency": "Hunter (threadId 19cc568b0b452c4f 2026-03-06): \"Take pre-workout / pre-cardio.\"",
+        "duration": null,
+        "verbatim_citation": "Hunter email threadId 19cc568b0b452c4f (2026-03-06): \"Start: 50 mg/day · Standard performance dose: 100 mg/day · Take pre-workout / pre-cardio.\"",
+        "episode_url": "https://open.spotify.com/episode/0uRxClDt9iiUkqSK3BOc9R",
+        "timestamp": "2026-03-06 (email — no VTT timestamp)"
+      },
+      "chronic": {
+        "dose": "Hunter (threadId 19cc568b0b452c4f 2026-03-06) cites the clinical reference frame: \"Japan oral: 20-60 mg/day (liver use) · China NAFLD trial: 60-120 mg/day · One NAFLD trial: 60 mg vs 120 mg/day for 8 weeks → improvements in liver enzymes + metabolic markers.\" Hunter does NOT recommend chronic daily dosing for performance — performance use is pre-workout only.",
+        "route": "Oral has clinical history for liver/NAFLD use (Hunter, threadId 19cc568b0b452c4f 2026-03-06): \"Used clinically in Japan as liver-support medication (20-60 mg/day oral, chronic liver conditions).\"",
+        "frequency": "Hunter (threadId 19cc568b0b452c4f 2026-03-06): \"60 mg vs 120 mg/day for 8 weeks\" (NAFLD clinical trial framing — not a Hunter recommendation, a citation of the literature).",
+        "duration": "Hunter (threadId 19cc568b0b452c4f 2026-03-06): \"60 mg vs 120 mg/day for 8 weeks\" (clinical reference duration).",
+        "verbatim_citation": "Hunter email threadId 19cc568b0b452c4f (2026-03-06): \"Used clinically in Japan as liver-support medication (20-60 mg/day oral, chronic liver conditions) · Used in China as injectable regulated pharmaceutical (stronger safety labeling required after post-marketing adverse events) · One NAFLD trial: 60 mg vs 120 mg/day for 8 weeks.\"",
+        "episode_url": "https://open.spotify.com/episode/0uRxClDt9iiUkqSK3BOc9R",
+        "timestamp": "2026-03-06 (email — no VTT timestamp)"
+      }
+    },
+    "female_specific_notes": "Taylor does not give female-specific DADA guidance on the record. Her DADA discussion is general-population endurance/lactate context — Taylor (JC1poI1OEog 01:18:16.280): \"it will increase the threshold to which your body will start to build up lactic acid, which makes it good for endurance, makes it good for weightlifting, and you definitely don't get as sore\" — and a passing lipid-helper mention — Taylor (hgI5Mpc-xDQ 01:27:01.040): \"carterine actually can help with lipids. Dada is another one that can help with lipids.\" No fertility, hormone-context, or female-only dosing signal in the corpus.",
+    "distilled_at": "2026-04-27T05:40:24.525Z",
+    "distilled_by": "claude"
   },
   "generated_at": "2026-04-27T02:02:34.970Z"
 }

@@ -214,11 +214,34 @@
     }
   },
   "reset_biology_synthesis": {
-    "status": "pending-codex-distillation",
-    "recommendation": null,
-    "caveats": null,
-    "cross_expert_consensus": null,
-    "cross_expert_disagreement": null
+    "status": "distilled",
+    "recommendation": "Reset Biology suggests asking the practitioner to consider Hunter's MCAS-stack framing as the operative voice on PEA: Hunter (email threadId 19ca15c5dc80c2e0, 2026-02-27): \"PEA (Palmitoylethanolamide) — CLEAN MAST CELL STABILIZER\" and \"Not a peptide — but extremely important\" with a loading-then-maintenance schedule. We'd ask the prescribing physician to weigh the gut-driven IBS use case Hunter (email threadId 19506a8ec76bb2df, 2025-02-14) lists — \"Best peptides for gut health/IBS? BPC-157, TB-500, KPV, oral tributyrin, PEA, and larazotide\" — and to confirm the ultra-micronized form, since Hunter (email threadId 19ca15c5dc80c2e0, 2026-02-27) explicitly says \"Use ultra-micronized form for absorption.\" Taylor mentions PEA only in passing as a component of oral gut-repair blends and gives no PEA-specific dose; Trevor's transcripts contain no Palmitoylethanolamide mentions (all keyword hits are 'pea protein' / 'pea smoothie' food references), so the librarian record is single-expert.",
+    "caveats": "- PEA is NOT a peptide — Hunter (email threadId 19ca15c5dc80c2e0, 2026-02-27): \"Not a peptide — but extremely important.\"\n- Form matters — Hunter (email threadId 19ca15c5dc80c2e0, 2026-02-27): \"Use ultra-micronized form for absorption.\"\n- Long-term continuation flagged — Hunter (email threadId 19ca15c5dc80c2e0, 2026-02-27): \"Long-term - LDN + PEA often continued long term.\"\n- Hunter's broader MCAS-stack honest caveat applies — Hunter (email threadId 19ca15c5dc80c2e0, 2026-02-27): \"NOT a cure-all\" and \"Genetic / mold-driven / trauma-driven nervous system / complex autoimmune cases — no stack fixes everything.\"\n- Single-expert evidence base — Trevor's transcript hits are all food-pea (e.g., Trevor (qd3wIAKuaME 00:00:30.240): \"every wannabe soy pea protein\"; Trevor (5O4vqJO61QU 00:26:43.679): \"Got to get this really great pea protein\"; Trevor (PEbu7E8QB_Y 00:27:45.120): \"Or whatever else like pea protein\"); no Trevor doses or claims about Palmitoylethanolamide are on record.\n- Taylor's PEA mentions are blend-level only — Taylor (hgI5Mpc-xDQ 00:15:40.160): \"and pea in them and those are also really good to help with inflammation\"; Taylor (JC1poI1OEog 00:57:35.040): \"you got BPC KPV PEA some of those other things in there\" — Taylor never gives a PEA-specific dose, so practitioner-level dosing must come from Hunter's verbatim or external authority.",
+    "cross_expert_consensus": "Where Hunter and Taylor overlap they both treat PEA as part of an oral gut/inflammation-modulating stack rather than a standalone protocol. Hunter (email threadId 19506a8ec76bb2df, 2025-02-14): \"Best peptides for gut health/IBS? BPC-157, TB-500, KPV, oral tributyrin, PEA, and larazotide.\" Taylor (hgI5Mpc-xDQ 00:15:37.600): \"most of those gut repair formulas have like tributinrin and pea in them and those are also really good to help with inflammation.\" Taylor (JC1poI1OEog 00:57:35.040): \"one of those peptide oral blends too with larazotide in it, but you got BPC KPV PEA some of those other things in there too.\" Trevor's transcripts contain no on-topic PEA quotes to confirm or refute.",
+    "cross_expert_disagreement": "There is no on-record disagreement, because only Hunter speaks to PEA dose, mechanism, and protocol. Taylor never gives a PEA-specific dose (only blend-level mentions), and Trevor's keyword hits are all food-pea protein references — for example Trevor (HbgvbVP8B-k 00:48:33.359): \"rice protein and your pea protein and your little vegan proteins, knock it off\" and Trevor (G6QnofqaYfM 00:14:22.480): \"unless you're eating guava and pea protein.\" Practitioners should note this asymmetry: any PEA-dose claim in this card is single-source Hunter; if Taylor or Trevor publish PEA-specific guidance later it should be added and reconciled.",
+    "acute_chronic_split": {
+      "acute": {
+        "dose": "Hunter (email threadId 19ca15c5dc80c2e0, 2026-02-27): \"Loading: 600 mg twice daily, 4-8 weeks.\"",
+        "route": "Hunter (email threadId 19ca15c5dc80c2e0, 2026-02-27) frames PEA in the MCAS stack as oral; he separately specifies \"Use ultra-micronized form for absorption,\" implying oral. No injectable PEA route is on record.",
+        "frequency": "Hunter (email threadId 19ca15c5dc80c2e0, 2026-02-27): \"600 mg twice daily.\"",
+        "duration": "Hunter (email threadId 19ca15c5dc80c2e0, 2026-02-27): \"4-8 weeks\" loading window.",
+        "verbatim_citation": "Hunter email threadId 19ca15c5dc80c2e0 (2026-02-27): \"Loading: 600 mg twice daily, 4-8 weeks\" and \"Use ultra-micronized form for absorption.\"",
+        "episode_url": "https://open.spotify.com/episode/4kMOv0WToaZ3KP0cMuvGHe",
+        "timestamp": "email threadId 19ca15c5dc80c2e0 — no VTT timestamp; The MCAS Peptide Stack newsletter, section #6 PEA"
+      },
+      "chronic": {
+        "dose": "Hunter (email threadId 19ca15c5dc80c2e0, 2026-02-27): \"Maintenance: 300-600 mg twice daily.\"",
+        "route": "Oral (ultra-micronized) — Hunter (email threadId 19ca15c5dc80c2e0, 2026-02-27): \"Use ultra-micronized form for absorption.\"",
+        "frequency": "Hunter (email threadId 19ca15c5dc80c2e0, 2026-02-27): \"300-600 mg twice daily.\"",
+        "duration": "Hunter (email threadId 19ca15c5dc80c2e0, 2026-02-27): \"Long-term - LDN + PEA often continued long term.\"",
+        "verbatim_citation": "Hunter email threadId 19ca15c5dc80c2e0 (2026-02-27): \"Maintenance: 300-600 mg twice daily\" and \"Long-term - LDN + PEA often continued long term.\"",
+        "episode_url": "https://open.spotify.com/episode/4kMOv0WToaZ3KP0cMuvGHe",
+        "timestamp": "email threadId 19ca15c5dc80c2e0 — no VTT timestamp; The MCAS Peptide Stack newsletter, section #6 PEA + Expected Timeline"
+      }
+    },
+    "female_specific_notes": null,
+    "distilled_at": "2026-04-27T05:31:14.062Z",
+    "distilled_by": "claude"
   },
   "generated_at": "2026-04-27T02:02:34.987Z"
 }

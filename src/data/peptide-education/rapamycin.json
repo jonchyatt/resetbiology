@@ -188,11 +188,26 @@
     }
   },
   "reset_biology_synthesis": {
-    "status": "pending-codex-distillation",
-    "recommendation": null,
-    "caveats": null,
-    "cross_expert_consensus": null,
-    "cross_expert_disagreement": null
+    "status": "distilled",
+    "recommendation": "Reset Biology suggests asking the practitioner to consider rapamycin as a use-case-specific cyclical mTOR-suppression tool, not a daily longevity standard, and to position it as an option for patients in their late 40s or 50s who are running an autophagy-focused phase. Hunter (0TyW-wlJMxo 00:24:42.200): \"I personally don't use rapamycin.\" Hunter (0TyW-wlJMxo 00:26:02.120): \"I think rapamycin can be appropriate, but I just wouldn't want to do it all the time.\" We'd ask the prescribing physician to weigh muscle-loss and frailty risk because Hunter (0TyW-wlJMxo 00:25:28.560): \"The problem is if you take mTOR suppression too far, we end up losing muscle\" and (0TyW-wlJMxo 00:25:38.320): \"low muscle, eventually lead to bone density.\"",
+    "caveats": "- Muscle/frailty ceiling: Hunter (0TyW-wlJMxo 00:25:28.560): \"The problem is if you take mTOR suppression too far, we end up losing muscle\"; Hunter (0TyW-wlJMxo 00:25:38.320): \"low muscle, eventually lead to bone density\"; Taylor (G27dIPBJUSs 00:25:43.679): \"Especially Especially after the age of 50.\"\n- Cycle-don't-stack: Hunter (0TyW-wlJMxo 00:25:55.320): \"you want to be cyclical in how you do that\"; Hunter (0TyW-wlJMxo 00:26:05.430): \"I just wouldn't want to do it all the time.\"\n- Stack-redundancy with autophagy agents: Hunter email threadId 19c970e1745b6a39 (2026-02-25): \"If you're already running rapamycin, aggressive fasting, or strong autophagy stacks → may be redundant.\"\n- Hunter explicitly does not personally use it: Hunter (0TyW-wlJMxo 00:24:42.200): \"I personally don't use rapamycin. I might mess around with it in the future\"; Hunter (0TyW-wlJMxo 00:25:01.640): \"I don't feel like I'm in a state right now, just based on everything that I can objectively measure for my health, that I would do that.\"\n- Magnitude warning: Hunter (0TyW-wlJMxo 00:23:58.679): \"rapamycin is a very large manual lever to suppress mTOR\"; Hunter (0TyW-wlJMxo 00:23:44.960): \"metformin is like rapamycin light\" — framing rapamycin as the heavier mTOR lever.",
+    "cross_expert_consensus": "Substantive consensus is limited to a single co-hosted Saturday Morning Coffee Talk where Hunter answers the rapamycin question while Taylor co-hosts. Hunter (0TyW-wlJMxo 00:26:08.120): \"there is very compelling data around rapamycin.\" Hunter (0TyW-wlJMxo 00:25:23.920): \"Rapamycin can be good. I I just think it's a use case thing.\" Mechanism framing both Hunter and Trevor share: Hunter (0TyW-wlJMxo 00:23:58.679): \"rapamycin is a very large manual lever to suppress mTOR\"; Trevor (DuRVkxq9MpE 00:23:54.320): \"the mTOR, mammalian target of rapamycin pathway, is… the central regulator of cell growth and protein synthesis\" — both treat rapamycin as the canonical mTOR-pathway reference compound. Hunter email threadId 19c970e1745b6a39 (2026-02-25): \"Rapamycin: direct mTOR inhibition.\"",
+    "cross_expert_disagreement": "No meaningful three-way disagreement on rapamycin in the available expert content — Trevor (DuRVkxq9MpE 00:23:54.320) only references rapamycin as the namesake of the mTOR pathway (\"the mTOR, mammalian target of rapamycin pathway\") with no dose, route, frequency, or duration content. Taylor's mentions in G27dIPBJUSs are the same co-hosted episode where Hunter answers; Taylor does not contribute distinct dose/route guidance. The only expert-level dose claim across the corpus is Hunter (0TyW-wlJMxo 00:24:50.480): \"I think that the standard dose is 6 mg\" — there is no contradicting dose number from Taylor or Trevor to disagree with.",
+    "acute_chronic_split": {
+      "acute": null,
+      "chronic": {
+        "dose": "Hunter (0TyW-wlJMxo 00:24:50.480): \"I think that the standard dose is 6 mg.\"",
+        "route": "Hunter (0TyW-wlJMxo 00:24:54.120): \"6 mg pill of rapamycin\" — oral pill.",
+        "frequency": "Hunter (0TyW-wlJMxo 00:24:52.240): \"You could maybe do on a rest day, take a 6 mg pill of rapamycin and get good mTOR suppression to which you're inducing some autophagy there\" — rest-day cadence, not daily; Hunter (0TyW-wlJMxo 00:26:05.430): \"I just wouldn't want to do it all the time.\"",
+        "duration": "Hunter (0TyW-wlJMxo 00:25:55.320): \"you want to be cyclical in how you do that\"; Hunter (0TyW-wlJMxo 00:26:00.120): \"if you're in a cycle or a phase where that would be more of the focus, I think rapamycin can be appropriate.\"",
+        "verbatim_citation": "Hunter (0TyW-wlJMxo 00:24:47.560): \"I think as people get into their late 40s and 50s, they could probably take… I think that the standard dose is 6 mg. You could maybe do on a rest day, take a 6 mg pill of rapamycin and get good mTOR suppression to which you're inducing some autophagy there.\"",
+        "episode_url": "https://youtu.be/0TyW-wlJMxo",
+        "timestamp": "00:24:47.560 — 00:25:01.630 (dose+route+frequency block); cyclical framing 00:25:55.320 — 00:26:08.110"
+      }
+    },
+    "female_specific_notes": null,
+    "distilled_at": "2026-04-27T05:30:31.154Z",
+    "distilled_by": "claude"
   },
   "generated_at": "2026-04-27T02:02:34.832Z"
 }

@@ -65,11 +65,26 @@
     }
   },
   "reset_biology_synthesis": {
-    "status": "pending-codex-distillation",
-    "recommendation": null,
-    "caveats": null,
-    "cross_expert_consensus": null,
-    "cross_expert_disagreement": null
+    "status": "distilled",
+    "recommendation": "Reset Biology suggests asking the practitioner to consider Urolithin A as a chronic, daily oral mitophagy support rather than an acute-injury tool, because Hunter (4igc2UpFr7Q 00:33:59.160): \"Urolithin A, I would say the the capsules are typically like 500 mg. So I would say 1 to 2 g of Urolithin A per day,\" and Hunter (4igc2UpFr7Q 00:34:33.879): \"I think they're just good things to have in as a background player.\" Taylor and Trevor are silent on this compound across the indexed corpus, so we'd ask the prescribing physician to weigh dose and stacking decisions against Hunter's signal alone and to confirm interactions with any concurrent GLP-1, peptide, or supplement protocol.",
+    "caveats": "- Single-expert evidence base: only Hunter discusses Urolithin A in the indexed corpus; Taylor and Trevor have zero mentions, so cross-expert triangulation is unavailable.\n- Hunter (4igc2UpFr7Q 00:33:38.160): \"What is a really good one that I can go to to finish it up?\" framing — the dose guidance is delivered as a conversational closer, not a structured protocol; surface that hedge to the practitioner.\n- Hunter positions Urolithin A as a complementary mitochondrial compound, not a standalone — Hunter email threadId 197a40227534e0d0 (2025-06-24): \"This includes compounds such as BAM15, SLU-PP-332, Urolithin A, L-carnitine, SS-31, and MOTS-c.\"\n- Hunter (4igc2UpFr7Q 00:34:21.280): \"I have great energy when I take those. I feel really good\" is a self-report, not a controlled outcome — preserve as anecdote, not endorsement.\n- No baseline_protocol exists in Hunter's 2023 cheat sheet for Urolithin A — there is no older floor to override; this 2026 podcast is the only operative dosing signal we have.",
+    "cross_expert_consensus": "Not applicable — only Hunter Williams discusses Urolithin A in the indexed corpus (Hunter mention_count 14; Taylor 0; Trevor 0). Hunter's standalone position: Hunter (4igc2UpFr7Q 00:33:57.160): \"Yes, I do. I love both of those compounds\" (referring to Urolithin A and spermidine), and Hunter email threadId 19d5563af433c548 (2026-04-03): \"Mitophagy + Autophagy Background Players - Urolithin A dosing - Spermidine dosing.\" Taylor and Trevor have no transcript signal for this compound, so consensus cannot be triangulated.",
+    "cross_expert_disagreement": "Not applicable — Taylor Williams and Trevor Bachmeyer have zero indexed mentions of Urolithin A in their podcast/email corpora. There is no expert-vs-expert dose, route, frequency, or duration disagreement to surface. The only intra-expert nuance is Hunter framing Urolithin A as one of several substitutes for BPC-157 / TB500 healing routes — Hunter (4igc2UpFr7Q 00:33:11.000 area): \"there's other peptides out there that can get you the same goal\" — versus framing it strictly as a mitophagy/autophagy background player in Hunter email threadId 19d5563af433c548 (2026-04-03): \"Mitophagy + Autophagy Background Players - Urolithin A dosing.\"",
+    "acute_chronic_split": {
+      "acute": null,
+      "chronic": {
+        "dose": "Hunter (4igc2UpFr7Q 00:34:01.520): \"like 500 mg. So I would say 1 to 2 g of spermidine or excuse me, of Urolithin A per day. And that'd be like two two to four capsules of most Urolithin A brands.\"",
+        "route": "Hunter (4igc2UpFr7Q 00:33:59.160): \"the capsules are typically like 500 mg\" — oral capsule.",
+        "frequency": "Hunter (4igc2UpFr7Q 00:34:07.560): \"of Urolithin A per day.\"",
+        "duration": null,
+        "verbatim_citation": "Hunter (4igc2UpFr7Q 00:33:59.160): \"Urolithin A, I would say the the capsules are typically like 500 mg. So I would say 1 to 2 g of Urolithin A per day. And that'd be like two two to four capsules of most Urolithin A brands.\" Hunter (4igc2UpFr7Q 00:34:33.879): \"I think they're just good things to have in as a background player.\"",
+        "episode_url": "https://youtu.be/4igc2UpFr7Q",
+        "timestamp": "00:33:59.160; 00:34:01.520; 00:34:07.560; 00:34:33.879"
+      }
+    },
+    "female_specific_notes": null,
+    "distilled_at": "2026-04-27T05:40:07.949Z",
+    "distilled_by": "claude"
   },
   "generated_at": "2026-04-27T02:02:34.959Z"
 }

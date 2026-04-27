@@ -152,11 +152,34 @@
     }
   },
   "reset_biology_synthesis": {
-    "status": "pending-codex-distillation",
-    "recommendation": null,
-    "caveats": null,
-    "cross_expert_consensus": null,
-    "cross_expert_disagreement": null
+    "status": "distilled",
+    "recommendation": "Reset Biology suggests asking the practitioner to consider Hunter's tiered subcutaneous protocol — Hunter email threadId 195d486531c37652 (2025-03-26) frames it as 'three specific protocols tailored to different situations' with 'Dosage: 500 mcg (0.5 mg) subcutaneously daily' for longevity/maintenance, 'Dosage: 1 mg subcutaneously daily' for intermediate (long COVID, asthma, mild COPD), and 'Dosage: 2 mg subcutaneously daily' for severe/acute respiratory conditions. We'd ask the prescribing physician to weigh duration because Hunter email threadId 195d486531c37652 (2025-03-26) lists '30 days, repeated every 4–6 months' for the longevity tier and '30–45 days' for the intensive tier, while the newer Hunter email threadId 19af0c0c3b0300ba (2025-12-05) extends a 5-peptide lung-stack including Bronchogen at '2 mg | Injection | 12 weeks.' Taylor and Trevor have no published Bronchogen content, so the synthesis is single-expert and Hunter himself frames the data as preliminary.",
+    "caveats": "- Single-expert evidence base: Taylor Williams and Dr Trevor Bachmeyer have no Bronchogen mentions in the corpus — this card draws entirely from Hunter Williams emails.\n- Hunter's own hedging on the evidence: Hunter email threadId 195d486531c37652 (2025-03-26): \"The data is limited, but after experimenting with several of them and getting feedback from my inner circle, I feel confident in the new peptide cheat sheet I will put out with these injectable bioregulators.\"\n- Hunter email threadId 19af0c0c3b0300ba (2025-12-05): \"All of this is experimental. I'm just a guy on the internet who loves reading studies and has seen this work in real people, including my own family.\"\n- Animal/cellular-data preponderance: Hunter email threadId 195d486531c37652 (2025-03-26): \"Bronchogen has shown impressive potential in multiple animal and cellular studies, with powerful real-world testimonials from biohackers, integrative clinicians, and patients themselves.\"\n- Dose-tier duration ceiling — Hunter email threadId 195d486531c37652 (2025-03-26) caps the intensive 2 mg/day tier at \"30–45 days,\" but the newer Hunter email threadId 19af0c0c3b0300ba (2025-12-05) runs 2 mg/day for \"12 weeks\" inside a 5-peptide lung stack — clinician should reconcile.\n- Route is exclusively subcutaneous injection across all Hunter sources — Hunter email threadId 195d486531c37652 (2025-03-26): \"2 mg Bronchogen, injected subcutaneously, daily for at least 30 days.\"\n- No female-specific signal: Taylor Williams has no Bronchogen content, so fertility/hormone-context guidance is absent — clinician should not extrapolate.",
+    "cross_expert_consensus": "Single-expert synthesis — only Hunter Williams has published Bronchogen content. Cross-expert consensus is not assessable from the corpus. Hunter's own internally-consistent claim across two emails: route is subcutaneous injection. Hunter email threadId 195d486531c37652 (2025-03-26): \"2 mg Bronchogen, injected subcutaneously, daily for at least 30 days.\" Hunter email threadId 19af0c0c3b0300ba (2025-12-05) lists Bronchogen at \"2 mg | Injection | 12 weeks\" inside the 5-peptide lung stack. Mechanism framing also internally consistent: Hunter email threadId 19af0c0c3b0300ba (2025-12-05): \"Injectable bioregulators penetrate lung cells, get into nucleus, bind DNA + histone proteins\" and \"Bioregulator peptide derived from bronchial tissue.\"",
+    "cross_expert_disagreement": "No cross-expert disagreement assessable — Taylor Williams and Dr Trevor Bachmeyer have no Bronchogen mentions in the corpus. Within Hunter's own content, the duration of the 2 mg/day intensive tier shifts between sources: Hunter email threadId 195d486531c37652 (2025-03-26): \"Dosage: 2 mg subcutaneously daily\" / \"Duration: 30–45 days\" / \"Ideal For: Severe COPD cases (like my father-in-law), advanced emphysema, severe chronic inflammation, or acute respiratory conditions needing rapid and profound repair,\" while the newer Hunter email threadId 19af0c0c3b0300ba (2025-12-05) lists \"Bronchogen | 2 mg | Injection | 12 weeks\" inside the lung-stack protocol. Newer 2025-12-05 content extends duration; the 2025-03-26 source frames 2 mg/day as the high-acuity tier capped at 45 days. Both should be surfaced to the clinician, not averaged.",
+    "acute_chronic_split": {
+      "acute": {
+        "dose": "Hunter email threadId 195d486531c37652 (2025-03-26): \"Dosage: 2 mg subcutaneously daily.\"",
+        "route": "Hunter email threadId 195d486531c37652 (2025-03-26): \"2 mg Bronchogen, injected subcutaneously, daily for at least 30 days.\"",
+        "frequency": "Hunter email threadId 195d486531c37652 (2025-03-26): \"daily.\"",
+        "duration": "Hunter email threadId 195d486531c37652 (2025-03-26): \"Duration: 30–45 days.\"",
+        "verbatim_citation": "Hunter email threadId 195d486531c37652 (2025-03-26): \"🔴 Intensive Protocol (Severe Issues, Advanced COPD, Acute Conditions): Dosage: 2 mg subcutaneously daily / Duration: 30–45 days / Ideal For: Severe COPD cases (like my father-in-law), advanced emphysema, severe chronic inflammation, or acute respiratory conditions needing rapid and profound repair.\"",
+        "episode_url": "https://huntershealthhacks.beehiiv.com/p/healing-the-lungs",
+        "timestamp": "Hunter email threadId 195d486531c37652 (2025-03-26)"
+      },
+      "chronic": {
+        "dose": "Hunter email threadId 195d486531c37652 (2025-03-26): \"Dosage: 500 mcg (0.5 mg) subcutaneously daily\" (longevity/maintenance tier); Hunter email threadId 195d486531c37652 (2025-03-26): \"Dosage: 1 mg subcutaneously daily\" (intermediate tier for long COVID, mild COPD, asthma); Hunter email threadId 19af0c0c3b0300ba (2025-12-05): \"Bronchogen | 2 mg | Injection | 12 weeks\" (5-peptide lung stack).",
+        "route": "Hunter email threadId 195d486531c37652 (2025-03-26): \"subcutaneously\"; Hunter email threadId 19af0c0c3b0300ba (2025-12-05): \"Injection.\"",
+        "frequency": "Hunter email threadId 195d486531c37652 (2025-03-26): \"daily\"; Hunter email threadId 19af0c0c3b0300ba (2025-12-05) protocol table column: \"Daily Dose.\"",
+        "duration": "Hunter email threadId 195d486531c37652 (2025-03-26): \"30 days, repeated every 4–6 months\" (longevity tier); Hunter email threadId 195d486531c37652 (2025-03-26): \"30–60 days\" (intermediate tier); Hunter email threadId 19af0c0c3b0300ba (2025-12-05): \"12 weeks\" (lung stack).",
+        "verbatim_citation": "Hunter email threadId 195d486531c37652 (2025-03-26): \"🟢 Longevity & Maintenance Protocol: Dosage: 500 mcg (0.5 mg) subcutaneously daily / Duration: 30 days, repeated every 4–6 months / Ideal For: General respiratory health, anti-aging, immunity enhancement, and ongoing lung maintenance.\" Hunter email threadId 195d486531c37652 (2025-03-26): \"🟡 Intermediate Protocol (Long COVID, Asthma, Mild COPD): Dosage: 1 mg subcutaneously daily / Duration: 30–60 days / Ideal For: Long COVID sufferers, mild-to-moderate asthma, chronic bronchitis, or COPD patients seeking stronger improvement in breathing, energy, and inflammation reduction.\" Hunter email threadId 19af0c0c3b0300ba (2025-12-05): \"Bronchogen | 2 mg | Injection | 12 weeks.\"",
+        "episode_url": "https://open.spotify.com/episode/0heRIsC6pUEWN9mZptGkF2",
+        "timestamp": "Hunter email threadId 195d486531c37652 (2025-03-26); Hunter email threadId 19af0c0c3b0300ba (2025-12-05)"
+      }
+    },
+    "female_specific_notes": null,
+    "distilled_at": "2026-04-27T05:39:24.556Z",
+    "distilled_by": "claude"
   },
   "generated_at": "2026-04-27T02:02:35.001Z"
 }

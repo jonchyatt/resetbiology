@@ -68,11 +68,26 @@
     }
   },
   "reset_biology_synthesis": {
-    "status": "pending-codex-distillation",
-    "recommendation": null,
-    "caveats": null,
-    "cross_expert_consensus": null,
-    "cross_expert_disagreement": null
+    "status": "distilled",
+    "recommendation": "Reset Biology suggests asking the practitioner to consider Acetyl-L-Carnitine (ALCAR) only as the oral, brain-targeted variant of the carnitine family — not as a substitute for injectable L-carnitine in fat-loss or hypertrophy contexts. Hunter email threadId 1955918cc4dbdc51 (2025-03-02) writes \"Acetyl L-Carnitine (ALCAR) crosses the blood-brain barrier more effectively than other forms, making it great for cognitive function, focus, and neuroprotection,\" and Hunter email threadId 19a993b895f1dcb2 (2025-11-18) frames it as a stack-companion: \"+ 1 g acetyl-L-carnitine oral AM (cognitive + mood).\" We'd ask the prescribing physician to weigh that ALCAR's oral bioavailability is bounded — Hunter email threadId 1955918cc4dbdc51 (2025-03-02): \"Oral L-Carnitine (Including Acetyl L-Carnitine) has a very low bioavailability—meaning your body only absorbs 10-18% of what you take\" — so it should not be sold to a patient as an alternate route to androgen-receptor or hypertrophy outcomes.",
+    "caveats": "- Indication-scope caveat: ALCAR is positioned as cognitive / neuroprotective only, NOT as a route-substitute for injectable L-carnitine. Hunter email threadId 1955918cc4dbdc51 (2025-03-02): \"But can oral L-carnitine upregulate androgen receptors, increase ligand binding affinity, and enhance hypertrophy? Not really.\"\n- Bioavailability ceiling: Hunter email threadId 1955918cc4dbdc51 (2025-03-02): \"Oral L-Carnitine (Including Acetyl L-Carnitine) has a very low bioavailability—meaning your body only absorbs 10-18% of what you take.\"\n- Tolerability advantage over plain oral L-carnitine: Hunter email threadId 1955918cc4dbdc51 (2025-03-02): \"It's also better tolerated in higher doses than regular oral L-carnitine and doesn't cause the same digestive issues that can come from high-dose oral carnitine.\"\n- Oral carnitine class TMAO concern (applies to oral L-carnitine; Hunter does not explicitly carve ALCAR out from this): Hunter email threadId 1955918cc4dbdc51 (2025-03-02): \"Some people experience GI distress with oral L-Carnitine—especially at higher doses. It can also increase TMAO (Trimethylamine-N-Oxide) levels, which has been linked to cardiovascular risks.\"\n- Stack context (not standalone fat-loss / hypertrophy): Hunter email threadId 1955918cc4dbdc51 (2025-03-02): \"Cognitive Enhancement (Stacking with ALCAR): 500mg Injectable L-Carnitine + 1g Acetyl L-Carnitine orally in the morning.\"\n- No Taylor (women-specific) or Trevor (SmashweRx) signal in the corpus for ALCAR specifically — recommendations rest on Hunter only.",
+    "cross_expert_consensus": "_(no consensus available — only Hunter Williams discusses Acetyl-L-Carnitine specifically in the corpus; Taylor Williams and Trevor Bachmeyer have no ALCAR-specific signal. Hunter's two emails internally agree on indication: oral ALCAR = brain / cognitive use, not body-composition use.)_ Hunter email threadId 1955918cc4dbdc51 (2025-03-02): \"Acetyl L-Carnitine (ALCAR) crosses the blood-brain barrier more effectively than other forms, making it great for cognitive function, focus, and neuroprotection.\" Hunter email threadId 19a993b895f1dcb2 (2025-11-18) reinforces same role in stack: \"+ 1 g acetyl-L-carnitine oral AM (cognitive + mood).\"",
+    "cross_expert_disagreement": "_(no inter-expert disagreement available — Taylor and Trevor do not address Acetyl-L-Carnitine specifically in the indexed corpus.)_ Internal Hunter-vs-Hunter framing tension worth surfacing: Hunter email threadId 1955918cc4dbdc51 (2025-03-02) describes ALCAR as a \"solid option\" for brain mitochondrial support — \"If you're looking to enhance mitochondrial function in the brain, ALCAR is a solid option\" — while flatly excluding it from body-composition outcomes — \"But can oral L-carnitine upregulate androgen receptors, increase ligand binding affinity, and enhance hypertrophy? Not really.\" Newer Hunter email threadId 19a993b895f1dcb2 (2025-11-18) keeps the same scope, listing ALCAR only as the oral cognitive add-on inside an injectable-IM \"Default protocol\": \"400-500 mg IM before training, 3-4× per week\" + \"1 g acetyl-L-carnitine oral AM (cognitive + mood).\" The newer email therefore confirms — does not contradict — the older.",
+    "acute_chronic_split": {
+      "acute": null,
+      "chronic": {
+        "dose": "Hunter email threadId 1955918cc4dbdc51 (2025-03-02): \"1g Acetyl L-Carnitine orally in the morning\" (within the cognitive-stack protocol). Hunter email threadId 19a993b895f1dcb2 (2025-11-18): \"+ 1 g acetyl-L-carnitine oral AM (cognitive + mood).\"",
+        "route": "Hunter email threadId 1955918cc4dbdc51 (2025-03-02): \"Acetyl L-Carnitine (ALCAR) crosses the blood-brain barrier more effectively than other forms\" — oral. Hunter email threadId 19a993b895f1dcb2 (2025-11-18): \"oral AM.\"",
+        "frequency": "Hunter email threadId 1955918cc4dbdc51 (2025-03-02): \"orally in the morning\" (daily AM dose implied by stack instruction). Hunter email threadId 19a993b895f1dcb2 (2025-11-18): \"oral AM\" within \"Default protocol (Hunter's recommendation).\"",
+        "duration": null,
+        "verbatim_citation": "Hunter email threadId 1955918cc4dbdc51 (2025-03-02): \"Cognitive Enhancement (Stacking with ALCAR): 500mg Injectable L-Carnitine + 1g Acetyl L-Carnitine orally in the morning.\" Hunter email threadId 19a993b895f1dcb2 (2025-11-18): \"+ 1 g acetyl-L-carnitine oral AM (cognitive + mood).\"",
+        "episode_url": "https://huntershealthhacks.beehiiv.com/p/injectable-vs-oral-l-carnitine",
+        "timestamp": "email 2025-03-02 threadId 1955918cc4dbdc51; email 2025-11-18 threadId 19a993b895f1dcb2"
+      }
+    },
+    "female_specific_notes": null,
+    "distilled_at": "2026-04-27T05:39:38.611Z",
+    "distilled_by": "claude"
   },
   "generated_at": "2026-04-27T02:02:34.991Z"
 }

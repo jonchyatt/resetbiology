@@ -660,11 +660,34 @@
     }
   },
   "reset_biology_synthesis": {
-    "status": "pending-codex-distillation",
-    "recommendation": null,
-    "caveats": null,
-    "cross_expert_consensus": null,
-    "cross_expert_disagreement": null
+    "status": "distilled",
+    "recommendation": "Reset Biology suggests asking the practitioner to consider the newer low-microgram chronic frame as the operative ceiling: Trevor (LPeTrmJI380 00:20:11.919) says, \"we're talking micrograms, not millig. We're talking 100, 200, 250, 500 micrograms at the max every day,\" while Hunter's 2023 baseline_protocol lists \"Dose\" \"250 mcg,\" \"Timing\" \"AM/PM,\" \"Frequency\" \"Every day,\" \"Duration\" \"8 weeks on, 8 weeks off.\" We'd ask the prescribing physician to weigh route and neuropsychiatric context because Hunter (4igc2UpFr7Q 00:23:33.200) says \"BPC-157 can affect dopamine regulation\" and Taylor (sRcDkKFFBG0 00:22:52.279) says \"you are better off um taking this peptide um subcutaneously.\"",
+    "caveats": "- Dopamine/psychotropic context: Hunter (4igc2UpFr7Q 00:23:33.200) \"BPC-157 can affect dopamine regulation\"; Hunter (4igc2UpFr7Q 00:23:53.560) \"it might be the peptide, or it could be the peptide with your unique neurochemistry with the psychotropic drug that you're combining with it.\"\n- Cancer-history caution: Hunter email threadId 195b595300fd118e (2025-03-20) uses the heading \"Personal/family history of cancer\" and says \"Reasonable to be extra cautious.\"\n- Route dispute: Hunter email threadId 1999788e1ce25670 (2025-09-29) \"Injections remain GOLD STANDARD\" and \"If someone refuses to inject, oral (especially arginate) may still provide benefits\"; Taylor (sRcDkKFFBG0 00:22:56.919) \"personally my opinion I don't think the oral bpc does much\"; Trevor (LPeTrmJI380 00:38:09.119) \"BPC57 is highly bioavailable when it's injected subcutaneously\" and (LPeTrmJI380 00:38:13.440) \"less than 1% bioavailability orally.\"\n- Dose ceiling/cycling tension: Trevor (O_hbAtgMSE8 00:03:21.360) \"do not take 2 milligs every day or anything like that\"; Trevor (LPeTrmJI380 00:20:15.679) \"We're talking 100, 200, 250, 500 micrograms at the max every day\"; Taylor (eWfRxGQ45jg 00:13:43.959) \"it's really important to do cycling with your peptides especially bpc 157.\"",
+    "cross_expert_consensus": "Quoted overlap: Hunter email threadId 1999788e1ce25670 (2025-09-29): \"Injections remain GOLD STANDARD\" and \"Powerful for digestive health, possibly supportive for whole-body healing.\" Taylor (eWfRxGQ45jg 00:04:15.079): \"it can help with um muscle tears and tendons and ligaments it can also help with gut health.\" Trevor (jD6S-RfYZhY 00:15:33.400): \"Regenerates damaged gastric mucosa\"; Trevor (jD6S-RfYZhY 00:15:38.040): \"Restores tight junctions in your intestinal lining\"; Trevor (jD6S-RfYZhY 00:15:40.920): \"Promotes angiogenesis, which is new blood flow formation in damaged tissues.\" Dose quotes: Hunter 2023 baseline_protocol lists \"Dose\" \"250 mcg\"; Taylor (eWfRxGQ45jg 00:13:13.000) \"250 micrograms of it\"; Trevor (LPeTrmJI380 00:20:15.679) \"100, 200, 250, 500 micrograms at the max every day.\"",
+    "cross_expert_disagreement": "Oral route differs sharply. Hunter email threadId 1999788e1ce25670 (2025-09-29): \"When I first started looking, I was convinced oral BPC-157 was overhyped. After poring over the studies, I've had to ADJUST my stance\" and \"If someone refuses to inject, oral (especially arginate) may still provide benefits.\" Taylor (sRcDkKFFBG0 00:22:35.080): \"you can take this peptide orally\" but Taylor (sRcDkKFFBG0 00:22:38.080) says \"my experience with this peptite Orly is that it doesn't do much other than help with a little bit with helping your stomach.\" Trevor (LPeTrmJI380 00:08:21.680) says \"cannot take it orally\" and Trevor (LPeTrmJI380 00:38:13.440) says \"It is almost worthless. When I say almost, less than 1% bioavailability orally.\" Cycling/forever also differs: Hunter 2023 baseline_protocol lists \"Duration\" \"8 weeks on, 8 weeks off\"; Taylor (eWfRxGQ45jg 00:13:25.959) says \"eight weeks\" and Taylor (eWfRxGQ45jg 00:13:43.959) says \"it's really important to do cycling\"; Trevor (LPeTrmJI380 00:19:53.280) says \"for longevity, taking this forever\" and (LPeTrmJI380 00:20:00.720) \"low dose, consistent daily works better.\" Newer Trevor dose content overrides older Trevor dose content: older Trevor (nRi9GqTfGqY 00:00:51.520) says \"one milligram every day\" and (nRi9GqTfGqY 00:00:54.000) \"I'm going to do that forever,\" while newer Trevor (LPeTrmJI380 00:20:15.679) says \"100, 200, 250, 500 micrograms at the max every day.\"",
+    "acute_chronic_split": {
+      "acute": {
+        "dose": "Trevor (O_hbAtgMSE8 00:04:04.799): \"Took 2 millig of BPC and 500 micrograms of KPV\"; Trevor (O_hbAtgMSE8 00:03:21.360): \"do not take 2 milligs every day or anything like that.\"",
+        "route": "Trevor (O_hbAtgMSE8 00:09:54.800): \"You cannot take it anything other than subq. Period.\"",
+        "frequency": null,
+        "duration": null,
+        "verbatim_citation": "Trevor (LPeTrmJI380 00:19:48.400): \"For an acute injury, bomb that thing.\" Trevor (O_hbAtgMSE8 00:04:04.799): \"Took 2 millig of BPC and 500 micrograms of KPV.\"",
+        "episode_url": "https://youtu.be/O_hbAtgMSE8",
+        "timestamp": "00:04:04.799; route 00:09:54.800; acute frame LPeTrmJI380 00:19:48.400"
+      },
+      "chronic": {
+        "dose": "Trevor (LPeTrmJI380 00:20:11.919): \"we're talking micrograms, not millig. We're talking 100, 200, 250, 500 micrograms at the max every day.\"",
+        "route": "Trevor (LPeTrmJI380 00:38:09.119): \"BPC57 is highly bioavailable when it's injected subcutaneously\"; Trevor (LPeTrmJI380 00:38:13.440): \"less than 1% bioavailability orally.\"",
+        "frequency": "Trevor (LPeTrmJI380 00:20:00.720): \"low dose, consistent daily works better.\"",
+        "duration": "Trevor (LPeTrmJI380 00:19:53.280): \"for longevity, taking this forever.\"",
+        "verbatim_citation": "Trevor (LPeTrmJI380 00:19:42.160): \"lower consistent daily dosing works far better than highdosese cycling.\" Trevor (LPeTrmJI380 00:20:15.679): \"We're talking 100, 200, 250, 500 micrograms at the max every day.\"",
+        "episode_url": "https://youtu.be/LPeTrmJI380",
+        "timestamp": "00:19:42.160; 00:20:15.679; 00:38:09.119"
+      }
+    },
+    "female_specific_notes": "Taylor (sRcDkKFFBG0 00:20:34.880): \"bpc 157 is going to help with our postmenopausal ladies\"; Taylor (sRcDkKFFBG0 00:20:45.480): \"as we age unfortunately the inflammation goes up\"; Taylor (sRcDkKFFBG0 00:22:21.600): \"dosing recommendations is going to be 250 microgram 5 days a week with this peptide\" and (sRcDkKFFBG0 00:22:28.640) \"eight weeks on eight weeks off.\" Taylor (XyN5pku7hZM 00:08:12.560): \"bpc 157 is great if you are dealing with menstrual cramps\" and (XyN5pku7hZM 00:08:21.720) \"severe menstrual cramps for the ladies.\" Taylor (hjJPYEhOvAw 00:01:35.520): \"for women our thyroid is super super super important.\"",
+    "distilled_at": "2026-04-27T03:51:55.605Z",
+    "distilled_by": "codex"
   },
   "generated_at": "2026-04-27T02:02:34.746Z"
 }

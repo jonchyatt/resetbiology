@@ -27,11 +27,18 @@
     }
   },
   "reset_biology_synthesis": {
-    "status": "pending-codex-distillation",
-    "recommendation": null,
-    "caveats": null,
-    "cross_expert_consensus": null,
-    "cross_expert_disagreement": null
+    "status": "distilled",
+    "recommendation": "Reset Biology has no expert-corpus data on MOTS-c yet; we'd ask the practitioner to defer until source content is added. The only signal currently on file is Hunter Williams's 2023 cheat-sheet entry (Fat Loss; 2 mg AM every 3rd day for 2 weeks), which predates the podcast/email corpus this library distills from and has not been confirmed by Hunter, Taylor, or Trevor on the record.",
+    "caveats": "- No expert-corpus signal available in 503 transcripts + 280 emails as of distillation date (2026-04-26).\n- Only reference on file is Hunter Williams + Jay Campbell 2023 cheat sheet (data/peptide-libraries/cross-expert/cheat-sheets/hunter-williams-jay-campbell-peptide-cheat-sheet-2023.pdf): 5 mg vial, 2 mL BAC, 2 mg dose (~80 units on 1 mL insulin syringe), AM, every 3rd day, 2 weeks — treat as 2023-frozen, unconfirmed by newer expert content.\n- No verbatim podcast or email citations exist for MOTS-c from Hunter Williams, Taylor Williams, or Dr Trevor Bachmeyer in the current corpus; any dose, route, frequency, or contraindication claim would be ungrounded.\n- No female-specific signal from Taylor Williams; no acute-vs-chronic distinction from Trevor Bachmeyer in corpus.\n- Recommend re-running distillation once additional Hunter/Taylor/Trevor source material on MOTS-c is ingested.",
+    "cross_expert_consensus": "No cross-expert consensus available — MOTS-c has 0 mentions across Hunter Williams, Taylor Williams, and Dr Trevor Bachmeyer in the current corpus (503 transcripts + 280 emails as of 2026-04-26).",
+    "cross_expert_disagreement": "No cross-expert disagreement available — MOTS-c has 0 mentions across Hunter Williams, Taylor Williams, and Dr Trevor Bachmeyer in the current corpus (503 transcripts + 280 emails as of 2026-04-26).",
+    "acute_chronic_split": {
+      "acute": null,
+      "chronic": null
+    },
+    "female_specific_notes": null,
+    "distilled_at": "2026-04-27T05:38:22.472Z",
+    "distilled_by": "claude"
   },
   "generated_at": "2026-04-27T02:02:35.017Z"
 }

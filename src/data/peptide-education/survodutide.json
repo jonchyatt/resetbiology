@@ -94,11 +94,26 @@
     }
   },
   "reset_biology_synthesis": {
-    "status": "pending-codex-distillation",
-    "recommendation": null,
-    "caveats": null,
-    "cross_expert_consensus": null,
-    "cross_expert_disagreement": null
+    "status": "distilled",
+    "recommendation": "Reset Biology suggests asking the practitioner to consider survodutide as a GLP-1/glucagon dual agonist alternative rather than a first-line peptide, given Hunter email threadId 19d45fc334be87a7 (2026-03-31): \"Survodutide and mazdutide are not retatrutide. But they're not far off. And they fill important gaps that tirzepatide and semaglutide can't address.\" If introducing it, we'd ask the prescribing physician to weigh Hunter's slow-titration framing — Hunter email threadId 19d45fc334be87a7 (2026-03-31): \"People who escalate every 4 weeks instead of every 2 weeks are far more compliant and much better able to stay on the compound long term. Don't rush the titration\" — and Hunter's dose-splitting trick — Hunter email threadId 19d45fc334be87a7 (2026-03-31): \"Always prefer to split weekly total across 2-3 injections rather than all at once.\" Taylor and Trevor have not addressed this peptide on record.",
+    "caveats": "- Phase 2 GI tolerability concerns: Hunter email threadId 19d45fc334be87a7 (2026-03-31): \"Survodutide (rougher Phase 2) - 66% nausea, 49% diarrhea, 41% vomiting - 20-24% discontinuation during rapid bi-weekly dose escalation.\"\n- Approval status — not approved: Hunter email threadId 19d45fc334be87a7 (2026-03-31): \"NOT approved anywhere yet\" and \"Holds FDA Breakthrough Therapy designations specifically for MASH\"; \"Phase 3 SYNCHRONIZE trials fully enrolled (1,400+ patients) - Results expected first half of 2026.\"\n- Titration cadence is load-bearing: Hunter email threadId 19d45fc334be87a7 (2026-03-31): \"Phase 2 aggressive bi-weekly escalation caused dropouts\" and \"Phase 3 = 4-week titration intervals + dose flexibility + pause/restart option.\"\n- Crossover from retatrutide is not 1:1: Hunter email threadId 19d45fc334be87a7 (2026-03-31): \"Likely need to scale down Reta dose before introducing either of these\" and \"Same GLP-1 pathway but glucagon agonism feels different from GIP.\"\n- Receptor ratio matters for use-case selection: Hunter email threadId 19d45fc334be87a7 (2026-03-31): \"Survodutide = GLP-1 dominant (~8:1 ratio) - Like 'semaglutide with little glucagon cherry on top' - Strong appetite suppression + modest energy expenditure boost.\"\n- Hunter's personal lean is mazdutide, not survodutide: Hunter email threadId 19d45fc334be87a7 (2026-03-31): \"'Mazdutide' — appetite isn't completely out of control, wants more energy expenditure + liver fat benefit.\"\n- Taylor (women-focused) and Trevor (Bachmeyer) have no on-record signal for this peptide — single-expert card.",
+    "cross_expert_consensus": "No cross-expert consensus available — only Hunter has on-record content for survodutide (11 mentions, all from Hunter email threadId 19d45fc334be87a7 (2026-03-31) \"Survodutide & Mazdutide (GLP-1/Glucagon Duo)\"). Taylor Williams and Trevor Bachmeyer have not discussed this peptide in the indexed library.",
+    "cross_expert_disagreement": "No cross-expert disagreement available — Taylor Williams and Trevor Bachmeyer have not discussed survodutide on record. Internal Hunter tension is between the Phase 2 trial \"Phase 3 target: 3.6 mg + 6.0 mg\" — Hunter email threadId 19d45fc334be87a7 (2026-03-31) — and Hunter's own \"starting from scratch\" rec — Hunter email threadId 19d45fc334be87a7 (2026-03-31): \"1-2 mg/wk to begin (either compound) - See response, scale from there - Minimum 4 weeks at each dose before moving up.\" Both go in with the trial spec as ceiling and Hunter's rec as the floor; we'd ask the prescribing physician to weigh which framing fits the patient.",
+    "acute_chronic_split": {
+      "acute": null,
+      "chronic": {
+        "dose": "Hunter email threadId 19d45fc334be87a7 (2026-03-31): \"Phase 3 target: 3.6 mg + 6.0 mg\"; Hunter \"starting from scratch\" rec: \"1-2 mg/wk to begin (either compound).\" Comparison-chart efficacy reference: \"Survodutide | 4.8 mg/wk | GLP-1 + Glucagon | 46 wk | ~18.7% [max weight loss] | ~67% (>30% [liver fat reduction]).\"",
+        "route": "Hunter email threadId 19d45fc334be87a7 (2026-03-31): \"Once weekly\" subcutaneous (parent section heading: \"Once-weekly subcutaneous\" applied to the dual-agonist class).",
+        "frequency": "Hunter email threadId 19d45fc334be87a7 (2026-03-31): \"Once weekly\" with Hunter's preference: \"Always prefer to split weekly total across 2-3 injections rather than all at once. Spreads peptide exposure over week. More stable blood levels (no spike). Side effects dramatically reduced. Example: 6 mg/wk → 2 mg Mon + 2 mg Wed + 2 mg Fri.\"",
+        "duration": "Hunter email threadId 19d45fc334be87a7 (2026-03-31): \"Minimum 4 weeks at each dose before moving up\"; \"Phase 3 = 4-week titration intervals + dose flexibility + pause/restart option.\"",
+        "verbatim_citation": "Hunter email threadId 19d45fc334be87a7 (2026-03-31): \"Phase 3 target: 3.6 mg + 6.0 mg\" and \"1-2 mg/wk to begin (either compound) - See response, scale from there - Minimum 4 weeks at each dose before moving up.\"",
+        "episode_url": "https://open.spotify.com/episode/2IADOstRyI6FrZlNHriPJB",
+        "timestamp": "email threadId 19d45fc334be87a7 (2026-03-31)"
+      }
+    },
+    "female_specific_notes": null,
+    "distilled_at": "2026-04-27T05:39:50.146Z",
+    "distilled_by": "claude"
   },
   "generated_at": "2026-04-27T02:02:35.013Z"
 }

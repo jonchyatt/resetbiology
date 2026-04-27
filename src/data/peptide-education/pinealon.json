@@ -214,11 +214,34 @@
     }
   },
   "reset_biology_synthesis": {
-    "status": "pending-codex-distillation",
-    "recommendation": null,
-    "caveats": null,
-    "cross_expert_consensus": null,
-    "cross_expert_disagreement": null
+    "status": "distilled",
+    "recommendation": "Reset Biology suggests asking the practitioner to consider Hunter's two distinct pinealon frames before prescribing: a low-dose subcutaneous bioregulator cycle for circadian/cognitive support and a higher-dose protocol for stress, HPA, or travel-driven dysfunction. Hunter (threadId 19c49cac85fb70ef, 2026-02-10): \"100-300 mcg/day subQ\" \"10-20 days\" for conservative use, vs. \"2 mg/day subQ\" \"10-60 days depending on situation.\" We'd ask the prescribing physician to weigh timing carefully because Hunter (threadId 19c49cac85fb70ef, 2026-02-10) reports \"Hunter at night → restlessness + elevated heart rate\" and \"Morning dosing → problem solved,\" which directly overrides his earlier 2025-03-12 \"1 mg/day (at night)\" Epitalon-combo guidance.",
+    "caveats": "- Annual ceiling: Hunter (threadId 19c49cac85fb70ef, 2026-02-10): \"DO NOT exceed 100-120 mg total per year.\"\n- Timing reversal — newer overrides older: Hunter (threadId 19c49cac85fb70ef, 2026-02-10): \"Take in the morning\" overrides Hunter (threadId 1958c6d78ba43937, 2025-03-12) \"Pinealon: 1 mg/day (at night).\" 2026-02-10 explains why: \"Hunter at night → restlessness + elevated heart rate. Morning dosing → problem solved.\"\n- Effects persist after stopping: Hunter (threadId 19c49cac85fb70ef, 2026-02-10): \"Effects persist well after stopping → suggests long-lasting regulatory changes, NOT transient stimulation.\"\n- Expectation-setting: Taylor (5ugqlYRSRSo 01:14:50.320): \"a lot of people have this like this fantasy about this like magical longevity stack\" and Taylor (5ugqlYRSRSo 01:15:23.040): \"if you want the most longevity protocol, it's hormone optimization. That is the fountain of youth as we have it today.\" Taylor (5ugqlYRSRSo 01:15:39.600) frames bi-regulators including pinealon as adjunctive: \"sure, it's great to do epitalon and pinealon, daimolin, and some of these other bi-regular things for longevity, but I just want people's expectations.\"\n- No Trevor Bachmeyer (SmashweRx) signal — pinealon is not addressed in Trevor's transcripts in this card.\n- Reconstitution detail: Hunter (threadId 1958c6d78ba43937, 2025-03-12): \"2 mL bacteriostatic water per vial\" \"Slow injection of BAC, dissolve naturally — DO NOT SHAKE\"; \"1 mg Pinealon = 10 units (0.1 mL)\" on a U-100 insulin syringe; \"Inject subQ (belly fat).\"",
+    "cross_expert_consensus": "Both Hunter and Taylor agree that pinealon is part of a bioregulator longevity stack and frame it as legitimate but not stand-alone. Hunter (threadId 1958c6d78ba43937, 2025-03-12): \"Epitalon optimizes the body. Pinealon optimizes the brain. Combining them = hits both major components of longevity.\" Taylor (5ugqlYRSRSo 01:15:39.600): \"sure, it's great to do epitalon and pinealon, daimolin, and some of these other bi-regular things for longevity.\" Hunter's \"peptide replacement therapy\" frame from threadId (2025-10-31): \"Endogenous peptides (BPC, Humanin, Pinealon, Epitalon, GHK-Cu, etc.) ALSO decline with age\" with \"Suggestion: periodic cycles throughout the year ('rotating' peptides)\" aligns with the cycling guidance both experts use. On route, Hunter is consistent that pinealon is subcutaneous: Hunter (threadId 19c49cac85fb70ef, 2026-02-10) \"100-300 mcg/day subQ\" and \"2 mg/day subQ\"; Hunter (threadId 1958c6d78ba43937, 2025-03-12) \"Inject subQ (belly fat).\" Taylor does not specify a route in her single transcript.",
+    "cross_expert_disagreement": "Within Hunter's own content, dose and timing differ between the 2025-03-12 combo email and the 2026-02-10 standalone deep-dive. Older Hunter (threadId 1958c6d78ba43937, 2025-03-12): \"Pinealon: 1 mg/day (at night)\" with \"20 days STRAIGHT\" \"2-3 times per year.\" Newer Hunter (threadId 19c49cac85fb70ef, 2026-02-10) materially changes both: \"Conservative (most online protocols)\" \"100-300 mcg/day subQ\" \"10-20 days,\" \"Hunter's preferred dose\" \"2 mg/day subQ\" \"10-60 days,\" and on timing \"Hunter at night → restlessness + elevated heart rate\" \"Morning dosing → problem solved\" \"Take in the morning.\" The newer 2026-02-10 content is the operative recommendation. Taylor differs from Hunter not on dose specifics (she cites no doses) but on framing: Hunter calls pinealon \"shines for sleep + circadian\" Taylor (5ugqlYRSRSo 01:15:23.040) cautions \"if you want the most longevity protocol, it's hormone optimization\" and (5ugqlYRSRSo 01:15:46.960) \"I just want people's expectations because it's kind of one of those things.\" No Trevor Bachmeyer voice exists in this card to compare.",
+    "acute_chronic_split": {
+      "acute": {
+        "dose": "Hunter (threadId 19c49cac85fb70ef, 2026-02-10): \"2 mg/day subQ\" with \"Shorter cycles → acute issues.\"",
+        "route": "Hunter (threadId 19c49cac85fb70ef, 2026-02-10): \"2 mg/day subQ.\"",
+        "frequency": "Hunter (threadId 19c49cac85fb70ef, 2026-02-10): \"Take in the morning.\"",
+        "duration": "Hunter (threadId 19c49cac85fb70ef, 2026-02-10): \"10-60 days depending on situation\" with \"Shorter cycles → acute issues.\"",
+        "verbatim_citation": "Hunter (threadId 19c49cac85fb70ef, 2026-02-10): \"Hunter's preferred dose - 2 mg/day subQ - 10-60 days depending on situation - Shorter cycles → acute issues - Longer cycles → prolonged stress, HPA dysfunction, heavy travel.\"",
+        "episode_url": "https://open.spotify.com/episode/6r4jji1nEwaFYsF0GfJiaD",
+        "timestamp": "Hunter email threadId 19c49cac85fb70ef (2026-02-10)"
+      },
+      "chronic": {
+        "dose": "Hunter (threadId 19c49cac85fb70ef, 2026-02-10): \"100-300 mcg/day subQ\" for conservative use; microdosing alternative \"Start: 200 mcg/day - Titrate up to: 500 mcg/day over 8-12 weeks - ~20 mg per cycle total.\" Older Hunter (threadId 1958c6d78ba43937, 2025-03-12) combo dose: \"Pinealon: 1 mg/day (at night).\"",
+        "route": "Hunter (threadId 19c49cac85fb70ef, 2026-02-10): \"100-300 mcg/day subQ\"; Hunter (threadId 1958c6d78ba43937, 2025-03-12): \"Inject subQ (belly fat).\"",
+        "frequency": "Hunter (threadId 19c49cac85fb70ef, 2026-02-10): \"Take in the morning.\" Older Hunter (threadId 1958c6d78ba43937, 2025-03-12) said \"at night\" — explicitly overridden by 2026-02-10.",
+        "duration": "Hunter (threadId 19c49cac85fb70ef, 2026-02-10): \"10-20 days\" conservative; \"10-60 days depending on situation\" preferred; microdose \"8-12 weeks.\" Annual cap: \"DO NOT exceed 100-120 mg total per year.\" Older Hunter (threadId 1958c6d78ba43937, 2025-03-12): \"20 days STRAIGHT\" \"2-3 times per year.\"",
+        "verbatim_citation": "Hunter (threadId 19c49cac85fb70ef, 2026-02-10): \"Conservative (most online protocols) - 100-300 mcg/day subQ - 10-20 days - Works for subtle circadian / cognitive support\" and \"Annual cap - DO NOT exceed 100-120 mg total per year - Effects persist well after stopping → suggests long-lasting regulatory changes, NOT transient stimulation.\"",
+        "episode_url": "https://open.spotify.com/episode/6r4jji1nEwaFYsF0GfJiaD",
+        "timestamp": "Hunter email threadId 19c49cac85fb70ef (2026-02-10); older combo threadId 1958c6d78ba43937 (2025-03-12)"
+      }
+    },
+    "female_specific_notes": null,
+    "distilled_at": "2026-04-27T05:40:40.186Z",
+    "distilled_by": "claude"
   },
   "generated_at": "2026-04-27T02:02:34.994Z"
 }

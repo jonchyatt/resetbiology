@@ -190,11 +190,26 @@
     }
   },
   "reset_biology_synthesis": {
-    "status": "pending-codex-distillation",
-    "recommendation": null,
-    "caveats": null,
-    "cross_expert_consensus": null,
-    "cross_expert_disagreement": null
+    "status": "distilled",
+    "recommendation": "Reset Biology suggests asking the practitioner to consider PE-22-28 primarily as a mood / antidepressant-class neuropeptide delivered intranasally, with both Hunter Williams and Taylor Williams describing it as a 'little bit more of an antidepressant' that can be paired with PE-21 but is preferably cycled separately. We'd ask the prescribing physician to weigh that the experts in our source set never published a specific PE-22-28 dose in milligrams or micrograms — the only operative parameters they confirm are route (nasal spray) and indication (mood support, serotonin/neurotransmitter modulation, brain-inflammation reduction). We'd defer all numeric dosing to the prescribing clinician's research-grade source rather than infer one.",
+    "caveats": "- No verbatim dose was given by Hunter, Taylor, or Trevor in the source set — `top_doses` extracted by the mention parser (100 mg, 1 IU) are artifacts of unrelated neighboring Q&A about test and GH cycling at the same timestamp; do NOT use them as PE-22-28 dosing.\n- Dr Trevor Bachmeyer has zero mentions of PE-22-28 in the indexed SmashweRx content — no chronic / acute counterweight from that voice.\n- Hunter (E7GPNidicqY 01:43:41.440): \"Yes, you can use both of those as nasal spray. Um you could probably do them together and it's fine. I would just use them separately cuz they do a little bit different things.\" — pairing PE-22-28 with PE-21 is permitted but not preferred.\n- Taylor (hgI5Mpc-xDQ 01:40:24.560): \"I would actually be very interested to see how PE 2228 does in people because it does work kind of like an anti-depressant peptide\" — explicit hedge: she has not yet observed it in her own client base, the framing is theoretical.\n- Hunter does NOT have a 2023 cheat-sheet baseline_protocol for PE-22-28 — there is no older floor to override; the entire signal is 2026 content.\n- Indication overlaps with traditional antidepressant pharmacotherapy. We'd ask the prescribing physician to weigh interaction risk with SSRIs / SNRIs / MAO inhibitors before stacking.",
+    "cross_expert_consensus": "Hunter and Taylor agree on three points: (1) PE-22-28 is intranasal; (2) it acts in the antidepressant / mood class; (3) it is distinct from PE-21 and worth using on its own cycle.\n\n- Hunter (E7GPNidicqY 01:43:51.040): \"PE-22-28 is a little bit more of an antidepressant. PE-21 is a little bit more of just a modulator of neurotransmitters helping with energy in the brain, helping with reducing inflammation in the brain.\"\n- Taylor (Cg7JtpnfRY4 01:43:51.040): \"PE-22-28 is a little bit more of an antidepressant. P21 is a little bit more of just a modulator of neurotransmitters helping with energy in the brain, helping with reducing inflammation in the brain.\" (Hunter and Taylor co-host the 4/18/26 Coffee Talk; both YouTube uploads carry the same dialogue.)\n- Hunter (E7GPNidicqY 02:01:54.040): \"Yep, PE-22-28 nasal. Big help with mood? That's what it does.\"\n- Taylor (Cg7JtpnfRY4 02:01:54.040): \"Yep, PE-22-28 nasal. Big help with mood? That's what it does.\"\n- Taylor (hgI5Mpc-xDQ 01:40:30.080): \"it does work kind of like an anti-depressant peptide um to help people\" — Taylor's earlier 2/28/26 framing is consistent with the joint 4/18/26 framing.",
+    "cross_expert_disagreement": "No meaningful disagreement was found in the source set. Hunter and Taylor co-host the 4/18/26 episode and deliver the same answer to the same listener question (Jim's nasal-spray question at 01:43). Taylor's standalone 2/28/26 framing (PE-22-28 as 'serotonin' / 'anti-depressant peptide') is consistent rather than contradictory. Trevor is absent from the source set so no acute-vs-chronic counterweight is available — call this a single-camp consensus, not validated triangulation.",
+    "acute_chronic_split": {
+      "acute": null,
+      "chronic": {
+        "dose": "Not specified by the experts in the source set — practitioner-discretion based on a research-grade source.",
+        "route": "Intranasal (nasal spray)",
+        "frequency": null,
+        "duration": null,
+        "verbatim_citation": "Hunter (E7GPNidicqY 02:01:54.040): \"Yep, PE-22-28 nasal. Big help with mood? That's what it does.\"",
+        "episode_url": "https://youtu.be/E7GPNidicqY",
+        "timestamp": "02:01:54.040"
+      }
+    },
+    "female_specific_notes": null,
+    "distilled_at": "2026-04-27T05:39:49.006Z",
+    "distilled_by": "claude"
   },
   "generated_at": "2026-04-27T02:02:34.979Z"
 }

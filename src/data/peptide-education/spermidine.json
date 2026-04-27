@@ -145,11 +145,26 @@
     }
   },
   "reset_biology_synthesis": {
-    "status": "pending-codex-distillation",
-    "recommendation": null,
-    "caveats": null,
-    "cross_expert_consensus": null,
-    "cross_expert_disagreement": null
+    "status": "distilled",
+    "recommendation": "Reset Biology suggests asking the practitioner to consider Hunter's 5-10 mg/day oral chronic frame as the operative starting range, since Hunter (4igc2UpFr7Q 00:34:16.240): \"then for spermidine, I like somewhere around like 10 mg per day of spermidine\" and Hunter email threadId 19c970e1745b6a39 (2026-02-25): \"Hunter's sweet spot 5-10 mg per day - Above dietary intake - Well within studied safety margins.\" We'd ask the prescribing physician to weigh whether typical store-bought wheat-germ products even reach that floor, since Hunter email threadId 19cfdd3f61ffe05e (2026-03-17): \"Typical wheat germ / plant extract supplement: 0.6-1.2 mg/day - Probably TOO LOW to move the needle.\" Taylor and Trevor have no spermidine content in the corpus, so the recommendation rests entirely on Hunter; treat this as a longevity/autophagy background player rather than an acute-injury tool.",
+    "caveats": "- Single-expert sourcing: only Hunter has documented spermidine content; Taylor (women-focused) and Trevor (SmashweRx) have zero mentions in the corpus, so cross-validation is not available.\n- B12 depletion at higher doses: Hunter email threadId 19cfdd3f61ffe05e (2026-03-17): \"B12 depletion at higher doses (similar to metformin) -> just supplement B12.\"\n- Minor joint/muscle issues at higher doses: Hunter email threadId 19cfdd3f61ffe05e (2026-03-17): \"Some minor joint + muscle issues at higher doses.\"\n- Hypertrophy goal mismatch: Hunter email threadId 19cfdd3f61ffe05e (2026-03-17): \"If your only goal right now is putting on as much muscle as possible, maybe hold off.\"\n- Redundancy with other autophagy stacks: Hunter email threadId 19c970e1745b6a39 (2026-02-25): \"If you're already running rapamycin, aggressive fasting, or strong autophagy stacks -> may be redundant.\"\n- Dose ceiling reference: Hunter email threadId 19cfdd3f61ffe05e (2026-03-17): \"Highest dose tested: 40 mg/day for 28 days, ZERO adverse events in healthy older men\" and Hunter (4igc2UpFr7Q 00:34:19.600): \"You can go as high as 40 mg.\" Hunter email threadId 19cfdd3f61ffe05e (2026-03-17): \"Hunter wouldn't go that high himself.\"\n- Not an NAD+ precursor: Hunter email threadId 19c970e1745b6a39 (2026-02-25): \"Spermidine does NOT raise NAD+ levels directly + is NOT a precursor - BUT improves NAD+ efficiency.\"\n- 12-month memory trial null result was dose-related: Hunter email threadId 19cfdd3f61ffe05e (2026-03-17): \"Larger 12-month trial at only 0.9 mg/day: NO significant memory benefit -> Dose was too low - blood spermidine levels didn't change.\"",
+    "cross_expert_consensus": "Cross-expert consensus is not available for spermidine: only Hunter has documented spermidine content in the Reset Biology corpus. Hunter's own internal consistency across two emails and one podcast: Hunter email threadId 19c970e1745b6a39 (2026-02-25): \"Hunter's sweet spot 5-10 mg per day\"; Hunter email threadId 19cfdd3f61ffe05e (2026-03-17): \"Hunter's sweet spot 5-10 mg/day\"; Hunter (4igc2UpFr7Q 00:34:16.240): \"then for spermidine, I like somewhere around like 10 mg per day of spermidine.\" Mechanism framing is consistent across emails: Hunter email threadId 19c970e1745b6a39 (2026-02-25): \"Primary action: induces autophagy\" and \"works via EP300 acetyltransferase inhibition\"; Hunter email threadId 19cfdd3f61ffe05e (2026-03-17): \"Spermidine triggers it by blocking EP300 (protein that normally puts brakes on cleanup).\"",
+    "cross_expert_disagreement": "No cross-expert disagreement is documentable: Taylor and Trevor have no spermidine content in the corpus. Within Hunter's own material there is a tension between studied dose ranges and his personal sweet spot, captured verbatim: Hunter email threadId 19c970e1745b6a39 (2026-02-25): \"Plant-extract studies: 1-1.2 mg/day\" vs \"Safety in healthy older adults: 40 mg/day (good tolerability)\" vs \"PK studies: 15 mg/day\" vs \"Hunter's sweet spot 5-10 mg per day.\" There is also a hedge against high-end dosing: Hunter (4igc2UpFr7Q 00:34:19.600): \"You can go as high as 40 mg\" but Hunter email threadId 19cfdd3f61ffe05e (2026-03-17): \"Hunter wouldn't go that high himself.\"",
+    "acute_chronic_split": {
+      "acute": null,
+      "chronic": {
+        "dose": "Hunter (4igc2UpFr7Q 00:34:16.240): \"then for spermidine, I like somewhere around like 10 mg per day of spermidine\"; Hunter email threadId 19c970e1745b6a39 (2026-02-25): \"Hunter's sweet spot 5-10 mg per day.\" Hunter (4igc2UpFr7Q 00:34:19.600) hedges higher: \"You can go as high as 40 mg.\"",
+        "route": "Oral. Hunter email threadId 19cfdd3f61ffe05e (2026-03-17): \"NAD Regen by BioStack Labs - biostacklabs.com/hunter - 5 mg spermidine per serving\" (oral capsule context, no injectable route taught).",
+        "frequency": "Daily. Hunter (4igc2UpFr7Q 00:34:16.240): \"10 mg per day of spermidine.\"",
+        "duration": "Continuous, not pulsed. Hunter email threadId 19c970e1745b6a39 (2026-02-25): \"Cycling philosophy - 'Not something I would pulse' - View as consistent background longevity signal - mitochondrial maintenance, not acute intervention.\"",
+        "verbatim_citation": "Hunter (4igc2UpFr7Q 00:34:16.240): \"then for spermidine, I like somewhere around like 10 mg per day of spermidine.\" Hunter email threadId 19c970e1745b6a39 (2026-02-25): \"Hunter's sweet spot 5-10 mg per day - Above dietary intake - Well within studied safety margins - Likely meaningful autophagy signaling without experimental megadosing.\" Hunter email threadId 19cfdd3f61ffe05e (2026-03-17): \"Hunter's sweet spot 5-10 mg/day - Where Hunter personally notices difference in energy + mental clarity.\"",
+        "episode_url": "https://youtu.be/4igc2UpFr7Q",
+        "timestamp": "00:34:16.240; email threadId 19c970e1745b6a39 (2026-02-25); email threadId 19cfdd3f61ffe05e (2026-03-17)"
+      }
+    },
+    "female_specific_notes": null,
+    "distilled_at": "2026-04-27T05:31:38.017Z",
+    "distilled_by": "claude"
   },
   "generated_at": "2026-04-27T02:02:34.961Z"
 }

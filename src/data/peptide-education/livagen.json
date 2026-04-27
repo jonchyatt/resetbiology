@@ -98,11 +98,26 @@
     }
   },
   "reset_biology_synthesis": {
-    "status": "pending-codex-distillation",
-    "recommendation": null,
-    "caveats": null,
-    "cross_expert_consensus": null,
-    "cross_expert_disagreement": null
+    "status": "distilled",
+    "recommendation": "Reset Biology suggests asking the practitioner to consider Livagen only inside a liver-support context, framed by Hunter as a Khavinson bioregulator that 'helps decondense chromatin (DNA packaging)' and 're-activates healthy gene expression in aging/damaged cells' (Hunter email threadId 19ae14e47514bea3 (2025-12-02)). The single operative dosing signal in our corpus is Hunter's 12-week liver-rebuild stack — '2 mg' 'Daily' 'Subq' '12 weeks' (Hunter email threadId 19ae14e47514bea3 (2025-12-02)) — which Hunter reaffirms by name in podcast 4igc2UpFr7Q (2026-04-03 00:12:29.000): 'two injectable bioregulators which I've got dosing guides on… One of those being Ovagen and the other being Livagen.' Taylor and Trevor are silent on Livagen in the available transcripts, so we'd ask the prescribing physician to weigh this as a single-source recommendation rather than a cross-expert consensus.",
+    "caveats": "- Single-expert source: Hunter is the only one of the three experts who addresses Livagen in our indexed corpus; Taylor and Trevor have zero mentions, so claims are not cross-validated.\n- Stack-context only: every Livagen citation we have is inside Hunter's 7-agent fatty-liver protocol — Hunter email threadId 19ae14e47514bea3 (2025-12-02): 'Tissue rebuild | Ovagen, Livagen' — there is no standalone monotherapy guidance in the corpus.\n- Route is injectable: Hunter (4igc2UpFr7Q 00:12:29.000): 'two injectable bioregulators which I've got dosing guides on… One of those being Ovagen and the other being Livagen,' and the protocol table (Hunter email threadId 19ae14e47514bea3 (2025-12-02)) lists 'Route' 'Subq.'\n- Stack-only context for the 12-week duration: Hunter email threadId 19ae14e47514bea3 (2025-12-02): 'Livagen | 2 mg | Daily | Subq | 12 weeks' is presented as a co-administered piece of the full stack, not validated as a stand-alone duration.\n- Hunter himself flags the stack is adjunctive, not a substitute: Hunter email threadId 19ae14e47514bea3 (2025-12-02): 'This stack is not magic. It doesn't replace diet, movement, or getting your life together. But it does act as a powerful catalyst.'\n- No baseline_protocol from the 2023 cheat sheet for Livagen — operative recommendation is the 2025-12-02 stack only.\n- No acute / post-injury framing exists in the corpus; treat as chronic-only signal.",
+    "cross_expert_consensus": "No cross-expert consensus available — Taylor and Trevor have zero Livagen mentions in the indexed corpus. Hunter is the sole speaker. Hunter email threadId 19ae14e47514bea3 (2025-12-02): 'Livagen | 2 mg | Daily | Subq | 12 weeks.' Hunter (4igc2UpFr7Q 00:12:29.000): 'two injectable bioregulators which I've got dosing guides on and everything on the cheech and chong. One of those being Ovagen and the other being Livagen.'",
+    "cross_expert_disagreement": "No cross-expert disagreement available — Taylor and Trevor have zero Livagen mentions in the indexed corpus, so there is nothing to weigh against Hunter's protocol. The only intra-Hunter tension worth surfacing: Hunter's mechanism description spans 'tissue rebuild' (Hunter email threadId 19ae14e47514bea3 (2025-12-02): 'Tissue rebuild | Ovagen, Livagen') and 'epigenetic tuner' / 'conductor of the orchestra' (Hunter email threadId 19ae14e47514bea3 (2025-12-02): 'Khavinson peptide — Helps decondense chromatin (DNA packaging) — Re-activates healthy gene expression in aging/damaged cells… Conductor of the orchestra'). Both framings come from the same email on the same date — surface them together, do not collapse.",
+    "acute_chronic_split": {
+      "acute": null,
+      "chronic": {
+        "dose": "Hunter email threadId 19ae14e47514bea3 (2025-12-02): '2 mg daily' and stack table 'Livagen | 2 mg | Daily | Subq | 12 weeks.'",
+        "route": "Hunter email threadId 19ae14e47514bea3 (2025-12-02): 'Subq'; Hunter (4igc2UpFr7Q 00:12:29.000): 'two injectable bioregulators which I've got dosing guides on… One of those being Ovagen and the other being Livagen.'",
+        "frequency": "Hunter email threadId 19ae14e47514bea3 (2025-12-02): 'Daily.'",
+        "duration": "Hunter email threadId 19ae14e47514bea3 (2025-12-02): '12 weeks.'",
+        "verbatim_citation": "Hunter email threadId 19ae14e47514bea3 (2025-12-02): 'Hunter's protocol - 2 mg daily - Gentle but persistent regeneration signal.' Stack table: 'Livagen | 2 mg | Daily | Subq | 12 weeks.'",
+        "episode_url": "https://open.spotify.com/episode/06bZXi5BoRP4pGOAUMbEJm",
+        "timestamp": "n/a (email source, threadId 19ae14e47514bea3, dated 2025-12-02); reaffirmed in podcast https://youtu.be/4igc2UpFr7Q at 00:12:29.000"
+      }
+    },
+    "female_specific_notes": null,
+    "distilled_at": "2026-04-27T05:39:37.854Z",
+    "distilled_by": "claude"
   },
   "generated_at": "2026-04-27T02:02:34.947Z"
 }

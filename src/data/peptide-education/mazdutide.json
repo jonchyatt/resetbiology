@@ -88,11 +88,34 @@
     }
   },
   "reset_biology_synthesis": {
-    "status": "pending-codex-distillation",
-    "recommendation": null,
-    "caveats": null,
-    "cross_expert_consensus": null,
-    "cross_expert_disagreement": null
+    "status": "distilled",
+    "recommendation": "Reset Biology suggests asking the practitioner to consider mazdutide as a GLP-1/glucagon dual agonist option when the prescribing physician wants hepatic-fat reduction or thermogenic energy-expenditure benefit beyond what GLP-1 monotherapy delivers, with Hunter email threadId 19d45fc334be87a7 (2026-03-31): \"Mazdutide had a remarkably clean tolerability profile.\" We'd ask the prescribing physician to weigh slow titration and dose-splitting because Hunter email threadId 19d45fc334be87a7 (2026-03-31): \"People who escalate every 4 weeks instead of every 2 weeks are far more compliant and much better able to stay on the compound long term. Don't rush the titration.\" Note that Taylor and Trevor have not addressed mazdutide in indexed content, so this synthesis rests on Hunter alone.",
+    "caveats": "- Single-expert sourcing: only Hunter (email threadId 19d45fc334be87a7, 2026-03-31) addresses mazdutide in indexed content; Taylor and Trevor are silent. Treat the synthesis accordingly.\n- US regulatory status: Hunter email threadId 19d45fc334be87a7 (2026-03-31): \"US trials Phase 2; FDA approval estimated 2028-2029\" — only China-approved as of the email (\"June 2025: world's first approved GLP-1/glucagon receptor agonist (China — brand name Xinermei for weight management)\").\n- Titration discipline: Hunter email threadId 19d45fc334be87a7 (2026-03-31): \"Titration: 2 → 4 → 6 mg, 4 weeks between each step\" and \"Minimum 4 weeks at each dose before moving up.\"\n- Coming-from-retatrutide handoff: Hunter email threadId 19d45fc334be87a7 (2026-03-31): \"Likely need to scale down Reta dose before introducing either of these. Same GLP-1 pathway but glucagon agonism feels different from GIP.\"\n- Heart-rate watch (gentler than reta but not zero): Hunter email threadId 19d45fc334be87a7 (2026-03-31): \"Heart rate increase only ~2.6 bpm at 48 weeks\" vs \"Reta typically ↑ HR 5-10 bpm within a few weeks.\"\n- Mazdutide ≠ Survodutide: Hunter email threadId 19d45fc334be87a7 (2026-03-31): \"Mazdutide = ~50/50 ratio (slightly favors glucagon)\" vs \"Survodutide = GLP-1 dominant (~8:1 ratio)\" — pick on the indication (liver-fat / thermogenesis vs appetite suppression).\n- Use-case framing: Hunter email threadId 19d45fc334be87a7 (2026-03-31): \"For people who don't tolerate retatrutide well\" and \"Rotation compound to maintain receptor sensitivity.\"",
+    "cross_expert_consensus": "Single-expert content — only Hunter addresses mazdutide. Hunter email threadId 19d45fc334be87a7 (2026-03-31): \"Survodutide and mazdutide are not retatrutide. But they're not far off. And they fill important gaps that tirzepatide and semaglutide can't address.\" Hunter email threadId 19d45fc334be87a7 (2026-03-31) on mechanism: \"GLP-1 component counterbalances glucagon's glucose-raising effect - No increased risk of hyperglycemia in trials of either compound.\" Hunter email threadId 19d45fc334be87a7 (2026-03-31) on hepatic effect at 6 mg/wk: \"80% reduction in liver fat in baseline hepatic steatosis\" and \"A1C reductions of 1.5-2.15%.\" Taylor and Trevor have not been indexed on mazdutide, so this is intra-expert consistency rather than cross-expert agreement.",
+    "cross_expert_disagreement": "No cross-expert disagreement available — only Hunter is indexed on mazdutide; Taylor and Trevor are silent in current sources. Within Hunter's own content, the operative dose tension is between the China-approved label range and the protocols Hunter favors: Hunter email threadId 19d45fc334be87a7 (2026-03-31): \"China approved: 4 mg + 6 mg/wk\" and \"9 mg max studied in China GLORY-2\" and \"US evaluating up to 16 mg,\" while Hunter's starting recommendation is more conservative: Hunter email threadId 19d45fc334be87a7 (2026-03-31): \"1-2 mg/wk to begin (either compound)\" and \"See response, scale from there.\" Once-weekly canonical dosing also coexists with Hunter's split-dosing trick: Hunter email threadId 19d45fc334be87a7 (2026-03-31): \"Once-weekly subcutaneous\" vs Hunter email threadId 19d45fc334be87a7 (2026-03-31): \"Always prefer to split weekly total across 2-3 injections rather than all at once\" and \"Example: 6 mg/wk → 2 mg Mon + 2 mg Wed + 2 mg Fri.\"",
+    "acute_chronic_split": {
+      "acute": {
+        "dose": "Hunter email threadId 19d45fc334be87a7 (2026-03-31): \"1-2 mg/wk to begin (either compound)\"; titration ladder Hunter email threadId 19d45fc334be87a7 (2026-03-31): \"Titration: 2 → 4 → 6 mg, 4 weeks between each step.\"",
+        "route": "Hunter email threadId 19d45fc334be87a7 (2026-03-31): \"Once-weekly subcutaneous.\"",
+        "frequency": "Hunter email threadId 19d45fc334be87a7 (2026-03-31): \"Once-weekly subcutaneous\"; optional split frame Hunter email threadId 19d45fc334be87a7 (2026-03-31): \"Always prefer to split weekly total across 2-3 injections rather than all at once.\"",
+        "duration": "Hunter email threadId 19d45fc334be87a7 (2026-03-31): \"Minimum 4 weeks at each dose before moving up.\"",
+        "verbatim_citation": "Hunter email threadId 19d45fc334be87a7 (2026-03-31): \"1-2 mg/wk to begin (either compound). See response, scale from there. Minimum 4 weeks at each dose before moving up.\"",
+        "episode_url": "https://open.spotify.com/episode/2IADOstRyI6FrZlNHriPJB",
+        "timestamp": "email threadId 19d45fc334be87a7 (2026-03-31) — DOSING — Hunter's Protocols / starting from scratch"
+      },
+      "chronic": {
+        "dose": "Hunter email threadId 19d45fc334be87a7 (2026-03-31): \"Mazdutide (6 mg/wk)\" with effect floor \"80% reduction in liver fat in baseline hepatic steatosis\"; higher comparator data Hunter email threadId 19d45fc334be87a7 (2026-03-31): \"Mazdutide | 9 mg/wk | GLP-1 + Glucagon | 60 wk | ~20% (non-diabetics)\" and \"Mazdutide | 16 mg/wk | GLP-1 + Glucagon | 20 wk | ~21%.\"",
+        "route": "Hunter email threadId 19d45fc334be87a7 (2026-03-31): \"Once-weekly subcutaneous.\"",
+        "frequency": "Hunter email threadId 19d45fc334be87a7 (2026-03-31): \"Once-weekly subcutaneous\"; split-dose alternative Hunter email threadId 19d45fc334be87a7 (2026-03-31): \"Example: 6 mg/wk → 2 mg Mon + 2 mg Wed + 2 mg Fri\" — \"Spreads peptide exposure over week\" and \"Side effects dramatically reduced.\"",
+        "duration": "Hunter email threadId 19d45fc334be87a7 (2026-03-31): \"Rotation compound to maintain receptor sensitivity.\" No fixed cycling-off duration is stated for mazdutide in indexed content.",
+        "verbatim_citation": "Hunter email threadId 19d45fc334be87a7 (2026-03-31): \"Mazdutide (6 mg/wk) - 80% reduction in liver fat in baseline hepatic steatosis - A1C reductions of 1.5-2.15% - Heart rate increase only ~2.6 bpm at 48 weeks.\"",
+        "episode_url": "https://open.spotify.com/episode/2IADOstRyI6FrZlNHriPJB",
+        "timestamp": "email threadId 19d45fc334be87a7 (2026-03-31) — Clinical Benefits / DOSING — Mazdutide / dose-splitting trick"
+      }
+    },
+    "female_specific_notes": null,
+    "distilled_at": "2026-04-27T05:39:38.887Z",
+    "distilled_by": "claude"
   },
   "generated_at": "2026-04-27T02:02:35.015Z"
 }

@@ -95,11 +95,26 @@
     }
   },
   "reset_biology_synthesis": {
-    "status": "pending-codex-distillation",
-    "recommendation": null,
-    "caveats": null,
-    "cross_expert_consensus": null,
-    "cross_expert_disagreement": null
+    "status": "distilled",
+    "recommendation": "Reset Biology suggests asking the practitioner to consider Chonluten as a lung-specific bioregulator that Hunter frames as the immune-modulation arm of his 5-peptide pulmonary recovery stack — Hunter email threadId 19af0c0c3b0300ba (2025-12-05): \"Tripeptide derived from bronchial mucosa\" and \"Similar epigenetic mechanism to Bronchogen, **superpower = immune modulation**.\" The only operative protocol on file is Hunter email threadId 19af0c0c3b0300ba (2025-12-05): \"Chonluten | 2 mg | Injection | 12 weeks,\" run inside a 5-peptide stack alongside Bronchogen, VIP, TB-500, and GHK-Cu. Taylor and Trevor have no published commentary on Chonluten in the indexed corpus, so we'd ask the prescribing physician to weigh that this synthesis rests on a single Hunter email plus four cheat-sheet/sale-list mentions, with no cross-expert corroboration on dose, frequency, or duration.",
+    "caveats": "- Single-source-of-record: only Hunter Williams has substantive content on Chonluten in the indexed corpus; Taylor Williams and Dr Trevor Bachmeyer have ZERO mentions, so there is no cross-expert corroboration of dose, route, frequency, or duration.\n- Experimental framing per Hunter email threadId 19af0c0c3b0300ba (2025-12-05): \"All of this is experimental. I'm just a guy on the internet who loves reading studies and has seen this work in real people, including my own family.\"\n- Indication is narrow — the operative protocol is built around post-COPD/lung-injury recovery per Hunter email threadId 19af0c0c3b0300ba (2025-12-05): \"Earlier this year, my father-in-law spent about a week in the hospital with what they essentially labeled COPD. When he came home, I put him on the exact stack I'm going to share in this email…and his recovery was insanely fast compared to what you'd expect for that kind of diagnosis.\"\n- Mechanism is immune-biasing per Hunter email threadId 19af0c0c3b0300ba (2025-12-05): \"Triggers **STAT1 phosphorylation**\" and \"Inhibits **STAT3 activation**\" and \"Biases immune signaling toward **resolving inflammation rather than chronic destructive pathways**\" — practitioners should weigh interaction with any therapy that intentionally manipulates STAT1/STAT3 signaling (e.g., certain JAK inhibitors, oncology regimens).\n- Stack-context only: Hunter email threadId 19af0c0c3b0300ba (2025-12-05) frames Chonluten as one of five peptides — \"Bronchogen rewrites blueprint, Chonluten rewires immune response\" — there is no Hunter content on Chonluten as a stand-alone monotherapy.\n- The 2023 Hunter/Jay Campbell cheat sheet does NOT include a Chonluten baseline_protocol; the only Hunter dose data point is the 2025-12-05 email.",
+    "cross_expert_consensus": "No cross-expert consensus is possible — only Hunter has substantive content on Chonluten. Hunter email threadId 19af0c0c3b0300ba (2025-12-05): \"Tripeptide derived from bronchial mucosa\" and \"Lung-specific bioregulator\" and \"Chonluten | 2 mg | Injection | 12 weeks.\" Taylor Williams: 0 mentions in indexed corpus. Dr Trevor Bachmeyer: 0 mentions in indexed corpus.",
+    "cross_expert_disagreement": "No cross-expert disagreement is recorded — the synthesis rests on Hunter alone. Within Hunter's own corpus, the 2025-12-05 lung-health email is the single dose-bearing source (Hunter email threadId 19af0c0c3b0300ba: \"Chonluten | 2 mg | Injection | 12 weeks\"); the three earlier 2025-03-28 / 2025-03-30 / 2025-03-31 emails (threadIds 195dedb693f63f9b, 195e91fe0fed1a09, 195ee3b383eab82d) only list Chonluten as one of the \"injectable Bioregulators\" on sale (\"Cortagen * Epitalon * Cartalax * Pinealon * Bronchogen * Cardiogen * Chonluten\") and do not propose a dose or duration of their own. The newer 2025-12-05 email overrides the earlier list-only mentions as the operative recommendation.",
+    "acute_chronic_split": {
+      "acute": null,
+      "chronic": {
+        "dose": "Hunter email threadId 19af0c0c3b0300ba (2025-12-05): \"Chonluten | 2 mg | Injection | 12 weeks.\"",
+        "route": "Hunter email threadId 19af0c0c3b0300ba (2025-12-05): \"Chonluten | 2 mg | Injection | 12 weeks\" (route = Injection).",
+        "frequency": "Hunter email threadId 19af0c0c3b0300ba (2025-12-05) — table heading \"Daily Dose\" with row \"Chonluten | 2 mg | Injection | 12 weeks,\" i.e. 2 mg daily.",
+        "duration": "Hunter email threadId 19af0c0c3b0300ba (2025-12-05): \"Chonluten | 2 mg | Injection | 12 weeks.\"",
+        "verbatim_citation": "Hunter email threadId 19af0c0c3b0300ba (2025-12-05): \"Chonluten | 2 mg | Injection | 12 weeks.\" Frame: \"Bronchogen rewrites blueprint, Chonluten rewires immune response.\"",
+        "episode_url": "https://open.spotify.com/episode/0heRIsC6pUEWN9mZptGkF2",
+        "timestamp": "email threadId 19af0c0c3b0300ba (2025-12-05); no VTT timestamp — source is text email"
+      }
+    },
+    "female_specific_notes": null,
+    "distilled_at": "2026-04-27T05:39:24.011Z",
+    "distilled_by": "claude"
   },
   "generated_at": "2026-04-27T02:02:35.004Z"
 }
