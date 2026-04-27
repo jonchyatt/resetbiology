@@ -11,9 +11,38 @@ import { BreathState, BreathSettings, DEFAULT_SETTINGS, CycleData, SessionData }
 
 interface BreathTrainingAppProps {
   onSessionComplete?: (session: any) => void
+  /** Selected protocol from the library — when present, its inhaleMs /
+   *  exhaleMs / breathsPerCycle / cyclesTarget override DEFAULT_SETTINGS so
+   *  the user actually trains the protocol they picked instead of the
+   *  generic 3s medium pace. */
+  exercise?: {
+    name?: string
+    inhaleMs?: number
+    exhaleMs?: number
+    breathsPerCycle?: number
+    cyclesTarget?: number
+  } | null
 }
 
-export function BreathTrainingApp({ onSessionComplete }: BreathTrainingAppProps) {
+function settingsFromExercise(
+  ex: BreathTrainingAppProps['exercise']
+): BreathSettings {
+  if (!ex) return DEFAULT_SETTINGS
+  const inhaleMs = typeof ex.inhaleMs === 'number' && ex.inhaleMs > 0 ? ex.inhaleMs : DEFAULT_SETTINGS.pace.inhaleMs
+  const exhaleMs = typeof ex.exhaleMs === 'number' && ex.exhaleMs > 0 ? ex.exhaleMs : DEFAULT_SETTINGS.pace.exhaleMs
+  return {
+    ...DEFAULT_SETTINGS,
+    breathsPerCycle: typeof ex.breathsPerCycle === 'number' && ex.breathsPerCycle > 0 ? ex.breathsPerCycle : DEFAULT_SETTINGS.breathsPerCycle,
+    cyclesTarget: typeof ex.cyclesTarget === 'number' && ex.cyclesTarget > 0 ? ex.cyclesTarget : DEFAULT_SETTINGS.cyclesTarget,
+    pace: {
+      label: ex.name ?? 'Custom',
+      inhaleMs,
+      exhaleMs,
+    },
+  }
+}
+
+export function BreathTrainingApp({ onSessionComplete, exercise }: BreathTrainingAppProps) {
   // Core state machine
   const [state, setState] = useState<BreathState>('idle')
   const [settings, setSettings] = useState<BreathSettings>(() => {
@@ -29,8 +58,16 @@ export function BreathTrainingApp({ onSessionComplete }: BreathTrainingAppProps)
         }
       }
     }
-    return DEFAULT_SETTINGS
+    return settingsFromExercise(exercise)
   })
+
+  // If the parent swaps in a different exercise (or clears it), re-derive
+  // settings — but only when idle, so we don't yank the pace mid-session.
+  useEffect(() => {
+    if (state === 'idle') {
+      setSettings(settingsFromExercise(exercise))
+    }
+  }, [exercise, state])
   
   // Session data
   const [sessionId, setSessionId] = useState('')

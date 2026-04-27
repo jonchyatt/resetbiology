@@ -433,7 +433,7 @@ export function BreathPage() {
                 </div>
               </div>
             )}
-            <BreathTrainingApp />
+            <BreathTrainingApp exercise={selectedExercise} />
           </div>
         )}
       </div>
