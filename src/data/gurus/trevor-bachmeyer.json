@@ -1,0 +1,71 @@
+{
+  "slug": "trevor-bachmeyer",
+  "name": "Dr Trevor Bachmeyer",
+  "title": "SmashweRx — Injury Repair, Mitochondrial Health & Longevity",
+  "bio": "Dr Trevor Bachmeyer is the highest-volume voice in the library — 366 podcast episodes covering injury repair, mitochondrial health, autoimmune protocols, and longevity peptides. His SmashweRx and Unbreakable Podcast content runs the gamut from masterclass-format deep dives (BPC-157 longevity, KPV anti-aging, Methylene Blue, Retatrutide) to specific clinical reversals — Hashimoto's, lupus, endometriosis, Graves' disease, dementia, Parkinson's, Epstein-Barr, fibromyalgia. His POV is reversal-oriented: most chronic conditions are not life sentences, and the right peptide-and-protocol combination paired with mitochondrial repair can unwind the disease state.",
+  "credentials": [
+    "Doctor of Chiropractic",
+    "Host, SmashweRx and Unbreakable Podcast",
+    "366+ published episodes covering peptides, hormones, and chronic-disease reversal",
+    "Library's highest-mention practitioner (15,159 peptide mentions)"
+  ],
+  "photo_url": "/images/gurus/trevor-bachmeyer.jpg",
+  "domains": [
+    "peptides",
+    "injury-repair",
+    "mitochondrial-health",
+    "autoimmune",
+    "longevity",
+    "trt",
+    "chronic-disease-reversal",
+    "growth-hormone"
+  ],
+  "channels": {
+    "youtube": "https://www.youtube.com/@SmashweRx",
+    "youtube_channel_handle": "@SmashweRx",
+    "podcast_name": "Unbreakable Podcast / SmashweRx",
+    "website": null
+  },
+  "content_corpus": {
+    "youtube_transcripts": 366,
+    "total_peptide_mentions": 15159,
+    "covered_peptides_count": 45,
+    "covered_peptides": [
+      "testosterone", "tb-500", "estrogen", "nad", "glp-1", "methylene-blue", "bpc-157",
+      "igf-1", "ss-31", "kpv", "metformin", "cjc-1295", "glutathione", "mk-677", "vip",
+      "retatrutide", "semaglutide", "hgh", "progesterone", "ghk-cu", "tesamorelin",
+      "melanotan-ii", "thymosin-alpha-1", "ipamorelin", "ll-37", "slu-pp-332", "l-carnitine",
+      "glow", "aod-9604", "tirzepatide"
+    ]
+  },
+  "signature_topics": [
+    {
+      "topic": "BPC-157 and TB-500 for injury repair, longevity, and cardiac fibrosis",
+      "evidence": "806 BPC-157 + 1,450 TB-500 mentions — TB-500 is more prominent in his work than for any other guru in the library"
+    },
+    {
+      "topic": "Mitochondrial repair (MOTS-c / SS-31 / Methylene Blue / NAD)",
+      "evidence": "Multiple masterclass episodes; 746 SS-31 + 1,039 NAD + 841 Methylene Blue mentions"
+    },
+    {
+      "topic": "Retatrutide and modern GLP-1 protocols",
+      "evidence": "Dozens of episodes — masterclass, mistakes, microdosing, off-ramp, cardarine combos, pregnancy/breastfeeding"
+    },
+    {
+      "topic": "TRT and the off-ramp protocol",
+      "evidence": "2,587 testosterone mentions; \"The TRT Off-Ramp Protocol That Actually Works\" — his clinical specialty"
+    },
+    {
+      "topic": "Chronic disease reversal (Hashimoto's, lupus, endometriosis, Graves', EBV, dementia)",
+      "evidence": "Dedicated reversal episodes for each condition — his core POV is that chronic conditions are unwinable"
+    },
+    {
+      "topic": "GH peptides and the cancer-myth response",
+      "evidence": "\"Tesamorelin, CJC and Ipamorelin and CANCER\", \"Cardarine Masterclass and the Cancer Myth\" — direct on the safety debates"
+    }
+  ],
+  "voice_quote": null,
+  "voice_quote_citation": null,
+  "added_to_library": "2026-04-27",
+  "library_status": "active"
+}

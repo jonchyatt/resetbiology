@@ -1,0 +1,68 @@
+{
+  "slug": "hunter-williams",
+  "name": "Hunter Williams",
+  "title": "Founder, FRC Peptides; Co-author, 2023 Peptide Cheat Sheet",
+  "bio": "Hunter Williams is the founder of FRC Peptides and co-author with Jay Campbell of the 2023 Peptide Cheat Sheet. A former athlete who hit a wall in his mid-20s with depression, anxiety, and the loss of feeling himself despite a lifetime of fitness, Hunter discovered hormone optimization and peptide therapy and rebuilt from the inside. He hosts The Hunter Williams Podcast — clinical, practitioner-voiced takes on peptides, hormones, GLP-1 protocols, oral bioavailability, and the daily decisions of optimization. His voice in the library is direct, comparative, and fast to call out what is overrated.",
+  "credentials": [
+    "Founder, FRC Peptides",
+    "Co-author with Jay Campbell, 2023 Peptide Cheat Sheet",
+    "Host, The Hunter Williams Podcast",
+    "Beehiiv newsletter author (peptide & hormone protocols)"
+  ],
+  "photo_url": "/images/gurus/hunter-williams.jpg",
+  "domains": [
+    "peptides",
+    "clinical-baselines",
+    "oral-protocols",
+    "growth-hormone",
+    "glp-1",
+    "hormones"
+  ],
+  "channels": {
+    "youtube": "https://www.youtube.com/@TheHunterWilliamsPodcast",
+    "youtube_channel_handle": "@TheHunterWilliamsPodcast",
+    "podcast_name": "The Hunter Williams Podcast",
+    "beehiiv_url": "https://hunterwilliams.beehiiv.com/",
+    "website": "https://frcpeptides.com/"
+  },
+  "content_corpus": {
+    "youtube_transcripts": 35,
+    "beehiiv_emails": 11,
+    "cheat_sheet_pdf": "data/peptide-libraries/by-expert/hunter-williams/source-documents/peptide-cheat-sheet-2023.pdf",
+    "total_peptide_mentions": 8400,
+    "covered_peptides_count": 70,
+    "covered_peptides": [
+      "testosterone", "retatrutide", "estrogen", "glp-1", "ss-31", "tb-500", "nad",
+      "tesamorelin", "ipamorelin", "bpc-157", "tirzepatide", "progesterone", "metformin",
+      "hgh", "glutathione", "ghk-cu", "slu-pp-332", "kpv", "semaglutide", "cagrilintide",
+      "5-amino-1mq", "oxytocin", "vip", "cjc-1295", "l-carnitine", "aod-9604", "epitalon",
+      "cartalax", "thymosin-alpha-1", "melanotan-i"
+    ]
+  },
+  "signature_topics": [
+    {
+      "topic": "GLP-1 protocols and stacking (semaglutide / tirzepatide / retatrutide / cagrilintide)",
+      "evidence": "442 mentions of GLP-1 + 508 retatrutide + dedicated mailbag and microdose-vs-real-dose episodes"
+    },
+    {
+      "topic": "Testosterone and male hormone optimization",
+      "evidence": "1,441 mentions across podcast + cheat sheet — his most-covered topic"
+    },
+    {
+      "topic": "Healing peptide stacks (BPC-157 + TB-500 + KPV)",
+      "evidence": "264 BPC-157 + 304 TB-500 mentions; KPV positioned as his #1 anti-inflammatory"
+    },
+    {
+      "topic": "Oral peptide bioavailability and what he considers obsolete",
+      "evidence": "Cheat sheet co-author voice; calls Sermorelin obsolete, AOD9604 overrated, HGH frag worse than AOD"
+    },
+    {
+      "topic": "Mitochondrial sequence (SS-31, MOTS-c, NAD)",
+      "evidence": "310 SS-31 + 300 NAD mentions; warns MOTS-c can backfire if overused"
+    }
+  ],
+  "voice_quote": "Hey everybody, this is Hunter Williams. I hope you're doing amazing wherever you are at in the world... I was an athlete growing up. So I was obsessed with becoming the best football player that I could and making it to the NFL. That didn't work out. So I had to get a normal job like everyone else, but somewhere around the age of 25, I really started to notice that I just wasn't myself. I'd been fit my whole life and I was depressed, I was anxious, and I didn't feel good.",
+  "voice_quote_citation": "Hunter Williams (p0IMKbfAyFo 00:00:00–00:00:42): \"Welcome! Here's What You Need to Know About Me, Hunter Williams\" (2026-04-03)",
+  "added_to_library": "2026-04-27",
+  "library_status": "active"
+}

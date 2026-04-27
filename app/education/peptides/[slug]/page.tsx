@@ -147,6 +147,7 @@ export default async function PeptidePage({ params }: Props) {
               subtitle="Protocol systematizer"
               accent="bg-[#3FBFB5]"
               hasContent={!!hunter}
+              guruSlug="hunter-williams"
             >
               {hunter && (
                 <>
@@ -175,6 +176,7 @@ export default async function PeptidePage({ params }: Props) {
               subtitle="Female-focused HRT + peptides"
               accent="bg-pink-500"
               hasContent={!!taylor}
+              guruSlug="taylor-williams"
             >
               {taylor && (
                 <>
@@ -193,6 +195,7 @@ export default async function PeptidePage({ params }: Props) {
               subtitle="Acute vs chronic specialist"
               accent="bg-orange-500"
               hasContent={!!bachmeyer}
+              guruSlug="trevor-bachmeyer"
             >
               {bachmeyer && (
                 <>
@@ -228,11 +231,19 @@ export default async function PeptidePage({ params }: Props) {
   );
 }
 
-function ExpertColumn({ title, subtitle, accent, hasContent, children }: { title: string; subtitle: string; accent: string; hasContent: boolean; children: React.ReactNode }) {
+function ExpertColumn({ title, subtitle, accent, hasContent, guruSlug, children }: { title: string; subtitle: string; accent: string; hasContent: boolean; guruSlug?: string; children: React.ReactNode }) {
+  const heading = guruSlug ? (
+    <Link href={`/education/gurus/${guruSlug}`} className="group inline-flex items-baseline gap-2 hover:underline">
+      <h2 className="text-xl font-bold text-white">{title}</h2>
+      <span className="text-xs text-white/70 group-hover:text-white">→ profile</span>
+    </Link>
+  ) : (
+    <h2 className="text-xl font-bold text-white">{title}</h2>
+  );
   return (
     <article className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 overflow-hidden">
       <header className={`${accent} px-4 py-3`}>
-        <h2 className="text-xl font-bold text-white">{title}</h2>
+        {heading}
         <p className="text-xs text-white/85">{subtitle}</p>
       </header>
       <div className="p-4">

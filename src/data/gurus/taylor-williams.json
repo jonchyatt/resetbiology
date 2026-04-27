@@ -1,0 +1,69 @@
+{
+  "slug": "taylor-williams",
+  "name": "Taylor Williams",
+  "title": "Williams Coaching — Female-focused Hormone & Peptide Protocols",
+  "bio": "Taylor Williams is a female-health coach focused on hormone replacement, peptides, and longevity protocols specifically for women across the menopause and post-menopause transitions. She is the most prolific voice in the library on female-specific peptide and hormone use — testosterone for women, progesterone protocols, GHK-Cu skin and aesthetic peptides, fasting and training paired with peptides, and the practitioner-voiced cautions women rarely hear from generic peptide content. Her Saturday Morning Coffee Talk format and detailed peptide-experience reviews give her audience a continuous mentor relationship rather than one-off explainers.",
+  "credentials": [
+    "Founder, Williams Coaching",
+    "Host, Williams Coaching YouTube channel (104+ episodes)",
+    "Female-focused hormone & peptide protocols",
+    "Mentioned by name across the library as the female-protocols reference"
+  ],
+  "photo_url": "/images/gurus/taylor-williams.jpg",
+  "domains": [
+    "peptides",
+    "hormones",
+    "female-health",
+    "menopause",
+    "hrt",
+    "skin-aesthetics",
+    "fasting"
+  ],
+  "channels": {
+    "youtube": "https://www.youtube.com/@WilliamsCoaching",
+    "youtube_channel_handle": "@WilliamsCoaching",
+    "podcast_name": "Williams Coaching",
+    "website": null
+  },
+  "content_corpus": {
+    "youtube_transcripts": 104,
+    "total_peptide_mentions": 9897,
+    "covered_peptides_count": 58,
+    "covered_peptides": [
+      "testosterone", "progesterone", "estrogen", "glp-1", "ss-31", "ghk-cu", "glutathione",
+      "cjc-1295", "metformin", "tb-500", "tesamorelin", "kpv", "oxytocin", "hgh", "ll-37",
+      "bpc-157", "nad", "ipamorelin", "p21", "retatrutide", "semaglutide", "vip", "glow",
+      "tirzepatide", "igf-1-lr3", "slu-pp-332", "melanotan-i", "mk-677", "aod-9604", "cerebrolysin"
+    ]
+  },
+  "signature_topics": [
+    {
+      "topic": "Testosterone for women",
+      "evidence": "2,475 mentions — the highest single-topic count across all three gurus; her signature subject (\"Why I Inject Testosterone as a Woman\", 1-year injection journey, etc.)"
+    },
+    {
+      "topic": "Progesterone and PMS / sleep / anxiety",
+      "evidence": "884 mentions; \"Progesterone Changed My Sleep, Anxiety, and PMS\" is a defining episode"
+    },
+    {
+      "topic": "Skin peptides and aesthetic protocols",
+      "evidence": "GHK-Cu skincare, hyperpigmentation reversal, SNAP-8 (\"Botox peptide\"), the Glow stack"
+    },
+    {
+      "topic": "Female peptide protocols for menopause and post-menopause",
+      "evidence": "\"Peptides for Menopause: The Fat Loss & Energy Stack\", \"The Best Peptides & Hormones for Postmenopausal Women\""
+    },
+    {
+      "topic": "Female-specific GLP-1 use (retatrutide / tirzepatide / semaglutide)",
+      "evidence": "556 GLP-1 mentions plus dedicated retatrutide stacking and what-I-eat episodes"
+    },
+    {
+      "topic": "Common mistakes women make with peptides",
+      "evidence": "\"5 Mistakes Women Make with Peptides (And How to Avoid Them)\" — cautionary practitioner voice"
+    }
+  ],
+  "voice_quote": null,
+  "voice_quote_citation": null,
+  "added_to_library": "2026-04-27",
+  "library_status": "active"
+}
