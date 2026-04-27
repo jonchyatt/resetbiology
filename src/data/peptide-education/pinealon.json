@@ -1,0 +1,224 @@
+{
+  "peptide": "Pinealon",
+  "slug": "pinealon",
+  "aliases": [
+    "Pinealon",
+    "pinealon"
+  ],
+  "category": "Uncategorized",
+  "experts": {
+    "hunter-williams": {
+      "baseline_protocol": null,
+      "summary": {
+        "mention_count": 17,
+        "top_doses": [
+          {
+            "dose": "1 mg",
+            "count": 10
+          },
+          {
+            "dose": "10 units",
+            "count": 4
+          },
+          {
+            "dose": "2 mg",
+            "count": 4
+          },
+          {
+            "dose": "20 mg",
+            "count": 3
+          },
+          {
+            "dose": "8 mg",
+            "count": 2
+          },
+          {
+            "dose": "6 mg",
+            "count": 2
+          },
+          {
+            "dose": "20 units",
+            "count": 1
+          },
+          {
+            "dose": "300 mcg",
+            "count": 1
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "1958c6d78ba43937",
+            "source_type": "email",
+            "source_title": "The Epitalon + Pinealon Combo",
+            "source_date": "2025-03-12",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-03-12-epitalon-pinealon-combo.md",
+            "mention_count": 9,
+            "top_snippet": "↓brain fog - Protection against cognitive decline + neurodegeneration - More resilient brain under stress + aging ### Animal data - Protected brain cells from damage - Helped prevent neuron loss ## Wh",
+            "top_context": "↓brain fog - Protection against cognitive decline + neurodegeneration - More resilient brain under stress + aging ### Animal data - Protected brain cells from damage - Helped prevent neuron loss ## Why They Work Together - **Epitalon** → keeps cells younger, improves sleep, enhances recovery - **Pinealon** → protects brain, improves memory + focus, supports neuroplasticity - Body + brain = covers both pillars of longevity ## ⭐ DOSING (Epitalon + Pinealon Combo) — Hunter's protocol ### Dose - **Epitalon: 1 mg/day (at night)** - **Pinealon: 1 mg/day (at night)** ### Cycle - **20 days STRAIGHT** -",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "19c49cac85fb70ef",
+            "source_type": "email",
+            "source_title": "Pinealon for Longevity",
+            "source_date": "2026-02-10",
+            "source_url": "https://open.spotify.com/episode/6r4jji1nEwaFYsF0GfJiaD",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2026-02-10-pinealon-for-longevity.md",
+            "mention_count": 3,
+            "top_snippet": "hift work, prolonged stress ### Mood + HPA - Boosts serotonin - Modulates cortisol - Improves HPA-axis resilience - \"Calmer yet more mentally alert — rare combination\" ### Other domains - Eye health -",
+            "top_context": "hift work, prolonged stress ### Mood + HPA - Boosts serotonin - Modulates cortisol - Improves HPA-axis resilience - \"Calmer yet more mentally alert — rare combination\" ### Other domains - Eye health - Hearing / tinnitus - Immune regulation - Exercise recovery (mitochondrial support) ## ⭐ DOSING (Pinealon) — Hunter's protocol ### Conservative (most online protocols) - **100-300 mcg/day subQ** - **10-20 days** - Works for subtle circadian / cognitive support ### Hunter's preferred dose - **2 mg/day subQ** - **10-60 days** depending on situation - Shorter cycles → acute issues - Longer cycles → prol",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "195dedb693f63f9b",
+            "source_type": "email",
+            "source_title": "Updated Peptide Cheat Sheet",
+            "source_date": "2025-03-28",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-03-28-updated-peptide-cheat-sheet.md",
+            "mention_count": 2,
+            "top_snippet": "pamorelin’s growth hormone release, delivering superior anti-aging and physique-enhancing results. And because I want this to be your go-to resource, I’ve also included some of the top injectable bior",
+            "top_context": "pamorelin’s growth hormone release, delivering superior anti-aging and physique-enhancing results. And because I want this to be your go-to resource, I’ve also included some of the top injectable bioregulators for targeted health optimization: • **Cortagen** (brain & stress resilience) • **Pinealon** (neurogenesis & cognitive enhancement) • **Bronchogen** (improves lung function and breathing) • **Cartalax** (supports joint health, cartilage repair, and mobility) And more! I’ve personally seen these peptides and bioregulators transform the lives of thousands of people, enhancing p",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "195e91fe0fed1a09",
+            "source_type": "email",
+            "source_title": "Live Q&A Tonight!",
+            "source_date": "2025-03-30",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-03-30-live-q-a-tonight.md",
+            "mention_count": 1,
+            "top_snippet": "amorelin/Ipamorelin Blend (8mg)](https://biolongevitylabs.com/product/tesamorelin-6mg-ipamorelin-2mg-blend/)_ - The next best thing to human growth hormone and strongest fat loss peptide blend! Plus, ",
+            "top_context": "amorelin/Ipamorelin Blend (8mg)](https://biolongevitylabs.com/product/tesamorelin-6mg-ipamorelin-2mg-blend/)_ - The next best thing to human growth hormone and strongest fat loss peptide blend! Plus, these injectable Bioregulators are also on sale: * Cortagen * Epitalon * Cartalax * Pinealon * Bronchogen * Cardiogen * Chonluten **You can get 50% off all peptide courses. Get: ** * _[The Reconstitution Minicourse](http://jaycampbell.com/reconstitution-course/)_ for $24.50 - If you are clueless using Peptides, start here! * _[Peptides Demystified](https://click.convertki",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "195ee3b383eab82d",
+            "source_type": "email",
+            "source_title": "Shred vs. ShredX vs. MetaShred",
+            "source_date": "2025-03-31",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-03-31-shred-vs-shredx-vs-metashred.md",
+            "mention_count": 1,
+            "top_snippet": "elin-2mg-blend/?utm_source=huntershealthhacks.beehiiv.com&utm_medium=referral&utm_campaign=live-q-a-tonight)__ - The next best thing to human growth hormone and strongest fat loss peptide blend! Plus,",
+            "top_context": "elin-2mg-blend/?utm_source=huntershealthhacks.beehiiv.com&utm_medium=referral&utm_campaign=live-q-a-tonight)__ - The next best thing to human growth hormone and strongest fat loss peptide blend! Plus, these injectable Bioregulators are also on sale: * Cortagen * Epitalon * Cartalax * Pinealon * Bronchogen * Cardiogen * Chonluten **You can get 50% off all peptide courses. Get:** * __[The Reconstitution Minicourse](http://jaycampbell.com/reconstitution-course/?utm_source=huntershealthhacks.beehiiv.com&amp;utm_medium=referral&amp;utm_campaign=live-q-a-tonight)__ for $24.50 -",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "19a3c533447e6751",
+            "source_type": "email",
+            "source_title": "Tirzepatide Becomes The Top-Selling Medication Worldwide",
+            "source_date": "2025-10-31",
+            "source_url": "https://open.spotify.com/episode/0uLvXmHfqMtIsicXgkeq1D",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-10-31-tirzepatide-top-selling-peptide-replacement-therapy.md",
+            "mention_count": 1,
+            "top_snippet": "odically throughout the year.\" > \"Hopefully we as a community can make this more commonplace and eventually a standard practice!\" ⭐ Key conceptual frame Hunter is pushing in 2025: - We already do Horm",
+            "top_context": "odically throughout the year.\" > \"Hopefully we as a community can make this more commonplace and eventually a standard practice!\" ⭐ Key conceptual frame Hunter is pushing in 2025: - We already do Hormone Replacement Therapy (HRT) when hormones decline with age - Endogenous peptides (BPC, Humanin, Pinealon, Epitalon, GHK-Cu, etc.) ALSO decline with age - **Why aren't we replacing them too?** - Suggestion: periodic cycles throughout the year (\"rotating\" peptides) Spotify deep dive: open.spotify.com/episode/0uLvXmHfqMtIsicXgkeq1D ## Industry Data Point — Tirzepatide #1 Worldwide - October 2025: Tirz",
+            "first_timestamp": null
+          }
+        ],
+        "acute_signals": [
+          {
+            "snippet": "hift work, prolonged stress ### Mood + HPA - Boosts serotonin - Modulates cortisol - Improves HPA-axis resilience - \"Calmer yet more mentally alert — rare combination\" ### Other domains - Eye health -",
+            "source_title": "Pinealon for Longevity",
+            "source_date": "2026-02-10",
+            "timestamp": null,
+            "source_url": "https://open.spotify.com/episode/6r4jji1nEwaFYsF0GfJiaD"
+          }
+        ],
+        "chronic_signals": [
+          {
+            "snippet": "# Epitalon + Pinealon — Body + Brain Longevity Stack > \"Epitalon optimizes the body. Pinealon optimizes the brain. Combining them = hits both major components of longevity.\" > \"If there's one peptide ",
+            "source_title": "The Epitalon + Pinealon Combo",
+            "source_date": "2025-03-12",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "# Epitalon + Pinealon — Body + Brain Longevity Stack > \"Epitalon optimizes the body. Pinealon optimizes the brain. Combining them = hits both major components of longevity.\" > \"If there's one peptide ",
+            "source_title": "The Epitalon + Pinealon Combo",
+            "source_date": "2025-03-12",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "↓brain fog - Protection against cognitive decline + neurodegeneration - More resilient brain under stress + aging ### Animal data - Protected brain cells from damage - Helped prevent neuron loss ## Wh",
+            "source_title": "The Epitalon + Pinealon Combo",
+            "source_date": "2025-03-12",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "from damage - Helped prevent neuron loss ## Why They Work Together - **Epitalon** → keeps cells younger, improves sleep, enhances recovery - **Pinealon** → protects brain, improves memory + focus, sup",
+            "source_title": "The Epitalon + Pinealon Combo",
+            "source_date": "2025-03-12",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "keeps cells younger, improves sleep, enhances recovery - **Pinealon** → protects brain, improves memory + focus, supports neuroplasticity - Body + brain = covers both pillars of longevity ## ⭐ DOSING ",
+            "source_title": "The Epitalon + Pinealon Combo",
+            "source_date": "2025-03-12",
+            "timestamp": null,
+            "source_url": null
+          }
+        ]
+      }
+    },
+    "taylor-williams": {
+      "summary": {
+        "mention_count": 3,
+        "top_doses": [],
+        "top_sources": [
+          {
+            "source_id": "5ugqlYRSRSo",
+            "source_type": "podcast",
+            "source_title": "Saturday Morning Coffee Talk 1/17/26",
+            "source_date": "2026-01-17",
+            "source_url": "https://youtu.be/5ugqlYRSRSo",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2026-01-17-saturday-morning-coffee-talk-1-17-26-5ugqlYRSRSo.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "them in the long run. And then sure, it's great to do epitalon and pinealon,",
+            "top_context": "longevity stack that's out there that longevity stack that's out there that like you're just going to take and it's like you're just going to take and it's like you're just going to take and it's going to like reverse your brain going to like reverse your brain going to like reverse your brain &gt;&gt; Yeah. it's going to like reverse age you &gt;&gt; Yeah. it's going to like reverse age you &gt;&gt; Yeah. it's going to like reverse age you 25 years 25 years 25 years &gt;&gt; and like that there's like some like bio &gt;&gt; and like that there's like some like bio &gt;&gt; and like that there's like some like bio regulator protocol that's going to do regulator protocol that's going to do regulator protocol that's going to do that. Now, the bi-regular protocols are that. Now, the bi-regular protocols are that. Now, the bi-regular protocols are great, but what I want people to great, but what I want people to great, but what I want people to understand, I'm not saying this person understand, I'm not saying this person understand, I'm not saying this person is asking this, but I'm just saying is asking this, but I'm just saying is asking this, but I'm just saying because you hear about this, is like because you hear about this, is like because you hear about this, is like people think there's like this magical people think there's like this magical people think there's like this magical longevity protocol that is going to like longevity protocol that is going to like longevity protocol that is going to like reverse age them 20 years and 12 months reverse age them 20 years and 12 months reverse age them 20 years and 12 months and doesn't really work like that. And and doesn't really work like that. And and doesn't really work like that. And honestly, if you want the most longevity honestly, if you want the most longevity honestly, if you want the most longevity protocol, it's hormone optimization. protocol, it's hormone optimization. protocol, it's hormone optimization. That is the fountain of youth as we have That is the fountain of youth as we have That is the fountain of youth as we have it today. And if you optimize your it today. And if you optimize your it today. And if you optimize your hormones, that's going to solve probably hormones, that's going to solve probably hormones, that's going to solve probably like 70 to 80% of the issues that people like 70 to 80% of the issues that people like 70 to 80% of the issues that people would have, you know, and kind of help would have, you know, and kind of help would have, you know, and kind of help them in the long run. And then sure, them in the long run. And then sure, them in the long run. And then sure, it's great to do epitalon and pinealon, it's great to do epitalon and pinealon, it's great to do epitalon and pinealon, daimolin, daimolin, daimolin, and some of these other bi-regular and some of these other bi-regular and some of these other bi-regular things for longevity, but I just I just things for longevity, but I just I just things for longevity, but I just I just want people's expectations because it's want people's expectations because it's want people's expectations because it's kind of one of those things. I think two kind of one of those things. I think two kind of one of those things. I think two people probably get into this and people probably get into this and people probably get into this and they're like, \"Oh, wow. This made me they're like, \"Oh, wow. This made me they're like, \"Oh, wow. This made me feel so much better, so there must be feel so much better, so there must be feel so much better, so there must be something more that's going to make me something more that's going to make me something more that's going to make me feel that much better.\" feel that much better.\" feel that much better.\" And a lot of times epalon is not going And a lot of times epalon is not going And a lot of times epalon is not going to be the one to do that. Not saying to be the one to do that. Not saying to be the one to do that. Not saying it's bad obviously, but it's bad obviously, but it's bad obviously, but all right let's see all right let's see all right let's see simple stack protocol for SS31 mod z5 simple stack protocol for SS31 mod z5 simple stack protocol for SS31 mod z5 amino sloop b 15 don't want to overspend amino sloop b 15 don't want to overspend amino sloop b 15 don't want to overspend in what order how long each that is a in what order how long each that is a in what order how long each that is a very long question to which it would very long question to which it would very long question to which it would require a 30 minute presentation. require a 30 minute presentation. require a 30 minute presentation. Sean. Uh, I would say probably I would Sean. Uh, I would say probably I would Sean. Uh, I would say probably I would not use all those one at one time.",
+            "first_timestamp": "01:15:39.600"
+          }
+        ],
+        "acute_signals": [],
+        "chronic_signals": [
+          {
+            "snippet": "them in the long run. And then sure, it's great to do epitalon and pinealon,",
+            "source_title": "Saturday Morning Coffee Talk 1/17/26",
+            "source_date": "2026-01-17",
+            "timestamp": "01:15:39.600",
+            "source_url": "https://youtu.be/5ugqlYRSRSo"
+          },
+          {
+            "snippet": "it's great to do epitalon and pinealon,",
+            "source_title": "Saturday Morning Coffee Talk 1/17/26",
+            "source_date": "2026-01-17",
+            "timestamp": "01:15:41.910",
+            "source_url": "https://youtu.be/5ugqlYRSRSo"
+          },
+          {
+            "snippet": "it's great to do epitalon and pinealon, daimolin,",
+            "source_title": "Saturday Morning Coffee Talk 1/17/26",
+            "source_date": "2026-01-17",
+            "timestamp": "01:15:41.920",
+            "source_url": "https://youtu.be/5ugqlYRSRSo"
+          }
+        ]
+      },
+      "female_specific_note": "Taylor Williams Coaching focuses on female-specific HRT/peptide guidance. Per-peptide notes here often emphasize female dosing, fertility, hormone interactions."
+    }
+  },
+  "reset_biology_synthesis": {
+    "status": "pending-codex-distillation",
+    "recommendation": null,
+    "caveats": null,
+    "cross_expert_consensus": null,
+    "cross_expert_disagreement": null
+  },
+  "generated_at": "2026-04-27T02:02:34.994Z"
+}

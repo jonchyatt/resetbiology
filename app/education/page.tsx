@@ -1807,6 +1807,31 @@ export default function EducationPage() {
           </p>
         </div>
 
+        {/* Peptide Library Hub Card */}
+        <div className="container mx-auto px-4 mb-12">
+          <div className="max-w-4xl mx-auto">
+            <a
+              href="/education/peptides"
+              className="block bg-gradient-to-r from-[#3FBFB5]/20 to-[#72C247]/20 backdrop-blur-md border border-[#3FBFB5]/40 rounded-2xl p-6 hover:from-[#3FBFB5]/30 hover:to-[#72C247]/30 hover:border-[#3FBFB5]/60 transition-all duration-300 group"
+            >
+              <div className="flex items-start justify-between flex-wrap gap-4">
+                <div className="flex-1 min-w-[280px]">
+                  <h3 className="text-2xl md:text-3xl font-bold text-white mb-2 group-hover:text-[#3FBFB5] transition-colors">
+                    NEW &middot; Peptide Library
+                  </h3>
+                  <p className="text-gray-200 text-base md:text-lg">
+                    Cross-expert reference for 70+ peptides. What Hunter Williams, Taylor Williams, and Dr Trevor Bachmeyer teach about each compound — dosing where given, acute vs chronic, female-specific guidance, and Reset Biology synthesis.
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 self-center">
+                  <span className="text-[#3FBFB5] font-semibold">Explore</span>
+                  <span className="text-[#3FBFB5] text-2xl group-hover:translate-x-1 transition-transform">→</span>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+
         {/* Search and Filter */}
         <div className="container mx-auto px-4 mb-8">
           <div className="max-w-4xl mx-auto">

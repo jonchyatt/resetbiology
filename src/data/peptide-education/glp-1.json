@@ -1,0 +1,645 @@
+{
+  "peptide": "GLP-1",
+  "slug": "glp-1",
+  "aliases": [
+    "GLP1",
+    "GLP-1",
+    "glp-1",
+    "glp1",
+    "glp 1",
+    "GLP 1"
+  ],
+  "category": "Uncategorized",
+  "experts": {
+    "hunter-williams": {
+      "baseline_protocol": null,
+      "summary": {
+        "mention_count": 442,
+        "top_doses": [
+          {
+            "dose": "1 mg",
+            "count": 26
+          },
+          {
+            "dose": "10 mg",
+            "count": 11
+          },
+          {
+            "dose": "2.5 mg",
+            "count": 10
+          },
+          {
+            "dose": "15 mg",
+            "count": 9
+          },
+          {
+            "dose": "6 mg",
+            "count": 8
+          },
+          {
+            "dose": "9 mg",
+            "count": 8
+          },
+          {
+            "dose": "16 mg",
+            "count": 8
+          },
+          {
+            "dose": "2 mg",
+            "count": 7
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "196177296bf4b2dd",
+            "source_type": "email",
+            "source_title": "Do GLP-1s Drop Your Blood Sugar TOO Low?",
+            "source_date": "2025-04-08",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-04-08-do-glp-1s-drop-your-blood-sugar-too-low.md",
+            "mention_count": 21,
+            "top_snippet": "iolongevitylabs.com/product-category/bioregulators-creams/). Now back to regularly scheduled programming 😀 ——————————————————————————— Lately, I’ve seen this question pop up numerous times in my [que",
+            "top_context": "iolongevitylabs.com/product-category/bioregulators-creams/). Now back to regularly scheduled programming 😀 ——————————————————————————— Lately, I’ve seen this question pop up numerous times in my [question box:](https://hunterwilliamsvideotopic.carrd.co/) “Will retatrtuide and/or other GLP-1 peptides drop my blood sugar dangerously low and make me “go hypo”[glycemic]?“ — I completely understand this fear. Most folks in my audience are relatively healthy to begin with, and they are NOT using GLP-1s because they have diabetes. They want all the amazing anti-aging/longevity",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "194f7321ecf3fdae",
+            "source_type": "email",
+            "source_title": "Cagrilintide",
+            "source_date": "2025-02-11",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-02-11-cagrilintide.md",
+            "mention_count": 20,
+            "top_snippet": "Today, I released my first video on Cagrilintide. Youtube: Cagrilintide Explained | The Next BIG Peptide for Fat Loss? (https://youtu.be/-79_weZJC1o?si=2lRiyi9LyzlHNsht) Current research suggests that",
+            "top_context": "Today, I released my first video on Cagrilintide. Youtube: Cagrilintide Explained | The Next BIG Peptide for Fat Loss? (https://youtu.be/-79_weZJC1o?si=2lRiyi9LyzlHNsht) Current research suggests that cagrilintide’s mechanism of action—working on amylin receptors rather than GLP-1 pathways—may make it an ideal sidekick for your existing GLP-1 or GIP/GLP-1 therapies. Plus, it features strong appetite suppression without the classic “nausea overload” often experienced with higher-dose GLP-1 agonists. Let’s jump into some of the topics I cover in the video. ——————————",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "196a11deace2e80d",
+            "source_type": "email",
+            "source_title": "GLP-1s For Dementia?",
+            "source_date": "2025-05-05",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-05-05-glp-1s-for-dementia.md",
+            "mention_count": 17,
+            "top_snippet": "inventions ever to grace mankind thus far. When used properly, they can massively enhance well-being in unhealthy AND healthy people. A groundbreaking meta-analysis published recently in the _Journal ",
+            "top_context": "inventions ever to grace mankind thus far. When used properly, they can massively enhance well-being in unhealthy AND healthy people. A groundbreaking meta-analysis published recently in the _Journal of Neurology, Neurosurgery & Psychiatry_ revealed some truly exciting cognitive benefits of GLP-1 peptides like semaglutide, tirzepatide, and especially the powerful new kid on the block—**retatrutide**. If you want to dive deep into the science yourself (and I highly recommend you do), here’s a link to the original study: 👉 [Read the study here](https://jnnp.bmj.com/content/early/2025/0",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "19ab8288a9f895cd",
+            "source_type": "email",
+            "source_title": "GLP-1s Cause Blindness?!",
+            "source_date": "2025-11-24",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-11-24-glp-1s-cause-blindness.md",
+            "mention_count": 16,
+            "top_snippet": "Happy Monday! Today’s email is a direct response to questions I received from several different readers over the last few months. Most of their questions go like this: “**“Can you please address the t",
+            "top_context": "Happy Monday! Today’s email is a direct response to questions I received from several different readers over the last few months. Most of their questions go like this: “**“Can you please address the topic of eye health and sudden blindness associated with GLP-1 peptides. Is this a real concern for healthy individuals or just diabetics?”**“ — The mainstream media has gone full scorched-earth with headlines like “Weight-Loss Drugs Causing Blindness?” and “New Class of Fat-Loss Medications Linked to Eye Damage.” These stories spread quickly, mainly b",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "19d45fc334be87a7",
+            "source_type": "email",
+            "source_title": "Survodutide & Mazdutide (GLP-1/Glucagon Duo)",
+            "source_date": "2026-03-31",
+            "source_url": "https://open.spotify.com/episode/2IADOstRyI6FrZlNHriPJB",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2026-03-31-survodutide-mazdutide-glp1-glucagon-duo.md",
+            "mention_count": 16,
+            "top_snippet": "agon agonism ADDS - ↑ Energy expenditure (~200 cal/day at rest from acute glucagon infusion) - Mechanism: hepatic fuel cycling, **FGF-21 thermogenesis**, brown fat adipocyte activation - ↑ Hepatic bet",
+            "top_context": "agon agonism ADDS - ↑ Energy expenditure (~200 cal/day at rest from acute glucagon infusion) - Mechanism: hepatic fuel cycling, **FGF-21 thermogenesis**, brown fat adipocyte activation - ↑ Hepatic beta-oxidation (liver fat ↓) - ↓ De novo lipogenesis - Restores mitochondrial function - These effects GLP-1 alone CANNOT replicate ### Why it doesn't raise blood sugar - GLP-1 component **counterbalances** glucagon's glucose-raising effect - No increased risk of hyperglycemia in trials of either compound ## ⭐ Clinical Benefits ### Mazdutide (6 mg/wk) - **80% reduction in liver fat** in baseline hepati",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "0TyW-wlJMxo",
+            "source_type": "podcast",
+            "source_title": "Saturday Morning Coffee Talk | Peptides, Hormones & Fitness for Couples 3/28/26",
+            "source_date": "2026-03-28",
+            "source_url": "https://youtu.be/0TyW-wlJMxo",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-03-28-saturday-morning-coffee-talk-peptides-hormones-fitness-for-couples-3-2-0TyW-wlJMxo.en.vtt",
+            "mention_count": 15,
+            "top_snippet": "GLP-1s. If there's a thing you could be hooked on, GLP-1 would be better than",
+            "top_context": "world that you would say you have a lot world that you would say you have a lot of private doctors that would use a of private doctors that would use a of private doctors that would use a compounding pharmacy or even large compounding pharmacy or even large compounding pharmacy or even large public companies now like Hims and Hers public companies now like Hims and Hers public companies now like Hims and Hers that will use compounding pharmacies to that will use compounding pharmacies to that will use compounding pharmacies to make what they make what they make what they would be called compounded GLPs. And so would be called compounded GLPs. And so would be called compounded GLPs. And so big pharma says compounders are bad. big pharma says compounders are bad. big pharma says compounders are bad. They're the ones that are ruining They're the ones that are ruining They're the ones that are ruining everything because they're dangerous. everything because they're dangerous. everything because they're dangerous. They're giving our They're giving our They're giving our patented drugs to people in a compounded patented drugs to people in a compounded patented drugs to people in a compounded version that is now dangerous. It's version that is now dangerous. It's version that is now dangerous. It's going to going to cause harm to them. going to going to cause harm to them. going to going to cause harm to them. The last four years and it's kind of The last four years and it's kind of The last four years and it's kind of funny because big pharma depended on the funny because big pharma depended on the funny because big pharma depended on the compounding pharmacy world to get all of compounding pharmacy world to get all of compounding pharmacy world to get all of the people hooked on GLP-1s the people hooked on GLP-1s the people hooked on GLP-1s because they weren't able to meet the because they weren't able to meet the because they weren't able to meet the demand. And so they said, \"Hey, help us demand. And so they said, \"Hey, help us demand. And so they said, \"Hey, help us make these so we can get everyone hooked make these so we can get everyone hooked make these so we can get everyone hooked on them.\" Which I mean, hey, I'm I'm in on them.\" Which I mean, hey, I'm I'm in on them.\" Which I mean, hey, I'm I'm in support of people being hooked on support of people being hooked on support of people being hooked on GLP-1s. If there's a thing you could be GLP-1s. If there's a thing you could be GLP-1s. If there's a thing you could be hooked on, GLP-1 would be better than hooked on, GLP-1 would be better than hooked on, GLP-1 would be better than alcohol or whatnot. However, alcohol or whatnot. However, alcohol or whatnot. However, big pharma relied on the compounders to big pharma relied on the compounders to big pharma relied on the compounders to fill the need and get everyone addicted fill the need and get everyone addicted fill the need and get everyone addicted to GLPs, so to speak. to GLPs, so to speak. to GLPs, so to speak. And now that there's not an emergency And now that there's not an emergency And now that there's not an emergency use authorization for those, big pharma use authorization for those, big pharma use authorization for those, big pharma is saying, \"Well, the compounders are is saying, \"Well, the compounders are is saying, \"Well, the compounders are bad now because they're taking money bad now because they're taking money bad now because they're taking money away from us because they're giving you away from us because they're giving you away from us because they're giving you quote unquote dangerous versions of the quote unquote dangerous versions of the quote unquote dangerous versions of the medication.\" Mhm. medication.\" Mhm. medication.\" Mhm. And where do the compounders turn? Well, And where do the compounders turn? Well, And where do the compounders turn? Well, the compounders and the people with the the compounders and the people with the the compounders and the people with the clinics of the world and everything like clinics of the world and everything like clinics of the world and everything like that, they're saying, \"We're not bad. that, they're saying, \"We're not bad. that, they're saying, \"We're not bad. We're doing everything that we're We're doing everything that we're We're doing everything that we're supposed to do, quote unquote getting supposed to do, quote unquote getting supposed to do, quote unquote getting inspected by the FDA, whatnot, blah blah inspected by the FDA, whatnot, blah blah inspected by the FDA, whatnot, blah blah blah. It's the research people that are blah. It's the research people that are blah. It's the research people that are bad. It's the four out of every five bad. It's the four out of every five bad. It's the four out of every five peptides right now that are being peptides right now that are being peptides right now that are being consumed on the market are research consumed on the market are research consumed on the market are research peptides. They're the bad guys. They're",
+            "first_timestamp": "00:06:42.160"
+          },
+          {
+            "source_id": "195fdb93188e97f0",
+            "source_type": "email",
+            "source_title": "GLP-1 \\\"Side Effects\\\"",
+            "source_date": "2025-04-03",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-04-03-glp-1-side-effects.md",
+            "mention_count": 15,
+            "top_snippet": "It’s no secret GLP-1 peptides have exploded onto the scene, helping thousands crush their fat loss and metabolic health goals. They suppress appetite, boost insulin sensitivity, and massively reduce c",
+            "top_context": "It’s no secret GLP-1 peptides have exploded onto the scene, helping thousands crush their fat loss and metabolic health goals. They suppress appetite, boost insulin sensitivity, and massively reduce cravings. BUT—and it’s a big one—they come with some serious potential pitfalls, especially if your gut isn’t alr",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "1967e6f0ec9241dc",
+            "source_type": "email",
+            "source_title": "Retatrutide Vs. Alcohol",
+            "source_date": "2025-04-28",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-04-28-retatrutide-vs-alcohol.md",
+            "mention_count": 12,
+            "top_snippet": "uggest people remove from their lives, it’s alcohol. If you just remove the consumption of alcohol from your life, things magically start to improve without any extra effort on your part. Why? Because",
+            "top_context": "uggest people remove from their lives, it’s alcohol. If you just remove the consumption of alcohol from your life, things magically start to improve without any extra effort on your part. Why? Because alcohol is a cell toxin and poison - physically and metaphysically. Ironically enough, GLP-1 peptides seem to reduce interest and cravings for alcohol dramatically. And today, I’m sharing with you my insights on a groundbreaking new study that puts this concept to the test. If you thought GLP-1 peptides like semaglutide, tirzepatide, and retatrutide were just about shredding body fa",
+            "first_timestamp": null
+          }
+        ],
+        "acute_signals": [
+          {
+            "snippet": "pathways in the body with the GLP1 gip there's a&nbsp; lot of immune modulation that occurs and I have&nbsp;&nbsp;",
+            "source_title": "Estrogen is Critical for Men Too - Here's Why Your Peptides Fail Without It with Sarah Morgan",
+            "source_date": "2026-03-13",
+            "timestamp": "00:43:58.320",
+            "source_url": "https://youtu.be/PEU3ZE5axiQ"
+          },
+          {
+            "snippet": "like, oh, I have to stack it together. So rea is&nbsp; a glucagon agonist added to the GLP-1 GIP. Yes.&nbsp;&nbsp;",
+            "source_title": "Estrogen is Critical for Men Too - Here's Why Your Peptides Fail Without It with Sarah Morgan",
+            "source_date": "2026-03-13",
+            "timestamp": "01:29:41.200",
+            "source_url": "https://youtu.be/PEU3ZE5axiQ"
+          },
+          {
+            "snippet": "GLP-1s. If there's a thing you could be hooked on, GLP-1 would be better than",
+            "source_title": "Saturday Morning Coffee Talk | Peptides, Hormones & Fitness for Couples 3/28/26",
+            "source_date": "2026-03-28",
+            "timestamp": "00:06:42.160",
+            "source_url": "https://youtu.be/0TyW-wlJMxo"
+          },
+          {
+            "snippet": "hooked on, GLP-1 would be better than",
+            "source_title": "Saturday Morning Coffee Talk | Peptides, Hormones & Fitness for Couples 3/28/26",
+            "source_date": "2026-03-28",
+            "timestamp": "00:06:44.470",
+            "source_url": "https://youtu.be/0TyW-wlJMxo"
+          },
+          {
+            "snippet": "hooked on, GLP-1 would be better than alcohol or whatnot. However,",
+            "source_title": "Saturday Morning Coffee Talk | Peptides, Hormones & Fitness for Couples 3/28/26",
+            "source_date": "2026-03-28",
+            "timestamp": "00:06:44.480",
+            "source_url": "https://youtu.be/0TyW-wlJMxo"
+          }
+        ],
+        "chronic_signals": [
+          {
+            "snippet": "based off of randomized clinical controlled study. you know, the GLP-1 in",
+            "source_title": "Peptides & Longevity Medicine Explained by a Real Cardiologist | Dr. Abid Husain, MD",
+            "source_date": "2026-03-27",
+            "timestamp": "00:42:39.040",
+            "source_url": "https://youtu.be/JFrn_zX0RE4"
+          },
+          {
+            "snippet": "controlled study. you know, the GLP-1 in",
+            "source_title": "Peptides & Longevity Medicine Explained by a Real Cardiologist | Dr. Abid Husain, MD",
+            "source_date": "2026-03-27",
+            "timestamp": "00:42:41.910",
+            "source_url": "https://youtu.be/JFrn_zX0RE4"
+          },
+          {
+            "snippet": "controlled study. you know, the GLP-1 in the select trial in uh patients that",
+            "source_title": "Peptides & Longevity Medicine Explained by a Real Cardiologist | Dr. Abid Husain, MD",
+            "source_date": "2026-03-27",
+            "timestamp": "00:42:41.920",
+            "source_url": "https://youtu.be/JFrn_zX0RE4"
+          },
+          {
+            "snippet": "molecule, meaning it's not actually a peptide, but it's a small molecule GLP-1",
+            "source_title": "Saturday Morning Coffee Talk | Peptides, Hormones & Fitness for Couples 3/28/26",
+            "source_date": "2026-03-28",
+            "timestamp": "01:06:46.200",
+            "source_url": "https://youtu.be/0TyW-wlJMxo"
+          },
+          {
+            "snippet": "peptide, but it's a small molecule GLP-1",
+            "source_title": "Saturday Morning Coffee Talk | Peptides, Hormones & Fitness for Couples 3/28/26",
+            "source_date": "2026-03-28",
+            "timestamp": "01:06:48.190",
+            "source_url": "https://youtu.be/0TyW-wlJMxo"
+          }
+        ]
+      }
+    },
+    "taylor-williams": {
+      "summary": {
+        "mention_count": 556,
+        "top_doses": [
+          {
+            "dose": "2 milligrams",
+            "count": 31
+          },
+          {
+            "dose": "750 micrograms",
+            "count": 27
+          },
+          {
+            "dose": "1 milligram",
+            "count": 27
+          },
+          {
+            "dose": "3 micrograms",
+            "count": 18
+          },
+          {
+            "dose": "100 milligrams",
+            "count": 18
+          },
+          {
+            "dose": "25 mg",
+            "count": 18
+          },
+          {
+            "dose": "20 milligrams",
+            "count": 18
+          },
+          {
+            "dose": "1.5 milligrams",
+            "count": 9
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "L331y2xrWwE",
+            "source_type": "podcast",
+            "source_title": "Hidden Secrets to Fat Loss WITHOUT GLP1s!",
+            "source_date": "2024-10-11",
+            "source_url": "https://youtu.be/L331y2xrWwE",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2024-10-11-hidden-secrets-to-fat-loss-without-glp1s-L331y2xrWwE.en.vtt",
+            "mention_count": 51,
+            "top_snippet": "when I'm not on a glp1 and let's just say that this is",
+            "top_context": "[Music] [Music] C hey everyone welcome back to my C hey everyone welcome back to my C hey everyone welcome back to my channel and in today's video I'm going channel and in today's video I'm going channel and in today's video I'm going to be sharing with you guys what to be sharing with you guys what to be sharing with you guys what peptides and supplements I like to use peptides and supplements I like to use peptides and supplements I like to use when I'm not on a when I'm not on a when I'm not on a glp1 and let's just say that this is glp1 and let's just say that this is glp1 and let's just say that this is super important to understand that like super important to understand that like super important to understand that like we have to cycle off of our glp ones and we have to cycle off of our glp ones and we have to cycle off of our glp ones and so many women that I work with get so so many women that I work with get so so many women that I work with get so nervous about coming off their G gp1s so nervous about coming off their G gp1s so nervous about coming off their G gp1s so I'm going to share with you guys what I I'm going to share with you guys what I I'm going to share with you guys what I like to use when I'm not on a glp1 and like to use when I'm not on a glp1 and like to use when I'm not on a glp1 and the habits that I like to change that the habits that I like to change that the habits that I like to change that way you don't have to fear coming off of way you don't have to fear coming off of way you don't have to fear coming off of your glp ones so let's get into this your glp ones so let's get into this your glp ones so let's get into this video okay so I'm going to share with video okay so I'm going to share with video okay so I'm going to share with you guys what peptides that I like to you guys what peptides that I like to you guys what peptides that I like to use that are going to help with fat loss use that are going to help with fat loss use that are going to help with fat loss that aren't glp ones plus I have two that aren't glp ones plus I have two that aren't glp ones plus I have two bronos products in here that I'm going bronos products in here that I'm going bronos products in here that I'm going to be sharing with you guys so let's get to be sharing with you guys so let's get to be sharing with you guys so let's get into this so let's talk about like why into this so let's talk about like why into this so let's talk about like why it's so important to cycle off of our it's so important to cycle off of our it's so important to cycle off of our glp on this is going to be so important",
+            "first_timestamp": "00:00:19.000"
+          },
+          {
+            "source_id": "V5WgMemX0rc",
+            "source_type": "podcast",
+            "source_title": "Tirzepatide Users Beware: Mistakes You Must Avoid",
+            "source_date": "2024-06-18",
+            "source_url": "https://youtu.be/V5WgMemX0rc",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2024-06-18-tirzepatide-users-beware-mistakes-you-must-avoid-V5WgMemX0rc.en.vtt",
+            "mention_count": 48,
+            "top_snippet": "people make when taking glp ones so if you're taking a glp1 and you want to",
+            "top_context": "interested in where I get my glp ones interested in where I get my glp ones and what other peptides that I like and what other peptides that I like and what other peptides that I like using in the description below is my using in the description below is my using in the description below is my link tree account you guys can click on link tree account you guys can click on link tree account you guys can click on that and that brings you directly to all that and that brings you directly to all that and that brings you directly to all my resources on where I get my peptides my resources on where I get my peptides my resources on where I get my peptides it has in there the women's peptide it has in there the women's peptide it has in there the women's peptide course um that I did with Monica course um that I did with Monica course um that I did with Monica Campbell you have access to that there Campbell you have access to that there Campbell you have access to that there there is the access to the women's there is the access to the women's there is the access to the women's peptide cheat sheet I get a lot of peptide cheat sheet I get a lot of peptide cheat sheet I get a lot of questions on Where can I get the peptide questions on Where can I get the peptide questions on Where can I get the peptide cheat cheat cheat sheet go to the link Tre account it's sheet go to the link Tre account it's sheet go to the link Tre account it's all right there so now that we got all all right there so now that we got all all right there so now that we got all that out of the way let's get into this that out of the way let's get into this that out of the way let's get into this discussion so I'm going to share with discussion so I'm going to share with discussion so I'm going to share with you guys the common mistakes that I see you guys the common mistakes that I see you guys the common mistakes that I see people make when taking glp ones so if people make when taking glp ones so if people make when taking glp ones so if you're taking a glp1 and you want to you're taking a glp1 and you want to you're taking a glp1 and you want to make sure you're not doing any of the make sure you're not doing any of the make sure you're not doing any of the common mistakes or if you have done this common mistakes or if you have done this common mistakes or if you have done this like that's okay like it's it's all like that's okay like it's it's all like that's okay like it's it's all learning process and even myself have I learning process and even myself have I learning process and even myself have I have learned this personally just along have learned this personally just along have learned this personally just along the way of using glp ones so let's get the way of using glp ones so let's get the way of using glp ones so let's get into into into it probably it probably it probably the these are all very important there's the these are all very important there's the these are all very important there's no one bigger than the other but one of no one bigger than the other but one of no one bigger than the other but one of the most common things I see people do the most common things I see people do the most common things I see people do while taking glp ones which is the worst while taking glp ones which is the worst while taking glp ones which is the worst thing you can do they're not resistance thing you can do they're not resistance thing you can do they're not resistance training resistance training is so training resistance training is so training resistance training is so important when using a glp1 peptide important when using a glp1 peptide important when using a glp1 peptide because yes it is great I see so many",
+            "first_timestamp": "00:01:20.520"
+          },
+          {
+            "source_id": "SUZmM0nTPyw",
+            "source_type": "podcast",
+            "source_title": "Peptide Stacking SECRETS for Women Who Want RESULTS!",
+            "source_date": "2024-10-22",
+            "source_url": "https://youtu.be/SUZmM0nTPyw",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2024-10-22-peptide-stacking-secrets-for-women-who-want-results-SUZmM0nTPyw.en.vtt",
+            "mention_count": 33,
+            "top_snippet": "under our glp1 now have I",
+            "top_context": "body just natur builds a stronger body just natur builds a stronger resistance to it quicker so sometimes resistance to it quicker so sometimes resistance to it quicker so sometimes I'll just even take that by itself and I'll just even take that by itself and I'll just even take that by itself and then test some Morel and I'm usually then test some Morel and I'm usually then test some Morel and I'm usually taking that by itself I'm not normally taking that by itself I'm not normally taking that by itself I'm not normally pairing things so let's just say okay pairing things so let's just say okay pairing things so let's just say okay you're making a peptide plan okay what you're making a peptide plan okay what you're making a peptide plan okay what one of these do you want to pick for one of these do you want to pick for one of these do you want to pick for your growth hormone your growth hormone your growth hormone stimulant that's where you get to kind stimulant that's where you get to kind stimulant that's where you get to kind of pick um you can just pick any of of pick um you can just pick any of of pick um you can just pick any of these by themselves or you can pair the these by themselves or you can pair the these by themselves or you can pair the ones that combine really well together ones that combine really well together ones that combine really well together or just make sure you just don't combine or just make sure you just don't combine or just make sure you just don't combine IA and pessa together it's just nothing IA and pessa together it's just nothing IA and pessa together it's just nothing bad's gonna happen you're just now we're bad's gonna happen you're just now we're bad's gonna happen you're just now we're on to understanding how to pick peptides on to understanding how to pick peptides on to understanding how to pick peptides or fat loss which is going to be covered or fat loss which is going to be covered or fat loss which is going to be covered under our under our under our glp1 now have I glp1 now have I glp1 now have I paired thti and ratr Tide together yes paired thti and ratr Tide together yes paired thti and ratr Tide together yes is that possible do yes is it fully is that possible do yes is it fully is that possible do yes is it fully beneficial no so it's also now we're beneficial no so it's also now we're beneficial no so it's also now we're going into understanding which peptide going into understanding which peptide going into understanding which peptide we want to take for our um we want to take for our um we want to take for our um glp1 understanding the difference glp1 understanding the difference glp1 understanding the difference between redit true tide semaglutide and between redit true tide semaglutide and between redit true tide semaglutide and trapti is really important and yes um trapti is really important and yes um trapti is really important and yes um trapti is no longer available um for trapti is no longer available um for trapti is no longer available um for from chemical research companies it's from chemical research companies it's from chemical research companies it's still out there and people still take it still out there and people still take it still out there and people still take it so um a lot of times now you just have so um a lot of times now you just have so um a lot of times now you just have to have this prescribed from a doctor",
+            "first_timestamp": "00:07:44.560"
+          },
+          {
+            "source_id": "ut_iXVvl-8w",
+            "source_type": "podcast",
+            "source_title": "What I Take When Cycling Off GLP-1 Peptides",
+            "source_date": "2024-05-21",
+            "source_url": "https://youtu.be/ut_iXVvl-8w",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2024-05-21-what-i-take-when-cycling-off-glp-1-peptides-ut_iXVvl-8w.en.vtt",
+            "mention_count": 30,
+            "top_snippet": "to share with you guys what I do when I am not taking a glp1 supplement such as",
+            "top_context": "[Music] [Music] C hey everyone welcome back to my C hey everyone welcome back to my C hey everyone welcome back to my channel and in today's video I'm going channel and in today's video I'm going channel and in today's video I'm going to share with you guys what I do when I to share with you guys what I do when I to share with you guys what I do when I am not taking a glp1 supplement such as am not taking a glp1 supplement such as am not taking a glp1 supplement such as trapti or semi glutide um I get a lot of trapti or semi glutide um I get a lot of trapti or semi glutide um I get a lot of questions about what to do when I am questions about what to do when I am questions about what to do when I am what you're recycling off of them and what you're recycling off of them and what you're recycling off of them and whatnot so I'm going to share with you whatnot so I'm going to share with you whatnot so I'm going to share with you guys exactly everything that I do and guys exactly everything that I do and guys exactly everything that I do and break down my routine for you guys um so break down my routine for you guys um so break down my routine for you guys um so before I get into that um all of the before I get into that um all of the before I get into that um all of the peptides that I recommend people it it peptides that I recommend people it it peptides that I recommend people it it is linked in my link to your description is linked in my link to your description is linked in my link to your description below I get a lot of questions on Where below I get a lot of questions on Where below I get a lot of questions on Where do I go to get peptides um if you click do I go to get peptides um if you click do I go to get peptides um if you click that link tree um in the description that link tree um in the description that link tree um in the description below it will have reference the two below it will have reference the two below it will have reference the two sites that I prefer to get my peptides sites that I prefer to get my peptides sites that I prefer to get my peptides from and there are um discount codes for",
+            "first_timestamp": "00:00:15.440"
+          },
+          {
+            "source_id": "4ZGT9tmA6Ak",
+            "source_type": "podcast",
+            "source_title": "My Honest Cagrilintide Experience: Side Effects, Benefits & Best Dose",
+            "source_date": "2025-03-21",
+            "source_url": "https://youtu.be/4ZGT9tmA6Ak",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2025-03-21-my-honest-cagrilintide-experience-side-effects-benefits-best-dose-4ZGT9tmA6Ak.en.vtt",
+            "mention_count": 30,
+            "top_snippet": "food noise but it's a little bit different from taking a glp1 and I'm",
+            "top_context": "hey everyone welcome back to my channel hey everyone welcome back to my channel and if you're new here hi I'm Taylor I and if you're new here hi I'm Taylor I and if you're new here hi I'm Taylor I love teaching women how to use peptides love teaching women how to use peptides love teaching women how to use peptides how to optimize your hormones how to how to optimize your hormones how to how to optimize your hormones how to lose fat and build muscle all at the lose fat and build muscle all at the lose fat and build muscle all at the same time so if you're new here joining same time so if you're new here joining same time so if you're new here joining thank you so much for clicking on this thank you so much for clicking on this thank you so much for clicking on this video and so in today's video I'm going video and so in today's video I'm going video and so in today's video I'm going to be talking to you all about the p to be talking to you all about the p to be talking to you all about the p congren tide also known as KAG and this congren tide also known as KAG and this congren tide also known as KAG and this is a really powerful peptide that is is a really powerful peptide that is is a really powerful peptide that is going to help so much with appetite going to help so much with appetite going to help so much with appetite suppression and it's going to help with suppression and it's going to help with suppression and it's going to help with food noise but it's a little bit food noise but it's a little bit food noise but it's a little bit different from taking a glp1 and I'm different from taking a glp1 and I'm different from taking a glp1 and I'm going to get into that and I'm going to going to get into that and I'm going to going to get into that and I'm going to also share with you my experience using also share with you my experience using also share with you my experience using this peptide and what I wish I had known this peptide and what I wish I had known this peptide and what I wish I had known before using it so this is definitely before using it so this is definitely before using it so this is definitely going to be a very honest review on this going to be a very honest review on this going to be a very honest review on this peptide this is a very popular trending peptide this is a very popular trending peptide this is a very popular trending peptide a lot of people are talking peptide a lot of people are talking peptide a lot of people are talking about it right now and I'm just going to about it right now and I'm just going to about it right now and I'm just going to share with you my honest feedback with share with you my honest feedback with share with you my honest feedback with it I think it's a great peptide but it I think it's a great peptide but it I think it's a great peptide but there are definitely some things to be there are definitely some things to be there are definitely some things to be mindful when using this peptide so let's mindful when using this peptide so let's mindful when using this peptide so let's get into this video GTI is a long amalin get into this video GTI is a long amalin get into this video GTI is a long amalin agon that's actually designed to help agon that's actually designed to help agon that's actually designed to help support with weight loss and to help support with weight loss and to help support with weight loss and to help with malotic health now this is going to with malotic health now this is going to with malotic health now this is going to be different from taking a glp1 such as",
+            "first_timestamp": "00:00:41.120"
+          },
+          {
+            "source_id": "BUmPXCXEgF8",
+            "source_type": "podcast",
+            "source_title": "Calocurb - The Natural GLP-1 Supplement | My Review",
+            "source_date": "2024-05-17",
+            "source_url": "https://youtu.be/BUmPXCXEgF8",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2024-05-17-calocurb-the-natural-glp-1-supplement-my-review-BUmPXCXEgF8.en.vtt",
+            "mention_count": 27,
+            "top_snippet": "suppression so it works as a essentially as a glp1 supplement so this is going to",
+            "top_context": "exercises all of that so be sure to go exercises all of that so be sure to go on there and find that again you can on there and find that again you can on there and find that again you can find this all on my link in tree find this all on my link in tree find this all on my link in tree description and don't forget to also description and don't forget to also description and don't forget to also download the women's peptide cheat sheet download the women's peptide cheat sheet download the women's peptide cheat sheet that again is in that description below that again is in that description below that again is in that description below um in that lincol tree account so you um in that lincol tree account so you um in that lincol tree account so you guys can click on that link and it guys can click on that link and it guys can click on that link and it brings you to all those different things brings you to all those different things brings you to all those different things and you can always shoot me a message and you can always shoot me a message and you can always shoot me a message over on Instagram so let's get into this over on Instagram so let's get into this over on Instagram so let's get into this topic um cicer I found out about calic topic um cicer I found out about calic topic um cicer I found out about calic curve back in December and um it is a curve back in December and um it is a curve back in December and um it is a supplement that helps with appetite supplement that helps with appetite supplement that helps with appetite suppression so it works as a essentially suppression so it works as a essentially suppression so it works as a essentially as a glp1 supplement so this is going to as a glp1 supplement so this is going to as a glp1 supplement so this is going to be different from a glp1 peptide you are be different from a glp1 peptide you are be different from a glp1 peptide you are not going to be injecting this this is a not going to be injecting this this is a not going to be injecting this this is a capsule that you take early and you capsule that you take early and you capsule that you take early and you still want to make sure that you take still want to make sure that you take still want to make sure that you take this um this um this um fasted um this is a really great product fasted um this is a really great product fasted um this is a really great product what I have found this product has been what I have found this product has been what I have found this product has been the most helpful for me is I like to the most helpful for me is I like to the most helpful for me is I like to take this when I am not using a glp1 take this when I am not using a glp1 take this when I am not using a glp1 peptide so when I'm not using a gp1 peptide so when I'm not using a gp1 peptide so when I'm not using a gp1 peptide this is going to be what I'm peptide this is going to be what I'm peptide this is going to be what I'm taking instead now that being said guys taking instead now that being said guys taking instead now that being said guys you can still use cerb while you're you can still use cerb while you're you can still use cerb while you're taking a g lp1 it's not going to do any taking a g lp1 it's not going to do any taking a g lp1 it's not going to do any harm I have I do this all the time like harm I have I do this all the time like harm I have I do this all the time like it's not going to give you any harm by",
+            "first_timestamp": "00:02:19.840"
+          },
+          {
+            "source_id": "S4hfIPWRKZ0",
+            "source_type": "podcast",
+            "source_title": "Semaglutide vs Tirzepatide vs Retatutide: Which Peptide Is Best for Weight Loss?",
+            "source_date": "2024-10-29",
+            "source_url": "https://youtu.be/S4hfIPWRKZ0",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2024-10-29-semaglutide-vs-tirzepatide-vs-retatutide-which-peptide-is-best-for-wei-S4hfIPWRKZ0.en.vtt",
+            "mention_count": 27,
+            "top_snippet": "women when it comes to picking which glp1 peptide we should be using so I'm",
+            "top_context": "[Music] [Music] C hey everyone welcome back to my C hey everyone welcome back to my C hey everyone welcome back to my channel and in today's video I'm going channel and in today's video I'm going channel and in today's video I'm going to be doing a comparison for you guys to be doing a comparison for you guys to be doing a comparison for you guys the difference between semi glutide the difference between semi glutide the difference between semi glutide tritide and ritr Tide so if you want to tritide and ritr Tide so if you want to tritide and ritr Tide so if you want to know more about these peptides and know more about these peptides and know more about these peptides and you're interested in what the difference you're interested in what the difference you're interested in what the difference is and want to know my experience with is and want to know my experience with is and want to know my experience with these these these peptides keep watching watching cuz I'm peptides keep watching watching cuz I'm peptides keep watching watching cuz I'm going to share with you guys all the going to share with you guys all the going to share with you guys all the details semi glutide versus stap Tide details semi glutide versus stap Tide details semi glutide versus stap Tide versus ratr tide when decision fatigue versus ratr tide when decision fatigue versus ratr tide when decision fatigue can definitely be a thing especially for can definitely be a thing especially for can definitely be a thing especially for women when it comes to picking which women when it comes to picking which women when it comes to picking which glp1 peptide we should be using so I'm glp1 peptide we should be using so I'm glp1 peptide we should be using so I'm going to share with you guys my going to share with you guys my going to share with you guys my experience with each of these peptides experience with each of these peptides experience with each of these peptides I'm also going to be sharing with you I'm also going to be sharing with you I'm also going to be sharing with you guys my dosing and before I get into guys my dosing and before I get into guys my dosing and before I get into this um if you are interested on where I this um if you are interested on where I this um if you are interested on where I buy my peptides go in the description of buy my peptides go in the description of buy my peptides go in the description of this video and click click the link tree this video and click click the link tree this video and click click the link tree description in that description you will description in that description you will description in that description you will find the two places that I like to buy find the two places that I like to buy find the two places that I like to buy my peptides from with discount my peptides from with discount my peptides from with discount codes if you comment on my video where codes if you comment on my video where codes if you comment on my video where do I get any of these peptides I'm not do I get any of these peptides I'm not do I get any of these peptides I'm not going to answer you I'm not doing that going to answer you I'm not doing that going to answer you I'm not doing that to be rude if you want to send me an to be rude if you want to send me an to be rude if you want to send me an email you definitely can I'm not meaning email you definitely can I'm not meaning email you definitely can I'm not meaning to be rude by not answering",
+            "first_timestamp": "00:00:43.399"
+          },
+          {
+            "source_id": "rc66QuY9Drs",
+            "source_type": "podcast",
+            "source_title": "I Stacked Retatrutide with THESE Peptides for Insane Fat Loss!",
+            "source_date": "2025-01-31",
+            "source_url": "https://youtu.be/rc66QuY9Drs",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2025-01-31-i-stacked-retatrutide-with-these-peptides-for-insane-fat-loss-rc66QuY9Drs.en.vtt",
+            "mention_count": 27,
+            "top_snippet": "tide for the most part we are going to make this short it is a glp1 but what is",
+            "top_context": "so in today's video I want to talk to so in today's video I want to talk to you all about what peptides to stack you all about what peptides to stack you all about what peptides to stack with ratr Tide I've gotten a ton of with ratr Tide I've gotten a ton of with ratr Tide I've gotten a ton of questions lately on what all can I put questions lately on what all can I put questions lately on what all can I put with rat true tide what all is going to with rat true tide what all is going to with rat true tide what all is going to also help me lose bat and also work well also help me lose bat and also work well also help me lose bat and also work well to help me maximize fat loss along with to help me maximize fat loss along with to help me maximize fat loss along with redit true tide so I'm going to share redit true tide so I'm going to share redit true tide so I'm going to share with you what I've done what all I have with you what I've done what all I have with you what I've done what all I have stacked with RIT tide to help me lose stacked with RIT tide to help me lose stacked with RIT tide to help me lose the most amount of fat as possible the most amount of fat as possible the most amount of fat as possible possible so let's get into this possible so let's get into this possible so let's get into this video so what exactly is rat true tide video so what exactly is rat true tide video so what exactly is rat true tide I've talked about rat true tide a lot on I've talked about rat true tide a lot on I've talked about rat true tide a lot on my channel and I have another video on my channel and I have another video on my channel and I have another video on it and I go more in depth detail on what it and I go more in depth detail on what it and I go more in depth detail on what exactly is RIT true tide but RIT true exactly is RIT true tide but RIT true exactly is RIT true tide but RIT true tide for the most part we are going to tide for the most part we are going to tide for the most part we are going to make this short it is a glp1 but what is make this short it is a glp1 but what is make this short it is a glp1 but what is so different about rat true tide is that so different about rat true tide is that so different about rat true tide is that it is a triple Agonist gp1 so it's going it is a triple Agonist gp1 so it's going it is a triple Agonist gp1 so it's going to hit your your glp one your Gip and to hit your your glp one your Gip and to hit your your glp one your Gip and and your glucagon receptor and that and your glucagon receptor and that and your glucagon receptor and that right there the glucagon receptor is why right there the glucagon receptor is why right there the glucagon receptor is why ratr tide is right now in my opinion the ratr tide is right now in my opinion the ratr tide is right now in my opinion the best best best glp1 peptide to be losing for fat loss glp1 peptide to be losing for fat loss glp1 peptide to be losing for fat loss because it's hitting that glucon because it's hitting that glucon because it's hitting that glucon receptor it receptor it is the making it receptor it receptor it is the making it receptor it receptor it is the making it a Powerhouse for fat loss so this is not a Powerhouse for fat loss so this is not a Powerhouse for fat loss so this is not only just going to suppress your only just going to suppress your only just going to suppress your appetite but this is also going to help appetite but this is also going to help appetite but this is also going to help with fat oxidation which is going to with fat oxidation which is going to with fat oxidation which is going to improve also insulin sensitivity which",
+            "first_timestamp": "00:01:17.040"
+          }
+        ],
+        "acute_signals": [
+          {
+            "snippet": "GLP-1s. If there's a thing you could be hooked on, GLP-1 would be better than",
+            "source_title": "Saturday Morning Coffee Talk 3/28/26",
+            "source_date": "2026-03-28",
+            "timestamp": "00:06:42.160",
+            "source_url": "https://youtu.be/G27dIPBJUSs"
+          },
+          {
+            "snippet": "hooked on, GLP-1 would be better than",
+            "source_title": "Saturday Morning Coffee Talk 3/28/26",
+            "source_date": "2026-03-28",
+            "timestamp": "00:06:44.470",
+            "source_url": "https://youtu.be/G27dIPBJUSs"
+          },
+          {
+            "snippet": "hooked on, GLP-1 would be better than alcohol or whatnot. However,",
+            "source_title": "Saturday Morning Coffee Talk 3/28/26",
+            "source_date": "2026-03-28",
+            "timestamp": "00:06:44.480",
+            "source_url": "https://youtu.be/G27dIPBJUSs"
+          }
+        ],
+        "chronic_signals": [
+          {
+            "snippet": "use it's just personally not my favorite glp1 um and it's not my",
+            "source_title": "Semaglutide Vs. Tirzepatide | Which One Is Better For Women?",
+            "source_date": "2024-04-01",
+            "timestamp": "00:07:54.800",
+            "source_url": "https://youtu.be/j9pTgtor55A"
+          },
+          {
+            "snippet": "glp1 um and it's not my",
+            "source_title": "Semaglutide Vs. Tirzepatide | Which One Is Better For Women?",
+            "source_date": "2024-04-01",
+            "timestamp": "00:07:57.550",
+            "source_url": "https://youtu.be/j9pTgtor55A"
+          },
+          {
+            "snippet": "glp1 um and it's not my go-to so clearly um you guys can already",
+            "source_title": "Semaglutide Vs. Tirzepatide | Which One Is Better For Women?",
+            "source_date": "2024-04-01",
+            "timestamp": "00:07:57.560",
+            "source_url": "https://youtu.be/j9pTgtor55A"
+          },
+          {
+            "snippet": "so trapti same boat um glp1 and it's going to help with",
+            "source_title": "Semaglutide Vs. Tirzepatide | Which One Is Better For Women?",
+            "source_date": "2024-04-01",
+            "timestamp": "00:08:07.400",
+            "source_url": "https://youtu.be/j9pTgtor55A"
+          },
+          {
+            "snippet": "glp1 and it's going to help with",
+            "source_title": "Semaglutide Vs. Tirzepatide | Which One Is Better For Women?",
+            "source_date": "2024-04-01",
+            "timestamp": "00:08:09.550",
+            "source_url": "https://youtu.be/j9pTgtor55A"
+          }
+        ]
+      },
+      "female_specific_note": "Taylor Williams Coaching focuses on female-specific HRT/peptide guidance. Per-peptide notes here often emphasize female dosing, fertility, hormone interactions."
+    },
+    "trevor-bachmeyer": {
+      "summary": {
+        "mention_count": 1008,
+        "top_doses": [
+          {
+            "dose": "150 micrograms",
+            "count": 41
+          },
+          {
+            "dose": "0.25 milligrams",
+            "count": 18
+          },
+          {
+            "dose": "2.5 milligrams",
+            "count": 15
+          },
+          {
+            "dose": "4 milligrams",
+            "count": 12
+          },
+          {
+            "dose": "500 milligrams",
+            "count": 12
+          },
+          {
+            "dose": "36 milligram",
+            "count": 9
+          },
+          {
+            "dose": "60 milligrams",
+            "count": 9
+          },
+          {
+            "dose": "15 milligrams",
+            "count": 9
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "PEbu7E8QB_Y",
+            "source_type": "podcast",
+            "source_title": "STOP Combining Retatrutide and Tirzepatide - Dr Trevor Bachmeyer",
+            "source_date": "2026-03-25",
+            "source_url": "https://youtu.be/PEbu7E8QB_Y",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2026-03-25-stop-combining-retatrutide-and-tirzepatide-dr-trevor-bachmeyer-PEbu7E8QB_Y.en.vtt",
+            "mention_count": 111,
+            "top_snippet": "biology works and it forces thermogenesis because of the GLP1 and",
+            "top_context": "I'll explain why and I'm sure somebody's I'll explain why and I'm sure somebody's going to get real mad because they don't going to get real mad because they don't going to get real mad because they don't like my hurty words and they think that like my hurty words and they think that like my hurty words and they think that it's offensive to a peptide. I I don't it's offensive to a peptide. I I don't it's offensive to a peptide. I I don't really know why people even get mad. really know why people even get mad. really know why people even get mad. It's just a weird thing to me. But It's just a weird thing to me. But It's just a weird thing to me. But anyway, I'm about to tell you all the anyway, I'm about to tell you all the anyway, I'm about to tell you all the facts, lay it all out for you. I'll even facts, lay it all out for you. I'll even facts, lay it all out for you. I'll even give you the nuclear option if you've give you the nuclear option if you've give you the nuclear option if you've hit a if you've hit a stuck a sticking hit a if you've hit a stuck a sticking hit a if you've hit a stuck a sticking point. If you're struggling because you point. If you're struggling because you point. If you're struggling because you just can't have the weight loss isn't just can't have the weight loss isn't just can't have the weight loss isn't happening fast enough with rea or happening fast enough with rea or happening fast enough with rea or tursepide. Please don't take this. This tursepide. Please don't take this. This tursepide. Please don't take this. This stuff is trash. It's an appetite stuff is trash. It's an appetite stuff is trash. It's an appetite suppressant with a fancy label. That's suppressant with a fancy label. That's suppressant with a fancy label. That's all it is with great marketing. It is if all it is with great marketing. It is if all it is with great marketing. It is if you look at the biology behind it. That you look at the biology behind it. That you look at the biology behind it. That is all it does. It's the addition of is all it does. It's the addition of is all it does. It's the addition of glucagon that radically alters how your glucagon that radically alters how your glucagon that radically alters how your biology works and it forces biology works and it forces biology works and it forces thermogenesis because of the GLP1 and thermogenesis because of the GLP1 and thermogenesis because of the GLP1 and the GIP keeping insulin in check. And it the GIP keeping insulin in check. And it the GIP keeping insulin in check. And it forces glucagon to make the liver become forces glucagon to make the liver become forces glucagon to make the liver become thermogenic. It forces thermogenesis in thermogenic. It forces thermogenesis in thermogenic. It forces thermogenesis in the liver. It's and I'll explain that the liver. It's and I'll explain that the liver. It's and I'll explain that the whole physiology and the the whole physiology and the the whole physiology and the biochemistry behind it. But it's the biochemistry behind it. But it's the biochemistry behind it. But it's the combination that makes it work. It's not combination that makes it work. It's not combination that makes it work. It's not the peptides and the agonism of each the peptides and the agonism of each the peptides and the agonism of each one. It's by them. It's the combination one. It's by them. It's the combination one. It's by them. It's the combination that makes this so effective. And that's that makes this so effective. And that's that makes this so effective. And that's why red tide is such an effective why red tide is such an effective why red tide is such an effective peptide. But let me explain all this peptide. But let me explain all this peptide. But let me explain all this because I will I'm going to tell you if because I will I'm going to tell you if because I will I'm going to tell you if you are this person and there's somebody you are this person and there's somebody you are this person and there's somebody out there right now. I see him all the out there right now. I see him all the out there right now. I see him all the time and it's ridiculous. He's on time and it's ridiculous. He's on time and it's ridiculous. He's on YouTube and you're you're hurting YouTube and you're you're hurting YouTube and you're you're hurting people, man. And you're trying to get people, man. And you're trying to get people, man. And you're trying to get attention and it really bothers me attention and it really bothers me attention and it really bothers me because above all do no harm. That's because above all do no harm. That's because above all do no harm. That's what our job is. I don't get anything. what our job is. I don't get anything. what our job is. I don't get anything. I'm not here to sell you a damn thing. I I'm not here to sell you a damn thing. I I'm not here to sell you a damn thing. I don't care. I really don't. If you want",
+            "first_timestamp": "00:01:23.520"
+          },
+          {
+            "source_id": "_mitwuF5_4M",
+            "source_type": "podcast",
+            "source_title": "Retatrutide and 5-Amino-1-MQ Combined - Dr Trevor Bachmeyer",
+            "source_date": "2026-02-27",
+            "source_url": "https://youtu.be/_mitwuF5_4M",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2026-02-27-retatrutide-and-5-amino-1-mq-combined-dr-trevor-bachmeyer-_mitwuF5_4M.en.vtt",
+            "mention_count": 93,
+            "top_snippet": "all the locks in your body, right? So three receptors GLP1, GIP, and glucagon.",
+            "top_context": "journal of obesity showed that subjects journal of obesity showed that subjects using humans 5 amino 1MQ lost 8.2 2 L using humans 5 amino 1MQ lost 8.2 2 L using humans 5 amino 1MQ lost 8.2 2 L pounds of fat. But this is the cool pounds of fat. But this is the cool pounds of fat. But this is the cool part. While gaining 2.1 pounds of muscle part. While gaining 2.1 pounds of muscle part. While gaining 2.1 pounds of muscle in 12 weeks without changing I hate this in 12 weeks without changing I hate this in 12 weeks without changing I hate this part. Without changing their diet or part. Without changing their diet or part. Without changing their diet or doing any exercise. Yeah, I don't want doing any exercise. Yeah, I don't want doing any exercise. Yeah, I don't want to say that cuz you guys are like, I'm to say that cuz you guys are like, I'm to say that cuz you guys are like, I'm just going to take it and get jacked. just going to take it and get jacked. just going to take it and get jacked. It's not how it works, but it's pretty It's not how it works, but it's pretty It's not how it works, but it's pretty damn close. 2023 FB journal showed NAD+ damn close. 2023 FB journal showed NAD+ damn close. 2023 FB journal showed NAD+ restoration improved insulin sensitivity restoration improved insulin sensitivity restoration improved insulin sensitivity by 40 41% pre-diabetics. That means your by 40 41% pre-diabetics. That means your by 40 41% pre-diabetics. That means your HBA1C is right on the cusp. Okay, look HBA1C is right on the cusp. Okay, look HBA1C is right on the cusp. Okay, look at that's just this is just five amino. at that's just this is just five amino. at that's just this is just five amino. Look at rated trutide tripeptide. That Look at rated trutide tripeptide. That Look at rated trutide tripeptide. That means synthetic hormone that activates means synthetic hormone that activates means synthetic hormone that activates three separate hormone receptors three separate hormone receptors three separate hormone receptors simultaneously. It's been talked about simultaneously. It's been talked about simultaneously. It's been talked about enough. So it's like having the key to enough. So it's like having the key to enough. So it's like having the key to all the locks in your body, right? So all the locks in your body, right? So all the locks in your body, right? So three receptors GLP1, GIP, and glucagon. three receptors GLP1, GIP, and glucagon. three receptors GLP1, GIP, and glucagon. This is like a triple threat. And this This is like a triple threat. And this This is like a triple threat. And this is exactly why Eli Liy is trying to get is exactly why Eli Liy is trying to get is exactly why Eli Liy is trying to get this on lockdown so you can't get it. this on lockdown so you can't get it. this on lockdown so you can't get it. You if you do, you get their version of You if you do, you get their version of You if you do, you get their version of it which is going to be underdosed, it which is going to be underdosed, it which is going to be underdosed, weekly dosed, or it's going to be 1 to 2 weekly dosed, or it's going to be 1 to 2 weekly dosed, or it's going to be 1 to 2 milligrams of vial. It's going to cost milligrams of vial. It's going to cost milligrams of vial. It's going to cost you an exorbitant amount of money and you an exorbitant amount of money and you an exorbitant amount of money and who knows what the hell else is going to who knows what the hell else is going to who knows what the hell else is going to be in it. I'm out. I'm out. You guys are be in it. I'm out. I'm out. You guys are be in it. I'm out. I'm out. You guys are worried about where you're getting your worried about where you're getting your worried about where you're getting your peptides. Yeah, I think you should peptides. Yeah, I think you should peptides. Yeah, I think you should because a lot of times there's rice because a lot of times there's rice because a lot of times there's rice powder. I We use Janosha for everything powder. I We use Janosha for everything powder. I We use Janosha for everything that we make to prove it. I love it. One that we make to prove it. I love it. One that we make to prove it. I love it. One guy was like, \"Your BPC is fake.\" Are guy was like, \"Your BPC is fake.\" Are guy was like, \"Your BPC is fake.\" Are you high? The actual Janoshek lab report you high? The actual Janoshek lab report you high? The actual Janoshek lab report is on my site. It's on. I don't know is on my site. It's on. I don't know is on my site. It's on. I don't know what to tell you. Yes. By the way, I own what to tell you. Yes. By the way, I own what to tell you. Yes. By the way, I own Elite Biogenics. And here's the deal. I Elite Biogenics. And here's the deal. I Elite Biogenics. And here's the deal. I don't care if you buy from me. If you don't care if you buy from me. If you don't care if you buy from me. If you do, awesome. I promise you this. It's",
+            "first_timestamp": "00:08:15.919"
+          },
+          {
+            "source_id": "igkOl7DpTs0",
+            "source_type": "podcast",
+            "source_title": "Retatrutide Masterclass (the 'how to' for EVERYTHING) - Dr Trevor Bachmeyer",
+            "source_date": "2026-01-17",
+            "source_url": "https://youtu.be/igkOl7DpTs0",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2026-01-17-retatrutide-masterclass-the-how-to-for-everything-dr-trevor-bachmeyer-igkOl7DpTs0.en.vtt",
+            "mention_count": 87,
+            "top_snippet": "that activates three different receptor systems simultaneously. GIP, GLP-1, and",
+            "top_context": "has a trap vein. You know what the has a trap vein. You know what the difference is between somebody who gets difference is between somebody who gets difference is between somebody who gets results and somebody who has side results and somebody who has side results and somebody who has side effects? About four milligrams and an effects? About four milligrams and an effects? About four milligrams and an understanding of basic pharmacocinetics. understanding of basic pharmacocinetics. understanding of basic pharmacocinetics. But don't worry, I'll get there. Just But don't worry, I'll get there. Just But don't worry, I'll get there. Just listen. I'll get there. I promise. See, listen. I'll get there. I promise. See, listen. I'll get there. I promise. See, here's the thing. What people don't tell here's the thing. What people don't tell here's the thing. What people don't tell you right a true tide isn't magic. It's you right a true tide isn't magic. It's you right a true tide isn't magic. It's not. It's better than magic. Oh, you not. It's better than magic. Oh, you not. It's better than magic. Oh, you weren't expecting that, huh? Magic is weren't expecting that, huh? Magic is weren't expecting that, huh? Magic is unpredictable. This is biochemistry. And unpredictable. This is biochemistry. And unpredictable. This is biochemistry. And biochemistry, when you actually biochemistry, when you actually biochemistry, when you actually understand it, is the closest thing to a understand it, is the closest thing to a understand it, is the closest thing to a cheat code for the human condition, the cheat code for the human condition, the cheat code for the human condition, the human body. I'm going to go over red human body. I'm going to go over red human body. I'm going to go over red tide. Some of you guys, oh, I know what tide. Some of you guys, oh, I know what tide. Some of you guys, oh, I know what it means. I know what it does. Listen. it means. I know what it does. Listen. it means. I know what it does. Listen. Anyway, this is this thing is it's a Anyway, this is this thing is it's a Anyway, this is this thing is it's a triple agonist peptide. Now, before your triple agonist peptide. Now, before your triple agonist peptide. Now, before your eyes glaze over and let me translate it eyes glaze over and let me translate it eyes glaze over and let me translate it into English, it's a synthetic molecule into English, it's a synthetic molecule into English, it's a synthetic molecule that activates three different receptor that activates three different receptor that activates three different receptor systems simultaneously. GIP, GLP-1, and systems simultaneously. GIP, GLP-1, and systems simultaneously. GIP, GLP-1, and glucagon receptor. Think of your body glucagon receptor. Think of your body glucagon receptor. Think of your body like like a nightclub. Most drugs, most like like a nightclub. Most drugs, most like like a nightclub. Most drugs, most peptides, most anything are like that peptides, most anything are like that peptides, most anything are like that one guy trying to sweet talk the one guy trying to sweet talk the one guy trying to sweet talk the bouncer. Red or true tide? Yeah. It owns bouncer. Red or true tide? Yeah. It owns bouncer. Red or true tide? Yeah. It owns the club, knows the DJ, and has a the club, knows the DJ, and has a the club, knows the DJ, and has a manager on speed dial. That's how badass manager on speed dial. That's how badass manager on speed dial. That's how badass this is. And here's what's actually this is. And here's what's actually this is. And here's what's actually happening at the cellular level. GLP-1 happening at the cellular level. GLP-1 happening at the cellular level. GLP-1 binds to GLP-1 receptors on pancreatic binds to GLP-1 receptors on pancreatic binds to GLP-1 receptors on pancreatic beta cells, triggering this cascade that beta cells, triggering this cascade that beta cells, triggering this cascade that involves a denal cycl activation, cyclic involves a denal cycl activation, cyclic involves a denal cycl activation, cyclic AM activation, and ultimately insulin AM activation, and ultimately insulin AM activation, and ultimately insulin secretion, but only when glucose is secretion, but only when glucose is secretion, but only when glucose is present. It's glucose dependent, which present. It's glucose dependent, which present. It's glucose dependent, which means your blood sugar won't crash. I means your blood sugar won't crash. I means your blood sugar won't crash. I don't know, a Tesla owner who forgot to don't know, a Tesla owner who forgot to don't know, a Tesla owner who forgot to charge his damn car. God, I hate those",
+            "first_timestamp": "00:06:23.199"
+          },
+          {
+            "source_id": "HbgvbVP8B-k",
+            "source_type": "podcast",
+            "source_title": "Doctor Explains Why More Retatrutide Doesn't Mean Better Results - Dr Trevor Bachmeyer",
+            "source_date": "2026-03-28",
+            "source_url": "https://youtu.be/HbgvbVP8B-k",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2026-03-28-doctor-explains-why-more-retatrutide-doesn-t-mean-better-results-dr-tr-HbgvbVP8B-k.en.vtt",
+            "mention_count": 60,
+            "top_snippet": "triple agonist. Activates three receptors at the same time. GLP-1, GIP,",
+            "top_context": "comes to me, I run labs. TSH was 4.2, comes to me, I run labs. TSH was 4.2, her free T3 was 2.1, her potassium was her free T3 was 2.1, her potassium was her free T3 was 2.1, her potassium was 3.4, magnesium was insanely depleted, 3.4, magnesium was insanely depleted, 3.4, magnesium was insanely depleted, and her fasting insulin was 8.2. and her fasting insulin was 8.2. and her fasting insulin was 8.2. So, just to be on clear, it's supposed So, just to be on clear, it's supposed So, just to be on clear, it's supposed to be significantly less than that. So, to be significantly less than that. So, to be significantly less than that. So, her metabolism had essentially her metabolism had essentially her metabolism had essentially collapsed. Her thyroid was suppressed. collapsed. Her thyroid was suppressed. collapsed. Her thyroid was suppressed. Her electrolytes were depleted. Her Her electrolytes were depleted. Her Her electrolytes were depleted. Her insulin resistance had gotten worse. And insulin resistance had gotten worse. And insulin resistance had gotten worse. And her coach blamed her body. This is her coach blamed her body. This is her coach blamed her body. This is exactly I'll walk you through. This is exactly I'll walk you through. This is exactly I'll walk you through. This is what I learned about how people are what I learned about how people are what I learned about how people are treating reatride and how it's going to treating reatride and how it's going to treating reatride and how it's going to change how you understand this peptide change how you understand this peptide change how you understand this peptide forever because if you don't, you're forever because if you don't, you're forever because if you don't, you're going to run into problems. Most people going to run into problems. Most people going to run into problems. Most people think reatride is this appetite think reatride is this appetite think reatride is this appetite suppressant that makes you lean and it suppressant that makes you lean and it suppressant that makes you lean and it turns you into a superhero when you're turns you into a superhero when you're turns you into a superhero when you're done taking it. That's like saying a done taking it. That's like saying a done taking it. That's like saying a Ferrari is just a car. Redatide is a Ferrari is just a car. Redatide is a Ferrari is just a car. Redatide is a triple agonist. Activates three triple agonist. Activates three triple agonist. Activates three receptors at the same time. GLP-1, GIP, receptors at the same time. GLP-1, GIP, receptors at the same time. GLP-1, GIP, and glucagon. And I will I'm going to and glucagon. And I will I'm going to and glucagon. And I will I'm going to explain them again because a lot of explain them again because a lot of explain them again because a lot of people don't have this right. GLP-1 people don't have this right. GLP-1 people don't have this right. GLP-1 activation. GLP-1 receptors are located activation. GLP-1 receptors are located activation. GLP-1 receptors are located in your hypothalamus, lateral and in your hypothalamus, lateral and in your hypothalamus, lateral and parventricular nuclei which control your parventricular nuclei which control your parventricular nuclei which control your appetite. When redded truthide binds to appetite. When redded truthide binds to appetite. When redded truthide binds to these GLP-1 receptors, it suppresses these GLP-1 receptors, it suppresses these GLP-1 receptors, it suppresses neuropeptide Y and the these are neuropeptide Y and the these are neuropeptide Y and the these are appetite stimulating neurons. Without appetite stimulating neurons. Without appetite stimulating neurons. Without getting into the fancy part cuz I almost getting into the fancy part cuz I almost getting into the fancy part cuz I almost deviated and went fancy, but at the same deviated and went fancy, but at the same deviated and went fancy, but at the same time it turns on the proopio melanoorton time it turns on the proopio melanoorton time it turns on the proopio melanoorton neurons, the POMC, the which is the neurons, the POMC, the which is the neurons, the POMC, the which is the appetite suppressing neurons. Now follow appetite suppressing neurons. Now follow appetite suppressing neurons. Now follow me on this. 2023 study. This is me on this. 2023 study. This is me on this. 2023 study. This is important to understand because I back important to understand because I back important to understand because I back all my stuff because I care in cell all my stuff because I care in cell all my stuff because I care in cell metabolism showed that this dual this is metabolism showed that this dual this is metabolism showed that this dual this is just two dual activation creates a state just two dual activation creates a state just two dual activation creates a state where hunger is it's literally turned",
+            "first_timestamp": "00:06:15.520"
+          },
+          {
+            "source_id": "6eZTiUoEpcM",
+            "source_type": "podcast",
+            "source_title": "Retatrutide, Pregnancy and Breastfeeding - Dr Trevor Bachmeyer",
+            "source_date": "2026-03-12",
+            "source_url": "https://youtu.be/6eZTiUoEpcM",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2026-03-12-retatrutide-pregnancy-and-breastfeeding-dr-trevor-bachmeyer-6eZTiUoEpcM.en.vtt",
+            "mention_count": 48,
+            "top_snippet": "child's entire biological existence like read a truth tide. Listen GLP1 gip",
+            "top_context": "shutting down my entire life. But this shutting down my entire life. But this is read a true tide and pregnancy and is read a true tide and pregnancy and is read a true tide and pregnancy and breastfeeding and why that is easily the breastfeeding and why that is easily the breastfeeding and why that is easily the biggest gamble with your child's life. biggest gamble with your child's life. biggest gamble with your child's life. Like you were there one shot yet. This is a spot that gets me yet. This is a spot that gets me irritated. So you some of you guys might irritated. So you some of you guys might irritated. So you some of you guys might get in my comments and get all buttth get in my comments and get all buttth get in my comments and get all buttth hurt about it. Don't don't bother. I'll hurt about it. Don't don't bother. I'll hurt about it. Don't don't bother. I'll just turn off commenting. So because I just turn off commenting. So because I just turn off commenting. So because I just don't care. I'm out here to help just don't care. I'm out here to help just don't care. I'm out here to help people and to give you the truth because people and to give you the truth because people and to give you the truth because I love you enough to tell you the truth. I love you enough to tell you the truth. I love you enough to tell you the truth. not I love you enough to lie to you not I love you enough to lie to you not I love you enough to lie to you because that's not what love is. Love is because that's not what love is. Love is because that's not what love is. Love is not lies. So I want you to understand not lies. So I want you to understand not lies. So I want you to understand this cuz I this isn't some dramatic rah this cuz I this isn't some dramatic rah this cuz I this isn't some dramatic rah let me go against the system or anything let me go against the system or anything let me go against the system or anything like that. This is going to change the like that. This is going to change the like that. This is going to change the trajectory of your entire that your trajectory of your entire that your trajectory of your entire that your child's entire biological existence like child's entire biological existence like child's entire biological existence like read a truth tide. Listen GLP1 gip read a truth tide. Listen GLP1 gip read a truth tide. Listen GLP1 gip glucagon receptor agonist that's being glucagon receptor agonist that's being glucagon receptor agonist that's being promoted as this fantastic miracle promoted as this fantastic miracle promoted as this fantastic miracle weight loss drug which is what it's weight loss drug which is what it's weight loss drug which is what it's being marketed as is a drug not a being marketed as is a drug not a being marketed as is a drug not a peptide. But the fact that women are peptide. But the fact that women are peptide. But the fact that women are taking it while pregnant and taking it while pregnant and taking it while pregnant and breastfeeding, are you out of your breastfeeding, are you out of your breastfeeding, are you out of your freaking mind? Listen, pharmaceutical freaking mind? Listen, pharmaceutical freaking mind? Listen, pharmaceutical companies market this as safe based on companies market this as safe based on companies market this as safe based on nothing based on just they just want nothing based on just they just want nothing based on just they just want your money. You understand that, right? your money. You understand that, right? your money. You understand that, right? They don't care about your child. They They don't care about your child. They They don't care about your child. They care about selling you another vial, care about selling you another vial, care about selling you another vial, which is if you told me if you sent which is if you told me if you sent which is if you told me if you sent listen and watch, I'll help you. I own listen and watch, I'll help you. I own listen and watch, I'll help you. I own Elite Biogenics. If you want to buy from Elite Biogenics. If you want to buy from Elite Biogenics. If you want to buy from Elite Biogenics, thank you very much. Elite Biogenics, thank you very much. Elite Biogenics, thank you very much. I'm Thank you so much for buying from my I'm Thank you so much for buying from my I'm Thank you so much for buying from my company and supporting my company. It's company and supporting my company. It's company and supporting my company. It's a huge company and everything. It's been a huge company and everything. It's been a huge company and everything. It's been tested so many times. 99% plus every tested so many times. 99% plus every tested so many times. 99% plus every time on all and these are independent time on all and these are independent time on all and these are independent tests. People that come and test my tests. People that come and test my tests. People that come and test my stuff on their own and then send me",
+            "first_timestamp": "00:01:11.920"
+          },
+          {
+            "source_id": "WyUgRv8oRik",
+            "source_type": "podcast",
+            "source_title": "Microdosing Retatrutide Is Costing You - Dr Trevor Bachmeyer",
+            "source_date": "2026-01-02",
+            "source_url": "https://youtu.be/WyUgRv8oRik",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2026-01-02-microdosing-retatrutide-is-costing-you-dr-trevor-bachmeyer-WyUgRv8oRik.en.vtt",
+            "mention_count": 42,
+            "top_snippet": "action compound. It's still worthless. But semiglutide, a GLP-1 receptor",
+            "top_context": "for a decade to learn. I've done it for a decade to learn. I've done it already. I'm just giving it to you. I'm already. I'm just giving it to you. I'm already. I'm just giving it to you. I'm not asking you for quarter million not asking you for quarter million not asking you for quarter million dollars in tuition. I'm just coming out dollars in tuition. I'm just coming out dollars in tuition. I'm just coming out here giving you the info. Listen, Reddit here giving you the info. Listen, Reddit here giving you the info. Listen, Reddit True Tide is not a drug. No matter what True Tide is not a drug. No matter what True Tide is not a drug. No matter what people try, it's a drug. No, it's not. people try, it's a drug. No, it's not. people try, it's a drug. No, it's not. Drugs force. Peptides are signals. They Drugs force. Peptides are signals. They Drugs force. Peptides are signals. They tell your body to do what it already tell your body to do what it already tell your body to do what it already does. It is a master regulator. It's a does. It is a master regulator. It's a does. It is a master regulator. It's a key to your own metabolic operating key to your own metabolic operating key to your own metabolic operating system. So, here's what it is. The system. So, here's what it is. The system. So, here's what it is. The pharmaceutical industry pharmaceutical industry pharmaceutical industry spent two decades spent two decades spent two decades and billions of dollars chasing and billions of dollars chasing and billions of dollars chasing singleaction singleaction singleaction compounds, peptides, drugs, etc. They compounds, peptides, drugs, etc. They compounds, peptides, drugs, etc. They and they ended up creating something and they ended up creating something and they ended up creating something called semiglutide. Tzepathide is a dual called semiglutide. Tzepathide is a dual called semiglutide. Tzepathide is a dual action compound. It's still worthless. action compound. It's still worthless. action compound. It's still worthless. But semiglutide, a GLP-1 receptor But semiglutide, a GLP-1 receptor But semiglutide, a GLP-1 receptor agonist, right? It's this one trick agonist, right? It's this one trick agonist, right? It's this one trick pony. It tells your brain that you're pony. It tells your brain that you're pony. It tells your brain that you're full and then they market it as this full and then they market it as this full and then they market it as this miracle, but it's not. It's a crutch. miracle, but it's not. It's a crutch. miracle, but it's not. It's a crutch. Red True Tide isn't even in the same Red True Tide isn't even in the same Red True Tide isn't even in the same league. But let me explain it because if league. But let me explain it because if league. But let me explain it because if you follow me from A to Z, you will go, you follow me from A to Z, you will go, you follow me from A to Z, you will go, \"Holy crap, now I understand how it is.\" \"Holy crap, now I understand how it is.\" \"Holy crap, now I understand how it is.\" Because I think nobody's really, in Because I think nobody's really, in Because I think nobody's really, in fact, I've listened to probably well fact, I've listened to probably well fact, I've listened to probably well over a hundred different podcasts and over a hundred different podcasts and over a hundred different podcasts and explanations and bro science people explanations and bro science people explanations and bro science people trying to explain, right? None of you trying to explain, right? None of you trying to explain, right? None of you guys are getting it right. So, it's this guys are getting it right. So, it's this guys are getting it right. So, it's this unlecular single chain peptide unlecular single chain peptide unlecular single chain peptide engineered to be a triple agonist. It engineered to be a triple agonist. It engineered to be a triple agonist. It binds to and activates three separate binds to and activates three separate binds to and activates three separate receptors simultaneously, GLP-1, GIP, receptors simultaneously, GLP-1, GIP, receptors simultaneously, GLP-1, GIP, and glucagon. But independently that",
+            "first_timestamp": "00:04:48.880"
+          },
+          {
+            "source_id": "8Y9NolRIXUs",
+            "source_type": "podcast",
+            "source_title": "Retatrutide and Cardarine Combined? - Dr Trevor Bachmeyer",
+            "source_date": "2026-03-03",
+            "source_url": "https://youtu.be/8Y9NolRIXUs",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2026-03-03-retatrutide-and-cardarine-combined-dr-trevor-bachmeyer-8Y9NolRIXUs.en.vtt",
+            "mention_count": 42,
+            "top_snippet": "understand what a beast reddatide really is. So reddatride triple GLP-1 gip",
+            "top_context": "are slow twitch oxidative and they're are slow twitch oxidative and they're designed to burn fat and build designed to burn fat and build designed to burn fat and build mitochondrial density at the expense of mitochondrial density at the expense of mitochondrial density at the expense of type two fibers. So it's switching them type two fibers. So it's switching them type two fibers. So it's switching them around. And you guys go issn't that around. And you guys go issn't that around. And you guys go issn't that terrible? This is where it gets really terrible? This is where it gets really terrible? This is where it gets really wild. It doesn't destroy your capacity wild. It doesn't destroy your capacity wild. It doesn't destroy your capacity for growth. Not at all. You're not for growth. Not at all. You're not for growth. Not at all. You're not losing strength potential whatsoever. losing strength potential whatsoever. losing strength potential whatsoever. You're optimizing it because here's the You're optimizing it because here's the You're optimizing it because here's the result. You become this fat burning result. You become this fat burning result. You become this fat burning machine. And you don't do it through machine. And you don't do it through machine. And you don't do it through endless cardio or eating like a bird or endless cardio or eating like a bird or endless cardio or eating like a bird or whatever other chemistry you decide to whatever other chemistry you decide to whatever other chemistry you decide to put in your body. You do it through put in your body. You do it through put in your body. You do it through cellular programming. In fact, it's cellular programming. In fact, it's cellular programming. In fact, it's reprogramming, telling yourselves to reprogramming, telling yourselves to reprogramming, telling yourselves to function better. Now, look at Red True function better. Now, look at Red True function better. Now, look at Red True Tide. This is the other side. This is Tide. This is the other side. This is Tide. This is the other side. This is the other side of this equation. the other side of this equation. the other side of this equation. Remember, I said there's both. This is Remember, I said there's both. This is Remember, I said there's both. This is honestly, it's a pretty new player on honestly, it's a pretty new player on honestly, it's a pretty new player on the field considering how long the field considering how long the field considering how long Carterine's been in the game. It's Carterine's been in the game. It's Carterine's been in the game. It's mainstream media is just starting to mainstream media is just starting to mainstream media is just starting to understand what a beast reddatide really understand what a beast reddatide really understand what a beast reddatide really is. So reddatride triple GLP-1 gip is. So reddatride triple GLP-1 gip is. So reddatride triple GLP-1 gip glucagon receptor agonist. It's glucagon receptor agonist. It's glucagon receptor agonist. It's everybody out there knows what this is everybody out there knows what this is everybody out there knows what this is because they all use chat GPT and copy because they all use chat GPT and copy because they all use chat GPT and copy my stuff apparently. But let me break my stuff apparently. But let me break my stuff apparently. But let me break this down because I want you to this down because I want you to this down because I want you to understand where the real power emerges understand where the real power emerges understand where the real power emerges with this. So when it's so look at GLP1 with this. So when it's so look at GLP1 with this. So when it's so look at GLP1 when it's activated it does a couple of when it's activated it does a couple of when it's activated it does a couple of different things. It suppresses hunger different things. It suppresses hunger different things. It suppresses hunger signals in your hypothalamus. It slows signals in your hypothalamus. It slows signals in your hypothalamus. It slows gastric emptying so you feel hung longer gastric emptying so you feel hung longer gastric emptying so you feel hung longer and this is a cool one improves insulin and this is a cool one improves insulin and this is a cool one improves insulin sensitivity. So look at 2016 research in sensitivity. So look at 2016 research in sensitivity. So look at 2016 research in diabetes care showed GLP1 agonists diabetes care showed GLP1 agonists diabetes care showed GLP1 agonists reduced hbaw1c by 2%. 2%. In type2 reduced hbaw1c by 2%. 2%. In type2 reduced hbaw1c by 2%. 2%. In type2 diabetics that's the difference between diabetics that's the difference between diabetics that's the difference between being diabetic and not just so you know being diabetic and not just so you know being diabetic and not just so you know how big of a deal that is. Because if how big of a deal that is. Because if how big of a deal that is. Because if you hear 2% go, so that's a difference",
+            "first_timestamp": "00:06:07.680"
+          },
+          {
+            "source_id": "LGO11qnrSb8",
+            "source_type": "podcast",
+            "source_title": "Retatrutide, Should You Take it Forever? - Dr Trevor Bachmeyer",
+            "source_date": "2026-02-22",
+            "source_url": "https://youtu.be/LGO11qnrSb8",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2026-02-22-retatrutide-should-you-take-it-forever-dr-trevor-bachmeyer-LGO11qnrSb8.en.vtt",
+            "mention_count": 39,
+            "top_snippet": "the place peer-review journals everywhere. Semaglutide is a GLP-1",
+            "top_context": "oral, good luck. That's all I'll say. oral, good luck. That's all I'll say. Good luck. Zero efficacy. I'm going to Good luck. Zero efficacy. I'm going to Good luck. Zero efficacy. I'm going to do a whole podcast on those two where do a whole podcast on those two where do a whole podcast on those two where they're new the new oral versions. Yeah, they're new the new oral versions. Yeah, they're new the new oral versions. Yeah, wait till you see what those are going wait till you see what those are going wait till you see what those are going to cause disease-wise. So, let's let's to cause disease-wise. So, let's let's to cause disease-wise. So, let's let's compare semaglutide and show you how compare semaglutide and show you how compare semaglutide and show you how they create these brutal rebounds. they create these brutal rebounds. they create these brutal rebounds. Proven with real research. So, before Proven with real research. So, before Proven with real research. So, before you get mad, defend your trespide and you get mad, defend your trespide and you get mad, defend your trespide and semiglutide relax. You guys take it like semiglutide relax. You guys take it like semiglutide relax. You guys take it like a personal insult. It's like I take I a personal insult. It's like I take I a personal insult. It's like I take I took a Bayer aspirin and then you insult took a Bayer aspirin and then you insult took a Bayer aspirin and then you insult Bayer and I get mad. That doesn't make Bayer and I get mad. That doesn't make Bayer and I get mad. That doesn't make sense. This world's gotten fragile. So sense. This world's gotten fragile. So sense. This world's gotten fragile. So just just follow me because I want you just just follow me because I want you just just follow me because I want you to understand why you can't do the same to understand why you can't do the same to understand why you can't do the same thing with those two. You have to use thing with those two. You have to use thing with those two. You have to use radide. So if you start with semiglutide radide. So if you start with semiglutide radide. So if you start with semiglutide because the just understand the rebound because the just understand the rebound because the just understand the rebound data on this is it's terrifying. It's data on this is it's terrifying. It's data on this is it's terrifying. It's terrifying and it's published all over terrifying and it's published all over terrifying and it's published all over the place peer-review journals the place peer-review journals the place peer-review journals everywhere. Semaglutide is a GLP-1 everywhere. Semaglutide is a GLP-1 everywhere. Semaglutide is a GLP-1 receptor agonist. Okay? So that means it receptor agonist. Okay? So that means it receptor agonist. Okay? So that means it mimics glucagon like peptide 1 by mimics glucagon like peptide 1 by mimics glucagon like peptide 1 by binding to GLP-1 receptors in your binding to GLP-1 receptors in your binding to GLP-1 receptors in your hypothalamus in your gut. Right? So, hypothalamus in your gut. Right? So, hypothalamus in your gut. Right? So, here's what it does exceptionally, I here's what it does exceptionally, I here's what it does exceptionally, I mean exceptionally well. It signals mean exceptionally well. It signals mean exceptionally well. It signals satiety. Does it through the arcuate satiety. Does it through the arcuate satiety. Does it through the arcuate nucleus of the hypothalamus. Wang heard nucleus of the hypothalamus. Wang heard nucleus of the hypothalamus. Wang heard that in 2015. You feel full, you eat that in 2015. You feel full, you eat that in 2015. You feel full, you eat less, you lose weight. Bingo. But here's less, you lose weight. Bingo. But here's less, you lose weight. Bingo. But here's what it doesn't do. It doesn't fix what it doesn't do. It doesn't fix what it doesn't do. It doesn't fix insulin resistance whatsoever. I don't insulin resistance whatsoever. I don't insulin resistance whatsoever. I don't care what research you want to try and care what research you want to try and care what research you want to try and say, it does not. It's been proven that say, it does not. It's been proven that say, it does not. It's been proven that it does nothing for insulin resistance. it does nothing for insulin resistance. it does nothing for insulin resistance. The leader trial, look, 2016, there was The leader trial, look, 2016, there was The leader trial, look, 2016, there was a trial called the leader trial showed a trial called the leader trial showed a trial called the leader trial showed that semiglutide produced weight loss. that semiglutide produced weight loss. that semiglutide produced weight loss. Watch. Remember what I said about HBA1C Watch. Remember what I said about HBA1C Watch. Remember what I said about HBA1C and HOMA IR but HOMA IR which is the and HOMA IR but HOMA IR which is the and HOMA IR but HOMA IR which is the measure of insulin resistance in your measure of insulin resistance in your measure of insulin resistance in your system which is much more important",
+            "first_timestamp": "00:16:02.959"
+          }
+        ],
+        "acute_signals": [
+          {
+            "snippet": "hour. And it's all because you're combining GLP1 and GIP. And your body",
+            "source_title": "Peptides Myths Busted For Beginners - Unbreakable Podcast 183",
+            "source_date": "2025-07-03",
+            "timestamp": "00:10:45.920",
+            "source_url": "https://youtu.be/D5766FmqUzk"
+          },
+          {
+            "snippet": "combining GLP1 and GIP. And your body",
+            "source_title": "Peptides Myths Busted For Beginners - Unbreakable Podcast 183",
+            "source_date": "2025-07-03",
+            "timestamp": "00:10:47.829",
+            "source_url": "https://youtu.be/D5766FmqUzk"
+          },
+          {
+            "snippet": "combining GLP1 and GIP. And your body sees it as a two-pronged attack, right?",
+            "source_title": "Peptides Myths Busted For Beginners - Unbreakable Podcast 183",
+            "source_date": "2025-07-03",
+            "timestamp": "00:10:47.839",
+            "source_url": "https://youtu.be/D5766FmqUzk"
+          },
+          {
+            "snippet": "I can explain it again today. Peptide GLP1, you're a walking peptide producing",
+            "source_title": "Peptides vs. Pharmaceuticals (Which One Causes The Big C) - Unbreakable Podcast 205",
+            "source_date": "2025-07-26",
+            "timestamp": "00:18:04.720",
+            "source_url": "https://youtu.be/23W1ceqNJhQ"
+          },
+          {
+            "snippet": "GLP1, you're a walking peptide producing",
+            "source_title": "Peptides vs. Pharmaceuticals (Which One Causes The Big C) - Unbreakable Podcast 205",
+            "source_date": "2025-07-26",
+            "timestamp": "00:18:07.990",
+            "source_url": "https://youtu.be/23W1ceqNJhQ"
+          }
+        ],
+        "chronic_signals": [
+          {
+            "snippet": "to get them to go on a N subscription so they can take a GLP1 not understanding",
+            "source_title": "Vlog 118 Burnout Is A LIE (You're Unchallenged and Living A Life Too Small)",
+            "source_date": "2025-04-30",
+            "timestamp": "00:02:25.440",
+            "source_url": "https://youtu.be/TKxXLFAHfT4"
+          },
+          {
+            "snippet": "they can take a GLP1 not understanding",
+            "source_title": "Vlog 118 Burnout Is A LIE (You're Unchallenged and Living A Life Too Small)",
+            "source_date": "2025-04-30",
+            "timestamp": "00:02:27.510",
+            "source_url": "https://youtu.be/TKxXLFAHfT4"
+          },
+          {
+            "snippet": "they can take a GLP1 not understanding that it causes muscle wasting and all GI",
+            "source_title": "Vlog 118 Burnout Is A LIE (You're Unchallenged and Living A Life Too Small)",
+            "source_date": "2025-04-30",
+            "timestamp": "00:02:27.520",
+            "source_url": "https://youtu.be/TKxXLFAHfT4"
+          },
+          {
+            "snippet": "adverse effects tzepatide is a GLP1 and a gip so now",
+            "source_title": "Retatrutide, Not Just Another Peptide - Unbreakable Podcast 162",
+            "source_date": "2025-06-13",
+            "timestamp": "00:09:43.120",
+            "source_url": "https://youtu.be/0fjn38nN1rA"
+          },
+          {
+            "snippet": "tzepatide is a GLP1 and a gip so now",
+            "source_title": "Retatrutide, Not Just Another Peptide - Unbreakable Podcast 162",
+            "source_date": "2025-06-13",
+            "timestamp": "00:09:46.949",
+            "source_url": "https://youtu.be/0fjn38nN1rA"
+          }
+        ]
+      },
+      "acute_vs_chronic_note": "Dr Bachmeyer often distinguishes acute (injury/infection) vs chronic (longevity/maintenance) dosing. Acute_signals + chronic_signals fields surface candidate contexts; full distillation pending Codex pass."
+    }
+  },
+  "reset_biology_synthesis": {
+    "status": "pending-codex-distillation",
+    "recommendation": null,
+    "caveats": null,
+    "cross_expert_consensus": null,
+    "cross_expert_disagreement": null
+  },
+  "generated_at": "2026-04-27T02:02:34.547Z"
+}

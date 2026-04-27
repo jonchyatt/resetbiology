@@ -1,0 +1,187 @@
+{
+  "peptide": "Semax",
+  "slug": "semax",
+  "aliases": [
+    "semax",
+    "Semax"
+  ],
+  "category": "Uncategorized",
+  "experts": {
+    "hunter-williams": {
+      "baseline_protocol": null,
+      "summary": {
+        "mention_count": 7,
+        "top_doses": [
+          {
+            "dose": "500 mcg",
+            "count": 1
+          },
+          {
+            "dose": "20 mg",
+            "count": 1
+          },
+          {
+            "dose": "120 mg",
+            "count": 1
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "19d98523208598ae",
+            "source_type": "email",
+            "source_title": "New Peptide Announcement from the FDA (Category 2 → 503A)",
+            "source_date": "2026-04-16",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2026-04-16-fda-peptide-announcement-pcac-503a.md",
+            "mention_count": 2,
+            "top_snippet": "ifficult → Most popular peptides placed in Category 2 → pharmacies stopped compounding → doctors couldn't prescribe → research peptide market exploded ## ⭐ April 15, 2026 — FDA Removes 12 Peptides fro",
+            "top_context": "ifficult → Most popular peptides placed in Category 2 → pharmacies stopped compounding → doctors couldn't prescribe → research peptide market exploded ## ⭐ April 15, 2026 — FDA Removes 12 Peptides from Category 2 ### The 12 removed - **BPC-157** - **KPV** - **TB-500** - **MOTS-c** - **DSIP** - **Semax** - **Epitalon** - **GHK-Cu** (injectable) - **LL-37** - **Dihexa** - **PEG-MGF** - **Melanotan II** ## ⭐ April 16, 2026 — PCAC Meeting Scheduled (July 23-24, 2026) Federal Register notice — Pharmacy Compounding Advisory Committee (PCAC) meeting at FDA's White Oak Campus, Silver Spring, MD. ###",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "195b0718ac68bbb2",
+            "source_type": "email",
+            "source_title": "Stop Buying Peptides!",
+            "source_date": "2025-03-19",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-03-19-stop-buying-peptides.md",
+            "mention_count": 1,
+            "top_snippet": "ental focus by organizing your thoughts and reducing cognitive overload. Peptides can't give you clarity if your mind is cluttered and overwhelmed. Journaling provides the mental and emotional space p",
+            "top_context": "ental focus by organizing your thoughts and reducing cognitive overload. Peptides can't give you clarity if your mind is cluttered and overwhelmed. Journaling provides the mental and emotional space peptides need to be truly effective. If you're neglecting journaling, no amount of selank, semax, or cerebrolysin will fully optimize your brain health. Start journaling consistently, THEN invest in peptides. ——————————————————————————— ### Here’s the Cold, Hard Truth: Peptides and hormones are incredibly powerful tools. I love them. But they're exactly that—tools. Tools ar",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "19829deefaf29db8",
+            "source_type": "email",
+            "source_title": "Read Like Your Life Depends On It",
+            "source_date": "2025-07-20",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-07-20-read-like-your-life-depends-on-it.md",
+            "mention_count": 1,
+            "top_snippet": "nstance, BDNF (brain-derived neurotrophic factor), a protein essential for neuroplasticity, is elevated by both physical exercise and intellectual stimulation, such as reading. When you combine the ne",
+            "top_context": "nstance, BDNF (brain-derived neurotrophic factor), a protein essential for neuroplasticity, is elevated by both physical exercise and intellectual stimulation, such as reading. When you combine the neural growth from regular reading with peptides known to boost cognitive function (think Dihexa, Semax, Cerebrolysin), you get a _synergistic effect_ which leads to more neural growth, better mood, and faster recovery from mental fatigue. Optimizing testosterone and thyroid, using mitochondrial peptides, and reading daily… That’s how you stay mentally and physically young, regardless of the nu",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "19c06d9325e3862f",
+            "source_type": "email",
+            "source_title": "Men vs. Women Peptide Dosing",
+            "source_date": "2026-01-28",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2026-01-28-men-vs-women-peptide-dosing.md",
+            "mention_count": 1,
+            "top_snippet": "pro-healing via growth factors, angiogenesis, inflammation modulation, tissue remodeling. No \"female tissue needs different dose\" - **Thymosin Alpha-1** — immunomodulator interacting with TLR signalin",
+            "top_context": "pro-healing via growth factors, angiogenesis, inflammation modulation, tissue remodeling. No \"female tissue needs different dose\" - **Thymosin Alpha-1** — immunomodulator interacting with TLR signaling that exists in every human. Goal: shift immune behavior, not set sex-specific hormone levels - **Semax + Selank** — neurotrophic signaling (BDNF/TrkB) + immune/cytokine modulation. Don't require gender dosing - **LL-37** — angiogenesis signaling tied to innate immunity + wound biology. Shared mechanisms ## ⭐ When Sex-Specific Adjustments DO Apply (The Exceptions) 1. **Side effects more severe in o",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "19c112a2709941b7",
+            "source_type": "email",
+            "source_title": "January 2026 Q&A",
+            "source_date": "2026-01-30",
+            "source_url": "https://open.spotify.com/episode/2UpNk1gzskxFOy8y5hFjTY",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2026-01-30-january-q-and-a.md",
+            "mention_count": 1,
+            "top_snippet": "c peptides, gut-focused compounds fit into a real strategy (not random stack) - Many people chase symptoms when underlying issue is: - Nervous system overload - Gut permeability - Mitochondrial dysfun",
+            "top_context": "c peptides, gut-focused compounds fit into a real strategy (not random stack) - Many people chase symptoms when underlying issue is: - Nervous system overload - Gut permeability - Mitochondrial dysfunction ### Brain + Cognitive Peptides - **Cerebrolysin alternatives:** P21, PE-22-28, Selank, Semax - How Hunter thinks about neuroprotection ### TRT + Hormones (Deep Coverage) - When it makes sense to start - When it doesn't - Fertility considerations - ⭐ **\"Peptides don't replace hormones (and never will)\"** - Why people get frustrated trying to solve hormone problem with peptide ### Unconven",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "19c49cac85fb70ef",
+            "source_type": "email",
+            "source_title": "Pinealon for Longevity",
+            "source_date": "2026-02-10",
+            "source_url": "https://open.spotify.com/episode/6r4jji1nEwaFYsF0GfJiaD",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2026-02-10-pinealon-for-longevity.md",
+            "mention_count": 1,
+            "top_snippet": "trate up to: **500 mcg/day over 8-12 weeks** - ~20 mg per cycle total ### Annual cap - **DO NOT exceed 100-120 mg total per year** - Effects persist well after stopping → suggests long-lasting regulat",
+            "top_context": "trate up to: **500 mcg/day over 8-12 weeks** - ~20 mg per cycle total ### Annual cap - **DO NOT exceed 100-120 mg total per year** - Effects persist well after stopping → suggests long-lasting regulatory changes, NOT transient stimulation ## Stacks Well With - **Epitalon** - **Cerebrolysin** - **Semax** - **Selank** ## Best Candidates - Concussion history - Disrupted sleep / circadian struggles - Chronic stress - Heavy travel - Long-term brain-aging proactive ## Source BioLongevity Labs — code HUNTERW (30% storewide + 15% off) ## Further Reading - pubmed: 21978084 - mdpi.com/1420-3049/26/1",
+            "first_timestamp": null
+          }
+        ],
+        "acute_signals": [
+          {
+            "snippet": "pro-healing via growth factors, angiogenesis, inflammation modulation, tissue remodeling. No \"female tissue needs different dose\" - **Thymosin Alpha-1** — immunomodulator interacting with TLR signalin",
+            "source_title": "Men vs. Women Peptide Dosing",
+            "source_date": "2026-01-28",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "nd 1 (4 peptides) - **BPC-157** — for ulcerative colitis - **KPV** — for wound healing + inflammatory conditions - **TB-500** — for wound healing - **MOTS-c** — for obesity + osteoporosis ### July 24 ",
+            "source_title": "New Peptide Announcement from the FDA (Category 2 → 503A)",
+            "source_date": "2026-04-16",
+            "timestamp": null,
+            "source_url": null
+          }
+        ],
+        "chronic_signals": [
+          {
+            "snippet": "nstance, BDNF (brain-derived neurotrophic factor), a protein essential for neuroplasticity, is elevated by both physical exercise and intellectual stimulation, such as reading. When you combine the ne",
+            "source_title": "Read Like Your Life Depends On It",
+            "source_date": "2025-07-20",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "trate up to: **500 mcg/day over 8-12 weeks** - ~20 mg per cycle total ### Annual cap - **DO NOT exceed 100-120 mg total per year** - Effects persist well after stopping → suggests long-lasting regulat",
+            "source_title": "Pinealon for Longevity",
+            "source_date": "2026-02-10",
+            "timestamp": null,
+            "source_url": "https://open.spotify.com/episode/6r4jji1nEwaFYsF0GfJiaD"
+          },
+          {
+            "snippet": "nd 1 (4 peptides) - **BPC-157** — for ulcerative colitis - **KPV** — for wound healing + inflammatory conditions - **TB-500** — for wound healing - **MOTS-c** — for obesity + osteoporosis ### July 24 ",
+            "source_title": "New Peptide Announcement from the FDA (Category 2 → 503A)",
+            "source_date": "2026-04-16",
+            "timestamp": null,
+            "source_url": null
+          }
+        ]
+      }
+    },
+    "taylor-williams": {
+      "summary": {
+        "mention_count": 6,
+        "top_doses": [],
+        "top_sources": [
+          {
+            "source_id": "2m6fKa4Wd6k",
+            "source_type": "podcast",
+            "source_title": "Semax vs Selank - Which Nootropic Peptide is Best for You?",
+            "source_date": "2024-11-15",
+            "source_url": "https://youtu.be/2m6fKa4Wd6k",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2024-11-15-semax-vs-selank-which-nootropic-peptide-is-best-for-you-2m6fKa4Wd6k.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "sometimes this is also a really great combo I will use um semax in the morning",
+            "top_context": "and mood stability that and just kind of and mood stability that and just kind of need more of a calming effect that is need more of a calming effect that is need more of a calming effect that is wor the link is going to be a better wor the link is going to be a better wor the link is going to be a better option if you are struggling more so option if you are struggling more so option if you are struggling more so with the with the with the anxiety so these peptides actually anxiety so these peptides actually anxiety so these peptides actually compliment each other very well I use compliment each other very well I use compliment each other very well I use these peptides together a lot um just these peptides together a lot um just these peptides together a lot um just because sometimes like if I am because sometimes like if I am because sometimes like if I am struggling with brain cognition it's struggling with brain cognition it's struggling with brain cognition it's usually because I have multiple things usually because I have multiple things usually because I have multiple things going on and I'm having a hard time going on and I'm having a hard time going on and I'm having a hard time multitasking and then that stresses me multitasking and then that stresses me multitasking and then that stresses me out and it makes my anxiety go up so I out and it makes my anxiety go up so I out and it makes my anxiety go up so I absolutely love using these together absolutely love using these together absolutely love using these together they complement each other very well um they complement each other very well um they complement each other very well um I have experimented using them both at I have experimented using them both at I have experimented using them both at the same time um in the morning um but the same time um in the morning um but the same time um in the morning um but sometimes this is also a really great sometimes this is also a really great sometimes this is also a really great combo I will use um semax in the morning combo I will use um semax in the morning combo I will use um semax in the morning especially if I'm really needing to like especially if I'm really needing to like especially if I'm really needing to like be really focused and be really on um be really focused and be really on um be really focused and be really on um with work performance and then in the with work performance and then in the with work performance and then in the evening if I have been personally like evening if I have been personally like evening if I have been personally like on calls a lot and it's just been like a on calls a lot and it's just been like a on calls a lot and it's just been like a crazy day and um doing with a bunch of crazy day and um doing with a bunch of crazy day and um doing with a bunch of multitasking and I still kind of can't multitasking and I still kind of can't multitasking and I still kind of can't shut my mind down from the Mind chatter shut my mind down from the Mind chatter shut my mind down from the Mind chatter I'll actually take the link in the I'll actually take the link in the I'll actually take the link in the evening just to help relax and calm the evening just to help relax and calm the evening just to help relax and calm the anxiety um I typically also will use the anxiety um I typically also will use the anxiety um I typically also will use the link if I'm link if I'm link if I'm feeling anxious the night before feeling anxious the night before feeling anxious the night before traveling um just because I just tend to traveling um just because I just tend to traveling um just because I just tend to be that way because I'm worried I'm be that way because I'm worried I'm be that way because I'm worried I'm going to forget something or not pack going to forget something or not pack going to forget something or not pack something I'm leaving my home my animals",
+            "first_timestamp": "00:16:04.959"
+          },
+          {
+            "source_id": "aYuXqSfhPYE",
+            "source_type": "podcast",
+            "source_title": "5-Amino-1MQ: The Peptide That KILLS Appetite & Boosts Fat Loss!",
+            "source_date": "2025-03-14",
+            "source_url": "https://youtu.be/aYuXqSfhPYE",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2025-03-14-5-amino-1mq-the-peptide-that-kills-appetite-boosts-fat-loss-aYuXqSfhPYE.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "have it here in the sides but it also would pair really well too with um semax",
+            "top_context": "concentrate and really focus and it's concentrate and really focus and it's really beneficial especially if you are really beneficial especially if you are really beneficial especially if you are you know you know on a computer all day you know you know on a computer all day you know you know on a computer all day you're researching behind a screen but you're researching behind a screen but you're researching behind a screen but honestly even if you are just like honestly even if you are just like honestly even if you are just like a busy individual multitasking and doing a busy individual multitasking and doing a busy individual multitasking and doing multiple things I think this is also a multiple things I think this is also a multiple things I think this is also a really great peptide um combination to really great peptide um combination to really great peptide um combination to be using especially for my menopause be using especially for my menopause be using especially for my menopause women that are going through menopause women that are going through menopause women that are going through menopause because we all talk about like and hear because we all talk about like and hear because we all talk about like and hear about how bad like the brain fog and about how bad like the brain fog and about how bad like the brain fog and fatigue is during menopause this is fatigue is during menopause this is fatigue is during menopause this is going to be really beneficial a great going to be really beneficial a great going to be really beneficial a great combo to pair five Amino with teso combo to pair five Amino with teso combo to pair five Amino with teso fencing if you are really struggling fencing if you are really struggling fencing if you are really struggling with that brain cognition and I don't with that brain cognition and I don't with that brain cognition and I don't have it here in the sides but it also have it here in the sides but it also have it here in the sides but it also would pair really well too with um semax would pair really well too with um semax would pair really well too with um semax so if you're really wanting to increase so if you're really wanting to increase so if you're really wanting to increase in help with brain cognition be a great in help with brain cognition be a great in help with brain cognition be a great great pair to add in there together um I great pair to add in there together um I great pair to add in there together um I also think that it can also be very also think that it can also be very also think that it can also be very beneficial to use along with the beneficial to use along with the beneficial to use along with the supplement calocurb calocurb is a great supplement calocurb calocurb is a great supplement calocurb calocurb is a great supplement is essentially like a gp1 cap supplement is essentially like a gp1 cap supplement is essentially like a gp1 cap it is different from taking RIT trde it is different from taking RIT trde it is different from taking RIT trde trapti semi glutide um because it's a trapti semi glutide um because it's a trapti semi glutide um because it's a capsule form and it's it's extracted capsule form and it's it's extracted capsule form and it's it's extracted from a hot plant um have other videos on from a hot plant um have other videos on from a hot plant um have other videos on that but calocera is going to help with that but calocera is going to help with that but calocera is going to help with appetite suppression is going to help appetite suppression is going to help appetite suppression is going to help with reducing hunger and when you pair with reducing hunger and when you pair with reducing hunger and when you pair that in with five Amino 1 mq they are",
+            "first_timestamp": "00:13:34.000"
+          }
+        ],
+        "acute_signals": [],
+        "chronic_signals": []
+      },
+      "female_specific_note": "Taylor Williams Coaching focuses on female-specific HRT/peptide guidance. Per-peptide notes here often emphasize female dosing, fertility, hormone interactions."
+    }
+  },
+  "reset_biology_synthesis": {
+    "status": "pending-codex-distillation",
+    "recommendation": null,
+    "caveats": null,
+    "cross_expert_consensus": null,
+    "cross_expert_disagreement": null
+  },
+  "generated_at": "2026-04-27T02:02:34.998Z"
+}

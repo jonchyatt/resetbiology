@@ -1,0 +1,37 @@
+{
+  "peptide": "MOTS-C",
+  "slug": "mots-c",
+  "aliases": [],
+  "category": "Fat Loss",
+  "experts": {
+    "hunter-williams": {
+      "baseline_protocol": {
+        "source": "Hunter Williams + Jay Campbell Cheat Sheet 2023",
+        "source_pdf": "data/peptide-libraries/cross-expert/cheat-sheets/hunter-williams-jay-campbell-peptide-cheat-sheet-2023.pdf",
+        "purpose": "Fat Loss",
+        "vial_mg": "5 mg",
+        "bac_mL": "2 mL",
+        "dose": "2 mg",
+        "units_on_1mL_insulin": "80",
+        "timing": "AM",
+        "frequency": "Every 3rd day",
+        "duration": "2 weeks"
+      },
+      "summary": {
+        "mention_count": 0,
+        "top_doses": [],
+        "top_sources": [],
+        "acute_signals": [],
+        "chronic_signals": []
+      }
+    }
+  },
+  "reset_biology_synthesis": {
+    "status": "pending-codex-distillation",
+    "recommendation": null,
+    "caveats": null,
+    "cross_expert_consensus": null,
+    "cross_expert_disagreement": null
+  },
+  "generated_at": "2026-04-27T02:02:35.017Z"
+}

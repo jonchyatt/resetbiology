@@ -1,0 +1,78 @@
+{
+  "peptide": "Acetyl-L-Carnitine",
+  "slug": "acetyl-l-carnitine",
+  "aliases": [
+    "ALCAR",
+    "acetyl-L-carnitine"
+  ],
+  "category": "Uncategorized",
+  "experts": {
+    "hunter-williams": {
+      "baseline_protocol": null,
+      "summary": {
+        "mention_count": 4,
+        "top_doses": [
+          {
+            "dose": "000 mg",
+            "count": 2
+          },
+          {
+            "dose": "500 mg",
+            "count": 2
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "1955918cc4dbdc51",
+            "source_type": "email",
+            "source_title": "Injectable vs. Oral L-Carnitine",
+            "source_date": "2025-03-02",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-03-02-injectable-vs-oral-l-carnitine.md",
+            "mention_count": 3,
+            "top_snippet": "L-Carnitine?** Nearly 100% bioavailability. Your body gets the full dose, straight into your system, no bottlenecks, no wasted potential. ——————————————————————————— **Does Oral Acetyl L-Carnitine Hav",
+            "top_context": "L-Carnitine?** Nearly 100% bioavailability. Your body gets the full dose, straight into your system, no bottlenecks, no wasted potential. ——————————————————————————— **Does Oral Acetyl L-Carnitine Have Any Benefits?** Yes, but **not in the way most people think.** **Acetyl L-Carnitine (ALCAR)** crosses the **blood-brain barrier** more effectively than other forms, making it great for cognitive function, focus, and neuroprotection. If you’re looking to enhance mitochondrial function in the brain, ALCAR is a solid option. It’s also better tolerated in higher doses than regular ora",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "19a993b895f1dcb2",
+            "source_type": "email",
+            "source_title": "L-Carnitine Deep Dive",
+            "source_date": "2025-11-18",
+            "source_url": "https://open.spotify.com/episode/4qaZzJQBYcMoXMkKq1LPef",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-11-18-l-carnitine-injectable-deep-dive.md",
+            "mention_count": 1,
+            "top_snippet": "too viscous ### Subcutaneous? - Hunter not a fan - Lumps in abdomen hurt more than glute lump ### Pain management - Go slow - Massage area after - Use massage gun if needed - Rotate sites ### Default ",
+            "top_context": "too viscous ### Subcutaneous? - Hunter not a fan - Lumps in abdomen hurt more than glute lump ### Pain management - Go slow - Massage area after - Use massage gun if needed - Rotate sites ### Default protocol (Hunter's recommendation) - **400-500 mg IM before training, 3-4× per week** - **+ 1 g acetyl-L-carnitine oral AM** (cognitive + mood) - Plus good nutrition ## Why It's Hunter's \"Last Resort\" Pick > \"It is not the strongest thing in the world, but carnitine quietly supports almost everything else you do.\" - Fasted cardio more productive - Lifting sessions more efficient - Fat-loss phases easier - Mu",
+            "first_timestamp": null
+          }
+        ],
+        "acute_signals": [],
+        "chronic_signals": [
+          {
+            "snippet": "——————————————— **How to Dose Injectable L-Carnitine for Maximum Results** * **Fat Loss & Performance:** 500-1,000mg **IM or SubQ pre-workout** (3-5x per week) * **Testosterone Optimization:** 500-1,0",
+            "source_title": "Injectable vs. Oral L-Carnitine",
+            "source_date": "2025-03-02",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "too viscous ### Subcutaneous? - Hunter not a fan - Lumps in abdomen hurt more than glute lump ### Pain management - Go slow - Massage area after - Use massage gun if needed - Rotate sites ### Default ",
+            "source_title": "L-Carnitine Deep Dive",
+            "source_date": "2025-11-18",
+            "timestamp": null,
+            "source_url": "https://open.spotify.com/episode/4qaZzJQBYcMoXMkKq1LPef"
+          }
+        ]
+      }
+    }
+  },
+  "reset_biology_synthesis": {
+    "status": "pending-codex-distillation",
+    "recommendation": null,
+    "caveats": null,
+    "cross_expert_consensus": null,
+    "cross_expert_disagreement": null
+  },
+  "generated_at": "2026-04-27T02:02:34.991Z"
+}

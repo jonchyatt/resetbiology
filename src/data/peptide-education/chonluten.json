@@ -1,0 +1,105 @@
+{
+  "peptide": "Chonluten",
+  "slug": "chonluten",
+  "aliases": [
+    "Chonluten"
+  ],
+  "category": "Uncategorized",
+  "experts": {
+    "hunter-williams": {
+      "baseline_protocol": null,
+      "summary": {
+        "mention_count": 7,
+        "top_doses": [
+          {
+            "dose": "2 mg",
+            "count": 7
+          },
+          {
+            "dose": "6 mg",
+            "count": 2
+          },
+          {
+            "dose": "100 mcg",
+            "count": 1
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "19af0c0c3b0300ba",
+            "source_type": "email",
+            "source_title": "The Peptide Stack for Lung Health",
+            "source_date": "2025-12-05",
+            "source_url": "https://open.spotify.com/episode/0heRIsC6pUEWN9mZptGkF2",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-12-05-peptide-stack-lung-health.md",
+            "mention_count": 4,
+            "top_snippet": "rs bronchial epithelium, boosts surfactant protein B, increases secretory IgA (better local immune defense) 2. **Calms inflammation** — drops TNF-α + IL-6, lowers neutrophil infiltration, normalizes i",
+            "top_context": "rs bronchial epithelium, boosts surfactant protein B, increases secretory IgA (better local immune defense) 2. **Calms inflammation** — drops TNF-α + IL-6, lowers neutrophil infiltration, normalizes immune environment ### Frame **\"DNA upgrade for the architecture of the lungs\"** ## ⭐ Peptide #2 — Chonluten ### What it is - Tripeptide derived from bronchial mucosa - Lung-specific bioregulator - Similar epigenetic mechanism to Bronchogen, **superpower = immune modulation** ### Mechanism - Triggers **STAT1 phosphorylation** - Inhibits **STAT3 activation** - Biases immune signaling toward **resolving i",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "195dedb693f63f9b",
+            "source_type": "email",
+            "source_title": "Updated Peptide Cheat Sheet",
+            "source_date": "2025-03-28",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-03-28-updated-peptide-cheat-sheet.md",
+            "mention_count": 1,
+            "top_snippet": "ongevitylabs.com/product/tesamorelin-6mg-ipamorelin-2mg-blend/)_ - The next best thing to human growth hormone and strongest fat loss peptide blend! Plus, these injectable Bioregulators are also on sa",
+            "top_context": "ongevitylabs.com/product/tesamorelin-6mg-ipamorelin-2mg-blend/)_ - The next best thing to human growth hormone and strongest fat loss peptide blend! Plus, these injectable Bioregulators are also on sale: * Cortagen * Epitalon * Cartalax * Pinealon * Bronchogen * Cardiogen * Chonluten ——— You are reading a plain text version of this post. For the best experience, copy and paste this link in your browser to view the post online: https://huntershealthhacks.beehiiv.com/p/updated-peptide-cheat-sheet-9c9a",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "195e91fe0fed1a09",
+            "source_type": "email",
+            "source_title": "Live Q&A Tonight!",
+            "source_date": "2025-03-30",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-03-30-live-q-a-tonight.md",
+            "mention_count": 1,
+            "top_snippet": "ongevitylabs.com/product/tesamorelin-6mg-ipamorelin-2mg-blend/)_ - The next best thing to human growth hormone and strongest fat loss peptide blend! Plus, these injectable Bioregulators are also on sa",
+            "top_context": "ongevitylabs.com/product/tesamorelin-6mg-ipamorelin-2mg-blend/)_ - The next best thing to human growth hormone and strongest fat loss peptide blend! Plus, these injectable Bioregulators are also on sale: * Cortagen * Epitalon * Cartalax * Pinealon * Bronchogen * Cardiogen * Chonluten **You can get 50% off all peptide courses. Get: ** * _[The Reconstitution Minicourse](http://jaycampbell.com/reconstitution-course/)_ for $24.50 - If you are clueless using Peptides, start here! * _[Peptides Demystified](https://click.convertkit-mail2.com/wvung2oz0wtghk4g9wqb7hn0grxxxh8/e0",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "195ee3b383eab82d",
+            "source_type": "email",
+            "source_title": "Shred vs. ShredX vs. MetaShred",
+            "source_date": "2025-03-31",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-03-31-shred-vs-shredx-vs-metashred.md",
+            "mention_count": 1,
+            "top_snippet": ".beehiiv.com&utm_medium=referral&utm_campaign=live-q-a-tonight)__ - The next best thing to human growth hormone and strongest fat loss peptide blend! Plus, these injectable Bioregulators are also on s",
+            "top_context": ".beehiiv.com&utm_medium=referral&utm_campaign=live-q-a-tonight)__ - The next best thing to human growth hormone and strongest fat loss peptide blend! Plus, these injectable Bioregulators are also on sale: * Cortagen * Epitalon * Cartalax * Pinealon * Bronchogen * Cardiogen * Chonluten **You can get 50% off all peptide courses. Get:** * __[The Reconstitution Minicourse](http://jaycampbell.com/reconstitution-course/?utm_source=huntershealthhacks.beehiiv.com&amp;utm_medium=referral&amp;utm_campaign=live-q-a-tonight)__ for $24.50 - If you are clueless using Peptides, start her",
+            "first_timestamp": null
+          }
+        ],
+        "acute_signals": [],
+        "chronic_signals": [
+          {
+            "snippet": "down to kill the mouse.'\" ### Effects - Dramatically blunts TNF-α, IL-6, IL-17 in LPS-activated immune cells - Reduces WBC adhesion to activated endothelium - Up-regulates antioxidant defenses - Suppr",
+            "source_title": "The Peptide Stack for Lung Health",
+            "source_date": "2025-12-05",
+            "timestamp": null,
+            "source_url": "https://open.spotify.com/episode/0heRIsC6pUEWN9mZptGkF2"
+          },
+          {
+            "snippet": "- Gene-expression: literally reverses emphysema-type signature ### Frame **\"Global gene-reset signal tilting system from degeneration toward rebuilding\"** ## ⭐ FULL PROTOCOL SUMMARY | Peptide | Daily ",
+            "source_title": "The Peptide Stack for Lung Health",
+            "source_date": "2025-12-05",
+            "timestamp": null,
+            "source_url": "https://open.spotify.com/episode/0heRIsC6pUEWN9mZptGkF2"
+          }
+        ]
+      }
+    }
+  },
+  "reset_biology_synthesis": {
+    "status": "pending-codex-distillation",
+    "recommendation": null,
+    "caveats": null,
+    "cross_expert_consensus": null,
+    "cross_expert_disagreement": null
+  },
+  "generated_at": "2026-04-27T02:02:35.004Z"
+}

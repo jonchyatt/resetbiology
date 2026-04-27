@@ -1,0 +1,390 @@
+{
+  "peptide": "Melanotan I",
+  "slug": "melanotan-i",
+  "aliases": [
+    "MT-1",
+    "Melanotan I",
+    "Melanotan 1",
+    "melanotan 1"
+  ],
+  "category": "Cognitive Enhancement",
+  "experts": {
+    "hunter-williams": {
+      "baseline_protocol": {
+        "source": "Hunter Williams + Jay Campbell Cheat Sheet 2023",
+        "source_pdf": "data/peptide-libraries/cross-expert/cheat-sheets/hunter-williams-jay-campbell-peptide-cheat-sheet-2023.pdf",
+        "purpose": "Cognitive Enhancement",
+        "vial_mg": "10 mg",
+        "bac_mL": "3 mL",
+        "dose": "250 mcg",
+        "units_on_1mL_insulin": "7.5",
+        "timing": "AM",
+        "frequency": "2 days per week",
+        "duration": "8 weeks on, 8 weeks off"
+      },
+      "summary": {
+        "mention_count": 63,
+        "top_doses": [
+          {
+            "dose": "250 micrograms",
+            "count": 27
+          },
+          {
+            "dose": "1 mg",
+            "count": 27
+          },
+          {
+            "dose": "300 mg",
+            "count": 9
+          },
+          {
+            "dose": "10 mg",
+            "count": 6
+          },
+          {
+            "dose": "500 mcg",
+            "count": 5
+          },
+          {
+            "dose": "5 mg",
+            "count": 3
+          },
+          {
+            "dose": "10 units",
+            "count": 3
+          },
+          {
+            "dose": "0.5 mg",
+            "count": 3
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "19799acedca21a49",
+            "source_type": "email",
+            "source_title": "Use This Peptide At The Beach",
+            "source_date": "2025-06-22",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-06-22-use-this-peptide-at-the-beach.md",
+            "mention_count": 27,
+            "top_snippet": "be.com/live/bn7cey40pIM) ——————————————————————————— I received a great question from a reader this week, and thought it would be appropriate to answer in an email as everyone heads to the beach over ",
+            "top_context": "be.com/live/bn7cey40pIM) ——————————————————————————— I received a great question from a reader this week, and thought it would be appropriate to answer in an email as everyone heads to the beach over the next few weeks. ““Hunter, everyone’s talking about tanning peptides. Should I be using Melanotan 1 or 2 to get a tan for summer? What’s the difference, and is there more to these than just getting a tan for the beach?”“ — If you’ve spent any time in the peptide world, you’ve probably heard of Melanotan 1 and Melanotan 2. I get this question every spring, but most people don’t know just h",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "1961c9375d1784dd",
+            "source_type": "email",
+            "source_title": "Melanotan 1 vs. Melanotan 2",
+            "source_date": "2025-04-09",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-04-09-melanotan-1-vs-melanotan-2.md",
+            "mention_count": 13,
+            "top_snippet": "ation → unpredictable mood shifts/anxiety in sensitive individuals - MT-1: indirect cognitive support via ↓oxidative stress + ↓UV-induced inflammation → positive mood/cognition/longevity influence - H",
+            "top_context": "ation → unpredictable mood shifts/anxiety in sensitive individuals - MT-1: indirect cognitive support via ↓oxidative stress + ↓UV-induced inflammation → positive mood/cognition/longevity influence - Hunter's personal experience: \"Profound improvement in spiritual well-being when using microdoses of MT-1 throughout the year. My theory: MT-1 allows you to absorb sunlight more effectively with less risk → enhances how the body interacts with sunlight.\" ## ⭐ DOSING (Melanotan-1) — Hunter's protocol ### Dose - **250-500 mcg subcutaneously** ### Frequency - **2-3 times per week** - Adjust based on go",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "0TyW-wlJMxo",
+            "source_type": "podcast",
+            "source_title": "Saturday Morning Coffee Talk | Peptides, Hormones & Fitness for Couples 3/28/26",
+            "source_date": "2026-03-28",
+            "source_url": "https://youtu.be/0TyW-wlJMxo",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-03-28-saturday-morning-coffee-talk-peptides-hormones-fitness-for-couples-3-2-0TyW-wlJMxo.en.vtt",
+            "mention_count": 12,
+            "top_snippet": "Uh let's see. I want to take MT-1 for the first time",
+            "top_context": "too much. But if I was having food noise too much. But if I was having food noise with Retatrutide cuz I've done this with Retatrutide cuz I've done this with Retatrutide cuz I've done this before, I would just add in like a before, I would just add in like a before, I would just add in like a microdose of Tirzepatide. microdose of Tirzepatide. microdose of Tirzepatide. You can do it the same time you take You can do it the same time you take You can do it the same time you take Retatrutide, you can do it on the off Retatrutide, you can do it on the off Retatrutide, you can do it on the off days or whatever. You can even do, you days or whatever. You can even do, you days or whatever. You can even do, you know, we've talked about it in our know, we've talked about it in our know, we've talked about it in our group, you can even throw in some group, you can even throw in some group, you can even throw in some Semaglutide. So if you wanted to do like Semaglutide. So if you wanted to do like Semaglutide. So if you wanted to do like a tiny tiny dose of Semaglutide a tiny tiny dose of Semaglutide a tiny tiny dose of Semaglutide alongside the Retatrutide, alongside the Retatrutide, alongside the Retatrutide, I think you could do that too. But I've I think you could do that too. But I've I think you could do that too. But I've used Orforglipron alongside Retatrutide. used Orforglipron alongside Retatrutide. used Orforglipron alongside Retatrutide. That will definitely turn off your That will definitely turn off your That will definitely turn off your appetite. And so we don't really know appetite. And so we don't really know appetite. And so we don't really know yet, but having personally experimented, yet, but having personally experimented, yet, but having personally experimented, I've seemed to get good results from I've seemed to get good results from I've seemed to get good results from that to to the effect of food noise. What's on your mind? What's on your mind? No. You sure? Mhm. Uh let's see. Uh let's see. I want to take MT-1 for the first time I want to take MT-1 for the first time I want to take MT-1 for the first time in summer. How often do you pin it and in summer. How often do you pin it and in summer. How often do you pin it and how much? how much? how much? I personally do cuz I'm starting back my I personally do cuz I'm starting back my I personally do cuz I'm starting back my MT-1. I would start with 250 micrograms. MT-1. I would start with 250 micrograms. MT-1. I would start with 250 micrograms. That's a pretty low dose. This is also That's a pretty low dose. This is also That's a pretty low dose. This is also dependent on the amount of melanin you dependent on the amount of melanin you dependent on the amount of melanin you have in your skin. Darker skin people have in your skin. Darker skin people have in your skin. Darker skin people need less. need less. need less. More pale people More pale people More pale people lighter skin people usually need a lighter skin people usually need a lighter skin people usually need a little bit more depending on your sun little bit more depending on your sun little bit more depending on your sun exposure. I like to start with 250 exposure. I like to start with 250 exposure. I like to start with 250 micrograms. Since your first time, just micrograms. Since your first time, just micrograms. Since your first time, just do it once a week. You can go up to two do it once a week. You can go up to two do it once a week. You can go up to two to three times per week and then as you to three times per week and then as you to three times per week and then as you go from there, you can scale up the go from there, you can scale up the go from there, you can scale up the dose. Then for instance like if I'm in dose. Then for instance like if I'm in dose. Then for instance like if I'm in the beach in the summer, the beach in the summer, the beach in the summer, I would do 1 mg per day. But I would I would do 1 mg per day. But I would I would do 1 mg per day. But I would build up to that cuz if Build it up cuz build up to that cuz if Build it up cuz build up to that cuz if Build it up cuz it will make you nauseous. it will make you nauseous. it will make you nauseous. &gt;&gt; it will make you sick. &gt;&gt; it will make you sick. &gt;&gt; it will make you sick. &gt;&gt; often more frequently you use it, &gt;&gt; often more frequently you use it, &gt;&gt; often more frequently you use it, the less that nausea goes away. It's",
+            "first_timestamp": "00:38:21.080"
+          },
+          {
+            "source_id": "19b0fb03adaf2453",
+            "source_type": "email",
+            "source_title": "Beyond Tanning (Melanotan 1)",
+            "source_date": "2025-12-11",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-12-11-melanotan-1-beyond-tanning.md",
+            "mention_count": 7,
+            "top_snippet": "inimal Erythema Dose (MED)** — skin handles more UV without burning - **↓Oxidative DNA photodamage** - **↓Cyclobutane pyrimidine dimers (CPDs)** — the DNA lesions tied to skin aging + cancer risk > \"E",
+            "top_context": "inimal Erythema Dose (MED)** — skin handles more UV without burning - **↓Oxidative DNA photodamage** - **↓Cyclobutane pyrimidine dimers (CPDs)** — the DNA lesions tied to skin aging + cancer risk > \"Even if you never cared about tanning again, photoprotective + oxidative stress benefits alone make MT-1 worth researching.\" ## ⭐ DOSING (Melanotan-1) — Non-Tanning Protocol ### Sweet spot for ancillary benefits - **250 mcg 1-2x per week** - NO loading phase - NO daily injections - NO tanning protocols ### Expected effects at this dose - People typically do NOT notice meaningful skin darkening - DO",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "E7GPNidicqY",
+            "source_type": "podcast",
+            "source_title": "Saturday Morning Coffee Talk 4/18/26",
+            "source_date": "2026-04-18",
+            "source_url": "https://youtu.be/E7GPNidicqY",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-04-18-saturday-morning-coffee-talk-4-18-26-E7GPNidicqY.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "I do feel like that's more of a I mean, you can get it with Melanotan I one the",
+            "top_context": "time. White skin darkened nicely, but time. White skin darkened nicely, but moles all over her body also darkened. moles all over her body also darkened. moles all over her body also darkened. Now months later, tan is gone, but moles Now months later, tan is gone, but moles Now months later, tan is gone, but moles still dark. still dark. still dark. Not pretty, especially in face. How to Not pretty, especially in face. How to Not pretty, especially in face. How to fix? I mean, you could try glutathione fix? I mean, you could try glutathione fix? I mean, you could try glutathione and see if that helps lighten it up. and see if that helps lighten it up. and see if that helps lighten it up. Glutathione. Glutathione. Glutathione. &gt;&gt; be like the only thing I know to do. &gt;&gt; be like the only thing I know to do. &gt;&gt; be like the only thing I know to do. Yeah. And then as far as like the face, Yeah. And then as far as like the face, Yeah. And then as far as like the face, I would do that same that same I would do that same that same I would do that same that same skin brightening serum that I talked skin brightening serum that I talked skin brightening serum that I talked about. I would do the GHK-Cu one and about. I would do the GHK-Cu one and about. I would do the GHK-Cu one and then I would also follow it up with the then I would also follow it up with the then I would also follow it up with the Better You Science Intense Brightening Better You Science Intense Brightening Better You Science Intense Brightening or Elast-Ene or Elast-Ene or Elast-Ene um skin brightening um skin brightening um skin brightening cream with it for the face. cream with it for the face. cream with it for the face. But I think injecting glutathione But I think injecting glutathione But I think injecting glutathione three times a week will help with skin three times a week will help with skin three times a week will help with skin brightening all over. brightening all over. brightening all over. So. So. So. I do feel like that's more of a I mean, I do feel like that's more of a I mean, I do feel like that's more of a I mean, you can get it with Melanotan I one the you can get it with Melanotan I one the you can get it with Melanotan I one the darkening, but I do think you get the darkening, but I do think you get the darkening, but I do think you get the darker darker darker moles more dominant with two versus one. moles more dominant with two versus one. moles more dominant with two versus one. If that's a 31 and TB-500 was left at If that's a 31 and TB-500 was left at If that's a 31 and TB-500 was left at room temperature for 2 days, are they room temperature for 2 days, are they room temperature for 2 days, are they still good? Probably. There's probably a still good? Probably. There's probably a still good? Probably. There's probably a little bit of degradation, but I would little bit of degradation, but I would little bit of degradation, but I would still use it. I personally would I would still use it. I personally would I would still use it. I personally would I would still use it. Yeah, Reda for Raynaud's works good, Yeah, Reda for Raynaud's works good, too. Yeah. too. Yeah. too. Yeah. I'm on 300 mg compound of progesterone I'm on 300 mg compound of progesterone I'm on 300 mg compound of progesterone and Leo and Levo for thyroid pellets for and Leo and Levo for thyroid pellets for and Leo and Levo for thyroid pellets for test and estradiol not optimal yet, but test and estradiol not optimal yet, but test and estradiol not optimal yet, but getting there. Yeah, well, that's where getting there. Yeah, well, that's where getting there. Yeah, well, that's where I would throw the I would throw the I would throw the the pellets and in the trash. Test and the pellets and in the trash. Test and the pellets and in the trash. Test and estradiol are not optimal. estradiol are not optimal. estradiol are not optimal. &gt;&gt; with that carrying the weight in that &gt;&gt; with that carrying the weight in that &gt;&gt; with that carrying the weight in that midsection and trying to get that body midsection and trying to get that body midsection and trying to get that body fat percentage down. I would get fat percentage down. I would get fat percentage down. I would get rid of the pellets. Um",
+            "first_timestamp": "01:53:56.560"
+          },
+          {
+            "source_id": "194f205727e4de34",
+            "source_type": "email",
+            "source_title": "Should Peptides Be Taken While Fasted?",
+            "source_date": "2025-02-10",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-02-10-should-peptides-be-taken-while-fasted.md",
+            "mention_count": 1,
+            "top_snippet": "aken with or without food—consistency in dosing is often more important than timing around meals. Do they work better if you take them when fasting? Probably. But it’s less imperative than GH peptides",
+            "top_context": "aken with or without food—consistency in dosing is often more important than timing around meals. Do they work better if you take them when fasting? Probably. But it’s less imperative than GH peptides. **Managing Nausea from MCR Peptides** Melanocortin receptor peptides (like PT-141 or Melanotan 1/2) target specific pathways related to libido, tanning, or appetite. While some folks find a fasted state enhances absorption, nausea can be a common side effect. And the nausea can be exacerbated by a fasted state. If you feel queasy: * **Try a Light Snack** * A small portion of prot",
+            "first_timestamp": null
+          }
+        ],
+        "acute_signals": [
+          {
+            "snippet": "cule, creating a 13-amino-acid peptide that was over 1,000 times more potent and had a much longer half-life in the body. This was a huge breakthrough: suddenly, it was possible to get the “protective",
+            "source_title": "Use This Peptide At The Beach",
+            "source_date": "2025-06-22",
+            "timestamp": null,
+            "source_url": null
+          }
+        ],
+        "chronic_signals": [
+          {
+            "snippet": "t disrupts training/work/life - MT-1: avoids all of the above due to selectivity ### 4. Neuroactive / Consciousness Effects - MT-2: appetite suppression + libido boost (notable but not necessarily ben",
+            "source_title": "Melanotan 1 vs. Melanotan 2",
+            "source_date": "2025-04-09",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "ation → unpredictable mood shifts/anxiety in sensitive individuals - MT-1: indirect cognitive support via ↓oxidative stress + ↓UV-induced inflammation → positive mood/cognition/longevity influence - H",
+            "source_title": "Melanotan 1 vs. Melanotan 2",
+            "source_date": "2025-04-09",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "iety in sensitive individuals - MT-1: indirect cognitive support via ↓oxidative stress + ↓UV-induced inflammation → positive mood/cognition/longevity influence - Hunter's personal experience: \"Profoun",
+            "source_title": "Melanotan 1 vs. Melanotan 2",
+            "source_date": "2025-04-09",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "necdotal, but worth mentioning—many users (especially those who suffered from light sensitivity or chronic inflammation) report a real boost in mood and confidence. And if you’re someone who’s always ",
+            "source_title": "Use This Peptide At The Beach",
+            "source_date": "2025-06-22",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "I get asked about this all the time, so let’s break it down. **Here’s my favorite way to dose a 10mg vial of Melanotan 1:** 1. **Reconstitution:** Add 2ml of bacteriostatic water to the vial. This mak",
+            "source_title": "Use This Peptide At The Beach",
+            "source_date": "2025-06-22",
+            "timestamp": null,
+            "source_url": null
+          }
+        ]
+      }
+    },
+    "taylor-williams": {
+      "summary": {
+        "mention_count": 57,
+        "top_doses": [
+          {
+            "dose": "1 mg",
+            "count": 39
+          },
+          {
+            "dose": "250 micrograms",
+            "count": 33
+          },
+          {
+            "dose": "200 milligrams",
+            "count": 12
+          },
+          {
+            "dose": "200 micrograms",
+            "count": 10
+          },
+          {
+            "dose": "125 micrograms",
+            "count": 9
+          },
+          {
+            "dose": "10 mg",
+            "count": 9
+          },
+          {
+            "dose": "300 mg",
+            "count": 9
+          },
+          {
+            "dose": "50 mg",
+            "count": 6
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "G27dIPBJUSs",
+            "source_type": "podcast",
+            "source_title": "Saturday Morning Coffee Talk 3/28/26",
+            "source_date": "2026-03-28",
+            "source_url": "https://youtu.be/G27dIPBJUSs",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2026-03-28-saturday-morning-coffee-talk-3-28-26-G27dIPBJUSs.en.vtt",
+            "mention_count": 12,
+            "top_snippet": "Uh let's see. I want to take MT-1 for the first time",
+            "top_context": "too much. But, if I was having food too much. But, if I was having food noise with Reta, cuz I've done this noise with Reta, cuz I've done this noise with Reta, cuz I've done this before, I would just add in like a before, I would just add in like a before, I would just add in like a microdose of Tirzepatide. microdose of Tirzepatide. microdose of Tirzepatide. And you can do it the same time you take And you can do it the same time you take And you can do it the same time you take Reta, you can do it on the off days or Reta, you can do it on the off days or Reta, you can do it on the off days or whatever. You can even do, you know, whatever. You can even do, you know, whatever. You can even do, you know, we've talked about it in our group, you we've talked about it in our group, you we've talked about it in our group, you can even throw in some Semaglutide. So, can even throw in some Semaglutide. So, can even throw in some Semaglutide. So, if you wanted to do like a tiny tiny if you wanted to do like a tiny tiny if you wanted to do like a tiny tiny dose of Semaglutide alongside the Reta, dose of Semaglutide alongside the Reta, dose of Semaglutide alongside the Reta, I think you could do that, too. But, I think you could do that, too. But, I think you could do that, too. But, I've used Orforglipron alongside Reta, I've used Orforglipron alongside Reta, I've used Orforglipron alongside Reta, that will definitely turn off your that will definitely turn off your that will definitely turn off your appetite. And so, we don't really know appetite. And so, we don't really know appetite. And so, we don't really know yet, but having personally experienced yet, but having personally experienced yet, but having personally experienced it, I've seemed to get good results from it, I've seemed to get good results from it, I've seemed to get good results from that to to the effect of food noise. What's on your mind? What's on your mind? No. No. No. Sure? Mhm. Uh let's see. Uh let's see. I want to take MT-1 for the first time I want to take MT-1 for the first time I want to take MT-1 for the first time in summer. How often do you pin it, and in summer. How often do you pin it, and in summer. How often do you pin it, and how much? how much? how much? I personally do, cuz I'm starting back I personally do, cuz I'm starting back I personally do, cuz I'm starting back my MT-1. I would start with 250 my MT-1. I would start with 250 my MT-1. I would start with 250 micrograms. That's a pretty low dose. micrograms. That's a pretty low dose. micrograms. That's a pretty low dose. This is also dependent on the amount of This is also dependent on the amount of This is also dependent on the amount of melanin you have in your skin. Darker melanin you have in your skin. Darker melanin you have in your skin. Darker skin people need less. skin people need less. skin people need less. More pale people More pale people More pale people lighter skin people usually need a lighter skin people usually need a lighter skin people usually need a little bit more, depending on your sun little bit more, depending on your sun little bit more, depending on your sun exposure. I like to start with 250 exposure. I like to start with 250 exposure. I like to start with 250 micrograms. So, your first time, just do micrograms. So, your first time, just do micrograms. So, your first time, just do it once a week. And you can build up to it once a week. And you can build up to it once a week. And you can build up to two to three times per week, and then as two to three times per week, and then as two to three times per week, and then as you go from there, you can scale up the you go from there, you can scale up the you go from there, you can scale up the dose. Then, for instance, like, if I'm dose. Then, for instance, like, if I'm dose. Then, for instance, like, if I'm in the beach in the summer, in the beach in the summer, in the beach in the summer, I would do 1 mg per day. But, I would I would do 1 mg per day. But, I would I would do 1 mg per day. But, I would build up to that, cuz if you Build it build up to that, cuz if you Build it build up to that, cuz if you Build it up, cuz that will make you nauseous. And up, cuz that will make you nauseous. And up, cuz that will make you nauseous. And the more often, more frequently you use the more often, more frequently you use the more often, more frequently you use it, it, it, the less that nausea goes away. It's",
+            "first_timestamp": "00:38:21.120"
+          },
+          {
+            "source_id": "7wdbHq4R33Y",
+            "source_type": "podcast",
+            "source_title": "Melanotan 1 | My Personal Review For Women",
+            "source_date": "2024-04-12",
+            "source_url": "https://youtu.be/7wdbHq4R33Y",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2024-04-12-melanotan-1-my-personal-review-for-women-7wdbHq4R33Y.en.vtt",
+            "mention_count": 9,
+            "top_snippet": "good for and whatnot so let's start off with um what melanotan 1 actually does",
+            "top_context": "the companies go and use that link um if the companies go and use that link um if you don't see the link the link is you don't see the link the link is you don't see the link the link is should be right there in the description should be right there in the description should be right there in the description it's also in my bio on um my Instagram it's also in my bio on um my Instagram it's also in my bio on um my Instagram page so you can check it out there as page so you can check it out there as page so you can check it out there as well too and um yeah so let's get into well too and um yeah so let's get into well too and um yeah so let's get into this discussion melen tan one this is this discussion melen tan one this is this discussion melen tan one this is known as the tanning peptide and that is known as the tanning peptide and that is known as the tanning peptide and that is what it's most well known for but this what it's most well known for but this what it's most well known for but this peptide actually has a lot of room peptide actually has a lot of room peptide actually has a lot of room really other great benefits that um I'm really other great benefits that um I'm really other great benefits that um I'm going to get in and share with you guys going to get in and share with you guys going to get in and share with you guys how I like to use Molina tan one how I like to use Molina tan one how I like to use Molina tan one for a few different ways and kind of for a few different ways and kind of for a few different ways and kind of give you guys a breakdown of what it's give you guys a breakdown of what it's give you guys a breakdown of what it's good for and whatnot so let's start off good for and whatnot so let's start off good for and whatnot so let's start off with um what melanotan 1 actually does with um what melanotan 1 actually does with um what melanotan 1 actually does so it's going to actually stimulate your so it's going to actually stimulate your so it's going to actually stimulate your penal gland which is going to help penal gland which is going to help penal gland which is going to help stimulate the hormone and your melon stimulate the hormone and your melon stimulate the hormone and your melon effect so that is going to be such a big effect so that is going to be such a big effect so that is going to be such a big benefit because this happens usually in benefit because this happens usually in benefit because this happens usually in the hour the hour the hour between 2: a.m. and 6:00 a.m. so this is between 2: a.m. and 6:00 a.m. so this is between 2: a.m. and 6:00 a.m. so this is also going to it's just kind of creating also going to it's just kind of creating also going to it's just kind of creating a nice like bath for your brain to be a nice like bath for your brain to be a nice like bath for your brain to be able to create more visual cont so this able to create more visual cont so this able to create more visual cont so this is where like a lot of dream state is where like a lot of dream state is where like a lot of dream state happens in this timing and it just happens in this timing and it just happens in this timing and it just creates a nice bath to help you creates a nice bath to help you creates a nice bath to help you visualize and it's going to bring more visualize and it's going to bring more visualize and it's going to bring more awareness to your um cognition of awareness to your um cognition of awareness to your um cognition of your spiritual being in life and it's",
+            "first_timestamp": "00:03:48.120"
+          },
+          {
+            "source_id": "V87f6GRxZLM",
+            "source_type": "podcast",
+            "source_title": "Top Peptides for PMS Relief: My Go-To Stack",
+            "source_date": "2024-08-20",
+            "source_url": "https://youtu.be/V87f6GRxZLM",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2024-08-20-top-peptides-for-pms-relief-my-go-to-stack-V87f6GRxZLM.en.vtt",
+            "mention_count": 9,
+            "top_snippet": "adding in so this phase you're going to be doing your same doses of melanotan 1",
+            "top_context": "instead I let met foran better um so instead I let met foran better um so that is why she's in there and she's that is why she's in there and she's that is why she's in there and she's staying she's staying she's not leaving staying she's staying she's not leaving staying she's staying she's not leaving my supplement recommendations um for me my supplement recommendations um for me my supplement recommendations um for me or for my clients so the next phase that or for my clients so the next phase that or for my clients so the next phase that we're going to be going into is this is we're going to be going into is this is we're going to be going into is this is going to be your follicular phase so going to be your follicular phase so going to be your follicular phase so this typically happens between day six this typically happens between day six this typically happens between day six to 14 again could FL fluctuate depending to 14 again could FL fluctuate depending to 14 again could FL fluctuate depending on how much um how how how many days in on how much um how how how many days in on how much um how how how many days in a row you bleed for so let's just say a row you bleed for so let's just say a row you bleed for so let's just say folicular phase hits at day six or 14 folicular phase hits at day six or 14 folicular phase hits at day six or 14 this is going to be your stack for your this is going to be your stack for your this is going to be your stack for your fical phase so each phase there're going fical phase so each phase there're going fical phase so each phase there're going to be different peptides I'm going to be to be different peptides I'm going to be to be different peptides I'm going to be adding in so this phase you're going to adding in so this phase you're going to adding in so this phase you're going to be doing your same doses of melanotan 1 be doing your same doses of melanotan 1 be doing your same doses of melanotan 1 that I just mentioned before you're that I just mentioned before you're that I just mentioned before you're going to be continuing with your 200 going to be continuing with your 200 going to be continuing with your 200 milligrams of eleanine and you're going milligrams of eleanine and you're going milligrams of eleanine and you're going to be continuing oh two times a day and to be continuing oh two times a day and to be continuing oh two times a day and you're going to be continuing with your you're going to be continuing with your you're going to be continuing with your metformin two times a day re as I did metformin two times a day re as I did metformin two times a day re as I did before now what you're going to be before now what you're going to be before now what you're going to be adding into this is going to be um your adding into this is going to be um your adding into this is going to be um your Kissin peptide which this is a great Kissin peptide which this is a great Kissin peptide which this is a great peptide to take um just for overall peptide to take um just for overall peptide to take um just for overall hormonal benefits but the reason why hormonal benefits but the reason why hormonal benefits but the reason why it's going to be great to use during it's going to be great to use during it's going to be great to use during your folicular phase is that you're your folicular phase is that you're your folicular phase is that you're going to be taking well I'm going to be going to be taking well I'm going to be going to be taking well I'm going to be taking and I'm suggesting this um taking taking and I'm suggesting this um taking taking and I'm suggesting this um taking 200 micrograms",
+            "first_timestamp": "00:12:29.480"
+          },
+          {
+            "source_id": "GP0EG8UyvJo",
+            "source_type": "podcast",
+            "source_title": "My Favorite Peptides For Skin Health!",
+            "source_date": "2024-06-28",
+            "source_url": "https://youtu.be/GP0EG8UyvJo",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2024-06-28-my-favorite-peptides-for-skin-health-GP0EG8UyvJo.en.vtt",
+            "mention_count": 6,
+            "top_snippet": "help with my skin is going to be melanotan one melanotan 1",
+            "top_context": "actually get hives like spread just not actually get hives like spread just not even just like all over the body they'll even just like all over the body they'll even just like all over the body they'll get it on their face um I know one of my get it on their face um I know one of my get it on their face um I know one of my girlfriends she gets really bad hives girlfriends she gets really bad hives girlfriends she gets really bad hives like along her her neck and her jawline like along her her neck and her jawline like along her her neck and her jawline um so ll37 will definitely help with um so ll37 will definitely help with um so ll37 will definitely help with that but main Beauty hack and benefit of that but main Beauty hack and benefit of that but main Beauty hack and benefit of it it helps with your acne um so I it it helps with your acne um so I it it helps with your acne um so I definitely suggest doing that and when I definitely suggest doing that and when I definitely suggest doing that and when I personally take ll37 I'm taking about personally take ll37 I'm taking about personally take ll37 I'm taking about 125 um micrograms so that way you know 125 um micrograms so that way you know 125 um micrograms so that way you know what dosing I'm I'm doing um so the next what dosing I'm I'm doing um so the next what dosing I'm I'm doing um so the next peptide that um I'm going to be using to peptide that um I'm going to be using to peptide that um I'm going to be using to help with my skin is going to be help with my skin is going to be help with my skin is going to be melanotan one melanotan 1 melanotan one melanotan 1 melanotan one melanotan 1 is probably my favorite peptide um I is probably my favorite peptide um I is probably my favorite peptide um I think I said that about MSI a lot too think I said that about MSI a lot too think I said that about MSI a lot too but melan one is definitely um one of my but melan one is definitely um one of my but melan one is definitely um one of my favorite peptides for um many other favorite peptides for um many other favorite peptides for um many other reasons for the cognitive health and it reasons for the cognitive health and it reasons for the cognitive health and it helped me so much when I was going helped me so much when I was going helped me so much when I was going through um anxiety and coming off birth through um anxiety and coming off birth through um anxiety and coming off birth control and dealing with a lot of control and dealing with a lot of control and dealing with a lot of hormonal changes melanin one helping so hormonal changes melanin one helping so hormonal changes melanin one helping so much with that but melittin one for your much with that but melittin one for your much with that but melittin one for your skin has some great benefits because it skin has some great benefits because it skin has some great benefits because it is going to help darken your skin it's is going to help darken your skin it's is going to help darken your skin it's the tanning peptide Now melanotan 1 is the tanning peptide Now melanotan 1 is the tanning peptide Now melanotan 1 is different from melanotan 2 melanotan 2 different from melanotan 2 melanotan 2 different from melanotan 2 melanotan 2 has some really awful negative side has some really awful negative side has some really awful negative side effects of people feeling nauseous sick",
+            "first_timestamp": "00:04:41.000"
+          },
+          {
+            "source_id": "p948IlTbY7c",
+            "source_type": "podcast",
+            "source_title": "Why Melanotan 1 Is My Favorite Peptide Ever!",
+            "source_date": "2025-04-11",
+            "source_url": "https://youtu.be/p948IlTbY7c",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2025-04-11-why-melanotan-1-is-my-favorite-peptide-ever-p948IlTbY7c.en.vtt",
+            "mention_count": 6,
+            "top_snippet": "of my favorite things to talk about these next two topics with melanotan 1.",
+            "top_context": "GHKC peptide can be a great combination GHKC peptide can be a great combination to put in there to help offset any worry to put in there to help offset any worry to put in there to help offset any worry about hyperpigmentation. One of the about hyperpigmentation. One of the about hyperpigmentation. One of the other great benefits is that it can help other great benefits is that it can help other great benefits is that it can help with supporting DNA repair. Because the with supporting DNA repair. Because the with supporting DNA repair. Because the alpha MSH Agalon has shown that it can alpha MSH Agalon has shown that it can alpha MSH Agalon has shown that it can help with DNA repair, it's going to help help with DNA repair, it's going to help help with DNA repair, it's going to help with response to UVA exposures. So, you with response to UVA exposures. So, you with response to UVA exposures. So, you also have that benefit in there, too. also have that benefit in there, too. also have that benefit in there, too. Again, also too, it can help with skin Again, also too, it can help with skin Again, also too, it can help with skin inflammation. the less inflammation that inflammation. the less inflammation that inflammation. the less inflammation that we have going on with the skin, it's we have going on with the skin, it's we have going on with the skin, it's also just going to be more beneficial also just going to be more beneficial also just going to be more beneficial for relaxing your skin tones, oxidative for relaxing your skin tones, oxidative for relaxing your skin tones, oxidative stress to the skin. Let's get into the stress to the skin. Let's get into the stress to the skin. Let's get into the cognitive function support that cognitive function support that cognitive function support that melanotan one can give. And this is one melanotan one can give. And this is one melanotan one can give. And this is one of my favorite things to talk about of my favorite things to talk about of my favorite things to talk about these next two topics with melanotan 1. these next two topics with melanotan 1. these next two topics with melanotan 1. Cognitive neutropic benefits that you Cognitive neutropic benefits that you Cognitive neutropic benefits that you get when using melanotan one. One of the get when using melanotan one. One of the get when using melanotan one. One of the great benefits is that melanotin 1 great benefits is that melanotin 1 great benefits is that melanotin 1 actually crosses blood brain barrier actually crosses blood brain barrier actually crosses blood brain barrier which binds to your MC4 receptor. This which binds to your MC4 receptor. This which binds to your MC4 receptor. This is going to be amazing because this is is going to be amazing because this is is going to be amazing because this is what is going to help deepen your what is going to help deepen your what is going to help deepen your connection to emotional regulation and connection to emotional regulation and connection to emotional regulation and mental mental mental alertness. Another thing that's going to alertness. Another thing that's going to alertness. Another thing that's going to help with also too is your help with also too is your help with also too is your neurotransmitter enhancement. Melantan neurotransmitter enhancement. Melantan neurotransmitter enhancement. Melantan one is going to um increase activity of one is going to um increase activity of one is going to um increase activity of dopamine and serotonin pathways. dopamine and serotonin pathways. dopamine and serotonin pathways. Therefore, that is going to contribute Therefore, that is going to contribute Therefore, that is going to contribute to being in overall better mood, being to being in overall better mood, being to being in overall better mood, being able to focus better and have more",
+            "first_timestamp": "00:08:00.319"
+          },
+          {
+            "source_id": "15uJlcypPSA",
+            "source_type": "podcast",
+            "source_title": "The Surprising Peptide Stack That Stopped My Anxiety Attacks",
+            "source_date": "2024-12-27",
+            "source_url": "https://youtu.be/15uJlcypPSA",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2024-12-27-the-surprising-peptide-stack-that-stopped-my-anxiety-attacks-15uJlcypPSA.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "my life prior to hormone replacement therapy melanotan 1 is the peptide that",
+            "top_context": "similar like family path waves these two similar like family path waves these two peptides are great to combine in the peptides are great to combine in the peptides are great to combine in the same syringe so my dosing mouth that I same syringe so my dosing mouth that I same syringe so my dosing mouth that I like to do with this is 300 like to do with this is 300 like to do with this is 300 micrograms um micrograms um micrograms um subcutaneously um once a day I've had subcutaneously um once a day I've had subcutaneously um once a day I've had people tell me that they've used it people tell me that they've used it people tell me that they've used it twice a day personally for me I think twice a day personally for me I think twice a day personally for me I think using it once a day is enough for me but using it once a day is enough for me but using it once a day is enough for me but that's where peptides are fun and that's where peptides are fun and that's where peptides are fun and everybody's going to respond to it everybody's going to respond to it everybody's going to respond to it different so you have to figure out and different so you have to figure out and different so you have to figure out and be your own guinea pig and figure out be your own guinea pig and figure out be your own guinea pig and figure out what works for you this is just me what works for you this is just me what works for you this is just me sharing you what work what works for me sharing you what work what works for me sharing you what work what works for me so um this is one that you also can do so um this is one that you also can do so um this is one that you also can do in a nasal spray form so melittin 1 is in a nasal spray form so melittin 1 is in a nasal spray form so melittin 1 is the unexpected peptide for anxiety the unexpected peptide for anxiety the unexpected peptide for anxiety relief and it has played a big role in relief and it has played a big role in relief and it has played a big role in my life prior to hormone replacement my life prior to hormone replacement my life prior to hormone replacement therapy melanotan 1 is the peptide that therapy melanotan 1 is the peptide that therapy melanotan 1 is the peptide that absolutely changed my world and helped absolutely changed my world and helped absolutely changed my world and helped me so much with dealing with anxiety me so much with dealing with anxiety me so much with dealing with anxiety hormone imbalances so that is why it is hormone imbalances so that is why it is hormone imbalances so that is why it is in my stack melittin one is known for in my stack melittin one is known for in my stack melittin one is known for its beauty enhancement of darkening your its beauty enhancement of darkening your its beauty enhancement of darkening your skin and UVA protection but it also has skin and UVA protection but it also has skin and UVA protection but it also has so much cognitive enhancements that it so much cognitive enhancements that it so much cognitive enhancements that it definitely does pair well if you're are definitely does pair well if you're are definitely does pair well if you're are somebody that has anxiety I like to somebody that has anxiety I like to somebody that has anxiety I like to use this peptide in cases of when I use this peptide in cases of when I use this peptide in cases of when I really need to kind of just connect back really need to kind of just connect back really need to kind of just connect back to the Earth and get back to reality and to the Earth and get back to reality and to the Earth and get back to reality and feel grounded again Meenan one feel grounded again Meenan one feel grounded again Meenan one definitely does that for me and it just",
+            "first_timestamp": "00:09:54.720"
+          },
+          {
+            "source_id": "1IaUfoOA55s",
+            "source_type": "podcast",
+            "source_title": "Traveling with Peptides: A4M Conference Vlog + My Wellness Secrets",
+            "source_date": "2025-05-16",
+            "source_url": "https://youtu.be/1IaUfoOA55s",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2025-05-16-traveling-with-peptides-a4m-conference-vlog-my-wellness-secrets-1IaUfoOA55s.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "and I'm going to take 250 micrograms of melanotan 1. Oh, you know what? I forgot",
+            "top_context": "of the acne. But I'm actually really of the acne. But I'm actually really glad I had the LL37 um here just to help glad I had the LL37 um here just to help glad I had the LL37 um here just to help with the with my sinuses right now. And with the with my sinuses right now. And with the with my sinuses right now. And then with these pens, I have to use then with these pens, I have to use then with these pens, I have to use these little needle caps. Um, so they these little needle caps. Um, so they these little needle caps. Um, so they just screw on. And this is Five Aamino. just screw on. And this is Five Aamino. just screw on. And this is Five Aamino. People ask all the time. It is People ask all the time. It is People ask all the time. It is completely normal for Five Aamino to be completely normal for Five Aamino to be completely normal for Five Aamino to be orangey. I think it's the prettiest orangey. I think it's the prettiest orangey. I think it's the prettiest color orange. Um, so yeah, I'm just color orange. Um, so yeah, I'm just color orange. Um, so yeah, I'm just going to start popping those in and take going to start popping those in and take going to start popping those in and take those peptides. Um, so these needle caps those peptides. Um, so these needle caps those peptides. Um, so these needle caps are really these are really convenient are really these are really convenient are really these are really convenient for when you're traveling. You just for when you're traveling. You just for when you're traveling. You just screw the little cap on. Taking 1 millig screw the little cap on. Taking 1 millig screw the little cap on. Taking 1 millig of five amino. taking 125 micrograms of of five amino. taking 125 micrograms of of five amino. taking 125 micrograms of LL37. So, taking 250 micrograms of KPV LL37. So, taking 250 micrograms of KPV LL37. So, taking 250 micrograms of KPV and I'm going to take 250 micrograms of and I'm going to take 250 micrograms of and I'm going to take 250 micrograms of melanotan 1. Oh, you know what? I forgot melanotan 1. Oh, you know what? I forgot melanotan 1. Oh, you know what? I forgot to mention the Calurb. Calurbs here. The to mention the Calurb. Calurbs here. The to mention the Calurb. Calurbs here. The Caler people are here and they are Caler people are here and they are Caler people are here and they are seriously like the weedest people ever. seriously like the weedest people ever. seriously like the weedest people ever. Like, they're just so like everybody in Like, they're just so like everybody in Like, they're just so like everybody in that company is so nice. I love Calurb that company is so nice. I love Calurb that company is so nice. I love Calurb so much. It's such an underrated so much. It's such an underrated so much. It's such an underrated supplement shake. Calurb for those of supplement shake. Calurb for those of supplement shake. Calurb for those of you that have not tried Calicerb is what you that have not tried Calicerb is what you that have not tried Calicerb is what I use when I'm not on a GLP1. So it is I use when I'm not on a GLP1. So it is I use when I'm not on a GLP1. So it is going to help with appetite suppression. going to help with appetite suppression. going to help with appetite suppression. It's a capsule. It helps with appetite It's a capsule. It helps with appetite It's a capsule. It helps with appetite suppression, but it is um made from a suppression, but it is um made from a suppression, but it is um made from a hot plant. So this is a really great hot plant. So this is a really great hot plant. So this is a really great product for all of like my holistic like product for all of like my holistic like product for all of like my holistic like really want to be more natural pathway really want to be more natural pathway really want to be more natural pathway girls girls girls that want to use a GLP one but they that want to use a GLP one but they that want to use a GLP one but they don't want to use a peptide version.",
+            "first_timestamp": "00:10:52.040"
+          },
+          {
+            "source_id": "VHZuOyJwopI",
+            "source_type": "podcast",
+            "source_title": "Sugar Fasting for Women: What I Ate, How I Trained, & the Truth",
+            "source_date": "2025-06-20",
+            "source_url": "https://youtu.be/VHZuOyJwopI",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2025-06-20-sugar-fasting-for-women-what-i-ate-how-i-trained-the-truth-VHZuOyJwopI.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "after a while. Same way I talk about melanotan 1 and PT-41 and melanotan are",
+            "top_context": "So, um, it actually because it's going So, um, it actually because it's going through the roof of your mouth, it's through the roof of your mouth, it's through the roof of your mouth, it's going to bypass the liver and going to bypass the liver and going to bypass the liver and everything. And this is the PT-141. everything. And this is the PT-141. everything. And this is the PT-141. Now, we all know this peptide blend is Now, we all know this peptide blend is Now, we all know this peptide blend is to help with libido, but Hunter and I to help with libido, but Hunter and I to help with libido, but Hunter and I are going to use it as a pre-workout are going to use it as a pre-workout are going to use it as a pre-workout instead of using Seialis today cuz I instead of using Seialis today cuz I instead of using Seialis today cuz I love using Seialis as a pre-workout. I'm love using Seialis as a pre-workout. I'm love using Seialis as a pre-workout. I'm going to use this and see how it works. going to use this and see how it works. going to use this and see how it works. Um, and I'm interested to see how this Um, and I'm interested to see how this Um, and I'm interested to see how this works because a lot of women and works because a lot of women and works because a lot of women and sometimes men say like when they inject sometimes men say like when they inject sometimes men say like when they inject PT-141, they get nauseous and sick from PT-141, they get nauseous and sick from PT-141, they get nauseous and sick from it. My reason behind that is I think a it. My reason behind that is I think a it. My reason behind that is I think a lot of it is dosing it too high. And I lot of it is dosing it too high. And I lot of it is dosing it too high. And I think if you use it a little bit more think if you use it a little bit more think if you use it a little bit more frequently um and let your body get used frequently um and let your body get used frequently um and let your body get used to it, those symptoms kind of go away to it, those symptoms kind of go away to it, those symptoms kind of go away after a while. Same way I talk about after a while. Same way I talk about after a while. Same way I talk about melanotan 1 and PT-41 and melanotan are melanotan 1 and PT-41 and melanotan are melanotan 1 and PT-41 and melanotan are in similar pathway in families. But um in similar pathway in families. But um in similar pathway in families. But um this is also going to be really great this is also going to be really great this is also going to be really great for a pre-workout. That's what we're for a pre-workout. That's what we're for a pre-workout. That's what we're going to try it. So these strips are going to try it. So these strips are going to try it. So these strips are cool. Any medications are the best cool. Any medications are the best cool. Any medications are the best pre-workout. There you go. You hear it pre-workout. There you go. You hear it pre-workout. There you go. You hear it from the master. So these strips are from the master. So these strips are from the master. So these strips are really cool. So right now we have these really cool. So right now we have these really cool. So right now we have these in in in BPC BPC BPC um thus and alpha 1 CJC um thus and alpha 1 CJC um thus and alpha 1 CJC um with NAC and GHK um with NAC and GHK um with NAC and GHK is what we have so far and hopefully is what we have so far and hopefully is what we have so far and hopefully we'll have more to come. My goal is to we'll have more to come. My goal is to we'll have more to come. My goal is to have this in a melanitine one version have this in a melanitine one version have this in a melanitine one version cuz everybody knows I love melanitine cuz everybody knows I love melanitine cuz everybody knows I love melanitine ones. So but these strips are really ones. So but these strips are really ones. So but these strips are really cool. It kind of looks like a listing",
+            "first_timestamp": "00:08:09.039"
+          }
+        ],
+        "acute_signals": [
+          {
+            "snippet": "and prior to that I completed a 10 mg bottle of melanotan 1 and a nasal spray",
+            "source_title": "Saturday Morning Coffee Talk 3/14/2026",
+            "source_date": "2026-03-14",
+            "timestamp": "00:51:52.120",
+            "source_url": "https://youtu.be/JC1poI1OEog"
+          },
+          {
+            "snippet": "bottle of melanotan 1 and a nasal spray",
+            "source_title": "Saturday Morning Coffee Talk 3/14/2026",
+            "source_date": "2026-03-14",
+            "timestamp": "00:51:53.950",
+            "source_url": "https://youtu.be/JC1poI1OEog"
+          },
+          {
+            "snippet": "bottle of melanotan 1 and a nasal spray of C-Max all purchased from your sources",
+            "source_title": "Saturday Morning Coffee Talk 3/14/2026",
+            "source_date": "2026-03-14",
+            "timestamp": "00:51:53.960",
+            "source_url": "https://youtu.be/JC1poI1OEog"
+          }
+        ],
+        "chronic_signals": [
+          {
+            "snippet": "going to do we're going to continue with our um 250 micrograms of melanotan 1",
+            "source_title": "Top Peptides for PMS Relief: My Go-To Stack",
+            "source_date": "2024-08-20",
+            "timestamp": "00:16:47.399",
+            "source_url": "https://youtu.be/V87f6GRxZLM"
+          },
+          {
+            "snippet": "our um 250 micrograms of melanotan 1",
+            "source_title": "Top Peptides for PMS Relief: My Go-To Stack",
+            "source_date": "2024-08-20",
+            "timestamp": "00:16:51.430",
+            "source_url": "https://youtu.be/V87f6GRxZLM"
+          },
+          {
+            "snippet": "our um 250 micrograms of melanotan 1 we're going to continue with the 200 Mig",
+            "source_title": "Top Peptides for PMS Relief: My Go-To Stack",
+            "source_date": "2024-08-20",
+            "timestamp": "00:16:51.440",
+            "source_url": "https://youtu.be/V87f6GRxZLM"
+          },
+          {
+            "snippet": "phase of our cycle we are going to be continuing with our melanotan 1 we are",
+            "source_title": "Top Peptides for PMS Relief: My Go-To Stack",
+            "source_date": "2024-08-20",
+            "timestamp": "00:22:07.360",
+            "source_url": "https://youtu.be/V87f6GRxZLM"
+          },
+          {
+            "snippet": "continuing with our melanotan 1 we are",
+            "source_title": "Top Peptides for PMS Relief: My Go-To Stack",
+            "source_date": "2024-08-20",
+            "timestamp": "00:22:10.789",
+            "source_url": "https://youtu.be/V87f6GRxZLM"
+          }
+        ]
+      },
+      "female_specific_note": "Taylor Williams Coaching focuses on female-specific HRT/peptide guidance. Per-peptide notes here often emphasize female dosing, fertility, hormone interactions."
+    }
+  },
+  "reset_biology_synthesis": {
+    "status": "pending-codex-distillation",
+    "recommendation": null,
+    "caveats": null,
+    "cross_expert_consensus": null,
+    "cross_expert_disagreement": null
+  },
+  "generated_at": "2026-04-27T02:02:34.851Z"
+}

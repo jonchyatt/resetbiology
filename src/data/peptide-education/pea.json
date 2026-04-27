@@ -1,0 +1,224 @@
+{
+  "peptide": "PEA",
+  "slug": "pea",
+  "aliases": [
+    "PEA",
+    "Palmitoylethanolamide",
+    "pea"
+  ],
+  "category": "Uncategorized",
+  "experts": {
+    "hunter-williams": {
+      "baseline_protocol": null,
+      "summary": {
+        "mention_count": 5,
+        "top_doses": [
+          {
+            "dose": "50 mcg",
+            "count": 4
+          },
+          {
+            "dose": "600 mg",
+            "count": 4
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "19ca15c5dc80c2e0",
+            "source_type": "email",
+            "source_title": "The MCAS Peptide Stack",
+            "source_date": "2026-02-27",
+            "source_url": "https://open.spotify.com/episode/4kMOv0WToaZ3KP0cMuvGHe",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2026-02-27-mcas-peptide-stack.md",
+            "mention_count": 3,
+            "top_snippet": "g in sensitive individuals** (activates mast cells via MRGPRX2 in some cases) → **Introduce LATER in stack** **Dose:** - **50 mcg intranasal per nostril, 4× daily** - OR **50 mcg injected once daily**",
+            "top_context": "g in sensitive individuals** (activates mast cells via MRGPRX2 in some cases) → **Introduce LATER in stack** **Dose:** - **50 mcg intranasal per nostril, 4× daily** - OR **50 mcg injected once daily** to start - Transformative for nervous system overload / low HRV / sympathetic dominance ### #6 — PEA (Palmitoylethanolamide) — CLEAN MAST CELL STABILIZER - Not a peptide — but extremely important - **Directly stabilizes mast cells** - ↓ neuroinflammation - Activates **PPAR-alpha** - ↓ TNF-alpha, IL-1 beta, IL-6 **Dose:** - Loading: **600 mg twice daily, 4-8 weeks** - Maintenance: **300-600 mg twi",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "19506a8ec76bb2df",
+            "source_type": "email",
+            "source_title": "Happy Valentine's Day❤️",
+            "source_date": "2025-02-14",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-02-14-happy-valentine-s-day.md",
+            "mention_count": 1,
+            "top_snippet": ")?** Thymosin Alpha-1, LL-37, KPV, VIP, BPC-157, TB-500, and **SS-31**. ✅ **Best peptides for nerve repair & blood vessel growth?** BPC-157, TB-500, **ARA-290 (nerve repair), and GHK-Cu (angiogenesis)",
+            "top_context": ")?** Thymosin Alpha-1, LL-37, KPV, VIP, BPC-157, TB-500, and **SS-31**. ✅ **Best peptides for nerve repair & blood vessel growth?** BPC-157, TB-500, **ARA-290 (nerve repair), and GHK-Cu (angiogenesis).** ✅ **Best peptides for gut health/IBS?** BPC-157, TB-500, KPV, **oral tributyrin, PEA, and larazotide**. Adding **glutamine and aloe vera juice** helps. ✅ **Best peptides for soft tissue healing (e.g., hernias)?** BPC-157, TB-500, **PEG-MGF, and GHK-Cu**. ——————————————————————————— **GLP-1 Peptides & Fat Loss—How to Optimize** ✅ **Can I take a break from tirzepatide?",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "1999788e1ce25670",
+            "source_type": "email",
+            "source_title": "Does Oral BPC-157 Work?",
+            "source_date": "2025-09-29",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-09-29-oral-bpc-157.md",
+            "mention_count": 1,
+            "top_snippet": "uses to inject, oral (especially arginate) may still provide benefits. I'll continue using injectable for acute injuries — but no longer dismissing oral use out of hand. Powerful for digestive health,",
+            "top_context": "uses to inject, oral (especially arginate) may still provide benefits. I'll continue using injectable for acute injuries — but no longer dismissing oral use out of hand. Powerful for digestive health, possibly supportive for whole-body healing.\" ## Source BioLongevity Labs — BioRestore (BPC-157 + PEA + Hyaluronic Acid) — code HUNTERW ## Further Reading - pubmed: 23755725 — Sikiric 2014 BPC-157 stability/NO system review - PMC9794587 — He 2022 pharmacokinetics rats/dogs (Frontiers) - PMC8275860 — Seiwerth 2021 oral drinking-water efficacy in animals - patents.google.com/patent/WO2014142764A1 —",
+            "first_timestamp": null
+          }
+        ],
+        "acute_signals": [
+          {
+            "snippet": "uses to inject, oral (especially arginate) may still provide benefits. I'll continue using injectable for acute injuries — but no longer dismissing oral use out of hand. Powerful for digestive health,",
+            "source_title": "Does Oral BPC-157 Work?",
+            "source_date": "2025-09-29",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "suppression ## ⭐ Expected Timeline ### Weeks 1-2 - Gradual introduction - Assess tolerance ### Weeks 3-6 - Reduced flares - Improved gut stability - Less skin reactivity ### Weeks 6-12 - Immune recali",
+            "source_title": "The MCAS Peptide Stack",
+            "source_date": "2026-02-27",
+            "timestamp": null,
+            "source_url": "https://open.spotify.com/episode/4kMOv0WToaZ3KP0cMuvGHe"
+          }
+        ],
+        "chronic_signals": [
+          {
+            "snippet": "g in sensitive individuals** (activates mast cells via MRGPRX2 in some cases) → **Introduce LATER in stack** **Dose:** - **50 mcg intranasal per nostril, 4× daily** - OR **50 mcg injected once daily**",
+            "source_title": "The MCAS Peptide Stack",
+            "source_date": "2026-02-27",
+            "timestamp": null,
+            "source_url": "https://open.spotify.com/episode/4kMOv0WToaZ3KP0cMuvGHe"
+          },
+          {
+            "snippet": "sensitive individuals** (activates mast cells via MRGPRX2 in some cases) → **Introduce LATER in stack** **Dose:** - **50 mcg intranasal per nostril, 4× daily** - OR **50 mcg injected once daily** to s",
+            "source_title": "The MCAS Peptide Stack",
+            "source_date": "2026-02-27",
+            "timestamp": null,
+            "source_url": "https://open.spotify.com/episode/4kMOv0WToaZ3KP0cMuvGHe"
+          },
+          {
+            "snippet": "suppression ## ⭐ Expected Timeline ### Weeks 1-2 - Gradual introduction - Assess tolerance ### Weeks 3-6 - Reduced flares - Improved gut stability - Less skin reactivity ### Weeks 6-12 - Immune recali",
+            "source_title": "The MCAS Peptide Stack",
+            "source_date": "2026-02-27",
+            "timestamp": null,
+            "source_url": "https://open.spotify.com/episode/4kMOv0WToaZ3KP0cMuvGHe"
+          }
+        ]
+      }
+    },
+    "taylor-williams": {
+      "summary": {
+        "mention_count": 6,
+        "top_doses": [],
+        "top_sources": [
+          {
+            "source_id": "hgI5Mpc-xDQ",
+            "source_type": "podcast",
+            "source_title": "Saturday Morning Coffee Talk 2/28/26",
+            "source_date": "2026-02-28",
+            "source_url": "https://youtu.be/hgI5Mpc-xDQ",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2026-02-28-saturday-morning-coffee-talk-2-28-26-hgI5Mpc-xDQ.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "repair formulas have like tributinrin and pea in them and those are also",
+            "top_context": "them up on the screen. So, this one I'm them up on the screen. So, this one I'm going to read, \"My nine-year-old son has going to read, \"My nine-year-old son has going to read, \"My nine-year-old son has moderate to severe Crohn's. He has been moderate to severe Crohn's. He has been moderate to severe Crohn's. He has been on LDN for 3 weeks. What peptide can we on LDN for 3 weeks. What peptide can we on LDN for 3 weeks. What peptide can we add in to shut off that inflammation add in to shut off that inflammation add in to shut off that inflammation signal?\" Um, I really like for this signal?\" Um, I really like for this signal?\" Um, I really like for this case, especially a younger child. I case, especially a younger child. I case, especially a younger child. I mean, there's things you could inject, mean, there's things you could inject, mean, there's things you could inject, but I would even say uh something as but I would even say uh something as but I would even say uh something as simple as like a gut repair formula that simple as like a gut repair formula that simple as like a gut repair formula that has BPC, TB500, and KPV oral capsules uh has BPC, TB500, and KPV oral capsules uh has BPC, TB500, and KPV oral capsules uh will be huge. The LDN I would keep the will be huge. The LDN I would keep the will be huge. The LDN I would keep the lowd dose nrexone to help. But I would lowd dose nrexone to help. But I would lowd dose nrexone to help. But I would take those three. So BPC, TB500 and take those three. So BPC, TB500 and take those three. So BPC, TB500 and &gt;&gt; KPV &gt;&gt; KPV &gt;&gt; KPV &gt;&gt; KPV also too like uh most of those gut &gt;&gt; KPV also too like uh most of those gut &gt;&gt; KPV also too like uh most of those gut repair formulas have like tributinrin repair formulas have like tributinrin repair formulas have like tributinrin and pea in them and those are also and pea in them and those are also and pea in them and those are also really good to help with inflammation. really good to help with inflammation. really good to help with inflammation. There's also another peptide too. I There's also another peptide too. I There's also another peptide too. I always forget to mention this when we always forget to mention this when we always forget to mention this when we talk about Crohn's disease, celiac talk about Crohn's disease, celiac talk about Crohn's disease, celiac disease. It's called laorazzide. disease. It's called laorazzide. disease. It's called laorazzide. Lorazzide is an oral peptide. It was Lorazzide is an oral peptide. It was Lorazzide is an oral peptide. It was actually originally studied for celiac actually originally studied for celiac actually originally studied for celiac disease. It's just not as popular. A lot disease. It's just not as popular. A lot disease. It's just not as popular. A lot of peptide companies will put it in of peptide companies will put it in of peptide companies will put it in their gut formula. It's an oral their gut formula. It's an oral their gut formula. It's an oral formulation. Uh, but I love lorazzide formulation. Uh, but I love lorazzide formulation. Uh, but I love lorazzide especially it it is typically thought of especially it it is typically thought of especially it it is typically thought of more in the celiac disease but really more in the celiac disease but really more in the celiac disease but really anything it that you're experiencing anything it that you're experiencing anything it that you're experiencing like that like Crohn's, GI dysfunction, like that like Crohn's, GI dysfunction, like that like Crohn's, GI dysfunction, IBS, whatever, it's going to help heal IBS, whatever, it's going to help heal IBS, whatever, it's going to help heal the gut lining. And so I love the the gut lining. And so I love the the gut lining. And so I love the razetide to and a lot of those peptide razetide to and a lot of those peptide razetide to and a lot of those peptide companies that have gut formulas. Um, companies that have gut formulas. Um, companies that have gut formulas. Um, &gt;&gt; have that in there already. &gt;&gt; have that in there already. &gt;&gt; have that in there already. &gt;&gt; Yeah, have that in there. But that's &gt;&gt; Yeah, have that in there. But that's &gt;&gt; Yeah, have that in there. But that's where I would start. And obviously too, where I would start. And obviously too, where I would start. And obviously too, I'm sure if he has Crohn's, you're",
+            "first_timestamp": "00:15:37.600"
+          },
+          {
+            "source_id": "JC1poI1OEog",
+            "source_type": "podcast",
+            "source_title": "Saturday Morning Coffee Talk 3/14/2026",
+            "source_date": "2026-03-14",
+            "source_url": "https://youtu.be/JC1poI1OEog",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2026-03-14-saturday-morning-coffee-talk-3-14-2026-JC1poI1OEog.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "in it, but you got BPC KPV PEA some of those other things in there",
+            "top_context": "and fuller. and fuller. So I think anatomically for fat loss So I think anatomically for fat loss So I think anatomically for fat loss it's a more cumulative thing not to say it's a more cumulative thing not to say it's a more cumulative thing not to say that people can't have results quicker that people can't have results quicker that people can't have results quicker but I think when you really look at the but I think when you really look at the but I think when you really look at the structural change of body for the better structural change of body for the better structural change of body for the better is probably about three to six months is probably about three to six months is probably about three to six months depending on the person. My two grandsons 14 and 16 have celiac I My two grandsons 14 and 16 have celiac I put them on Ipamorelin for stunted put them on Ipamorelin for stunted put them on Ipamorelin for stunted growth any suggestions for gut healing? growth any suggestions for gut healing? growth any suggestions for gut healing? Specifically for celiac I would get Specifically for celiac I would get Specifically for celiac I would get larazotide which is an oral peptide that larazotide which is an oral peptide that larazotide which is an oral peptide that was actually developed specifically for was actually developed specifically for was actually developed specifically for celiac. I would try that, but that's celiac. I would try that, but that's celiac. I would try that, but that's also and I would try one of those also and I would try one of those also and I would try one of those peptide oral blends too with larazotide peptide oral blends too with larazotide peptide oral blends too with larazotide in it, but you got BPC KPV in it, but you got BPC KPV in it, but you got BPC KPV PEA some of those other things in there PEA some of those other things in there PEA some of those other things in there too. My daughter is 16 has big stretch marks My daughter is 16 has big stretch marks on both of her inner thighs without on both of her inner thighs without on both of her inner thighs without gaining weight she is 5 ft 113 lb been gaining weight she is 5 ft 113 lb been gaining weight she is 5 ft 113 lb been taking her skin doctor doing micro taking her skin doctor doing micro taking her skin doctor doing micro needling which has helped but still needling which has helped but still needling which has helped but still there there there do you have any suggestions for that? I mean the micro needling probably I mean the micro needling probably &gt;&gt; is probably going to help the most with &gt;&gt; is probably going to help the most with &gt;&gt; is probably going to help the most with that I mean is that just from growing fast? is that just from growing fast? &gt;&gt; Yeah it's just from growing is from &gt;&gt; Yeah it's just from growing is from &gt;&gt; Yeah it's just from growing is from growing fast I mean some people are just growing fast I mean some people are just growing fast I mean some people are just more prone like especially like olive more prone like especially like olive more prone like especially like olive complected skin tones are more prone complected skin tones are more prone complected skin tones are more prone to it um to it um to it um vitamin E oils would be helpful",
+            "first_timestamp": "00:57:35.040"
+          }
+        ],
+        "acute_signals": [],
+        "chronic_signals": []
+      },
+      "female_specific_note": "Taylor Williams Coaching focuses on female-specific HRT/peptide guidance. Per-peptide notes here often emphasize female dosing, fertility, hormone interactions."
+    },
+    "trevor-bachmeyer": {
+      "summary": {
+        "mention_count": 30,
+        "top_doses": [
+          {
+            "dose": "25 milligrams",
+            "count": 3
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "qd3wIAKuaME",
+            "source_type": "podcast",
+            "source_title": "Protein Versus Vegan Logic - Unbreakable Podcast 246",
+            "source_date": "2025-09-06",
+            "source_url": "https://youtu.be/qd3wIAKuaME",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2025-09-06-protein-versus-vegan-logic-unbreakable-podcast-246-qd3wIAKuaME.en.vtt",
+            "mention_count": 18,
+            "top_snippet": "this up. It's that dumb. And I'm sure every wannabe soy pea protein just you",
+            "top_context": "Oh, this is going to piss off all the Oh, this is going to piss off all the vegans. vegans. vegans. Even the pseudo vegans, all you guys Even the pseudo vegans, all you guys Even the pseudo vegans, all you guys know food with a face and your protein. know food with a face and your protein. know food with a face and your protein. I just saw a study. I can't even believe I just saw a study. I can't even believe I just saw a study. I can't even believe I read it. This is the nonsense that's I read it. This is the nonsense that's I read it. This is the nonsense that's happening in our world right now that happening in our world right now that happening in our world right now that says protein, too much protein is going says protein, too much protein is going says protein, too much protein is going to actually lower your testosterone. Are to actually lower your testosterone. Are to actually lower your testosterone. Are you out of your mind? You can't make you out of your mind? You can't make you out of your mind? You can't make this up. It's that dumb. And I'm sure this up. It's that dumb. And I'm sure this up. It's that dumb. And I'm sure every wannabe soy pea protein just you every wannabe soy pea protein just you every wannabe soy pea protein just you guys your heads are exploding right now guys your heads are exploding right now guys your heads are exploding right now because I'm pushing every hot button because I'm pushing every hot button because I'm pushing every hot button you've got. Uh it doesn't change the you've got. Uh it doesn't change the you've got. Uh it doesn't change the fact that I'm right. You need protein fact that I'm right. You need protein fact that I'm right. You need protein and you need meat. Enough with your and you need meat. Enough with your and you need meat. Enough with your bamboo shoot kale smoothie. I can get bamboo shoot kale smoothie. I can get bamboo shoot kale smoothie. I can get all the nutrients I need out of all the nutrients I need out of all the nutrients I need out of everything I eat because I'm a vegan everything I eat because I'm a vegan everything I eat because I'm a vegan self-righteous virtue signaling wannabe self-righteous virtue signaling wannabe self-righteous virtue signaling wannabe embarrassment embarrassment embarrassment shrinking away into nothing who can hide shrinking away into nothing who can hide shrinking away into nothing who can hide behind a flashlight holding it behind a flashlight holding it behind a flashlight holding it vertically because you've lost so much vertically because you've lost so much vertically because you've lost so much [&nbsp;__&nbsp;] weight. It's not possible [&nbsp;__&nbsp;] weight. It's not possible [&nbsp;__&nbsp;] weight. It's not possible physiologically. It is missing physiologically. It is missing physiologically. It is missing nutrients. Which is why you guys freak nutrients. Which is why you guys freak nutrients. Which is why you guys freak out and take a bunch of supplemental out and take a bunch of supplemental out and take a bunch of supplemental vitamins because you can't get them from vitamins because you can't get them from vitamins because you can't get them from the food that you because you're not",
+            "first_timestamp": "00:00:30.240"
+          },
+          {
+            "source_id": "5O4vqJO61QU",
+            "source_type": "podcast",
+            "source_title": "Vlog 149 My Diet AND Debunking Every Diet Fad",
+            "source_date": "2025-05-30",
+            "source_url": "https://youtu.be/5O4vqJO61QU",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2025-05-30-vlog-149-my-diet-and-debunking-every-diet-fad-5O4vqJO61QU.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "garbage. Oh, you don't understand. Got to get this really great pea protein",
+            "top_context": "because they eat a lot of processed because they eat a lot of processed food, but it's protein. Protein is the food, but it's protein. Protein is the food, but it's protein. Protein is the golden gun. Protein is the if you watch golden gun. Protein is the if you watch golden gun. Protein is the if you watch James Bond, you know what that means. James Bond, you know what that means. James Bond, you know what that means. Protein is the beall end all. That is Protein is the beall end all. That is Protein is the beall end all. That is that deflects everything that comes at that deflects everything that comes at that deflects everything that comes at you. And I cannot stress this enough. you. And I cannot stress this enough. you. And I cannot stress this enough. And this is where most of you guys screw And this is where most of you guys screw And this is where most of you guys screw this up. You're eating 50 gram of this up. You're eating 50 gram of this up. You're eating 50 gram of protein a day because some idiot out protein a day because some idiot out protein a day because some idiot out there in social media said you shouldn't there in social media said you shouldn't there in social media said you shouldn't eat too much protein. It's hard on your eat too much protein. It's hard on your eat too much protein. It's hard on your kidneys and it causes all kinds of kidneys and it causes all kinds of kidneys and it causes all kinds of problems. [&nbsp;__&nbsp;] It does. [&nbsp;__&nbsp;] problems. [&nbsp;__&nbsp;] It does. [&nbsp;__&nbsp;] problems. [&nbsp;__&nbsp;] It does. [&nbsp;__&nbsp;] Not a chance. Not a chance. I eat so Not a chance. Not a chance. I eat so Not a chance. Not a chance. I eat so much protein. But you're eating 50 much protein. But you're eating 50 much protein. But you're eating 50 grams. You're wondering why your body grams. You're wondering why your body grams. You're wondering why your body looks like a crumpled up wet napkin. You looks like a crumpled up wet napkin. You looks like a crumpled up wet napkin. You want to be lean. Proteins your want to be lean. Proteins your want to be lean. Proteins your non-negotiable. The end. I stay away non-negotiable. The end. I stay away non-negotiable. The end. I stay away from shakes. I don't care what shake it from shakes. I don't care what shake it from shakes. I don't care what shake it is. It doesn't matter. Shakes are is. It doesn't matter. Shakes are is. It doesn't matter. Shakes are garbage. Oh, you don't understand. Got garbage. Oh, you don't understand. Got garbage. Oh, you don't understand. Got to get this really great pea protein to get this really great pea protein to get this really great pea protein from this guy that makes it in his from this guy that makes it in his from this guy that makes it in his basement. Shakes are garbage. Go call basement. Shakes are garbage. Go call basement. Shakes are garbage. Go call American Rancher Beef. Ask for Mike. He American Rancher Beef. Ask for Mike. He American Rancher Beef. Ask for Mike. He owns it. He and his wife. I kid you not. owns it. He and his wife. I kid you not. owns it. He and his wife. I kid you not. I will plug the [&nbsp;__&nbsp;] out of him. I will plug the [&nbsp;__&nbsp;] out of him. I will plug the [&nbsp;__&nbsp;] out of him. American Rancher Beef. Call him. Say, American Rancher Beef. Call him. Say, American Rancher Beef. Call him. Say, \"The Spartan sent me.\" Said, \"You have \"The Spartan sent me.\" Said, \"You have \"The Spartan sent me.\" Said, \"You have the best beef on earth.\" He really does. the best beef on earth.\" He really does. the best beef on earth.\" He really does. They don't hormone their cows, nothing. They don't hormone their cows, nothing. They don't hormone their cows, nothing. And these guys work And these guys work And these guys work hard. They work for you, man. Tell them hard. They work for you, man. Tell them hard. They work for you, man. Tell them you want whatever you want. Just tons you want whatever you want. Just tons you want whatever you want. Just tons and tons of beef. Stop getting pork and and tons of beef. Stop getting pork and and tons of beef. Stop getting pork and weird [&nbsp;__&nbsp;] Just get beef. Tell him how weird [&nbsp;__&nbsp;] Just get beef. Tell him how weird [&nbsp;__&nbsp;] Just get beef. Tell him how much. He will help you. Tell him I sent much. He will help you. Tell him I sent much. He will help you. Tell him I sent you. He will hook you up. I promise. You you. He will hook you up. I promise. You you. He will hook you up. I promise. You want to be lean. Protein is want to be lean. Protein is want to be lean. Protein is non-negotiable. Red non-negotiable. Red non-negotiable. Red meat. Red meat. Red meat. Red meat. I used to say one gram per pound",
+            "first_timestamp": "00:26:43.679"
+          },
+          {
+            "source_id": "G6QnofqaYfM",
+            "source_type": "podcast",
+            "source_title": "Is This The Oral 'God Mode' Stack? Unbreakable Podcast 246",
+            "source_date": "2025-09-07",
+            "source_url": "https://youtu.be/G6QnofqaYfM",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2025-09-07-is-this-the-oral-god-mode-stack-unbreakable-podcast-246-G6QnofqaYfM.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "cushions and the you're an inauthentic unless you're eating guava and pea",
+            "top_context": "running this trippy dialogue in your running this trippy dialogue in your head about why it's inauthentic, it's head about why it's inauthentic, it's head about why it's inauthentic, it's cheating, and and you shouldn't I I'm cheating, and and you shouldn't I I'm cheating, and and you shouldn't I I'm not going to do that. That's not good. not going to do that. That's not good. not going to do that. That's not good. It's inauthentic. It's inauthentic. You It's inauthentic. It's inauthentic. You It's inauthentic. It's inauthentic. You look like a hasb been that's never been, look like a hasb been that's never been, look like a hasb been that's never been, you know. Oh, I could never inject you know. Oh, I could never inject you know. Oh, I could never inject myself. I just then don't. This stack myself. I just then don't. This stack myself. I just then don't. This stack doesn't require it at all. And you get doesn't require it at all. And you get doesn't require it at all. And you get all the benefits without playing nurse all the benefits without playing nurse all the benefits without playing nurse in your bathroom mirror, shaking, in your bathroom mirror, shaking, in your bathroom mirror, shaking, sweating, trying to stick yourself with sweating, trying to stick yourself with sweating, trying to stick yourself with something smaller than any sliver you've something smaller than any sliver you've something smaller than any sliver you've ever gotten. It's not messy. It's not ever gotten. It's not messy. It's not ever gotten. It's not messy. It's not complicated. No vials, no syringes, no complicated. No vials, no syringes, no complicated. No vials, no syringes, no alcohol swab, nothing. Just oral. If you alcohol swab, nothing. Just oral. If you alcohol swab, nothing. Just oral. If you can stand a little bitterness, you're can stand a little bitterness, you're can stand a little bitterness, you're golden. Which is why SARMMS are that golden. Which is why SARMMS are that golden. Which is why SARMMS are that lane between or the actually the better lane between or the actually the better lane between or the actually the better lane between the never-ending pin lane between the never-ending pin lane between the never-ending pin cushions and the you're an inauthentic cushions and the you're an inauthentic cushions and the you're an inauthentic unless you're eating guava and pea unless you're eating guava and pea unless you're eating guava and pea protein and that's going to give you protein and that's going to give you protein and that's going to give you your muscle. Get the hell out of here. your muscle. Get the hell out of here. your muscle. Get the hell out of here. They're not about pretend. Listen, this They're not about pretend. Listen, this They're not about pretend. Listen, this is not about pretending natural will get is not about pretending natural will get is not about pretending natural will get you there. That's that's not what SARMs you there. That's that's not what SARMs you there. That's that's not what SARMs do. They're not about that. They're not do. They're not about that. They're not do. They're not about that. They're not about about pinning yourself like a pin about about pinning yourself like a pin about about pinning yourself like a pin cushion. So, it mitigates those two cushion. So, it mitigates those two cushion. So, it mitigates those two idiotic camps. They're about leveraging idiotic camps. They're about leveraging idiotic camps. They're about leveraging biology in a very precise, specific way, biology in a very precise, specific way, biology in a very precise, specific way, very easily and effectively, and very easily and effectively, and very easily and effectively, and honestly, very costefficiently. Like I I honestly, very costefficiently. Like I I honestly, very costefficiently. Like I I think you're looking maybe, yes, I own think you're looking maybe, yes, I own think you're looking maybe, yes, I own the company, but I don't know off off the company, but I don't know off off the company, but I don't know off off the top of my head, 150 bucks a month. the top of my head, 150 bucks a month. the top of my head, 150 bucks a month. Maybe uh if you you probably have to Maybe uh if you you probably have to Maybe uh if you you probably have to squeeze into two two full sets of one squeeze into two two full sets of one squeeze into two two full sets of one bottle of Austrian rad 140 and MK677 if bottle of Austrian rad 140 and MK677 if bottle of Austrian rad 140 and MK677 if you're sitting at the top of the dose you're sitting at the top of the dose you're sitting at the top of the dose cuz it's got uh maybe even then you're cuz it's got uh maybe even then you're cuz it's got uh maybe even then you're about 30 days cuz at 25 milligrams per",
+            "first_timestamp": "00:14:22.480"
+          },
+          {
+            "source_id": "PEbu7E8QB_Y",
+            "source_type": "podcast",
+            "source_title": "STOP Combining Retatrutide and Tirzepatide - Dr Trevor Bachmeyer",
+            "source_date": "2026-03-25",
+            "source_url": "https://youtu.be/PEbu7E8QB_Y",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2026-03-25-stop-combining-retatrutide-and-tirzepatide-dr-trevor-bachmeyer-PEbu7E8QB_Y.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "which is one of the dumbest inventions. Or whatever else like pea protein and",
+            "top_context": "attention to her biology. I ran labs and attention to her biology. I ran labs and saw all kinds of things. I'll do a whole saw all kinds of things. I'll do a whole saw all kinds of things. I'll do a whole podcast on it just to help you guys out podcast on it just to help you guys out podcast on it just to help you guys out so you can see exactly where the so you can see exactly where the so you can see exactly where the screw-ups were and then you don't make screw-ups were and then you don't make screw-ups were and then you don't make them. So that way you have them. If them. So that way you have them. If them. So that way you have them. If that's what you want, then somebody send that's what you want, then somebody send that's what you want, then somebody send me an email because I'm not going to me an email because I'm not going to me an email because I'm not going to look at the comments. I never do. So look at the comments. I never do. So look at the comments. I never do. So 2022 study I said by McNeel is was 2022 study I said by McNeel is was 2022 study I said by McNeel is was exposed this gallstone problem. Right? exposed this gallstone problem. Right? exposed this gallstone problem. Right? So GLP-1 monotherapy increased gallstone So GLP-1 monotherapy increased gallstone So GLP-1 monotherapy increased gallstone formation by 3.2 times with GLP alone. formation by 3.2 times with GLP alone. formation by 3.2 times with GLP alone. Right? So now monotherapy, right? Excuse Right? So now monotherapy, right? Excuse Right? So now monotherapy, right? Excuse me. GLP1 and glucagon X. I'm not playing me. GLP1 and glucagon X. I'm not playing me. GLP1 and glucagon X. I'm not playing for that. I don't nobody wants that. You for that. I don't nobody wants that. You for that. I don't nobody wants that. You develop disease. Your liver is backed up develop disease. Your liver is backed up develop disease. Your liver is backed up with bile. Your fat digestion suffers. with bile. Your fat digestion suffers. with bile. Your fat digestion suffers. You know we are fat burning organisms, You know we are fat burning organisms, You know we are fat burning organisms, right? Really, you're not designed to right? Really, you're not designed to right? Really, you're not designed to run on Snickers bars or protein pasta, run on Snickers bars or protein pasta, run on Snickers bars or protein pasta, which is one of the dumbest inventions. which is one of the dumbest inventions. which is one of the dumbest inventions. Or whatever else like pea protein and Or whatever else like pea protein and Or whatever else like pea protein and all this stuff. Just eat a steak. Eat all this stuff. Just eat a steak. Eat all this stuff. Just eat a steak. Eat real food. Real food. I promise your real food. Real food. I promise your real food. Real food. I promise your body will thank you. Your sympathetic body will thank you. Your sympathetic body will thank you. Your sympathetic nervous system sits in fight, flight, or nervous system sits in fight, flight, or nervous system sits in fight, flight, or freeze. And it's constantly on the freeze. And it's constantly on the freeze. And it's constantly on the throttle. Parasympathetic nervous throttle. Parasympathetic nervous throttle. Parasympathetic nervous system, rest and digest, is suppressed. system, rest and digest, is suppressed. system, rest and digest, is suppressed. So here's what happens. This is what I So here's what happens. This is what I So here's what happens. This is what I was talking about. The cortisol issues, was talking about. The cortisol issues, was talking about. The cortisol issues, insomnia, so you get like these 2:30 in insomnia, so you get like these 2:30 in insomnia, so you get like these 2:30 in the morning cortisol surges that wake the morning cortisol surges that wake the morning cortisol surges that wake you up. Heart palpitations, you get you up. Heart palpitations, you get you up. Heart palpitations, you get tacocartic, right? Anxiety, you have tacocartic, right? Anxiety, you have tacocartic, right? Anxiety, you have panic attacks, you have tremors, you get panic attacks, you have tremors, you get panic attacks, you have tremors, you get massive heat intolerance that people massive heat intolerance that people massive heat intolerance that people don't even talk about. And I said this don't even talk about. And I said this don't even talk about. And I said this to to dozens and dozens of people and to to dozens and dozens of people and to to dozens and dozens of people and they're like, \"Oh my god, yeah, I do.\" they're like, \"Oh my god, yeah, I do.\" they're like, \"Oh my god, yeah, I do.\" But nobody nobody points this stuff out But nobody nobody points this stuff out But nobody nobody points this stuff out because they're not paying attention to because they're not paying attention to because they're not paying attention to the biology. They're just going checking the biology. They're just going checking the biology. They're just going checking off boxes on symptoms and going, \"Take off boxes on symptoms and going, \"Take off boxes on symptoms and going, \"Take this pill.\" 2023 study by Ang in journal this pill.\" 2023 study by Ang in journal this pill.\" 2023 study by Ang in journal of cardiovascular medicine showed GLP-1 of cardiovascular medicine showed GLP-1 of cardiovascular medicine showed GLP-1 agonism increases resting heart rate by",
+            "first_timestamp": "00:27:45.120"
+          },
+          {
+            "source_id": "HbgvbVP8B-k",
+            "source_type": "podcast",
+            "source_title": "Doctor Explains Why More Retatrutide Doesn't Mean Better Results - Dr Trevor Bachmeyer",
+            "source_date": "2026-03-28",
+            "source_url": "https://youtu.be/HbgvbVP8B-k",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2026-03-28-doctor-explains-why-more-retatrutide-doesn-t-mean-better-results-dr-tr-HbgvbVP8B-k.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "people don't. Listen, rice protein and your pea protein and your little vegan",
+            "top_context": "level is training stimulus. The next level is training stimulus. The next level is hormonal support, thyroid level is hormonal support, thyroid level is hormonal support, thyroid growth hormone. The top is the peptide. growth hormone. The top is the peptide. growth hormone. The top is the peptide. Most people try and build the pyramid Most people try and build the pyramid Most people try and build the pyramid upside down. They stack peptides on a upside down. They stack peptides on a upside down. They stack peptides on a crumbling foundation. Sarah's Insta crumbling foundation. Sarah's Insta crumbling foundation. Sarah's Insta coach was doing exactly that. Higher and coach was doing exactly that. Higher and coach was doing exactly that. Higher and higher peptide doses, you're on a higher peptide doses, you're on a higher peptide doses, you're on a foundation that just it was giving her foundation that just it was giving her foundation that just it was giving her the finger. When you build it right, the finger. When you build it right, the finger. When you build it right, foundation first, then the peptide, the foundation first, then the peptide, the foundation first, then the peptide, the results are exponential. They always results are exponential. They always results are exponential. They always work. So, if you're on Reddit Tide and work. So, if you're on Reddit Tide and work. So, if you're on Reddit Tide and it's not working or it's making you feel it's not working or it's making you feel it's not working or it's making you feel terrible, before you crank up the dose terrible, before you crank up the dose terrible, before you crank up the dose or yell at somebody or anything, ask or yell at somebody or anything, ask or yell at somebody or anything, ask yourself these questions. Let me just yourself these questions. Let me just yourself these questions. Let me just help you. Ask yourself these questions. help you. Ask yourself these questions. help you. Ask yourself these questions. Is my thyroid function optimal? If TSH Is my thyroid function optimal? If TSH Is my thyroid function optimal? If TSH is above 3.5, just so you know, it's is above 3.5, just so you know, it's is above 3.5, just so you know, it's not. Are my electrolytes adequate? If not. Are my electrolytes adequate? If not. Are my electrolytes adequate? If you haven't checked potassium or you haven't checked potassium or you haven't checked potassium or magnesium, they're probably depleted. Is magnesium, they're probably depleted. Is magnesium, they're probably depleted. Is my protein intake sufficient? Most my protein intake sufficient? Most my protein intake sufficient? Most people don't. Listen, rice protein and people don't. Listen, rice protein and people don't. Listen, rice protein and your pea protein and your little vegan your pea protein and your little vegan your pea protein and your little vegan proteins, knock it off. Eat friaking proteins, knock it off. Eat friaking proteins, knock it off. Eat friaking steak and meat and eggs. Eat real steak and meat and eggs. Eat real steak and meat and eggs. Eat real protein. If your intake is lower than protein. If your intake is lower than protein. If your intake is lower than 1.2 grams per pound, it is too low. Is 1.2 grams per pound, it is too low. Is 1.2 grams per pound, it is too low. Is my micronutrient status optimal? If I my micronutrient status optimal? If I my micronutrient status optimal? If I haven't supplemented, I'm going to tell haven't supplemented, I'm going to tell haven't supplemented, I'm going to tell you right now, it's not. That's what you you right now, it's not. That's what you you right now, it's not. That's what you should say. Am I drinking enough water? should say. Am I drinking enough water? should say. Am I drinking enough water? If you're relying on thirst, I'll just If you're relying on thirst, I'll just If you're relying on thirst, I'll just help you. You are 100% dehydrated, baby. help you. You are 100% dehydrated, baby. help you. You are 100% dehydrated, baby. Don't blame redatride for the failure. Don't blame redatride for the failure. Don't blame redatride for the failure. Blame the foundation of your own Blame the foundation of your own Blame the foundation of your own biology. And if your Insta coach or biology. And if your Insta coach or biology. And if your Insta coach or Insta expert or PhD or whoever it is Insta expert or PhD or whoever it is Insta expert or PhD or whoever it is keeps telling you just increase the dose keeps telling you just increase the dose keeps telling you just increase the dose without addressing or just add this next without addressing or just add this next without addressing or just add this next pie, usually it's not adding things. You pie, usually it's not adding things. You pie, usually it's not adding things. You have to take things away without have to take things away without have to take things away without addressing the foundation. You need to addressing the foundation. You need to addressing the foundation. You need to find a new coach or a new doctor because find a new coach or a new doctor because find a new coach or a new doctor because the peptides and medication can't the peptides and medication can't the peptides and medication can't overcome a broken foundation. All it overcome a broken foundation. All it overcome a broken foundation. All it does is accelerate the breakdown while does is accelerate the breakdown while does is accelerate the breakdown while you think you're making progress.",
+            "first_timestamp": "00:48:33.359"
+          }
+        ],
+        "acute_signals": [],
+        "chronic_signals": []
+      },
+      "acute_vs_chronic_note": "Dr Bachmeyer often distinguishes acute (injury/infection) vs chronic (longevity/maintenance) dosing. Acute_signals + chronic_signals fields surface candidate contexts; full distillation pending Codex pass."
+    }
+  },
+  "reset_biology_synthesis": {
+    "status": "pending-codex-distillation",
+    "recommendation": null,
+    "caveats": null,
+    "cross_expert_consensus": null,
+    "cross_expert_disagreement": null
+  },
+  "generated_at": "2026-04-27T02:02:34.987Z"
+}

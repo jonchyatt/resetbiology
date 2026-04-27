@@ -1,0 +1,104 @@
+{
+  "peptide": "Survodutide",
+  "slug": "survodutide",
+  "aliases": [
+    "Survodutide"
+  ],
+  "category": "Uncategorized",
+  "experts": {
+    "hunter-williams": {
+      "baseline_protocol": null,
+      "summary": {
+        "mention_count": 11,
+        "top_doses": [
+          {
+            "dose": "9 mg",
+            "count": 6
+          },
+          {
+            "dose": "6 mg",
+            "count": 5
+          },
+          {
+            "dose": "16 mg",
+            "count": 4
+          },
+          {
+            "dose": "15 mg",
+            "count": 2
+          },
+          {
+            "dose": "12 mg",
+            "count": 2
+          },
+          {
+            "dose": "2.4 mg",
+            "count": 1
+          },
+          {
+            "dose": "4.8 mg",
+            "count": 1
+          },
+          {
+            "dose": "4 mg",
+            "count": 1
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "19d45fc334be87a7",
+            "source_type": "email",
+            "source_title": "Survodutide & Mazdutide (GLP-1/Glucagon Duo)",
+            "source_date": "2026-03-31",
+            "source_url": "https://open.spotify.com/episode/2IADOstRyI6FrZlNHriPJB",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2026-03-31-survodutide-mazdutide-glp1-glucagon-duo.md",
+            "mention_count": 11,
+            "top_snippet": "cagon's glucose-raising effect - No increased risk of hyperglycemia in trials of either compound ## ⭐ Clinical Benefits ### Mazdutide (6 mg/wk) - **80% reduction in liver fat** in baseline hepatic ste",
+            "top_context": "cagon's glucose-raising effect - No increased risk of hyperglycemia in trials of either compound ## ⭐ Clinical Benefits ### Mazdutide (6 mg/wk) - **80% reduction in liver fat** in baseline hepatic steatosis - A1C reductions of **1.5-2.15%** - Heart rate increase only **~2.6 bpm at 48 weeks** ### Survodutide - **62% MASH resolution** vs 14% placebo - 67% achieved >30% liver fat reduction - Dramatic ALT/AST reductions ### Both peptides - ↓ waist circumference - ↓ systolic BP - ↑ triglyceride / LDL / uric acid improvements ### Compare to Reta heart rate (Hunter's experience) - Reta typically ↑ HR **5-1",
+            "first_timestamp": null
+          }
+        ],
+        "acute_signals": [
+          {
+            "snippet": "Lilly handles US development separately - **June 2025**: world's first approved GLP-1/glucagon receptor agonist (China — brand name **Xinermei** for weight management) - **September 2025**: 2nd China ",
+            "source_title": "Survodutide & Mazdutide (GLP-1/Glucagon Duo)",
+            "source_date": "2026-03-31",
+            "timestamp": null,
+            "source_url": "https://open.spotify.com/episode/2IADOstRyI6FrZlNHriPJB"
+          },
+          {
+            "snippet": "this with retatrutide too ## Use Cases - Primary GLP-1 alternative - For people who don't tolerate retatrutide well - **Rotation compound to maintain receptor sensitivity** ## Source - GLORY-1 Trial N",
+            "source_title": "Survodutide & Mazdutide (GLP-1/Glucagon Duo)",
+            "source_date": "2026-03-31",
+            "timestamp": null,
+            "source_url": "https://open.spotify.com/episode/2IADOstRyI6FrZlNHriPJB"
+          },
+          {
+            "snippet": "tolerate retatrutide well - **Rotation compound to maintain receptor sensitivity** ## Source - GLORY-1 Trial NEJM (Mazdutide Phase 3) - GLORY-2 Results (Mazdutide 9mg) - DREAMS-1 + DREAMS-2 (T2D, Natu",
+            "source_title": "Survodutide & Mazdutide (GLP-1/Glucagon Duo)",
+            "source_date": "2026-03-31",
+            "timestamp": null,
+            "source_url": "https://open.spotify.com/episode/2IADOstRyI6FrZlNHriPJB"
+          }
+        ],
+        "chronic_signals": [
+          {
+            "snippet": "cagon's glucose-raising effect - No increased risk of hyperglycemia in trials of either compound ## ⭐ Clinical Benefits ### Mazdutide (6 mg/wk) - **80% reduction in liver fat** in baseline hepatic ste",
+            "source_title": "Survodutide & Mazdutide (GLP-1/Glucagon Duo)",
+            "source_date": "2026-03-31",
+            "timestamp": null,
+            "source_url": "https://open.spotify.com/episode/2IADOstRyI6FrZlNHriPJB"
+          }
+        ]
+      }
+    }
+  },
+  "reset_biology_synthesis": {
+    "status": "pending-codex-distillation",
+    "recommendation": null,
+    "caveats": null,
+    "cross_expert_consensus": null,
+    "cross_expert_disagreement": null
+  },
+  "generated_at": "2026-04-27T02:02:35.013Z"
+}

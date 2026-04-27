@@ -1,0 +1,670 @@
+{
+  "peptide": "BPC-157",
+  "slug": "bpc-157",
+  "aliases": [
+    "BPC157",
+    "BPC 157",
+    "BPC-157",
+    "bpc157",
+    "bpc-157",
+    "bpc 157"
+  ],
+  "category": "Healing",
+  "experts": {
+    "hunter-williams": {
+      "baseline_protocol": {
+        "source": "Hunter Williams + Jay Campbell Cheat Sheet 2023",
+        "source_pdf": "data/peptide-libraries/cross-expert/cheat-sheets/hunter-williams-jay-campbell-peptide-cheat-sheet-2023.pdf",
+        "purpose": "Healing",
+        "vial_mg": "10 mg",
+        "bac_mL": "3 mL",
+        "dose": "250 mcg",
+        "units_on_1mL_insulin": "7.5",
+        "timing": "AM/PM",
+        "frequency": "Every day",
+        "duration": "8 weeks on, 8 weeks off"
+      },
+      "summary": {
+        "mention_count": 264,
+        "top_doses": [
+          {
+            "dose": "10 mg",
+            "count": 96
+          },
+          {
+            "dose": "50 mg",
+            "count": 36
+          },
+          {
+            "dose": "10 units",
+            "count": 26
+          },
+          {
+            "dose": "5 mg",
+            "count": 26
+          },
+          {
+            "dose": "70 mg",
+            "count": 25
+          },
+          {
+            "dose": "500 micrograms",
+            "count": 18
+          },
+          {
+            "dose": "6 mg",
+            "count": 10
+          },
+          {
+            "dose": "80 mg",
+            "count": 9
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "4igc2UpFr7Q",
+            "source_type": "podcast",
+            "source_title": "GLP-1 Stacks, HGH & Healing Protocols - Your Questions Answered | March 2026",
+            "source_date": "2026-04-03",
+            "source_url": "https://youtu.be/4igc2UpFr7Q",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-04-03-glp-1-stacks-hgh-healing-protocols-your-questions-answered-march-2026-4igc2UpFr7Q.en.vtt",
+            "mention_count": 18,
+            "top_snippet": "recovery. I started BPC-157 for hip bursitis and a",
+            "top_context": "suggesting more cancer risk. So, suggesting more cancer risk. So, uh that would be my opinion on that is uh that would be my opinion on that is uh that would be my opinion on that is um I just haven't seen it in practice, um I just haven't seen it in practice, um I just haven't seen it in practice, and to that point it's kind of like and to that point it's kind of like and to that point it's kind of like where the bodies, you know, like where where the bodies, you know, like where where the bodies, you know, like where the bodies that the bodies that the bodies that people are falling like flies from using people are falling like flies from using people are falling like flies from using HGH and having cancer. HGH and having cancer. HGH and having cancer. There you could run into other issues, There you could run into other issues, There you could run into other issues, obviously, with obviously, with obviously, with HGH and too high of a dose and then HGH and too high of a dose and then HGH and too high of a dose and then causing issues with anabolic steroid causing issues with anabolic steroid causing issues with anabolic steroid abuse, but for a replacement dose, abuse, but for a replacement dose, abuse, but for a replacement dose, you know, we just don't really see it you know, we just don't really see it you know, we just don't really see it from what I've seen. Let's move to some Let's move to some I've got a lot of categories, so I'm I've got a lot of categories, so I'm I've got a lot of categories, so I'm probably not going to get through all of probably not going to get through all of probably not going to get through all of these. Let's do some healing and injury Let's do some healing and injury recovery. recovery. recovery. I started BPC-157 for hip bursitis and a I started BPC-157 for hip bursitis and a I started BPC-157 for hip bursitis and a ligament tear and developed anhedonia on ligament tear and developed anhedonia on ligament tear and developed anhedonia on Wellbutrin daily. Was the BPC-157 the Wellbutrin daily. Was the BPC-157 the Wellbutrin daily. Was the BPC-157 the cause? Can I try it again, or should I cause? Can I try it again, or should I cause? Can I try it again, or should I just use TB-500 alone? Well, it is known just use TB-500 alone? Well, it is known just use TB-500 alone? Well, it is known that BPC-157 can affect dopamine that BPC-157 can affect dopamine that BPC-157 can affect dopamine regulation. Now, I don't know what the regulation. Now, I don't know what the regulation. Now, I don't know what the contraindication would be for someone on contraindication would be for someone on contraindication would be for someone on an SSRI like Wellbutrin, but it might an SSRI like Wellbutrin, but it might an SSRI like Wellbutrin, but it might not be well. If you if your dopamine is not be well. If you if your dopamine is not be well. If you if your dopamine is too low and serotonin might be higher, too low and serotonin might be higher, too low and serotonin might be higher, that could cause anhedonia. I'm not a that could cause anhedonia. I'm not a that could cause anhedonia. I'm not a neuroscientist, but that could that neuroscientist, but that could that neuroscientist, but that could that could potentially be it. So, I actually could potentially be it. So, I actually could potentially be it. So, I actually think um think um think um this is one of those cases where it's this is one of those cases where it's this is one of those cases where it's like it might be the peptide, or it like it might be the peptide, or it like it might be the peptide, or it could be the peptide with your unique could be the peptide with your unique could be the peptide with your unique neurochemistry with the psychotropic neurochemistry with the psychotropic neurochemistry with the psychotropic drug that you're combining with it. And drug that you're combining with it. And drug that you're combining with it. And in this case, I would say in this case, I would say in this case, I would say we have TB-500, we have cardarine, we",
+            "first_timestamp": "00:23:20.920"
+          },
+          {
+            "source_id": "1999788e1ce25670",
+            "source_type": "email",
+            "source_title": "Does Oral BPC-157 Work?",
+            "source_date": "2025-09-29",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-09-29-oral-bpc-157.md",
+            "mention_count": 15,
+            "top_snippet": "acidic environments - **Simulated gastric fluid:** - Plain BPC-157: degraded significantly over hours - **Arginate form: ~90% intact after 4 hours** - Arginine slightly increases hydrophobicity → more",
+            "top_context": "acidic environments - **Simulated gastric fluid:** - Plain BPC-157: degraded significantly over hours - **Arginate form: ~90% intact after 4 hours** - Arginine slightly increases hydrophobicity → more likely to cross intestinal wall - Patents specifically highlight arginate as way to make oral BPC-157 viable - **If oral BPC-157 has a chance to work, arginate is the best bet** ## Human Dose Extrapolation ### From rat dose - ~10 mcg/kg/day in rats - Body-surface-area-scaled human equivalent: **~1.6 mcg/kg/day** - 70 kg adult: ~**113 mcg/day** ### Pharmacokinetics-based recommendation - First PK",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "195b595300fd118e",
+            "source_type": "email",
+            "source_title": "Does BPC-157 Cause Cancer?",
+            "source_date": "2025-03-20",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-03-20-bpc-157-cancer-question.md",
+            "mention_count": 14,
+            "top_snippet": "# Does BPC-157 Cause Cancer? — Hunter's Deep Dive > \"Based on the studies we have, there is NO clear evidence that BPC-157 promotes tumor growth in practice. Some research even shows it might HELP in ",
+            "top_context": "# Does BPC-157 Cause Cancer? — Hunter's Deep Dive > \"Based on the studies we have, there is NO clear evidence that BPC-157 promotes tumor growth in practice. Some research even shows it might HELP in models where cancer is already present.\" ## What Is BPC-157 - \"Body Protection Compound-157\" - Synthetic fragme",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "1955e4a133c3e2ce",
+            "source_type": "email",
+            "source_title": "The Easy Way To Mix A Blended Peptide",
+            "source_date": "2025-03-03",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-03-03-the-easy-way-to-mix-a-blended-peptide.md",
+            "mention_count": 13,
+            "top_snippet": "most common questions I get from people new to peptides is how to reconstitute a blended peptide properly. I’ve answered this in numerous videos and emails, but for the sake of positive reinforcement,",
+            "top_context": "most common questions I get from people new to peptides is how to reconstitute a blended peptide properly. I’ve answered this in numerous videos and emails, but for the sake of positive reinforcement, let’s go over it again today. Just last week, someone asked me: ““Hunter, I just got a BPC-157/TB-500 blend (5mg/5mg), but I’m confused about reconstitution. Since there are two peptides in one vial, do I mix it the same way I would with a single peptide, or is there a different process? Can you break it down in a simple way?”“ — This is a great question, and if you’ve ever found yoursel",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "0TyW-wlJMxo",
+            "source_type": "podcast",
+            "source_title": "Saturday Morning Coffee Talk | Peptides, Hormones & Fitness for Couples 3/28/26",
+            "source_date": "2026-03-28",
+            "source_url": "https://youtu.be/0TyW-wlJMxo",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-03-28-saturday-morning-coffee-talk-peptides-hormones-fitness-for-couples-3-2-0TyW-wlJMxo.en.vtt",
+            "mention_count": 12,
+            "top_snippet": "email list, I sent out a survey for BPC-157.",
+            "top_context": "the dosing for VIP? We don't really the dosing for VIP? We don't really know, but let's let's try it let's try know, but let's let's try it let's try know, but let's let's try it let's try it and figure it out.\" And then, \"Oh my it and figure it out.\" And then, \"Oh my it and figure it out.\" And then, \"Oh my goodness, VIP helps heal gut issues. It goodness, VIP helps heal gut issues. It goodness, VIP helps heal gut issues. It helps heal autoimmune disease. It helps helps heal autoimmune disease. It helps helps heal autoimmune disease. It helps bring down nervous system tone and bring down nervous system tone and bring down nervous system tone and everything. Helps you enter into more of everything. Helps you enter into more of everything. Helps you enter into more of a parasympathetic state.\" And so the the a parasympathetic state.\" And so the the a parasympathetic state.\" And so the the compounders of the world, they're like, compounders of the world, they're like, compounders of the world, they're like, \"We want our money. We want our hundreds \"We want our money. We want our hundreds \"We want our money. We want our hundreds of millions of dollars. of millions of dollars. of millions of dollars. We're little old compounders. We're We're little old compounders. We're We're little old compounders. We're making hundreds of millions. Big pharma making hundreds of millions. Big pharma making hundreds of millions. Big pharma is making billions.\" And you have the is making billions.\" And you have the is making billions.\" And you have the research world that really just exists research world that really just exists research world that really just exists to fill a gap, fill a void, that gets to fill a gap, fill a void, that gets to fill a gap, fill a void, that gets the short end of the stick and they the short end of the stick and they the short end of the stick and they really have no representation. Nor do I really have no representation. Nor do I really have no representation. Nor do I think a lot of the research world really think a lot of the research world really think a lot of the research world really want representation because if they want representation because if they want representation because if they bring attention to themselves, bring attention to themselves, bring attention to themselves, everyone else is just going to try to everyone else is just going to try to everyone else is just going to try to make them look bad. And I admit that make them look bad. And I admit that make them look bad. And I admit that sucks. But anyway, one thing I was sucks. But anyway, one thing I was sucks. But anyway, one thing I was working on this week, if you're on my working on this week, if you're on my working on this week, if you're on my email list, I sent out a survey for email list, I sent out a survey for email list, I sent out a survey for BPC-157. BPC-157. BPC-157. And with some group of people, we're And with some group of people, we're And with some group of people, we're just working on bringing safety data just working on bringing safety data just working on bringing safety data around peptides. I think whatever around peptides. I think whatever around peptides. I think whatever spectrum you come at this, whatever side spectrum you come at this, whatever side spectrum you come at this, whatever side of the fence you come from, I think it's of the fence you come from, I think it's of the fence you come from, I think it's a good thing to say that we can have a good thing to say that we can have a good thing to say that we can have user crowd-sourced data around safety. user crowd-sourced data around safety. user crowd-sourced data around safety. Maybe not even efficacy so much as Maybe not even efficacy so much as Maybe not even efficacy so much as safety. Meaning that these are safe safety. Meaning that these are safe safety. Meaning that these are safe things. If we have a list of 10,000 things. If we have a list of 10,000 things. If we have a list of 10,000 people that have independently verified people that have independently verified people that have independently verified that they have taken something like that they have taken something like that they have taken something like BPC-157 safety safely, BPC-157 safety safely, BPC-157 safety safely, I don't know that they'll necessarily be I don't know that they'll necessarily be I don't know that they'll necessarily be able to shut down the research world. able to shut down the research world. able to shut down the research world. Yes, they may introduce it into the Yes, they may introduce it into the Yes, they may introduce it into the compounding world and have it have the compounding world and have it have the compounding world and have it have the ability to go through doctors. I just ability to go through doctors. I just ability to go through doctors. I just don't see the research world as being don't see the research world as being don't see the research world as being something that could necessarily be shut something that could necessarily be shut something that could necessarily be shut down. You can try to handicap it at the down. You can try to handicap it at the down. You can try to handicap it at the knees right now with payment processing",
+            "first_timestamp": "00:08:58.440"
+          },
+          {
+            "source_id": "198489a54128a775",
+            "source_type": "email",
+            "source_title": "1+1+1 = GLOW",
+            "source_date": "2025-07-26",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-07-26-1-1-1-glow.md",
+            "mention_count": 10,
+            "top_snippet": "ecause it sounds advanced or looks cool on paper. But honestly, that’s not good enough for me. Nor should it be for you. Not all peptide stacks are created equal. Some are great, but others, not so mu",
+            "top_context": "ecause it sounds advanced or looks cool on paper. But honestly, that’s not good enough for me. Nor should it be for you. Not all peptide stacks are created equal. Some are great, but others, not so much. When I get the same question over and over (“Hunter, why should I use a blend of BPC-157, TB-500, and GHK-Cu instead of just picking one?”), I know it’s time to break down the _real_ reasons you should consider using these _together_. Whether you’re an athlete coming back from an injury, a weekend warrior wanting to heal faster, or a high-achiever looking to bounce back from the gri",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "tFd00xrcwq4",
+            "source_type": "podcast",
+            "source_title": "Does BPC-157 Increase Cancer? The Answer #bpc157 #peptidetherapy #shorts",
+            "source_date": "2026-04-08",
+            "source_url": "https://youtu.be/tFd00xrcwq4",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-04-08-does-bpc-157-increase-cancer-the-answer-bpc157-peptidetherapy-shorts-tFd00xrcwq4.en.vtt",
+            "mention_count": 9,
+            "top_snippet": "concern because if you look at what peptides like BPC-157 do, peptides and",
+            "top_context": "One of the questions I get all the time One of the questions I get all the time is about whether peptides are going to is about whether peptides are going to is about whether peptides are going to stimulate pathways in the body that end stimulate pathways in the body that end stimulate pathways in the body that end up causing cancer. And it's a very real up causing cancer. And it's a very real up causing cancer. And it's a very real concern because if you look at what concern because if you look at what concern because if you look at what peptides like BPC-157 do, peptides and peptides like BPC-157 do, peptides and peptides like BPC-157 do, peptides and growth hormone releasing hormones like growth hormone releasing hormones like growth hormone releasing hormones like tesamorelin and ipamorelin, they're tesamorelin and ipamorelin, they're tesamorelin and ipamorelin, they're stimulating growth in the body. And a stimulating growth in the body. And a stimulating growth in the body. And a lot of people get concerned of, \"Okay, lot of people get concerned of, \"Okay, lot of people get concerned of, \"Okay, well, I'm creating this growth in the well, I'm creating this growth in the well, I'm creating this growth in the body. Is that eventually going to lead body. Is that eventually going to lead body. Is that eventually going to lead to cancer? Or if I maybe have undetected to cancer? Or if I maybe have undetected to cancer? Or if I maybe have undetected cancer, is that going to increase the cancer, is that going to increase the cancer, is that going to increase the risk of that undetected cancer growing?\" risk of that undetected cancer growing?\" risk of that undetected cancer growing?\" Well, ultimately I don't know. I think Well, ultimately I don't know. I think Well, ultimately I don't know. I think it's kind of like saying does getting in it's kind of like saying does getting in it's kind of like saying does getting in a car increase your risk of getting in a a car increase your risk of getting in a a car increase your risk of getting in a car crash? Well, obviously it does, but car crash? Well, obviously it does, but car crash? Well, obviously it does, but a lot of people go through their whole a lot of people go through their whole a lot of people go through their whole lives and they're relatively safe in a lives and they're relatively safe in a lives and they're relatively safe in a car. But I want to talk about two car. But I want to talk about two car. But I want to talk about two studies and I'm going to have my editor studies and I'm going to have my editor studies and I'm going to have my editor flash them on the screen. One is about flash them on the screen. One is about flash them on the screen. One is about BPC-157. BPC-157. BPC-157. It actually looked at lung cancer in It actually looked at lung cancer in It actually looked at lung cancer in mice. mice. mice. And interestingly enough, the BPC-157 And interestingly enough, the BPC-157 And interestingly enough, the BPC-157 did not Not only did it not increase",
+            "first_timestamp": "00:00:12.960"
+          },
+          {
+            "source_id": "19d2c2e386869c33",
+            "source_type": "email",
+            "source_title": "Your BPC-157 Experience Could Change FDA policy",
+            "source_date": "2026-03-26",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2026-03-26-peptide-safety-initiative-fda.md",
+            "mention_count": 9,
+            "top_snippet": "# The Peptide Safety Initiative — Real-World Evidence Push > \"FDA classified BPC-157 as Category 2 bulk drug substance in 2023. Their reasoning: insufficient evidence on whether it causes harm to huma",
+            "top_context": "# The Peptide Safety Initiative — Real-World Evidence Push > \"FDA classified BPC-157 as Category 2 bulk drug substance in 2023. Their reasoning: insufficient evidence on whether it causes harm to humans. But hundreds of thousands have used BPC-157 — most walked away with zero adverse events and a healed injury.\" ## The Strategic Gap ### What FDA sees - Razor-thin published clinic",
+            "first_timestamp": null
+          }
+        ],
+        "acute_signals": [
+          {
+            "snippet": "recovery. I started BPC-157 for hip bursitis and a",
+            "source_title": "GLP-1 Stacks, HGH & Healing Protocols - Your Questions Answered | March 2026",
+            "source_date": "2026-04-03",
+            "timestamp": "00:23:20.920",
+            "source_url": "https://youtu.be/4igc2UpFr7Q"
+          },
+          {
+            "snippet": "I started BPC-157 for hip bursitis and a",
+            "source_title": "GLP-1 Stacks, HGH & Healing Protocols - Your Questions Answered | March 2026",
+            "source_date": "2026-04-03",
+            "timestamp": "00:23:23.150",
+            "source_url": "https://youtu.be/4igc2UpFr7Q"
+          },
+          {
+            "snippet": "I started BPC-157 for hip bursitis and a ligament tear and developed anhedonia on",
+            "source_title": "GLP-1 Stacks, HGH & Healing Protocols - Your Questions Answered | March 2026",
+            "source_date": "2026-04-03",
+            "timestamp": "00:23:23.160",
+            "source_url": "https://youtu.be/4igc2UpFr7Q"
+          },
+          {
+            "snippet": "ligament tear and developed anhedonia on Wellbutrin daily. Was the BPC-157 the",
+            "source_title": "GLP-1 Stacks, HGH & Healing Protocols - Your Questions Answered | March 2026",
+            "source_date": "2026-04-03",
+            "timestamp": "00:23:25.200",
+            "source_url": "https://youtu.be/4igc2UpFr7Q"
+          },
+          {
+            "snippet": "Wellbutrin daily. Was the BPC-157 the",
+            "source_title": "GLP-1 Stacks, HGH & Healing Protocols - Your Questions Answered | March 2026",
+            "source_date": "2026-04-03",
+            "timestamp": "00:23:27.470",
+            "source_url": "https://youtu.be/4igc2UpFr7Q"
+          }
+        ],
+        "chronic_signals": [
+          {
+            "snippet": "even like some of the trans dermal like transermal BPC157 to drive more",
+            "source_title": "The Next Big Things in Biohacking | EMF, Peptides, and Superhuman Performance with Alex Kikel",
+            "source_date": "2026-03-20",
+            "timestamp": "02:45:32.560",
+            "source_url": "https://youtu.be/tYscWLLPkDE"
+          },
+          {
+            "snippet": "transermal BPC157 to drive more",
+            "source_title": "The Next Big Things in Biohacking | EMF, Peptides, and Superhuman Performance with Alex Kikel",
+            "source_date": "2026-03-20",
+            "timestamp": "02:45:35.030",
+            "source_url": "https://youtu.be/tYscWLLPkDE"
+          },
+          {
+            "snippet": "transermal BPC157 to drive more vascularization to the area.",
+            "source_title": "The Next Big Things in Biohacking | EMF, Peptides, and Superhuman Performance with Alex Kikel",
+            "source_date": "2026-03-20",
+            "timestamp": "02:45:35.040",
+            "source_url": "https://youtu.be/tYscWLLPkDE"
+          },
+          {
+            "snippet": "we're just talking in theory. We talked in theory, we would say that BPC-157",
+            "source_title": "Saturday Morning Coffee Talk | Peptides, Hormones & Fitness for Couples 3/28/26",
+            "source_date": "2026-03-28",
+            "timestamp": "02:12:50.240",
+            "source_url": "https://youtu.be/0TyW-wlJMxo"
+          },
+          {
+            "snippet": "recovery. I started BPC-157 for hip bursitis and a",
+            "source_title": "GLP-1 Stacks, HGH & Healing Protocols - Your Questions Answered | March 2026",
+            "source_date": "2026-04-03",
+            "timestamp": "00:23:20.920",
+            "source_url": "https://youtu.be/4igc2UpFr7Q"
+          }
+        ]
+      }
+    },
+    "taylor-williams": {
+      "summary": {
+        "mention_count": 164,
+        "top_doses": [
+          {
+            "dose": "250 micrograms",
+            "count": 67
+          },
+          {
+            "dose": "500 micrograms",
+            "count": 19
+          },
+          {
+            "dose": "100 milligrams",
+            "count": 11
+          },
+          {
+            "dose": "10 mg",
+            "count": 9
+          },
+          {
+            "dose": "3 mg",
+            "count": 9
+          },
+          {
+            "dose": "50 mg",
+            "count": 9
+          },
+          {
+            "dose": "10 units",
+            "count": 9
+          },
+          {
+            "dose": "100 milligram",
+            "count": 6
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "eWfRxGQ45jg",
+            "source_type": "podcast",
+            "source_title": "BPC-157 | Your Key to Recovery",
+            "source_date": "2024-08-13",
+            "source_url": "https://youtu.be/eWfRxGQ45jg",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2024-08-13-bpc-157-your-key-to-recovery-eWfRxGQ45jg.en.vtt",
+            "mention_count": 47,
+            "top_snippet": "discuss with you guys the peptide bpc 157 I'm going to share with you my",
+            "top_context": "[Music] [Music] Cy everyone welcome back to my channel Cy everyone welcome back to my channel Cy everyone welcome back to my channel and in today's video I'm going to and in today's video I'm going to and in today's video I'm going to discuss with you guys the peptide bpc discuss with you guys the peptide bpc discuss with you guys the peptide bpc 157 I'm going to share with you my 157 I'm going to share with you my 157 I'm going to share with you my thoughts my experiences and all the thoughts my experiences and all the thoughts my experiences and all the things you need to know about this things you need to know about this things you need to know about this peptide so but before we get into this peptide so but before we get into this peptide so but before we get into this don't forget to like And subscribe if don't forget to like And subscribe if don't forget to like And subscribe if you're new to my channel that way you you're new to my channel that way you you're new to my channel that way you get all the updates on the new video and get all the updates on the new video and get all the updates on the new video and content I have coming out also too if content I have coming out also too if content I have coming out also too if you are new and don't already know I you are new and don't already know I you are new and don't already know I have a women's peptide course where I have a women's peptide course where I have a women's peptide course where I have a full online self-based course have a full online self-based course have a full online self-based course where I teach women how to use peptides where I teach women how to use peptides where I teach women how to use peptides and and and also there where you can also find the also there where you can also find the also there where you can also find the women's peptide cheat sheet which is a women's peptide cheat sheet which is a women's peptide cheat sheet which is a great free downloadable peptide cheat great free downloadable peptide cheat great free downloadable peptide cheat sheet that I designed that way you guys sheet that I designed that way you guys sheet that I designed that way you guys know exactly what peptide what you're know exactly what peptide what you're know exactly what peptide what you're using it for how much um bacteria CTIC",
+            "first_timestamp": "00:00:15.320"
+          },
+          {
+            "source_id": "XyN5pku7hZM",
+            "source_type": "podcast",
+            "source_title": "Should You Use BPC-157 or TB500? Find Out Which is Right for You!",
+            "source_date": "2024-11-08",
+            "source_url": "https://youtu.be/XyN5pku7hZM",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2024-11-08-should-you-use-bpc-157-or-tb500-find-out-which-is-right-for-you-XyN5pku7hZM.en.vtt",
+            "mention_count": 43,
+            "top_snippet": "said today's video I'm going to be doing a comparison of te 500 and bpc 157 the",
+            "top_context": "[Music] [Music] C hey everyone welcome back to my C hey everyone welcome back to my C hey everyone welcome back to my channel if you're new here hi I'm Taylor channel if you're new here hi I'm Taylor channel if you're new here hi I'm Taylor I love teaching women how to use I love teaching women how to use I love teaching women how to use peptides how to build muscle and lose peptides how to build muscle and lose peptides how to build muscle and lose fat all at the same time how to optimize fat all at the same time how to optimize fat all at the same time how to optimize their hormones and just overall live a their hormones and just overall live a their hormones and just overall live a healthier lifestyle so with that being healthier lifestyle so with that being healthier lifestyle so with that being said today's video I'm going to be doing said today's video I'm going to be doing said today's video I'm going to be doing a comparison of te 500 and bpc 157 the a comparison of te 500 and bpc 157 the a comparison of te 500 and bpc 157 the benefits of using these together and benefits of using these together and benefits of using these together and separate and when to know when to pair separate and when to know when to pair separate and when to know when to pair them and when to know to take them them and when to know to take them them and when to know to take them separately so let's get into this separately so let's get into this separately so let's get into this video bpc 1259 and video bpc 1259 and video bpc 1259 and tb500 these are two very popular tb500 these are two very popular tb500 these are two very popular peptides that we hear people talk about peptides that we hear people talk about peptides that we hear people talk about so much and I wanted to share this with so much and I wanted to share this with so much and I wanted to share this with you guys on when to take them separate you guys on when to take them separate you guys on when to take them separate when to take them together what really when to take them together what really when to take them together what really is the difference between them is it is the difference between them is it is the difference between them is it beneficial to take them separately so beneficial to take them separately so beneficial to take them separately so these are great healing peptides these are great healing peptides these are great healing peptides especially in the fitness athlete especially in the fitness athlete especially in the fitness athlete recovery",
+            "first_timestamp": "00:00:28.199"
+          },
+          {
+            "source_id": "G27dIPBJUSs",
+            "source_type": "podcast",
+            "source_title": "Saturday Morning Coffee Talk 3/28/26",
+            "source_date": "2026-03-28",
+            "source_url": "https://youtu.be/G27dIPBJUSs",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2026-03-28-saturday-morning-coffee-talk-3-28-26-G27dIPBJUSs.en.vtt",
+            "mention_count": 18,
+            "top_snippet": "email list, I sent out a survey for BPC-157.",
+            "top_context": "the dosing for VIP? We don't really the dosing for VIP? We don't really know, but let's let's try it let's try know, but let's let's try it let's try know, but let's let's try it let's try it and figure it out.\" And then oh my it and figure it out.\" And then oh my it and figure it out.\" And then oh my goodness, VIP helps heal gut issues. It goodness, VIP helps heal gut issues. It goodness, VIP helps heal gut issues. It helps heal autoimmune disease. It helps helps heal autoimmune disease. It helps helps heal autoimmune disease. It helps bring down nervous system tone and bring down nervous system tone and bring down nervous system tone and everything. Helps you enter into more of everything. Helps you enter into more of everything. Helps you enter into more of a parasympathetic state. And so the the a parasympathetic state. And so the the a parasympathetic state. And so the the compounders of the world, they're like, compounders of the world, they're like, compounders of the world, they're like, \"We want our money. We want our hundreds \"We want our money. We want our hundreds \"We want our money. We want our hundreds of millions of dollars. of millions of dollars. of millions of dollars. We're little old compounders. We're We're little old compounders. We're We're little old compounders. We're making hundreds of millions. Big pharma making hundreds of millions. Big pharma making hundreds of millions. Big pharma is making billions.\" And you have the is making billions.\" And you have the is making billions.\" And you have the research world that really just exists research world that really just exists research world that really just exists to fill a gap, fill a void that gets the to fill a gap, fill a void that gets the to fill a gap, fill a void that gets the short end of the stick and they really short end of the stick and they really short end of the stick and they really have no representation. Nor do I think a have no representation. Nor do I think a have no representation. Nor do I think a lot of the research world really want lot of the research world really want lot of the research world really want representation because if they bring representation because if they bring representation because if they bring attention to themselves, attention to themselves, attention to themselves, everyone else is just going to try to everyone else is just going to try to everyone else is just going to try to make them look bad. And I admit that make them look bad. And I admit that make them look bad. And I admit that sucks. But anyway, one thing I was sucks. But anyway, one thing I was sucks. But anyway, one thing I was working on this week, if you're on my working on this week, if you're on my working on this week, if you're on my email list, I sent out a survey for email list, I sent out a survey for email list, I sent out a survey for BPC-157. BPC-157. BPC-157. And some group of people we're just And some group of people we're just And some group of people we're just working on bringing safety data around working on bringing safety data around working on bringing safety data around peptides. And I think whatever spectrum peptides. And I think whatever spectrum peptides. And I think whatever spectrum you come at this, whatever side of the you come at this, whatever side of the you come at this, whatever side of the fence you come from, I think it's a good fence you come from, I think it's a good fence you come from, I think it's a good thing to say that we can have user thing to say that we can have user thing to say that we can have user crowd-sourced data around safety. Maybe crowd-sourced data around safety. Maybe crowd-sourced data around safety. Maybe not even efficacy so much as safety. not even efficacy so much as safety. not even efficacy so much as safety. Meaning that these are safe things. If Meaning that these are safe things. If Meaning that these are safe things. If we have a list of 10,000 people that we have a list of 10,000 people that we have a list of 10,000 people that have independently verified that they have independently verified that they have independently verified that they have taken something like BPC-157 safety have taken something like BPC-157 safety have taken something like BPC-157 safety safely, safely, safely, I don't know that they'll necessarily be I don't know that they'll necessarily be I don't know that they'll necessarily be able to shut down the research world. able to shut down the research world. able to shut down the research world. Yes, they may introduce it into the Yes, they may introduce it into the Yes, they may introduce it into the compounding world and have it have the compounding world and have it have the compounding world and have it have the ability to go through doctors. I just ability to go through doctors. I just ability to go through doctors. I just don't see the research world as being don't see the research world as being don't see the research world as being something that could necessarily be shut something that could necessarily be shut something that could necessarily be shut down. You can try to handicap it at the down. You can try to handicap it at the down. You can try to handicap it at the knees right now with payment processing",
+            "first_timestamp": "00:08:58.440"
+          },
+          {
+            "source_id": "hjJPYEhOvAw",
+            "source_type": "podcast",
+            "source_title": "The Hashimotos Peptide Stack",
+            "source_date": "2024-06-04",
+            "source_url": "https://youtu.be/hjJPYEhOvAw",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2024-06-04-the-hashimotos-peptide-stack-hjJPYEhOvAw.en.vtt",
+            "mention_count": 10,
+            "top_snippet": "bpc 157 along with tb500 and I really love",
+            "top_context": "inflammation in the body inflammation in the body tremendously it's also going to be tremendously it's also going to be tremendously it's also going to be really great too if you are suffering really great too if you are suffering really great too if you are suffering from joint pain and gut and GI issues a from joint pain and gut and GI issues a from joint pain and gut and GI issues a lot of time with Hashimoto we do see a lot of time with Hashimoto we do see a lot of time with Hashimoto we do see a lot of inflammation in the joint lot of inflammation in the joint lot of inflammation in the joint swelling we have a lot of gut issues swelling we have a lot of gut issues swelling we have a lot of gut issues going on so this is why kpv is going to going on so this is why kpv is going to going on so this is why kpv is going to be really important and it cares very be really important and it cares very be really important and it cares very well with thymus and Alpha 1 um because well with thymus and Alpha 1 um because well with thymus and Alpha 1 um because again it's going to be working on the again it's going to be working on the again it's going to be working on the immune system it is going to help with immune system it is going to help with immune system it is going to help with um Bringing Down the inflammation in the um Bringing Down the inflammation in the um Bringing Down the inflammation in the body body body so also going to be a great stack so also going to be a great stack so also going to be a great stack together to add to this is going to be together to add to this is going to be together to add to this is going to be bpc bpc bpc 157 along with tb500 and I really love 157 along with tb500 and I really love 157 along with tb500 and I really love pairing these two peptides together pairing these two peptides together pairing these two peptides together because their healing properties are so because their healing properties are so because their healing properties are so powerful when they're together and also powerful when they're together and also powerful when they're together and also when they're separate um but because you when they're separate um but because you when they're separate um but because you know if you're dealing with haimoto you know if you're dealing with haimoto you know if you're dealing with haimoto you know your body is in a state where it know your body is in a state where it know your body is in a state where it really does need some healing properties really does need some healing properties really does need some healing properties and that is where um bpc 157 is going to and that is where um bpc 157 is going to and that is where um bpc 157 is going to be great because it's known for its be great because it's known for its be great because it's known for its recovery it's known to help with the recovery it's known to help with the recovery it's known to help with the healing process um it's also going to healing process um it's also going to healing process um it's also going to help with inflammatory issues as well so help with inflammatory issues as well so help with inflammatory issues as well so my suggestion is going to be doing the my suggestion is going to be doing the my suggestion is going to be doing the BPT bpc 157 along with tb500 td500 is",
+            "first_timestamp": "00:05:09.560"
+          },
+          {
+            "source_id": "sRcDkKFFBG0",
+            "source_type": "podcast",
+            "source_title": "The Best Peptides & Hormones for Postmenopausal Women",
+            "source_date": "2024-09-24",
+            "source_url": "https://youtu.be/sRcDkKFFBG0",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2024-09-24-the-best-peptides-hormones-for-postmenopausal-women-sRcDkKFFBG0.en.vtt",
+            "mention_count": 7,
+            "top_snippet": "bpc1 15 7 which is a great peptide bpc 157 does so much but the main thing that",
+            "top_context": "morning 8 weeks on 8 weeks off you can morning 8 weeks on 8 weeks off you can do this in the evening too um I like to do this in the evening too um I like to do this in the evening too um I like to do it in the morning just because I do do it in the morning just because I do do it in the morning just because I do feel like it kind of just if I'm using feel like it kind of just if I'm using feel like it kind of just if I'm using it for like any kind of injury benefit I it for like any kind of injury benefit I it for like any kind of injury benefit I just feel like I just feel the effects just feel like I just feel the effects just feel like I just feel the effects throughout the day like in my joints and throughout the day like in my joints and throughout the day like in my joints and in my muscles and whatnot so that's why in my muscles and whatnot so that's why in my muscles and whatnot so that's why I like to use it um in the morning but I like to use it um in the morning but I like to use it um in the morning but you you can use it in the evening too um you you can use it in the evening too um you you can use it in the evening too um so and then if you are using it so and then if you are using it so and then if you are using it topically which I have been topically which I have been topically which I have been experimenting with and that's been um experimenting with and that's been um experimenting with and that's been um really fun um if you're using it really fun um if you're using it really fun um if you're using it topically you can use this daily so um topically you can use this daily so um topically you can use this daily so um that is really great and then we have that is really great and then we have that is really great and then we have bpc1 15 7 which is a great peptide bpc bpc1 15 7 which is a great peptide bpc bpc1 15 7 which is a great peptide bpc 157 does so much but the main thing that 157 does so much but the main thing that 157 does so much but the main thing that bpc 157 is going to help with our bpc 157 is going to help with our bpc 157 is going to help with our postmenopausal ladies is that it's going postmenopausal ladies is that it's going postmenopausal ladies is that it's going to help reduce to help reduce to help reduce inflammation which is so important inflammation which is so important inflammation which is so important because as we age unfortunately the because as we age unfortunately the because as we age unfortunately the inflammation goes up so it's going to inflammation goes up so it's going to inflammation goes up so it's going to help reduce the inflammation in our help reduce the inflammation in our help reduce the inflammation in our joints in our muscles it's going to help joints in our muscles it's going to help joints in our muscles it's going to help with reducing the inflammation in our with reducing the inflammation in our with reducing the inflammation in our gut and gut and gut and as we age like you know I know a lot of as we age like you know I know a lot of as we age like you know I know a lot of wh women especially as they age is that wh women especially as they age is that wh women especially as they age is that like the gut takes a beating and a lot like the gut takes a beating and a lot like the gut takes a beating and a lot of it a lot of people don't realize is of it a lot of people don't realize is of it a lot of people don't realize is that as women you know we hold and carry that as women you know we hold and carry that as women you know we hold and carry a lot of a lot of our emotions and a lot of a lot of our emotions and a lot of a lot of our emotions and everything in because we have to just be",
+            "first_timestamp": "00:20:31.799"
+          },
+          {
+            "source_id": "zd2eGg-0-OI",
+            "source_type": "podcast",
+            "source_title": "GHK-Cu for Beauty and Healing | My Experience & Tips",
+            "source_date": "2024-04-16",
+            "source_url": "https://youtu.be/zd2eGg-0-OI",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2024-04-16-ghk-cu-for-beauty-and-healing-my-experience-tips-zd2eGg-0-OI.en.vtt",
+            "mention_count": 6,
+            "top_snippet": "gets bothered when taking um ghk if you also take bpc 157 with your ghk um a lot",
+            "top_context": "in to your recovery routine with your in to your recovery routine with your pep ties and if you're somebody who are pep ties and if you're somebody who are pep ties and if you're somebody who are just you're just wanting it for the just you're just wanting it for the just you're just wanting it for the beauty benefits it's great to do as well beauty benefits it's great to do as well beauty benefits it's great to do as well um now some of the things that um I get um now some of the things that um I get um now some of the things that um I get asked questions a lot with dhk is that asked questions a lot with dhk is that asked questions a lot with dhk is that some people say that it is painful to some people say that it is painful to some people say that it is painful to inject um you know I think everybody is inject um you know I think everybody is inject um you know I think everybody is just different um some people are going just different um some people are going just different um some people are going to have different reactions I person I to have different reactions I person I to have different reactions I person I personally I do not have any um any pain personally I do not have any um any pain personally I do not have any um any pain when injecting um when injecting um when injecting um ghk um I have some people that say that ghk um I have some people that say that ghk um I have some people that say that it does if it is something that does it does if it is something that does it does if it is something that does bother you if you are the person that bother you if you are the person that bother you if you are the person that gets bothered when taking um ghk if you gets bothered when taking um ghk if you gets bothered when taking um ghk if you also take bpc 157 with your ghk um a lot also take bpc 157 with your ghk um a lot also take bpc 157 with your ghk um a lot of people say that that actually helps of people say that that actually helps of people say that that actually helps um with any kind of pain with injecting um with any kind of pain with injecting um with any kind of pain with injecting it um but like I said everybody's it um but like I said everybody's it um but like I said everybody's different I don't want to scre you from different I don't want to scre you from different I don't want to scre you from using it it's a great peptide but if using it it's a great peptide but if using it it's a great peptide but if just a like just a little tip that if just a like just a little tip that if just a like just a little tip that if you are somebody that does get irritated you are somebody that does get irritated you are somebody that does get irritated by it um put a little bit of bpc 157 in by it um put a little bit of bpc 157 in by it um put a little bit of bpc 157 in with that peptide and that should with that peptide and that should with that peptide and that should hopefully help you if you're having any hopefully help you if you're having any hopefully help you if you're having any issues with it issues with it issues with it um so yeah that is kind um so yeah that is kind um so yeah that is kind of kind of the summary of why I like ghk",
+            "first_timestamp": "00:09:55.760"
+          },
+          {
+            "source_id": "SUZmM0nTPyw",
+            "source_type": "podcast",
+            "source_title": "Peptide Stacking SECRETS for Women Who Want RESULTS!",
+            "source_date": "2024-10-22",
+            "source_url": "https://youtu.be/SUZmM0nTPyw",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2024-10-22-peptide-stacking-secrets-for-women-who-want-results-SUZmM0nTPyw.en.vtt",
+            "mention_count": 6,
+            "top_snippet": "do and you can also pair a lot of these peptides together so we have bpc 157",
+            "top_context": "save my m see when I'm not on a glp1 so save my m see when I'm not on a glp1 so that's kind of how we can pair those off that's kind of how we can pair those off that's kind of how we can pair those off so it's just knowing which ones to take so it's just knowing which ones to take so it's just knowing which ones to take now would it hurt to take all of these now would it hurt to take all of these now would it hurt to take all of these again no but you're just not going to do again no but you're just not going to do again no but you're just not going to do yourself any benefit from doing that yourself any benefit from doing that yourself any benefit from doing that so that's kind of like how like to break so that's kind of like how like to break so that's kind of like how like to break down the difference of of the longevity down the difference of of the longevity down the difference of of the longevity mitochondria helping the mitochondria mitochondria helping the mitochondria mitochondria helping the mitochondria Health peptides so that's just another Health peptides so that's just another Health peptides so that's just another example so now we have an example of our example so now we have an example of our example so now we have an example of our healing peptides so these peptides are healing peptides so these peptides are healing peptides so these peptides are going to be the category for helping us going to be the category for helping us going to be the category for helping us with recovery healing is also going to with recovery healing is also going to with recovery healing is also going to help with inflammation so it's also help with inflammation so it's also help with inflammation so it's also knowing which one of these peptides to knowing which one of these peptides to knowing which one of these peptides to do and you can also pair a lot of these do and you can also pair a lot of these do and you can also pair a lot of these peptides together so we have bpc 157 peptides together so we have bpc 157 peptides together so we have bpc 157 which is an excellent peptide it's just which is an excellent peptide it's just which is an excellent peptide it's just like a really good like everybody can like a really good like everybody can like a really good like everybody can benefit from using this peptide is going benefit from using this peptide is going benefit from using this peptide is going to help with recovery time going faster to help with recovery time going faster to help with recovery time going faster is going to help with reducing is going to help with reducing is going to help with reducing inflammation and then we have tb500 inflammation and then we have tb500 inflammation and then we have tb500 which is going to help with muscle which is going to help with muscle which is going to help with muscle repair wound repair tissue um repair repair wound repair tissue um repair repair wound repair tissue um repair tissue recovery and flexibility within tissue recovery and flexibility within tissue recovery and flexibility within the tissues and then we have GH KCU or the tissues and then we have GH KCU or the tissues and then we have GH KCU or copper peptide which is going to be copper peptide which is going to be copper peptide which is going to be really beneficial for overall skin really beneficial for overall skin really beneficial for overall skin health so this is going to help with W health so this is going to help with W health so this is going to help with W like healing wounded skin it's also like healing wounded skin it's also like healing wounded skin it's also going to help with tissue because of the",
+            "first_timestamp": "00:11:15.440"
+          },
+          {
+            "source_id": "Cg7JtpnfRY4",
+            "source_type": "podcast",
+            "source_title": "Saturday Morning Coffee Talk 4/18/26",
+            "source_date": "2026-04-18",
+            "source_url": "https://youtu.be/Cg7JtpnfRY4",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2026-04-18-saturday-morning-coffee-talk-4-18-26-Cg7JtpnfRY4.en.vtt",
+            "mention_count": 6,
+            "top_snippet": "on the 28th of this month. What kind of protocol with BPC-157 would you",
+            "top_context": "normal person actually needs cuz it's normal person actually needs cuz it's designed for stroke and brain trauma. Also mentioned I eat 130 g of protein, Also mentioned I eat 130 g of protein, carbs 150 to 175, fat 60 to 75. Started carbs 150 to 175, fat 60 to 75. Started carbs 150 to 175, fat 60 to 75. Started Ipamorelin 3 weeks ago, 10 units at Ipamorelin 3 weeks ago, 10 units at Ipamorelin 3 weeks ago, 10 units at night, 5 days on, 2 days off. It's a night, 5 days on, 2 days off. It's a night, 5 days on, 2 days off. It's a good ratio, in my opinion. Um no, they good ratio, in my opinion. Um no, they good ratio, in my opinion. Um no, they were they were the ones asking about fat were they were the ones asking about fat were they were the ones asking about fat loss. They wanted to Oh, okay. loss. They wanted to Oh, okay. loss. They wanted to Oh, okay. &gt;&gt; teach spin class. I would actually cut &gt;&gt; teach spin class. I would actually cut &gt;&gt; teach spin class. I would actually cut those I would cut those fats down those I would cut those fats down those I would cut those fats down to 50. Yeah, for fat loss I'm probably to 50. Yeah, for fat loss I'm probably to 50. Yeah, for fat loss I'm probably up up up &gt;&gt; For fat loss I'd cut those down to 50. &gt;&gt; For fat loss I'd cut those down to 50. &gt;&gt; For fat loss I'd cut those down to 50. Um See how you do with that. If not, maybe See how you do with that. If not, maybe up the carbs or up the protein, I mean, up the carbs or up the protein, I mean, up the carbs or up the protein, I mean, a little bit. a little bit. a little bit. Getting surgery for a torn rotator cuff Getting surgery for a torn rotator cuff Getting surgery for a torn rotator cuff on the 28th of this month. What kind of on the 28th of this month. What kind of on the 28th of this month. What kind of protocol with BPC-157 would you protocol with BPC-157 would you protocol with BPC-157 would you recommend following? recommend following? recommend following? 500 micrograms a day of each. Yeah. 500 micrograms a day of each. Yeah. 500 micrograms a day of each. Yeah. &gt;&gt; Potentially two times per day. Yeah. &gt;&gt; Potentially two times per day. Yeah. &gt;&gt; Potentially two times per day. Yeah. &gt;&gt; If you wanted to. See, I told you. Robert says I put See, I told you. Robert says I put put your videos on at night to go to put your videos on at night to go to put your videos on at night to go to sleep. Thank you. There you go. sleep. Thank you. There you go. sleep. Thank you. There you go. Best peptide for sleep. Best peptide for sleep. Best peptide for sleep. Turn on my videos. Turn on my videos. Turn on my videos. My son is 15 years old and his x-ray My son is 15 years old and his x-ray My son is 15 years old and his x-ray growth plates are almost closed. I growth plates are almost closed. I growth plates are almost closed. I wanted to stimulate growth before they wanted to stimulate growth before they wanted to stimulate growth before they close. Dr. Brazil use HGH with teens. close. Dr. Brazil use HGH with teens. close. Dr. Brazil use HGH with teens. What do you think of MK-677 and or GH What do you think of MK-677 and or GH What do you think of MK-677 and or GH peptides? peptides? peptides? Um no comment. Um no comment. Um no comment. Because I'm not going to talk about Because I'm not going to talk about Because I'm not going to talk about teens, but you could probably teens, but you could probably teens, but you could probably if you ask yourself what would we say? if you ask yourself what would we say? if you ask yourself what would we say? What do you think we would say? What do you think we would say? What do you think we would say? And that will probably lead you to where",
+            "first_timestamp": "01:51:07.480"
+          }
+        ],
+        "acute_signals": [
+          {
+            "snippet": "um bpc 157 um but I'm just going to be talking",
+            "source_title": "TB - 500 | How I Used It To Help Heal My Injuries",
+            "source_date": "2024-05-07",
+            "timestamp": "00:01:09.280",
+            "source_url": "https://youtu.be/oA6ZwwDtxME"
+          },
+          {
+            "snippet": "so that is um one of the benefits that you're going to get is that bpc 157 is",
+            "source_title": "BPC-157 | Your Key to Recovery",
+            "source_date": "2024-08-13",
+            "timestamp": "00:06:29.599",
+            "source_url": "https://youtu.be/eWfRxGQ45jg"
+          },
+          {
+            "snippet": "you're going to get is that bpc 157 is",
+            "source_title": "BPC-157 | Your Key to Recovery",
+            "source_date": "2024-08-13",
+            "timestamp": "00:06:31.749",
+            "source_url": "https://youtu.be/eWfRxGQ45jg"
+          },
+          {
+            "snippet": "you're going to get is that bpc 157 is going to help with your gut health um",
+            "source_title": "BPC-157 | Your Key to Recovery",
+            "source_date": "2024-08-13",
+            "timestamp": "00:06:31.759",
+            "source_url": "https://youtu.be/eWfRxGQ45jg"
+          },
+          {
+            "snippet": "the other benefit that you're going to get with bpc 157 is that is going to",
+            "source_title": "BPC-157 | Your Key to Recovery",
+            "source_date": "2024-08-13",
+            "timestamp": "00:06:36.599",
+            "source_url": "https://youtu.be/eWfRxGQ45jg"
+          }
+        ],
+        "chronic_signals": [
+          {
+            "snippet": "and that is where um bpc 157 is going to",
+            "source_title": "The Hashimotos Peptide Stack",
+            "source_date": "2024-06-04",
+            "timestamp": "00:05:37.029",
+            "source_url": "https://youtu.be/hjJPYEhOvAw"
+          },
+          {
+            "snippet": "and that is where um bpc 157 is going to be great because it's known for its",
+            "source_title": "The Hashimotos Peptide Stack",
+            "source_date": "2024-06-04",
+            "timestamp": "00:05:37.039",
+            "source_url": "https://youtu.be/hjJPYEhOvAw"
+          },
+          {
+            "snippet": "my suggestion is going to be doing the BPT bpc 157 along with tb500 td500 is",
+            "source_title": "The Hashimotos Peptide Stack",
+            "source_date": "2024-06-04",
+            "timestamp": "00:05:49.319",
+            "source_url": "https://youtu.be/hjJPYEhOvAw"
+          },
+          {
+            "snippet": "BPT bpc 157 along with tb500 td500 is",
+            "source_title": "The Hashimotos Peptide Stack",
+            "source_date": "2024-06-04",
+            "timestamp": "00:05:55.150",
+            "source_url": "https://youtu.be/hjJPYEhOvAw"
+          },
+          {
+            "snippet": "BPT bpc 157 along with tb500 td500 is going to help with muscle repairing um",
+            "source_title": "The Hashimotos Peptide Stack",
+            "source_date": "2024-06-04",
+            "timestamp": "00:05:55.160",
+            "source_url": "https://youtu.be/hjJPYEhOvAw"
+          }
+        ]
+      },
+      "female_specific_note": "Taylor Williams Coaching focuses on female-specific HRT/peptide guidance. Per-peptide notes here often emphasize female dosing, fertility, hormone interactions."
+    },
+    "trevor-bachmeyer": {
+      "summary": {
+        "mention_count": 806,
+        "top_doses": [
+          {
+            "dose": "500 micrograms",
+            "count": 66
+          },
+          {
+            "dose": "83 milligram",
+            "count": 30
+          },
+          {
+            "dose": "500 milligrams",
+            "count": 21
+          },
+          {
+            "dose": "2 milligrams",
+            "count": 20
+          },
+          {
+            "dose": "000 microgram",
+            "count": 18
+          },
+          {
+            "dose": "000 micrograms",
+            "count": 15
+          },
+          {
+            "dose": "1 milligram",
+            "count": 12
+          },
+          {
+            "dose": "200 micrograms",
+            "count": 12
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "LPeTrmJI380",
+            "source_type": "podcast",
+            "source_title": "BPC-157 As A Forever Peptide - Dr Trevor Bachmeyer",
+            "source_date": "2026-02-24",
+            "source_url": "https://youtu.be/LPeTrmJI380",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2026-02-24-bpc-157-as-a-forever-peptide-dr-trevor-bachmeyer-LPeTrmJI380.en.vtt",
+            "mention_count": 135,
+            "top_snippet": "give you an answer. So this is about BPC157",
+            "top_context": "caffeine next to me. And I don't know if caffeine next to me. And I don't know if you can see it right there. Let's see. I you can see it right there. Let's see. I you can see it right there. Let's see. I can't even say it. Like, this is a world can't even say it. Like, this is a world can't even say it. Like, this is a world we live in. I can't even talk about we live in. I can't even talk about we live in. I can't even talk about things. This is because heaven forbid I things. This is because heaven forbid I things. This is because heaven forbid I give somebody an answer that solves give somebody an answer that solves give somebody an answer that solves their problem. Anyway, that's what's on their problem. Anyway, that's what's on their problem. Anyway, that's what's on me. Full seven. My allergies have been me. Full seven. My allergies have been me. Full seven. My allergies have been crazy lately. And you know what? I've crazy lately. And you know what? I've crazy lately. And you know what? I've noticed that changed it like this. Wild. noticed that changed it like this. Wild. noticed that changed it like this. Wild. Almost 20 minutes and lasts all day. Why Almost 20 minutes and lasts all day. Why Almost 20 minutes and lasts all day. Why would you not do that? But hey, you guys would you not do that? But hey, you guys would you not do that? But hey, you guys keep taking your antihistamines and keep taking your antihistamines and keep taking your antihistamines and thinking that they are helping you. I thinking that they are helping you. I thinking that they are helping you. I should do a podcast. You guys want me to should do a podcast. You guys want me to should do a podcast. You guys want me to do a podcast on allergies and how to do a podcast on allergies and how to do a podcast on allergies and how to relieve them because I've done it for relieve them because I've done it for relieve them because I've done it for probably 10,000 people. And you know probably 10,000 people. And you know probably 10,000 people. And you know what's wild, you guys, is I love you what's wild, you guys, is I love you what's wild, you guys, is I love you enough to tell you the truth and then to enough to tell you the truth and then to enough to tell you the truth and then to give it to you for free, right? Like I'm give it to you for free, right? Like I'm give it to you for free, right? Like I'm not here to sell you anything. I'm not not here to sell you anything. I'm not not here to sell you anything. I'm not here to market to you. I'm not here to here to market to you. I'm not here to here to market to you. I'm not here to get you to buy my stuff. I just want to get you to buy my stuff. I just want to get you to buy my stuff. I just want to give you an answer. So this is about give you an answer. So this is about give you an answer. So this is about BPC157 BPC157 BPC157 and whether or not you should take it and whether or not you should take it and whether or not you should take it forever. and how it makes your life better. And and how it makes your life better. And any information that you think BPC does any information that you think BPC does any information that you think BPC does or doesn't is going to get answered on or doesn't is going to get answered on or doesn't is going to get answered on this with facts and biology and this with facts and biology and this with facts and biology and physiology and chemistry and physiology and chemistry and physiology and chemistry and biochemistry, all the things that you biochemistry, all the things that you biochemistry, all the things that you guys need to know so you can make an guys need to know so you can make an guys need to know so you can make an educated decision about whatever it is educated decision about whatever it is educated decision about whatever it is you're going to put in your body. And you're going to put in your body. And you're going to put in your body. And whether or not you buy from Elite whether or not you buy from Elite whether or not you buy from Elite Biogenics, yes, it is my company. Yes, I Biogenics, yes, it is my company. Yes, I Biogenics, yes, it is my company. Yes, I am the CEO. Yes, my wife and I work very am the CEO. Yes, my wife and I work very am the CEO. Yes, my wife and I work very hard. my my little brother Sean, we put hard. my my little brother Sean, we put hard. my my little brother Sean, we put this together all the time and we break this together all the time and we break this together all the time and we break our fingers for it. And the only thing our fingers for it. And the only thing our fingers for it. And the only thing that goes out of our lab and our that goes out of our lab and our that goes out of our lab and our warehouses are things that we would give",
+            "first_timestamp": "00:00:49.360"
+          },
+          {
+            "source_id": "Ug_nx7Z9R7I",
+            "source_type": "podcast",
+            "source_title": "BPC157 and Longevity (and why it terrifies big pharma) - Dr Trevor Bachmeyer",
+            "source_date": "2026-01-24",
+            "source_url": "https://youtu.be/Ug_nx7Z9R7I",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2026-01-24-bpc157-and-longevity-and-why-it-terrifies-big-pharma-dr-trevor-bachmey-Ug_nx7Z9R7I.en.vtt",
+            "mention_count": 87,
+            "top_snippet": "ultimate longevity peptide, I would say BPC-157. And the more I go down the",
+            "top_context": "So, it is it's date night. Actually, So, it is it's date night. Actually, it's quarter to 5 and I'm going to knock it's quarter to 5 and I'm going to knock it's quarter to 5 and I'm going to knock this out real quick and then I'm going this out real quick and then I'm going this out real quick and then I'm going to go hang out with my wife. But I to go hang out with my wife. But I to go hang out with my wife. But I started thinking I've seen all these started thinking I've seen all these started thinking I've seen all these posts about BPC and BPC57 and most posts about BPC and BPC57 and most posts about BPC and BPC57 and most people are getting it wrong. They call people are getting it wrong. They call people are getting it wrong. They call it a healing peptide. It does so much it a healing peptide. It does so much it a healing peptide. It does so much more than that. So much more. If I had to give you the So much more. If I had to give you the ultimate longevity peptide, I would say ultimate longevity peptide, I would say ultimate longevity peptide, I would say BPC-157. And the more I go down the BPC-157. And the more I go down the BPC-157. And the more I go down the rabbit hole, the more he smokes, this rabbit hole, the more he smokes, this rabbit hole, the more he smokes, this stuff is incredible. Just from a stuff is incredible. Just from a stuff is incredible. Just from a biochemistry standpoint and then a human biochemistry standpoint and then a human biochemistry standpoint and then a human biology standpoint, it's it'll change biology standpoint, it's it'll change biology standpoint, it's it'll change your life. And that's the reason why your life. And that's the reason why your life. And that's the reason why like big pharma is terrified. No matter like big pharma is terrified. No matter like big pharma is terrified. No matter what you think, no matter what kind of what you think, no matter what kind of what you think, no matter what kind of stuff you want to try and sell me on or stuff you want to try and sell me on or stuff you want to try and sell me on or talk about or argue with me, please talk about or argue with me, please talk about or argue with me, please don't. Just please stop arguing in my don't. Just please stop arguing in my don't. Just please stop arguing in my comments with me. I just don't read comments with me. I just don't read comments with me. I just don't read them. So, I just don't care. Maybe make them. So, I just don't care. Maybe make them. So, I just don't care. Maybe make yourself feel better because you still yourself feel better because you still yourself feel better because you still live at home with your mom. I don't live at home with your mom. I don't live at home with your mom. I don't know. I don't know. I just I don't know. I don't know. I just I don't know. I don't know. I just I don't really know what to say. I'm a I'm a really know what to say. I'm a I'm a really know what to say. I'm a I'm a doctor that comes out here because I doctor that comes out here because I doctor that comes out here because I care and that's it. You do what you want care and that's it. You do what you want care and that's it. You do what you want to do with this. I don't really know to do with this. I don't really know to do with this. I don't really know what you want to do with it. But if it's what you want to do with it. But if it's what you want to do with it. But if it's to come on and argue, you have a to come on and argue, you have a to come on and argue, you have a self-worth problem and you've got none. self-worth problem and you've got none. self-worth problem and you've got none. But BPC 157 has big pharma so terrified. But BPC 157 has big pharma so terrified. But BPC 157 has big pharma so terrified. And why do you think they're trying to And why do you think they're trying to And why do you think they're trying to take it off the market? Listen, you",
+            "first_timestamp": "00:00:30.160"
+          },
+          {
+            "source_id": "O_hbAtgMSE8",
+            "source_type": "podcast",
+            "source_title": "BPC157 Does Everything - Dr Trevor Bachmeyer",
+            "source_date": "2025-12-27",
+            "source_url": "https://youtu.be/O_hbAtgMSE8",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2025-12-27-bpc157-does-everything-dr-trevor-bachmeyer-O_hbAtgMSE8.en.vtt",
+            "mention_count": 36,
+            "top_snippet": "All right. How about a playbook on BPC157",
+            "top_context": "All right. How about a playbook on All right. How about a playbook on BPC157 BPC157 BPC157 and the whole thing? You guys ask me for and the whole thing? You guys ask me for and the whole thing? You guys ask me for it and believe me, I do try and it and believe me, I do try and it and believe me, I do try and accommodate a lot of the questions you accommodate a lot of the questions you accommodate a lot of the questions you guys ask me. I want you guys to have the guys ask me. I want you guys to have the guys ask me. I want you guys to have the information. I want you guys to have the information. I want you guys to have the information. I want you guys to have the answers. I want you guys to have all the answers. I want you guys to have all the answers. I want you guys to have all the solutions that are going to help you solutions that are going to help you solutions that are going to help you build the juggernaut body so you can go build the juggernaut body so you can go build the juggernaut body so you can go out and do the things you want in life. Instead of worry about the injuries and Instead of worry about the injuries and repairing the system all the time, I repairing the system all the time, I repairing the system all the time, I want you to actually use the freaking want you to actually use the freaking want you to actually use the freaking system. You have this machine that system. You have this machine that system. You have this machine that you're born with. It is a juggernaut the you're born with. It is a juggernaut the you're born with. It is a juggernaut the day you're born. And what ends up day you're born. And what ends up day you're born. And what ends up happening is people beat it up and then happening is people beat it up and then happening is people beat it up and then doctors follow up and add insult to doctors follow up and add insult to doctors follow up and add insult to injury and give you treatments that injury and give you treatments that injury and give you treatments that don't matter, don't do anything, and don't matter, don't do anything, and don't matter, don't do anything, and actually cause further damage, creating",
+            "first_timestamp": "00:00:02.159"
+          },
+          {
+            "source_id": "nRi9GqTfGqY",
+            "source_type": "podcast",
+            "source_title": "I Take This Peptide Every Day No Matter What - Unbreakable Podcast 285",
+            "source_date": "2025-10-17",
+            "source_url": "https://youtu.be/nRi9GqTfGqY",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2025-10-17-i-take-this-peptide-every-day-no-matter-what-unbreakable-podcast-285-nRi9GqTfGqY.en.vtt",
+            "mention_count": 33,
+            "top_snippet": "And the enemy is all the problems in your body. BPC-157 body protection",
+            "top_context": "a doctor for well over two decades. And a doctor for well over two decades. And I give this stuff away so people are I give this stuff away so people are I give this stuff away so people are healthy. You want to see me, come see me healthy. You want to see me, come see me healthy. You want to see me, come see me when there's a real problem or you need when there's a real problem or you need when there's a real problem or you need knowledge. But you don't need to rely on knowledge. But you don't need to rely on knowledge. But you don't need to rely on me for the rest of your life. That's a me for the rest of your life. That's a me for the rest of your life. That's a that's the most ridiculous health model that's the most ridiculous health model that's the most ridiculous health model on the planet. BPC57 will change so many on the planet. BPC57 will change so many on the planet. BPC57 will change so many things in your life. And you have to things in your life. And you have to things in your life. And you have to understand that if you aren't doing the understand that if you aren't doing the understand that if you aren't doing the things to make yourself into a things to make yourself into a things to make yourself into a juggernaut, you have officially and juggernaut, you have officially and juggernaut, you have officially and permanently wasted the most valuable permanently wasted the most valuable permanently wasted the most valuable asset that you've got here on this asset that you've got here on this asset that you've got here on this planet. Your [&nbsp;__&nbsp;] planet. Your [&nbsp;__&nbsp;] planet. Your [&nbsp;__&nbsp;] time. Listen, I've been inches from time. Listen, I've been inches from time. Listen, I've been inches from death. I come out here because I don't death. I come out here because I don't death. I come out here because I don't want that to happen to you. Then this want that to happen to you. Then this want that to happen to you. Then this isn't a sales pitch. This is a like isn't a sales pitch. This is a like isn't a sales pitch. This is a like cellular warfare and I'm giving you all cellular warfare and I'm giving you all cellular warfare and I'm giving you all the tools so you can wipe out the enemy. the tools so you can wipe out the enemy. the tools so you can wipe out the enemy. And the enemy is all the problems in And the enemy is all the problems in And the enemy is all the problems in your body. BPC-157 body protection your body. BPC-157 body protection your body. BPC-157 body protection compound. It's a 15 amino uh 15 amino compound. It's a 15 amino uh 15 amino compound. It's a 15 amino uh 15 amino acid peptide. It sounds all fancy. It's acid peptide. It sounds all fancy. It's acid peptide. It sounds all fancy. It's not. It is. It is just you. It is. It is not. It is. It is just you. It is. It is not. It is. It is just you. It is. It is genetic code written into your own damn genetic code written into your own damn genetic code written into your own damn DNA. It's expressed in the gastric DNA. It's expressed in the gastric DNA. It's expressed in the gastric juices of your stomach. Your stomach. juices of your stomach. Your stomach. juices of your stomach. Your stomach. And listen, before you go, well, yeah, And listen, before you go, well, yeah, And listen, before you go, well, yeah, that's why you can take it orally. No, that's why you can take it orally. No, that's why you can take it orally. No, you can't. That's the great irony. You you can't. That's the great irony. You you can't. That's the great irony. You go ahead, take it orally. I'm going to go ahead, take it orally. I'm going to go ahead, take it orally. I'm going to tell you, if you get in my comments and tell you, if you get in my comments and tell you, if you get in my comments and you start yapping about how oral works you start yapping about how oral works you start yapping about how oral works for you, I want you to come to my house for you, I want you to come to my house for you, I want you to come to my house so I can put you on the mat, put you to so I can put you on the mat, put you to so I can put you on the mat, put you to sleep, and then punch you in the face. sleep, and then punch you in the face. sleep, and then punch you in the face. That is the most ridiculous thing in the That is the most ridiculous thing in the That is the most ridiculous thing in the world to say. If you understand world to say. If you understand world to say. If you understand physiology and if you understand physiology and if you understand physiology and if you understand gastroenterology, it does not work. gastroenterology, it does not work. gastroenterology, it does not work. Endocrinology, biochemistry, all of it. Endocrinology, biochemistry, all of it. Endocrinology, biochemistry, all of it. The how your liver works, how it doesn't The how your liver works, how it doesn't The how your liver works, how it doesn't work. You guys are you aggravate me",
+            "first_timestamp": "00:04:37.199"
+          },
+          {
+            "source_id": "jD6S-RfYZhY",
+            "source_type": "podcast",
+            "source_title": "The FDA War Against Peptides and The Facts - Dr Trevor Bachmeyer",
+            "source_date": "2026-02-13",
+            "source_url": "https://youtu.be/jD6S-RfYZhY",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2026-02-13-the-fda-war-against-peptides-and-the-facts-dr-trevor-bachmeyer-jD6S-RfYZhY.en.vtt",
+            "mention_count": 25,
+            "top_snippet": "this knucklehead on social media is attacking. BPC 157, body protection",
+            "top_context": "GI mucosa, maintaining renal blood flow, GI mucosa, maintaining renal blood flow, kidneys, and regulating immune kidneys, and regulating immune kidneys, and regulating immune functions. Just destroyed all of that. functions. Just destroyed all of that. functions. Just destroyed all of that. Don't worry. I'm going to touch on this Don't worry. I'm going to touch on this Don't worry. I'm going to touch on this because you guys are going to go, \"Wait because you guys are going to go, \"Wait because you guys are going to go, \"Wait a minute. I take an Advil every day a minute. I take an Advil every day a minute. I take an Advil every day before I work out.\" You're not going to before I work out.\" You're not going to before I work out.\" You're not going to live very long if you do that. The live very long if you do that. The live very long if you do that. The pattern is always the same. Take pattern is always the same. Take pattern is always the same. Take something your body needs, block it, something your body needs, block it, something your body needs, block it, watch one symptom improve while 10 watch one symptom improve while 10 watch one symptom improve while 10 others develop. Trying to maintain others develop. Trying to maintain others develop. Trying to maintain composure because this pisses me off. composure because this pisses me off. composure because this pisses me off. I've lost people that I love dearly I've lost people that I love dearly I've lost people that I love dearly because they've taken medications and because they've taken medications and because they've taken medications and they've died because of it. Just compare they've died because of it. Just compare they've died because of it. Just compare this to how peptides actually work for this to how peptides actually work for this to how peptides actually work for all the muppets out there arguing all the muppets out there arguing all the muppets out there arguing against peptides. Peptide, short chain against peptides. Peptide, short chain against peptides. Peptide, short chain of amino acids, biological molecule, the of amino acids, biological molecule, the of amino acids, biological molecule, the way your body communicates with itself. way your body communicates with itself. way your body communicates with itself. When you introduce it into your system, When you introduce it into your system, When you introduce it into your system, it's not trying to block a damn thing. it's not trying to block a damn thing. it's not trying to block a damn thing. It's trying to restore biological It's trying to restore biological It's trying to restore biological function that's degraded. And it's using function that's degraded. And it's using function that's degraded. And it's using a signal that your body already knows. a signal that your body already knows. a signal that your body already knows. How about we use one that everybody How about we use one that everybody How about we use one that everybody this knucklehead on social media is this knucklehead on social media is this knucklehead on social media is attacking. BPC 157, body protection attacking. BPC 157, body protection attacking. BPC 157, body protection compound 157. Your body naturally compound 157. Your body naturally compound 157. Your body naturally produces small amounts of BP 157 in your produces small amounts of BP 157 in your produces small amounts of BP 157 in your gastric juices. No, it cannot be taken gastric juices. No, it cannot be taken gastric juices. No, it cannot be taken orally. I'm tired of everybody asking me orally. I'm tired of everybody asking me orally. I'm tired of everybody asking me that. No, it can't. I've already gone that. No, it can't. I've already gone that. No, it can't. I've already gone over the mechanism and why. Regenerates over the mechanism and why. Regenerates over the mechanism and why. Regenerates damaged gastric mucosa. Let's just go damaged gastric mucosa. Let's just go damaged gastric mucosa. Let's just go through this line by line. Restores through this line by line. Restores through this line by line. Restores tight junctions in your intestinal tight junctions in your intestinal tight junctions in your intestinal lining. You need those. Promotes lining. You need those. Promotes lining. You need those. Promotes angiogenesis, which is new blood flow angiogenesis, which is new blood flow angiogenesis, which is new blood flow formation in damaged tissues. Reduces formation in damaged tissues. Reduces formation in damaged tissues. Reduces inflammatory cytokines, you know, alpha inflammatory cytokines, you know, alpha inflammatory cytokines, you know, alpha alpha, IL-6, IL-1 beta that cause Oh, alpha, IL-6, IL-1 beta that cause Oh, alpha, IL-6, IL-1 beta that cause Oh, they're pretty much the basis of 95% of they're pretty much the basis of 95% of they're pretty much the basis of 95% of all chronic disease. Enhances growth all chronic disease. Enhances growth all chronic disease. Enhances growth hormone secretion and makes you hormone secretion and makes you hormone secretion and makes you violently sensitive to IGF-1. Improves violently sensitive to IGF-1. Improves violently sensitive to IGF-1. Improves wound healing. I could do this all day, wound healing. I could do this all day, wound healing. I could do this all day, but yet there's not And that's the but yet there's not And that's the but yet there's not And that's the problem? So, if you have IBS, irritable problem? So, if you have IBS, irritable problem? So, if you have IBS, irritable bowel syndrome, leaky gut, or a duodenal bowel syndrome, leaky gut, or a duodenal bowel syndrome, leaky gut, or a duodenal ulcer, these are fundamentally problems ulcer, these are fundamentally problems ulcer, these are fundamentally problems of mucosal degradation and barrier",
+            "first_timestamp": "00:15:21.760"
+          },
+          {
+            "source_id": "q6zqwmvTN8Y",
+            "source_type": "podcast",
+            "source_title": "Fully Reverse Heart Disease? LFG Unbreakable Podcast 196",
+            "source_date": "2025-07-16",
+            "source_url": "https://youtu.be/q6zqwmvTN8Y",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2025-07-16-fully-reverse-heart-disease-lfg-unbreakable-podcast-196-q6zqwmvTN8Y.en.vtt",
+            "mention_count": 24,
+            "top_snippet": "run and heal and do its job. Then you get BPC157.",
+            "top_context": "It just It's dangerous as [&nbsp;__&nbsp;] It just It's dangerous as [&nbsp;__&nbsp;] TB500 is TB500 is TB500 is like a tactical precision repair like a tactical precision repair like a tactical precision repair molecule. It boosts which is a molecule. It boosts which is a molecule. It boosts which is a structural protein that helps cells structural protein that helps cells structural protein that helps cells migrate to where they need to and migrate to where they need to and migrate to where they need to and rebuild all the damaged tissue. And then rebuild all the damaged tissue. And then rebuild all the damaged tissue. And then it promotes something called it promotes something called it promotes something called angioenesis. Angioenesis is the creation angioenesis. Angioenesis is the creation angioenesis. Angioenesis is the creation of new blood vessels. Better blood flow, of new blood vessels. Better blood flow, of new blood vessels. Better blood flow, better oxygen delivery, better healing. better oxygen delivery, better healing. better oxygen delivery, better healing. You know what's even better? It even You know what's even better? It even You know what's even better? It even helps reverse fibrosis. This scarring helps reverse fibrosis. This scarring helps reverse fibrosis. This scarring that stiffens up your heart over time, that stiffens up your heart over time, that stiffens up your heart over time, even athletes heart. Listen, you end up even athletes heart. Listen, you end up even athletes heart. Listen, you end up because of this one thing we're too deep because of this one thing we're too deep because of this one thing we're too deep and TB500. You end up with flexible and TB500. You end up with flexible and TB500. You end up with flexible cardiac tissue, improved oxygenation, cardiac tissue, improved oxygenation, cardiac tissue, improved oxygenation, and a vascular system that can actually and a vascular system that can actually and a vascular system that can actually run and heal and do its job. run and heal and do its job. run and heal and do its job. Then you get BPC157. Then you get BPC157. Then you get BPC157. I've talked about these last two, TB500 I've talked about these last two, TB500 I've talked about these last two, TB500 and BPC-157 at nausea like all the time. and BPC-157 at nausea like all the time. and BPC-157 at nausea like all the time. So BPC57, body protection compound made So BPC57, body protection compound made So BPC57, body protection compound made in the gut. All this stuff's already in in the gut. All this stuff's already in in the gut. All this stuff's already in your body, which is why they can't your body, which is why they can't your body, which is why they can't patent it. Short chain amino acids, like patent it. Short chain amino acids, like patent it. Short chain amino acids, like they're like five, six, you know, they're like five, six, you know, they're like five, six, you know, molecule. They're just short. Amino's molecule. They're just short. Amino's molecule. They're just short. Amino's long. BPC157 patches the leaks. That's long. BPC157 patches the leaks. That's long. BPC157 patches the leaks. That's the easiest way to explain. So, think of the easiest way to explain. So, think of the easiest way to explain. So, think of your arteries like a hose under your arteries like a hose under your arteries like a hose under pressure. And now imagine dragging that pressure. And now imagine dragging that pressure. And now imagine dragging that hose across gravel every like sharp hose across gravel every like sharp hose across gravel every like sharp crappy old school driveway gravel every crappy old school driveway gravel every crappy old school driveway gravel every day. And what happens is you get these day. And what happens is you get these day. And what happens is you get these micro tears, micro leaks, and eventually micro tears, micro leaks, and eventually micro tears, micro leaks, and eventually ruptures. ruptures. ruptures. That's your vascular lining under all That's your vascular lining under all That's your vascular lining under all the stress that you keep putting it the stress that you keep putting it the stress that you keep putting it under. And no, an 83 milligram,",
+            "first_timestamp": "00:15:27.360"
+          },
+          {
+            "source_id": "Eee36H0A6IA",
+            "source_type": "podcast",
+            "source_title": "5 Lifetime Peptides For A Biological Juggernaut - Unbreakable Podcast 249",
+            "source_date": "2025-09-11",
+            "source_url": "https://youtu.be/Eee36H0A6IA",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2025-09-11-5-lifetime-peptides-for-a-biological-juggernaut-unbreakable-podcast-24-Eee36H0A6IA.en.vtt",
+            "mention_count": 18,
+            "top_snippet": "you that. MSI gives you all that. The second thing is BPC157, man. All day. I",
+            "top_context": "stop being this disaster, right? So if stop being this disaster, right? So if you don't fix like without mitochondrial you don't fix like without mitochondrial you don't fix like without mitochondrial efficiency, I said it earlier probably efficiency, I said it earlier probably efficiency, I said it earlier probably about 10 minutes ago now. Nothing else about 10 minutes ago now. Nothing else about 10 minutes ago now. Nothing else matters, man. It doesn't it doesn't matters, man. It doesn't it doesn't matters, man. It doesn't it doesn't matter what you do. You can do all the matter what you do. You can do all the matter what you do. You can do all the injury mitigation and repair. You could injury mitigation and repair. You could injury mitigation and repair. You could do all the supplements and vitamins and do all the supplements and vitamins and do all the supplements and vitamins and all the stretching and red light and all the stretching and red light and all the stretching and red light and sauna and whatever weird things you sauna and whatever weird things you sauna and whatever weird things you stick in your butthole or tan, you know, stick in your butthole or tan, you know, stick in your butthole or tan, you know, go out and tan your taint, whatever you go out and tan your taint, whatever you go out and tan your taint, whatever you guys come up with. None of it matters guys come up with. None of it matters guys come up with. None of it matters without ATP, adenazine triphosphate. It without ATP, adenazine triphosphate. It without ATP, adenazine triphosphate. It does not matter. If you don't have the does not matter. If you don't have the does not matter. If you don't have the energy to make it rock, you ain't energy to make it rock, you ain't energy to make it rock, you ain't rocking anything. You understand me, rocking anything. You understand me, rocking anything. You understand me, son? That's the foundation. You want son? That's the foundation. You want son? That's the foundation. You want resilience, ATP. In fact, you need you resilience, ATP. In fact, you need you resilience, ATP. In fact, you need you need ATP without excess ROS. MSI gives need ATP without excess ROS. MSI gives need ATP without excess ROS. MSI gives you that. MSI gives you all that. The you that. MSI gives you all that. The you that. MSI gives you all that. The second thing is BPC157, man. All day. I second thing is BPC157, man. All day. I second thing is BPC157, man. All day. I take BP BPC57 every day. And what's take BP BPC57 every day. And what's take BP BPC57 every day. And what's funny is somebody's going to hear this funny is somebody's going to hear this funny is somebody's going to hear this and go, \"Oh, wow. That's not healthy. I and go, \"Oh, wow. That's not healthy. I and go, \"Oh, wow. That's not healthy. I heard it causes cancer.\" None of this heard it causes cancer.\" None of this heard it causes cancer.\" None of this causes cancer. [&nbsp;__&nbsp;] your cancer. I've causes cancer. [&nbsp;__&nbsp;] your cancer. I've causes cancer. [&nbsp;__&nbsp;] your cancer. I've been through cancer four times. None of been through cancer four times. None of been through cancer four times. None of it has to do with any of this. And if it has to do with any of this. And if it has to do with any of this. And if you go, \"Oh, but clearly, dude, I just you go, \"Oh, but clearly, dude, I just you go, \"Oh, but clearly, dude, I just started this afterwards.\" You realize started this afterwards.\" You realize started this afterwards.\" You realize that? How crazy is that? The only thing that? How crazy is that? The only thing that? How crazy is that? The only thing I ever did before this was BPC and I ever did before this was BPC and I ever did before this was BPC and TB500. I didn't even do GHKCU. I didn't TB500. I didn't even do GHKCU. I didn't TB500. I didn't even do GHKCU. I didn't use copper. Fixed a torn superpanatus use copper. Fixed a torn superpanatus use copper. Fixed a torn superpanatus tendon after I got greedy on a snatch tendon after I got greedy on a snatch tendon after I got greedy on a snatch cuz my ego was too big. It was bigger cuz my ego was too big. It was bigger cuz my ego was too big. It was bigger than what I could do. And I heard the than what I could do. And I heard the than what I could do. And I heard the snap, felt it pop, and it was a snap, felt it pop, and it was a snap, felt it pop, and it was a disaster. Three oros said, \"I'm going to disaster. Three oros said, \"I'm going to disaster. Three oros said, \"I'm going to need surgery. It's the only way.\" And I need surgery. It's the only way.\" And I need surgery. It's the only way.\" And I went and that's the day I started to went and that's the day I started to went and that's the day I started to become an expert. So, it happens. And become an expert. So, it happens. And become an expert. So, it happens. And then I come out here and I just give it then I come out here and I just give it then I come out here and I just give it to you. And some of you muppets still",
+            "first_timestamp": "00:21:36.480"
+          },
+          {
+            "source_id": "8AV5LW8VcCs",
+            "source_type": "podcast",
+            "source_title": "Wolverine Protocol Oral versus Injectable (Only One Works) - Unbreakable Podcast 207",
+            "source_date": "2025-07-28",
+            "source_url": "https://youtu.be/8AV5LW8VcCs",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2025-07-28-wolverine-protocol-oral-versus-injectable-only-one-works-unbreakable-p-8AV5LW8VcCs.en.vtt",
+            "mention_count": 15,
+            "top_snippet": "going to start selling bottled up oral BPC157,",
+            "top_context": "supplement charlatan peddlers, the supplement charlatan peddlers, the Instagram biohackers, oh, I hate that Instagram biohackers, oh, I hate that Instagram biohackers, oh, I hate that word, with collagen unicorn blood word, with collagen unicorn blood word, with collagen unicorn blood discount codes are selling you the wrong discount codes are selling you the wrong discount codes are selling you the wrong protocol. protocol. protocol. They're calling it Wolverine, but that's They're calling it Wolverine, but that's They're calling it Wolverine, but that's not my Wolverine protocol. What they're not my Wolverine protocol. What they're not my Wolverine protocol. What they're pushing is Wish.com pushing is Wish.com pushing is Wish.com pseudocience. pseudocience. pseudocience. Listen, Listen, Listen, this stuff drives me nuts. You could this stuff drives me nuts. You could this stuff drives me nuts. You could tell it pisses me off the moment tell it pisses me off the moment tell it pisses me off the moment something gets popular, especially if it something gets popular, especially if it something gets popular, especially if it has a cool nickname like Wolverine. Oh, has a cool nickname like Wolverine. Oh, has a cool nickname like Wolverine. Oh, it gets hijacked, right? It's like it gets hijacked, right? It's like it gets hijacked, right? It's like looking at whatever God creates, Satan looking at whatever God creates, Satan looking at whatever God creates, Satan counterfeits, right? Same thing. It's counterfeits, right? Same thing. It's counterfeits, right? Same thing. It's how I look at all this. Some Insta coach how I look at all this. Some Insta coach how I look at all this. Some Insta coach with a gym selfie in a Shopify store is with a gym selfie in a Shopify store is with a gym selfie in a Shopify store is going to start selling bottled up oral going to start selling bottled up oral going to start selling bottled up oral BPC157, BPC157, BPC157, slaps a wolf on the outside of the label slaps a wolf on the outside of the label slaps a wolf on the outside of the label and then calls it healing revolution. and then calls it healing revolution. and then calls it healing revolution. Except the problem is they're selling Except the problem is they're selling Except the problem is they're selling you a broken version of a very you a broken version of a very you a broken version of a very successful working protocol. successful working protocol. successful working protocol. And and before everybody gets in the And and before everybody gets in the And and before everybody gets in the comments, like I told you, you don't comments, like I told you, you don't comments, like I told you, you don't ever have to listen to me. You are not ever have to listen to me. You are not ever have to listen to me. You are not obliged to stay here and listen. So, if obliged to stay here and listen. So, if obliged to stay here and listen. So, if you don't like what I say, you feel free you don't like what I say, you feel free you don't like what I say, you feel free to f right off to f right off to f right off and save your negativity and misery for and save your negativity and misery for and save your negativity and misery for someone that actually cares cuz I don't. someone that actually cares cuz I don't. someone that actually cares cuz I don't. But if you get in my comments, I'm going But if you get in my comments, I'm going But if you get in my comments, I'm going to figure out a way how to delete your to figure out a way how to delete your to figure out a way how to delete your comment cuz I just don't want any part comment cuz I just don't want any part comment cuz I just don't want any part of you. Anyone that does not go of you. Anyone that does not go of you. Anyone that does not go absolutely 100%. You're you're a [&nbsp;__&nbsp;] absolutely 100%. You're you're a [&nbsp;__&nbsp;] absolutely 100%. You're you're a [&nbsp;__&nbsp;] weirdo. You didn't have to watch. You",
+            "first_timestamp": "00:04:41.280"
+          }
+        ],
+        "acute_signals": [
+          {
+            "snippet": "wonder you're injured no wonder you need bpc157 no wonder you need tb500 I'm",
+            "source_title": "Vlog 80 Get Out Of Negativity In 3 Steps",
+            "source_date": "2025-03-23",
+            "timestamp": "00:18:19.440",
+            "source_url": "https://youtu.be/19mOE7ed89E"
+          },
+          {
+            "snippet": "bpc157 no wonder you need tb500 I'm",
+            "source_title": "Vlog 80 Get Out Of Negativity In 3 Steps",
+            "source_date": "2025-03-23",
+            "timestamp": "00:18:22.149",
+            "source_url": "https://youtu.be/19mOE7ed89E"
+          },
+          {
+            "snippet": "bpc157 no wonder you need tb500 I'm gonna get a thousand messages from that",
+            "source_title": "Vlog 80 Get Out Of Negativity In 3 Steps",
+            "source_date": "2025-03-23",
+            "timestamp": "00:18:22.159",
+            "source_url": "https://youtu.be/19mOE7ed89E"
+          },
+          {
+            "snippet": "athletic. BPC157, thyosin beta 4, GHKCU, copper.",
+            "source_title": "Vlog 103 The Truth About TRT And Ozempic Once And For All",
+            "source_date": "2025-04-15",
+            "timestamp": "00:13:09.639",
+            "source_url": "https://youtu.be/-YM0GPZikbo"
+          },
+          {
+            "snippet": "BPC157, thyosin beta 4, GHKCU, copper.",
+            "source_title": "Vlog 103 The Truth About TRT And Ozempic Once And For All",
+            "source_date": "2025-04-15",
+            "timestamp": "00:13:15.110",
+            "source_url": "https://youtu.be/-YM0GPZikbo"
+          }
+        ],
+        "chronic_signals": [
+          {
+            "snippet": "athletic. BPC157, thyosin beta 4, GHKCU, copper.",
+            "source_title": "Vlog 103 The Truth About TRT And Ozempic Once And For All",
+            "source_date": "2025-04-15",
+            "timestamp": "00:13:09.639",
+            "source_url": "https://youtu.be/-YM0GPZikbo"
+          },
+          {
+            "snippet": "BPC157, thyosin beta 4, GHKCU, copper.",
+            "source_title": "Vlog 103 The Truth About TRT And Ozempic Once And For All",
+            "source_date": "2025-04-15",
+            "timestamp": "00:13:15.110",
+            "source_url": "https://youtu.be/-YM0GPZikbo"
+          },
+          {
+            "snippet": "BPC157, thyosin beta 4, GHKCU, copper. That's it. And none of those cause any",
+            "source_title": "Vlog 103 The Truth About TRT And Ozempic Once And For All",
+            "source_date": "2025-04-15",
+            "timestamp": "00:13:15.120",
+            "source_url": "https://youtu.be/-YM0GPZikbo"
+          },
+          {
+            "snippet": "after, let's say, an ACL tear, right? BPC157,",
+            "source_title": "Stop Using Oral Peptides (They're WORTHLESS) Unbreakable Podcast - 168",
+            "source_date": "2025-06-18",
+            "timestamp": "00:21:44.640",
+            "source_url": "https://youtu.be/LCHv_rSnLlI"
+          },
+          {
+            "snippet": "BPC157,",
+            "source_title": "Stop Using Oral Peptides (They're WORTHLESS) Unbreakable Podcast - 168",
+            "source_date": "2025-06-18",
+            "timestamp": "00:21:46.149",
+            "source_url": "https://youtu.be/LCHv_rSnLlI"
+          }
+        ]
+      },
+      "acute_vs_chronic_note": "Dr Bachmeyer often distinguishes acute (injury/infection) vs chronic (longevity/maintenance) dosing. Acute_signals + chronic_signals fields surface candidate contexts; full distillation pending Codex pass."
+    }
+  },
+  "reset_biology_synthesis": {
+    "status": "pending-codex-distillation",
+    "recommendation": null,
+    "caveats": null,
+    "cross_expert_consensus": null,
+    "cross_expert_disagreement": null
+  },
+  "generated_at": "2026-04-27T02:02:34.746Z"
+}

@@ -1,0 +1,111 @@
+{
+  "peptide": "Pancragen",
+  "slug": "pancragen",
+  "aliases": [
+    "Pancragen",
+    "pancragen"
+  ],
+  "category": "Uncategorized",
+  "experts": {
+    "hunter-williams": {
+      "baseline_protocol": null,
+      "summary": {
+        "mention_count": 36,
+        "top_doses": [
+          {
+            "dose": "20 mg",
+            "count": 15
+          },
+          {
+            "dose": "1 mg",
+            "count": 4
+          },
+          {
+            "dose": "10 units",
+            "count": 3
+          },
+          {
+            "dose": "2 mg",
+            "count": 3
+          },
+          {
+            "dose": "20 units",
+            "count": 3
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "198531334f561481",
+            "source_type": "email",
+            "source_title": "Reverse Age Your Pancreas?",
+            "source_date": "2025-07-28",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-07-28-reverse-age-your-pancreas.md",
+            "mention_count": 34,
+            "top_snippet": "re on your beta cells. They manage the problem, sure, but they don’t _fix_ the underlying issue. They don’t rejuvenate old pancreatic tissue, reverse cellular aging, or help your gland recover from ye",
+            "top_context": "re on your beta cells. They manage the problem, sure, but they don’t _fix_ the underlying issue. They don’t rejuvenate old pancreatic tissue, reverse cellular aging, or help your gland recover from years of metabolic stress. That’s where a tiny, little-known bioregulator peptide called **Pancragen** enters the conversation. A compound that Russian researchers have used for decades to literally _turn back the clock_ on pancreatic function. Today I want to shine a light on this unsung hero, share the data behind it, and tell you how you can use it to reclaim a younger, healthier pancreas",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "1987c43303a71c1e",
+            "source_type": "email",
+            "source_title": "Are Peptides For Life?",
+            "source_date": "2025-08-05",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-08-05-are-peptides-for-life.md",
+            "mention_count": 2,
+            "top_snippet": "Happy Tuesday! FYI, I just dropped a new video on the bioregulator Pancragen today on YouTube. Check it out when you get the chance! Youtube: This Peptide Reverses Pancreatic Aging (Pancragen Deep Div",
+            "top_context": "Happy Tuesday! FYI, I just dropped a new video on the bioregulator Pancragen today on YouTube. Check it out when you get the chance! Youtube: This Peptide Reverses Pancreatic Aging (Pancragen Deep Dive) (https://youtu.be/hVmzJWa_Wko?si=bf6FTQD36iKoc88f) I want to dive deep into a question that landed in my inbox this week. It’s a question I get asked more often tha",
+            "first_timestamp": null
+          }
+        ],
+        "acute_signals": [],
+        "chronic_signals": [
+          {
+            "snippet": "ythms * A general feeling of metabolic _youthfulness_, as your pancreas acts years (or decades) younger And because Pancragen works at the level of gene expression, these changes can _persist_ for wee",
+            "source_title": "Reverse Age Your Pancreas?",
+            "source_date": "2025-07-28",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "youthfulness_, as your pancreas acts years (or decades) younger And because Pancragen works at the level of gene expression, these changes can _persist_ for weeks or months after a course. ———————————",
+            "source_title": "Reverse Age Your Pancreas?",
+            "source_date": "2025-07-28",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "or wanting to prevent the so-called “GLP-1 plateau” by truly rejuvenating the pancreas If you’re just looking for an appetite suppressant or a quick fix, stick to the popular drugs. But if you want to",
+            "source_title": "Reverse Age Your Pancreas?",
+            "source_date": "2025-07-28",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "he pancreas If you’re just looking for an appetite suppressant or a quick fix, stick to the popular drugs. But if you want to _actually_ reverse pancreatic aging and set yourself up for long-term meta",
+            "source_title": "Reverse Age Your Pancreas?",
+            "source_date": "2025-07-28",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "t if you want to _actually_ reverse pancreatic aging and set yourself up for long-term metabolic resilience, Pancragen is your peptide. ——————————————————————————— **How to Dose Pancragen** Dosing is ",
+            "source_title": "Reverse Age Your Pancreas?",
+            "source_date": "2025-07-28",
+            "timestamp": null,
+            "source_url": null
+          }
+        ]
+      }
+    }
+  },
+  "reset_biology_synthesis": {
+    "status": "pending-codex-distillation",
+    "recommendation": null,
+    "caveats": null,
+    "cross_expert_consensus": null,
+    "cross_expert_disagreement": null
+  },
+  "generated_at": "2026-04-27T02:02:35.006Z"
+}

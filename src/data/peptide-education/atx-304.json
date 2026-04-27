@@ -1,0 +1,172 @@
+{
+  "peptide": "ATX-304",
+  "slug": "atx-304",
+  "aliases": [
+    "ATX-304",
+    "ATX304",
+    "ATX 304"
+  ],
+  "category": "Uncategorized",
+  "experts": {
+    "hunter-williams": {
+      "baseline_protocol": null,
+      "summary": {
+        "mention_count": 30,
+        "top_doses": [
+          {
+            "dose": "1000 mg",
+            "count": 5
+          },
+          {
+            "dose": "300 mg",
+            "count": 4
+          },
+          {
+            "dose": "400 mg",
+            "count": 4
+          },
+          {
+            "dose": "500 mcg",
+            "count": 3
+          },
+          {
+            "dose": "200 mg",
+            "count": 2
+          },
+          {
+            "dose": "1000 mcg",
+            "count": 2
+          },
+          {
+            "dose": "11 mg",
+            "count": 1
+          },
+          {
+            "dose": "212 mg",
+            "count": 1
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "199789ab3211cefa",
+            "source_type": "email",
+            "source_title": "Is This Better Than Metformin?",
+            "source_date": "2025-09-23",
+            "source_url": "https://open.spotify.com/episode/5gEkZWDy8vqNy05JeElmQv",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-09-23-is-this-better-than-metformin.md",
+            "mention_count": 21,
+            "top_snippet": "upports healthy aging. This is why it’s being called an “exercise pill” by many researchers. ——————————————————————————— **Clinical Results** The most compelling evidence so far comes from the Phase I",
+            "top_context": "upports healthy aging. This is why it’s being called an “exercise pill” by many researchers. ——————————————————————————— **Clinical Results** The most compelling evidence so far comes from the Phase IIa study in 65 patients with type 2 diabetes on metformin. After 28 days of 1000mg/day ATX-304: * **Fasting plasma glucose dropped by –0.60 mM vs –0.10 mM with placebo** (~11 mg/dL greater reduction, p=0.01). * **Insulin resistance (HOMA-IR) improved by a statistically significant margin** in the treatment group (p=0.0097). * **Diastolic blood pressure decreased significantly**, wit",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "19a9e63d0239bb68",
+            "source_type": "email",
+            "source_title": "SLU-PP-332 vs. ATX-304",
+            "source_date": "2025-11-19",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-11-19-slu-pp-332-vs-atx-304.md",
+            "mention_count": 9,
+            "top_snippet": "mpound** (not aggressively cycled) ### Summary - **SLU = powerful but cyclical** - **ATX = sustainable + longevity-focused** ## ⭐ DOSING — Hunter's Stack Protocol ### Standalone ranges - **SLU-PP-332:",
+            "top_context": "mpound** (not aggressively cycled) ### Summary - **SLU = powerful but cyclical** - **ATX = sustainable + longevity-focused** ## ⭐ DOSING — Hunter's Stack Protocol ### Standalone ranges - **SLU-PP-332:** 250-1000 mcg/day (research range). **Start LOW + go SLOW** — too high builds up ROS fast. - **ATX-304:** 50-300 mg/day orally typical. One trial used 1000 mg/day with no adverse effects. Hunter likes **200-400 mg/day**. ### ⭐ Stacking Recommendation - **SLU-PP-332: 250–500 mcg/day** - **ATX-304: 200–400 mg/day** Keeps you on \"exercise mimetic\" side of curve, NOT \"too much metabolic stress\" side.",
+            "first_timestamp": null
+          }
+        ],
+        "acute_signals": [
+          {
+            "snippet": "ainst fatty liver (MASLD/NASH) by decreasing steatosis and fibrosis. * **Kidney protection**: Reduces serum creatinine and renal injury markers in cisplatin-induced AKI models. * **Aging and longevity",
+            "source_title": "Is This Better Than Metformin?",
+            "source_date": "2025-09-23",
+            "timestamp": null,
+            "source_url": "https://open.spotify.com/episode/5gEkZWDy8vqNy05JeElmQv"
+          },
+          {
+            "snippet": "ficantly**, with a downward trend in systolic. * **Peripheral muscle blood flow increased significantly** on MRI perfusion scans. * Importantly, **no serious adverse events or safety issues were repor",
+            "source_title": "Is This Better Than Metformin?",
+            "source_date": "2025-09-23",
+            "timestamp": null,
+            "source_url": "https://open.spotify.com/episode/5gEkZWDy8vqNy05JeElmQv"
+          }
+        ],
+        "chronic_signals": [
+          {
+            "snippet": "ainst fatty liver (MASLD/NASH) by decreasing steatosis and fibrosis. * **Kidney protection**: Reduces serum creatinine and renal injury markers in cisplatin-induced AKI models. * **Aging and longevity",
+            "source_title": "Is This Better Than Metformin?",
+            "source_date": "2025-09-23",
+            "timestamp": null,
+            "source_url": "https://open.spotify.com/episode/5gEkZWDy8vqNy05JeElmQv"
+          },
+          {
+            "snippet": "ds. * In aging mice, it **reversed hyperinsulinemia** and preserved exercise capacity equivalent to young controls. These numbers show both **statistical and clinically meaningful effects** across mul",
+            "source_title": "Is This Better Than Metformin?",
+            "source_date": "2025-09-23",
+            "timestamp": null,
+            "source_url": "https://open.spotify.com/episode/5gEkZWDy8vqNy05JeElmQv"
+          },
+          {
+            "snippet": "gh a dose for too long → **overtrained metabolic state** (mitochondria overspin) - Too aggressive ERR activation → mitochondrial stress, excessive fatty-acid oxidation, unintended muscle remodeling - ",
+            "source_title": "SLU-PP-332 vs. ATX-304",
+            "source_date": "2025-11-19",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "mpound** (not aggressively cycled) ### Summary - **SLU = powerful but cyclical** - **ATX = sustainable + longevity-focused** ## ⭐ DOSING — Hunter's Stack Protocol ### Standalone ranges - **SLU-PP-332:",
+            "source_title": "SLU-PP-332 vs. ATX-304",
+            "source_date": "2025-11-19",
+            "timestamp": null,
+            "source_url": null
+          }
+        ]
+      }
+    },
+    "taylor-williams": {
+      "summary": {
+        "mention_count": 6,
+        "top_doses": [
+          {
+            "dose": "0.5 mg",
+            "count": 15
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "JccJTHbWF84",
+            "source_type": "podcast",
+            "source_title": "Saturday Morning Coffee Talk | 2/7/26",
+            "source_date": "2026-02-08",
+            "source_url": "https://youtu.be/JccJTHbWF84",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2026-02-08-saturday-morning-coffee-talk-2-7-26-JccJTHbWF84.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "you guys. What are your thoughts on ATX304?",
+            "top_context": "like two grams a week of testosterone. like two grams a week of testosterone. Obviously, you might have some issues, Obviously, you might have some issues, Obviously, you might have some issues, but if you're doing it, if you have a but if you're doing it, if you have a but if you're doing it, if you have a healthy level of testosterone in the healthy level of testosterone in the healthy level of testosterone in the body, it's going to improve lipid body, it's going to improve lipid body, it's going to improve lipid panels. So, no, I haven't heard of that. panels. So, no, I haven't heard of that. panels. So, no, I haven't heard of that. I would probably run away from that I would probably run away from that I would probably run away from that doctor if they were giving a woman in doctor if they were giving a woman in doctor if they were giving a woman in clomophene. clomophene. clomophene. &gt;&gt; Yes, &gt;&gt; Yes, &gt;&gt; Yes, &gt;&gt; that would be my opinion. I don't see &gt;&gt; that would be my opinion. I don't see &gt;&gt; that would be my opinion. I don't see what would be wrong about giving a woman what would be wrong about giving a woman what would be wrong about giving a woman even that's menrating and ovulating even that's menrating and ovulating even that's menrating and ovulating testosterone and progesterone. testosterone and progesterone. testosterone and progesterone. &gt;&gt; I don't see where there would be an &gt;&gt; I don't see where there would be an &gt;&gt; I don't see where there would be an issue unless a doctor's scared of their issue unless a doctor's scared of their issue unless a doctor's scared of their medical license. medical license. medical license. &gt;&gt; Jake says, \"As a healthcare provider &gt;&gt; Jake says, \"As a healthcare provider &gt;&gt; Jake says, \"As a healthcare provider practicing HRT, send me an email. If practicing HRT, send me an email. If practicing HRT, send me an email. If you're on my email list, just sign up you're on my email list, just sign up you're on my email list, just sign up for my email list and you'll see my for my email list and you'll see my for my email list and you'll see my email.\" So that's the best way is to email.\" So that's the best way is to email.\" So that's the best way is to send me an email. send me an email. send me an email. &gt;&gt; Honeycomb in the house. Hope you guys &gt;&gt; Honeycomb in the house. Hope you guys &gt;&gt; Honeycomb in the house. Hope you guys are doing well. Much love. Shout out to are doing well. Much love. Shout out to are doing well. Much love. Shout out to you guys. you guys. you guys. What are your thoughts on ATX304? What are your thoughts on ATX304? What are your thoughts on ATX304? &gt;&gt; I love it. I love that molecule so much. &gt;&gt; I love it. I love that molecule so much. &gt;&gt; I love it. I love that molecule so much. Like I I don't know. I just I when I Like I I don't know. I just I when I Like I I don't know. I just I when I actually had somebody actually had somebody actually had somebody asked this question in the group whether asked this question in the group whether asked this question in the group whether it was like ATX, Sloop, or BAM, like it was like ATX, Sloop, or BAM, like it was like ATX, Sloop, or BAM, like which one I would pick? And I would pick which one I would pick? And I would pick which one I would pick? And I would pick the ATX. Like I feel the best when I'm the ATX. Like I feel the best when I'm the ATX. Like I feel the best when I'm on that. I have really good cardio on that. I have really good cardio on that. I have really good cardio sessions. I feel like I feel super lean sessions. I feel like I feel super lean sessions. I feel like I feel super lean and very muscular defined when I'm on and very muscular defined when I'm on and very muscular defined when I'm on that. I feel like does not stress me out that. I feel like does not stress me out that. I feel like does not stress me out like sometimes like after being on Sloop like sometimes like after being on Sloop like sometimes like after being on Sloop for a extended period of time like I for a extended period of time like I for a extended period of time like I notice like the mitochondria spinning notice like the mitochondria spinning notice like the mitochondria spinning happening and it can get a burnout",
+            "first_timestamp": "00:33:26.159"
+          },
+          {
+            "source_id": "G27dIPBJUSs",
+            "source_type": "podcast",
+            "source_title": "Saturday Morning Coffee Talk 3/28/26",
+            "source_date": "2026-03-28",
+            "source_url": "https://youtu.be/G27dIPBJUSs",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2026-03-28-saturday-morning-coffee-talk-3-28-26-G27dIPBJUSs.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "&gt;&gt; Here's a very good statement that I would have to agree with. ATX 304 is",
+            "top_context": "I do think though that you can scale the I do think though that you can scale the dose and I do think that it can't A lot dose and I do think that it can't A lot dose and I do think that it can't A lot of women it's not enough of women it's not enough of women it's not enough for. for. for. And then 0.5 mg a day I think if the if And then 0.5 mg a day I think if the if And then 0.5 mg a day I think if the if it was actually compounded at 0.5 mg a it was actually compounded at 0.5 mg a it was actually compounded at 0.5 mg a day that's really low cuz most are going day that's really low cuz most are going day that's really low cuz most are going to be 5 mg a day for women because to be 5 mg a day for women because to be 5 mg a day for women because you're going to absorb about 10% of it. you're going to absorb about 10% of it. you're going to absorb about 10% of it. And so if it was 0.5 mg a day that's And so if it was 0.5 mg a day that's And so if it was 0.5 mg a day that's really really low. So that makes sense really really low. So that makes sense really really low. So that makes sense to me that nothing happened. Yeah. to me that nothing happened. Yeah. to me that nothing happened. Yeah. I don't I don't I just don't I don't I don't I don't I just don't I don't I don't I don't I just don't I don't feel like there's any relation with the feel like there's any relation with the feel like there's any relation with the UTI and hormone replacement therapy in UTI and hormone replacement therapy in UTI and hormone replacement therapy in my opinion. my opinion. my opinion. It could be a coincidental. I think it's It could be a coincidental. I think it's It could be a coincidental. I think it's coincidental. coincidental. coincidental. &gt;&gt; It may be or it may not be, but &gt;&gt; It may be or it may not be, but &gt;&gt; It may be or it may not be, but at the end of the day I still think that at the end of the day I still think that at the end of the day I still think that was probably way too low of a dose Yeah. was probably way too low of a dose Yeah. was probably way too low of a dose Yeah. to even have anything beneficial happen. to even have anything beneficial happen. to even have anything beneficial happen. Yeah. I think I think &gt;&gt; Here's a very good statement that I &gt;&gt; Here's a very good statement that I &gt;&gt; Here's a very good statement that I would have to agree with. ATX 304 is would have to agree with. ATX 304 is would have to agree with. ATX 304 is more effective than Sloop. Sloop more effective than Sloop. Sloop more effective than Sloop. Sloop activates a little quicker and lasts a activates a little quicker and lasts a activates a little quicker and lasts a little longer, but ATX definitely allows little longer, but ATX definitely allows little longer, but ATX definitely allows me to push myself harder without me to push myself harder without me to push myself harder without fatigue. I agree. Yeah. I agree with fatigue. I agree. Yeah. I agree with fatigue. I agree. Yeah. I agree with that. I've been saying that. Also too, I that. I've been saying that. Also too, I that. I've been saying that. Also too, I think the ATX studied in humans was it think the ATX studied in humans was it think the ATX studied in humans was it 1,000 mg a day. Most of the dosing 1,000 mg a day. Most of the dosing 1,000 mg a day. Most of the dosing you're going to see from people is 100 you're going to see from people is 100 you're going to see from people is 100 mg capsules. And so I don't I noticed mg capsules. And so I don't I noticed mg capsules. And so I don't I noticed outsized benefits at like 5 to 700 mg outsized benefits at like 5 to 700 mg outsized benefits at like 5 to 700 mg per day. That's where it really starts per day. That's where it really starts per day. That's where it really starts to hit. But again, that's like that's to hit. But again, that's like that's to hit. But again, that's like that's like a quarter of the bottle in one like a quarter of the bottle in one like a quarter of the bottle in one serving. So here's my opinion with serving. So here's my opinion with serving. So here's my opinion with everybody like with doing the high dose everybody like with doing the high dose everybody like with doing the high dose Sloop, I think everybody got it wrong Sloop, I think everybody got it wrong Sloop, I think everybody got it wrong and they should have been manufacturing and they should have been manufacturing and they should have been manufacturing higher dose higher dose higher dose ATX. Yeah, probably like 250 or 500 mg. ATX. Yeah, probably like 250 or 500 mg. ATX. Yeah, probably like 250 or 500 mg. Yes, versus making high dose Sloop.",
+            "first_timestamp": "00:57:30.080"
+          }
+        ],
+        "acute_signals": [],
+        "chronic_signals": []
+      },
+      "female_specific_note": "Taylor Williams Coaching focuses on female-specific HRT/peptide guidance. Per-peptide notes here often emphasize female dosing, fertility, hormone interactions."
+    }
+  },
+  "reset_biology_synthesis": {
+    "status": "pending-codex-distillation",
+    "recommendation": null,
+    "caveats": null,
+    "cross_expert_consensus": null,
+    "cross_expert_disagreement": null
+  },
+  "generated_at": "2026-04-27T02:02:35.010Z"
+}

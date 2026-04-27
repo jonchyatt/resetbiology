@@ -1,0 +1,651 @@
+{
+  "peptide": "NAD+",
+  "slug": "nad",
+  "aliases": [
+    "NAD",
+    "nad"
+  ],
+  "category": "Uncategorized",
+  "experts": {
+    "hunter-williams": {
+      "baseline_protocol": null,
+      "summary": {
+        "mention_count": 300,
+        "top_doses": [
+          {
+            "dose": "100 mg",
+            "count": 33
+          },
+          {
+            "dose": "500 mg",
+            "count": 20
+          },
+          {
+            "dose": "10 mg",
+            "count": 19
+          },
+          {
+            "dose": "1 mg",
+            "count": 19
+          },
+          {
+            "dose": "500 micrograms",
+            "count": 18
+          },
+          {
+            "dose": "50 mg",
+            "count": 16
+          },
+          {
+            "dose": "750 micrograms",
+            "count": 12
+          },
+          {
+            "dose": "150 mg",
+            "count": 10
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "197f13cc2a822e7e",
+            "source_type": "email",
+            "source_title": "I Stack This With NAD+ Injections",
+            "source_date": "2025-07-09",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-07-09-i-stack-this-with-nad-injections.md",
+            "mention_count": 45,
+            "top_snippet": "Happy Wednesday! Today I want to talk about a combination that’s had a huge impact on my mitochondrial health, energy, and overall sense of drive: **injecting NAD⁺ alongside 5-amino-1MQ**, and the lit",
+            "top_context": "Happy Wednesday! Today I want to talk about a combination that’s had a huge impact on my mitochondrial health, energy, and overall sense of drive: **injecting NAD⁺ alongside 5-amino-1MQ**, and the little-known supplement that has become a personal favorite of mine. **It’s called NAD Regen.** For the last year, I’ve been experimenting with **injecting 50–100 mg of NAD⁺, two to three times a week**, and stacking it with 1mg per day of injectable **5-amin",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "196b719c9b96afc2",
+            "source_type": "email",
+            "source_title": "NAD+ and Fat Loss",
+            "source_date": "2025-05-09",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-05-09-nad-and-fat-loss.md",
+            "mention_count": 37,
+            "top_snippet": "composition and lasting fat loss involves addressing multiple interconnected pathways—from consistent exercise and nutrient-dense eating to advanced hormone optimization. Yet, even among biohackers an",
+            "top_context": "composition and lasting fat loss involves addressing multiple interconnected pathways—from consistent exercise and nutrient-dense eating to advanced hormone optimization. Yet, even among biohackers and longevity enthusiasts, there’s one critical pathway that remains criminally overlooked: **the NAD+ pathway**. Today, I’m going to shed light on NAD+, one of the body’s fundamental metabolic regulators, and how optimizing it—especially via injectable supplementation—could significantly accelerate your fat loss. ——————————————————————————— **Why NAD+ Matters for Metabolism and Fat Loss**",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "1959187cc22d1581",
+            "source_type": "email",
+            "source_title": "Why NAD+ Might Not Work",
+            "source_date": "2025-03-13",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-03-13-why-nad-might-not-work.md",
+            "mention_count": 29,
+            "top_snippet": "ting NAD+ should turn you into a fat-burning, brain-boosted, age-reversing machine, right? Well… not exactly. Because here’s what most people don’t know: **1️⃣ Your body naturally destroys NAD+ faster",
+            "top_context": "ting NAD+ should turn you into a fat-burning, brain-boosted, age-reversing machine, right? Well… not exactly. Because here’s what most people don’t know: **1️⃣ Your body naturally destroys NAD+ faster than you can replace it.** **2️⃣ NNMT is actively working against you by shutting down NAD+ recycling.** **3️⃣ Even if you inject high doses, much of it gets wasted if NNMT is running wild.** NNMT is an enzyme that methylates nicotinamide (a key NAD+ precursor), rendering it useless for NAD+ production. This means even if you inject 100mg, 200mg, or more of NAD+, your body is s",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "1958755a587d1088",
+            "source_type": "email",
+            "source_title": "NAD+ Simplified",
+            "source_date": "2025-03-11",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-03-11-nad-simplified.md",
+            "mention_count": 25,
+            "top_snippet": "If you’re feeling sluggish, mentally foggy, or struggling to recover from workouts like you used to, then you might be running low on one of the most essential molecules in your body: **NAD+.** **NAD+",
+            "top_context": "If you’re feeling sluggish, mentally foggy, or struggling to recover from workouts like you used to, then you might be running low on one of the most essential molecules in your body: **NAD+.** **NAD+ is the backbone of energy production, mitochondrial health, and longevity.** When your NAD+ levels drop (which they inevitably do with age and stress), you start experiencing all the telltale signs of aging—fatigue, slower recovery, metabolic slowdown, and brain fog. The good n",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "19959bbad498ddd1",
+            "source_type": "email",
+            "source_title": "Fat Loss Doesn’t Have to Mean Energy Loss",
+            "source_date": "2025-09-17",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-09-17-fat-loss-doesn-t-have-to-mean-energy-loss.md",
+            "mention_count": 24,
+            "top_snippet": "d longevity education, without worrying about big tech pulling the plug. Now, on to today’s email. A few months ago, [I sent out an email](https://huntershealthhacks.beehiiv.com/p/triple-threat-energy",
+            "top_context": "d longevity education, without worrying about big tech pulling the plug. Now, on to today’s email. A few months ago, [I sent out an email](https://huntershealthhacks.beehiiv.com/p/triple-threat-energy-stack-fc7316db9259dea4) where I shared how I experimented on myself with a research blend of NAD+, 5-Amino-1MQ, and MOTS-c. The results blew me away. I dropped fat faster than usual, but instead of feeling flat or tired, I actually felt **more energetic**. My recovery was better, my focus sharper, and more importantly, it helped Taylor and me keep our energy high after the stress o",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "PEU3ZE5axiQ",
+            "source_type": "podcast",
+            "source_title": "Estrogen is Critical for Men Too - Here's Why Your Peptides Fail Without It with Sarah Morgan",
+            "source_date": "2026-03-13",
+            "source_url": "https://youtu.be/PEU3ZE5axiQ",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-03-13-estrogen-is-critical-for-men-too-here-s-why-your-peptides-fail-without-PEU3ZE5axiQ.en.vtt",
+            "mention_count": 22,
+            "top_snippet": "that rather than just say retosi, NAD. Actually,&nbsp; that that makes me want to ask you, what is your&nbsp;&nbsp;",
+            "top_context": "Saturday. I can go hypo sometimes with it if I&nbsp; Yeah. It'll make me go hypoglycemic even with&nbsp;&nbsp; like a low dose. If I do it and then go to the gym&nbsp; and I'm like strength training even with carbs and&nbsp;&nbsp; everything like I'll be like kind of be like whoa&nbsp; seeing stars and everything. Um, so I think it's&nbsp;&nbsp; one of those things people just like jump on and&nbsp; it's like, well, let's ask ourselves like what&nbsp;&nbsp; we're really doing. And also they get addicted&nbsp; to like the idea of like, oh, I need more. I'm&nbsp;&nbsp; going to get more fat loss. I'm going to get more&nbsp; I'm going to get more gains the more I add. Yeah.&nbsp;&nbsp; And it I mean someone might argue like, well, it&nbsp; worked for me, but it's also too I think it still&nbsp;&nbsp; it's not sustainable. Yeah. And it's the awareness&nbsp; part of the equation of like why are we doing&nbsp;&nbsp; this? And if it's like, okay, we really want to&nbsp; like focus on mitochondria. Let's like actually do&nbsp;&nbsp; that rather than just say retosi, NAD. Actually,&nbsp; that that makes me want to ask you, what is your&nbsp;&nbsp; approach to NAD? Because there's like big debates&nbsp; over like you're going to get cancer if you take&nbsp;&nbsp; NAD to like I'm going to use NAD every single day&nbsp; and never take a day off because it makes me feel&nbsp;&nbsp; so good. And then some people take 25 milligrams&nbsp; and they're like have like their heart rate is&nbsp;&nbsp; like over a hundred. How do you think about NAD&nbsp; and like what is the best approach? Because I'm&nbsp;&nbsp; not like someone that uses every day. I think&nbsp; they can use it to achieve a certain outcome.&nbsp;&nbsp; But honestly, I don't really use it that much, but&nbsp; I also don't feel the need to. Yeah, lifestyle has&nbsp;&nbsp; a lot. I think if some people are like drinking&nbsp; three or four times a week pretty heavily,&nbsp;&nbsp; like they probably feel better. Yeah. If you&nbsp; take NAD, so how do you think about NAD in all?&nbsp;&nbsp;",
+            "first_timestamp": "01:32:13.360"
+          },
+          {
+            "source_id": "19b33b4a94196ed4",
+            "source_type": "email",
+            "source_title": "NAD+ vs. 5-Amino-1MQ",
+            "source_date": "2025-12-18",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-12-18-nad-vs-5-amino-1mq.md",
+            "mention_count": 20,
+            "top_snippet": "first. **Refill the tank.** **Metabolically inefficient / stubborn fat / insulin resistant / diet rebound:** → 5-Amino-1MQ first. **Fix the drain.** **Longevity / durable metabolic change / sustainabl",
+            "top_context": "first. **Refill the tank.** **Metabolically inefficient / stubborn fat / insulin resistant / diet rebound:** → 5-Amino-1MQ first. **Fix the drain.** **Longevity / durable metabolic change / sustainable fat loss / better stress tolerance over time:** → **Use BOTH.** ## Source BioLongevity Labs — NAD⁺ 500mg — code HUNTERW (40% off + 15% off)",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "rGQEAyVP6Ks",
+            "source_type": "podcast",
+            "source_title": "NAD Can Actually Cause Cancer #health #NAD #longevity",
+            "source_date": "2026-03-19",
+            "source_url": "https://youtu.be/rGQEAyVP6Ks",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-03-19-nad-can-actually-cause-cancer-health-nad-longevity-rGQEAyVP6Ks.en.vtt",
+            "mention_count": 17,
+            "top_snippet": "So, how do you think about NAD?",
+            "top_context": "So, how do you think about NAD? So, how do you think about NAD? &gt;&gt; Don't follow trends about your health. &gt;&gt; Don't follow trends about your health. &gt;&gt; Don't follow trends about your health. Follow your personalized needs and be Follow your personalized needs and be Follow your personalized needs and be smart about what you're going to use, smart about what you're going to use, smart about what you're going to use, right? And do it in a really strategic right? And do it in a really strategic right? And do it in a really strategic way and take your time. That's number way and take your time. That's number way and take your time. That's number one. NAD is I smile cuz it is absolutely one. NAD is I smile cuz it is absolutely one. NAD is I smile cuz it is absolutely a can of worms. It's yeah, it's got a a can of worms. It's yeah, it's got a a can of worms. It's yeah, it's got a lot of different ways. lot of different ways. lot of different ways. &gt;&gt; everybody has an opinion about it. Yes. &gt;&gt; everybody has an opinion about it. Yes. &gt;&gt; everybody has an opinion about it. Yes. I do not profess to be an NAD expert. I do not profess to be an NAD expert. I do not profess to be an NAD expert. Can it be helpful? Absolutely. I think Can it be helpful? Absolutely. I think Can it be helpful? Absolutely. I think it can be just like any tool if it's it can be just like any tool if it's it can be just like any tool if it's used in the right scenario, it's very used in the right scenario, it's very used in the right scenario, it's very beneficial. But if you're going to abuse beneficial. But if you're going to abuse beneficial. But if you're going to abuse it, could it drive cancer? In my it, could it drive cancer? In my it, could it drive cancer? In my opinion, absolutely. What does NAD do? opinion, absolutely. What does NAD do? opinion, absolutely. What does NAD do? If you have a lot of inflammation, you If you have a lot of inflammation, you If you have a lot of inflammation, you are going to suck all of your NAD into a are going to suck all of your NAD into a are going to suck all of your NAD into a black hole. NAD is really great for DNA",
+            "first_timestamp": "00:00:01.270"
+          }
+        ],
+        "acute_signals": [
+          {
+            "snippet": "glutamate than anything out there. Also fixing NAD to NADH ratios. So, you can",
+            "source_title": "The Next Big Things in Biohacking | EMF, Peptides, and Superhuman Performance with Alex Kikel",
+            "source_date": "2026-03-20",
+            "timestamp": "01:51:39.119",
+            "source_url": "https://youtu.be/tYscWLLPkDE"
+          },
+          {
+            "snippet": "fixing NAD to NADH ratios. So, you can",
+            "source_title": "The Next Big Things in Biohacking | EMF, Peptides, and Superhuman Performance with Alex Kikel",
+            "source_date": "2026-03-20",
+            "timestamp": "01:51:41.750",
+            "source_url": "https://youtu.be/tYscWLLPkDE"
+          },
+          {
+            "snippet": "fixing NAD to NADH ratios. So, you can literally like cellularly your cells",
+            "source_title": "The Next Big Things in Biohacking | EMF, Peptides, and Superhuman Performance with Alex Kikel",
+            "source_date": "2026-03-20",
+            "timestamp": "01:51:41.760",
+            "source_url": "https://youtu.be/tYscWLLPkDE"
+          },
+          {
+            "snippet": "themselves. You can drive autophagy. You can fix that NAD NADH ratio flux which",
+            "source_title": "The Next Big Things in Biohacking | EMF, Peptides, and Superhuman Performance with Alex Kikel",
+            "source_date": "2026-03-20",
+            "timestamp": "01:51:57.199",
+            "source_url": "https://youtu.be/tYscWLLPkDE"
+          },
+          {
+            "snippet": "on stimulants** – If you’re stacking multiple mitochondrial activators at high doses, you’re asking for trouble in the long run. **2. Ignoring oxidative stress** – High-functioning mitochondria create",
+            "source_title": "The Dark Side Of Mitochondrial Peptides",
+            "source_date": "2025-02-07",
+            "timestamp": null,
+            "source_url": null
+          }
+        ],
+        "chronic_signals": [
+          {
+            "snippet": "that rather than just say retosi, NAD. Actually,&nbsp; that that makes me want to ask you, what is your&nbsp;&nbsp;",
+            "source_title": "Estrogen is Critical for Men Too - Here's Why Your Peptides Fail Without It with Sarah Morgan",
+            "source_date": "2026-03-13",
+            "timestamp": "01:32:13.360",
+            "source_url": "https://youtu.be/PEU3ZE5axiQ"
+          },
+          {
+            "snippet": "approach to NAD? Because there's like big debates&nbsp; over like you're going to get cancer if you take&nbsp;&nbsp;",
+            "source_title": "Estrogen is Critical for Men Too - Here's Why Your Peptides Fail Without It with Sarah Morgan",
+            "source_date": "2026-03-13",
+            "timestamp": "01:32:20.720",
+            "source_url": "https://youtu.be/PEU3ZE5axiQ"
+          },
+          {
+            "snippet": "NAD to like I'm going to use NAD every single day&nbsp; and never take a day off because it makes me feel&nbsp;&nbsp;",
+            "source_title": "Estrogen is Critical for Men Too - Here's Why Your Peptides Fail Without It with Sarah Morgan",
+            "source_date": "2026-03-13",
+            "timestamp": "01:32:26.720",
+            "source_url": "https://youtu.be/PEU3ZE5axiQ"
+          },
+          {
+            "snippet": "NAD to like I'm going to use NAD every single day&nbsp; and never take a day off because it makes me feel&nbsp;&nbsp;",
+            "source_title": "Estrogen is Critical for Men Too - Here's Why Your Peptides Fail Without It with Sarah Morgan",
+            "source_date": "2026-03-13",
+            "timestamp": "01:32:26.720",
+            "source_url": "https://youtu.be/PEU3ZE5axiQ"
+          },
+          {
+            "snippet": "like over a hundred. How do you think about NAD&nbsp; and like what is the best approach? Because I'm&nbsp;&nbsp;",
+            "source_title": "Estrogen is Critical for Men Too - Here's Why Your Peptides Fail Without It with Sarah Morgan",
+            "source_date": "2026-03-13",
+            "timestamp": "01:32:37.920",
+            "source_url": "https://youtu.be/PEU3ZE5axiQ"
+          }
+        ]
+      }
+    },
+    "taylor-williams": {
+      "summary": {
+        "mention_count": 137,
+        "top_doses": [
+          {
+            "dose": "100 milligrams",
+            "count": 74
+          },
+          {
+            "dose": "500 micrograms",
+            "count": 49
+          },
+          {
+            "dose": "10 milligrams",
+            "count": 48
+          },
+          {
+            "dose": "750 micrograms",
+            "count": 12
+          },
+          {
+            "dose": "600 milligrams",
+            "count": 9
+          },
+          {
+            "dose": "30 units",
+            "count": 9
+          },
+          {
+            "dose": "1 milligram",
+            "count": 6
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "UmEg_nxog0Y",
+            "source_type": "podcast",
+            "source_title": "My Secret Peptide Stack For All Day Energy!",
+            "source_date": "2025-06-06",
+            "source_url": "https://youtu.be/UmEg_nxog0Y",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2025-06-06-my-secret-peptide-stack-for-all-day-energy-UmEg_nxog0Y.en.vtt",
+            "mention_count": 42,
+            "top_snippet": "blend that I have been playing with is a mix of NAD+ and five amino which we all",
+            "top_context": "this is going to give you extremely this is going to give you extremely clean energy levels without feeling any clean energy levels without feeling any clean energy levels without feeling any kind of jitter. But trust me, when you kind of jitter. But trust me, when you kind of jitter. But trust me, when you take this blend, you are going to want take this blend, you are going to want take this blend, you are going to want to move your body. So, I definitely to move your body. So, I definitely to move your body. So, I definitely suggest taking this as a pre-workout, suggest taking this as a pre-workout, suggest taking this as a pre-workout, whether you're doing it before lifting whether you're doing it before lifting whether you're doing it before lifting or cardio. Personally, I love taking or cardio. Personally, I love taking or cardio. Personally, I love taking this before cardio, but I've also used this before cardio, but I've also used this before cardio, but I've also used this blend when I was recovering from this blend when I was recovering from this blend when I was recovering from being sick after having a stomach bug being sick after having a stomach bug being sick after having a stomach bug after my wedding. And then I also love after my wedding. And then I also love after my wedding. And then I also love using this blend um anytime I'm using this blend um anytime I'm using this blend um anytime I'm traveling a lot and feeling jet lag. traveling a lot and feeling jet lag. traveling a lot and feeling jet lag. This is a great blend to use if you have This is a great blend to use if you have This is a great blend to use if you have jet lag or if you're traveling a lot. So jet lag or if you're traveling a lot. So jet lag or if you're traveling a lot. So what exactly is all in this blend? This what exactly is all in this blend? This what exactly is all in this blend? This blend that I have been playing with is a blend that I have been playing with is a blend that I have been playing with is a mix of NAD+ and five amino which we all mix of NAD+ and five amino which we all mix of NAD+ and five amino which we all know I love and M C. So this is going to know I love and M C. So this is going to know I love and M C. So this is going to help with giving you efficient energy to help with giving you efficient energy to help with giving you efficient energy to really get your body moving and also really get your body moving and also really get your body moving and also really going to help so much with brain really going to help so much with brain really going to help so much with brain cognition. But this is going to be cognition. But this is going to be cognition. But this is going to be extremely beneficial to help with extremely beneficial to help with extremely beneficial to help with mitochondria support and it's also going mitochondria support and it's also going mitochondria support and it's also going to help with activity. It's also going to help with activity. It's also going to help with activity. It's also going to help with energy levels without your to help with energy levels without your to help with energy levels without your energy crashing out because this is energy crashing out because this is energy crashing out because this is literally biohacking your cells to help literally biohacking your cells to help literally biohacking your cells to help with better performance from the inside with better performance from the inside with better performance from the inside out. So, let's get into why this blend out. So, let's get into why this blend out. So, let's get into why this blend is so great and why these peptides pair",
+            "first_timestamp": "00:01:46.000"
+          },
+          {
+            "source_id": "aYuXqSfhPYE",
+            "source_type": "podcast",
+            "source_title": "5-Amino-1MQ: The Peptide That KILLS Appetite & Boosts Fat Loss!",
+            "source_date": "2025-03-14",
+            "source_url": "https://youtu.be/aYuXqSfhPYE",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2025-03-14-5-amino-1mq-the-peptide-that-kills-appetite-boosts-fat-loss-aYuXqSfhPYE.en.vtt",
+            "mention_count": 24,
+            "top_snippet": "a big game Cher and it's also going to help with increasing your NAD plus",
+            "top_context": "exactly does a five Amino 1mq work and exactly does a five Amino 1mq work and why is it so powerful so it is going to why is it so powerful so it is going to why is it so powerful so it is going to help so much with with inhibiting your help so much with with inhibiting your help so much with with inhibiting your nmmt and this is going to play a big nmmt and this is going to play a big nmmt and this is going to play a big role on how fat is stored in our body role on how fat is stored in our body role on how fat is stored in our body it's actually going to help block it's actually going to help block it's actually going to help block nnmt and it's going to increase your nnmt and it's going to increase your nnmt and it's going to increase your energy production essentially so this energy production essentially so this energy production essentially so this basically means that your body is going basically means that your body is going basically means that your body is going to be able to burn more calories in help to be able to burn more calories in help to be able to burn more calories in help with metabolic rate while making you with metabolic rate while making you with metabolic rate while making you feel less hungry so this is going to be feel less hungry so this is going to be feel less hungry so this is going to be a big game Cher and it's also going to a big game Cher and it's also going to a big game Cher and it's also going to help with increasing your NAD plus help with increasing your NAD plus help with increasing your NAD plus levels naturally so this is going to be levels naturally so this is going to be levels naturally so this is going to be different than taking actual NAD plus we different than taking actual NAD plus we different than taking actual NAD plus we all have NAD Plus in our bodies so it's all have NAD Plus in our bodies so it's all have NAD Plus in our bodies so it's only to help naturally increase those only to help naturally increase those only to help naturally increase those Levels by increasing NAD plus levels it Levels by increasing NAD plus levels it Levels by increasing NAD plus levels it is going to help with energy circulation is going to help with energy circulation is going to help with energy circulation and it's going to help with your body and it's going to help with your body and it's going to help with your body being able to be able to have more being able to be able to have more being able to be able to have more cellular energy going that way you cellular energy going that way you cellular energy going that way you actually are going to be able to have actually are going to be able to have actually are going to be able to have your metabolism burning faster and your metabolism burning faster and your metabolism burning faster and you're going to help give you a boost of you're going to help give you a boost of you're going to help give you a boost of energy naturally so it's also by energy naturally so it's also by energy naturally so it's also by increasing our Ned plus levels is also increasing our Ned plus levels is also increasing our Ned plus levels is also going to help so much with mitochondria going to help so much with mitochondria going to help so much with mitochondria function you all know how much I function you all know how much I function you all know how much I mentioned mitochondria function on this",
+            "first_timestamp": "00:04:30.600"
+          },
+          {
+            "source_id": "5ugqlYRSRSo",
+            "source_type": "podcast",
+            "source_title": "Saturday Morning Coffee Talk 1/17/26",
+            "source_date": "2026-01-17",
+            "source_url": "https://youtu.be/5ugqlYRSRSo",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2026-01-17-saturday-morning-coffee-talk-1-17-26-5ugqlYRSRSo.en.vtt",
+            "mention_count": 21,
+            "top_snippet": "Brenda says, \"My stack is CJC, IPO, DAC, take at night, CL, NAD+, glutathione,",
+            "top_context": "just might not be enough to get the just might not be enough to get the therapeutic effect. Jen, how do usually therapeutic effect. Jen, how do usually therapeutic effect. Jen, how do usually how much growth hormone do you usually how much growth hormone do you usually how much growth hormone do you usually do? do? do? &gt;&gt; I actually just do one IU. I have played &gt;&gt; I actually just do one IU. I have played &gt;&gt; I actually just do one IU. I have played with it though uh for two IUs just but with it though uh for two IUs just but with it though uh for two IUs just but didn't really notice much of a a didn't really notice much of a a didn't really notice much of a a difference in me. So, I think it difference in me. So, I think it difference in me. So, I think it probably just depends on the person, but probably just depends on the person, but probably just depends on the person, but I'm at one IU still and have I have I'm at one IU still and have I have I'm at one IU still and have I have great results with it. great results with it. great results with it. &gt;&gt; Yeah. Yeah. Everyone is a little bit &gt;&gt; Yeah. Yeah. Everyone is a little bit &gt;&gt; Yeah. Yeah. Everyone is a little bit different. Some people different. Some people different. Some people &gt;&gt; don't feel anything at all. I think a &gt;&gt; don't feel anything at all. I think a &gt;&gt; don't feel anything at all. I think a lot of that too I think for in my case lot of that too I think for in my case lot of that too I think for in my case it has to do with pituitary function and it has to do with pituitary function and it has to do with pituitary function and some people it's relative to like how some people it's relative to like how some people it's relative to like how well their pituitary works and like how well their pituitary works and like how well their pituitary works and like how much they're naturally producing that it much they're naturally producing that it much they're naturally producing that it ends up you know being for them. Brenda says, \"My stack is CJC, IPO, DAC, Brenda says, \"My stack is CJC, IPO, DAC, take at night, CL, NAD+, glutathione, take at night, CL, NAD+, glutathione, take at night, CL, NAD+, glutathione, SS31, MSI, and time 1, AM time. So, SS31, MSI, and time 1, AM time. So, SS31, MSI, and time 1, AM time. So, better to split the AM pepsa evening. better to split the AM pepsa evening. better to split the AM pepsa evening. Any of these combined together cause any Any of these combined together cause any Any of these combined together cause any issue?\" I don't see any issue with issue?\" I don't see any issue with issue?\" I don't see any issue with those. It kind of just is one of those those. It kind of just is one of those those. It kind of just is one of those things. Take them when you can. I mean, things. Take them when you can. I mean, things. Take them when you can. I mean, probably the Matsi and the NAD are going probably the Matsi and the NAD are going probably the Matsi and the NAD are going to be better to take in the morning. to be better to take in the morning. to be better to take in the morning. &gt;&gt; Yeah. &gt;&gt; Yeah. &gt;&gt; Yeah. &gt;&gt; But then the other ones is kind of up to &gt;&gt; But then the other ones is kind of up to &gt;&gt; But then the other ones is kind of up to you whenever you take it. you whenever you take it. you whenever you take it. &gt;&gt; Yeah. But um no, I don't I don't see any &gt;&gt; Yeah. But um no, I don't I don't see any &gt;&gt; Yeah. But um no, I don't I don't see any issue with any of those. And you think issue with any of those. And you think issue with any of those. And you think about this like because a lot of people about this like because a lot of people about this like because a lot of people are like, I'm taking this this this are like, I'm taking this this this are like, I'm taking this this this this. this. this. &gt;&gt; Is that good or is it bad? &gt;&gt; Is that good or is it bad? &gt;&gt; Is that good or is it bad? &gt;&gt; Uh we don't know because it's kind of &gt;&gt; Uh we don't know because it's kind of &gt;&gt; Uh we don't know because it's kind of like relative to your goals. I will say like relative to your goals. I will say like relative to your goals. I will say if you look at something like that, if you look at something like that, if you look at something like that, think of the pathways. So think of the think of the pathways. So think of the think of the pathways. So think of the pathways. Okay, we have KPV pathways. Okay, we have KPV pathways. Okay, we have KPV inflammation, BPC,",
+            "first_timestamp": "00:58:20.480"
+          },
+          {
+            "source_id": "rc66QuY9Drs",
+            "source_type": "podcast",
+            "source_title": "I Stacked Retatrutide with THESE Peptides for Insane Fat Loss!",
+            "source_date": "2025-01-31",
+            "source_url": "https://youtu.be/rc66QuY9Drs",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2025-01-31-i-stacked-retatrutide-with-these-peptides-for-insane-fat-loss-rc66QuY9Drs.en.vtt",
+            "mention_count": 12,
+            "top_snippet": "along with ratu Tide is going to be any NAD plus and aod",
+            "top_context": "will take up to six sometimes if I need will take up to six sometimes if I need to go up on it I will so like with curb to go up on it I will so like with curb to go up on it I will so like with curb I like to take 2 in the morning I'll see I like to take 2 in the morning I'll see I like to take 2 in the morning I'll see how I'm doing by the afternoon how I'm doing by the afternoon how I'm doing by the afternoon especially if I'm fasting usually um in especially if I'm fasting usually um in especially if I'm fasting usually um in the afternoon I'll will probably have to the afternoon I'll will probably have to the afternoon I'll will probably have to take um two more but I have taken up to take um two more but I have taken up to take um two more but I have taken up to six capsules and six was six capsules and six was six capsules and six was like I probably could have taken six and like I probably could have taken six and like I probably could have taken six and done like a good 24-hour fast with it um done like a good 24-hour fast with it um done like a good 24-hour fast with it um I don't like to fast longer than 20 I don't like to fast longer than 20 I don't like to fast longer than 20 hours but it definitely helps with the hours but it definitely helps with the hours but it definitely helps with the appetite supression so it is a great appetite supression so it is a great appetite supression so it is a great product to pair along with your rat true product to pair along with your rat true product to pair along with your rat true tide the other pepti that I like to take tide the other pepti that I like to take tide the other pepti that I like to take along with ratu Tide is going to be any along with ratu Tide is going to be any along with ratu Tide is going to be any NAD plus and aod NAD plus and aod NAD plus and aod 9604 these are two peptides that I um 9604 these are two peptides that I um 9604 these are two peptides that I um that I do like to take I will be honest that I do like to take I will be honest that I do like to take I will be honest I I I didn't think I liked these peptides when didn't think I liked these peptides when didn't think I liked these peptides when I first tried them but I will say I I first tried them but I will say I I first tried them but I will say I actually do like these peptides now and actually do like these peptides now and actually do like these peptides now and I do like to particularly pair them with I do like to particularly pair them with I do like to particularly pair them with rat trde I feel like I get the most rat trde I feel like I get the most rat trde I feel like I get the most maximized results when I pair them with maximized results when I pair them with maximized results when I pair them with tide but um nad+ is a great peptide for tide but um nad+ is a great peptide for tide but um nad+ is a great peptide for cellular and energy production and it's cellular and energy production and it's cellular and energy production and it's going to help with repairing that so going to help with repairing that so going to help with repairing that so that is going to be really important that is going to be really important that is going to be really important because when we're on a glp1 you know because when we're on a glp1 you know because when we're on a glp1 you know we're in usually typically a calorie we're in usually typically a calorie we're in usually typically a calorie deficit but it's always really important",
+            "first_timestamp": "00:11:59.240"
+          },
+          {
+            "source_id": "p948IlTbY7c",
+            "source_type": "podcast",
+            "source_title": "Why Melanotan 1 Is My Favorite Peptide Ever!",
+            "source_date": "2025-04-11",
+            "source_url": "https://youtu.be/p948IlTbY7c",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2025-04-11-why-melanotan-1-is-my-favorite-peptide-ever-p948IlTbY7c.en.vtt",
+            "mention_count": 9,
+            "top_snippet": "it to help with support with um more relaxation. You can, you know, NAD+ is",
+            "top_context": "together. Other great things that you together. Other great things that you can stack Molina Tan one with help it be can stack Molina Tan one with help it be can stack Molina Tan one with help it be more complimentary. So, if you are more complimentary. So, if you are more complimentary. So, if you are struggling more so with anxiety, struggling more so with anxiety, struggling more so with anxiety, especially around that lier phase of especially around that lier phase of especially around that lier phase of your menstrual cycle, you definitely your menstrual cycle, you definitely your menstrual cycle, you definitely want to pair this peptide with elenine, want to pair this peptide with elenine, want to pair this peptide with elenine, um, anywhere between 2 to 600 milligrams um, anywhere between 2 to 600 milligrams um, anywhere between 2 to 600 milligrams is typically what I like to do. This is is typically what I like to do. This is is typically what I like to do. This is just going to help with promoting just going to help with promoting just going to help with promoting relaxation, calming. This is going to relaxation, calming. This is going to relaxation, calming. This is going to help a lot with anxiety. It also helps help a lot with anxiety. It also helps help a lot with anxiety. It also helps with the mind chatter. So, ladies, you with the mind chatter. So, ladies, you with the mind chatter. So, ladies, you know, we all know what I mean when I say know, we all know what I mean when I say know, we all know what I mean when I say the mind chatter. the mind chatter that the mind chatter. the mind chatter that the mind chatter. the mind chatter that just keeps us up at night or that we just keeps us up at night or that we just keeps us up at night or that we tend to get lost in our thoughts tend to get lost in our thoughts tend to get lost in our thoughts throughout the day. There's also great throughout the day. There's also great throughout the day. There's also great magnesium blends you can blend in with magnesium blends you can blend in with magnesium blends you can blend in with it to help with support with um more it to help with support with um more it to help with support with um more relaxation. You can, you know, NAD+ is relaxation. You can, you know, NAD+ is relaxation. You can, you know, NAD+ is great with it just to help boost with great with it just to help boost with great with it just to help boost with the mitochondria um and energy levels if the mitochondria um and energy levels if the mitochondria um and energy levels if you're needing it more for um you know, you're needing it more for um you know, you're needing it more for um you know, more that mental concentration. And SS31 more that mental concentration. And SS31 more that mental concentration. And SS31 is a great peptide you can pair with it is a great peptide you can pair with it is a great peptide you can pair with it as well, just because it's going to help as well, just because it's going to help as well, just because it's going to help with the mitochondria to help with with the mitochondria to help with with the mitochondria to help with boosting skin and mitochondria function. boosting skin and mitochondria function. boosting skin and mitochondria function. So again, the reason why I have NAD and So again, the reason why I have NAD and So again, the reason why I have NAD and SS31 is because those are going to be SS31 is because those are going to be SS31 is because those are going to be help tied into mitochondria function and help tied into mitochondria function and help tied into mitochondria function and that is also going to help with your, that is also going to help with your, that is also going to help with your, you know, your neuros and everything. So you know, your neuros and everything. So you know, your neuros and everything. So that's why I like to tie that in there. that's why I like to tie that in there. that's why I like to tie that in there. Um, you definitely don't have to pair Um, you definitely don't have to pair Um, you definitely don't have to pair any you don't have to pair this with any you don't have to pair this with any you don't have to pair this with other peptides. You can just take it by",
+            "first_timestamp": "00:21:08.919"
+          },
+          {
+            "source_id": "PvvfZxiFfjQ",
+            "source_type": "podcast",
+            "source_title": "I Used RETATRUTIDE for Fat Loss Here's What Happened",
+            "source_date": "2025-05-23",
+            "source_url": "https://youtu.be/PvvfZxiFfjQ",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2025-05-23-i-used-retatrutide-for-fat-loss-here-s-what-happened-PvvfZxiFfjQ.en.vtt",
+            "mention_count": 9,
+            "top_snippet": "millig. So that was also added in. And then I also added in twice a week NAD+.",
+            "top_context": "using injectable 5 amino, which is using injectable 5 amino, which is probably probably one of my favorite probably probably one of my favorite probably probably one of my favorite peptides right now. But I started using peptides right now. But I started using peptides right now. But I started using this um in February. I wish I had used this um in February. I wish I had used this um in February. I wish I had used this instead of concride. I used this instead of concride. I used this instead of concride. I used Injectable 5 amino back in December. Um, Injectable 5 amino back in December. Um, Injectable 5 amino back in December. Um, basically when we had it sent to us um basically when we had it sent to us um basically when we had it sent to us um through one of our friends, we didn't through one of our friends, we didn't through one of our friends, we didn't have access to it. We just got sent one have access to it. We just got sent one have access to it. We just got sent one bottle, tried it. Oh wow, this actually bottle, tried it. Oh wow, this actually bottle, tried it. Oh wow, this actually really helped. Gave me appetite really helped. Gave me appetite really helped. Gave me appetite suppression. February time period, got suppression. February time period, got suppression. February time period, got access to it and I started using that. access to it and I started using that. access to it and I started using that. But what I noticed is that it helps so But what I noticed is that it helps so But what I noticed is that it helps so much more with your energy. So I started much more with your energy. So I started much more with your energy. So I started off using 500 micrograms for the first off using 500 micrograms for the first off using 500 micrograms for the first two weeks and then I upped it to 1 two weeks and then I upped it to 1 two weeks and then I upped it to 1 millig. So that was also added in. And millig. So that was also added in. And millig. So that was also added in. And then I also added in twice a week NAD+. then I also added in twice a week NAD+. then I also added in twice a week NAD+. Now NAD+ and injectable 5 amino, they Now NAD+ and injectable 5 amino, they Now NAD+ and injectable 5 amino, they pair so good together. And this is going pair so good together. And this is going pair so good together. And this is going to be super beneficial for energy levels to be super beneficial for energy levels to be super beneficial for energy levels cuz when you are in a calorie deficit cuz when you are in a calorie deficit cuz when you are in a calorie deficit and you're leaning out like you don't and you're leaning out like you don't and you're leaning out like you don't have as much energy, you're exercising, have as much energy, you're exercising, have as much energy, you're exercising, your body stressed out more. So it's your body stressed out more. So it's your body stressed out more. So it's really important to go in and replenish really important to go in and replenish really important to go in and replenish your body and work on your cellular your body and work on your cellular your body and work on your cellular energy. And it's also going to have energy. And it's also going to have energy. And it's also going to have great anti-aging benefits. So, um, NAD+, great anti-aging benefits. So, um, NAD+, great anti-aging benefits. So, um, NAD+, I would use 100 milligrams of this twice I would use 100 milligrams of this twice I would use 100 milligrams of this twice a week. And I would inject this a week. And I would inject this a week. And I would inject this interuscularly into my glutes, which interuscularly into my glutes, which interuscularly into my glutes, which ends up being like a full syringe. So, ends up being like a full syringe. So, ends up being like a full syringe. So, um, it's definitely something that you um, it's definitely something that you um, it's definitely something that you don't want to do subq. You're going to",
+            "first_timestamp": "00:20:00.000"
+          },
+          {
+            "source_id": "JccJTHbWF84",
+            "source_type": "podcast",
+            "source_title": "Saturday Morning Coffee Talk | 2/7/26",
+            "source_date": "2026-02-08",
+            "source_url": "https://youtu.be/JccJTHbWF84",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2026-02-08-saturday-morning-coffee-talk-2-7-26-JccJTHbWF84.en.vtt",
+            "mention_count": 6,
+            "top_snippet": "cancels it out. So, even though like it might advertise that it has like NAD+ in",
+            "top_context": "thing too is like topical getting the thing too is like topical getting the right type of topical peptides um for right type of topical peptides um for right type of topical peptides um for skin health. That makes a big skin health. That makes a big skin health. That makes a big difference. And you do have to be difference. And you do have to be difference. And you do have to be careful with topical peptides um serums careful with topical peptides um serums careful with topical peptides um serums and creams that I've recently have been and creams that I've recently have been and creams that I've recently have been learning about is that like if they're learning about is that like if they're learning about is that like if they're dosed too high, that can actually be dosed too high, that can actually be dosed too high, that can actually be damaging to the skin. And depending on damaging to the skin. And depending on damaging to the skin. And depending on how they are factured and how they're how they are factured and how they're how they are factured and how they're chemically made, they could have chemically made, they could have chemically made, they could have peptides in them. But if it's not peptides in them. But if it's not peptides in them. But if it's not chemically structured properly, chemically structured properly, chemically structured properly, it's actually you're not going to get it's actually you're not going to get it's actually you're not going to get any benefit from the peptides. Um any benefit from the peptides. Um any benefit from the peptides. Um because if it's not chemically like because if it's not chemically like because if it's not chemically like structured properly, it actually will structured properly, it actually will structured properly, it actually will basically basically like basically basically like basically basically like cancels it out. So, even though like it cancels it out. So, even though like it cancels it out. So, even though like it might advertise that it has like NAD+ in might advertise that it has like NAD+ in might advertise that it has like NAD+ in it, if it's not properly um formulated, it, if it's not properly um formulated, it, if it's not properly um formulated, that NAD+ isn't going to really do that NAD+ isn't going to really do that NAD+ isn't going to really do anything. Um so, and then, you know, anything. Um so, and then, you know, anything. Um so, and then, you know, getting just more on board honestly with getting just more on board honestly with getting just more on board honestly with the foundations of doing a good skincare the foundations of doing a good skincare the foundations of doing a good skincare regimen routine of like, you know, regimen routine of like, you know, regimen routine of like, you know, moisturizing, toning, washing, moisturizing, toning, washing, moisturizing, toning, washing, exfoliating a couple times a week. exfoliating a couple times a week. exfoliating a couple times a week. Retinol makes a big difference on the Retinol makes a big difference on the Retinol makes a big difference on the skin health. skin health. skin health. &gt;&gt; Yeah. &gt;&gt; Yeah. &gt;&gt; Yeah. How to avoid freckles on malantan one. I How to avoid freckles on malantan one. I How to avoid freckles on malantan one. I live in New York City. UV won't be live in New York City. UV won't be live in New York City. UV won't be anywhere above 2 to three until April. anywhere above 2 to three until April. anywhere above 2 to three until April. &gt;&gt; I think you'd take glutathione. Yeah, &gt;&gt; I think you'd take glutathione. Yeah, &gt;&gt; I think you'd take glutathione. Yeah, &gt;&gt; that tends to help with skin lightening &gt;&gt; that tends to help with skin lightening &gt;&gt; that tends to help with skin lightening and so you kind of will get this tanning and so you kind of will get this tanning and so you kind of will get this tanning from the lantan one but then also the I from the lantan one but then also the I from the lantan one but then also the I think it kind of like mitigates some of",
+            "first_timestamp": "01:16:21.679"
+          },
+          {
+            "source_id": "Cg7JtpnfRY4",
+            "source_type": "podcast",
+            "source_title": "Saturday Morning Coffee Talk 4/18/26",
+            "source_date": "2026-04-18",
+            "source_url": "https://youtu.be/Cg7JtpnfRY4",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2026-04-18-saturday-morning-coffee-talk-4-18-26-Cg7JtpnfRY4.en.vtt",
+            "mention_count": 6,
+            "top_snippet": "Down 60 lb on Retatrutide do you recommend doing glutathione and NAD+",
+            "top_context": "So, I would do that for at least a good So, I would do that for at least a good 3 months 3 months 3 months prior to even putting in any estrogen. prior to even putting in any estrogen. prior to even putting in any estrogen. You do not want to start all of them all You do not want to start all of them all You do not want to start all of them all at once like that. Um I at once like that. Um I at once like that. Um I Honestly think if you did that, you Honestly think if you did that, you Honestly think if you did that, you switched that hormone switched that hormone switched that hormone those hormones up like that those hormones up like that those hormones up like that that weight that you're trying to lose that weight that you're trying to lose that weight that you're trying to lose will come off. Could be. Could be. What dosage of semaglutide would you What dosage of semaglutide would you What dosage of semaglutide would you suggest for someone who runs 50 km Whoa. suggest for someone who runs 50 km Whoa. suggest for someone who runs 50 km Whoa. 50 km and 100 km runs. 50 km and 100 km runs. 50 km and 100 km runs. 500 micrograms, 750 micrograms. I don't 500 micrograms, 750 micrograms. I don't 500 micrograms, 750 micrograms. I don't know that going know that going know that going that much higher is going to be that much higher is going to be that much higher is going to be beneficial because you're going to beneficial because you're going to beneficial because you're going to create a lot of oxidative stress from create a lot of oxidative stress from create a lot of oxidative stress from that for You're going to get burnt out. that for You're going to get burnt out. that for You're going to get burnt out. Ooh. Ooh. Ooh. That is a long way to run. Down 60 lb on Retatrutide do you Down 60 lb on Retatrutide do you recommend doing glutathione and NAD+ recommend doing glutathione and NAD+ recommend doing glutathione and NAD+ after a big weight loss? Yeah, you after a big weight loss? Yeah, you after a big weight loss? Yeah, you could. Definitely glutathione. could. Definitely glutathione. could. Definitely glutathione. NAD, yeah, I would use it as needed. If NAD, yeah, I would use it as needed. If NAD, yeah, I would use it as needed. If you feel like your energy is pretty low, you feel like your energy is pretty low, you feel like your energy is pretty low, but I wouldn't want to use I wouldn't but I wouldn't want to use I wouldn't but I wouldn't want to use I wouldn't say like do it all the time. You don't say like do it all the time. You don't say like do it all the time. You don't need to do it all the time in my need to do it all the time in my need to do it all the time in my opinion. opinion. opinion. And you're welcome. What are your And you're welcome. What are your And you're welcome. What are your thoughts on ARE290? How do you recommend thoughts on ARE290? How do you recommend thoughts on ARE290? How do you recommend BPC-157 and TB 500? I love ARE290. You BPC-157 and TB 500? I love ARE290. You BPC-157 and TB 500? I love ARE290. You can use it with BPC and TB 500. It's can use it with BPC and TB 500. It's can use it with BPC and TB 500. It's It's great, especially for people with It's great, especially for people with It's great, especially for people with neuropathy, nerve pain, sciatica. ARE290 neuropathy, nerve pain, sciatica. ARE290 neuropathy, nerve pain, sciatica. ARE290 in addition to those work great. See, Maria said it, too. See, Maria said it, too. It's been having my son's file for It's been having my son's file for It's been having my son's file for school. They keep getting corrupted in school. They keep getting corrupted in school. They keep getting corrupted in the cloud and USB every time. the cloud and USB every time. the cloud and USB every time. They're messing with us.",
+            "first_timestamp": "01:55:57.880"
+          }
+        ],
+        "acute_signals": [
+          {
+            "snippet": "boosting skin and mitochondria function. So again, the reason why I have NAD and",
+            "source_title": "Why Melanotan 1 Is My Favorite Peptide Ever!",
+            "source_date": "2025-04-11",
+            "timestamp": "00:21:32.799",
+            "source_url": "https://youtu.be/p948IlTbY7c"
+          },
+          {
+            "snippet": "So again, the reason why I have NAD and",
+            "source_title": "Why Melanotan 1 Is My Favorite Peptide Ever!",
+            "source_date": "2025-04-11",
+            "timestamp": "00:21:35.909",
+            "source_url": "https://youtu.be/p948IlTbY7c"
+          },
+          {
+            "snippet": "So again, the reason why I have NAD and SS31 is because those are going to be",
+            "source_title": "Why Melanotan 1 Is My Favorite Peptide Ever!",
+            "source_date": "2025-04-11",
+            "timestamp": "00:21:35.919",
+            "source_url": "https://youtu.be/p948IlTbY7c"
+          },
+          {
+            "snippet": "other peptides. You can just take it by itself. You don't need to take NAD or",
+            "source_title": "Why Melanotan 1 Is My Favorite Peptide Ever!",
+            "source_date": "2025-04-11",
+            "timestamp": "00:21:55.120",
+            "source_url": "https://youtu.be/p948IlTbY7c"
+          },
+          {
+            "snippet": "itself. You don't need to take NAD or",
+            "source_title": "Why Melanotan 1 Is My Favorite Peptide Ever!",
+            "source_date": "2025-04-11",
+            "timestamp": "00:21:57.190",
+            "source_url": "https://youtu.be/p948IlTbY7c"
+          }
+        ],
+        "chronic_signals": [
+          {
+            "snippet": "again it's kind of like going back and talking about it with nad+ those two",
+            "source_title": "5-Amino-1MQ: The Peptide That KILLS Appetite & Boosts Fat Loss!",
+            "source_date": "2025-03-14",
+            "timestamp": "00:15:05.040",
+            "source_url": "https://youtu.be/aYuXqSfhPYE"
+          },
+          {
+            "snippet": "talking about it with nad+ those two",
+            "source_title": "5-Amino-1MQ: The Peptide That KILLS Appetite & Boosts Fat Loss!",
+            "source_date": "2025-03-14",
+            "timestamp": "00:15:08.829",
+            "source_url": "https://youtu.be/aYuXqSfhPYE"
+          },
+          {
+            "snippet": "talking about it with nad+ those two pair together so well because it's going",
+            "source_title": "5-Amino-1MQ: The Peptide That KILLS Appetite & Boosts Fat Loss!",
+            "source_date": "2025-03-14",
+            "timestamp": "00:15:08.839",
+            "source_url": "https://youtu.be/aYuXqSfhPYE"
+          },
+          {
+            "snippet": "it to help with support with um more relaxation. You can, you know, NAD+ is",
+            "source_title": "Why Melanotan 1 Is My Favorite Peptide Ever!",
+            "source_date": "2025-04-11",
+            "timestamp": "00:21:08.919",
+            "source_url": "https://youtu.be/p948IlTbY7c"
+          },
+          {
+            "snippet": "relaxation. You can, you know, NAD+ is",
+            "source_title": "Why Melanotan 1 Is My Favorite Peptide Ever!",
+            "source_date": "2025-04-11",
+            "timestamp": "00:21:11.990",
+            "source_url": "https://youtu.be/p948IlTbY7c"
+          }
+        ]
+      },
+      "female_specific_note": "Taylor Williams Coaching focuses on female-specific HRT/peptide guidance. Per-peptide notes here often emphasize female dosing, fertility, hormone interactions."
+    },
+    "trevor-bachmeyer": {
+      "summary": {
+        "mention_count": 1039,
+        "top_doses": [
+          {
+            "dose": "50 milligrams",
+            "count": 151
+          },
+          {
+            "dose": "100 milligrams",
+            "count": 64
+          },
+          {
+            "dose": "50 mg",
+            "count": 52
+          },
+          {
+            "dose": "4 milligrams",
+            "count": 48
+          },
+          {
+            "dose": "000 milligrams",
+            "count": 38
+          },
+          {
+            "dose": "400 milligrams",
+            "count": 31
+          },
+          {
+            "dose": "1 milligram",
+            "count": 30
+          },
+          {
+            "dose": "60 milligram",
+            "count": 29
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "xsxq0Lb0kps",
+            "source_type": "podcast",
+            "source_title": "Does MOTS-C Make You Tired? Here's the solution - Dr Trevor Bachmeyer",
+            "source_date": "2026-03-18",
+            "source_url": "https://youtu.be/xsxq0Lb0kps",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2026-03-18-does-mots-c-make-you-tired-here-s-the-solution-dr-trevor-bachmeyer-xsxq0Lb0kps.en.vtt",
+            "mention_count": 150,
+            "top_snippet": "something else because it's important. So we have mod C. Now we have NAD+. Now",
+            "top_context": "building new mitochondria biogenesis building new mitochondria biogenesis while destroying the damaged onephagy. while destroying the damaged onephagy. while destroying the damaged onephagy. You're literally replacing your You're literally replacing your You're literally replacing your mitochondrial population with newer, mitochondrial population with newer, mitochondrial population with newer, healthier versions. This is profound healthier versions. This is profound healthier versions. This is profound because your mitochondrial age because your mitochondrial age because your mitochondrial age decreases. Your ATP production capacity decreases. Your ATP production capacity decreases. Your ATP production capacity increases and your metabolic flexibility increases and your metabolic flexibility increases and your metabolic flexibility goes through the roof. But this is the goes through the roof. But this is the goes through the roof. But this is the critical part. Here's the butt. This critical part. Here's the butt. This critical part. Here's the butt. This process doesn't happen overnight. It process doesn't happen overnight. It process doesn't happen overnight. It takes weeks, months even. And during takes weeks, months even. And during takes weeks, months even. And during that transition, you feel worse. Let me that transition, you feel worse. Let me that transition, you feel worse. Let me explain why. Because the old explain why. Because the old explain why. Because the old mitochondria are gone before the new mitochondria are gone before the new mitochondria are gone before the new ones are fully operational. But nobody's ones are fully operational. But nobody's ones are fully operational. But nobody's explaining that properly. They just go explaining that properly. They just go explaining that properly. They just go take MC and then take this magic cream take MC and then take this magic cream take MC and then take this magic cream or drink this magic supplement and it'll or drink this magic supplement and it'll or drink this magic supplement and it'll make you better. No. So let me explain make you better. No. So let me explain make you better. No. So let me explain something else because it's important. something else because it's important. something else because it's important. So we have mod C. Now we have NAD+. Now So we have mod C. Now we have NAD+. Now So we have mod C. Now we have NAD+. Now you guys are starting to put this you guys are starting to put this you guys are starting to put this together. So the molecules are together. So the molecules are together. So the molecules are absolutely fundamental to cellular absolutely fundamental to cellular absolutely fundamental to cellular energy production. In fact, without energy production. In fact, without energy production. In fact, without NAD+, you can't produce NAD or you can't NAD+, you can't produce NAD or you can't NAD+, you can't produce NAD or you can't produce ATP at all. Here's the produce ATP at all. Here's the produce ATP at all. Here's the mechanism. the electron transport chain, mechanism. the electron transport chain, mechanism. the electron transport chain, the mitochondrial machinery that the mitochondrial machinery that the mitochondrial machinery that produces ATP. Electrons are transferred produces ATP. Electrons are transferred produces ATP. Electrons are transferred through a series of protein complexes, through a series of protein complexes, through a series of protein complexes, which I've gone over a ton of times. which I've gone over a ton of times. which I've gone over a ton of times. NAD+ is a molecule that accepts NAD+ is a molecule that accepts NAD+ is a molecule that accepts electrons at complex one. When NAD+ electrons at complex one. When NAD+ electrons at complex one. When NAD+ accepts the electrons, it becomes NADH. accepts the electrons, it becomes NADH. accepts the electrons, it becomes NADH. NADH then donates those electrons down NADH then donates those electrons down NADH then donates those electrons down the chain, driving proton pumping that the chain, driving proton pumping that the chain, driving proton pumping that creates something called a proton creates something called a proton creates something called a proton gradient, powering something called ATP gradient, powering something called ATP gradient, powering something called ATP synth. It's ATP synthes. It's the ATP synth. It's ATP synthes. It's the ATP synth. It's ATP synthes. It's the ATP synthesis that makes the ATP at the end. synthesis that makes the ATP at the end. synthesis that makes the ATP at the end. So 2014 study nature reviews molecular",
+            "first_timestamp": "00:10:52.000"
+          },
+          {
+            "source_id": "UWZ3sEwI5TM",
+            "source_type": "podcast",
+            "source_title": "Why Your Injuries Heal SO SLOW (It's Not Rest) - Dr Trevor Bachmeyer",
+            "source_date": "2026-04-18",
+            "source_url": "https://youtu.be/UWZ3sEwI5TM",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2026-04-18-why-your-injuries-heal-so-slow-it-s-not-rest-dr-trevor-bachmeyer-UWZ3sEwI5TM.en.vtt",
+            "mention_count": 150,
+            "top_snippet": "molecular cell biology demonstrated and this is just NAD+, never mind the MC and",
+            "top_context": "be slow, baby. This is why rest doesn't be slow, baby. This is why rest doesn't work. Rest doesn't create energy. I'm work. Rest doesn't create energy. I'm work. Rest doesn't create energy. I'm not saying don't rest before you guys not saying don't rest before you guys not saying don't rest before you guys misunderstand it. You guys misconstrue misunderstand it. You guys misconstrue misunderstand it. You guys misconstrue things sometimes. You still need to things sometimes. You still need to things sometimes. You still need to rest. But rest doesn't create energy. It rest. But rest doesn't create energy. It rest. But rest doesn't create energy. It just prevents additional damage. They're just prevents additional damage. They're just prevents additional damage. They're not the same. So, you can rest all you not the same. So, you can rest all you not the same. So, you can rest all you want. That's like saying saving your way want. That's like saying saving your way want. That's like saying saving your way to a million doesn't If you don't buy to a million doesn't If you don't buy to a million doesn't If you don't buy coffee, you're like, I'm not going to go coffee, you're like, I'm not going to go coffee, you're like, I'm not going to go to Starbucks anymore. Okay, great. to Starbucks anymore. Okay, great. to Starbucks anymore. Okay, great. You're still not going to be a You're still not going to be a You're still not going to be a millionaire. If you're making 30 grand a millionaire. If you're making 30 grand a millionaire. If you're making 30 grand a year, unless you're making that money do year, unless you're making that money do year, unless you're making that money do something for you, saving your way to something for you, saving your way to something for you, saving your way to millions of dollars ain't going to millions of dollars ain't going to millions of dollars ain't going to happen, honey. If you're using it, if happen, honey. If you're using it, if happen, honey. If you're using it, if you're cancelling your Starbucks and you're cancelling your Starbucks and you're cancelling your Starbucks and your white mocha every day, not your white mocha every day, not your white mocha every day, not possible. Same thing. Please understand possible. Same thing. Please understand possible. Same thing. Please understand the ramifications of what you're doing. the ramifications of what you're doing. the ramifications of what you're doing. Okay, so 25th Luch published nature Okay, so 25th Luch published nature Okay, so 25th Luch published nature molecular cell biology demonstrated and molecular cell biology demonstrated and molecular cell biology demonstrated and this is just NAD+, never mind the MC and this is just NAD+, never mind the MC and this is just NAD+, never mind the MC and the BPC. NAD+ available is the rate the BPC. NAD+ available is the rate the BPC. NAD+ available is the rate limited co-actor for mitochondrial limited co-actor for mitochondrial limited co-actor for mitochondrial function. We know this already, but function. We know this already, but function. We know this already, but without sufficient NAD+, your without sufficient NAD+, your without sufficient NAD+, your mitochondria literally can't produce ATP mitochondria literally can't produce ATP mitochondria literally can't produce ATP efficiently. Your cells are like efficiently. Your cells are like efficiently. Your cells are like factories running at 50% power. Here's factories running at 50% power. Here's factories running at 50% power. Here's the thing that blows my mind. Most the thing that blows my mind. Most the thing that blows my mind. Most people are operating at 50% people are operating at 50% people are operating at 50% mitochondrial capacity without even mitochondrial capacity without even mitochondrial capacity without even knowing it. You don't even know. You knowing it. You don't even know. You knowing it. You don't even know. You guys drink monsters and black coffee guys drink monsters and black coffee guys drink monsters and black coffee like it's going out of style trying to like it's going out of style trying to like it's going out of style trying to mainline caffeine or methamphetamines. mainline caffeine or methamphetamines. mainline caffeine or methamphetamines. It's not changing the mitochondrial It's not changing the mitochondrial It's not changing the mitochondrial capacity, the energy capacity. Your NAD+ capacity, the energy capacity. Your NAD+ capacity, the energy capacity. Your NAD+ levels naturally decline, right? They levels naturally decline, right? They levels naturally decline, right? They decline from age. They decline from decline from age. They decline from decline from age. They decline from stress. they decline from inflammation stress. they decline from inflammation stress. they decline from inflammation or infection and by the time you're or infection and by the time you're or infection and by the time you're injured, you need max healing capacity. injured, you need max healing capacity. injured, you need max healing capacity. You're already operating with a You're already operating with a You're already operating with a compromised energy supply. So, you don't compromised energy supply. So, you don't compromised energy supply. So, you don't have the you don't have the chops to",
+            "first_timestamp": "00:16:28.000"
+          },
+          {
+            "source_id": "m8FwL9Xsk78",
+            "source_type": "podcast",
+            "source_title": "NAD+ Is My New Favorite Compound - Unbreakable Podcast 298",
+            "source_date": "2025-10-31",
+            "source_url": "https://youtu.be/m8FwL9Xsk78",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2025-10-31-nad-is-my-new-favorite-compound-unbreakable-podcast-298-m8FwL9Xsk78.en.vtt",
+            "mention_count": 102,
+            "top_snippet": "blown damn fuse. I'm going to talk about NAD+ by the way. If you're like, what",
+            "top_context": "your life. I think this, listen, doctors your life. I think this, listen, doctors love symptoms. All of you doctors, boy, love symptoms. All of you doctors, boy, love symptoms. All of you doctors, boy, you guys just get queer for symptoms. you guys just get queer for symptoms. you guys just get queer for symptoms. You just all horned out for this stuff. You just all horned out for this stuff. You just all horned out for this stuff. You know why though? I'll tell all the You know why though? I'll tell all the You know why though? I'll tell all the the rest of the people, I'm going to the rest of the people, I'm going to the rest of the people, I'm going to blow your secret. All you doc I'm a blow your secret. All you doc I'm a blow your secret. All you doc I'm a doctor, so I get it. I know exactly what doctor, so I get it. I know exactly what doctor, so I get it. I know exactly what you're doing, but I just never did that. you're doing, but I just never did that. you're doing, but I just never did that. Symptoms are billable hours. They love Symptoms are billable hours. They love Symptoms are billable hours. They love giving fancy names to your decay, giving fancy names to your decay, giving fancy names to your decay, metabolic syndrome, fibromyalgia, metabolic syndrome, fibromyalgia, metabolic syndrome, fibromyalgia, adrenal fatigue, all this stuff, big adrenal fatigue, all this stuff, big adrenal fatigue, all this stuff, big fancy words that mean one thing. They fancy words that mean one thing. They fancy words that mean one thing. They all mean the same thing. Your body's all mean the same thing. Your body's all mean the same thing. Your body's electrical system electrical system electrical system is failing. is failing. is failing. Because that's what it all comes back Because that's what it all comes back Because that's what it all comes back to. Energy, inflammation or insulin. to. Energy, inflammation or insulin. to. Energy, inflammation or insulin. It's always the same. And they'll these It's always the same. And they'll these It's always the same. And they'll these docs, they'll throw pills at the docs, they'll throw pills at the docs, they'll throw pills at the symptoms and they'll never address the symptoms and they'll never address the symptoms and they'll never address the blown damn fuse. I'm going to talk about blown damn fuse. I'm going to talk about blown damn fuse. I'm going to talk about NAD+ by the way. If you're like, what NAD+ by the way. If you're like, what NAD+ by the way. If you're like, what the [&nbsp;__&nbsp;] are you talking about, doc? the [&nbsp;__&nbsp;] are you talking about, doc? the [&nbsp;__&nbsp;] are you talking about, doc? NAD+. The fuse is blown because you're NAD+. The fuse is blown because you're NAD+. The fuse is blown because you're burning out the wiring in your system in burning out the wiring in your system in burning out the wiring in your system in your biology, right? The wiring is your your biology, right? The wiring is your your biology, right? The wiring is your mitochondria and the insulation mitochondria and the insulation mitochondria and the insulation protecting that wiring has worn protecting that wiring has worn protecting that wiring has worn incredibly thin and the insulation is a incredibly thin and the insulation is a incredibly thin and the insulation is a molecule called NAD+. You guys are all molecule called NAD+. You guys are all molecule called NAD+. You guys are all running on exposed, sparking, shorting running on exposed, sparking, shorting running on exposed, sparking, shorting out, screwed up wiring. NAD+ out, screwed up wiring. NAD+ out, screwed up wiring. NAD+ nicotinamide adenine dinucleotide. It's nicotinamide adenine dinucleotide. It's nicotinamide adenine dinucleotide. It's a big mouthful. You know what else? So a big mouthful. You know what else? So a big mouthful. You know what else? So is congestive heart failure. Get used to is congestive heart failure. Get used to is congestive heart failure. Get used to it. You have to decide what what you're it. You have to decide what what you're it. You have to decide what what you're doing. Your body is a dictatorship. It doing. Your body is a dictatorship. It doing. Your body is a dictatorship. It is a very brutal, unforgiving, is a very brutal, unforgiving, is a very brutal, unforgiving, authoritarian dictatorship of ATP. It's authoritarian dictatorship of ATP. It's authoritarian dictatorship of ATP. It's the only currency. Doesn't allow for the only currency. Doesn't allow for the only currency. Doesn't allow for anything else. There's no other anything else. There's no other anything else. There's no other currency, none. Every thought, every currency, none. Every thought, every currency, none. Every thought, every heartbeat, the very act of listening to",
+            "first_timestamp": "00:07:19.400"
+          },
+          {
+            "source_id": "_mitwuF5_4M",
+            "source_type": "podcast",
+            "source_title": "Retatrutide and 5-Amino-1-MQ Combined - Dr Trevor Bachmeyer",
+            "source_date": "2026-02-27",
+            "source_url": "https://youtu.be/_mitwuF5_4M",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2026-02-27-retatrutide-and-5-amino-1-mq-combined-dr-trevor-bachmeyer-_mitwuF5_4M.en.vtt",
+            "mention_count": 93,
+            "top_snippet": "and I went over this the other day called NAD+. NAD+ is the premise. It's",
+            "top_context": "address one of these problems and maybe address one of these problems and maybe two if you're lucky, but they don't two if you're lucky, but they don't two if you're lucky, but they don't solve it. They cover it up. So, I'm solve it. They cover it up. So, I'm solve it. They cover it up. So, I'm going to look at all three. Get comfy going to look at all three. Get comfy going to look at all three. Get comfy because this is going to change your because this is going to change your because this is going to change your whole life. Listen, I'll explain. So, whole life. Listen, I'll explain. So, whole life. Listen, I'll explain. So, let's do this. Five amino 1MQ. Let's let's do this. Five amino 1MQ. Let's let's do this. Five amino 1MQ. Let's just get right into it because otherwise just get right into it because otherwise just get right into it because otherwise I'm going to get on these three medical I'm going to get on these three medical I'm going to get on these three medical these biological failures and you guys these biological failures and you guys these biological failures and you guys are going to be like, can we talk about are going to be like, can we talk about are going to be like, can we talk about this other peptide? Yes. So, five amino this other peptide? Yes. So, five amino this other peptide? Yes. So, five amino is it's a metabolite. So, think of it as is it's a metabolite. So, think of it as is it's a metabolite. So, think of it as a cellular signal. It's a message that a cellular signal. It's a message that a cellular signal. It's a message that tells your body, hey, listen, we need to tells your body, hey, listen, we need to tells your body, hey, listen, we need to manufacture our energy differently, manufacture our energy differently, manufacture our energy differently, right? very small molecule interacts right? very small molecule interacts right? very small molecule interacts with something called NNMT, nicotenomide with something called NNMT, nicotenomide with something called NNMT, nicotenomide Nmethyl transferase. Just say it with me Nmethyl transferase. Just say it with me Nmethyl transferase. Just say it with me because it's fun, right? But here's because it's fun, right? But here's because it's fun, right? But here's where it gets really fun. Look at the where it gets really fun. Look at the where it gets really fun. Look at the biochemistry. Your body has a molecule, biochemistry. Your body has a molecule, biochemistry. Your body has a molecule, and I went over this the other day and I went over this the other day and I went over this the other day called NAD+. NAD+ is the premise. It's called NAD+. NAD+ is the premise. It's called NAD+. NAD+ is the premise. It's the precursor to every single energy the precursor to every single energy the precursor to every single energy function in your body. No NAD+, no ATP function in your body. No NAD+, no ATP function in your body. No NAD+, no ATP is created. So NAD+ comes upstream. is created. So NAD+ comes upstream. is created. So NAD+ comes upstream. That's why it's important. So NAD+ is That's why it's important. So NAD+ is That's why it's important. So NAD+ is basically the electron carrying shuttle basically the electron carrying shuttle basically the electron carrying shuttle in your mitochondria. It's the currency in your mitochondria. It's the currency in your mitochondria. It's the currency of cellular energy. And when NAD+ is of cellular energy. And when NAD+ is of cellular energy. And when NAD+ is high, your mitochondria are firing. And high, your mitochondria are firing. And high, your mitochondria are firing. And when NAD+ is low, your mitochondria are when NAD+ is low, your mitochondria are when NAD+ is low, your mitochondria are limping around. And here's what most limping around. And here's what most limping around. And here's what most people don't understand. NMT is an people don't understand. NMT is an people don't understand. NMT is an enzyme that literally burns up NAD+. It enzyme that literally burns up NAD+. It enzyme that literally burns up NAD+. It consumes it in obese individuals, consumes it in obese individuals, consumes it in obese individuals, overweight individuals, menopausal overweight individuals, menopausal overweight individuals, menopausal individuals, neuro neurologically individuals, neuro neurologically individuals, neuro neurologically declining individuals, diabetic",
+            "first_timestamp": "00:03:23.760"
+          },
+          {
+            "source_id": "lAdPLuyggFw",
+            "source_type": "podcast",
+            "source_title": "MOTS-C, NAD+ and SS-31 (solving mitochondrial damage) - Dr Trevor Bachmeyer",
+            "source_date": "2026-01-08",
+            "source_url": "https://youtu.be/lAdPLuyggFw",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2026-01-08-mots-c-nad-and-ss-31-solving-mitochondrial-damage-dr-trevor-bachmeyer-lAdPLuyggFw.en.vtt",
+            "mention_count": 72,
+            "top_snippet": "I'm on, and better than social media for in general. So, today NAD+ actually",
+            "top_context": "So, I almost wasn't going to do this So, I almost wasn't going to do this podcast, but I actually Thank you for podcast, but I actually Thank you for podcast, but I actually Thank you for the questions. Keep them coming and I'll the questions. Keep them coming and I'll the questions. Keep them coming and I'll I'll do my best to make podcasts and I'll do my best to make podcasts and I'll do my best to make podcasts and posts and answer things like that. And posts and answer things like that. And posts and answer things like that. And if you leave me a question in my ask me if you leave me a question in my ask me if you leave me a question in my ask me your questions post that I make your questions post that I make your questions post that I make generally about once a week, I'll do my generally about once a week, I'll do my generally about once a week, I'll do my best to get to it. I usually get best to get to it. I usually get best to get to it. I usually get somewhere in the neighborhood of about somewhere in the neighborhood of about somewhere in the neighborhood of about 10 to 15,000 questions and I appreciate 10 to 15,000 questions and I appreciate 10 to 15,000 questions and I appreciate that. I appreciate the trust. I'll give that. I appreciate the trust. I'll give that. I appreciate the trust. I'll give you all I got. And I have a ton of you all I got. And I have a ton of you all I got. And I have a ton of answers just single Q&amp;A answers on answers just single Q&amp;A answers on answers just single Q&amp;A answers on Rumble. And you guys should all If Rumble. And you guys should all If Rumble. And you guys should all If you're not following me on Rumble and you're not following me on Rumble and you're not following me on Rumble and you're not subscribed, you should. For you're not subscribed, you should. For you're not subscribed, you should. For two reasons. One, honestly, because I'm two reasons. One, honestly, because I'm two reasons. One, honestly, because I'm asking you to and it's the safest place. asking you to and it's the safest place. asking you to and it's the safest place. It's better than YouTube, this crap that It's better than YouTube, this crap that It's better than YouTube, this crap that I'm on, and better than social media for I'm on, and better than social media for I'm on, and better than social media for in general. So, today NAD+ actually in general. So, today NAD+ actually in general. So, today NAD+ actually MOTS-c NAD+ and SS-31 as a mitochondrial MOTS-c NAD+ and SS-31 as a mitochondrial MOTS-c NAD+ and SS-31 as a mitochondrial repair I hate to say the word protocol cuz it's I hate to say the word protocol cuz it's so much more than that. It's like a so much more than that. It's like a so much more than that. It's like a repair blueprint. Your mitochondria are repair blueprint. Your mitochondria are repair blueprint. Your mitochondria are life Listen, all of you guys are sick. life Listen, all of you guys are sick. life Listen, all of you guys are sick. Just understand, you're all sick. And Just understand, you're all sick. And Just understand, you're all sick. And you might not be sick enough for a you might not be sick enough for a you might not be sick enough for a diagnosis, not yet, but you're tired, diagnosis, not yet, but you're tired, diagnosis, not yet, but you're tired, your brain is foggy, and you can't lose your brain is foggy, and you can't lose your brain is foggy, and you can't lose the last 20 or 30 lb no matter how you the last 20 or 30 lb no matter how you the last 20 or 30 lb no matter how you eat or how hard you work out or how long eat or how hard you work out or how long eat or how hard you work out or how long you fast or how many walks you go on or you fast or how many walks you go on or you fast or how many walks you go on or the water fasts or whatever it is you the water fasts or whatever it is you the water fasts or whatever it is you guys are doing and your joints ache and guys are doing and your joints ache and guys are doing and your joints ache and your doctor runs the standard panel,",
+            "first_timestamp": "00:00:44.800"
+          },
+          {
+            "source_id": "1r5FQHIx5-o",
+            "source_type": "podcast",
+            "source_title": "The Longevity Stack (Fire Your Longevity Clinic) Unbreakable Podcast 198",
+            "source_date": "2025-07-18",
+            "source_url": "https://youtu.be/1r5FQHIx5-o",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2025-07-18-the-longevity-stack-fire-your-longevity-clinic-unbreakable-podcast-198-1r5FQHIx5-o.en.vtt",
+            "mention_count": 34,
+            "top_snippet": "wellness spa hyped up NAD plus infusion IV",
+            "top_context": "I've been a doc for well over two I've been a doc for well over two decades. Like I said, I'm 52 years old. decades. Like I said, I'm 52 years old. decades. Like I said, I'm 52 years old. I've been doing this a really long time. I've been doing this a really long time. I've been doing this a really long time. But I really started getting into But I really started getting into But I really started getting into real health. Let me explain something real health. Let me explain something real health. Let me explain something because I'm going to I'm going to burn because I'm going to I'm going to burn because I'm going to I'm going to burn down every single longevity clinic down every single longevity clinic down every single longevity clinic wellness spa wellness spa wellness spa hyped up NAD plus infusion IV hyped up NAD plus infusion IV hyped up NAD plus infusion IV BS business in the United States on this BS business in the United States on this BS business in the United States on this this version of this podcast today cuz this version of this podcast today cuz this version of this podcast today cuz they aggravate me so much because you they aggravate me so much because you they aggravate me so much because you guys if you're one of those wellness guys if you're one of those wellness guys if you're one of those wellness spas, those longevity clinics, I'm going spas, those longevity clinics, I'm going spas, those longevity clinics, I'm going to burn out your to burn out your to burn out your I'm going to burn out your eyes because I'm going to burn out your eyes because I'm going to burn out your eyes because you know what? I'm going to give it all you know what? I'm going to give it all you know what? I'm going to give it all away and I'm going to tell everybody how away and I'm going to tell everybody how away and I'm going to tell everybody how to do it where they can do it without to do it where they can do it without to do it where they can do it without giving you a hundred grand a year for giving you a hundred grand a year for giving you a hundred grand a year for all the BS that you guys don't even all the BS that you guys don't even all the BS that you guys don't even understand. I'll go toe-to-toe with any understand. I'll go toe-to-toe with any understand. I'll go toe-to-toe with any one of you guys. anyone go live with me one of you guys. anyone go live with me one of you guys. anyone go live with me time and place because I'm so sick and time and place because I'm so sick and time and place because I'm so sick and tired of you guys thinking that you are tired of you guys thinking that you are tired of you guys thinking that you are such an expert just because you know such an expert just because you know such an expert just because you know more than some rich man or woman that more than some rich man or woman that more than some rich man or woman that comes into your wellness spa or your",
+            "first_timestamp": "00:00:26.160"
+          },
+          {
+            "source_id": "7Pz8i1D4MJE",
+            "source_type": "podcast",
+            "source_title": "Is Long-Term Methylene Blue Use Safe? - Dr Trevor Bachmeyer",
+            "source_date": "2026-04-07",
+            "source_url": "https://youtu.be/7Pz8i1D4MJE",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2026-04-07-is-long-term-methylene-blue-use-safe-dr-trevor-bachmeyer-7Pz8i1D4MJE.en.vtt",
+            "mention_count": 33,
+            "top_snippet": "means they're all running around ATP deficient. NAD+, this is the electron",
+            "top_context": "go why why this isn't working. It's not go why why this isn't working. It's not working because you keep starting at the working because you keep starting at the working because you keep starting at the [&nbsp;__&nbsp;] beginning. That's why it's not [&nbsp;__&nbsp;] beginning. That's why it's not [&nbsp;__&nbsp;] beginning. That's why it's not working. Anyway, I had to get that out. working. Anyway, I had to get that out. working. Anyway, I had to get that out. So complex one and complex 3, right? So complex one and complex 3, right? So complex one and complex 3, right? without it without this shuttle which is without it without this shuttle which is without it without this shuttle which is CoQ10 right ubiquinol without it CoQ10 right ubiquinol without it CoQ10 right ubiquinol without it electrons jam up so 2015 study in the electrons jam up so 2015 study in the electrons jam up so 2015 study in the journal of American college of journal of American college of journal of American college of cardiology showed that CoQ10 deficiency cardiology showed that CoQ10 deficiency cardiology showed that CoQ10 deficiency is present in 40% of people with heart is present in 40% of people with heart is present in 40% of people with heart failure a direct result of electron failure a direct result of electron failure a direct result of electron transport chain dysfunction magnesium transport chain dysfunction magnesium transport chain dysfunction magnesium everybody is deficient in this one baby everybody is deficient in this one baby everybody is deficient in this one baby this is a co-actor for ATP synthes this is a co-actor for ATP synthes this is a co-actor for ATP synthes itself the turbine that's making ATP itself the turbine that's making ATP itself the turbine that's making ATP it's literally required to spin the it's literally required to spin the it's literally required to spin the turbine 2018 nutrients show that turbine 2018 nutrients show that turbine 2018 nutrients show that magnesium deficiency is present in 50% magnesium deficiency is present in 50% magnesium deficiency is present in 50% of the population. Half the people can't of the population. Half the people can't of the population. Half the people can't spin their turbines properly, which spin their turbines properly, which spin their turbines properly, which means they're all running around ATP means they're all running around ATP means they're all running around ATP deficient. NAD+, this is the electron deficient. NAD+, this is the electron deficient. NAD+, this is the electron donor that feeds electrons into complex donor that feeds electrons into complex donor that feeds electrons into complex one. Without it, the electron transport one. Without it, the electron transport one. Without it, the electron transport chain can't start. 2016 Harvard by David chain can't start. 2016 Harvard by David chain can't start. 2016 Harvard by David Sinclair. This guy is a monster. Love Sinclair. This guy is a monster. Love Sinclair. This guy is a monster. Love this guy's research. Showed NAD+ this guy's research. Showed NAD+ this guy's research. Showed NAD+ declines by 50% between the ages of 20 declines by 50% between the ages of 20 declines by 50% between the ages of 20 and 60. Your battery is literally and 60. Your battery is literally and 60. Your battery is literally draining as you get older. And iron draining as you get older. And iron draining as you get older. And iron required for complexes one, complex required for complexes one, complex required for complexes one, complex three, and complex four. And deficiency three, and complex four. And deficiency three, and complex four. And deficiency means stalled electron transport chain. means stalled electron transport chain. means stalled electron transport chain. It's just that simple. By the way, don't It's just that simple. By the way, don't It's just that simple. By the way, don't screw around with iron when you want to screw around with iron when you want to screw around with iron when you want to take it. Use your labs. Understand. take it. Use your labs. Understand. take it. Use your labs. Understand. Feritin is what you want to check too Feritin is what you want to check too Feritin is what you want to check too because it checks stored iron basically because it checks stored iron basically because it checks stored iron basically inside a red blood cell without getting inside a red blood cell without getting inside a red blood cell without getting fancy about it. B vitamins, they should fancy about it. B vitamins, they should fancy about it. B vitamins, they should always be methylated by the way. B2, B3, always be methylated by the way. B2, B3, always be methylated by the way. B2, B3, B5. These are the precursors for FADH2",
+            "first_timestamp": "00:09:14.959"
+          },
+          {
+            "source_id": "tEjUk1gs1W4",
+            "source_type": "podcast",
+            "source_title": "The Entire Routine And Supplement Stack - Unbreakable Podcast 232",
+            "source_date": "2025-08-23",
+            "source_url": "https://youtu.be/tEjUk1gs1W4",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2025-08-23-the-entire-routine-and-supplement-stack-unbreakable-podcast-232-tEjUk1gs1W4.en.vtt",
+            "mention_count": 27,
+            "top_snippet": "It shuts down something called NNMT. This is an enzyme that wastes your NAD+.",
+            "top_context": "Yes, it's blue. I say this every time Yes, it's blue. I say this every time because as some invariably somebody asks because as some invariably somebody asks because as some invariably somebody asks me, it boosts something called lysol me, it boosts something called lysol me, it boosts something called lysol oxidase. It's an enzyme that that oxidase. It's an enzyme that that oxidase. It's an enzyme that that cross-links collagen and elastin. So cross-links collagen and elastin. So cross-links collagen and elastin. So think skin, tendons, connective tissue, think skin, tendons, connective tissue, think skin, tendons, connective tissue, which is like ligaments, even muscles. which is like ligaments, even muscles. which is like ligaments, even muscles. They all get stronger and tighter and They all get stronger and tighter and They all get stronger and tighter and function better. It also lowers function better. It also lowers function better. It also lowers pro-inflammatory cytoines, which are all pro-inflammatory cytoines, which are all pro-inflammatory cytoines, which are all the things that keep you in a lot of the things that keep you in a lot of the things that keep you in a lot of discomfort. TNF, it doesn't matter what discomfort. TNF, it doesn't matter what discomfort. TNF, it doesn't matter what they are actually, but it it just means they are actually, but it it just means they are actually, but it it just means less pain, faster recovery, cuz I really less pain, faster recovery, cuz I really less pain, faster recovery, cuz I really want to go. I got other things to do want to go. I got other things to do want to go. I got other things to do right now. and tissue that actually right now. and tissue that actually right now. and tissue that actually rebuilds stronger instead of scarred rebuilds stronger instead of scarred rebuilds stronger instead of scarred with a low almost non-existent range of with a low almost non-existent range of with a low almost non-existent range of motion. Five amino motion. Five amino motion. Five amino mq. I just started this a little while mq. I just started this a little while mq. I just started this a little while ago. Every other day this and if you ago. Every other day this and if you ago. Every other day this and if you remember the podcast I did about this. remember the podcast I did about this. remember the podcast I did about this. It shuts down something called NNMT. It shuts down something called NNMT. It shuts down something called NNMT. This is an enzyme that wastes your NAD+. This is an enzyme that wastes your NAD+. This is an enzyme that wastes your NAD+. So if NAD+, think about like this. If So if NAD+, think about like this. If So if NAD+, think about like this. If NAD+ is your cell's battery, NMT is the NAD+ is your cell's battery, NMT is the NAD+ is your cell's battery, NMT is the parasite that sits on both poles, parasite that sits on both poles, parasite that sits on both poles, positive and negative, and just drains positive and negative, and just drains positive and negative, and just drains the crap out of it. Five amino stops the crap out of it. Five amino stops the crap out of it. Five amino stops that leak. It gets rid of that parasite, that leak. It gets rid of that parasite, that leak. It gets rid of that parasite, which means more NAD+ is left for which means more NAD+ is left for which means more NAD+ is left for mitochondrial energy production, which mitochondrial energy production, which mitochondrial energy production, which is what's required. So, not only that, is what's required. So, not only that, is what's required. So, not only that, it actually helps you with fat oxidation it actually helps you with fat oxidation it actually helps you with fat oxidation or fat metabolism, more precisely, not or fat metabolism, more precisely, not or fat metabolism, more precisely, not oxidation, and DNA repair. Sign me up. oxidation, and DNA repair. Sign me up. oxidation, and DNA repair. Sign me up. None of these things are bad. So, if None of these things are bad. So, if None of these things are bad. So, if somebody goes, I take an Advil. hundred somebody goes, I take an Advil. hundred somebody goes, I take an Advil. hundred times worse than anything I ever put in times worse than anything I ever put in times worse than anything I ever put in my body so far. You preserve, The reason my body so far. You preserve, The reason my body so far. You preserve, The reason this stuff is so great is because you this stuff is so great is because you this stuff is so great is because you preserve lean tissue. You burn fat more preserve lean tissue. You burn fat more preserve lean tissue. You burn fat more efficiently and you keep cellular aging efficiently and you keep cellular aging efficiently and you keep cellular aging almost on pause. Not like a pitilon with",
+            "first_timestamp": "00:14:36.720"
+          }
+        ],
+        "acute_signals": [
+          {
+            "snippet": "This is just pure research and hypothetical information. NAD+ you can",
+            "source_title": "Stop Using Oral Peptides (They're WORTHLESS) Unbreakable Podcast - 168",
+            "source_date": "2025-06-18",
+            "timestamp": "00:33:03.840",
+            "source_url": "https://youtu.be/LCHv_rSnLlI"
+          },
+          {
+            "snippet": "hypothetical information. NAD+ you can",
+            "source_title": "Stop Using Oral Peptides (They're WORTHLESS) Unbreakable Podcast - 168",
+            "source_date": "2025-06-18",
+            "timestamp": "00:33:06.389",
+            "source_url": "https://youtu.be/LCHv_rSnLlI"
+          },
+          {
+            "snippet": "hypothetical information. NAD+ you can orally actually it's the only one that",
+            "source_title": "Stop Using Oral Peptides (They're WORTHLESS) Unbreakable Podcast - 168",
+            "source_date": "2025-06-18",
+            "timestamp": "00:33:06.399",
+            "source_url": "https://youtu.be/LCHv_rSnLlI"
+          },
+          {
+            "snippet": "that leak. It gets rid of that parasite, which means more NAD+ is left for",
+            "source_title": "The Entire Routine And Supplement Stack - Unbreakable Podcast 232",
+            "source_date": "2025-08-23",
+            "timestamp": "00:14:54.720",
+            "source_url": "https://youtu.be/tEjUk1gs1W4"
+          },
+          {
+            "snippet": "which means more NAD+ is left for",
+            "source_title": "The Entire Routine And Supplement Stack - Unbreakable Podcast 232",
+            "source_date": "2025-08-23",
+            "timestamp": "00:14:57.590",
+            "source_url": "https://youtu.be/tEjUk1gs1W4"
+          }
+        ],
+        "chronic_signals": [
+          {
+            "snippet": "Look at longevity. Pitilon, it would be a epitoolon, GHKCU, the copper, NAD",
+            "source_title": "Stop Using Oral Peptides (They're WORTHLESS) Unbreakable Podcast - 168",
+            "source_date": "2025-06-18",
+            "timestamp": "00:32:13.279",
+            "source_url": "https://youtu.be/LCHv_rSnLlI"
+          },
+          {
+            "snippet": "a epitoolon, GHKCU, the copper, NAD",
+            "source_title": "Stop Using Oral Peptides (They're WORTHLESS) Unbreakable Podcast - 168",
+            "source_date": "2025-06-18",
+            "timestamp": "00:32:16.389",
+            "source_url": "https://youtu.be/LCHv_rSnLlI"
+          },
+          {
+            "snippet": "a epitoolon, GHKCU, the copper, NAD plus, gold,",
+            "source_title": "Stop Using Oral Peptides (They're WORTHLESS) Unbreakable Podcast - 168",
+            "source_date": "2025-06-18",
+            "timestamp": "00:32:16.399",
+            "source_url": "https://youtu.be/LCHv_rSnLlI"
+          },
+          {
+            "snippet": "This is just pure research and hypothetical information. NAD+ you can",
+            "source_title": "Stop Using Oral Peptides (They're WORTHLESS) Unbreakable Podcast - 168",
+            "source_date": "2025-06-18",
+            "timestamp": "00:33:03.840",
+            "source_url": "https://youtu.be/LCHv_rSnLlI"
+          },
+          {
+            "snippet": "hypothetical information. NAD+ you can",
+            "source_title": "Stop Using Oral Peptides (They're WORTHLESS) Unbreakable Podcast - 168",
+            "source_date": "2025-06-18",
+            "timestamp": "00:33:06.389",
+            "source_url": "https://youtu.be/LCHv_rSnLlI"
+          }
+        ]
+      },
+      "acute_vs_chronic_note": "Dr Bachmeyer often distinguishes acute (injury/infection) vs chronic (longevity/maintenance) dosing. Acute_signals + chronic_signals fields surface candidate contexts; full distillation pending Codex pass."
+    }
+  },
+  "reset_biology_synthesis": {
+    "status": "pending-codex-distillation",
+    "recommendation": null,
+    "caveats": null,
+    "cross_expert_consensus": null,
+    "cross_expert_disagreement": null
+  },
+  "generated_at": "2026-04-27T02:02:34.580Z"
+}

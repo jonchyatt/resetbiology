@@ -1,0 +1,625 @@
+{
+  "peptide": "IGF-1",
+  "slug": "igf-1",
+  "aliases": [
+    "IGF-1",
+    "IGF 1",
+    "igf1",
+    "igf-1",
+    "IGF1"
+  ],
+  "category": "Uncategorized",
+  "experts": {
+    "hunter-williams": {
+      "baseline_protocol": null,
+      "summary": {
+        "mention_count": 47,
+        "top_doses": [
+          {
+            "dose": "10 units",
+            "count": 9
+          },
+          {
+            "dose": "200 micrograms",
+            "count": 2
+          },
+          {
+            "dose": "100 mcg",
+            "count": 2
+          },
+          {
+            "dose": "0.15 mg",
+            "count": 1
+          },
+          {
+            "dose": "6 mg",
+            "count": 1
+          },
+          {
+            "dose": "2 mg",
+            "count": 1
+          },
+          {
+            "dose": "30 mcg",
+            "count": 1
+          },
+          {
+            "dose": "50 mcg",
+            "count": 1
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "19b80f57eb2ad328",
+            "source_type": "email",
+            "source_title": "IGF-1 LR3 for Longevity?",
+            "source_date": "2026-01-02",
+            "source_url": "https://open.spotify.com/episode/1ZTsl2FS2Oy7ZHXLQq7ejn",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2026-01-02-igf-1-lr3-longevity.md",
+            "mention_count": 9,
+            "top_snippet": "gy Hunter Wants to Break - Old framing: \"holy grail of bodybuilding,\" instant 300-lb mass monster - People either abused it, used it wrong, or dismissed it when results weren't cartoonish - ⭐ \"Not the",
+            "top_context": "gy Hunter Wants to Break - Old framing: \"holy grail of bodybuilding,\" instant 300-lb mass monster - People either abused it, used it wrong, or dismissed it when results weren't cartoonish - ⭐ \"Not the use case I care about, and it's not why I'm talking about it today\" ## The Real Use Case — Aging IGF-1 Decline - IGF-1 declines naturally with age - Decline correlates with: **sarcopenia, slower recovery, reduced bone density, cognitive decline** - IGF-1 LR3 = strategic windows few times/year for muscle preservation, metabolic health, healthspan ## Background — What LR3 Actually Is - Synthetic an",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "JFrn_zX0RE4",
+            "source_type": "podcast",
+            "source_title": "Peptides & Longevity Medicine Explained by a Real Cardiologist | Dr. Abid Husain, MD",
+            "source_date": "2026-03-27",
+            "source_url": "https://youtu.be/JFrn_zX0RE4",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-03-27-peptides-longevity-medicine-explained-by-a-real-cardiologist-dr-abid-h-JFrn_zX0RE4.en.vtt",
+            "mention_count": 6,
+            "top_snippet": "see if if uh if there's any risk. Uh I usually like to do an IGF-1 prior to",
+            "top_context": "desensitization. So I just uh cycle desensitization. So I just uh cycle those. those. those. Yeah. Um probably one of the more common Yeah. Um probably one of the more common Yeah. Um probably one of the more common questions I get and this is relates to questions I get and this is relates to questions I get and this is relates to BPC and TB or TB4 and also the growth BPC and TB or TB4 and also the growth BPC and TB or TB4 and also the growth hormone peptides. As a doctor, you'll hormone peptides. As a doctor, you'll hormone peptides. As a doctor, you'll hear these platitudes of like, \"Oh, well hear these platitudes of like, \"Oh, well hear these platitudes of like, \"Oh, well that causes angioenesis or increase in that causes angioenesis or increase in that causes angioenesis or increase in VEF that's going to cause cancer.\" Or, VEF that's going to cause cancer.\" Or, VEF that's going to cause cancer.\" Or, \"Oh, it feeds growth hormone, which can \"Oh, it feeds growth hormone, which can \"Oh, it feeds growth hormone, which can feed cancer.\" As a doctor, how do you feed cancer.\" As a doctor, how do you feed cancer.\" As a doctor, how do you think about that? And if you had a think about that? And if you had a think about that? And if you had a patient that's coming in, it's like, patient that's coming in, it's like, patient that's coming in, it's like, \"Hey, I really want to do these, but I'm \"Hey, I really want to do these, but I'm \"Hey, I really want to do these, but I'm I'm worried about cancer. Maybe I don't I'm worried about cancer. Maybe I don't I'm worried about cancer. Maybe I don't have I don't have cancer at all. There's have I don't have cancer at all. There's have I don't have cancer at all. There's nothing to indicate that I do. Uh, how nothing to indicate that I do. Uh, how nothing to indicate that I do. Uh, how would you speak to someone that might be would you speak to someone that might be would you speak to someone that might be concerned about that?\" concerned about that?\" concerned about that?\" So if there's there's two situations. If So if there's there's two situations. If So if there's there's two situations. If you have no history of cancer, then you you have no history of cancer, then you you have no history of cancer, then you know we can do some screening tests to know we can do some screening tests to know we can do some screening tests to see if if uh if there's any risk. Uh I see if if uh if there's any risk. Uh I see if if uh if there's any risk. Uh I usually like to do an IGF-1 prior to usually like to do an IGF-1 prior to usually like to do an IGF-1 prior to starting just to see what their baseline starting just to see what their baseline starting just to see what their baseline is. Uh and if it's really elevated, then is. Uh and if it's really elevated, then is. Uh and if it's really elevated, then then that's caused to look for cancer. then that's caused to look for cancer. then that's caused to look for cancer. Um if it's normal or low, then we know Um if it's normal or low, then we know Um if it's normal or low, then we know that they're going to respond well to that they're going to respond well to that they're going to respond well to these. Um, so for the most part, if you these. Um, so for the most part, if you these. Um, so for the most part, if you don't have a history of cancer and your don't have a history of cancer and your don't have a history of cancer and your IGF-1 is good, then we can start without IGF-1 is good, then we can start without IGF-1 is good, then we can start without a problem. I can just reassure them that a problem. I can just reassure them that a problem. I can just reassure them that these, you know, talk to them about the these, you know, talk to them about the these, you know, talk to them about the lifespan, talk to them about the lifespan, talk to them about the lifespan, talk to them about the half-life and the fact that these don't half-life and the fact that these don't half-life and the fact that these don't indiscriminately stimulate this because, indiscriminately stimulate this because, indiscriminately stimulate this because, well, number one, they're doing it for well, number one, they're doing it for well, number one, they're doing it for such a short period of time. All these such a short period of time. All these such a short period of time. All these peptides are really sensitive and have a peptides are really sensitive and have a peptides are really sensitive and have a short lifespan to them. And then and short lifespan to them. And then and short lifespan to them. And then and then they're they're more like then they're they're more like then they're they're more like modulators. You know, these are modulators. You know, these are modulators. You know, these are messengers that are messenger systems",
+            "first_timestamp": "00:53:41.119"
+          },
+          {
+            "source_id": "0TyW-wlJMxo",
+            "source_type": "podcast",
+            "source_title": "Saturday Morning Coffee Talk | Peptides, Hormones & Fitness for Couples 3/28/26",
+            "source_date": "2026-03-28",
+            "source_url": "https://youtu.be/0TyW-wlJMxo",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-03-28-saturday-morning-coffee-talk-peptides-hormones-fitness-for-couples-3-2-0TyW-wlJMxo.en.vtt",
+            "mention_count": 6,
+            "top_snippet": "HGH optimized GH levels, which lead to optimized IGF-1 levels, which lead to",
+            "top_context": "What would that be? 200 micrograms of What would that be? 200 micrograms of Ippa Ippa Ippa per day per day per day would be like the top end, but I would would be like the top end, but I would would be like the top end, but I would start with 300 to 100 Tessa to Ippa start with 300 to 100 Tessa to Ippa start with 300 to 100 Tessa to Ippa and go from there. Echo36 Echo36 uh uh uh I love saying Echo36, which I know I love saying Echo36, which I know I love saying Echo36, which I know Echo36 is in our group. Um Echo36 is in our group. Um Echo36 is in our group. Um I feel like I'm like it's like a code I feel like I'm like it's like a code I feel like I'm like it's like a code name. Like Echo36, name. Like Echo36, name. Like Echo36, over over. Um He says, \"Can you talk over over. Um He says, \"Can you talk over over. Um He says, \"Can you talk about the mechanics between pituitary GH about the mechanics between pituitary GH about the mechanics between pituitary GH release strength, duration, time, and release strength, duration, time, and release strength, duration, time, and how thyroid health can interact with GH how thyroid health can interact with GH how thyroid health can interact with GH secretagogues use over time?\" It's secretagogues use over time?\" It's secretagogues use over time?\" It's actually a very good question. actually a very good question. actually a very good question. &gt;&gt; good question. &gt;&gt; good question. &gt;&gt; good question. &gt;&gt; To which I probably don't talk about &gt;&gt; To which I probably don't talk about &gt;&gt; To which I probably don't talk about enough. To which whether it's HGH enough. To which whether it's HGH enough. To which whether it's HGH secretagogues or it's HGH itself, here's secretagogues or it's HGH itself, here's secretagogues or it's HGH itself, here's what happens. what happens. what happens. HGH optimized GH levels, which lead to HGH optimized GH levels, which lead to HGH optimized GH levels, which lead to optimized IGF-1 levels, which lead to optimized IGF-1 levels, which lead to optimized IGF-1 levels, which lead to lots of benefits to the body. lots of benefits to the body. lots of benefits to the body. What you start to see over time is an What you start to see over time is an What you start to see over time is an improvement in the conversion of T4 to improvement in the conversion of T4 to improvement in the conversion of T4 to T3. T3. T3. And when we look at the benefit of or if And when we look at the benefit of or if And when we look at the benefit of or if we could have one indicator of thyroid we could have one indicator of thyroid we could have one indicator of thyroid health, even though there's multiple, it health, even though there's multiple, it health, even though there's multiple, it would be our free T3. And what happens would be our free T3. And what happens would be our free T3. And what happens is the body makes T4 and a lot of that is the body makes T4 and a lot of that is the body makes T4 and a lot of that gets converted into T3, which then gets gets converted into T3, which then gets gets converted into T3, which then gets used to get all the metabolic benefits used to get all the metabolic benefits used to get all the metabolic benefits of thyroid health. One particular being of thyroid health. One particular being of thyroid health. One particular being clearance of LDL particles to improve clearance of LDL particles to improve clearance of LDL particles to improve cholesterol. But, nevertheless, with cholesterol. But, nevertheless, with cholesterol. But, nevertheless, with optimized GH levels, we improve thyroid optimized GH levels, we improve thyroid optimized GH levels, we improve thyroid health because we improve the conversion health because we improve the conversion health because we improve the conversion of T4 to T3. And so, when you see of T4 to T3. And so, when you see of T4 to T3. And so, when you see someone that someone that someone that has very low IGF-1 or low GH or low has very low IGF-1 or low GH or low has very low IGF-1 or low GH or low hormones, a lot of times you'll see a",
+            "first_timestamp": "01:26:38.760"
+          },
+          {
+            "source_id": "19d270896573f8ef",
+            "source_type": "email",
+            "source_title": "HGH Peptides Cause Cancer? (Tesamorelin Liver Transcriptome Study)",
+            "source_date": "2026-03-25",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2026-03-25-hgh-peptides-cause-cancer-tesamorelin-study.md",
+            "mention_count": 5,
+            "top_snippet": "Liver Transcriptome RCT (Massachusetts General Hospital / Harvard 2020) > \"Across every cancer-relevant pathway they measured, the direction was favorable.\" > \"The next time you hear 'HGH peptides cau",
+            "top_context": "Liver Transcriptome RCT (Massachusetts General Hospital / Harvard 2020) > \"Across every cancer-relevant pathway they measured, the direction was favorable.\" > \"The next time you hear 'HGH peptides cause cancer,' just forward them this study.\" ## The Common Concern \"Growth hormone causes cancer. IGF-1 feeds tumors. If you touch the GH axis, you're playing with fire.\" Hunter has always had questions about that framing. The blanket statement never sat right. ## The Study — JCI Insight 2020 - Authors: **Steven Grinspoon + Raymond Chung** (MGH + Harvard) - Design: **randomized double-blind placeb",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "197e6ecf63007001",
+            "source_type": "email",
+            "source_title": "Is Sermorelin Worth It?",
+            "source_date": "2025-07-07",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-07-07-sermorelin-overrated.md",
+            "mention_count": 4,
+            "top_snippet": "GHRH - FDA approved ONCE upon a time (specifically for pediatric GH deficiency) - Anti-aging crowd uses it off-label for adults - The \"face of legal GH peptides\" at HRT/longevity clinics ## Mechanism ",
+            "top_context": "GHRH - FDA approved ONCE upon a time (specifically for pediatric GH deficiency) - Anti-aging crowd uses it off-label for adults - The \"face of legal GH peptides\" at HRT/longevity clinics ## Mechanism - Binds GHRH receptor in pituitary - Stimulates pulse of endogenous GH release - Theoretically: ↑IGF-1 + downstream HGH benefits (sleep, fat loss, muscle, etc.) ⚠️ **The huge caveat:** structure only contains first 29 amino acids of GHRH. While this IS the \"active fragment,\" it's **far less potent than newer analogs**. ## Why Hunter Doesn't Like It - **GH pulse peak is modest at best** — especial",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "tYscWLLPkDE",
+            "source_type": "podcast",
+            "source_title": "The Next Big Things in Biohacking | EMF, Peptides, and Superhuman Performance with Alex Kikel",
+            "source_date": "2026-03-20",
+            "source_url": "https://youtu.be/tYscWLLPkDE",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-03-20-the-next-big-things-in-biohacking-emf-peptides-and-superhuman-performa-tYscWLLPkDE.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "like IF and even in like so like straight IGF-1 ideally this is done post",
+            "top_context": "could do like the topical um like vasop could do like the topical um like vasop like Matt Porter's old company with um like Matt Porter's old company with um like Matt Porter's old company with um the capsain and yohim and things like the capsain and yohim and things like the capsain and yohim and things like that. But also the BPCs tend to work that. But also the BPCs tend to work that. But also the BPCs tend to work pretty well from like a vascrization pretty well from like a vascrization pretty well from like a vascrization standard. you. So, so we know BPC I standard. you. So, so we know BPC I standard. you. So, so we know BPC I think increases growth hormone receptor think increases growth hormone receptor think increases growth hormone receptor density or sensitivity density or sensitivity density or sensitivity &gt;&gt; and it also increases heat shock protein &gt;&gt; and it also increases heat shock protein &gt;&gt; and it also increases heat shock protein 90 90 90 &gt;&gt; so you can get more and receptor &gt;&gt; so you can get more and receptor &gt;&gt; so you can get more and receptor sticking around more to basically suck sticking around more to basically suck sticking around more to basically suck up and pick up more lians. up and pick up more lians. up and pick up more lians. &gt;&gt; So could you inject IGF desk into the &gt;&gt; So could you inject IGF desk into the &gt;&gt; So could you inject IGF desk into the glute and then rub some BPC transder glute and then rub some BPC transder glute and then rub some BPC transder dermal on it? Would that potentially be dermal on it? Would that potentially be dermal on it? Would that potentially be synergistic? synergistic? synergistic? &gt;&gt; Yes, but the timing wouldn't matter as &gt;&gt; Yes, but the timing wouldn't matter as &gt;&gt; Yes, but the timing wouldn't matter as much. much. much. &gt;&gt; Okay. So as long as you're doing it like &gt;&gt; Okay. So as long as you're doing it like &gt;&gt; Okay. So as long as you're doing it like &gt;&gt; exactly like &gt;&gt; exactly like &gt;&gt; exactly like &gt;&gt; at some point in the day you wouldn't &gt;&gt; at some point in the day you wouldn't &gt;&gt; at some point in the day you wouldn't have to do it like right right after but have to do it like right right after but have to do it like right right after but like IF and even in like so like like IF and even in like so like like IF and even in like so like straight IGF-1 ideally this is done post straight IGF-1 ideally this is done post straight IGF-1 ideally this is done post myot trauma you have to set up growth myot trauma you have to set up growth myot trauma you have to set up growth home receptor expression so it would be home receptor expression so it would be home receptor expression so it would be like essentially weight training come like essentially weight training come like essentially weight training come home post-workout meal and some growth home post-workout meal and some growth home post-workout meal and some growth hormone 60 90 minutes first pass the hormone 60 90 minutes first pass the hormone 60 90 minutes first pass the liver and then your IGF variety if liver and then your IGF variety if liver and then your IGF variety if you're trying to be like as optimal as you're trying to be like as optimal as you're trying to be like as optimal as possible but still in that post-workout possible but still in that post-workout possible but still in that post-workout scenario for glutes you just split scenario for glutes you just split scenario for glutes you just split bilaterally and rotating not every like bilaterally and rotating not every like bilaterally and rotating not every like single injection with every other single injection with every other single injection with every other workout that tends to be enough. workout that tends to be enough. workout that tends to be enough. &gt;&gt; Hypothetically, if you had incre what &gt;&gt; Hypothetically, if you had incre what &gt;&gt; Hypothetically, if you had incre what would be the do would it be similar to would be the do would it be similar to would be the do would it be similar to the dose of IGF desk the dose of IGF desk the dose of IGF desk &gt;&gt; lower? &gt;&gt; lower? &gt;&gt; lower? &gt;&gt; So for most PE so &gt;&gt; So for most PE so &gt;&gt; So for most PE so it's tough because okay so this is where it's tough because okay so this is where it's tough because okay so this is where we leave the longevity conversation and we leave the longevity conversation and we leave the longevity conversation and &gt;&gt; we enter into performance. [laughter] &gt;&gt; we enter into performance. [laughter] &gt;&gt; we enter into performance. [laughter] &gt;&gt; Yeah, this is more like athletic. You're &gt;&gt; Yeah, this is more like athletic. You're &gt;&gt; Yeah, this is more like athletic. You're definitely going to be downregulating um",
+            "first_timestamp": "02:46:44.960"
+          },
+          {
+            "source_id": "E7GPNidicqY",
+            "source_type": "podcast",
+            "source_title": "Saturday Morning Coffee Talk 4/18/26",
+            "source_date": "2026-04-18",
+            "source_url": "https://youtu.be/E7GPNidicqY",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-04-18-saturday-morning-coffee-talk-4-18-26-E7GPNidicqY.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "I'm trying it instead of test so I don't raise IGF-1 with polycystic kidneys.",
+            "top_context": "&gt;&gt; Best time and duration for fasting for a &gt;&gt; Best time and duration for fasting for a woman during her cycle. I'd say not to woman during her cycle. I'd say not to woman during her cycle. I'd say not to fast. fast. fast. What part during her cycle? What part? What part during her cycle? What part? What part during her cycle? What part? &gt;&gt; You don't want to fast during the luteal &gt;&gt; You don't want to fast during the luteal &gt;&gt; You don't want to fast during the luteal phase of the menstrual cycle cuz that's phase of the menstrual cycle cuz that's phase of the menstrual cycle cuz that's like when the PMS phase happens. So, like when the PMS phase happens. So, like when the PMS phase happens. So, that's the phase where it's like either that's the phase where it's like either that's the phase where it's like either your body's preparing for pregnancy or your body's preparing for pregnancy or your body's preparing for pregnancy or your body's preparing to get its your body's preparing to get its your body's preparing to get its menstrual cycle. You don't want to fast menstrual cycle. You don't want to fast menstrual cycle. You don't want to fast during um during um during um that time frame. So, just anytime after that time frame. So, just anytime after that time frame. So, just anytime after ovulation and luteal phase happens, you ovulation and luteal phase happens, you ovulation and luteal phase happens, you don't want to You don't want to fast. don't want to You don't want to fast. don't want to You don't want to fast. Yeah. A lot of women feel great as honestly A lot of women feel great as honestly like like like while they're like actually menstruating while they're like actually menstruating while they're like actually menstruating to fast during that time. Yeah. to fast during that time. Yeah. to fast during that time. Yeah. You see any positive results with AOD? You see any positive results with AOD? You see any positive results with AOD? I'm trying it instead of test so I don't I'm trying it instead of test so I don't I'm trying it instead of test so I don't raise IGF-1 with polycystic kidneys. raise IGF-1 with polycystic kidneys. raise IGF-1 with polycystic kidneys. Honestly, not really. The only results I Honestly, not really. The only results I Honestly, not really. The only results I see is if it's with a GLP and with a see is if it's with a GLP and with a see is if it's with a GLP and with a growth hormone peptide. growth hormone peptide. growth hormone peptide. So, you could try, but I just don't So, you could try, but I just don't So, you could try, but I just don't think it really does that much. How do you reconstitute peptides? Like How do you reconstitute peptides? Like clone it after three different peptide clone it after three different peptide clone it after three different peptide shrinks? When all else fails, add 2 ml shrinks? When all else fails, add 2 ml shrinks? When all else fails, add 2 ml and take 10 units. No, but on and take 10 units. No, but on and take 10 units. No, but on seriousness on the peptide cheat sheet, seriousness on the peptide cheat sheet, seriousness on the peptide cheat sheet, I have instructions for that. Yeah. And I think this is we're getting to the And I think this is we're getting to the end. Can I clarify what I meant by it's all Can I clarify what I meant by it's all placebo effect after answering the placebo effect after answering the placebo effect after answering the Cardarine and KPV question? Yes, it was Cardarine and KPV question? Yes, it was Cardarine and KPV question? Yes, it was a joke. It's So, that is what I meant. I",
+            "first_timestamp": "02:05:43.560"
+          },
+          {
+            "source_id": "19621e264ba38f4e",
+            "source_type": "email",
+            "source_title": "How To Mix A Tesmorelin/Ipamorelin Blend",
+            "source_date": "2025-04-10",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-04-10-how-to-mix-a-tesmorelin-ipamorelin-blend.md",
+            "mention_count": 2,
+            "top_snippet": "hen you combine these two peptides, you’re actually engaging two completely different pathways in your brain and pituitary gland—dramatically amplifying GH release far beyond what you’d experience wit",
+            "top_context": "hen you combine these two peptides, you’re actually engaging two completely different pathways in your brain and pituitary gland—dramatically amplifying GH release far beyond what you’d experience with either peptide alone. This dual-action synergy means significantly higher GH peaks, optimized IGF-1 levels, and ultimately accelerated results in fat burning, muscle recovery, muscle building, skin elasticity, sleep quality, and even overall energy. On their own, Tesamorelin and Ipamorelin are powerful, effective peptides. But combined, they’re an unstoppable duo that supercharges your bod",
+            "first_timestamp": null
+          }
+        ],
+        "acute_signals": [
+          {
+            "snippet": "like IF and even in like so like straight IGF-1 ideally this is done post",
+            "source_title": "The Next Big Things in Biohacking | EMF, Peptides, and Superhuman Performance with Alex Kikel",
+            "source_date": "2026-03-20",
+            "timestamp": "02:46:44.960",
+            "source_url": "https://youtu.be/tYscWLLPkDE"
+          },
+          {
+            "snippet": "straight IGF-1 ideally this is done post",
+            "source_title": "The Next Big Things in Biohacking | EMF, Peptides, and Superhuman Performance with Alex Kikel",
+            "source_date": "2026-03-20",
+            "timestamp": "02:46:47.429",
+            "source_url": "https://youtu.be/tYscWLLPkDE"
+          },
+          {
+            "snippet": "straight IGF-1 ideally this is done post myot trauma you have to set up growth",
+            "source_title": "The Next Big Things in Biohacking | EMF, Peptides, and Superhuman Performance with Alex Kikel",
+            "source_date": "2026-03-20",
+            "timestamp": "02:46:47.439",
+            "source_url": "https://youtu.be/tYscWLLPkDE"
+          }
+        ],
+        "chronic_signals": [
+          {
+            "snippet": "like IF and even in like so like straight IGF-1 ideally this is done post",
+            "source_title": "The Next Big Things in Biohacking | EMF, Peptides, and Superhuman Performance with Alex Kikel",
+            "source_date": "2026-03-20",
+            "timestamp": "02:46:44.960",
+            "source_url": "https://youtu.be/tYscWLLPkDE"
+          },
+          {
+            "snippet": "straight IGF-1 ideally this is done post",
+            "source_title": "The Next Big Things in Biohacking | EMF, Peptides, and Superhuman Performance with Alex Kikel",
+            "source_date": "2026-03-20",
+            "timestamp": "02:46:47.429",
+            "source_url": "https://youtu.be/tYscWLLPkDE"
+          },
+          {
+            "snippet": "straight IGF-1 ideally this is done post myot trauma you have to set up growth",
+            "source_title": "The Next Big Things in Biohacking | EMF, Peptides, and Superhuman Performance with Alex Kikel",
+            "source_date": "2026-03-20",
+            "timestamp": "02:46:47.439",
+            "source_url": "https://youtu.be/tYscWLLPkDE"
+          },
+          {
+            "snippet": "see if if uh if there's any risk. Uh I usually like to do an IGF-1 prior to",
+            "source_title": "Peptides & Longevity Medicine Explained by a Real Cardiologist | Dr. Abid Husain, MD",
+            "source_date": "2026-03-27",
+            "timestamp": "00:53:41.119",
+            "source_url": "https://youtu.be/JFrn_zX0RE4"
+          },
+          {
+            "snippet": "usually like to do an IGF-1 prior to",
+            "source_title": "Peptides & Longevity Medicine Explained by a Real Cardiologist | Dr. Abid Husain, MD",
+            "source_date": "2026-03-27",
+            "timestamp": "00:53:43.349",
+            "source_url": "https://youtu.be/JFrn_zX0RE4"
+          }
+        ]
+      }
+    },
+    "taylor-williams": {
+      "summary": {
+        "mention_count": 45,
+        "top_doses": [
+          {
+            "dose": "10 iu",
+            "count": 15
+          },
+          {
+            "dose": "10 mg",
+            "count": 9
+          },
+          {
+            "dose": "10 units",
+            "count": 9
+          },
+          {
+            "dose": "50 mg",
+            "count": 6
+          },
+          {
+            "dose": "200 micrograms",
+            "count": 2
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "nkOr0jCzn18",
+            "source_type": "podcast",
+            "source_title": "IGF-1 LR3: My Experience & Benefits for Women",
+            "source_date": "2024-08-16",
+            "source_url": "https://youtu.be/nkOr0jCzn18",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2024-08-16-igf-1-lr3-my-experience-benefits-for-women-nkOr0jCzn18.en.vtt",
+            "mention_count": 18,
+            "top_snippet": "igf1 lr3 is um a great peptide and what this stands for is um the igf1 stands",
+            "top_context": "designed for men cuz this is a peptide designed for men cuz this is a peptide to help with muscle growth and um to help with muscle growth and um to help with muscle growth and um Sometimes women can get scared of having Sometimes women can get scared of having Sometimes women can get scared of having too much muscle growth or they think too much muscle growth or they think too much muscle growth or they think they're going to take this and get super they're going to take this and get super they're going to take this and get super bulky and whatnot and so I'm here to bulky and whatnot and so I'm here to bulky and whatnot and so I'm here to share with you guys that is not true share with you guys that is not true share with you guys that is not true this is a peptide this is not a steroid this is a peptide this is not a steroid this is a peptide this is not a steroid so there is no fear for women to be so there is no fear for women to be so there is no fear for women to be using this peptide and it is a great using this peptide and it is a great using this peptide and it is a great peptide for women and I use it I'm going peptide for women and I use it I'm going peptide for women and I use it I'm going to be sharing with you my experience to be sharing with you my experience to be sharing with you my experience with it so um with that being said let's with it so um with that being said let's with it so um with that being said let's um get into this and I'm going to kind um get into this and I'm going to kind um get into this and I'm going to kind of break down a little bit um so of break down a little bit um so of break down a little bit um so basically basically basically igf1 lr3 is um a great peptide and what igf1 lr3 is um a great peptide and what igf1 lr3 is um a great peptide and what this stands for is um the igf1 stands this stands for is um the igf1 stands this stands for is um the igf1 stands for the insulant like growth factor one for the insulant like growth factor one for the insulant like growth factor one and the L R3 is the long acting analog and the L R3 is the long acting analog and the L R3 is the long acting analog for growth factor so this plays a very for growth factor so this plays a very for growth factor so this plays a very big and crucial role in cell growth big and crucial role in cell growth big and crucial role in cell growth development and basically just the development and basically just the development and basically just the potential benefits of muscle growth fat potential benefits of muscle growth fat potential benefits of muscle growth fat loss overall health and um actually has loss overall health and um actually has loss overall health and um actually has some potential great anti-aging benefits some potential great anti-aging benefits some potential great anti-aging benefits so some of the great things that so some of the great things that so some of the great things that igf1 lr3 can promote is the biggest",
+            "first_timestamp": "00:01:58.719"
+          },
+          {
+            "source_id": "5ugqlYRSRSo",
+            "source_type": "podcast",
+            "source_title": "Saturday Morning Coffee Talk 1/17/26",
+            "source_date": "2026-01-17",
+            "source_url": "https://youtu.be/5ugqlYRSRSo",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2026-01-17-saturday-morning-coffee-talk-1-17-26-5ugqlYRSRSo.en.vtt",
+            "mention_count": 6,
+            "top_snippet": "drawn and then you would usually see like a spike in IGF-1.",
+            "top_context": "Yeah, he said he was a patient of Yeah, he said he was a patient of transcend and stepping away. What's up, transcend and stepping away. What's up, transcend and stepping away. What's up, Kelly? How you doing this morning? Kelly? How you doing this morning? Kelly? How you doing this morning? Another North Carolinian. Uh, she says, Another North Carolinian. Uh, she says, Another North Carolinian. Uh, she says, \"Got my IGF tested and was still only \"Got my IGF tested and was still only \"Got my IGF tested and was still only 120 with 10 IU dose.\" Wow. But should I 120 with 10 IU dose.\" Wow. But should I 120 with 10 IU dose.\" Wow. But should I be taking breaks? I mean, I don't be taking breaks? I mean, I don't be taking breaks? I mean, I don't necessarily think you need to take necessarily think you need to take necessarily think you need to take breaks from growth hormone itself. That breaks from growth hormone itself. That breaks from growth hormone itself. That seems weird that it would be that low seems weird that it would be that low seems weird that it would be that low with a 10 IU dose. I don't know the with a 10 IU dose. I don't know the with a 10 IU dose. I don't know the timing of when you got it tested, but timing of when you got it tested, but timing of when you got it tested, but that's interesting that you would do 10 that's interesting that you would do 10 that's interesting that you would do 10 IUs. Usually like if you wanted to test IUs. Usually like if you wanted to test IUs. Usually like if you wanted to test if your growth hormone was was legit, if your growth hormone was was legit, if your growth hormone was was legit, what you would do is you would take 10 what you would do is you would take 10 what you would do is you would take 10 IUs intramuscularly and then like two IUs intramuscularly and then like two IUs intramuscularly and then like two hours go to the lab and get your blood hours go to the lab and get your blood hours go to the lab and get your blood drawn and then you would usually see drawn and then you would usually see drawn and then you would usually see like a spike in IGF-1. like a spike in IGF-1. like a spike in IGF-1. But that's weird that it would be low. But that's weird that it would be low. But that's weird that it would be low. But then also too, I've heard of other But then also too, I've heard of other But then also too, I've heard of other people taking huge doses of growth people taking huge doses of growth people taking huge doses of growth hormone and it doesn't really push their hormone and it doesn't really push their hormone and it doesn't really push their IGF past 300. So I wonder in some cases, IGF past 300. So I wonder in some cases, IGF past 300. So I wonder in some cases, this is rampant speculation, but I this is rampant speculation, but I this is rampant speculation, but I wonder in some cases the body almost has wonder in some cases the body almost has wonder in some cases the body almost has this self-limiting regulation on the this self-limiting regulation on the this self-limiting regulation on the amount of IGF that gets converted out of amount of IGF that gets converted out of amount of IGF that gets converted out of the growth hormone. the growth hormone. the growth hormone. Now I don't know, some people may be Now I don't know, some people may be Now I don't know, some people may be different, some people just may different, some people just may different, some people just may metabolize it different, some people metabolize it different, some people metabolize it different, some people based on age and liver function and based on age and liver function and based on age and liver function and estradi. Estradi actually can affect the estradi. Estradi actually can affect the estradi. Estradi actually can affect the conversion of HGH into IGF-1. And so conversion of HGH into IGF-1. And so conversion of HGH into IGF-1. And so estradiol can actually if your estradiol estradiol can actually if your estradiol estradiol can actually if your estradiol levels are too low, it can actually levels are too low, it can actually levels are too low, it can actually affect how much the liver converts. So, affect how much the liver converts. So, affect how much the liver converts. So, I don't know. It's one of those things. I don't know. It's one of those things. I don't know. It's one of those things. But in terms of taking breaks, I do 5",
+            "first_timestamp": "00:31:04.480"
+          },
+          {
+            "source_id": "G27dIPBJUSs",
+            "source_type": "podcast",
+            "source_title": "Saturday Morning Coffee Talk 3/28/26",
+            "source_date": "2026-03-28",
+            "source_url": "https://youtu.be/G27dIPBJUSs",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2026-03-28-saturday-morning-coffee-talk-3-28-26-G27dIPBJUSs.en.vtt",
+            "mention_count": 6,
+            "top_snippet": "HGH optimized GH levels, which leads to optimized IGF-1 levels, which leads to",
+            "top_context": "what would that be? 200 micrograms of what would that be? 200 micrograms of Ippa Ippa Ippa per day. per day. per day. Would be like the top end, but I would Would be like the top end, but I would Would be like the top end, but I would start with 300 to 100 Tessa to Ippa. start with 300 to 100 Tessa to Ippa. start with 300 to 100 Tessa to Ippa. And go from there. Echo36. Echo36. Uh Uh Uh I love saying Echo that which I know I love saying Echo that which I know I love saying Echo that which I know Echo36 is in our group. Um Echo36 is in our group. Um Echo36 is in our group. Um I feel like I'm like it's like a code I feel like I'm like it's like a code I feel like I'm like it's like a code name. Like Echo36 name. Like Echo36 name. Like Echo36 over over. Um he says, \"Can you talk over over. Um he says, \"Can you talk over over. Um he says, \"Can you talk about the mechanics between pituitary GH about the mechanics between pituitary GH about the mechanics between pituitary GH release strength, duration, time and how release strength, duration, time and how release strength, duration, time and how thyroid health can interact with GH thyroid health can interact with GH thyroid health can interact with GH secretagogues use over time?\" It's secretagogues use over time?\" It's secretagogues use over time?\" It's actually a very good question to which I actually a very good question to which I actually a very good question to which I probably don't talk about enough to probably don't talk about enough to probably don't talk about enough to which whether it's HGH secretagogues or which whether it's HGH secretagogues or which whether it's HGH secretagogues or it's HGH itself, here's what happens. it's HGH itself, here's what happens. it's HGH itself, here's what happens. HGH optimized GH levels, which leads to HGH optimized GH levels, which leads to HGH optimized GH levels, which leads to optimized IGF-1 levels, which leads to optimized IGF-1 levels, which leads to optimized IGF-1 levels, which leads to lots of benefits to the body. lots of benefits to the body. lots of benefits to the body. What you start to see over time is an What you start to see over time is an What you start to see over time is an improvement in the conversion of T4 to improvement in the conversion of T4 to improvement in the conversion of T4 to T3. T3. T3. And when we look at the benefit of or if And when we look at the benefit of or if And when we look at the benefit of or if we could have one indicator of thyroid we could have one indicator of thyroid we could have one indicator of thyroid health even though there's multiple, it health even though there's multiple, it health even though there's multiple, it would be our free T3. And what happens would be our free T3. And what happens would be our free T3. And what happens is the body makes T4 and a lot of that is the body makes T4 and a lot of that is the body makes T4 and a lot of that gets converted into T3, which then gets gets converted into T3, which then gets gets converted into T3, which then gets used to get all the metabolic benefits used to get all the metabolic benefits used to get all the metabolic benefits of thyroid health. One particular being of thyroid health. One particular being of thyroid health. One particular being clearance of LDL particles to improve clearance of LDL particles to improve clearance of LDL particles to improve cholesterol. But nevertheless, with cholesterol. But nevertheless, with cholesterol. But nevertheless, with optimized GH levels, we improve thyroid optimized GH levels, we improve thyroid optimized GH levels, we improve thyroid health because we improve the conversion health because we improve the conversion health because we improve the conversion of T4 to T3. And so when you see someone of T4 to T3. And so when you see someone of T4 to T3. And so when you see someone that that that has very low IGF-1 or low GH or low has very low IGF-1 or low GH or low has very low IGF-1 or low GH or low hormones, a lot of times you'll see a",
+            "first_timestamp": "01:26:38.800"
+          },
+          {
+            "source_id": "n9KbzwObtqg",
+            "source_type": "podcast",
+            "source_title": "3 Reasons Why PEG-MGF is the BEST Kept Secret in Injury Recovery",
+            "source_date": "2024-12-20",
+            "source_url": "https://youtu.be/n9KbzwObtqg",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2024-12-20-3-reasons-why-peg-mgf-is-the-best-kept-secret-in-injury-recovery-n9KbzwObtqg.en.vtt",
+            "mention_count": 5,
+            "top_snippet": "factor so this is a variant of igf1 which is a key growth factor in",
+            "top_context": "as peptide during an injury recovery and as peptide during an injury recovery and I will get more into that later but this I will get more into that later but this I will get more into that later but this is going to be a super beneficial is going to be a super beneficial is going to be a super beneficial peptide and I would even argue that this peptide and I would even argue that this peptide and I would even argue that this is probably a key component peptide in is probably a key component peptide in is probably a key component peptide in recovering from any type of small recovering from any type of small recovering from any type of small ligament tears as well too so what ligament tears as well too so what ligament tears as well too so what exactly is Peg MGF well it is the pedula exactly is Peg MGF well it is the pedula exactly is Peg MGF well it is the pedula Cano growth factor I'm probably Cano growth factor I'm probably Cano growth factor I'm probably butchering that so don't come after me butchering that so don't come after me butchering that so don't come after me if for not pronouncing it correctly but if for not pronouncing it correctly but if for not pronouncing it correctly but essentially this involves a key growth essentially this involves a key growth essentially this involves a key growth in involving your muscles and the peg in involving your muscles and the peg in involving your muscles and the peg portion of this peptide also is growth portion of this peptide also is growth portion of this peptide also is growth factor so this is a variant of factor so this is a variant of factor so this is a variant of igf1 which is a key growth factor in igf1 which is a key growth factor in igf1 which is a key growth factor in involving muscle repair and Muscle involving muscle repair and Muscle involving muscle repair and Muscle Recovery muscle retention the peeg Recovery muscle retention the peeg Recovery muscle retention the peeg portion of this peptide actually plays a portion of this peptide actually plays a portion of this peptide actually plays a huge role in extending the halflife and huge role in extending the halflife and huge role in extending the halflife and allowing the activity of muscle allowing the activity of muscle allowing the activity of muscle enhancement and Muscle Recovery get enhancement and Muscle Recovery get enhancement and Muscle Recovery get lated in the body so it is more lated in the body so it is more lated in the body so it is more bioavailable so this is a GameChanger bioavailable so this is a GameChanger bioavailable so this is a GameChanger peptide so how exactly does Peg MGF work peptide so how exactly does Peg MGF work peptide so how exactly does Peg MGF work well let's use this as an example well let's use this as an example well let's use this as an example anytime that we're exercising we are anytime that we're exercising we are anytime that we're exercising we are especially resistance training we are especially resistance training we are especially resistance training we are creating tiny little micro tears in our",
+            "first_timestamp": "00:01:53.360"
+          },
+          {
+            "source_id": "JC1poI1OEog",
+            "source_type": "podcast",
+            "source_title": "Saturday Morning Coffee Talk 3/14/2026",
+            "source_date": "2026-03-14",
+            "source_url": "https://youtu.be/JC1poI1OEog",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2026-03-14-saturday-morning-coffee-talk-3-14-2026-JC1poI1OEog.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "And it's going to help with some of the healing and IGF-1 signaling",
+            "top_context": "12 weeks I mean it's still like I still 12 weeks I mean it's still like I still that's a hard surgery to it's still a that's a hard surgery to it's still a that's a hard surgery to it's still a hard surgery to recover from. hard surgery to recover from. hard surgery to recover from. I would like if you haven't used it I would like if you haven't used it I would like if you haven't used it doesn't sound like you have I would like doesn't sound like you have I would like doesn't sound like you have I would like KPV KPV is one of the best KPV KPV is one of the best KPV KPV is one of the best anti-inflammatory peptides. Yeah. I anti-inflammatory peptides. Yeah. I anti-inflammatory peptides. Yeah. I would say KPV if it's feels like there's would say KPV if it's feels like there's would say KPV if it's feels like there's inflammation from the surgery KPV and inflammation from the surgery KPV and inflammation from the surgery KPV and cardalax would be really good. I would cardalax would be really good. I would cardalax would be really good. I would do little doses of cardalax as close as do little doses of cardalax as close as do little doses of cardalax as close as I could to that area. That's going to I could to that area. That's going to I could to that area. That's going to help with some of the healing and then help with some of the healing and then help with some of the healing and then potentially PEG MGF potentially PEG MGF potentially PEG MGF 200-ish micrograms around there. I think 200-ish micrograms around there. I think 200-ish micrograms around there. I think those are good alternatives to get the those are good alternatives to get the those are good alternatives to get the same effects from the BPC TB and GHK same effects from the BPC TB and GHK same effects from the BPC TB and GHK without using those. Yeah. Very without using those. Yeah. Very without using those. Yeah. Very anti-inflammatory. anti-inflammatory. anti-inflammatory. And it's going to help with some of the And it's going to help with some of the And it's going to help with some of the healing and IGF-1 signaling healing and IGF-1 signaling healing and IGF-1 signaling locally that's where the PEG MGF comes locally that's where the PEG MGF comes locally that's where the PEG MGF comes in, but that's where that's where I in, but that's where that's where I in, but that's where that's where I would go would go would go with those. Recently completed a 50 mg bottle of GHK Recently completed a 50 mg bottle of GHK and prior to that I completed a 10 mg and prior to that I completed a 10 mg and prior to that I completed a 10 mg bottle of melanotan 1 and a nasal spray bottle of melanotan 1 and a nasal spray bottle of melanotan 1 and a nasal spray of C-Max all purchased from your sources of C-Max all purchased from your sources of C-Max all purchased from your sources haven't noticed any haven't noticed any haven't noticed any difference from any of the peptides difference from any of the peptides difference from any of the peptides other than mild flushing from the other than mild flushing from the other than mild flushing from the melanotan could there be a reason why melanotan could there be a reason why melanotan could there be a reason why I'm not seeing feeling anything? I mean I'm not seeing feeling anything? I mean I'm not seeing feeling anything? I mean that's that's that's one of those things it could be a whole one of those things it could be a whole one of those things it could be a whole host of reasons and I I would need to host of reasons and I I would need to host of reasons and I I would need to know more are you using hormones are you know more are you using hormones are you know more are you using hormones are you what is your lifestyle look like how what is your lifestyle look like how what is your lifestyle look like how much inflammation do you have and your much inflammation do you have and your much inflammation do you have and your stress levels? stress levels? stress levels? Okay is there a lot of inflammation Okay is there a lot of inflammation Okay is there a lot of inflammation going on? I mean do you feel like you're going on? I mean do you feel like you're going on? I mean do you feel like you're less inflamed?",
+            "first_timestamp": "00:51:36.120"
+          },
+          {
+            "source_id": "Cg7JtpnfRY4",
+            "source_type": "podcast",
+            "source_title": "Saturday Morning Coffee Talk 4/18/26",
+            "source_date": "2026-04-18",
+            "source_url": "https://youtu.be/Cg7JtpnfRY4",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2026-04-18-saturday-morning-coffee-talk-4-18-26-Cg7JtpnfRY4.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "AOD? I'm trying it instead of test so I don't raise IGF-1 with polycystic",
+            "top_context": "&gt;&gt; Best time and duration for fasting for a &gt;&gt; Best time and duration for fasting for a woman during her cycle? I'd say not to woman during her cycle? I'd say not to woman during her cycle? I'd say not to fast. fast. fast. Well, part During the cycle. During the Well, part During the cycle. During the Well, part During the cycle. During the cycle. You don't want to fast during the cycle. You don't want to fast during the cycle. You don't want to fast during the luteal phase of the menstrual cycle cuz luteal phase of the menstrual cycle cuz luteal phase of the menstrual cycle cuz that's like when the PMS phase happens. that's like when the PMS phase happens. that's like when the PMS phase happens. So, that's the phase where it's like So, that's the phase where it's like So, that's the phase where it's like either your body's preparing for either your body's preparing for either your body's preparing for pregnancy or your body's preparing to pregnancy or your body's preparing to pregnancy or your body's preparing to get its menstrual cycle. You don't want get its menstrual cycle. You don't want get its menstrual cycle. You don't want to fast during um to fast during um to fast during um that time frame. So, just anytime after that time frame. So, just anytime after that time frame. So, just anytime after ovulation and luteal phase happens, you ovulation and luteal phase happens, you ovulation and luteal phase happens, you don't want to you don't want to fast. don't want to you don't want to fast. don't want to you don't want to fast. Yeah. A lot of women feel great as honestly A lot of women feel great as honestly like like like while they're like actually menstruating while they're like actually menstruating while they're like actually menstruating to fast during that time. Yeah. to fast during that time. Yeah. to fast during that time. Yeah. Do you see any positive results with Do you see any positive results with Do you see any positive results with AOD? I'm trying it instead of test so I AOD? I'm trying it instead of test so I AOD? I'm trying it instead of test so I don't raise IGF-1 with polycystic don't raise IGF-1 with polycystic don't raise IGF-1 with polycystic kidneys. Honestly, not really. The only kidneys. Honestly, not really. The only kidneys. Honestly, not really. The only results I see is if it's with a GLP and results I see is if it's with a GLP and results I see is if it's with a GLP and with a growth hormone peptide. with a growth hormone peptide. with a growth hormone peptide. So, you could try, but I just don't So, you could try, but I just don't So, you could try, but I just don't think it really does that much. How do you reconstitute peptides like How do you reconstitute peptides like Clenbuterol after three different Clenbuterol after three different Clenbuterol after three different peptide drinks? When all else fails, add peptide drinks? When all else fails, add peptide drinks? When all else fails, add 2 ml and take 10 units. No, but all 2 ml and take 10 units. No, but all 2 ml and take 10 units. No, but all seriousness, on the peptide cheat sheet seriousness, on the peptide cheat sheet seriousness, on the peptide cheat sheet I have instructions for that. Yeah. And I think this is We're getting to the And I think this is We're getting to the end. Can I clarify what I meant by it's all Can I clarify what I meant by it's all placebo effect after answering the placebo effect after answering the placebo effect after answering the Cartalax and KPV question? Yes, it was a Cartalax and KPV question? Yes, it was a Cartalax and KPV question? Yes, it was a joke. It's So, that is what I meant. I",
+            "first_timestamp": "02:05:43.320"
+          },
+          {
+            "source_id": "U3Yqjb3bK6A",
+            "source_type": "podcast",
+            "source_title": "Top 5 Growth Hormone Peptides | Every Woman Needs to Know About",
+            "source_date": "2024-09-10",
+            "source_url": "https://youtu.be/U3Yqjb3bK6A",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2024-09-10-top-5-growth-hormone-peptides-every-woman-needs-to-know-about-U3Yqjb3bK6A.en.vtt",
+            "mention_count": 2,
+            "top_snippet": "build muscle because they're not consuming enough calories now how igf1",
+            "top_context": "therefore our appetite has been in a therefore our appetite has been in a very you know spin more restrictive very you know spin more restrictive very you know spin more restrictive we're leaning out our calorie intake is we're leaning out our calorie intake is we're leaning out our calorie intake is going to be different you know we're going to be different you know we're going to be different you know we're basically in a more constrictive area of basically in a more constrictive area of basically in a more constrictive area of consuming calories because we're in a consuming calories because we're in a consuming calories because we're in a fat loss mode now we're going back into fat loss mode now we're going back into fat loss mode now we're going back into a muscle building mode and now we need a muscle building mode and now we need a muscle building mode and now we need to consume more calories because we want to consume more calories because we want to consume more calories because we want to put more muscle mass on and we've to put more muscle mass on and we've to put more muscle mass on and we've just gone off of being on a glp1 which just gone off of being on a glp1 which just gone off of being on a glp1 which our appetites are suppressed you have to our appetites are suppressed you have to our appetites are suppressed you have to be able if you want to build muscle be able if you want to build muscle be able if you want to build muscle ladies you have got to have enough ladies you have got to have enough ladies you have got to have enough calories in your system I see this so calories in your system I see this so calories in your system I see this so much happen where women are not able to much happen where women are not able to much happen where women are not able to build muscle because they're not build muscle because they're not build muscle because they're not consuming enough calories now how igf1 consuming enough calories now how igf1 consuming enough calories now how igf1 lr3 can help with this is that it does lr3 can help with this is that it does lr3 can help with this is that it does one of the things it does it does one of the things it does it does one of the things it does it does stimulate um stimulate um stimulate um appetite so I notice that I do have a appetite so I notice that I do have a appetite so I notice that I do have a heavier appetite when I take this heavier appetite when I take this heavier appetite when I take this peptide but I'm only going to be taking peptide but I'm only going to be taking peptide but I'm only going to be taking this peptide when I'm trying to build this peptide when I'm trying to build this peptide when I'm trying to build muscle and I'm only going to be staying muscle and I'm only going to be staying muscle and I'm only going to be staying on this pepti for four weeks and if I on this pepti for four weeks and if I on this pepti for four weeks and if I want to build muscle I have to have more want to build muscle I have to have more want to build muscle I have to have more of an appetite therefore and I've been of an appetite therefore and I've been of an appetite therefore and I've been on a glp1 therefore like I need a little on a glp1 therefore like I need a little on a glp1 therefore like I need a little bit boost of an appetite my appetite to bit boost of an appetite my appetite to bit boost of an appetite my appetite to go up is going to be a great peptide for go up is going to be a great peptide for go up is going to be a great peptide for that um so help with that now another that um so help with that now another that um so help with that now another really great thing that if you are using really great thing that if you are using really great thing that if you are using gp1s for the first time this is a great",
+            "first_timestamp": "00:13:17.839"
+          },
+          {
+            "source_id": "SUZmM0nTPyw",
+            "source_type": "podcast",
+            "source_title": "Peptide Stacking SECRETS for Women Who Want RESULTS!",
+            "source_date": "2024-10-22",
+            "source_url": "https://youtu.be/SUZmM0nTPyw",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2024-10-22-peptide-stacking-secrets-for-women-who-want-results-SUZmM0nTPyw.en.vtt",
+            "mention_count": 2,
+            "top_snippet": "together I've also taken igf igf1",
+            "top_context": "favorite is IAM maralin now let's say if favorite is IAM maralin now let's say if you are wanting to Target more on you are wanting to Target more on you are wanting to Target more on visceral fat Tesa marelin is going to be visceral fat Tesa marelin is going to be visceral fat Tesa marelin is going to be the better option and then let's say if the better option and then let's say if the better option and then let's say if you were wanting to focus on building you were wanting to focus on building you were wanting to focus on building muscle that's where the igf1 lr3 is muscle that's where the igf1 lr3 is muscle that's where the igf1 lr3 is going to be beneficial and then let's going to be beneficial and then let's going to be beneficial and then let's say if you are trying to enhance the say if you are trying to enhance the say if you are trying to enhance the growth hormone growth hormone growth hormone production that is where CJC 1259 with production that is where CJC 1259 with production that is where CJC 1259 with no deck is going to be beneficial but no deck is going to be beneficial but no deck is going to be beneficial but what's so great is that if rein CJC 1259 what's so great is that if rein CJC 1259 what's so great is that if rein CJC 1259 pair really good together so a lot of pair really good together so a lot of pair really good together so a lot of times I take that as a blend and it's times I take that as a blend and it's times I take that as a blend and it's all in together it's a great combo to do all in together it's a great combo to do all in together it's a great combo to do together I've also together I've also together I've also taken igf igf1 taken igf igf1 taken igf igf1 lr3 while taking epam marelin and it lr3 while taking epam marelin and it lr3 while taking epam marelin and it does great together um you also can does great together um you also can does great together um you also can paare this alone by itself does great paare this alone by itself does great paare this alone by itself does great cuz you can only be on this peptide for cuz you can only be on this peptide for cuz you can only be on this peptide for a very short period of time because our a very short period of time because our a very short period of time because our body just natur builds a stronger body just natur builds a stronger body just natur builds a stronger resistance to it quicker so sometimes resistance to it quicker so sometimes resistance to it quicker so sometimes I'll just even take that by itself and I'll just even take that by itself and I'll just even take that by itself and then test some Morel and I'm usually then test some Morel and I'm usually then test some Morel and I'm usually taking that by itself I'm not normally taking that by itself I'm not normally taking that by itself I'm not normally pairing things so let's just say okay pairing things so let's just say okay pairing things so let's just say okay you're making a peptide plan okay what you're making a peptide plan okay what you're making a peptide plan okay what one of these do you want to pick for one of these do you want to pick for one of these do you want to pick for your growth hormone your growth hormone your growth hormone stimulant that's where you get to kind stimulant that's where you get to kind stimulant that's where you get to kind of pick um you can just pick any of of pick um you can just pick any of of pick um you can just pick any of these by themselves or you can pair the",
+            "first_timestamp": "00:06:40.840"
+          }
+        ],
+        "acute_signals": [
+          {
+            "snippet": "factor so this is a variant of igf1 which is a key growth factor in",
+            "source_title": "3 Reasons Why PEG-MGF is the BEST Kept Secret in Injury Recovery",
+            "source_date": "2024-12-20",
+            "timestamp": "00:01:53.360",
+            "source_url": "https://youtu.be/n9KbzwObtqg"
+          },
+          {
+            "snippet": "And it's going to help with some of the healing and IGF-1 signaling",
+            "source_title": "Saturday Morning Coffee Talk 3/14/2026",
+            "source_date": "2026-03-14",
+            "timestamp": "00:51:36.120",
+            "source_url": "https://youtu.be/JC1poI1OEog"
+          },
+          {
+            "snippet": "healing and IGF-1 signaling",
+            "source_title": "Saturday Morning Coffee Talk 3/14/2026",
+            "source_date": "2026-03-14",
+            "timestamp": "00:51:38.950",
+            "source_url": "https://youtu.be/JC1poI1OEog"
+          },
+          {
+            "snippet": "healing and IGF-1 signaling locally that's where the PEG MGF comes",
+            "source_title": "Saturday Morning Coffee Talk 3/14/2026",
+            "source_date": "2026-03-14",
+            "timestamp": "00:51:38.960",
+            "source_url": "https://youtu.be/JC1poI1OEog"
+          }
+        ],
+        "chronic_signals": [
+          {
+            "snippet": "be a great benefit of igf1 so you got that in there for your",
+            "source_title": "IGF-1 LR3: My Experience & Benefits for Women",
+            "source_date": "2024-08-16",
+            "timestamp": "00:04:47.120",
+            "source_url": "https://youtu.be/nkOr0jCzn18"
+          },
+          {
+            "snippet": "igf1 so you got that in there for your",
+            "source_title": "IGF-1 LR3: My Experience & Benefits for Women",
+            "source_date": "2024-08-16",
+            "timestamp": "00:04:50.029",
+            "source_url": "https://youtu.be/nkOr0jCzn18"
+          },
+          {
+            "snippet": "igf1 so you got that in there for your anti-aging and it's also going to help",
+            "source_title": "IGF-1 LR3: My Experience & Benefits for Women",
+            "source_date": "2024-08-16",
+            "timestamp": "00:04:50.039",
+            "source_url": "https://youtu.be/nkOr0jCzn18"
+          },
+          {
+            "snippet": "because our body is our bodies are more sensitive to um igf-1 because",
+            "source_title": "IGF-1 LR3: My Experience & Benefits for Women",
+            "source_date": "2024-08-16",
+            "timestamp": "00:15:18.399",
+            "source_url": "https://youtu.be/nkOr0jCzn18"
+          },
+          {
+            "snippet": "sensitive to um igf-1 because",
+            "source_title": "IGF-1 LR3: My Experience & Benefits for Women",
+            "source_date": "2024-08-16",
+            "timestamp": "00:15:24.069",
+            "source_url": "https://youtu.be/nkOr0jCzn18"
+          }
+        ]
+      },
+      "female_specific_note": "Taylor Williams Coaching focuses on female-specific HRT/peptide guidance. Per-peptide notes here often emphasize female dosing, fertility, hormone interactions."
+    },
+    "trevor-bachmeyer": {
+      "summary": {
+        "mention_count": 802,
+        "top_doses": [
+          {
+            "dose": "25 milligrams",
+            "count": 54
+          },
+          {
+            "dose": "12.5 milligrams",
+            "count": 18
+          },
+          {
+            "dose": "7 mg",
+            "count": 18
+          },
+          {
+            "dose": "100 micrograms",
+            "count": 9
+          },
+          {
+            "dose": "5 milligrams",
+            "count": 9
+          },
+          {
+            "dose": "200 mg",
+            "count": 9
+          },
+          {
+            "dose": "10 iu",
+            "count": 7
+          },
+          {
+            "dose": "10 milligrams",
+            "count": 6
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "0mFLEuEg2_0",
+            "source_type": "podcast",
+            "source_title": "Tesamorelin, CJC and Ipamorelin and CANCER - Dr Trevor Bachmeyer",
+            "source_date": "2026-03-01",
+            "source_url": "https://youtu.be/0mFLEuEg2_0",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2026-03-01-tesamorelin-cjc-and-ipamorelin-and-cancer-dr-trevor-bachmeyer-0mFLEuEg2_0.en.vtt",
+            "mention_count": 214,
+            "top_snippet": "it. I'm just going over everything. IGF-1 like it all of it.",
+            "top_context": "The lack of information is staggering. The lack of information is staggering. You know how you expose a rookie? How You know how you expose a rookie? How You know how you expose a rookie? How they conduct themselves because they they conduct themselves because they they conduct themselves because they just make mistakes and their ego gets in just make mistakes and their ego gets in just make mistakes and their ego gets in the way instead of going, \"You know the way instead of going, \"You know the way instead of going, \"You know what? That might be right.\" It's wild to what? That might be right.\" It's wild to what? That might be right.\" It's wild to me cuz today this is all about growth me cuz today this is all about growth me cuz today this is all about growth hormone analoges and how they don't hormone analoges and how they don't hormone analoges and how they don't cause cancer ever. They don't start cause cancer ever. They don't start cause cancer ever. They don't start cancer. They don't increase cancer. They cancer. They don't increase cancer. They cancer. They don't increase cancer. They don't do anything with cancer don't do anything with cancer don't do anything with cancer whatsoever. I'm talking to Samarellan. whatsoever. I'm talking to Samarellan. whatsoever. I'm talking to Samarellan. Pamarell and CJC with without DAG all of Pamarell and CJC with without DAG all of Pamarell and CJC with without DAG all of it. I'm just going over everything. it. I'm just going over everything. it. I'm just going over everything. IGF-1 like it all of it. You need to understand this which works You need to understand this which works hand in hand by the way IGF-1 and any hand in hand by the way IGF-1 and any hand in hand by the way IGF-1 and any growth hormone analog and not HGH. HGH growth hormone analog and not HGH. HGH growth hormone analog and not HGH. HGH just before and don't get in my comments just before and don't get in my comments just before and don't get in my comments just listen. HGH for 99.9% just listen. HGH for 99.9% just listen. HGH for 99.9% of the people is quite possibly the of the people is quite possibly the of the people is quite possibly the dumbest decision you can make. And don't dumbest decision you can make. And don't dumbest decision you can make. And don't get offended or mad. I'm not talk I'm get offended or mad. I'm not talk I'm get offended or mad. I'm not talk I'm you take things personally. Half of you you take things personally. Half of you you take things personally. Half of you guys. It's that it is riddled with side guys. It's that it is riddled with side guys. It's that it is riddled with side effects and it causes catastrophic effects and it causes catastrophic effects and it causes catastrophic problems with your pituitary. So it's problems with your pituitary. So it's problems with your pituitary. So it's not worth it. It's not worth it unless not worth it. It's not worth it unless not worth it. It's not worth it unless you have to take it. It's not worth it. you have to take it. It's not worth it. you have to take it. It's not worth it. Listen. All right. So, let's get into Listen. All right. So, let's get into Listen. All right. So, let's get into this because I have a whole bunch of",
+            "first_timestamp": "00:00:30.800"
+          },
+          {
+            "source_id": "l1QK_Vmlhgk",
+            "source_type": "podcast",
+            "source_title": "CJC 1295 w/DAC and Ipamorelin Masterclass",
+            "source_date": "2026-02-09",
+            "source_url": "https://youtu.be/l1QK_Vmlhgk",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2026-02-09-cjc-1295-w-dac-and-ipamorelin-masterclass-l1QK_Vmlhgk.en.vtt",
+            "mention_count": 99,
+            "top_snippet": "and biologically favorable and active IGF elevation IGF-1 compared to CJC 1295",
+            "top_context": "to bind to albumin in the blood. It's to bind to albumin in the blood. It's the most abundant protein in your the most abundant protein in your the most abundant protein in your bloodstream. This is physiologically bloodstream. This is physiologically bloodstream. This is physiologically some serious genius work here because some serious genius work here because some serious genius work here because once bound to albumin, the peptide once bound to albumin, the peptide once bound to albumin, the peptide becomes invisible to the enzyme that becomes invisible to the enzyme that becomes invisible to the enzyme that destroys it, the DPP4. So now the destroys it, the DPP4. So now the destroys it, the DPP4. So now the kidneys can't filter it out, the kidneys can't filter it out, the kidneys can't filter it out, the proteiasis can't break it down, the proteiasis can't break it down, the proteiasis can't break it down, the peptide circulates for over a week. Let peptide circulates for over a week. Let peptide circulates for over a week. Let me say it again. once provides one me say it again. once provides one me say it again. once provides one injection for your kangaroo pituitary injection for your kangaroo pituitary injection for your kangaroo pituitary stimulation for over a week up to two stimulation for over a week up to two stimulation for over a week up to two weeks. So the DAC is a gamecher. The weeks. So the DAC is a gamecher. The weeks. So the DAC is a gamecher. The research is unbelievable. 2013 Journal research is unbelievable. 2013 Journal research is unbelievable. 2013 Journal of Clinical Endocrinology and Metabolism of Clinical Endocrinology and Metabolism of Clinical Endocrinology and Metabolism showed CJC 1295 with DAC once a week showed CJC 1295 with DAC once a week showed CJC 1295 with DAC once a week produced significantly more consistent produced significantly more consistent produced significantly more consistent and biologically favorable and active and biologically favorable and active and biologically favorable and active IGF elevation IGF-1 compared to CJC 1295 IGF elevation IGF-1 compared to CJC 1295 IGF elevation IGF-1 compared to CJC 1295 without DAC which required multiple without DAC which required multiple without DAC which required multiple administrations per week and less administrations per week and less administrations per week and less effective. But here's why this is effective. But here's why this is effective. But here's why this is important beyond the convenience of it. important beyond the convenience of it. important beyond the convenience of it. You guys are like I don't want to take You guys are like I don't want to take You guys are like I don't want to take them all at once. Can I take Can I put them all at once. Can I take Can I put them all at once. Can I take Can I put it all in the same barrel? No. Your body it all in the same barrel? No. Your body it all in the same barrel? No. Your body responds to homeostasis. Constant responds to homeostasis. Constant responds to homeostasis. Constant stimulation creates constant adaptation. stimulation creates constant adaptation. stimulation creates constant adaptation. Without DAC, you get a nightmare and you Without DAC, you get a nightmare and you Without DAC, you get a nightmare and you don't get nearly the same hit. Now, don't get nearly the same hit. Now, don't get nearly the same hit. Now, there are times before you go any there are times before you go any there are times before you go any further, get in my comments. Yeah, there further, get in my comments. Yeah, there further, get in my comments. Yeah, there are times that without DAC is necessary, are times that without DAC is necessary, are times that without DAC is necessary, but for the most part, the difference but for the most part, the difference but for the most part, the difference between with DAC, which is the one I am between with DAC, which is the one I am between with DAC, which is the one I am angling you towards, for all you guys angling you towards, for all you guys angling you towards, for all you guys going, which one should I do? with DAC going, which one should I do? with DAC going, which one should I do? with DAC is the one I'm telling you should is the one I'm telling you should is the one I'm telling you should consider in your kangaroo experiment consider in your kangaroo experiment consider in your kangaroo experiment versus without it. But it's literally",
+            "first_timestamp": "00:10:33.120"
+          },
+          {
+            "source_id": "m_GpIdkHI4M",
+            "source_type": "podcast",
+            "source_title": "CJC 1295 and Ipamorelin and Reversing Age - Dr Trevor Bachmeyer",
+            "source_date": "2025-11-15",
+            "source_url": "https://youtu.be/m_GpIdkHI4M",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2025-11-15-cjc-1295-and-ipamorelin-and-reversing-age-dr-trevor-bachmeyer-m_GpIdkHI4M.en.vtt",
+            "mention_count": 57,
+            "top_snippet": "liver, you guys, ever. It produces insulin-like growth factor 1, IGF-1.",
+            "top_context": "never read the comments. So you guys get never read the comments. So you guys get in the comments, you guys are talking to in the comments, you guys are talking to in the comments, you guys are talking to each other. Just so you know, I have each other. Just so you know, I have each other. Just so you know, I have read the number of YouTube comments I read the number of YouTube comments I read the number of YouTube comments I have read in the last 6 months, zero. have read in the last 6 months, zero. have read in the last 6 months, zero. Maybe slightly Maybe Maybe I've answered Maybe slightly Maybe Maybe I've answered Maybe slightly Maybe Maybe I've answered five in total just because I was bored five in total just because I was bored five in total just because I was bored and it popped up. I was like yeah [&nbsp;__&nbsp;] and it popped up. I was like yeah [&nbsp;__&nbsp;] and it popped up. I was like yeah [&nbsp;__&nbsp;] I'll answer this guy. And thank you for I'll answer this guy. And thank you for I'll answer this guy. And thank you for the comments. I love it. Thank you so the comments. I love it. Thank you so the comments. I love it. Thank you so much for the conversations, but I'm if much for the conversations, but I'm if much for the conversations, but I'm if you're going to talk trash or be you're going to talk trash or be you're going to talk trash or be anything that you don't value your own anything that you don't value your own anything that you don't value your own life, you value your ego. So listen to life, you value your ego. So listen to life, you value your ego. So listen to me. You don't need growth hormone, you me. You don't need growth hormone, you me. You don't need growth hormone, you need to have your system make growth need to have your system make growth need to have your system make growth hormone. It's insanely effective. Your hormone. It's insanely effective. Your hormone. It's insanely effective. Your pituitary gland releases growth hormone pituitary gland releases growth hormone pituitary gland releases growth hormone and pulses GH. Little pulses. Bang. And and pulses GH. Little pulses. Bang. And and pulses GH. Little pulses. Bang. And it does it mostly while you're sleeping. it does it mostly while you're sleeping. it does it mostly while you're sleeping. GH tells your liver Growth hormone isn't GH tells your liver Growth hormone isn't GH tells your liver Growth hormone isn't the be all end all. The action where all the be all end all. The action where all the be all end all. The action where all the cool stuff happens is your liver, the cool stuff happens is your liver, the cool stuff happens is your liver, which is why you don't screw with your which is why you don't screw with your which is why you don't screw with your liver, you guys, ever. It produces liver, you guys, ever. It produces liver, you guys, ever. It produces insulin-like growth factor 1, IGF-1. insulin-like growth factor 1, IGF-1. insulin-like growth factor 1, IGF-1. This GH IGF-1 axis is the master This GH IGF-1 axis is the master This GH IGF-1 axis is the master regulator of growth and repair and all regulator of growth and repair and all regulator of growth and repair and all of all of your metabolic function. But of all of your metabolic function. But of all of your metabolic function. But about 30 years old, this signal tanks. about 30 years old, this signal tanks. about 30 years old, this signal tanks. It starts to get quieter and softer and It starts to get quieter and softer and It starts to get quieter and softer and a little more dull every single year and a little more dull every single year and a little more dull every single year and the pulses get weaker and less frequent the pulses get weaker and less frequent the pulses get weaker and less frequent and the result is you lose muscle and and the result is you lose muscle and and the result is you lose muscle and you gain fat, your skin thins and your you gain fat, your skin thins and your you gain fat, your skin thins and your energy tanks and your recovery slows to energy tanks and your recovery slows to energy tanks and your recovery slows to this toddler's crawl. It's not aging this toddler's crawl. It's not aging this toddler's crawl. It's not aging though. It is hormonal decay. Please though. It is hormonal decay. Please though. It is hormonal decay. Please understand they're not the same. So the understand they're not the same. So the understand they're not the same. So the multi-billion dollar question has been multi-billion dollar question has been multi-billion dollar question has been always the same thing. How do we fix always the same thing. How do we fix always the same thing. How do we fix this? And they have The nonsense that I this? And they have The nonsense that I this? And they have The nonsense that I see online and the stuff people put see online and the stuff people put see online and the stuff people put together and the oral compounds that together and the oral compounds that together and the oral compounds that people are trying to sell you that are",
+            "first_timestamp": "00:11:50.000"
+          },
+          {
+            "source_id": "8bL5e8pQc_U",
+            "source_type": "podcast",
+            "source_title": "The Endogenous GH Protocol Every Biohacker Needs to Know - Dr Trevor Bachmeyer",
+            "source_date": "2026-04-03",
+            "source_url": "https://youtu.be/8bL5e8pQc_U",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2026-04-03-the-endogenous-gh-protocol-every-biohacker-needs-to-know-dr-trevor-bac-8bL5e8pQc_U.en.vtt",
+            "mention_count": 48,
+            "top_snippet": "protein synthesis. So growth hormone works by increasing IGF-1, insulin like",
+            "top_context": "You can't mobilize fat efficiently no You can't mobilize fat efficiently no matter how much you exercise, how much matter how much you exercise, how much matter how much you exercise, how much you diet, and what you do. So 2015 study you diet, and what you do. So 2015 study you diet, and what you do. So 2015 study by Sacman Salah and endocrine reviews by Sacman Salah and endocrine reviews by Sacman Salah and endocrine reviews showed GH deficient individuals have showed GH deficient individuals have showed GH deficient individuals have three and a half times impaired three and a half times impaired three and a half times impaired lipolysis compared to the healthy lipolysis compared to the healthy lipolysis compared to the healthy control group. Fat oxidation capacity is control group. Fat oxidation capacity is control group. Fat oxidation capacity is reduced 68% despite, listen to this reduced 68% despite, listen to this reduced 68% despite, listen to this part, despite identical exercise part, despite identical exercise part, despite identical exercise protocols, which means you guys both protocols, which means you guys both protocols, which means you guys both groups are doing the same thing. one groups are doing the same thing. one groups are doing the same thing. one with low GH internal and others with with low GH internal and others with with low GH internal and others with normal and they are radically different. normal and they are radically different. normal and they are radically different. Their fat oxidation capacity of the low Their fat oxidation capacity of the low Their fat oxidation capacity of the low growth hormone individuals was reduced growth hormone individuals was reduced growth hormone individuals was reduced by 68%. That's huge, which means they're by 68%. That's huge, which means they're by 68%. That's huge, which means they're doing the same work but producing doing the same work but producing doing the same work but producing different results. You're essentially different results. You're essentially different results. You're essentially biochemically incapable of losing fat. biochemically incapable of losing fat. biochemically incapable of losing fat. Look at growth hormone, the muscle Look at growth hormone, the muscle Look at growth hormone, the muscle protein synthesis. So growth hormone protein synthesis. So growth hormone protein synthesis. So growth hormone works by increasing IGF-1, insulin like works by increasing IGF-1, insulin like works by increasing IGF-1, insulin like growth factor 1, and that's produced in growth factor 1, and that's produced in growth factor 1, and that's produced in your liver. IGF-1 is the metabolic your liver. IGF-1 is the metabolic your liver. IGF-1 is the metabolic workhorse of your biology. It directly workhorse of your biology. It directly workhorse of your biology. It directly stimulates amino acid uptake into the stimulates amino acid uptake into the stimulates amino acid uptake into the muscle cells and activates mTor muscle cells and activates mTor muscle cells and activates mTor signaling which is the it's like the signaling which is the it's like the signaling which is the it's like the control system for muscle protein control system for muscle protein control system for muscle protein synthesis. When GH is low, IGF-1 is low. synthesis. When GH is low, IGF-1 is low. synthesis. When GH is low, IGF-1 is low. Your muscles can't synthesize new Your muscles can't synthesize new Your muscles can't synthesize new protein. You lose muscle mass protein. You lose muscle mass protein. You lose muscle mass progressively. Even if you're training progressively. Even if you're training progressively. Even if you're training hard, baby, which is what happens as we hard, baby, which is what happens as we hard, baby, which is what happens as we get older. So 2012 study by Clemens in get older. So 2012 study by Clemens in get older. So 2012 study by Clemens in growth hormone and IGF research showed growth hormone and IGF research showed growth hormone and IGF research showed IGF-1 deficiency reduces muscle protein IGF-1 deficiency reduces muscle protein IGF-1 deficiency reduces muscle protein synthesis by 43% increases protein synthesis by 43% increases protein synthesis by 43% increases protein breakdown by 31% and the result is breakdown by 31% and the result is breakdown by 31% and the result is progressive sarcopenia muscle loss",
+            "first_timestamp": "00:06:40.720"
+          },
+          {
+            "source_id": "j3JtxiHkq08",
+            "source_type": "podcast",
+            "source_title": "Raising Growth Hormone - Dr Trevor Bachmeyer",
+            "source_date": "2026-04-12",
+            "source_url": "https://youtu.be/j3JtxiHkq08",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2026-04-12-raising-growth-hormone-dr-trevor-bachmeyer-j3JtxiHkq08.en.vtt",
+            "mention_count": 48,
+            "top_snippet": "protein synthesis. So growth hormone works by increasing IGF-1, insulin like",
+            "top_context": "You can't mobilize fat efficiently no You can't mobilize fat efficiently no matter how much you exercise, how much matter how much you exercise, how much matter how much you exercise, how much you diet, and what you do. So 2015 study you diet, and what you do. So 2015 study you diet, and what you do. So 2015 study by Sacman Sala and endocrine reviews by Sacman Sala and endocrine reviews by Sacman Sala and endocrine reviews showed GH deficient individuals have showed GH deficient individuals have showed GH deficient individuals have three and a half times impaired three and a half times impaired three and a half times impaired lipolysis compared to the healthy lipolysis compared to the healthy lipolysis compared to the healthy control group. Fat oxidation capacity is control group. Fat oxidation capacity is control group. Fat oxidation capacity is reduced 68% despite listen to this part reduced 68% despite listen to this part reduced 68% despite listen to this part despite identical exercise protocols. despite identical exercise protocols. despite identical exercise protocols. Which means you guys both groups are Which means you guys both groups are Which means you guys both groups are doing the same thing. one with low GH doing the same thing. one with low GH doing the same thing. one with low GH internal and others with normal and they internal and others with normal and they internal and others with normal and they are radically different. Their fat are radically different. Their fat are radically different. Their fat oxidation capacity of the low growth oxidation capacity of the low growth oxidation capacity of the low growth hormone individuals was reduced by 68%. hormone individuals was reduced by 68%. hormone individuals was reduced by 68%. That's huge, which means they're doing That's huge, which means they're doing That's huge, which means they're doing the same work but producing different the same work but producing different the same work but producing different results. You're essentially results. You're essentially results. You're essentially biochemically incapable of losing fat. biochemically incapable of losing fat. biochemically incapable of losing fat. Look at growth hormone, the muscle Look at growth hormone, the muscle Look at growth hormone, the muscle protein synthesis. So growth hormone protein synthesis. So growth hormone protein synthesis. So growth hormone works by increasing IGF-1, insulin like works by increasing IGF-1, insulin like works by increasing IGF-1, insulin like growth factor 1, and that's produced in growth factor 1, and that's produced in growth factor 1, and that's produced in your liver. IGF-1 is the metabolic your liver. IGF-1 is the metabolic your liver. IGF-1 is the metabolic workhorse of your biology. It directly workhorse of your biology. It directly workhorse of your biology. It directly stimulates amino acid uptake into the stimulates amino acid uptake into the stimulates amino acid uptake into the muscle cells and activates mTor muscle cells and activates mTor muscle cells and activates mTor signaling which is the it's like the signaling which is the it's like the signaling which is the it's like the control system for muscle protein control system for muscle protein control system for muscle protein synthesis. When GH is low, IGF-1 is low. synthesis. When GH is low, IGF-1 is low. synthesis. When GH is low, IGF-1 is low. Your muscles can't synthesize new Your muscles can't synthesize new Your muscles can't synthesize new protein. You lose muscle mass protein. You lose muscle mass protein. You lose muscle mass progressively. Even if you're training progressively. Even if you're training progressively. Even if you're training hard, baby, which is what happens as we hard, baby, which is what happens as we hard, baby, which is what happens as we get older. So 2012 study by Clemens in get older. So 2012 study by Clemens in get older. So 2012 study by Clemens in growth hormone and IGF research showed growth hormone and IGF research showed growth hormone and IGF research showed IGF-1 deficiency reduces muscle protein IGF-1 deficiency reduces muscle protein IGF-1 deficiency reduces muscle protein synthesis by 43% synthesis by 43% synthesis by 43% increases protein breakdown by 31% and increases protein breakdown by 31% and increases protein breakdown by 31% and the result is progressive sarcopenia the result is progressive sarcopenia the result is progressive sarcopenia muscle loss you're cannibalize your own",
+            "first_timestamp": "00:06:47.520"
+          },
+          {
+            "source_id": "n7HyiIEhn7c",
+            "source_type": "podcast",
+            "source_title": "Debunking The Bro Science About MK677 Causing Cancer - Unbreakable Podcast 211",
+            "source_date": "2025-08-02",
+            "source_url": "https://youtu.be/n7HyiIEhn7c",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2025-08-02-debunking-the-bro-science-about-mk677-causing-cancer-unbreakable-podca-n7HyiIEhn7c.en.vtt",
+            "mention_count": 36,
+            "top_snippet": "pulses naturally all the time. And when it pulses, you make IGF-1, right?",
+            "top_context": "presume their expertise even though they presume their expertise even though they really have no idea what they're saying. really have no idea what they're saying. really have no idea what they're saying. Your body already produces growth Your body already produces growth Your body already produces growth hormone. That hormone gets made in a hormone. That hormone gets made in a hormone. That hormone gets made in a place called your pituitary gland when place called your pituitary gland when place called your pituitary gland when your hypothalamus tells it to. The your hypothalamus tells it to. The your hypothalamus tells it to. The hypothalamus uses something called hypothalamus uses something called hypothalamus uses something called ghrein which is some of you guys know it ghrein which is some of you guys know it ghrein which is some of you guys know it the hunger hormone to trigger that the hunger hormone to trigger that the hunger hormone to trigger that signal. Now MK677 acts as a ghrein signal. Now MK677 acts as a ghrein signal. Now MK677 acts as a ghrein receptor agonist, right? It taps on the receptor agonist, right? It taps on the receptor agonist, right? It taps on the door. So it binds to something called door. So it binds to something called door. So it binds to something called the GHS R1A the GHS R1A the GHS R1A receptor in your hypothalamus. It receptor in your hypothalamus. It receptor in your hypothalamus. It doesn't matter what it is. I just doesn't matter what it is. I just doesn't matter what it is. I just figured I'd tell you. But it binds to figured I'd tell you. But it binds to figured I'd tell you. But it binds to this receptor in your hypothalamus and this receptor in your hypothalamus and this receptor in your hypothalamus and says, \"We need some more GH production says, \"We need some more GH production says, \"We need some more GH production over here. We need time to crank it up. over here. We need time to crank it up. over here. We need time to crank it up. Get the FRA factory running a little Get the FRA factory running a little Get the FRA factory running a little better.\" That triggers what's called a better.\" That triggers what's called a better.\" That triggers what's called a GH pulse. And these are natural. Your GH GH pulse. And these are natural. Your GH GH pulse. And these are natural. Your GH pulses naturally all the time. And when pulses naturally all the time. And when pulses naturally all the time. And when it pulses, you make IGF-1, right? it pulses, you make IGF-1, right? it pulses, you make IGF-1, right? Insulin like growth factor, which God, Insulin like growth factor, which God, Insulin like growth factor, which God, this is I could go down this rabbit hole this is I could go down this rabbit hole this is I could go down this rabbit hole and try not to get too deep into and try not to get too deep into and try not to get too deep into physiology because I don't want to lose physiology because I don't want to lose physiology because I don't want to lose anybody. I just want you guys to anybody. I just want you guys to anybody. I just want you guys to understand what I'm talking about. So, understand what I'm talking about. So, understand what I'm talking about. So, IGF-1 promotes muscle growth, bone IGF-1 promotes muscle growth, bone IGF-1 promotes muscle growth, bone density, deep sleep, tissue healing, density, deep sleep, tissue healing, density, deep sleep, tissue healing, cellular repair, fat loss on a massive cellular repair, fat loss on a massive cellular repair, fat loss on a massive scale. So, let me ask you just just scale. So, let me ask you just just scale. So, let me ask you just just follow me on this one. If a compound follow me on this one. If a compound follow me on this one. If a compound helps you produce more of what it's helps you produce more of what it's helps you produce more of what it's already designed to make in response to already designed to make in response to already designed to make in response to its own signaling cascade, by the way, its own signaling cascade, by the way, its own signaling cascade, by the way, the own the own its own messenger the own the own its own messenger the own the own its own messenger system. And it does it within the the system. And it does it within the the system. And it does it within the the natural physiological confines, the natural physiological confines, the natural physiological confines, the ranges that your body can accommodate. ranges that your body can accommodate. ranges that your body can accommodate. You're not redlining anything. How is You're not redlining anything. How is You're not redlining anything. How is that scary? It's not. But here's where",
+            "first_timestamp": "00:05:03.600"
+          },
+          {
+            "source_id": "WIHm62bBsUI",
+            "source_type": "podcast",
+            "source_title": "Ultimate Guide To Growth Hormone and Secretagogues - Unbreakable Podcast",
+            "source_date": "2025-11-09",
+            "source_url": "https://youtu.be/WIHm62bBsUI",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2025-11-09-ultimate-guide-to-growth-hormone-and-secretagogues-unbreakable-podcast-WIHm62bBsUI.en.vtt",
+            "mention_count": 36,
+            "top_snippet": "for the liver to produce the real workh horses, which is IGF-1, insulin light",
+            "top_context": "pinky nail, maybe, maybe a little pinky nail, maybe, maybe a little bigger, maybe your thumbnail. Runs your bigger, maybe your thumbnail. Runs your bigger, maybe your thumbnail. Runs your entire metabolic existence. Follow me on entire metabolic existence. Follow me on entire metabolic existence. Follow me on this. The most famous product that it this. The most famous product that it this. The most famous product that it creates is smatotropen, which is human creates is smatotropen, which is human creates is smatotropen, which is human growth hormone. But HGH is not the growth hormone. But HGH is not the growth hormone. But HGH is not the finish line. This is where people start finish line. This is where people start finish line. This is where people start to get disconnected. It's it's the baton to get disconnected. It's it's the baton to get disconnected. It's it's the baton in a in a relay race if you've ever run in a in a relay race if you've ever run in a in a relay race if you've ever run or done track because on its own, it's or done track because on its own, it's or done track because on its own, it's inert. It does nothing. It's just a key. inert. It does nothing. It's just a key. inert. It does nothing. It's just a key. But the key needs a lock. And it's But the key needs a lock. And it's But the key needs a lock. And it's always the same thing. That lock is the always the same thing. That lock is the always the same thing. That lock is the receptor on the surface of certain cells receptor on the surface of certain cells receptor on the surface of certain cells and primarily in the liver. So when when and primarily in the liver. So when when and primarily in the liver. So when when HGH binds to that receptor, it doesn't HGH binds to that receptor, it doesn't HGH binds to that receptor, it doesn't magically start building muscle. It magically start building muscle. It magically start building muscle. It sends a signal, this message. And the sends a signal, this message. And the sends a signal, this message. And the message is for the liver. This is why message is for the liver. This is why message is for the liver. This is why I'm trying to give you the answer. It's I'm trying to give you the answer. It's I'm trying to give you the answer. It's for the liver to produce the real workh for the liver to produce the real workh for the liver to produce the real workh horses, which is IGF-1, insulin light horses, which is IGF-1, insulin light horses, which is IGF-1, insulin light growth factor 1. And it's binding growth factor 1. And it's binding growth factor 1. And it's binding proteins and all the things that come proteins and all the things that come proteins and all the things that come along with it. That's the anabolic along with it. That's the anabolic along with it. That's the anabolic orchestra. That's the anabolic system orchestra. That's the anabolic system orchestra. That's the anabolic system that you need to tap into. HGH is just that you need to tap into. HGH is just that you need to tap into. HGH is just the one that comes up and starts getting the one that comes up and starts getting the one that comes up and starts getting everybody ready to play their music. everybody ready to play their music. everybody ready to play their music. just tapping the podium like Bugs Bunny just tapping the podium like Bugs Bunny just tapping the podium like Bugs Bunny in that cartoon. Your body isn't stupid. in that cartoon. Your body isn't stupid. in that cartoon. Your body isn't stupid. It doesn't release HGH in this steady, It doesn't release HGH in this steady, It doesn't release HGH in this steady, boring drip either. And this is where a boring drip either. And this is where a boring drip either. And this is where a lot of people get confused cuz remember lot of people get confused cuz remember lot of people get confused cuz remember what's going to happen is if you inject what's going to happen is if you inject what's going to happen is if you inject HGH into your kangaroo and it's HGH into your kangaroo and it's HGH into your kangaroo and it's instantly going to get that hit, start instantly going to get that hit, start instantly going to get that hit, start pulsing your own growth hormone. It pulsing your own growth hormone. It pulsing your own growth hormone. It doesn't even feed that loop at all. Not doesn't even feed that loop at all. Not doesn't even feed that loop at all. Not even close. You just wham hit the even close. You just wham hit the even close. You just wham hit the accelerator and your body goes, I guess accelerator and your body goes, I guess accelerator and your body goes, I guess I don't need to do it. So, your body has I don't need to do it. So, your body has I don't need to do it. So, your body has this pulsatile cascade, this symphony of",
+            "first_timestamp": "00:07:56.879"
+          },
+          {
+            "source_id": "1r5FQHIx5-o",
+            "source_type": "podcast",
+            "source_title": "The Longevity Stack (Fire Your Longevity Clinic) Unbreakable Podcast 198",
+            "source_date": "2025-07-18",
+            "source_url": "https://youtu.be/1r5FQHIx5-o",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2025-07-18-the-longevity-stack-fire-your-longevity-clinic-unbreakable-podcast-198-1r5FQHIx5-o.en.vtt",
+            "mention_count": 15,
+            "top_snippet": "stimulates natural growth hormone release, increases IGF-1, but the other",
+            "top_context": "every day for how long? I honestly I'll every day for how long? I honestly I'll break this down at the end. I think it's break this down at the end. I think it's break this down at the end. I think it's probably easier, but this is it's like, probably easier, but this is it's like, probably easier, but this is it's like, you guys know what duct tape is? Duct you guys know what duct tape is? Duct you guys know what duct tape is? Duct tape is this is like duct tape for tape is this is like duct tape for tape is this is like duct tape for regenerative medicine, regenerative regenerative medicine, regenerative regenerative medicine, regenerative health. And I mean I mean this in a good health. And I mean I mean this in a good health. And I mean I mean this in a good way. This is the best thing. You can way. This is the best thing. You can way. This is the best thing. You can make anything out of duct tape, by the make anything out of duct tape, by the make anything out of duct tape, by the way, if you haven't figured that out. way, if you haven't figured that out. way, if you haven't figured that out. Duct tape is the ultimate compound. Duct tape is the ultimate compound. Duct tape is the ultimate compound. There you go. BPC57. So, what are we at? There you go. BPC57. So, what are we at? There you go. BPC57. So, what are we at? Five. Five. CJC1 1295 plus something Five. Five. CJC1 1295 plus something Five. Five. CJC1 1295 plus something called a pomellin. Use these in called a pomellin. Use these in called a pomellin. Use these in conjunction. And there's a whole litany conjunction. And there's a whole litany conjunction. And there's a whole litany of reasons why. I'm not going to get of reasons why. I'm not going to get of reasons why. I'm not going to get into it because otherwise I'm I've into it because otherwise I'm I've into it because otherwise I'm I've already been on here for about 20 already been on here for about 20 already been on here for about 20 minutes. I like I said, I'm hungry and I minutes. I like I said, I'm hungry and I minutes. I like I said, I'm hungry and I have a call coming up. This is um this have a call coming up. This is um this have a call coming up. This is um this is a growth trigger. So remember I said is a growth trigger. So remember I said is a growth trigger. So remember I said and I've talked about this before. It and I've talked about this before. It and I've talked about this before. It stimulates natural growth hormone stimulates natural growth hormone stimulates natural growth hormone release, increases IGF-1, but the other release, increases IGF-1, but the other release, increases IGF-1, but the other things it does improves sleep recovery, things it does improves sleep recovery, things it does improves sleep recovery, lean mass, skin elasticity, right? It's lean mass, skin elasticity, right? It's lean mass, skin elasticity, right? It's right up there with the copper GHKCU. right up there with the copper GHKCU. right up there with the copper GHKCU. Honestly, overall repair. This is just Honestly, overall repair. This is just Honestly, overall repair. This is just like a global systemic repair machine. like a global systemic repair machine. like a global systemic repair machine. But growth hormone isn't a Listen, But growth hormone isn't a Listen, But growth hormone isn't a Listen, here's why it's so awesome. Growth here's why it's so awesome. Growth here's why it's so awesome. Growth hormone isn't about aesthetics. And I hormone isn't about aesthetics. And I hormone isn't about aesthetics. And I think a lot of you guys have it wrong. think a lot of you guys have it wrong. think a lot of you guys have it wrong. It's about being able to rebuild faster It's about being able to rebuild faster It's about being able to rebuild faster than you're decaying, than you're decaying, than you're decaying, right? So if you like you look at the uh right? So if you like you look at the uh right? So if you like you look at the uh the Golden Gate Bridge, they're always the Golden Gate Bridge, they're always the Golden Gate Bridge, they're always painting it, right? They never stop painting it, right? They never stop painting it, right? They never stop painting it. Why? Because they're painting it. Why? Because they're painting it. Why? Because they're mitigating the damage caused by the salt mitigating the damage caused by the salt mitigating the damage caused by the salt spray from the bay and all the things spray from the bay and all the things spray from the bay and all the things that are causing decay on all that that are causing decay on all that that are causing decay on all that metal, that steel. So they just paint it metal, that steel. So they just paint it metal, that steel. So they just paint it all the time. That's what this does. all the time. That's what this does. all the time. That's what this does. It's just it's keeping the dec. It's",
+            "first_timestamp": "00:26:43.039"
+          }
+        ],
+        "acute_signals": [
+          {
+            "snippet": "effect. It builds real mass. None of this is water. IGF-1 is anabolic",
+            "source_title": "Building Muscle & Skyrocketing Performance (Cardarine and MK677) - Unbreakable Podcast 185",
+            "source_date": "2025-07-05",
+            "timestamp": "00:08:42.320",
+            "source_url": "https://youtu.be/roc-LGn_fP0"
+          },
+          {
+            "snippet": "this is water. IGF-1 is anabolic",
+            "source_title": "Building Muscle & Skyrocketing Performance (Cardarine and MK677) - Unbreakable Podcast 185",
+            "source_date": "2025-07-05",
+            "timestamp": "00:08:45.990",
+            "source_url": "https://youtu.be/roc-LGn_fP0"
+          },
+          {
+            "snippet": "this is water. IGF-1 is anabolic systemically and that means bones,",
+            "source_title": "Building Muscle & Skyrocketing Performance (Cardarine and MK677) - Unbreakable Podcast 185",
+            "source_date": "2025-07-05",
+            "timestamp": "00:08:46.000",
+            "source_url": "https://youtu.be/roc-LGn_fP0"
+          },
+          {
+            "snippet": "to say that just bear with me because I say that growth hormone rises, IGF-1",
+            "source_title": "The Truth About Hair Loss - Unbreakable Podcast 187",
+            "source_date": "2025-07-07",
+            "timestamp": "00:07:07.120",
+            "source_url": "https://youtu.be/8wid5VqsuiY"
+          },
+          {
+            "snippet": "this, right? Growth factors, things like IGF-1, VEGF, they upregulate, local",
+            "source_title": "The Proof That Healthcare is a Business - Unbreakable Podcast 200",
+            "source_date": "2025-07-20",
+            "timestamp": "00:05:10.800",
+            "source_url": "https://youtu.be/BZDXHISktnw"
+          }
+        ],
+        "chronic_signals": [
+          {
+            "snippet": "effect. It builds real mass. None of this is water. IGF-1 is anabolic",
+            "source_title": "Building Muscle & Skyrocketing Performance (Cardarine and MK677) - Unbreakable Podcast 185",
+            "source_date": "2025-07-05",
+            "timestamp": "00:08:42.320",
+            "source_url": "https://youtu.be/roc-LGn_fP0"
+          },
+          {
+            "snippet": "this is water. IGF-1 is anabolic",
+            "source_title": "Building Muscle & Skyrocketing Performance (Cardarine and MK677) - Unbreakable Podcast 185",
+            "source_date": "2025-07-05",
+            "timestamp": "00:08:45.990",
+            "source_url": "https://youtu.be/roc-LGn_fP0"
+          },
+          {
+            "snippet": "this is water. IGF-1 is anabolic systemically and that means bones,",
+            "source_title": "Building Muscle & Skyrocketing Performance (Cardarine and MK677) - Unbreakable Podcast 185",
+            "source_date": "2025-07-05",
+            "timestamp": "00:08:46.000",
+            "source_url": "https://youtu.be/roc-LGn_fP0"
+          },
+          {
+            "snippet": "stimulates natural growth hormone release, increases IGF-1, but the other",
+            "source_title": "The Longevity Stack (Fire Your Longevity Clinic) Unbreakable Podcast 198",
+            "source_date": "2025-07-18",
+            "timestamp": "00:26:43.039",
+            "source_url": "https://youtu.be/1r5FQHIx5-o"
+          },
+          {
+            "snippet": "at the CJC and the the epheimer, right? The growth hormone IGF-1. So this boosts",
+            "source_title": "The Longevity Stack (Fire Your Longevity Clinic) Unbreakable Podcast 198",
+            "source_date": "2025-07-18",
+            "timestamp": "00:28:58.720",
+            "source_url": "https://youtu.be/1r5FQHIx5-o"
+          }
+        ]
+      },
+      "acute_vs_chronic_note": "Dr Bachmeyer often distinguishes acute (injury/infection) vs chronic (longevity/maintenance) dosing. Acute_signals + chronic_signals fields surface candidate contexts; full distillation pending Codex pass."
+    }
+  },
+  "reset_biology_synthesis": {
+    "status": "pending-codex-distillation",
+    "recommendation": null,
+    "caveats": null,
+    "cross_expert_consensus": null,
+    "cross_expert_disagreement": null
+  },
+  "generated_at": "2026-04-27T02:02:34.764Z"
+}

@@ -1,0 +1,181 @@
+{
+  "peptide": "Selank",
+  "slug": "selank",
+  "aliases": [
+    "selank",
+    "Selank"
+  ],
+  "category": "Uncategorized",
+  "experts": {
+    "hunter-williams": {
+      "baseline_protocol": null,
+      "summary": {
+        "mention_count": 8,
+        "top_doses": [
+          {
+            "dose": "1 mg",
+            "count": 3
+          },
+          {
+            "dose": "500 mcg",
+            "count": 1
+          },
+          {
+            "dose": "20 mg",
+            "count": 1
+          },
+          {
+            "dose": "120 mg",
+            "count": 1
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "199d026a6dd3eb61",
+            "source_type": "email",
+            "source_title": "October Q&A Video Is Up!",
+            "source_date": "2025-10-10",
+            "source_url": "https://open.spotify.com/episode/0W2xCxtez1lUroS3hlzeNC",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-10-10-october-q-a-video-is-up.md",
+            "mention_count": 4,
+            "top_snippet": "s better sleep, lower joint pain, and a steadier burn of visceral fat. ——————————————————————————— **PTSD-type body tension** Question: “My body subconsciously contracts at times (old PTSD), leading t",
+            "top_context": "s better sleep, lower joint pain, and a steadier burn of visceral fat. ——————————————————————————— **PTSD-type body tension** Question: “My body subconsciously contracts at times (old PTSD), leading to pain. Is there a peptide to relax the nervous system?” Answer: The tool here is Selank (or N-Acetyl Selank Amidate if you need more oomph). Dose ~1 mg once or twice daily (nasal or subQ). Selank modulates GABAergic tone and helps the system “downshift” out of fight-or-flight. Pair it with breath work (long exhales), magnesium glycinate or taurate in the evening, and gentl",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "195b0718ac68bbb2",
+            "source_type": "email",
+            "source_title": "Stop Buying Peptides!",
+            "source_date": "2025-03-19",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-03-19-stop-buying-peptides.md",
+            "mention_count": 1,
+            "top_snippet": "rifies mental focus by organizing your thoughts and reducing cognitive overload. Peptides can't give you clarity if your mind is cluttered and overwhelmed. Journaling provides the mental and emotional",
+            "top_context": "rifies mental focus by organizing your thoughts and reducing cognitive overload. Peptides can't give you clarity if your mind is cluttered and overwhelmed. Journaling provides the mental and emotional space peptides need to be truly effective. If you're neglecting journaling, no amount of selank, semax, or cerebrolysin will fully optimize your brain health. Start journaling consistently, THEN invest in peptides. ——————————————————————————— ### Here’s the Cold, Hard Truth: Peptides and hormones are incredibly powerful tools. I love them. But they're exactly that—tools. T",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "19c06d9325e3862f",
+            "source_type": "email",
+            "source_title": "Men vs. Women Peptide Dosing",
+            "source_date": "2026-01-28",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2026-01-28-men-vs-women-peptide-dosing.md",
+            "mention_count": 1,
+            "top_snippet": "ling via growth factors, angiogenesis, inflammation modulation, tissue remodeling. No \"female tissue needs different dose\" - **Thymosin Alpha-1** — immunomodulator interacting with TLR signaling that ",
+            "top_context": "ling via growth factors, angiogenesis, inflammation modulation, tissue remodeling. No \"female tissue needs different dose\" - **Thymosin Alpha-1** — immunomodulator interacting with TLR signaling that exists in every human. Goal: shift immune behavior, not set sex-specific hormone levels - **Semax + Selank** — neurotrophic signaling (BDNF/TrkB) + immune/cytokine modulation. Don't require gender dosing - **LL-37** — angiogenesis signaling tied to innate immunity + wound biology. Shared mechanisms ## ⭐ When Sex-Specific Adjustments DO Apply (The Exceptions) 1. **Side effects more severe in one group*",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "19c112a2709941b7",
+            "source_type": "email",
+            "source_title": "January 2026 Q&A",
+            "source_date": "2026-01-30",
+            "source_url": "https://open.spotify.com/episode/2UpNk1gzskxFOy8y5hFjTY",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2026-01-30-january-q-and-a.md",
+            "mention_count": 1,
+            "top_snippet": "V, thymic peptides, gut-focused compounds fit into a real strategy (not random stack) - Many people chase symptoms when underlying issue is: - Nervous system overload - Gut permeability - Mitochondria",
+            "top_context": "V, thymic peptides, gut-focused compounds fit into a real strategy (not random stack) - Many people chase symptoms when underlying issue is: - Nervous system overload - Gut permeability - Mitochondrial dysfunction ### Brain + Cognitive Peptides - **Cerebrolysin alternatives:** P21, PE-22-28, Selank, Semax - How Hunter thinks about neuroprotection ### TRT + Hormones (Deep Coverage) - When it makes sense to start - When it doesn't - Fertility considerations - ⭐ **\"Peptides don't replace hormones (and never will)\"** - Why people get frustrated trying to solve hormone problem with peptide ### U",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "19c49cac85fb70ef",
+            "source_type": "email",
+            "source_title": "Pinealon for Longevity",
+            "source_date": "2026-02-10",
+            "source_url": "https://open.spotify.com/episode/6r4jji1nEwaFYsF0GfJiaD",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2026-02-10-pinealon-for-longevity.md",
+            "mention_count": 1,
+            "top_snippet": "**500 mcg/day over 8-12 weeks** - ~20 mg per cycle total ### Annual cap - **DO NOT exceed 100-120 mg total per year** - Effects persist well after stopping → suggests long-lasting regulatory changes, ",
+            "top_context": "**500 mcg/day over 8-12 weeks** - ~20 mg per cycle total ### Annual cap - **DO NOT exceed 100-120 mg total per year** - Effects persist well after stopping → suggests long-lasting regulatory changes, NOT transient stimulation ## Stacks Well With - **Epitalon** - **Cerebrolysin** - **Semax** - **Selank** ## Best Candidates - Concussion history - Disrupted sleep / circadian struggles - Chronic stress - Heavy travel - Long-term brain-aging proactive ## Source BioLongevity Labs — code HUNTERW (30% storewide + 15% off) ## Further Reading - pubmed: 21978084 - mdpi.com/1420-3049/26/1/159 - pubmed",
+            "first_timestamp": null
+          }
+        ],
+        "acute_signals": [
+          {
+            "snippet": "body tension** Question: “My body subconsciously contracts at times (old PTSD), leading to pain. Is there a peptide to relax the nervous system?” Answer: The tool here is Selank (or N-Acetyl Selank Am",
+            "source_title": "October Q&A Video Is Up!",
+            "source_date": "2025-10-10",
+            "timestamp": null,
+            "source_url": "https://open.spotify.com/episode/0W2xCxtez1lUroS3hlzeNC"
+          },
+          {
+            "snippet": "(nasal or subQ). Selank modulates GABAergic tone and helps the system “downshift” out of fight-or-flight. Pair it with breath work (long exhales), magnesium glycinate or taurate in the evening, and ge",
+            "source_title": "October Q&A Video Is Up!",
+            "source_date": "2025-10-10",
+            "timestamp": null,
+            "source_url": "https://open.spotify.com/episode/0W2xCxtez1lUroS3hlzeNC"
+          },
+          {
+            "snippet": "ling via growth factors, angiogenesis, inflammation modulation, tissue remodeling. No \"female tissue needs different dose\" - **Thymosin Alpha-1** — immunomodulator interacting with TLR signaling that ",
+            "source_title": "Men vs. Women Peptide Dosing",
+            "source_date": "2026-01-28",
+            "timestamp": null,
+            "source_url": null
+          }
+        ],
+        "chronic_signals": [
+          {
+            "snippet": "s better sleep, lower joint pain, and a steadier burn of visceral fat. ——————————————————————————— **PTSD-type body tension** Question: “My body subconsciously contracts at times (old PTSD), leading t",
+            "source_title": "October Q&A Video Is Up!",
+            "source_date": "2025-10-10",
+            "timestamp": null,
+            "source_url": "https://open.spotify.com/episode/0W2xCxtez1lUroS3hlzeNC"
+          },
+          {
+            "snippet": "r joint pain, and a steadier burn of visceral fat. ——————————————————————————— **PTSD-type body tension** Question: “My body subconsciously contracts at times (old PTSD), leading to pain. Is there a p",
+            "source_title": "October Q&A Video Is Up!",
+            "source_date": "2025-10-10",
+            "timestamp": null,
+            "source_url": "https://open.spotify.com/episode/0W2xCxtez1lUroS3hlzeNC"
+          },
+          {
+            "snippet": "body tension** Question: “My body subconsciously contracts at times (old PTSD), leading to pain. Is there a peptide to relax the nervous system?” Answer: The tool here is Selank (or N-Acetyl Selank Am",
+            "source_title": "October Q&A Video Is Up!",
+            "source_date": "2025-10-10",
+            "timestamp": null,
+            "source_url": "https://open.spotify.com/episode/0W2xCxtez1lUroS3hlzeNC"
+          },
+          {
+            "snippet": "**500 mcg/day over 8-12 weeks** - ~20 mg per cycle total ### Annual cap - **DO NOT exceed 100-120 mg total per year** - Effects persist well after stopping → suggests long-lasting regulatory changes, ",
+            "source_title": "Pinealon for Longevity",
+            "source_date": "2026-02-10",
+            "timestamp": null,
+            "source_url": "https://open.spotify.com/episode/6r4jji1nEwaFYsF0GfJiaD"
+          }
+        ]
+      }
+    },
+    "taylor-williams": {
+      "summary": {
+        "mention_count": 3,
+        "top_doses": [],
+        "top_sources": [
+          {
+            "source_id": "2m6fKa4Wd6k",
+            "source_type": "podcast",
+            "source_title": "Semax vs Selank - Which Nootropic Peptide is Best for You?",
+            "source_date": "2024-11-15",
+            "source_url": "https://youtu.be/2m6fKa4Wd6k",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2024-11-15-semax-vs-selank-which-nootropic-peptide-is-best-for-you-2m6fKa4Wd6k.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "peptides for so basically the difference is that selank and seax are both going",
+            "top_context": "that have recently gotten a lot of that have recently gotten a lot of attention and these are two peptides attention and these are two peptides attention and these are two peptides that are kind of similar but they do that are kind of similar but they do that are kind of similar but they do work very differently but they're both work very differently but they're both work very differently but they're both going to be super beneficial if you are going to be super beneficial if you are going to be super beneficial if you are struggling whether it's with anxiety or struggling whether it's with anxiety or struggling whether it's with anxiety or being able to concentrate being able to concentrate being able to concentrate let's get into it so really let's get into it so really let's get into it so really understanding the difference between understanding the difference between understanding the difference between these two peptides is going to be super these two peptides is going to be super these two peptides is going to be super beneficial I've had a lot of women um beneficial I've had a lot of women um beneficial I've had a lot of women um over the years say that they they have over the years say that they they have over the years say that they they have used one of these peptides or the other used one of these peptides or the other used one of these peptides or the other and sometimes they get confused on which and sometimes they get confused on which and sometimes they get confused on which symptoms they should be using these symptoms they should be using these symptoms they should be using these peptides for so basically the difference peptides for so basically the difference peptides for so basically the difference is that selank and seax are both going is that selank and seax are both going is that selank and seax are both going to be cognitive enhancing peptides and to be cognitive enhancing peptides and to be cognitive enhancing peptides and support um mood stability they work on support um mood stability they work on support um mood stability they work on the neuropath way transmitters of the the neuropath way transmitters of the the neuropath way transmitters of the brain they are going to be super brain they are going to be super brain they are going to be super beneficial whether you are trying to beneficial whether you are trying to beneficial whether you are trying to focus on focus on focus on memory focusing mood memory focusing mood memory focusing mood stability um anxiety stability um anxiety stability um anxiety emotional um regulation like these are emotional um regulation like these are emotional um regulation like these are going to be super beneficial but it's going to be super beneficial but it's going to be super beneficial but it's also knowing to understand which peptide also knowing to understand which peptide also knowing to understand which peptide you want to use for which because they you want to use for which because they you want to use for which because they can work very similar so let's break can work very similar so let's break can work very similar so let's break this down and let's start with cmax cmax this down and let's start with cmax cmax this down and let's start with cmax cmax is a peptide that I have recently been is a peptide that I have recently been is a peptide that I have recently been using and it has made a huge difference",
+            "first_timestamp": "00:01:24.520"
+          }
+        ],
+        "acute_signals": [],
+        "chronic_signals": []
+      },
+      "female_specific_note": "Taylor Williams Coaching focuses on female-specific HRT/peptide guidance. Per-peptide notes here often emphasize female dosing, fertility, hormone interactions."
+    }
+  },
+  "reset_biology_synthesis": {
+    "status": "pending-codex-distillation",
+    "recommendation": null,
+    "caveats": null,
+    "cross_expert_consensus": null,
+    "cross_expert_disagreement": null
+  },
+  "generated_at": "2026-04-27T02:02:34.996Z"
+}

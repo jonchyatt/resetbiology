@@ -1,0 +1,635 @@
+{
+  "peptide": "Metformin",
+  "slug": "metformin",
+  "aliases": [
+    "Metformin",
+    "metformin"
+  ],
+  "category": "Uncategorized",
+  "experts": {
+    "hunter-williams": {
+      "baseline_protocol": null,
+      "summary": {
+        "mention_count": 239,
+        "top_doses": [
+          {
+            "dose": "500 mg",
+            "count": 67
+          },
+          {
+            "dose": "6 mg",
+            "count": 44
+          },
+          {
+            "dose": "000 mg",
+            "count": 6
+          },
+          {
+            "dose": "85 mg",
+            "count": 4
+          },
+          {
+            "dose": "10 mg",
+            "count": 4
+          },
+          {
+            "dose": "0.25 mg",
+            "count": 3
+          },
+          {
+            "dose": "2 iu",
+            "count": 3
+          },
+          {
+            "dose": "20 mg",
+            "count": 2
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "197c2ddd4fc636b1",
+            "source_type": "email",
+            "source_title": "New Metformin Studies Out",
+            "source_date": "2025-06-30",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-06-30-new-metformin-studies-out.md",
+            "mention_count": 35,
+            "top_snippet": "Happy Monday! Every year, a new “miracle supplement” tries to make its way onto the anti-aging stage. But when the dust settles, one compound keeps shining brighter than the rest: **Metformin**. It’s ",
+            "top_context": "Happy Monday! Every year, a new “miracle supplement” tries to make its way onto the anti-aging stage. But when the dust settles, one compound keeps shining brighter than the rest: **Metformin**. It’s not new, it’s not sexy, but it _keeps_ delivering. And the latest 2025 research just turbocharged its case as the ultimate longevity molecule. Whether you’re optimizing blood sugar, aiming for legendary healthspan, or stacking the deck against age-related diseases, it’s impossible",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "0TyW-wlJMxo",
+            "source_type": "podcast",
+            "source_title": "Saturday Morning Coffee Talk | Peptides, Hormones & Fitness for Couples 3/28/26",
+            "source_date": "2026-03-28",
+            "source_url": "https://youtu.be/0TyW-wlJMxo",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-03-28-saturday-morning-coffee-talk-peptides-hormones-fitness-for-couples-3-2-0TyW-wlJMxo.en.vtt",
+            "mention_count": 30,
+            "top_snippet": "SGLT2 is not going to inhibit mTOR as much. Now, metformin will. Metformin is",
+            "top_context": "hair I feel like thicker and coarser. hair I feel like thicker and coarser. Yeah. Cuz I even notice that even Yeah. Yeah. Cuz I even notice that even Yeah. Yeah. Cuz I even notice that even Yeah. with my own. And I don't do I don't with my own. And I don't do I don't with my own. And I don't do I don't inject GHK. I The only GHK I use is a inject GHK. I The only GHK I use is a inject GHK. I The only GHK I use is a serum. Yeah. on my face. serum. Yeah. on my face. serum. Yeah. on my face. &gt;&gt; Well, that's what I'm saying is not even &gt;&gt; Well, that's what I'm saying is not even &gt;&gt; Well, that's what I'm saying is not even from injecting it. It's just from the from injecting it. It's just from the from injecting it. It's just from the topical that I can put it topically on topical that I can put it topically on topical that I can put it topically on my face, but it will make my body hair my face, but it will make my body hair my face, but it will make my body hair grow more. Yeah. I mean, my facial hair grow more. Yeah. I mean, my facial hair grow more. Yeah. I mean, my facial hair Yeah. Yeah. Yeah. Jennifer says, \"Do you have any feedback Jennifer says, \"Do you have any feedback Jennifer says, \"Do you have any feedback results from people taking an mTOR results from people taking an mTOR results from people taking an mTOR inhibitor like rapamycin for longevity? inhibitor like rapamycin for longevity? inhibitor like rapamycin for longevity? I know I've heard you talk about good I know I've heard you talk about good I know I've heard you talk about good effects from SGLT2 inhibitors. effects from SGLT2 inhibitors. effects from SGLT2 inhibitors. Are these opposites?\" I would not say an Are these opposites?\" I would not say an Are these opposites?\" I would not say an SGLT2 is an opposite to an mTOR SGLT2 is an opposite to an mTOR SGLT2 is an opposite to an mTOR inhibitor. inhibitor. inhibitor. They're kind of adjacent. They're kind of adjacent. They're kind of adjacent. To my knowledge, mechanistically, the To my knowledge, mechanistically, the To my knowledge, mechanistically, the SGLT2 is not going to inhibit mTOR as SGLT2 is not going to inhibit mTOR as SGLT2 is not going to inhibit mTOR as much. Now, metformin will. Metformin is much. Now, metformin will. Metformin is much. Now, metformin will. Metformin is like rapamycin light. Metformin would be like rapamycin light. Metformin would be like rapamycin light. Metformin would be kind of something that I think a lot of kind of something that I think a lot of kind of something that I think a lot of people hate it. I still take 500 mg of people hate it. I still take 500 mg of people hate it. I still take 500 mg of metformin per day. metformin per day. metformin per day. Metformin I I I would think it'd be Metformin I I I would think it'd be Metformin I I I would think it'd be something that's a good something that's a good something that's a good balance of suppressing mTOR, but not too balance of suppressing mTOR, but not too balance of suppressing mTOR, but not too much. Whereas rapamycin is a very much. Whereas rapamycin is a very much. Whereas rapamycin is a very large manual lever to suppress mTOR. large manual lever to suppress mTOR. large manual lever to suppress mTOR. Which basically means you you suppress Which basically means you you suppress Which basically means you you suppress mTOR. Think of mTOR is If mTOR is on, mTOR. Think of mTOR is If mTOR is on, mTOR. Think of mTOR is If mTOR is on, we're growing. Mhm. mTOR on means muscle we're growing. Mhm. mTOR on means muscle we're growing. Mhm. mTOR on means muscle building on. Muscle building mode on is building on. Muscle building mode on is building on. Muscle building mode on is mTOR up. mTOR down, muscle building mode mTOR up. mTOR down, muscle building mode mTOR up. mTOR down, muscle building mode off, fasting autophagy mode on. So, off, fasting autophagy mode on. So, off, fasting autophagy mode on. So, lower mTOR is more like you're fasting. lower mTOR is more like you're fasting. lower mTOR is more like you're fasting. And so, when we're fasting, our our mTOR And so, when we're fasting, our our mTOR And so, when we're fasting, our our mTOR is lower, AMPK is typically higher.",
+            "first_timestamp": "00:23:42.200"
+          },
+          {
+            "source_id": "19544a0246974d8d",
+            "source_type": "email",
+            "source_title": "Should You Use Metformin If You’re On a GLP-1?",
+            "source_date": "2025-02-26",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-02-26-should-you-use-metformin-if-you-re-on-a-glp-1.md",
+            "mention_count": 21,
+            "top_snippet": "e interaction between HGH, GLP-1 drugs, and metformin—especially when it comes to blood sugar. Here’s a perfect example from a recent reader-submitted question: ““My hormones are optimized. I take **2",
+            "top_context": "e interaction between HGH, GLP-1 drugs, and metformin—especially when it comes to blood sugar. Here’s a perfect example from a recent reader-submitted question: ““My hormones are optimized. I take **2 IU of HGH every night** and **microdose Retatrutide 3x per week**. I also take **1,000 mg of metformin daily**. I’m in **good shape (14% body fat)**. Do you think metformin is still necessary if I’m on a GLP-1 drug? My blood sugar became elevated when I started HGH.”“ — This is an important question for anyone using peptides, GH, and metabolic optimization tools—so let’s break it down. _*",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "19db739726262c08",
+            "source_type": "email",
+            "source_title": "Why I Still Take 500mg of Metformin Daily",
+            "source_date": "2026-04-22",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2026-04-22-metformin-500mg-daily.md",
+            "mention_count": 20,
+            "top_snippet": "# Why I Still Take 500mg of Metformin Daily — Defense in the GLP-1 / SGLT2 Era > \"The longevity community keeps telling you metformin is dead. In my opinion, they're wrong based on data that keeps pou",
+            "top_context": "# Why I Still Take 500mg of Metformin Daily — Defense in the GLP-1 / SGLT2 Era > \"The longevity community keeps telling you metformin is dead. In my opinion, they're wrong based on data that keeps pouring in.\" > \"If I had to pick one drug for longevity and I was diabetic, I'd pick an SGLT2. If I had to pick one drug and I wasn't diabetic, I'd still pick an SGLT2 off-label. But I don't have to pick one.\" ## ⭐ Why Hunter Keeps Me",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "he_GzaUMwpI",
+            "source_type": "podcast",
+            "source_title": "The FDA Just Changed Everything for Peptides | My Honest Take",
+            "source_date": "2026-04-17",
+            "source_url": "https://youtu.be/he_GzaUMwpI",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-04-17-the-fda-just-changed-everything-for-peptides-my-honest-take-he_GzaUMwpI.en.vtt",
+            "mention_count": 18,
+            "top_snippet": "if you think about let's use the analogy of metformin for a second. Metformin",
+            "top_context": "to get BPC or TB-500 or KPV from your to get BPC or TB-500 or KPV from your doctor, doctor, doctor, although not impossible. And I think at although not impossible. And I think at although not impossible. And I think at that point, you're probably going to that point, you're probably going to that point, you're probably going to have a lot of people that stay in the have a lot of people that stay in the have a lot of people that stay in the research world. They'll probably do what research world. They'll probably do what research world. They'll probably do what they can to shut that down, but I don't they can to shut that down, but I don't they can to shut that down, but I don't think it's going to be that effective at think it's going to be that effective at think it's going to be that effective at shutting down. shutting down. shutting down. But, But, But, it's probably going to be pretty high. it's probably going to be pretty high. it's probably going to be pretty high. But, what will start to happen, and I'm But, what will start to happen, and I'm But, what will start to happen, and I'm already seeing this happen now, is more already seeing this happen now, is more already seeing this happen now, is more and more compounding pharmacies are and more compounding pharmacies are and more compounding pharmacies are going to get into uh making peptides. going to get into uh making peptides. going to get into uh making peptides. More and more telehealth clinics are More and more telehealth clinics are More and more telehealth clinics are going to get into prescribing peptides. going to get into prescribing peptides. going to get into prescribing peptides. And eventually, what's going to happen And eventually, what's going to happen And eventually, what's going to happen is that's going to bring the price down is that's going to bring the price down is that's going to bring the price down to where it is actually more to where it is actually more to where it is actually more cost-effective cost-effective cost-effective for someone to get a peptide from their for someone to get a peptide from their for someone to get a peptide from their doctor than it is through the research doctor than it is through the research doctor than it is through the research world. And I know that sounds crazy, but world. And I know that sounds crazy, but world. And I know that sounds crazy, but if you think about let's use the analogy if you think about let's use the analogy if you think about let's use the analogy of metformin for a second. Metformin of metformin for a second. Metformin of metformin for a second. Metformin right now is a generic, it's off patent, right now is a generic, it's off patent, right now is a generic, it's off patent, uh it's basically like the cheapest drug uh it's basically like the cheapest drug uh it's basically like the cheapest drug on the planet, probably one of the on the planet, probably one of the on the planet, probably one of the cheapest, most widely prescribed drugs cheapest, most widely prescribed drugs cheapest, most widely prescribed drugs on the planet. And you can actually get on the planet. And you can actually get on the planet. And you can actually get metformin from like an offshore black metformin from like an offshore black metformin from like an offshore black market underground pharmacy if you want market underground pharmacy if you want market underground pharmacy if you want to. But, if you look at the cost of to. But, if you look at the cost of to. But, if you look at the cost of doing that, and also the the fact that doing that, and also the the fact that doing that, and also the the fact that you have to use crypto and usually takes you have to use crypto and usually takes you have to use crypto and usually takes like six weeks to arrive, like six weeks to arrive, like six weeks to arrive, uh the cost of doing that versus going uh the cost of doing that versus going uh the cost of doing that versus going to an online pharmacy and just filling to an online pharmacy and just filling to an online pharmacy and just filling out a 5-minute questionnaire like out a 5-minute questionnaire like out a 5-minute questionnaire like Ageless RX or TeleRX, you can get Ageless RX or TeleRX, you can get Ageless RX or TeleRX, you can get metformin for like 15 to 30 bucks a metformin for like 15 to 30 bucks a metformin for like 15 to 30 bucks a month delivered to your doorstep with a month delivered to your doorstep with a month delivered to your doorstep with a prescription. And so, why would you go prescription. And so, why would you go prescription. And so, why would you go through all the trouble to order through all the trouble to order through all the trouble to order metformin from an offshore pharmacy and metformin from an offshore pharmacy and metformin from an offshore pharmacy and go through all that crypto and wait go through all that crypto and wait go through all that crypto and wait however many weeks for it to arrive however many weeks for it to arrive however many weeks for it to arrive versus just going on an online pharmacy,",
+            "first_timestamp": "00:09:09.760"
+          },
+          {
+            "source_id": "1977fedef602bdeb",
+            "source_type": "email",
+            "source_title": "The Truth About High Estrogen",
+            "source_date": "2025-06-17",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-06-17-the-truth-about-high-estrogen.md",
+            "mention_count": 17,
+            "top_snippet": "— If that sounds familiar, you’re definitely not alone. There’s a LOT of misinformation out there about estrogen, aromatase, and what it _really_ means to feel “estrogen dominant” or to have symptoms ",
+            "top_context": "— If that sounds familiar, you’re definitely not alone. There’s a LOT of misinformation out there about estrogen, aromatase, and what it _really_ means to feel “estrogen dominant” or to have symptoms that look like high estrogen. So, let’s dive deep into why I’m a massive proponent of **metformin** (not aromatase inhibitors) for people struggling with these issues. “[BioLongevity Labs is launching a flash sale today on the following items:](https://biolongevitylabs.com/) GLP-3 BPC-157/TB-500 Blend MOTS-C Glow Blend (BPC-157/TB-500/GHK-Cu) Thymosin Alpha-1 Melanota",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "JFrn_zX0RE4",
+            "source_type": "podcast",
+            "source_title": "Peptides & Longevity Medicine Explained by a Real Cardiologist | Dr. Abid Husain, MD",
+            "source_date": "2026-03-27",
+            "source_url": "https://youtu.be/JFrn_zX0RE4",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-03-27-peptides-longevity-medicine-explained-by-a-real-cardiologist-dr-abid-h-JFrn_zX0RE4.en.vtt",
+            "mention_count": 15,
+            "top_snippet": "little bold. I think they'll probably make Metformin obsolete assuming that",
+            "top_context": "interesting um and that's why it can interesting um and that's why it can re-calibrate the gut microbiome improve re-calibrate the gut microbiome improve re-calibrate the gut microbiome improve gut health um improve b you know short gut health um improve b you know short gut health um improve b you know short chain fatty acids which are important chain fatty acids which are important chain fatty acids which are important for gut health improving that metabolism for gut health improving that metabolism for gut health improving that metabolism so it's got a multi-system effect that so it's got a multi-system effect that so it's got a multi-system effect that is perfectly in line with what we're is perfectly in line with what we're is perfectly in line with what we're trying to do with longevity. Um, you trying to do with longevity. Um, you trying to do with longevity. Um, you know, it's a systems approach that good know, it's a systems approach that good know, it's a systems approach that good longevity care means you've got you're longevity care means you've got you're longevity care means you've got you're improving all of the systems or many improving all of the systems or many improving all of the systems or many systems at once to to help the overall systems at once to to help the overall systems at once to to help the overall organism function better. Uh, so SGLT2 organism function better. Uh, so SGLT2 organism function better. Uh, so SGLT2 inhibitors meet all of that. They they inhibitors meet all of that. They they inhibitors meet all of that. They they do all of these things in multiple do all of these things in multiple do all of these things in multiple different tissues. different tissues. different tissues. Yeah, I think it's interesting too is uh Yeah, I think it's interesting too is uh Yeah, I think it's interesting too is uh maybe this is a prediction, maybe a maybe this is a prediction, maybe a maybe this is a prediction, maybe a little bold. I think they'll probably little bold. I think they'll probably little bold. I think they'll probably make Metformin obsolete assuming that make Metformin obsolete assuming that make Metformin obsolete assuming that people can, you know, affordably get people can, you know, affordably get people can, you know, affordably get them because Metformin is so cheap. The them because Metformin is so cheap. The them because Metformin is so cheap. The SGLT2s are a little bit more expensive. SGLT2s are a little bit more expensive. SGLT2s are a little bit more expensive. But I think if you look at the the cost But I think if you look at the the cost But I think if you look at the the cost benefit, if you said you could have an benefit, if you said you could have an benefit, if you said you could have an SGLT or two or Metformin, I would take SGLT or two or Metformin, I would take SGLT or two or Metformin, I would take SGLT2s all day because of the benefits SGLT2s all day because of the benefits SGLT2s all day because of the benefits you have and you don't have any of the you have and you don't have any of the you have and you don't have any of the drawbacks of metformin that a lot of drawbacks of metformin that a lot of drawbacks of metformin that a lot of people have. So people have. So people have. So &gt;&gt; that's right. Yeah. I I I did a lecture &gt;&gt; that's right. Yeah. I I I did a lecture &gt;&gt; that's right. Yeah. I I I did a lecture a few years ago and and that was that a few years ago and and that was that a few years ago and and that was that was part of it. That was the gist of it. was part of it. That was the gist of it. was part of it. That was the gist of it. It was about, you know, metformin being It was about, you know, metformin being It was about, you know, metformin being old news and SGLT2 inhibitors should be old news and SGLT2 inhibitors should be old news and SGLT2 inhibitors should be the one that you use now. So, I agree. the one that you use now. So, I agree. the one that you use now. So, I agree. &gt;&gt; Yeah. Yeah. Well, wrapping up, I'm sure &gt;&gt; Yeah. Yeah. Well, wrapping up, I'm sure &gt;&gt; Yeah. Yeah. Well, wrapping up, I'm sure the one thing I appreciate about you is the one thing I appreciate about you is the one thing I appreciate about you is you practice what you preach. So, not you practice what you preach. So, not you practice what you preach. So, not only are you living living this in uh only are you living living this in uh only are you living living this in uh your professional world, but you also your professional world, but you also your professional world, but you also live it in your personal life. Can you live it in your personal life. Can you live it in your personal life. Can you just give people kind of high level what",
+            "first_timestamp": "01:05:39.359"
+          },
+          {
+            "source_id": "1985d61b6553c86f",
+            "source_type": "email",
+            "source_title": "Metformin + Dihydroberberine",
+            "source_date": "2025-07-30",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-07-30-metformin-dihydroberberine.md",
+            "mention_count": 15,
+            "top_snippet": "Happy Wednesday! Today I’m diving deep into a question I get almost every week. Here’s the most recent one I received: “**“Hey Hunter, I keep hearing about metformin and berberine for blood sugar and ",
+            "top_context": "Happy Wednesday! Today I’m diving deep into a question I get almost every week. Here’s the most recent one I received: “**“Hey Hunter, I keep hearing about metformin and berberine for blood sugar and longevity. I’m confused. Should I just take metformin, or is berberine better? I hear metformin is super dangerous!”**“ — If you’re on the fence about which route to take, or wondering whether to combine them, this breakdown is for you. “FYI, BioLongevity La",
+            "first_timestamp": null
+          }
+        ],
+        "acute_signals": [
+          {
+            "snippet": "bad food? Is it a combo of both? And so, I think someone with a GLP and Metformin",
+            "source_title": "Saturday Morning Coffee Talk | Peptides, Hormones & Fitness for Couples 3/28/26",
+            "source_date": "2026-03-28",
+            "timestamp": "01:42:29.480",
+            "source_url": "https://youtu.be/0TyW-wlJMxo"
+          },
+          {
+            "snippet": "I think someone with a GLP and Metformin",
+            "source_title": "Saturday Morning Coffee Talk | Peptides, Hormones & Fitness for Couples 3/28/26",
+            "source_date": "2026-03-28",
+            "timestamp": "01:42:31.150",
+            "source_url": "https://youtu.be/0TyW-wlJMxo"
+          },
+          {
+            "snippet": "I think someone with a GLP and Metformin and SGLT2 after 3 months of that, gout",
+            "source_title": "Saturday Morning Coffee Talk | Peptides, Hormones & Fitness for Couples 3/28/26",
+            "source_date": "2026-03-28",
+            "timestamp": "01:42:31.160",
+            "source_url": "https://youtu.be/0TyW-wlJMxo"
+          },
+          {
+            "snippet": "&gt;&gt; SS-31, too. Yeah, SS-31. SS-31, Retta, SGLT2, Metformin within 4 months I think",
+            "source_title": "Saturday Morning Coffee Talk | Peptides, Hormones & Fitness for Couples 3/28/26",
+            "source_date": "2026-03-28",
+            "timestamp": "01:42:40.760",
+            "source_url": "https://youtu.be/0TyW-wlJMxo"
+          },
+          {
+            "snippet": "SGLT2, Metformin within 4 months I think",
+            "source_title": "Saturday Morning Coffee Talk | Peptides, Hormones & Fitness for Couples 3/28/26",
+            "source_date": "2026-03-28",
+            "timestamp": "01:42:43.310",
+            "source_url": "https://youtu.be/0TyW-wlJMxo"
+          }
+        ],
+        "chronic_signals": [
+          {
+            "snippet": "little bold. I think they'll probably make Metformin obsolete assuming that",
+            "source_title": "Peptides & Longevity Medicine Explained by a Real Cardiologist | Dr. Abid Husain, MD",
+            "source_date": "2026-03-27",
+            "timestamp": "01:05:39.359",
+            "source_url": "https://youtu.be/JFrn_zX0RE4"
+          },
+          {
+            "snippet": "make Metformin obsolete assuming that",
+            "source_title": "Peptides & Longevity Medicine Explained by a Real Cardiologist | Dr. Abid Husain, MD",
+            "source_date": "2026-03-27",
+            "timestamp": "01:05:41.750",
+            "source_url": "https://youtu.be/JFrn_zX0RE4"
+          },
+          {
+            "snippet": "make Metformin obsolete assuming that people can, you know, affordably get",
+            "source_title": "Peptides & Longevity Medicine Explained by a Real Cardiologist | Dr. Abid Husain, MD",
+            "source_date": "2026-03-27",
+            "timestamp": "01:05:41.760",
+            "source_url": "https://youtu.be/JFrn_zX0RE4"
+          },
+          {
+            "snippet": "people can, you know, affordably get them because Metformin is so cheap. The",
+            "source_title": "Peptides & Longevity Medicine Explained by a Real Cardiologist | Dr. Abid Husain, MD",
+            "source_date": "2026-03-27",
+            "timestamp": "01:05:44.319",
+            "source_url": "https://youtu.be/JFrn_zX0RE4"
+          },
+          {
+            "snippet": "them because Metformin is so cheap. The",
+            "source_title": "Peptides & Longevity Medicine Explained by a Real Cardiologist | Dr. Abid Husain, MD",
+            "source_date": "2026-03-27",
+            "timestamp": "01:05:45.829",
+            "source_url": "https://youtu.be/JFrn_zX0RE4"
+          }
+        ]
+      }
+    },
+    "taylor-williams": {
+      "summary": {
+        "mention_count": 373,
+        "top_doses": [
+          {
+            "dose": "500 milligrams",
+            "count": 154
+          },
+          {
+            "dose": "200 milligrams",
+            "count": 75
+          },
+          {
+            "dose": "500 mg",
+            "count": 56
+          },
+          {
+            "dose": "6 mg",
+            "count": 43
+          },
+          {
+            "dose": "500 micrograms",
+            "count": 30
+          },
+          {
+            "dose": "200 micrograms",
+            "count": 23
+          },
+          {
+            "dose": "250 micrograms",
+            "count": 19
+          },
+          {
+            "dose": "200 milligram",
+            "count": 9
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "ovNE9d4xFsk",
+            "source_type": "podcast",
+            "source_title": "Metformin Benefits | Changer for Longevity and Health",
+            "source_date": "2024-09-03",
+            "source_url": "https://youtu.be/ovNE9d4xFsk",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2024-09-03-metformin-benefits-changer-for-longevity-and-health-ovNE9d4xFsk.en.vtt",
+            "mention_count": 117,
+            "top_snippet": "am going to be talking to you guys about metformin and how metformin can be",
+            "top_context": "[Music] [Music] C hey everyone welcome back to my C hey everyone welcome back to my C hey everyone welcome back to my channel and in today's video I'm going channel and in today's video I'm going channel and in today's video I'm going to talk about a little bit of a to talk about a little bit of a to talk about a little bit of a different subject um still in the different subject um still in the different subject um still in the wonderful biohacking and health realm wonderful biohacking and health realm wonderful biohacking and health realm but I not talking about peptides today I but I not talking about peptides today I but I not talking about peptides today I am going to be talking to you guys about am going to be talking to you guys about am going to be talking to you guys about metformin and how metformin can be metformin and how metformin can be metformin and how metformin can be beneficial for people that are not TI to beneficial for people that are not TI to beneficial for people that are not TI to diabetic so if you are interested in diabetic so if you are interested in diabetic so if you are interested in wanting to know more about metformin um wanting to know more about metformin um wanting to know more about metformin um keep watching and I'm going to unpack keep watching and I'm going to unpack keep watching and I'm going to unpack all of this for you guys all of this for you guys all of this for you guys so before I get into this discussion so before I get into this discussion so before I get into this discussion this is going to be me covering why I this is going to be me covering why I this is going to be me covering why I love met foran I talk about met foran love met foran I talk about met foran love met foran I talk about met foran all the time like especially in like my all the time like especially in like my all the time like especially in like my stacking videos and I always mention stacking videos and I always mention stacking videos and I always mention that metformin is something that I will that metformin is something that I will that metformin is something that I will always take and that I'm always going to always take and that I'm always going to always take and that I'm always going to recommend to people and this is just me recommend to people and this is just me recommend to people and this is just me giving you my information and my giving you my information and my giving you my information and my knowledge that I have about metform and knowledge that I have about metform and knowledge that I have about metform and why I like using it but I already know",
+            "first_timestamp": "00:00:25.279"
+          },
+          {
+            "source_id": "5ugqlYRSRSo",
+            "source_type": "podcast",
+            "source_title": "Saturday Morning Coffee Talk 1/17/26",
+            "source_date": "2026-01-17",
+            "source_url": "https://youtu.be/5ugqlYRSRSo",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2026-01-17-saturday-morning-coffee-talk-1-17-26-5ugqlYRSRSo.en.vtt",
+            "mention_count": 48,
+            "top_snippet": "ATX. I kind of think of ATX as almost like a a better version of metformin.",
+            "top_context": "So yeah, it's the unfortunate cost of So yeah, it's the unfortunate cost of doing business until someone comes out doing business until someone comes out doing business until someone comes out with a better mechanism to deliver with a better mechanism to deliver with a better mechanism to deliver glutathione, which hopefully will glutathione, which hopefully will glutathione, which hopefully will happen. happen. happen. &gt;&gt; Yeah, I've seen I've seen stuff that I &gt;&gt; Yeah, I've seen I've seen stuff that I &gt;&gt; Yeah, I've seen I've seen stuff that I think could happen. I haven't tried one think could happen. I haven't tried one think could happen. I haven't tried one personally yet, but I think there will personally yet, but I think there will personally yet, but I think there will be. There will be soon. be. There will be soon. be. There will be soon. &gt;&gt; I think there will be soon. It &gt;&gt; I think there will be soon. It &gt;&gt; I think there will be soon. It &gt;&gt; be cool if you just had like a &gt;&gt; be cool if you just had like a &gt;&gt; be cool if you just had like a glutathione uh sublingual or troy or glutathione uh sublingual or troy or glutathione uh sublingual or troy or something you just took every day and it something you just took every day and it something you just took every day and it had the same effect. had the same effect. had the same effect. &gt;&gt; Same effect. &gt;&gt; Same effect. &gt;&gt; Same effect. &gt;&gt; Yeah. &gt;&gt; Yeah. &gt;&gt; Yeah. Spandis says, \"What experience do you Spandis says, \"What experience do you Spandis says, \"What experience do you have with ATX04, including antidodu user have with ATX04, including antidodu user have with ATX04, including antidodu user reports potentially more efficient than reports potentially more efficient than reports potentially more efficient than Matzi?\" You know, they're a little bit Matzi?\" You know, they're a little bit Matzi?\" You know, they're a little bit different. Obviously, like both are different. Obviously, like both are different. Obviously, like both are going to be an AMPK activator. I don't going to be an AMPK activator. I don't going to be an AMPK activator. I don't think I think Matsi seems to be stronger think I think Matsi seems to be stronger think I think Matsi seems to be stronger from a performance benefit, but maybe from a performance benefit, but maybe from a performance benefit, but maybe ATX. I kind of think of ATX as almost ATX. I kind of think of ATX as almost ATX. I kind of think of ATX as almost like a a better version of metformin. like a a better version of metformin. like a a better version of metformin. And the issue is I've really just seen And the issue is I've really just seen And the issue is I've really just seen the benefits when I go to like 5 or 600 the benefits when I go to like 5 or 600 the benefits when I go to like 5 or 600 milligrams. milligrams. milligrams. &gt;&gt; Even in human clinical trials, the the &gt;&gt; Even in human clinical trials, the the &gt;&gt; Even in human clinical trials, the the dose was 1,000 milligrams a day. And dose was 1,000 milligrams a day. And dose was 1,000 milligrams a day. And most people are getting 100 milligram most people are getting 100 milligram most people are getting 100 milligram capsules. And so they're like, \"Oh, I capsules. And so they're like, \"Oh, I capsules. And so they're like, \"Oh, I took it. I didn't feel anything.\" It's took it. I didn't feel anything.\" It's took it. I didn't feel anything.\" It's usually like I've had to go to 5 to 700 usually like I've had to go to 5 to 700 usually like I've had to go to 5 to 700 milligram range to feel like the milligram range to feel like the milligram range to feel like the performance effects to see more of like performance effects to see more of like performance effects to see more of like the the leaning out cuz it it will lean the the leaning out cuz it it will lean the the leaning out cuz it it will lean you out and kind of like harden you out. you out and kind of like harden you out. you out and kind of like harden you out. But it also that can be cost prohibitive But it also that can be cost prohibitive But it also that can be cost prohibitive because if you think about it, one because if you think about it, one because if you think about it, one bottle with 30 100 milligram capsules bottle with 30 100 milligram capsules bottle with 30 100 milligram capsules and you're doing 500 milligrams a day, and you're doing 500 milligrams a day, and you're doing 500 milligrams a day, that bottle is going to last you six six that bottle is going to last you six six that bottle is going to last you six six days. And so that's like two or three days. And so that's like two or three days. And so that's like two or three hundred bucks for a week supply, you",
+            "first_timestamp": "01:07:08.640"
+          },
+          {
+            "source_id": "V87f6GRxZLM",
+            "source_type": "podcast",
+            "source_title": "Top Peptides for PMS Relief: My Go-To Stack",
+            "source_date": "2024-08-20",
+            "source_url": "https://youtu.be/V87f6GRxZLM",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2024-08-20-top-peptides-for-pms-relief-my-go-to-stack-V87f6GRxZLM.en.vtt",
+            "mention_count": 36,
+            "top_snippet": "phase of the cycle is going to be metformin you're going to also be taking",
+            "top_context": "thoughts Health eating is going to be thoughts Health eating is going to be your best friend I can't tell you how your best friend I can't tell you how your best friend I can't tell you how many women that I have helped coach and many women that I have helped coach and many women that I have helped coach and I've suggested them take eling and I've suggested them take eling and I've suggested them take eling and they've all have messaged me as like I they've all have messaged me as like I they've all have messaged me as like I think I'm overtaking this you're not think I'm overtaking this you're not think I'm overtaking this you're not overtaking it they're like this is a overtaking it they're like this is a overtaking it they're like this is a lifesaver like how did I not know about lifesaver like how did I not know about lifesaver like how did I not know about this so eling is this so eling is this so eling is great 200 milligrams that twice a day great 200 milligrams that twice a day great 200 milligrams that twice a day you can do this in a liquid dropper form you can do this in a liquid dropper form you can do this in a liquid dropper form or in a capsule form I like to keep both or in a capsule form I like to keep both or in a capsule form I like to keep both on hand just like if I feel the stress on hand just like if I feel the stress on hand just like if I feel the stress like coming on I can go ahead and take like coming on I can go ahead and take like coming on I can go ahead and take that liquid dropper and it's going to that liquid dropper and it's going to that liquid dropper and it's going to kick in and work really quick into the kick in and work really quick into the kick in and work really quick into the system so the next thing that you're system so the next thing that you're system so the next thing that you're going to take during um the menstrual going to take during um the menstrual going to take during um the menstrual phase of the cycle is going to be phase of the cycle is going to be phase of the cycle is going to be metformin you're going to also be taking metformin you're going to also be taking metformin you're going to also be taking metformin throughout every phase of your metformin throughout every phase of your metformin throughout every phase of your menstrual cycle so you are going to hear menstrual cycle so you are going to hear menstrual cycle so you are going to hear me repeat myself with that so metformin me repeat myself with that so metformin me repeat myself with that so metformin you're going to be taking um 500 you're going to be taking um 500 you're going to be taking um 500 milligrams of that twice a day um I like milligrams of that twice a day um I like milligrams of that twice a day um I like to take Metformin in the morning fasted to take Metformin in the morning fasted to take Metformin in the morning fasted before I eat and I like to take before I eat and I like to take before I eat and I like to take Metformin um at bedtime after I've Metformin um at bedtime after I've Metformin um at bedtime after I've already eaten my meals I like to wait at already eaten my meals I like to wait at already eaten my meals I like to wait at least like 60 to 90 minutes um after least like 60 to 90 minutes um after least like 60 to 90 minutes um after I've eaten to take this like so for me I've eaten to take this like so for me I've eaten to take this like so for me like this is the last thing I take like like this is the last thing I take like like this is the last thing I take like as I'm getting into bed it's like the as I'm getting into bed it's like the as I'm getting into bed it's like the last thing basically so what this is last thing basically so what this is last thing basically so what this is going to do this is going to help going to do this is going to help going to do this is going to help regulate your blood sugar which is going regulate your blood sugar which is going regulate your blood sugar which is going to improve your insulin sensitivity so to improve your insulin sensitivity so to improve your insulin sensitivity so this is going to help with your levels",
+            "first_timestamp": "00:09:32.560"
+          },
+          {
+            "source_id": "G27dIPBJUSs",
+            "source_type": "podcast",
+            "source_title": "Saturday Morning Coffee Talk 3/28/26",
+            "source_date": "2026-03-28",
+            "source_url": "https://youtu.be/G27dIPBJUSs",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2026-03-28-saturday-morning-coffee-talk-3-28-26-G27dIPBJUSs.en.vtt",
+            "mention_count": 30,
+            "top_snippet": "SGLT2 is not going to inhibit mTOR as much. Now, metformin will. Metformin is",
+            "top_context": "hair I feel like thicker and coarser. hair I feel like thicker and coarser. Yeah. Cuz I even notice that even Yeah. Yeah. Cuz I even notice that even Yeah. Yeah. Cuz I even notice that even Yeah. with my own. And I And I don't do I with my own. And I And I don't do I with my own. And I And I don't do I don't inject GHK. I The only GHK I use don't inject GHK. I The only GHK I use don't inject GHK. I The only GHK I use is a serum. Yeah. on my face. is a serum. Yeah. on my face. is a serum. Yeah. on my face. &gt;&gt; Well, that's what I'm saying is not even &gt;&gt; Well, that's what I'm saying is not even &gt;&gt; Well, that's what I'm saying is not even from injecting it. It's just from the from injecting it. It's just from the from injecting it. It's just from the topical that I can put it topically on topical that I can put it topically on topical that I can put it topically on my face, but it will make my body hair my face, but it will make my body hair my face, but it will make my body hair grow more. I mean, my facial hair grow more. I mean, my facial hair grow more. I mean, my facial hair Yeah. Yeah. Yeah. Jennifer says, \"Do you have any feedback Jennifer says, \"Do you have any feedback Jennifer says, \"Do you have any feedback results from people taking an mTOR results from people taking an mTOR results from people taking an mTOR inhibitor like rapamycin for longevity? inhibitor like rapamycin for longevity? inhibitor like rapamycin for longevity? I know I've heard you talk about good I know I've heard you talk about good I know I've heard you talk about good effects from SGLT2 inhibitors. effects from SGLT2 inhibitors. effects from SGLT2 inhibitors. Are these opposites?\" I would not say an Are these opposites?\" I would not say an Are these opposites?\" I would not say an SGLT2 is an opposite to an mTOR SGLT2 is an opposite to an mTOR SGLT2 is an opposite to an mTOR inhibitor. inhibitor. inhibitor. They're kind of adjacent. They're kind of adjacent. They're kind of adjacent. To my knowledge, mechanistically, the To my knowledge, mechanistically, the To my knowledge, mechanistically, the SGLT2 is not going to inhibit mTOR as SGLT2 is not going to inhibit mTOR as SGLT2 is not going to inhibit mTOR as much. Now, metformin will. Metformin is much. Now, metformin will. Metformin is much. Now, metformin will. Metformin is like rapamycin light. Metformin would be like rapamycin light. Metformin would be like rapamycin light. Metformin would be kind of something that I think a lot of kind of something that I think a lot of kind of something that I think a lot of people hate it. I still take 500 mg of people hate it. I still take 500 mg of people hate it. I still take 500 mg of metformin per day. metformin per day. metformin per day. Metformin I I I would think it'd be Metformin I I I would think it'd be Metformin I I I would think it'd be something that's a good something that's a good something that's a good balance of suppressing mTOR, but not too balance of suppressing mTOR, but not too balance of suppressing mTOR, but not too much. Whereas rapamycin is a very much. Whereas rapamycin is a very much. Whereas rapamycin is a very large manual lever to suppress mTOR. large manual lever to suppress mTOR. large manual lever to suppress mTOR. Which basically means you you suppress Which basically means you you suppress Which basically means you you suppress mTOR. Think of mTOR is If mTOR is on, mTOR. Think of mTOR is If mTOR is on, mTOR. Think of mTOR is If mTOR is on, we're growing. Mhm. mTOR on means muscle we're growing. Mhm. mTOR on means muscle we're growing. Mhm. mTOR on means muscle building on. Muscle building mode on is building on. Muscle building mode on is building on. Muscle building mode on is mTOR up. mTOR down muscle building mode mTOR up. mTOR down muscle building mode mTOR up. mTOR down muscle building mode off, fasting autophagy mode on. So, off, fasting autophagy mode on. So, off, fasting autophagy mode on. So, lower mTOR is more like you're fasting. lower mTOR is more like you're fasting. lower mTOR is more like you're fasting. And so, when we're fasting, our our mTOR And so, when we're fasting, our our mTOR And so, when we're fasting, our our mTOR is lower, AMPK is typically higher.",
+            "first_timestamp": "00:23:42.200"
+          },
+          {
+            "source_id": "ut_iXVvl-8w",
+            "source_type": "podcast",
+            "source_title": "What I Take When Cycling Off GLP-1 Peptides",
+            "source_date": "2024-05-21",
+            "source_url": "https://youtu.be/ut_iXVvl-8w",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2024-05-21-what-i-take-when-cycling-off-glp-1-peptides-ut_iXVvl-8w.en.vtt",
+            "mention_count": 21,
+            "top_snippet": "about is like supplements that we're going to take so metformin this is a",
+            "top_context": "peptides most people will do a glp1 for peptides most people will do a glp1 for about 8 weeks you can push it to 12 but about 8 weeks you can push it to 12 but about 8 weeks you can push it to 12 but typically I always recommend doing eight typically I always recommend doing eight typically I always recommend doing eight weeks on eight weeks off so this is weeks on eight weeks off so this is weeks on eight weeks off so this is going to help you not build immunity to going to help you not build immunity to going to help you not build immunity to these peptides so when you hear people these peptides so when you hear people these peptides so when you hear people like oh I've been on some glue tide or like oh I've been on some glue tide or like oh I've been on some glue tide or CH zap tide for for a whole year and I'm CH zap tide for for a whole year and I'm CH zap tide for for a whole year and I'm on the highest dose now that's not good on the highest dose now that's not good on the highest dose now that's not good that's not what you want to do um that's not what you want to do um that's not what you want to do um especially if you're using these pet especially if you're using these pet especially if you're using these pet tiddes mainly for fat loss and weight tiddes mainly for fat loss and weight tiddes mainly for fat loss and weight goals you definitely want to make sure goals you definitely want to make sure goals you definitely want to make sure you're cycling those so this is what I you're cycling those so this is what I you're cycling those so this is what I do and this is what I recommend people do and this is what I recommend people do and this is what I recommend people doing when cycling off of gp1s so the doing when cycling off of gp1s so the doing when cycling off of gp1s so the first thing that we're going to talk first thing that we're going to talk first thing that we're going to talk about is like supplements that we're about is like supplements that we're about is like supplements that we're going to take so metformin this is a going to take so metformin this is a going to take so metformin this is a supplement that you should be taking supplement that you should be taking supplement that you should be taking regardless whether you're on trop typ or regardless whether you're on trop typ or regardless whether you're on trop typ or off zde metformin everybody should take off zde metformin everybody should take off zde metformin everybody should take it it's amazing supplement um so you it it's amazing supplement um so you it it's amazing supplement um so you definitely want to make sure that you definitely want to make sure that you definitely want to make sure that you are taking M metformin metformin is are taking M metformin metformin is are taking M metformin metformin is going to help reduce your insulant going to help reduce your insulant going to help reduce your insulant levels so it's going to help you you levels so it's going to help you you levels so it's going to help you you know it's going to give you the same glp know it's going to give you the same glp know it's going to give you the same glp ones are going to help with insulin ones are going to help with insulin ones are going to help with insulin levels met fora is going to help with levels met fora is going to help with levels met fora is going to help with that too so that is going to be key is that too so that is going to be key is that too so that is going to be key is making sure that you're taking that making sure that you're taking that making sure that you're taking that because it's also going to help clean because it's also going to help clean because it's also going to help clean out any candida any gut issues that out any candida any gut issues that out any candida any gut issues that you're having leaky gut candida is going you're having leaky gut candida is going you're having leaky gut candida is going to help with that it's going to help to help with that it's going to help to help with that it's going to help clean all those things out but it's also clean all those things out but it's also clean all those things out but it's also going to help reduce your insulant going to help reduce your insulant going to help reduce your insulant levels and it's also going to help with",
+            "first_timestamp": "00:03:22.000"
+          },
+          {
+            "source_id": "iwUf7sB3Xn8",
+            "source_type": "podcast",
+            "source_title": "How to Use Peptides to Navigate Holiday Meals Without Guilt",
+            "source_date": "2024-11-22",
+            "source_url": "https://youtu.be/iwUf7sB3Xn8",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2024-11-22-how-to-use-peptides-to-navigate-holiday-meals-without-guilt-iwUf7sB3Xn8.en.vtt",
+            "mention_count": 21,
+            "top_snippet": "going to be seeing that I'm going to be taking a good bit of metformin and",
+            "top_context": "movements if I haven't taken it in a movements if I haven't taken it in a while or it's my first time taking it while or it's my first time taking it while or it's my first time taking it don't take the oxytocin if you are not don't take the oxytocin if you are not don't take the oxytocin if you are not already using that in your regular already using that in your regular already using that in your regular cycling system um just my advice don't cycling system um just my advice don't cycling system um just my advice don't try any of these peptides before any try any of these peptides before any try any of these peptides before any events before any holiday get to get events before any holiday get to get events before any holiday get to get togethers like this is these are togethers like this is these are togethers like this is these are peptides that I take on a regular basis peptides that I take on a regular basis peptides that I take on a regular basis so for me taking them is not going to so for me taking them is not going to so for me taking them is not going to shock my system so definitely this is shock my system so definitely this is shock my system so definitely this is what I do and what works for me do what what I do and what works for me do what what I do and what works for me do what works for your body so before I get into works for your body so before I get into works for your body so before I get into my supplement my supplement my supplement stack the reason why this next slide is stack the reason why this next slide is stack the reason why this next slide is in here is that I'm going to be you're in here is that I'm going to be you're in here is that I'm going to be you're going to be seeing that I'm going to be going to be seeing that I'm going to be going to be seeing that I'm going to be taking a good bit of metformin and taking a good bit of metformin and taking a good bit of metformin and berberine and I know I'm going to get berberine and I know I'm going to get berberine and I know I'm going to get questions on why am I taking both why do questions on why am I taking both why do questions on why am I taking both why do you not just take Metformin why just not you not just take Metformin why just not you not just take Metformin why just not take berberine and the thing is is that take berberine and the thing is is that take berberine and the thing is is that I like to combine these together and I like to combine these together and I like to combine these together and here's my reason why so metformin is here's my reason why so metformin is here's my reason why so metformin is going to help with reducing liver going to help with reducing liver going to help with reducing liver glucose where production whereas bourine glucose where production whereas bourine glucose where production whereas bourine is not going to be able to do that it's is not going to be able to do that it's is not going to be able to do that it's still going to help with um insulin still going to help with um insulin still going to help with um insulin sensitivity it's going to be able to sensitivity it's going to be able to sensitivity it's going to be able to improve your insulin levels but it's not improve your insulin levels but it's not improve your insulin levels but it's not going to hit it the same way metformin's going to hit it the same way metformin's going to hit it the same way metformin's going to that's why I like to take both going to that's why I like to take both going to that's why I like to take both of these together met fora is great",
+            "first_timestamp": "00:18:50.280"
+          },
+          {
+            "source_id": "JC1poI1OEog",
+            "source_type": "podcast",
+            "source_title": "Saturday Morning Coffee Talk 3/14/2026",
+            "source_date": "2026-03-14",
+            "source_url": "https://youtu.be/JC1poI1OEog",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2026-03-14-saturday-morning-coffee-talk-3-14-2026-JC1poI1OEog.en.vtt",
+            "mention_count": 21,
+            "top_snippet": "going to add maybe in there, um, metformin.",
+            "top_context": "America that you see America that you see this age group of women this age group of women this age group of women really left to dry. really left to dry. really left to dry. Would you say Would you say Would you say Meaning from their doctor, sorry, I'll Meaning from their doctor, sorry, I'll Meaning from their doctor, sorry, I'll let you go. Yeah. But just meaning from let you go. Yeah. But just meaning from let you go. Yeah. But just meaning from the the pharma world and how they treat the the pharma world and how they treat the the pharma world and how they treat them cuz Yeah. typically, I would them cuz Yeah. typically, I would them cuz Yeah. typically, I would imagine if a girl like this goes to the imagine if a girl like this goes to the imagine if a girl like this goes to the doctor, they're going to put doctor, they're going to put doctor, they're going to put &gt;&gt; put her on birth control, and that's the &gt;&gt; put her on birth control, and that's the &gt;&gt; put her on birth control, and that's the worst thing that you can do. Which will worst thing that you can do. Which will worst thing that you can do. Which will maybe be a band-aid to the problem. maybe be a band-aid to the problem. maybe be a band-aid to the problem. No, it's going to make it worse. Well, No, it's going to make it worse. Well, No, it's going to make it worse. Well, yeah, meaning that it would just get yeah, meaning that it would just get yeah, meaning that it would just get infected. Not infected, but it would infected. Not infected, but it would infected. Not infected, but it would just continue to fester just continue to fester just continue to fester if put on birth control. Yeah. I mean, I if put on birth control. Yeah. I mean, I if put on birth control. Yeah. I mean, I was on birth control when I Even when I was on birth control when I Even when I was on birth control when I Even when I was on birth control, I still had acne was on birth control, I still had acne was on birth control, I still had acne issues. Yeah. issues. Yeah. issues. Yeah. Sorry, what were you going to say? I cut Sorry, what were you going to say? I cut Sorry, what were you going to say? I cut you off. Um, I was also going to be you off. Um, I was also going to be you off. Um, I was also going to be going to add maybe in there, um, going to add maybe in there, um, going to add maybe in there, um, metformin. metformin. metformin. Yeah, I don't think that would be Yeah, I don't think that would be Yeah, I don't think that would be &gt;&gt; think that bad. This cuz one, diet's &gt;&gt; think that bad. This cuz one, diet's &gt;&gt; think that bad. This cuz one, diet's going to be a little off, so it's going going to be a little off, so it's going going to be a little off, so it's going to clean out any candida, to clean out any candida, to clean out any candida, any like insulin resistance that's going any like insulin resistance that's going any like insulin resistance that's going on from the diet, too. Yeah. Just clean on from the diet, too. Yeah. Just clean on from the diet, too. Yeah. Just clean up inflammation. It doesn't have to be a up inflammation. It doesn't have to be a up inflammation. It doesn't have to be a lot. 500 mg I think would be really lot. 500 mg I think would be really lot. 500 mg I think would be really good. Yeah. good. Yeah. good. Yeah. Great question. It's a Those are such Great question. It's a Those are such Great question. It's a Those are such good questions because that when I think good questions because that when I think good questions because that when I think of that, I think how many millions of of that, I think how many millions of of that, I think how many millions of girls out there girls out there girls out there have that right now. Yeah. And it have that right now. Yeah. And it have that right now. Yeah. And it probably doesn't have to be as bad Yeah. probably doesn't have to be as bad Yeah. probably doesn't have to be as bad Yeah. But I think also, too, it's like I think But I think also, too, it's like I think But I think also, too, it's like I think about this, it's like those about this, it's like those about this, it's like those those age group of people aren't those age group of people aren't those age group of people aren't watching our stuff, which would be watching our stuff, which would be watching our stuff, which would be really beneficial. It's their their really beneficial. It's their their really beneficial. It's their their parents are, and I think that's like parents are, and I think that's like parents are, and I think that's like Would you have watched you now at 19?",
+            "first_timestamp": "00:27:26.240"
+          },
+          {
+            "source_id": "hjJPYEhOvAw",
+            "source_type": "podcast",
+            "source_title": "The Hashimotos Peptide Stack",
+            "source_date": "2024-06-04",
+            "source_url": "https://youtu.be/hjJPYEhOvAw",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2024-06-04-the-hashimotos-peptide-stack-hjJPYEhOvAw.en.vtt",
+            "mention_count": 15,
+            "top_snippet": "stacking in with this is going to be metformin now metformin is something",
+            "top_context": "best the best in my opinion for thyroid best the best in my opinion for thyroid function and to give your thyroid the function and to give your thyroid the function and to give your thyroid the full support that it needs um so again full support that it needs um so again full support that it needs um so again like I'm just I'm very big into I want like I'm just I'm very big into I want like I'm just I'm very big into I want to have as much to have as much to have as much bioidentical bioidentical bioidentical um supplements or medications or um supplements or medications or um supplements or medications or peptides or whatever it is in my body I peptides or whatever it is in my body I peptides or whatever it is in my body I want to stay away from synthetics as want to stay away from synthetics as want to stay away from synthetics as much as possible so if I had the option much as possible so if I had the option much as possible so if I had the option between a synthetic thyroid or a between a synthetic thyroid or a between a synthetic thyroid or a desicated natural thyroid I'm going to desicated natural thyroid I'm going to desicated natural thyroid I'm going to go with the desicated natural thyroid go with the desicated natural thyroid go with the desicated natural thyroid just because I don't want any more just because I don't want any more just because I don't want any more synthetic products in my body so the synthetic products in my body so the synthetic products in my body so the last supplement I'm going to suggest last supplement I'm going to suggest last supplement I'm going to suggest stacking in with this is going to be stacking in with this is going to be stacking in with this is going to be metformin now metformin is something metformin now metformin is something metformin now metformin is something that I use daily it's something that I that I use daily it's something that I that I use daily it's something that I feel that like everybody should should feel that like everybody should should feel that like everybody should should use and there's been some really great use and there's been some really great use and there's been some really great articles and studies out there um about articles and studies out there um about articles and studies out there um about metformin if you guys want to know more metformin if you guys want to know more metformin if you guys want to know more please go check out um J Campbell's um please go check out um J Campbell's um please go check out um J Campbell's um website to learn more about metformin he website to learn more about metformin he website to learn more about metformin he has some great stuff published about it has some great stuff published about it has some great stuff published about it and cannot recommend that enough um but and cannot recommend that enough um but and cannot recommend that enough um but metform is typically used to treat type metform is typically used to treat type metform is typically used to treat type 2 2 2 diabetes because of its great overall diabetes because of its great overall diabetes because of its great overall healing properties all over the body is healing properties all over the body is healing properties all over the body is going to be really great for Hashimoto going to be really great for Hashimoto going to be really great for Hashimoto because it's going to improve your because it's going to improve your because it's going to improve your insulin",
+            "first_timestamp": "00:09:08.399"
+          }
+        ],
+        "acute_signals": [
+          {
+            "snippet": "bad food? Is it a combo of both? And so I think someone with a GLP and metformin",
+            "source_title": "Saturday Morning Coffee Talk 3/28/26",
+            "source_date": "2026-03-28",
+            "timestamp": "01:42:29.480",
+            "source_url": "https://youtu.be/G27dIPBJUSs"
+          },
+          {
+            "snippet": "I think someone with a GLP and metformin",
+            "source_title": "Saturday Morning Coffee Talk 3/28/26",
+            "source_date": "2026-03-28",
+            "timestamp": "01:42:31.150",
+            "source_url": "https://youtu.be/G27dIPBJUSs"
+          },
+          {
+            "snippet": "I think someone with a GLP and metformin and SGLT2 after 3 months of that, gout",
+            "source_title": "Saturday Morning Coffee Talk 3/28/26",
+            "source_date": "2026-03-28",
+            "timestamp": "01:42:31.160",
+            "source_url": "https://youtu.be/G27dIPBJUSs"
+          },
+          {
+            "snippet": "&gt;&gt; SS-31, too. Yeah, SS-31. SS-31, Retatrutide, SGLT2, metformin within 4",
+            "source_title": "Saturday Morning Coffee Talk 3/28/26",
+            "source_date": "2026-03-28",
+            "timestamp": "01:42:40.120",
+            "source_url": "https://youtu.be/G27dIPBJUSs"
+          },
+          {
+            "snippet": "Retatrutide, SGLT2, metformin within 4",
+            "source_title": "Saturday Morning Coffee Talk 3/28/26",
+            "source_date": "2026-03-28",
+            "timestamp": "01:42:42.790",
+            "source_url": "https://youtu.be/G27dIPBJUSs"
+          }
+        ],
+        "chronic_signals": [
+          {
+            "snippet": "about is like supplements that we're going to take so metformin this is a",
+            "source_title": "What I Take When Cycling Off GLP-1 Peptides",
+            "source_date": "2024-05-21",
+            "timestamp": "00:03:22.000",
+            "source_url": "https://youtu.be/ut_iXVvl-8w"
+          },
+          {
+            "snippet": "going to take so metformin this is a",
+            "source_title": "What I Take When Cycling Off GLP-1 Peptides",
+            "source_date": "2024-05-21",
+            "timestamp": "00:03:25.229",
+            "source_url": "https://youtu.be/ut_iXVvl-8w"
+          },
+          {
+            "snippet": "going to take so metformin this is a supplement that you should be taking",
+            "source_title": "What I Take When Cycling Off GLP-1 Peptides",
+            "source_date": "2024-05-21",
+            "timestamp": "00:03:25.239",
+            "source_url": "https://youtu.be/ut_iXVvl-8w"
+          },
+          {
+            "snippet": "regardless whether you're on trop typ or off zde metformin everybody should take",
+            "source_title": "What I Take When Cycling Off GLP-1 Peptides",
+            "source_date": "2024-05-21",
+            "timestamp": "00:03:30.000",
+            "source_url": "https://youtu.be/ut_iXVvl-8w"
+          },
+          {
+            "snippet": "off zde metformin everybody should take",
+            "source_title": "What I Take When Cycling Off GLP-1 Peptides",
+            "source_date": "2024-05-21",
+            "timestamp": "00:03:32.110",
+            "source_url": "https://youtu.be/ut_iXVvl-8w"
+          }
+        ]
+      },
+      "female_specific_note": "Taylor Williams Coaching focuses on female-specific HRT/peptide guidance. Per-peptide notes here often emphasize female dosing, fertility, hormone interactions."
+    },
+    "trevor-bachmeyer": {
+      "summary": {
+        "mention_count": 618,
+        "top_doses": [
+          {
+            "dose": "5 milligrams",
+            "count": 9
+          },
+          {
+            "dose": "150 milligrams",
+            "count": 9
+          },
+          {
+            "dose": "500 micrograms",
+            "count": 6
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "sKS-my9Y8vQ",
+            "source_type": "podcast",
+            "source_title": "Metformin Isn't What They Told You (MOTS-C Is The Real Deal) - Dr Trevor Bachmeyer",
+            "source_date": "2026-04-09",
+            "source_url": "https://youtu.be/sKS-my9Y8vQ",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2026-04-09-metformin-isn-t-what-they-told-you-mots-c-is-the-real-deal-dr-trevor-b-sKS-my9Y8vQ.en.vtt",
+            "mention_count": 276,
+            "top_snippet": "this isn't a rant, but this is all about metformin and m and metformin is killing",
+            "top_context": "Listen, longevity is a billiondoll Listen, longevity is a billiondoll industry and I get no money from it. industry and I get no money from it. industry and I get no money from it. It's not like somebody's paying me the It's not like somebody's paying me the It's not like somebody's paying me the billions, but most people are going billions, but most people are going billions, but most people are going about it all wrong, especially the about it all wrong, especially the about it all wrong, especially the wellness clinics and the longevity wellness clinics and the longevity wellness clinics and the longevity clinics and the sellout doctors. And clinics and the sellout doctors. And clinics and the sellout doctors. And this isn't a rant, but this is all about this isn't a rant, but this is all about this isn't a rant, but this is all about metformin and m and metformin is killing metformin and m and metformin is killing metformin and m and metformin is killing you and MC is saving you. And I will you and MC is saving you. And I will you and MC is saving you. And I will explain the difference from A to Z. So explain the difference from A to Z. So explain the difference from A to Z. So you can see that Metformin is not a you can see that Metformin is not a you can see that Metformin is not a longevity drug whatsoever. Not at all. Zero. In fact, I'll show you Not at all. Zero. In fact, I'll show you the study they used to say it was and the study they used to say it was and the study they used to say it was and how backwards the logic is and how how backwards the logic is and how how backwards the logic is and how convoluted they use it and they fold it convoluted they use it and they fold it convoluted they use it and they fold it and misshape it so you think it actually and misshape it so you think it actually and misshape it so you think it actually serves you, but it doesn't. Actually serves you, but it doesn't. Actually serves you, but it doesn't. Actually causes a ton of problems. Like millions causes a ton of problems. Like millions causes a ton of problems. Like millions of people are being prescribed metformin of people are being prescribed metformin of people are being prescribed metformin based on incomplete science and you're based on incomplete science and you're based on incomplete science and you're not getting you're not getting all the not getting you're not getting all the not getting you're not getting all the pieces. It's a lie about longevity and pieces. It's a lie about longevity and pieces. It's a lie about longevity and extending life and defeating aging. And extending life and defeating aging. And extending life and defeating aging. And none of it is fact-based. Look, none of it is fact-based. Look, none of it is fact-based. Look, metformin, this has become one of the",
+            "first_timestamp": "00:00:17.680"
+          },
+          {
+            "source_id": "aE1L6rZwsSY",
+            "source_type": "podcast",
+            "source_title": "MOTS-C versus Metformin For Longevity - Dr Trevor Bachmeyer",
+            "source_date": "2025-12-09",
+            "source_url": "https://youtu.be/aE1L6rZwsSY",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2025-12-09-mots-c-versus-metformin-for-longevity-dr-trevor-bachmeyer-aE1L6rZwsSY.en.vtt",
+            "mention_count": 105,
+            "top_snippet": "most part and it's to help you. So MOTS-c and Metformin. So the question I",
+            "top_context": "I got an interesting question the other I got an interesting question the other day and one of them was from one of my day and one of them was from one of my day and one of them was from one of my clients and then a bunch from you guys clients and then a bunch from you guys clients and then a bunch from you guys and you guys are asking me a lot about and you guys are asking me a lot about and you guys are asking me a lot about longevity. So I'm going to go over some longevity. So I'm going to go over some longevity. So I'm going to go over some really cool things that work better than really cool things that work better than really cool things that work better than what is being talked about on Reddit and what is being talked about on Reddit and what is being talked about on Reddit and Quora and all the Insta bros and even Quora and all the Insta bros and even Quora and all the Insta bros and even the health and doctors who really don't the health and doctors who really don't the health and doctors who really don't know what they're talking about for the know what they're talking about for the know what they're talking about for the most part and it's to help you. So most part and it's to help you. So most part and it's to help you. So MOTS-c and Metformin. So the question I MOTS-c and Metformin. So the question I MOTS-c and Metformin. So the question I got was, \"Hey, I'm going to take got was, \"Hey, I'm going to take got was, \"Hey, I'm going to take Metformin. I'm going to eat Metformin. I'm going to eat Metformin. I'm going to eat I'm going to take it for longevity.\" I'm going to take it for longevity.\" I'm going to take it for longevity.\" Yeah, that's a terrible idea. I'll Yeah, that's a terrible idea. I'll Yeah, that's a terrible idea. I'll explain why and I'm sure right off the explain why and I'm sure right off the explain why and I'm sure right off the bat all you guys just ran to my comments bat all you guys just ran to my comments bat all you guys just ran to my comments to start dropping all your Insta facts. But listen, hear me out. I'm not doing But listen, hear me out. I'm not doing this for me. I have no stock in this for me. I have no stock in this for me. I have no stock in Metformin. I have no stock in any Metformin. I have no stock in any Metformin. I have no stock in any peptide company. I don't think any of peptide company. I don't think any of peptide company. I don't think any of them are public anyway. But what I'm them are public anyway. But what I'm them are public anyway. But what I'm saying is this is for you, not for me. saying is this is for you, not for me. saying is this is for you, not for me. My coffee's good today. So I'm going to My coffee's good today. So I'm going to My coffee's good today. So I'm going to go over MOTS-c, I'll go over Metformin, go over MOTS-c, I'll go over Metformin, go over MOTS-c, I'll go over Metformin, I'll explain why Metformin is a I'll explain why Metformin is a I'll explain why Metformin is a catastrophe and not just for longevity,",
+            "first_timestamp": "00:00:23.880"
+          },
+          {
+            "source_id": "0qBMBO-6xIE",
+            "source_type": "podcast",
+            "source_title": "MOTS-C or Retatrutide Which One Is Better - Dr Trevor Bachmeyer",
+            "source_date": "2025-12-17",
+            "source_url": "https://youtu.be/0qBMBO-6xIE",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2025-12-17-mots-c-or-retatrutide-which-one-is-better-dr-trevor-bachmeyer-0qBMBO-6xIE.en.vtt",
+            "mention_count": 24,
+            "top_snippet": "decade. Like high blood sugar, metformin. I already went over that.",
+            "top_context": "guy as far as blaming you for that guy as far as blaming you for that because you didn't take the initiative because you didn't take the initiative because you didn't take the initiative to go, you know what, what I'm learning to go, you know what, what I'm learning to go, you know what, what I'm learning is not I need to learn more. You didn't is not I need to learn more. You didn't is not I need to learn more. You didn't take the initiative to do that. But at take the initiative to do that. But at take the initiative to do that. But at the same time, you're in a school that the same time, you're in a school that the same time, you're in a school that doesn't take the initiative to teach you doesn't take the initiative to teach you doesn't take the initiative to teach you real healthcare. Caught in a quandry real healthcare. Caught in a quandry real healthcare. Caught in a quandry right now because part of me wants to right now because part of me wants to right now because part of me wants to beat the crap out of all of you and the beat the crap out of all of you and the beat the crap out of all of you and the other part of me wants to help educate other part of me wants to help educate other part of me wants to help educate you. Since you're not in front of me and you. Since you're not in front of me and you. Since you're not in front of me and I can't smack you in the mouth, I guess I can't smack you in the mouth, I guess I can't smack you in the mouth, I guess I'm going to educate you, right? But I'm going to educate you, right? But I'm going to educate you, right? But listen, your doctor, if you're listening listen, your doctor, if you're listening listen, your doctor, if you're listening to your doctor all the time for and to your doctor all the time for and to your doctor all the time for and people go, \"Oh, it's not very good people go, \"Oh, it's not very good people go, \"Oh, it's not very good advice.\" I don't really care what you advice.\" I don't really care what you advice.\" I don't really care what you think then. Doctor's an idiot. No, think then. Doctor's an idiot. No, think then. Doctor's an idiot. No, seriously. He's listen, this is what's seriously. He's listen, this is what's seriously. He's listen, this is what's happening for most of these people. He's happening for most of these people. He's happening for most of these people. He's treating the puddle on that's on your treating the puddle on that's on your treating the puddle on that's on your kitchen floor while the pipes and the kitchen floor while the pipes and the kitchen floor while the pipes and the walls have busted through the drywall walls have busted through the drywall walls have busted through the drywall and they're just pouring water and they're just pouring water and they're just pouring water everywhere and they've done it for a everywhere and they've done it for a everywhere and they've done it for a decade. Like high blood sugar, decade. Like high blood sugar, decade. Like high blood sugar, metformin. I already went over that. metformin. I already went over that. metformin. I already went over that. It's terrible for you. It's not a It's terrible for you. It's not a It's terrible for you. It's not a longevity drug. It's not. You guys need longevity drug. It's not. You guys need longevity drug. It's not. You guys need to stop taking Metformin thinking it's to stop taking Metformin thinking it's to stop taking Metformin thinking it's for longevity. And then actually look at for longevity. And then actually look at for longevity. And then actually look at what happens when you take Metformin and what happens when you take Metformin and what happens when you take Metformin and how it is just a catastrophe for your how it is just a catastrophe for your how it is just a catastrophe for your system. Statins, blood pressure meds, system. Statins, blood pressure meds, system. Statins, blood pressure meds, that is mopping. That's not fixing the that is mopping. That's not fixing the that is mopping. That's not fixing the burst pipe, you guys. It's pathetic. And burst pipe, you guys. It's pathetic. And burst pipe, you guys. It's pathetic. And you guys are paying for the privilege of you guys are paying for the privilege of you guys are paying for the privilege of your own managed decline. Make it make your own managed decline. Make it make your own managed decline. Make it make it make sense. Jeez. It's like I feel it make sense. Jeez. It's like I feel it make sense. Jeez. It's like I feel like just this caged predator right now. like just this caged predator right now. like just this caged predator right now. Like it drives me nuts. I'm not mopping. Like it drives me nuts. I'm not mopping. Like it drives me nuts. I'm not mopping. That's This is not a podcast about That's This is not a podcast about That's This is not a podcast about mopping. I'm going to rip out the walls mopping. I'm going to rip out the walls mopping. I'm going to rip out the walls and replace all that plumbing over there and replace all that plumbing over there and replace all that plumbing over there that's pissing all over your floors. Two that's pissing all over your floors. Two that's pissing all over your floors. Two powerful molecules that do not ask your powerful molecules that do not ask your powerful molecules that do not ask your body to change under any circumstances. body to change under any circumstances. body to change under any circumstances. They force it to change using native",
+            "first_timestamp": "00:05:22.240"
+          },
+          {
+            "source_id": "HYm2_YWT6aI",
+            "source_type": "podcast",
+            "source_title": "Can You Reverse Type 2 Diabetes (yep, easily) Unbreakable Podcast - 194",
+            "source_date": "2025-07-13",
+            "source_url": "https://youtu.be/HYm2_YWT6aI",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2025-07-13-can-you-reverse-type-2-diabetes-yep-easily-unbreakable-podcast-194-HYm2_YWT6aI.en.vtt",
+            "mention_count": 12,
+            "top_snippet": "sold you this this holy trinity of insulin injections, metformin, and blood",
+            "top_context": "this random unfortunate this random unfortunate terrible thing that just happens because terrible thing that just happens because terrible thing that just happens because of genetics, bad luck, or aging. None of of genetics, bad luck, or aging. None of of genetics, bad luck, or aging. None of that is true. It is earned. every step that is true. It is earned. every step that is true. It is earned. every step of the way. Every processed carb skipped of the way. Every processed carb skipped of the way. Every processed carb skipped workout, every all you can eat buffet workout, every all you can eat buffet workout, every all you can eat buffet that you thought didn't count, every that you thought didn't count, every that you thought didn't count, every late night poor decision that was all late night poor decision that was all late night poor decision that was all your enrollment form in type 2 diabetes. your enrollment form in type 2 diabetes. your enrollment form in type 2 diabetes. I'm not blaming you. I'm just blaming I'm not blaming you. I'm just blaming I'm not blaming you. I'm just blaming the system that told you this was the system that told you this was the system that told you this was manageable and not reversible manageable and not reversible manageable and not reversible because that lie makes it profitable. because that lie makes it profitable. because that lie makes it profitable. Not for me, for them. You were never Not for me, for them. You were never Not for me, for them. You were never supposed to be cured. You were supposed supposed to be cured. You were supposed supposed to be cured. You were supposed to be compliant because compliancy makes to be compliant because compliancy makes to be compliant because compliancy makes money. They sold you this holy trinity money. They sold you this holy trinity money. They sold you this holy trinity of Think about it. Listen, anybody of Think about it. Listen, anybody of Think about it. Listen, anybody that's diab has type two diabetes knows that's diab has type two diabetes knows that's diab has type two diabetes knows exactly what I'm about to say. They they exactly what I'm about to say. They they exactly what I'm about to say. They they sold you this this holy trinity of sold you this this holy trinity of sold you this this holy trinity of insulin injections, metformin, and blood insulin injections, metformin, and blood insulin injections, metformin, and blood glucose monitors, all while telling you glucose monitors, all while telling you glucose monitors, all while telling you to eat 3 400 gram of carbs a day and to eat 3 400 gram of carbs a day and to eat 3 400 gram of carbs a day and just stay positive. That's insane. just stay positive. That's insane. just stay positive. That's insane. Because if you break it down, type 2 Because if you break it down, type 2 Because if you break it down, type 2 diabetes is just insulin resistance. The diabetes is just insulin resistance. The diabetes is just insulin resistance. The system's clogged and all jammed up and system's clogged and all jammed up and system's clogged and all jammed up and the machinery is overloaded and it's not the machinery is overloaded and it's not the machinery is overloaded and it's not sending things where it's supposed to sending things where it's supposed to sending things where it's supposed to send them. Instead of sending glucose to send them. Instead of sending glucose to send them. Instead of sending glucose to muscle, it sends it to fat there. And muscle, it sends it to fat there. And muscle, it sends it to fat there. And I'll get into the physiology behind I'll get into the physiology behind I'll get into the physiology behind this. And now the very thing that's this. And now the very thing that's this. And now the very thing that's supposed to save you, insulin, you supposed to save you, insulin, you supposed to save you, insulin, you cannot live without it. Is flooding your cannot live without it. Is flooding your cannot live without it. Is flooding your bloodstream like this overworked bloodstream like this overworked bloodstream like this overworked personal trainer that just is slamming a personal trainer that just is slamming a personal trainer that just is slamming a panic button every day. You're not sick. panic button every day. You're not sick. panic button every day. You're not sick. You're metabolically hijacked. And if You're metabolically hijacked. And if You're metabolically hijacked. And if that hijack was earned, think about it.",
+            "first_timestamp": "00:02:54.000"
+          },
+          {
+            "source_id": "jD6S-RfYZhY",
+            "source_type": "podcast",
+            "source_title": "The FDA War Against Peptides and The Facts - Dr Trevor Bachmeyer",
+            "source_date": "2026-02-13",
+            "source_url": "https://youtu.be/jD6S-RfYZhY",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2026-02-13-the-fda-war-against-peptides-and-the-facts-dr-trevor-bachmeyer-jD6S-RfYZhY.en.vtt",
+            "mention_count": 12,
+            "top_snippet": "resistance, right? It's another word for it. Prescribe metformin, which is always",
+            "top_context": "and convince you of something that's and convince you of something that's going to freaking save you. Let me going to freaking save you. Let me going to freaking save you. Let me explain the actual business model explain the actual business model explain the actual business model because it's brilliant from a profit because it's brilliant from a profit because it's brilliant from a profit perspective and it's evil from a health perspective and it's evil from a health perspective and it's evil from a health perspective. The pharmaceutical perspective. The pharmaceutical perspective. The pharmaceutical company's goal is not to cure you. Say company's goal is not to cure you. Say company's goal is not to cure you. Say it again. The pharmaceutical industry's it again. The pharmaceutical industry's it again. The pharmaceutical industry's model is not to cure you. It's to get model is not to cure you. It's to get model is not to cure you. It's to get you dependent on a medication, keep you you dependent on a medication, keep you you dependent on a medication, keep you sick enough to need it, make you sick in sick enough to need it, make you sick in sick enough to need it, make you sick in new ways so you need more medication. new ways so you need more medication. new ways so you need more medication. Call me a liar, I don't care. This is Call me a liar, I don't care. This is Call me a liar, I don't care. This is called disease creation, medication called disease creation, medication called disease creation, medication cascade, and you ready for my favorite cascade, and you ready for my favorite cascade, and you ready for my favorite one? one? one? Decline. Want some examples? Let's have Decline. Want some examples? Let's have Decline. Want some examples? Let's have some fun with this. How about let's type some fun with this. How about let's type some fun with this. How about let's type 2 diabetes. Let's do that cuz this one's 2 diabetes. Let's do that cuz this one's 2 diabetes. Let's do that cuz this one's fun for me cuz it's everywhere. I've fun for me cuz it's everywhere. I've fun for me cuz it's everywhere. I've reversed tangerine type 2 diabetes reversed tangerine type 2 diabetes reversed tangerine type 2 diabetes thousands of times. thousands of times. thousands of times. Full reversal. But, it's not possible. Full reversal. But, it's not possible. Full reversal. But, it's not possible. Only need medication. Patient develops Only need medication. Patient develops Only need medication. Patient develops metabolic dysfunction, insulin metabolic dysfunction, insulin metabolic dysfunction, insulin resistance, right? It's another word for resistance, right? It's another word for resistance, right? It's another word for it. Prescribe metformin, which is always it. Prescribe metformin, which is always it. Prescribe metformin, which is always the first line of defense. Works on the first line of defense. Works on the first line of defense. Works on AMPK. Not even close to the same as AMPK. Not even close to the same as AMPK. Not even close to the same as myt-c, by the way. So, metformin works myt-c, by the way. So, metformin works myt-c, by the way. So, metformin works by blocking glucose absorption and by blocking glucose absorption and by blocking glucose absorption and improving insulin sensitivity somewhat. improving insulin sensitivity somewhat. improving insulin sensitivity somewhat. It's comes married to a ton of side It's comes married to a ton of side It's comes married to a ton of side effects. But, doesn't address the effects. But, doesn't address the effects. But, doesn't address the underlying insulin resistance. So, underlying insulin resistance. So, underlying insulin resistance. So, eventually, here's what happens, 100% of eventually, here's what happens, 100% of eventually, here's what happens, 100% of the time. Metformin stops working the time. Metformin stops working the time. Metformin stops working because the problem, insulin resistance, because the problem, insulin resistance, because the problem, insulin resistance, is still there. Now, they prescribe a is still there. Now, they prescribe a is still there. Now, they prescribe a second drug, GLP-1 agonist. So, GLP-1 second drug, GLP-1 agonist. So, GLP-1 second drug, GLP-1 agonist. So, GLP-1 agonist increase insulin secretion. agonist increase insulin secretion. agonist increase insulin secretion. Still not fixing the insulin resistance. Still not fixing the insulin resistance. Still not fixing the insulin resistance. In fact, if you understand insulin In fact, if you understand insulin In fact, if you understand insulin resistance whatsoever and you listen to resistance whatsoever and you listen to resistance whatsoever and you listen to anything I've said in the last year, you anything I've said in the last year, you anything I've said in the last year, you know that your cells become deaf to know that your cells become deaf to know that your cells become deaf to insulin. Your pancreas goes, \"I have to insulin. Your pancreas goes, \"I have to insulin. Your pancreas goes, \"I have to make more.\" Which makes it even worse. make more.\" Which makes it even worse. make more.\" Which makes it even worse. You're starving in a sea of plenty, is You're starving in a sea of plenty, is You're starving in a sea of plenty, is what I always say. So, now the patient what I always say. So, now the patient what I always say. So, now the patient has high insulin levels, which causes has high insulin levels, which causes has high insulin levels, which causes increased fat storage, metabolic",
+            "first_timestamp": "00:41:36.000"
+          },
+          {
+            "source_id": "LGO11qnrSb8",
+            "source_type": "podcast",
+            "source_title": "Retatrutide, Should You Take it Forever? - Dr Trevor Bachmeyer",
+            "source_date": "2026-02-22",
+            "source_url": "https://youtu.be/LGO11qnrSb8",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2026-02-22-retatrutide-should-you-take-it-forever-dr-trevor-bachmeyer-LGO11qnrSb8.en.vtt",
+            "mention_count": 12,
+            "top_snippet": "Because you can manipulate HBA1C levels with metformin, but it doesn't mean the",
+            "top_context": "master ultimate metabolic dysfunction. master ultimate metabolic dysfunction. Like it doesn't get any worse than this. Like it doesn't get any worse than this. Like it doesn't get any worse than this. Here this look at Raven's research in Here this look at Raven's research in Here this look at Raven's research in 198 1980 and syndrome X showed that 198 1980 and syndrome X showed that 198 1980 and syndrome X showed that insulin resistance is the central insulin resistance is the central insulin resistance is the central abnormality in every chronic disease. abnormality in every chronic disease. abnormality in every chronic disease. not cholesterol, not weight, insulin not cholesterol, not weight, insulin not cholesterol, not weight, insulin sensitivity. And then 2003, this is even sensitivity. And then 2003, this is even sensitivity. And then 2003, this is even better. Con and Hull published research better. Con and Hull published research better. Con and Hull published research showing that insulin resistance preeds showing that insulin resistance preeds showing that insulin resistance preeds that I mean we're talking comes before that I mean we're talking comes before that I mean we're talking comes before type 2 diabetes 20 years 20 years prior type 2 diabetes 20 years 20 years prior type 2 diabetes 20 years 20 years prior to type 2 diabetes, man. So by the time to type 2 diabetes, man. So by the time to type 2 diabetes, man. So by the time you're diagnosed, the damage is decades you're diagnosed, the damage is decades you're diagnosed, the damage is decades old. You are screwed. And just so you old. You are screwed. And just so you old. You are screwed. And just so you know, HBA1C not a good indicator of of know, HBA1C not a good indicator of of know, HBA1C not a good indicator of of diabetes. Not even close. Hom is way diabetes. Not even close. Hom is way diabetes. Not even close. Hom is way better. Way better. Not even the same. better. Way better. Not even the same. better. Way better. Not even the same. Because you can manipulate HBA1C levels Because you can manipulate HBA1C levels Because you can manipulate HBA1C levels with metformin, but it doesn't mean the with metformin, but it doesn't mean the with metformin, but it doesn't mean the problem's solved. It just manipulated problem's solved. It just manipulated problem's solved. It just manipulated the problem. You still have diabetes. So the problem. You still have diabetes. So the problem. You still have diabetes. So look at here. Understand the the insulin look at here. Understand the the insulin look at here. Understand the the insulin resistance. Here's the mechanism. When resistance. Here's the mechanism. When resistance. Here's the mechanism. When your cells are insulin resistant, your your cells are insulin resistant, your your cells are insulin resistant, your pancreas cranks out more insulin in pancreas cranks out more insulin in pancreas cranks out more insulin in order to compensate, right? It's called order to compensate, right? It's called order to compensate, right? It's called hyperinsulinemia. This excess insulin hyperinsulinemia. This excess insulin hyperinsulinemia. This excess insulin though, look at 1997, Steinberg proved though, look at 1997, Steinberg proved though, look at 1997, Steinberg proved causes endothelial dysfunction. 2006 causes endothelial dysfunction. 2006 causes endothelial dysfunction. 2006 Desp and Lemieux proved that it causes Desp and Lemieux proved that it causes Desp and Lemieux proved that it causes increased visceral fat storage, the increased visceral fat storage, the increased visceral fat storage, the stuff that pumps out inflammatory stuff that pumps out inflammatory stuff that pumps out inflammatory cytoines and kills you. It accelerates cytoines and kills you. It accelerates cytoines and kills you. It accelerates atherosclerosis. Godsland proved it in atherosclerosis. Godsland proved it in atherosclerosis. Godsland proved it in 2005. Moran in 2015 in nature, which is 2005. Moran in 2015 in nature, which is 2005. Moran in 2015 in nature, which is a big deal. It's a big research a big deal. It's a big research a big deal. It's a big research publication. Impaired amaloid beta publication. Impaired amaloid beta publication. Impaired amaloid beta clearance in the brain. Just so you clearance in the brain. Just so you clearance in the brain. Just so you know, that last one's pretty critical.",
+            "first_timestamp": "00:08:41.519"
+          },
+          {
+            "source_id": "IH5wbl7waW4",
+            "source_type": "podcast",
+            "source_title": "If I Could Only Choose 4 peptides - Dr Trevor Bachmeyer",
+            "source_date": "2025-11-18",
+            "source_url": "https://youtu.be/IH5wbl7waW4",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2025-11-18-if-i-could-only-choose-4-peptides-dr-trevor-bachmeyer-IH5wbl7waW4.en.vtt",
+            "mention_count": 9,
+            "top_snippet": "beta blocker for life. Pre-diabetic metformin and aching joints.",
+            "top_context": "that profits from your ignorance. Listen that profits from your ignorance. Listen they've convinced you that being sick they've convinced you that being sick they've convinced you that being sick and being old means that it is that's and being old means that it is that's and being old means that it is that's normal that you're supposed to be weak normal that you're supposed to be weak normal that you're supposed to be weak and sick and soft. I talked about this and sick and soft. I talked about this and sick and soft. I talked about this yesterday when I was talking about CJC yesterday when I was talking about CJC yesterday when I was talking about CJC and I Pamearellin. Your best years are and I Pamearellin. Your best years are and I Pamearellin. Your best years are not here. They're gone already. No not here. They're gone already. No not here. They're gone already. No matter what you 17, your best years are matter what you 17, your best years are matter what you 17, your best years are behind you. 41, your best years are behind you. 41, your best years are behind you. 41, your best years are behind you. 81, your best years are behind you. 81, your best years are behind you. 81, your best years are behind you. They've convinced you to behind you. They've convinced you to behind you. They've convinced you to think your best years are already done. think your best years are already done. think your best years are already done. No matter what age you're at, it is a No matter what age you're at, it is a No matter what age you're at, it is a brilliant business model. It's called brilliant business model. It's called brilliant business model. It's called manage freaking decline. And it is the manage freaking decline. And it is the manage freaking decline. And it is the most profitable, disgusting lie that's most profitable, disgusting lie that's most profitable, disgusting lie that's ever been told. I hope this costs them a ever been told. I hope this costs them a ever been told. I hope this costs them a trillion dollars and you hunt me all day trillion dollars and you hunt me all day trillion dollars and you hunt me all day long because the point is I'm not going long because the point is I'm not going long because the point is I'm not going to stop. I want you to have the answers. to stop. I want you to have the answers. to stop. I want you to have the answers. I don't do this for me. I do this for I don't do this for me. I do this for I don't do this for me. I do this for you. Think about it. High cholesterol, you. Think about it. High cholesterol, you. Think about it. High cholesterol, statin for life. High blood pressure, statin for life. High blood pressure, statin for life. High blood pressure, beta blocker for life. Pre-diabetic beta blocker for life. Pre-diabetic beta blocker for life. Pre-diabetic metformin and aching joints. metformin and aching joints. metformin and aching joints. Anti-inflammatories. Each symptom gets a Anti-inflammatories. Each symptom gets a Anti-inflammatories. Each symptom gets a pill. Each pill has a side effect that pill. Each pill has a side effect that pill. Each pill has a side effect that requires another pill. It's a requires another pill. It's a requires another pill. It's a pharmaceutical merrygoround. And the pharmaceutical merrygoround. And the pharmaceutical merrygoround. And the only one getting dizzy with the profits only one getting dizzy with the profits only one getting dizzy with the profits is them. You're just getting sicker. I'm is them. You're just getting sicker. I'm is them. You're just getting sicker. I'm going to stop that right frigin now. going to stop that right frigin now. going to stop that right frigin now. Aging and and illness is not a mystery. Aging and and illness is not a mystery. Aging and and illness is not a mystery. It is a checklist of three systemwide It is a checklist of three systemwide It is a checklist of three systemwide failures. Master these and you don't failures. Master these and you don't failures. Master these and you don't age. You don't And I'm saying within age. You don't And I'm saying within age. You don't And I'm saying within reason, right? You're not reason, right? You're not reason, right? You're not indestructible. I'm saying you don't age indestructible. I'm saying you don't age indestructible. I'm saying you don't age the way they've described. You don't get the way they've described. You don't get the way they've described. You don't get sick. You don't have pathology. You sick. You don't have pathology. You sick. You don't have pathology. You upgrade. You upgrade. I mean, failure upgrade. You upgrade. I mean, failure upgrade. You upgrade. I mean, failure one, I'll go through them all real quick one, I'll go through them all real quick one, I'll go through them all real quick and then I'll explain exactly what these and then I'll explain exactly what these and then I'll explain exactly what these four are. You have this forest fire four are. You have this forest fire four are. You have this forest fire inside your system. It's systematic inside your system. It's systematic inside your system. It's systematic inflammation or systemic inflammation.",
+            "first_timestamp": "00:04:56.400"
+          },
+          {
+            "source_id": "iAlw9iZyTDQ",
+            "source_type": "podcast",
+            "source_title": "Can Retatrutide Solve Every Disease? - Dr Trevor Bachmeyer",
+            "source_date": "2025-11-25",
+            "source_url": "https://youtu.be/iAlw9iZyTDQ",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2025-11-25-can-retatrutide-solve-every-disease-dr-trevor-bachmeyer-iAlw9iZyTDQ.en.vtt",
+            "mention_count": 9,
+            "top_snippet": "the way. Here's a statin. Sugar, metformin, right away. SSRI for the",
+            "top_context": "sugar stays in your blood, toxic sugar stays in your blood, toxic glycating proteins frying your nerves. glycating proteins frying your nerves. glycating proteins frying your nerves. And three, the ATP shortage. The power And three, the ATP shortage. The power And three, the ATP shortage. The power plants of your cells, the little nuclear plants of your cells, the little nuclear plants of your cells, the little nuclear reactors called mitochondria are reactors called mitochondria are reactors called mitochondria are sputtering and dying and inefficient and sputtering and dying and inefficient and sputtering and dying and inefficient and producing more oxidative stress than producing more oxidative stress than producing more oxidative stress than they are producing usable energy. This they are producing usable energy. This they are producing usable energy. This is the unholy trinity I've said of all is the unholy trinity I've said of all is the unholy trinity I've said of all modern disease and people get mad. My modern disease and people get mad. My modern disease and people get mad. My grandma had, my dad had, my mom had, grandma had, my dad had, my mom had, grandma had, my dad had, my mom had, still had the same problems. You should still had the same problems. You should still had the same problems. You should want to understand this because if you want to understand this because if you want to understand this because if you understand it, it can be fixed. See, understand it, it can be fixed. See, understand it, it can be fixed. See, that's why I do this. I want you to that's why I do this. I want you to that's why I do this. I want you to understand this. Now, how do they treat understand this. Now, how do they treat understand this. Now, how do they treat all this stuff? They don't. They manage all this stuff? They don't. They manage all this stuff? They don't. They manage the symptoms. I'll get to Reddit truth the symptoms. I'll get to Reddit truth the symptoms. I'll get to Reddit truth in a second, but they sell you in a second, but they sell you in a second, but they sell you subscriptions to your own decline. High subscriptions to your own decline. High subscriptions to your own decline. High blood pressure, here's a beta blocker. blood pressure, here's a beta blocker. blood pressure, here's a beta blocker. Cholesterol problem, no such thing, by Cholesterol problem, no such thing, by Cholesterol problem, no such thing, by the way. Here's a statin. Sugar, the way. Here's a statin. Sugar, the way. Here's a statin. Sugar, metformin, right away. SSRI for the metformin, right away. SSRI for the metformin, right away. SSRI for the depression that comes from your brain, depression that comes from your brain, depression that comes from your brain, starving for energy. I could do this all starving for energy. I could do this all starving for energy. I could do this all day. They're putting band-aids on bullet day. They're putting band-aids on bullet day. They're putting band-aids on bullet holes that are in you, and it's the most holes that are in you, and it's the most holes that are in you, and it's the most lucrative business model in human lucrative business model in human lucrative business model in human history ever. There has never been a history ever. There has never been a history ever. There has never been a business model like this. People come to business model like this. People come to business model like this. People come to this country that are from other this country that are from other this country that are from other countries and I've even say I've been countries and I've even say I've been countries and I've even say I've been all over the world and I've spoken all all over the world and I've spoken all all over the world and I've spoken all over the world and I have a lot of over the world and I have a lot of over the world and I have a lot of friends all over the world and the one friends all over the world and the one friends all over the world and the one thing they have in common is when they thing they have in common is when they thing they have in common is when they watch American TV are the drug ads. They watch American TV are the drug ads. They watch American TV are the drug ads. They go we don't have drug and attorney ads. go we don't have drug and attorney ads. go we don't have drug and attorney ads. They we don't have any of this stuff. They we don't have any of this stuff. They we don't have any of this stuff. This is crazy. This is nuts. It's like This is crazy. This is nuts. It's like This is crazy. This is nuts. It's like every second ad is a drug ad. You guys every second ad is a drug ad. You guys every second ad is a drug ad. You guys are being bombarded and you don't even are being bombarded and you don't even are being bombarded and you don't even know it. You just accept it as normal know it. You just accept it as normal know it. You just accept it as normal social media. I can't turn on YouTube social media. I can't turn on YouTube social media. I can't turn on YouTube without having an ad. It just it's wild. without having an ad. It just it's wild. without having an ad. It just it's wild. Listen, let's talk numbers because Listen, let's talk numbers because Listen, let's talk numbers because corruption is measured in dollars. corruption is measured in dollars. corruption is measured in dollars. Agreed? So, the global Alzheimer market,",
+            "first_timestamp": "00:09:40.080"
+          }
+        ],
+        "acute_signals": [
+          {
+            "snippet": "cost of type two diabetes? What is the monthly cost of metformin, jardian,",
+            "source_title": "The Big Three Peptides - Unbreakable Podcast 261",
+            "source_date": "2025-09-22",
+            "timestamp": "00:19:55.840",
+            "source_url": "https://youtu.be/6cZWHEsLXYg"
+          },
+          {
+            "snippet": "monthly cost of metformin, jardian,",
+            "source_title": "The Big Three Peptides - Unbreakable Podcast 261",
+            "source_date": "2025-09-22",
+            "timestamp": "00:19:58.310",
+            "source_url": "https://youtu.be/6cZWHEsLXYg"
+          },
+          {
+            "snippet": "monthly cost of metformin, jardian, tricity, statin? What's the cost? What's",
+            "source_title": "The Big Three Peptides - Unbreakable Podcast 261",
+            "source_date": "2025-09-22",
+            "timestamp": "00:19:58.320",
+            "source_url": "https://youtu.be/6cZWHEsLXYg"
+          },
+          {
+            "snippet": "that isn't being solved. Even something like metformin or a hemalog pump if you",
+            "source_title": "The Two Best Peptides (for life) - Unbreakable Podcast 268",
+            "source_date": "2025-09-30",
+            "timestamp": "00:30:40.000",
+            "source_url": "https://youtu.be/NhGdknUyHKo"
+          },
+          {
+            "snippet": "like metformin or a hemalog pump if you",
+            "source_title": "The Two Best Peptides (for life) - Unbreakable Podcast 268",
+            "source_date": "2025-09-30",
+            "timestamp": "00:30:41.990",
+            "source_url": "https://youtu.be/NhGdknUyHKo"
+          }
+        ],
+        "chronic_signals": [
+          {
+            "snippet": "sold you this this holy trinity of insulin injections, metformin, and blood",
+            "source_title": "Can You Reverse Type 2 Diabetes (yep, easily) Unbreakable Podcast - 194",
+            "source_date": "2025-07-13",
+            "timestamp": "00:02:54.000",
+            "source_url": "https://youtu.be/HYm2_YWT6aI"
+          },
+          {
+            "snippet": "insulin injections, metformin, and blood",
+            "source_title": "Can You Reverse Type 2 Diabetes (yep, easily) Unbreakable Podcast - 194",
+            "source_date": "2025-07-13",
+            "timestamp": "00:02:55.990",
+            "source_url": "https://youtu.be/HYm2_YWT6aI"
+          },
+          {
+            "snippet": "insulin injections, metformin, and blood glucose monitors, all while telling you",
+            "source_title": "Can You Reverse Type 2 Diabetes (yep, easily) Unbreakable Podcast - 194",
+            "source_date": "2025-07-13",
+            "timestamp": "00:02:56.000",
+            "source_url": "https://youtu.be/HYm2_YWT6aI"
+          },
+          {
+            "snippet": "can run fasting insulin. You can cycle usage. You can use metformin. You can",
+            "source_title": "Debunking The Bro Science About MK677 Causing Cancer - Unbreakable Podcast 211",
+            "source_date": "2025-08-02",
+            "timestamp": "00:19:00.720",
+            "source_url": "https://youtu.be/n7HyiIEhn7c"
+          },
+          {
+            "snippet": "usage. You can use metformin. You can",
+            "source_title": "Debunking The Bro Science About MK677 Causing Cancer - Unbreakable Podcast 211",
+            "source_date": "2025-08-02",
+            "timestamp": "00:19:03.510",
+            "source_url": "https://youtu.be/n7HyiIEhn7c"
+          }
+        ]
+      },
+      "acute_vs_chronic_note": "Dr Bachmeyer often distinguishes acute (injury/infection) vs chronic (longevity/maintenance) dosing. Acute_signals + chronic_signals fields surface candidate contexts; full distillation pending Codex pass."
+    }
+  },
+  "reset_biology_synthesis": {
+    "status": "pending-codex-distillation",
+    "recommendation": null,
+    "caveats": null,
+    "cross_expert_consensus": null,
+    "cross_expert_disagreement": null
+  },
+  "generated_at": "2026-04-27T02:02:34.792Z"
+}

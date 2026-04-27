@@ -1,0 +1,660 @@
+{
+  "peptide": "LL-37",
+  "slug": "ll-37",
+  "aliases": [
+    "LL-37",
+    "LL37",
+    "ll37",
+    "LL 37"
+  ],
+  "category": "Immunity",
+  "experts": {
+    "hunter-williams": {
+      "baseline_protocol": {
+        "source": "Hunter Williams + Jay Campbell Cheat Sheet 2023",
+        "source_pdf": "data/peptide-libraries/cross-expert/cheat-sheets/hunter-williams-jay-campbell-peptide-cheat-sheet-2023.pdf",
+        "purpose": "Immunity",
+        "vial_mg": "5 mg",
+        "bac_mL": "2 mL",
+        "dose": "125 mcg",
+        "units_on_1mL_insulin": "5",
+        "timing": "AM",
+        "frequency": "Every day",
+        "duration": "50 days straight, 4 weeks off"
+      },
+      "summary": {
+        "mention_count": 56,
+        "top_doses": [
+          {
+            "dose": "500 micrograms",
+            "count": 51
+          },
+          {
+            "dose": "200 mg",
+            "count": 7
+          },
+          {
+            "dose": "100 micrograms",
+            "count": 6
+          },
+          {
+            "dose": "250 mcg",
+            "count": 2
+          },
+          {
+            "dose": "5 mg",
+            "count": 2
+          },
+          {
+            "dose": "1 mg",
+            "count": 1
+          },
+          {
+            "dose": "100 mcg",
+            "count": 1
+          },
+          {
+            "dose": "600 mcg",
+            "count": 1
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "E7GPNidicqY",
+            "source_type": "podcast",
+            "source_title": "Saturday Morning Coffee Talk 4/18/26",
+            "source_date": "2026-04-18",
+            "source_url": "https://youtu.be/E7GPNidicqY",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-04-18-saturday-morning-coffee-talk-4-18-26-E7GPNidicqY.en.vtt",
+            "mention_count": 15,
+            "top_snippet": "yeah, nothing planned. Also, okay to mix LL-37 and KPV together",
+            "top_context": "about EMF. Yeah. And so that's the only about EMF. Yeah. And so that's the only one planned but um one planned but um one planned but um other than that, nothing immediate. other than that, nothing immediate. other than that, nothing immediate. And so but if anyone's out there and And so but if anyone's out there and And so but if anyone's out there and wants to do a podcast and feels like wants to do a podcast and feels like wants to do a podcast and feels like they would be good, we're always open to they would be good, we're always open to they would be good, we're always open to suggestions. Yeah. We built a studio for suggestions. Yeah. We built a studio for suggestions. Yeah. We built a studio for us but obviously we like to have guests us but obviously we like to have guests us but obviously we like to have guests too. But then it's funny with the guests too. But then it's funny with the guests too. But then it's funny with the guests because then you get like if people because then you get like if people because then you get like if people don't like the guest, then they like don't like the guest, then they like don't like the guest, then they like send you hate messages about like you send you hate messages about like you send you hate messages about like you shouldn't have the guest on. It's like, shouldn't have the guest on. It's like, shouldn't have the guest on. It's like, dude, I'm just trying to dude, I'm just trying to dude, I'm just trying to one, help other people that I like Yeah. one, help other people that I like Yeah. one, help other people that I like Yeah. and then like two, it's interesting to and then like two, it's interesting to and then like two, it's interesting to talk to them. It's just like talk to them. It's just like talk to them. It's just like people get so weird if you like talk to people get so weird if you like talk to people get so weird if you like talk to other people that they don't like. If other people that they don't like. If other people that they don't like. If they like you but then they don't like they like you but then they don't like they like you but then they don't like you or people don't like me and then you or people don't like me and then you or people don't like me and then they like the guest, you know, so they like the guest, you know, so they like the guest, you know, so whatever. But um whatever. But um whatever. But um yeah, nothing planned. yeah, nothing planned. yeah, nothing planned. Also, okay to mix LL-37 and KPV together Also, okay to mix LL-37 and KPV together Also, okay to mix LL-37 and KPV together in a nasal spray. I would not do that in a nasal spray. I would not do that in a nasal spray. I would not do that personally. I don't like mixing LL-37 personally. I don't like mixing LL-37 personally. I don't like mixing LL-37 with anything with anything with anything but that's my personal philosophy. So if but that's my personal philosophy. So if but that's my personal philosophy. So if you want to you want to you want to you can do that and probably not going you can do that and probably not going you can do that and probably not going to do anything bad and I wouldn't really to do anything bad and I wouldn't really to do anything bad and I wouldn't really use those in a nasal spray anyway use those in a nasal spray anyway use those in a nasal spray anyway although they could be beneficial. although they could be beneficial. although they could be beneficial. Particularly KPV with helping with Particularly KPV with helping with Particularly KPV with helping with candida or any sort of like my microbes candida or any sort of like my microbes candida or any sort of like my microbes in the brain because you can get that in the brain because you can get that in the brain because you can get that but but but I wouldn't do that personally. I wouldn't do that personally. I wouldn't do that personally. That would just be my personal opinion. That would just be my personal opinion. That would just be my personal opinion. Any new subs in the stacks that I like? Any new subs in the stacks that I like? Any new subs in the stacks that I like? Um nothing comes to mind. Do we have any Um nothing comes to mind. Do we have any Um nothing comes to mind. Do we have any new supplements? new supplements? new supplements? No, and then I know we're getting ready No, and then I know we're getting ready No, and then I know we're getting ready to try some",
+            "first_timestamp": "00:24:37.000"
+          },
+          {
+            "source_id": "tcaX0xrCMR4",
+            "source_type": "podcast",
+            "source_title": "Reader Mailbag 2 � Autoimmune, Fertility, Cancer & More | Hunter & Taylor Williams",
+            "source_date": "2026-04-24",
+            "source_url": "https://youtu.be/tcaX0xrCMR4",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-04-24-reader-mailbag-2-autoimmune-fertility-cancer-more-hunter-taylor-willia-tcaX0xrCMR4.en.vtt",
+            "mention_count": 12,
+            "top_snippet": "&gt;&gt; I think from there, you could potentially use something like an LL37.",
+            "top_context": "&gt;&gt; Yeah. Even though it is beneficial, I &gt;&gt; Yeah. Even though it is beneficial, I would not put that in there, especially would not put that in there, especially would not put that in there, especially in the beginning for somebody. in the beginning for somebody. in the beginning for somebody. &gt;&gt; Yeah. And so we have thus off one BPC &gt;&gt; Yeah. And so we have thus off one BPC &gt;&gt; Yeah. And so we have thus off one BPC 157, TB500, KPV. I think that right 157, TB500, KPV. I think that right 157, TB500, KPV. I think that right there alone will there alone will there alone will again maybe not solve everything, but is again maybe not solve everything, but is again maybe not solve everything, but is at least going to man like probably like at least going to man like probably like at least going to man like probably like 70 to 80%. 70 to 80%. 70 to 80%. &gt;&gt; Whatever's going on. I think to the skin &gt;&gt; Whatever's going on. I think to the skin &gt;&gt; Whatever's going on. I think to the skin issue too to like some auto autoimmune issue too to like some auto autoimmune issue too to like some auto autoimmune skin disease skin disease skin disease &gt;&gt; or issue that someone's having those are &gt;&gt; or issue that someone's having those are &gt;&gt; or issue that someone's having those are going to be massive going to be massive going to be massive &gt;&gt; especially for the skin. &gt;&gt; especially for the skin. &gt;&gt; especially for the skin. &gt;&gt; Yeah. Yeah. Yeah. And again, I don't &gt;&gt; Yeah. Yeah. Yeah. And again, I don't &gt;&gt; Yeah. Yeah. Yeah. And again, I don't need to go into dosing. Obviously, with need to go into dosing. Obviously, with need to go into dosing. Obviously, with those 500 micrograms of each of those is those 500 micrograms of each of those is those 500 micrograms of each of those is fine daily to do. Thus, one probably fine daily to do. Thus, one probably fine daily to do. Thus, one probably like one milligram per day. But again, like one milligram per day. But again, like one milligram per day. But again, these are going to be like regular doses these are going to be like regular doses these are going to be like regular doses that you will see on the cheat sheet. that you will see on the cheat sheet. that you will see on the cheat sheet. So, So, So, &gt;&gt; I would do that. &gt;&gt; I would do that. &gt;&gt; I would do that. &gt;&gt; I think from there, you could &gt;&gt; I think from there, you could &gt;&gt; I think from there, you could potentially use something like an LL37. potentially use something like an LL37. potentially use something like an LL37. Yes, Yes, Yes, &gt;&gt; I think L37 could be really good for &gt;&gt; I think L37 could be really good for &gt;&gt; I think L37 could be really good for arthritis as well. There's a lot of arthritis as well. There's a lot of arthritis as well. There's a lot of evidence around that. a lot of evidence evidence around that. a lot of evidence evidence around that. a lot of evidence if there is some sort of like if there is some sort of like if there is some sort of like &gt;&gt; especially with Hashimoto's skin issues &gt;&gt; especially with Hashimoto's skin issues &gt;&gt; especially with Hashimoto's skin issues skin as well that's going to be very skin as well that's going to be very skin as well that's going to be very beneficial. beneficial. beneficial. &gt;&gt; Yeah, that could be a microbial thing. &gt;&gt; Yeah, that could be a microbial thing. &gt;&gt; Yeah, that could be a microbial thing. Yes, Yes, Yes, &gt;&gt; LL37 could help a lot of people. &gt;&gt; LL37 could help a lot of people. &gt;&gt; LL37 could help a lot of people. &gt;&gt; It definitely will help. &gt;&gt; It definitely will help. &gt;&gt; It definitely will help. &gt;&gt; And then I think to to so as to not &gt;&gt; And then I think to to so as to not &gt;&gt; And then I think to to so as to not overwhelm people, the last thing that I overwhelm people, the last thing that I overwhelm people, the last thing that I would have in that protocol would just would have in that protocol would just would have in that protocol would just be a micro dose of a GLP. be a micro dose of a GLP. be a micro dose of a GLP. &gt;&gt; Yeah. &gt;&gt; Yeah. &gt;&gt; Yeah. &gt;&gt; And autoimmune is interesting. You don't &gt;&gt; And autoimmune is interesting. You don't &gt;&gt; And autoimmune is interesting. You don't see, you know what's kind of interesting see, you know what's kind of interesting see, you know what's kind of interesting is I don't see a lot of morbidly or like is I don't see a lot of morbidly or like is I don't see a lot of morbidly or like vastly obese people have some of the vastly obese people have some of the vastly obese people have some of the autoimmune manifestation that sometimes",
+            "first_timestamp": "00:10:13.600"
+          },
+          {
+            "source_id": "1964ae3f342c5139",
+            "source_type": "email",
+            "source_title": "LL-37: Better Than Antibiotics?",
+            "source_date": "2025-04-18",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-04-18-ll-37-better-than-antibiotics.md",
+            "mention_count": 10,
+            "top_snippet": "LL-37 - Cancer patients (theoretical tumor stimulation) - Severe inflammatory / allergic reaction history ## Hunter's Key Frame > \"It's an advanced tool, perfect for certain situations, but not someth",
+            "top_context": "LL-37 - Cancer patients (theoretical tumor stimulation) - Severe inflammatory / allergic reaction history ## Hunter's Key Frame > \"It's an advanced tool, perfect for certain situations, but not something to depend on alone to fix deeper, underlying health issues.\" ## Source BioLongevity Labs — LL-37 5mg — code HUNTERW (Healing Sale: 25% off LL-37 + 19 other healing peptides — 10% in store + 15% with code = 25%)",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "198154a515982b37",
+            "source_type": "email",
+            "source_title": "The First Responder Peptide Stack",
+            "source_date": "2025-07-16",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-07-16-the-first-responder-peptide-stack.md",
+            "mention_count": 6,
+            "top_snippet": "For first responders, it means you recover faster from colds, flu, and other infections, and you’re less likely to get sick in the first place. Thymosin Alpha 1 acts like your immune “tune-up,” raisin",
+            "top_context": "For first responders, it means you recover faster from colds, flu, and other infections, and you’re less likely to get sick in the first place. Thymosin Alpha 1 acts like your immune “tune-up,” raising your resilience, especially in times of chronic stress. ——————————————————————————— **LL-37** LL-37 is a natural peptide your body makes to fight bacteria, viruses, and even fungi. It’s what scientists call an “antimicrobial peptide,” part of your body’s frontline defense, literally punching holes in invaders’ membranes. Studies show that LL-37 can disrupt bacterial biofilms (t",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "0TyW-wlJMxo",
+            "source_type": "podcast",
+            "source_title": "Saturday Morning Coffee Talk | Peptides, Hormones & Fitness for Couples 3/28/26",
+            "source_date": "2026-03-28",
+            "source_url": "https://youtu.be/0TyW-wlJMxo",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-03-28-saturday-morning-coffee-talk-peptides-hormones-fitness-for-couples-3-2-0TyW-wlJMxo.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "If you've got the mold if you've got the mold out, VIP, LL-37, those would all be",
+            "top_context": "Sloop. Is HGH, I think Kelly means 191 Sloop. Is HGH, I think Kelly means 191 amino acid the same as somatropin, so amino acid the same as somatropin, so amino acid the same as somatropin, so much less money, so I questioned it. Um much less money, so I questioned it. Um much less money, so I questioned it. Um I don't know, Kelly. I don't know, Kelly. I don't know, Kelly. Uh you can send us a message. I don't Uh you can send us a message. I don't Uh you can send us a message. I don't know specifically. I mean, that's like know specifically. I mean, that's like know specifically. I mean, that's like saying is like BPC 15 amino acid saying is like BPC 15 amino acid saying is like BPC 15 amino acid different than BPC um or you know, it's different than BPC um or you know, it's different than BPC um or you know, it's like, well, like, well, like, well, no, but there is like people do like no, but there is like people do like no, but there is like people do like make lesser forms of growth hormone. make lesser forms of growth hormone. make lesser forms of growth hormone. Yeah. Yeah. Yeah. What peptides do you think would work What peptides do you think would work What peptides do you think would work best for mold detox? I've been doing best for mold detox? I've been doing best for mold detox? I've been doing BPC, TB 500, cerebral neurogen, and CJC. BPC, TB 500, cerebral neurogen, and CJC. BPC, TB 500, cerebral neurogen, and CJC. GHK still have a lot of brain fog and GHK still have a lot of brain fog and GHK still have a lot of brain fog and very fatigue. I mean, definitely doesn't very fatigue. I mean, definitely doesn't very fatigue. I mean, definitely doesn't sound like you have like any immune sound like you have like any immune sound like you have like any immune peptides right now. So like thymusin peptides right now. So like thymusin peptides right now. So like thymusin alpha 1, Yeah, I do. alpha 1, Yeah, I do. alpha 1, Yeah, I do. &gt;&gt; thymulin, KPV, uh &gt;&gt; thymulin, KPV, uh &gt;&gt; thymulin, KPV, uh If you've got the mold if you've got the If you've got the mold if you've got the If you've got the mold if you've got the mold out, VIP, LL-37, those would all be mold out, VIP, LL-37, those would all be mold out, VIP, LL-37, those would all be things that I'd default to. things that I'd default to. things that I'd default to. &gt;&gt; Yeah. &gt;&gt; Yeah. &gt;&gt; Yeah. Um I have a video you look up on like Um I have a video you look up on like Um I have a video you look up on like Spotify or iTunes. Spotify or iTunes. Spotify or iTunes. It's within the last 6 months, I don't It's within the last 6 months, I don't It's within the last 6 months, I don't remember what date. Um it's just like a remember what date. Um it's just like a remember what date. Um it's just like a peptide stack for mold. peptide stack for mold. peptide stack for mold. So. Seems like health and fitness Twitter Seems like health and fitness Twitter has gone from TRT being great for body has gone from TRT being great for body has gone from TRT being great for body recomp to TRT plus for some form of recomp to TRT plus for some form of recomp to TRT plus for some form of anabolic being the only way to hit anabolic being the only way to hit anabolic being the only way to hit goals. Thoughts? They are vilified goals. Thoughts? They are vilified goals. Thoughts? They are vilified offline. I don't think that's bad. Like offline. I don't think that's bad. Like offline. I don't think that's bad. Like I have no problem with TRT plus or even I have no problem with TRT plus or even I have no problem with TRT plus or even running cycles to get muscle and then running cycles to get muscle and then running cycles to get muscle and then coming back down to TRT. Mhm. coming back down to TRT. Mhm. coming back down to TRT. Mhm. It's just a trade-off, you know? It's It's just a trade-off, you know? It's It's just a trade-off, you know? It's just like just like just like it's like exercise. The right amount of it's like exercise. The right amount of it's like exercise. The right amount of exercise is good. If you do too much exercise is good. If you do too much exercise is good. If you do too much exercise, eventually you're going to pay exercise, eventually you're going to pay exercise, eventually you're going to pay the price. the price. the price. And so the question is is like, what",
+            "first_timestamp": "02:01:48.360"
+          },
+          {
+            "source_id": "JgktB39WB_A",
+            "source_type": "podcast",
+            "source_title": "Hunter & Taylor Answer Your Most Pressing Health Questions | Reader Mailbag Episode 1",
+            "source_date": "2026-04-10",
+            "source_url": "https://youtu.be/JgktB39WB_A",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-04-10-hunter-taylor-answer-your-most-pressing-health-questions-reader-mailba-JgktB39WB_A.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "some KPV and some thyus alpha 1 and some LL37 for acne. So, I think there",
+            "top_context": "use anything, there were probably use anything, there were probably certain ones like I would not gravitate certain ones like I would not gravitate certain ones like I would not gravitate towards first. towards first. towards first. &gt;&gt; Yes. &gt;&gt; Yes. &gt;&gt; Yes. &gt;&gt; Like the GH peptides. Can a teen use &gt;&gt; Like the GH peptides. Can a teen use &gt;&gt; Like the GH peptides. Can a teen use those? Yeah, I think they would be fine those? Yeah, I think they would be fine those? Yeah, I think they would be fine with them, but that would not be like I with them, but that would not be like I with them, but that would not be like I wouldn't go there first. wouldn't go there first. wouldn't go there first. &gt;&gt; But for instance, like if you had a a &gt;&gt; But for instance, like if you had a a &gt;&gt; But for instance, like if you had a a teen athlete that had an injury, I think teen athlete that had an injury, I think teen athlete that had an injury, I think BBC and TB500 are completely BBC and TB500 are completely BBC and TB500 are completely appropriate. I don't see what evidence appropriate. I don't see what evidence appropriate. I don't see what evidence we have to suggest that that would not we have to suggest that that would not we have to suggest that that would not be appropriate. Now, I'm not telling you be appropriate. Now, I'm not telling you be appropriate. Now, I'm not telling you to use teens. Actually, for the purpose to use teens. Actually, for the purpose to use teens. Actually, for the purpose of this video, you should never use of this video, you should never use of this video, you should never use peptides in a teen. Hypothetically peptides in a teen. Hypothetically peptides in a teen. Hypothetically speaking though, for the purpose of speaking though, for the purpose of speaking though, for the purpose of doing fantasy role play, yeah, doing fantasy role play, yeah, doing fantasy role play, yeah, &gt;&gt; I think that there's absolutely that you &gt;&gt; I think that there's absolutely that you &gt;&gt; I think that there's absolutely that you could use especially for an injury like could use especially for an injury like could use especially for an injury like that. that. that. &gt;&gt; I think for something like acne, man, I &gt;&gt; I think for something like acne, man, I &gt;&gt; I think for something like acne, man, I wish I would have as a teenager had some wish I would have as a teenager had some wish I would have as a teenager had some some KPV and some thyus alpha 1 and some some KPV and some thyus alpha 1 and some some KPV and some thyus alpha 1 and some LL37 for acne. So, I think there LL37 for acne. So, I think there LL37 for acne. So, I think there absolutely can be used. You know, ADHD absolutely can be used. You know, ADHD absolutely can be used. You know, ADHD is a weird one. I I wonder sometimes how is a weird one. I I wonder sometimes how is a weird one. I I wonder sometimes how much of ADHD is teens and kids just have much of ADHD is teens and kids just have much of ADHD is teens and kids just have a lot of energy and so if we say that a lot of energy and so if we say that a lot of energy and so if we say that they don't sit at a desk for eight hours they don't sit at a desk for eight hours they don't sit at a desk for eight hours a day compliant a day compliant a day compliant &gt;&gt; or they just learn differently &gt;&gt; or they just learn differently &gt;&gt; or they just learn differently &gt;&gt; or they learn differently or if they &gt;&gt; or they learn differently or if they &gt;&gt; or they learn differently or if they don't do that compliantly that they all don't do that compliantly that they all don't do that compliantly that they all of a sudden have ADHD. Yes, I realize in of a sudden have ADHD. Yes, I realize in of a sudden have ADHD. Yes, I realize in some cases that that like some kids are some cases that that like some kids are some cases that that like some kids are going to be very ADD and I understand going to be very ADD and I understand going to be very ADD and I understand that and there can be like behavioral that and there can be like behavioral that and there can be like behavioral issues that stem as a result of that. issues that stem as a result of that. issues that stem as a result of that. &gt;&gt; Yeah. But I do think peptides could be &gt;&gt; Yeah. But I do think peptides could be &gt;&gt; Yeah. But I do think peptides could be appropriate to help manage or improve appropriate to help manage or improve appropriate to help manage or improve the environment in which it's causing the environment in which it's causing the environment in which it's causing some of those things. I think GLPs, some of those things. I think GLPs, some of those things. I think GLPs, they're being studied in teens right they're being studied in teens right they're being studied in teens right now. now. now. &gt;&gt; If I had an obese teen and they were &gt;&gt; If I had an obese teen and they were &gt;&gt; If I had an obese teen and they were doing everything they could to lose",
+            "first_timestamp": "00:47:54.400"
+          },
+          {
+            "source_id": "19d98523208598ae",
+            "source_type": "email",
+            "source_title": "New Peptide Announcement from the FDA (Category 2 → 503A)",
+            "source_date": "2026-04-16",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2026-04-16-fda-peptide-announcement-pcac-503a.md",
+            "mention_count": 2,
+            "top_snippet": "2 → pharmacies stopped compounding → doctors couldn't prescribe → research peptide market exploded ## ⭐ April 15, 2026 — FDA Removes 12 Peptides from Category 2 ### The 12 removed - **BPC-157** - **KP",
+            "top_context": "2 → pharmacies stopped compounding → doctors couldn't prescribe → research peptide market exploded ## ⭐ April 15, 2026 — FDA Removes 12 Peptides from Category 2 ### The 12 removed - **BPC-157** - **KPV** - **TB-500** - **MOTS-c** - **DSIP** - **Semax** - **Epitalon** - **GHK-Cu** (injectable) - **LL-37** - **Dihexa** - **PEG-MGF** - **Melanotan II** ## ⭐ April 16, 2026 — PCAC Meeting Scheduled (July 23-24, 2026) Federal Register notice — Pharmacy Compounding Advisory Committee (PCAC) meeting at FDA's White Oak Campus, Silver Spring, MD. ### July 23 agenda — Round 1 (4 peptides) - **BPC-157** —",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "19506a8ec76bb2df",
+            "source_type": "email",
+            "source_title": "Happy Valentine's Day❤️",
+            "source_date": "2025-02-14",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-02-14-happy-valentine-s-day.md",
+            "mention_count": 1,
+            "top_snippet": "Yes. **Free T matters more than total T**. Raising **free T to 30–40 ng/dL** improves energy and vitality dramatically. ——————————————————————————— **Peptide Stacks for Healing & Performance** ✅ **Bes",
+            "top_context": "Yes. **Free T matters more than total T**. Raising **free T to 30–40 ng/dL** improves energy and vitality dramatically. ——————————————————————————— **Peptide Stacks for Healing & Performance** ✅ **Best peptide stack for long COVID (mitochondrial dysfunction, POTS)?** Thymosin Alpha-1, LL-37, KPV, VIP, BPC-157, TB-500, and **SS-31**. ✅ **Best peptides for nerve repair & blood vessel growth?** BPC-157, TB-500, **ARA-290 (nerve repair), and GHK-Cu (angiogenesis).** ✅ **Best peptides for gut health/IBS?** BPC-157, TB-500, KPV, **oral tributyrin, PEA, and larazotide**. Adding *",
+            "first_timestamp": null
+          }
+        ],
+        "acute_signals": [
+          {
+            "snippet": "some KPV and some thyus alpha 1 and some LL37 for acne. So, I think there",
+            "source_title": "Hunter & Taylor Answer Your Most Pressing Health Questions | Reader Mailbag Episode 1",
+            "source_date": "2026-04-10",
+            "timestamp": "00:47:54.400",
+            "source_url": "https://youtu.be/JgktB39WB_A"
+          },
+          {
+            "snippet": "LL37 for acne. So, I think there",
+            "source_title": "Hunter & Taylor Answer Your Most Pressing Health Questions | Reader Mailbag Episode 1",
+            "source_date": "2026-04-10",
+            "timestamp": "00:47:57.270",
+            "source_url": "https://youtu.be/JgktB39WB_A"
+          },
+          {
+            "snippet": "LL37 for acne. So, I think there absolutely can be used. You know, ADHD",
+            "source_title": "Hunter & Taylor Answer Your Most Pressing Health Questions | Reader Mailbag Episode 1",
+            "source_date": "2026-04-10",
+            "timestamp": "00:47:57.280",
+            "source_url": "https://youtu.be/JgktB39WB_A"
+          },
+          {
+            "snippet": "those would be the ones I'd add in. You could also do LL-37 as well if it is",
+            "source_title": "Saturday Morning Coffee Talk 4/18/26",
+            "source_date": "2026-04-18",
+            "timestamp": "00:29:30.720",
+            "source_url": "https://youtu.be/E7GPNidicqY"
+          },
+          {
+            "snippet": "could also do LL-37 as well if it is",
+            "source_title": "Saturday Morning Coffee Talk 4/18/26",
+            "source_date": "2026-04-18",
+            "timestamp": "00:29:33.470",
+            "source_url": "https://youtu.be/E7GPNidicqY"
+          }
+        ],
+        "chronic_signals": [
+          {
+            "snippet": "Moving on. I don't know how I got there from LL-37 and KPV. Yeah, I don't",
+            "source_title": "Saturday Morning Coffee Talk 4/18/26",
+            "source_date": "2026-04-18",
+            "timestamp": "00:28:36.800",
+            "source_url": "https://youtu.be/E7GPNidicqY"
+          },
+          {
+            "snippet": "from LL-37 and KPV. Yeah, I don't",
+            "source_title": "Saturday Morning Coffee Talk 4/18/26",
+            "source_date": "2026-04-18",
+            "timestamp": "00:28:38.590",
+            "source_url": "https://youtu.be/E7GPNidicqY"
+          },
+          {
+            "snippet": "from LL-37 and KPV. Yeah, I don't either.",
+            "source_title": "Saturday Morning Coffee Talk 4/18/26",
+            "source_date": "2026-04-18",
+            "timestamp": "00:28:38.600",
+            "source_url": "https://youtu.be/E7GPNidicqY"
+          },
+          {
+            "snippet": "those would be the ones I'd add in. You could also do LL-37 as well if it is",
+            "source_title": "Saturday Morning Coffee Talk 4/18/26",
+            "source_date": "2026-04-18",
+            "timestamp": "00:29:30.720",
+            "source_url": "https://youtu.be/E7GPNidicqY"
+          },
+          {
+            "snippet": "could also do LL-37 as well if it is",
+            "source_title": "Saturday Morning Coffee Talk 4/18/26",
+            "source_date": "2026-04-18",
+            "timestamp": "00:29:33.470",
+            "source_url": "https://youtu.be/E7GPNidicqY"
+          }
+        ]
+      }
+    },
+    "taylor-williams": {
+      "summary": {
+        "mention_count": 167,
+        "top_doses": [
+          {
+            "dose": "125 micrograms",
+            "count": 36
+          },
+          {
+            "dose": "500 micrograms",
+            "count": 33
+          },
+          {
+            "dose": "250 micrograms",
+            "count": 15
+          },
+          {
+            "dose": "2 milligrams",
+            "count": 9
+          },
+          {
+            "dose": "1.5 milligrams",
+            "count": 9
+          },
+          {
+            "dose": "20 units",
+            "count": 9
+          },
+          {
+            "dose": "40 units",
+            "count": 9
+          },
+          {
+            "dose": "200 mg",
+            "count": 6
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "JC1poI1OEog",
+            "source_type": "podcast",
+            "source_title": "Saturday Morning Coffee Talk 3/14/2026",
+            "source_date": "2026-03-14",
+            "source_url": "https://youtu.be/JC1poI1OEog",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2026-03-14-saturday-morning-coffee-talk-3-14-2026-JC1poI1OEog.en.vtt",
+            "mention_count": 37,
+            "top_snippet": "that be every day in AM small amount on finger? My son is taking LL-37 and BPC",
+            "top_context": "&gt;&gt; Mercury in retrograde. &gt;&gt; Mercury in retrograde. Well, and then Jupiter went direct. Well, and then Jupiter went direct. Well, and then Jupiter went direct. Yeah. I don't really know what that Yeah. I don't really know what that Yeah. I don't really know what that means. means. means. I sure as heck doesn't don't know what I sure as heck doesn't don't know what I sure as heck doesn't don't know what it means, but it means, but it means, but &gt;&gt; what I was I've heard other people say &gt;&gt; what I was I've heard other people say &gt;&gt; what I was I've heard other people say that. that. that. &gt;&gt; [laughter] &gt;&gt; [laughter] &gt;&gt; [laughter] &gt;&gt; And when you're if your life is crazy if &gt;&gt; And when you're if your life is crazy if &gt;&gt; And when you're if your life is crazy if your life is crazy your life is crazy your life is crazy &gt;&gt; haven't had And if your life is crazy, &gt;&gt; haven't had And if your life is crazy, &gt;&gt; haven't had And if your life is crazy, then you say, \"Well, Mercury's in retro then you say, \"Well, Mercury's in retro then you say, \"Well, Mercury's in retro retrograde.\" And people People like retrograde.\" And people People like retrograde.\" And people People like Mercury's always in retrograde, though. Mercury's always in retrograde, though. Mercury's always in retrograde, though. Well, I'm sure it probably is multiple Well, I'm sure it probably is multiple Well, I'm sure it probably is multiple times Yeah. times Yeah. times Yeah. per year. per year. per year. Maybe? Yeah. I don't know. Yeah. Maybe? Yeah. I don't know. Yeah. Maybe? Yeah. I don't know. Yeah. Well, without any further topical rants Well, without any further topical rants Well, without any further topical rants that we can do, let's just start going that we can do, let's just start going that we can do, let's just start going into some questions. into some questions. into some questions. So, Jennifer says, \"First off, thank you So, Jennifer says, \"First off, thank you So, Jennifer says, \"First off, thank you for time and work. Last time you for time and work. Last time you for time and work. Last time you mentioned ivermectin horse paste. Would mentioned ivermectin horse paste. Would mentioned ivermectin horse paste. Would that be every day in AM small amount on that be every day in AM small amount on that be every day in AM small amount on finger? My son is taking LL-37 and BPC finger? My son is taking LL-37 and BPC finger? My son is taking LL-37 and BPC as of now.\" Yeah, I would say wherever as of now.\" Yeah, I would say wherever as of now.\" Yeah, I would say wherever the affected area is, just it does not the affected area is, just it does not the affected area is, just it does not have to be a ton. have to be a ton. have to be a ton. For me, one of those tubes, if I get a For me, one of those tubes, if I get a For me, one of those tubes, if I get a horse paste tube it'll last horse paste tube it'll last horse paste tube it'll last probably six or seven times. And that's probably six or seven times. And that's probably six or seven times. And that's covering a bigger swath of area on my covering a bigger swath of area on my covering a bigger swath of area on my back. That's like on my shoulder blades back. That's like on my shoulder blades back. That's like on my shoulder blades and everything. But if it's a smaller and everything. But if it's a smaller and everything. But if it's a smaller area, you definitely can use it. But area, you definitely can use it. But area, you definitely can use it. But yeah, just yeah, just yeah, just &gt;&gt; Definitely use gloves when you put it &gt;&gt; Definitely use gloves when you put it &gt;&gt; Definitely use gloves when you put it on. It can be kind of sticky. on. It can be kind of sticky. on. It can be kind of sticky. &gt;&gt; Yeah, it can be kind of sticky and oily &gt;&gt; Yeah, it can be kind of sticky and oily &gt;&gt; Yeah, it can be kind of sticky and oily and so you definitely don't want to do and so you definitely don't want to do and so you definitely don't want to do it before you're going to be sweating or it before you're going to be sweating or it before you're going to be sweating or anything, I would probably say. No, I anything, I would probably say. No, I anything, I would probably say. No, I think doing it at night at bedtime like think doing it at night at bedtime like think doing it at night at bedtime like at the like your like bedtime skin care at the like your like bedtime skin care at the like your like bedtime skin care routine, I think that's the best time to routine, I think that's the best time to routine, I think that's the best time to apply it. I wouldn't apply it during the apply it. I wouldn't apply it during the apply it. I wouldn't apply it during the day. Yeah. Especially um",
+            "first_timestamp": "00:06:49.520"
+          },
+          {
+            "source_id": "1IaUfoOA55s",
+            "source_type": "podcast",
+            "source_title": "Traveling with Peptides: A4M Conference Vlog + My Wellness Secrets",
+            "source_date": "2025-05-16",
+            "source_url": "https://youtu.be/1IaUfoOA55s",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2025-05-16-traveling-with-peptides-a4m-conference-vlog-my-wellness-secrets-1IaUfoOA55s.en.vtt",
+            "mention_count": 24,
+            "top_snippet": "this morning, what all did we bring with us? We have KPV, 5 amino, LL37, SS31,",
+            "top_context": "literally like I just put like that much literally like I just put like that much in the dropper. I don't know if you can in the dropper. I don't know if you can in the dropper. I don't know if you can see that. Yeah, you can see that. see that. Yeah, you can see that. see that. Yeah, you can see that. Um, and I put that under my tongue like Um, and I put that under my tongue like Um, and I put that under my tongue like while I'm taking the B12 so it's not so while I'm taking the B12 so it's not so while I'm taking the B12 so it's not so metallicy my mouth. But I'm gonna get metallicy my mouth. But I'm gonna get metallicy my mouth. But I'm gonna get the peptides so I can show you how we the peptides so I can show you how we the peptides so I can show you how we travel with our peptides. Ask all the travel with our peptides. Ask all the travel with our peptides. Ask all the time, how do we travel with peptides? time, how do we travel with peptides? time, how do we travel with peptides? And oh yeah, I need to take my And oh yeah, I need to take my And oh yeah, I need to take my testosterone. Um, this is how I travel. testosterone. Um, this is how I travel. testosterone. Um, this is how I travel. This is an insulin cooler and we put This is an insulin cooler and we put This is an insulin cooler and we put this into our check bag. And never put this into our check bag. And never put this into our check bag. And never put this into your carry-on or all the this into your carry-on or all the this into your carry-on or all the goodies. So we use we've been making the goodies. So we use we've been making the goodies. So we use we've been making the peptide pens. Um Hunter has a video of peptide pens. Um Hunter has a video of peptide pens. Um Hunter has a video of him making the pens. I actually have him making the pens. I actually have him making the pens. I actually have never made any of the pens. Um but it never made any of the pens. Um but it never made any of the pens. Um but it makes it a lot easier to travel with. So makes it a lot easier to travel with. So makes it a lot easier to travel with. So this morning, what all did we bring with this morning, what all did we bring with this morning, what all did we bring with us? We have KPV, 5 amino, LL37, SS31, us? We have KPV, 5 amino, LL37, SS31, us? We have KPV, 5 amino, LL37, SS31, melanotan one, melanotan one, melanotan one, thyolin. Been taking thyolin and I am thyolin. Been taking thyolin and I am thyolin. Been taking thyolin and I am loving thyolin right now. We got rat loving thyolin right now. We got rat loving thyolin right now. We got rat tide, grin tide. I'm not taking that. tide, grin tide. I'm not taking that. tide, grin tide. I'm not taking that. Yeah, Yeah, Yeah, that's that is it. So, I'm going to take that's that is it. So, I'm going to take that's that is it. So, I'm going to take this morning and then we also have our this morning and then we also have our this morning and then we also have our growth hormone with us, too. I do some growth hormone with us, too. I do some growth hormone with us, too. I do some KPV this morning, some melanotan so I KPV this morning, some melanotan so I KPV this morning, some melanotan so I can be nice and sharp with my cognitive can be nice and sharp with my cognitive can be nice and sharp with my cognitive function. I'm taking LL37 because I was function. I'm taking LL37 because I was function. I'm taking LL37 because I was wanting to do a cycle of LL37 just wanting to do a cycle of LL37 just wanting to do a cycle of LL37 just because one, I was getting a little bit because one, I was getting a little bit because one, I was getting a little bit of cystic acne. I never get cystic ac I of cystic acne. I never get cystic ac I of cystic acne. I never get cystic ac I never get any acne in my forehead, but I never get any acne in my forehead, but I never get any acne in my forehead, but I got like two cystic acne spots in my got like two cystic acne spots in my got like two cystic acne spots in my forehead. So, I want to just run a cycle",
+            "first_timestamp": "00:08:37.120"
+          },
+          {
+            "source_id": "YCSzE066krM",
+            "source_type": "podcast",
+            "source_title": "LL - 37 | My Personal Tips For Autoimmune Conditions",
+            "source_date": "2024-05-03",
+            "source_url": "https://youtu.be/YCSzE066krM",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2024-05-03-ll-37-my-personal-tips-for-autoimmune-conditions-YCSzE066krM.en.vtt",
+            "mention_count": 22,
+            "top_snippet": "with the peptide ll37 but before I get into that don't",
+            "top_context": "[Music] [Music] C hey everyone welcome back to my C hey everyone welcome back to my C hey everyone welcome back to my channel and in today's video I'm going channel and in today's video I'm going channel and in today's video I'm going to share with you guys my experience to share with you guys my experience to share with you guys my experience with the peptide with the peptide with the peptide ll37 but before I get into that don't ll37 but before I get into that don't ll37 but before I get into that don't forget to download the women's peptide forget to download the women's peptide forget to download the women's peptide cheat sheet if you haven't already done cheat sheet if you haven't already done cheat sheet if you haven't already done so um I have that Linked In the so um I have that Linked In the so um I have that Linked In the description below you can also go into description below you can also go into description below you can also go into that same description and you will see that same description and you will see that same description and you will see my link ENT tree account that is where I my link ENT tree account that is where I my link ENT tree account that is where I reference where I get all of my peptides reference where I get all of my peptides reference where I get all of my peptides from I have discount codes in there as from I have discount codes in there as from I have discount codes in there as well so be sure to check that out that well so be sure to check that out that well so be sure to check that out that way you're getting the highest quality way you're getting the highest quality way you're getting the highest quality peptides that are out there so let's get peptides that are out there so let's get peptides that are out there so let's get into this discussion into this discussion into this discussion ll37 this is the anti- fungal antiviral ll37 this is the anti- fungal antiviral ll37 this is the anti- fungal antiviral peptide so this is going to be great for peptide so this is going to be great for peptide so this is going to be great for anybody who is dealing with any kind of",
+            "first_timestamp": "00:00:18.000"
+          },
+          {
+            "source_id": "GP0EG8UyvJo",
+            "source_type": "podcast",
+            "source_title": "My Favorite Peptides For Skin Health!",
+            "source_date": "2024-06-28",
+            "source_url": "https://youtu.be/GP0EG8UyvJo",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2024-06-28-my-favorite-peptides-for-skin-health-GP0EG8UyvJo.en.vtt",
+            "mention_count": 15,
+            "top_snippet": "like to use to help with my skin is um ll37 that is a antifungal peptide and",
+            "top_context": "it's going to then help you look and it's going to then help you look and appear younger because it's going to appear younger because it's going to appear younger because it's going to slow down the wrinkle production so when slow down the wrinkle production so when slow down the wrinkle production so when I use maty I personally like to use um I use maty I personally like to use um I use maty I personally like to use um about 500 micrograms and I always do about 500 micrograms and I always do about 500 micrograms and I always do like an 8we rotation of that um I also like an 8we rotation of that um I also like an 8we rotation of that um I also sometimes will only use that maybe twice sometimes will only use that maybe twice sometimes will only use that maybe twice a week for four weeks and then give a week for four weeks and then give a week for four weeks and then give myself a break but that's just myself a break but that's just myself a break but that's just personally what I like to do with uh personally what I like to do with uh personally what I like to do with uh maty for the anti-aging purposes of maty for the anti-aging purposes of maty for the anti-aging purposes of embracing my skin um maty also has some embracing my skin um maty also has some embracing my skin um maty also has some other great benefits um but I have a other great benefits um but I have a other great benefits um but I have a whole video on maty that you guys can go whole video on maty that you guys can go whole video on maty that you guys can go and watch that the other peptide that I and watch that the other peptide that I and watch that the other peptide that I like to use to help with my skin is like to use to help with my skin is like to use to help with my skin is um ll37 that is a antifungal peptide and um ll37 that is a antifungal peptide and um ll37 that is a antifungal peptide and if you're dealing with any kind of skin if you're dealing with any kind of skin if you're dealing with any kind of skin issues such as like issues such as like issues such as like rosacea um eczema hives um acne this is rosacea um eczema hives um acne this is rosacea um eczema hives um acne this is going to be the peptide for you um I going to be the peptide for you um I going to be the peptide for you um I sometimes still struggle a little bit sometimes still struggle a little bit sometimes still struggle a little bit with acne um unfortunately it for me with acne um unfortunately it for me with acne um unfortunately it for me it's one of the negative side effects it's one of the negative side effects it's one of the negative side effects that I have with taking Progesterone but that I have with taking Progesterone but that I have with taking Progesterone but I rather keep taking my progesterone and I rather keep taking my progesterone and I rather keep taking my progesterone and be feeling feeling great and being be feeling feeling great and being be feeling feeling great and being hormonally um balanced so therefore hormonally um balanced so therefore hormonally um balanced so therefore sometimes I do struggle with um dealing sometimes I do struggle with um dealing sometimes I do struggle with um dealing with acne and that is something that with acne and that is something that with acne and that is something that I've seen um ll37 like help so much is I've seen um ll37 like help so much is I've seen um ll37 like help so much is clearing out acne um you know especially",
+            "first_timestamp": "00:02:30.360"
+          },
+          {
+            "source_id": "Cg7JtpnfRY4",
+            "source_type": "podcast",
+            "source_title": "Saturday Morning Coffee Talk 4/18/26",
+            "source_date": "2026-04-18",
+            "source_url": "https://youtu.be/Cg7JtpnfRY4",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2026-04-18-saturday-morning-coffee-talk-4-18-26-Cg7JtpnfRY4.en.vtt",
+            "mention_count": 15,
+            "top_snippet": "yeah, nothing planned. Also okay to mix LL-37 and KPV together",
+            "top_context": "about EMF. Yeah. And so that's the only about EMF. Yeah. And so that's the only one planned but um one planned but um one planned but um other than that, nothing immediate. other than that, nothing immediate. other than that, nothing immediate. And so but if anyone's out there and And so but if anyone's out there and And so but if anyone's out there and wants to do a podcast and feels like wants to do a podcast and feels like wants to do a podcast and feels like they would be good, we're always open to they would be good, we're always open to they would be good, we're always open to suggestions. Yeah. We built the studio suggestions. Yeah. We built the studio suggestions. Yeah. We built the studio for us but obviously we like to have for us but obviously we like to have for us but obviously we like to have guests too. But then it's funny with the guests too. But then it's funny with the guests too. But then it's funny with the guests because then you get like if guests because then you get like if guests because then you get like if people don't like the guest, then they people don't like the guest, then they people don't like the guest, then they like send you hate messages about like like send you hate messages about like like send you hate messages about like you shouldn't have the guest on. you shouldn't have the guest on. you shouldn't have the guest on. &gt;&gt; that guest on. &gt;&gt; that guest on. &gt;&gt; that guest on. &gt;&gt; dude, I'm just trying to &gt;&gt; dude, I'm just trying to &gt;&gt; dude, I'm just trying to one help other people that I like Yeah. one help other people that I like Yeah. one help other people that I like Yeah. and then like two, it's interesting to and then like two, it's interesting to and then like two, it's interesting to talk to them. It's just like talk to them. It's just like talk to them. It's just like people get so weird if you like talk to people get so weird if you like talk to people get so weird if you like talk to other people that they don't like. If other people that they don't like. If other people that they don't like. If they like you but then they don't like they like you but then they don't like they like you but then they don't like you or people don't like me and then you or people don't like me and then you or people don't like me and then they like the guest, you know, so they like the guest, you know, so they like the guest, you know, so whatever. But um whatever. But um whatever. But um yeah, nothing planned. yeah, nothing planned. yeah, nothing planned. Also okay to mix LL-37 and KPV together Also okay to mix LL-37 and KPV together Also okay to mix LL-37 and KPV together in a nasal spray. I would not do that in a nasal spray. I would not do that in a nasal spray. I would not do that personally. I don't like mixing LL-37 personally. I don't like mixing LL-37 personally. I don't like mixing LL-37 with anything with anything with anything but that's my personal philosophy. So if but that's my personal philosophy. So if but that's my personal philosophy. So if you want to you want to you want to you can do that and probably not going you can do that and probably not going you can do that and probably not going to do anything bad and I wouldn't really to do anything bad and I wouldn't really to do anything bad and I wouldn't really use those in a nasal spray anyway, use those in a nasal spray anyway, use those in a nasal spray anyway, although they could be beneficial. although they could be beneficial. although they could be beneficial. Particularly KPV with helping with Particularly KPV with helping with Particularly KPV with helping with candida or any sort of like my microbes candida or any sort of like my microbes candida or any sort of like my microbes in the brain because you can get that. in the brain because you can get that. in the brain because you can get that. But But But I wouldn't do that personally. I wouldn't do that personally. I wouldn't do that personally. That would just be my personal opinion. That would just be my personal opinion. That would just be my personal opinion. Any new subs in the stacks that I like? Any new subs in the stacks that I like? Any new subs in the stacks that I like? Um nothing comes to mind. Do we have any Um nothing comes to mind. Do we have any Um nothing comes to mind. Do we have any new supplements? new supplements? new supplements? No, and then I know we're getting ready No, and then I know we're getting ready No, and then I know we're getting ready to try some",
+            "first_timestamp": "00:24:37.000"
+          },
+          {
+            "source_id": "sRcDkKFFBG0",
+            "source_type": "podcast",
+            "source_title": "The Best Peptides & Hormones for Postmenopausal Women",
+            "source_date": "2024-09-24",
+            "source_url": "https://youtu.be/sRcDkKFFBG0",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2024-09-24-the-best-peptides-hormones-for-postmenopausal-women-sRcDkKFFBG0.en.vtt",
+            "mention_count": 12,
+            "top_snippet": "that we are going to talk about is going to be ll37 and the reason why ll37 is in",
+            "top_context": "stomach if you are going to be using stomach if you are going to be using this for any kind of repairing and this for any kind of repairing and this for any kind of repairing and muscle or tissue muscle or tissue muscle or tissue repair you are better off um taking this repair you are better off um taking this repair you are better off um taking this peptide um peptide um peptide um subcutaneously um onor hly personally my subcutaneously um onor hly personally my subcutaneously um onor hly personally my opinion I don't think the oral bpc does opinion I don't think the oral bpc does opinion I don't think the oral bpc does much and you are going much and you are going much and you are going to to to basically more bang for your buck just basically more bang for your buck just basically more bang for your buck just take it take it take it subcutaneously I know it's gets annoying subcutaneously I know it's gets annoying subcutaneously I know it's gets annoying having to in inject after a while not having to in inject after a while not having to in inject after a while not saying that it doesn't work I just think saying that it doesn't work I just think saying that it doesn't work I just think that you're just going to get more for that you're just going to get more for that you're just going to get more for your money if you just take it your money if you just take it your money if you just take it so there's that the the next peptide so there's that the the next peptide so there's that the the next peptide that we are going to talk about is going that we are going to talk about is going that we are going to talk about is going to be ll37 and the reason why ll37 is in to be ll37 and the reason why ll37 is in to be ll37 and the reason why ll37 is in here is because this is going to help here is because this is going to help here is because this is going to help with immune health and boosting your with immune health and boosting your with immune health and boosting your immune Health as we immune Health as we immune Health as we age um our immune system goes down age um our immune system goes down age um our immune system goes down especially after we go through menopause especially after we go through menopause especially after we go through menopause because we've because we've because we've um you know gone through a hormonal um you know gone through a hormonal um you know gone through a hormonal change our hormones have change our hormones have change our hormones have declined L therefore when our hormonal declined L therefore when our hormonal declined L therefore when our hormonal when our hormones decline it's going to when our hormones decline it's going to when our hormones decline it's going to affect our immune system as well too so affect our immune system as well too so affect our immune system as well too so ll37 is going to come in and play the ll37 is going to come in and play the ll37 is going to come in and play the role in helping and boosting your immune role in helping and boosting your immune role in helping and boosting your immune system it's also going to help with system it's also going to help with system it's also going to help with reducing inflammation this is also going reducing inflammation this is also going reducing inflammation this is also going to be great to um just to help with to be great to um just to help with to be great to um just to help with support um with any kind of autoimmune",
+            "first_timestamp": "00:23:32.320"
+          },
+          {
+            "source_id": "Z8p5Hu8BmuQ",
+            "source_type": "podcast",
+            "source_title": "Top Peptide & Hormone Questions Women Ask Me",
+            "source_date": "2025-06-27",
+            "source_url": "https://youtu.be/Z8p5Hu8BmuQ",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2025-06-27-top-peptide-hormone-questions-women-ask-me-Z8p5Hu8BmuQ.en.vtt",
+            "mention_count": 9,
+            "top_snippet": "hormone. That's always super beneficial, too. How long should you stay on LL37",
+            "top_context": "recommend Tessamellin to lose a bit recommend Tessamellin to lose a bit more? So I would say that once you are more? So I would say that once you are more? So I would say that once you are done cycling your done cycling your done cycling your and CJC blend, once you come off of that and CJC blend, once you come off of that and CJC blend, once you come off of that cycle, it's best to now rotate in a new cycle, it's best to now rotate in a new cycle, it's best to now rotate in a new growth hormone peptide. And Tesla would growth hormone peptide. And Tesla would growth hormone peptide. And Tesla would be a really great peptide, especially if be a really great peptide, especially if be a really great peptide, especially if you're still noticing the fat in the you're still noticing the fat in the you're still noticing the fat in the abdomen area. It'd be a great peptide to abdomen area. It'd be a great peptide to abdomen area. It'd be a great peptide to help get that fat off. But another help get that fat off. But another help get that fat off. But another really great hormone, growth hormone really great hormone, growth hormone really great hormone, growth hormone releasing peptide to use would be IGF releasing peptide to use would be IGF releasing peptide to use would be IGF LR3, which is one of my favorite growth LR3, which is one of my favorite growth LR3, which is one of my favorite growth hormone peptides. Unfortunately, you can hormone peptides. Unfortunately, you can hormone peptides. Unfortunately, you can only stay on it for only about 2 weeks. only stay on it for only about 2 weeks. only stay on it for only about 2 weeks. But your other really great option is to But your other really great option is to But your other really great option is to maybe even cycle an actual growth maybe even cycle an actual growth maybe even cycle an actual growth hormone. That's always super beneficial, hormone. That's always super beneficial, hormone. That's always super beneficial, too. How long should you stay on LL37 too. How long should you stay on LL37 too. How long should you stay on LL37 for acne? So, I love using LL37 for for acne? So, I love using LL37 for for acne? So, I love using LL37 for acne. As far as how long to stay on it, acne. As far as how long to stay on it, acne. As far as how long to stay on it, I say stay on it for at least like four I say stay on it for at least like four I say stay on it for at least like four weeks. See how your acne does with it. I weeks. See how your acne does with it. I weeks. See how your acne does with it. I know for me, anytime I have cystic acne know for me, anytime I have cystic acne know for me, anytime I have cystic acne flare-ups, if I start L37, I will notice flare-ups, if I start L37, I will notice flare-ups, if I start L37, I will notice that cystic acne go down within like 3 that cystic acne go down within like 3 that cystic acne go down within like 3 days of using it. So, I'd say go on it days of using it. So, I'd say go on it days of using it. So, I'd say go on it and do 5 days on, 2 days off, and do a 4 and do 5 days on, 2 days off, and do a 4 and do 5 days on, 2 days off, and do a 4 week cycle. If you're still struggling week cycle. If you're still struggling week cycle. If you're still struggling with it, you can definitely push it to 8 with it, you can definitely push it to 8 with it, you can definitely push it to 8 weeks. Some people even like to stay on weeks. Some people even like to stay on weeks. Some people even like to stay on LL37 for like 30 days straight. That's LL37 for like 30 days straight. That's LL37 for like 30 days straight. That's always an option, too. I personally like always an option, too. I personally like always an option, too. I personally like to take 2 days off from it. When doing",
+            "first_timestamp": "00:06:29.440"
+          },
+          {
+            "source_id": "V87f6GRxZLM",
+            "source_type": "podcast",
+            "source_title": "Top Peptides for PMS Relief: My Go-To Stack",
+            "source_date": "2024-08-20",
+            "source_url": "https://youtu.be/V87f6GRxZLM",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2024-08-20-top-peptides-for-pms-relief-my-go-to-stack-V87f6GRxZLM.en.vtt",
+            "mention_count": 6,
+            "top_snippet": "we're going to be taking in there is ll37 which um is going to help with with",
+            "top_context": "peptide wise we are going to be now peptide wise we are going to be now adding in two different peptides we're adding in two different peptides we're adding in two different peptides we're going to be adding in ss31 which is a going to be adding in ss31 which is a going to be adding in ss31 which is a great peptide that um if you haven't great peptide that um if you haven't great peptide that um if you haven't already go watch that video because that already go watch that video because that already go watch that video because that is a really great peptide to help with is a really great peptide to help with is a really great peptide to help with overall longevity of life but so ss3 1 overall longevity of life but so ss3 1 overall longevity of life but so ss3 1 we are going to be taking this um we're we are going to be taking this um we're we are going to be taking this um we're Take 2 milligrams one time a day in the Take 2 milligrams one time a day in the Take 2 milligrams one time a day in the morning and this is going to help with morning and this is going to help with morning and this is going to help with your monoch condriac this is going to help relieve condriac this is going to help relieve the the fatigue feeling that you get the the fatigue feeling that you get the the fatigue feeling that you get with PMS so we are going to be taking um with PMS so we are going to be taking um with PMS so we are going to be taking um ss31 for that and then the other peptide ss31 for that and then the other peptide ss31 for that and then the other peptide we're going to be taking in there is we're going to be taking in there is we're going to be taking in there is ll37 which um is going to help with with ll37 which um is going to help with with ll37 which um is going to help with with um your immune function and when we are um your immune function and when we are um your immune function and when we are in the phase of the PMS ludor phase of in the phase of the PMS ludor phase of in the phase of the PMS ludor phase of our cycle is that because our bodies are our cycle is that because our bodies are our cycle is that because our bodies are more stressed because our bodies are more stressed because our bodies are more stressed because our bodies are either preparing for a pregnancy or our either preparing for a pregnancy or our either preparing for a pregnancy or our bodies are preparing to shed our uterus bodies are preparing to shed our uterus bodies are preparing to shed our uterus and have our period so body is in a more and have our period so body is in a more and have our period so body is in a more of a stress is in a more stress phase of a stress is in a more stress phase of a stress is in a more stress phase and when our bodies are more stressed and when our bodies are more stressed and when our bodies are more stressed our immune system tends to be down a our immune system tends to be down a our immune system tends to be down a little bit this is why like people get little bit this is why like people get little bit this is why like people get sick when they get super stressed out sick when they get super stressed out sick when they get super stressed out ll37 is going to help with that because ll37 is going to help with that because ll37 is going to help with that because it's going to help kind of give you a it's going to help kind of give you a it's going to help kind of give you a protection of your immune function it's protection of your immune function it's protection of your immune function it's also going to help um with acne so if",
+            "first_timestamp": "00:27:25.200"
+          }
+        ],
+        "acute_signals": [
+          {
+            "snippet": "kind of flare up more so I decided to try ll37 for my acne",
+            "source_title": "LL - 37 | My Personal Tips For Autoimmune Conditions",
+            "source_date": "2024-05-03",
+            "timestamp": "00:03:36.599",
+            "source_url": "https://youtu.be/YCSzE066krM"
+          },
+          {
+            "snippet": "try ll37 for my acne",
+            "source_title": "LL - 37 | My Personal Tips For Autoimmune Conditions",
+            "source_date": "2024-05-03",
+            "timestamp": "00:03:40.030",
+            "source_url": "https://youtu.be/YCSzE066krM"
+          },
+          {
+            "snippet": "try ll37 for my acne and y'all it did the it did the trick it",
+            "source_title": "LL - 37 | My Personal Tips For Autoimmune Conditions",
+            "source_date": "2024-05-03",
+            "timestamp": "00:03:40.040",
+            "source_url": "https://youtu.be/YCSzE066krM"
+          },
+          {
+            "snippet": "you know one injection of the ll37 and today I'm not having any issues",
+            "source_title": "LL - 37 | My Personal Tips For Autoimmune Conditions",
+            "source_date": "2024-05-03",
+            "timestamp": "00:08:15.400",
+            "source_url": "https://youtu.be/YCSzE066krM"
+          },
+          {
+            "snippet": "ll37 and today I'm not having any issues",
+            "source_title": "LL - 37 | My Personal Tips For Autoimmune Conditions",
+            "source_date": "2024-05-03",
+            "timestamp": "00:08:18.629",
+            "source_url": "https://youtu.be/YCSzE066krM"
+          }
+        ],
+        "chronic_signals": [
+          {
+            "snippet": "we're going to be taking in there is ll37 which um is going to help with with",
+            "source_title": "Top Peptides for PMS Relief: My Go-To Stack",
+            "source_date": "2024-08-20",
+            "timestamp": "00:27:25.200",
+            "source_url": "https://youtu.be/V87f6GRxZLM"
+          },
+          {
+            "snippet": "ll37 which um is going to help with with",
+            "source_title": "Top Peptides for PMS Relief: My Go-To Stack",
+            "source_date": "2024-08-20",
+            "timestamp": "00:27:28.590",
+            "source_url": "https://youtu.be/V87f6GRxZLM"
+          },
+          {
+            "snippet": "ll37 which um is going to help with with um your immune function and when we are",
+            "source_title": "Top Peptides for PMS Relief: My Go-To Stack",
+            "source_date": "2024-08-20",
+            "timestamp": "00:27:28.600",
+            "source_url": "https://youtu.be/V87f6GRxZLM"
+          },
+          {
+            "snippet": "sick when they get super stressed out ll37 is going to help with that because",
+            "source_title": "Top Peptides for PMS Relief: My Go-To Stack",
+            "source_date": "2024-08-20",
+            "timestamp": "00:28:00.000",
+            "source_url": "https://youtu.be/V87f6GRxZLM"
+          },
+          {
+            "snippet": "ll37 is going to help with that because",
+            "source_title": "Top Peptides for PMS Relief: My Go-To Stack",
+            "source_date": "2024-08-20",
+            "timestamp": "00:28:02.470",
+            "source_url": "https://youtu.be/V87f6GRxZLM"
+          }
+        ]
+      },
+      "female_specific_note": "Taylor Williams Coaching focuses on female-specific HRT/peptide guidance. Per-peptide notes here often emphasize female dosing, fertility, hormone interactions."
+    },
+    "trevor-bachmeyer": {
+      "summary": {
+        "mention_count": 75,
+        "top_doses": [
+          {
+            "dose": "2 milligrams",
+            "count": 21
+          },
+          {
+            "dose": "1.5 milligrams",
+            "count": 9
+          },
+          {
+            "dose": "100 micrograms",
+            "count": 6
+          },
+          {
+            "dose": "300 micrograms",
+            "count": 6
+          },
+          {
+            "dose": "250 micrograms",
+            "count": 3
+          },
+          {
+            "dose": "400 micrograms",
+            "count": 3
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "q6zqwmvTN8Y",
+            "source_type": "podcast",
+            "source_title": "Fully Reverse Heart Disease? LFG Unbreakable Podcast 196",
+            "source_date": "2025-07-16",
+            "source_url": "https://youtu.be/q6zqwmvTN8Y",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2025-07-16-fully-reverse-heart-disease-lfg-unbreakable-podcast-196-q6zqwmvTN8Y.en.vtt",
+            "mention_count": 15,
+            "top_snippet": "I'm in. So eight is something called LL37.",
+            "top_context": "Yeah, it matters. Just trust me on that. Yeah, it matters. Just trust me on that. So, here's what it does. gives you So, here's what it does. gives you So, here's what it does. gives you improved cardiac muscle regeneration, improved cardiac muscle regeneration, improved cardiac muscle regeneration, way faster tissue repair, increased lean way faster tissue repair, increased lean way faster tissue repair, increased lean mass without all that bloat and weird mass without all that bloat and weird mass without all that bloat and weird stuff that comes with taking most stuff that comes with taking most stuff that comes with taking most exogenous GH, and a way better lipid exogenous GH, and a way better lipid exogenous GH, and a way better lipid metabolism. To me, that sounds like nothing but To me, that sounds like nothing but upside, no catastrophe, no chaos. Sign me up. no catastrophe, no chaos. Sign me up. So now the byproduct is stronger cardiac So now the byproduct is stronger cardiac So now the byproduct is stronger cardiac tissue, better body composition, great. tissue, better body composition, great. tissue, better body composition, great. Faster recovery, frigin awesome. All Faster recovery, frigin awesome. All Faster recovery, frigin awesome. All without cooking your pituitary. without cooking your pituitary. without cooking your pituitary. I'm in. I'm in. I'm in. So eight is something called LL37. So eight is something called LL37. So eight is something called LL37. It's like it comes in and just it's It's like it comes in and just it's It's like it comes in and just it's right before they're about to they just right before they're about to they just right before they're about to they just finished framing up your house and now finished framing up your house and now finished framing up your house and now they want to clean it all out and build they want to clean it all out and build they want to clean it all out and build the walls. Not just the frame, but the the walls. Not just the frame, but the the walls. Not just the frame, but the drywall and stuff on. And this is the drywall and stuff on. And this is the drywall and stuff on. And this is the part nobody talks about. Arterial plaque part nobody talks about. Arterial plaque part nobody talks about. Arterial plaque doesn't just trap cholesterol. It traps doesn't just trap cholesterol. It traps doesn't just trap cholesterol. It traps pathogens. pathogens. pathogens. Arterial plaque does not come from Arterial plaque does not come from Arterial plaque does not come from cholesterol. By the way, just so we're cholesterol. By the way, just so we're cholesterol. By the way, just so we're clear, trapping it and coming from it clear, trapping it and coming from it clear, trapping it and coming from it are not the same. But I'm not going to are not the same. But I'm not going to are not the same. But I'm not going to get into that because the whole high get into that because the whole high get into that because the whole high cholesterol thing is a it's a lie. But cholesterol thing is a it's a lie. But cholesterol thing is a it's a lie. But it doesn't the plaque doesn't just trap it doesn't the plaque doesn't just trap it doesn't the plaque doesn't just trap the cholesterol. And like I said, it the cholesterol. And like I said, it the cholesterol. And like I said, it traps the things that shouldn't be traps the things that shouldn't be traps the things that shouldn't be there, the pathogens. So I'm talking there, the pathogens. So I'm talking there, the pathogens. So I'm talking viruses, bacteria, biofilm, and just",
+            "first_timestamp": "00:30:29.120"
+          },
+          {
+            "source_id": "OBndB0EFuUM",
+            "source_type": "podcast",
+            "source_title": "Why Cold Sores Keep Coming Back (and preventing it) - Dr Trevor Bachmeyer",
+            "source_date": "2026-04-01",
+            "source_url": "https://youtu.be/OBndB0EFuUM",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2026-04-01-why-cold-sores-keep-coming-back-and-preventing-it-dr-trevor-bachmeyer-OBndB0EFuUM.en.vtt",
+            "mention_count": 15,
+            "top_snippet": "goes I can't survive here this is an unwelcome environment ll37 every day IM",
+            "top_context": "the beginning. Then we added immune the beginning. Then we added immune retraining products, compounds, retraining products, compounds, retraining products, compounds, peptides, right? Nitesides. So thymus peptides, right? Nitesides. So thymus peptides, right? Nitesides. So thymus and alpha 1 twice a week, small dose. and alpha 1 twice a week, small dose. and alpha 1 twice a week, small dose. This retrains the thymus gland by the This retrains the thymus gland by the This retrains the thymus gland by the way to produce these very elite killer way to produce these very elite killer way to produce these very elite killer tea cells. specifically trained to hunt tea cells. specifically trained to hunt tea cells. specifically trained to hunt herpes. 15 study by Stein in herpes. 15 study by Stein in herpes. 15 study by Stein in international immunology showed thyos international immunology showed thyos international immunology showed thyos and alpha 1 specifically increased HSV and alpha 1 specifically increased HSV and alpha 1 specifically increased HSV specific CD8 T- cell count by 156%. T- specific CD8 T- cell count by 156%. T- specific CD8 T- cell count by 156%. T- cell killing capacity the cytotoxicity cell killing capacity the cytotoxicity cell killing capacity the cytotoxicity increased 84%. Viral reactivation increased 84%. Viral reactivation increased 84%. Viral reactivation frequency decreased 67%. So it frequency decreased 67%. So it frequency decreased 67%. So it obliterates the virus because the immune obliterates the virus because the immune obliterates the virus because the immune system's working. It doesn't directly system's working. It doesn't directly system's working. It doesn't directly attack the virus. tells you and your attack the virus. tells you and your attack the virus. tells you and your biology exactly what I said to do its biology exactly what I said to do its biology exactly what I said to do its job the way it's designed and the virus job the way it's designed and the virus job the way it's designed and the virus goes I can't survive here this is an goes I can't survive here this is an goes I can't survive here this is an unwelcome environment ll37 every day IM unwelcome environment ll37 every day IM unwelcome environment ll37 every day IM by the way in this case you want faster by the way in this case you want faster by the way in this case you want faster absorption that's why this is an absorption that's why this is an absorption that's why this is an antimicrobial peptide that kills HSV antimicrobial peptide that kills HSV antimicrobial peptide that kills HSV directly and cranks up interferon directly and cranks up interferon directly and cranks up interferon production 2016 I'll show you another production 2016 I'll show you another production 2016 I'll show you another gangster study on this okay chrom in gangster study on this okay chrom in gangster study on this okay chrom in penas showed LL37 kills HSV by penas showed LL37 kills HSV by penas showed LL37 kills HSV by disrupting the viral envelope it disrupting the viral envelope it disrupting the viral envelope it enhances interferent production 43 enhances interferent production 43 enhances interferent production 43 administration reactivation frequency or administration reactivation frequency or administration reactivation frequency or LL37 administration or it reduced it LL37 administration or it reduced it LL37 administration or it reduced it reduced reactivation frequency by 52%. reduced reactivation frequency by 52%. reduced reactivation frequency by 52%. So Jennifer's T-EL surveillance became So Jennifer's T-EL surveillance became So Jennifer's T-EL surveillance became hyper elite, right? Her immune system hyper elite, right? Her immune system hyper elite, right? Her immune system became virtually unstoppable, which is became virtually unstoppable, which is became virtually unstoppable, which is how it's designed. You're not designed how it's designed. You're not designed how it's designed. You're not designed to be sick. I really struggle with this to be sick. I really struggle with this to be sick. I really struggle with this because I just want everybody to look at because I just want everybody to look at because I just want everybody to look at their pets. If you have pets, look at their pets. If you have pets, look at their pets. If you have pets, look at your pets. When's the last time, look at your pets. When's the last time, look at your pets. When's the last time, look at how many times you get sick versus how how many times you get sick versus how how many times you get sick versus how many times your dog or your cat gets",
+            "first_timestamp": "00:23:32.559"
+          },
+          {
+            "source_id": "XtiCLO0biUc",
+            "source_type": "podcast",
+            "source_title": "What If You Could Reverse Kidney Disease? Unbreakable Podcast 209",
+            "source_date": "2025-07-30",
+            "source_url": "https://youtu.be/XtiCLO0biUc",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2025-07-30-what-if-you-could-reverse-kidney-disease-unbreakable-podcast-209-XtiCLO0biUc.en.vtt",
+            "mention_count": 12,
+            "top_snippet": "think would probably work really well. LL37 and KPV because the these are these",
+            "top_context": "it bypasses all that nonsense that it bypasses all that nonsense that people have to go through. And by the people have to go through. And by the people have to go through. And by the way, speaking of which, how about way, speaking of which, how about way, speaking of which, how about there's there's something I was going to there's there's something I was going to there's there's something I was going to I wasn't going to talk about this, but I wasn't going to talk about this, but I wasn't going to talk about this, but it's called S23. It's a SARM. Yeah. it's called S23. It's a SARM. Yeah. it's called S23. It's a SARM. Yeah. Right. But it's not what you think. Right. But it's not what you think. Right. But it's not what you think. You're using it at a micro dose level, You're using it at a micro dose level, You're using it at a micro dose level, which is just enough to preserve muscle which is just enough to preserve muscle which is just enough to preserve muscle mass and nitrogen balance in these mass and nitrogen balance in these mass and nitrogen balance in these chronic kidney patients who would man chronic kidney patients who would man chronic kidney patients who would man otherwise just lose every ounce of all otherwise just lose every ounce of all otherwise just lose every ounce of all the hardearned gains. And you end up the hardearned gains. And you end up the hardearned gains. And you end up just drowning and cycling down into just drowning and cycling down into just drowning and cycling down into sarcopenia. Like you just become a sarcopenia. Like you just become a sarcopenia. Like you just become a disaster. But it does it. This S23 does disaster. But it does it. This S23 does disaster. But it does it. This S23 does it without the the hyper androgenic load it without the the hyper androgenic load it without the the hyper androgenic load that wrecks kidneys like anything DHT that wrecks kidneys like anything DHT that wrecks kidneys like anything DHT based, right? There's a couple that I I based, right? There's a couple that I I based, right? There's a couple that I I think would probably work really well. think would probably work really well. think would probably work really well. LL37 and KPV because the these are these LL37 and KPV because the these are these LL37 and KPV because the these are these are like gut kidney access assassins. are like gut kidney access assassins. are like gut kidney access assassins. Hold on. I want to drink some more of my Hold on. I want to drink some more of my Hold on. I want to drink some more of my own kidney poison. If you don't get it own kidney poison. If you don't get it own kidney poison. If you don't get it by now, I'm being completely sarcastic. by now, I'm being completely sarcastic. by now, I'm being completely sarcastic. Any of you people out there that go, Any of you people out there that go, Any of you people out there that go, \"Yeah, coffee's bad. I knew it.\" No, \"Yeah, coffee's bad. I knew it.\" No, \"Yeah, coffee's bad. I knew it.\" No, it's not. Stop being ignorant just it's not. Stop being ignorant just it's not. Stop being ignorant just because somebody wrote a headline about because somebody wrote a headline about because somebody wrote a headline about it or your favorite Insta guru that it or your favorite Insta guru that it or your favorite Insta guru that decided that losing is the new winning. decided that losing is the new winning. decided that losing is the new winning. Stop listening to these people. LL37 and Stop listening to these people. LL37 and Stop listening to these people. LL37 and KPV. LL37 destroys the bacterial KPV. LL37 destroys the bacterial KPV. LL37 destroys the bacterial biofilms in the gut which end up biofilms in the gut which end up biofilms in the gut which end up spilling into systemic circulation and spilling into systemic circulation and spilling into systemic circulation and inflame the hell out of the kidneys. And inflame the hell out of the kidneys. And inflame the hell out of the kidneys. And KPV blocks, remember I said NF, TNF and KPV blocks, remember I said NF, TNF and KPV blocks, remember I said NF, TNF and IL1 beta, all those? It blocks them all. IL1 beta, all those? It blocks them all. IL1 beta, all those? It blocks them all. It's like a bodyguard. It just gets in It's like a bodyguard. It just gets in It's like a bodyguard. It just gets in the way and keeps them from ever the way and keeps them from ever the way and keeps them from ever entering your system. But what they do entering your system. But what they do entering your system. But what they do is they calm your immune system. Well, is they calm your immune system. Well, is they calm your immune system. Well, when they calm the immune system, they",
+            "first_timestamp": "00:22:10.640"
+          },
+          {
+            "source_id": "MjQAHwcC2o0",
+            "source_type": "podcast",
+            "source_title": "Testosterone by Itself Or With Peptides? - Unbreakable Podcast 245",
+            "source_date": "2025-09-05",
+            "source_url": "https://youtu.be/MjQAHwcC2o0",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2025-09-05-testosterone-by-itself-or-with-peptides-unbreakable-podcast-245-MjQAHwcC2o0.en.vtt",
+            "mention_count": 9,
+            "top_snippet": "your health span and lifespan. So BPC157 thamic peptides LL37 which repairs",
+            "top_context": "little ATP factories, the mitochondria, little ATP factories, the mitochondria, oh, AMPK, uh, PGC1 alpha pathways, pep, oh, AMPK, uh, PGC1 alpha pathways, pep, oh, AMPK, uh, PGC1 alpha pathways, pep, that's like you need things to get those that's like you need things to get those that's like you need things to get those to run properly. Otherwise, if you're to run properly. Otherwise, if you're to run properly. Otherwise, if you're running out of energy, you wind up aging running out of energy, you wind up aging running out of energy, you wind up aging regardless of how much testosterone regardless of how much testosterone regardless of how much testosterone you're taking. You know, even things you're taking. You know, even things you're taking. You know, even things like, yeah, like, yeah, like, yeah, a r a carb works. I could do this all a r a carb works. I could do this all a r a carb works. I could do this all day. Sometimes I get frustrated because day. Sometimes I get frustrated because day. Sometimes I get frustrated because I think of all the things that you guys I think of all the things that you guys I think of all the things that you guys need to know and all the bro science on need to know and all the bro science on need to know and all the bro science on social media that is trying to convince social media that is trying to convince social media that is trying to convince you that you don't need to know any of you that you don't need to know any of you that you don't need to know any of this. Yet your body is a incredibly this. Yet your body is a incredibly this. Yet your body is a incredibly complex machine and I want to give you complex machine and I want to give you complex machine and I want to give you the tools without you guys going I have the tools without you guys going I have the tools without you guys going I have no idea what this guy just said. Look at no idea what this guy just said. Look at no idea what this guy just said. Look at the immune system. Chronic inflammation the immune system. Chronic inflammation the immune system. Chronic inflammation I said is the most effective assassin to I said is the most effective assassin to I said is the most effective assassin to your health span and lifespan. So BPC157 your health span and lifespan. So BPC157 your health span and lifespan. So BPC157 thamic peptides LL37 which repairs thamic peptides LL37 which repairs thamic peptides LL37 which repairs mucosal integrity and regulates all the mucosal integrity and regulates all the mucosal integrity and regulates all the cytoine storms that you have. TRT gives cytoine storms that you have. TRT gives cytoine storms that you have. TRT gives you a good mood but it doesn't heal the you a good mood but it doesn't heal the you a good mood but it doesn't heal the way you think. And if you go, \"Well, way you think. And if you go, \"Well, way you think. And if you go, \"Well, what about Deca? That heals. It made my what about Deca? That heals. It made my what about Deca? That heals. It made my shoulders feel great.\" No, it made your shoulders feel great.\" No, it made your shoulders feel great.\" No, it made your shoulders and the rest of your system shoulders and the rest of your system shoulders and the rest of your system hold a truckload of water and made your hold a truckload of water and made your hold a truckload of water and made your dick not work. Don't tell me I'm wrong. dick not work. Don't tell me I'm wrong. dick not work. Don't tell me I'm wrong. I'm right. You have any idea the number I'm right. You have any idea the number I'm right. You have any idea the number of patients I've seen in my life? Over a of patients I've seen in my life? Over a of patients I've seen in my life? Over a million. Believe me, I've heard million. Believe me, I've heard million. Believe me, I've heard everything you're going to throw at me. everything you're going to throw at me. everything you're going to throw at me. Look at neurobiology. TRT cranks up Look at neurobiology. TRT cranks up Look at neurobiology. TRT cranks up dopamineergic tone, right? But it dopamineergic tone, right? But it dopamineergic tone, right? But it doesn't regulate circadian rhythm or doesn't regulate circadian rhythm or doesn't regulate circadian rhythm or enhance neuroplasticity, whatever, enhance neuroplasticity, whatever, enhance neuroplasticity, whatever, because that's all based on habits and because that's all based on habits and because that's all based on habits and repetition. So peptides like a pititol repetition. So peptides like a pititol repetition. So peptides like a pititol dip, BDNF, mimetics, those those all do dip, BDNF, mimetics, those those all do dip, BDNF, mimetics, those those all do that. So this is why I'm saying you need that. So this is why I'm saying you need that. So this is why I'm saying you need to build something that it's like to build something that it's like to build something that it's like constantly going, well water is very",
+            "first_timestamp": "00:16:52.560"
+          },
+          {
+            "source_id": "gd-BP8P9RYY",
+            "source_type": "podcast",
+            "source_title": "Lupus and the Real Protocol for Healing - Dr Trevor Bachmeyer",
+            "source_date": "2026-01-04",
+            "source_url": "https://youtu.be/gd-BP8P9RYY",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2026-01-04-lupus-and-the-real-protocol-for-healing-dr-trevor-bachmeyer-gd-BP8P9RYY.en.vtt",
+            "mention_count": 9,
+            "top_snippet": "rosacea. The link LL37. Yep, that one. Which is",
+            "top_context": "guys don't screw with your biology, man. guys don't screw with your biology, man. I don't come out here to make you buy my I don't come out here to make you buy my I don't come out here to make you buy my products. I come out here or to join my products. I come out here or to join my products. I come out here or to join my black card membership. I come out here black card membership. I come out here black card membership. I come out here to give you an answer so you actually to give you an answer so you actually to give you an answer so you actually run radar, right? Just d paying run radar, right? Just d paying run radar, right? Just d paying attention to everything so you know attention to everything so you know attention to everything so you know what's real and what's not. You know what's real and what's not. You know what's real and what's not. You know what the early sign of lupus is? what the early sign of lupus is? what the early sign of lupus is? Rosacea. Who told you that? Nobody. You Rosacea. Who told you that? Nobody. You Rosacea. Who told you that? Nobody. You think it's a cosmetic issue? Dermatology think it's a cosmetic issue? Dermatology think it's a cosmetic issue? Dermatology told you it's about spicy food and red told you it's about spicy food and red told you it's about spicy food and red wine and maybe some dark chocolate. wine and maybe some dark chocolate. wine and maybe some dark chocolate. That's the nonsense. They feed they just That's the nonsense. They feed they just That's the nonsense. They feed they just feed you this and you go, \"Oh, okay. feed you this and you go, \"Oh, okay. feed you this and you go, \"Oh, okay. It's a dermatologist. They said that's It's a dermatologist. They said that's It's a dermatologist. They said that's what it is.\" What a croc of crap. That what it is.\" What a croc of crap. That what it is.\" What a croc of crap. That is incompetence. 16 study in drama is incompetence. 16 study in drama is incompetence. 16 study in drama dermatology showed significantly higher dermatology showed significantly higher dermatology showed significantly higher risk of autoimmune disease including in risk of autoimmune disease including in risk of autoimmune disease including in fact specifically lupus SLE systemic fact specifically lupus SLE systemic fact specifically lupus SLE systemic lupus arithmatosis in patients with lupus arithmatosis in patients with lupus arithmatosis in patients with rosacea. rosacea. rosacea. The link LL37. Yep, that one. Which is The link LL37. Yep, that one. Which is The link LL37. Yep, that one. Which is why you don't bomb somebody all that you why you don't bomb somebody all that you why you don't bomb somebody all that you have to be really if you guys go well have to be really if you guys go well have to be really if you guys go well but what about taking LL37 but what about taking LL37 but what about taking LL37 hypothetically when you have lupus. Yes hypothetically when you have lupus. Yes hypothetically when you have lupus. Yes to regulate it but under somebody to regulate it but under somebody to regulate it but under somebody telling you what to do in the dosage not telling you what to do in the dosage not telling you what to do in the dosage not some Reddit form or Kora or Bro Science some Reddit form or Kora or Bro Science some Reddit form or Kora or Bro Science guy in a tank top and bulging out guy in a tank top and bulging out guy in a tank top and bulging out everywhere with a trap vein thinking everywhere with a trap vein thinking everywhere with a trap vein thinking that he knows what he's talking about that he knows what he's talking about that he knows what he's talking about because he can read chat GPT. That's not because he can read chat GPT. That's not because he can read chat GPT. That's not helping understand biology. If you come helping understand biology. If you come helping understand biology. If you come to me with it and you're like hey should to me with it and you're like hey should to me with it and you're like hey should I take it or should I not? I can't give I take it or should I not? I can't give I take it or should I not? I can't give you an answer unless I until I see your you an answer unless I until I see your you an answer unless I until I see your labs, talk to you, and actually go down labs, talk to you, and actually go down labs, talk to you, and actually go down the rabbit hole on your symptomatology, the rabbit hole on your symptomatology, the rabbit hole on your symptomatology, which is exactly what I do in the black which is exactly what I do in the black which is exactly what I do in the black art, by the way. So, the point is I want art, by the way. So, the point is I want art, by the way. So, the point is I want you to be healthy, but you can't just you to be healthy, but you can't just you to be healthy, but you can't just throw everything at the wall to see what throw everything at the wall to see what throw everything at the wall to see what sticks. So, LL37, that's the problem, sticks. So, LL37, that's the problem, sticks. So, LL37, that's the problem, right? Caffealin in ro in rosacea, the",
+            "first_timestamp": "00:07:37.039"
+          },
+          {
+            "source_id": "LCHv_rSnLlI",
+            "source_type": "podcast",
+            "source_title": "Stop Using Oral Peptides (They're WORTHLESS) Unbreakable Podcast - 168",
+            "source_date": "2025-06-18",
+            "source_url": "https://youtu.be/LCHv_rSnLlI",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2025-06-18-stop-using-oral-peptides-they-re-worthless-unbreakable-podcast-168-LCHv_rSnLlI.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "Thyin alpha and LL37.",
+            "top_context": "it. You could do immune, right? I'm just it. You could do immune, right? I'm just thinking of these things off the top of thinking of these things off the top of thinking of these things off the top of my head to help you out. There's immune. my head to help you out. There's immune. my head to help you out. There's immune. You can upgrade your immune system. You can upgrade your immune system. You can upgrade your immune system. Probably one of the greatest things that Probably one of the greatest things that Probably one of the greatest things that hypothetically could happen is hypothetically could happen is hypothetically could happen is enhancing your weakened, beat up, overly enhancing your weakened, beat up, overly enhancing your weakened, beat up, overly taxed immune system from fighting things taxed immune system from fighting things taxed immune system from fighting things that you're not even seeing right now that you're not even seeing right now that you're not even seeing right now that are being sprayed on, put on, that are being sprayed on, put on, that are being sprayed on, put on, rubbed on, bathed in. You guys think rubbed on, bathed in. You guys think rubbed on, bathed in. You guys think drinking water is the problem? Let me drinking water is the problem? Let me drinking water is the problem? Let me help you out. help you out. help you out. What about all the [&nbsp;__&nbsp;] you shower in? What about all the [&nbsp;__&nbsp;] you shower in? What about all the [&nbsp;__&nbsp;] you shower in? Yeah, I never thought of that, huh? Your Yeah, I never thought of that, huh? Your Yeah, I never thought of that, huh? Your skin absorbing all the chemicals in that skin absorbing all the chemicals in that skin absorbing all the chemicals in that water. water. water. No chance, man. We got a crazy filter No chance, man. We got a crazy filter No chance, man. We got a crazy filter system in our house. Whole house. system in our house. Whole house. system in our house. Whole house. Thyin alpha Thyin alpha Thyin alpha and LL37. and LL37. and LL37. That's what I would. That's what I would. That's what I would. So thyus and alpha if I was going to do So thyus and alpha if I was going to do So thyus and alpha if I was going to do it hypothetically to my kangaroo it hypothetically to my kangaroo it hypothetically to my kangaroo 1.5 milligrams two times a week and 1.5 milligrams two times a week and 1.5 milligrams two times a week and double L37 double L37 double L37 100 micrograms a day 10 days 12 days 100 micrograms a day 10 days 12 days 100 micrograms a day 10 days 12 days these are great for autoimmune issues these are great for autoimmune issues these are great for autoimmune issues chronic infections that you just can't chronic infections that you just can't chronic infections that you just can't get rid of get rid of get rid of C19 recovery post that'll C19 recovery post that'll C19 recovery post that'll Everybody's chasing this longevity thing Everybody's chasing this longevity thing Everybody's chasing this longevity thing lately, right? I mean, this is the most lately, right? I mean, this is the most lately, right? I mean, this is the most unorganized unorganized unorganized podcast I think I've done in a very long podcast I think I've done in a very long podcast I think I've done in a very long time, but I'm just trying to spit time, but I'm just trying to spit time, but I'm just trying to spit information for you guys. Longevity.",
+            "first_timestamp": "00:31:24.720"
+          },
+          {
+            "source_id": "6cZWHEsLXYg",
+            "source_type": "podcast",
+            "source_title": "The Big Three Peptides - Unbreakable Podcast 261",
+            "source_date": "2025-09-22",
+            "source_url": "https://youtu.be/6cZWHEsLXYg",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2025-09-22-the-big-three-peptides-unbreakable-podcast-261-6cZWHEsLXYg.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "don't ever take them. No. If you've got pneumonia, LL37, and thymus alpha 1, uh,",
+            "top_context": "them a cute little name so you guys them a cute little name so you guys don't look at them very long. Side don't look at them very long. Side don't look at them very long. Side effects. Oh, I don't need to see them. effects. Oh, I don't need to see them. effects. Oh, I don't need to see them. May cause death. You will never see that May cause death. You will never see that May cause death. You will never see that on a peptide package. You will see that on a peptide package. You will see that on a peptide package. You will see that all over every pharmaceutical. There are all over every pharmaceutical. There are all over every pharmaceutical. There are no profound side effects to any of any no profound side effects to any of any no profound side effects to any of any of these peptides, especially these of these peptides, especially these of these peptides, especially these ones. None. These are your body's ones. None. These are your body's ones. None. These are your body's language. It's all it does is speak this language. It's all it does is speak this language. It's all it does is speak this language. Nothing else. Text message. language. Nothing else. Text message. language. Nothing else. Text message. Text message just saying go harder, hit Text message just saying go harder, hit Text message just saying go harder, hit the gas, do more, do this better, make the gas, do more, do this better, make the gas, do more, do this better, make more of it. There are thousands of more of it. There are thousands of more of it. There are thousands of lethal side effects to pharmaceuticals lethal side effects to pharmaceuticals lethal side effects to pharmaceuticals because they are foreign invasion. I'm because they are foreign invasion. I'm because they are foreign invasion. I'm not telling you that they aren't not telling you that they aren't not telling you that they aren't necessary. They aren't necessary for necessary. They aren't necessary for necessary. They aren't necessary for health. They're necessary for a health. They're necessary for a health. They're necessary for a subscription model. They're necessary to subscription model. They're necessary to subscription model. They're necessary to keep you hooked. But they don't make you keep you hooked. But they don't make you keep you hooked. But they don't make you healthy. Will they save your life? healthy. Will they save your life? healthy. Will they save your life? Absolutely. Absolutely. Absolutely. Don't don't sit there and think for a Don't don't sit there and think for a Don't don't sit there and think for a second that I'm so ignorant that I go second that I'm so ignorant that I go second that I'm so ignorant that I go don't ever take them. No. If you've got don't ever take them. No. If you've got don't ever take them. No. If you've got pneumonia, LL37, and thymus alpha 1, uh, pneumonia, LL37, and thymus alpha 1, uh, pneumonia, LL37, and thymus alpha 1, uh, I think maybe just some good amoxicylin. I think maybe just some good amoxicylin. I think maybe just some good amoxicylin. But I I had a patient that was on cypro But I I had a patient that was on cypro But I I had a patient that was on cypro going on 20 years because she had part going on 20 years because she had part going on 20 years because she had part part of her small intestine taken out part of her small intestine taken out part of her small intestine taken out and every time she went off cypro she and every time she went off cypro she and every time she went off cypro she got an infection. Where do you think a got an infection. Where do you think a got an infection. Where do you think a lot of your immunity comes from you lot of your immunity comes from you lot of your immunity comes from you guys? The gut. What do you think's guys? The gut. What do you think's guys? The gut. What do you think's happening when she's bombing herself happening when she's bombing herself happening when she's bombing herself with I I can't do this. It's just so with I I can't do this. It's just so with I I can't do this. It's just so bad. And yet most people are so bad. And yet most people are so bad. And yet most people are so indoctrinated. It it really it's it's indoctrinated. It it really it's it's indoctrinated. It it really it's it's heartbreaking to me because I've been on heartbreaking to me because I've been on heartbreaking to me because I've been on the other side of this equation where I the other side of this equation where I the other side of this equation where I was so terrified that I briefly took a was so terrified that I briefly took a was so terrified that I briefly took a step into the pharmaceutical realm step into the pharmaceutical realm step into the pharmaceutical realm twice. once with chemotherapy the chop twice. once with chemotherapy the chop twice. once with chemotherapy the chop series which by the way the vinristen series which by the way the vinristen series which by the way the vinristen was the worst thing I've ever taken in was the worst thing I've ever taken in was the worst thing I've ever taken in my life it looked like red syrup and it my life it looked like red syrup and it my life it looked like red syrup and it took forever to infuse and remesae until",
+            "first_timestamp": "00:24:03.520"
+          },
+          {
+            "source_id": "qDfN-e4vBj0",
+            "source_type": "podcast",
+            "source_title": "What to Do About Mold Toxicity - Dr Trevor Bachmeyer",
+            "source_date": "2025-11-22",
+            "source_url": "https://youtu.be/qDfN-e4vBj0",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2025-11-22-what-to-do-about-mold-toxicity-dr-trevor-bachmeyer-qDfN-e4vBj0.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "figure out what the hell is wrong. Thyosin alpha 1 LL37 powerful",
+            "top_context": "ATP synthesis. It is pretty much a ATP synthesis. It is pretty much a direct antidote to the primary mechanism direct antidote to the primary mechanism direct antidote to the primary mechanism of damage. Methylene blue electron of damage. Methylene blue electron of damage. Methylene blue electron cycler in the mitochondrial chain. It cycler in the mitochondrial chain. It cycler in the mitochondrial chain. It bypasses all the damaged complexes and bypasses all the damaged complexes and bypasses all the damaged complexes and it restores energy production. It it restores energy production. It it restores energy production. It remember the traffic jam between complex remember the traffic jam between complex remember the traffic jam between complex one and cytochrome C. What you have to one and cytochrome C. What you have to one and cytochrome C. What you have to do is you have to get through and clean do is you have to get through and clean do is you have to get through and clean up that damage so you can actually get up that damage so you can actually get up that damage so you can actually get the ATP to produce otherwise it's just a the ATP to produce otherwise it's just a the ATP to produce otherwise it's just a hot mess. It looks like spaghetti of hot mess. It looks like spaghetti of hot mess. It looks like spaghetti of electrons. So this restores energy electrons. So this restores energy electrons. So this restores energy production. NAD+ literal fuel for production. NAD+ literal fuel for production. NAD+ literal fuel for enzymes sertuins that repair they enzymes sertuins that repair they enzymes sertuins that repair they repaired the cellular damage the repaired the cellular damage the repaired the cellular damage the mitochondrial damage. You need to do mitochondrial damage. You need to do mitochondrial damage. You need to do this because you're nothing is going to this because you're nothing is going to this because you're nothing is going to heal you. You're going to but you got to heal you. You're going to but you got to heal you. You're going to but you got to get all the crap out of the way. You get all the crap out of the way. You get all the crap out of the way. You need to recalibrate your immune system need to recalibrate your immune system need to recalibrate your immune system because the immune system's gone because the immune system's gone because the immune system's gone completely haywire because it's been on completely haywire because it's been on completely haywire because it's been on the skinny pedal non-stop trying to the skinny pedal non-stop trying to the skinny pedal non-stop trying to figure out what the hell is wrong. figure out what the hell is wrong. figure out what the hell is wrong. Thyosin alpha 1 LL37 powerful Thyosin alpha 1 LL37 powerful Thyosin alpha 1 LL37 powerful immunomodulators. They don't just boost immunomodulators. They don't just boost immunomodulators. They don't just boost the immune system, they make it smarter the immune system, they make it smarter the immune system, they make it smarter and they help downregulate the NLRP3 and they help downregulate the NLRP3 and they help downregulate the NLRP3 inflammosome and the cytoine storm, inflammosome and the cytoine storm, inflammosome and the cytoine storm, which is what I talked about at the which is what I talked about at the which is what I talked about at the beginning. And it actually enhances beginning. And it actually enhances beginning. And it actually enhances defense against real pathogens, not defense against real pathogens, not defense against real pathogens, not this. So remember, if your immune system this. So remember, if your immune system this. So remember, if your immune system is under constant attack, it's running is under constant attack, it's running is under constant attack, it's running at full throttle. Eventually, it runs at full throttle. Eventually, it runs at full throttle. Eventually, it runs out of gas, but it runs out of gas out of gas, but it runs out of gas out of gas, but it runs out of gas faster because your ATP isn't being faster because your ATP isn't being faster because your ATP isn't being produced. So, you get where I'm going produced. So, you get where I'm going produced. So, you get where I'm going with this? That's why there are these with this? That's why there are these with this? That's why there are these three biological failures, why they three biological failures, why they three biological failures, why they cause disease. So a pathogen comes in, cause disease. So a pathogen comes in, cause disease. So a pathogen comes in, invades, could be anything, and you get invades, could be anything, and you get invades, could be anything, and you get sick when normally you wouldn't because sick when normally you wouldn't because sick when normally you wouldn't because your immune the tea cells will come your immune the tea cells will come your immune the tea cells will come along, go, \"Yeah, you're going to die.\" along, go, \"Yeah, you're going to die.\" along, go, \"Yeah, you're going to die.\" Except now they can't cuz they don't Except now they can't cuz they don't Except now they can't cuz they don't have the energy. So they're slogging have the energy. So they're slogging have the energy. So they're slogging through the swamp trying to get to the through the swamp trying to get to the through the swamp trying to get to the pathogen and they can't do it. So this pathogen and they can't do it. So this pathogen and they can't do it. So this is why you need to handle this cerebral",
+            "first_timestamp": "00:29:55.360"
+          }
+        ],
+        "acute_signals": [
+          {
+            "snippet": "And that's exactly where they want you to be. So LL37 clears all of that stuff",
+            "source_title": "Fully Reverse Heart Disease? LFG Unbreakable Podcast 196",
+            "source_date": "2025-07-16",
+            "timestamp": "00:31:34.480",
+            "source_url": "https://youtu.be/q6zqwmvTN8Y"
+          },
+          {
+            "snippet": "to be. So LL37 clears all of that stuff",
+            "source_title": "Fully Reverse Heart Disease? LFG Unbreakable Podcast 196",
+            "source_date": "2025-07-16",
+            "timestamp": "00:31:37.029",
+            "source_url": "https://youtu.be/q6zqwmvTN8Y"
+          },
+          {
+            "snippet": "to be. So LL37 clears all of that stuff out. It's an antimicrobial peptide.",
+            "source_title": "Fully Reverse Heart Disease? LFG Unbreakable Podcast 196",
+            "source_date": "2025-07-16",
+            "timestamp": "00:31:37.039",
+            "source_url": "https://youtu.be/q6zqwmvTN8Y"
+          },
+          {
+            "snippet": "you don't know, then it doesn't matter, but you that's an important thing. LL37,",
+            "source_title": "Fully Reverse Heart Disease? LFG Unbreakable Podcast 196",
+            "source_date": "2025-07-16",
+            "timestamp": "00:41:33.040",
+            "source_url": "https://youtu.be/q6zqwmvTN8Y"
+          },
+          {
+            "snippet": "but you that's an important thing. LL37,",
+            "source_title": "Fully Reverse Heart Disease? LFG Unbreakable Podcast 196",
+            "source_date": "2025-07-16",
+            "timestamp": "00:41:35.589",
+            "source_url": "https://youtu.be/q6zqwmvTN8Y"
+          }
+        ],
+        "chronic_signals": [
+          {
+            "snippet": "Thyin alpha and LL37.",
+            "source_title": "Stop Using Oral Peptides (They're WORTHLESS) Unbreakable Podcast - 168",
+            "source_date": "2025-06-18",
+            "timestamp": "00:31:24.720",
+            "source_url": "https://youtu.be/LCHv_rSnLlI"
+          },
+          {
+            "snippet": "and LL37.",
+            "source_title": "Stop Using Oral Peptides (They're WORTHLESS) Unbreakable Podcast - 168",
+            "source_date": "2025-06-18",
+            "timestamp": "00:31:26.950",
+            "source_url": "https://youtu.be/LCHv_rSnLlI"
+          },
+          {
+            "snippet": "and LL37. That's what I would.",
+            "source_title": "Stop Using Oral Peptides (They're WORTHLESS) Unbreakable Podcast - 168",
+            "source_date": "2025-06-18",
+            "timestamp": "00:31:26.960",
+            "source_url": "https://youtu.be/LCHv_rSnLlI"
+          },
+          {
+            "snippet": "And that's exactly where they want you to be. So LL37 clears all of that stuff",
+            "source_title": "Fully Reverse Heart Disease? LFG Unbreakable Podcast 196",
+            "source_date": "2025-07-16",
+            "timestamp": "00:31:34.480",
+            "source_url": "https://youtu.be/q6zqwmvTN8Y"
+          },
+          {
+            "snippet": "to be. So LL37 clears all of that stuff",
+            "source_title": "Fully Reverse Heart Disease? LFG Unbreakable Podcast 196",
+            "source_date": "2025-07-16",
+            "timestamp": "00:31:37.029",
+            "source_url": "https://youtu.be/q6zqwmvTN8Y"
+          }
+        ]
+      },
+      "acute_vs_chronic_note": "Dr Bachmeyer often distinguishes acute (injury/infection) vs chronic (longevity/maintenance) dosing. Acute_signals + chronic_signals fields surface candidate contexts; full distillation pending Codex pass."
+    }
+  },
+  "reset_biology_synthesis": {
+    "status": "pending-codex-distillation",
+    "recommendation": null,
+    "caveats": null,
+    "cross_expert_consensus": null,
+    "cross_expert_disagreement": null
+  },
+  "generated_at": "2026-04-27T02:02:34.931Z"
+}

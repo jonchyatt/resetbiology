@@ -1,0 +1,1038 @@
+[
+  {
+    "slug": "testosterone",
+    "peptide": "Testosterone",
+    "category": "Uncategorized",
+    "aliases": [
+      "testosterone",
+      "TRT",
+      "Testosterone",
+      "TESTOSTERONE",
+      "trt"
+    ],
+    "total_mentions": 6503,
+    "has_hunter_baseline": false,
+    "has_taylor": true,
+    "has_bachmeyer": true
+  },
+  {
+    "slug": "estrogen",
+    "peptide": "Estrogen",
+    "category": "Uncategorized",
+    "aliases": [
+      "estrogen",
+      "estradiol",
+      "Estrogen",
+      "Estradiol"
+    ],
+    "total_mentions": 2303,
+    "has_hunter_baseline": false,
+    "has_taylor": true,
+    "has_bachmeyer": true
+  },
+  {
+    "slug": "tb-500",
+    "peptide": "TB-500",
+    "category": "Healing",
+    "aliases": [
+      "TB500",
+      "TB 500",
+      "TB4",
+      "TB-500",
+      "tb500",
+      "tb-500",
+      "thymosin beta-4",
+      "Thymosin Beta 4",
+      "Thymosin Beta-4",
+      "TB-4",
+      "Thymosin beta 4",
+      "thymosin beta 4"
+    ],
+    "total_mentions": 2011,
+    "has_hunter_baseline": true,
+    "has_taylor": true,
+    "has_bachmeyer": true
+  },
+  {
+    "slug": "glp-1",
+    "peptide": "GLP-1",
+    "category": "Uncategorized",
+    "aliases": [
+      "GLP1",
+      "GLP-1",
+      "glp-1",
+      "glp1",
+      "glp 1",
+      "GLP 1"
+    ],
+    "total_mentions": 2006,
+    "has_hunter_baseline": false,
+    "has_taylor": true,
+    "has_bachmeyer": true
+  },
+  {
+    "slug": "ss-31",
+    "peptide": "SS-31",
+    "category": "Uncategorized",
+    "aliases": [
+      "SS31",
+      "SS-31",
+      "Elamipretide",
+      "ss-31",
+      "elamipretide",
+      "ss31"
+    ],
+    "total_mentions": 1570,
+    "has_hunter_baseline": false,
+    "has_taylor": true,
+    "has_bachmeyer": true
+  },
+  {
+    "slug": "nad",
+    "peptide": "NAD+",
+    "category": "Uncategorized",
+    "aliases": [
+      "NAD",
+      "nad"
+    ],
+    "total_mentions": 1476,
+    "has_hunter_baseline": false,
+    "has_taylor": true,
+    "has_bachmeyer": true
+  },
+  {
+    "slug": "progesterone",
+    "peptide": "Progesterone",
+    "category": "Uncategorized",
+    "aliases": [
+      "progesterone",
+      "Progesterone"
+    ],
+    "total_mentions": 1294,
+    "has_hunter_baseline": false,
+    "has_taylor": true,
+    "has_bachmeyer": true
+  },
+  {
+    "slug": "bpc-157",
+    "peptide": "BPC-157",
+    "category": "Healing",
+    "aliases": [
+      "BPC157",
+      "BPC 157",
+      "BPC-157",
+      "bpc157",
+      "bpc-157",
+      "bpc 157"
+    ],
+    "total_mentions": 1234,
+    "has_hunter_baseline": true,
+    "has_taylor": true,
+    "has_bachmeyer": true
+  },
+  {
+    "slug": "metformin",
+    "peptide": "Metformin",
+    "category": "Uncategorized",
+    "aliases": [
+      "Metformin",
+      "metformin"
+    ],
+    "total_mentions": 1230,
+    "has_hunter_baseline": false,
+    "has_taylor": true,
+    "has_bachmeyer": true
+  },
+  {
+    "slug": "glutathione",
+    "peptide": "Glutathione",
+    "category": "Uncategorized",
+    "aliases": [
+      "glutathione",
+      "Glutathione",
+      "GSH"
+    ],
+    "total_mentions": 1019,
+    "has_hunter_baseline": false,
+    "has_taylor": true,
+    "has_bachmeyer": true
+  },
+  {
+    "slug": "kpv",
+    "peptide": "KPV",
+    "category": "Uncategorized",
+    "aliases": [
+      "KPV",
+      "kpv"
+    ],
+    "total_mentions": 1009,
+    "has_hunter_baseline": false,
+    "has_taylor": true,
+    "has_bachmeyer": true
+  },
+  {
+    "slug": "cjc-1295",
+    "peptide": "CJC-1295",
+    "category": "Uncategorized",
+    "aliases": [
+      "CJC",
+      "CJC-1295",
+      "CJC 1295",
+      "CJC1295"
+    ],
+    "total_mentions": 981,
+    "has_hunter_baseline": false,
+    "has_taylor": true,
+    "has_bachmeyer": true
+  },
+  {
+    "slug": "igf-1",
+    "peptide": "IGF-1",
+    "category": "Uncategorized",
+    "aliases": [
+      "IGF-1",
+      "IGF 1",
+      "igf1",
+      "igf-1",
+      "IGF1"
+    ],
+    "total_mentions": 894,
+    "has_hunter_baseline": false,
+    "has_taylor": true,
+    "has_bachmeyer": true
+  },
+  {
+    "slug": "methylene-blue",
+    "peptide": "Methylene Blue",
+    "category": "Uncategorized",
+    "aliases": [
+      "methylene blue",
+      "Methylene Blue",
+      "Methylene blue",
+      "methylene Blue"
+    ],
+    "total_mentions": 882,
+    "has_hunter_baseline": false,
+    "has_taylor": true,
+    "has_bachmeyer": true
+  },
+  {
+    "slug": "retatrutide",
+    "peptide": "Retatrutide",
+    "category": "Uncategorized",
+    "aliases": [
+      "Retatrutide",
+      "retatrutide",
+      "reta",
+      "Reta",
+      "GLP-3",
+      "glp-3",
+      "RETA"
+    ],
+    "total_mentions": 859,
+    "has_hunter_baseline": false,
+    "has_taylor": true,
+    "has_bachmeyer": true
+  },
+  {
+    "slug": "ghk-cu",
+    "peptide": "GHK-Cu",
+    "category": "Uncategorized",
+    "aliases": [
+      "GHK",
+      "GHK-Cu",
+      "ghk-cu",
+      "GHK-cu",
+      "ghk",
+      "ghk CU",
+      "ghk Cu"
+    ],
+    "total_mentions": 784,
+    "has_hunter_baseline": false,
+    "has_taylor": true,
+    "has_bachmeyer": true
+  },
+  {
+    "slug": "tesamorelin",
+    "peptide": "Tesamorelin",
+    "category": "Fat Loss",
+    "aliases": [
+      "Tesamorelin",
+      "tesamorelin",
+      "Tessa",
+      "tessa"
+    ],
+    "total_mentions": 669,
+    "has_hunter_baseline": true,
+    "has_taylor": true,
+    "has_bachmeyer": true
+  },
+  {
+    "slug": "hgh",
+    "peptide": "HGH",
+    "category": "Uncategorized",
+    "aliases": [
+      "HGH",
+      "human growth hormone",
+      "Human Growth Hormone",
+      "hgh"
+    ],
+    "total_mentions": 625,
+    "has_hunter_baseline": false,
+    "has_taylor": true,
+    "has_bachmeyer": true
+  },
+  {
+    "slug": "ipamorelin",
+    "peptide": "Ipamorelin",
+    "category": "Fat Loss",
+    "aliases": [
+      "Ipamorelin",
+      "Ipa",
+      "ipamorelin",
+      "ipa",
+      "IPA"
+    ],
+    "total_mentions": 485,
+    "has_hunter_baseline": true,
+    "has_taylor": true,
+    "has_bachmeyer": true
+  },
+  {
+    "slug": "semaglutide",
+    "peptide": "Semaglutide",
+    "category": "Fat Loss",
+    "aliases": [
+      "sema",
+      "semaglutide",
+      "Semaglutide",
+      "Ozempic",
+      "Wegovy",
+      "ozempic",
+      "wegovy",
+      "SEMA",
+      "Sema"
+    ],
+    "total_mentions": 461,
+    "has_hunter_baseline": true,
+    "has_taylor": true,
+    "has_bachmeyer": true
+  },
+  {
+    "slug": "vip",
+    "peptide": "VIP",
+    "category": "Uncategorized",
+    "aliases": [
+      "VIP",
+      "vip",
+      "Vasoactive Intestinal Peptide",
+      "vasoactive intestinal peptide"
+    ],
+    "total_mentions": 459,
+    "has_hunter_baseline": false,
+    "has_taylor": true,
+    "has_bachmeyer": true
+  },
+  {
+    "slug": "mk-677",
+    "peptide": "MK-677",
+    "category": "Uncategorized",
+    "aliases": [
+      "MK-677",
+      "MK677"
+    ],
+    "total_mentions": 413,
+    "has_hunter_baseline": false,
+    "has_taylor": true,
+    "has_bachmeyer": true
+  },
+  {
+    "slug": "tirzepatide",
+    "peptide": "Tirzepatide",
+    "category": "Fat Loss",
+    "aliases": [
+      "tirzepatide",
+      "Tirz",
+      "Tirzepatide",
+      "Mounjaro",
+      "tirz",
+      "Zepbound",
+      "zepbound",
+      "mounjaro"
+    ],
+    "total_mentions": 385,
+    "has_hunter_baseline": true,
+    "has_taylor": true,
+    "has_bachmeyer": true
+  },
+  {
+    "slug": "oxytocin",
+    "peptide": "Oxytocin",
+    "category": "Uncategorized",
+    "aliases": [
+      "oxytocin",
+      "Oxytocin"
+    ],
+    "total_mentions": 344,
+    "has_hunter_baseline": false,
+    "has_taylor": true,
+    "has_bachmeyer": true
+  },
+  {
+    "slug": "ll-37",
+    "peptide": "LL-37",
+    "category": "Immunity",
+    "aliases": [
+      "LL-37",
+      "LL37",
+      "ll37",
+      "LL 37"
+    ],
+    "total_mentions": 298,
+    "has_hunter_baseline": true,
+    "has_taylor": true,
+    "has_bachmeyer": true
+  },
+  {
+    "slug": "slu-pp-332",
+    "peptide": "SLU-PP-332",
+    "category": "Uncategorized",
+    "aliases": [
+      "SLU",
+      "slu",
+      "SLU-PP",
+      "SLU-PP-332",
+      "SLU-pp-332",
+      "slu-pp-332",
+      "SLU PP 332"
+    ],
+    "total_mentions": 280,
+    "has_hunter_baseline": false,
+    "has_taylor": true,
+    "has_bachmeyer": true
+  },
+  {
+    "slug": "l-carnitine",
+    "peptide": "L-Carnitine",
+    "category": "Uncategorized",
+    "aliases": [
+      "carnitine",
+      "L-carnitine",
+      "L-Carnitine",
+      "l-carnitine",
+      "Carnitine"
+    ],
+    "total_mentions": 199,
+    "has_hunter_baseline": false,
+    "has_taylor": true,
+    "has_bachmeyer": true
+  },
+  {
+    "slug": "thymosin-alpha-1",
+    "peptide": "Thymosin-Alpha 1",
+    "category": "Immunity",
+    "aliases": [
+      "TA1",
+      "Thymosin alpha 1",
+      "Thymosin Alpha 1",
+      "thymosin alpha 1",
+      "TA-1"
+    ],
+    "total_mentions": 197,
+    "has_hunter_baseline": true,
+    "has_taylor": true,
+    "has_bachmeyer": true
+  },
+  {
+    "slug": "glow",
+    "peptide": "Glow",
+    "category": "Uncategorized",
+    "aliases": [
+      "Glow",
+      "glow",
+      "GLOW"
+    ],
+    "total_mentions": 189,
+    "has_hunter_baseline": false,
+    "has_taylor": true,
+    "has_bachmeyer": true
+  },
+  {
+    "slug": "aod-9604",
+    "peptide": "AOD-9604",
+    "category": "Fat Loss",
+    "aliases": [
+      "AOD",
+      "AOD9604",
+      "AOD-9604",
+      "aod"
+    ],
+    "total_mentions": 186,
+    "has_hunter_baseline": true,
+    "has_taylor": true,
+    "has_bachmeyer": true
+  },
+  {
+    "slug": "5-amino-1mq",
+    "peptide": "5-Amino-1MQ",
+    "category": "Uncategorized",
+    "aliases": [
+      "5-amino",
+      "5-Amino-1MQ",
+      "5-amino-1mq",
+      "5-Amino",
+      "5-amino-1MQ",
+      "5 Amino 1mq",
+      "5 amino 1MQ"
+    ],
+    "total_mentions": 161,
+    "has_hunter_baseline": false,
+    "has_taylor": true,
+    "has_bachmeyer": true
+  },
+  {
+    "slug": "epitalon",
+    "peptide": "Epitalon",
+    "category": "Longevity",
+    "aliases": [
+      "epitalon",
+      "Epitalon",
+      "Epithalon",
+      "epithalon"
+    ],
+    "total_mentions": 152,
+    "has_hunter_baseline": true,
+    "has_taylor": true,
+    "has_bachmeyer": true
+  },
+  {
+    "slug": "melanotan-ii",
+    "peptide": "Melanotan II",
+    "category": "Uncategorized",
+    "aliases": [
+      "Melanotan II",
+      "Melanotan 2",
+      "MT-2",
+      "melanotan 2",
+      "mt2",
+      "MT2"
+    ],
+    "total_mentions": 149,
+    "has_hunter_baseline": false,
+    "has_taylor": true,
+    "has_bachmeyer": true
+  },
+  {
+    "slug": "p21",
+    "peptide": "P21",
+    "category": "Uncategorized",
+    "aliases": [
+      "P21"
+    ],
+    "total_mentions": 147,
+    "has_hunter_baseline": false,
+    "has_taylor": true,
+    "has_bachmeyer": false
+  },
+  {
+    "slug": "cagrilintide",
+    "peptide": "Cagrilintide",
+    "category": "Uncategorized",
+    "aliases": [
+      "Cagrilintide",
+      "cagrilintide",
+      "Cagri",
+      "cagri"
+    ],
+    "total_mentions": 133,
+    "has_hunter_baseline": false,
+    "has_taylor": true,
+    "has_bachmeyer": false
+  },
+  {
+    "slug": "cerebrolysin",
+    "peptide": "Cerebrolysin",
+    "category": "Uncategorized",
+    "aliases": [
+      "Cerebrolysin",
+      "cerebrolysin"
+    ],
+    "total_mentions": 127,
+    "has_hunter_baseline": false,
+    "has_taylor": true,
+    "has_bachmeyer": true
+  },
+  {
+    "slug": "melanotan-i",
+    "peptide": "Melanotan I",
+    "category": "Cognitive Enhancement",
+    "aliases": [
+      "MT-1",
+      "Melanotan I",
+      "Melanotan 1",
+      "melanotan 1"
+    ],
+    "total_mentions": 120,
+    "has_hunter_baseline": true,
+    "has_taylor": true,
+    "has_bachmeyer": false
+  },
+  {
+    "slug": "igf-1-lr3",
+    "peptide": "IGF-1 LR3",
+    "category": "Uncategorized",
+    "aliases": [
+      "IGF-1 LR3",
+      "LR3",
+      "igf1 lr3",
+      "igf-1 lr3",
+      "lr3"
+    ],
+    "total_mentions": 90,
+    "has_hunter_baseline": false,
+    "has_taylor": true,
+    "has_bachmeyer": true
+  },
+  {
+    "slug": "dsip",
+    "peptide": "DSIP",
+    "category": "Uncategorized",
+    "aliases": [
+      "DSIP",
+      "dsip",
+      "Delta sleep inducing peptide",
+      "delta sleep inducing peptide"
+    ],
+    "total_mentions": 77,
+    "has_hunter_baseline": false,
+    "has_taylor": true,
+    "has_bachmeyer": true
+  },
+  {
+    "slug": "cartalax",
+    "peptide": "Cartalax",
+    "category": "Uncategorized",
+    "aliases": [
+      "Cartalax",
+      "cartalax"
+    ],
+    "total_mentions": 73,
+    "has_hunter_baseline": false,
+    "has_taylor": true,
+    "has_bachmeyer": false
+  },
+  {
+    "slug": "sermorelin",
+    "peptide": "Sermorelin",
+    "category": "Uncategorized",
+    "aliases": [
+      "sermorelin",
+      "Sermorelin"
+    ],
+    "total_mentions": 71,
+    "has_hunter_baseline": false,
+    "has_taylor": true,
+    "has_bachmeyer": true
+  },
+  {
+    "slug": "ghrp-2",
+    "peptide": "GHRP-2",
+    "category": "Uncategorized",
+    "aliases": [
+      "GHRP-2",
+      "GHRP2",
+      "GHRP 2"
+    ],
+    "total_mentions": 63,
+    "has_hunter_baseline": false,
+    "has_taylor": true,
+    "has_bachmeyer": true
+  },
+  {
+    "slug": "pregnenolone",
+    "peptide": "Pregnenolone",
+    "category": "Uncategorized",
+    "aliases": [
+      "pregnenolone",
+      "Pregnenolone"
+    ],
+    "total_mentions": 63,
+    "has_hunter_baseline": false,
+    "has_taylor": true,
+    "has_bachmeyer": true
+  },
+  {
+    "slug": "dhea",
+    "peptide": "DHEA",
+    "category": "Uncategorized",
+    "aliases": [
+      "DHEA"
+    ],
+    "total_mentions": 57,
+    "has_hunter_baseline": false,
+    "has_taylor": true,
+    "has_bachmeyer": true
+  },
+  {
+    "slug": "pt-141",
+    "peptide": "PT-141",
+    "category": "Uncategorized",
+    "aliases": [
+      "PT-141",
+      "Bremelanotide",
+      "bremelanotide"
+    ],
+    "total_mentions": 56,
+    "has_hunter_baseline": false,
+    "has_taylor": true,
+    "has_bachmeyer": true
+  },
+  {
+    "slug": "dihexa",
+    "peptide": "Dihexa",
+    "category": "Uncategorized",
+    "aliases": [
+      "Dihexa",
+      "dihexa"
+    ],
+    "total_mentions": 54,
+    "has_hunter_baseline": false,
+    "has_taylor": true,
+    "has_bachmeyer": true
+  },
+  {
+    "slug": "rapamycin",
+    "peptide": "Rapamycin",
+    "category": "Uncategorized",
+    "aliases": [
+      "rapamycin",
+      "Rapamycin"
+    ],
+    "total_mentions": 54,
+    "has_hunter_baseline": false,
+    "has_taylor": true,
+    "has_bachmeyer": true
+  },
+  {
+    "slug": "spermidine",
+    "peptide": "Spermidine",
+    "category": "Uncategorized",
+    "aliases": [
+      "spermidine",
+      "Spermidine"
+    ],
+    "total_mentions": 47,
+    "has_hunter_baseline": false,
+    "has_taylor": false,
+    "has_bachmeyer": false
+  },
+  {
+    "slug": "pea",
+    "peptide": "PEA",
+    "category": "Uncategorized",
+    "aliases": [
+      "PEA",
+      "Palmitoylethanolamide",
+      "pea"
+    ],
+    "total_mentions": 41,
+    "has_hunter_baseline": false,
+    "has_taylor": true,
+    "has_bachmeyer": true
+  },
+  {
+    "slug": "thymogen",
+    "peptide": "Thymogen",
+    "category": "Uncategorized",
+    "aliases": [
+      "Thymogen",
+      "thymogen"
+    ],
+    "total_mentions": 39,
+    "has_hunter_baseline": false,
+    "has_taylor": true,
+    "has_bachmeyer": false
+  },
+  {
+    "slug": "kisspeptin",
+    "peptide": "Kisspeptin",
+    "category": "Uncategorized",
+    "aliases": [
+      "kisspeptin",
+      "Kisspeptin"
+    ],
+    "total_mentions": 38,
+    "has_hunter_baseline": false,
+    "has_taylor": true,
+    "has_bachmeyer": false
+  },
+  {
+    "slug": "atx-304",
+    "peptide": "ATX-304",
+    "category": "Uncategorized",
+    "aliases": [
+      "ATX-304",
+      "ATX304",
+      "ATX 304"
+    ],
+    "total_mentions": 36,
+    "has_hunter_baseline": false,
+    "has_taylor": true,
+    "has_bachmeyer": false
+  },
+  {
+    "slug": "pancragen",
+    "peptide": "Pancragen",
+    "category": "Uncategorized",
+    "aliases": [
+      "Pancragen",
+      "pancragen"
+    ],
+    "total_mentions": 36,
+    "has_hunter_baseline": false,
+    "has_taylor": false,
+    "has_bachmeyer": false
+  },
+  {
+    "slug": "ovagen",
+    "peptide": "Ovagen",
+    "category": "Uncategorized",
+    "aliases": [
+      "Ovagen",
+      "ovagen"
+    ],
+    "total_mentions": 35,
+    "has_hunter_baseline": false,
+    "has_taylor": false,
+    "has_bachmeyer": false
+  },
+  {
+    "slug": "thymalin",
+    "peptide": "Thymalin",
+    "category": "Longevity",
+    "aliases": [
+      "Thymalin",
+      "thymalin"
+    ],
+    "total_mentions": 33,
+    "has_hunter_baseline": true,
+    "has_taylor": true,
+    "has_bachmeyer": false
+  },
+  {
+    "slug": "ghrp-6",
+    "peptide": "GHRP-6",
+    "category": "Uncategorized",
+    "aliases": [
+      "GHRP-6",
+      "GHRP6"
+    ],
+    "total_mentions": 31,
+    "has_hunter_baseline": false,
+    "has_taylor": true,
+    "has_bachmeyer": true
+  },
+  {
+    "slug": "bronchogen",
+    "peptide": "Bronchogen",
+    "category": "Uncategorized",
+    "aliases": [
+      "Bronchogen",
+      "bronchogen"
+    ],
+    "total_mentions": 30,
+    "has_hunter_baseline": false,
+    "has_taylor": false,
+    "has_bachmeyer": false
+  },
+  {
+    "slug": "pe-22-28",
+    "peptide": "PE-22-28",
+    "category": "Uncategorized",
+    "aliases": [
+      "PE-22-28",
+      "PE 22-28",
+      "PE2228"
+    ],
+    "total_mentions": 25,
+    "has_hunter_baseline": false,
+    "has_taylor": true,
+    "has_bachmeyer": false
+  },
+  {
+    "slug": "dada",
+    "peptide": "DADA",
+    "category": "Uncategorized",
+    "aliases": [
+      "Dada",
+      "DADA"
+    ],
+    "total_mentions": 24,
+    "has_hunter_baseline": false,
+    "has_taylor": true,
+    "has_bachmeyer": false
+  },
+  {
+    "slug": "klow",
+    "peptide": "Klow",
+    "category": "Uncategorized",
+    "aliases": [
+      "KLOW",
+      "klow"
+    ],
+    "total_mentions": 24,
+    "has_hunter_baseline": false,
+    "has_taylor": false,
+    "has_bachmeyer": false
+  },
+  {
+    "slug": "hgh-fragment-176-191",
+    "peptide": "HGH Fragment 176-191",
+    "category": "Uncategorized",
+    "aliases": [
+      "HGH frag",
+      "HGH fragment",
+      "176-191",
+      "HGH Fragment",
+      "HGH Frag"
+    ],
+    "total_mentions": 21,
+    "has_hunter_baseline": false,
+    "has_taylor": false,
+    "has_bachmeyer": false
+  },
+  {
+    "slug": "pinealon",
+    "peptide": "Pinealon",
+    "category": "Uncategorized",
+    "aliases": [
+      "Pinealon",
+      "pinealon"
+    ],
+    "total_mentions": 20,
+    "has_hunter_baseline": false,
+    "has_taylor": true,
+    "has_bachmeyer": false
+  },
+  {
+    "slug": "mazdutide",
+    "peptide": "Mazdutide",
+    "category": "Uncategorized",
+    "aliases": [
+      "Mazdutide",
+      "mazdutide"
+    ],
+    "total_mentions": 17,
+    "has_hunter_baseline": false,
+    "has_taylor": false,
+    "has_bachmeyer": false
+  },
+  {
+    "slug": "urolithin-a",
+    "peptide": "Urolithin A",
+    "category": "Uncategorized",
+    "aliases": [
+      "Urolithin A",
+      "Urolithin"
+    ],
+    "total_mentions": 14,
+    "has_hunter_baseline": false,
+    "has_taylor": false,
+    "has_bachmeyer": false
+  },
+  {
+    "slug": "semax",
+    "peptide": "Semax",
+    "category": "Uncategorized",
+    "aliases": [
+      "semax",
+      "Semax"
+    ],
+    "total_mentions": 13,
+    "has_hunter_baseline": false,
+    "has_taylor": true,
+    "has_bachmeyer": false
+  },
+  {
+    "slug": "selank",
+    "peptide": "Selank",
+    "category": "Uncategorized",
+    "aliases": [
+      "selank",
+      "Selank"
+    ],
+    "total_mentions": 11,
+    "has_hunter_baseline": false,
+    "has_taylor": true,
+    "has_bachmeyer": false
+  },
+  {
+    "slug": "survodutide",
+    "peptide": "Survodutide",
+    "category": "Uncategorized",
+    "aliases": [
+      "Survodutide"
+    ],
+    "total_mentions": 11,
+    "has_hunter_baseline": false,
+    "has_taylor": false,
+    "has_bachmeyer": false
+  },
+  {
+    "slug": "chonluten",
+    "peptide": "Chonluten",
+    "category": "Uncategorized",
+    "aliases": [
+      "Chonluten"
+    ],
+    "total_mentions": 7,
+    "has_hunter_baseline": false,
+    "has_taylor": false,
+    "has_bachmeyer": false
+  },
+  {
+    "slug": "livagen",
+    "peptide": "Livagen",
+    "category": "Uncategorized",
+    "aliases": [
+      "Livagen"
+    ],
+    "total_mentions": 7,
+    "has_hunter_baseline": false,
+    "has_taylor": false,
+    "has_bachmeyer": false
+  },
+  {
+    "slug": "acetyl-l-carnitine",
+    "peptide": "Acetyl-L-Carnitine",
+    "category": "Uncategorized",
+    "aliases": [
+      "ALCAR",
+      "acetyl-L-carnitine"
+    ],
+    "total_mentions": 4,
+    "has_hunter_baseline": false,
+    "has_taylor": false,
+    "has_bachmeyer": false
+  },
+  {
+    "slug": "cjc-1295-no-dac",
+    "peptide": "CJC-1295 No DAC",
+    "category": "Longevity",
+    "aliases": [],
+    "total_mentions": 0,
+    "has_hunter_baseline": true,
+    "has_taylor": false,
+    "has_bachmeyer": false
+  },
+  {
+    "slug": "mots-c",
+    "peptide": "MOTS-C",
+    "category": "Fat Loss",
+    "aliases": [],
+    "total_mentions": 0,
+    "has_hunter_baseline": true,
+    "has_taylor": false,
+    "has_bachmeyer": false
+  }
+]

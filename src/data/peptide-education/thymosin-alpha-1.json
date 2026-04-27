@@ -1,0 +1,553 @@
+{
+  "peptide": "Thymosin-Alpha 1",
+  "slug": "thymosin-alpha-1",
+  "aliases": [
+    "TA1",
+    "Thymosin alpha 1",
+    "Thymosin Alpha 1",
+    "thymosin alpha 1",
+    "TA-1"
+  ],
+  "category": "Immunity",
+  "experts": {
+    "hunter-williams": {
+      "baseline_protocol": {
+        "source": "Hunter Williams + Jay Campbell Cheat Sheet 2023",
+        "source_pdf": "data/peptide-libraries/cross-expert/cheat-sheets/hunter-williams-jay-campbell-peptide-cheat-sheet-2023.pdf",
+        "purpose": "Immunity",
+        "vial_mg": "10 mg",
+        "bac_mL": "3 mL",
+        "dose": "1.5 mg",
+        "units_on_1mL_insulin": "45",
+        "timing": "AM",
+        "frequency": "2 days per week",
+        "duration": "8 weeks on, 8 weeks off"
+      },
+      "summary": {
+        "mention_count": 64,
+        "top_doses": [
+          {
+            "dose": "10 mg",
+            "count": 16
+          },
+          {
+            "dose": "500 micrograms",
+            "count": 12
+          },
+          {
+            "dose": "2 mg",
+            "count": 9
+          },
+          {
+            "dose": "1 mg",
+            "count": 9
+          },
+          {
+            "dose": "200 mg",
+            "count": 4
+          },
+          {
+            "dose": "1.5 mg",
+            "count": 4
+          },
+          {
+            "dose": "0.5 mg",
+            "count": 3
+          },
+          {
+            "dose": "600 mcg",
+            "count": 1
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "1978a40874af523a",
+            "source_type": "email",
+            "source_title": "My Secret Weapon For Travel",
+            "source_date": "2025-06-19",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-06-19-my-secret-weapon-for-travel.md",
+            "mention_count": 16,
+            "top_snippet": "After a few days running on fumes, I started to feel the telltale signs of an incoming head illness in the form of a scratchy throat, sinus pressure, and a vague ache in my bones. In the past, this wa",
+            "top_context": "After a few days running on fumes, I started to feel the telltale signs of an incoming head illness in the form of a scratchy throat, sinus pressure, and a vague ache in my bones. In the past, this was the point where I’d be out of commission for days. But now, I don’t sweat it thanks to **Thymosin Alpha 1**. As soon as I felt that first twinge of sickness, I dosed 2mg of Thymosin Alpha 1 daily. Within 72 hours, even with the relentless travel schedule, my symptoms faded. No lost work, no days wasted. It felt like flipping a switch for my immune system. And that’s what inspired thi",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "19a511c4fca788af",
+            "source_type": "email",
+            "source_title": "Prepping Your Immune System For The Winter (Thymosin Alpha-1)",
+            "source_date": "2025-11-04",
+            "source_url": "https://open.spotify.com/episode/5Inu125eta0bSTQ7AWdY8N",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-11-04-thymosin-alpha-1-immune-system.md",
+            "mention_count": 11,
+            "top_snippet": "# Thymosin Alpha-1 — Hunter's Top Immune Peptide > \"One of those rare compounds that I always keep in my house year-round. A staple for me and for anyone who wants to stay resilient through the stress",
+            "top_context": "# Thymosin Alpha-1 — Hunter's Top Immune Peptide > \"One of those rare compounds that I always keep in my house year-round. A staple for me and for anyone who wants to stay resilient through the stress, travel, and chaos of life.\" > \"TA-1 helps your body REMEMBER how to defend itself.\" ## What It Is - **28-amino acid peptide** isolated from thymus gland in 1960s - Thymus = the gland responsible for \"training\" your T-cells (your body's main defense against infections + cancer) - As we age → thymus shrinks → immune system loses prec",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "19c730146ef3d524",
+            "source_type": "email",
+            "source_title": "Thymosin Alpha-1 For Depression?",
+            "source_date": "2026-02-18",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2026-02-18-thymosin-alpha-1-depression.md",
+            "mention_count": 7,
+            "top_snippet": "### Real-world reports - People starting TA-1 for IMMUNE reasons often report SECONDARY benefits: - Improved resilience - Clearer thinking - Subtle lift in mood - Less emotional volatility - \"That sta",
+            "top_context": "### Real-world reports - People starting TA-1 for IMMUNE reasons often report SECONDARY benefits: - Improved resilience - Clearer thinking - Subtle lift in mood - Less emotional volatility - \"That stabilization may be the nervous system finally exiting an inflammatory state\" ## ⭐ DOSING (TA-1 for Depression/Mood) — Hunter's protocol - **1 mg/day** subQ - **5 days on, 2 days off** - **8 weeks** - Sufficient consistent signaling to shift patterns without inducing overactivation - 8 weeks = meaningful immune remodeling (T-cell dynamics + cytokines don't change overnight) - After 8 weeks →",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "0TyW-wlJMxo",
+            "source_type": "podcast",
+            "source_title": "Saturday Morning Coffee Talk | Peptides, Hormones & Fitness for Couples 3/28/26",
+            "source_date": "2026-03-28",
+            "source_url": "https://youtu.be/0TyW-wlJMxo",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-03-28-saturday-morning-coffee-talk-peptides-hormones-fitness-for-couples-3-2-0TyW-wlJMxo.en.vtt",
+            "mention_count": 5,
+            "top_snippet": "currently use iodine nasal spray in public and take TA1 as well. I don't",
+            "top_context": "great with cream. Whenever I never want great with cream. Whenever I never want to go back on cream. Yeah. Testosterone cypionate, I don't like it, Testosterone cypionate, I don't like it, but that's what's out in the wild right but that's what's out in the wild right but that's what's out in the wild right now because there's a shortage. now because there's a shortage. now because there's a shortage. So, I would try to get So, I would try to get So, I would try to get enanthate or cypionate if you could, but enanthate or cypionate if you could, but enanthate or cypionate if you could, but it's better than nothing, but I'm not a it's better than nothing, but I'm not a it's better than nothing, but I'm not a fan. fan. fan. Yeah, it has to be compounded. UGLs tend Yeah, it has to be compounded. UGLs tend Yeah, it has to be compounded. UGLs tend to use preservatives and cause bigger to use preservatives and cause bigger to use preservatives and cause bigger lumps and histamines. Yeah, it depends lumps and histamines. Yeah, it depends lumps and histamines. Yeah, it depends on where you get it from, but generally on where you get it from, but generally on where you get it from, but generally speaking, that would be true. speaking, that would be true. speaking, that would be true. &gt;&gt; Mhm. We answered that one about the Retatide We answered that one about the Retatide break. I've never heard of this nasal iodine I've never heard of this nasal iodine effective for the variant going around. effective for the variant going around. effective for the variant going around. Need to make sure I don't get Need to make sure I don't get Need to make sure I don't get immunocompromised. Family member said immunocompromised. Family member said immunocompromised. Family member said currently use iodine nasal spray in currently use iodine nasal spray in currently use iodine nasal spray in public and take TA1 as well. I don't public and take TA1 as well. I don't public and take TA1 as well. I don't know. Yeah. I don't know about nasal know. Yeah. I don't know about nasal know. Yeah. I don't know about nasal iodine. iodine. iodine. I've gone back and forth of taking I've gone back and forth of taking I've gone back and forth of taking uh nascent iodine for years, and I've kind nascent iodine for years, and I've kind of been off that because I just wanted of been off that because I just wanted of been off that because I just wanted to see if there was any difference. I to see if there was any difference. I to see if there was any difference. I used iodine for years daily, though. I used iodine for years daily, though. I used iodine for years daily, though. I haven't used it lately. haven't used it lately. haven't used it lately. &gt;&gt; We haven't Yeah, we haven't used it &gt;&gt; We haven't Yeah, we haven't used it &gt;&gt; We haven't Yeah, we haven't used it lately. lately. lately. &gt;&gt; Yeah. &gt;&gt; Yeah. &gt;&gt; Yeah. I think it'd be good. It probably just I think it'd be good. It probably just I think it'd be good. It probably just depends on thyroid health, how deficient you are, thyroid health, how deficient you are, and whatnot. Yeah, I would just say, I mean, TA1 is Yeah, I would just say, I mean, TA1 is great. Thymalin could be another great great. Thymalin could be another great great. Thymalin could be another great one. Thymogen could be another great one one. Thymogen could be another great one one. Thymogen could be another great one to help with immune function. to help with immune function. to help with immune function. Glutathione as well. People discount Glutathione as well. People discount Glutathione as well. People discount glutathione, but glutathione is one of glutathione, but glutathione is one of glutathione, but glutathione is one of the best things to prophylactically help the best things to prophylactically help the best things to prophylactically help with immune function.",
+            "first_timestamp": "01:03:39.640"
+          },
+          {
+            "source_id": "JFrn_zX0RE4",
+            "source_type": "podcast",
+            "source_title": "Peptides & Longevity Medicine Explained by a Real Cardiologist | Dr. Abid Husain, MD",
+            "source_date": "2026-03-27",
+            "source_url": "https://youtu.be/JFrn_zX0RE4",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-03-27-peptides-longevity-medicine-explained-by-a-real-cardiologist-dr-abid-h-JFrn_zX0RE4.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "started with BPC. I started with TB4, TA1 and then uh the secrets CJC and",
+            "top_context": "there's human data on most peptides now. there's human data on most peptides now. It's just whether it's randomized It's just whether it's randomized It's just whether it's randomized control trials or whether it's data control trials or whether it's data control trials or whether it's data that's actually states side and in that's actually states side and in that's actually states side and in English because when you look at uh English because when you look at uh English because when you look at uh peptides like BPC peptides like BPC peptides like BPC um you know there are a lots there are um you know there are a lots there are um you know there are a lots there are many studies that are from Russia from many studies that are from Russia from many studies that are from Russia from the you from the you know the eastern the you from the you know the eastern the you from the you know the eastern block countries that are just not in block countries that are just not in block countries that are just not in English that never made it over to our English that never made it over to our English that never made it over to our databases. So um you know the way to get databases. So um you know the way to get databases. So um you know the way to get them to start you know introducing or them to start you know introducing or them to start you know introducing or understanding is just take one peptide understanding is just take one peptide understanding is just take one peptide take a handful of them that we know are take a handful of them that we know are take a handful of them that we know are safe and just learn those and that's safe and just learn those and that's safe and just learn those and that's what that's basically what I did. I what that's basically what I did. I what that's basically what I did. I started with BPC. I started with TB4, started with BPC. I started with TB4, started with BPC. I started with TB4, TA1 and then uh the secrets CJC and TA1 and then uh the secrets CJC and TA1 and then uh the secrets CJC and those are plenty to learn right there. those are plenty to learn right there. those are plenty to learn right there. And each one of those has an application And each one of those has an application And each one of those has an application to the cardiovascular system. They help to the cardiovascular system. They help to the cardiovascular system. They help the vascular system more more often than the vascular system more more often than the vascular system more more often than not. Things like BPC, they help the not. Things like BPC, they help the not. Things like BPC, they help the lining of the artery. They help lining of the artery. They help lining of the artery. They help regrowth. They help collagen. They help regrowth. They help collagen. They help regrowth. They help collagen. They help reduce fibrosis. TB4 similarly does the reduce fibrosis. TB4 similarly does the reduce fibrosis. TB4 similarly does the same thing. So you know get to know a same thing. So you know get to know a same thing. So you know get to know a few of the aspects of how these peptides few of the aspects of how these peptides few of the aspects of how these peptides are functional. Maybe know you know how are functional. Maybe know you know how are functional. Maybe know you know how they work on a cellular level because they work on a cellular level because they work on a cellular level because peptides really their strength is how peptides really their strength is how peptides really their strength is how they interact with our on a cellular they interact with our on a cellular they interact with our on a cellular level. And when we when you learn that",
+            "first_timestamp": "00:40:29.200"
+          },
+          {
+            "source_id": "4igc2UpFr7Q",
+            "source_type": "podcast",
+            "source_title": "GLP-1 Stacks, HGH & Healing Protocols - Your Questions Answered | March 2026",
+            "source_date": "2026-04-03",
+            "source_url": "https://youtu.be/4igc2UpFr7Q",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-04-03-glp-1-stacks-hgh-healing-protocols-your-questions-answered-march-2026-4igc2UpFr7Q.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "minutes here left. So let's talk some autoimmune. Can I Can Thymosin alpha 1",
+            "top_context": "hormones first would obviously for me as hormones first would obviously for me as someone who's dealt with those things someone who's dealt with those things someone who's dealt with those things like hormones made my personality much like hormones made my personality much like hormones made my personality much more enhanced to the point where I more enhanced to the point where I more enhanced to the point where I didn't really struggle with those things didn't really struggle with those things didn't really struggle with those things as much as you know, especially like as much as you know, especially like as much as you know, especially like social anxiety. But I would say Dihexa social anxiety. But I would say Dihexa social anxiety. But I would say Dihexa can be a really good one. can be a really good one. can be a really good one. New Pept can be a really good one. New Pept can be a really good one. New Pept can be a really good one. Oxytocin can be a really good one. I Oxytocin can be a really good one. I Oxytocin can be a really good one. I think those things kind of will help think those things kind of will help think those things kind of will help with with all those things. But with with all those things. But with with all those things. But ultimately, when you look at someone ultimately, when you look at someone ultimately, when you look at someone that has anxiety, you know, confidence that has anxiety, you know, confidence that has anxiety, you know, confidence issues, and fear issues, issues, and fear issues, issues, and fear issues, um um um the chemical piece is likely a component the chemical piece is likely a component the chemical piece is likely a component of that. But there's also a very real of that. But there's also a very real of that. But there's also a very real psychological, emotional, mental piece psychological, emotional, mental piece psychological, emotional, mental piece of that. And so I'm sure, you know, if of that. And so I'm sure, you know, if of that. And so I'm sure, you know, if you're asking this question, you're you're asking this question, you're you're asking this question, you're probably working on all these things. probably working on all these things. probably working on all these things. But I would just say don't don't forget But I would just say don't don't forget But I would just say don't don't forget that. Let's talk about some and I got a few Let's talk about some and I got a few minutes here left. So let's talk some minutes here left. So let's talk some minutes here left. So let's talk some autoimmune. Can I Can Thymosin alpha 1 autoimmune. Can I Can Thymosin alpha 1 autoimmune. Can I Can Thymosin alpha 1 or any other peptides reduce or or any other peptides reduce or or any other peptides reduce or eliminate autoimmune disorders like eliminate autoimmune disorders like eliminate autoimmune disorders like lupus? Absolutely. I've done stacks on lupus? Absolutely. I've done stacks on lupus? Absolutely. I've done stacks on autoimmune disease, but autoimmune disease, but autoimmune disease, but absolutely they can they can help. absolutely they can they can help. absolutely they can they can help. Obviously, everyone's autoimmune is Obviously, everyone's autoimmune is Obviously, everyone's autoimmune is going to be a little bit different, but going to be a little bit different, but going to be a little bit different, but that would be the first that would be the first that would be the first place I would start. All right. Moving along just to finish All right. Moving along just to finish up. up. up. Here's a good one around men's health. Here's a good one around men's health. Here's a good one around men's health. After a radical prostatectomy, how do After a radical prostatectomy, how do After a radical prostatectomy, how do you restore libido using testosterone, you restore libido using testosterone, you restore libido using testosterone, estradiol, and DHT? Removing the estradiol, and DHT? Removing the estradiol, and DHT? Removing the prostate kills your DHT production, and prostate kills your DHT production, and prostate kills your DHT production, and doctors don't tell you that. That's doctors don't tell you that. That's doctors don't tell you that. That's unfortunate. You can use unfortunate. You can use unfortunate. You can use injectable DHT, although that might be injectable DHT, although that might be injectable DHT, although that might be harder to come by these days. You could harder to come by these days. You could harder to come by these days. You could also maybe use something like a also maybe use something like a also maybe use something like a Primobolan or a Masteron to give you the",
+            "first_timestamp": "00:30:49.640"
+          },
+          {
+            "source_id": "E7GPNidicqY",
+            "source_type": "podcast",
+            "source_title": "Saturday Morning Coffee Talk 4/18/26",
+            "source_date": "2026-04-18",
+            "source_url": "https://youtu.be/E7GPNidicqY",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-04-18-saturday-morning-coffee-talk-4-18-26-E7GPNidicqY.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "getting colds every 6 weeks, travel often. Using TA1 max 500 micrograms, get",
+            "top_context": "technical explanation for it but what is technical explanation for it but what is even higher or beyond the technical even higher or beyond the technical even higher or beyond the technical explanation? Did somebody want not want explanation? Did somebody want not want explanation? Did somebody want not want me to film that video? me to film that video? me to film that video? Well, I could I guess you could say that Well, I could I guess you could say that Well, I could I guess you could say that someone doesn't want me filming any someone doesn't want me filming any someone doesn't want me filming any &gt;&gt; I think someone doesn't want you filming &gt;&gt; I think someone doesn't want you filming &gt;&gt; I think someone doesn't want you filming any video. any videos. There'd be a lot any video. any videos. There'd be a lot any video. any videos. There'd be a lot of people I guess happy out there if I of people I guess happy out there if I of people I guess happy out there if I just shut down making videos for good just shut down making videos for good just shut down making videos for good for whatever reason. But that's not what for whatever reason. But that's not what for whatever reason. But that's not what I'm going to do. But it's kind of one of I'm going to do. But it's kind of one of I'm going to do. But it's kind of one of those things like you choose to believe those things like you choose to believe those things like you choose to believe it or not, it exist. it or not, it exist. it or not, it exist. So anyway. So anyway. So anyway. Moving on. I don't know how I got there Moving on. I don't know how I got there Moving on. I don't know how I got there from LL-37 and KPV. Yeah, I don't from LL-37 and KPV. Yeah, I don't from LL-37 and KPV. Yeah, I don't either. either. either. That's why people are here. They we're That's why people are here. They we're That's why people are here. They we're entertaining. entertaining. entertaining. I hope so. I hope so. I hope so. I hope it's worth the while. Mid-40s I hope it's worth the while. Mid-40s I hope it's worth the while. Mid-40s female perimenopause on HRT still female perimenopause on HRT still female perimenopause on HRT still getting colds every 6 weeks, travel getting colds every 6 weeks, travel getting colds every 6 weeks, travel often. Using TA1 max 500 micrograms, get often. Using TA1 max 500 micrograms, get often. Using TA1 max 500 micrograms, get headaches. Tried Villon Chrisigen 500 headaches. Tried Villon Chrisigen 500 headaches. Tried Villon Chrisigen 500 micrograms daily. What else would you micrograms daily. What else would you micrograms daily. What else would you add? I would definitely I mean, if add? I would definitely I mean, if add? I would definitely I mean, if you're traveling a lot, it's one of you're traveling a lot, it's one of you're traveling a lot, it's one of those things you're you're getting those things you're you're getting those things you're you're getting exposure. Glutathione would be a major exposure. Glutathione would be a major exposure. Glutathione would be a major thing that I would add in if you're not thing that I would add in if you're not thing that I would add in if you're not using. That's going to help a lot. I using. That's going to help a lot. I using. That's going to help a lot. I would be injecting 100 to 200 mg of would be injecting 100 to 200 mg of would be injecting 100 to 200 mg of glutathione two to three times per week glutathione two to three times per week glutathione two to three times per week in this case. From there, you could add in this case. From there, you could add in this case. From there, you could add in a product called thymogen t h y m o g in a product called thymogen t h y m o g in a product called thymogen t h y m o g e n. That's going to be really good. e n. That's going to be really good. e n. That's going to be really good. It's a bioregulator that's a little bit It's a bioregulator that's a little bit It's a bioregulator that's a little bit more targeted than thymalin which is more targeted than thymalin which is more targeted than thymalin which is another bioregulator. You could actually another bioregulator. You could actually another bioregulator. You could actually add both of those in if you choose but add both of those in if you choose but add both of those in if you choose but those would be the ones I'd add in. You those would be the ones I'd add in. You those would be the ones I'd add in. You could also do LL-37 as well if it is could also do LL-37 as well if it is could also do LL-37 as well if it is some sort of viral or microbial",
+            "first_timestamp": "00:28:49.120"
+          },
+          {
+            "source_id": "1978f6718a372f6c",
+            "source_type": "email",
+            "source_title": "GLP Plateaus",
+            "source_date": "2025-06-20",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-06-20-glp-plateaus.md",
+            "mention_count": 3,
+            "top_snippet": "Happy Friday! Before getting into today’s email, I want to correct a typo from [yesterday’s email](https://huntershealthhacks.beehiiv.com/p/my-secret-weapon-for-travel). I misspoke on the math regardi",
+            "top_context": "Happy Friday! Before getting into today’s email, I want to correct a typo from [yesterday’s email](https://huntershealthhacks.beehiiv.com/p/my-secret-weapon-for-travel). I misspoke on the math regarding the mixing of Thymosin Alpha 1. The correct instructions should have read like the following: 1. **Reconstitution:** Take your 10mg vial of Thymosin Alpha 1 and add 2ml of bacteriostatic water (always use a sterile syringe). 2. **Mix gently** by swirling (don’t shake aggressively). 3. **Dosing:** Each 10-unit mark o",
+            "first_timestamp": null
+          }
+        ],
+        "acute_signals": [
+          {
+            "snippet": "often. Using TA1 max 500 micrograms, get",
+            "source_title": "Saturday Morning Coffee Talk 4/18/26",
+            "source_date": "2026-04-18",
+            "timestamp": "00:28:52.550",
+            "source_url": "https://youtu.be/E7GPNidicqY"
+          },
+          {
+            "snippet": "often. Using TA1 max 500 micrograms, get headaches. Tried Villon Chrisigen 500",
+            "source_title": "Saturday Morning Coffee Talk 4/18/26",
+            "source_date": "2026-04-18",
+            "timestamp": "00:28:52.560",
+            "source_url": "https://youtu.be/E7GPNidicqY"
+          },
+          {
+            "snippet": "ps://biolongevitylabs.com) for **15% off**. We’re also running the **15% off sale** on: • **Tesamorelin** – Ideal for visceral fat loss and liver health • **BPC-157** – Renowned for gut healing and in",
+            "source_title": "Ipamorelin Use Guide",
+            "source_date": "2025-02-19",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "makes your cells better at presenting viral or cancerous threats for attack. Whether you’re fighting a virus, bouncing back from chemo, or trying to keep your immune system sharp as you age, Tα1 bring",
+            "source_title": "My Secret Weapon For Travel",
+            "source_date": "2025-06-19",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "ctions (respiratory, sinus, etc.) * Those recovering from surgery, illness, or cancer therapy * Older adults who want to maintain immune vigilance as they age If you’re perfectly healthy, sleep eight ",
+            "source_title": "My Secret Weapon For Travel",
+            "source_date": "2025-06-19",
+            "timestamp": null,
+            "source_url": null
+          }
+        ],
+        "chronic_signals": [
+          {
+            "snippet": "currently use iodine nasal spray in public and take TA1 as well. I don't",
+            "source_title": "Saturday Morning Coffee Talk | Peptides, Hormones & Fitness for Couples 3/28/26",
+            "source_date": "2026-03-28",
+            "timestamp": "01:03:39.640",
+            "source_url": "https://youtu.be/0TyW-wlJMxo"
+          },
+          {
+            "snippet": "public and take TA1 as well. I don't",
+            "source_title": "Saturday Morning Coffee Talk | Peptides, Hormones & Fitness for Couples 3/28/26",
+            "source_date": "2026-03-28",
+            "timestamp": "01:03:41.270",
+            "source_url": "https://youtu.be/0TyW-wlJMxo"
+          },
+          {
+            "snippet": "public and take TA1 as well. I don't know. Yeah. I don't know about nasal",
+            "source_title": "Saturday Morning Coffee Talk | Peptides, Hormones & Fitness for Couples 3/28/26",
+            "source_date": "2026-03-28",
+            "timestamp": "01:03:41.280",
+            "source_url": "https://youtu.be/0TyW-wlJMxo"
+          },
+          {
+            "snippet": "Yeah, I would just say, I mean, TA1 is",
+            "source_title": "Saturday Morning Coffee Talk | Peptides, Hormones & Fitness for Couples 3/28/26",
+            "source_date": "2026-03-28",
+            "timestamp": "01:04:11.750",
+            "source_url": "https://youtu.be/0TyW-wlJMxo"
+          },
+          {
+            "snippet": "Yeah, I would just say, I mean, TA1 is great. Thymalin could be another great",
+            "source_title": "Saturday Morning Coffee Talk | Peptides, Hormones & Fitness for Couples 3/28/26",
+            "source_date": "2026-03-28",
+            "timestamp": "01:04:11.760",
+            "source_url": "https://youtu.be/0TyW-wlJMxo"
+          }
+        ]
+      }
+    },
+    "taylor-williams": {
+      "summary": {
+        "mention_count": 41,
+        "top_doses": [
+          {
+            "dose": "1 milligram",
+            "count": 18
+          },
+          {
+            "dose": "500 micrograms",
+            "count": 12
+          },
+          {
+            "dose": "200 mg",
+            "count": 3
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "JC1poI1OEog",
+            "source_type": "podcast",
+            "source_title": "Saturday Morning Coffee Talk 3/14/2026",
+            "source_date": "2026-03-14",
+            "source_url": "https://youtu.be/JC1poI1OEog",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2026-03-14-saturday-morning-coffee-talk-3-14-2026-JC1poI1OEog.en.vtt",
+            "mention_count": 24,
+            "top_snippet": "some pollen and everything out in the air, but thymosin alpha 1 can be really",
+            "top_context": "I'd say it's more smooth. It is more I'd say it's more smooth. It is more smooth. I think also smooth. I think also smooth. I think also like switching I think using like like switching I think using like like switching I think using like the certain GH the certain GH the certain GH Oh, okay. is like helping. Oh, okay. is like helping. Oh, okay. is like helping. &gt;&gt; Different. Yeah. A lot, too. Yeah. &gt;&gt; Different. Yeah. A lot, too. Yeah. &gt;&gt; Different. Yeah. A lot, too. Yeah. Also, like I know now that we're talking Also, like I know now that we're talking Also, like I know now that we're talking and my brain's a little bit more firing and my brain's a little bit more firing and my brain's a little bit more firing like like like allergies, pollen. allergies, pollen. allergies, pollen. People have been asking peptides for People have been asking peptides for People have been asking peptides for pollen and allergies. pollen and allergies. pollen and allergies. Yeah. That's that has Yeah. That's that has Yeah. That's that has &gt;&gt; Thymosin alpha-1 I would be my first. &gt;&gt; Thymosin alpha-1 I would be my first. &gt;&gt; Thymosin alpha-1 I would be my first. First just cuz it modulates the immune First just cuz it modulates the immune First just cuz it modulates the immune system. Typically, allergies system. Typically, allergies system. Typically, allergies is triggering your immune system and is triggering your immune system and is triggering your immune system and that's why we have all these responses, that's why we have all these responses, that's why we have all these responses, but we were outside this We were outside but we were outside this We were outside but we were outside this We were outside this morning and my I came back inside this morning and my I came back inside this morning and my I came back inside and my eyes were super itchy. Cuz and my eyes were super itchy. Cuz and my eyes were super itchy. Cuz there's already some there's already there's already some there's already there's already some there's already some pollen and everything out in the some pollen and everything out in the some pollen and everything out in the air, but thymosin alpha 1 can be really air, but thymosin alpha 1 can be really air, but thymosin alpha 1 can be really good for that. good for that. good for that. I don't think you need LL-37 I don't think you need LL-37 I don't think you need LL-37 specifically for allergies. specifically for allergies. specifically for allergies. &gt;&gt; like a sinus infection going on from &gt;&gt; like a sinus infection going on from &gt;&gt; like a sinus infection going on from allergies and from pollen like allergies and from pollen like allergies and from pollen like especially like if you're in the south especially like if you're in the south especially like if you're in the south and like the pine pollen starts, and like the pine pollen starts, and like the pine pollen starts, that's when a lot of people can kind of that's when a lot of people can kind of that's when a lot of people can kind of start getting more like sinus infections start getting more like sinus infections start getting more like sinus infections from the from the pine pollen. Yeah. from the from the pine pollen. Yeah. from the from the pine pollen. Yeah. Yeah, I think when it gets to the point Yeah, I think when it gets to the point Yeah, I think when it gets to the point of being a sinus infection of being a sinus infection of being a sinus infection &gt;&gt; infection, that's when I think LL-37 &gt;&gt; infection, that's when I think LL-37 &gt;&gt; infection, that's when I think LL-37 when to bring in LL-37. when to bring in LL-37. when to bring in LL-37. &gt;&gt; Yeah. KPV can help modulate &gt;&gt; Yeah. KPV can help modulate &gt;&gt; Yeah. KPV can help modulate inflammation as well, but I think inflammation as well, but I think inflammation as well, but I think thymosin alpha 1 would be my go-to thymosin alpha 1 would be my go-to thymosin alpha 1 would be my go-to just for allergy season Yeah. just for allergy season Yeah. just for allergy season Yeah. to help with that. to help with that. to help with that. I've been fortunate in my life I've I've I've been fortunate in my life I've I've I've been fortunate in my life I've I've never really had bad allergies. never really had bad allergies. never really had bad allergies. There was one time in college though",
+            "first_timestamp": "00:10:02.920"
+          },
+          {
+            "source_id": "JccJTHbWF84",
+            "source_type": "podcast",
+            "source_title": "Saturday Morning Coffee Talk | 2/7/26",
+            "source_date": "2026-02-08",
+            "source_url": "https://youtu.be/JccJTHbWF84",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2026-02-08-saturday-morning-coffee-talk-2-7-26-JccJTHbWF84.en.vtt",
+            "mention_count": 6,
+            "top_snippet": "can we all take beforehand to keep us healthy? TA1 von dosages okay for the",
+            "top_context": "three shots a week that's the can of three shots a week that's the can of worms right it's like is one shot a week worms right it's like is one shot a week worms right it's like is one shot a week better is three shots a week better I better is three shots a week better I better is three shots a week better I think whatever think whatever think whatever &gt;&gt; whatever &gt;&gt; whatever &gt;&gt; whatever &gt;&gt; you whatever you respond to is the best &gt;&gt; you whatever you respond to is the best &gt;&gt; you whatever you respond to is the best in my experience split dosing that is in my experience split dosing that is in my experience split dosing that is better the same way that split dosing better the same way that split dosing better the same way that split dosing testosterone even though the half life testosterone even though the half life testosterone even though the half life of testosterone is se testosterone of testosterone is se testosterone of testosterone is se testosterone siponates like seven to 10 days. But siponates like seven to 10 days. But siponates like seven to 10 days. But guess what? I feel better if I do it guess what? I feel better if I do it guess what? I feel better if I do it three or four times a week instead of three or four times a week instead of three or four times a week instead of one time a week or once every 10 days. one time a week or once every 10 days. one time a week or once every 10 days. So it just depends depends on the So it just depends depends on the So it just depends depends on the molecule, depends on the goals, you molecule, depends on the goals, you molecule, depends on the goals, you know, depends on your personal know, depends on your personal know, depends on your personal experience. But I I do think it matters, experience. But I I do think it matters, experience. But I I do think it matters, but I wouldn't say like some peptides but I wouldn't say like some peptides but I wouldn't say like some peptides have a halfife of 30 minutes, but it have a halfife of 30 minutes, but it have a halfife of 30 minutes, but it doesn't mean it doesn't work longer than doesn't mean it doesn't work longer than doesn't mean it doesn't work longer than 30 minutes because it's signaling and 30 minutes because it's signaling and 30 minutes because it's signaling and then that has a cascade effect over then that has a cascade effect over then that has a cascade effect over time. time. time. My family of six. Wow. Kids are 12, 12, My family of six. Wow. Kids are 12, 12, My family of six. Wow. Kids are 12, 12, 17, 19 is traveling to Europe next 17, 19 is traveling to Europe next 17, 19 is traveling to Europe next month. We aren't bringing peps, but what month. We aren't bringing peps, but what month. We aren't bringing peps, but what can we all take beforehand to keep us can we all take beforehand to keep us can we all take beforehand to keep us healthy? TA1 von dosages okay for the healthy? TA1 von dosages okay for the healthy? TA1 von dosages okay for the 12-year-olds. I mean, I think those are 12-year-olds. I mean, I think those are 12-year-olds. I mean, I think those are fine to take for the 12-year-olds. Thus fine to take for the 12-year-olds. Thus fine to take for the 12-year-olds. Thus one, if you guys are relatively healthy, one, if you guys are relatively healthy, one, if you guys are relatively healthy, probably thus alpha 1 by itself would be probably thus alpha 1 by itself would be probably thus alpha 1 by itself would be fine. I'll just do 1 milligram. fine. I'll just do 1 milligram. fine. I'll just do 1 milligram. &gt;&gt; Um, &gt;&gt; Um, &gt;&gt; Um, &gt;&gt; you know, probably every day leading up &gt;&gt; you know, probably every day leading up &gt;&gt; you know, probably every day leading up for like two to three weeks or so. Vlain for like two to three weeks or so. Vlain for like two to three weeks or so. Vlain can be good, too. You could do like one can be good, too. You could do like one can be good, too. You could do like one to two milligrams of that. to two milligrams of that. to two milligrams of that. &gt;&gt; Yeah. I would also bring that TA1 with &gt;&gt; Yeah. I would also bring that TA1 with &gt;&gt; Yeah. I would also bring that TA1 with you. Um, just use like you. Um, just use like you. Um, just use like &gt;&gt; Well, I said they're not bringing them. &gt;&gt; Well, I said they're not bringing them. &gt;&gt; Well, I said they're not bringing them. &gt;&gt; Oh, they're not bring &gt;&gt; Oh, they're not bring &gt;&gt; Oh, they're not bring &gt;&gt; in my experience. If you put them in &gt;&gt; in my experience. If you put them in &gt;&gt; in my experience. If you put them in your check bag going to Europe, I've your check bag going to Europe, I've your check bag going to Europe, I've never had issues going to Europe. I'm never had issues going to Europe. I'm never had issues going to Europe. I'm not a seasoned European traveler, even not a seasoned European traveler, even not a seasoned European traveler, even though I would like to be. though I would like to be. though I would like to be. &gt;&gt; I've gone to Europe the last two &gt;&gt; I've gone to Europe the last two &gt;&gt; I've gone to Europe the last two summers. So, summers. So, summers. So, &gt;&gt; but that's the only time. &gt;&gt; but that's the only time. &gt;&gt; but that's the only time. &gt;&gt; Yeah, that's true. &gt;&gt; Yeah, that's true. &gt;&gt; Yeah, that's true. &gt;&gt; So, I'm just I'm not I've been I've been &gt;&gt; So, I'm just I'm not I've been I've been &gt;&gt; So, I'm just I'm not I've been I've been to Europe like 20 times. to Europe like 20 times. to Europe like 20 times. &gt;&gt; I've been twice, but I've never had",
+            "first_timestamp": "01:09:15.600"
+          },
+          {
+            "source_id": "Cg7JtpnfRY4",
+            "source_type": "podcast",
+            "source_title": "Saturday Morning Coffee Talk 4/18/26",
+            "source_date": "2026-04-18",
+            "source_url": "https://youtu.be/Cg7JtpnfRY4",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2026-04-18-saturday-morning-coffee-talk-4-18-26-Cg7JtpnfRY4.en.vtt",
+            "mention_count": 6,
+            "top_snippet": "getting colds every 6 weeks, travel often. Using TA1 max 500 micrograms, get",
+            "top_context": "technical explanation for it. But what technical explanation for it. But what is even higher or beyond the technical is even higher or beyond the technical is even higher or beyond the technical explanation? Did somebody want explanation? Did somebody want explanation? Did somebody want not want me to film that video? not want me to film that video? not want me to film that video? Well, I could get I guess you could say Well, I could get I guess you could say Well, I could get I guess you could say that someone doesn't want me filming any that someone doesn't want me filming any that someone doesn't want me filming any &gt;&gt; does not want you filming any video. &gt;&gt; does not want you filming any video. &gt;&gt; does not want you filming any video. &gt;&gt; any videos. There'd be a lot of people I &gt;&gt; any videos. There'd be a lot of people I &gt;&gt; any videos. There'd be a lot of people I guess happy out there if I just shut guess happy out there if I just shut guess happy out there if I just shut down making videos for good for whatever down making videos for good for whatever down making videos for good for whatever reason. But that's not what I'm going to reason. But that's not what I'm going to reason. But that's not what I'm going to do. But it's kind of one of those things do. But it's kind of one of those things do. But it's kind of one of those things like you choose to believe it or not, it like you choose to believe it or not, it like you choose to believe it or not, it exist. exist. exist. So anyway. So anyway. So anyway. Moving on. I don't know how I got there Moving on. I don't know how I got there Moving on. I don't know how I got there from LL-37 and KPV. Yeah, I don't from LL-37 and KPV. Yeah, I don't from LL-37 and KPV. Yeah, I don't either. either. either. That's why people are here. They we're That's why people are here. They we're That's why people are here. They we're entertaining. I hope so. entertaining. I hope so. entertaining. I hope so. I hope it's worth the while. Mid-40s I hope it's worth the while. Mid-40s I hope it's worth the while. Mid-40s female, perimenopause on HRT, still female, perimenopause on HRT, still female, perimenopause on HRT, still getting colds every 6 weeks, travel getting colds every 6 weeks, travel getting colds every 6 weeks, travel often. Using TA1 max 500 micrograms, get often. Using TA1 max 500 micrograms, get often. Using TA1 max 500 micrograms, get headaches. Tried Vilon, Chrisagin 500 headaches. Tried Vilon, Chrisagin 500 headaches. Tried Vilon, Chrisagin 500 micrograms daily. What else would you micrograms daily. What else would you micrograms daily. What else would you add? I would definitely I mean, if add? I would definitely I mean, if add? I would definitely I mean, if you're traveling a lot, it's one of you're traveling a lot, it's one of you're traveling a lot, it's one of those things you're you're getting those things you're you're getting those things you're you're getting exposure. Glutathione would be a major exposure. Glutathione would be a major exposure. Glutathione would be a major thing that I would add in if you're not thing that I would add in if you're not thing that I would add in if you're not using. That's going to help a lot. I using. That's going to help a lot. I using. That's going to help a lot. I would be injecting 100 to 200 mg of would be injecting 100 to 200 mg of would be injecting 100 to 200 mg of glutathione two three times per week in glutathione two three times per week in glutathione two three times per week in this case. From there, you could add in this case. From there, you could add in this case. From there, you could add in a product called thymogen t h y m o g e a product called thymogen t h y m o g e a product called thymogen t h y m o g e n. That's going to be really good. It's n. That's going to be really good. It's n. That's going to be really good. It's a bioregulator that's a little bit more a bioregulator that's a little bit more a bioregulator that's a little bit more targeted than thymolin which is another targeted than thymolin which is another targeted than thymolin which is another bioregulator. You could actually add bioregulator. You could actually add bioregulator. You could actually add both of those in if you choose but those both of those in if you choose but those both of those in if you choose but those would be the ones I'd add in. You could would be the ones I'd add in. You could would be the ones I'd add in. You could also do LL-37 as well if it is some sort also do LL-37 as well if it is some sort also do LL-37 as well if it is some sort of viral or microbial infection. There",
+            "first_timestamp": "00:28:49.120"
+          },
+          {
+            "source_id": "G27dIPBJUSs",
+            "source_type": "podcast",
+            "source_title": "Saturday Morning Coffee Talk 3/28/26",
+            "source_date": "2026-03-28",
+            "source_url": "https://youtu.be/G27dIPBJUSs",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2026-03-28-saturday-morning-coffee-talk-3-28-26-G27dIPBJUSs.en.vtt",
+            "mention_count": 5,
+            "top_snippet": "currently use iodine nasal spray in public and take TA1 as well. I don't",
+            "top_context": "do great with cream. I never I never do great with cream. I never I never want to go back on cream. Yeah. Test isocaproate, I don't like it, but Test isocaproate, I don't like it, but that's what's out in the wild right now that's what's out in the wild right now that's what's out in the wild right now because there's a shortage. because there's a shortage. because there's a shortage. So, I would try to get So, I would try to get So, I would try to get enanthate or cypionate if you could, but enanthate or cypionate if you could, but enanthate or cypionate if you could, but it's better than nothing, but I'm not a it's better than nothing, but I'm not a it's better than nothing, but I'm not a fan. fan. fan. Yeah, it has to be compounded. UGLs have Yeah, it has to be compounded. UGLs have Yeah, it has to be compounded. UGLs have too many preservatives and cause bigger too many preservatives and cause bigger too many preservatives and cause bigger lumps and histamines. Yeah, it depends lumps and histamines. Yeah, it depends lumps and histamines. Yeah, it depends on where you get it from, but generally on where you get it from, but generally on where you get it from, but generally speaking that would be true. speaking that would be true. speaking that would be true. &gt;&gt; Mhm. We answered that one about the We answered that one about the Retatrutide break. I've never heard of this nasal iodine I've never heard of this nasal iodine effective for the variant going around. effective for the variant going around. effective for the variant going around. Need to make sure I don't get Need to make sure I don't get Need to make sure I don't get immunocompromised. Family member said immunocompromised. Family member said immunocompromised. Family member said currently use iodine nasal spray in currently use iodine nasal spray in currently use iodine nasal spray in public and take TA1 as well. I don't public and take TA1 as well. I don't public and take TA1 as well. I don't know. Yeah. I don't know about nasal know. Yeah. I don't know about nasal know. Yeah. I don't know about nasal iodine. iodine. iodine. I've gone back and forth of taking I've gone back and forth of taking I've gone back and forth of taking uh nascent iodine for years and I've kind nascent iodine for years and I've kind of been off that cuz I just wanted to of been off that cuz I just wanted to of been off that cuz I just wanted to see if there was any difference. I used see if there was any difference. I used see if there was any difference. I used iodine for years daily though. I haven't iodine for years daily though. I haven't iodine for years daily though. I haven't used it lately. used it lately. used it lately. &gt;&gt; We haven't We haven't used it lately. &gt;&gt; We haven't We haven't used it lately. &gt;&gt; We haven't We haven't used it lately. Yeah. Yeah. Yeah. I think it'd be good. It probably just I think it'd be good. It probably just I think it'd be good. It probably just depends on thyroid health, how deficient you are, thyroid health, how deficient you are, and whatnot. Yeah, I would just say I mean, TA1 is Yeah, I would just say I mean, TA1 is great. Thymalin could be another great great. Thymalin could be another great great. Thymalin could be another great one. Thymogen could be another great one one. Thymogen could be another great one one. Thymogen could be another great one to help with immune function. to help with immune function. to help with immune function. Glutathione as well. People discount Glutathione as well. People discount Glutathione as well. People discount glutathione, but glutathione is one of glutathione, but glutathione is one of glutathione, but glutathione is one of the best things to prophylactically help the best things to prophylactically help the best things to prophylactically help with immune function.",
+            "first_timestamp": "01:03:39.640"
+          }
+        ],
+        "acute_signals": [
+          {
+            "snippet": "some pollen and everything out in the air, but thymosin alpha 1 can be really",
+            "source_title": "Saturday Morning Coffee Talk 3/14/2026",
+            "source_date": "2026-03-14",
+            "timestamp": "00:10:02.920",
+            "source_url": "https://youtu.be/JC1poI1OEog"
+          },
+          {
+            "snippet": "air, but thymosin alpha 1 can be really",
+            "source_title": "Saturday Morning Coffee Talk 3/14/2026",
+            "source_date": "2026-03-14",
+            "timestamp": "00:10:06.110",
+            "source_url": "https://youtu.be/JC1poI1OEog"
+          },
+          {
+            "snippet": "air, but thymosin alpha 1 can be really good for that.",
+            "source_title": "Saturday Morning Coffee Talk 3/14/2026",
+            "source_date": "2026-03-14",
+            "timestamp": "00:10:06.120",
+            "source_url": "https://youtu.be/JC1poI1OEog"
+          },
+          {
+            "snippet": "inflammation as well, but I think thymosin alpha 1 would be my go-to",
+            "source_title": "Saturday Morning Coffee Talk 3/14/2026",
+            "source_date": "2026-03-14",
+            "timestamp": "00:10:35.520",
+            "source_url": "https://youtu.be/JC1poI1OEog"
+          },
+          {
+            "snippet": "thymosin alpha 1 would be my go-to",
+            "source_title": "Saturday Morning Coffee Talk 3/14/2026",
+            "source_date": "2026-03-14",
+            "timestamp": "00:10:38.110",
+            "source_url": "https://youtu.be/JC1poI1OEog"
+          }
+        ],
+        "chronic_signals": [
+          {
+            "snippet": "can we all take beforehand to keep us healthy? TA1 von dosages okay for the",
+            "source_title": "Saturday Morning Coffee Talk | 2/7/26",
+            "source_date": "2026-02-08",
+            "timestamp": "01:09:15.600",
+            "source_url": "https://youtu.be/JccJTHbWF84"
+          },
+          {
+            "snippet": "healthy? TA1 von dosages okay for the",
+            "source_title": "Saturday Morning Coffee Talk | 2/7/26",
+            "source_date": "2026-02-08",
+            "timestamp": "01:09:18.070",
+            "source_url": "https://youtu.be/JccJTHbWF84"
+          },
+          {
+            "snippet": "healthy? TA1 von dosages okay for the 12-year-olds. I mean, I think those are",
+            "source_title": "Saturday Morning Coffee Talk | 2/7/26",
+            "source_date": "2026-02-08",
+            "timestamp": "01:09:18.080",
+            "source_url": "https://youtu.be/JccJTHbWF84"
+          },
+          {
+            "snippet": "to two milligrams of that. &gt;&gt; Yeah. I would also bring that TA1 with",
+            "source_title": "Saturday Morning Coffee Talk | 2/7/26",
+            "source_date": "2026-02-08",
+            "timestamp": "01:09:35.839",
+            "source_url": "https://youtu.be/JccJTHbWF84"
+          },
+          {
+            "snippet": "&gt;&gt; Yeah. I would also bring that TA1 with",
+            "source_title": "Saturday Morning Coffee Talk | 2/7/26",
+            "source_date": "2026-02-08",
+            "timestamp": "01:09:37.910",
+            "source_url": "https://youtu.be/JccJTHbWF84"
+          }
+        ]
+      },
+      "female_specific_note": "Taylor Williams Coaching focuses on female-specific HRT/peptide guidance. Per-peptide notes here often emphasize female dosing, fertility, hormone interactions."
+    },
+    "trevor-bachmeyer": {
+      "summary": {
+        "mention_count": 92,
+        "top_doses": [
+          {
+            "dose": "1 milligram",
+            "count": 9
+          },
+          {
+            "dose": "200 micrograms",
+            "count": 6
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "J8dLY1QECr0",
+            "source_type": "podcast",
+            "source_title": "Thymosin Alpha 1 Is A Powerhouse For Life - Dr Trevor Bachmeyer",
+            "source_date": "2025-12-14",
+            "source_url": "https://youtu.be/J8dLY1QECr0",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2025-12-14-thymosin-alpha-1-is-a-powerhouse-for-life-dr-trevor-bachmeyer-J8dLY1QECr0.en.vtt",
+            "mention_count": 66,
+            "top_snippet": "to this.\" I'm talking about Thymosin alpha 1 today.",
+            "top_context": "December 13th, though. December 13th, though. 12 more days till Christmas. 12 more 12 more days till Christmas. 12 more 12 more days till Christmas. 12 more days. days. days. And 2025 has gone fast. So, I think And 2025 has gone fast. So, I think And 2025 has gone fast. So, I think about a lot of things towards the end of about a lot of things towards the end of about a lot of things towards the end of the year. And just to be very clear, so the year. And just to be very clear, so the year. And just to be very clear, so I get this out of the way before you're I get this out of the way before you're I get this out of the way before you're like, \"I don't know if I want to listen like, \"I don't know if I want to listen like, \"I don't know if I want to listen to this.\" I'm talking about Thymosin to this.\" I'm talking about Thymosin to this.\" I'm talking about Thymosin alpha 1 today. And a lot of people they think they know And a lot of people they think they know their going to immune system. Oh, man, their going to immune system. Oh, man, their going to immune system. Oh, man, it does so much more than that. It's it does so much more than that. It's it does so much more than that. It's pretty much a pretty much a pretty much a immune modulator that'll cure cancer if immune modulator that'll cure cancer if immune modulator that'll cure cancer if it's in you. There's so many things that it's in you. There's so many things that it's in you. There's so many things that we are being we are being we are being steered away from steered away from steered away from using fear, right? using fear, right? using fear, right? Like even all of this nonsense about I Like even all of this nonsense about I Like even all of this nonsense about I saw somebody that I used to follow and I saw somebody that I used to follow and I saw somebody that I used to follow and I used to respect that I just don't used to respect that I just don't used to respect that I just don't anymore. And he's a diet dude. And I'm anymore. And he's a diet dude. And I'm anymore. And he's a diet dude. And I'm like, \"Dude, you're a sellout. You're like, \"Dude, you're a sellout. You're like, \"Dude, you're a sellout. You're just shilling for Big Pharma. And you just shilling for Big Pharma. And you just shilling for Big Pharma. And you just embarrassed me and embarrassed just embarrassed me and embarrassed just embarrassed me and embarrassed yourself by going on, 'So glad that",
+            "first_timestamp": "00:00:16.160"
+          },
+          {
+            "source_id": "UaY1l0Yu50w",
+            "source_type": "podcast",
+            "source_title": "What Causes Arterial Plaque - Dr Trevor Bachmeyer 312",
+            "source_date": "2025-11-13",
+            "source_url": "https://youtu.be/UaY1l0Yu50w",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2025-11-13-what-causes-arterial-plaque-dr-trevor-bachmeyer-312-UaY1l0Yu50w.en.vtt",
+            "mention_count": 15,
+            "top_snippet": "cells and I am still not done, baby. Thymosin alpha 1, this is the fifth one,",
+            "top_context": "upregulates the synthesis of collagen, upregulates the synthesis of collagen, elastin, glycosaminoglycans. elastin, glycosaminoglycans. elastin, glycosaminoglycans. It's the actual structural proteins of It's the actual structural proteins of It's the actual structural proteins of your arterial walls, which is where the your arterial walls, which is where the your arterial walls, which is where the problem rests in the first place. problem rests in the first place. problem rests in the first place. Remember the Velcro inside? It's a very Remember the Velcro inside? It's a very Remember the Velcro inside? It's a very powerful antioxidant, anti-inflammatory powerful antioxidant, anti-inflammatory powerful antioxidant, anti-inflammatory in its own right. It provides neuronal in its own right. It provides neuronal in its own right. It provides neuronal armor. So, it's like putting a shield or armor. So, it's like putting a shield or armor. So, it's like putting a shield or a suit of armor around every single a suit of armor around every single a suit of armor around every single neuron in your brain. So, never mind neuron in your brain. So, never mind neuron in your brain. So, never mind what I talked about over the last couple what I talked about over the last couple what I talked about over the last couple of days, MS, dementia, Parkinson's, all of days, MS, dementia, Parkinson's, all of days, MS, dementia, Parkinson's, all of these things, right? You Like, of these things, right? You Like, of these things, right? You Like, connect the dots. It doesn't just connect the dots. It doesn't just connect the dots. It doesn't just suppress the problem, copper. It issues suppress the problem, copper. It issues suppress the problem, copper. It issues the orders to rebuild the damaged the orders to rebuild the damaged the orders to rebuild the damaged infrastructure correctly. It addresses infrastructure correctly. It addresses infrastructure correctly. It addresses the root cause of all three failures. It the root cause of all three failures. It the root cause of all three failures. It does that by by changing the fundamental does that by by changing the fundamental does that by by changing the fundamental software of every single one of your software of every single one of your software of every single one of your cells and I am still not done, baby. cells and I am still not done, baby. cells and I am still not done, baby. Thymosin alpha 1, this is the fifth one, Thymosin alpha 1, this is the fifth one, Thymosin alpha 1, this is the fifth one, the magic one about this whole thing. the magic one about this whole thing. the magic one about this whole thing. The immune system in atherosclerosis is The immune system in atherosclerosis is The immune system in atherosclerosis is very chaotic. It just it's firing at very chaotic. It just it's firing at very chaotic. It just it's firing at everything, right? Just nonstop just everything, right? Just nonstop just everything, right? Just nonstop just spray and pray, right? Thymosin alpha 1. spray and pray, right? Thymosin alpha 1. spray and pray, right? Thymosin alpha 1. I'm going to drink some of this before I'm going to drink some of this before I'm going to drink some of this before before I keep going. Thymosin alpha 1 is before I keep going. Thymosin alpha 1 is before I keep going. Thymosin alpha 1 is like the commander that says you guys like the commander that says you guys like the commander that says you guys have no idea what you're doing. Just have no idea what you're doing. Just have no idea what you're doing. Just relax and it brings all the order to the relax and it brings all the order to the relax and it brings all the order to the entire system. It doesn't suppress the entire system. It doesn't suppress the entire system. It doesn't suppress the immune system. It modulates it, which is immune system. It modulates it, which is immune system. It modulates it, which is what you want. Immunosuppression isn't what you want. Immunosuppression isn't what you want. Immunosuppression isn't going to help you. In fact, that's going going to help you. In fact, that's going going to help you. In fact, that's going to cause a lot of problems. I went over to cause a lot of problems. I went over to cause a lot of problems. I went over that yesterday when I explained how they that yesterday when I explained how they that yesterday when I explained how they modify the immune system and shut it modify the immune system and shut it modify the immune system and shut it down essentially, where you have a 500% down essentially, where you have a 500% down essentially, where you have a 500% increased chance of increased chance of increased chance of getting the common cold and dying from getting the common cold and dying from getting the common cold and dying from it, right? It modulates it. it, right? It modulates it. it, right? It modulates it. Thymosin alpha 1, it calms the",
+            "first_timestamp": "00:30:02.480"
+          },
+          {
+            "source_id": "gd-BP8P9RYY",
+            "source_type": "podcast",
+            "source_title": "Lupus and the Real Protocol for Healing - Dr Trevor Bachmeyer",
+            "source_date": "2026-01-04",
+            "source_url": "https://youtu.be/gd-BP8P9RYY",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2026-01-04-lupus-and-the-real-protocol-for-healing-dr-trevor-bachmeyer-gd-BP8P9RYY.en.vtt",
+            "mention_count": 6,
+            "top_snippet": "Alpha 1, SS31. I couldn't think of a better dynamic duo. Thymosin alpha 1",
+            "top_context": "instead of restoration of your biology. instead of restoration of your biology. The solution isn't to kill the immune The solution isn't to kill the immune The solution isn't to kill the immune system. That doesn't even make sense to system. That doesn't even make sense to system. That doesn't even make sense to me cuz it makes you a walking liability me cuz it makes you a walking liability me cuz it makes you a walking liability to yourself. It's to re reboot it to yourself. It's to re reboot it to yourself. It's to re reboot it started again, get it working. You need started again, get it working. You need started again, get it working. You need to restore order to your system. to restore order to your system. to restore order to your system. Eliminate the three biological failures Eliminate the three biological failures Eliminate the three biological failures and the problem solved. You need to fix and the problem solved. You need to fix and the problem solved. You need to fix them. And if somebody goes, \"Oh, here them. And if somebody goes, \"Oh, here them. And if somebody goes, \"Oh, here you go hawking your stuff again.\" I'm you go hawking your stuff again.\" I'm you go hawking your stuff again.\" I'm right. You know the guy that invented right. You know the guy that invented right. You know the guy that invented being out of gas? This is being being out of gas? This is being being out of gas? This is being sarcastic, by the way. He's not wrong. sarcastic, by the way. He's not wrong. sarcastic, by the way. He's not wrong. When your car sputters to a halt because When your car sputters to a halt because When your car sputters to a halt because the tank is empty, put gas in the tank the tank is empty, put gas in the tank the tank is empty, put gas in the tank and your car runs again. It might be and your car runs again. It might be and your car runs again. It might be something else. It sure might be, but if something else. It sure might be, but if something else. It sure might be, but if your tank is empty, that's the first your tank is empty, that's the first your tank is empty, that's the first place I'm looking. You need an entire place I'm looking. You need an entire place I'm looking. You need an entire protocol that solves this problem with protocol that solves this problem with protocol that solves this problem with surgical precision. So, let me explain a surgical precision. So, let me explain a surgical precision. So, let me explain a few things that work very well. Thus, few things that work very well. Thus, few things that work very well. Thus, Alpha 1, SS31. I couldn't think of a Alpha 1, SS31. I couldn't think of a Alpha 1, SS31. I couldn't think of a better dynamic duo. Thymosin alpha 1 better dynamic duo. Thymosin alpha 1 better dynamic duo. Thymosin alpha 1 master regulator produced by the thymus master regulator produced by the thymus master regulator produced by the thymus the very organ that fails in lupus. Huh the very organ that fails in lupus. Huh the very organ that fails in lupus. Huh strange. 2014 annals of the New York strange. 2014 annals of the New York strange. 2014 annals of the New York Academy of Sciences proved its actions. Academy of Sciences proved its actions. Academy of Sciences proved its actions. It boosts CD4 and CD8 T cell function. It boosts CD4 and CD8 T cell function. It boosts CD4 and CD8 T cell function. Enhances T- regulatory cell activity Enhances T- regulatory cell activity Enhances T- regulatory cell activity which are the peacekeepers right. which are the peacekeepers right. which are the peacekeepers right. Promotes dendritic cell maturation. So Promotes dendritic cell maturation. So Promotes dendritic cell maturation. So you get better intelligence for your you get better intelligence for your you get better intelligence for your immune system. Not brain for your immune system. Not brain for your immune system. Not brain for your byproduct because of inflammatory and byproduct because of inflammatory and byproduct because of inflammatory and insulin resistance but for your immune insulin resistance but for your immune insulin resistance but for your immune system. it becomes better at system. it becomes better at system. it becomes better at surveillance and it modulates cytoine surveillance and it modulates cytoine surveillance and it modulates cytoine production towards a tolerogenic state. production towards a tolerogenic state. production towards a tolerogenic state. It's literally replacement therapy for It's literally replacement therapy for It's literally replacement therapy for the failing thymic function. That's I'll the failing thymic function. That's I'll the failing thymic function. That's I'll even go through every process just so even go through every process just so even go through every process just so you understand so I don't just explain you understand so I don't just explain you understand so I don't just explain what these things do. This 31 what these things do. This 31 what these things do. This 31 mitochondrial targeted antioxidant, mitochondrial targeted antioxidant, mitochondrial targeted antioxidant, right? We already know inner",
+            "first_timestamp": "00:27:49.279"
+          },
+          {
+            "source_id": "2M-JSqf2SNA",
+            "source_type": "podcast",
+            "source_title": "Epstein-Barr Virus (EBV) Protocol That Actually Works - Dr Trevor Bachmeyer",
+            "source_date": "2026-03-28",
+            "source_url": "https://youtu.be/2M-JSqf2SNA",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2026-03-28-epstein-barr-virus-ebv-protocol-that-actually-works-dr-trevor-bachmeye-2M-JSqf2SNA.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "virus infected B cells. Nothing else could do it. Thymosin alpha 1 they",
+            "top_context": "you reach about 2 to three grams a day. you reach about 2 to three grams a day. Llysine llysine is the natural Llysine llysine is the natural Llysine llysine is the natural antagonist to arginine. Viruses need antagonist to arginine. Viruses need antagonist to arginine. Viruses need arginine to replicate. Flooding your arginine to replicate. Flooding your arginine to replicate. Flooding your system with lysine starves the viral system with lysine starves the viral system with lysine starves the viral replication machine. So 2015 study by replication machine. So 2015 study by replication machine. So 2015 study by Griffith in journal of antiviral Griffith in journal of antiviral Griffith in journal of antiviral research showed the mechanism that this research showed the mechanism that this research showed the mechanism that this works. So lysine suppresses herpes works. So lysine suppresses herpes works. So lysine suppresses herpes virus. That's what it is. Herpes virus virus. That's what it is. Herpes virus virus. That's what it is. Herpes virus replication by blocking arginine replication by blocking arginine replication by blocking arginine dependent viral protein synthesis 2 to dependent viral protein synthesis 2 to dependent viral protein synthesis 2 to three grams a day. Hypothetically I three grams a day. Hypothetically I three grams a day. Hypothetically I would start with two and I would divide would start with two and I would divide would start with two and I would divide it into three doses throughout the day. it into three doses throughout the day. it into three doses throughout the day. Take it with food. Now hypothetically Take it with food. Now hypothetically Take it with food. Now hypothetically thyus and alpha 1 pretty much the gold thyus and alpha 1 pretty much the gold thyus and alpha 1 pretty much the gold standard for immune modulation. It standard for immune modulation. It standard for immune modulation. It retrains your thymus gland to produce retrains your thymus gland to produce retrains your thymus gland to produce mature and competent tea cells. These mature and competent tea cells. These mature and competent tea cells. These are the only things just so you know are the only things just so you know are the only things just so you know that are capable of finding and that are capable of finding and that are capable of finding and neutralizing the latent Epstein bar neutralizing the latent Epstein bar neutralizing the latent Epstein bar virus infected B cells. Nothing else virus infected B cells. Nothing else virus infected B cells. Nothing else could do it. Thymosin alpha 1 they could do it. Thymosin alpha 1 they could do it. Thymosin alpha 1 they showed 2011 Stein international showed 2011 Stein international showed 2011 Stein international immunology showed that it increased T- immunology showed that it increased T- immunology showed that it increased T- cell count by 38% T- cell function by cell count by 38% T- cell function by cell count by 38% T- cell function by 45% specifically in Epstein bar virus 45% specifically in Epstein bar virus 45% specifically in Epstein bar virus infected individuals. So hypothetically infected individuals. So hypothetically infected individuals. So hypothetically for the kangaroo I would run 1 milligram for the kangaroo I would run 1 milligram for the kangaroo I would run 1 milligram twice a week for 12 weeks. Look at twice a week for 12 weeks. Look at twice a week for 12 weeks. Look at selenium 200 micrograms daily. It's selenium 200 micrograms daily. It's selenium 200 micrograms daily. It's essential for glutathione production essential for glutathione production essential for glutathione production which is your primary antioxidant for which is your primary antioxidant for which is your primary antioxidant for life. Epstein bar virus thrives in high life. Epstein bar virus thrives in high life. Epstein bar virus thrives in high oxidative stress environments. Selenium oxidative stress environments. Selenium oxidative stress environments. Selenium removes the fuel for the virus. 2021 removes the fuel for the virus. 2021 removes the fuel for the virus. 2021 study by Raymond in nature endocrinology study by Raymond in nature endocrinology study by Raymond in nature endocrinology showed selenium supplementation showed selenium supplementation showed selenium supplementation increased glutathione levels 31%. That's increased glutathione levels 31%. That's increased glutathione levels 31%. That's a massive uptick in glutathione. But the a massive uptick in glutathione. But the a massive uptick in glutathione. But the it came married with something else it came married with something else it came married with something else where it reduced oxidative stress",
+            "first_timestamp": "00:22:08.240"
+          },
+          {
+            "source_id": "OBndB0EFuUM",
+            "source_type": "podcast",
+            "source_title": "Why Cold Sores Keep Coming Back (and preventing it) - Dr Trevor Bachmeyer",
+            "source_date": "2026-04-01",
+            "source_url": "https://youtu.be/OBndB0EFuUM",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2026-04-01-why-cold-sores-keep-coming-back-and-preventing-it-dr-trevor-bachmeyer-OBndB0EFuUM.en.vtt",
+            "mention_count": 1,
+            "top_snippet": "optimize your immune system. Thymosin alpha 1 creates very dangerous elite tea",
+            "top_context": "because she's been lit up since she got because she's been lit up since she got this new position. So, here's the issue. this new position. So, here's the issue. this new position. So, here's the issue. Her dermatologist said, \"This is just Her dermatologist said, \"This is just Her dermatologist said, \"This is just herpes. You manage it with medication herpes. You manage it with medication herpes. You manage it with medication for the rest of your life.\" That's for the rest of your life.\" That's for the rest of your life.\" That's treating herpes as a disease that you treating herpes as a disease that you treating herpes as a disease that you accept and endure. Just think about accept and endure. Just think about accept and endure. Just think about that. But Jennifer came to me thinking that. But Jennifer came to me thinking that. But Jennifer came to me thinking and understanding there's something and understanding there's something and understanding there's something different. Like, when's the last time different. Like, when's the last time different. Like, when's the last time you had to think about a cut healing on you had to think about a cut healing on you had to think about a cut healing on your head? You didn't. I'm not trying to your head? You didn't. I'm not trying to your head? You didn't. I'm not trying to sell you on anything except your own sell you on anything except your own sell you on anything except your own damn biology. Herpes is a virus hiding damn biology. Herpes is a virus hiding damn biology. Herpes is a virus hiding inside your nerve cells that will never inside your nerve cells that will never inside your nerve cells that will never physically leave, man. It's giving you physically leave, man. It's giving you physically leave, man. It's giving you the finger all the time. It locks the the finger all the time. It locks the the finger all the time. It locks the door. But that doesn't mean you have to door. But that doesn't mean you have to door. But that doesn't mean you have to suffer from it. You don't cure herpes. suffer from it. You don't cure herpes. suffer from it. You don't cure herpes. You establish a border. You don't take a You establish a border. You don't take a You establish a border. You don't take a pill that temporarily suppresses viral pill that temporarily suppresses viral pill that temporarily suppresses viral replication while the virus remains replication while the virus remains replication while the virus remains dormant in your nerves waiting for your dormant in your nerves waiting for your dormant in your nerves waiting for your immune system to slip up. You rebuild immune system to slip up. You rebuild immune system to slip up. You rebuild your entire biological function. You your entire biological function. You your entire biological function. You optimize your immune system. Thymosin optimize your immune system. Thymosin optimize your immune system. Thymosin alpha 1 creates very dangerous elite tea alpha 1 creates very dangerous elite tea alpha 1 creates very dangerous elite tea cells designed to hunt herpes. You kill cells designed to hunt herpes. You kill cells designed to hunt herpes. You kill the virus directly. The LL37 and the virus directly. The LL37 and the virus directly. The LL37 and monolurin attack it from all different monolurin attack it from all different monolurin attack it from all different sides. You repair the nerve damage. sides. You repair the nerve damage. sides. You repair the nerve damage. BPC57 rebuilds those damaged neurons. BPC57 rebuilds those damaged neurons. BPC57 rebuilds those damaged neurons. You restore the nutrients. The virus You restore the nutrients. The virus You restore the nutrients. The virus keeps stealing from you. The zinc, the keeps stealing from you. The zinc, the keeps stealing from you. The zinc, the selenium, the magnesium, the vitamin D. selenium, the magnesium, the vitamin D. selenium, the magnesium, the vitamin D. You have to take ownership of your own You have to take ownership of your own You have to take ownership of your own health. You have to remove the fuel for health. You have to remove the fuel for health. You have to remove the fuel for the stress induced reactivation. So, the stress induced reactivation. So, the stress induced reactivation. So, proper diet, get some stress management, proper diet, get some stress management, proper diet, get some stress management, get some sleep. 2022, listen, I will get some sleep. 2022, listen, I will get some sleep. 2022, listen, I will spell this out binary. 2022 study by spell this out binary. 2022 study by spell this out binary. 2022 study by Prusty in viruses examined comprehensive Prusty in viruses examined comprehensive Prusty in viruses examined comprehensive HSV management and yet you will never HSV management and yet you will never HSV management and yet you will never hear about these studies because they hear about these studies because they hear about these studies because they don't make billions of dollars. Patients don't make billions of dollars. Patients don't make billions of dollars. Patients on the combination immune training, the on the combination immune training, the on the combination immune training, the peptides, antiviral nerve repair",
+            "first_timestamp": "00:32:30.559"
+          },
+          {
+            "source_id": "bA-39A1w59M",
+            "source_type": "podcast",
+            "source_title": "Celiac Disease Full Remission - Dr Trevor Bachmeyer",
+            "source_date": "2026-04-14",
+            "source_url": "https://youtu.be/bA-39A1w59M",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2026-04-14-celiac-disease-full-remission-dr-trevor-bachmeyer-bA-39A1w59M.en.vtt",
+            "mention_count": 1,
+            "top_snippet": "is actually established. Thymosin alpha 1 and TUDCA and selenium and zinc are",
+            "top_context": "keeps on shifting that immune tolerance keeps on shifting that immune tolerance to where it's supposed to be. So now the to where it's supposed to be. So now the to where it's supposed to be. So now the intestinal villi begin to regenerate. intestinal villi begin to regenerate. intestinal villi begin to regenerate. New blood fell vessels are bringing New blood fell vessels are bringing New blood fell vessels are bringing oxygen. You're stripping away the oxygen. You're stripping away the oxygen. You're stripping away the toxins. You're bringing in the nutrients toxins. You're bringing in the nutrients toxins. You're bringing in the nutrients required to the damaged tissue so you required to the damaged tissue so you required to the damaged tissue so you can actually heal. Tight junctions begin can actually heal. Tight junctions begin can actually heal. Tight junctions begin to restore. You get energy and cognitive to restore. You get energy and cognitive to restore. You get energy and cognitive enhancement and you have better enhancement and you have better enhancement and you have better digestion. Like your system begins to digestion. Like your system begins to digestion. Like your system begins to work the way it's designed. You get a work the way it's designed. You get a work the way it's designed. You get a better night's freaking sleep. And better night's freaking sleep. And better night's freaking sleep. And that's still probably only 2 to 3 weeks that's still probably only 2 to 3 weeks that's still probably only 2 to 3 weeks in. So here's the ultimate goal. Your in. So here's the ultimate goal. Your in. So here's the ultimate goal. Your intestinal epithelial intestinal intestinal epithelial intestinal intestinal epithelial intestinal epithelial cells are now being epithelial cells are now being epithelial cells are now being generated. So the microvilli are generated. So the microvilli are generated. So the microvilli are actually growing. Collagen is being actually growing. Collagen is being actually growing. Collagen is being rebuilt because of the copper and the rebuilt because of the copper and the rebuilt because of the copper and the micronutrients. tight junctions are micronutrients. tight junctions are micronutrients. tight junctions are functionally restored because of the functionally restored because of the functionally restored because of the TUDCA, the KPV and all the TUDCA, the KPV and all the TUDCA, the KPV and all the micronutrients that you're actually micronutrients that you're actually micronutrients that you're actually getting in your system. Immune tolerance getting in your system. Immune tolerance getting in your system. Immune tolerance is actually established. Thymosin alpha is actually established. Thymosin alpha is actually established. Thymosin alpha 1 and TUDCA and selenium and zinc are 1 and TUDCA and selenium and zinc are 1 and TUDCA and selenium and zinc are all solving the immune issue. Zulin all solving the immune issue. Zulin all solving the immune issue. Zulin production finally drops back down to production finally drops back down to production finally drops back down to normal because the BPC and the KPV and normal because the BPC and the KPV and normal because the BPC and the KPV and the TUDCA and the vitamin D the TUDCA and the vitamin D the TUDCA and the vitamin D micronutrient absorption is where it's micronutrient absorption is where it's micronutrient absorption is where it's supposed to be because your intestinal supposed to be because your intestinal supposed to be because your intestinal epithelium is actually functioning. So epithelium is actually functioning. So epithelium is actually functioning. So you have no more symptoms, nutrient you have no more symptoms, nutrient you have no more symptoms, nutrient levels normalize. So the rest of your levels normalize. So the rest of your levels normalize. So the rest of your biology can function, right? You see the biology can function, right? You see the biology can function, right? You see the problem with this, right? Because problem with this, right? Because problem with this, right? Because otherwise none of this is going to work. otherwise none of this is going to work. otherwise none of this is going to work. So now your energy comes back, cognitive So now your energy comes back, cognitive So now your energy comes back, cognitive function improves, your skin lesions function improves, your skin lesions function improves, your skin lesions clear, so you're not sitting there with clear, so you're not sitting there with clear, so you're not sitting there with DH all the time. The issue is, look, DH all the time. The issue is, look, DH all the time. The issue is, look, here's why this works better than any here's why this works better than any here's why this works better than any drug. I'll just leave it at this. Okay, drug. I'll just leave it at this. Okay, drug. I'll just leave it at this. Okay, let's go like compared to PPIs, right? let's go like compared to PPIs, right? let's go like compared to PPIs, right? Proton pump inhibitors. This protocol Proton pump inhibitors. This protocol Proton pump inhibitors. This protocol actually restores stomach acid function actually restores stomach acid function actually restores stomach acid function by healing the underlying gastric by healing the underlying gastric by healing the underlying gastric irritation. BPC, KPB, TUD, DCA promote",
+            "first_timestamp": "00:45:41.920"
+          }
+        ],
+        "acute_signals": [
+          {
+            "snippet": "where I'm going? If there's an autoimmune crisis, thymosin alpha 1",
+            "source_title": "Thymosin Alpha 1 Is A Powerhouse For Life - Dr Trevor Bachmeyer",
+            "source_date": "2025-12-14",
+            "timestamp": "00:10:23.280",
+            "source_url": "https://youtu.be/J8dLY1QECr0"
+          },
+          {
+            "snippet": "autoimmune crisis, thymosin alpha 1",
+            "source_title": "Thymosin Alpha 1 Is A Powerhouse For Life - Dr Trevor Bachmeyer",
+            "source_date": "2025-12-14",
+            "timestamp": "00:10:26.150",
+            "source_url": "https://youtu.be/J8dLY1QECr0"
+          },
+          {
+            "snippet": "autoimmune crisis, thymosin alpha 1 helps solve it. It doesn't boost the",
+            "source_title": "Thymosin Alpha 1 Is A Powerhouse For Life - Dr Trevor Bachmeyer",
+            "source_date": "2025-12-14",
+            "timestamp": "00:10:26.160",
+            "source_url": "https://youtu.be/J8dLY1QECr0"
+          },
+          {
+            "snippet": "analysis hepatology research showed that adding thymosin alpha 1 to interferon",
+            "source_title": "Thymosin Alpha 1 Is A Powerhouse For Life - Dr Trevor Bachmeyer",
+            "source_date": "2025-12-14",
+            "timestamp": "00:12:38.720",
+            "source_url": "https://youtu.be/J8dLY1QECr0"
+          },
+          {
+            "snippet": "adding thymosin alpha 1 to interferon",
+            "source_title": "Thymosin Alpha 1 Is A Powerhouse For Life - Dr Trevor Bachmeyer",
+            "source_date": "2025-12-14",
+            "timestamp": "00:12:40.390",
+            "source_url": "https://youtu.be/J8dLY1QECr0"
+          }
+        ],
+        "chronic_signals": [
+          {
+            "snippet": "identity. Look at 2016 endocrine. It shows that thymosin alpha 1 re-educates",
+            "source_title": "Thymosin Alpha 1 Is A Powerhouse For Life - Dr Trevor Bachmeyer",
+            "source_date": "2025-12-14",
+            "timestamp": "00:11:35.000",
+            "source_url": "https://youtu.be/J8dLY1QECr0"
+          },
+          {
+            "snippet": "shows that thymosin alpha 1 re-educates",
+            "source_title": "Thymosin Alpha 1 Is A Powerhouse For Life - Dr Trevor Bachmeyer",
+            "source_date": "2025-12-14",
+            "timestamp": "00:11:37.270",
+            "source_url": "https://youtu.be/J8dLY1QECr0"
+          },
+          {
+            "snippet": "shows that thymosin alpha 1 re-educates those confused T cells. It increases",
+            "source_title": "Thymosin Alpha 1 Is A Powerhouse For Life - Dr Trevor Bachmeyer",
+            "source_date": "2025-12-14",
+            "timestamp": "00:11:37.280",
+            "source_url": "https://youtu.be/J8dLY1QECr0"
+          },
+          {
+            "snippet": "diseases like Alzheimer's and dementia and MS and Parkinson's. Thymosin alpha 1",
+            "source_title": "Thymosin Alpha 1 Is A Powerhouse For Life - Dr Trevor Bachmeyer",
+            "source_date": "2025-12-14",
+            "timestamp": "00:13:49.240",
+            "source_url": "https://youtu.be/J8dLY1QECr0"
+          },
+          {
+            "snippet": "and MS and Parkinson's. Thymosin alpha 1",
+            "source_title": "Thymosin Alpha 1 Is A Powerhouse For Life - Dr Trevor Bachmeyer",
+            "source_date": "2025-12-14",
+            "timestamp": "00:13:52.110",
+            "source_url": "https://youtu.be/J8dLY1QECr0"
+          }
+        ]
+      },
+      "acute_vs_chronic_note": "Dr Bachmeyer often distinguishes acute (injury/infection) vs chronic (longevity/maintenance) dosing. Acute_signals + chronic_signals fields surface candidate contexts; full distillation pending Codex pass."
+    }
+  },
+  "reset_biology_synthesis": {
+    "status": "pending-codex-distillation",
+    "recommendation": null,
+    "caveats": null,
+    "cross_expert_consensus": null,
+    "cross_expert_disagreement": null
+  },
+  "generated_at": "2026-04-27T02:02:34.785Z"
+}

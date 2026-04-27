@@ -1,0 +1,488 @@
+{
+  "peptide": "Epitalon",
+  "slug": "epitalon",
+  "aliases": [
+    "epitalon",
+    "Epitalon",
+    "Epithalon",
+    "epithalon"
+  ],
+  "category": "Longevity",
+  "experts": {
+    "hunter-williams": {
+      "baseline_protocol": {
+        "source": "Hunter Williams + Jay Campbell Cheat Sheet 2023",
+        "source_pdf": "data/peptide-libraries/cross-expert/cheat-sheets/hunter-williams-jay-campbell-peptide-cheat-sheet-2023.pdf",
+        "purpose": "Longevity",
+        "vial_mg": "100 mg",
+        "bac_mL": "3 mL",
+        "dose": "10 mg",
+        "units_on_1mL_insulin": "30",
+        "timing": "AM",
+        "frequency": "3 days per week",
+        "duration": "3 weeks straight, once per year"
+      },
+      "summary": {
+        "mention_count": 93,
+        "top_doses": [
+          {
+            "dose": "1 mg",
+            "count": 12
+          },
+          {
+            "dose": "20 mg",
+            "count": 12
+          },
+          {
+            "dose": "10 units",
+            "count": 7
+          },
+          {
+            "dose": "6 mg",
+            "count": 3
+          },
+          {
+            "dose": "2 mg",
+            "count": 3
+          },
+          {
+            "dose": "20 units",
+            "count": 2
+          },
+          {
+            "dose": "8 mg",
+            "count": 2
+          },
+          {
+            "dose": "5 mg",
+            "count": 2
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "196db243b2b4ff15",
+            "source_type": "email",
+            "source_title": "Peptides For Shift Workers",
+            "source_date": "2025-05-16",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-05-16-peptides-for-shift-workers.md",
+            "mention_count": 34,
+            "top_snippet": "tastic question—one that highlights the critical issue of circadian rhythm disruption faced by many shift workers. As it happens, the timing couldn’t be better because, in light of our BioLongevity La",
+            "top_context": "tastic question—one that highlights the critical issue of circadian rhythm disruption faced by many shift workers. As it happens, the timing couldn’t be better because, in light of our BioLongevity Labs Healing Sale, I wanted to unpack one of my favorite peptides for circadian rhythm alignment: Epitalon. Let’s unpack this. ——————————————————————————— **What Exactly is Epitalon?** Epitalon, also known as Epithalon, is a potent, synthetic tetrapeptide composed of four amino acids: Alanine, Glutamic Acid, Aspartic Acid, and Glycine. Originally derived from research into a pineal gland",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "4igc2UpFr7Q",
+            "source_type": "podcast",
+            "source_title": "GLP-1 Stacks, HGH & Healing Protocols - Your Questions Answered | March 2026",
+            "source_date": "2026-04-03",
+            "source_url": "https://youtu.be/4igc2UpFr7Q",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-04-03-glp-1-stacks-hgh-healing-protocols-your-questions-answered-march-2026-4igc2UpFr7Q.en.vtt",
+            "mention_count": 18,
+            "top_snippet": "And should I run SLU, FoxO4, and epitalon before starting mot-c? Well,",
+            "top_context": "help a lot with sleep that would help a lot with sleep that would probably have an indirect effect on probably have an indirect effect on probably have an indirect effect on that. But I would say this pace that. But I would say this pace that. But I would say this pace unfortunately it's going to have to be, unfortunately it's going to have to be, unfortunately it's going to have to be, and I say that because a lot of people and I say that because a lot of people and I say that because a lot of people don't want to have to go on this route, don't want to have to go on this route, don't want to have to go on this route, but it's going to have to be hormone but it's going to have to be hormone but it's going to have to be hormone replacement. And then once you do go replacement. And then once you do go replacement. And then once you do go down the hormone replacement route, down the hormone replacement route, down the hormone replacement route, you're going to be like, \"Wow, you're going to be like, \"Wow, you're going to be like, \"Wow, things are so much better now. Like I things are so much better now. Like I things are so much better now. Like I wish I would would done this sooner.\" wish I would would done this sooner.\" wish I would would done this sooner.\" So, So, So, um um um What's the deal with tesamorelin on What's the deal with tesamorelin on What's the deal with tesamorelin on ovarian health in women? I don't know. I ovarian health in women? I don't know. I ovarian health in women? I don't know. I don't know if this person was don't know if this person was don't know if this person was referencing someone else. Um I do think referencing someone else. Um I do think referencing someone else. Um I do think tesamorelin could be beneficial um for tesamorelin could be beneficial um for tesamorelin could be beneficial um for ovarian health, although I don't know ovarian health, although I don't know ovarian health, although I don't know specifically if there's research specifically if there's research specifically if there's research something around this that showed that something around this that showed that something around this that showed that they're either not beneficial or they they're either not beneficial or they they're either not beneficial or they are beneficial. I'd love to hear more. are beneficial. I'd love to hear more. are beneficial. I'd love to hear more. Let's see. What's better stacked with Let's see. What's better stacked with Let's see. What's better stacked with retatrutide for belly fat? Tesamorelin retatrutide for belly fat? Tesamorelin retatrutide for belly fat? Tesamorelin or CJC-1295 with Ipamorelin? or CJC-1295 with Ipamorelin? or CJC-1295 with Ipamorelin? And should I run SLU, FoxO4, and And should I run SLU, FoxO4, and And should I run SLU, FoxO4, and epitalon before starting mot-c? Well, epitalon before starting mot-c? Well, epitalon before starting mot-c? Well, first question first, I would say for first question first, I would say for first question first, I would say for belly fat specifically, we do have more belly fat specifically, we do have more belly fat specifically, we do have more data around tesamorelin. Now, in this data around tesamorelin. Now, in this data around tesamorelin. Now, in this case it's a woman asking this, so uh case it's a woman asking this, so uh case it's a woman asking this, so uh they might do better with CJC-1295 and they might do better with CJC-1295 and they might do better with CJC-1295 and Ipamorelin, but I would say clinically Ipamorelin, but I would say clinically Ipamorelin, but I would say clinically speaking, tesamorelin is going to be speaking, tesamorelin is going to be speaking, tesamorelin is going to be better for getting rid of visceral belly better for getting rid of visceral belly better for getting rid of visceral belly fat. I think women that are leaner don't fat. I think women that are leaner don't fat. I think women that are leaner don't seem to like tesamorelin as much because seem to like tesamorelin as much because seem to like tesamorelin as much because it's so strong, and so they feel like it's so strong, and so they feel like it's so strong, and so they feel like they get bloated. they get bloated. they get bloated. But, women that need to lose a But, women that need to lose a But, women that need to lose a substantial amount of fat, I think substantial amount of fat, I think substantial amount of fat, I think tesamorelin could be great. And then, to tesamorelin could be great. And then, to tesamorelin could be great. And then, to the point of SLU, FoxO4, and epitalon the point of SLU, FoxO4, and epitalon the point of SLU, FoxO4, and epitalon before starting mot-c, I think that's a before starting mot-c, I think that's a before starting mot-c, I think that's a great thing to do. I would do those and great thing to do. I would do those and great thing to do. I would do those and maybe even some SS-31. Uh actually, I'd maybe even some SS-31. Uh actually, I'd maybe even some SS-31. Uh actually, I'd probably take the SS-31 with the FoxO4 probably take the SS-31 with the FoxO4 probably take the SS-31 with the FoxO4 and the epitalon cuz to me that's much and the epitalon cuz to me that's much and the epitalon cuz to me that's much more of this kind of like healing more of this kind of like healing more of this kind of like healing environment stack to where we're healing",
+            "first_timestamp": "00:20:19.320"
+          },
+          {
+            "source_id": "1958c6d78ba43937",
+            "source_type": "email",
+            "source_title": "The Epitalon + Pinealon Combo",
+            "source_date": "2025-03-12",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-03-12-epitalon-pinealon-combo.md",
+            "mention_count": 9,
+            "top_snippet": "ects - Better memory, sharper focus - Faster thinking, improved recall, ↓brain fog - Protection against cognitive decline + neurodegeneration - More resilient brain under stress + aging ### Animal dat",
+            "top_context": "ects - Better memory, sharper focus - Faster thinking, improved recall, ↓brain fog - Protection against cognitive decline + neurodegeneration - More resilient brain under stress + aging ### Animal data - Protected brain cells from damage - Helped prevent neuron loss ## Why They Work Together - **Epitalon** → keeps cells younger, improves sleep, enhances recovery - **Pinealon** → protects brain, improves memory + focus, supports neuroplasticity - Body + brain = covers both pillars of longevity ## ⭐ DOSING (Epitalon + Pinealon Combo) — Hunter's protocol ### Dose - **Epitalon: 1 mg/day (at night)**",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "JFrn_zX0RE4",
+            "source_type": "podcast",
+            "source_title": "Peptides & Longevity Medicine Explained by a Real Cardiologist | Dr. Abid Husain, MD",
+            "source_date": "2026-03-27",
+            "source_url": "https://youtu.be/JFrn_zX0RE4",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-03-27-peptides-longevity-medicine-explained-by-a-real-cardiologist-dr-abid-h-JFrn_zX0RE4.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "overall metabolic health and uh sleep and the epitalon for my sleep cycles. Uh",
+            "top_context": "intermittent fasting because I want to intermittent fasting because I want to maintain my my caloric intake. uh but maintain my my caloric intake. uh but maintain my my caloric intake. uh but it's more about performance uh uh goals it's more about performance uh uh goals it's more about performance uh uh goals for me and so I'm more about taking in for me and so I'm more about taking in for me and so I'm more about taking in the adequate amount of calories than the adequate amount of calories than the adequate amount of calories than inhibiting them. So I don't utilize inhibiting them. So I don't utilize inhibiting them. So I don't utilize fasting as much. Um and my uh the fasting as much. Um and my uh the fasting as much. Um and my uh the peptides I use I mean I'll use testo peptides I use I mean I'll use testo peptides I use I mean I'll use testo regularly cycle those that works really regularly cycle those that works really regularly cycle those that works really well. I prefer tessamel for vascular well. I prefer tessamel for vascular well. I prefer tessamel for vascular health and uh is a good add-on to that. health and uh is a good add-on to that. health and uh is a good add-on to that. Um, I I will cycle in uh SS31 and epalon Um, I I will cycle in uh SS31 and epalon Um, I I will cycle in uh SS31 and epalon quarterly uh because they help with quarterly uh because they help with quarterly uh because they help with overall metabolic health and uh sleep overall metabolic health and uh sleep overall metabolic health and uh sleep and the epitalon for my sleep cycles. Uh and the epitalon for my sleep cycles. Uh and the epitalon for my sleep cycles. Uh BPC and TV4 I'll use for many of my you BPC and TV4 I'll use for many of my you BPC and TV4 I'll use for many of my you know my regular injuries. So you know it know my regular injuries. So you know it know my regular injuries. So you know it uh it's never really I'm never really uh it's never really I'm never really uh it's never really I'm never really without it for for more than a few without it for for more than a few without it for for more than a few months. So, it just ends up being cycled months. So, it just ends up being cycled months. So, it just ends up being cycled in to help treat injuries. in to help treat injuries. in to help treat injuries. &gt;&gt; Yeah. Awesome. Well, I think that's a a &gt;&gt; Yeah. Awesome. Well, I think that's a a &gt;&gt; Yeah. Awesome. Well, I think that's a a very good summary of kind of the pillars very good summary of kind of the pillars very good summary of kind of the pillars that we all need. And then, yeah, kind that we all need. And then, yeah, kind that we all need. And then, yeah, kind of based on what you just said right of based on what you just said right of based on what you just said right there from your own personal health, I'm there from your own personal health, I'm there from your own personal health, I'm very similar in a lot of things I do. very similar in a lot of things I do. very similar in a lot of things I do. And, uh, I always tell people, you know, And, uh, I always tell people, you know, And, uh, I always tell people, you know, there's hundreds of peptides out there. there's hundreds of peptides out there. there's hundreds of peptides out there. You can go down the rabbit hole, but You can go down the rabbit hole, but You can go down the rabbit hole, but yeah, after those core things, the rest yeah, after those core things, the rest yeah, after those core things, the rest are kind of just gravy. And we're just, are kind of just gravy. And we're just, are kind of just gravy. And we're just, you know, kind of playing with stuff you know, kind of playing with stuff you know, kind of playing with stuff that's nice to have here or there, but that's nice to have here or there, but that's nice to have here or there, but those are really good, uh, definitely. those are really good, uh, definitely. those are really good, uh, definitely. Well, Well, Well, &gt;&gt; yeah. Well, um I'm sure there's much &gt;&gt; yeah. Well, um I'm sure there's much &gt;&gt; yeah. Well, um I'm sure there's much much more that we could talk about and",
+            "first_timestamp": "01:09:13.359"
+          },
+          {
+            "source_id": "he_GzaUMwpI",
+            "source_type": "podcast",
+            "source_title": "The FDA Just Changed Everything for Peptides | My Honest Take",
+            "source_date": "2026-04-17",
+            "source_url": "https://youtu.be/he_GzaUMwpI",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-04-17-the-fda-just-changed-everything-for-peptides-my-honest-take-he_GzaUMwpI.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "more mainstream peptides that are out there like BPC, KPV, DSIP, epitalon,",
+            "top_context": "to government stuff, as they always say to government stuff, as they always say like you there's two things you don't like you there's two things you don't like you there's two things you don't want to be made as sausage and want to be made as sausage and want to be made as sausage and um laws. And this is one of those things um laws. And this is one of those things um laws. And this is one of those things it takes time to play out and uh we will it takes time to play out and uh we will it takes time to play out and uh we will likely see the fruits of whatever is likely see the fruits of whatever is likely see the fruits of whatever is happening probably another 1 to 2 years happening probably another 1 to 2 years happening probably another 1 to 2 years in the future. But at the end of the in the future. But at the end of the in the future. But at the end of the day, I would not fear I would not be day, I would not fear I would not be day, I would not fear I would not be worried that your peptides are going to worried that your peptides are going to worried that your peptides are going to be taken away. Yes, over the years I'm be taken away. Yes, over the years I'm be taken away. Yes, over the years I'm sure the access to them will change, um sure the access to them will change, um sure the access to them will change, um but to all the people in the research but to all the people in the research but to all the people in the research world, I wouldn't get super up in arms world, I wouldn't get super up in arms world, I wouldn't get super up in arms about what is going on. At least I'm not about what is going on. At least I'm not about what is going on. At least I'm not panicking right now and maybe there panicking right now and maybe there panicking right now and maybe there there is good reason to panic. I don't there is good reason to panic. I don't there is good reason to panic. I don't have all the insider information, have all the insider information, have all the insider information, um but at least that's not what I am um but at least that's not what I am um but at least that's not what I am thinking. I think this is going to be a thinking. I think this is going to be a thinking. I think this is going to be a good thing and I think eventually the good thing and I think eventually the good thing and I think eventually the prices will come down to meet the prices will come down to meet the prices will come down to meet the research world at least with some of the research world at least with some of the research world at least with some of the more mainstream peptides that are out more mainstream peptides that are out more mainstream peptides that are out there like BPC, KPV, DSIP, epitalon, there like BPC, KPV, DSIP, epitalon, there like BPC, KPV, DSIP, epitalon, GHK, some of those ones that are on the GHK, some of those ones that are on the GHK, some of those ones that are on the list. So, list. So, list. So, we will see what happen happens. It's we will see what happen happens. It's we will see what happen happens. It's definitely say what you will, it is definitely say what you will, it is definitely say what you will, it is interesting time to be alive seems like interesting time to be alive seems like interesting time to be alive seems like right now and uh maybe this is my own right now and uh maybe this is my own right now and uh maybe this is my own personal bias like AI and peptides are personal bias like AI and peptides are personal bias like AI and peptides are the two biggest things right now. And the two biggest things right now. And the two biggest things right now. And peptides maybe even be be bigger than peptides maybe even be be bigger than peptides maybe even be be bigger than AI. Probably not, but um it's fun to AI. Probably not, but um it's fun to AI. Probably not, but um it's fun to think about. So, uh that's it for this think about. So, uh that's it for this think about. So, uh that's it for this one. As always in closing, thank you one. As always in closing, thank you one. As always in closing, thank you guys so much for the overwhelming amount guys so much for the overwhelming amount guys so much for the overwhelming amount of support, whatever form or fashion it of support, whatever form or fashion it of support, whatever form or fashion it is, whether you share this video with is, whether you share this video with is, whether you share this video with friends and family, whether you sign up friends and family, whether you sign up friends and family, whether you sign up for the email list, whether you're in my for the email list, whether you're in my for the email list, whether you're in my private group, um or you use my code at private group, um or you use my code at private group, um or you use my code at places, thank you so much. It goes so places, thank you so much. It goes so places, thank you so much. It goes so far in helping me bring these messages far in helping me bring these messages far in helping me bring these messages to you and uh it's truly a dream come to you and uh it's truly a dream come to you and uh it's truly a dream come true for me to be able to do this and uh true for me to be able to do this and uh true for me to be able to do this and uh have the relationship I do with you",
+            "first_timestamp": "00:17:42.920"
+          },
+          {
+            "source_id": "tcaX0xrCMR4",
+            "source_type": "podcast",
+            "source_title": "Reader Mailbag 2 � Autoimmune, Fertility, Cancer & More | Hunter & Taylor Williams",
+            "source_date": "2026-04-24",
+            "source_url": "https://youtu.be/tcaX0xrCMR4",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-04-24-reader-mailbag-2-autoimmune-fertility-cancer-more-hunter-taylor-willia-tcaX0xrCMR4.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "about some of the evidence we see with thyolin or epitalon or some of these bio",
+            "top_context": "aromatization out of the testosterone aromatization out of the testosterone that will then be protective. And then that will then be protective. And then that will then be protective. And then you can talk about bringing an estradi. you can talk about bringing an estradi. you can talk about bringing an estradi. So that's how I think about I personally So that's how I think about I personally So that's how I think about I personally don't worry about it. And there are don't worry about it. And there are don't worry about it. And there are doctors out there that share that view. doctors out there that share that view. doctors out there that share that view. Thank goodness. And so if your doctor is Thank goodness. And so if your doctor is Thank goodness. And so if your doctor is not one of those people, I would not one of those people, I would not one of those people, I would recommend guess what? Just like a doctor recommend guess what? Just like a doctor recommend guess what? Just like a doctor or just excuse me, just like a lawyer or or just excuse me, just like a lawyer or or just excuse me, just like a lawyer or an accountant or your landscaper, you an accountant or your landscaper, you an accountant or your landscaper, you can find a new doctor. There's plenty of can find a new doctor. There's plenty of can find a new doctor. There's plenty of good ones out there. And so I I realize good ones out there. And so I I realize good ones out there. And so I I realize like the insurance piece is a part of like the insurance piece is a part of like the insurance piece is a part of it, but we all got to make the the it, but we all got to make the the it, but we all got to make the the decisions that we have. And and so that decisions that we have. And and so that decisions that we have. And and so that would be the hormone thing, would be the hormone thing, would be the hormone thing, &gt;&gt; the peptide thing. Very similar &gt;&gt; the peptide thing. Very similar &gt;&gt; the peptide thing. Very similar conversation like I said with the the conversation like I said with the the conversation like I said with the the BPCs of the world. It's interesting BPCs of the world. It's interesting BPCs of the world. It's interesting because people love to talk about that because people love to talk about that because people love to talk about that but then they don't talk about thy alpha but then they don't talk about thy alpha but then they don't talk about thy alpha 1 helping the immune system to which it 1 helping the immune system to which it 1 helping the immune system to which it would be preventative. They don't talk would be preventative. They don't talk would be preventative. They don't talk about some of the evidence we see with about some of the evidence we see with about some of the evidence we see with thyolin or epitalon or some of these bio thyolin or epitalon or some of these bio thyolin or epitalon or some of these bio regulators that reduce the risk or even regulators that reduce the risk or even regulators that reduce the risk or even use as an adjunct to cancer treatment use as an adjunct to cancer treatment use as an adjunct to cancer treatment like chemotherapy to enhance results to like chemotherapy to enhance results to like chemotherapy to enhance results to protect the immune system. And so as protect the immune system. And so as protect the immune system. And so as much as people want to talk about the much as people want to talk about the much as people want to talk about the cancer risk for some certain peptides cancer risk for some certain peptides cancer risk for some certain peptides fine I grant that. Don't use those if fine I grant that. Don't use those if fine I grant that. Don't use those if you don't want to. you don't want to. you don't want to. &gt;&gt; Yeah. Yeah, &gt;&gt; Yeah. Yeah, &gt;&gt; Yeah. Yeah, &gt;&gt; use KPV instead of BPC. &gt;&gt; use KPV instead of BPC. &gt;&gt; use KPV instead of BPC. &gt;&gt; Use Carlax instead of TB500 if you need &gt;&gt; Use Carlax instead of TB500 if you need &gt;&gt; Use Carlax instead of TB500 if you need a healing peptide. a healing peptide. a healing peptide. &gt;&gt; Yeah. &gt;&gt; Yeah. &gt;&gt; Yeah. &gt;&gt; And so use thyson alpha 1. And so there &gt;&gt; And so use thyson alpha 1. And so there &gt;&gt; And so use thyson alpha 1. And so there are peptides out there. I do want to get are peptides out there. I do want to get are peptides out there. I do want to get to the PNC27 question. So PNC27, I'm to the PNC27 question. So PNC27, I'm to the PNC27 question. So PNC27, I'm talking off the top of my head here, so talking off the top of my head here, so talking off the top of my head here, so please forgive me if there's any like please forgive me if there's any like please forgive me if there's any like misqu, but to my knowledge, PNC27 misqu, but to my knowledge, PNC27 misqu, but to my knowledge, PNC27 actually is kind of like a seek and actually is kind of like a seek and actually is kind of like a seek and destroy peptide for cancer cells. And so",
+            "first_timestamp": "00:40:50.800"
+          },
+          {
+            "source_id": "197bdbb80a66aee3",
+            "source_type": "email",
+            "source_title": "Thymagen for Immune Function",
+            "source_date": "2025-06-29",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-06-29-thymagen-for-immune-function.md",
+            "mention_count": 3,
+            "top_snippet": "l: Inject **1mg per day** (10 units/0.1ml), subcutaneously (belly fat), either **AM or PM**. * A 20mg vial lasts 20 days at this dose. For longer cycles, you can use for 30–60 days straight (you’ll ne",
+            "top_context": "l: Inject **1mg per day** (10 units/0.1ml), subcutaneously (belly fat), either **AM or PM**. * A 20mg vial lasts 20 days at this dose. For longer cycles, you can use for 30–60 days straight (you’ll need 2–3 vials for a full 60 days). ——————————————————————————— **How Thymagen Works with Epitalon and Vilon** For a complete longevity and immune support protocol, Thymagen works exceptionally well alongside Epitalon and Vilon. Epitalon targets cellular repair and circadian balance, while Vilon supports deeper immune communication and cell protection. When these three are combined, u",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "199ef13fd5ffd723",
+            "source_type": "email",
+            "source_title": "Peptide Replacement Therapy",
+            "source_date": "2025-10-16",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-10-16-peptide-replacement-therapy.md",
+            "mention_count": 3,
+            "top_snippet": "ion, and the fatigue that most people accept as normal aging. Repair peptides such as GHK and BPC, which direct collagen synthesis and vascular repair, are diminished by more than 60%. The result is w",
+            "top_context": "ion, and the fatigue that most people accept as normal aging. Repair peptides such as GHK and BPC, which direct collagen synthesis and vascular repair, are diminished by more than 60%. The result is weaker connective tissue, slower wound healing, and more inflammation throughout the body. Epitalon, produced in the pineal gland, controls circadian rhythm and telomerase activity. As it declines, sleep quality deteriorates, cellular repair slows, and the aging clock accelerates. Even peptides tied to mood and reproduction, like Oxytocin and Kisspeptin, drop significantly. This contri",
+            "first_timestamp": null
+          }
+        ],
+        "acute_signals": [
+          {
+            "snippet": "ion, and the fatigue that most people accept as normal aging. Repair peptides such as GHK and BPC, which direct collagen synthesis and vascular repair, are diminished by more than 60%. The result is w",
+            "source_title": "Peptide Replacement Therapy",
+            "source_date": "2025-10-16",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "for wound healing + inflammatory conditions - **TB-500** — for wound healing - **MOTS-c** — for obesity + osteoporosis ### July 24 agenda — Round 2 (3 peptides) - **DSIP** — for opioid withdrawal, chr",
+            "source_title": "New Peptide Announcement from the FDA (Category 2 → 503A)",
+            "source_date": "2026-04-16",
+            "timestamp": null,
+            "source_url": null
+          }
+        ],
+        "chronic_signals": [
+          {
+            "snippet": "overall metabolic health and uh sleep and the epitalon for my sleep cycles. Uh",
+            "source_title": "Peptides & Longevity Medicine Explained by a Real Cardiologist | Dr. Abid Husain, MD",
+            "source_date": "2026-03-27",
+            "timestamp": "01:09:13.359",
+            "source_url": "https://youtu.be/JFrn_zX0RE4"
+          },
+          {
+            "snippet": "and the epitalon for my sleep cycles. Uh",
+            "source_title": "Peptides & Longevity Medicine Explained by a Real Cardiologist | Dr. Abid Husain, MD",
+            "source_date": "2026-03-27",
+            "timestamp": "01:09:16.390",
+            "source_url": "https://youtu.be/JFrn_zX0RE4"
+          },
+          {
+            "snippet": "and the epitalon for my sleep cycles. Uh BPC and TV4 I'll use for many of my you",
+            "source_title": "Peptides & Longevity Medicine Explained by a Real Cardiologist | Dr. Abid Husain, MD",
+            "source_date": "2026-03-27",
+            "timestamp": "01:09:16.400",
+            "source_url": "https://youtu.be/JFrn_zX0RE4"
+          },
+          {
+            "snippet": "tesamorelin could be great. And then, to the point of SLU, FoxO4, and epitalon",
+            "source_title": "GLP-1 Stacks, HGH & Healing Protocols - Your Questions Answered | March 2026",
+            "source_date": "2026-04-03",
+            "timestamp": "00:20:49.400",
+            "source_url": "https://youtu.be/4igc2UpFr7Q"
+          },
+          {
+            "snippet": "the point of SLU, FoxO4, and epitalon",
+            "source_title": "GLP-1 Stacks, HGH & Healing Protocols - Your Questions Answered | March 2026",
+            "source_date": "2026-04-03",
+            "timestamp": "00:20:51.470",
+            "source_url": "https://youtu.be/4igc2UpFr7Q"
+          }
+        ]
+      }
+    },
+    "taylor-williams": {
+      "summary": {
+        "mention_count": 35,
+        "top_doses": [],
+        "top_sources": [
+          {
+            "source_id": "JC1poI1OEog",
+            "source_type": "podcast",
+            "source_title": "Saturday Morning Coffee Talk 3/14/2026",
+            "source_date": "2026-03-14",
+            "source_url": "https://youtu.be/JC1poI1OEog",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2026-03-14-saturday-morning-coffee-talk-3-14-2026-JC1poI1OEog.en.vtt",
+            "mention_count": 17,
+            "top_snippet": "Do you think they meant to meant to say Epitalon?",
+            "top_context": "I can improve I can stand to improve I can improve I can stand to improve because I can just talk and talk and because I can just talk and talk and because I can just talk and talk and talk. And sometimes I need to condense talk. And sometimes I need to condense talk. And sometimes I need to condense it down into the most effective points. it down into the most effective points. it down into the most effective points. She's very effective at condensing what She's very effective at condensing what She's very effective at condensing what you need to know. you need to know. you need to know. &gt;&gt; condensing the information. Yeah. &gt;&gt; condensing the information. Yeah. &gt;&gt; condensing the information. Yeah. Whereas I will just like to talk get up Whereas I will just like to talk get up Whereas I will just like to talk get up and talk. And then I'll go down tangents and talk. And then I'll go down tangents and talk. And then I'll go down tangents of what I'm talking about because I'll of what I'm talking about because I'll of what I'm talking about because I'll think about stuff while I'm talking. think about stuff while I'm talking. think about stuff while I'm talking. What do you think about Ramelton for What do you think about Ramelton for What do you think about Ramelton for sleep? Do you think it can be combined sleep? Do you think it can be combined sleep? Do you think it can be combined with D SIP? I don't even know about with D SIP? I don't even know about with D SIP? I don't even know about Ramelton. Ramelton. Ramelton. And so, I apologize. My knowledge base And so, I apologize. My knowledge base And so, I apologize. My knowledge base does not include that. So, does not include that. So, does not include that. So, &gt;&gt; Yeah, I don't know. Sorry. I'll look it &gt;&gt; Yeah, I don't know. Sorry. I'll look it &gt;&gt; Yeah, I don't know. Sorry. I'll look it up though cuz I don't I'm not sure. up though cuz I don't I'm not sure. up though cuz I don't I'm not sure. &gt;&gt; for sharing that. That'll be something &gt;&gt; for sharing that. That'll be something &gt;&gt; for sharing that. That'll be something for us to look into. Yeah. Do you think they meant to meant to say Do you think they meant to meant to say Epitalon? Epitalon? Epitalon? Epitalon combined with D SIP is really Epitalon combined with D SIP is really Epitalon combined with D SIP is really good for sleep. good for sleep. good for sleep. &gt;&gt; Yeah. If that was meant to be that and &gt;&gt; Yeah. If that was meant to be that and &gt;&gt; Yeah. If that was meant to be that and then then then Epitalon. Yeah. Or it might be Ramelton. Epitalon. Yeah. Or it might be Ramelton. Epitalon. Yeah. Or it might be Ramelton. Ramelton. Ramelton. Ramelton. I don't know. I don't know. I don't know. Would LL-37 work for those who are Would LL-37 work for those who are Would LL-37 work for those who are dealing with histamine overload? I would dealing with histamine overload? I would dealing with histamine overload? I would actually say I would shy away from that. actually say I would shy away from that. actually say I would shy away from that. Sometimes if someone if you look at Sometimes if someone if you look at Sometimes if someone if you look at histamine overload, a lot of times it's histamine overload, a lot of times it's histamine overload, a lot of times it's an autoimmune reaction. an autoimmune reaction. an autoimmune reaction. In some autoimmune cases, LL-37 can In some autoimmune cases, LL-37 can In some autoimmune cases, LL-37 can actually backfire and cause the immune actually backfire and cause the immune actually backfire and cause the immune system to get kicked up even more. And system to get kicked up even more. And system to get kicked up even more. And so, it's that's why I say it's really so, it's that's why I say it's really so, it's that's why I say it's really good in the case of an infection, virus, good in the case of an infection, virus, good in the case of an infection, virus, fungus, mold, things of that nature. fungus, mold, things of that nature. fungus, mold, things of that nature. But, for the purpose of histamine But, for the purpose of histamine But, for the purpose of histamine overload with autoimmune, you do have to overload with autoimmune, you do have to overload with autoimmune, you do have to be careful. I'm not saying that it be careful. I'm not saying that it be careful. I'm not saying that it doesn't help in some cases. But, in some doesn't help in some cases. But, in some doesn't help in some cases. But, in some cases I've seen it go the opposite. And",
+            "first_timestamp": "00:43:57.800"
+          },
+          {
+            "source_id": "5ugqlYRSRSo",
+            "source_type": "podcast",
+            "source_title": "Saturday Morning Coffee Talk 1/17/26",
+            "source_date": "2026-01-17",
+            "source_url": "https://youtu.be/5ugqlYRSRSo",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2026-01-17-saturday-morning-coffee-talk-1-17-26-5ugqlYRSRSo.en.vtt",
+            "mention_count": 6,
+            "top_snippet": "I think that's one of those ones you do not go into taking epitalon thinking",
+            "top_context": "downside to that? I don't know. I just downside to that? I don't know. I just don't see the need to take it monthly. I don't see the need to take it monthly. I don't see the need to take it monthly. I don't know. What do you guys think? don't know. What do you guys think? don't know. What do you guys think? &gt;&gt; Jen, I know you use Yeah. &gt;&gt; Jen, I know you use Yeah. &gt;&gt; Jen, I know you use Yeah. &gt;&gt; Yeah. I agree. A couple just doing it a &gt;&gt; Yeah. I agree. A couple just doing it a &gt;&gt; Yeah. I agree. A couple just doing it a couple times a year is sufficient. couple times a year is sufficient. couple times a year is sufficient. &gt;&gt; Yeah. And you can do it for a 30-day if &gt;&gt; Yeah. And you can do it for a 30-day if &gt;&gt; Yeah. And you can do it for a 30-day if you wanted to. A 30-day dose and then you wanted to. A 30-day dose and then you wanted to. A 30-day dose and then &gt;&gt; Yeah. twice a year is enough, I feel. &gt;&gt; Yeah. twice a year is enough, I feel. &gt;&gt; Yeah. twice a year is enough, I feel. &gt;&gt; Yeah. &gt;&gt; Yeah. &gt;&gt; Yeah. &gt;&gt; Yeah. When you do it 30 days, is it 30 &gt;&gt; Yeah. When you do it 30 days, is it 30 &gt;&gt; Yeah. When you do it 30 days, is it 30 days straight or do you do like five days straight or do you do like five days straight or do you do like five days on? days on? days on? &gt;&gt; I did five days on and then took the &gt;&gt; I did five days on and then took the &gt;&gt; I did five days on and then took the weekends off when I've done a course and weekends off when I've done a course and weekends off when I've done a course and I'll do another course probably in the I'll do another course probably in the I'll do another course probably in the fall. fall. fall. &gt;&gt; Okay. &gt;&gt; Okay. &gt;&gt; Okay. &gt;&gt; Yeah. I think people I mean I have heard &gt;&gt; Yeah. I think people I mean I have heard &gt;&gt; Yeah. I think people I mean I have heard people that are like, \"Oh man, I feel my people that are like, \"Oh man, I feel my people that are like, \"Oh man, I feel my sleep is so much better when I do that.\" sleep is so much better when I do that.\" sleep is so much better when I do that.\" I think that's one of those ones you do I think that's one of those ones you do I think that's one of those ones you do not go into taking epitalon thinking not go into taking epitalon thinking not go into taking epitalon thinking that there's going to be some magical that there's going to be some magical that there's going to be some magical like revolution like revolution like revolution &gt;&gt; like you're going to feel &gt;&gt; like you're going to feel &gt;&gt; like you're going to feel &gt;&gt; like that there's going to be like oh my &gt;&gt; like that there's going to be like oh my &gt;&gt; like that there's going to be like oh my goodness this is like completely goodness this is like completely goodness this is like completely revolutionize my health. I think over revolutionize my health. I think over revolutionize my health. I think over time it's one of those ones in the time it's one of those ones in the time it's one of those ones in the background that does a lot of good background that does a lot of good background that does a lot of good things things things &gt;&gt; that it's good to use and we see that in &gt;&gt; that it's good to use and we see that in &gt;&gt; that it's good to use and we see that in the data from Russia where it's been the data from Russia where it's been the data from Russia where it's been used but it's just one of those ones I used but it's just one of those ones I used but it's just one of those ones I think people they're like you know think people they're like you know think people they're like you know thinking that's going to be like thinking that's going to be like thinking that's going to be like &gt;&gt; a lot of people have this like this &gt;&gt; a lot of people have this like this &gt;&gt; a lot of people have this like this fantasy about this like magical fantasy about this like magical fantasy about this like magical longevity stack that's out there that longevity stack that's out there that longevity stack that's out there that like you're just going to take and it's like you're just going to take and it's like you're just going to take and it's going to like reverse your brain going to like reverse your brain going to like reverse your brain &gt;&gt; Yeah. it's going to like reverse age you &gt;&gt; Yeah. it's going to like reverse age you &gt;&gt; Yeah. it's going to like reverse age you 25 years 25 years 25 years &gt;&gt; and like that there's like some like bio &gt;&gt; and like that there's like some like bio &gt;&gt; and like that there's like some like bio regulator protocol that's going to do regulator protocol that's going to do regulator protocol that's going to do that. Now, the bi-regular protocols are that. Now, the bi-regular protocols are that. Now, the bi-regular protocols are great, but what I want people to",
+            "first_timestamp": "01:14:23.679"
+          },
+          {
+            "source_id": "JccJTHbWF84",
+            "source_type": "podcast",
+            "source_title": "Saturday Morning Coffee Talk | 2/7/26",
+            "source_date": "2026-02-08",
+            "source_url": "https://youtu.be/JccJTHbWF84",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2026-02-08-saturday-morning-coffee-talk-2-7-26-JccJTHbWF84.en.vtt",
+            "mention_count": 6,
+            "top_snippet": "&gt;&gt; Growth hormone would be the first one. I think you know epitalon can be really",
+            "top_context": "day would probably be the starting day would probably be the starting dosage from what I've read. But yeah, I dosage from what I've read. But yeah, I dosage from what I've read. But yeah, I think it'd be good. It's just not think it'd be good. It's just not think it'd be good. It's just not something I've ever had to do. And I something I've ever had to do. And I something I've ever had to do. And I haven't personally used it, so I don't haven't personally used it, so I don't haven't personally used it, so I don't really I don't like talking so much really I don't like talking so much really I don't like talking so much about things that I haven't personally about things that I haven't personally about things that I haven't personally used. used. used. &gt;&gt; Yeah. &gt;&gt; Yeah. Regarding cholesterol, this is &gt;&gt; Yeah. Regarding cholesterol, this is what I brought up earlier. I'm pretty what I brought up earlier. I'm pretty what I brought up earlier. I'm pretty sure Rapatha is a PCSK9. Don't quote me sure Rapatha is a PCSK9. Don't quote me sure Rapatha is a PCSK9. Don't quote me on that, but that's what I was kind of on that, but that's what I was kind of on that, but that's what I was kind of talking about being a replacement for talking about being a replacement for talking about being a replacement for statins. &gt;&gt; Will you guys cover a sleep stack, &gt;&gt; Will you guys cover a sleep stack, please, for waking up too early? &gt;&gt; I like a growth I like a growth hormone &gt;&gt; I like a growth I like a growth hormone peptide. Obviously, I've got videos peptide. Obviously, I've got videos peptide. Obviously, I've got videos about sleep stack that you guys can look about sleep stack that you guys can look about sleep stack that you guys can look up. up. up. &gt;&gt; We both do. &gt;&gt; We both do. &gt;&gt; We both do. &gt;&gt; Growth hormone would be the first one. I &gt;&gt; Growth hormone would be the first one. I &gt;&gt; Growth hormone would be the first one. I think you know epitalon can be really think you know epitalon can be really think you know epitalon can be really good for heading resetting circadian good for heading resetting circadian good for heading resetting circadian rhythm rhythm rhythm &gt;&gt; and just because we've been using that &gt;&gt; and just because we've been using that &gt;&gt; and just because we've been using that recently as of late for fertility recently as of late for fertility recently as of late for fertility purposes I do notice that I purposes I do notice that I purposes I do notice that I &gt;&gt; mean I always sleep good but it does &gt;&gt; mean I always sleep good but it does &gt;&gt; mean I always sleep good but it does seem to help. seem to help. seem to help. &gt;&gt; I don't get up like when I take a &gt;&gt; I don't get up like when I take a &gt;&gt; I don't get up like when I take a batalon I don't get up at all during the batalon I don't get up at all during the batalon I don't get up at all during the night. night. night. &gt;&gt; Yeah &gt;&gt; Yeah &gt;&gt; Yeah &gt;&gt; I usually get up once sometimes go to &gt;&gt; I usually get up once sometimes go to &gt;&gt; I usually get up once sometimes go to the bathroom like an hour before I the bathroom like an hour before I the bathroom like an hour before I actually get up actually get up actually get up &gt;&gt; but like the last two weeks I haven't &gt;&gt; but like the last two weeks I haven't &gt;&gt; but like the last two weeks I haven't even got up to use the bathroom. Yeah. even got up to use the bathroom. Yeah. even got up to use the bathroom. Yeah. &gt;&gt; At night, which is nice. &gt;&gt; At night, which is nice. &gt;&gt; At night, which is nice. &gt;&gt; Yeah, I agree. All the epatital &gt;&gt; Yeah, I agree. All the epatital &gt;&gt; Yeah, I agree. All the epatital &gt;&gt; um DEP. DEP. &gt;&gt; Yeah, &gt;&gt; Yeah, &gt;&gt; Yeah, &gt;&gt; that's another one. &gt;&gt; that's another one. &gt;&gt; that's another one. &gt;&gt; Sloop bioavailable orally. Just talked &gt;&gt; Sloop bioavailable orally. Just talked &gt;&gt; Sloop bioavailable orally. Just talked about that. I think I do fine with it about that. I think I do fine with it about that. I think I do fine with it orally.",
+            "first_timestamp": "00:57:20.720"
+          },
+          {
+            "source_id": "SUZmM0nTPyw",
+            "source_type": "podcast",
+            "source_title": "Peptide Stacking SECRETS for Women Who Want RESULTS!",
+            "source_date": "2024-10-22",
+            "source_url": "https://youtu.be/SUZmM0nTPyw",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2024-10-22-peptide-stacking-secrets-for-women-who-want-results-SUZmM0nTPyw.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "help with fat and metabolism and then we have epitalon which is going to help",
+            "top_context": "Agonist so it's only going to be hitting Agonist so it's only going to be hitting your G glp1 and your Gip receptor so your G glp1 and your Gip receptor so your G glp1 and your Gip receptor so that is where you know kind of have to that is where you know kind of have to that is where you know kind of have to come in there pick which one do you want come in there pick which one do you want come in there pick which one do you want to do which one sounds like it's going to do which one sounds like it's going to do which one sounds like it's going to be the most beneficial for you to do to be the most beneficial for you to do to be the most beneficial for you to do and that's kind of like how you want to and that's kind of like how you want to and that's kind of like how you want to pick between which glp one to take let's pick between which glp one to take let's pick between which glp one to take let's move on to our category of longevity and move on to our category of longevity and move on to our category of longevity and mitochondria Health which is one of my mitochondria Health which is one of my mitochondria Health which is one of my favorite things to talk about on this favorite things to talk about on this favorite things to talk about on this channel is mitochondria health is channel is mitochondria health is channel is mitochondria health is knowing what ones to pick from so we knowing what ones to pick from so we knowing what ones to pick from so we have for mitochondria example we have have for mitochondria example we have have for mitochondria example we have ss31 which is going to help with ss31 which is going to help with ss31 which is going to help with oxidative stress maty which is going to oxidative stress maty which is going to oxidative stress maty which is going to help with fat and metabolism and then we help with fat and metabolism and then we help with fat and metabolism and then we have epitalon which is going to help have epitalon which is going to help have epitalon which is going to help with reducing cellular aging and it's with reducing cellular aging and it's with reducing cellular aging and it's basically going to be more of our basically going to be more of our basically going to be more of our longevity more of our anti-aging um longevity more of our anti-aging um longevity more of our anti-aging um peptide so it's kind of knowing when to peptide so it's kind of knowing when to peptide so it's kind of knowing when to pick these so I would say for example pick these so I would say for example pick these so I would say for example like I personally if I was on a cycle of like I personally if I was on a cycle of like I personally if I was on a cycle of a glp1 I would probably pick ss31 out of a glp1 I would probably pick ss31 out of a glp1 I would probably pick ss31 out of the category of longevity and the category of longevity and the category of longevity and mitochondria health because I'm going to mitochondria health because I'm going to mitochondria health because I'm going to save my m see when I'm not on a glp1 so save my m see when I'm not on a glp1 so save my m see when I'm not on a glp1 so that's kind of how we can pair those off that's kind of how we can pair those off that's kind of how we can pair those off so it's just knowing which ones to take so it's just knowing which ones to take so it's just knowing which ones to take now would it hurt to take all of these now would it hurt to take all of these now would it hurt to take all of these again no but you're just not going to do",
+            "first_timestamp": "00:09:54.519"
+          },
+          {
+            "source_id": "Z1wJf_D6Pec",
+            "source_type": "podcast",
+            "source_title": "Vilon: The Healing Bioregulator Better Than BPC-157",
+            "source_date": "2025-08-02",
+            "source_url": "https://youtu.be/Z1wJf_D6Pec",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2025-08-02-vilon-the-healing-bioregulator-better-than-bpc-157-Z1wJf_D6Pec.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "is a great anti-aging peptide. I don't talk a lot about epitalon because I",
+            "top_context": "and especially von is awesome to use and especially von is awesome to use along with other bio regulators and along with other bio regulators and along with other bio regulators and other peptides because it's it's going other peptides because it's it's going other peptides because it's it's going to help amplify what you're already to help amplify what you're already to help amplify what you're already using. So therefore, von is going to using. So therefore, von is going to using. So therefore, von is going to help you make better progress and it's help you make better progress and it's help you make better progress and it's actually going to enhance whatever actually going to enhance whatever actually going to enhance whatever peptides and bio regulators you're peptides and bio regulators you're peptides and bio regulators you're using, which makes it the ideal using, which makes it the ideal using, which makes it the ideal candidate bio regulator for overall candidate bio regulator for overall candidate bio regulator for overall healing and health. So it's going to healing and health. So it's going to healing and health. So it's going to pair really great if you are dealing pair really great if you are dealing pair really great if you are dealing with any kind of injury recovery. It's with any kind of injury recovery. It's with any kind of injury recovery. It's going to pair great with BPC. If you're going to pair great with BPC. If you're going to pair great with BPC. If you're dealing with any kind of mitochondria dealing with any kind of mitochondria dealing with any kind of mitochondria support, liver, kidney function, it's support, liver, kidney function, it's support, liver, kidney function, it's going to work even better with SS31. going to work even better with SS31. going to work even better with SS31. Same thing with any kind of tissue Same thing with any kind of tissue Same thing with any kind of tissue repair. It's going to be great to use repair. It's going to be great to use repair. It's going to be great to use TB500 along with this and epalon. Epalon TB500 along with this and epalon. Epalon TB500 along with this and epalon. Epalon is a great anti-aging peptide. I don't is a great anti-aging peptide. I don't is a great anti-aging peptide. I don't talk a lot about epitalon because I talk a lot about epitalon because I talk a lot about epitalon because I don't use it yet currently. It's a don't use it yet currently. It's a don't use it yet currently. It's a peptide that is just not something that peptide that is just not something that peptide that is just not something that is going to be useful for me to use yet is going to be useful for me to use yet is going to be useful for me to use yet in my age. Evital is going to be more in my age. Evital is going to be more in my age. Evital is going to be more beneficial to use if you are in your beneficial to use if you are in your beneficial to use if you are in your 50s. Even even better to be using in 50s. Even even better to be using in 50s. Even even better to be using in your 60s. But what's great is that it's your 60s. But what's great is that it's your 60s. But what's great is that it's whatever you pair Vlain with is just whatever you pair Vlain with is just whatever you pair Vlain with is just going to help amplify. Vlain is also going to help amplify. Vlain is also going to help amplify. Vlain is also fine to use by itself as well too, fine to use by itself as well too, fine to use by itself as well too, especially when it comes to dealing with especially when it comes to dealing with especially when it comes to dealing with any kind of autoimmune functions, any kind of autoimmune functions, any kind of autoimmune functions, especially as women or if you're just especially as women or if you're just especially as women or if you're just looking at it just for like a anti-aging looking at it just for like a anti-aging looking at it just for like a anti-aging biorulator. Pairing these along with biorulator. Pairing these along with biorulator. Pairing these along with those same peptides within the family of those same peptides within the family of those same peptides within the family of what you're trying to focus on is going what you're trying to focus on is going what you're trying to focus on is going to be extremely beneficial. So what's to be extremely beneficial. So what's to be extremely beneficial. So what's also really great about vain because also really great about vain because also really great about vain because it's a bio regulator again shorter chain",
+            "first_timestamp": "00:12:11.440"
+          }
+        ],
+        "acute_signals": [
+          {
+            "snippet": "is a great anti-aging peptide. I don't talk a lot about epitalon because I",
+            "source_title": "Vilon: The Healing Bioregulator Better Than BPC-157",
+            "source_date": "2025-08-02",
+            "timestamp": "00:12:11.440",
+            "source_url": "https://youtu.be/Z1wJf_D6Pec"
+          },
+          {
+            "snippet": "talk a lot about epitalon because I",
+            "source_title": "Vilon: The Healing Bioregulator Better Than BPC-157",
+            "source_date": "2025-08-02",
+            "timestamp": "00:12:13.030",
+            "source_url": "https://youtu.be/Z1wJf_D6Pec"
+          },
+          {
+            "snippet": "talk a lot about epitalon because I don't use it yet currently. It's a",
+            "source_title": "Vilon: The Healing Bioregulator Better Than BPC-157",
+            "source_date": "2025-08-02",
+            "timestamp": "00:12:13.040",
+            "source_url": "https://youtu.be/Z1wJf_D6Pec"
+          },
+          {
+            "snippet": "Do you think they meant to meant to say Epitalon?",
+            "source_title": "Saturday Morning Coffee Talk 3/14/2026",
+            "source_date": "2026-03-14",
+            "timestamp": "00:43:57.800",
+            "source_url": "https://youtu.be/JC1poI1OEog"
+          },
+          {
+            "snippet": "Epitalon?",
+            "source_title": "Saturday Morning Coffee Talk 3/14/2026",
+            "source_date": "2026-03-14",
+            "timestamp": "00:44:00.349",
+            "source_url": "https://youtu.be/JC1poI1OEog"
+          }
+        ],
+        "chronic_signals": [
+          {
+            "snippet": "help with fat and metabolism and then we have epitalon which is going to help",
+            "source_title": "Peptide Stacking SECRETS for Women Who Want RESULTS!",
+            "source_date": "2024-10-22",
+            "timestamp": "00:09:54.519",
+            "source_url": "https://youtu.be/SUZmM0nTPyw"
+          },
+          {
+            "snippet": "have epitalon which is going to help",
+            "source_title": "Peptide Stacking SECRETS for Women Who Want RESULTS!",
+            "source_date": "2024-10-22",
+            "timestamp": "00:09:58.030",
+            "source_url": "https://youtu.be/SUZmM0nTPyw"
+          },
+          {
+            "snippet": "have epitalon which is going to help with reducing cellular aging and it's",
+            "source_title": "Peptide Stacking SECRETS for Women Who Want RESULTS!",
+            "source_date": "2024-10-22",
+            "timestamp": "00:09:58.040",
+            "source_url": "https://youtu.be/SUZmM0nTPyw"
+          },
+          {
+            "snippet": "I think that's one of those ones you do not go into taking epitalon thinking",
+            "source_title": "Saturday Morning Coffee Talk 1/17/26",
+            "source_date": "2026-01-17",
+            "timestamp": "01:14:23.679",
+            "source_url": "https://youtu.be/5ugqlYRSRSo"
+          },
+          {
+            "snippet": "not go into taking epitalon thinking",
+            "source_title": "Saturday Morning Coffee Talk 1/17/26",
+            "source_date": "2026-01-17",
+            "timestamp": "01:14:25.750",
+            "source_url": "https://youtu.be/5ugqlYRSRSo"
+          }
+        ]
+      },
+      "female_specific_note": "Taylor Williams Coaching focuses on female-specific HRT/peptide guidance. Per-peptide notes here often emphasize female dosing, fertility, hormone interactions."
+    },
+    "trevor-bachmeyer": {
+      "summary": {
+        "mention_count": 24,
+        "top_doses": [
+          {
+            "dose": "2 mg",
+            "count": 9
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "xxTZXHynh20",
+            "source_type": "podcast",
+            "source_title": "I Take Copper Every Day Because... Unbreakable Podcast 290",
+            "source_date": "2025-10-22",
+            "source_url": "https://youtu.be/xxTZXHynh20",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2025-10-22-i-take-copper-every-day-because-unbreakable-podcast-290-xxTZXHynh20.en.vtt",
+            "mention_count": 12,
+            "top_snippet": "while GHK-Cu works on all of these genes, epitalon",
+            "top_context": "1 million or 2 million?\" 2 million. You 1 million or 2 million?\" 2 million. You guys get your priorities right, man. guys get your priorities right, man. guys get your priorities right, man. Stack the GHK-Cu. Say two. I'll just say Stack the GHK-Cu. Say two. I'll just say Stack the GHK-Cu. Say two. I'll just say two. 2 mg every day, and then we build two. 2 mg every day, and then we build two. 2 mg every day, and then we build the house. So, MOTS-c, so you can handle the house. So, MOTS-c, so you can handle the house. So, MOTS-c, so you can handle mitochondrial biogenesis and energy mitochondrial biogenesis and energy mitochondrial biogenesis and energy production. Remember, it's a peptide production. Remember, it's a peptide production. Remember, it's a peptide that it's a mitochondrial peptide, that it's a mitochondrial peptide, that it's a mitochondrial peptide, specifically mitochondrially derived specifically mitochondrially derived specifically mitochondrially derived signal that gets Man, it gets right to signal that gets Man, it gets right to signal that gets Man, it gets right to the heart of every cellular energy the heart of every cellular energy the heart of every cellular energy production process in your body. It production process in your body. It production process in your body. It works synergistically with GHK-Cu. It's works synergistically with GHK-Cu. It's works synergistically with GHK-Cu. It's specifically its mitogenic effects, specifically its mitogenic effects, specifically its mitogenic effects, which gives it a wild, powerful, which gives it a wild, powerful, which gives it a wild, powerful, snap-kick double-punch for your snap-kick double-punch for your snap-kick double-punch for your vitality. And I'm not going to get into vitality. And I'm not going to get into vitality. And I'm not going to get into the details cuz I've done these so many the details cuz I've done these so many the details cuz I've done these so many times. Telomere support is something you times. Telomere support is something you times. Telomere support is something you should think about. So, we've got should think about. So, we've got should think about. So, we've got energy, we've got telomere support. So, energy, we've got telomere support. So, energy, we've got telomere support. So, while GHK-Cu while GHK-Cu while GHK-Cu works on all of these genes, epitalon works on all of these genes, epitalon works on all of these genes, epitalon targets the telomerase enzyme and the targets the telomerase enzyme and the targets the telomerase enzyme and the pineal gland dysfunction, so it changes pineal gland dysfunction, so it changes pineal gland dysfunction, so it changes its The issue is superior and very well its The issue is superior and very well its The issue is superior and very well architecture or very well orchestrated architecture or very well orchestrated architecture or very well orchestrated sleep. Restorative sleep is without any sleep. Restorative sleep is without any sleep. Restorative sleep is without any It's more recov- It's the best recovery It's more recov- It's the best recovery It's more recov- It's the best recovery tool. It's the ultimate recovery tool. tool. It's the ultimate recovery tool. tool. It's the ultimate recovery tool. It does better recovery than any It does better recovery than any It does better recovery than any supplement you'll ever get. Epitalon's supplement you'll ever get. Epitalon's supplement you'll ever get. Epitalon's the master key to that. This is your the master key to that. This is your the master key to that. This is your nightly regenerative dive. nightly regenerative dive. nightly regenerative dive. Hypothetically, if you're going to use Hypothetically, if you're going to use Hypothetically, if you're going to use this epitalon 20 days, then take 4 this epitalon 20 days, then take 4 this epitalon 20 days, then take 4 months off. Why can't you take it months off. Why can't you take it months off. Why can't you take it forever? I'm going to tell you right now forever? I'm going to tell you right now forever? I'm going to tell you right now cuz I [&nbsp;__&nbsp;] said you don't need any cuz I [&nbsp;__&nbsp;] said you don't need any cuz I [&nbsp;__&nbsp;] said you don't need any other reason. I'm tired of giving these other reason. I'm tired of giving these other reason. I'm tired of giving these explanations. Just accept it. explanations. Just accept it. explanations. Just accept it. BPC-157, which is the ultimate repair BPC-157, which is the ultimate repair BPC-157, which is the ultimate repair signal. We know that. While you don't signal. We know that. While you don't signal. We know that. While you don't mix it, by the way, with GHK-Cu, you",
+            "first_timestamp": "00:31:10.800"
+          },
+          {
+            "source_id": "lJJlzeUG7NU",
+            "source_type": "podcast",
+            "source_title": "Two Compounds To Solve Fatigue - Unbreakable Podcast 284",
+            "source_date": "2025-10-16",
+            "source_url": "https://youtu.be/lJJlzeUG7NU",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2025-10-16-two-compounds-to-solve-fatigue-unbreakable-podcast-284-lJJlzeUG7NU.en.vtt",
+            "mention_count": 6,
+            "top_snippet": "job on a damaged piece of DNA for you guys taking epitalon thinking it's",
+            "top_context": "why. Because it doesn't matter. If I why. Because it doesn't matter. If I tell you how, it won't matter what I'm tell you how, it won't matter what I'm tell you how, it won't matter what I'm You're not going to understand it. You're not going to understand it. You're not going to understand it. You're just going to go, \"Tell me the You're just going to go, \"Tell me the You're just going to go, \"Tell me the dosage. How do I do it?\" Except then you dosage. How do I do it?\" Except then you dosage. How do I do it?\" Except then you don't know what's working and what's don't know what's working and what's don't know what's working and what's not. You're throwing spaghetti at the not. You're throwing spaghetti at the not. You're throwing spaghetti at the wall and wondering why it's not wall and wondering why it's not wall and wondering why it's not sticking, or hoping one of the strands sticking, or hoping one of the strands sticking, or hoping one of the strands sticks. Like, yes, that was me drinking sticks. Like, yes, that was me drinking sticks. Like, yes, that was me drinking coffee. So, start with the biggest one coffee. So, start with the biggest one coffee. So, start with the biggest one of the whole group, the platform, right? of the whole group, the platform, right? of the whole group, the platform, right? The thing that everything is based on, The thing that everything is based on, The thing that everything is based on, which is energy production. So, you have which is energy production. So, you have which is energy production. So, you have an energy production problem. Your an energy production problem. Your an energy production problem. Your body's currency is not dollars or body's currency is not dollars or body's currency is not dollars or Bitcoin or silver or gold or anything. Bitcoin or silver or gold or anything. Bitcoin or silver or gold or anything. It's the ATP, adenosine triphosphate It's the ATP, adenosine triphosphate It's the ATP, adenosine triphosphate molecule. Triphosphate, right. molecule. Triphosphate, right. molecule. Triphosphate, right. Triphosphate molecule. Every single Triphosphate molecule. Every single Triphosphate molecule. Every single process, every thought, every heartbeat, process, every thought, every heartbeat, process, every thought, every heartbeat, every move of my hand, every blink of my every move of my hand, every blink of my every move of my hand, every blink of my eyelid, every immune cell that is eyelid, every immune cell that is eyelid, every immune cell that is hunting pathogens. Yeah, do you see hunting pathogens. Yeah, do you see hunting pathogens. Yeah, do you see where I'm going with this? Every repair where I'm going with this? Every repair where I'm going with this? Every repair job on a damaged piece of DNA for you job on a damaged piece of DNA for you job on a damaged piece of DNA for you guys taking epitalon thinking it's guys taking epitalon thinking it's guys taking epitalon thinking it's repairing telomeres, but how does it repairing telomeres, but how does it repairing telomeres, but how does it repair the telomere? Epitalon doesn't do repair the telomere? Epitalon doesn't do repair the telomere? Epitalon doesn't do the repair. It tells your body to do the the repair. It tells your body to do the the repair. It tells your body to do the repair. The energy required for the repair. The energy required for the repair. The energy required for the repair is, ready? Survey says, ATP. It repair is, ready? Survey says, ATP. It repair is, ready? Survey says, ATP. It is the foundation of everything. All of is the foundation of everything. All of is the foundation of everything. All of it is paid for everything I'm talking it is paid for everything I'm talking it is paid for everything I'm talking about is paid for with ATP. Everything about is paid for with ATP. Everything about is paid for with ATP. Everything you do in your entire body while you are you do in your entire body while you are you do in your entire body while you are alive is paid for with ATP. Every time alive is paid for with ATP. Every time alive is paid for with ATP. Every time that's what crosses the counter. This that's what crosses the counter. This that's what crosses the counter. This currency is minted in these tiny little currency is minted in these tiny little currency is minted in these tiny little cellular power plants called cellular power plants called cellular power plants called mitochondria. This is basic physiology. mitochondria. This is basic physiology. mitochondria. This is basic physiology. So, if you get that, you are ahead of So, if you get that, you are ahead of So, if you get that, you are ahead of 98% of the population on the internet. 98% of the population on the internet. 98% of the population on the internet. The problem in modern society is it's We The problem in modern society is it's We The problem in modern society is it's We don't have new fancy diseases, you guys. don't have new fancy diseases, you guys. don't have new fancy diseases, you guys. We don't. The Merck Manual is filled We don't. The Merck Manual is filled We don't. The Merck Manual is filled with a bunch of [&nbsp;__&nbsp;] It's that we with a bunch of [&nbsp;__&nbsp;] It's that we with a bunch of [&nbsp;__&nbsp;] It's that we have systematically dismantled our have systematically dismantled our have systematically dismantled our ability to produce energy, and it's",
+            "first_timestamp": "00:14:16.520"
+          },
+          {
+            "source_id": "Fj9_wLXso1c",
+            "source_type": "podcast",
+            "source_title": "What is Tesamorelin - Unbreakable Podcast 296",
+            "source_date": "2025-10-30",
+            "source_url": "https://youtu.be/Fj9_wLXso1c",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2025-10-30-what-is-tesamorelin-unbreakable-podcast-296-Fj9_wLXso1c.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "physiology. You have the tools. I've talked about it even with epitalon. You",
+            "top_context": "a over by the squat rack. Boosts a over by the squat rack. Boosts endogenous testosterone production, endogenous testosterone production, endogenous testosterone production, which is crucial for the full anabolic which is crucial for the full anabolic which is crucial for the full anabolic effect, the vitality effect of putting effect, the vitality effect of putting effect, the vitality effect of putting this together. But, Ipamorelin and this together. But, Ipamorelin and this together. But, Ipamorelin and clomiphene, Tesamorelin, it's another clomiphene, Tesamorelin, it's another clomiphene, Tesamorelin, it's another powerful layout. None of this is a cost. powerful layout. None of this is a cost. powerful layout. None of this is a cost. I think you guys need to understand I think you guys need to understand I think you guys need to understand that. None of this is a cost. This is an that. None of this is a cost. This is an that. None of this is a cost. This is an investment in the only asset that you investment in the only asset that you investment in the only asset that you actually own. I think you need to really actually own. I think you need to really actually own. I think you need to really stop and look in the mirror and go, stop and look in the mirror and go, stop and look in the mirror and go, \"What do I really own?\" You own you. \"What do I really own?\" You own you. \"What do I really own?\" You own you. Your physical vessel, this thing that Your physical vessel, this thing that Your physical vessel, this thing that you walk around in all day long. The you walk around in all day long. The you walk around in all day long. The alternative is a very slow, miserable, alternative is a very slow, miserable, alternative is a very slow, miserable, expensive, managed decline. And I mean expensive, managed decline. And I mean expensive, managed decline. And I mean managed by a medical system that profits managed by a medical system that profits managed by a medical system that profits from your sickness. The data isn't gone. from your sickness. The data isn't gone. from your sickness. The data isn't gone. It's not hidden. None of this is It's not hidden. None of this is It's not hidden. None of this is speculative. This is based on pure speculative. This is based on pure speculative. This is based on pure science, pure human biology and science, pure human biology and science, pure human biology and physiology. You have the tools. I've physiology. You have the tools. I've physiology. You have the tools. I've talked about it even with epitalon. You talked about it even with epitalon. You talked about it even with epitalon. You have the tools to slow the clock and not have the tools to slow the clock and not have the tools to slow the clock and not even reverse its most devastating even reverse its most devastating even reverse its most devastating pathologies. The question is no longer, pathologies. The question is no longer, pathologies. The question is no longer, \"What in the hell is wrong with me?\" The \"What in the hell is wrong with me?\" The \"What in the hell is wrong with me?\" The question you should be asking is, \"Do question you should be asking is, \"Do question you should be asking is, \"Do you have the will and the drive and the you have the will and the drive and the you have the will and the drive and the actual capacity to fix it? Are you actual capacity to fix it? Are you actual capacity to fix it? Are you willing to do it?\" Because I think a willing to do it?\" Because I think a willing to do it?\" Because I think a because it's tolerated, but it's because it's tolerated, but it's because it's tolerated, but it's tolerated until you are on death's tolerated until you are on death's tolerated until you are on death's doorstep and you're sitting in a room doorstep and you're sitting in a room doorstep and you're sitting in a room all by yourself while the world is still all by yourself while the world is still all by yourself while the world is still spinning by and had you only done X, Y, spinning by and had you only done X, Y, spinning by and had you only done X, Y, and Z, you wouldn't be in that room. How and Z, you wouldn't be in that room. How and Z, you wouldn't be in that room. How about you just start engineering a about you just start engineering a about you just start engineering a better [&nbsp;__&nbsp;] biology? But, that's just better [&nbsp;__&nbsp;] biology? But, that's just better [&nbsp;__&nbsp;] biology? But, that's just my thoughts. What do I know? Hope you my thoughts. What do I know? Hope you my thoughts. What do I know? Hope you got something out of this. I got to go. got something out of this. I got to go. got something out of this. I got to go. Never miss.",
+            "first_timestamp": "00:22:15.240"
+          },
+          {
+            "source_id": "m8FwL9Xsk78",
+            "source_type": "podcast",
+            "source_title": "NAD+ Is My New Favorite Compound - Unbreakable Podcast 298",
+            "source_date": "2025-10-31",
+            "source_url": "https://youtu.be/m8FwL9Xsk78",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2025-10-31-nad-is-my-new-favorite-compound-unbreakable-podcast-298-m8FwL9Xsk78.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "protects your telomeres, remember epitalon, telomerase, right? Which does",
+            "top_context": "turbine spin no ATP. That's why this is turbine spin no ATP. That's why this is important. That's why NAD+ is a big important. That's why NAD+ is a big important. That's why NAD+ is a big deal. That's just the energy side, by deal. That's just the energy side, by deal. That's just the energy side, by the way. NAD+'s other job is damage the way. NAD+'s other job is damage the way. NAD+'s other job is damage control and this is the one that nobody control and this is the one that nobody control and this is the one that nobody you're never going to see this on the you're never going to see this on the you're never going to see this on the back of a container. It activates back of a container. It activates back of a container. It activates sirtuins, right? Sirt1, Sirt3, Sirt6. sirtuins, right? Sirt1, Sirt3, Sirt6. sirtuins, right? Sirt1, Sirt3, Sirt6. These are like emergency response These are like emergency response These are like emergency response proteins. They come in and they do stuff proteins. They come in and they do stuff proteins. They come in and they do stuff that you don't even pay attention to, that you don't even pay attention to, that you don't even pay attention to, but if it didn't, you wouldn't survive. but if it didn't, you wouldn't survive. but if it didn't, you wouldn't survive. So, Sirt1, this activates DNA repair and So, Sirt1, this activates DNA repair and So, Sirt1, this activates DNA repair and tells the nucleus to build more tells the nucleus to build more tells the nucleus to build more mitochondria. That's one. Sirt3, this is mitochondria. That's one. Sirt3, this is mitochondria. That's one. Sirt3, this is inside the mitochondria. It tweaks the inside the mitochondria. It tweaks the inside the mitochondria. It tweaks the mechanics, the machinery for max mechanics, the machinery for max mechanics, the machinery for max efficiency and stops all the energy efficiency and stops all the energy efficiency and stops all the energy leaks, so you stop just bleeding out leaks, so you stop just bleeding out leaks, so you stop just bleeding out horsepower. Sirt6 reinforces the DNA and horsepower. Sirt6 reinforces the DNA and horsepower. Sirt6 reinforces the DNA and protects your telomeres, remember protects your telomeres, remember protects your telomeres, remember epitalon, telomerase, right? Which does epitalon, telomerase, right? Which does epitalon, telomerase, right? Which does aglets, the caps on the end of your aglets, the caps on the end of your aglets, the caps on the end of your chromosomes that shorten with age. So, chromosomes that shorten with age. So, chromosomes that shorten with age. So, all of this stuff is working together to all of this stuff is working together to all of this stuff is working together to make you more efficient and make you make you more efficient and make you make you more efficient and make you more like into a more robust, more of a more like into a more robust, more of a more like into a more robust, more of a juggernaut. You become more like juggernaut. You become more like juggernaut. You become more like Wolverine and less like a potato. This Wolverine and less like a potato. This Wolverine and less like a potato. This is the ultimate management crew that is the ultimate management crew that is the ultimate management crew that keeps your entire city of what did I say keeps your entire city of what did I say keeps your entire city of what did I say yesterday or the day before, whenever it yesterday or the day before, whenever it yesterday or the day before, whenever it was I said 30 trillion cells all in the was I said 30 trillion cells all in the was I said 30 trillion cells all in the same city, all with their own power same city, all with their own power same city, all with their own power supply, mitochondria. This is what keeps supply, mitochondria. This is what keeps supply, mitochondria. This is what keeps all those 30 trillion power supplies all those 30 trillion power supplies all those 30 trillion power supplies inside each one of those homes from from inside each one of those homes from from inside each one of those homes from from crumbling. And the right now they're crumbling. And the right now they're crumbling. And the right now they're without NAD+ they're on this unpaid LOA, without NAD+ they're on this unpaid LOA, without NAD+ they're on this unpaid LOA, leave of absence, because you got no leave of absence, because you got no leave of absence, because you got no NAD+ to pay these people. It's like a NAD+ to pay these people. It's like a NAD+ to pay these people. It's like a government shutdown. God, I feel for you government shutdown. God, I feel for you government shutdown. God, I feel for you guys, man. Like I",
+            "first_timestamp": "00:13:36.480"
+          }
+        ],
+        "acute_signals": [
+          {
+            "snippet": "with your mind. So, this Listen to me. The stack: GHK-Cu, MOTS-c, epitalon,",
+            "source_title": "I Take Copper Every Day Because... Unbreakable Podcast 290",
+            "source_date": "2025-10-22",
+            "timestamp": "00:32:52.160",
+            "source_url": "https://youtu.be/xxTZXHynh20"
+          },
+          {
+            "snippet": "The stack: GHK-Cu, MOTS-c, epitalon,",
+            "source_title": "I Take Copper Every Day Because... Unbreakable Podcast 290",
+            "source_date": "2025-10-22",
+            "timestamp": "00:32:54.990",
+            "source_url": "https://youtu.be/xxTZXHynh20"
+          },
+          {
+            "snippet": "The stack: GHK-Cu, MOTS-c, epitalon, cerebrolysin, BPC-157. And if you go,",
+            "source_title": "I Take Copper Every Day Because... Unbreakable Podcast 290",
+            "source_date": "2025-10-22",
+            "timestamp": "00:32:55.000",
+            "source_url": "https://youtu.be/xxTZXHynh20"
+          },
+          {
+            "snippet": "protects your telomeres, remember epitalon, telomerase, right? Which does",
+            "source_title": "NAD+ Is My New Favorite Compound - Unbreakable Podcast 298",
+            "source_date": "2025-10-31",
+            "timestamp": "00:13:36.480",
+            "source_url": "https://youtu.be/m8FwL9Xsk78"
+          },
+          {
+            "snippet": "epitalon, telomerase, right? Which does",
+            "source_title": "NAD+ Is My New Favorite Compound - Unbreakable Podcast 298",
+            "source_date": "2025-10-31",
+            "timestamp": "00:13:38.750",
+            "source_url": "https://youtu.be/m8FwL9Xsk78"
+          }
+        ],
+        "chronic_signals": [
+          {
+            "snippet": "while GHK-Cu works on all of these genes, epitalon",
+            "source_title": "I Take Copper Every Day Because... Unbreakable Podcast 290",
+            "source_date": "2025-10-22",
+            "timestamp": "00:31:10.800",
+            "source_url": "https://youtu.be/xxTZXHynh20"
+          },
+          {
+            "snippet": "works on all of these genes, epitalon",
+            "source_title": "I Take Copper Every Day Because... Unbreakable Podcast 290",
+            "source_date": "2025-10-22",
+            "timestamp": "00:31:14.150",
+            "source_url": "https://youtu.be/xxTZXHynh20"
+          },
+          {
+            "snippet": "works on all of these genes, epitalon targets the telomerase enzyme and the",
+            "source_title": "I Take Copper Every Day Because... Unbreakable Podcast 290",
+            "source_date": "2025-10-22",
+            "timestamp": "00:31:14.160",
+            "source_url": "https://youtu.be/xxTZXHynh20"
+          }
+        ]
+      },
+      "acute_vs_chronic_note": "Dr Bachmeyer often distinguishes acute (injury/infection) vs chronic (longevity/maintenance) dosing. Acute_signals + chronic_signals fields surface candidate contexts; full distillation pending Codex pass."
+    }
+  },
+  "reset_biology_synthesis": {
+    "status": "pending-codex-distillation",
+    "recommendation": null,
+    "caveats": null,
+    "cross_expert_consensus": null,
+    "cross_expert_disagreement": null
+  },
+  "generated_at": "2026-04-27T02:02:34.809Z"
+}

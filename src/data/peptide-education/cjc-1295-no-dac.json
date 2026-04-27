@@ -1,0 +1,37 @@
+{
+  "peptide": "CJC-1295 No DAC",
+  "slug": "cjc-1295-no-dac",
+  "aliases": [],
+  "category": "Longevity",
+  "experts": {
+    "hunter-williams": {
+      "baseline_protocol": {
+        "source": "Hunter Williams + Jay Campbell Cheat Sheet 2023",
+        "source_pdf": "data/peptide-libraries/cross-expert/cheat-sheets/hunter-williams-jay-campbell-peptide-cheat-sheet-2023.pdf",
+        "purpose": "Longevity",
+        "vial_mg": "10 mg",
+        "bac_mL": "3 mL",
+        "dose": "200 mcg",
+        "units_on_1mL_insulin": "6",
+        "timing": "PM",
+        "frequency": "5 days on, 2 days off",
+        "duration": "8 weeks on, 8 weeks off"
+      },
+      "summary": {
+        "mention_count": 0,
+        "top_doses": [],
+        "top_sources": [],
+        "acute_signals": [],
+        "chronic_signals": []
+      }
+    }
+  },
+  "reset_biology_synthesis": {
+    "status": "pending-codex-distillation",
+    "recommendation": null,
+    "caveats": null,
+    "cross_expert_consensus": null,
+    "cross_expert_disagreement": null
+  },
+  "generated_at": "2026-04-27T02:02:35.018Z"
+}

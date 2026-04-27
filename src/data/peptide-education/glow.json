@@ -1,0 +1,619 @@
+{
+  "peptide": "Glow",
+  "slug": "glow",
+  "aliases": [
+    "Glow",
+    "glow",
+    "GLOW"
+  ],
+  "category": "Uncategorized",
+  "experts": {
+    "hunter-williams": {
+      "baseline_protocol": null,
+      "summary": {
+        "mention_count": 49,
+        "top_doses": [
+          {
+            "dose": "10 mg",
+            "count": 29
+          },
+          {
+            "dose": "70 mg",
+            "count": 11
+          },
+          {
+            "dose": "50 mg",
+            "count": 11
+          },
+          {
+            "dose": "80 mg",
+            "count": 3
+          },
+          {
+            "dose": "10 units",
+            "count": 2
+          },
+          {
+            "dose": "1 mg",
+            "count": 2
+          },
+          {
+            "dose": "120 mg",
+            "count": 2
+          },
+          {
+            "dose": "6 mg",
+            "count": 1
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "198489a54128a775",
+            "source_type": "email",
+            "source_title": "1+1+1 = GLOW",
+            "source_date": "2025-07-26",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-07-26-1-1-1-glow.md",
+            "mention_count": 10,
+            "top_snippet": ", and GHK-Cu instead of just picking one?”), I know it’s time to break down the _real_ reasons you should consider using these _together_. Whether you’re an athlete coming back from an injury, a weeke",
+            "top_context": ", and GHK-Cu instead of just picking one?”), I know it’s time to break down the _real_ reasons you should consider using these _together_. Whether you’re an athlete coming back from an injury, a weekend warrior wanting to heal faster, or a high-achiever looking to bounce back from the grind, the GLOW blend can benefit you for very specific reasons. Today, we’ll talk science, synergy, and real-world results. And yes, I’ll show you exactly how to dose the GLOW blend so you get the best possible results. “FYI, BioLongevity Labs is running a flash sale on the GLOW blend and Thyreogen unt",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "PEU3ZE5axiQ",
+            "source_type": "podcast",
+            "source_title": "Estrogen is Critical for Men Too - Here's Why Your Peptides Fail Without It with Sarah Morgan",
+            "source_date": "2026-03-13",
+            "source_url": "https://youtu.be/PEU3ZE5axiQ",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-03-13-estrogen-is-critical-for-men-too-here-s-why-your-peptides-fail-without-PEU3ZE5axiQ.en.vtt",
+            "mention_count": 5,
+            "top_snippet": "that's like everyone's favorite thing to buy is&nbsp; Glow and CL. Uh can you explain to people and&nbsp;&nbsp;",
+            "top_context": "peptides as signaling molecules to do repair and&nbsp; it's going to do it more and longer in an acute&nbsp;&nbsp; injury situation. That's the big context that you&nbsp; need to have. And yes, you're right. Like, don't&nbsp;&nbsp; just use it forever. And this is where education&nbsp; is so important. And we're all kind of catching up&nbsp;&nbsp; on that. Yeah. Yeah. Um, also, as we were talking&nbsp; about that, there's been a lot of, how would I&nbsp;&nbsp; call it? I think confusion right now like the big&nbsp; thing we've getting asked a ton of questions. Can&nbsp;&nbsp; you have BPC and TB500 stable together? or can you&nbsp; have BPC, TV500, GHK or even KPV? Yeah. Because&nbsp;&nbsp; that's like everyone's favorite thing to buy is&nbsp; Glow and CL. Uh can you explain to people and&nbsp;&nbsp; whether it's not like you can't or you can and&nbsp; then maybe just like a very lay explanation to&nbsp;&nbsp; like why that would be the case. Yeah. It's like&nbsp; um twin daughters that like don't like each other&nbsp;&nbsp; and start fighting and punching each other when&nbsp; they're in the same room too long. Yeah. So the&nbsp;&nbsp; idea here is for a while, you know, with peptides,&nbsp; they're amino acid sequences, right? And they have&nbsp;&nbsp; different charges. They have different dolton&nbsp; size. They have different pHes that they like&nbsp;&nbsp; to be at in terms of their personalities. All of&nbsp; them like a little bit of an acidic pH. So it's&nbsp;&nbsp; in general that's the case. Yeah. I think if you&nbsp; would talk to a chemist, which I'm not a chemist,&nbsp;&nbsp;",
+            "first_timestamp": "00:34:38.160"
+          },
+          {
+            "source_id": "198c4537f0cfbd90",
+            "source_type": "email",
+            "source_title": "The KLOW Stack",
+            "source_date": "2025-08-19",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-08-19-the-klow-stack.md",
+            "mention_count": 5,
+            "top_snippet": "Happy Tuesday! I’m excited to announce that today I’ve released a brand new video on the **KLOW peptide stack**. This cutting-edge blend of **KPV, BPC-157, TB-500, and GHK-Cu** elevates the GLOW stack",
+            "top_context": "Happy Tuesday! I’m excited to announce that today I’ve released a brand new video on the **KLOW peptide stack**. This cutting-edge blend of **KPV, BPC-157, TB-500, and GHK-Cu** elevates the GLOW stack to a whole new level. View image: (https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,format=auto,onerror=redirect,quality=80/uploads/asset/file/2a3b8628-7e63-4471-ab05-458c02568783/klow.png?t=1755592686) Follow image link: (https://youtu.be/mX9Gim98OEw) Caption: [https://youtu.be/mX",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "19bc90e12abefa74",
+            "source_type": "email",
+            "source_title": "GLOW/KLOW are Worthless? (Stability Defense)",
+            "source_date": "2026-01-16",
+            "source_url": "https://open.spotify.com/episode/39JBeBmCbURDLURrBvsPXT",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2026-01-16-glow-klow-stability-defense.md",
+            "mention_count": 5,
+            "top_snippet": "# GLOW + KLOW Stability Defense — Why The \"Blends Are Dead On Arrival\" Argument Fails > \"I take the strongest arguments AGAINST these blends seriously and ask one question. Does it hold up when you ac",
+            "top_context": "# GLOW + KLOW Stability Defense — Why The \"Blends Are Dead On Arrival\" Argument Fails > \"I take the strongest arguments AGAINST these blends seriously and ask one question. Does it hold up when you actually check the chemistry, the biology, and the data? Short answer. Yes, these blends are stable, and ye",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "4igc2UpFr7Q",
+            "source_type": "podcast",
+            "source_title": "GLP-1 Stacks, HGH & Healing Protocols - Your Questions Answered | March 2026",
+            "source_date": "2026-04-03",
+            "source_url": "https://youtu.be/4igc2UpFr7Q",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-04-03-glp-1-stacks-hgh-healing-protocols-your-questions-answered-march-2026-4igc2UpFr7Q.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "Next question, I'm finishing a 12-week run of Tessa, AOD, Glow, and Retat.",
+            "top_context": "a pretty warm temperature. I want to say a pretty warm temperature. I want to say like 80 or 90° Fahrenheit. I don't like 80 or 90° Fahrenheit. I don't like 80 or 90° Fahrenheit. I don't remember. But uh the MOTS-c stayed remember. But uh the MOTS-c stayed remember. But uh the MOTS-c stayed stable for 30 days at a warm temperature stable for 30 days at a warm temperature stable for 30 days at a warm temperature and there was like virtually no and there was like virtually no and there was like virtually no degradation. So, that's MOTS-c, it's not degradation. So, that's MOTS-c, it's not degradation. So, that's MOTS-c, it's not Tesamorelin. But do I have to Tesamorelin. But do I have to Tesamorelin. But do I have to refrigerate Tesamorelin? I don't know. refrigerate Tesamorelin? I don't know. refrigerate Tesamorelin? I don't know. I'd say do what thou wilt. You probably I'd say do what thou wilt. You probably I'd say do what thou wilt. You probably are okay if you leave it out of the are okay if you leave it out of the are okay if you leave it out of the fridge if it's not too hot, but I put it fridge if it's not too hot, but I put it fridge if it's not too hot, but I put it in the fridge. Uh but I've never had in the fridge. Uh but I've never had in the fridge. Uh but I've never had mine gel in the fridge. And if you've mine gel in the fridge. And if you've mine gel in the fridge. And if you've had yours gel in the fridge, then maybe had yours gel in the fridge, then maybe had yours gel in the fridge, then maybe you want to leave it out at room you want to leave it out at room you want to leave it out at room temperature. So, I will, unlike a lot of temperature. So, I will, unlike a lot of temperature. So, I will, unlike a lot of other people out there, I will never other people out there, I will never other people out there, I will never claim to have the definitive answer on claim to have the definitive answer on claim to have the definitive answer on things that I can't definitively say yes things that I can't definitively say yes things that I can't definitively say yes or no. I will tell you me, Hunter, I put or no. I will tell you me, Hunter, I put or no. I will tell you me, Hunter, I put my Tesamorelin in the fridge and I have my Tesamorelin in the fridge and I have my Tesamorelin in the fridge and I have for years and never had any issues. for years and never had any issues. for years and never had any issues. Um and so I'm not a chemist, don't claim Um and so I'm not a chemist, don't claim Um and so I'm not a chemist, don't claim claim to be a chemist, but that's just claim to be a chemist, but that's just claim to be a chemist, but that's just kind of my thoughts on it. kind of my thoughts on it. kind of my thoughts on it. Next question, I'm finishing a 12-week Next question, I'm finishing a 12-week Next question, I'm finishing a 12-week run of Tessa, AOD, Glow, and Retat. run of Tessa, AOD, Glow, and Retat. run of Tessa, AOD, Glow, and Retat. Should I add Ipamorelin now or wait Should I add Ipamorelin now or wait Should I add Ipamorelin now or wait until my next Tessa cycle? Will the until my next Tessa cycle? Will the until my next Tessa cycle? Will the ghrelin bump mess with fat loss when I'm ghrelin bump mess with fat loss when I'm ghrelin bump mess with fat loss when I'm this close to my goal? I think you could this close to my goal? I think you could this close to my goal? I think you could go ahead and add in Ipamorelin now. And go ahead and add in Ipamorelin now. And go ahead and add in Ipamorelin now. And to the point of Ipamorelin with the to the point of Ipamorelin with the to the point of Ipamorelin with the ghrelin agonism because it is a GHRP ghrelin agonism because it is a GHRP ghrelin agonism because it is a GHRP which stimulates ghrelin. The good thing which stimulates ghrelin. The good thing which stimulates ghrelin. The good thing about Ipamorelin doing that is it seems about Ipamorelin doing that is it seems about Ipamorelin doing that is it seems to be selective, meaning that it it to be selective, meaning that it it to be selective, meaning that it it doesn't raise prolactin and it doesn't doesn't raise prolactin and it doesn't doesn't raise prolactin and it doesn't raise cortisol, and it doesn't increase raise cortisol, and it doesn't increase raise cortisol, and it doesn't increase appetite. I would say very few people appetite. I would say very few people appetite. I would say very few people that I have talked to, worked with, that I have talked to, worked with, that I have talked to, worked with, heard from ever really get an increase heard from ever really get an increase heard from ever really get an increase in appetite from in appetite from in appetite from uh Ipamorelin, whereas the other GHRPs uh Ipamorelin, whereas the other GHRPs uh Ipamorelin, whereas the other GHRPs you would have MK-677 as a GHRP, you would have GHRP-2, MK-677 as a GHRP, you would have GHRP-2, GHRP-6. Uh I do see those. Now, MK-777",
+            "first_timestamp": "00:15:41.520"
+          },
+          {
+            "source_id": "198f7e2e34be4381",
+            "source_type": "email",
+            "source_title": "The Easiest Way to Reconstitute Blended Peptides",
+            "source_date": "2025-08-29",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-08-29-the-easiest-way-to-reconstitute-blended-peptides.md",
+            "mention_count": 3,
+            "top_snippet": "d the right amount of bacteriostatic water, swirl gently, and suddenly you can measure precise servings. **Peptides are the same.** Below is my simple “kitchen math” approach, followed by three worked",
+            "top_context": "d the right amount of bacteriostatic water, swirl gently, and suddenly you can measure precise servings. **Peptides are the same.** Below is my simple “kitchen math” approach, followed by three worked examples using blends that many of you have. * **Tesamorelin/Ipamorelin 6mg/2mg** * **GLOW Blend (GHK-Cu 50mg, BPC-157 10mg, TB-500 10mg)** * **Ipamorelin/CJC-1295 no DAC 5mg/5mg**. I’ll also show exactly how many **insulin syringe units** to pull for common doses. “[The Labor Day Sale is going strong at BioLongevity Labs. ](https://biolongevitylabs.com/) All products are di",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "tcaX0xrCMR4",
+            "source_type": "podcast",
+            "source_title": "Reader Mailbag 2 � Autoimmune, Fertility, Cancer & More | Hunter & Taylor Williams",
+            "source_date": "2026-04-24",
+            "source_url": "https://youtu.be/tcaX0xrCMR4",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-04-24-reader-mailbag-2-autoimmune-fertility-cancer-more-hunter-taylor-willia-tcaX0xrCMR4.en.vtt",
+            "mention_count": 2,
+            "top_snippet": "glow, those are all fine to mix in the",
+            "top_context": "receptive to it at a lower dose. It receptive to it at a lower dose. It helps you like manage. It helps you like helps you like manage. It helps you like helps you like manage. It helps you like not become dependent on it. And you not become dependent on it. And you not become dependent on it. And you know, it's funny is because I had been know, it's funny is because I had been know, it's funny is because I had been on Reddit for probably like four or five on Reddit for probably like four or five on Reddit for probably like four or five months consecutively, which is the months consecutively, which is the months consecutively, which is the longest I'd been on before that. And I'm longest I'd been on before that. And I'm longest I'd been on before that. And I'm like, man, that's not as bad as you like, man, that's not as bad as you like, man, that's not as bad as you think in your head. Yeah. You do it. think in your head. Yeah. You do it. think in your head. Yeah. You do it. Now, I realize like other people may Now, I realize like other people may Now, I realize like other people may feel that way, but if you manage it that feel that way, but if you manage it that feel that way, but if you manage it that way, I don't think it's as bad. way, I don't think it's as bad. way, I don't think it's as bad. &gt;&gt; Yeah. &gt;&gt; Yeah. &gt;&gt; Yeah. &gt;&gt; All right. I think we beat that one to &gt;&gt; All right. I think we beat that one to &gt;&gt; All right. I think we beat that one to death. Last one. This will be it. death. Last one. This will be it. death. Last one. This will be it. &gt;&gt; Let's talk about some reconstitution. &gt;&gt; Let's talk about some reconstitution. &gt;&gt; Let's talk about some reconstitution. All right. So, we have a lot of All right. So, we have a lot of All right. So, we have a lot of questions we always get around questions we always get around questions we always get around reconstitution. I'm not going to tell reconstitution. I'm not going to tell reconstitution. I'm not going to tell you how much water to mix in your you how much water to mix in your you how much water to mix in your peptide. That's what the peptide cheat peptide. That's what the peptide cheat peptide. That's what the peptide cheat sheet is for. sheet is for. sheet is for. calculator. glow, those are all fine to mix in the glow, those are all fine to mix in the same syringe? What I like to think of is same syringe? What I like to think of is same syringe? What I like to think of is like if it's relatively the same like if it's relatively the same like if it's relatively the same pathway, it's probably okay. Mhm. pathway, it's probably okay. Mhm. pathway, it's probably okay. Mhm. &gt;&gt; But when we start mixing healing &gt;&gt; But when we start mixing healing &gt;&gt; But when we start mixing healing peptides with a GLP or GLPS with a peptides with a GLP or GLPS with a peptides with a GLP or GLPS with a growth hormone peptide or GLPS with an growth hormone peptide or GLPS with an growth hormone peptide or GLPS with an immunity peptide, all of a sudden now immunity peptide, all of a sudden now immunity peptide, all of a sudden now we're just kind of throwing caution to we're just kind of throwing caution to we're just kind of throwing caution to the wind and hoping that it works. The the wind and hoping that it works. The the wind and hoping that it works. The rule of thumb that I would say is that rule of thumb that I would say is that rule of thumb that I would say is that if you mix it together and it's cloudy, if you mix it together and it's cloudy, if you mix it together and it's cloudy, most likely you denature the peptide to most likely you denature the peptide to most likely you denature the peptide to now where it's worthless when you inject now where it's worthless when you inject now where it's worthless when you inject it. But that doesn't mean that it can't it. But that doesn't mean that it can't it. But that doesn't mean that it can't be cloudy and it also can't be like be cloudy and it also can't be like be cloudy and it also can't be like that. that. that. &gt;&gt; Just because it's not cloudy doesn't &gt;&gt; Just because it's not cloudy doesn't &gt;&gt; Just because it's not cloudy doesn't mean it's not working. it could mean it's not working. it could mean it's not working. it could potentially still potentially still potentially still &gt;&gt; be worthless even if it's not cloudy. &gt;&gt; be worthless even if it's not cloudy. &gt;&gt; be worthless even if it's not cloudy. &gt;&gt; And so that's what I do. I don't really &gt;&gt; And so that's what I do. I don't really &gt;&gt; And so that's what I do. I don't really like outside of those things I just like outside of those things I just like outside of those things I just mentioned, which is like pathways mentioned, which is like pathways mentioned, which is like pathways together, I don't really mix peptides",
+            "first_timestamp": "01:03:30.789"
+          },
+          {
+            "source_id": "19799acedca21a49",
+            "source_type": "email",
+            "source_title": "Use This Peptide At The Beach",
+            "source_date": "2025-06-22",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-06-22-use-this-peptide-at-the-beach.md",
+            "mention_count": 2,
+            "top_snippet": "sing code HUNTERW). “[BioLongevity Labs extended their flash sale on the following items until midnight Sunday PST:](https://biolongevitylabs.com/) [GLP-3](https://biolongevitylabs.com/product/glp-3-1",
+            "top_context": "sing code HUNTERW). “[BioLongevity Labs extended their flash sale on the following items until midnight Sunday PST:](https://biolongevitylabs.com/) [GLP-3](https://biolongevitylabs.com/product/glp-3-10mg/) (Retatrutide — must click the link here to buy) BPC-157/TB-500 Blend MOTS-C Glow Blend (BPC-157/TB-500/GHK-Cu) Thymosin Alpha-1 Melanotan-1 Tesamorelin MetaShred BioMind Tesofensine Metformin Get 35% off these items when you use code HUNTERW (20% off in the store and the code applies 15% at checkout) [Go here to purchase](https://biolongevitylab",
+            "first_timestamp": null
+          }
+        ],
+        "acute_signals": [
+          {
+            "snippet": "that's like everyone's favorite thing to buy is&nbsp; Glow and CL. Uh can you explain to people and&nbsp;&nbsp;",
+            "source_title": "Estrogen is Critical for Men Too - Here's Why Your Peptides Fail Without It with Sarah Morgan",
+            "source_date": "2026-03-13",
+            "timestamp": "00:34:38.160",
+            "source_url": "https://youtu.be/PEU3ZE5axiQ"
+          },
+          {
+            "snippet": "slow-healing injuries - Want visibly younger/firmer/healthier skin - Hair thinning / hair loss - Faster recovery (workouts, surgery) - Proactive aging management - **People over 30** (when natural GHK",
+            "source_title": "GHK-cu: The ShamWow Peptide",
+            "source_date": "2025-04-19",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": ", and GHK-Cu instead of just picking one?”), I know it’s time to break down the _real_ reasons you should consider using these _together_. Whether you’re an athlete coming back from an injury, a weeke",
+            "source_title": "1+1+1 = GLOW",
+            "source_date": "2025-07-26",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "oming back from an injury, a weekend warrior wanting to heal faster, or a high-achiever looking to bounce back from the grind, the GLOW blend can benefit you for very specific reasons. Today, we’ll ta",
+            "source_title": "1+1+1 = GLOW",
+            "source_date": "2025-07-26",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "ing fine lines and making surgical or injury scars far less visible. * **General anti-aging and recovery:** Many users report feeling “younger” at the tissue level. More flexible, less stiff, quicker ",
+            "source_title": "1+1+1 = GLOW",
+            "source_date": "2025-07-26",
+            "timestamp": null,
+            "source_url": null
+          }
+        ],
+        "chronic_signals": [
+          {
+            "snippet": "I think the the glow the word the glow is like the&nbsp; best has been the best marketing strategy because&nbsp;&nbsp;",
+            "source_title": "Estrogen is Critical for Men Too - Here's Why Your Peptides Fail Without It with Sarah Morgan",
+            "source_date": "2026-03-13",
+            "timestamp": "01:55:14.000",
+            "source_url": "https://youtu.be/PEU3ZE5axiQ"
+          },
+          {
+            "snippet": "I think the the glow the word the glow is like the&nbsp; best has been the best marketing strategy because&nbsp;&nbsp;",
+            "source_title": "Estrogen is Critical for Men Too - Here's Why Your Peptides Fail Without It with Sarah Morgan",
+            "source_date": "2026-03-13",
+            "timestamp": "01:55:14.000",
+            "source_url": "https://youtu.be/PEU3ZE5axiQ"
+          },
+          {
+            "snippet": "Next question, I'm finishing a 12-week run of Tessa, AOD, Glow, and Retat.",
+            "source_title": "GLP-1 Stacks, HGH & Healing Protocols - Your Questions Answered | March 2026",
+            "source_date": "2026-04-03",
+            "timestamp": "00:15:41.520",
+            "source_url": "https://youtu.be/4igc2UpFr7Q"
+          },
+          {
+            "snippet": "run of Tessa, AOD, Glow, and Retat.",
+            "source_title": "GLP-1 Stacks, HGH & Healing Protocols - Your Questions Answered | March 2026",
+            "source_date": "2026-04-03",
+            "timestamp": "00:15:43.790",
+            "source_url": "https://youtu.be/4igc2UpFr7Q"
+          },
+          {
+            "snippet": "run of Tessa, AOD, Glow, and Retat. Should I add Ipamorelin now or wait",
+            "source_title": "GLP-1 Stacks, HGH & Healing Protocols - Your Questions Answered | March 2026",
+            "source_date": "2026-04-03",
+            "timestamp": "00:15:43.800",
+            "source_url": "https://youtu.be/4igc2UpFr7Q"
+          }
+        ]
+      }
+    },
+    "taylor-williams": {
+      "summary": {
+        "mention_count": 92,
+        "top_doses": [
+          {
+            "dose": "10 milligram",
+            "count": 15
+          },
+          {
+            "dose": "250 micrograms",
+            "count": 9
+          },
+          {
+            "dose": "60 units",
+            "count": 9
+          },
+          {
+            "dose": "20 milligram",
+            "count": 9
+          },
+          {
+            "dose": "20 units",
+            "count": 6
+          },
+          {
+            "dose": "5 milligrams",
+            "count": 3
+          },
+          {
+            "dose": "10 milligrams",
+            "count": 3
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "LvqyX5QWQZc",
+            "source_type": "podcast",
+            "source_title": "Glow Peptide Stack 101: Benefits, Mixing & Best Dosing!",
+            "source_date": "2025-02-28",
+            "source_url": "https://youtu.be/LvqyX5QWQZc",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2025-02-28-glow-peptide-stack-101-benefits-mixing-best-dosing-LvqyX5QWQZc.en.vtt",
+            "mention_count": 44,
+            "top_snippet": "creativity going so um yeah I've gotten a lot of requests on the glow stack I",
+            "top_context": "[Music] [Music] C welcome to the downstairs of my home I C welcome to the downstairs of my home I C welcome to the downstairs of my home I normally always film in my office but normally always film in my office but normally always film in my office but trying to change up things a little bit trying to change up things a little bit trying to change up things a little bit just to keep my just to keep my just to keep my creativity going so um yeah I've gotten creativity going so um yeah I've gotten creativity going so um yeah I've gotten a lot of requests on the glow stack I a lot of requests on the glow stack I a lot of requests on the glow stack I get a lot of questions asking me what get a lot of questions asking me what get a lot of questions asking me what mascara I use this mascara that I use mascara I use this mascara that I use mascara I use this mascara that I use today is the new Platinum lift Platinum today is the new Platinum lift Platinum today is the new Platinum lift Platinum lash lift from tar um it's the new lash lift from tar um it's the new lash lift from tar um it's the new newest mascara from tar it's in like a newest mascara from tar it's in like a newest mascara from tar it's in like a silver bottle I usually always use the silver bottle I usually always use the silver bottle I usually always use the Maneater um mascara but this one um they Maneater um mascara but this one um they Maneater um mascara but this one um they didn't have that one when I went to didn't have that one when I went to didn't have that one when I went to Sephora yesterday so I'm using this one Sephora yesterday so I'm using this one Sephora yesterday so I'm using this one today which I like it this side came out today which I like it this side came out today which I like it this side came out a little bit more clumpier a little bit more clumpier a little bit more clumpier um but so far it's pretty good you guys um but so far it's pretty good you guys um but so far it's pretty good you guys will see in the background the",
+            "first_timestamp": "00:00:24.240"
+          },
+          {
+            "source_id": "as8gRLLlnqY",
+            "source_type": "podcast",
+            "source_title": "SNAP 8: The Botox Peptide? My Honest Review & How to Use It",
+            "source_date": "2025-03-07",
+            "source_url": "https://youtu.be/as8gRLLlnqY",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2025-03-07-snap-8-the-botox-peptide-my-honest-review-how-to-use-it-as8gRLLlnqY.en.vtt",
+            "mention_count": 12,
+            "top_snippet": "enhancements and after making the glow blend I wanted to do another",
+            "top_context": "peptide snap eight snap eight is a peptide snap eight snap eight is a peptide that I've been recently getting peptide that I've been recently getting peptide that I've been recently getting a lot of questions about and I think a lot of questions about and I think a lot of questions about and I think just as like the peptide world starts just as like the peptide world starts just as like the peptide world starts growing more awareness starts happening growing more awareness starts happening growing more awareness starts happening with that um we just start hearing more with that um we just start hearing more with that um we just start hearing more and more about all these different and more about all these different and more about all these different peptides but we going to talk about snap peptides but we going to talk about snap peptides but we going to talk about snap eight snap eight is what um people like eight snap eight is what um people like eight snap eight is what um people like to refer to as the botox peptide and I'm to refer to as the botox peptide and I'm to refer to as the botox peptide and I'm here to just give you my honest feedback here to just give you my honest feedback here to just give you my honest feedback and to share my insights and thoughts on and to share my insights and thoughts on and to share my insights and thoughts on this peptide I think that this peptide this peptide I think that this peptide this peptide I think that this peptide can be a great peptide to use for beauty can be a great peptide to use for beauty can be a great peptide to use for beauty enhancements and after making enhancements and after making enhancements and after making the glow blend I wanted to do another the glow blend I wanted to do another the glow blend I wanted to do another video like that and because the glow video like that and because the glow video like that and because the glow Seck gets so much attention because of Seck gets so much attention because of Seck gets so much attention because of the name being that it's going to help the name being that it's going to help the name being that it's going to help so much with um Aesthetics of the skin so much with um Aesthetics of the skin so much with um Aesthetics of the skin and it does but in that last video I and it does but in that last video I and it does but in that last video I talked about how it's actually a really talked about how it's actually a really talked about how it's actually a really great healing peptide blend so I wanted great healing peptide blend so I wanted great healing peptide blend so I wanted to talk to you guys more about snap 8 to talk to you guys more about snap 8 to talk to you guys more about snap 8 because this peptide is actually because this peptide is actually because this peptide is actually designed to be um a peptide that you use designed to be um a peptide that you use designed to be um a peptide that you use topically on the skin to help with Fine topically on the skin to help with Fine topically on the skin to help with Fine Lines wrinkles and to help with Lines wrinkles and to help with Lines wrinkles and to help with anti-aging so I know that the ladies anti-aging so I know that the ladies anti-aging so I know that the ladies here you know we all care about our here you know we all care about our here you know we all care about our health but let's be honest who doesn't health but let's be honest who doesn't health but let's be honest who doesn't want less wrinkles um I know I do so",
+            "first_timestamp": "00:01:00.519"
+          },
+          {
+            "source_id": "JccJTHbWF84",
+            "source_type": "podcast",
+            "source_title": "Saturday Morning Coffee Talk | 2/7/26",
+            "source_date": "2026-02-08",
+            "source_url": "https://youtu.be/JccJTHbWF84",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2026-02-08-saturday-morning-coffee-talk-2-7-26-JccJTHbWF84.en.vtt",
+            "mention_count": 9,
+            "top_snippet": "&gt;&gt; Oh, one one more question. &gt;&gt; Okay, so are Glow and Close Stacks",
+            "top_context": "think would help a lot. Probably an think would help a lot. Probably an immune peptide just to help support the immune peptide just to help support the immune peptide just to help support the immune system. you know, thymus analysis immune system. you know, thymus analysis immune system. you know, thymus analysis one, SS31 would probably be helpful as one, SS31 would probably be helpful as one, SS31 would probably be helpful as well because you're probably gonna have well because you're probably gonna have well because you're probably gonna have impaired mitochondrial function from impaired mitochondrial function from impaired mitochondrial function from mercury or any other sort of toxin mercury or any other sort of toxin mercury or any other sort of toxin overexposure. overexposure. overexposure. &gt;&gt; Y &gt;&gt; Y &gt;&gt; Y &gt;&gt; and those are all the questions. Wow, we &gt;&gt; and those are all the questions. Wow, we &gt;&gt; and those are all the questions. Wow, we usually have enough to keep us going for usually have enough to keep us going for usually have enough to keep us going for two hours two hours two hours &gt;&gt; unless people start popping some more &gt;&gt; unless people start popping some more &gt;&gt; unless people start popping some more questions in. But all in all, good questions in. But all in all, good questions in. But all in all, good questions today. Yeah, questions today. Yeah, questions today. Yeah, &gt;&gt; definitely seem to be a little uh cover &gt;&gt; definitely seem to be a little uh cover &gt;&gt; definitely seem to be a little uh cover a little bit of everything, which is a little bit of everything, which is a little bit of everything, which is always fun. So, thank you guys for always fun. So, thank you guys for always fun. So, thank you guys for hanging out with us on a Saturday hanging out with us on a Saturday hanging out with us on a Saturday morning. It's always fun to get to do morning. It's always fun to get to do morning. It's always fun to get to do this. this. this. &gt;&gt; Oh, one one more question. &gt;&gt; Oh, one one more question. &gt;&gt; Oh, one one more question. &gt;&gt; Okay, so are Glow and Close Stacks &gt;&gt; Okay, so are Glow and Close Stacks &gt;&gt; Okay, so are Glow and Close Stacks actually reducing GHKCU effectiveness? actually reducing GHKCU effectiveness? actually reducing GHKCU effectiveness? If you want the deepest of deep dives, I If you want the deepest of deep dives, I If you want the deepest of deep dives, I have a 42minute video on my Spotify or have a 42minute video on my Spotify or have a 42minute video on my Spotify or iTunes about the glow and glow and why iTunes about the glow and glow and why iTunes about the glow and glow and why they are okay. Yeah. And so I would I they are okay. Yeah. And so I would I they are okay. Yeah. And so I would I would check those out. But short answer would check those out. But short answer would check those out. But short answer is no, they aren't. And there's been is no, they aren't. And there's been is no, they aren't. And there's been multiple labs that have done degradation multiple labs that have done degradation multiple labs that have done degradation testing to show that they are not. And testing to show that they are not. And testing to show that they are not. And so either the labs are lying or other so either the labs are lying or other so either the labs are lying or other people are just saying stuff to get people are just saying stuff to get people are just saying stuff to get clicks and views because people respond clicks and views because people respond clicks and views because people respond to things that make them afraid more so to things that make them afraid more so to things that make them afraid more so than respond to things that empower than respond to things that empower than respond to things that empower them. And so that would be my suggestion them. And so that would be my suggestion them. And so that would be my suggestion is take that video and I'm not saying is take that video and I'm not saying is take that video and I'm not saying that I have the definive right answers. that I have the definive right answers. that I have the definive right answers. &gt;&gt; What say or do they own a company? They",
+            "first_timestamp": "01:19:46.239"
+          },
+          {
+            "source_id": "gCJLLBdAK0k",
+            "source_type": "podcast",
+            "source_title": "Anti-Aging And Beauty Peptides For Women | My Top 3",
+            "source_date": "2024-04-05",
+            "source_url": "https://youtu.be/gCJLLBdAK0k",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2024-04-05-anti-aging-and-beauty-peptides-for-women-my-top-3-gCJLLBdAK0k.en.vtt",
+            "mention_count": 6,
+            "top_snippet": "out so it's going to really help it to me it's the most like glow enhancing",
+            "top_context": "help you get in that deeper sleep in help you get in that deeper sleep in order to produce more that melatonin order to produce more that melatonin order to produce more that melatonin which is going to help with skin which is going to help with skin which is going to help with skin elasticity it's going to help with your elasticity it's going to help with your elasticity it's going to help with your fine lines it's going to help with fine lines it's going to help with fine lines it's going to help with muscle with getting you helping with muscle with getting you helping with muscle with getting you helping with lean muscles so lean muscles so lean muscles so like if you're exercising a lot it's like if you're exercising a lot it's like if you're exercising a lot it's going to help you get more defined going to help you get more defined going to help you get more defined muscle the more muscle you have on you muscle the more muscle you have on you muscle the more muscle you have on you the younger and more youthful you look the younger and more youthful you look the younger and more youthful you look so this is a really great peptide um for so this is a really great peptide um for so this is a really great peptide um for multiple reasons but it's going to help multiple reasons but it's going to help multiple reasons but it's going to help you the most also too with looking and you the most also too with looking and you the most also too with looking and appearing younger it really does make a appearing younger it really does make a appearing younger it really does make a big difference on firming up your skin big difference on firming up your skin big difference on firming up your skin because it's helping your muscles lean because it's helping your muscles lean because it's helping your muscles lean out so it's going to really help it to out so it's going to really help it to out so it's going to really help it to me it's the most like glow enhancing me it's the most like glow enhancing me it's the most like glow enhancing peptide this peptide is going to help peptide this peptide is going to help peptide this peptide is going to help produce a more glow appearance on your produce a more glow appearance on your produce a more glow appearance on your skin it's going to really help with the skin it's going to really help with the skin it's going to really help with the softing the the fine lines and wrinkles softing the the fine lines and wrinkles softing the the fine lines and wrinkles especially on your skin I'll be especially on your skin I'll be especially on your skin I'll be completely honest I was someone that I completely honest I was someone that I completely honest I was someone that I used to do Botox and I have not gotten used to do Botox and I have not gotten used to do Botox and I have not gotten Botox Botox Botox in probably over a year now and it is I in probably over a year now and it is I in probably over a year now and it is I truly believe is because of these truly believe is because of these truly believe is because of these peptides these peptides are really going peptides these peptides are really going peptides these peptides are really going to help with the fine lines and Les yes to help with the fine lines and Les yes to help with the fine lines and Les yes I still have fine lines and wrinkles we I still have fine lines and wrinkles we I still have fine lines and wrinkles we all do and that is the beauty of aging all do and that is the beauty of aging all do and that is the beauty of aging and the beauty of coming into her own and the beauty of coming into her own and the beauty of coming into her own but this is going to be something that but this is going to be something that but this is going to be something that is so much more gentle on my body it's",
+            "first_timestamp": "00:07:24.639"
+          },
+          {
+            "source_id": "UmEg_nxog0Y",
+            "source_type": "podcast",
+            "source_title": "My Secret Peptide Stack For All Day Energy!",
+            "source_date": "2025-06-06",
+            "source_url": "https://youtu.be/UmEg_nxog0Y",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2025-06-06-my-secret-peptide-stack-for-all-day-energy-UmEg_nxog0Y.en.vtt",
+            "mention_count": 6,
+            "top_snippet": "into one bigger vials. So, I've made videos on me putting together the glow",
+            "top_context": "milligrams of NAD+ on its own which can milligrams of NAD+ on its own which can be expensive and can be uncomfortable be expensive and can be uncomfortable be expensive and can be uncomfortable because a lot of people don't like in because a lot of people don't like in because a lot of people don't like in injecting interuscularly and with NAD+ injecting interuscularly and with NAD+ injecting interuscularly and with NAD+ injecting 100 milligs of that you have injecting 100 milligs of that you have injecting 100 milligs of that you have to do interuscularly. You could do it to do interuscularly. You could do it to do interuscularly. You could do it subq but it's going to be extremely subq but it's going to be extremely subq but it's going to be extremely painful. By just using 10 milligs of it painful. By just using 10 milligs of it painful. By just using 10 milligs of it along with the injectable 5 amino and along with the injectable 5 amino and along with the injectable 5 amino and the m you're able to amplify the effects the m you're able to amplify the effects the m you're able to amplify the effects without having to use as much NAD+ cuz without having to use as much NAD+ cuz without having to use as much NAD+ cuz that can be cost expensive but it's that can be cost expensive but it's that can be cost expensive but it's actually going to be more beneficial in actually going to be more beneficial in actually going to be more beneficial in the long run. Now a reason part dosing the long run. Now a reason part dosing the long run. Now a reason part dosing part. So what I like to do with this part. So what I like to do with this part. So what I like to do with this peptide blend I like to reconstitute peptide blend I like to reconstitute peptide blend I like to reconstitute these peptides separately and then take these peptides separately and then take these peptides separately and then take them all out of their vials and put them them all out of their vials and put them them all out of their vials and put them into one bigger vials. So, I've made into one bigger vials. So, I've made into one bigger vials. So, I've made videos on me putting together the glow videos on me putting together the glow videos on me putting together the glow blend. This is exactly how I would do blend. This is exactly how I would do blend. This is exactly how I would do the glow blend just with this NA+ 5 the glow blend just with this NA+ 5 the glow blend just with this NA+ 5 amino blend. So, all I would do is I amino blend. So, all I would do is I amino blend. So, all I would do is I would reconstitute each of these would reconstitute each of these would reconstitute each of these peptides in their own vial. I'm going to peptides in their own vial. I'm going to peptides in their own vial. I'm going to put 1 milll of water into each of these put 1 milll of water into each of these put 1 milll of water into each of these vials and then I'm going to pull them vials and then I'm going to pull them vials and then I'm going to pull them all out of their separate vials and just all out of their separate vials and just all out of their separate vials and just put them all into one glass vial put them all into one glass vial put them all into one glass vial together. Now, let's say if you didn't together. Now, let's say if you didn't together. Now, let's say if you didn't want to do that, you could definitely go want to do that, you could definitely go want to do that, you could definitely go through and just put them all in the through and just put them all in the through and just put them all in the same syringe, but just know because same syringe, but just know because same syringe, but just know because you're sticking your syringe into three you're sticking your syringe into three you're sticking your syringe into three different peptide vials that you are different peptide vials that you are different peptide vials that you are going to dill your needle out very going to dill your needle out very going to dill your needle out very quickly. So, that's why I like to put quickly. So, that's why I like to put quickly. So, that's why I like to put them all into one vial or or into my",
+            "first_timestamp": "00:06:41.919"
+          },
+          {
+            "source_id": "V87f6GRxZLM",
+            "source_type": "podcast",
+            "source_title": "Top Peptides for PMS Relief: My Go-To Stack",
+            "source_date": "2024-08-20",
+            "source_url": "https://youtu.be/V87f6GRxZLM",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2024-08-20-top-peptides-for-pms-relief-my-go-to-stack-V87f6GRxZLM.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "your skin and help you with a nice um glow of like being outside but it's",
+            "top_context": "are going to be taking during that time are going to be taking during that time um peptide wise is going to be Molina um peptide wise is going to be Molina um peptide wise is going to be Molina tan one m t one you are going to hear me tan one m t one you are going to hear me tan one m t one you are going to hear me talk about this this is going to be in talk about this this is going to be in talk about this this is going to be in each of the phases of the menstrual each of the phases of the menstrual each of the phases of the menstrual cycle um so this is one peptide that's cycle um so this is one peptide that's cycle um so this is one peptide that's going to be in every phase um as I'm going to be in every phase um as I'm going to be in every phase um as I'm going through and talking this video so going through and talking this video so going through and talking this video so molena 10 one the dosing amount that I molena 10 one the dosing amount that I molena 10 one the dosing amount that I would take during this um menstrual would take during this um menstrual would take during this um menstrual phase of the cycle would be 2. .5 phase of the cycle would be 2. .5 phase of the cycle would be 2. .5 millgram or 250 micrograms however you millgram or 250 micrograms however you millgram or 250 micrograms however you want to measure that and you're going to want to measure that and you're going to want to measure that and you're going to take that every other day um during this take that every other day um during this take that every other day um during this face so the reason why you're going to face so the reason why you're going to face so the reason why you're going to want to do Molina one is because it is want to do Molina one is because it is want to do Molina one is because it is going to help not only like help with going to help not only like help with going to help not only like help with your skin and help you with a nice um your skin and help you with a nice um your skin and help you with a nice um glow of like being outside but it's glow of like being outside but it's glow of like being outside but it's going to help with um your cognitive going to help with um your cognitive going to help with um your cognitive function it's going to help so much with function it's going to help so much with function it's going to help so much with your mental health um I talk about this your mental health um I talk about this your mental health um I talk about this in my meltin one video just how much it in my meltin one video just how much it in my meltin one video just how much it helps me especially during my ludar helps me especially during my ludar helps me especially during my ludar phase of the cycle but what I have phase of the cycle but what I have phase of the cycle but what I have learned is that having this learned is that having this learned is that having this throughout the whole menstrual cycle throughout the whole menstrual cycle throughout the whole menstrual cycle phase has been really beneficial so I phase has been really beneficial so I phase has been really beneficial so I would say for millenum 1 you're going to would say for millenum 1 you're going to would say for millenum 1 you're going to be doing that three um three times a be doing that three um three times a be doing that three um three times a week so like every other day it's going week so like every other day it's going week so like every other day it's going to help with your brain and cognitive to help with your brain and cognitive to help with your brain and cognitive function the other supplement that we're function the other supplement that we're function the other supplement that we're going to be taking is going to be eleine going to be taking is going to be eleine going to be taking is going to be eleine and the amount that I would recommend and the amount that I would recommend and the amount that I would recommend taking that I would take would be 200 taking that I would take would be 200 taking that I would take would be 200 migr two times a day this is going to",
+            "first_timestamp": "00:06:17.680"
+          },
+          {
+            "source_id": "ZK3qR_etBRQ",
+            "source_type": "podcast",
+            "source_title": "My TOP Secret to Achieving CLEAR Skin with Peptides",
+            "source_date": "2025-04-04",
+            "source_url": "https://youtu.be/ZK3qR_etBRQ",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2025-04-04-my-top-secret-to-achieving-clear-skin-with-peptides-ZK3qR_etBRQ.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "gives gives your skin just like a really nice glow shine and it",
+            "top_context": "than my forehead right now cuz I just than my forehead right now cuz I just feel like it is a little heavy I've been feel like it is a little heavy I've been feel like it is a little heavy I've been using it for about a few weeks now I using it for about a few weeks now I using it for about a few weeks now I just I don't love it I'm going to order just I don't love it I'm going to order just I don't love it I'm going to order the elastin and switch back to that one the elastin and switch back to that one the elastin and switch back to that one the next two products I'm going in with the next two products I'm going in with the next two products I'm going in with are from image The Dewy brightening are from image The Dewy brightening are from image The Dewy brightening serum now this is the back bar size so serum now this is the back bar size so serum now this is the back bar size so this Serum is going to come in a smaller this Serum is going to come in a smaller this Serum is going to come in a smaller bottle the serum I love this serum so bottle the serum I love this serum so bottle the serum I love this serum so but again I'm just kind of going in and but again I'm just kind of going in and but again I'm just kind of going in and just dabbing areas on my face and this just dabbing areas on my face and this just dabbing areas on my face and this Serum is like you want that glowy look Serum is like you want that glowy look Serum is like you want that glowy look like I'll wear this sometimes like on my like I'll wear this sometimes like on my like I'll wear this sometimes like on my live calls one of the girls is always live calls one of the girls is always live calls one of the girls is always like you always have such glowy skin and like you always have such glowy skin and like you always have such glowy skin and it's usually it's me wearing this it's usually it's me wearing this it's usually it's me wearing this product on my life calls um it just product on my life calls um it just product on my life calls um it just gives gives your skin just like a really gives gives your skin just like a really gives gives your skin just like a really nice glow shine and it nice glow shine and it nice glow shine and it just it just feels it just feels so good just it just feels it just feels so good just it just feels it just feels so good I know I just I love love this product I I know I just I love love this product I I know I just I love love this product I love this line this is part of the same love this line this is part of the same love this line this is part of the same cleansing line or the cleansing cream cleansing line or the cleansing cream cleansing line or the cleansing cream that I use and I just this isn't I think that I use and I just this isn't I think that I use and I just this isn't I think their newest line I their newest line I their newest line I just I love it so now that that's on I'm just I love it so now that that's on I'm just I love it so now that that's on I'm going to go in and use the um smoothing going to go in and use the um smoothing going to go in and use the um smoothing Cloud cream from image and is also I'll Cloud cream from image and is also I'll Cloud cream from image and is also I'll wear this sometimes times in the winter wear this sometimes times in the winter wear this sometimes times in the winter when I'm not putting makeup on and I when I'm not putting makeup on and I when I'm not putting makeup on and I just need some just need some just need some moisture we'll put this on as moisture we'll put this on as moisture we'll put this on as well and tonight I'm using the elastin well and tonight I'm using the elastin well and tonight I'm using the elastin sort of eye treatment",
+            "first_timestamp": "00:23:31.039"
+          },
+          {
+            "source_id": "KKy_vkaHLHg",
+            "source_type": "podcast",
+            "source_title": "Why I Inject Testosterone as a Woman",
+            "source_date": "2025-04-25",
+            "source_url": "https://youtu.be/KKy_vkaHLHg",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2025-04-25-why-i-inject-testosterone-as-a-woman-KKy_vkaHLHg.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "get these off Amazon. Same way um same vials that I use to make the glow blend.",
+            "top_context": "completely different from actually using completely different from actually using it for injection form versus eating. I it for injection form versus eating. I it for injection form versus eating. I could use um injectable MTC oil as well, could use um injectable MTC oil as well, could use um injectable MTC oil as well, but um I like the grape seed oil. I just but um I like the grape seed oil. I just but um I like the grape seed oil. I just feel like it's super clean, um very feel like it's super clean, um very feel like it's super clean, um very smooth, very comfortable to inject. So, smooth, very comfortable to inject. So, smooth, very comfortable to inject. So, it's super simple and super easy. And it's super simple and super easy. And it's super simple and super easy. And then I use a 28 gauge needle to inject then I use a 28 gauge needle to inject then I use a 28 gauge needle to inject my testosterone with. And I do the my my testosterone with. And I do the my my testosterone with. And I do the my injections interuscularly. Have all my injections interuscularly. Have all my injections interuscularly. Have all my different needles that I'm going to use different needles that I'm going to use different needles that I'm going to use to extract and put my testosterone into to extract and put my testosterone into to extract and put my testosterone into the vial. And then I'm using um a empty the vial. And then I'm using um a empty the vial. And then I'm using um a empty glass vial. This is my vial, my bottle glass vial. This is my vial, my bottle glass vial. This is my vial, my bottle that I use to keep my testosterone in. that I use to keep my testosterone in. that I use to keep my testosterone in. And again, these are like super cheap. I And again, these are like super cheap. I And again, these are like super cheap. I get these off Amazon. Same way um same get these off Amazon. Same way um same get these off Amazon. Same way um same vials that I use to make the glow blend. vials that I use to make the glow blend. vials that I use to make the glow blend. All I'm going to do is I'm going to All I'm going to do is I'm going to All I'm going to do is I'm going to first open up my testosterone. How I'm first open up my testosterone. How I'm first open up my testosterone. How I'm going to get this is that this going to get this is that this going to get this is that this injectable grape seed oil acts as like a injectable grape seed oil acts as like a injectable grape seed oil acts as like a carrier oil oil. So, you know, when we carrier oil oil. So, you know, when we carrier oil oil. So, you know, when we talk about carrier oils, if you're a talk about carrier oils, if you're a talk about carrier oils, if you're a woman and you're into um you know, woman and you're into um you know, woman and you're into um you know, essential oils and everything, typically essential oils and everything, typically essential oils and everything, typically when it comes to using them topically on when it comes to using them topically on when it comes to using them topically on your skin, you typically need a carrier your skin, you typically need a carrier your skin, you typically need a carrier oil to have that essential oil to be in oil to have that essential oil to be in oil to have that essential oil to be in to carry it through. It's the same way to carry it through. It's the same way to carry it through. It's the same way as that. Take that complex and apply it as that. Take that complex and apply it as that. Take that complex and apply it to testosterone. This allows me to get a to testosterone. This allows me to get a to testosterone. This allows me to get a bigger injection so that way I can bigger injection so that way I can bigger injection so that way I can actually get my therapeutic amount of",
+            "first_timestamp": "00:05:38.800"
+          }
+        ],
+        "acute_signals": [
+          {
+            "snippet": "differently and this peptide stack one the glow stack is essentially",
+            "source_title": "Glow Peptide Stack 101: Benefits, Mixing & Best Dosing!",
+            "source_date": "2025-02-28",
+            "timestamp": "00:02:23.319",
+            "source_url": "https://youtu.be/LvqyX5QWQZc"
+          },
+          {
+            "snippet": "the glow stack is essentially",
+            "source_title": "Glow Peptide Stack 101: Benefits, Mixing & Best Dosing!",
+            "source_date": "2025-02-28",
+            "timestamp": "00:02:25.750",
+            "source_url": "https://youtu.be/LvqyX5QWQZc"
+          },
+          {
+            "snippet": "the glow stack is essentially bpc um 157 tb500",
+            "source_title": "Glow Peptide Stack 101: Benefits, Mixing & Best Dosing!",
+            "source_date": "2025-02-28",
+            "timestamp": "00:02:25.760",
+            "source_url": "https://youtu.be/LvqyX5QWQZc"
+          },
+          {
+            "snippet": "but gotten a lot of requests for this and I think that this the glow stack",
+            "source_title": "Glow Peptide Stack 101: Benefits, Mixing & Best Dosing!",
+            "source_date": "2025-02-28",
+            "timestamp": "00:03:35.799",
+            "source_url": "https://youtu.be/LvqyX5QWQZc"
+          },
+          {
+            "snippet": "and I think that this the glow stack",
+            "source_title": "Glow Peptide Stack 101: Benefits, Mixing & Best Dosing!",
+            "source_date": "2025-02-28",
+            "timestamp": "00:03:39.789",
+            "source_url": "https://youtu.be/LvqyX5QWQZc"
+          }
+        ],
+        "chronic_signals": [
+          {
+            "snippet": "your skin and help you with a nice um glow of like being outside but it's",
+            "source_title": "Top Peptides for PMS Relief: My Go-To Stack",
+            "source_date": "2024-08-20",
+            "timestamp": "00:06:17.680",
+            "source_url": "https://youtu.be/V87f6GRxZLM"
+          },
+          {
+            "snippet": "glow of like being outside but it's",
+            "source_title": "Top Peptides for PMS Relief: My Go-To Stack",
+            "source_date": "2024-08-20",
+            "timestamp": "00:06:19.430",
+            "source_url": "https://youtu.be/V87f6GRxZLM"
+          },
+          {
+            "snippet": "glow of like being outside but it's going to help with um your cognitive",
+            "source_title": "Top Peptides for PMS Relief: My Go-To Stack",
+            "source_date": "2024-08-20",
+            "timestamp": "00:06:19.440",
+            "source_url": "https://youtu.be/V87f6GRxZLM"
+          },
+          {
+            "snippet": "it for a good 6 to 12 weeks so so that is a glow stack blend um hope",
+            "source_title": "Glow Peptide Stack 101: Benefits, Mixing & Best Dosing!",
+            "source_date": "2025-02-28",
+            "timestamp": "00:30:24.440",
+            "source_url": "https://youtu.be/LvqyX5QWQZc"
+          },
+          {
+            "snippet": "so so that is a glow stack blend um hope",
+            "source_title": "Glow Peptide Stack 101: Benefits, Mixing & Best Dosing!",
+            "source_date": "2025-02-28",
+            "timestamp": "00:30:28.230",
+            "source_url": "https://youtu.be/LvqyX5QWQZc"
+          }
+        ]
+      },
+      "female_specific_note": "Taylor Williams Coaching focuses on female-specific HRT/peptide guidance. Per-peptide notes here often emphasize female dosing, fertility, hormone interactions."
+    },
+    "trevor-bachmeyer": {
+      "summary": {
+        "mention_count": 48,
+        "top_doses": [],
+        "top_sources": [
+          {
+            "source_id": "z8Ch0De6pnQ",
+            "source_type": "podcast",
+            "source_title": "Solving Perimenopause and Debunking Gurus - Unbreakable Podcast 218",
+            "source_date": "2025-08-08",
+            "source_url": "https://youtu.be/z8Ch0De6pnQ",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2025-08-08-solving-perimenopause-and-debunking-gurus-unbreakable-podcast-218-z8Ch0De6pnQ.en.vtt",
+            "mention_count": 18,
+            "top_snippet": "I'm going to talk about the ultimate glow up and and I even hate to say that,",
+            "top_context": "lately and I have multiple sources of lately and I have multiple sources of internet here at the house and sometimes internet here at the house and sometimes internet here at the house and sometimes normally Starlink is like unbreakable normally Starlink is like unbreakable normally Starlink is like unbreakable and I I that's worked in the most and I I that's worked in the most and I I that's worked in the most adverse conditions and always lightning adverse conditions and always lightning adverse conditions and always lightning quick and uh and then I have fiber as quick and uh and then I have fiber as quick and uh and then I have fiber as well and that for the most part is well and that for the most part is well and that for the most part is sporadic at best but lately all sporadic at best but lately all sporadic at best but lately all internet. So I don't know you guys internet. So I don't know you guys internet. So I don't know you guys listening let me know if you guys have listening let me know if you guys have listening let me know if you guys have had some weird internet. I live uh just had some weird internet. I live uh just had some weird internet. I live uh just east of Dallas in Texas and let me know east of Dallas in Texas and let me know east of Dallas in Texas and let me know if you guys have some weird internet. if you guys have some weird internet. if you guys have some weird internet. Like who knows what the gremlins are Like who knows what the gremlins are Like who knows what the gremlins are doing or whatever else is happening in doing or whatever else is happening in doing or whatever else is happening in the world. I'm not going to go down that the world. I'm not going to go down that the world. I'm not going to go down that rabbit hole right now, but I've been rabbit hole right now, but I've been rabbit hole right now, but I've been seeing Oh, I just sometimes it it's so seeing Oh, I just sometimes it it's so seeing Oh, I just sometimes it it's so frustrating to see these Insta bros frustrating to see these Insta bros frustrating to see these Insta bros talking. If you're one of those guys, talking. If you're one of those guys, talking. If you're one of those guys, man, shut up. You're misleading people. man, shut up. You're misleading people. man, shut up. You're misleading people. Do you know why this gets me so upset? Do you know why this gets me so upset? Do you know why this gets me so upset? I'm going to talk about the ultimate I'm going to talk about the ultimate I'm going to talk about the ultimate glow up and and I even hate to say that, glow up and and I even hate to say that, glow up and and I even hate to say that, but this is the like I'll give you all but this is the like I'll give you all but this is the like I'll give you all the information. break it down with the information. break it down with the information. break it down with biochem and physiology and I got zero biochem and physiology and I got zero biochem and physiology and I got zero tolerance for [&nbsp;__&nbsp;] because I'm tolerance for [&nbsp;__&nbsp;] because I'm tolerance for [&nbsp;__&nbsp;] because I'm seeing it everywhere. And people that seeing it everywhere. And people that seeing it everywhere. And people that are claiming to be experts have no are claiming to be experts have no are claiming to be experts have no expertise and they have no business expertise and they have no business expertise and they have no business saying they are. And so I just come out saying they are. And so I just come out saying they are. And so I just come out and I help you. And if you like my and I help you. And if you like my and I help you. And if you like my stuff, great. If you don't, great. stuff, great. If you don't, great. stuff, great. If you don't, great. Either way, I really don't care. But I'm Either way, I really don't care. But I'm Either way, I really don't care. But I'm also going to tell you the truth whether also going to tell you the truth whether also going to tell you the truth whether you like it or not. Physiology doesn't you like it or not. Physiology doesn't you like it or not. Physiology doesn't lie. It's it's about as dishonest as lie. It's it's about as dishonest as lie. It's it's about as dishonest as gravity. It's always there and it is gravity. It's always there and it is gravity. It's always there and it is always irrefutable. But these these always irrefutable. But these these always irrefutable. But these these peptide gurus, there's a couple of guys, peptide gurus, there's a couple of guys, peptide gurus, there's a couple of guys, man. on this one. Baseball hat, beard man. on this one. Baseball hat, beard man. on this one. Baseball hat, beard wear, beard dude, and this this IFBB pro wear, beard dude, and this this IFBB pro wear, beard dude, and this this IFBB pro bodybuild. Like these guys, they're full bodybuild. Like these guys, they're full bodybuild. Like these guys, they're full of crap and I just can't get my head of crap and I just can't get my head of crap and I just can't get my head around why other than greed. So, I'm around why other than greed. So, I'm around why other than greed. So, I'm going to disrupt the whole thing and",
+            "first_timestamp": "00:01:08.400"
+          },
+          {
+            "source_id": "XUdc1evyaFg",
+            "source_type": "podcast",
+            "source_title": "GHK-Cu (Copper) Masterclass To Help You - Dr Trevor Bachmeyer",
+            "source_date": "2026-01-15",
+            "source_url": "https://youtu.be/XUdc1evyaFg",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2026-01-15-ghk-cu-copper-masterclass-to-help-you-dr-trevor-bachmeyer-XUdc1evyaFg.en.vtt",
+            "mention_count": 9,
+            "top_snippet": "this. They sell peptides. They sell blends. Clo glow, all the stuff.\" I",
+            "top_context": "like, \"Done. I'll go get it.\" because I like, \"Done. I'll go get it.\" because I wanted to do everything I could just to wanted to do everything I could just to wanted to do everything I could just to make sure I offset anything that was make sure I offset anything that was make sure I offset anything that was making her feel bad. But she never took making her feel bad. But she never took making her feel bad. But she never took a single pill. Not by my I didn't ask. I a single pill. Not by my I didn't ask. I a single pill. Not by my I didn't ask. I support whatever my wife does. She is my support whatever my wife does. She is my support whatever my wife does. She is my best friend. But I had her back the best friend. But I had her back the best friend. But I had her back the whole way. But don't you dare introduce whole way. But don't you dare introduce whole way. But don't you dare introduce something into your body and just call something into your body and just call something into your body and just call the doctors say it's safe. These are the the doctors say it's safe. These are the the doctors say it's safe. These are the same doctors that did the C19. Just hang same doctors that did the C19. Just hang same doctors that did the C19. Just hang on that. Wilson's disease. Okay, this is on that. Wilson's disease. Okay, this is on that. Wilson's disease. Okay, this is a genetic copper accumulation disorder. a genetic copper accumulation disorder. a genetic copper accumulation disorder. Adding more copper is like the last Adding more copper is like the last Adding more copper is like the last thing that you need. People with thing that you need. People with thing that you need. People with hemocromattosis, that's a big one. hemocromattosis, that's a big one. hemocromattosis, that's a big one. Hemocchromattosis is iron. Too much iron Hemocchromattosis is iron. Too much iron Hemocchromattosis is iron. Too much iron overload. Copper metabolism definitely overload. Copper metabolism definitely overload. Copper metabolism definitely affected and then putting it in your affected and then putting it in your affected and then putting it in your children when they're 10 years old. No. children when they're 10 years old. No. children when they're 10 years old. No. Here's where all these biohackers and Here's where all these biohackers and Here's where all these biohackers and insta bros get this wrong. And I'm sure insta bros get this wrong. And I'm sure insta bros get this wrong. And I'm sure this is going to get all the comments in this is going to get all the comments in this is going to get all the comments in my YouTube getting mad going, \"I do my YouTube getting mad going, \"I do my YouTube getting mad going, \"I do this. They sell peptides. They sell this. They sell peptides. They sell this. They sell peptides. They sell blends. Clo glow, all the stuff.\" I blends. Clo glow, all the stuff.\" I blends. Clo glow, all the stuff.\" I don't care. You should be grateful that don't care. You should be grateful that don't care. You should be grateful that I'm out here instead of an [&nbsp;__&nbsp;] Just I'm out here instead of an [&nbsp;__&nbsp;] Just I'm out here instead of an [&nbsp;__&nbsp;] Just to be very transparent. These Insta Bros to be very transparent. These Insta Bros to be very transparent. These Insta Bros and these peptide companies, nothing. If and these peptide companies, nothing. If and these peptide companies, nothing. If you go, \"Don't you sell the Wolverine you go, \"Don't you sell the Wolverine you go, \"Don't you sell the Wolverine stack or the glow or the glow?\" All stack or the glow or the glow?\" All stack or the glow or the glow?\" All separate, baby. Bet your butt I do. But separate, baby. Bet your butt I do. But separate, baby. Bet your butt I do. But they're all separate. They're not in the they're all separate. They're not in the they're all separate. They're not in the same vial. That's for idiots. These same vial. That's for idiots. These same vial. That's for idiots. These companies and these insta bros and these companies and these insta bros and these companies and these insta bros and these soccer moms stack everything together soccer moms stack everything together soccer moms stack everything together going more is better. Peptides are going more is better. Peptides are going more is better. Peptides are signaling molecules. They trigger signaling molecules. They trigger signaling molecules. They trigger specific cellular responses through very specific cellular responses through very specific cellular responses through very specific receptors. When you take specific receptors. When you take specific receptors. When you take multiple peptides simultaneously, multiple peptides simultaneously, multiple peptides simultaneously, receptor competition. They compete for receptor competition. They compete for receptor competition. They compete for the same binding site. Conflicting the same binding site. Conflicting the same binding site. Conflicting signals. One says grow, the other says signals. One says grow, the other says signals. One says grow, the other says don't grow. One says repair. One says don't grow. One says repair. One says don't grow. One says repair. One says don't repair. One says clean up. don't repair. One says clean up. don't repair. One says clean up. Everyone says break down like this is Everyone says break down like this is Everyone says break down like this is the problem. Overwhelmed cellular",
+            "first_timestamp": "00:42:58.240"
+          },
+          {
+            "source_id": "3auVU0LYmNY",
+            "source_type": "podcast",
+            "source_title": "Vlog 111 The World Doesn't Care About YOUR FEELINGS",
+            "source_date": "2025-04-23",
+            "source_url": "https://youtu.be/3auVU0LYmNY",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2025-04-23-vlog-111-the-world-doesn-t-care-about-your-feelings-3auVU0LYmNY.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "talks about, like it or not. It doesn't hang in your house. It doesn't glow on",
+            "top_context": "structure. So now expression becomes structure. So now expression becomes just noise. Without pain, you have no just noise. Without pain, you have no just noise. Without pain, you have no strength. So ask yourself, what system strength. So ask yourself, what system strength. So ask yourself, what system governs my life? Ask yourself. Don't ask governs my life? Ask yourself. Don't ask governs my life? Ask yourself. Don't ask me. I already know what does for me. me. I already know what does for me. me. I already know what does for me. It's God 24/7, 365. And if you think It's God 24/7, 365. And if you think It's God 24/7, 365. And if you think Jesus or God are soft, you need to read Jesus or God are soft, you need to read Jesus or God are soft, you need to read the Bible again. So what system governs the Bible again. So what system governs the Bible again. So what system governs my life? What order am I submitted to my life? What order am I submitted to my life? What order am I submitted to that refineses me when I'm lost, soft, that refineses me when I'm lost, soft, that refineses me when I'm lost, soft, or emotional? Because if you don't have or emotional? Because if you don't have or emotional? Because if you don't have that in place, you are a product of your that in place, you are a product of your that in place, you are a product of your emotions. And a man with no framework is emotions. And a man with no framework is emotions. And a man with no framework is a man who gets a man who gets a man who gets replaced replaced replaced fast by the world, by your woman, by fast by the world, by your woman, by fast by the world, by your woman, by your family, by your boss, by everyone your family, by your boss, by everyone your family, by your boss, by everyone around you because you've got nothing. around you because you've got nothing. around you because you've got nothing. Listen, there's a scoreboard that nobody Listen, there's a scoreboard that nobody Listen, there's a scoreboard that nobody talks about, like it or not. It doesn't talks about, like it or not. It doesn't talks about, like it or not. It doesn't hang in your house. It doesn't glow on hang in your house. It doesn't glow on hang in your house. It doesn't glow on your phone. It doesn't pop up with your your phone. It doesn't pop up with your your phone. It doesn't pop up with your app. It governs everything in your life. app. It governs everything in your life. app. It governs everything in your life. It determines how she looks at you. It It determines how she looks at you. It It determines how she looks at you. It determines how your kids feel around determines how your kids feel around determines how your kids feel around you. It determines how much money you you. It determines how much money you you. It determines how much money you make. It determines whether people make. It determines whether people make. It determines whether people listen when you speak. It's the listen when you speak. It's the listen when you speak. It's the scoreboard of results. Are you putting scoreboard of results. Are you putting scoreboard of results. Are you putting points on the board? Because every day points on the board? Because every day points on the board? Because every day at the end, I pray before every meal at the end, I pray before every meal at the end, I pray before every meal with my family. And I thank God for with my family. And I thank God for with my family. And I thank God for another day and the wisdom and the another day and the wisdom and the another day and the wisdom and the strength to guide my family and strength to guide my family and strength to guide my family and everybody that listens to me into the everybody that listens to me into the everybody that listens to me into the direction that they need to be towards direction that they need to be towards direction that they need to be towards God to be a better human being, to be a God to be a better human being, to be a God to be a better human being, to be a better version of themselves. And I end better version of themselves. And I end better version of themselves. And I end with the same thing. Scorch the earth with the same thing. Scorch the earth with the same thing. Scorch the earth and change the world. Amen. Me. That's and change the world. Amen. Me. That's and change the world. Amen. Me. That's what I believe I'm here to do. The",
+            "first_timestamp": "00:09:58.160"
+          },
+          {
+            "source_id": "8onzuOhLNcY",
+            "source_type": "podcast",
+            "source_title": "Vlog 137 The Devil is Real",
+            "source_date": "2025-05-19",
+            "source_url": "https://youtu.be/8onzuOhLNcY",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2025-05-19-vlog-137-the-devil-is-real-8onzuOhLNcY.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "with your big ass. That porn tab at midnight in the dark with a soft glow of",
+            "top_context": "yesterday. Oh, the devil lives in hell, yesterday. Oh, the devil lives in hell, believe me. And hell is real. Hell is believe me. And hell is real. Hell is believe me. And hell is real. Hell is hot. And heaven is real. And heaven is hot. And heaven is real. And heaven is hot. And heaven is real. And heaven is amazing. amazing. amazing. But the devil in your life isn't in But the devil in your life isn't in But the devil in your life isn't in hell. He's in your home. He's in your hell. He's in your home. He's in your hell. He's in your home. He's in your habits. He's in your phone. He's in your habits. He's in your phone. He's in your habits. He's in your phone. He's in your excuses and your comments and your hate excuses and your comments and your hate excuses and your comments and your hate and your validations and your comfort and your validations and your comfort and your validations and your comfort and your calendar full of I'll do it and your calendar full of I'll do it and your calendar full of I'll do it later. I'll do it tomorrow. I'll do it later. I'll do it tomorrow. I'll do it later. I'll do it tomorrow. I'll do it when I get around to it. You know what? when I get around to it. You know what? when I get around to it. You know what? Maybe I don't need to do it at all. I'll Maybe I don't need to do it at all. I'll Maybe I don't need to do it at all. I'll just succumb to this impotent, weak, just succumb to this impotent, weak, just succumb to this impotent, weak, mediocre life and justify that not mediocre life and justify that not mediocre life and justify that not everybody wants to win. Except that's everybody wants to win. Except that's everybody wants to win. Except that's wrong. Everybody does. wrong. Everybody does. wrong. Everybody does. The devil's in that second The devil's in that second The devil's in that second drink. That third hour denting the couch drink. That third hour denting the couch drink. That third hour denting the couch with your big ass. That porn tab at with your big ass. That porn tab at with your big ass. That porn tab at midnight in the dark with a soft glow of midnight in the dark with a soft glow of midnight in the dark with a soft glow of your computer when your wife's asleep or your computer when your wife's asleep or your computer when your wife's asleep or your husband's your husband's your husband's asleep. The dopamine flooded Instagram asleep. The dopamine flooded Instagram asleep. The dopamine flooded Instagram Tik Tok binging that costs you your Tik Tok binging that costs you your Tik Tok binging that costs you your mission because you look up at the clock mission because you look up at the clock mission because you look up at the clock and you realize you've been doing it for and you realize you've been doing it for and you realize you've been doing it for 5 hours and that's 5 hours you could 5 hours and that's 5 hours you could 5 hours and that's 5 hours you could have been working on your mission. He is have been working on your mission. He is have been working on your mission. He is not coming for your soul all at once. not coming for your soul all at once. not coming for your soul all at once. He's coming for it one cookie, one He's coming for it one cookie, one He's coming for it one cookie, one scroll, one lie, one broken promise, one scroll, one lie, one broken promise, one scroll, one lie, one broken promise, one skipped workout at a time. That's how skipped workout at a time. That's how skipped workout at a time. That's how the devil shows up. And you guys the devil shows up. And you guys the devil shows up. And you guys listen. You guys let people into your listen. You guys let people into your listen. You guys let people into your life that make empty promises never life that make empty promises never life that make empty promises never follow through to them through with follow through to them through with follow through to them through with them. And you think that's not the them. And you think that's not the them. And you think that's not the devil. That's the devil. That's the devil. That's the devil. You think that people that show devil. You think that people that show devil. You think that people that show up and tell you how great they're going up and tell you how great they're going up and tell you how great they're going to make your life, but never act on it,",
+            "first_timestamp": "00:04:20.959"
+          },
+          {
+            "source_id": "sy_uuIlELyA",
+            "source_type": "podcast",
+            "source_title": "Vlog 143 Why You Should Never Go To College",
+            "source_date": "2025-05-25",
+            "source_url": "https://youtu.be/sy_uuIlELyA",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2025-05-25-vlog-143-why-you-should-never-go-to-college-sy_uuIlELyA.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "combustion engine with a spark, right? It works on pressure glow",
+            "top_context": "How do you stop eating stupid things and How do you stop eating stupid things and validating it and going, \"Oh, but it's validating it and going, \"Oh, but it's validating it and going, \"Oh, but it's healthy for me because it comes out of a healthy for me because it comes out of a healthy for me because it comes out of a package.\" I have a 2018 Chevy Silverado package.\" I have a 2018 Chevy Silverado package.\" I have a 2018 Chevy Silverado 2500 diesel that I built from the ground 2500 diesel that I built from the ground 2500 diesel that I built from the ground up. I gutted it. Transmission, motor, up. I gutted it. Transmission, motor, up. I gutted it. Transmission, motor, everything. Did it all. This thing is a everything. Did it all. This thing is a everything. Did it all. This thing is a monster on the road. It still gets 20 m monster on the road. It still gets 20 m monster on the road. It still gets 20 m to the gallon. If diesels, you know what to the gallon. If diesels, you know what to the gallon. If diesels, you know what I'm talking about. Diesels are amazing. I'm talking about. Diesels are amazing. I'm talking about. Diesels are amazing. It's an It's an It's an L5P. Even Banks, Yale Banks says those L5P. Even Banks, Yale Banks says those L5P. Even Banks, Yale Banks says those L5PS are nuts. He did bolt-ons and got L5PS are nuts. He did bolt-ons and got L5PS are nuts. He did bolt-ons and got well over 900 horsepower and you just well over 900 horsepower and you just well over 900 horsepower and you just couldn't blow that motor up. They're couldn't blow that motor up. They're couldn't blow that motor up. They're just like a Cummins. They're just like a Cummins. They're just like a Cummins. They're indestructible. I built it from top to indestructible. I built it from top to indestructible. I built it from top to bottom in my driveway. Took me 3 weeks. bottom in my driveway. Took me 3 weeks. bottom in my driveway. Took me 3 weeks. I had to figure it all out. I know how I had to figure it all out. I know how I had to figure it all out. I know how to fix engines. I've been doing it since to fix engines. I've been doing it since to fix engines. I've been doing it since I was a kid and I know how to work on I was a kid and I know how to work on I was a kid and I know how to work on this stuff, but I'd never ripped apart a this stuff, but I'd never ripped apart a this stuff, but I'd never ripped apart a diesel. It's not the same as a internal diesel. It's not the same as a internal diesel. It's not the same as a internal combustion engine with a spark, right? combustion engine with a spark, right? combustion engine with a spark, right? It works on pressure glow It works on pressure glow It works on pressure glow plug. Learned a lot of lessons. Burnt plug. Learned a lot of lessons. Burnt plug. Learned a lot of lessons. Burnt myself, stuck myself, got covered in myself, stuck myself, got covered in myself, stuck myself, got covered in fiberglass from this wrapping on the fiberglass from this wrapping on the fiberglass from this wrapping on the downpipe coming off the back of the downpipe coming off the back of the downpipe coming off the back of the turbo. to use duct tape to pull the turbo. to use duct tape to pull the turbo. to use duct tape to pull the fiberglass out of my arm cuz it was fiberglass out of my arm cuz it was fiberglass out of my arm cuz it was itching so bad. It's Texas, 105° and itching so bad. It's Texas, 105° and itching so bad. It's Texas, 105° and 100% humidity. Didn't matter. I was out 100% humidity. Didn't matter. I was out 100% humidity. Didn't matter. I was out there sweating. My wife sat on a cooler. there sweating. My wife sat on a cooler. there sweating. My wife sat on a cooler. I put an umbrella out cuz she wanted to I put an umbrella out cuz she wanted to I put an umbrella out cuz she wanted to hang out with me. And I put a cooler out hang out with me. And I put a cooler out hang out with me. And I put a cooler out there with a bunch of waters and drinks there with a bunch of waters and drinks there with a bunch of waters and drinks and stuff in it. She just I just want to and stuff in it. She just I just want to and stuff in it. She just I just want to be with you. I have the greatest wife on be with you. I have the greatest wife on be with you. I have the greatest wife on earth. I had to take a sawzaw that I had earth. I had to take a sawzaw that I had earth. I had to take a sawzaw that I had to buy and I didn't have a long enough to buy and I didn't have a long enough to buy and I didn't have a long enough extension cord. So, I took my generator extension cord. So, I took my generator extension cord. So, I took my generator and I brought it outside. This is this and I brought it outside. This is this and I brought it outside. This is this how committed I was. plugged the saws how committed I was. plugged the saws how committed I was. plugged the saws all in and I had cut the catalytic all in and I had cut the catalytic all in and I had cut the catalytic converter out because it wouldn't fit converter out because it wouldn't fit converter out because it wouldn't fit and I had to drop the transmission in and I had to drop the transmission in and I had to drop the transmission in order to do it and I was like I'm not",
+            "first_timestamp": "00:36:10.720"
+          },
+          {
+            "source_id": "5O4vqJO61QU",
+            "source_type": "podcast",
+            "source_title": "Vlog 149 My Diet AND Debunking Every Diet Fad",
+            "source_date": "2025-05-30",
+            "source_url": "https://youtu.be/5O4vqJO61QU",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2025-05-30-vlog-149-my-diet-and-debunking-every-diet-fad-5O4vqJO61QU.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "still going to sit there and get up every night and look at the glow of the",
+            "top_context": "even if they do one-on-one, \"What kind even if they do one-on-one, \"What kind of guarantee do I have? What kind of of guarantee do I have? What kind of of guarantee do I have? What kind of guarantee do I have that I'm going to guarantee do I have that I'm going to guarantee do I have that I'm going to make a million dollars? That I'm going make a million dollars? That I'm going make a million dollars? That I'm going to be successful? That I'm going to lose to be successful? That I'm going to lose to be successful? That I'm going to lose the weight? That I'm going to change my the weight? That I'm going to change my the weight? That I'm going to change my mindset, that my marriage is going to be mindset, that my marriage is going to be mindset, that my marriage is going to be fixed, that I'm going to start this fixed, that I'm going to start this fixed, that I'm going to start this business, grow this business, scale this business, grow this business, scale this business, grow this business, scale this life, move, get the car, get the house, life, move, get the car, get the house, life, move, get the car, get the house, all the things.\" I've asked people ask all the things.\" I've asked people ask all the things.\" I've asked people ask me about the guarantee all the time, and me about the guarantee all the time, and me about the guarantee all the time, and I go, \"I have a guarantee.\" Absolutely. I go, \"I have a guarantee.\" Absolutely. I go, \"I have a guarantee.\" Absolutely. I have a guarantee. The guarantee is I have a guarantee. The guarantee is I have a guarantee. The guarantee is that if you do the same thing you're that if you do the same thing you're that if you do the same thing you're doing right now tomorrow you will wake doing right now tomorrow you will wake doing right now tomorrow you will wake up with the same stupid results that you up with the same stupid results that you up with the same stupid results that you are trying to escape. I guarantee that are trying to escape. I guarantee that are trying to escape. I guarantee that if you never post on social media and if you never post on social media and if you never post on social media and you never do the work on social media, you never do the work on social media, you never do the work on social media, you never ask people for money on social you never ask people for money on social you never ask people for money on social media, you are never going to affect media, you are never going to affect media, you are never going to affect change and help anybody that you so change and help anybody that you so change and help anybody that you so desperately say you want to help. I desperately say you want to help. I desperately say you want to help. I guarantee that if you never have that guarantee that if you never have that guarantee that if you never have that hard conversation with your wife or your hard conversation with your wife or your hard conversation with your wife or your husband, your marriage is going to go husband, your marriage is going to go husband, your marriage is going to go right down the [&nbsp;__&nbsp;] toilet. I right down the [&nbsp;__&nbsp;] toilet. I right down the [&nbsp;__&nbsp;] toilet. I guarantee that if you do not tell your guarantee that if you do not tell your guarantee that if you do not tell your spouse about all the freaky weird things spouse about all the freaky weird things spouse about all the freaky weird things you want to do in the bedroom, she's not you want to do in the bedroom, she's not you want to do in the bedroom, she's not going to tell you either. And you're going to tell you either. And you're going to tell you either. And you're still going to sit there and get up still going to sit there and get up still going to sit there and get up every night and look at the glow of the every night and look at the glow of the every night and look at the glow of the screen at 2:00 in the morning and look screen at 2:00 in the morning and look screen at 2:00 in the morning and look netwacked to porn that you wish you netwacked to porn that you wish you netwacked to porn that you wish you could be doing in your life. I guarantee could be doing in your life. I guarantee could be doing in your life. I guarantee that if you do nothing, your life stays that if you do nothing, your life stays that if you do nothing, your life stays the same. That's your the same. That's your the same. That's your guarantee. Guarantees are for people guarantee. Guarantees are for people guarantee. Guarantees are for people that expect perfection. I am not perfect that expect perfection. I am not perfect that expect perfection. I am not perfect at all. I'm far from it. But I do know at all. I'm far from it. But I do know at all. I'm far from it. But I do know this. When you eliminate all the this. When you eliminate all the this. When you eliminate all the distractions from the pain of distractions from the pain of distractions from the pain of discipline, you are left discipline, you are left discipline, you are left with no matter how ridiculous it is, with no matter how ridiculous it is, with no matter how ridiculous it is, it's like AAM's razor, right? You are it's like AAM's razor, right? You are it's like AAM's razor, right? You are left whatever you are left with no left whatever you are left with no left whatever you are left with no matter how improbable is the truth. matter how improbable is the truth. matter how improbable is the truth. That's how this That's how this That's how this works. If you can't regulate your works. If you can't regulate your works. If you can't regulate your behavior under stress, then you're not behavior under stress, then you're not behavior under stress, then you're not integrated. You're integrated. You're integrated. You're fragmented. So you want to be whole, you fragmented. So you want to be whole, you fragmented. So you want to be whole, you want to be excellent, you want to be the want to be excellent, you want to be the want to be excellent, you want to be the blueprint that everybody looks at and blueprint that everybody looks at and blueprint that everybody looks at and goes, that guy, that girl's got they got goes, that guy, that girl's got they got goes, that guy, that girl's got they got their [&nbsp;__&nbsp;] together. Then do what needs",
+            "first_timestamp": "00:35:50.720"
+          },
+          {
+            "source_id": "ZA1eeJKQVTQ",
+            "source_type": "podcast",
+            "source_title": "Consequences Of Low Testosterone (how to fix it) - Unbreakable Podcast 223",
+            "source_date": "2025-08-14",
+            "source_url": "https://youtu.be/ZA1eeJKQVTQ",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2025-08-14-consequences-of-low-testosterone-how-to-fix-it-unbreakable-podcast-223-ZA1eeJKQVTQ.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "out there. And I just saw another one today. Let me tell you about my glow",
+            "top_context": "wife and I will sit her up and hug her wife and I will sit her up and hug her like the world is about to end. Make like the world is about to end. Make like the world is about to end. Make sure she knows. I'll flip her around and sure she knows. I'll flip her around and sure she knows. I'll flip her around and french the other part of her. But I'll french the other part of her. But I'll french the other part of her. But I'll tell you this, I will make damn sure my tell you this, I will make damn sure my tell you this, I will make damn sure my wife knows it's not going to be written wife knows it's not going to be written wife knows it's not going to be written on a fridge. I'll help her. I'll do on a fridge. I'll help her. I'll do on a fridge. I'll help her. I'll do anything she needs. I will I don't care. anything she needs. I will I don't care. anything she needs. I will I don't care. I'll break myself for my wife because I'll break myself for my wife because I'll break myself for my wife because she is my best friend. But putting a she is my best friend. But putting a she is my best friend. But putting a little note, Hi, sweetie. I hope you little note, Hi, sweetie. I hope you little note, Hi, sweetie. I hope you have a great day. What is wrong with have a great day. What is wrong with have a great day. What is wrong with you? be a man. That's the problem. you? be a man. That's the problem. you? be a man. That's the problem. That's why you're anxious and depressed That's why you're anxious and depressed That's why you're anxious and depressed and you can't function because your and you can't function because your and you can't function because your cortisol has been spiking nonstop and cortisol has been spiking nonstop and cortisol has been spiking nonstop and you're depressed because your dopamine you're depressed because your dopamine you're depressed because your dopamine system has the responsiveness of a 1934 system has the responsiveness of a 1934 system has the responsiveness of a 1934 car that's been sitting in a farmer's car that's been sitting in a farmer's car that's been sitting in a farmer's field for the last 30 years. This you field for the last 30 years. This you field for the last 30 years. This you don't have emotional trauma, you guys. don't have emotional trauma, you guys. don't have emotional trauma, you guys. You can tell it really aggravates me You can tell it really aggravates me You can tell it really aggravates me because of all the bro science coming because of all the bro science coming because of all the bro science coming out there. And I just saw another one out there. And I just saw another one out there. And I just saw another one today. Let me tell you about my glow today. Let me tell you about my glow today. Let me tell you about my glow stack. It's great. It's the best thing stack. It's great. It's the best thing stack. It's great. It's the best thing that I ever do. I see a lot of talk that I ever do. I see a lot of talk that I ever do. I see a lot of talk about peptides and let me start getting about peptides and let me start getting about peptides and let me start getting on this and let me tell you too why on this and let me tell you too why on this and let me tell you too why because I'm seeing they're getting because I'm seeing they're getting because I'm seeing they're getting attention and I'm not. That's what I attention and I'm not. That's what I attention and I'm not. That's what I saw. Not a dude who stands by his saw. Not a dude who stands by his saw. Not a dude who stands by his principles and acts like a man. Listen, principles and acts like a man. Listen, principles and acts like a man. Listen, if you believe what you do has value, if you believe what you do has value, if you believe what you do has value, you don't pivot because everybody else you don't pivot because everybody else you don't pivot because everybody else is doing something else. In fact, that is doing something else. In fact, that is doing something else. In fact, that makes you a s. You don't have emotional makes you a s. You don't have emotional makes you a s. You don't have emotional trauma when you're feeling all these trauma when you're feeling all these trauma when you're feeling all these things and your hormones are all over things and your hormones are all over things and your hormones are all over the place. It's neuroendocrine sab the place. It's neuroendocrine sab the place. It's neuroendocrine sab sabotage. It's destroying your life. sabotage. It's destroying your life. sabotage. It's destroying your life. Which is why this pisses me off because Which is why this pisses me off because Which is why this pisses me off because people are so indoctrinated to go, \"No, people are so indoctrinated to go, \"No, people are so indoctrinated to go, \"No, that's not it. Where's my sound bowl? that's not it. Where's my sound bowl? that's not it. Where's my sound bowl? Where's my 432 Herz vibrations? Yes, 432 Where's my 432 Herz vibrations? Yes, 432 Where's my 432 Herz vibrations? Yes, 432 Hz, by the way, is right.\" Or 40. No, Hz, by the way, is right.\" Or 40. No, Hz, by the way, is right.\" Or 40. No, that's bad. It gets even worse. But that's bad. It gets even worse. But that's bad. It gets even worse. But that's a whole other conversation. But that's a whole other conversation. But that's a whole other conversation. But what I'm saying is that's not the",
+            "first_timestamp": "00:08:40.159"
+          },
+          {
+            "source_id": "IKgitxmC5jA",
+            "source_type": "podcast",
+            "source_title": "I Take TB500 Every Month - Unbreakable Podcast 286",
+            "source_date": "2025-10-18",
+            "source_url": "https://youtu.be/IKgitxmC5jA",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2025-10-18-i-take-tb500-every-month-unbreakable-podcast-286-IKgitxmC5jA.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "whether copper or TB or B because you see this glow stack all the time. [&nbsp;__&nbsp;]",
+            "top_context": "You will see pro products that claim to You will see pro products that claim to have TB500, BPC, and GHKU in a s single have TB500, BPC, and GHKU in a s single have TB500, BPC, and GHKU in a s single vial. This is scientifically illiterate vial. This is scientifically illiterate vial. This is scientifically illiterate and stupid and chemically impossible. and stupid and chemically impossible. and stupid and chemically impossible. I'll even tell you why. They have I'll even tell you why. They have I'll even tell you why. They have different stability profiles. These different stability profiles. These different stability profiles. These peptides have a different optimal pH peptides have a different optimal pH peptides have a different optimal pH level and chemical stabilizers. So, level and chemical stabilizers. So, level and chemical stabilizers. So, mixing them into one solution guarantees mixing them into one solution guarantees mixing them into one solution guarantees that at least one of them, at least one that at least one of them, at least one that at least one of them, at least one of them, if not all of them, will of them, if not all of them, will of them, if not all of them, will degrade incredibly rapidly. BPC, by the degrade incredibly rapidly. BPC, by the degrade incredibly rapidly. BPC, by the way, 157 incredibly fragile. So fragile. way, 157 incredibly fragile. So fragile. way, 157 incredibly fragile. So fragile. If you go, if you buy from a reputable If you go, if you buy from a reputable If you go, if you buy from a reputable place, let's say you buy it from Elite place, let's say you buy it from Elite place, let's say you buy it from Elite and then you say it doesn't work and you and then you say it doesn't work and you and then you say it doesn't work and you shook the vial, that's why it doesn't shook the vial, that's why it doesn't shook the vial, that's why it doesn't work. The fragments are, you just work. The fragments are, you just work. The fragments are, you just literally dismember it. You did literally dismember it. You did literally dismember it. You did vivisection inside a vial. They have vivisection inside a vial. They have vivisection inside a vial. They have different rec with blends, they have different rec with blends, they have different rec with blends, they have different reconstitution requirements, different reconstitution requirements, different reconstitution requirements, whether copper or TB or B because you whether copper or TB or B because you whether copper or TB or B because you see this glow stack all the time. [&nbsp;__&nbsp;] see this glow stack all the time. [&nbsp;__&nbsp;] see this glow stack all the time. [&nbsp;__&nbsp;] you cannot put them in the same vial. If you cannot put them in the same vial. If you cannot put them in the same vial. If I see any of you idiots, there's this I see any of you idiots, there's this I see any of you idiots, there's this one doctor out here, this bodybuilding one doctor out here, this bodybuilding one doctor out here, this bodybuilding guy, this doc, he talks about blending guy, this doc, he talks about blending guy, this doc, he talks about blending it all in the same bottle. I I caught a it all in the same bottle. I I caught a it all in the same bottle. I I caught a post the other day and I was like, post the other day and I was like, post the other day and I was like, \"Dude, that doesn't even make sense. You \"Dude, that doesn't even make sense. You \"Dude, that doesn't even make sense. You don't understand anything you're talking don't understand anything you're talking don't understand anything you're talking about because they require different about because they require different about because they require different types of bacteria water or acetic acid types of bacteria water or acetic acid types of bacteria water or acetic acid solutions for stability. It can't work solutions for stability. It can't work solutions for stability. It can't work from just purely a science from from just purely a science from from just purely a science from chemistry standpoint. They even have chemistry standpoint. They even have chemistry standpoint. They even have different think receptor targets, different think receptor targets, different think receptor targets, different half- livives. So, they work different half- livives. So, they work different half- livives. So, they work in entirely different pathways and have in entirely different pathways and have in entirely different pathways and have different durations of action. So different durations of action. So different durations of action. So putting them in, think about this. You putting them in, think about this. You putting them in, think about this. You put them in together is like trying to put them in together is like trying to put them in together is like trying to play a symphony, a metal album, listen play a symphony, a metal album, listen play a symphony, a metal album, listen to a Tony Robbins CD, listen to Joe to a Tony Robbins CD, listen to Joe to a Tony Robbins CD, listen to Joe Rogan podcast while having a Rogan podcast while having a Rogan podcast while having a conversation with Howard Stern, all at conversation with Howard Stern, all at conversation with Howard Stern, all at the same volume at the same [&nbsp;__&nbsp;]",
+            "first_timestamp": "00:38:15.359"
+          }
+        ],
+        "acute_signals": [
+          {
+            "snippet": "like, \"I I have no desire.\" and all that internal glow. Yeah, that's gone. And",
+            "source_title": "Solving Perimenopause and Debunking Gurus - Unbreakable Podcast 218",
+            "source_date": "2025-08-08",
+            "timestamp": "00:14:07.040",
+            "source_url": "https://youtu.be/z8Ch0De6pnQ"
+          },
+          {
+            "snippet": "internal glow. Yeah, that's gone. And",
+            "source_title": "Solving Perimenopause and Debunking Gurus - Unbreakable Podcast 218",
+            "source_date": "2025-08-08",
+            "timestamp": "00:14:10.629",
+            "source_url": "https://youtu.be/z8Ch0De6pnQ"
+          },
+          {
+            "snippet": "internal glow. Yeah, that's gone. And there's more. Believe me, I could I",
+            "source_title": "Solving Perimenopause and Debunking Gurus - Unbreakable Podcast 218",
+            "source_date": "2025-08-08",
+            "timestamp": "00:14:10.639",
+            "source_url": "https://youtu.be/z8Ch0De6pnQ"
+          },
+          {
+            "snippet": "what I want. It's what you're willing to do. But no gut, no gut function, no glow",
+            "source_title": "Solving Perimenopause and Debunking Gurus - Unbreakable Podcast 218",
+            "source_date": "2025-08-08",
+            "timestamp": "00:36:42.480",
+            "source_url": "https://youtu.be/z8Ch0De6pnQ"
+          },
+          {
+            "snippet": "do. But no gut, no gut function, no glow",
+            "source_title": "Solving Perimenopause and Debunking Gurus - Unbreakable Podcast 218",
+            "source_date": "2025-08-08",
+            "timestamp": "00:36:46.550",
+            "source_url": "https://youtu.be/z8Ch0De6pnQ"
+          }
+        ],
+        "chronic_signals": [
+          {
+            "snippet": "talks about, like it or not. It doesn't hang in your house. It doesn't glow on",
+            "source_title": "Vlog 111 The World Doesn't Care About YOUR FEELINGS",
+            "source_date": "2025-04-23",
+            "timestamp": "00:09:58.160",
+            "source_url": "https://youtu.be/3auVU0LYmNY"
+          },
+          {
+            "snippet": "hang in your house. It doesn't glow on",
+            "source_title": "Vlog 111 The World Doesn't Care About YOUR FEELINGS",
+            "source_date": "2025-04-23",
+            "timestamp": "00:09:59.670",
+            "source_url": "https://youtu.be/3auVU0LYmNY"
+          },
+          {
+            "snippet": "hang in your house. It doesn't glow on your phone. It doesn't pop up with your",
+            "source_title": "Vlog 111 The World Doesn't Care About YOUR FEELINGS",
+            "source_date": "2025-04-23",
+            "timestamp": "00:09:59.680",
+            "source_url": "https://youtu.be/3auVU0LYmNY"
+          },
+          {
+            "snippet": "all put back together and you're listening to a guy who sells glow stacks",
+            "source_title": "Solving Perimenopause and Debunking Gurus - Unbreakable Podcast 218",
+            "source_date": "2025-08-08",
+            "timestamp": "00:05:38.240",
+            "source_url": "https://youtu.be/z8Ch0De6pnQ"
+          },
+          {
+            "snippet": "listening to a guy who sells glow stacks",
+            "source_title": "Solving Perimenopause and Debunking Gurus - Unbreakable Podcast 218",
+            "source_date": "2025-08-08",
+            "timestamp": "00:05:41.110",
+            "source_url": "https://youtu.be/z8Ch0De6pnQ"
+          }
+        ]
+      },
+      "acute_vs_chronic_note": "Dr Bachmeyer often distinguishes acute (injury/infection) vs chronic (longevity/maintenance) dosing. Acute_signals + chronic_signals fields surface candidate contexts; full distillation pending Codex pass."
+    }
+  },
+  "reset_biology_synthesis": {
+    "status": "pending-codex-distillation",
+    "recommendation": null,
+    "caveats": null,
+    "cross_expert_consensus": null,
+    "cross_expert_disagreement": null
+  },
+  "generated_at": "2026-04-27T02:02:34.509Z"
+}

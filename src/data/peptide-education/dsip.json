@@ -1,0 +1,396 @@
+{
+  "peptide": "DSIP",
+  "slug": "dsip",
+  "aliases": [
+    "DSIP",
+    "dsip",
+    "Delta sleep inducing peptide",
+    "delta sleep inducing peptide"
+  ],
+  "category": "Uncategorized",
+  "experts": {
+    "hunter-williams": {
+      "baseline_protocol": null,
+      "summary": {
+        "mention_count": 52,
+        "top_doses": [
+          {
+            "dose": "5 mg",
+            "count": 11
+          },
+          {
+            "dose": "150 mcg",
+            "count": 3
+          },
+          {
+            "dose": "500 mcg",
+            "count": 3
+          },
+          {
+            "dose": "10 units",
+            "count": 2
+          },
+          {
+            "dose": "250 mcg",
+            "count": 1
+          },
+          {
+            "dose": "200 mg",
+            "count": 1
+          },
+          {
+            "dose": "1.5 mg",
+            "count": 1
+          },
+          {
+            "dose": "400 mcg",
+            "count": 1
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "1975bfa8f26850f6",
+            "source_type": "email",
+            "source_title": "DSIP for Opiate Withdrawal?",
+            "source_date": "2025-06-10",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-06-10-dsip-for-opiate-withdrawal.md",
+            "mention_count": 32,
+            "top_snippet": "ew weeks back, I was scrolling through the submissions in my weekly [question box ](https://hunterwilliamsvideotopic.carrd.co/)(by the way, if you’re not submitting your peptide questions, get on it!)",
+            "top_context": "ew weeks back, I was scrolling through the submissions in my weekly [question box ](https://hunterwilliamsvideotopic.carrd.co/)(by the way, if you’re not submitting your peptide questions, get on it!), and I noticed something I’d never seen before. A reader tipped me off to a study showing that DSIP eliminated nearly all symptoms of opioid withdrawal. Now, after years in the trenches researching therapeutic peptides, I don’t get surprised easily. But DSIP? For opioid withdrawal? That was new—even for me. But the data is promising, and today I want to break down everything I’ve l",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "19b055eeb0fca283",
+            "source_type": "email",
+            "source_title": "DSIP Deep Dive (Beyond Sleep | How DSIP Resets Stress, Pain, and Circadian Rhythm)",
+            "source_date": "2025-12-09",
+            "source_url": "https://open.spotify.com/episode/3HbtQRFOYImCW0e8kjIrK1",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-12-09-dsip-deep-dive.md",
+            "mention_count": 8,
+            "top_snippet": "support** | Business crisis, divorce, caregiving, grief — calmer nervous system + better sleep | | **Pain + withdrawal adjunct** | Few peptides have human data in this lane | | **Jet lag / circadian**",
+            "top_context": "support** | Business crisis, divorce, caregiving, grief — calmer nervous system + better sleep | | **Pain + withdrawal adjunct** | Few peptides have human data in this lane | | **Jet lag / circadian** | Resync clock after travel or schedule shifts (Hunter is leaning into this more) | ## ⭐ DOSING (DSIP) — Hunter's protocol ### Subcutaneous (most common research route) - **Starting dose:** 100-200 mcg subQ - **Working range:** 300-500 mcg subQ - **Hunter's sweet spot: 500 mcg** (he already sleeps well, didn't feel much at lower doses) - Clear deeper sleep + better Oura metrics at 500 mcg ### Tim",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "198154a515982b37",
+            "source_type": "email",
+            "source_title": "The First Responder Peptide Stack",
+            "source_date": "2025-07-16",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-07-16-the-first-responder-peptide-stack.md",
+            "mention_count": 6,
+            "top_snippet": "xins, and accelerate wound healing. If you’re constantly exposed to new bugs, LL-37 gives your immune system the edge it needs to prevent and quickly clear infections. It’s not a “maybe,” it’s a found",
+            "top_context": "xins, and accelerate wound healing. If you’re constantly exposed to new bugs, LL-37 gives your immune system the edge it needs to prevent and quickly clear infections. It’s not a “maybe,” it’s a foundational immune defense your body _should_ have more of. ——————————————————————————— **DSIP** You can train, you can eat right, but if you don’t sleep, you don’t recover. DSIP (Delta Sleep-Inducing Peptide) helps your brain achieve deep, restorative sleep, even when rotating shifts disrupt your circadian rhythm. In controlled studies, DSIP increased the time spent in deep (delt",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "he_GzaUMwpI",
+            "source_type": "podcast",
+            "source_title": "The FDA Just Changed Everything for Peptides | My Honest Take",
+            "source_date": "2026-04-17",
+            "source_url": "https://youtu.be/he_GzaUMwpI",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-04-17-the-fda-just-changed-everything-for-peptides-my-honest-take-he_GzaUMwpI.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "more mainstream peptides that are out there like BPC, KPV, DSIP, epitalon,",
+            "top_context": "to government stuff, as they always say to government stuff, as they always say like you there's two things you don't like you there's two things you don't like you there's two things you don't want to be made as sausage and want to be made as sausage and want to be made as sausage and um laws. And this is one of those things um laws. And this is one of those things um laws. And this is one of those things it takes time to play out and uh we will it takes time to play out and uh we will it takes time to play out and uh we will likely see the fruits of whatever is likely see the fruits of whatever is likely see the fruits of whatever is happening probably another 1 to 2 years happening probably another 1 to 2 years happening probably another 1 to 2 years in the future. But at the end of the in the future. But at the end of the in the future. But at the end of the day, I would not fear I would not be day, I would not fear I would not be day, I would not fear I would not be worried that your peptides are going to worried that your peptides are going to worried that your peptides are going to be taken away. Yes, over the years I'm be taken away. Yes, over the years I'm be taken away. Yes, over the years I'm sure the access to them will change, um sure the access to them will change, um sure the access to them will change, um but to all the people in the research but to all the people in the research but to all the people in the research world, I wouldn't get super up in arms world, I wouldn't get super up in arms world, I wouldn't get super up in arms about what is going on. At least I'm not about what is going on. At least I'm not about what is going on. At least I'm not panicking right now and maybe there panicking right now and maybe there panicking right now and maybe there there is good reason to panic. I don't there is good reason to panic. I don't there is good reason to panic. I don't have all the insider information, have all the insider information, have all the insider information, um but at least that's not what I am um but at least that's not what I am um but at least that's not what I am thinking. I think this is going to be a thinking. I think this is going to be a thinking. I think this is going to be a good thing and I think eventually the good thing and I think eventually the good thing and I think eventually the prices will come down to meet the prices will come down to meet the prices will come down to meet the research world at least with some of the research world at least with some of the research world at least with some of the more mainstream peptides that are out more mainstream peptides that are out more mainstream peptides that are out there like BPC, KPV, DSIP, epitalon, there like BPC, KPV, DSIP, epitalon, there like BPC, KPV, DSIP, epitalon, GHK, some of those ones that are on the GHK, some of those ones that are on the GHK, some of those ones that are on the list. So, list. So, list. So, we will see what happen happens. It's we will see what happen happens. It's we will see what happen happens. It's definitely say what you will, it is definitely say what you will, it is definitely say what you will, it is interesting time to be alive seems like interesting time to be alive seems like interesting time to be alive seems like right now and uh maybe this is my own right now and uh maybe this is my own right now and uh maybe this is my own personal bias like AI and peptides are personal bias like AI and peptides are personal bias like AI and peptides are the two biggest things right now. And the two biggest things right now. And the two biggest things right now. And peptides maybe even be be bigger than peptides maybe even be be bigger than peptides maybe even be be bigger than AI. Probably not, but um it's fun to AI. Probably not, but um it's fun to AI. Probably not, but um it's fun to think about. So, uh that's it for this think about. So, uh that's it for this think about. So, uh that's it for this one. As always in closing, thank you one. As always in closing, thank you one. As always in closing, thank you guys so much for the overwhelming amount guys so much for the overwhelming amount guys so much for the overwhelming amount of support, whatever form or fashion it of support, whatever form or fashion it of support, whatever form or fashion it is, whether you share this video with is, whether you share this video with is, whether you share this video with friends and family, whether you sign up friends and family, whether you sign up friends and family, whether you sign up for the email list, whether you're in my for the email list, whether you're in my for the email list, whether you're in my private group, um or you use my code at private group, um or you use my code at private group, um or you use my code at places, thank you so much. It goes so places, thank you so much. It goes so places, thank you so much. It goes so far in helping me bring these messages far in helping me bring these messages far in helping me bring these messages to you and uh it's truly a dream come to you and uh it's truly a dream come to you and uh it's truly a dream come true for me to be able to do this and uh true for me to be able to do this and uh true for me to be able to do this and uh have the relationship I do with you",
+            "first_timestamp": "00:17:42.920"
+          },
+          {
+            "source_id": "19d98523208598ae",
+            "source_type": "email",
+            "source_title": "New Peptide Announcement from the FDA (Category 2 → 503A)",
+            "source_date": "2026-04-16",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2026-04-16-fda-peptide-announcement-pcac-503a.md",
+            "mention_count": 2,
+            "top_snippet": "extremely difficult → Most popular peptides placed in Category 2 → pharmacies stopped compounding → doctors couldn't prescribe → research peptide market exploded ## ⭐ April 15, 2026 — FDA Removes 12 P",
+            "top_context": "extremely difficult → Most popular peptides placed in Category 2 → pharmacies stopped compounding → doctors couldn't prescribe → research peptide market exploded ## ⭐ April 15, 2026 — FDA Removes 12 Peptides from Category 2 ### The 12 removed - **BPC-157** - **KPV** - **TB-500** - **MOTS-c** - **DSIP** - **Semax** - **Epitalon** - **GHK-Cu** (injectable) - **LL-37** - **Dihexa** - **PEG-MGF** - **Melanotan II** ## ⭐ April 16, 2026 — PCAC Meeting Scheduled (July 23-24, 2026) Federal Register notice — Pharmacy Compounding Advisory Committee (PCAC) meeting at FDA's White Oak Campus, Silver Sprin",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "196ff329b54df0ca",
+            "source_type": "email",
+            "source_title": "Credit Cards vs. Peptides",
+            "source_date": "2025-05-23",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-05-23-credit-cards-vs-peptides.md",
+            "mention_count": 1,
+            "top_snippet": "ike BioLongevity Labs sell therapeutic peptides as “research chemicals,” we can deliver life-changing products at affordable prices. We’re talking about peptides like: * **Retatrutide (GLP-3) for fat ",
+            "top_context": "ike BioLongevity Labs sell therapeutic peptides as “research chemicals,” we can deliver life-changing products at affordable prices. We’re talking about peptides like: * **Retatrutide (GLP-3) for fat loss** * **Tesamorelin for fat loss and muscle gain** * **BPC-157 for healing** * **DSIP for better sleep** Eli Lilly—and other Big Pharma giants—sell many of these same molecules at exorbitant prices. We’re talking about a markup so extreme it would make your head spin—peptides that cost them a few dollars per vial, sold to consumers (or insurance companies) for hundreds or eve",
+            "first_timestamp": null
+          }
+        ],
+        "acute_signals": [
+          {
+            "snippet": ": * Pair DSIP with social support (groups, therapy, accountability partners) * Optimize your nutrition, hydration, and mineral intake (withdrawal trashes electrolytes) * Exercise and sunlight, even in",
+            "source_title": "DSIP for Opiate Withdrawal?",
+            "source_date": "2025-06-10",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "iene matters more than ever * **DSIP is just a tool.** Don’t skip the hard work. If you’re in crisis, reach out to a medical professional or addiction specialist. ——————————————————————————— **Further",
+            "source_title": "DSIP for Opiate Withdrawal?",
+            "source_date": "2025-06-10",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "xins, and accelerate wound healing. If you’re constantly exposed to new bugs, LL-37 gives your immune system the edge it needs to prevent and quickly clear infections. It’s not a “maybe,” it’s a found",
+            "source_title": "The First Responder Peptide Stack",
+            "source_date": "2025-07-16",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "# DSIP Deep Dive — Beyond Sleep > \"DSIP is NOT Ambien. It's a tool that interfaces directly with your sleep architecture, circadian rhythm, and stress response.\" > Hunter framing: \"Less a 'sleep drug'",
+            "source_title": "DSIP Deep Dive (Beyond Sleep | How DSIP Resets Stress, Pain, and Circadian Rhythm)",
+            "source_date": "2025-12-09",
+            "timestamp": null,
+            "source_url": "https://open.spotify.com/episode/3HbtQRFOYImCW0e8kjIrK1"
+          },
+          {
+            "snippet": "# DSIP Deep Dive — Beyond Sleep > \"DSIP is NOT Ambien. It's a tool that interfaces directly with your sleep architecture, circadian rhythm, and stress response.\" > Hunter framing: \"Less a 'sleep drug'",
+            "source_title": "DSIP Deep Dive (Beyond Sleep | How DSIP Resets Stress, Pain, and Circadian Rhythm)",
+            "source_date": "2025-12-09",
+            "timestamp": null,
+            "source_url": "https://open.spotify.com/episode/3HbtQRFOYImCW0e8kjIrK1"
+          }
+        ],
+        "chronic_signals": [
+          {
+            "snippet": "Unlike benzos or heavy-duty narcotics, DSIP doesn’t sedate you into oblivion or carry a risk of dependency. Instead, it seems to modulate withdrawal at the source, by stabilizing the disrupted neuroch",
+            "source_title": "DSIP for Opiate Withdrawal?",
+            "source_date": "2025-06-10",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "Instead, it seems to modulate withdrawal at the source, by stabilizing the disrupted neurochemistry and blunting some of the harshest symptoms. ——————————————————————————— **How DSIP Works for Withdra",
+            "source_title": "DSIP for Opiate Withdrawal?",
+            "source_date": "2025-06-10",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "——————————————————————————— **How DSIP Works for Withdrawal ** So, why would a “sleep peptide” help with opioid withdrawal? Mechanistically, DSIP is a bit of a Swiss Army knife. The research suggests ",
+            "source_title": "DSIP for Opiate Withdrawal?",
+            "source_date": "2025-06-10",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "h several systems that get trashed by chronic opioid use. First, DSIP appears to modulate the endogenous opioid system—think of it as gently “resetting” the body’s natural pain-relief and stress-respo",
+            "source_title": "DSIP for Opiate Withdrawal?",
+            "source_date": "2025-06-10",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "te for a comprehensive recovery plan. It seems to help take the edge off, making the process more tolerable so you can focus on the deep work: therapy, social support, and repairing your life. ———————",
+            "source_title": "DSIP for Opiate Withdrawal?",
+            "source_date": "2025-06-10",
+            "timestamp": null,
+            "source_url": null
+          }
+        ]
+      }
+    },
+    "taylor-williams": {
+      "summary": {
+        "mention_count": 1,
+        "top_doses": [],
+        "top_sources": [
+          {
+            "source_id": "9Ibjy2ROaA0",
+            "source_type": "podcast",
+            "source_title": "DSIP Peptide  |  The Secret to Deeper Sleep",
+            "source_date": "2024-08-23",
+            "source_url": "https://youtu.be/9Ibjy2ROaA0",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2024-08-23-dsip-peptide-the-secret-to-deeper-sleep-9Ibjy2ROaA0.en.vtt",
+            "mention_count": 1,
+            "top_snippet": "stands for deep is the Delta sleep inducing peptide this is going to be a",
+            "top_context": "[Music] [Music] C everyone welcome back to my channel C everyone welcome back to my channel C everyone welcome back to my channel and in today's video I have a great and in today's video I have a great and in today's video I have a great topic for you guys I'm going to discuss topic for you guys I'm going to discuss topic for you guys I'm going to discuss the peptide BP so if you've been the peptide BP so if you've been the peptide BP so if you've been struggling with sleep deep might be the struggling with sleep deep might be the struggling with sleep deep might be the peptide that could be a big game changer peptide that could be a big game changer peptide that could be a big game changer to your sweet quality so let's get into to your sweet quality so let's get into to your sweet quality so let's get into this this this so what if exactly is DP and what it so what if exactly is DP and what it so what if exactly is DP and what it stands for deep is the Delta sleep stands for deep is the Delta sleep stands for deep is the Delta sleep inducing peptide this is going to be a inducing peptide this is going to be a inducing peptide this is going to be a natural occurrence in the body and it natural occurrence in the body and it natural occurrence in the body and it plays a key role in promoting deeper plays a key role in promoting deeper plays a key role in promoting deeper sleep and this is so crucial and so sleep and this is so crucial and so sleep and this is so crucial and so important because the better sleep important because the better sleep important because the better sleep callar we have the better recovery the callar we have the better recovery the callar we have the better recovery the better overall health we are going to better overall health we are going to better overall health we are going to have so just to kind of give you guys have so just to kind of give you guys have so just to kind of give you guys like a little bit of a a guidance on like a little bit of a a guidance on like a little bit of a a guidance on what is a good Delta Sleep percentage what is a good Delta Sleep percentage what is a good Delta Sleep percentage well typically around 15 to well typically around 15 to well typically around 15 to 25% is a good range but let's be honest 25% is a good range but let's be honest 25% is a good range but let's be honest like most of us are not hitting that and like most of us are not hitting that and like most of us are not hitting that and this is myself included so on average this is myself included so on average this is myself included so on average young adults and especially children are",
+            "first_timestamp": "00:00:35.239"
+          }
+        ],
+        "acute_signals": [],
+        "chronic_signals": []
+      },
+      "female_specific_note": "Taylor Williams Coaching focuses on female-specific HRT/peptide guidance. Per-peptide notes here often emphasize female dosing, fertility, hormone interactions."
+    },
+    "trevor-bachmeyer": {
+      "summary": {
+        "mention_count": 24,
+        "top_doses": [
+          {
+            "dose": "100 micrograms",
+            "count": 9
+          },
+          {
+            "dose": "3.5 milligrams",
+            "count": 3
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "UrlUjuiur-8",
+            "source_type": "podcast",
+            "source_title": "DSIP is a Longevity Peptide - Dr Trevor Bachmeyer",
+            "source_date": "2025-12-01",
+            "source_url": "https://youtu.be/UrlUjuiur-8",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2025-12-01-dsip-is-a-longevity-peptide-dr-trevor-bachmeyer-UrlUjuiur-8.en.vtt",
+            "mention_count": 9,
+            "top_snippet": "what that is? That's insanity. I'm going to talk about DIP, by the way, DSIP. And",
+            "top_context": "That's not what I am, by the way. Not at That's not what I am, by the way. Not at all. I'm just a gritty old bald doctor all. I'm just a gritty old bald doctor all. I'm just a gritty old bald doctor that's helping as many people as I can that's helping as many people as I can that's helping as many people as I can solving problems and I'm 100% solving problems and I'm 100% solving problems and I'm 100% certain certain certain that I've solved all disease. It's just that I've solved all disease. It's just that I've solved all disease. It's just biochemistry and physiology. I'm right. biochemistry and physiology. I'm right. biochemistry and physiology. I'm right. I said it yesterday. I'm right. The I said it yesterday. I'm right. The I said it yesterday. I'm right. The problem is most people won't have the problem is most people won't have the problem is most people won't have the intestinal fortitude or the capacity to intestinal fortitude or the capacity to intestinal fortitude or the capacity to actually step out on the ledge and go actually step out on the ledge and go actually step out on the ledge and go okay. They'll keep pushing on the door okay. They'll keep pushing on the door okay. They'll keep pushing on the door that says pull and they'll keep doing that says pull and they'll keep doing that says pull and they'll keep doing the same thing over and over again just the same thing over and over again just the same thing over and over again just harder and more frequently and spending harder and more frequently and spending harder and more frequently and spending more money doing it and expecting a more money doing it and expecting a more money doing it and expecting a different result and wondering why different result and wondering why different result and wondering why they're not getting anywhere. You know they're not getting anywhere. You know they're not getting anywhere. You know what that is? That's insanity. I'm going what that is? That's insanity. I'm going what that is? That's insanity. I'm going to talk about DIP, by the way, DSIP. And to talk about DIP, by the way, DSIP. And to talk about DIP, by the way, DSIP. And I'll explain it because I think a lot of I'll explain it because I think a lot of I'll explain it because I think a lot of god the instro world and the god the instro world and the god the instro world and the selfproclaimed selfproclaimed selfproclaimed experts call it a sleep peptide. Man, experts call it a sleep peptide. Man, experts call it a sleep peptide. Man, that is not even close to what it is. that is not even close to what it is. that is not even close to what it is. I'll explain why I'm going to blow your I'll explain why I'm going to blow your I'll explain why I'm going to blow your mind on this podcast because I want you mind on this podcast because I want you mind on this podcast because I want you to have the info. Like I said, this to have the info. Like I said, this to have the info. Like I said, this isn't about me. By the way, you see isn't about me. By the way, you see isn't about me. By the way, you see this? How many of you guys have one of this? How many of you guys have one of this? How many of you guys have one of these on today? I'll just leave it at these on today? I'll just leave it at these on today? I'll just leave it at that. What side? Mine's right here. 3.5 that. What side? Mine's right here. 3.5 that. What side? Mine's right here. 3.5 milligrams every day. Remember, viruses milligrams every day. Remember, viruses milligrams every day. Remember, viruses obligate parasites block where they bind obligate parasites block where they bind obligate parasites block where they bind and where they get into the cell and and where they get into the cell and and where they get into the cell and they die because they have no host. 29, they die because they have no host. 29, they die because they have no host. 29, right? 29 influenza viruses handles all right? 29 influenza viruses handles all right? 29 influenza viruses handles all of them. that you go ahead and keep of them. that you go ahead and keep of them. that you go ahead and keep getting those flu shots every year. Let",
+            "first_timestamp": "00:01:09.600"
+          },
+          {
+            "source_id": "QrACVICgbyk",
+            "source_type": "podcast",
+            "source_title": "Is Age Reversal Possible? You Bet - Unbreakable Podcast 204",
+            "source_date": "2025-07-25",
+            "source_url": "https://youtu.be/QrACVICgbyk",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2025-07-25-is-age-reversal-possible-you-bet-unbreakable-podcast-204-QrACVICgbyk.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "here, listen, I'll lay it. There's something called DIP, right? DSIP, delta",
+            "top_context": "it doesn't do this I heard this I read it doesn't do this I heard this I read this guy sent me a Wikipedia media page this guy sent me a Wikipedia media page this guy sent me a Wikipedia media page today going, \"Well, why don't you tell today going, \"Well, why don't you tell today going, \"Well, why don't you tell them about the cancer? Are you high? Are them about the cancer? Are you high? Are them about the cancer? Are you high? Are you high?\" Cancer. Cancer is man-made. you high?\" Cancer. Cancer is man-made. you high?\" Cancer. Cancer is man-made. Number one. And number two is the Number one. And number two is the Number one. And number two is the treatment of cancer is designed to end treatment of cancer is designed to end treatment of cancer is designed to end you very quickly. And when people die of you very quickly. And when people die of you very quickly. And when people die of cancer, 97% that's a big number, by the cancer, 97% that's a big number, by the cancer, 97% that's a big number, by the way, verifiable by the way, proven, way, verifiable by the way, proven, way, verifiable by the way, proven, verifiable. 97% of the people that die verifiable. 97% of the people that die verifiable. 97% of the people that die listed as dying from cancer do not die listed as dying from cancer do not die listed as dying from cancer do not die from cancer. They die of organ failure from cancer. They die of organ failure from cancer. They die of organ failure from the treatment. I have to put the from the treatment. I have to put the from the treatment. I have to put the last last bit in bit in because some of last last bit in bit in because some of last last bit in bit in because some of you guys are going to go yeah organ you guys are going to go yeah organ you guys are going to go yeah organ failure failure because of the cancer. failure failure because of the cancer. failure failure because of the cancer. Get out of here. It is not. It's from Get out of here. It is not. It's from Get out of here. It is not. It's from the treatment. You don't have a hardware the treatment. You don't have a hardware the treatment. You don't have a hardware problem. You have a software and a problem. You have a software and a problem. You have a software and a signaling problem. Fix the signal and signaling problem. Fix the signal and signaling problem. Fix the signal and the hardware takes care of itself. So the hardware takes care of itself. So the hardware takes care of itself. So here, listen, I'll lay it. There's here, listen, I'll lay it. There's here, listen, I'll lay it. There's something called DIP, right? DSIP, delta something called DIP, right? DSIP, delta something called DIP, right? DSIP, delta sleep inducing uh peptide. Dip is not a sleep inducing uh peptide. Dip is not a sleep inducing uh peptide. Dip is not a sedative. It doesn't lock you out of sedative. It doesn't lock you out of sedative. It doesn't lock you out of your own personality in life like your own personality in life like your own personality in life like ambient or some new over-the-counter ambient or some new over-the-counter ambient or some new over-the-counter zombie formula that they give you. Like zombie formula that they give you. Like zombie formula that they give you. Like I saw Zquil. If you guys haven't figured I saw Zquil. If you guys haven't figured I saw Zquil. If you guys haven't figured it out yet, Zquil is benadryil. That's it out yet, Zquil is benadryil. That's it out yet, Zquil is benadryil. That's it. I'll let you figure that one. Rename it. I'll let you figure that one. Rename it. I'll let you figure that one. Rename it. Makes you tired. So DIP, what it it. Makes you tired. So DIP, what it it. Makes you tired. So DIP, what it does is it gently reminds your does is it gently reminds your does is it gently reminds your hypothalamus how to regulate your sleep hypothalamus how to regulate your sleep hypothalamus how to regulate your sleep wake cycles like when you were eight, wake cycles like when you were eight, wake cycles like when you were eight, you just had this perfect circadian you just had this perfect circadian you just had this perfect circadian rhythm. It's not a hammer like most rhythm. It's not a hammer like most rhythm. It's not a hammer like most drugs, right? I said they're just like a drugs, right? I said they're just like a drugs, right? I said they're just like a sledgehammer. This is a key like a sledgehammer. This is a key like a sledgehammer. This is a key like a programming key. Dip, it works. Okay, programming key. Dip, it works. Okay, programming key. Dip, it works. Okay, let's get a little fancy. Buck buckle let's get a little fancy. Buck buckle let's get a little fancy. Buck buckle up. I'm going to go through some up. I'm going to go through some up. I'm going to go through some physiology and some endocrinology. physiology and some endocrinology. physiology and some endocrinology. really quick, but and just some anatomy. really quick, but and just some anatomy. really quick, but and just some anatomy. So, DIP works directly in something",
+            "first_timestamp": "00:13:01.279"
+          },
+          {
+            "source_id": "XtiCLO0biUc",
+            "source_type": "podcast",
+            "source_title": "What If You Could Reverse Kidney Disease? Unbreakable Podcast 209",
+            "source_date": "2025-07-30",
+            "source_url": "https://youtu.be/XtiCLO0biUc",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2025-07-30-what-if-you-could-reverse-kidney-disease-unbreakable-podcast-209-XtiCLO0biUc.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "delta sleep rather. I was calling to say deep delta sleep inducing peptide. This",
+            "top_context": "sleep, stop it. You don't have to. And sleep, stop it. You don't have to. And it stops something called dal stress it stops something called dal stress it stops something called dal stress response which is what burns out the response which is what burns out the response which is what burns out the adrenal kidney relationship. And if you adrenal kidney relationship. And if you adrenal kidney relationship. And if you understand, people go, \"I have burned understand, people go, \"I have burned understand, people go, \"I have burned out adrenals.\" No, no, you don't. You out adrenals.\" No, no, you don't. You out adrenals.\" No, no, you don't. You have bad signals and a bunch of static. have bad signals and a bunch of static. have bad signals and a bunch of static. So, what this all means is, let me let So, what this all means is, let me let So, what this all means is, let me let me give you a better picture. Less me give you a better picture. Less me give you a better picture. Less oxidative stress, which means less free oxidative stress, which means less free oxidative stress, which means less free radicals running around your system radicals running around your system radicals running around your system beating the crap out of everything. Less beating the crap out of everything. Less beating the crap out of everything. Less mitochondrial damage because of that, mitochondrial damage because of that, mitochondrial damage because of that, less cell death, more regeneration. So, less cell death, more regeneration. So, less cell death, more regeneration. So, you're making more than you're losing. you're making more than you're losing. you're making more than you're losing. Does that make sense? Like, it's like Does that make sense? Like, it's like Does that make sense? Like, it's like you have a bank account and somebody you have a bank account and somebody you have a bank account and somebody keeps pulling money out of it, but keeps pulling money out of it, but keeps pulling money out of it, but they're not putting enough in. they're not putting enough in. they're not putting enough in. Eventually, that bank account is gone. Eventually, that bank account is gone. Eventually, that bank account is gone. Right? So, that's how you have to look Right? So, that's how you have to look Right? So, that's how you have to look at this. So you have to be repairing at this. So you have to be repairing at this. So you have to be repairing more tissue than is being degraded and more tissue than is being degraded and more tissue than is being degraded and destroyed. Then the next one is destroyed. Then the next one is destroyed. Then the next one is something called Dip. Deep sleep or something called Dip. Deep sleep or something called Dip. Deep sleep or delta sleep rather. I was calling to say delta sleep rather. I was calling to say delta sleep rather. I was calling to say deep delta sleep inducing peptide. This deep delta sleep inducing peptide. This deep delta sleep inducing peptide. This is like a secret weapon cuz that's not is like a secret weapon cuz that's not is like a secret weapon cuz that's not all it that's not all it does. It all it that's not all it does. It all it that's not all it does. It radically reduces something called IL6. radically reduces something called IL6. radically reduces something called IL6. And I talked about this IL6 TNF alpha. And I talked about this IL6 TNF alpha. And I talked about this IL6 TNF alpha. These are the two biggest cytoine These are the two biggest cytoine These are the two biggest cytoine assassins and terrorists in kidney assassins and terrorists in kidney assassins and terrorists in kidney disease. That's what trashes everything. disease. That's what trashes everything. disease. That's what trashes everything. When's the last time somebody told you When's the last time somebody told you When's the last time somebody told you that? They didn't. And the thing with that? They didn't. And the thing with that? They didn't. And the thing with DIP is it's not like an ambient. That's DIP is it's not like an ambient. That's DIP is it's not like an ambient. That's not what it does. So don't think that's not what it does. So don't think that's not what it does. So don't think that's it's not even close to what it does. It it's not even close to what it does. It it's not even close to what it does. It doesn't knock you out. It restructures doesn't knock you out. It restructures doesn't knock you out. It restructures and honestly just restores your sleep and honestly just restores your sleep and honestly just restores your sleep architecture. And the part of sleep that architecture. And the part of sleep that architecture. And the part of sleep that heals is that REM sleep, right? Which is heals is that REM sleep, right? Which is heals is that REM sleep, right? Which is that's where all the hormonal repair that's where all the hormonal repair that's where all the hormonal repair happens. It restores all that. So when happens. It restores all that. So when happens. It restores all that. So when you're laying in your bed and you're you're laying in your bed and you're you're laying in your bed and you're listening to the ceiling fan and you're",
+            "first_timestamp": "00:18:49.440"
+          },
+          {
+            "source_id": "3Xjn3aIHi3Y",
+            "source_type": "podcast",
+            "source_title": "Retatrutide The Longevity Secret - Unbreakable Podcast 220",
+            "source_date": "2025-08-10",
+            "source_url": "https://youtu.be/3Xjn3aIHi3Y",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2025-08-10-retatrutide-the-longevity-secret-unbreakable-podcast-220-3Xjn3aIHi3Y.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "all the growth hormone problems. DIP, right? Delta sleep inducing peptide. Oh",
+            "top_context": "you do it. Hypothetically, this would be you do it. Hypothetically, this would be the move. Stack it with a pitilon to the move. Stack it with a pitilon to the move. Stack it with a pitilon to protect your telomeres, right? Tymeres protect your telomeres, right? Tymeres protect your telomeres, right? Tymeres keeps the end caps on the DNA so you keeps the end caps on the DNA so you keeps the end caps on the DNA so you don't so the aglet doesn't come off. It don't so the aglet doesn't come off. It don't so the aglet doesn't come off. It doesn't tough the end, right? BPC57 to doesn't tough the end, right? BPC57 to doesn't tough the end, right? BPC57 to rebuild the gut and the brain, get rid rebuild the gut and the brain, get rid rebuild the gut and the brain, get rid of a lot of that inflammation. GHKCU to of a lot of that inflammation. GHKCU to of a lot of that inflammation. GHKCU to drive collagen production and hair drive collagen production and hair drive collagen production and hair growth and neurogenesis, right? Brain growth and neurogenesis, right? Brain growth and neurogenesis, right? Brain cells. It's like synaptogenesis, cells. It's like synaptogenesis, cells. It's like synaptogenesis, neurogenesis, all that. MK677 to restore neurogenesis, all that. MK677 to restore neurogenesis, all that. MK677 to restore growth hormone and a lot of the lean growth hormone and a lot of the lean growth hormone and a lot of the lean tissue. MK677, by the way, infinitely tissue. MK677, by the way, infinitely tissue. MK677, by the way, infinitely better than hexa and surma and tessa, better than hexa and surma and tessa, better than hexa and surma and tessa, all of those, and for a lot of reasons, all of those, and for a lot of reasons, all of those, and for a lot of reasons, but it it just and this is the point I'm but it it just and this is the point I'm but it it just and this is the point I'm going to say, just trust me because going to say, just trust me because going to say, just trust me because otherwise this podcast is going to be otherwise this podcast is going to be otherwise this podcast is going to be like 6 hours long because I'll go into like 6 hours long because I'll go into like 6 hours long because I'll go into the physiology and the neurology of all the physiology and the neurology of all the physiology and the neurology of all of this and you guys have better things of this and you guys have better things of this and you guys have better things to do with your night. So MK677 restores to do with your night. So MK677 restores to do with your night. So MK677 restores all the growth hormone problems. DIP, all the growth hormone problems. DIP, all the growth hormone problems. DIP, right? Delta sleep inducing peptide. Oh right? Delta sleep inducing peptide. Oh right? Delta sleep inducing peptide. Oh man, that is, you know, I use DIP for man, that is, you know, I use DIP for man, that is, you know, I use DIP for the first time about a week ago. the first time about a week ago. the first time about a week ago. Mindblowing rest. And I sleep maybe 4 Mindblowing rest. And I sleep maybe 4 Mindblowing rest. And I sleep maybe 4 hours a night. And if you before any of hours a night. And if you before any of hours a night. And if you before any of you guys go, \"Well, see, you're not you guys go, \"Well, see, you're not you guys go, \"Well, see, you're not getting enough sleep.\" If you call my getting enough sleep.\" If you call my getting enough sleep.\" If you call my mother right now, then you ask her. My mother right now, then you ask her. My mother right now, then you ask her. My mom is 82 years old. You call my mom and mom is 82 years old. You call my mom and mom is 82 years old. You call my mom and you ask her about how I was cuz I know you ask her about how I was cuz I know you ask her about how I was cuz I know this. When I was a kid, I used to wake this. When I was a kid, I used to wake this. When I was a kid, I used to wake up with my neighbor and we used to go up with my neighbor and we used to go up with my neighbor and we used to go play under this bridge of all things, play under this bridge of all things, play under this bridge of all things, like the dumb [&nbsp;__&nbsp;] we did as a kid. But like the dumb [&nbsp;__&nbsp;] we did as a kid. But like the dumb [&nbsp;__&nbsp;] we did as a kid. But he'd knock on my window at 5:00, 5:30 in he'd knock on my window at 5:00, 5:30 in he'd knock on my window at 5:00, 5:30 in the morning. David would just get up. I the morning. David would just get up. I the morning. David would just get up. I was never tired. And my parents would was never tired. And my parents would was never tired. And my parents would come into my room sometimes the middle come into my room sometimes the middle come into my room sometimes the middle like I don't know. It was dark and like I don't know. It was dark and like I don't know. It was dark and probably 2:00 in the morning. And there probably 2:00 in the morning. And there probably 2:00 in the morning. And there I am sitting in the corner with a record I am sitting in the corner with a record I am sitting in the corner with a record player. Yes, I'm 52. I had a little red player. Yes, I'm 52. I had a little red player. Yes, I'm 52. I had a little red record player and I'd be listening to record player and I'd be listening to record player and I'd be listening to Star Wars records and story records and",
+            "first_timestamp": "00:23:03.280"
+          },
+          {
+            "source_id": "CksP80BjgpI",
+            "source_type": "podcast",
+            "source_title": "Fix Your Sleep Problems, NOW - Unbreakable Podcast 250",
+            "source_date": "2025-09-12",
+            "source_url": "https://youtu.be/CksP80BjgpI",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2025-09-12-fix-your-sleep-problems-now-unbreakable-podcast-250-CksP80BjgpI.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "is sticking in my mouth right now. Dip delta sleep inducing peptide. I've",
+            "top_context": "you're not taking advantage of it. So, you're not taking advantage of it. So, you're bringing these pharmaceutical you're bringing these pharmaceutical you're bringing these pharmaceutical sledgehammers into your system and sledgehammers into your system and sledgehammers into your system and wondering why you're never ever getting wondering why you're never ever getting wondering why you're never ever getting the rest you need. You wake I know the rest you need. You wake I know the rest you need. You wake I know people that take benadryil every night people that take benadryil every night people that take benadryil every night just to help them sleep. But how does just to help them sleep. But how does just to help them sleep. But how does that work? First of all, you get immune that work? First of all, you get immune that work? First of all, you get immune desensitization just from that. This desensitization just from that. This desensitization just from that. This immune surveillance system starts to go immune surveillance system starts to go immune surveillance system starts to go ary if you keep doing that all the time. ary if you keep doing that all the time. ary if you keep doing that all the time. That's why Zquil is not something you That's why Zquil is not something you That's why Zquil is not something you should take all the time or ever. should take all the time or ever. should take all the time or ever. Benadryil is for an allergic reaction. Benadryil is for an allergic reaction. Benadryil is for an allergic reaction. Just keep it at that. Which is what ZQIL Just keep it at that. Which is what ZQIL Just keep it at that. Which is what ZQIL is if you haven't read. So DIP, Pitilon, is if you haven't read. So DIP, Pitilon, is if you haven't read. So DIP, Pitilon, CJC1 1295, DAC, these aren't these are CJC1 1295, DAC, these aren't these are CJC1 1295, DAC, these aren't these are epic, man. These are lines of code for epic, man. These are lines of code for epic, man. These are lines of code for your internal clock. So let me explain your internal clock. So let me explain your internal clock. So let me explain this. If you look at Sorry, my my beard this. If you look at Sorry, my my beard this. If you look at Sorry, my my beard is sticking in my mouth right now. Dip is sticking in my mouth right now. Dip is sticking in my mouth right now. Dip delta sleep inducing peptide. I've delta sleep inducing peptide. I've delta sleep inducing peptide. I've talked this before. It slips into the talked this before. It slips into the talked this before. It slips into the hypothal the HPA the right the hypothal the HPA the right the hypothal the HPA the right the hypothalamic pituitary adrenal axis. But hypothalamic pituitary adrenal axis. But hypothalamic pituitary adrenal axis. But it's like this wild little electrician. it's like this wild little electrician. it's like this wild little electrician. It modulates GABAurgic neurons, which is It modulates GABAurgic neurons, which is It modulates GABAurgic neurons, which is the inhibitory network that puts the the inhibitory network that puts the the inhibitory network that puts the brakes on your CNS, your central nervous brakes on your CNS, your central nervous brakes on your CNS, your central nervous system. So when GABA signals are strong, system. So when GABA signals are strong, system. So when GABA signals are strong, excitatory neurons stop flooding the excitatory neurons stop flooding the excitatory neurons stop flooding the cortex and the HPA axis, stops dumping cortex and the HPA axis, stops dumping cortex and the HPA axis, stops dumping cortisol. This single act, just this one cortisol. This single act, just this one cortisol. This single act, just this one thing, lowering nocturnal nighttime thing, lowering nocturnal nighttime thing, lowering nocturnal nighttime cortisol or dusk cortisol opens the door cortisol or dusk cortisol opens the door cortisol or dusk cortisol opens the door to slowwave sleep. Just that alone. to slowwave sleep. Just that alone. to slowwave sleep. Just that alone. Slowwave isn't just deep sleep. It's the Slowwave isn't just deep sleep. It's the Slowwave isn't just deep sleep. It's the stage where all the good things happen. stage where all the good things happen. stage where all the good things happen. Right? So you have to understand this. Right? So you have to understand this. Right? So you have to understand this. It's like I talked about the It's like I talked about the It's like I talked about the glimpmphatic system. Yes. With a G. glimpmphatic system. Yes. With a G. glimpmphatic system. Yes. With a G. Glimpymphatic system flushes beta",
+            "first_timestamp": "00:08:51.440"
+          },
+          {
+            "source_id": "67i3fNpBvAA",
+            "source_type": "podcast",
+            "source_title": "Menopause, Hot Flashes and the Real Solution - Unbreakable Podcast 264",
+            "source_date": "2025-09-25",
+            "source_url": "https://youtu.be/67i3fNpBvAA",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2025-09-25-menopause-hot-flashes-and-the-real-solution-unbreakable-podcast-264-67i3fNpBvAA.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "regulatory system in your body, right? So, DIP, delta sleep inducing peptide.",
+            "top_context": "So, you need to now fix neurology and So, you need to now fix neurology and the sleep problem. My wife sometimes, the sleep problem. My wife sometimes, the sleep problem. My wife sometimes, and some of you women know what I'm and some of you women know what I'm and some of you women know what I'm talking about, it's like sleeping beside talking about, it's like sleeping beside talking about, it's like sleeping beside a moody campfire. All of a sudden, out a moody campfire. All of a sudden, out a moody campfire. All of a sudden, out of the blue, she's just wired and wide of the blue, she's just wired and wide of the blue, she's just wired and wide awake and just hot. And I mean hot like awake and just hot. And I mean hot like awake and just hot. And I mean hot like my wife is super hot. If you've ever my wife is super hot. If you've ever my wife is super hot. If you've ever seen my wife, my wife is so hot. Holy seen my wife, my wife is so hot. Holy seen my wife, my wife is so hot. Holy [&nbsp;__&nbsp;] she's hot. Like, I kind of want to [&nbsp;__&nbsp;] she's hot. Like, I kind of want to [&nbsp;__&nbsp;] she's hot. Like, I kind of want to stop the podcast and go inside now. stop the podcast and go inside now. stop the podcast and go inside now. She's that hot. Just compels me to do She's that hot. Just compels me to do She's that hot. Just compels me to do all kinds of filthy things because she's all kinds of filthy things because she's all kinds of filthy things because she's so hot and I just want to squeeze her so hot and I just want to squeeze her so hot and I just want to squeeze her all the time. I just love her. But I all the time. I just love her. But I all the time. I just love her. But I mean, hot temperature- wise, you can't mean, hot temperature- wise, you can't mean, hot temperature- wise, you can't fix the body without fixing your sleep, fix the body without fixing your sleep, fix the body without fixing your sleep, which is the introduction to dip, right? which is the introduction to dip, right? which is the introduction to dip, right? And I explain this. The problem is your And I explain this. The problem is your And I explain this. The problem is your hypothalamus is exhausted. So, remember hypothalamus is exhausted. So, remember hypothalamus is exhausted. So, remember hypothalamus, go way back to the hypothalamus, go way back to the hypothalamus, go way back to the beginning of this podcast before I went beginning of this podcast before I went beginning of this podcast before I went on all these rants. It's the thermmore on all these rants. It's the thermmore on all these rants. It's the thermmore regulatory system in your body, right? regulatory system in your body, right? regulatory system in your body, right? So, DIP, delta sleep inducing peptide. So, DIP, delta sleep inducing peptide. So, DIP, delta sleep inducing peptide. This is and 100 micrograms of this and This is and 100 micrograms of this and This is and 100 micrograms of this and you are out in good sleep. Not ambient you are out in good sleep. Not ambient you are out in good sleep. Not ambient wake up with your pants around your wake up with your pants around your wake up with your pants around your ankles wondering why you feel all ankles wondering why you feel all ankles wondering why you feel all slippery and you're in an unfamiliar slippery and you're in an unfamiliar slippery and you're in an unfamiliar place. Like, not that kind of sleep or place. Like, not that kind of sleep or place. Like, not that kind of sleep or you don't get any rest and you got to you don't get any rest and you got to you don't get any rest and you got to roofed. Here's what's cool about this. roofed. Here's what's cool about this. roofed. Here's what's cool about this. It is naturally occurring. It does It is naturally occurring. It does It is naturally occurring. It does exactly what it says it does. Induces exactly what it says it does. Induces exactly what it says it does. Induces sleep. That's it. Deep restorative slow sleep. That's it. Deep restorative slow sleep. That's it. Deep restorative slow wave repair everything sleep. This is a wave repair everything sleep. This is a wave repair everything sleep. This is a non Listen to me please. This is a non Listen to me please. This is a non Listen to me please. This is a non-negotiable for hormone recovery. non-negotiable for hormone recovery. non-negotiable for hormone recovery. Poor sleep causes hormonal chaos. Causes Poor sleep causes hormonal chaos. Causes Poor sleep causes hormonal chaos. Causes it cuz now your body is running on like it cuz now your body is running on like it cuz now your body is running on like ether just full like just it's like ether just full like just it's like ether just full like just it's like quick start in the carburetor all the quick start in the carburetor all the quick start in the carburetor all the time. If you know hormonal chaos damage time. If you know hormonal chaos damage time. If you know hormonal chaos damage your body's just fighting to survive.",
+            "first_timestamp": "00:40:19.520"
+          }
+        ],
+        "acute_signals": [
+          {
+            "snippet": "back to my three biological failures and look at how DSIP performs like a",
+            "source_title": "DSIP is a Longevity Peptide - Dr Trevor Bachmeyer",
+            "source_date": "2025-12-01",
+            "timestamp": "00:16:12.639",
+            "source_url": "https://youtu.be/UrlUjuiur-8"
+          },
+          {
+            "snippet": "look at how DSIP performs like a",
+            "source_title": "DSIP is a Longevity Peptide - Dr Trevor Bachmeyer",
+            "source_date": "2025-12-01",
+            "timestamp": "00:16:14.870",
+            "source_url": "https://youtu.be/UrlUjuiur-8"
+          },
+          {
+            "snippet": "look at how DSIP performs like a systemwide surgery right systemic",
+            "source_title": "DSIP is a Longevity Peptide - Dr Trevor Bachmeyer",
+            "source_date": "2025-12-01",
+            "timestamp": "00:16:14.880",
+            "source_url": "https://youtu.be/UrlUjuiur-8"
+          },
+          {
+            "snippet": "problem is always the same. By normalizing the HBA access, DSIP shuts",
+            "source_title": "DSIP is a Longevity Peptide - Dr Trevor Bachmeyer",
+            "source_date": "2025-12-01",
+            "timestamp": "00:16:42.720",
+            "source_url": "https://youtu.be/UrlUjuiur-8"
+          },
+          {
+            "snippet": "normalizing the HBA access, DSIP shuts",
+            "source_title": "DSIP is a Longevity Peptide - Dr Trevor Bachmeyer",
+            "source_date": "2025-12-01",
+            "timestamp": "00:16:45.269",
+            "source_url": "https://youtu.be/UrlUjuiur-8"
+          }
+        ],
+        "chronic_signals": [
+          {
+            "snippet": "So, DIP, delta sleep inducing peptide.",
+            "source_title": "Menopause, Hot Flashes and the Real Solution - Unbreakable Podcast 264",
+            "source_date": "2025-09-25",
+            "timestamp": "00:40:21.910",
+            "source_url": "https://youtu.be/67i3fNpBvAA"
+          },
+          {
+            "snippet": "So, DIP, delta sleep inducing peptide. This is and 100 micrograms of this and",
+            "source_title": "Menopause, Hot Flashes and the Real Solution - Unbreakable Podcast 264",
+            "source_date": "2025-09-25",
+            "timestamp": "00:40:21.920",
+            "source_url": "https://youtu.be/67i3fNpBvAA"
+          },
+          {
+            "snippet": "what that is? That's insanity. I'm going to talk about DIP, by the way, DSIP. And",
+            "source_title": "DSIP is a Longevity Peptide - Dr Trevor Bachmeyer",
+            "source_date": "2025-12-01",
+            "timestamp": "00:01:09.600",
+            "source_url": "https://youtu.be/UrlUjuiur-8"
+          },
+          {
+            "snippet": "to talk about DIP, by the way, DSIP. And",
+            "source_title": "DSIP is a Longevity Peptide - Dr Trevor Bachmeyer",
+            "source_date": "2025-12-01",
+            "timestamp": "00:01:12.230",
+            "source_url": "https://youtu.be/UrlUjuiur-8"
+          },
+          {
+            "snippet": "to talk about DIP, by the way, DSIP. And I'll explain it because I think a lot of",
+            "source_title": "DSIP is a Longevity Peptide - Dr Trevor Bachmeyer",
+            "source_date": "2025-12-01",
+            "timestamp": "00:01:12.240",
+            "source_url": "https://youtu.be/UrlUjuiur-8"
+          }
+        ]
+      },
+      "acute_vs_chronic_note": "Dr Bachmeyer often distinguishes acute (injury/infection) vs chronic (longevity/maintenance) dosing. Acute_signals + chronic_signals fields surface candidate contexts; full distillation pending Codex pass."
+    }
+  },
+  "reset_biology_synthesis": {
+    "status": "pending-codex-distillation",
+    "recommendation": null,
+    "caveats": null,
+    "cross_expert_consensus": null,
+    "cross_expert_disagreement": null
+  },
+  "generated_at": "2026-04-27T02:02:34.972Z"
+}
