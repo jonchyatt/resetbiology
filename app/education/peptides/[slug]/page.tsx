@@ -88,6 +88,24 @@ export default async function PeptidePage({ params }: Props) {
       </div>
 
       <div className="relative z-10 pt-16">
+        {/* Portal header — canonical pattern, matches /audio, /admin/workouts, /auth/profile */}
+        <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm shadow-2xl border-b border-primary-400/30">
+          <div className="container mx-auto px-4 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <img src="/logo1.png" alt="Reset Biology" className="h-8 w-auto mr-3 drop-shadow-lg" />
+                <div>
+                  <h1 className="text-xl font-bold text-white drop-shadow-lg">Portal</h1>
+                  <span className="text-lg text-gray-200 drop-shadow-sm">• Peptide Education</span>
+                </div>
+              </div>
+              <a href="/portal" className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
+                ← Back to Portal
+              </a>
+            </div>
+          </div>
+        </div>
+
         <div className="bg-gradient-to-r from-[#3FBFB5]/90 to-[#72C247]/90 backdrop-blur-md border-b border-white/10">
           <div className="container mx-auto px-4 py-12">
             <div className="text-sm text-white/80 mb-2">
