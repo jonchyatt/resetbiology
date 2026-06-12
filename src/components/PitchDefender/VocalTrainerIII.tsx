@@ -63,15 +63,19 @@ interface FullTemplate {
   createdAt?: string;
 }
 
-type MicProfile = 'laptop' | 'usb';
+type MicProfile = 'phone' | 'laptop' | 'usb';
 
 // V3: latencyHint removed from profiles — the context is ALWAYS 'interactive'
 // (live monitoring app; 'playback' added 100-200ms echo on the singer's voice).
-// Profiles only set input makeup gain now.
-const MIC_PROFILES: Record<MicProfile, { label: string; gain: number }> = {
-  laptop: { label: 'Laptop built-in mic', gain: 1.5 },
-  usb:    { label: 'USB / Audio interface', gain: 0.9 },
+// Profiles set input makeup gain + whether the OS auto-gain/noise pipeline runs.
+// `agc:true` matters on phones: Android mics are VERY quiet with AGC disabled.
+const MIC_PROFILES: Record<MicProfile, { label: string; gain: number; agc: boolean }> = {
+  phone:  { label: 'Phone mic (auto-boost)', gain: 3.0, agc: true },
+  laptop: { label: 'Laptop built-in mic', gain: 1.5, agc: false },
+  usb:    { label: 'USB / Audio interface', gain: 0.9, agc: false },
 };
+
+const IS_MOBILE = typeof navigator !== 'undefined' && /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent);
 
 const VOL_MAX = 400; // V3: percent ceiling per stream (V1 was 200)
 
@@ -700,27 +704,34 @@ export default function VocalTrainerIII() {
 
   // Mic monitor (right channel), with separate profile-gain and user-gain nodes.
   // Also starts/stops the pitch-detection stream so Jon sees live "You: D4 +12¢".
-  const toggleMicMonitor = useCallback(async () => {
-    if (micEnabled) {
-      if (micSourceNodeRef.current) { try { micSourceNodeRef.current.disconnect(); } catch {} micSourceNodeRef.current = null; }
-      if (micProfileGainNodeRef.current) { try { micProfileGainNodeRef.current.disconnect(); } catch {} micProfileGainNodeRef.current = null; }
-      if (micUserGainNodeRef.current) { try { micUserGainNodeRef.current.disconnect(); } catch {} micUserGainNodeRef.current = null; }
-      if (micAnalyserRef.current) { try { micAnalyserRef.current.disconnect(); } catch {} micAnalyserRef.current = null; }
-      if (micPanNodeRef.current) { try { micPanNodeRef.current.disconnect(); } catch {} micPanNodeRef.current = null; }
-      if (micStreamRef.current) {
-        micStreamRef.current.getTracks().forEach(t => t.stop());
-        micStreamRef.current = null;
-      }
-      stopPitchDetect();
-      setMicEnabled(false);
-      return;
+  // V3: split into stop/start so (a) profile changes can restart the stream with
+  // new getUserMedia constraints and (b) pagehide can release the mic — a held
+  // mic stream keeps Android Bluetooth stuck in SCO call-mode and hijacks the
+  // phone's audio routing until restart.
+  const stopMicMonitor = useCallback(() => {
+    if (micSourceNodeRef.current) { try { micSourceNodeRef.current.disconnect(); } catch {} micSourceNodeRef.current = null; }
+    if (micProfileGainNodeRef.current) { try { micProfileGainNodeRef.current.disconnect(); } catch {} micProfileGainNodeRef.current = null; }
+    if (micUserGainNodeRef.current) { try { micUserGainNodeRef.current.disconnect(); } catch {} micUserGainNodeRef.current = null; }
+    if (micAnalyserRef.current) { try { micAnalyserRef.current.disconnect(); } catch {} micAnalyserRef.current = null; }
+    if (micPanNodeRef.current) { try { micPanNodeRef.current.disconnect(); } catch {} micPanNodeRef.current = null; }
+    if (micStreamRef.current) {
+      micStreamRef.current.getTracks().forEach(t => t.stop());
+      micStreamRef.current = null;
     }
+    stopPitchDetect();
+    setMicEnabled(false);
+  }, [stopPitchDetect]);
+
+  const startMicMonitor = useCallback(async () => {
     try {
+      // V3: phone profile turns the OS gain pipeline ON — Android mics are
+      // near-silent without autoGainControl. Desktop profiles keep raw input.
+      const agc = MIC_PROFILES[micProfileRef.current].agc;
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: {
           echoCancellation: false,
-          noiseSuppression: false,
-          autoGainControl: false,
+          noiseSuppression: agc,
+          autoGainControl: agc,
         },
       });
       micStreamRef.current = stream;
@@ -748,14 +759,51 @@ export default function VocalTrainerIII() {
     } catch (e) {
       setStatusMsg(`Mic access failed: ${e instanceof Error ? e.message : e}`);
     }
-  }, [micEnabled, ensureAudioGraph, startPitchDetect, stopPitchDetect]);
+  }, [ensureAudioGraph, startPitchDetect]);
 
-  // Update mic profile gain live when profile changes (while mic is running).
+  const toggleMicMonitor = useCallback(async () => {
+    if (micEnabled) stopMicMonitor();
+    else await startMicMonitor();
+  }, [micEnabled, stopMicMonitor, startMicMonitor]);
+
+  const micEnabledRef = useRef(false);
+  useEffect(() => { micEnabledRef.current = micEnabled; }, [micEnabled]);
+
+  // V3: default to the phone profile on mobile devices (Android mics need AGC).
   useEffect(() => {
+    if (IS_MOBILE) setMicProfile('phone');
+  }, []);
+
+  // Update mic profile gain live + RESTART the stream when constraints change
+  // (AGC on/off requires a fresh getUserMedia — gain alone can update in place).
+  const prevProfileRef = useRef<MicProfile | null>(null);
+  useEffect(() => {
+    const prev = prevProfileRef.current;
+    prevProfileRef.current = micProfile;
     if (micProfileGainNodeRef.current) {
       micProfileGainNodeRef.current.gain.value = MIC_PROFILES[micProfile].gain;
     }
-  }, [micProfile]);
+    if (prev && prev !== micProfile && micEnabledRef.current
+        && MIC_PROFILES[prev].agc !== MIC_PROFILES[micProfile].agc) {
+      stopMicMonitor();
+      // micProfileRef is synced by its own effect; defer restart a tick so the
+      // new constraints are read.
+      setTimeout(() => { startMicMonitor(); }, 50);
+    }
+  }, [micProfile, stopMicMonitor, startMicMonitor]);
+
+  // V3: release the mic when the page is hidden/left. A held mic stream keeps
+  // Android Bluetooth in SCO call-mode and breaks ALL phone audio until reboot.
+  useEffect(() => {
+    const release = () => { if (micEnabledRef.current) stopMicMonitor(); };
+    const onVis = () => { if (document.visibilityState === 'hidden') release(); };
+    document.addEventListener('visibilitychange', onVis);
+    window.addEventListener('pagehide', release);
+    return () => {
+      document.removeEventListener('visibilitychange', onVis);
+      window.removeEventListener('pagehide', release);
+    };
+  }, [stopMicMonitor]);
 
   // Decode template audio when the current template changes. Split out from the
   // template-metadata effect so loadTemplateAudio is defined by this point.
@@ -994,13 +1042,13 @@ export default function VocalTrainerIII() {
           </summary>
           <ol className="mt-3 space-y-2 text-sm text-gray-300 list-decimal list-inside">
             <li>
-              <span className="font-semibold text-gray-100">Put on headphones.</span> This whole trainer is built for two ears doing different jobs — it does not work on speakers.
+              <span className="font-semibold text-gray-100">Put on WIRED headphones.</span> This whole trainer is built for two ears doing different jobs — it does not work on speakers. <span className="text-amber-300">Avoid Bluetooth</span>: it delays your own voice by a noticeable beat AND on phones it can hijack the phone&rsquo;s audio into call-mode. Plug in.
             </li>
             <li>
               <span className="font-semibold text-gray-100">Load your song.</span> Drag your practice track (like a Music Man plunk track .m4a) into the upload box below — or pick one already saved in the Library at the top.
             </li>
             <li>
-              <span className="font-semibold text-gray-100">Click &ldquo;Start mic monitor.&rdquo;</span> Allow the microphone when the browser asks. Now sing — you should hear your own voice in your RIGHT ear instantly. If it feels delayed, refresh the page and start the mic before playing the track.
+              <span className="font-semibold text-gray-100">Click &ldquo;Start mic monitor.&rdquo;</span> Allow the microphone when the browser asks. Now sing — you should hear your own voice in your RIGHT ear instantly. If it feels delayed, refresh the page and start the mic before playing the track. On a phone, the <span className="text-cyan-300">Phone mic (auto-boost)</span> profile is selected automatically — if your voice is still soft, push the Mic volume slider up and watch its meter.
             </li>
             <li>
               <span className="font-semibold text-gray-100">Press Play.</span> The track plays mostly in your LEFT ear, your live voice stays in your RIGHT ear. The moving cursor follows the notes.
