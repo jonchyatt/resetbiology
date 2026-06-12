@@ -123,6 +123,16 @@ export default function VocalTrainerIII() {
   const [vocalPan, setVocalPan] = useState(-0.7);
   const [musicPan, setMusicPan] = useState(0);
   const [micPan, setMicPan] = useState(1);
+  // V3: seek bar + A/B loop state. durationSec mirrors playbackDurationRef for UI.
+  const [durationSec, setDurationSec] = useState(0);
+  const [loopA, setLoopA] = useState<number | null>(null);
+  const [loopB, setLoopB] = useState<number | null>(null);
+  const loopARef = useRef<number | null>(null);
+  const loopBRef = useRef<number | null>(null);
+  useEffect(() => { loopARef.current = loopA; }, [loopA]);
+  useEffect(() => { loopBRef.current = loopB; }, [loopB]);
+  const startAudioSourceRef = useRef<(() => Promise<void>) | null>(null);
+  const seekBarElRef = useRef<HTMLDivElement | null>(null);
 
   const [musicFile, setMusicFile] = useState<File | null>(null);
   const [musicFileName, setMusicFileName] = useState<string>('');
@@ -508,6 +518,16 @@ export default function VocalTrainerIII() {
       if (!c) return;
       const elapsed = c.currentTime - startedAtRef.current;
       setPracticeTime(Math.max(0, elapsed));
+      // V3: A/B loop — when the playhead crosses B, jump back to A and keep going.
+      const la = loopARef.current;
+      const lb = loopBRef.current;
+      if (la != null && lb != null && lb > la && elapsed >= lb) {
+        stopAudioSource();
+        pauseOffsetRef.current = la;
+        setPracticeTime(la);
+        startAudioSourceRef.current?.();
+        return;
+      }
       if (elapsed >= playbackDurationRef.current) {
         stopAudioSource();
         pauseOffsetRef.current = 0;
@@ -519,6 +539,10 @@ export default function VocalTrainerIII() {
     };
     rafRef.current = requestAnimationFrame(tick);
   }, [ensureAudioGraph, stopAudioSource]);
+
+  // V3: keep a ref to the latest startAudioSource so the tick closure (and
+  // seek) can restart playback without stale-closure issues.
+  useEffect(() => { startAudioSourceRef.current = startAudioSource; });
 
   const pausePlayback = useCallback(() => {
     const ctx = audioCtxRef.current;
@@ -547,7 +571,60 @@ export default function VocalTrainerIII() {
     const vocDur = vocalBufRef.current?.duration ?? 0;
     const musDur = musicBufRef.current?.duration ?? 0;
     playbackDurationRef.current = Math.max(vocDur, musDur);
+    setDurationSec(playbackDurationRef.current); // V3: mirror for the seek-bar UI
+    // New material invalidates old loop points.
+    setLoopA(null);
+    setLoopB(null);
   }, []);
+
+  // ─── V3: seek + A/B loop controls ────────────────────────────────────────
+
+  // Jump to an absolute time. Works idle, paused, or mid-playback.
+  const seekTo = useCallback((t: number) => {
+    const dur = playbackDurationRef.current;
+    if (dur <= 0) return;
+    const clamped = Math.max(0, Math.min(t, dur - 0.01));
+    pauseOffsetRef.current = clamped;
+    setPracticeTime(clamped);
+    if (playbackState === 'playing') {
+      stopAudioSource();
+      startAudioSourceRef.current?.();
+    } else if (playbackState === 'idle') {
+      setPlaybackState('paused'); // show the playhead where they clicked
+    }
+  }, [playbackState, stopAudioSource]);
+
+  // Click (or drag) on the seek bar → seek proportionally.
+  const handleSeekBarPointer = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    const el = seekBarElRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const frac = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    seekTo(frac * playbackDurationRef.current);
+  }, [seekTo]);
+
+  const markLoopA = useCallback(() => {
+    const t = pauseOffsetRef.current && playbackState !== 'playing'
+      ? pauseOffsetRef.current
+      : practiceTime;
+    setLoopA(t);
+    // Keep the loop sane: A must precede B.
+    if (loopB != null && t >= loopB) setLoopB(null);
+  }, [practiceTime, playbackState, loopB]);
+
+  const markLoopB = useCallback(() => {
+    const t = practiceTime;
+    if (loopA != null && t <= loopA) return; // B must come after A
+    setLoopB(t);
+  }, [practiceTime, loopA]);
+
+  const clearLoop = useCallback(() => { setLoopA(null); setLoopB(null); }, []);
+
+  const fmtTime = (t: number) => {
+    const m = Math.floor(t / 60);
+    const s = t - m * 60;
+    return `${m}:${s.toFixed(1).padStart(4, '0')}`;
+  };
 
   // Load a raw uploaded file as the VOCAL track (Quick Play — no extraction).
   const loadQuickFile = useCallback(async (file: File) => {
@@ -1244,6 +1321,81 @@ export default function VocalTrainerIII() {
               </span>
             )}
           </div>
+
+          {/* V3: click-to-seek bar + A/B loop (YouTube-style scrubber) */}
+          {durationSec > 0 && (
+            <div className="mb-4">
+              <div className="flex items-center justify-between text-[11px] text-gray-400 mb-1">
+                <span className="font-mono">{fmtTime(practiceTime)}</span>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={markLoopA}
+                    className={`px-2 py-0.5 rounded text-[11px] font-bold border ${loopA != null ? 'bg-green-700/60 border-green-500 text-green-200' : 'bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700'}`}
+                    title="Set loop START at the playhead"
+                  >
+                    A {loopA != null ? fmtTime(loopA) : ''}
+                  </button>
+                  <button
+                    onClick={markLoopB}
+                    className={`px-2 py-0.5 rounded text-[11px] font-bold border ${loopB != null ? 'bg-green-700/60 border-green-500 text-green-200' : 'bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700'}`}
+                    title="Set loop END at the playhead (must be after A)"
+                  >
+                    B {loopB != null ? fmtTime(loopB) : ''}
+                  </button>
+                  {(loopA != null || loopB != null) && (
+                    <button
+                      onClick={clearLoop}
+                      className="px-2 py-0.5 rounded text-[11px] border bg-gray-800 border-gray-600 text-gray-400 hover:bg-gray-700"
+                      title="Clear the A/B loop"
+                    >
+                      ✕ loop
+                    </button>
+                  )}
+                  {loopA != null && loopB != null && (
+                    <span className="text-green-400 font-semibold animate-pulse">↻ looping</span>
+                  )}
+                </div>
+                <span className="font-mono">{fmtTime(durationSec)}</span>
+              </div>
+              <div
+                ref={seekBarElRef}
+                onPointerDown={handleSeekBarPointer}
+                className="relative h-3 bg-gray-800 rounded-full cursor-pointer group"
+                title="Click anywhere to jump there"
+              >
+                {/* loop region highlight */}
+                {loopA != null && loopB != null && (
+                  <div
+                    className="absolute top-0 h-full bg-green-500/25 rounded"
+                    style={{
+                      left: `${(loopA / durationSec) * 100}%`,
+                      width: `${((loopB - loopA) / durationSec) * 100}%`,
+                    }}
+                  />
+                )}
+                {/* progress fill */}
+                <div
+                  className="absolute top-0 left-0 h-full bg-amber-500/70 rounded-full"
+                  style={{ width: `${Math.min(100, (practiceTime / durationSec) * 100)}%` }}
+                />
+                {/* playhead knob */}
+                <div
+                  className="absolute top-1/2 -translate-y-1/2 w-3.5 h-3.5 bg-amber-300 rounded-full shadow group-hover:scale-125 transition-transform"
+                  style={{ left: `calc(${Math.min(100, (practiceTime / durationSec) * 100)}% - 7px)` }}
+                />
+                {/* A / B pins */}
+                {loopA != null && (
+                  <div className="absolute -top-1.5 w-0.5 h-6 bg-green-400" style={{ left: `${(loopA / durationSec) * 100}%` }} />
+                )}
+                {loopB != null && (
+                  <div className="absolute -top-1.5 w-0.5 h-6 bg-green-400" style={{ left: `${(loopB / durationSec) * 100}%` }} />
+                )}
+              </div>
+              <p className="text-[10px] text-gray-600 mt-1">
+                Click the bar to jump · press <span className="text-green-400 font-bold">A</span> at the start of the tricky part, play to the end of it, press <span className="text-green-400 font-bold">B</span> — it repeats forever until you clear it.
+              </p>
+            </div>
+          )}
 
           {/* Pitchforks v1 slider bar — THE canonical mic feedback meter.
               Gated to matchProgress > 0: only visible while singing on-pitch.
