@@ -88,6 +88,28 @@ function midiToName(m: number): string {
   return `${PITCH_NAMES[m % 12]}${Math.floor(m / 12) - 1}`;
 }
 
+// ─── V3.1: Music Man barbershop title taxonomy ──────────────────────────
+// Library titles are saved as "<Part> - <Song> - <Mix>",
+// e.g. "Lead - Wells Fargo - No Lead" / "Bass - Ice Cream - Bass Dominant".
+// The library grouping parses this from the title string (no data migration).
+const MM_PARTS = ['Lead', 'Tenor', 'Baritone', 'Bass'] as const;
+const MODE_LABEL: Record<string, string> = {
+  learn: 'Learn — your part is loud',
+  'sing-in': 'Sing-in — your part removed',
+  other: 'Other mixes',
+};
+interface MmMeta { part: string; song: string; mix: string; mode: 'learn' | 'sing-in' | 'other'; }
+function parseMmTitle(title: string): MmMeta | null {
+  const segs = title.split(' - ').map((s) => s.trim());
+  if (segs.length < 2) return null;
+  const part = MM_PARTS.find((p) => p.toLowerCase() === segs[0].toLowerCase());
+  if (!part) return null;
+  const mix = segs[segs.length - 1];
+  const song = segs.slice(1, segs.length - 1).join(' - ') || mix;
+  const mode: MmMeta['mode'] = /^no\s/i.test(mix) ? 'sing-in' : /dominant/i.test(mix) ? 'learn' : 'other';
+  return { part, song, mix, mode };
+}
+
 export default function VocalTrainerIII() {
   // ─── Library + selected template ────────────────────────────────────────
   const [library, setLibrary] = useState<LibraryItem[]>([]);
@@ -106,6 +128,39 @@ export default function VocalTrainerIII() {
   const [tempo, setTempo] = useState(100);
   const [saving, setSaving] = useState(false);
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
+
+  // ─── V3.1: library grouping + per-item extraction ───────────────────────
+  const [groupBy, setGroupBy] = useState<'part' | 'song' | 'mode' | 'flat'>('part');
+  const [libFilter, setLibFilter] = useState('');
+  const [collapsed, setCollapsed] = useState<Set<string>>(() => new Set());
+  const [extractingId, setExtractingId] = useState<string | null>(null);
+  const [extractAllRun, setExtractAllRun] = useState(false);
+
+  const libraryGroups = useMemo(() => {
+    const q = libFilter.trim().toLowerCase();
+    const items = q ? library.filter((i) => i.title.toLowerCase().includes(q)) : library;
+    if (groupBy === 'flat') return [{ key: 'all', label: `All songs (${items.length})`, items }];
+    const map = new Map<string, LibraryItem[]>();
+    const order: string[] = [];
+    for (const it of items) {
+      const mm = parseMmTitle(it.title);
+      const key = !mm ? 'Other'
+        : groupBy === 'part' ? mm.part
+        : groupBy === 'song' ? mm.song
+        : (MODE_LABEL[mm.mode] || 'Other mixes');
+      if (!map.has(key)) { map.set(key, []); order.push(key); }
+      map.get(key)!.push(it);
+    }
+    const partRank = (k: string) => { const i = (MM_PARTS as readonly string[]).indexOf(k); return i < 0 ? 99 : i; };
+    order.sort((a, b) =>
+      (groupBy === 'part' ? partRank(a) - partRank(b) : (a === 'Other' ? 1 : 0) - (b === 'Other' ? 1 : 0))
+      || a.localeCompare(b));
+    return order.map((key) => ({
+      key,
+      label: `${key} (${map.get(key)!.length})`,
+      items: map.get(key)!.slice().sort((a, b) => a.title.localeCompare(b.title)),
+    }));
+  }, [library, groupBy, libFilter]);
 
   // ─── Editor state ───────────────────────────────────────────────────────
   const [zoom, setZoom] = useState(80); // px per second
@@ -385,6 +440,81 @@ export default function VocalTrainerIII() {
       setSaving(false);
     }
   }, [currentTemplate, extractedNotes, tempo, extractedDuration, refreshLibrary]);
+
+  // ───────────────────────────────────────────────────────────────────────
+  // V3.1 — Extract the vocal line for an item ALREADY in the library.
+  // Same BasicPitch melody+contour pipeline as the upload path, but sourced
+  // from the item's stored audioUrl, then PUT back (re-publishes to Synthesia).
+  // This is what backfills the notes:0 entries (the 40 Music Man part tracks).
+  // ───────────────────────────────────────────────────────────────────────
+  const extractLibraryItem = useCallback(async (item: LibraryItem, opts?: { silent?: boolean }) => {
+    if (!item.audioUrl) {
+      if (!opts?.silent) setStatusMsg(`"${item.title}" has no audio to extract.`);
+      return false;
+    }
+    setExtractingId(item.id);
+    if (!opts?.silent) setStatusMsg(`Extracting vocal line for "${item.title}"…`);
+    try {
+      const tpl = await (await fetch(item.templateUrl, { cache: 'no-store' })).json();
+      const blob = await (await fetch(item.audioUrl, { cache: 'no-store' })).blob();
+      const { rawNotes, durationSec, pitchContour } = await extractNotesFromAudio(blob, {
+        onProgress: setExtractProgress,
+        midiMin: PITCH_MIN,
+        midiMax: PITCH_MAX,
+      });
+      const melody = extractMelodyLine(rawNotes, 0.05);
+      const updated = {
+        ...tpl,
+        notes: melody,
+        durationSec: durationSec || tpl.durationSec || 0,
+        tempo: tpl.tempo || 100,
+      };
+      const put = await fetch('/api/vocal-trainer/upload', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updated),
+      });
+      if (!put.ok) throw new Error((await put.json()).error || 'update failed');
+      const songNotes = rawNotesToSongNotes(melody, updated.tempo);
+      publishToSynthesia({ id: updated.id, title: updated.title, songNotes });
+      // If this item is open in the editor, reflect the new notes + contour live.
+      if (selectedId === item.id) {
+        setCurrentTemplate(updated);
+        setExtractedNotes(melody);
+        setExtractedDuration(updated.durationSec);
+        setVocalContour(pitchContour);
+        setTempo(updated.tempo);
+      }
+      if (!opts?.silent) {
+        setStatusMsg(`✓ Extracted "${item.title}" — ${melody.length} notes`);
+        await refreshLibrary();
+      }
+      return true;
+    } catch (e) {
+      console.error('[VocalTrainer] library extract failed:', e);
+      if (!opts?.silent) setStatusMsg(`Extract failed for "${item.title}": ${e instanceof Error ? e.message : String(e)}`);
+      return false;
+    } finally {
+      setExtractingId(null);
+      setExtractProgress(null);
+    }
+  }, [selectedId, refreshLibrary]);
+
+  // V3.1 — Extract every notes:0 item in a group, one at a time (BasicPitch is heavy).
+  const extractAllMissing = useCallback(async (items: LibraryItem[]) => {
+    const missing = items.filter((i) => i.noteCount === 0 && i.audioUrl);
+    if (missing.length === 0) { setStatusMsg('No un-extracted songs in this group.'); return; }
+    setExtractAllRun(true);
+    let done = 0;
+    for (const it of missing) {
+      setStatusMsg(`Extracting ${done + 1}/${missing.length}: "${it.title}"…`);
+      await extractLibraryItem(it, { silent: true });
+      done++;
+    }
+    await refreshLibrary();
+    setExtractAllRun(false);
+    setStatusMsg(`✓ Extracted ${done} song${done === 1 ? '' : 's'} in this group.`);
+  }, [extractLibraryItem, refreshLibrary]);
 
   // ───────────────────────────────────────────────────────────────────────
   // Dichotic player — quick-play OR template practice, shared audio graph
@@ -1084,24 +1214,105 @@ export default function VocalTrainerIII() {
             <p className="text-sm text-gray-500">No templates yet. Upload one below to get started.</p>
           )}
           {library.length > 0 && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-              {library.map(item => (
-                <button
-                  key={item.id}
-                  onClick={() => setSelectedId(item.id)}
-                  className={`text-left p-3 rounded border transition ${
-                    selectedId === item.id
-                      ? 'border-amber-400 bg-amber-500/10'
-                      : 'border-gray-700 bg-gray-800/40 hover:bg-gray-800'
-                  }`}
-                >
-                  <div className="font-medium text-amber-200 truncate">★ {item.title}</div>
-                  <div className="text-xs text-gray-400 mt-1">
-                    {item.noteCount} notes · {item.createdAt?.slice(0, 10) || ''}
-                  </div>
-                </button>
-              ))}
-            </div>
+            <>
+              {/* Toolbar: group-by dropdown + filter (V3.1) */}
+              <div className="flex flex-wrap items-center gap-2 mb-3">
+                <label className="text-xs text-gray-400 flex items-center gap-1">
+                  Group by
+                  <select
+                    value={groupBy}
+                    onChange={(e) => setGroupBy(e.target.value as 'part' | 'song' | 'mode' | 'flat')}
+                    className="bg-gray-800 border border-gray-700 rounded px-2 py-1 text-sm text-gray-100"
+                  >
+                    <option value="part">Voice part</option>
+                    <option value="song">Song</option>
+                    <option value="mode">Practice mode</option>
+                    <option value="flat">Show all (flat)</option>
+                  </select>
+                </label>
+                <input
+                  type="text"
+                  value={libFilter}
+                  onChange={(e) => setLibFilter(e.target.value)}
+                  placeholder="Filter songs…"
+                  className="flex-1 min-w-[140px] bg-gray-800 border border-gray-700 rounded px-2 py-1 text-sm text-gray-100"
+                />
+                <span className="text-xs text-gray-500 whitespace-nowrap">{library.length} in library</span>
+              </div>
+
+              {libraryGroups.map((group) => {
+                const missing = group.items.filter((i) => i.noteCount === 0 && i.audioUrl).length;
+                const isOpen = !collapsed.has(group.key);
+                return (
+                  <details
+                    key={group.key}
+                    open={isOpen}
+                    onToggle={(e) => {
+                      const open = (e.currentTarget as HTMLDetailsElement).open;
+                      setCollapsed((prev) => {
+                        const n = new Set(prev);
+                        if (open) n.delete(group.key); else n.add(group.key);
+                        return n;
+                      });
+                    }}
+                    className="mb-2 border border-gray-800 rounded-lg p-2"
+                  >
+                    <summary className="cursor-pointer select-none text-amber-300 font-semibold text-sm py-1 marker:text-amber-500">
+                      {group.label}
+                      {missing > 0 && <span className="ml-2 text-[10px] font-normal text-gray-500">{missing} un-extracted</span>}
+                    </summary>
+                    {missing > 0 && (
+                      <button
+                        onClick={() => extractAllMissing(group.items)}
+                        disabled={extractingId !== null || extractAllRun}
+                        className="mt-2 mb-1 text-[11px] px-2 py-1 bg-amber-700/70 hover:bg-amber-600 disabled:bg-gray-700 disabled:text-gray-500 rounded"
+                      >
+                        ⚡ Extract all {missing} vocal lines
+                      </button>
+                    )}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 mt-1">
+                      {group.items.map((item) => {
+                        const mm = parseMmTitle(item.title);
+                        const leaf = mm && groupBy === 'part' ? `${mm.song} · ${mm.mix}`
+                          : mm && groupBy === 'song' ? `${mm.part} · ${mm.mix}`
+                          : item.title;
+                        const busy = extractingId === item.id;
+                        return (
+                          <div
+                            key={item.id}
+                            className={`p-3 rounded border transition ${
+                              selectedId === item.id
+                                ? 'border-amber-400 bg-amber-500/10'
+                                : 'border-gray-700 bg-gray-800/40 hover:bg-gray-800'
+                            }`}
+                          >
+                            <button onClick={() => setSelectedId(item.id)} className="block w-full text-left">
+                              <div className="font-medium text-amber-200 truncate">★ {leaf}</div>
+                              <div className="text-xs text-gray-400 mt-1">
+                                {item.noteCount} notes · {item.createdAt?.slice(0, 10) || ''}
+                              </div>
+                            </button>
+                            <button
+                              onClick={() => extractLibraryItem(item)}
+                              disabled={extractingId !== null || extractAllRun || !item.audioUrl}
+                              className={`mt-2 w-full text-[11px] px-2 py-1 rounded disabled:bg-gray-700 disabled:text-gray-500 ${
+                                item.noteCount === 0
+                                  ? 'bg-amber-600 hover:bg-amber-500 text-white'
+                                  : 'bg-gray-700 hover:bg-gray-600 text-gray-200'
+                              }`}
+                            >
+                              {busy
+                                ? (extractProgress ? `Extracting… ${Math.round(extractProgress.pct * 100)}%` : 'Extracting…')
+                                : item.noteCount === 0 ? 'Extract vocal line' : 'Re-extract'}
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </details>
+                );
+              })}
+            </>
           )}
         </section>
 
