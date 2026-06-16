@@ -36,6 +36,7 @@ import {
   type PitchContourPoint,
 } from './extractNotesFromAudio';
 import { usePitchDetection } from './usePitchDetection';
+import { PitchDetector } from 'pitchy';
 
 // Convert a frequency (Hz) to a MIDI note number (69 = A4 = 440 Hz).
 function freqToMidi(freq: number): number {
@@ -229,6 +230,10 @@ export default function VocalTrainerIII() {
   const vocalAnalyserRef = useRef<AnalyserNode | null>(null);
   const musicAnalyserRef = useRef<AnalyserNode | null>(null);
   const micAnalyserRef = useRef<AnalyserNode | null>(null);
+  // V3.2 — dedicated 2048-fft analysers for live pitch tracking (reference + voice).
+  // 2048 (vs the 256 meter analysers) resolves low barbershop notes (bass ~80Hz).
+  const refPitchAnalyserRef = useRef<AnalyserNode | null>(null);
+  const micPitchAnalyserRef = useRef<AnalyserNode | null>(null);
   const vocalMeterElRef = useRef<HTMLDivElement | null>(null);
   const musicMeterElRef = useRef<HTMLDivElement | null>(null);
   const micMeterElRef = useRef<HTMLDivElement | null>(null);
@@ -271,6 +276,27 @@ export default function VocalTrainerIII() {
     startListening: startPitchDetect,
     stopListening: stopPitchDetect,
   } = usePitchDetection({ noiseGateDb: -45 });
+
+  // ─── V3.2: live pitch tracking — your voice vs the REAL audio, in real time ──
+  // The reference line is detected from the PLAYING audio (not the BasicPitch
+  // transcription), so it's the true sung pitch even on un-extracted tracks.
+  // The mic pitch is detected off the monitoring stream Jon can already hear,
+  // so it doesn't depend on the (fragile) second usePitchDetection stream.
+  const refDetectorRef = useRef<PitchDetector<Float32Array<ArrayBuffer>> | null>(null);
+  const micDetectorRef = useRef<PitchDetector<Float32Array<ArrayBuffer>> | null>(null);
+  const refBufRef = useRef<Float32Array<ArrayBuffer> | null>(null);
+  const micBufRef = useRef<Float32Array<ArrayBuffer> | null>(null);
+  const refMidiRef = useRef<number | null>(null);   // live reference pitch (fractional MIDI)
+  const trackMicMidiRef = useRef<number | null>(null); // live voice pitch (fractional MIDI)
+  const refSmoothRef = useRef(0);
+  const micSmoothRef = useRef(0);
+  const [refMidi, setRefMidi] = useState<number | null>(null);
+  const [trackMicMidi, setTrackMicMidi] = useState<number | null>(null);
+  // Headphones (default) keeps echo-cancellation OFF for zero-latency dichotic
+  // monitoring; Speakers turns it ON so the reference bleed can't fake a match.
+  const [outputMode, setOutputMode] = useState<'headphones' | 'speakers'>('headphones');
+  const outputModeRef = useRef<'headphones' | 'speakers'>('headphones');
+  useEffect(() => { outputModeRef.current = outputMode; }, [outputMode]);
 
   // ───────────────────────────────────────────────────────────────────────
   // Library fetch
@@ -552,6 +578,13 @@ export default function VocalTrainerIII() {
       const pan = ctx.createStereoPanner();
       pan.pan.value = vocalPanRef.current; // V3: user-adjustable balance (default -0.7)
       gain.connect(analyser).connect(pan).connect(limiterRef.current!);
+      // V3.2: 2048-fft leaf tap off the gain node (pre-pan, pre-limiter) so the
+      // live reference-pitch read reflects the recording content regardless of
+      // L/R balance or master limiting.
+      const pitchAnalyser = ctx.createAnalyser();
+      pitchAnalyser.fftSize = 2048;
+      gain.connect(pitchAnalyser);
+      refPitchAnalyserRef.current = pitchAnalyser;
       vocalGainNodeRef.current = gain;
       vocalAnalyserRef.current = analyser;
       vocalPanNodeRef.current = pan;
@@ -843,12 +876,15 @@ export default function VocalTrainerIII() {
     if (micProfileGainNodeRef.current) { try { micProfileGainNodeRef.current.disconnect(); } catch {} micProfileGainNodeRef.current = null; }
     if (micUserGainNodeRef.current) { try { micUserGainNodeRef.current.disconnect(); } catch {} micUserGainNodeRef.current = null; }
     if (micAnalyserRef.current) { try { micAnalyserRef.current.disconnect(); } catch {} micAnalyserRef.current = null; }
+    if (micPitchAnalyserRef.current) { try { micPitchAnalyserRef.current.disconnect(); } catch {} micPitchAnalyserRef.current = null; }
     if (micPanNodeRef.current) { try { micPanNodeRef.current.disconnect(); } catch {} micPanNodeRef.current = null; }
     if (micStreamRef.current) {
       micStreamRef.current.getTracks().forEach(t => t.stop());
       micStreamRef.current = null;
     }
     stopPitchDetect();
+    trackMicMidiRef.current = null; setTrackMicMidi(null);
+    micSmoothRef.current = 0;
     setMicEnabled(false);
   }, [stopPitchDetect]);
 
@@ -859,7 +895,9 @@ export default function VocalTrainerIII() {
       const agc = MIC_PROFILES[micProfileRef.current].agc;
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: {
-          echoCancellation: false,
+          // V3.2: Headphones → AEC off (zero-latency dichotic monitoring).
+          // Speakers → AEC on so the reference bleed can't fake a perfect match.
+          echoCancellation: outputModeRef.current === 'speakers',
           noiseSuppression: agc,
           autoGainControl: agc,
         },
@@ -877,15 +915,21 @@ export default function VocalTrainerIII() {
       const pan = ctx.createStereoPanner();
       pan.pan.value = micPanRef.current; // V3: user-adjustable balance (default hard-right)
       src.connect(profileGain).connect(userGain).connect(analyser).connect(pan).connect(limiterRef.current!);
+      // V3.2: 2048-fft leaf tap off the RAW mic source for live voice-pitch
+      // detection — same stream Jon hears (so it's proven live), independent of
+      // the user volume slider, and not subject to the second-getUserMedia flakiness.
+      const micPitch = ctx.createAnalyser();
+      micPitch.fftSize = 2048;
+      src.connect(micPitch);
+      micPitchAnalyserRef.current = micPitch;
       micSourceNodeRef.current = src;
       micProfileGainNodeRef.current = profileGain;
       micUserGainNodeRef.current = userGain;
       micAnalyserRef.current = analyser;
       micPanNodeRef.current = pan;
       setMicEnabled(true);
-      // Kick off pitch detection on its own stream (AEC on) so the readout
-      // and piano-roll overlay have live data.
-      startPitchDetect();
+      // V3.2: live voice + reference pitch are read by the trackPitch RAF loop
+      // (below), off the monitoring stream — no separate pitch-detect stream.
     } catch (e) {
       setStatusMsg(`Mic access failed: ${e instanceof Error ? e.message : e}`);
     }
@@ -921,6 +965,18 @@ export default function VocalTrainerIII() {
       setTimeout(() => { startMicMonitor(); }, 50);
     }
   }, [micProfile, stopMicMonitor, startMicMonitor]);
+
+  // V3.2: restart the mic when Headphones/Speakers changes (echoCancellation is
+  // fixed at getUserMedia time, so the new constraint needs a fresh stream).
+  const prevOutputRef = useRef(outputMode);
+  useEffect(() => {
+    const prev = prevOutputRef.current;
+    prevOutputRef.current = outputMode;
+    if (prev !== outputMode && micEnabledRef.current) {
+      stopMicMonitor();
+      setTimeout(() => { startMicMonitor(); }, 60);
+    }
+  }, [outputMode, stopMicMonitor, startMicMonitor]);
 
   // V3: release the mic when the page is hidden/left. A held mic stream keeps
   // Android Bluetooth in SCO call-mode and breaks ALL phone audio until reboot.
@@ -1055,11 +1111,62 @@ export default function VocalTrainerIII() {
     ) ?? null;
   }, [extractedNotes, practiceTime]);
 
-  // Live pitch as a MIDI number — used for the piano-roll marker.
-  const liveMidi = useMemo(() => {
-    if (!livePitch?.isActive || livePitch.frequency <= 0) return null;
-    return freqToMidi(livePitch.frequency);
-  }, [livePitch]);
+  // ─── V3.2: live pitch tracking loop — reference (playback) + voice (mic) ──
+  // Reads both 2048-fft analysers each frame, runs pitchy, noise-gates +
+  // EMA-smooths + octave-snaps, and writes fractional MIDI to refs (for the
+  // lock tick) and throttled state (for the render).
+  useEffect(() => {
+    const active = playbackState === 'playing' || micEnabled;
+    if (!active) {
+      refMidiRef.current = null; setRefMidi(null);
+      trackMicMidiRef.current = null; setTrackMicMidi(null);
+      refSmoothRef.current = 0; micSmoothRef.current = 0;
+      return;
+    }
+    const SIZE = 2048;
+    if (!refDetectorRef.current) refDetectorRef.current = PitchDetector.forFloat32Array(SIZE);
+    if (!micDetectorRef.current) micDetectorRef.current = PitchDetector.forFloat32Array(SIZE);
+    if (!refBufRef.current) refBufRef.current = new Float32Array(SIZE);
+    if (!micBufRef.current) micBufRef.current = new Float32Array(SIZE);
+
+    const detectOne = (
+      analyser: AnalyserNode | null,
+      detector: PitchDetector<Float32Array<ArrayBuffer>>,
+      buf: Float32Array<ArrayBuffer>,
+      smoothRef: { current: number },
+    ): number | null => {
+      if (!analyser) return null;
+      analyser.getFloatTimeDomainData(buf);
+      let s = 0; for (let i = 0; i < buf.length; i++) s += buf[i] * buf[i];
+      const db = 20 * Math.log10(Math.sqrt(s / buf.length) + 1e-10);
+      if (db < -55) { smoothRef.current = 0; return null; }   // noise gate
+      const sr = audioCtxRef.current ? audioCtxRef.current.sampleRate : 48000;
+      const [hz, clarity] = detector.findPitch(buf, sr);
+      if (clarity < 0.8 || hz < 70 || hz > 1100) return null; // vocal range guard
+      const midi = 69 + 12 * Math.log2(hz / 440);
+      const prev = smoothRef.current;
+      // EMA smooth, but SNAP on an octave-ish jump (don't lerp across a big leap)
+      smoothRef.current = (prev && Math.abs(midi - prev) <= 7) ? 0.5 * midi + 0.5 * prev : midi;
+      return smoothRef.current;
+    };
+
+    let raf = 0; let frame = 0;
+    const loop = () => {
+      const r = detectOne(refPitchAnalyserRef.current, refDetectorRef.current!, refBufRef.current!, refSmoothRef);
+      const m = detectOne(micPitchAnalyserRef.current, micDetectorRef.current!, micBufRef.current!, micSmoothRef);
+      refMidiRef.current = r;
+      trackMicMidiRef.current = m;
+      if (frame++ % 3 === 0) { setRefMidi(r); setTrackMicMidi(m); } // ~20fps state
+      raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(raf);
+  }, [playbackState, micEnabled]);
+
+  // Live VOICE pitch as a MIDI number — drives the piano-roll marker + slider.
+  // V3.2: sourced from the monitoring-stream detector (trackMicMidi), not the
+  // old second-stream usePitchDetection, so it works wherever Jon hears himself.
+  const liveMidi = trackMicMidi;
 
   // Keep a ref to the current target so the lock-tick loop reads the latest
   // value without re-subscribing on every target change.
@@ -1082,62 +1189,41 @@ export default function VocalTrainerIII() {
       return;
     }
     let raf = 0;
-    let lastTarget: RawNote | null = null;
+    let lastTargetKey = '';
     const HOLD_MS = 300;
-    const CONFIDENCE_FLOOR = 0.75;
     const TOLERANCE_CENTS = 70;
 
     const tick = () => {
-      const tgt = currentTargetRef.current;
-      const p = livePitchRef.current;
-
-      if (tgt) {
-        // ── Mode A: lock-to-target ──
-        if (lastTarget !== tgt) {
+      // V3.2: target = the extracted note if one exists, ELSE the live reference
+      // pitch detected from the playing audio. So un-extracted tracks still get a
+      // real, moving target to lock onto — your voice vs the actual recording.
+      const tgtNote = currentTargetRef.current;
+      const targetMidi = tgtNote ? tgtNote.pitchMidi : refMidiRef.current;
+      const micMidi = trackMicMidiRef.current;
+      const key = tgtNote ? `n${tgtNote.startTimeSeconds}` : 'ref';
+      if (key !== lastTargetKey) {
+        // Reset on a new EXTRACTED note boundary only (not on every ref wiggle).
+        if (tgtNote) { matchStartRef.current = 0; setMatchProgress(0); }
+        lastTargetKey = key;
+      }
+      if (targetMidi != null && micMidi != null) {
+        const rawCents = (micMidi - targetMidi) * 100;
+        const folded = ((rawCents + 600) % 1200 + 1200) % 1200 - 600;
+        if (Math.abs(folded) <= TOLERANCE_CENTS) {
+          if (matchStartRef.current === 0) matchStartRef.current = performance.now();
+          const held = performance.now() - matchStartRef.current;
+          setMatchProgress(Math.min(1, held / HOLD_MS));
+        } else if (matchStartRef.current > 0) {
           matchStartRef.current = 0;
           setMatchProgress(0);
-          lastTarget = tgt;
-        }
-        if (p?.isActive && p.confidence >= CONFIDENCE_FLOOR && p.frequency > 0) {
-          const targetFreq = 440 * Math.pow(2, (tgt.pitchMidi - 69) / 12);
-          const rawCents = 1200 * Math.log2(p.frequency / targetFreq);
-          const folded = ((rawCents + 600) % 1200 + 1200) % 1200 - 600;
-          if (Math.abs(folded) <= TOLERANCE_CENTS) {
-            if (matchStartRef.current === 0) matchStartRef.current = performance.now();
-            if (matchStartRef.current > 0) {
-              const held = performance.now() - matchStartRef.current;
-              setMatchProgress(Math.min(1, held / HOLD_MS));
-            }
-          } else {
-            if (matchStartRef.current > 0) {
-              matchStartRef.current = 0;
-              setMatchProgress(0);
-            }
-          }
-        }
-        // silence → preserve lock
-      } else {
-        // ── Mode B: no target — show pitch stability ──
-        lastTarget = null;
-        if (p?.isActive && p.confidence >= CONFIDENCE_FLOOR && p.frequency > 0) {
-          if (matchStartRef.current === 0) matchStartRef.current = performance.now();
-          if (matchStartRef.current > 0) {
-            const held = performance.now() - matchStartRef.current;
-            setMatchProgress(Math.min(1, held / HOLD_MS));
-          }
-        } else {
-          // No pitch → reset (in targetless mode, silence = reset is correct)
-          if (matchStartRef.current > 0) {
-            matchStartRef.current = 0;
-            setMatchProgress(0);
-          }
         }
       }
+      // both-null (silence on either side) → preserve current lock
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [playbackState, livePitchRef]);
+  }, [playbackState]);
 
   // ── Auto-scroll the piano-roll so the playhead stays visible ──
   useEffect(() => {
@@ -1537,15 +1623,34 @@ export default function VocalTrainerIII() {
                     }).join(' ')}
                   />
                 )}
-                {/* Live detected pitch — cyan dot + trailing polyline showing
-                    where YOUR voice is compared to the recording's contour. */}
-                {liveMidi !== null && liveMidi >= PITCH_MIN && liveMidi <= PITCH_MAX && (() => {
-                  const y = (PITCH_MAX - liveMidi) * editorRowHeight + editorRowHeight / 2;
+                {/* V3.2: live REFERENCE pitch (detected from the playing audio) +
+                    YOUR voice. White bar = the real pitch right now; cyan dot =
+                    you; the connector shows how far above/below you are. Above the
+                    bar = singing too high, below = too low. */}
+                {(() => {
                   const cx = playbackState !== 'idle' ? practiceTime * zoom : 0;
+                  const yOf = (m: number) => (PITCH_MAX - m) * editorRowHeight + editorRowHeight / 2;
+                  const refOk = refMidi !== null && refMidi >= PITCH_MIN && refMidi <= PITCH_MAX;
+                  const micOk = liveMidi !== null && liveMidi >= PITCH_MIN && liveMidi <= PITCH_MAX;
+                  const refY = refOk ? yOf(refMidi as number) : null;
+                  const micY = micOk ? yOf(liveMidi as number) : null;
+                  const onPitch = refOk && micOk && Math.abs((refMidi as number) - (liveMidi as number)) <= 0.7;
                   return (
                     <g pointerEvents="none">
-                      <circle cx={cx} cy={y} r={5}
-                        fill="#22d3ee" stroke="#0f172a" strokeWidth={1} />
+                      {refY !== null && micY !== null && (
+                        <line x1={cx} y1={refY} x2={cx} y2={micY}
+                          stroke={onPitch ? '#4ade80' : '#fbbf24'} strokeWidth={2} opacity={0.85} />
+                      )}
+                      {refY !== null && (
+                        <line x1={cx - 16} y1={refY} x2={cx + 16} y2={refY}
+                          stroke="#f8fafc" strokeWidth={3} strokeLinecap="round"
+                          style={{ filter: 'drop-shadow(0 0 4px #f8fafc)' }} />
+                      )}
+                      {micY !== null && (
+                        <circle cx={cx} cy={micY} r={6}
+                          fill={onPitch ? '#4ade80' : '#22d3ee'} stroke="#0f172a" strokeWidth={1.5}
+                          style={{ filter: onPitch ? 'drop-shadow(0 0 6px #4ade80)' : 'drop-shadow(0 0 4px #22d3ee)' }} />
+                      )}
                     </g>
                   );
                 })()}
@@ -1656,38 +1761,39 @@ export default function VocalTrainerIII() {
             </div>
           )}
 
-          {/* Pitchforks v1 slider bar — THE canonical mic feedback meter.
-              Gated to matchProgress > 0: only visible while singing on-pitch.
-              Yellow under 80%, green at/above. Resets on target note change. */}
-          <div className="mb-3 h-6 flex items-center justify-center">
-            {matchProgress > 0 ? (
-              <div
-                style={{
-                  width: 160,
-                  height: 6,
-                  background: 'rgba(10,10,20,0.6)',
-                  border: '1px solid rgba(60,60,90,0.6)',
-                  borderRadius: 3,
-                  overflow: 'hidden',
-                }}
-              >
+          {/* Pitchforks v1 slider — THE canonical mic feedback meter.
+              V3.2: visible whenever the mic is LIVE (was: only while on-pitch),
+              so Jon always sees the meter respond. Fill = lock hold; green ≥80%.
+              The "too high / too low" read lives on the piano roll (your dot vs
+              the white reference bar) — position only, no numbers/arrows. */}
+          <div className="mb-3 h-6 flex items-center justify-center gap-2">
+            {micEnabled ? (
+              <>
+                <span className="text-[11px]" title="Mic is live">🎤</span>
                 <div
                   style={{
-                    width: `${matchProgress * 100}%`,
-                    height: '100%',
-                    background: matchProgress >= 0.8 ? '#4ade80' : '#fbbf24',
-                    boxShadow: matchProgress >= 0.8
-                      ? '0 0 10px #4ade80, 0 0 20px #4ade8060'
-                      : '0 0 8px #fbbf2460',
-                    transition: 'width 0.05s linear',
+                    width: 200, height: 6,
+                    background: 'rgba(10,10,20,0.6)',
+                    border: '1px solid rgba(60,60,90,0.6)',
+                    borderRadius: 3, overflow: 'hidden',
                   }}
-                />
-              </div>
+                >
+                  <div
+                    style={{
+                      width: `${matchProgress * 100}%`,
+                      height: '100%',
+                      background: matchProgress >= 0.8 ? '#4ade80' : '#fbbf24',
+                      boxShadow: matchProgress >= 0.8
+                        ? '0 0 10px #4ade80, 0 0 20px #4ade8060'
+                        : '0 0 8px #fbbf2460',
+                      transition: 'width 0.05s linear',
+                    }}
+                  />
+                </div>
+              </>
             ) : (
               <span className="text-[10px] text-gray-600 uppercase tracking-wider">
-                {playbackState === 'playing'
-                  ? (micEnabled ? 'Sing to lock the target note' : 'Start mic monitor →')
-                  : 'Press play to begin'}
+                {playbackState === 'playing' ? 'Start mic monitor →' : 'Start mic monitor, then press play'}
               </span>
             )}
           </div>
@@ -1768,6 +1874,28 @@ export default function VocalTrainerIII() {
                 />
               </div>
             ))}
+          </div>
+
+          {/* V3.2: Output mode — Headphones keeps dichotic L/R + lowest latency;
+              Speakers turns on echo-cancellation so the track can't fake a match. */}
+          <div className="mb-2 flex flex-wrap items-center gap-2 text-xs text-gray-400">
+            <span>Output</span>
+            <div className="inline-flex rounded border border-gray-700 overflow-hidden">
+              {(['headphones', 'speakers'] as const).map((mode) => (
+                <button
+                  key={mode}
+                  onClick={() => setOutputMode(mode)}
+                  className={`px-3 py-1 ${outputMode === mode ? 'bg-cyan-600 text-white' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}`}
+                >
+                  {mode === 'headphones' ? '🎧 Headphones' : '🔊 Speakers'}
+                </button>
+              ))}
+            </div>
+            <span className="text-[10px] text-gray-600">
+              {outputMode === 'headphones'
+                ? 'dichotic L/R · lowest latency (best for practice)'
+                : 'echo-cancel ON so the track can’t fake a match'}
+            </span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
