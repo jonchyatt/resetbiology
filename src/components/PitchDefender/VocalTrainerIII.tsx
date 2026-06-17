@@ -290,6 +290,11 @@ export default function VocalTrainerIII() {
   const trackMicMidiRef = useRef<number | null>(null); // live voice pitch (fractional MIDI)
   const refSmoothRef = useRef(0);
   const micSmoothRef = useRef(0);
+  // V3.3: hold-last-value timestamps (bridge <150ms mic dropouts so the trace
+  // doesn't snap to nothing) + the SimplySing-style glowing voice trail buffer.
+  const refLastMsRef = useRef(0);
+  const micLastMsRef = useRef(0);
+  const micTrailRef = useRef<{ t: number; midi: number; on: boolean }[]>([]);
   const [refMidi, setRefMidi] = useState<number | null>(null);
   const [trackMicMidi, setTrackMicMidi] = useState<number | null>(null);
   // Headphones (default) keeps echo-cancellation OFF for zero-latency dichotic
@@ -1121,6 +1126,8 @@ export default function VocalTrainerIII() {
       refMidiRef.current = null; setRefMidi(null);
       trackMicMidiRef.current = null; setTrackMicMidi(null);
       refSmoothRef.current = 0; micSmoothRef.current = 0;
+      refLastMsRef.current = 0; micLastMsRef.current = 0;
+      micTrailRef.current = [];
       return;
     }
     const SIZE = 2048;
@@ -1134,28 +1141,45 @@ export default function VocalTrainerIII() {
       detector: PitchDetector<Float32Array<ArrayBuffer>>,
       buf: Float32Array<ArrayBuffer>,
       smoothRef: { current: number },
+      lastMsRef: { current: number },
+      nowMs: number,
     ): number | null => {
       if (!analyser) return null;
       analyser.getFloatTimeDomainData(buf);
       let s = 0; for (let i = 0; i < buf.length; i++) s += buf[i] * buf[i];
       const db = 20 * Math.log10(Math.sqrt(s / buf.length) + 1e-10);
-      if (db < -55) { smoothRef.current = 0; return null; }   // noise gate
-      const sr = audioCtxRef.current ? audioCtxRef.current.sampleRate : 48000;
-      const [hz, clarity] = detector.findPitch(buf, sr);
-      if (clarity < 0.8 || hz < 70 || hz > 1100) return null; // vocal range guard
-      const midi = 69 + 12 * Math.log2(hz / 440);
-      const prev = smoothRef.current;
-      // EMA smooth, but SNAP on an octave-ish jump (don't lerp across a big leap)
-      smoothRef.current = (prev && Math.abs(midi - prev) <= 7) ? 0.5 * midi + 0.5 * prev : midi;
-      return smoothRef.current;
+      if (db >= -55) {                                          // above noise floor
+        const sr = audioCtxRef.current ? audioCtxRef.current.sampleRate : 48000;
+        const [hz, clarity] = detector.findPitch(buf, sr);
+        if (clarity >= 0.8 && hz >= 70 && hz <= 1100) {         // confident vocal pitch
+          const midi = 69 + 12 * Math.log2(hz / 440);
+          const prev = smoothRef.current;
+          // EMA smooth, but SNAP on an octave-ish jump (don't lerp across a leap)
+          smoothRef.current = (prev && Math.abs(midi - prev) <= 7) ? 0.5 * midi + 0.5 * prev : midi;
+          lastMsRef.current = nowMs;
+          return smoothRef.current;
+        }
+      }
+      // V3.3: dropout (silence or low clarity) — HOLD the last good value for up
+      // to 150ms instead of snapping to null. THIS is what kills the jumpiness.
+      if (lastMsRef.current && (nowMs - lastMsRef.current) < 150 && smoothRef.current) {
+        return smoothRef.current;
+      }
+      smoothRef.current = 0;
+      return null;
     };
 
     let raf = 0; let frame = 0;
     const loop = () => {
-      const r = detectOne(refPitchAnalyserRef.current, refDetectorRef.current!, refBufRef.current!, refSmoothRef);
-      const m = detectOne(micPitchAnalyserRef.current, micDetectorRef.current!, micBufRef.current!, micSmoothRef);
+      const nowMs = performance.now();
+      const r = detectOne(refPitchAnalyserRef.current, refDetectorRef.current!, refBufRef.current!, refSmoothRef, refLastMsRef, nowMs);
+      const m = detectOne(micPitchAnalyserRef.current, micDetectorRef.current!, micBufRef.current!, micSmoothRef, micLastMsRef, nowMs);
       refMidiRef.current = r;
       trackMicMidiRef.current = m;
+      // V3.3: accumulate the voice trail (glowing tail, ~1.2s) for the render.
+      const trail = micTrailRef.current;
+      if (m != null) trail.push({ t: nowMs, midi: m, on: r != null && Math.abs(m - r) <= 0.7 });
+      while (trail.length && nowMs - trail[0].t > 1200) trail.shift();
       if (frame++ % 3 === 0) { setRefMidi(r); setTrackMicMidi(m); } // ~20fps state
       raf = requestAnimationFrame(loop);
     };
@@ -1635,8 +1659,25 @@ export default function VocalTrainerIII() {
                   const refY = refOk ? yOf(refMidi as number) : null;
                   const micY = micOk ? yOf(liveMidi as number) : null;
                   const onPitch = refOk && micOk && Math.abs((refMidi as number) - (liveMidi as number)) <= 0.7;
+                  // V3.3: glowing voice trail — the last ~1.2s of your pitch as a
+                  // smooth tail behind the head, timeline-aligned with the contour.
+                  const nowMs = (typeof performance !== 'undefined') ? performance.now() : 0;
+                  const trailPts = micTrailRef.current
+                    .map((p) => {
+                      const x = cx - zoom * ((nowMs - p.t) / 1000);
+                      if (x < 0 || p.midi < PITCH_MIN || p.midi > PITCH_MAX) return null;
+                      return `${x.toFixed(1)},${yOf(p.midi).toFixed(1)}`;
+                    })
+                    .filter(Boolean)
+                    .join(' ');
                   return (
                     <g pointerEvents="none">
+                      {trailPts && (
+                        <polyline points={trailPts} fill="none"
+                          stroke={onPitch ? '#4ade80' : '#22d3ee'} strokeWidth={3}
+                          strokeLinecap="round" strokeLinejoin="round" opacity={0.85}
+                          style={{ filter: onPitch ? 'drop-shadow(0 0 6px #4ade80)' : 'drop-shadow(0 0 5px #22d3ee)' }} />
+                      )}
                       {refY !== null && micY !== null && (
                         <line x1={cx} y1={refY} x2={cx} y2={micY}
                           stroke={onPitch ? '#4ade80' : '#fbbf24'} strokeWidth={2} opacity={0.85} />
