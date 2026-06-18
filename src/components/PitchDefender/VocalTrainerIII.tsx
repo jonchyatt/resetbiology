@@ -37,6 +37,7 @@ import {
 } from './extractNotesFromAudio';
 import { usePitchDetection } from './usePitchDetection';
 import { PitchDetector } from 'pitchy';
+import ScoreViewer from './ScoreViewer';
 
 // Convert a frequency (Hz) to a MIDI note number (69 = A4 = 440 Hz).
 function freqToMidi(freq: number): number {
@@ -1307,6 +1308,9 @@ export default function VocalTrainerIII() {
             Tip: if a slider seems to do nothing, look at its meter. Meter moving = audio flowing (your headphone/system volume may be the bottleneck). Meter flat = that channel has nothing loaded or the mic isn&rsquo;t on.
           </p>
         </details>
+
+        {/* ─── Sheet Music (real score, follow along) ─────────────────── */}
+        <ScoreViewer />
 
         {/* ─── Library ───────────────────────────────────────────────── */}
         <section className="bg-gray-900/60 border border-amber-500/20 rounded-lg p-4">
