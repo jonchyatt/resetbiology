@@ -86,7 +86,7 @@ export default function ScoreViewer() {
           src={`/score/page-${pad(page)}.jpg`}
           alt={`Music Man score — page ${page}`}
           style={{ width: zoom ? 'auto' : '100%', maxWidth: zoom ? 'none' : '100%', display: 'block', margin: '0 auto' }}
-          loading="lazy"
+          key={page}
         />
       </div>
       <p className="text-[10px] text-gray-600 mt-1">
