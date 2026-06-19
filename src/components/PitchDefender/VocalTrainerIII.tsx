@@ -1475,12 +1475,15 @@ export default function VocalTrainerIII() {
                   <span className="text-xs">(m4a, mp3, wav, ogg)</span>
                 </div>
               )}
-              <input
-                type="file"
-                accept="audio/*,.m4a,.mp3,.wav,.ogg"
-                onChange={(e) => e.target.files?.[0] && handleFileChosen(e.target.files[0])}
-                className="mt-3 text-xs text-gray-400 file:mr-2 file:py-1 file:px-3 file:rounded file:border-0 file:bg-amber-600 file:text-white hover:file:bg-amber-500"
-              />
+              <label className="mt-3 inline-block cursor-pointer text-xs font-medium px-3 py-1.5 rounded bg-amber-600 hover:bg-amber-500 text-white transition focus-within:ring-2 focus-within:ring-amber-400/60">
+                {uploadFile ? 'Choose a different file' : 'Choose vocal file'}
+                <input
+                  type="file"
+                  accept="audio/*,.m4a,.mp3,.wav,.ogg"
+                  onChange={(e) => e.target.files?.[0] && handleFileChosen(e.target.files[0])}
+                  className="sr-only"
+                />
+              </label>
             </div>
 
             {/* Music stem (optional third channel) */}
@@ -1510,15 +1513,18 @@ export default function VocalTrainerIII() {
                   <span className="text-xs">Optional — plays alongside vocals</span>
                 </div>
               )}
-              <input
-                type="file"
-                accept="audio/*,.m4a,.mp3,.wav,.ogg"
-                onChange={(e) => {
-                  const f = e.target.files?.[0];
-                  if (f) { setMusicFile(f); loadMusicFile(f); }
-                }}
-                className="mt-3 text-xs text-gray-400 file:mr-2 file:py-1 file:px-3 file:rounded file:border-0 file:bg-purple-600 file:text-white hover:file:bg-purple-500"
-              />
+              <label className="mt-3 inline-block cursor-pointer text-xs font-medium px-3 py-1.5 rounded bg-purple-600 hover:bg-purple-500 text-white transition focus-within:ring-2 focus-within:ring-purple-400/60">
+                {(musicFile || musicFileName) ? 'Choose a different file' : 'Choose music file'}
+                <input
+                  type="file"
+                  accept="audio/*,.m4a,.mp3,.wav,.ogg"
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (f) { setMusicFile(f); loadMusicFile(f); }
+                  }}
+                  className="sr-only"
+                />
+              </label>
             </div>
           </div>
 
