@@ -164,6 +164,14 @@ export default function VocalTrainerIII() {
     }));
   }, [library, groupBy, libFilter]);
 
+  // Default-collapse all library groups except the first, so the page opens compact (V3.4 QA).
+  const didInitCollapse = useRef(false);
+  useEffect(() => {
+    if (didInitCollapse.current || libraryGroups.length === 0) return;
+    didInitCollapse.current = true;
+    if (libraryGroups.length > 1) setCollapsed(new Set(libraryGroups.slice(1).map((g) => g.key)));
+  }, [libraryGroups]);
+
   // ─── Editor state ───────────────────────────────────────────────────────
   const [zoom, setZoom] = useState(80); // px per second
 
@@ -1265,6 +1273,8 @@ export default function VocalTrainerIII() {
   // ───────────────────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-[#08080f] text-gray-100 p-6">
+      {/* Full-viewport dark backdrop — kills the white strip above the global-nav offset (V3.4 QA) */}
+      <div aria-hidden className="fixed inset-0 -z-10 bg-[#08080f] pointer-events-none" />
       <div className="max-w-6xl mx-auto space-y-6">
         <header className="flex items-center justify-between">
           <div>
@@ -1277,9 +1287,9 @@ export default function VocalTrainerIII() {
         </header>
 
         {/* ─── How to use (step-by-step for practice sessions) ─────────── */}
-        <details className="bg-gray-900/60 border border-cyan-500/30 rounded-lg p-4 open:pb-5" open>
+        <details className="bg-gray-900/60 border border-cyan-500/30 rounded-lg p-4 open:pb-5">
           <summary className="text-lg font-semibold text-cyan-300 cursor-pointer select-none">
-            🎵 How to practice your part (step by step)
+            🎵 How to practice your part <span className="text-sm font-normal text-gray-400">— tap for the 7-step guide · WIRED headphones required</span>
           </summary>
           <ol className="mt-3 space-y-2 text-sm text-gray-300 list-decimal list-inside">
             <li>
@@ -1394,30 +1404,36 @@ export default function VocalTrainerIII() {
                         return (
                           <div
                             key={item.id}
-                            className={`p-3 rounded border transition ${
+                            role="button"
+                            tabIndex={0}
+                            onClick={() => setSelectedId(item.id)}
+                            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedId(item.id); } }}
+                            className={`group relative p-3 rounded-lg border cursor-pointer transition outline-none focus-visible:ring-2 focus-visible:ring-amber-400/60 ${
                               selectedId === item.id
-                                ? 'border-amber-400 bg-amber-500/10'
-                                : 'border-gray-700 bg-gray-800/40 hover:bg-gray-800'
+                                ? 'border-amber-400 bg-amber-500/10 ring-1 ring-amber-400/40'
+                                : 'border-gray-700/70 bg-gray-800/40 hover:bg-gray-800 hover:border-gray-600'
                             }`}
                           >
-                            <button onClick={() => setSelectedId(item.id)} className="block w-full text-left">
-                              <div className="font-medium text-amber-200 truncate">★ {leaf}</div>
-                              <div className="text-xs text-gray-400 mt-1">
-                                {item.noteCount} notes · {item.createdAt?.slice(0, 10) || ''}
-                              </div>
-                            </button>
+                            <div className="font-medium text-gray-100 truncate pr-14">
+                              <span className="text-amber-500/70">★</span> {leaf}
+                            </div>
+                            <div className="text-xs mt-1 flex items-center gap-2">
+                              {item.noteCount > 0
+                                ? <span className="text-emerald-400">● {item.noteCount} notes</span>
+                                : <span className="text-gray-600">no melody yet</span>}
+                              <span className="text-gray-600">{item.createdAt?.slice(0, 10) || ''}</span>
+                            </div>
+                            {selectedId === item.id && (
+                              <span className="absolute top-2.5 right-2.5 text-[10px] font-semibold text-amber-300">✓ loaded</span>
+                            )}
                             <button
-                              onClick={() => extractLibraryItem(item)}
+                              onClick={(e) => { e.stopPropagation(); extractLibraryItem(item); }}
                               disabled={extractingId !== null || extractAllRun || !item.audioUrl}
-                              className={`mt-2 w-full text-[11px] px-2 py-1 rounded disabled:bg-gray-700 disabled:text-gray-500 ${
-                                item.noteCount === 0
-                                  ? 'bg-amber-600 hover:bg-amber-500 text-white'
-                                  : 'bg-gray-700 hover:bg-gray-600 text-gray-200'
-                              }`}
+                              className="mt-2 text-[10px] px-2 py-0.5 rounded border border-gray-700 text-gray-400 hover:text-amber-300 hover:border-amber-500/40 disabled:opacity-40 transition opacity-60 group-hover:opacity-100"
                             >
                               {busy
-                                ? (extractProgress ? `Extracting… ${Math.round(extractProgress.pct * 100)}%` : 'Extracting…')
-                                : item.noteCount === 0 ? 'Extract vocal line' : 'Re-extract'}
+                                ? (extractProgress ? `extracting… ${Math.round(extractProgress.pct * 100)}%` : 'extracting…')
+                                : item.noteCount === 0 ? '⚙ extract vocal line' : '⚙ re-extract'}
                             </button>
                           </div>
                         );
