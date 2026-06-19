@@ -164,12 +164,13 @@ export default function VocalTrainerIII() {
     }));
   }, [library, groupBy, libFilter]);
 
-  // Default-collapse all library groups except the first, so the page opens compact (V3.4 QA).
+  // Default-collapse ALL library groups so the page opens compact with every voice-part header
+  // visible at once (Jon directive); user taps their part to expand (V3.4.3 QA).
   const didInitCollapse = useRef(false);
   useEffect(() => {
     if (didInitCollapse.current || libraryGroups.length === 0) return;
     didInitCollapse.current = true;
-    if (libraryGroups.length > 1) setCollapsed(new Set(libraryGroups.slice(1).map((g) => g.key)));
+    if (libraryGroups.length > 1) setCollapsed(new Set(libraryGroups.map((g) => g.key)));
   }, [libraryGroups]);
 
   // ─── Editor state ───────────────────────────────────────────────────────
