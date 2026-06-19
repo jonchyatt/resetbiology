@@ -1272,8 +1272,9 @@ export default function VocalTrainerIII() {
   // Render
   // ───────────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-[#08080f] text-gray-100 p-6">
-      {/* Full-viewport dark backdrop — kills the white strip above the global-nav offset (V3.4 QA) */}
+    <div className="relative isolate min-h-screen bg-[#08080f] text-gray-100 p-6">
+      {/* Full-viewport dark backdrop — kills the white strip above the global-nav offset (V3.4 QA).
+          Root is `relative isolate` so this -z-10 layer stays scoped to this stacking context. */}
       <div aria-hidden className="fixed inset-0 -z-10 bg-[#08080f] pointer-events-none" />
       <div className="max-w-6xl mx-auto space-y-6">
         <header className="flex items-center justify-between">
@@ -1404,37 +1405,43 @@ export default function VocalTrainerIII() {
                         return (
                           <div
                             key={item.id}
-                            role="button"
-                            tabIndex={0}
-                            onClick={() => setSelectedId(item.id)}
-                            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedId(item.id); } }}
-                            className={`group relative p-3 rounded-lg border cursor-pointer transition outline-none focus-visible:ring-2 focus-visible:ring-amber-400/60 ${
+                            className={`group relative rounded-lg border transition ${
                               selectedId === item.id
                                 ? 'border-amber-400 bg-amber-500/10 ring-1 ring-amber-400/40'
-                                : 'border-gray-700/70 bg-gray-800/40 hover:bg-gray-800 hover:border-gray-600'
+                                : 'border-gray-700/70 bg-gray-800/40 hover:border-gray-600'
                             }`}
                           >
-                            <div className="font-medium text-gray-100 truncate pr-14">
-                              <span className="text-amber-500/70">★</span> {leaf}
-                            </div>
-                            <div className="text-xs mt-1 flex items-center gap-2">
-                              {item.noteCount > 0
-                                ? <span className="text-emerald-400">● {item.noteCount} notes</span>
-                                : <span className="text-gray-600">no melody yet</span>}
-                              <span className="text-gray-600">{item.createdAt?.slice(0, 10) || ''}</span>
-                            </div>
-                            {selectedId === item.id && (
-                              <span className="absolute top-2.5 right-2.5 text-[10px] font-semibold text-amber-300">✓ loaded</span>
-                            )}
                             <button
-                              onClick={(e) => { e.stopPropagation(); extractLibraryItem(item); }}
-                              disabled={extractingId !== null || extractAllRun || !item.audioUrl}
-                              className="mt-2 text-[10px] px-2 py-0.5 rounded border border-gray-700 text-gray-400 hover:text-amber-300 hover:border-amber-500/40 disabled:opacity-40 transition opacity-60 group-hover:opacity-100"
+                              type="button"
+                              onClick={() => setSelectedId(item.id)}
+                              aria-pressed={selectedId === item.id}
+                              className="block w-full text-left px-3 pt-3 pb-1 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-amber-400/70 hover:bg-white/[0.02]"
                             >
-                              {busy
-                                ? (extractProgress ? `extracting… ${Math.round(extractProgress.pct * 100)}%` : 'extracting…')
-                                : item.noteCount === 0 ? '⚙ extract vocal line' : '⚙ re-extract'}
+                              <div className="font-medium text-gray-100 truncate pr-14">
+                                <span className="text-amber-500/70">★</span> {leaf}
+                              </div>
+                              <div className="text-xs mt-1 flex items-center gap-2">
+                                {item.noteCount > 0
+                                  ? <span className="text-emerald-400">● {item.noteCount} notes</span>
+                                  : <span className="text-gray-600">no melody yet</span>}
+                                <span className="text-gray-600">{item.createdAt?.slice(0, 10) || ''}</span>
+                              </div>
                             </button>
+                            {selectedId === item.id && (
+                              <span className="absolute top-2.5 right-2.5 text-[10px] font-semibold text-amber-300 pointer-events-none">✓ loaded</span>
+                            )}
+                            <div className="px-3 pb-3">
+                              <button
+                                type="button"
+                                onClick={() => extractLibraryItem(item)}
+                                disabled={extractingId !== null || extractAllRun || !item.audioUrl}
+                                className="text-[10px] px-2 py-0.5 rounded border border-gray-700 text-gray-400 hover:text-amber-300 hover:border-amber-500/40 disabled:opacity-40 transition opacity-60 group-hover:opacity-100 outline-none focus-visible:ring-2 focus-visible:ring-amber-400/60"
+                              >
+                                {busy
+                                  ? (extractProgress ? `extracting… ${Math.round(extractProgress.pct * 100)}%` : 'extracting…')
+                                  : item.noteCount === 0 ? '⚙ extract vocal line' : '⚙ re-extract'}
+                              </button>
+                            </div>
                           </div>
                         );
                       })}
