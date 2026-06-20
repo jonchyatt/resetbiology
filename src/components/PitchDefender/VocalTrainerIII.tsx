@@ -38,6 +38,7 @@ import {
 import { usePitchDetection } from './usePitchDetection';
 import { PitchDetector } from 'pitchy';
 import ScoreViewer from './ScoreViewer';
+import { getOmrTarget } from './omrTargets';
 
 // Convert a frequency (Hz) to a MIDI note number (69 = A4 = 440 Hz).
 function freqToMidi(freq: number): number {
@@ -1112,7 +1113,17 @@ export default function VocalTrainerIII() {
     setExtractedNotes(prev => prev.filter((_, i) => i !== idx));
   }, []);
 
-  const editorWidth = useMemo(() => Math.max(800, extractedDuration * zoom), [extractedDuration, zoom]);
+  // OMR score-target lane (Phase 1): the REAL notated notes of the loaded part,
+  // recognized off the sheet music (Audiveris). Gated by song+part from the title.
+  const omrTarget = useMemo(() => {
+    const mm = currentTemplate ? parseMmTitle(currentTemplate.title) : null;
+    return mm ? getOmrTarget(mm.song, mm.part) : null;
+  }, [currentTemplate]);
+  const omrSpan = useMemo(
+    () => (omrTarget ? omrTarget.notes.reduce((mx, n) => Math.max(mx, n.startTimeSeconds + n.durationSeconds), 0) : 0),
+    [omrTarget],
+  );
+  const editorWidth = useMemo(() => Math.max(800, Math.max(extractedDuration, omrSpan) * zoom), [extractedDuration, omrSpan, zoom]);
   const editorRowHeight = 6; // px per semitone
   const editorHeight = (PITCH_MAX - PITCH_MIN + 1) * editorRowHeight;
 
@@ -1603,11 +1614,13 @@ export default function VocalTrainerIII() {
         </section>
 
         {/* ─── Editor (piano-roll) ───────────────────────────────────── */}
-        {extractedNotes.length > 0 && (
+        {(extractedNotes.length > 0 || omrTarget) && (
           <section className="bg-gray-900/60 border border-amber-500/20 rounded-lg p-4">
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-lg font-semibold text-amber-300">Note Editor — click any note to delete</h2>
-              <div className="flex items-center gap-2 text-xs text-gray-400">
+            <div className="flex items-center justify-between mb-3 gap-2">
+              <h2 className="text-lg font-semibold text-amber-300">
+                Note Editor{extractedNotes.length > 0 ? ' — click any note to delete' : ''}
+              </h2>
+              <div className="flex items-center flex-wrap gap-2 text-xs text-gray-400">
                 <span>Zoom</span>
                 <input
                   type="range" min={20} max={300} value={zoom}
@@ -1615,6 +1628,12 @@ export default function VocalTrainerIII() {
                   className="w-32"
                 />
                 <span>{extractedNotes.length} notes</span>
+                {omrTarget && (
+                  <span className="flex items-center gap-1 text-fuchsia-300" title={`Real notated ${omrTarget.part} notes read off the sheet music (OMR)`}>
+                    <span className="inline-block w-3 h-2 rounded-[1px] border border-dashed border-fuchsia-400" />
+                    Score target · {omrTarget.part} ×{omrTarget.noteCount}
+                  </span>
+                )}
               </div>
             </div>
             <div
@@ -1639,7 +1658,7 @@ export default function VocalTrainerIII() {
                   );
                 })}
                 {/* Vertical grid lines (every second) */}
-                {Array.from({ length: Math.ceil(extractedDuration) + 1 }).map((_, i) => (
+                {Array.from({ length: Math.ceil(Math.max(extractedDuration, omrSpan)) + 1 }).map((_, i) => (
                   <line key={i} x1={i * zoom} y1={0} x2={i * zoom} y2={editorHeight}
                     stroke="#1a1a22" strokeWidth={0.5} />
                 ))}
@@ -1681,6 +1700,26 @@ export default function VocalTrainerIII() {
                     }).join(' ')}
                   />
                 )}
+                {/* OMR score-target lane — the REAL notated notes recognized off
+                    the sheet music (Audiveris), as dashed fuchsia outlines so the
+                    singer sees the authoritative pitch target and can double-check
+                    the audio extraction. Phase 1: discrete score sequence, NOT
+                    sample-synced to playback. Additive — sits above the audio
+                    notes/contour, below the live-pitch group. */}
+                {omrTarget && omrTarget.notes.map((n, i) => {
+                  if (n.pitchMidi < PITCH_MIN || n.pitchMidi > PITCH_MAX) return null;
+                  const x = n.startTimeSeconds * zoom;
+                  const w = Math.max(3, n.durationSeconds * zoom);
+                  const y = (PITCH_MAX - n.pitchMidi) * editorRowHeight;
+                  return (
+                    <rect key={`omr-${i}`} x={x} y={y + 0.5}
+                      width={w} height={editorRowHeight - 1}
+                      fill="rgba(232,121,249,0.10)" stroke="#e879f9"
+                      strokeWidth={1} strokeDasharray="3 2" rx={1}
+                      pointerEvents="none"
+                      style={{ filter: 'drop-shadow(0 0 2px rgba(232,121,249,0.45))' }} />
+                  );
+                })}
                 {/* V3.2: live REFERENCE pitch (detected from the playing audio) +
                     YOUR voice. White bar = the real pitch right now; cyan dot =
                     you; the connector shows how far above/below you are. Above the
