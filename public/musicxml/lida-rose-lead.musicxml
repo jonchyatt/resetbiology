@@ -236,18 +236,6 @@
     </measure>
     <!--=======================================================-->
     <measure number="6" width="371">
-      <print new-system="yes">
-        <system-layout>
-          <system-margins>
-            <left-margin>152</left-margin>
-            <right-margin>182</right-margin>
-          </system-margins>
-          <system-distance>99</system-distance>
-        </system-layout>
-        <staff-layout number="1">
-          <staff-distance>72</staff-distance>
-        </staff-layout>
-      </print>
       <attributes>
         <key>
           <fifths>-6</fifths>
@@ -554,7 +542,7 @@
         </notations>
       </note>
     </measure>
-    <!--===================== page seam =====================-->
+    <!--=======================================================-->
     <measure number="9" width="350">
       <attributes>
         <divisions>12</divisions>
@@ -756,18 +744,6 @@
     </measure>
     <!--=======================================================-->
     <measure number="12" width="338">
-      <print new-system="yes">
-        <system-layout>
-          <system-margins>
-            <left-margin>196</left-margin>
-            <right-margin>140</right-margin>
-          </system-margins>
-          <system-distance>119</system-distance>
-        </system-layout>
-        <staff-layout number="1">
-          <staff-distance>74</staff-distance>
-        </staff-layout>
-      </print>
       <attributes>
         <staff-details print-object="yes"></staff-details>
       </attributes>
@@ -1058,18 +1034,6 @@
     </measure>
     <!--=======================================================-->
     <measure number="16" width="381">
-      <print new-system="yes">
-        <system-layout>
-          <system-margins>
-            <left-margin>191</left-margin>
-            <right-margin>146</right-margin>
-          </system-margins>
-          <system-distance>116</system-distance>
-        </system-layout>
-        <staff-layout number="1">
-          <staff-distance>72</staff-distance>
-        </staff-layout>
-      </print>
       <attributes>
         <staff-details print-object="yes"></staff-details>
       </attributes>
@@ -1357,7 +1321,7 @@
         <stem default-y="-44">down</stem>
       </note>
     </measure>
-    <!--===================== page seam =====================-->
+    <!--=======================================================-->
     <measure number="19" width="345">
       <attributes>
         <divisions>12</divisions>
@@ -1709,18 +1673,6 @@
     </measure>
     <!--=======================================================-->
     <measure number="23" width="357">
-      <print new-system="yes">
-        <system-layout>
-          <system-margins>
-            <left-margin>159</left-margin>
-            <right-margin>178</right-margin>
-          </system-margins>
-          <system-distance>119</system-distance>
-        </system-layout>
-        <staff-layout number="1">
-          <staff-distance>81</staff-distance>
-        </staff-layout>
-      </print>
       <attributes>
         <staff-details print-object="yes"></staff-details>
       </attributes>
@@ -1920,7 +1872,8 @@
       </note>
     </measure>
     <!--=======================================================-->
-    <measure number="26" width="126"></measure>
+    <measure number="26" width="126">  <note><rest measure="yes"/><duration>48</duration><voice>1</voice></note>
+    </measure>
     <!--=======================================================-->
     <measure number="27" width="248">
       <note default-x="20">
@@ -1987,18 +1940,6 @@
     </measure>
     <!--=======================================================-->
     <measure number="28" width="345">
-      <print new-system="yes">
-        <system-layout>
-          <system-margins>
-            <left-margin>155</left-margin>
-            <right-margin>181</right-margin>
-          </system-margins>
-          <system-distance>118</system-distance>
-        </system-layout>
-        <staff-layout number="1">
-          <staff-distance>73</staff-distance>
-        </staff-layout>
-      </print>
       <attributes>
         <staff-details print-object="yes"></staff-details>
       </attributes>
@@ -2266,18 +2207,6 @@
       <barline location="right">
         <bar-style>light-light</bar-style>
       </barline>
-    </measure>
-    <!--=======================================================-->
-    <measure number="32" width="44">
-      <attributes>
-        <key>
-          <fifths>1</fifths>
-        </key>
-        <time symbol="common">
-          <beats>4</beats>
-          <beat-type>4</beat-type>
-        </time>
-      </attributes>
     </measure>
   </part>
 </score-partwise>

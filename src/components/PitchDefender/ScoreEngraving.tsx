@@ -96,7 +96,11 @@ export default function ScoreEngraving({ musicXMLUrl, title, zoom: initialZoom =
       }
     }
     load()
-    return () => { cancelled = true }
+    return () => {
+      cancelled = true
+      if (osmdRef.current) { try { osmdRef.current.clear() } catch { /* ok */ } osmdRef.current = null }
+      if (containerRef.current) containerRef.current.innerHTML = ''
+    }
     // zoom intentionally excluded — handled by the re-zoom effect below (no refetch)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [musicXMLUrl, applyColors])

@@ -68,31 +68,48 @@ function leadPitches(partInner) {
 }
 
 // ── stitch ──
-let measureNo = 0;
-const stitched = [];
+// ── collect per-page Lead measures, scaled to LCM divisions ──
+const FULL_MEASURE_REST = LCM * 4; // 4/4 at divisions 12 = 48 (Lida Rose is 4/4 throughout)
+const measures = [];
 const perPage = [];
 for (const { file, lead, div } of PAGES) {
   const xml = fs.readFileSync(SRC(file), 'utf8');
   let inner = getPartInner(xml, lead);
-  // isolate measures only (first <measure … last </measure>)
   const a = inner.indexOf('<measure ');
   const b = inner.lastIndexOf('</measure>');
   inner = inner.slice(a, b + '</measure>'.length);
-  perPage.push(leadPitches(inner).length);
   const factor = LCM / div;
   inner = inner.replace(/<duration>(\d+)<\/duration>/g, (_, n) => `<duration>${parseInt(n) * factor}</duration>`);
   inner = inner.replace(/<divisions>\d+<\/divisions>/g, `<divisions>${LCM}</divisions>`);
-  inner = inner.replace(/<print>[\s\S]*?<\/print>\s*/g, ''); // drop original page-break layout
-  inner = inner.replace(/<measure number="[^"]*"/g, () => `<measure number="${++measureNo}"`);
-  stitched.push(inner.trim());
+  inner = inner.replace(/<print\b[\s\S]*?<\/print>\s*/g, ''); // drop ALL layout incl. <print new-system="yes"> so OSMD reflows
+  const units = inner.match(/<measure\b[\s\S]*?<\/measure>/g) || [];
+  perPage.push(units.reduce((c, u) => c + leadPitches(u).length, 0));
+  measures.push(...units);
 }
+
+// trim trailing note-less measures (next-section key/time residue, e.g. "Will I Ever Tell You")
+let trimmed = 0;
+while (measures.length && !/<note\b/.test(measures[measures.length - 1])) { measures.pop(); trimmed++; }
+
+// fill interior empty/note-less measures with a full-measure rest (preserves bar count + valid MusicXML)
+let filled = 0;
+for (let i = 0; i < measures.length; i++) {
+  if (!/<note\b/.test(measures[i])) {
+    measures[i] = measures[i].replace(/<\/measure>$/, `  <note><rest measure="yes"/><duration>${FULL_MEASURE_REST}</duration><voice>1</voice></note>\n    </measure>`);
+    filled++;
+  }
+}
+
+// renumber measures consecutively 1..N
+let measureNo = 0;
+const body = measures
+  .map((u) => u.replace(/<measure number="[^"]*"/, () => `<measure number="${++measureNo}"`))
+  .join('\n    <!--=======================================================-->\n    ');
 
 // defaults (layout) copied from p196 for sane OSMD scaling
 const src196 = fs.readFileSync(SRC('lida-196.xml'), 'utf8');
 const defaults = (src196.match(/<defaults>[\s\S]*?<\/defaults>/) || ['<defaults></defaults>'])[0];
 const encDate = (src196.match(/<encoding-date>([^<]+)/) || [])[1] || '2026-06-20';
-
-const body = stitched.join('\n    <!--===================== page seam =====================-->\n    ');
 const doc = `<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE score-partwise PUBLIC "-//Recordare//DTD MusicXML 4.0.3 Partwise//EN" "http://www.musicxml.org/dtds/partwise.dtd">
 <score-partwise version="4.0.3">
@@ -157,7 +174,7 @@ if (!samePitch) {
     (k >= 0 ? `; first divergence @${k}: ${nameOf(outPitches[k])} vs ref ${nameOf(refPitches[k])}` : ''));
 }
 
-console.log(`stitched ${nums.length} measures · ${outPitches.length} melodic notes · divisions ${LCM}`);
+console.log(`stitched ${nums.length} measures (trimmed ${trimmed} trailing, filled ${filled} empty) · ${outPitches.length} melodic notes · divisions ${LCM}`);
 console.log(`per-page Lead notes: 196=${perPage[0]} 197=${perPage[1]} 198=${perPage[2]} (sum ${perPage.reduce((a, c) => a + c, 0)})`);
 console.log(`range ${nameOf(Math.min(...outPitches))}–${nameOf(Math.max(...outPitches))}`);
 if (errors.length) {
