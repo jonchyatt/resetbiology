@@ -1,25 +1,33 @@
 'use client'
 
 // =============================================================================
-// ScoreEngraving — lean OSMD engraver for VocalTrainer III "Score" mode.
+// ScoreEngraving — lean OSMD engraver + "sung-out" highlight for VocalTrainer III.
 // =============================================================================
 //
-// Renders a part-isolated MusicXML score as real engraved notation (dark mode),
-// fetched by URL. Phase-2 Code Blue primitive `score-panel`: the "see your real
-// notes" surface that supersedes the 248-page page-image ScoreViewer.
+// Code Blue primitives `score-panel` (render) + `sing-out-highlight` (the cursor
+// that lights up the note being sung, synced to the RECORDING clock).
 //
-// Deliberately MINIMAL — reuses SheetMusicViewer's proven OSMD init + dark palette
-// but NONE of its mic/practice/LivePitchStaff (+cents/You) UI. Mic feedback in VT3
-// stays the existing Pitchforks-v1 slider; this component only draws the score.
-// The sing-out cursor highlight (primitive `sing-out-highlight`) layers on later.
+// Renders a part-isolated MusicXML score as engraved notation (dark mode). When a
+// sync map (syncUrl) + currentTime are supplied, it drives OSMD's NATIVE cursor to
+// the note whose recording window contains currentTime — the cursor both marks the
+// note and auto-scrolls it into view (follow:true), which is why we use it instead
+// of plotting pitch onto the non-linear staff (Argus's HIGH coordinate trap).
+//
+// Deliberately MINIMAL — no mic/practice/+cents UI. The live mic feedback in VT3
+// stays the existing Pitchforks-v1 slider; this component only draws + tracks the
+// score. Follows the recording clock, never a metronome (FLW hard rule).
 // =============================================================================
 
 import { useRef, useEffect, useState, useCallback } from 'react'
+
+interface SyncNote { pitchMidi: number; startTimeSeconds: number; durationSeconds: number }
 
 interface ScoreEngravingProps {
   musicXMLUrl: string
   title?: string
   zoom?: number
+  syncUrl?: string        // per-note recording timestamps (lida-rose-lead-sync.json)
+  currentTime?: number    // VT3 practiceTime (audio clock seconds)
 }
 
 // Dark palette — matches the site's #0a0a14 surface (same values as SheetMusicViewer).
@@ -29,16 +37,23 @@ const DARK = {
   staff: '#4a5578',
   title: '#e2e8f4',
   label: '#8898c0',
-  cursor: '#6366f1',
-  cursorAlpha: 0.3,
+  cursor: '#fbbf24',     // amber — the "sung-out" position highlight
+  cursorAlpha: 0.4,
 }
 
-export default function ScoreEngraving({ musicXMLUrl, title, zoom: initialZoom = 0.8 }: ScoreEngravingProps) {
+export default function ScoreEngraving({ musicXMLUrl, title, zoom: initialZoom = 0.8, syncUrl, currentTime }: ScoreEngravingProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const osmdRef = useRef<any>(null)
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading')
   const [error, setError] = useState<string | null>(null)
   const [zoom, setZoom] = useState(initialZoom)
+  const [syncReady, setSyncReady] = useState(false)
+
+  // sing-out cursor state (refs — driven imperatively, no re-render)
+  const syncNotesRef = useRef<SyncNote[]>([])
+  const stepOrdinalRef = useRef<number[]>([]) // cursor-step ordinal of each pitched note
+  const curStepRef = useRef(0)                // cursor's current absolute step
+  const curIdxRef = useRef(-1)                // last highlighted sync-note index
 
   const applyColors = useCallback((osmd: any) => {
     const r = osmd.EngravingRules
@@ -54,7 +69,7 @@ export default function ScoreEngraving({ musicXMLUrl, title, zoom: initialZoom =
     r.LedgerLineColorDefault = DARK.staff
   }, [])
 
-  // ─── Load + render (refetch only when the URL changes) ───────────────
+  // ─── Load + render (refetch only when the score URL changes) ─────────
   useEffect(() => {
     let cancelled = false
     const load = async () => {
@@ -62,6 +77,10 @@ export default function ScoreEngraving({ musicXMLUrl, title, zoom: initialZoom =
       try {
         setStatus('loading')
         setError(null)
+        setSyncReady(false)
+        curIdxRef.current = -1
+        curStepRef.current = 0
+
         const resp = await fetch(musicXMLUrl)
         if (!resp.ok) throw new Error(`fetch ${resp.status} ${resp.statusText}`)
         const xml = await resp.text()
@@ -78,7 +97,7 @@ export default function ScoreEngraving({ musicXMLUrl, title, zoom: initialZoom =
           drawTitle: true,
           drawPartNames: false,
           drawingParameters: 'default',
-          disableCursor: false,
+          followCursor: true,
           cursorsOptions: [{ type: 0, color: DARK.cursor, alpha: DARK.cursorAlpha, follow: true }],
         })
         osmd.Zoom = zoom
@@ -88,6 +107,25 @@ export default function ScoreEngraving({ musicXMLUrl, title, zoom: initialZoom =
         osmd.render()
         osmdRef.current = osmd
         setStatus('ready')
+
+        // ── sing-out setup: fetch sync map + index the pitched notes ──
+        if (syncUrl) {
+          try {
+            const sresp = await fetch(syncUrl)
+            if (sresp.ok) {
+              const sj = await sresp.json()
+              if (cancelled) return
+              syncNotesRef.current = sj.notes || []
+              stepOrdinalRef.current = buildStepOrdinals(osmd)
+              const np = stepOrdinalRef.current.length
+              const ns = syncNotesRef.current.length
+              if (np !== ns) console.warn(`ScoreEngraving: pitched notes ${np} != sync notes ${ns} — highlight may drift`)
+              const cur = osmd.cursor
+              if (cur) { cur.reset(); cur.show(); curStepRef.current = 0; curIdxRef.current = -1 }
+              setSyncReady(true)
+            }
+          } catch (e) { console.warn('ScoreEngraving sync load failed:', e) }
+        }
       } catch (err: any) {
         if (cancelled) return
         console.error('ScoreEngraving load error:', err)
@@ -101,17 +139,44 @@ export default function ScoreEngraving({ musicXMLUrl, title, zoom: initialZoom =
       if (osmdRef.current) { try { osmdRef.current.clear() } catch { /* ok */ } osmdRef.current = null }
       if (containerRef.current) containerRef.current.innerHTML = ''
     }
-    // zoom intentionally excluded — handled by the re-zoom effect below (no refetch)
+    // zoom handled by the re-zoom effect (no refetch); currentTime by the sing-out effect
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [musicXMLUrl, applyColors])
+  }, [musicXMLUrl, syncUrl, applyColors])
+
+  // ─── Sing-out: drive the cursor to the note at currentTime ───────────
+  useEffect(() => {
+    if (status !== 'ready' || !syncReady || currentTime == null || !osmdRef.current) return
+    const sn = syncNotesRef.current
+    const ord = stepOrdinalRef.current
+    if (!sn.length || !ord.length) return
+
+    // active note = the one whose recording window contains currentTime (mirror of VT3 currentTargetNote)
+    let idx = -1
+    for (let i = 0; i < sn.length; i++) {
+      if (sn[i].startTimeSeconds <= currentTime && currentTime < sn[i].startTimeSeconds + sn[i].durationSeconds) { idx = i; break }
+    }
+    if (idx === -1) {
+      if (currentTime < (sn[0]?.startTimeSeconds ?? 0)) idx = 0 // before the first sung note → park at start
+      else return // between/after notes → hold the last highlight
+    }
+    if (idx === curIdxRef.current) return
+    curIdxRef.current = idx
+
+    const target = ord[idx]
+    if (target == null) return
+    try {
+      const cur = osmdRef.current.cursor
+      let s = curStepRef.current
+      if (target < s) { while (s > target) { cur.previous(); s-- } }
+      else { while (s < target && !cur.Iterator?.EndReached) { cur.next(); s++ } }
+      curStepRef.current = s
+    } catch { /* ok */ }
+  }, [currentTime, status, syncReady])
 
   // ─── Re-zoom without refetch ─────────────────────────────────────────
   useEffect(() => {
     if (osmdRef.current && status === 'ready') {
-      try {
-        osmdRef.current.Zoom = zoom
-        osmdRef.current.render()
-      } catch { /* ok */ }
+      try { osmdRef.current.Zoom = zoom; osmdRef.current.render(); osmdRef.current.cursor?.show?.() } catch { /* ok */ }
     }
   }, [zoom, status])
 
@@ -126,7 +191,7 @@ export default function ScoreEngraving({ musicXMLUrl, title, zoom: initialZoom =
     <div className="rounded-lg border border-cyan-500/20 bg-[#0a0a14] p-3">
       <div className="flex items-center justify-between mb-2">
         <span className="text-xs text-gray-400">
-          {title || 'Engraved score'}{status === 'ready' ? ' · live notation (OSMD)' : ''}
+          {title || 'Engraved score'}{status === 'ready' ? (syncReady ? ' · sings out with the track' : ' · live notation (OSMD)') : ''}
         </span>
         <div className="flex items-center gap-1">
           <button
@@ -149,4 +214,27 @@ export default function ScoreEngraving({ musicXMLUrl, title, zoom: initialZoom =
       <div ref={containerRef} className="overflow-x-auto" />
     </div>
   )
+}
+
+// Walk the cursor once to record the absolute cursor-step ordinal of each PITCHED
+// voice entry (rests are cursor steps too, but get no highlight). Returns an array
+// aligned 1:1 with the sync notes (both = the song's pitched notes, in order).
+function buildStepOrdinals(osmd: any): number[] {
+  const cur = osmd.cursor
+  if (!cur) return []
+  cur.reset()
+  const ord: number[] = []
+  let step = 0
+  let guard = 0
+  while (!cur.Iterator?.EndReached && guard < 100000) {
+    let notes: any[] = []
+    try { notes = cur.NotesUnderCursor() || [] } catch { notes = [] }
+    const pitched = notes.some((nn: any) => nn && (nn.Pitch != null || nn.pitch != null))
+    if (pitched) ord.push(step)
+    cur.next()
+    step++
+    guard++
+  }
+  cur.reset()
+  return ord
 }

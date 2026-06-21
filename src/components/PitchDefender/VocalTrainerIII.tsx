@@ -1362,6 +1362,8 @@ export default function VocalTrainerIII() {
         ) : (
           <ScoreEngraving
             musicXMLUrl="/musicxml/lida-rose-lead.musicxml"
+            syncUrl="/musicxml/lida-rose-lead-sync.json"
+            currentTime={practiceTime}
             title="Lida Rose — Lead (pp.196–198)"
           />
         )}
