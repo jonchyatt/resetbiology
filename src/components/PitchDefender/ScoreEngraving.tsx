@@ -54,6 +54,7 @@ export default function ScoreEngraving({ musicXMLUrl, title, zoom: initialZoom =
   const stepOrdinalRef = useRef<number[]>([]) // cursor-step ordinal of each pitched note
   const curStepRef = useRef(0)                // cursor's current absolute step
   const curIdxRef = useRef(-1)                // last highlighted sync-note index
+  const overlayRef = useRef<HTMLDivElement | null>(null) // our visible amber bar (OSMD cursor img renders empty here)
 
   const applyColors = useCallback((osmd: any) => {
     const r = osmd.EngravingRules
@@ -121,6 +122,13 @@ export default function ScoreEngraving({ musicXMLUrl, title, zoom: initialZoom =
               if (np !== ns) console.warn(`ScoreEngraving: pitched notes ${np} != sync notes ${ns} — highlight may drift`)
               const cur = osmd.cursor
               if (cur) { cur.reset(); cur.show(); try { cur.update() } catch { /* ok */ }; curStepRef.current = 0; curIdxRef.current = -1 }
+              // OSMD's cursor <img> renders empty/1px here, so draw our own amber bar over the active note
+              if (containerRef.current) {
+                const ov = document.createElement('div')
+                ov.style.cssText = 'position:absolute;display:none;width:8px;border-radius:3px;background:rgba(251,191,36,0.72);pointer-events:none;z-index:5'
+                containerRef.current.appendChild(ov)
+                overlayRef.current = ov
+              }
               setSyncReady(true)
             }
           } catch (e) { console.warn('ScoreEngraving sync load failed:', e) }
@@ -168,8 +176,18 @@ export default function ScoreEngraving({ musicXMLUrl, title, zoom: initialZoom =
       let s = curStepRef.current
       if (target < s) { while (s > target) { cur.previous(); s-- } }
       else { while (s < target && !cur.Iterator?.EndReached) { cur.next(); s++ } }
-      try { cur.update() } catch { /* ok */ } // refresh cursor Y/height after the move (fixes top:-277 h:1 collapse)
+      try { cur.update() } catch { /* ok */ } // refresh OSMD cursor position after the move
       curStepRef.current = s
+      // mirror OSMD's (correct) cursor position with our visible amber bar
+      const ov = overlayRef.current
+      const cel = cur.cursorElement || document.getElementById('cursorImg-0')
+      if (ov && cel) {
+        const z = osmdRef.current?.Zoom || 0.8
+        ov.style.left = (cel.offsetLeft - 1) + 'px'
+        ov.style.top = (cel.offsetTop - 30 * z) + 'px'
+        ov.style.height = (118 * z) + 'px'
+        ov.style.display = 'block'
+      }
     } catch { /* ok */ }
   }, [currentTime, status, syncReady])
 
@@ -211,7 +229,7 @@ export default function ScoreEngraving({ musicXMLUrl, title, zoom: initialZoom =
       </div>
       {status === 'loading' && <p className="text-sm text-gray-500 py-8 text-center">Rendering score…</p>}
       {status === 'error' && <p className="text-sm text-red-400 py-8 text-center">Could not render score: {error}</p>}
-      <div ref={containerRef} className="overflow-x-auto" />
+      <div ref={containerRef} className="overflow-x-auto relative" />
     </div>
   )
 }
