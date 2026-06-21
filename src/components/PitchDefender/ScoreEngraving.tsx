@@ -97,7 +97,6 @@ export default function ScoreEngraving({ musicXMLUrl, title, zoom: initialZoom =
           drawTitle: true,
           drawPartNames: false,
           drawingParameters: 'default',
-          followCursor: true,
           cursorsOptions: [{ type: 0, color: DARK.cursor, alpha: DARK.cursorAlpha, follow: true }],
         })
         osmd.Zoom = zoom
@@ -121,7 +120,7 @@ export default function ScoreEngraving({ musicXMLUrl, title, zoom: initialZoom =
               const ns = syncNotesRef.current.length
               if (np !== ns) console.warn(`ScoreEngraving: pitched notes ${np} != sync notes ${ns} — highlight may drift`)
               const cur = osmd.cursor
-              if (cur) { cur.reset(); cur.show(); curStepRef.current = 0; curIdxRef.current = -1 }
+              if (cur) { cur.reset(); cur.show(); try { cur.update() } catch { /* ok */ }; curStepRef.current = 0; curIdxRef.current = -1 }
               setSyncReady(true)
             }
           } catch (e) { console.warn('ScoreEngraving sync load failed:', e) }
@@ -169,6 +168,7 @@ export default function ScoreEngraving({ musicXMLUrl, title, zoom: initialZoom =
       let s = curStepRef.current
       if (target < s) { while (s > target) { cur.previous(); s-- } }
       else { while (s < target && !cur.Iterator?.EndReached) { cur.next(); s++ } }
+      try { cur.update() } catch { /* ok */ } // refresh cursor Y/height after the move (fixes top:-277 h:1 collapse)
       curStepRef.current = s
     } catch { /* ok */ }
   }, [currentTime, status, syncReady])
