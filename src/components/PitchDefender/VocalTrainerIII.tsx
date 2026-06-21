@@ -38,6 +38,7 @@ import {
 import { usePitchDetection } from './usePitchDetection';
 import { PitchDetector } from 'pitchy';
 import ScoreViewer from './ScoreViewer';
+import ScoreEngraving from './ScoreEngraving';
 import { getOmrTarget } from './omrTargets';
 
 // Convert a frequency (Hz) to a MIDI note number (69 = A4 = 440 Hz).
@@ -134,6 +135,7 @@ export default function VocalTrainerIII() {
 
   // ─── V3.1: library grouping + per-item extraction ───────────────────────
   const [groupBy, setGroupBy] = useState<'part' | 'song' | 'mode' | 'flat'>('part');
+  const [scoreView, setScoreView] = useState<'pages' | 'engraved'>('pages');
   const [libFilter, setLibFilter] = useState('');
   const [collapsed, setCollapsed] = useState<Set<string>>(() => new Set());
   const [extractingId, setExtractingId] = useState<string | null>(null);
@@ -1333,7 +1335,36 @@ export default function VocalTrainerIII() {
         </details>
 
         {/* ─── Sheet Music (real score, follow along) ─────────────────── */}
-        <ScoreViewer />
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-gray-500">Score view:</span>
+          <div className="inline-flex rounded-md border border-gray-700 overflow-hidden text-xs">
+            <button
+              type="button"
+              onClick={() => setScoreView('pages')}
+              className={scoreView === 'pages' ? 'px-3 py-1 bg-amber-600 text-white' : 'px-3 py-1 bg-gray-800 text-gray-300 hover:bg-gray-700'}
+            >
+              📄 Pages
+            </button>
+            <button
+              type="button"
+              onClick={() => setScoreView('engraved')}
+              className={scoreView === 'engraved' ? 'px-3 py-1 bg-cyan-600 text-white' : 'px-3 py-1 bg-gray-800 text-gray-300 hover:bg-gray-700'}
+            >
+              🎼 Engraved ✨
+            </button>
+          </div>
+          {scoreView === 'engraved' && (
+            <span className="text-xs text-cyan-400/70">Lida Rose · Lead — recreated from the score</span>
+          )}
+        </div>
+        {scoreView === 'pages' ? (
+          <ScoreViewer />
+        ) : (
+          <ScoreEngraving
+            musicXMLUrl="/musicxml/lida-rose-lead.musicxml"
+            title="Lida Rose — Lead (pp.196–198)"
+          />
+        )}
 
         {/* ─── Library ───────────────────────────────────────────────── */}
         <section className="bg-gray-900/60 border border-amber-500/20 rounded-lg p-4">
