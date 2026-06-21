@@ -55,6 +55,7 @@ export default function ScoreEngraving({ musicXMLUrl, title, zoom: initialZoom =
   const curStepRef = useRef(0)                // cursor's current absolute step
   const curIdxRef = useRef(-1)                // last highlighted sync-note index
   const overlayRef = useRef<HTMLDivElement | null>(null) // our visible amber bar (OSMD cursor img renders empty here)
+  const wrapperRef = useRef<HTMLDivElement | null>(null)  // relative wrapper so the overlay survives OSMD re-renders
 
   const applyColors = useCallback((osmd: any) => {
     const r = osmd.EngravingRules
@@ -122,13 +123,6 @@ export default function ScoreEngraving({ musicXMLUrl, title, zoom: initialZoom =
               if (np !== ns) console.warn(`ScoreEngraving: pitched notes ${np} != sync notes ${ns} — highlight may drift`)
               const cur = osmd.cursor
               if (cur) { cur.reset(); cur.show(); try { cur.update() } catch { /* ok */ }; curStepRef.current = 0; curIdxRef.current = -1 }
-              // OSMD's cursor <img> renders empty/1px here, so draw our own amber bar over the active note
-              if (containerRef.current) {
-                const ov = document.createElement('div')
-                ov.style.cssText = 'position:absolute;display:none;width:8px;border-radius:3px;background:rgba(251,191,36,0.72);pointer-events:none;z-index:5'
-                containerRef.current.appendChild(ov)
-                overlayRef.current = ov
-              }
               setSyncReady(true)
             }
           } catch (e) { console.warn('ScoreEngraving sync load failed:', e) }
@@ -181,10 +175,12 @@ export default function ScoreEngraving({ musicXMLUrl, title, zoom: initialZoom =
       // mirror OSMD's (correct) cursor position with our visible amber bar
       const ov = overlayRef.current
       const cel = cur.cursorElement || document.getElementById('cursorImg-0')
-      if (ov && cel) {
+      const wrap = wrapperRef.current
+      if (ov && cel && wrap) {
         const z = osmdRef.current?.Zoom || 0.8
-        ov.style.left = (cel.offsetLeft - 1) + 'px'
-        ov.style.top = (cel.offsetTop - 30 * z) + 'px'
+        const cr = cel.getBoundingClientRect(); const wr = wrap.getBoundingClientRect()
+        ov.style.left = (cr.left - wr.left - 1) + 'px'
+        ov.style.top = (cr.top - wr.top - 30 * z) + 'px'
         ov.style.height = (118 * z) + 'px'
         ov.style.display = 'block'
       }
@@ -229,7 +225,10 @@ export default function ScoreEngraving({ musicXMLUrl, title, zoom: initialZoom =
       </div>
       {status === 'loading' && <p className="text-sm text-gray-500 py-8 text-center">Rendering score…</p>}
       {status === 'error' && <p className="text-sm text-red-400 py-8 text-center">Could not render score: {error}</p>}
-      <div ref={containerRef} className="overflow-x-auto relative" />
+      <div ref={wrapperRef} className="relative">
+        <div ref={containerRef} className="overflow-x-auto" />
+        <div ref={overlayRef} className="absolute pointer-events-none rounded" style={{ display: 'none', width: 8, background: 'rgba(251,191,36,0.72)', zIndex: 5 }} />
+      </div>
     </div>
   )
 }
