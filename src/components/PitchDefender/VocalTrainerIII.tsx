@@ -67,6 +67,8 @@ interface FullTemplate {
   createdAt?: string;
 }
 
+type SyncNote = { pitchMidi: number; startTimeSeconds: number; durationSeconds: number };
+
 type MicProfile = 'phone' | 'laptop' | 'usb';
 
 // V3: latencyHint removed from profiles — the context is ALWAYS 'interactive'
@@ -90,6 +92,10 @@ const PITCH_MAX = 84; // C6
 const PITCH_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 function midiToName(m: number): string {
   return `${PITCH_NAMES[m % 12]}${Math.floor(m / 12) - 1}`;
+}
+
+function midiToFreq(m: number): number {
+  return 440 * Math.pow(2, (m - 69) / 12);
 }
 
 // ─── V3.1: Music Man barbershop title taxonomy ──────────────────────────
@@ -192,6 +198,8 @@ export default function VocalTrainerIII() {
   const [micVol, setMicVol] = useState(150);      // 0-VOL_MAX percent (V3: starts hotter — raw mic is quiet vs mastered tracks)
   const [micProfile, setMicProfile] = useState<MicProfile>('usb');
   const [micEnabled, setMicEnabled] = useState(false);
+  const [plunkEnabled, setPlunkEnabled] = useState(false);
+  const [plunkVol, setPlunkVol] = useState(110);
   // V3: per-stream balance (-1 hard-left … +1 hard-right). Defaults = V1's fixed pans.
   const [vocalPan, setVocalPan] = useState(-0.7);
   const [musicPan, setMusicPan] = useState(0);
@@ -235,6 +243,13 @@ export default function VocalTrainerIII() {
   const micUserGainNodeRef = useRef<GainNode | null>(null);
   const micPanNodeRef = useRef<StereoPannerNode | null>(null);
 
+  const plunkEnabledRef = useRef(false);
+  const plunkVolRef = useRef(110);
+  const plunkNotesRef = useRef<SyncNote[]>([]);
+  const plunkFetchStartedRef = useRef(false);
+  const plunkOscsRef = useRef<any[]>([]);
+  const plunkGainRef = useRef<GainNode | null>(null);
+
   // V3: master brick-wall limiter — every stream routes through it so 400%
   // boosts get loud-but-clean instead of hard-clipping the destination.
   const limiterRef = useRef<DynamicsCompressorNode | null>(null);
@@ -258,6 +273,8 @@ export default function VocalTrainerIII() {
   const musicVolRef = useRef(150);
   const micVolRef = useRef(150);
   const micProfileRef = useRef<MicProfile>('usb');
+  useEffect(() => { plunkEnabledRef.current = plunkEnabled; }, [plunkEnabled]);
+  useEffect(() => { plunkVolRef.current = plunkVol; }, [plunkVol]);
   // V3: pan mirrors for the same stable-callback reason.
   const vocalPanRef = useRef(-0.7);
   const musicPanRef = useRef(0);
@@ -622,6 +639,51 @@ export default function VocalTrainerIII() {
     return ctx;
   }, []);
 
+  const stopPlunkNodes = useCallback(() => {
+    if (!plunkEnabledRef.current && plunkOscsRef.current.length === 0) return;
+    for (const node of plunkOscsRef.current) {
+      try { if (typeof node.stop === 'function') node.stop(); } catch {}
+      try { if (typeof node.disconnect === 'function') node.disconnect(); } catch {}
+    }
+    plunkOscsRef.current = [];
+  }, []);
+
+  useEffect(() => {
+    if (!plunkEnabled) {
+      stopPlunkNodes();
+      return;
+    }
+    if (plunkFetchStartedRef.current || plunkNotesRef.current.length) return;
+    plunkFetchStartedRef.current = true;
+    (async () => {
+      try {
+        const r = await fetch('/musicxml/lida-rose-lead-sync.json', { cache: 'no-store' });
+        if (!r.ok) throw new Error(`fetch ${r.status} ${r.statusText}`);
+        const j = await r.json();
+        plunkNotesRef.current = Array.isArray(j.notes)
+          ? j.notes.filter((n: Partial<SyncNote> | null | undefined) =>
+              n != null
+              && Number.isFinite(n.pitchMidi)
+              && Number.isFinite(n.startTimeSeconds)
+              && Number.isFinite(n.durationSeconds)
+            ) as SyncNote[]
+          : [];
+      } catch (e) {
+        console.error('[VocalTrainer] plunk sync-note load failed:', e);
+      }
+    })();
+  }, [plunkEnabled, stopPlunkNodes]);
+
+  useEffect(() => {
+    if (!plunkGainRef.current) return;
+    try {
+      plunkGainRef.current.gain.setValueAtTime(
+        (plunkVolRef.current / 100) * 0.22,
+        plunkGainRef.current.context.currentTime,
+      );
+    } catch {}
+  }, [plunkVol]);
+
   // Stop any in-flight BufferSources (both vocal + music) + cancel the RAF tick.
   const stopAudioSource = useCallback(() => {
     if (vocalSourceRef.current) {
@@ -636,11 +698,12 @@ export default function VocalTrainerIII() {
       try { musicSourceRef.current.disconnect(); } catch {}
       musicSourceRef.current = null;
     }
+    stopPlunkNodes();
     if (rafRef.current) {
       cancelAnimationFrame(rafRef.current);
       rafRef.current = null;
     }
-  }, []);
+  }, [stopPlunkNodes]);
 
   // Start playback from pauseOffsetRef. Fires both vocal + music sources in
   // lockstep so they stay synchronized even under pause/resume.
@@ -692,6 +755,63 @@ export default function VocalTrainerIII() {
           musicSourceRef.current = null;
         }
       };
+    }
+
+    if (plunkEnabledRef.current && plunkNotesRef.current.length) {
+      try {
+        if (!plunkGainRef.current || plunkGainRef.current.context !== ctx) {
+          try { plunkGainRef.current?.disconnect(); } catch {}
+          const gain = ctx.createGain();
+          gain.connect(ctx.destination);
+          plunkGainRef.current = gain;
+        }
+        plunkGainRef.current.gain.setValueAtTime((plunkVolRef.current / 100) * 0.22, startAt);
+
+        for (const note of plunkNotesRef.current) {
+          const noteEnd = note.startTimeSeconds + note.durationSeconds;
+          if (noteEnd <= offset) continue;
+
+          const toneStart = startAt + Math.max(0, note.startTimeSeconds - offset);
+          const remaining = note.startTimeSeconds < offset
+            ? noteEnd - offset
+            : note.durationSeconds;
+          const toneDuration = Math.max(0.03, Math.min(remaining, note.durationSeconds, 1.3));
+          const toneEnd = toneStart + toneDuration;
+          const freq = midiToFreq(note.pitchMidi);
+          const attack = Math.min(0.02, Math.max(0.005, toneDuration * 0.2));
+          const release = Math.min(0.12, Math.max(0.015, toneDuration * 0.25));
+          const releaseStart = Math.max(toneStart + attack, toneEnd - release);
+
+          const tri = ctx.createOscillator();
+          tri.type = 'triangle';
+          tri.frequency.setValueAtTime(freq, toneStart);
+
+          const sine = ctx.createOscillator();
+          sine.type = 'sine';
+          sine.frequency.setValueAtTime(freq, toneStart);
+          sine.detune.setValueAtTime(7, toneStart);
+
+          const partialGain = ctx.createGain();
+          partialGain.gain.setValueAtTime(0.32, toneStart);
+
+          const noteGain = ctx.createGain();
+          noteGain.gain.setValueAtTime(0, toneStart);
+          noteGain.gain.linearRampToValueAtTime(0.9, toneStart + attack);
+          noteGain.gain.setValueAtTime(0.72, releaseStart);
+          noteGain.gain.linearRampToValueAtTime(0, toneEnd);
+
+          tri.connect(noteGain);
+          sine.connect(partialGain).connect(noteGain);
+          noteGain.connect(plunkGainRef.current);
+          tri.start(toneStart);
+          sine.start(toneStart);
+          tri.stop(toneEnd + 0.01);
+          sine.stop(toneEnd + 0.01);
+          plunkOscsRef.current.push(tri, sine, partialGain, noteGain);
+        }
+      } catch (e) {
+        console.error('[VocalTrainer] plunk scheduling failed:', e);
+      }
     }
 
     // startedAt encodes (ctx.currentTime - offset) as-of the start moment.
@@ -2021,6 +2141,33 @@ export default function VocalTrainerIII() {
                 />
               </div>
             ))}
+          </div>
+
+          <div className="mb-4 text-xs text-gray-400 bg-gray-900/60 border border-gray-800 rounded-lg p-2">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+              <label className="inline-flex items-center gap-2 text-emerald-300 whitespace-nowrap">
+                <input
+                  type="checkbox"
+                  checked={plunkEnabled}
+                  onChange={(e) => setPlunkEnabled(e.target.checked)}
+                  className="accent-emerald-500"
+                />
+                <span>Plunk (score tones)</span>
+              </label>
+              <div className="flex flex-1 items-center gap-2">
+                <span className="text-gray-500">0</span>
+                <input
+                  type="range"
+                  min={0}
+                  max={200}
+                  step={1}
+                  value={plunkVol}
+                  onChange={(e) => setPlunkVol(Math.max(0, Math.min(200, Number(e.target.value))))}
+                  className="w-full accent-emerald-500"
+                />
+                <span className="w-12 text-right font-mono text-emerald-300">{plunkVol}%</span>
+              </div>
+            </div>
           </div>
 
           {/* V3.2: Output mode — Headphones keeps dichotic L/R + lowest latency;
