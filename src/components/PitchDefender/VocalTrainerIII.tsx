@@ -1235,12 +1235,24 @@ export default function VocalTrainerIII() {
     setExtractedNotes(prev => prev.filter((_, i) => i !== idx));
   }, []);
 
-  // OMR score-target lane (Phase 1): the REAL notated notes of the loaded part,
-  // recognized off the sheet music (Audiveris). Gated by song+part from the title.
+  // RECONCILED score-target lane: engraving truth RE-TIMED to the recording (v3 sync)
+  // with audio-missed notes recovered + extraction noise dropped. Falls back to the
+  // stale omrTargets span-scaled times only when no reconciled file exists.
+  const [reconciled, setReconciled] = useState<Array<{ pitchMidi: number; startTimeSeconds: number; durationSeconds: number; src?: string }> | null>(null);
+  useEffect(() => {
+    const mm = currentTemplate ? parseMmTitle(currentTemplate.title) : null;
+    if (mm && /lida\s*rose/i.test(mm.song) && /lead/i.test(mm.part)) {
+      fetch('/musicxml/lida-rose-lead-reconciled.json', { cache: 'no-store' })
+        .then((r) => r.json()).then((j) => setReconciled(j.notes || null)).catch(() => setReconciled(null));
+    } else setReconciled(null);
+  }, [currentTemplate]);
+  // OMR score-target lane: the REAL notated notes of the loaded part, off the sheet.
   const omrTarget = useMemo(() => {
     const mm = currentTemplate ? parseMmTitle(currentTemplate.title) : null;
-    return mm ? getOmrTarget(mm.song, mm.part) : null;
-  }, [currentTemplate]);
+    if (!mm) return null;
+    if (reconciled && reconciled.length) return { part: mm.part, noteCount: reconciled.length, notes: reconciled, reconciled: true };
+    return getOmrTarget(mm.song, mm.part);
+  }, [currentTemplate, reconciled]);
   const omrSpan = useMemo(
     () => (omrTarget ? omrTarget.notes.reduce((mx, n) => Math.max(mx, n.startTimeSeconds + n.durationSeconds), 0) : 0),
     [omrTarget],
@@ -1869,18 +1881,20 @@ export default function VocalTrainerIII() {
                     the audio extraction. Phase 1: discrete score sequence, NOT
                     sample-synced to playback. Additive — sits above the audio
                     notes/contour, below the live-pitch group. */}
-                {omrTarget && omrTarget.notes.map((n, i) => {
+                {omrTarget && omrTarget.notes.map((n: { pitchMidi: number; startTimeSeconds: number; durationSeconds: number; src?: string }, i: number) => {
                   if (n.pitchMidi < PITCH_MIN || n.pitchMidi > PITCH_MAX) return null;
                   const x = n.startTimeSeconds * zoom;
                   const w = Math.max(3, n.durationSeconds * zoom);
                   const y = (PITCH_MAX - n.pitchMidi) * editorRowHeight;
+                  const recovered = n.src === 'engraving-recovered';
                   return (
                     <rect key={`omr-${i}`} x={x} y={y + 0.5}
                       width={w} height={editorRowHeight - 1}
-                      fill="rgba(232,121,249,0.10)" stroke="#e879f9"
-                      strokeWidth={1} strokeDasharray="3 2" rx={1}
+                      fill={recovered ? 'rgba(251,191,36,0.22)' : 'rgba(232,121,249,0.10)'}
+                      stroke={recovered ? '#fbbf24' : '#e879f9'}
+                      strokeWidth={recovered ? 1.5 : 1} strokeDasharray={recovered ? undefined : '3 2'} rx={1}
                       pointerEvents="none"
-                      style={{ filter: 'drop-shadow(0 0 2px rgba(232,121,249,0.45))' }} />
+                      style={{ filter: recovered ? 'drop-shadow(0 0 3px rgba(251,191,36,0.7))' : 'drop-shadow(0 0 2px rgba(232,121,249,0.45))' }} />
                   );
                 })}
                 {/* V3.2: live REFERENCE pitch (detected from the playing audio) +
