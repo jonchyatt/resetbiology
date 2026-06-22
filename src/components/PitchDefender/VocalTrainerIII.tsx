@@ -141,7 +141,7 @@ export default function VocalTrainerIII() {
 
   // ─── V3.1: library grouping + per-item extraction ───────────────────────
   const [groupBy, setGroupBy] = useState<'part' | 'song' | 'mode' | 'flat'>('part');
-  const [scoreView, setScoreView] = useState<'pages' | 'engraved'>('pages');
+  const [scoreView, setScoreView] = useState<'pages' | 'engraved'>('engraved');
   const [libFilter, setLibFilter] = useState('');
   const [collapsed, setCollapsed] = useState<Set<string>>(() => new Set());
   const [extractingId, setExtractingId] = useState<string | null>(null);
@@ -1406,12 +1406,12 @@ export default function VocalTrainerIII() {
   // Render
   // ───────────────────────────────────────────────────────────────────────
   return (
-    <div className="relative isolate min-h-screen bg-[#08080f] text-gray-100 p-6">
+    <div className="relative isolate min-h-screen bg-[#08080f] text-gray-100 p-4 sm:p-6">
       {/* Full-viewport dark backdrop — kills the white strip above the global-nav offset (V3.4 QA).
           Root is `relative isolate` so this -z-10 layer stays scoped to this stacking context. */}
       <div aria-hidden className="fixed inset-0 -z-10 bg-[#08080f] pointer-events-none" />
-      <div className="max-w-6xl mx-auto space-y-6">
-        <header className="flex items-center justify-between">
+      <div className="max-w-6xl mx-auto flex flex-col gap-3">
+        <header className="order-1 flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-amber-300">Vocal Trainer III <span className="text-base font-semibold text-cyan-400 align-middle">· Blast Mix</span></h1>
             <p className="text-sm text-gray-400 mt-1">
@@ -1422,7 +1422,7 @@ export default function VocalTrainerIII() {
         </header>
 
         {/* ─── How to use (step-by-step for practice sessions) ─────────── */}
-        <details className="bg-gray-900/60 border border-cyan-500/30 rounded-lg p-4 open:pb-5">
+        <details className="order-2 bg-gray-900/60 border border-cyan-500/30 rounded-lg p-3 open:pb-4">
           <summary className="text-lg font-semibold text-cyan-300 cursor-pointer select-none">
             🎵 How to practice your part <span className="text-sm font-normal text-gray-400">— tap for the 7-step guide · WIRED headphones required</span>
           </summary>
@@ -1454,42 +1454,49 @@ export default function VocalTrainerIII() {
           </p>
         </details>
 
-        {/* ─── Sheet Music (real score, follow along) ─────────────────── */}
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-gray-500">Score view:</span>
-          <div className="inline-flex rounded-md border border-gray-700 overflow-hidden text-xs">
-            <button
-              type="button"
-              onClick={() => setScoreView('pages')}
-              className={scoreView === 'pages' ? 'px-3 py-1 bg-amber-600 text-white' : 'px-3 py-1 bg-gray-800 text-gray-300 hover:bg-gray-700'}
-            >
-              📄 Pages
-            </button>
-            <button
-              type="button"
-              onClick={() => setScoreView('engraved')}
-              className={scoreView === 'engraved' ? 'px-3 py-1 bg-cyan-600 text-white' : 'px-3 py-1 bg-gray-800 text-gray-300 hover:bg-gray-700'}
-            >
-              🎼 Engraved ✨
-            </button>
+        <section className="order-5 space-y-2">
+          {/* ─── Sheet Music (real score, follow along) ─────────────────── */}
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-gray-500">Score view:</span>
+            <div className="inline-flex rounded-md border border-gray-700 overflow-hidden text-xs">
+              <button
+                type="button"
+                onClick={() => setScoreView('pages')}
+                className={scoreView === 'pages' ? 'px-3 py-1 bg-amber-600 text-white' : 'px-3 py-1 bg-gray-800 text-gray-300 hover:bg-gray-700'}
+              >
+                📄 Pages
+              </button>
+              <button
+                type="button"
+                onClick={() => setScoreView('engraved')}
+                className={scoreView === 'engraved' ? 'px-3 py-1 bg-cyan-600 text-white' : 'px-3 py-1 bg-gray-800 text-gray-300 hover:bg-gray-700'}
+              >
+                🎼 Engraved ✨
+              </button>
+            </div>
+            {scoreView === 'engraved' && (
+              <span className="text-xs text-cyan-400/70">Lida Rose · Lead — recreated from the score</span>
+            )}
           </div>
-          {scoreView === 'engraved' && (
-            <span className="text-xs text-cyan-400/70">Lida Rose · Lead — recreated from the score</span>
-          )}
-        </div>
-        {scoreView === 'pages' ? (
-          <ScoreViewer />
-        ) : (
-          <ScoreEngraving
-            musicXMLUrl="/musicxml/lida-rose-lead.musicxml"
-            syncUrl="/musicxml/lida-rose-lead-sync.json"
-            currentTime={practiceTime}
-            title="Lida Rose — Lead (pp.196–198)"
-          />
-        )}
+          <div className="max-h-[30vh] min-h-[170px] overflow-auto rounded-lg">
+            {scoreView === 'pages' ? (
+              <ScoreViewer />
+            ) : (
+              <ScoreEngraving
+                musicXMLUrl="/musicxml/lida-rose-lead.musicxml"
+                syncUrl="/musicxml/lida-rose-lead-sync.json"
+                currentTime={practiceTime}
+                title="Lida Rose — Lead (pp.196–198)"
+              />
+            )}
+          </div>
+        </section>
 
         {/* ─── Library ───────────────────────────────────────────────── */}
-        <section className="bg-gray-900/60 border border-amber-500/20 rounded-lg p-4">
+        <details className="order-3 bg-gray-900/60 border border-amber-500/20 rounded-lg p-3">
+          <summary className="cursor-pointer select-none text-sm font-semibold text-amber-300 marker:text-amber-500">
+            Library <span className="text-xs font-normal text-gray-500">— saved templates and extraction tools</span>
+          </summary>
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-lg font-semibold text-amber-300">Library</h2>
             <button
@@ -1616,10 +1623,13 @@ export default function VocalTrainerIII() {
               })}
             </>
           )}
-        </section>
+        </details>
 
         {/* ─── Upload + extraction ───────────────────────────────────── */}
-        <section className="bg-gray-900/60 border border-amber-500/20 rounded-lg p-4">
+        <details className="order-4 bg-gray-900/60 border border-amber-500/20 rounded-lg p-3">
+          <summary className="cursor-pointer select-none text-sm font-semibold text-amber-300 marker:text-amber-500">
+            Upload + Extract <span className="text-xs font-normal text-gray-500">— add stems or extract notes</span>
+          </summary>
           <h2 className="text-lg font-semibold text-amber-300 mb-3">Upload + Extract</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {/* Vocals stem (primary) */}
@@ -1764,11 +1774,11 @@ export default function VocalTrainerIII() {
               {statusMsg}
             </div>
           )}
-        </section>
+        </details>
 
         {/* ─── Editor (piano-roll) ───────────────────────────────────── */}
         {(extractedNotes.length > 0 || omrTarget) && (
-          <section className="bg-gray-900/60 border border-amber-500/20 rounded-lg p-4">
+          <section className="order-6 bg-gray-900/60 border border-amber-500/20 rounded-lg p-3">
             <div className="flex items-center justify-between mb-3 gap-2">
               <h2 className="text-lg font-semibold text-amber-300">
                 Note Editor{extractedNotes.length > 0 ? ' — click any note to delete' : ''}
@@ -1792,7 +1802,7 @@ export default function VocalTrainerIII() {
             <div
               ref={editorScrollRef}
               className="overflow-auto bg-black/50 rounded border border-gray-800"
-              style={{ maxHeight: '400px' }}
+              style={{ maxHeight: '280px' }}
             >
               <svg width={editorWidth} height={editorHeight} style={{ display: 'block' }}>
                 {/* Horizontal grid lines (octaves highlighted) */}
@@ -1932,14 +1942,14 @@ export default function VocalTrainerIII() {
         )}
 
         {/* ─── Dichotic Player (three independent channels) ───────────── */}
-        <section className="bg-gray-900/60 border border-amber-500/20 rounded-lg p-4">
-          <h2 className="text-lg font-semibold text-amber-300 mb-1">Dichotic Player</h2>
-          <p className="text-xs text-gray-500 mb-3">
+        <section className="order-7 bg-gray-900/60 border border-amber-500/20 rounded-lg p-3">
+          <h2 className="text-base font-semibold text-amber-300 mb-0.5">Dichotic Player</h2>
+          <p className="text-xs text-gray-500 mb-2">
             Three independent channels — Vocals hard-LEFT, Music center, Mic hard-RIGHT. Upload
             separate stems above; adjust each volume independently. Headphones required.
           </p>
 
-          <div className="mb-3 text-xs">
+          <div className="mb-2 text-xs">
             {playbackLabel ? (
               <span className="text-amber-300">{playbackLabel}</span>
             ) : (
@@ -1955,7 +1965,7 @@ export default function VocalTrainerIII() {
 
           {/* V3: click-to-seek bar + A/B loop (YouTube-style scrubber) */}
           {durationSec > 0 && (
-            <div className="mb-4">
+            <div className="mb-2">
               <div className="flex items-center justify-between text-[11px] text-gray-400 mb-1">
                 <span className="font-mono">{fmtTime(practiceTime)}</span>
                 <div className="flex items-center gap-2">
@@ -2022,7 +2032,7 @@ export default function VocalTrainerIII() {
                   <div className="absolute -top-1.5 w-0.5 h-6 bg-green-400" style={{ left: `${(loopB / durationSec) * 100}%` }} />
                 )}
               </div>
-              <p className="text-[10px] text-gray-600 mt-1">
+              <p className="text-[10px] text-gray-600 mt-1 hidden sm:block">
                 Click the bar to jump · press <span className="text-green-400 font-bold">A</span> at the start of the tricky part, play to the end of it, press <span className="text-green-400 font-bold">B</span> — it repeats forever until you clear it.
               </p>
             </div>
@@ -2033,7 +2043,7 @@ export default function VocalTrainerIII() {
               so Jon always sees the meter respond. Fill = lock hold; green ≥80%.
               The "too high / too low" read lives on the piano roll (your dot vs
               the white reference bar) — position only, no numbers/arrows. */}
-          <div className="mb-3 h-6 flex items-center justify-center gap-2">
+          <div className="mb-2 h-6 flex items-center justify-center gap-2">
             {micEnabled ? (
               <>
                 <span className="text-[11px]" title="Mic is live">🎤</span>
@@ -2065,7 +2075,7 @@ export default function VocalTrainerIII() {
             )}
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-2">
             <button
               onClick={playOrResume}
               disabled={playbackState === 'playing' || (!vocalBufRef.current && !musicBufRef.current)}
@@ -2087,10 +2097,23 @@ export default function VocalTrainerIII() {
             >
               Stop ■
             </button>
+            <button
+              onClick={toggleMicMonitor}
+              className={`px-3 py-2 rounded text-sm font-semibold ${
+                micEnabled ? 'bg-red-600 hover:bg-red-500' : 'bg-green-600 hover:bg-green-500'
+              }`}
+            >
+              {micEnabled ? 'Stop mic' : 'Start mic'}
+            </button>
           </div>
 
+          <details className="rounded-lg border border-gray-800 bg-gray-950/40 p-2">
+            <summary className="cursor-pointer select-none text-xs font-semibold text-gray-300 marker:text-amber-500">
+              Mixing desk, plunk, output, mic profile
+            </summary>
+            <div className="mt-3 space-y-3">
           {/* V3 mixing desk: per-stream volume (0-400%) + L/R balance + live level meter */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {([
               {
                 name: 'Vocals', color: 'amber', vol: vocalVol, pan: vocalPan,
@@ -2143,7 +2166,7 @@ export default function VocalTrainerIII() {
             ))}
           </div>
 
-          <div className="mb-4 text-xs text-gray-400 bg-gray-900/60 border border-gray-800 rounded-lg p-2">
+          <div className="text-xs text-gray-400 bg-gray-900/60 border border-gray-800 rounded-lg p-2">
             <div className="flex flex-col sm:flex-row sm:items-center gap-2">
               <label className="inline-flex items-center gap-2 text-emerald-300 whitespace-nowrap">
                 <input
@@ -2172,7 +2195,7 @@ export default function VocalTrainerIII() {
 
           {/* V3.2: Output mode — Headphones keeps dichotic L/R + lowest latency;
               Speakers turns on echo-cancellation so the track can't fake a match. */}
-          <div className="mb-2 flex flex-wrap items-center gap-2 text-xs text-gray-400">
+          <div className="flex flex-wrap items-center gap-2 text-xs text-gray-400">
             <span>Output</span>
             <div className="inline-flex rounded border border-gray-700 overflow-hidden">
               {(['headphones', 'speakers'] as const).map((mode) => (
@@ -2192,7 +2215,7 @@ export default function VocalTrainerIII() {
             </span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 gap-2">
             <label className="text-xs text-gray-400">
               Mic profile
               <select
@@ -2205,17 +2228,9 @@ export default function VocalTrainerIII() {
                 ))}
               </select>
             </label>
-            <div className="flex items-end">
-              <button
-                onClick={toggleMicMonitor}
-                className={`w-full px-3 py-2 rounded text-sm font-semibold ${
-                  micEnabled ? 'bg-red-600 hover:bg-red-500' : 'bg-green-600 hover:bg-green-500'
-                }`}
-              >
-                {micEnabled ? 'Stop mic monitor' : 'Start mic monitor'}
-              </button>
-            </div>
           </div>
+            </div>
+          </details>
         </section>
       </div>
     </div>
