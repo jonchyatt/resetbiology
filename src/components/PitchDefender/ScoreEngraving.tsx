@@ -183,8 +183,17 @@ export default function ScoreEngraving({ musicXMLUrl, title, zoom: initialZoom =
         ov.style.top = (cr.top - wr.top - 30 * z) + 'px'
         ov.style.height = (118 * z) + 'px'
         ov.style.display = 'block'
-        // karaoke auto-scroll: keep the active note in view (score is height-capped in the one-screen deck)
-        try { cel.scrollIntoView({ block: 'nearest', inline: 'nearest' }) } catch { /* ok */ }
+        // karaoke auto-scroll: smoothly center the active note in the nearest vertical scroll-box
+        try {
+          let sc: HTMLElement | null = wrap.parentElement
+          while (sc && sc.scrollHeight <= sc.clientHeight + 4) sc = sc.parentElement
+          if (sc) {
+            const ovRect = ov.getBoundingClientRect(); const scRect = sc.getBoundingClientRect()
+            const target = sc.scrollTop + (ovRect.top - scRect.top) - sc.clientHeight * 0.38
+            const clamped = Math.max(0, Math.min(sc.scrollHeight - sc.clientHeight, target))
+            if (Math.abs(clamped - sc.scrollTop) > 10) sc.scrollTo({ top: clamped, behavior: 'smooth' })
+          }
+        } catch { /* ok */ }
       }
     } catch { /* ok */ }
   }, [currentTime, status, syncReady])

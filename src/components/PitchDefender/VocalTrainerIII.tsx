@@ -1478,7 +1478,7 @@ export default function VocalTrainerIII() {
               <span className="text-xs text-cyan-400/70">Lida Rose · Lead — recreated from the score</span>
             )}
           </div>
-          <div className="max-h-[30vh] min-h-[170px] overflow-auto rounded-lg">
+          <div className="max-h-[46vh] min-h-[230px] overflow-auto rounded-lg">
             {scoreView === 'pages' ? (
               <ScoreViewer />
             ) : (
