@@ -183,6 +183,8 @@ export default function ScoreEngraving({ musicXMLUrl, title, zoom: initialZoom =
         ov.style.top = (cr.top - wr.top - 30 * z) + 'px'
         ov.style.height = (118 * z) + 'px'
         ov.style.display = 'block'
+        // karaoke auto-scroll: keep the active note in view (score is height-capped in the one-screen deck)
+        try { cel.scrollIntoView({ block: 'nearest', inline: 'nearest' }) } catch { /* ok */ }
       }
     } catch { /* ok */ }
   }, [currentTime, status, syncReady])
