@@ -117,10 +117,10 @@ export default function ScoreEngraving({ musicXMLUrl, title, zoom: initialZoom =
               const sj = await sresp.json()
               if (cancelled) return
               syncNotesRef.current = sj.notes || []
-              stepOrdinalRef.current = buildStepOrdinals(osmd)
+              stepOrdinalRef.current = buildStepOrdinals(osmd, syncNotesRef.current)
               const np = stepOrdinalRef.current.length
               const ns = syncNotesRef.current.length
-              if (np !== ns) console.warn(`ScoreEngraving: pitched notes ${np} != sync notes ${ns} — highlight may drift`)
+              if (np !== ns) console.warn(`ScoreEngraving: aligned cursor notes ${np} != sync notes ${ns} - highlight may drift`)
               const cur = osmd.cursor
               if (cur) { cur.reset(); cur.show(); try { cur.update() } catch { /* ok */ }; curStepRef.current = 0; curIdxRef.current = -1 }
               setSyncReady(true)
@@ -233,25 +233,87 @@ export default function ScoreEngraving({ musicXMLUrl, title, zoom: initialZoom =
   )
 }
 
-// Walk the cursor once to record the absolute cursor-step ordinal of each PITCHED
-// voice entry (rests are cursor steps too, but get no highlight). Returns an array
-// aligned 1:1 with the sync notes (both = the song's pitched notes, in order).
-function buildStepOrdinals(osmd: any): number[] {
+type CursorPitchStop = { step: number; pitchMidi: number }
+
+// Walk the cursor once, keep each pitched stop's absolute cursor step plus MIDI
+// pitch, then align those stops to the sync notes by pitch. This avoids assuming
+// OSMD cursor stops are 1:1 with sung notes: tied/held continuation stops can be
+// skipped while later sync notes keep their correct cursor step.
+function buildStepOrdinals(osmd: any, syncNotes: SyncNote[]): number[] {
   const cur = osmd.cursor
-  if (!cur) return []
+  if (!cur || !syncNotes.length) return []
   cur.reset()
-  const ord: number[] = []
+  const stops: CursorPitchStop[] = []
   let step = 0
   let guard = 0
   while (!cur.Iterator?.EndReached && guard < 100000) {
     let notes: any[] = []
     try { notes = cur.NotesUnderCursor() || [] } catch { notes = [] }
-    const pitched = notes.some((nn: any) => nn && (nn.Pitch != null || nn.pitch != null))
-    if (pitched) ord.push(step)
+    const pitchMidi = firstPitchMidi(notes)
+    if (pitchMidi != null) stops.push({ step, pitchMidi })
     cur.next()
     step++
     guard++
   }
   cur.reset()
+
+  const ord: number[] = []
+  let stopIdx = 0
+  for (const syncNote of syncNotes) {
+    while (stopIdx < stops.length && !pitchesAgree(stops[stopIdx].pitchMidi, syncNote.pitchMidi)) {
+      stopIdx++
+    }
+    if (stopIdx >= stops.length) break
+    ord.push(stops[stopIdx].step)
+    stopIdx++
+  }
   return ord
+}
+
+function firstPitchMidi(notes: any[]): number | null {
+  for (const note of notes) {
+    const midi = notePitchMidi(note)
+    if (midi != null) return midi
+  }
+  return null
+}
+
+function notePitchMidi(note: any): number | null {
+  if (!note) return null
+  const pitch = note.Pitch ?? note.pitch ?? note.TransposedPitch
+  const halfTone = pitchHalfTone(pitch)
+  const octave = numberOrNull(pitch?.Octave ?? pitch?.octave)
+  if (halfTone != null && octave != null) return halfTone + 12 * (octave + 4)
+
+  const absoluteHalfTone = numberOrNull(note.halfTone ?? note.HalfTone)
+  return absoluteHalfTone != null && absoluteHalfTone > 24 ? absoluteHalfTone : null
+}
+
+function pitchHalfTone(pitch: any): number | null {
+  if (!pitch) return null
+  if (typeof pitch.getHalfTone === 'function') return numberOrNull(pitch.getHalfTone())
+  const halfTone = numberOrNull(pitch.halfTone ?? pitch.HalfTone)
+  if (halfTone != null) return halfTone
+  const fundamental = numberOrNull(pitch.FundamentalNote)
+  const accidental = numberOrNull(pitch.AccidentalHalfTones) ?? 0
+  return fundamental != null ? fundamental + accidental : null
+}
+
+function pitchesAgree(cursorMidi: number, syncMidi: number): boolean {
+  return Math.abs(cursorMidi - syncMidi) <= 0.5 || foldedPitchDistance(cursorMidi, syncMidi) <= 0.5
+}
+
+function foldedPitchDistance(a: number, b: number): number {
+  const diff = Math.abs(pitchClass(a) - pitchClass(b))
+  return Math.min(diff, 12 - diff)
+}
+
+function pitchClass(midi: number): number {
+  return ((midi % 12) + 12) % 12
+}
+
+function numberOrNull(value: unknown): number | null {
+  if (value == null || value === '') return null
+  const n = Number(value)
+  return Number.isFinite(n) ? n : null
 }
