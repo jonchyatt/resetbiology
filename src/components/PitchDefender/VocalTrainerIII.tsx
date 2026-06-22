@@ -1478,7 +1478,7 @@ export default function VocalTrainerIII() {
               <span className="text-xs text-cyan-400/70">Lida Rose · Lead — recreated from the score</span>
             )}
           </div>
-          <div className="max-h-[46vh] min-h-[230px] overflow-auto rounded-lg">
+          <div className="max-h-[46vh] min-h-[230px] overflow-auto rounded-lg" style={{ maskImage: 'linear-gradient(to bottom, transparent 0, #000 16px, #000 calc(100% - 24px), transparent 100%)', WebkitMaskImage: 'linear-gradient(to bottom, transparent 0, #000 16px, #000 calc(100% - 24px), transparent 100%)' }}>
             {scoreView === 'pages' ? (
               <ScoreViewer />
             ) : (
@@ -2079,31 +2079,31 @@ export default function VocalTrainerIII() {
             <button
               onClick={playOrResume}
               disabled={playbackState === 'playing' || (!vocalBufRef.current && !musicBufRef.current)}
-              className="px-3 py-2 bg-amber-600 hover:bg-amber-500 disabled:bg-gray-700 disabled:text-gray-500 rounded text-sm font-semibold"
+              className="px-3 py-2 rounded-lg text-sm font-semibold text-white transition-colors shadow-sm bg-emerald-600 hover:bg-emerald-500 disabled:bg-gray-800 disabled:text-gray-600 disabled:shadow-none"
             >
               {playbackState === 'paused' ? 'Resume ▶' : 'Play ▶'}
             </button>
             <button
               onClick={pausePlayback}
               disabled={playbackState !== 'playing'}
-              className="px-3 py-2 bg-yellow-600 hover:bg-yellow-500 disabled:bg-gray-700 disabled:text-gray-500 rounded text-sm font-semibold"
+              className="px-3 py-2 rounded-lg text-sm font-semibold text-white transition-colors shadow-sm bg-slate-600 hover:bg-slate-500 disabled:bg-gray-800 disabled:text-gray-600 disabled:shadow-none"
             >
               Pause ⏸
             </button>
             <button
               onClick={stopPlayback}
               disabled={playbackState === 'idle'}
-              className="px-3 py-2 bg-red-600 hover:bg-red-500 disabled:bg-gray-700 disabled:text-gray-500 rounded text-sm font-semibold"
+              className="px-3 py-2 rounded-lg text-sm font-semibold text-white transition-colors shadow-sm bg-rose-600/90 hover:bg-rose-500 disabled:bg-gray-800 disabled:text-gray-600 disabled:shadow-none"
             >
               Stop ■
             </button>
             <button
               onClick={toggleMicMonitor}
-              className={`px-3 py-2 rounded text-sm font-semibold ${
-                micEnabled ? 'bg-red-600 hover:bg-red-500' : 'bg-green-600 hover:bg-green-500'
+              className={`px-3 py-2 rounded-lg text-sm font-semibold text-white transition-colors shadow-sm ${
+                micEnabled ? 'bg-rose-600 hover:bg-rose-500 ring-2 ring-rose-400/50' : 'bg-cyan-600 hover:bg-cyan-500'
               }`}
             >
-              {micEnabled ? 'Stop mic' : 'Start mic'}
+              {micEnabled ? '● Stop mic' : 'Start mic'}
             </button>
           </div>
 

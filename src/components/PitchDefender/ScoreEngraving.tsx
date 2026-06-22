@@ -179,7 +179,7 @@ export default function ScoreEngraving({ musicXMLUrl, title, zoom: initialZoom =
       if (ov && cel && wrap) {
         const z = osmdRef.current?.Zoom || 0.8
         const cr = cel.getBoundingClientRect(); const wr = wrap.getBoundingClientRect()
-        ov.style.left = (cr.left - wr.left - 1) + 'px'
+        ov.style.left = (cr.left - wr.left - 9) + 'px'
         ov.style.top = (cr.top - wr.top - 30 * z) + 'px'
         ov.style.height = (118 * z) + 'px'
         ov.style.display = 'block'
@@ -238,7 +238,7 @@ export default function ScoreEngraving({ musicXMLUrl, title, zoom: initialZoom =
       {status === 'error' && <p className="text-sm text-red-400 py-8 text-center">Could not render score: {error}</p>}
       <div ref={wrapperRef} className="relative">
         <div ref={containerRef} className="overflow-x-auto" />
-        <div ref={overlayRef} className="absolute pointer-events-none rounded" style={{ display: 'none', width: 8, background: 'rgba(251,191,36,0.72)', zIndex: 5 }} />
+        <div ref={overlayRef} className="absolute pointer-events-none rounded-md" style={{ display: 'none', width: 18, background: 'rgba(251,191,36,0.28)', boxShadow: '0 0 10px rgba(251,191,36,0.5)', zIndex: 5 }} />
       </div>
     </div>
   )

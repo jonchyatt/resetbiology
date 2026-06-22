@@ -18,7 +18,7 @@ fs.mkdirSync(OUT, { recursive: true });
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const browser = await chromium.launch({ args: ['--autoplay-policy=no-user-gesture-required', '--use-fake-ui-for-media-stream'] });
-const ctx = await browser.newContext({ viewport: { width: 1320, height: 900 } });
+const ctx = await browser.newContext({ viewport: { width: 1320, height: 820 } });
 const page = await ctx.newPage();
 page.on('console', (m) => { const t = m.text(); if (/ScoreEngraving|aligned|drift/i.test(t)) console.log('[page]', t); });
 
@@ -42,7 +42,7 @@ try {
 const PROBE = `(() => {
   const divs = [...document.querySelectorAll('div')];
   const ov = divs.find(d => d.style && typeof d.style.background === 'string' && d.style.background.includes('251') && d.style.background.includes('191'));
-  const sb = divs.find(d => { const s = getComputedStyle(d); return s.overflowY === 'auto' && d.querySelector('svg') && d.clientHeight > 100 && d.clientHeight < 460; });
+  const sb = divs.find(d => { const s = getComputedStyle(d); return s.overflowY === 'auto' && d.querySelector('svg') && d.scrollHeight > d.clientHeight + 4 && d.clientHeight > 150; });
   return JSON.stringify({
     barLeft: ov ? parseFloat(ov.style.left) : null,
     barDisp: ov ? ov.style.display : null,
@@ -56,12 +56,12 @@ try { await page.getByRole('button', { name: /play/i }).first().click({ timeout:
 catch (e) { console.log('play failed:', e.message); }
 
 const series = [];
-const N = 30;
+const N = 40;
 for (let i = 0; i < N; i++) {
   await page.screenshot({ path: `${OUT}/f${String(i).padStart(2, '0')}.png` });
   let d = '{}'; try { d = await page.evaluate(PROBE); } catch {}
-  series.push({ i, t: +(i * 0.5).toFixed(2), ...JSON.parse(d) });
-  await sleep(500);
+  series.push({ i, t: +(i * 1.5).toFixed(2), ...JSON.parse(d) });
+  await sleep(1500);
 }
 fs.writeFileSync(`${OUT}/series.json`, JSON.stringify(series, null, 1));
 
