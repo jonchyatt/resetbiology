@@ -7,7 +7,7 @@
   "197:P2",
   "198:P2"
  ],
- "generatedAt": "2026-06-23T16:06:02.706Z",
+ "generatedAt": "2026-06-23T18:04:14.205Z",
  "keyFifths": -6,
  "noteCount": 118,
  "wholeNotes": [
@@ -47,8 +47,28 @@
  "sync": {
   "noteCount": 118,
   "reconciledCount": 118,
-  "confirmed": 112,
-  "recovered": 6
+  "audioEvidenceAnchors": 83,
+  "conductorAnchors": 31,
+  "scoreConductorNotes": 87,
+  "isolatedOnsets": 121,
+  "tempoSmoothness": {
+   "noteLevelAudio": {
+    "medianSecPerBeat": 0.574,
+    "p90RateJumpSecPerBeat": 0.964,
+    "maxRateJumpSecPerBeat": 6.258
+   },
+   "scoreConductor": {
+    "medianSecPerBeat": 0.618,
+    "p90RateJumpSecPerBeat": 0.406,
+    "maxRateJumpSecPerBeat": 1.18
+   }
+  },
+  "timingDeltaFromNoteLevelAudio": {
+   "meanAbsSec": 0.223,
+   "maxAbsSec": 2.526,
+   "maxAbsNote": 84,
+   "finalNoteDeltaSec": 0
+  }
  },
  "checks": [
   {
@@ -92,6 +112,12 @@
    "label": "Sync target count",
    "status": "pass",
    "detail": "sync=118; reconciled=118; score=118"
+  },
+  {
+   "id": "score-conductor-sync",
+   "label": "Score-conductor sync",
+   "status": "pass",
+   "detail": "conductorAnchors=31; scoreConductor=87; audioEvidence=83; p90Jump=0.406; isolated=121"
   }
  ]
 }

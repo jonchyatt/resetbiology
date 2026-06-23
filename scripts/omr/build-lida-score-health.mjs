@@ -143,8 +143,19 @@ checks.push(check(
   `sync=${syncNotes.length}; reconciled=${reconciledNotes.length}; score=${noteCount}`,
 ));
 
-const recovered = reconciledNotes.filter((n) => n.src === 'engraving-recovered').length;
-const confirmed = reconciledNotes.filter((n) => n.src === 'audio-confirmed').length;
+const conductorAnchors = reconciledNotes.filter((n) => n.src === 'conductor-anchor').length;
+const scoreConductorNotes = reconciledNotes.filter((n) => n.src === 'score-conductor').length;
+const conductorTempo = sync.audit?.tempoSmoothness?.scoreConductor;
+checks.push(check(
+  'score-conductor-sync',
+  'Score-conductor sync',
+  /score-conductor/i.test(sync.source || '') &&
+    conductorAnchors >= 20 &&
+    conductorAnchors + scoreConductorNotes === noteCount &&
+    (conductorTempo?.p90RateJumpSecPerBeat ?? 99) <= 0.5,
+  `conductorAnchors=${conductorAnchors}; scoreConductor=${scoreConductorNotes}; audioEvidence=${sync.audit?.audioEvidenceAnchors ?? 'n/a'}; p90Jump=${conductorTempo?.p90RateJumpSecPerBeat ?? 'n/a'}; isolated=${sync.audit?.isolatedOnsets ?? 'n/a'}`,
+));
+
 const payload = {
   song: 'Lida Rose',
   part: 'Lead',
@@ -158,8 +169,12 @@ const payload = {
   sync: {
     noteCount: syncNotes.length,
     reconciledCount: reconciledNotes.length,
-    confirmed,
-    recovered,
+    audioEvidenceAnchors: sync.audit?.audioEvidenceAnchors ?? null,
+    conductorAnchors,
+    scoreConductorNotes,
+    isolatedOnsets: sync.audit?.isolatedOnsets ?? null,
+    tempoSmoothness: sync.audit?.tempoSmoothness ?? null,
+    timingDeltaFromNoteLevelAudio: sync.audit?.timingDeltaFromNoteLevelAudio ?? null,
   },
   checks,
 };

@@ -58,14 +58,12 @@ for (const cfg of PARTS) {
     `${cfg.part}: sync note count ${syncNotes.length} != ${cfg.expectedNoteCount}`);
   assert(xmlPitches.length === cfg.expectedNoteCount,
     `${cfg.part}: XML pitch count ${xmlPitches.length} != ${cfg.expectedNoteCount}`);
-  if (cfg.part === 'Baritone') {
-    assert(/score-conductor/i.test(sync.source || ''),
-      `${cfg.part}: plunk sync must use score-conductor timing, got ${sync.source || 'missing source'}`);
-    assert((health.sync?.conductorAnchors ?? 0) >= 20,
-      `${cfg.part}: conductor-anchor count too low: ${health.sync?.conductorAnchors ?? 'missing'}`);
-    assert((health.sync?.tempoSmoothness?.scoreConductor?.p90RateJumpSecPerBeat ?? 99) <= 0.5,
-      `${cfg.part}: score-conductor timing is too jittery: ${JSON.stringify(health.sync?.tempoSmoothness?.scoreConductor)}`);
-  }
+  assert(/score-conductor/i.test(sync.source || ''),
+    `${cfg.part}: plunk sync must use score-conductor timing, got ${sync.source || 'missing source'}`);
+  assert((health.sync?.conductorAnchors ?? 0) >= 20,
+    `${cfg.part}: conductor-anchor count too low: ${health.sync?.conductorAnchors ?? 'missing'}`);
+  assert((health.sync?.tempoSmoothness?.scoreConductor?.p90RateJumpSecPerBeat ?? 99) <= 0.5,
+    `${cfg.part}: score-conductor timing is too jittery: ${JSON.stringify(health.sync?.tempoSmoothness?.scoreConductor)}`);
 
   for (let i = 0; i < syncNotes.length; i++) {
     const note = syncNotes[i];

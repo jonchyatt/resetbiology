@@ -1,168 +1,468 @@
-// ════════════════════════════════════════════════════════════════════════════
-// build-lead-sync.mjs — primitive `score-audio-align` v3 (VT3 Phase 2).
-//
-// v1 DTW'd the clean score onto the RAW 217-note extraction (noisy) → wrong times.
-// v2 re-anchored the score rhythm onto the audio's [first,last] RAW onset span →
-//    but the audio's first onset (0.57s) is the INTRO (Harold "…he loves pitch
-//    pipe" + pitch-pipe), NOT the quartet's "Li-da Rose" entry (~5s). So v2 pulled
-//    the whole bar ~5.5s early — the "way off" Jon caught (2026-06-21).
-//
-// v3 — the unlock is Jon's "No Lead" stem:
-//   clean Lead = LeadDominant − NoLead   (the other 3 voices are in BOTH and cancel)
-//   The NoLead's first onset (~4.9s) marks where the quartet enters → the intro
-//   is automatically excluded from the anchors.
-//   1) isolate the Lead onsets (LD − NL, range-gated, de-segmented).
-//   2) subsequence pitch-DTW: align the engraved pitches to the isolated onsets
-//      (free start/end skips the intro/outro; octave-folded cost tolerates extraction
-//      octave errors; audio onsets may be skipped for over-segmentation).
-//   3) ANCHOR each confident 1:1 match to its recording time; between anchors,
-//      interpolate by the engraving's own rel-rhythm (follows rubato at anchors,
-//      preserves musical spacing in gaps). No global constant-tempo assumption.
-//
-// Output: public/musicxml/lida-rose-lead-sync.json (per-note recording timestamps).
-// Run: node scripts/omr/build-lead-sync.mjs
-// ════════════════════════════════════════════════════════════════════════════
+// build-lead-sync.mjs
+// Builds Lead recording timestamps from the corrected score rhythm plus
+// measure-level LeadDominant-NoLead audio evidence. The score is the conductor;
+// extracted audio is only timing evidence.
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const RBW = path.join(__dirname, '..', '..');
+const LEAD_XML = path.join(RBW, 'public', 'musicxml', 'lida-rose-lead.musicxml');
 const OUT = path.join(RBW, 'public', 'musicxml', 'lida-rose-lead-sync.json');
+const RECONCILED_OUT = path.join(RBW, 'public', 'musicxml', 'lida-rose-lead-reconciled.json');
 const BLOB = 'https://vv03sd8jufykivax.public.blob.vercel-storage.com/vocal-trainer';
 const LD_URL = `${BLOB}/1781240825294-lead-lida-rose-lead-dominant/template.json`;
 const NL_URL = `${BLOB}/1781240827136-lead-lida-rose-no-lead/template.json`;
 const STAGE = 'C:/Users/jonch/Projects/jarvis/data/vocal-trainer/runtime-logs';
 
+const CONFIG = {
+  rangePadSemitones: 1,
+  subtractionWindowSec: 0.35,
+  subtractionPitchClassDistance: 1,
+  mergeGapSec: 0.12,
+  skipAudioCost: 0.7,
+  sharedOnsetPenalty: 1.1,
+  minIsolatedOnsets: 100,
+  minAudioEvidenceAnchors: 80,
+  minConductorAnchors: 20,
+  maxConductorP90RateJump: 0.5,
+};
+
 const NM = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 const nm = (m) => NM[((m % 12) + 12) % 12] + (Math.floor(m / 12) - 1);
-const pcDist = (a, b) => { const f = ((a - b) % 12 + 12) % 12; return Math.min(f, 12 - f); }; // octave-folded semitone dist
 
-async function load(url, stageName) {
-  const p = `${STAGE}/${stageName}`;
-  try { const j = await (await fetch(url)).json(); fs.writeFileSync(p, JSON.stringify(j)); return j; }
-  catch (e) { console.log(`  (fetch fail ${stageName}: ${e.message} — staged copy)`); return JSON.parse(fs.readFileSync(p, 'utf8')); }
+const scoreEvents = scoreEventsFromXml(fs.readFileSync(LEAD_XML, 'utf8'));
+const scoreMin = Math.min(...scoreEvents.map((n) => n.midi));
+const scoreMax = Math.max(...scoreEvents.map((n) => n.midi));
+const { leadDominant, noLead, durationSec } = await loadTemplates();
+const isolatedOnsets = isolateLeadOnsets(leadDominant, noLead, scoreEvents);
+const audioEvidenceAnchors = alignScoreToAudio(scoreEvents, isolatedOnsets);
+const audioEvidenceByScoreIndex = new Map(audioEvidenceAnchors.map((anchor) => [anchor.scoreIndex, anchor]));
+
+if (isolatedOnsets.length < CONFIG.minIsolatedOnsets) {
+  throw new Error(`Lead isolation too sparse: ${isolatedOnsets.length} onsets`);
+}
+if (audioEvidenceAnchors.length < CONFIG.minAudioEvidenceAnchors) {
+  throw new Error(`Lead audio evidence too sparse: ${audioEvidenceAnchors.length} anchors`);
 }
 
-// ── score: clean Lead notes with their relative score rhythm ──
-const ts = fs.readFileSync(path.join(RBW, 'src', 'components', 'PitchDefender', 'omrTargets.ts'), 'utf8');
-const leadTargetBlock = ts.match(/part: 'Lead',[\s\S]*?notes: \[([\s\S]*?)\n    \]/);
-if (!leadTargetBlock) throw new Error('missing Lead target in omrTargets.ts');
-const score = [...leadTargetBlock[1].matchAll(/pitchMidi:\s*(\d+),\s*startTimeSeconds:\s*([\d.]+),\s*durationSeconds:\s*([\d.]+)/g)]
-  .map((m) => ({ midi: +m[1], rel: +m[2], dur: +m[3] }));
-const EXPECTED_SCORE_NOTES = score.length;
-const sMin = Math.min(...score.map((n) => n.midi)), sMax = Math.max(...score.map((n) => n.midi));
+const noteLevelAudioSync = buildSyncFromAnchors(scoreEvents, audioEvidenceAnchors, durationSec);
+const conductorAnchors = selectConductorAnchors(audioEvidenceAnchors, scoreEvents);
+const conductorByScoreIndex = new Map(conductorAnchors.map((anchor) => [anchor.scoreIndex, anchor]));
+const sync = buildSyncFromAnchors(scoreEvents, conductorAnchors, durationSec);
+const noteLevelSmoothness = tempoSmoothness(noteLevelAudioSync, scoreEvents);
+const conductorSmoothness = tempoSmoothness(sync, scoreEvents);
+const timingDelta = timingDeltaSummary(sync, noteLevelAudioSync);
 
-// ── isolate the Lead: LeadDominant − NoLead ──
-const ldJ = await load(LD_URL, 'ld-lida-lead-dominant.json');
-const nlJ = await load(NL_URL, 'nl-lida-no-lead.json');
-const durationSec = ldJ.durationSec || 83.242;
-const LD = ldJ.notes.map((n) => ({ m: n.pitchMidi, t: n.startTimeSeconds, d: n.durationSeconds })).sort((a, b) => a.t - b.t);
-const NL = nlJ.notes.map((n) => ({ m: n.pitchMidi, t: n.startTimeSeconds, d: n.durationSeconds })).sort((a, b) => a.t - b.t);
-const TWIN = 0.35;
-const inNL = (n) => NL.some((x) => Math.abs(x.t - n.t) <= TWIN && pcDist(x.m, n.m) <= 1);
-let A = LD.filter((n) => !inNL(n)).filter((n) => n.m >= sMin - 1 && n.m <= sMax + 1).sort((a, b) => a.t - b.t);
-// de-segment: drop a same-pitch onset that re-fires within 0.12s
-A = A.filter((n, i) => !(i && A[i - 1].m === n.m && n.t - A[i - 1].t < 0.12));
-
-// ── subsequence pitch-DTW: align score[i] → audio A[j] ──
-const N = score.length, M = A.length, INF = 1e9;
-const SKIP = 0.7;   // cost to skip an audio onset (over-segmentation / intro junk)
-const DUP = 1.1;    // penalty for two score notes sharing one onset (under-segmentation)
-const D = Array.from({ length: N + 1 }, () => new Float64Array(M + 1).fill(INF));
-const P = Array.from({ length: N + 1 }, () => new Int8Array(M + 1)); // 1=diag 2=skipAudio 3=dup
-for (let j = 0; j <= M; j++) D[0][j] = 0; // free start anywhere in the audio
-for (let i = 1; i <= N; i++) {
-  for (let j = 1; j <= M; j++) {
-    const c = pcDist(score[i - 1].midi, A[j - 1].m);
-    const diag = D[i - 1][j - 1] + c;       // match
-    const skip = D[i][j - 1] + SKIP;        // skip audio j
-    const dup = D[i - 1][j] + c + DUP;      // score i shares audio j
-    let best = diag, mv = 1;
-    if (skip < best) { best = skip; mv = 2; }
-    if (dup < best) { best = dup; mv = 3; }
-    D[i][j] = best; P[i][j] = mv;
-  }
+if (conductorAnchors.length < CONFIG.minConductorAnchors) {
+  throw new Error(`Lead conductor anchors too sparse: ${conductorAnchors.length}`);
 }
-// free end: pick j* minimizing D[N][j]
-let jStar = 1; for (let j = 1; j <= M; j++) if (D[N][j] < D[N][jStar]) jStar = j;
-// backtrack → match[i] = audio index (0-based) or -1
-const match = new Array(N).fill(-1);
-let i = N, j = jStar;
-while (i > 0 && j > 0) {
-  const mv = P[i][j];
-  if (mv === 2) { j--; continue; }          // audio skipped
-  match[i - 1] = j - 1;                       // diag or dup → score i-1 ↔ audio j-1
-  if (mv === 1) { i--; j--; } else { i--; }   // dup keeps j
+if (conductorSmoothness.p90RateJumpSecPerBeat > CONFIG.maxConductorP90RateJump) {
+  throw new Error(`Lead conductor grid is still too jittery: p90 jump ${conductorSmoothness.p90RateJumpSecPerBeat}`);
 }
 
-// ── anchors: confident 1:1 matches (pitch agrees, not a shared-onset run) ──
-const matchCount = {};
-for (const mi of match) if (mi >= 0) matchCount[mi] = (matchCount[mi] || 0) + 1;
-const anchors = [];
-for (let k = 0; k < N; k++) {
-  const mi = match[k];
-  if (mi < 0) continue;
-  if (matchCount[mi] > 1) continue;                 // shared onset → not a clean anchor
-  if (pcDist(score[k].midi, A[mi].m) > 1) continue; // pitch must agree
-  const t = A[mi].t;
-  if (anchors.length && t <= anchors[anchors.length - 1].t) continue; // keep monotonic
-  anchors.push({ k, t });
-}
-
-// ── place every score note: anchor time, else interpolate by rel-rhythm ──
-function placeByRel(k, a, b) {
-  const span = (b.t - a.t), rspan = (score[b.k].rel - score[a.k].rel) || 1;
-  return a.t + ((score[k].rel - score[a.k].rel) / rspan) * span;
-}
-const times = new Array(N);
-for (let k = 0; k < N; k++) {
-  // find surrounding anchors
-  let lo = -1, hi = -1;
-  for (let a = 0; a < anchors.length; a++) { if (anchors[a].k <= k) lo = a; if (anchors[a].k >= k && hi < 0) hi = a; }
-  if (lo >= 0 && anchors[lo].k === k) { times[k] = anchors[lo].t; continue; }
-  if (lo >= 0 && hi >= 0 && lo !== hi) { times[k] = placeByRel(k, anchors[lo], anchors[hi]); continue; }
-  if (lo >= 0 && hi < 0) { // after last anchor — extrapolate at local rate
-    const a = anchors[lo], a0 = anchors[Math.max(0, lo - 1)];
-    const rate = (a.t - a0.t) / ((score[a.k].rel - score[a0.k].rel) || 1);
-    times[k] = a.t + (score[k].rel - score[a.k].rel) * (rate || 1); continue;
-  }
-  if (lo < 0 && hi >= 0) { // before first anchor — back-extrapolate
-    const a = anchors[hi], a1 = anchors[Math.min(anchors.length - 1, hi + 1)];
-    const rate = (a1.t - a.t) / ((score[a1.k].rel - score[a.k].rel) || 1);
-    times[k] = a.t - (score[a.k].rel - score[k].rel) * (rate || 1); continue;
-  }
-  times[k] = score[k].rel; // no anchors at all (shouldn't happen)
-}
-// monotonic safety + clamp
-let last = -1;
-for (let k = 0; k < N; k++) { let t = Math.max(0, times[k]); if (t <= last) t = last + 0.02; times[k] = t; last = t; }
-
-// ── durations: up to next onset, clamped ──
-const sync = score.map((s, k) => ({ pitchMidi: s.midi, startTimeSeconds: +times[k].toFixed(3) }));
-for (let k = 0; k < N; k++) {
-  const next = k < N - 1 ? sync[k + 1].startTimeSeconds : Math.min(durationSec, sync[k].startTimeSeconds + score[k].dur);
-  sync[k].durationSeconds = +Math.max(0.08, next - sync[k].startTimeSeconds).toFixed(3);
-}
-
-// ── verify ──
-const monotonic = sync.every((s, k) => k === 0 || s.startTimeSeconds >= sync[k - 1].startTimeSeconds);
+const monotonic = sync.every((s, i) => i === 0 || s.startTimeSeconds >= sync[i - 1].startTimeSeconds);
 const errors = [];
-if (sync.length !== EXPECTED_SCORE_NOTES) errors.push(`expected ${EXPECTED_SCORE_NOTES}, got ${sync.length}`);
-if (!monotonic) errors.push('not monotonic');
-if (sync[N - 1].startTimeSeconds > durationSec + 0.5) errors.push('last exceeds recording');
+if (sync.length !== scoreEvents.length) errors.push(`expected ${scoreEvents.length} Lead notes, got ${sync.length}`);
+if (!monotonic) errors.push('sync is not monotonic');
+if (sync[sync.length - 1].startTimeSeconds > durationSec + 0.5) errors.push('last note exceeds Lead recording duration');
+
+const audit = {
+  method: 'score-conductor grid: LeadDominant-NoLead audio evidence downsampled to measure-level anchors; every note regenerated from score rhythm between anchors',
+  leadDominantRawNotes: leadDominant.length,
+  noLeadRawNotes: noLead.length,
+  isolatedOnsets: isolatedOnsets.length,
+  audioEvidenceAnchors: audioEvidenceAnchors.length,
+  conductorAnchors: conductorAnchors.length,
+  scoreConductorNotes: sync.length - conductorAnchors.length,
+  pitchRange: `${nm(scoreMin)}-${nm(scoreMax)}`,
+  tempoSmoothness: {
+    noteLevelAudio: noteLevelSmoothness,
+    scoreConductor: conductorSmoothness,
+  },
+  timingDeltaFromNoteLevelAudio: timingDelta,
+  config: CONFIG,
+};
 
 const payload = {
-  song: 'Lida Rose', part: 'Lead',
-  source: 'v3 isolated-Lead (LeadDominant − NoLead) subsequence-DTW anchors + rel-rhythm interpolation',
-  durationSec, noteCount: sync.length, notes: sync,
+  song: 'Lida Rose',
+  part: 'Lead',
+  source: 'score-conductor Lead timing from score rhythm plus measure-level isolated-audio anchors',
+  durationSec,
+  noteCount: sync.length,
+  audit,
+  notes: sync,
 };
-fs.mkdirSync(path.dirname(OUT), { recursive: true });
-fs.writeFileSync(OUT, JSON.stringify(payload, null, 1));
+const reconciled = {
+  song: 'Lida Rose',
+  part: 'Lead',
+  method: audit.method,
+  noteCount: sync.length,
+  audit,
+  notes: sync.map((note, index) => {
+    const event = scoreEvents[index];
+    const audioAnchor = audioEvidenceByScoreIndex.get(index);
+    return {
+      ...note,
+      measure: event.measure,
+      scoreBeat: event.startBeat,
+      scoreBeats: event.beats,
+      src: conductorByScoreIndex.has(index) ? 'conductor-anchor' : 'score-conductor',
+      ...(conductorByScoreIndex.has(index) ? {
+        conductorReason: conductorByScoreIndex.get(index)?.reason,
+      } : {}),
+      ...(audioAnchor ? {
+        audioEvidencePitchMidi: audioAnchor.audioPitchMidi,
+        audioEvidenceStartTimeSeconds: round3(audioAnchor.time),
+        audioEvidenceDurationSeconds: round3(audioAnchor.durationSeconds),
+      } : {}),
+    };
+  }),
+};
 
-console.log(`score ${N} (${nm(sMin)}-${nm(sMax)}) | isolated-Lead onsets ${M} (intro excluded via NoLead) | anchors ${anchors.length}`);
-console.log(`★ note0 → ${sync[0].startTimeSeconds}s  (was 0.708s in v2; quartet entry ≈ NoLead start ${NL[0].t.toFixed(2)}s)`);
-console.log(`span ${sync[0].startTimeSeconds}s → ${sync[N - 1].startTimeSeconds}s | monotonic ${monotonic}`);
+fs.mkdirSync(path.dirname(OUT), { recursive: true });
+fs.writeFileSync(OUT, `${JSON.stringify(payload, null, 1)}\n`);
+fs.writeFileSync(RECONCILED_OUT, `${JSON.stringify(reconciled, null, 1)}\n`);
+
+console.log(`Lead score ${sync.length} (${audit.pitchRange}) | audio evidence ${audioEvidenceAnchors.length}/${sync.length} | conductor anchors ${conductorAnchors.length} | isolated onsets ${isolatedOnsets.length}`);
+console.log(`span ${sync[0].startTimeSeconds}s -> ${sync[sync.length - 1].startTimeSeconds}s | duration ${durationSec.toFixed(3)}s | monotonic ${monotonic}`);
+console.log(`tempo jitter p90: note-level ${noteLevelSmoothness.p90RateJumpSecPerBeat}s/beat -> conductor ${conductorSmoothness.p90RateJumpSecPerBeat}s/beat`);
+console.log(`delta vs note-level audio: mean ${timingDelta.meanAbsSec}s | max ${timingDelta.maxAbsSec}s @ note ${timingDelta.maxAbsNote} | final ${timingDelta.finalNoteDeltaSec}s`);
 console.log('first 16 notes:', sync.slice(0, 16).map((s) => `${s.startTimeSeconds}${nm(s.pitchMidi)}`).join(' '));
-if (errors.length) { console.error('VERIFY FAILED:\n  ' + errors.join('\n  ')); process.exit(1); }
-console.log('OK -> wrote public/musicxml/lida-rose-lead-sync.json');
+console.log('last 16 notes:', sync.slice(-16).map((s, i) => `${sync.length - 15 + i}:${s.startTimeSeconds}${nm(s.pitchMidi)}`).join(' '));
+if (errors.length) {
+  console.error('VERIFY FAILED:\n  ' + errors.join('\n  '));
+  process.exit(1);
+}
+console.log(`OK -> wrote ${path.relative(RBW, OUT)} and ${path.relative(RBW, RECONCILED_OUT)}`);
+
+async function loadTemplates() {
+  const ldJ = await loadTemplate(LD_URL, 'ld-lida-lead-dominant.json');
+  const nlJ = await loadTemplate(NL_URL, 'nl-lida-no-lead.json');
+  return {
+    leadDominant: normalizeTemplateNotes(ldJ.notes || []),
+    noLead: normalizeTemplateNotes(nlJ.notes || []),
+    durationSec: Number(ldJ.durationSec) || 83.24208333333333,
+  };
+}
+
+async function loadTemplate(url, stageName) {
+  const stagePath = `${STAGE}/${stageName}`;
+  try {
+    const json = await (await fetch(url)).json();
+    fs.writeFileSync(stagePath, JSON.stringify(json));
+    return json;
+  } catch (e) {
+    console.log(`fetch failed for ${stageName}: ${e.message}; using staged copy`);
+    return JSON.parse(fs.readFileSync(stagePath, 'utf8'));
+  }
+}
+
+function normalizeTemplateNotes(notes) {
+  return notes
+    .filter((n) => Number.isFinite(n.pitchMidi) && Number.isFinite(n.startTimeSeconds) && Number.isFinite(n.durationSeconds))
+    .map((n) => ({
+      pitchMidi: Number(n.pitchMidi),
+      startTimeSeconds: Number(n.startTimeSeconds),
+      durationSeconds: Number(n.durationSeconds),
+    }))
+    .sort((a, b) => a.startTimeSeconds - b.startTimeSeconds);
+}
+
+function isolateLeadOnsets(leadDominant, noLead, events) {
+  const scoreLo = Math.min(...events.map((n) => n.midi)) - CONFIG.rangePadSemitones;
+  const scoreHi = Math.max(...events.map((n) => n.midi)) + CONFIG.rangePadSemitones;
+  const backing = noLead.filter((n) => n.pitchMidi >= scoreLo && n.pitchMidi <= scoreHi);
+  const isolated = leadDominant
+    .filter((n) => n.pitchMidi >= scoreLo && n.pitchMidi <= scoreHi)
+    .filter((note) => !hasBackingTwin(note, backing));
+  return mergeFragments(isolated);
+}
+
+function hasBackingTwin(note, backing) {
+  for (const other of backing) {
+    if (other.startTimeSeconds < note.startTimeSeconds - CONFIG.subtractionWindowSec) continue;
+    if (other.startTimeSeconds > note.startTimeSeconds + CONFIG.subtractionWindowSec) break;
+    if (pitchClassDistance(other.pitchMidi, note.pitchMidi) <= CONFIG.subtractionPitchClassDistance) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function mergeFragments(notes) {
+  const out = [];
+  for (const note of notes) {
+    const prior = out[out.length - 1];
+    if (
+      prior &&
+      prior.pitchMidi === note.pitchMidi &&
+      note.startTimeSeconds <= prior.startTimeSeconds + prior.durationSeconds + CONFIG.mergeGapSec
+    ) {
+      const end = Math.max(
+        prior.startTimeSeconds + prior.durationSeconds,
+        note.startTimeSeconds + note.durationSeconds,
+      );
+      prior.durationSeconds = end - prior.startTimeSeconds;
+    } else {
+      out.push({ ...note });
+    }
+  }
+  return out;
+}
+
+function alignScoreToAudio(events, audio) {
+  const n = events.length;
+  const m = audio.length;
+  const inf = 1e9;
+  const d = Array.from({ length: n + 1 }, () => new Float64Array(m + 1).fill(inf));
+  const p = Array.from({ length: n + 1 }, () => new Int8Array(m + 1));
+  for (let j = 0; j <= m; j++) d[0][j] = 0;
+  for (let i = 1; i <= n; i++) {
+    for (let j = 1; j <= m; j++) {
+      const cost = pitchClassDistance(events[i - 1].midi, audio[j - 1].pitchMidi);
+      const diag = d[i - 1][j - 1] + cost;
+      const skip = d[i][j - 1] + CONFIG.skipAudioCost;
+      const shared = d[i - 1][j] + cost + CONFIG.sharedOnsetPenalty;
+      let best = diag;
+      let move = 1;
+      if (skip < best) {
+        best = skip;
+        move = 2;
+      }
+      if (shared < best) {
+        best = shared;
+        move = 3;
+      }
+      d[i][j] = best;
+      p[i][j] = move;
+    }
+  }
+
+  let jStar = 1;
+  for (let j = 1; j <= m; j++) {
+    if (d[n][j] < d[n][jStar]) jStar = j;
+  }
+
+  const match = new Array(n).fill(-1);
+  let i = n;
+  let j = jStar;
+  while (i > 0 && j > 0) {
+    const move = p[i][j];
+    if (move === 2) {
+      j--;
+      continue;
+    }
+    match[i - 1] = j - 1;
+    if (move === 1) {
+      i--;
+      j--;
+    } else {
+      i--;
+    }
+  }
+
+  const matchCount = new Map();
+  for (const audioIndex of match) {
+    if (audioIndex >= 0) matchCount.set(audioIndex, (matchCount.get(audioIndex) || 0) + 1);
+  }
+
+  const anchors = [];
+  for (let scoreIndex = 0; scoreIndex < n; scoreIndex++) {
+    const audioIndex = match[scoreIndex];
+    if (audioIndex < 0) continue;
+    if (matchCount.get(audioIndex) > 1) continue;
+    if (pitchClassDistance(events[scoreIndex].midi, audio[audioIndex].pitchMidi) > 1) continue;
+    const time = audio[audioIndex].startTimeSeconds;
+    if (anchors.length && time <= anchors[anchors.length - 1].time) continue;
+    anchors.push({
+      scoreIndex,
+      audioIndex,
+      beat: events[scoreIndex].startBeat,
+      time,
+      durationSeconds: audio[audioIndex].durationSeconds,
+      audioPitchMidi: audio[audioIndex].pitchMidi,
+    });
+  }
+  return anchors;
+}
+
+function selectConductorAnchors(audioAnchors, events) {
+  const audioByScoreIndex = new Map(audioAnchors.map((anchor) => [anchor.scoreIndex, anchor]));
+  const out = [];
+  const add = (scoreIndex, reason) => {
+    if (scoreIndex < 0 || scoreIndex >= events.length) return;
+    if (out.some((anchor) => anchor.scoreIndex === scoreIndex)) return;
+    const audioAnchor = audioByScoreIndex.get(scoreIndex);
+    const event = events[scoreIndex];
+    out.push({
+      scoreIndex,
+      beat: event.startBeat,
+      time: audioAnchor ? audioAnchor.time : mapBeat(event.startBeat, audioAnchors),
+      measure: event.measure,
+      reason,
+      audioPitchMidi: audioAnchor?.audioPitchMidi ?? event.midi,
+      durationSeconds: audioAnchor?.durationSeconds ?? event.beats,
+    });
+  };
+
+  add(0, 'first-note');
+  for (const measure of [...new Set(events.map((event) => event.measure))]) {
+    const noteIndexes = events
+      .map((event, index) => event.measure === measure ? index : -1)
+      .filter((index) => index >= 0);
+    if (!noteIndexes.length) continue;
+    const firstIndex = noteIndexes[0];
+    const confirmedIndexes = noteIndexes.filter((index) => audioByScoreIndex.has(index));
+    let choice = firstIndex;
+    if (!audioByScoreIndex.has(firstIndex) && confirmedIndexes.length) {
+      choice = confirmedIndexes.slice().sort((a, b) => {
+        const beatRank = events[b].beats - events[a].beats;
+        if (Math.abs(beatRank) > 0.01) return beatRank;
+        return events[a].startBeat - events[b].startBeat;
+      })[0];
+    }
+    add(choice, choice === firstIndex ? 'measure-start' : 'measure-strong-note');
+  }
+  add(events.length - 1, 'final-note');
+
+  out.sort((a, b) => a.beat - b.beat || a.scoreIndex - b.scoreIndex);
+  const pruned = [];
+  for (const anchor of out) {
+    const prior = pruned[pruned.length - 1];
+    if (
+      prior &&
+      anchor.scoreIndex !== events.length - 1 &&
+      anchor.beat - prior.beat < 1.5
+    ) {
+      continue;
+    }
+    pruned.push(anchor);
+  }
+  return pruned;
+}
+
+function buildSyncFromAnchors(events, beatAnchors, durationSec) {
+  const notes = events.map((event) => {
+    const start = mapBeat(event.startBeat, beatAnchors);
+    const end = mapBeat(event.startBeat + event.beats, beatAnchors);
+    return {
+      pitchMidi: event.midi,
+      startTimeSeconds: round3(Math.max(0, start)),
+      durationSeconds: round3(Math.max(0.08, end - start)),
+    };
+  });
+  for (let i = 0; i < notes.length; i++) {
+    const nextStart = i < notes.length - 1 ? notes[i + 1].startTimeSeconds : durationSec;
+    if (notes[i].startTimeSeconds + notes[i].durationSeconds > nextStart) {
+      notes[i].durationSeconds = round3(Math.max(0.08, nextStart - notes[i].startTimeSeconds));
+    }
+  }
+  return notes;
+}
+
+function mapBeat(beat, anchors) {
+  if (anchors.length < 2) return beat;
+  if (beat <= anchors[0].beat) return extrapolateBeat(beat, anchors[0], anchors[1]);
+  const last = anchors[anchors.length - 1];
+  if (beat >= last.beat) return extrapolateBeat(beat, anchors[anchors.length - 2], last);
+  let hi = 1;
+  while (hi < anchors.length && anchors[hi].beat < beat) hi++;
+  const lo = anchors[hi - 1];
+  const next = anchors[hi];
+  const span = next.beat - lo.beat || 1;
+  return lo.time + ((beat - lo.beat) / span) * (next.time - lo.time);
+}
+
+function extrapolateBeat(beat, a, b) {
+  const rate = (b.time - a.time) / ((b.beat - a.beat) || 1);
+  return a.time + (beat - a.beat) * rate;
+}
+
+function timingDeltaSummary(sync, baseline) {
+  const deltas = sync.map((note, index) => round3(note.startTimeSeconds - baseline[index].startTimeSeconds));
+  const abs = deltas.map(Math.abs);
+  let maxIndex = 0;
+  for (let i = 1; i < abs.length; i++) {
+    if (abs[i] > abs[maxIndex]) maxIndex = i;
+  }
+  return {
+    meanAbsSec: round3(abs.reduce((sum, n) => sum + n, 0) / abs.length),
+    maxAbsSec: round3(abs[maxIndex]),
+    maxAbsNote: maxIndex + 1,
+    finalNoteDeltaSec: deltas[deltas.length - 1],
+  };
+}
+
+function tempoSmoothness(sync, events) {
+  const rates = [];
+  for (let i = 1; i < sync.length; i++) {
+    const beatDelta = events[i].startBeat - events[i - 1].startBeat;
+    const timeDelta = sync[i].startTimeSeconds - sync[i - 1].startTimeSeconds;
+    if (beatDelta > 0 && timeDelta >= 0) rates.push(timeDelta / beatDelta);
+  }
+  const jumps = [];
+  for (let i = 1; i < rates.length; i++) jumps.push(Math.abs(rates[i] - rates[i - 1]));
+  return {
+    medianSecPerBeat: round3(percentile(rates, 0.5)),
+    p90RateJumpSecPerBeat: round3(percentile(jumps, 0.9)),
+    maxRateJumpSecPerBeat: round3(percentile(jumps, 1)),
+  };
+}
+
+function percentile(values, p) {
+  if (!values.length) return 0;
+  const sorted = values.slice().sort((a, b) => a - b);
+  const index = Math.min(sorted.length - 1, Math.max(0, Math.floor((sorted.length - 1) * p)));
+  return sorted[index];
+}
+
+function scoreEventsFromXml(xml) {
+  const events = [];
+  let beat = 0;
+  let divisions = 12;
+  for (const measureMatch of xml.matchAll(/<measure number="(\d+)"[\s\S]*?<\/measure>/g)) {
+    const measure = Number(measureMatch[1]);
+    const measureXml = measureMatch[0];
+    const divMatch = measureXml.match(/<divisions>(\d+)<\/divisions>/);
+    if (divMatch) divisions = Number(divMatch[1]);
+    for (const noteMatch of measureXml.matchAll(/<note\b[\s\S]*?<\/note>/g)) {
+      const noteXml = noteMatch[0];
+      if (/<chord\s*\/?\s*>/.test(noteXml)) continue;
+      const dur = Number((noteXml.match(/<duration>(\d+)<\/duration>/) || [])[1] || 0);
+      const beats = dur / divisions;
+      if (/<rest\b/.test(noteXml)) {
+        beat += beats;
+        continue;
+      }
+      const pitch = noteXml.match(/<pitch>[\s\S]*?<step>([A-G])<\/step>[\s\S]*?(?:<alter>(-?\d+)<\/alter>[\s\S]*?)?<octave>(\d+)<\/octave>[\s\S]*?<\/pitch>/);
+      if (!pitch) {
+        beat += beats;
+        continue;
+      }
+      events.push({
+        measure,
+        midi: pitchMidi(pitch[1], pitch[2] ? Number(pitch[2]) : 0, Number(pitch[3])),
+        startBeat: beat,
+        beats,
+      });
+      beat += beats;
+    }
+  }
+  return events;
+}
+
+function pitchMidi(step, alter, octave) {
+  const semi = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
+  return (octave + 1) * 12 + semi[step] + alter;
+}
+
+function pitchClassDistance(a, b) {
+  const diff = Math.abs((a - b) % 12);
+  return Math.min(diff, 12 - diff);
+}
+
+function round3(n) {
+  return +n.toFixed(3);
+}

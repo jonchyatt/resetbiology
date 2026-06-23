@@ -13,6 +13,8 @@ import {
 } from './lida-lead-printed-manifest.mjs';
 
 const XML = 'public/musicxml/lida-rose-lead.musicxml';
+const SYNC = 'public/musicxml/lida-rose-lead-sync.json';
+const RECONCILED = 'public/musicxml/lida-rose-lead-reconciled.json';
 const PAGES = [
   { page: '196', file: 'scripts/omr/source/lida-196.xml', lead: 'P3' },
   { page: '197', file: 'scripts/omr/source/lida-197.xml', lead: 'P2' },
@@ -20,6 +22,8 @@ const PAGES = [
 ];
 
 const xml = fs.readFileSync(XML, 'utf8');
+const sync = JSON.parse(fs.readFileSync(SYNC, 'utf8'));
+const reconciled = JSON.parse(fs.readFileSync(RECONCILED, 'utf8'));
 const expected = expectedFromSource();
 const actual = extractMeasurePitches(xml);
 const actualWhole = extractWholeNotes(xml);
@@ -65,6 +69,22 @@ const noteCount = Object.values(actual).reduce((sum, notes) => sum + notes.lengt
 if (noteCount !== expected.noteCount) errors.push(`expected ${expected.noteCount} pitched notes, got ${noteCount}`);
 if (noteCount !== EXPECTED_LEAD_NOTE_COUNT) errors.push(`printed manifest expects ${EXPECTED_LEAD_NOTE_COUNT} pitched notes, got ${noteCount}`);
 
+const syncNotes = Array.isArray(sync.notes) ? sync.notes : [];
+const reconciledNotes = Array.isArray(reconciled.notes) ? reconciled.notes : [];
+const conductorAnchors = reconciledNotes.filter((n) => n.src === 'conductor-anchor').length;
+const scoreConductorNotes = reconciledNotes.filter((n) => n.src === 'score-conductor').length;
+if (!/score-conductor/i.test(sync.source || '')) errors.push(`sync source is not score-conductor: ${sync.source || 'missing'}`);
+if (syncNotes.length !== noteCount || reconciledNotes.length !== noteCount) {
+  errors.push(`sync count mismatch: sync=${syncNotes.length}; reconciled=${reconciledNotes.length}; score=${noteCount}`);
+}
+if (conductorAnchors < 20) errors.push(`conductorAnchors too low: ${conductorAnchors}`);
+if (conductorAnchors + scoreConductorNotes !== noteCount) {
+  errors.push(`score-conductor note accounting mismatch: anchors=${conductorAnchors}; scoreConductor=${scoreConductorNotes}; score=${noteCount}`);
+}
+if ((sync.audit?.tempoSmoothness?.scoreConductor?.p90RateJumpSecPerBeat ?? 99) > 0.5) {
+  errors.push(`conductor timing too jittery: ${JSON.stringify(sync.audit?.tempoSmoothness?.scoreConductor)}`);
+}
+
 for (const err of comparePrintedAudit(xml)) errors.push(err);
 
 if (errors.length) {
@@ -78,6 +98,7 @@ console.log(`key: fifths allowed ${[...allowedFifths].join(',')}`);
 console.log(`pitched notes: ${noteCount}`);
 console.log(`whole notes: ${gotWhole.join(' ') || '(none)'}`);
 console.log(`printed audit: ${PRINTED_LEAD_AUDIT_MEASURES.length} measures`);
+console.log(`score conductor: anchors ${conductorAnchors}; notes ${scoreConductorNotes}; p90 jump ${sync.audit?.tempoSmoothness?.scoreConductor?.p90RateJumpSecPerBeat}; isolated ${sync.audit?.isolatedOnsets}`);
 console.log(`source pages: ${PAGES.map((p) => `${p.page}:${p.lead}`).join(' ')}`);
 
 function expectedFromSource() {
