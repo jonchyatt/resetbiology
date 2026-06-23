@@ -21,7 +21,8 @@
 
 - [x] Run score-health generator.
 - [x] Run local built-route smoke after build.
-- [ ] Push to `origin/master` and verify the live production page.
+- [x] Push to `origin/master` and verify the live production page.
+  - Production smoke: artifact smoke PASS, UI score-health PASS, active-note smoke PASS index 4 pitch C#4.
 
 ## Next system upgrades
 
