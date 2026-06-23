@@ -10,19 +10,51 @@ import { applyLeadMeasureCorrections } from './lida-lead-source-corrections.mjs'
 const XML = 'public/musicxml/lida-rose-lead.musicxml';
 const SYNC = 'public/musicxml/lida-rose-lead-sync.json';
 const RECONCILED = 'public/musicxml/lida-rose-lead-reconciled.json';
+const PHRASES = 'public/musicxml/lida-rose-lead-phrases.json';
 const OUT = 'public/musicxml/lida-rose-lead-score-health.json';
+const ALL_OUT = 'public/musicxml/lida-rose-score-health.json';
+const NOTE_MAP_OUT = 'public/musicxml/lida-rose-lead-note-map.json';
 const PAGES = [
   { page: '196', file: 'scripts/omr/source/lida-196.xml', lead: 'P3' },
   { page: '197', file: 'scripts/omr/source/lida-197.xml', lead: 'P2' },
   { page: '198', file: 'scripts/omr/source/lida-198.xml', lead: 'P2' },
 ];
+const PART_SOURCES = [
+  {
+    part: 'Tenor',
+    pages: [
+      { page: '196', file: 'scripts/omr/source/lida-196.xml', lead: 'P2' },
+      { page: '197', file: 'scripts/omr/source/lida-197.xml', lead: 'P1' },
+      { page: '198', file: 'scripts/omr/source/lida-198.xml', lead: 'P1' },
+    ],
+  },
+  { part: 'Lead', pages: PAGES },
+  {
+    part: 'Baritone',
+    pages: [
+      { page: '196', file: 'scripts/omr/source/lida-196.xml', lead: 'P4' },
+      { page: '197', file: 'scripts/omr/source/lida-197.xml', lead: 'P3' },
+      { page: '198', file: 'scripts/omr/source/lida-198.xml', lead: 'P3' },
+    ],
+  },
+  {
+    part: 'Bass',
+    pages: [
+      { page: '196', file: 'scripts/omr/source/lida-196.xml', lead: 'P5' },
+      { page: '197', file: 'scripts/omr/source/lida-197.xml', lead: 'P4' },
+      { page: '198', file: 'scripts/omr/source/lida-198.xml', lead: 'P4' },
+    ],
+  },
+];
 
 const xml = fs.readFileSync(XML, 'utf8');
 const sync = readJson(SYNC);
 const reconciled = readJson(RECONCILED);
+const phraseManifest = fs.existsSync(PHRASES) ? readJson(PHRASES) : { phrases: [] };
 const expected = expectedFromSource();
 const actual = extractMeasurePitches(xml);
 const actualWhole = extractWholeNotes(xml);
+const noteMap = extractNoteMap(xml, phraseManifest.phrases || []);
 const fifths = [...new Set([...xml.matchAll(/<fifths>(-?\d+)<\/fifths>/g)].map((m) => Number(m[1])))];
 const noteCount = Object.values(actual).reduce((sum, notes) => sum + notes.length, 0);
 const checks = [];
@@ -116,7 +148,18 @@ const payload = {
 };
 
 fs.writeFileSync(OUT, `${JSON.stringify(payload, null, 1)}\n`);
+const aggregate = buildAggregateHealth(payload.generatedAt);
+fs.writeFileSync(ALL_OUT, `${JSON.stringify(aggregate, null, 1)}\n`);
+fs.writeFileSync(NOTE_MAP_OUT, `${JSON.stringify({
+  song: 'Lida Rose',
+  part: 'Lead',
+  scoreVersion: payload.scoreVersion,
+  generatedAt: payload.generatedAt,
+  notes: noteMap,
+}, null, 1)}\n`);
 console.log(`wrote ${OUT}`);
+console.log(`wrote ${ALL_OUT}`);
+console.log(`wrote ${NOTE_MAP_OUT}`);
 for (const c of checks) console.log(`${c.status.toUpperCase()} ${c.id}: ${c.detail}`);
 if (checks.some((c) => c.status !== 'pass')) process.exit(1);
 
@@ -129,11 +172,50 @@ function readJson(file) {
 }
 
 function expectedFromSource() {
+  return expectedFromPages(PAGES);
+}
+
+function buildAggregateHealth(generatedAt) {
+  const parts = PART_SOURCES.map((partSource) => {
+    const expectedPart = expectedFromPages(partSource.pages);
+    const sourceNoteCount = expectedPart.noteCount;
+    const sourceWholeNotes = expectedPart.wholeNotes;
+    const sourceMeasures = Object.keys(expectedPart.pitchesByMeasure).length;
+    const hasGeneratedMusicXml = partSource.part === 'Lead';
+    return {
+      part: partSource.part,
+      sourcePages: partSource.pages.map((p) => `${p.page}:${p.lead}`),
+      sourceNoteCount,
+      sourceMeasures,
+      sourceWholeNotes,
+      generatedMusicXml: hasGeneratedMusicXml ? 'available' : 'not-yet-generated',
+      checks: [
+        check('source-readable', 'Source pages readable', sourceNoteCount > 0, `${sourceNoteCount} pitched notes from ${sourceMeasures} source measures`),
+        check('key-normalizer', 'Six-flat normalizer applies', PRINTED_FIFTHS === -6, `normalizer=${PRINTED_FIFTHS}`),
+      ],
+    };
+  });
+  const checks = [
+    check('four-part-source-map', 'Four-part source map', parts.length === 4, `${parts.map((p) => p.part).join(', ')}`),
+    check('all-source-parts-readable', 'All source parts readable', parts.every((p) => p.sourceNoteCount > 0), parts.map((p) => `${p.part}:${p.sourceNoteCount}`).join(' ')),
+    check('lead-output-generated', 'Lead generated MusicXML verified', parts.find((p) => p.part === 'Lead')?.generatedMusicXml === 'available', 'Lead is the current rendered VT3 score'),
+  ];
+  return {
+    song: 'Lida Rose',
+    scoreVersion: 'lida-rose-source-parts-six-flat',
+    generatedAt,
+    sourceImages: ['/score/page-196.jpg', '/score/page-197.jpg', '/score/page-198.jpg'],
+    parts,
+    checks,
+  };
+}
+
+function expectedFromPages(pages) {
   const pitchesByMeasure = {};
   const wholeNotes = [];
   let outMeasure = 0;
 
-  for (const page of PAGES) {
+  for (const page of pages) {
     const sourceXml = fs.readFileSync(page.file, 'utf8');
     const part = getPartInner(sourceXml, page.lead);
     const measures = applyLeadMeasureCorrections(page.page, part.match(/<measure\b[\s\S]*?<\/measure>/g) || []);
@@ -197,6 +279,32 @@ function extractWholeNotes(xmlText) {
   for (const measureMatch of xmlText.matchAll(/<measure number="(\d+)"[\s\S]*?<\/measure>/g)) {
     for (const pitch of extractWholeNotesFromMeasure(measureMatch[0])) {
       out.push({ measure: Number(measureMatch[1]), pitch });
+    }
+  }
+  return out;
+}
+
+function extractNoteMap(xmlText, phrases) {
+  const out = [];
+  let index = 0;
+  for (const measureMatch of xmlText.matchAll(/<measure number="(\d+)"[\s\S]*?<\/measure>/g)) {
+    const measure = Number(measureMatch[1]);
+    for (const noteMatch of measureMatch[0].matchAll(/<note\b[\s\S]*?<\/note>/g)) {
+      const noteXml = noteMatch[0];
+      if (/<rest\b/.test(noteXml) || /<chord\s*\/?\s*>/.test(noteXml)) continue;
+      const pitch = extractPitchesFromMeasure(noteXml)[0];
+      if (!pitch) continue;
+      index++;
+      const phrase = phrases.find((p) => index >= p.noteStart && index <= p.noteEnd) ?? null;
+      out.push({
+        index,
+        measure,
+        page: measure <= 9 ? 196 : measure <= 19 ? 197 : 198,
+        pitch,
+        phraseId: phrase?.id ?? null,
+        phraseLabel: phrase?.label ?? null,
+        phraseShortLabel: phrase?.shortLabel ?? null,
+      });
     }
   }
   return out;

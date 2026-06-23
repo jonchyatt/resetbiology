@@ -1,0 +1,160 @@
+{
+ "song": "Lida Rose",
+ "scoreVersion": "lida-rose-source-parts-six-flat",
+ "generatedAt": "2026-06-23T06:16:53.120Z",
+ "sourceImages": [
+  "/score/page-196.jpg",
+  "/score/page-197.jpg",
+  "/score/page-198.jpg"
+ ],
+ "parts": [
+  {
+   "part": "Tenor",
+   "sourcePages": [
+    "196:P2",
+    "197:P1",
+    "198:P1"
+   ],
+   "sourceNoteCount": 110,
+   "sourceMeasures": 27,
+   "sourceWholeNotes": [
+    {
+     "measure": 9,
+     "pitch": "Cb4"
+    }
+   ],
+   "generatedMusicXml": "not-yet-generated",
+   "checks": [
+    {
+     "id": "source-readable",
+     "label": "Source pages readable",
+     "status": "pass",
+     "detail": "110 pitched notes from 27 source measures"
+    },
+    {
+     "id": "key-normalizer",
+     "label": "Six-flat normalizer applies",
+     "status": "pass",
+     "detail": "normalizer=-6"
+    }
+   ]
+  },
+  {
+   "part": "Lead",
+   "sourcePages": [
+    "196:P3",
+    "197:P2",
+    "198:P2"
+   ],
+   "sourceNoteCount": 114,
+   "sourceMeasures": 29,
+   "sourceWholeNotes": [
+    {
+     "measure": 5,
+     "pitch": "Cb4"
+    },
+    {
+     "measure": 9,
+     "pitch": "Cb4"
+    }
+   ],
+   "generatedMusicXml": "available",
+   "checks": [
+    {
+     "id": "source-readable",
+     "label": "Source pages readable",
+     "status": "pass",
+     "detail": "114 pitched notes from 29 source measures"
+    },
+    {
+     "id": "key-normalizer",
+     "label": "Six-flat normalizer applies",
+     "status": "pass",
+     "detail": "normalizer=-6"
+    }
+   ]
+  },
+  {
+   "part": "Baritone",
+   "sourcePages": [
+    "196:P4",
+    "197:P3",
+    "198:P3"
+   ],
+   "sourceNoteCount": 107,
+   "sourceMeasures": 26,
+   "sourceWholeNotes": [
+    {
+     "measure": 9,
+     "pitch": "Cb4"
+    }
+   ],
+   "generatedMusicXml": "not-yet-generated",
+   "checks": [
+    {
+     "id": "source-readable",
+     "label": "Source pages readable",
+     "status": "pass",
+     "detail": "107 pitched notes from 26 source measures"
+    },
+    {
+     "id": "key-normalizer",
+     "label": "Six-flat normalizer applies",
+     "status": "pass",
+     "detail": "normalizer=-6"
+    }
+   ]
+  },
+  {
+   "part": "Bass",
+   "sourcePages": [
+    "196:P5",
+    "197:P4",
+    "198:P4"
+   ],
+   "sourceNoteCount": 100,
+   "sourceMeasures": 25,
+   "sourceWholeNotes": [
+    {
+     "measure": 9,
+     "pitch": "Cb4"
+    }
+   ],
+   "generatedMusicXml": "not-yet-generated",
+   "checks": [
+    {
+     "id": "source-readable",
+     "label": "Source pages readable",
+     "status": "pass",
+     "detail": "100 pitched notes from 25 source measures"
+    },
+    {
+     "id": "key-normalizer",
+     "label": "Six-flat normalizer applies",
+     "status": "pass",
+     "detail": "normalizer=-6"
+    }
+   ]
+  }
+ ],
+ "checks": [
+  {
+   "id": "four-part-source-map",
+   "label": "Four-part source map",
+   "status": "pass",
+   "detail": "Tenor, Lead, Baritone, Bass"
+  },
+  {
+   "id": "all-source-parts-readable",
+   "label": "All source parts readable",
+   "status": "pass",
+   "detail": "Tenor:110 Lead:114 Baritone:107 Bass:100"
+  },
+  {
+   "id": "lead-output-generated",
+   "label": "Lead generated MusicXML verified",
+   "status": "pass",
+   "detail": "Lead is the current rendered VT3 score"
+  }
+ ]
+}

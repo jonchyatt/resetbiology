@@ -84,9 +84,13 @@ interface ScoreHealthPayload {
 interface PracticePhrase {
   id: string;
   label: string;
+  shortLabel?: string;
   start: number;
   end: number;
   noteCount: number;
+  page?: number;
+  noteStart?: number;
+  noteEnd?: number;
 }
 
 interface CoachStats {
@@ -97,6 +101,79 @@ interface CoachStats {
   sumAbsCents: number;
   sumSignedCents: number;
   lastCents: number | null;
+}
+
+interface PhraseManifestPayload {
+  song: string;
+  part: string;
+  scoreVersion: string;
+  phrases: Array<{
+    id: string;
+    shortLabel?: string;
+    label: string;
+    page?: number;
+    noteStart: number;
+    noteEnd: number;
+  }>;
+}
+
+interface SourcePartHealthPayload {
+  song: string;
+  scoreVersion: string;
+  parts: Array<{
+    part: string;
+    sourceNoteCount: number;
+    generatedMusicXml: string;
+  }>;
+  checks: Array<{ id: string; label: string; status: 'pass' | 'fail'; detail: string }>;
+}
+
+interface LeadNoteMapPayload {
+  song: string;
+  part: string;
+  scoreVersion: string;
+  notes: Array<{
+    index: number;
+    measure: number;
+    page: number;
+    pitch: string;
+    phraseId?: string | null;
+    phraseLabel?: string | null;
+    phraseShortLabel?: string | null;
+  }>;
+}
+
+interface TakeSummary {
+  id: string;
+  createdAt: string;
+  title: string;
+  reason: 'stopped' | 'ended';
+  durationSec: number;
+  samples: number;
+  accuracyPct: number;
+  avgCents: number;
+  meanAbsCents: number;
+  sharpPct: number;
+  flatPct: number;
+}
+
+interface EngravingReport {
+  id: string;
+  createdAt: string;
+  title: string;
+  timeSeconds: number;
+  noteIndex: number | null;
+  measure: number | null;
+  page: number | null;
+  pitch: string | null;
+  phraseId: string | null;
+  phrase: string | null;
+  scoreVersion: string | null;
+  sourcePageImage: string | null;
+  activeScore: unknown;
+  svgSnapshot: string | null;
+  svgTruncated: boolean;
+  viewport: { width: number; height: number };
 }
 
 type MicProfile = 'phone' | 'laptop' | 'usb';
@@ -114,6 +191,8 @@ const MIC_PROFILES: Record<MicProfile, { label: string; gain: number; agc: boole
 const IS_MOBILE = typeof navigator !== 'undefined' && /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent);
 
 const VOL_MAX = 400; // V3: percent ceiling per stream (V1 was 200)
+const TAKE_HISTORY_KEY = 'vt3_take_summaries_v1';
+const ENGRAVING_REPORTS_KEY = 'vt3_engraving_reports_v1';
 
 // Vocal range used for both extraction filter and editor display
 const PITCH_MIN = 48; // C3
@@ -354,6 +433,55 @@ export default function VocalTrainerIII() {
     coachStatsRef.current = fresh;
     lastCoachSampleMsRef.current = 0;
     setCoachStats(fresh);
+  }, []);
+  const [takeHistory, setTakeHistory] = useState<TakeSummary[]>([]);
+  const [engravingReports, setEngravingReports] = useState<EngravingReport[]>([]);
+  const [reportStatus, setReportStatus] = useState<string | null>(null);
+  const currentTemplateRef = useRef<FullTemplate | null>(null);
+  const playbackLabelRef = useRef('');
+  const practiceTimeRef = useRef(0);
+  useEffect(() => { currentTemplateRef.current = currentTemplate; }, [currentTemplate]);
+  useEffect(() => { playbackLabelRef.current = playbackLabel; }, [playbackLabel]);
+  useEffect(() => { practiceTimeRef.current = practiceTime; }, [practiceTime]);
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      setTakeHistory(JSON.parse(localStorage.getItem(TAKE_HISTORY_KEY) || '[]'));
+    } catch {
+      setTakeHistory([]);
+    }
+    try {
+      setEngravingReports(JSON.parse(localStorage.getItem(ENGRAVING_REPORTS_KEY) || '[]'));
+    } catch {
+      setEngravingReports([]);
+    }
+  }, []);
+  const saveTakeSummary = useCallback((reason: TakeSummary['reason'], endTimeSec = practiceTimeRef.current) => {
+    const stats = coachStatsRef.current;
+    if (!stats.samples || stats.samples < 3) return;
+    const accuracyPct = Math.round((stats.onPitch / stats.samples) * 100);
+    const summary: TakeSummary = {
+      id: `take-${Date.now()}`,
+      createdAt: new Date().toISOString(),
+      title: currentTemplateRef.current?.title || playbackLabelRef.current || 'Practice take',
+      reason,
+      durationSec: Math.max(0, endTimeSec),
+      samples: stats.samples,
+      accuracyPct,
+      avgCents: Math.round(stats.sumSignedCents / stats.samples),
+      meanAbsCents: Math.round(stats.sumAbsCents / stats.samples),
+      sharpPct: Math.round((stats.sharp / stats.samples) * 100),
+      flatPct: Math.round((stats.flat / stats.samples) * 100),
+    };
+    setTakeHistory((prev) => {
+      const next = [summary, ...prev].slice(0, 10);
+      try { localStorage.setItem(TAKE_HISTORY_KEY, JSON.stringify(next)); } catch {}
+      return next;
+    });
+  }, []);
+  const clearTakeHistory = useCallback(() => {
+    setTakeHistory([]);
+    try { localStorage.removeItem(TAKE_HISTORY_KEY); } catch {}
   }, []);
 
   // Editor scroll container for auto-scrolling the piano-roll with the playhead.
@@ -896,6 +1024,7 @@ export default function VocalTrainerIII() {
         return;
       }
       if (elapsed >= playbackDurationRef.current) {
+        saveTakeSummary('ended', playbackDurationRef.current);
         stopAudioSource();
         pauseOffsetRef.current = 0;
         setPracticeTime(0);
@@ -905,7 +1034,7 @@ export default function VocalTrainerIII() {
       rafRef.current = requestAnimationFrame(tick);
     };
     rafRef.current = requestAnimationFrame(tick);
-  }, [ensureAudioGraph, stopAudioSource]);
+  }, [ensureAudioGraph, saveTakeSummary, stopAudioSource]);
 
   // V3: keep a ref to the latest startAudioSource so the tick closure (and
   // seek) can restart playback without stale-closure issues.
@@ -922,12 +1051,13 @@ export default function VocalTrainerIII() {
   }, [playbackState, stopAudioSource]);
 
   const stopPlayback = useCallback(() => {
+    saveTakeSummary('stopped', practiceTime);
     stopAudioSource();
     pauseOffsetRef.current = 0;
     setPracticeTime(0);
     setPlaybackState('idle');
     resetCoachStats();
-  }, [stopAudioSource, resetCoachStats]);
+  }, [practiceTime, saveTakeSummary, stopAudioSource, resetCoachStats]);
 
   const playOrResume = useCallback(async () => {
     if (playbackState === 'playing') return;
@@ -1316,6 +1446,9 @@ export default function VocalTrainerIII() {
   // stale omrTargets span-scaled times only when no reconciled file exists.
   const [reconciled, setReconciled] = useState<PracticeNote[] | null>(null);
   const [scoreHealth, setScoreHealth] = useState<ScoreHealthPayload | null>(null);
+  const [scorePartHealth, setScorePartHealth] = useState<SourcePartHealthPayload | null>(null);
+  const [phraseManifest, setPhraseManifest] = useState<PhraseManifestPayload | null>(null);
+  const [leadNoteMap, setLeadNoteMap] = useState<LeadNoteMapPayload | null>(null);
   useEffect(() => {
     if (isLidaRoseLead) {
       fetch('/musicxml/lida-rose-lead-reconciled.json', { cache: 'no-store' })
@@ -1328,6 +1461,20 @@ export default function VocalTrainerIII() {
       .then((r) => r.ok ? r.json() : null)
       .then((j) => { if (!cancelled) setScoreHealth(j || null); })
       .catch(() => { if (!cancelled) setScoreHealth(null); });
+    return () => { cancelled = true; };
+  }, []);
+  useEffect(() => {
+    let cancelled = false;
+    Promise.all([
+      fetch('/musicxml/lida-rose-score-health.json', { cache: 'no-store' }).then((r) => r.ok ? r.json() : null).catch(() => null),
+      fetch('/musicxml/lida-rose-lead-phrases.json', { cache: 'no-store' }).then((r) => r.ok ? r.json() : null).catch(() => null),
+      fetch('/musicxml/lida-rose-lead-note-map.json', { cache: 'no-store' }).then((r) => r.ok ? r.json() : null).catch(() => null),
+    ]).then(([parts, phrases, noteMap]) => {
+      if (cancelled) return;
+      setScorePartHealth(parts);
+      setPhraseManifest(phrases);
+      setLeadNoteMap(noteMap);
+    });
     return () => { cancelled = true; };
   }, []);
   // OMR score-target lane: the REAL notated notes of the loaded part, off the sheet.
@@ -1349,6 +1496,26 @@ export default function VocalTrainerIII() {
         && Number.isFinite(n.durationSeconds)
       )
       .sort((a, b) => a.startTimeSeconds - b.startTimeSeconds);
+    if (phraseManifest?.phrases.length) {
+      const fromManifest: PracticePhrase[] = [];
+      for (const phrase of phraseManifest.phrases) {
+        const first = notes[phrase.noteStart - 1];
+        const last = notes[phrase.noteEnd - 1];
+        if (!first || !last) continue;
+        fromManifest.push({
+          id: phrase.id,
+          label: phrase.label,
+          shortLabel: phrase.shortLabel,
+          start: Math.max(0, first.startTimeSeconds - 0.12),
+          end: last.startTimeSeconds + last.durationSeconds + 0.18,
+          noteCount: phrase.noteEnd - phrase.noteStart + 1,
+          page: phrase.page,
+          noteStart: phrase.noteStart,
+          noteEnd: phrase.noteEnd,
+        });
+      }
+      return fromManifest;
+    }
     const phrases: PracticePhrase[] = [];
     let startIdx = 0;
     const pushPhrase = (endIdx: number) => {
@@ -1379,11 +1546,12 @@ export default function VocalTrainerIII() {
       }
     }
     return phrases.filter((p) => p.noteCount >= 2 || p.end - p.start >= 1.2);
-  }, [omrTarget]);
-  const activePhraseId = useMemo(() => {
+  }, [omrTarget, phraseManifest]);
+  const activePhrase = useMemo(() => {
     const active = practicePhrases.find((p) => practiceTime >= p.start && practiceTime <= p.end);
-    return active?.id ?? null;
+    return active ?? null;
   }, [practicePhrases, practiceTime]);
+  const activePhraseId = activePhrase?.id ?? null;
   const editorWidth = useMemo(() => Math.max(800, Math.max(extractedDuration, omrSpan) * zoom), [extractedDuration, omrSpan, zoom]);
   const editorRowHeight = 6; // px per semitone
   const editorHeight = (PITCH_MAX - PITCH_MIN + 1) * editorRowHeight;
@@ -1584,12 +1752,66 @@ export default function VocalTrainerIII() {
 
   const scoreHealthOk = !!scoreHealth?.checks.length && scoreHealth.checks.every((c) => c.status === 'pass');
   const scoreHealthFailCount = scoreHealth?.checks.filter((c) => c.status === 'fail').length ?? 0;
+  const scorePartHealthOk = !!scorePartHealth?.checks.length && scorePartHealth.checks.every((c) => c.status === 'pass');
+  const scorePartCount = scorePartHealth?.parts.length ?? 0;
   const coachAccuracyPct = coachStats.samples ? Math.round((coachStats.onPitch / coachStats.samples) * 100) : null;
   const coachAvgCents = coachStats.samples ? coachStats.sumSignedCents / coachStats.samples : null;
   const coachAbsCents = coachStats.samples ? coachStats.sumAbsCents / coachStats.samples : null;
   const coachBias = coachAvgCents == null
     ? 'silent'
     : Math.abs(coachAvgCents) <= 8 ? 'centered' : coachAvgCents > 0 ? 'sharp' : 'flat';
+  const captureEngravingReport = useCallback(async () => {
+    if (typeof window === 'undefined') return;
+    const active = (window as any).__VT3_SCORE_ACTIVE__ ?? null;
+    const oneBasedIndex = Number.isFinite(active?.index) ? Number(active.index) + 1 : null;
+    const noteMeta = oneBasedIndex != null
+      ? leadNoteMap?.notes.find((n) => n.index === oneBasedIndex) ?? null
+      : null;
+    const sourcePhrase = oneBasedIndex != null
+      ? practicePhrases.find((p) =>
+        p.noteStart != null
+        && p.noteEnd != null
+        && oneBasedIndex >= p.noteStart
+        && oneBasedIndex <= p.noteEnd
+      ) ?? null
+      : null;
+    const reportPhrase = activePhrase ?? sourcePhrase;
+    const page = noteMeta?.page ?? reportPhrase?.page ?? null;
+    const scorePanel = document.querySelector('[data-vt3-score-panel="engraving"]');
+    const svg = scorePanel?.querySelector('svg');
+    const rawSvg = svg ? new XMLSerializer().serializeToString(svg) : null;
+    const maxSvgChars = 180000;
+    const report: EngravingReport = {
+      id: `engraving-${Date.now()}`,
+      createdAt: new Date().toISOString(),
+      title: currentTemplateRef.current?.title || 'Lida Rose - Lead',
+      timeSeconds: practiceTimeRef.current,
+      noteIndex: oneBasedIndex,
+      measure: noteMeta?.measure ?? null,
+      page,
+      pitch: noteMeta?.pitch ?? null,
+      phraseId: reportPhrase?.id ?? noteMeta?.phraseId ?? null,
+      phrase: reportPhrase?.label ?? noteMeta?.phraseLabel ?? null,
+      scoreVersion: scoreHealth?.scoreVersion ?? null,
+      sourcePageImage: page ? `/score/page-${page}.jpg` : null,
+      activeScore: active,
+      svgSnapshot: rawSvg ? rawSvg.slice(0, maxSvgChars) : null,
+      svgTruncated: !!rawSvg && rawSvg.length > maxSvgChars,
+      viewport: { width: window.innerWidth, height: window.innerHeight },
+    };
+    setEngravingReports((prev) => {
+      const next = [report, ...prev].slice(0, 12);
+      try { localStorage.setItem(ENGRAVING_REPORTS_KEY, JSON.stringify(next)); } catch {}
+      return next;
+    });
+    try {
+      await navigator.clipboard?.writeText(JSON.stringify(report, null, 2));
+      setReportStatus('report copied');
+    } catch {
+      setReportStatus('report saved');
+    }
+    window.setTimeout(() => setReportStatus(null), 3500);
+  }, [activePhrase, leadNoteMap, practicePhrases, scoreHealth?.scoreVersion]);
 
   // ───────────────────────────────────────────────────────────────────────
   // Render
@@ -1674,6 +1896,21 @@ export default function VocalTrainerIII() {
                 <span className="px-2 py-0.5 rounded border border-cyan-500/30 bg-cyan-500/10 text-cyan-200">key {scoreHealth.keyFifths}</span>
                 <span className="px-2 py-0.5 rounded border border-fuchsia-500/30 bg-fuchsia-500/10 text-fuchsia-200">{scoreHealth.noteCount} notes</span>
                 <span className="px-2 py-0.5 rounded border border-amber-500/30 bg-amber-500/10 text-amber-200">{scoreHealth.wholeNotes.length} whole</span>
+                {scorePartCount > 0 && (
+                  <span className={`px-2 py-0.5 rounded border ${scorePartHealthOk ? 'border-indigo-500/40 bg-indigo-500/10 text-indigo-200' : 'border-rose-500/40 bg-rose-500/10 text-rose-200'}`}>
+                    {scorePartCount} parts
+                  </span>
+                )}
+                <button
+                  type="button"
+                  onClick={captureEngravingReport}
+                  className="px-2 py-0.5 rounded border border-gray-700 bg-gray-800 text-gray-300 hover:border-amber-500/50 hover:text-amber-200"
+                  title="Capture active note, measure, source page, and rendered SVG"
+                >
+                  Report engraving
+                </button>
+                {reportStatus && <span className="text-emerald-300">{reportStatus}</span>}
+                {engravingReports.length > 0 && <span className="text-gray-500">{engravingReports.length} reports</span>}
               </div>
             )}
           </div>
@@ -2024,6 +2261,28 @@ export default function VocalTrainerIII() {
                 </div>
               </div>
             )}
+            {takeHistory.length > 0 && (
+              <div className="mb-2 flex flex-wrap items-center gap-1.5 text-[11px]">
+                <span className="text-gray-500 mr-1">Recent takes</span>
+                {takeHistory.slice(0, 5).map((take) => (
+                  <span
+                    key={take.id}
+                    className="rounded border border-gray-800 bg-black/30 px-2 py-1 text-gray-300"
+                    title={`${take.title} · ${take.samples} samples · ${centsLabel(take.avgCents)} avg · ${take.meanAbsCents}c mean abs`}
+                  >
+                    <span className="font-mono text-amber-200">{take.accuracyPct}%</span>
+                    <span className="ml-1 text-gray-500">{fmtTime(take.durationSec)}</span>
+                  </span>
+                ))}
+                <button
+                  type="button"
+                  onClick={clearTakeHistory}
+                  className="rounded border border-gray-800 bg-gray-900 px-2 py-1 text-gray-500 hover:text-rose-300 hover:border-rose-500/40"
+                >
+                  clear
+                </button>
+              </div>
+            )}
             <div
               ref={editorScrollRef}
               className="overflow-auto bg-black/50 rounded border border-gray-800"
@@ -2238,9 +2497,9 @@ export default function VocalTrainerIII() {
                           ? 'border-cyan-400 bg-cyan-500/20 text-cyan-100'
                           : 'border-gray-700 bg-gray-800 text-gray-300 hover:border-cyan-500/50 hover:text-cyan-200'
                       }`}
-                      title={`${fmtTime(phrase.start)}-${fmtTime(phrase.end)} · ${phrase.noteCount} notes`}
+                      title={`${phrase.label} · ${fmtTime(phrase.start)}-${fmtTime(phrase.end)} · ${phrase.noteCount} notes`}
                     >
-                      {phrase.label} <span className="font-mono text-gray-500">{fmtTime(phrase.start)}</span>
+                      {phrase.shortLabel || phrase.label} <span className="font-mono text-gray-500">{fmtTime(phrase.start)}</span>
                     </button>
                   ))}
                 </div>

@@ -17,6 +17,11 @@ async function verifyArtifacts() {
     fetchText(`${origin}/musicxml/lida-rose-lead.musicxml`),
     fetchJson(`${origin}/musicxml/lida-rose-lead-score-health.json`),
   ]);
+  const [allHealth, phrases, noteMap] = await Promise.all([
+    fetchJson(`${origin}/musicxml/lida-rose-score-health.json`),
+    fetchJson(`${origin}/musicxml/lida-rose-lead-phrases.json`),
+    fetchJson(`${origin}/musicxml/lida-rose-lead-note-map.json`),
+  ]);
   const fifths = [...new Set([...xmlText.matchAll(/<fifths>(-?\d+)<\/fifths>/g)].map((m) => Number(m[1])))];
   const pitched = [...xmlText.matchAll(/<note\b[\s\S]*?<\/note>/g)]
     .filter((m) => /<pitch>/.test(m[0]) && !/<rest\b/.test(m[0]) && !/<chord\s*\/?\s*>/.test(m[0]));
@@ -28,6 +33,16 @@ async function verifyArtifacts() {
     `unexpected health whole notes ${JSON.stringify(health.wholeNotes)}`);
   assert(Array.isArray(health.checks) && health.checks.every((c) => c.status === 'pass'),
     `health checks failing: ${JSON.stringify(health.checks)}`);
+  assert(Array.isArray(allHealth.parts) && allHealth.parts.length === 4,
+    `expected 4 source parts, got ${JSON.stringify(allHealth.parts)}`);
+  assert(Array.isArray(allHealth.checks) && allHealth.checks.every((c) => c.status === 'pass'),
+    `all-part checks failing: ${JSON.stringify(allHealth.checks)}`);
+  assert(Array.isArray(phrases.phrases) && phrases.phrases.length >= 8,
+    `expected phrase manifest, got ${JSON.stringify(phrases.phrases)}`);
+  assert(Array.isArray(noteMap.notes) && noteMap.notes.length === 114,
+    `expected 114 note-map entries, got ${noteMap.notes?.length}`);
+  assert(noteMap.notes.every((n) => typeof n.phraseLabel === 'string' && n.phraseLabel.length > 0),
+    `expected phrase labels on every note-map entry`);
   console.log('artifact smoke PASS');
 }
 
@@ -47,6 +62,8 @@ async function verifyBrowser() {
     await page.waitForSelector('svg', { timeout: 25000 }).catch(() => {});
     await page.getByText(/Score PASS/i).first().waitFor({ timeout: 10000 });
     await page.getByText(/key -6/i).first().waitFor({ timeout: 10000 });
+    await page.getByText(/4 parts/i).first().waitFor({ timeout: 10000 });
+    await page.getByRole('button', { name: /Report engraving/i }).first().waitFor({ timeout: 10000 });
     await sleep(1500);
 
     await page.locator('summary', { hasText: /^\s*Library/ }).first().click({ timeout: 5000 }).catch(() => {});

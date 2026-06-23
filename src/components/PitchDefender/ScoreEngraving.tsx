@@ -224,7 +224,7 @@ export default function ScoreEngraving({ musicXMLUrl, title, zoom: initialZoom =
   }, [status])
 
   return (
-    <div className="rounded-lg border border-cyan-500/20 bg-[#0a0a14] p-3">
+    <div data-vt3-score-panel="engraving" className="rounded-lg border border-cyan-500/20 bg-[#0a0a14] p-3">
       <div className="flex items-center justify-between mb-2">
         <span className="text-xs text-gray-400">
           {title || 'Engraved score'}{status === 'ready' ? (syncReady ? ' · sings out with the track' : ' · live notation (OSMD)') : ''}
