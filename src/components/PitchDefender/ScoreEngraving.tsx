@@ -38,7 +38,8 @@ const DARK = {
   title: '#e2e8f4',
   label: '#8898c0',
   cursor: '#fbbf24',     // amber — the "sung-out" position highlight
-  cursorAlpha: 0.4,
+  cursorAlpha: 0,
+  activeNote: '#fbbf24',
 }
 
 export default function ScoreEngraving({ musicXMLUrl, title, zoom: initialZoom = 0.8, syncUrl, currentTime }: ScoreEngravingProps) {
@@ -54,8 +55,8 @@ export default function ScoreEngraving({ musicXMLUrl, title, zoom: initialZoom =
   const stepOrdinalRef = useRef<number[]>([]) // cursor-step ordinal of each pitched note
   const curStepRef = useRef(0)                // cursor's current absolute step
   const curIdxRef = useRef(-1)                // last highlighted sync-note index
-  const overlayRef = useRef<HTMLDivElement | null>(null) // our visible amber bar (OSMD cursor img renders empty here)
-  const wrapperRef = useRef<HTMLDivElement | null>(null)  // relative wrapper so the overlay survives OSMD re-renders
+  const activeGNotesRef = useRef<any[]>([])   // currently colored OSMD graphical notes
+  const wrapperRef = useRef<HTMLDivElement | null>(null)  // nearest stable anchor for score scrolling
 
   const applyColors = useCallback((osmd: any) => {
     const r = osmd.EngravingRules
@@ -82,6 +83,7 @@ export default function ScoreEngraving({ musicXMLUrl, title, zoom: initialZoom =
         setSyncReady(false)
         curIdxRef.current = -1
         curStepRef.current = 0
+        activeGNotesRef.current = []
 
         const resp = await fetch(musicXMLUrl)
         if (!resp.ok) throw new Error(`fetch ${resp.status} ${resp.statusText}`)
@@ -172,24 +174,24 @@ export default function ScoreEngraving({ musicXMLUrl, title, zoom: initialZoom =
       else { while (s < target && !cur.Iterator?.EndReached) { cur.next(); s++ } }
       try { cur.update() } catch { /* ok */ } // refresh OSMD cursor position after the move
       curStepRef.current = s
-      // mirror OSMD's (correct) cursor position with our visible amber bar
-      const ov = overlayRef.current
+
+      clearGraphicalNotes(activeGNotesRef.current)
+      const gNotes = typeof cur.GNotesUnderCursor === 'function' ? (cur.GNotesUnderCursor() || []) : []
+      colorGraphicalNotes(gNotes, DARK.activeNote)
+      activeGNotesRef.current = gNotes
+      publishActiveNoteTelemetry(idx, sn[idx], s)
+
+      // Use OSMD's invisible cursor as a layout-aware position source for scroll.
       const cel = cur.cursorElement || document.getElementById('cursorImg-0')
       const wrap = wrapperRef.current
-      if (ov && cel && wrap) {
-        const z = osmdRef.current?.Zoom || 0.8
-        const cr = cel.getBoundingClientRect(); const wr = wrap.getBoundingClientRect()
-        ov.style.left = (cr.left - wr.left - 9) + 'px'
-        ov.style.top = (cr.top - wr.top - 30 * z) + 'px'
-        ov.style.height = (118 * z) + 'px'
-        ov.style.display = 'block'
-        // karaoke auto-scroll: smoothly center the active note in the nearest vertical scroll-box
+      if (cel && wrap) {
+        const cr = cel.getBoundingClientRect()
         try {
           let sc: HTMLElement | null = wrap.parentElement
           while (sc && sc.scrollHeight <= sc.clientHeight + 4) sc = sc.parentElement
           if (sc) {
-            const ovRect = ov.getBoundingClientRect(); const scRect = sc.getBoundingClientRect()
-            const target = sc.scrollTop + (ovRect.top - scRect.top) - sc.clientHeight * 0.38
+            const scRect = sc.getBoundingClientRect()
+            const target = sc.scrollTop + (cr.top - scRect.top) - sc.clientHeight * 0.38
             const clamped = Math.max(0, Math.min(sc.scrollHeight - sc.clientHeight, target))
             if (Math.abs(clamped - sc.scrollTop) > 10) sc.scrollTo({ top: clamped, behavior: 'smooth' })
           }
@@ -201,7 +203,14 @@ export default function ScoreEngraving({ musicXMLUrl, title, zoom: initialZoom =
   // ─── Re-zoom without refetch ─────────────────────────────────────────
   useEffect(() => {
     if (osmdRef.current && status === 'ready') {
-      try { osmdRef.current.Zoom = zoom; osmdRef.current.render(); osmdRef.current.cursor?.show?.() } catch { /* ok */ }
+      try {
+        clearGraphicalNotes(activeGNotesRef.current)
+        activeGNotesRef.current = []
+        curIdxRef.current = -1
+        osmdRef.current.Zoom = zoom
+        osmdRef.current.render()
+        osmdRef.current.cursor?.show?.()
+      } catch { /* ok */ }
     }
   }, [zoom, status])
 
@@ -238,10 +247,43 @@ export default function ScoreEngraving({ musicXMLUrl, title, zoom: initialZoom =
       {status === 'error' && <p className="text-sm text-red-400 py-8 text-center">Could not render score: {error}</p>}
       <div ref={wrapperRef} className="relative">
         <div ref={containerRef} className="overflow-x-auto" />
-        <div ref={overlayRef} className="absolute pointer-events-none rounded-md" style={{ display: 'none', width: 18, background: 'rgba(251,191,36,0.28)', boxShadow: '0 0 10px rgba(251,191,36,0.5)', zIndex: 5 }} />
       </div>
     </div>
   )
+}
+
+function clearGraphicalNotes(gNotes: any[]) {
+  colorGraphicalNotes(gNotes, DARK.music)
+}
+
+function colorGraphicalNotes(gNotes: any[], color: string) {
+  for (const gNote of gNotes || []) {
+    try {
+      if (typeof gNote?.setColor === 'function') {
+        gNote.setColor(color, {
+          applyToNoteheads: true,
+          applyToStem: true,
+        })
+      }
+    } catch { /* ok */ }
+  }
+}
+
+function publishActiveNoteTelemetry(index: number, note: SyncNote | undefined, cursorStep: number) {
+  if (typeof window === 'undefined') return
+  ;(window as any).__VT3_SCORE_ACTIVE__ = {
+    index,
+    cursorStep,
+    pitchMidi: note?.pitchMidi ?? null,
+    pitchName: note ? midiName(note.pitchMidi) : null,
+    startTimeSeconds: note?.startTimeSeconds ?? null,
+    durationSeconds: note?.durationSeconds ?? null,
+  }
+}
+
+const MIDI_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+function midiName(midi: number): string {
+  return `${MIDI_NAMES[((midi % 12) + 12) % 12]}${Math.floor(midi / 12) - 1}`
 }
 
 type CursorPitchStop = { step: number; pitchMidi: number }

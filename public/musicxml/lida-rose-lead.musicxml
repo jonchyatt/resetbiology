@@ -75,7 +75,7 @@
     <measure number="2" width="332">
       <attributes>
         <key>
-          <fifths>-2</fifths>
+          <fifths>-4</fifths>
         </key>
         <time>
           <beats>4</beats>
@@ -177,6 +177,7 @@
       <note default-x="91">
         <pitch>
           <step>D</step>
+          <alter>-1</alter>
           <octave>4</octave>
         </pitch>
         <duration>12</duration>
@@ -204,6 +205,7 @@
       <note default-x="169">
         <pitch>
           <step>D</step>
+          <alter>-1</alter>
           <octave>4</octave>
         </pitch>
         <duration>12</duration>
@@ -238,7 +240,7 @@
     <measure number="6" width="371">
       <attributes>
         <key>
-          <fifths>-6</fifths>
+          <fifths>-4</fifths>
         </key>
         <staff-details print-object="yes"></staff-details>
       </attributes>
@@ -254,7 +256,6 @@
       <note default-x="185">
         <pitch>
           <step>C</step>
-          <alter>-1</alter>
           <octave>4</octave>
         </pitch>
         <duration>6</duration>
@@ -286,7 +287,6 @@
       <note default-x="267">
         <pitch>
           <step>C</step>
-          <alter>-1</alter>
           <octave>4</octave>
         </pitch>
         <duration>12</duration>
@@ -547,7 +547,7 @@
       <attributes>
         <divisions>12</divisions>
         <key>
-          <fifths>-6</fifths>
+          <fifths>-4</fifths>
         </key>
         <clef>
           <sign>G</sign>
@@ -575,7 +575,6 @@
       <note default-x="256">
         <pitch>
           <step>C</step>
-          <alter>-1</alter>
           <octave>4</octave>
         </pitch>
         <duration>24</duration>
@@ -589,7 +588,6 @@
       <note default-x="35">
         <pitch>
           <step>G</step>
-          <alter>-1</alter>
           <octave>3</octave>
         </pitch>
         <duration>24</duration>
@@ -772,7 +770,6 @@
       <note default-x="258">
         <pitch>
           <step>G</step>
-          <alter>-1</alter>
           <octave>3</octave>
         </pitch>
         <duration>24</duration>
@@ -826,7 +823,6 @@
       <note default-x="168">
         <pitch>
           <step>G</step>
-          <alter>-1</alter>
           <octave>3</octave>
         </pitch>
         <duration>6</duration>
@@ -869,7 +865,6 @@
       <note default-x="104">
         <pitch>
           <step>G</step>
-          <alter>-1</alter>
           <octave>3</octave>
         </pitch>
         <duration>8</duration>
@@ -1326,7 +1321,7 @@
       <attributes>
         <divisions>12</divisions>
         <key>
-          <fifths>-6</fifths>
+          <fifths>-4</fifths>
         </key>
         <clef>
           <sign>G</sign>
@@ -1347,7 +1342,6 @@
       <note default-x="179">
         <pitch>
           <step>C</step>
-          <alter>-1</alter>
           <octave>4</octave>
         </pitch>
         <duration>6</duration>
@@ -1379,7 +1373,6 @@
       <note default-x="259">
         <pitch>
           <step>C</step>
-          <alter>-1</alter>
           <octave>4</octave>
         </pitch>
         <duration>12</duration>
@@ -1642,6 +1635,7 @@
       <note default-x="24">
         <pitch>
           <step>E</step>
+          <alter>-1</alter>
           <octave>4</octave>
         </pitch>
         <duration>24</duration>
@@ -1773,7 +1767,6 @@
       <note default-x="31">
         <pitch>
           <step>G</step>
-          <alter>-1</alter>
           <octave>3</octave>
         </pitch>
         <duration>24</duration>
@@ -1970,7 +1963,6 @@
       <note default-x="233">
         <pitch>
           <step>G</step>
-          <alter>-1</alter>
           <octave>3</octave>
         </pitch>
         <duration>12</duration>
@@ -2001,7 +1993,6 @@
       <note default-x="39">
         <pitch>
           <step>G</step>
-          <alter>-1</alter>
           <octave>3</octave>
         </pitch>
         <duration>12</duration>
@@ -2069,7 +2060,6 @@
       <note default-x="227">
         <pitch>
           <step>G</step>
-          <alter>-1</alter>
           <octave>3</octave>
         </pitch>
         <duration>12</duration>
@@ -2128,7 +2118,6 @@
       <note default-x="161">
         <pitch>
           <step>G</step>
-          <alter>-1</alter>
           <octave>3</octave>
         </pitch>
         <duration>12</duration>

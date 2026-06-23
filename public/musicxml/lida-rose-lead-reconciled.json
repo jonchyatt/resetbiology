@@ -2,9 +2,9 @@
  "song": "Lida Rose",
  "part": "Lead",
  "method": "engraving truth reconciled vs Lead-Dominant audio; engraving-recovered = audio missed it, noise dropped",
- "confirmed": 107,
- "recovered": 6,
- "audioNoiseDropped": 88,
+ "confirmed": 106,
+ "recovered": 7,
+ "audioNoiseDropped": 94,
  "notes": [
   {
    "pitchMidi": 58,
@@ -31,7 +31,7 @@
    "src": "audio-confirmed"
   },
   {
-   "pitchMidi": 62,
+   "pitchMidi": 61,
    "startTimeSeconds": 5.506,
    "durationSeconds": 0.802,
    "src": "audio-confirmed"
@@ -43,7 +43,7 @@
    "src": "audio-confirmed"
   },
   {
-   "pitchMidi": 62,
+   "pitchMidi": 61,
    "startTimeSeconds": 6.656,
    "durationSeconds": 0.581,
    "src": "audio-confirmed"
@@ -55,7 +55,7 @@
    "src": "audio-confirmed"
   },
   {
-   "pitchMidi": 59,
+   "pitchMidi": 60,
    "startTimeSeconds": 10.212,
    "durationSeconds": 0.371,
    "src": "audio-confirmed"
@@ -67,7 +67,7 @@
    "src": "audio-confirmed"
   },
   {
-   "pitchMidi": 59,
+   "pitchMidi": 60,
    "startTimeSeconds": 10.85,
    "durationSeconds": 0.65,
    "src": "audio-confirmed"
@@ -157,13 +157,13 @@
    "src": "audio-confirmed"
   },
   {
-   "pitchMidi": 59,
+   "pitchMidi": 60,
    "startTimeSeconds": 20.997,
    "durationSeconds": 1.657,
    "src": "engraving-recovered"
   },
   {
-   "pitchMidi": 54,
+   "pitchMidi": 55,
    "startTimeSeconds": 22.654,
    "durationSeconds": 0.719,
    "src": "audio-confirmed"
@@ -217,7 +217,7 @@
    "src": "audio-confirmed"
   },
   {
-   "pitchMidi": 54,
+   "pitchMidi": 55,
    "startTimeSeconds": 30.182,
    "durationSeconds": 2.323,
    "src": "audio-confirmed"
@@ -231,25 +231,25 @@
   {
    "pitchMidi": 56,
    "startTimeSeconds": 33.004,
-   "durationSeconds": 0.651,
+   "durationSeconds": 1.244,
    "src": "audio-confirmed"
   },
   {
-   "pitchMidi": 54,
-   "startTimeSeconds": 33.655,
-   "durationSeconds": 0.593,
-   "src": "audio-confirmed"
-  },
-  {
-   "pitchMidi": 53,
+   "pitchMidi": 55,
    "startTimeSeconds": 34.248,
    "durationSeconds": 0.174,
    "src": "audio-confirmed"
   },
   {
-   "pitchMidi": 54,
+   "pitchMidi": 53,
    "startTimeSeconds": 34.422,
-   "durationSeconds": 0.708,
+   "durationSeconds": 0.476,
+   "src": "audio-confirmed"
+  },
+  {
+   "pitchMidi": 55,
+   "startTimeSeconds": 34.898,
+   "durationSeconds": 0.232,
    "src": "audio-confirmed"
   },
   {
@@ -391,7 +391,7 @@
    "src": "audio-confirmed"
   },
   {
-   "pitchMidi": 59,
+   "pitchMidi": 60,
    "startTimeSeconds": 48.479,
    "durationSeconds": 0.499,
    "src": "audio-confirmed"
@@ -403,7 +403,7 @@
    "src": "audio-confirmed"
   },
   {
-   "pitchMidi": 59,
+   "pitchMidi": 60,
    "startTimeSeconds": 49.269,
    "durationSeconds": 0.849,
    "src": "audio-confirmed"
@@ -493,7 +493,7 @@
    "src": "audio-confirmed"
   },
   {
-   "pitchMidi": 64,
+   "pitchMidi": 63,
    "startTimeSeconds": 55.31,
    "durationSeconds": 3.044,
    "src": "audio-confirmed"
@@ -525,14 +525,14 @@
   {
    "pitchMidi": 63,
    "startTimeSeconds": 59.457,
-   "durationSeconds": 1.313,
+   "durationSeconds": 0.802,
    "src": "audio-confirmed"
   },
   {
-   "pitchMidi": 54,
-   "startTimeSeconds": 60.77,
-   "durationSeconds": 1.093,
-   "src": "audio-confirmed"
+   "pitchMidi": 55,
+   "startTimeSeconds": 60.259,
+   "durationSeconds": 1.604,
+   "src": "engraving-recovered"
   },
   {
    "pitchMidi": 56,
@@ -595,7 +595,7 @@
    "src": "audio-confirmed"
   },
   {
-   "pitchMidi": 54,
+   "pitchMidi": 55,
    "startTimeSeconds": 70.877,
    "durationSeconds": 0.163,
    "src": "audio-confirmed"
@@ -603,13 +603,13 @@
   {
    "pitchMidi": 56,
    "startTimeSeconds": 71.04,
-   "durationSeconds": 1.035,
+   "durationSeconds": 0.221,
    "src": "audio-confirmed"
   },
   {
-   "pitchMidi": 54,
-   "startTimeSeconds": 72.075,
-   "durationSeconds": 0.592,
+   "pitchMidi": 55,
+   "startTimeSeconds": 71.261,
+   "durationSeconds": 1.406,
    "src": "audio-confirmed"
   },
   {
@@ -627,14 +627,14 @@
   {
    "pitchMidi": 58,
    "startTimeSeconds": 73.375,
-   "durationSeconds": 0.802,
+   "durationSeconds": 0.721,
    "src": "audio-confirmed"
   },
   {
-   "pitchMidi": 54,
-   "startTimeSeconds": 74.177,
-   "durationSeconds": 0.639,
-   "src": "audio-confirmed"
+   "pitchMidi": 55,
+   "startTimeSeconds": 74.096,
+   "durationSeconds": 0.72,
+   "src": "engraving-recovered"
   },
   {
    "pitchMidi": 58,
@@ -651,14 +651,14 @@
   {
    "pitchMidi": 58,
    "startTimeSeconds": 76.361,
-   "durationSeconds": 0.284,
+   "durationSeconds": 0.186,
    "src": "audio-confirmed"
   },
   {
-   "pitchMidi": 54,
-   "startTimeSeconds": 76.645,
-   "durationSeconds": 0.285,
-   "src": "engraving-recovered"
+   "pitchMidi": 55,
+   "startTimeSeconds": 76.547,
+   "durationSeconds": 0.383,
+   "src": "audio-confirmed"
   },
   {
    "pitchMidi": 58,

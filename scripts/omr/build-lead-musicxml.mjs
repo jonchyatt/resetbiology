@@ -23,6 +23,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { PRINTED_FIFTHS, normalizeLeadMeasure } from './lida-lead-key-normalize.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SRC = (f) => path.join(__dirname, 'source', f);
@@ -82,7 +83,7 @@ for (const { file, lead, div } of PAGES) {
   inner = inner.replace(/<duration>(\d+)<\/duration>/g, (_, n) => `<duration>${parseInt(n) * factor}</duration>`);
   inner = inner.replace(/<divisions>\d+<\/divisions>/g, `<divisions>${LCM}</divisions>`);
   inner = inner.replace(/<print\b[\s\S]*?<\/print>\s*/g, ''); // drop ALL layout incl. <print new-system="yes"> so OSMD reflows
-  const units = inner.match(/<measure\b[\s\S]*?<\/measure>/g) || [];
+  const units = (inner.match(/<measure\b[\s\S]*?<\/measure>/g) || []).map(normalizeLeadMeasure);
   perPage.push(units.reduce((c, u) => c + leadPitches(u).length, 0));
   measures.push(...units);
 }
@@ -163,6 +164,9 @@ if (!nums.every((n, i) => n === i + 1)) errors.push(`measures not consecutive 1.
 
 const divs = [...new Set([...out.matchAll(/<divisions>(\d+)<\/divisions>/g)].map((m) => parseInt(m[1])))];
 if (divs.length !== 1 || divs[0] !== LCM) errors.push(`divisions not uniformly ${LCM}: ${divs}`);
+
+const fifths = [...new Set([...out.matchAll(/<fifths>(-?\d+)<\/fifths>/g)].map((m) => parseInt(m[1])))];
+if (fifths.length !== 1 || fifths[0] !== PRINTED_FIFTHS) errors.push(`key not uniformly ${PRINTED_FIFTHS}: ${fifths}`);
 
 const outInner = out.slice(out.indexOf('<part id="P1">'), out.indexOf('</part>'));
 const outPitches = leadPitches(outInner);
