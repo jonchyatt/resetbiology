@@ -110,17 +110,19 @@ checks.push(check(
   `sync=${syncNotes.length}; reconciled=${reconciledNotes.length}; score=${noteCount}`,
 ));
 
-const audioConfirmed = reconciledNotes.filter((n) => n.src === 'audio-confirmed').length;
-const audioInterpolated = reconciledNotes.filter((n) => n.src === 'audio-interpolated').length;
+const conductorAnchors = reconciledNotes.filter((n) => n.src === 'conductor-anchor').length;
+const scoreConductorNotes = reconciledNotes.filter((n) => n.src === 'score-conductor').length;
 const leadTimeline = reconciledNotes.filter((n) => n.src === 'lead-timeline').length;
+const conductorTempo = sync.audit?.tempoSmoothness?.scoreConductor;
 checks.push(check(
-  'audio-derived-sync',
-  'Audio-derived Baritone sync',
-  /isolated Baritone audio/i.test(sync.source || '') &&
+  'score-conductor-sync',
+  'Score-conductor Baritone sync',
+  /score-conductor/i.test(sync.source || '') &&
     leadTimeline === 0 &&
-    audioConfirmed >= 70 &&
-    audioConfirmed + audioInterpolated === noteCount,
-  `confirmed=${audioConfirmed}; interpolated=${audioInterpolated}; leadTimeline=${leadTimeline}; isolated=${sync.audit?.isolatedOnsets ?? 'n/a'}`,
+    conductorAnchors >= 20 &&
+    conductorAnchors + scoreConductorNotes === noteCount &&
+    Number(conductorTempo?.p90RateJumpSecPerBeat ?? 99) <= 0.5,
+  `conductorAnchors=${conductorAnchors}; scoreConductor=${scoreConductorNotes}; leadTimeline=${leadTimeline}; p90Jump=${conductorTempo?.p90RateJumpSecPerBeat ?? 'n/a'}; isolated=${sync.audit?.isolatedOnsets ?? 'n/a'}`,
 ));
 
 const payload = {
@@ -136,10 +138,12 @@ const payload = {
     noteCount: syncNotes.length,
     reconciledCount: reconciledNotes.length,
     source: sync.source || null,
-    audioConfirmed,
-    audioInterpolated,
+    audioEvidenceAnchors: sync.audit?.audioEvidenceAnchors ?? null,
+    conductorAnchors,
+    scoreConductorNotes,
     leadTimeline,
     isolatedOnsets: sync.audit?.isolatedOnsets ?? null,
+    tempoSmoothness: sync.audit?.tempoSmoothness ?? null,
     timingDeltaFromLeadGrid: sync.audit?.timingDeltaFromLeadGrid ?? null,
   },
   checks,

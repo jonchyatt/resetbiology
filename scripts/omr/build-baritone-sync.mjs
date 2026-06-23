@@ -29,6 +29,8 @@ const CONFIG = {
   mergeGapSec: 0.12,
   minAudioAnchors: 70,
   minIsolatedOnsets: 120,
+  minConductorAnchors: 20,
+  maxConductorP90RateJump: 0.5,
 };
 
 const NM = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
@@ -47,7 +49,7 @@ const dominantNotes = readNoteFile(DOMINANT_NOTES);
 const noBaritoneNotes = readNoteFile(NO_BARITONE_NOTES);
 const isolatedOnsets = isolateBaritoneOnsets(dominantNotes, noBaritoneNotes, baritoneEvents);
 const anchors = selectTempoSaneAnchors(isolatedOnsets, baritoneEvents, leadGridSync);
-const anchorsByScoreIndex = new Map(anchors.map((anchor) => [anchor.scoreIndex, anchor]));
+const audioEvidenceByScoreIndex = new Map(anchors.map((anchor) => [anchor.scoreIndex, anchor]));
 
 if (isolatedOnsets.length < CONFIG.minIsolatedOnsets) {
   throw new Error(`Baritone isolation too sparse: ${isolatedOnsets.length} onsets`);
@@ -56,22 +58,18 @@ if (anchors.length < CONFIG.minAudioAnchors) {
   throw new Error(`Baritone audio anchors too sparse: ${anchors.length}`);
 }
 
-const sync = baritoneEvents.map((event, index) => {
-  const anchor = anchorsByScoreIndex.get(index);
-  const start = anchor ? anchor.time : mapBeat(event.startBeat, anchors);
-  const end = mapBeat(event.startBeat + event.beats, anchors);
-  return {
-    pitchMidi: event.midi,
-    startTimeSeconds: round3(Math.max(0, start)),
-    durationSeconds: round3(Math.max(0.08, end - start)),
-  };
-});
+const noteLevelAudioSync = buildSyncFromAnchors(baritoneEvents, anchors, durationSec);
+const conductorAnchors = selectConductorAnchors(anchors, baritoneEvents);
+const conductorByScoreIndex = new Map(conductorAnchors.map((anchor) => [anchor.scoreIndex, anchor]));
+const sync = buildSyncFromAnchors(baritoneEvents, conductorAnchors, durationSec);
+const noteLevelSmoothness = tempoSmoothness(noteLevelAudioSync, baritoneEvents);
+const conductorSmoothness = tempoSmoothness(sync, baritoneEvents);
 
-for (let i = 0; i < sync.length; i++) {
-  const nextStart = i < sync.length - 1 ? sync[i + 1].startTimeSeconds : durationSec;
-  if (sync[i].startTimeSeconds + sync[i].durationSeconds > nextStart) {
-    sync[i].durationSeconds = round3(Math.max(0.08, nextStart - sync[i].startTimeSeconds));
-  }
+if (conductorAnchors.length < CONFIG.minConductorAnchors) {
+  throw new Error(`Baritone conductor anchors too sparse: ${conductorAnchors.length}`);
+}
+if (conductorSmoothness.p90RateJumpSecPerBeat > CONFIG.maxConductorP90RateJump) {
+  throw new Error(`Baritone conductor grid is still too jittery: p90 jump ${conductorSmoothness.p90RateJumpSecPerBeat}`);
 }
 
 const timingDelta = timingDeltaSummary(sync, leadGridSync);
@@ -82,14 +80,19 @@ if (!monotonic) errors.push('sync is not monotonic');
 if (sync[sync.length - 1].startTimeSeconds > durationSec + 0.5) errors.push('last note exceeds Baritone recording duration');
 
 const audit = {
-  method: 'BaritoneDominant minus NoBaritone BasicPitch isolation; exact-pitch monotonic anchors with tempo-slope sanity gate; score-rhythm interpolation between anchors',
+  method: 'score-conductor grid: BaritoneDominant-NoBaritone audio evidence downsampled to measure-level anchors; every note regenerated from score rhythm between anchors',
   audioStage: AUDIO_STAGE,
   dominantRawNotes: dominantNotes.length,
   noBaritoneRawNotes: noBaritoneNotes.length,
   isolatedOnsets: isolatedOnsets.length,
-  audioAnchors: anchors.length,
-  audioInterpolated: sync.length - anchors.length,
+  audioEvidenceAnchors: anchors.length,
+  conductorAnchors: conductorAnchors.length,
+  scoreConductorNotes: sync.length - conductorAnchors.length,
   pitchRange: `${nm(Math.min(...sync.map((n) => n.pitchMidi)))}-${nm(Math.max(...sync.map((n) => n.pitchMidi)))}`,
+  tempoSmoothness: {
+    noteLevelAudio: noteLevelSmoothness,
+    scoreConductor: conductorSmoothness,
+  },
   timingDeltaFromLeadGrid: timingDelta,
   config: CONFIG,
 };
@@ -97,7 +100,7 @@ const audit = {
 const payload = {
   song: 'Lida Rose',
   part: 'Baritone',
-  source: 'isolated Baritone audio sync from BaritoneDominant-NoBaritone BasicPitch anchors',
+  source: 'score-conductor Baritone timing from score rhythm plus measure-level isolated-audio anchors',
   durationSec,
   noteCount: sync.length,
   audit,
@@ -111,17 +114,19 @@ const reconciled = {
   audit,
   notes: sync.map((note, index) => {
     const event = baritoneEvents[index];
-    const anchor = anchorsByScoreIndex.get(index);
     return {
       ...note,
       measure: event.measure,
       scoreBeat: event.startBeat,
       scoreBeats: event.beats,
-      src: anchor ? 'audio-confirmed' : 'audio-interpolated',
-      ...(anchor ? {
-        audioPitchMidi: anchor.audioPitchMidi,
-        audioStartTimeSeconds: round3(anchor.time),
-        audioAmplitude: round3(anchor.amplitude),
+      src: conductorByScoreIndex.has(index) ? 'conductor-anchor' : 'score-conductor',
+      ...(conductorByScoreIndex.has(index) ? {
+        conductorReason: conductorByScoreIndex.get(index)?.reason,
+      } : {}),
+      ...(audioEvidenceByScoreIndex.has(index) ? {
+        audioEvidencePitchMidi: audioEvidenceByScoreIndex.get(index)?.audioPitchMidi,
+        audioEvidenceStartTimeSeconds: round3(audioEvidenceByScoreIndex.get(index)?.time ?? note.startTimeSeconds),
+        audioEvidenceAmplitude: round3(audioEvidenceByScoreIndex.get(index)?.amplitude ?? 0),
       } : {}),
     };
   }),
@@ -130,8 +135,9 @@ const reconciled = {
 fs.writeFileSync(OUT, `${JSON.stringify(payload, null, 1)}\n`);
 fs.writeFileSync(RECONCILED_OUT, `${JSON.stringify(reconciled, null, 1)}\n`);
 
-console.log(`Baritone score ${sync.length} (${audit.pitchRange}) | audio anchors ${anchors.length}/${sync.length} | isolated onsets ${isolatedOnsets.length}`);
+console.log(`Baritone score ${sync.length} (${audit.pitchRange}) | audio evidence ${anchors.length}/${sync.length} | conductor anchors ${conductorAnchors.length} | isolated onsets ${isolatedOnsets.length}`);
 console.log(`span ${sync[0].startTimeSeconds}s -> ${sync[sync.length - 1].startTimeSeconds}s | duration ${durationSec.toFixed(3)}s | monotonic ${monotonic}`);
+console.log(`tempo jitter p90: note-level ${noteLevelSmoothness.p90RateJumpSecPerBeat}s/beat -> conductor ${conductorSmoothness.p90RateJumpSecPerBeat}s/beat`);
 console.log(`delta vs old Lead grid: mean ${timingDelta.meanAbsSec}s | max ${timingDelta.maxAbsSec}s @ note ${timingDelta.maxAbsNote} | final ${timingDelta.finalNoteDeltaSec}s`);
 console.log('first 16 notes:', sync.slice(0, 16).map((s) => `${s.startTimeSeconds}${nm(s.pitchMidi)}`).join(' '));
 console.log('last 16 notes:', sync.slice(-16).map((s, i) => `${sync.length - 15 + i}:${s.startTimeSeconds}${nm(s.pitchMidi)}`).join(' '));
@@ -261,6 +267,83 @@ function selectTempoSaneAnchors(audio, scoreEvents, leadGrid) {
   return out.reverse();
 }
 
+function selectConductorAnchors(audioAnchors, scoreEvents) {
+  const audioByScoreIndex = new Map(audioAnchors.map((anchor) => [anchor.scoreIndex, anchor]));
+  const out = [];
+  const add = (scoreIndex, reason) => {
+    if (scoreIndex < 0 || scoreIndex >= scoreEvents.length) return;
+    if (out.some((anchor) => anchor.scoreIndex === scoreIndex)) return;
+    const audioAnchor = audioByScoreIndex.get(scoreIndex);
+    const event = scoreEvents[scoreIndex];
+    out.push({
+      scoreIndex,
+      beat: event.startBeat,
+      time: audioAnchor ? audioAnchor.time : mapBeat(event.startBeat, audioAnchors),
+      measure: event.measure,
+      reason,
+      audioPitchMidi: audioAnchor?.audioPitchMidi ?? event.midi,
+      amplitude: audioAnchor?.amplitude ?? 0,
+    });
+  };
+
+  add(0, 'first-note');
+  const measures = [...new Set(scoreEvents.map((event) => event.measure))];
+  for (const measure of measures) {
+    const noteIndexes = scoreEvents
+      .map((event, index) => event.measure === measure ? index : -1)
+      .filter((index) => index >= 0);
+    if (!noteIndexes.length) continue;
+    const firstIndex = noteIndexes[0];
+    const confirmedIndexes = noteIndexes.filter((index) => audioByScoreIndex.has(index));
+    let choice = firstIndex;
+    if (audioByScoreIndex.has(firstIndex)) {
+      choice = firstIndex;
+    } else if (confirmedIndexes.length) {
+      choice = confirmedIndexes.slice().sort((a, b) => {
+        const beatRank = scoreEvents[b].beats - scoreEvents[a].beats;
+        if (Math.abs(beatRank) > 0.01) return beatRank;
+        return scoreEvents[a].startBeat - scoreEvents[b].startBeat;
+      })[0];
+    }
+    add(choice, choice === firstIndex ? 'measure-start' : 'measure-strong-note');
+  }
+  add(scoreEvents.length - 1, 'final-note');
+
+  out.sort((a, b) => a.beat - b.beat || a.scoreIndex - b.scoreIndex);
+  const pruned = [];
+  for (const anchor of out) {
+    const prior = pruned[pruned.length - 1];
+    if (
+      prior &&
+      anchor.scoreIndex !== scoreEvents.length - 1 &&
+      anchor.beat - prior.beat < 1.5
+    ) {
+      continue;
+    }
+    pruned.push(anchor);
+  }
+  return pruned;
+}
+
+function buildSyncFromAnchors(scoreEvents, beatAnchors, durationSec) {
+  const notes = scoreEvents.map((event) => {
+    const start = mapBeat(event.startBeat, beatAnchors);
+    const end = mapBeat(event.startBeat + event.beats, beatAnchors);
+    return {
+      pitchMidi: event.midi,
+      startTimeSeconds: round3(Math.max(0, start)),
+      durationSeconds: round3(Math.max(0.08, end - start)),
+    };
+  });
+  for (let i = 0; i < notes.length; i++) {
+    const nextStart = i < notes.length - 1 ? notes[i + 1].startTimeSeconds : durationSec;
+    if (notes[i].startTimeSeconds + notes[i].durationSeconds > nextStart) {
+      notes[i].durationSeconds = round3(Math.max(0.08, nextStart - notes[i].startTimeSeconds));
+    }
+  }
+  return notes;
+}
+
 function anchorReward(anchor, leadGrid) {
   const leadTime = leadGrid[anchor.scoreIndex]?.startTimeSeconds ?? anchor.time;
   return 10 + Math.min(2, anchor.amplitude * 2) - 0.02 * Math.abs(leadTime - anchor.time);
@@ -341,6 +424,29 @@ function timingDeltaSummary(sync, baseline) {
     maxAbsNote: maxIndex + 1,
     finalNoteDeltaSec: deltas[deltas.length - 1],
   };
+}
+
+function tempoSmoothness(sync, scoreEvents) {
+  const rates = [];
+  for (let i = 1; i < sync.length; i++) {
+    const beatDelta = scoreEvents[i].startBeat - scoreEvents[i - 1].startBeat;
+    const timeDelta = sync[i].startTimeSeconds - sync[i - 1].startTimeSeconds;
+    if (beatDelta > 0 && timeDelta >= 0) rates.push(timeDelta / beatDelta);
+  }
+  const jumps = [];
+  for (let i = 1; i < rates.length; i++) jumps.push(Math.abs(rates[i] - rates[i - 1]));
+  return {
+    medianSecPerBeat: round3(percentile(rates, 0.5)),
+    p90RateJumpSecPerBeat: round3(percentile(jumps, 0.9)),
+    maxRateJumpSecPerBeat: round3(percentile(jumps, 1)),
+  };
+}
+
+function percentile(values, p) {
+  if (!values.length) return 0;
+  const sorted = values.slice().sort((a, b) => a - b);
+  const index = Math.min(sorted.length - 1, Math.max(0, Math.floor((sorted.length - 1) * p)));
+  return sorted[index];
 }
 
 async function templateDuration() {
