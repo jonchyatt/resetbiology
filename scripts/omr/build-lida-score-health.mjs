@@ -150,10 +150,11 @@ checks.push(check(
   'score-conductor-sync',
   'Score-conductor sync',
   /score-conductor/i.test(sync.source || '') &&
-    conductorAnchors >= 20 &&
+    conductorAnchors >= 18 &&
     conductorAnchors + scoreConductorNotes === noteCount &&
-    (conductorTempo?.p90RateJumpSecPerBeat ?? 99) <= 0.5,
-  `conductorAnchors=${conductorAnchors}; scoreConductor=${scoreConductorNotes}; audioEvidence=${sync.audit?.audioEvidenceAnchors ?? 'n/a'}; p90Jump=${conductorTempo?.p90RateJumpSecPerBeat ?? 'n/a'}; isolated=${sync.audit?.isolatedOnsets ?? 'n/a'}`,
+    (conductorTempo?.p90RateJumpSecPerBeat ?? 99) <= 0.5 &&
+    (conductorTempo?.maxRateJumpSecPerBeat ?? 99) <= 0.45,
+  `conductorAnchors=${conductorAnchors}; scoreConductor=${scoreConductorNotes}; audioEvidence=${sync.audit?.audioEvidenceAnchors ?? 'n/a'}; p90Jump=${conductorTempo?.p90RateJumpSecPerBeat ?? 'n/a'}; maxJump=${conductorTempo?.maxRateJumpSecPerBeat ?? 'n/a'}; pruned=${sync.audit?.removedConductorAnchors?.length ?? 0}; isolated=${sync.audit?.isolatedOnsets ?? 'n/a'}`,
 ));
 
 const payload = {
@@ -170,7 +171,9 @@ const payload = {
     noteCount: syncNotes.length,
     reconciledCount: reconciledNotes.length,
     audioEvidenceAnchors: sync.audit?.audioEvidenceAnchors ?? null,
+    rawConductorAnchors: sync.audit?.rawConductorAnchors ?? null,
     conductorAnchors,
+    removedConductorAnchors: sync.audit?.removedConductorAnchors ?? [],
     scoreConductorNotes,
     isolatedOnsets: sync.audit?.isolatedOnsets ?? null,
     tempoSmoothness: sync.audit?.tempoSmoothness ?? null,

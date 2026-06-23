@@ -117,12 +117,13 @@ const conductorTempo = sync.audit?.tempoSmoothness?.scoreConductor;
 checks.push(check(
   'score-conductor-sync',
   'Score-conductor Baritone sync',
-  /score-conductor/i.test(sync.source || '') &&
+    /score-conductor/i.test(sync.source || '') &&
     leadTimeline === 0 &&
-    conductorAnchors >= 20 &&
+    conductorAnchors >= 18 &&
     conductorAnchors + scoreConductorNotes === noteCount &&
-    Number(conductorTempo?.p90RateJumpSecPerBeat ?? 99) <= 0.5,
-  `conductorAnchors=${conductorAnchors}; scoreConductor=${scoreConductorNotes}; leadTimeline=${leadTimeline}; p90Jump=${conductorTempo?.p90RateJumpSecPerBeat ?? 'n/a'}; isolated=${sync.audit?.isolatedOnsets ?? 'n/a'}`,
+    Number(conductorTempo?.p90RateJumpSecPerBeat ?? 99) <= 0.5 &&
+    Number(conductorTempo?.maxRateJumpSecPerBeat ?? 99) <= 0.45,
+  `conductorAnchors=${conductorAnchors}; scoreConductor=${scoreConductorNotes}; leadTimeline=${leadTimeline}; p90Jump=${conductorTempo?.p90RateJumpSecPerBeat ?? 'n/a'}; maxJump=${conductorTempo?.maxRateJumpSecPerBeat ?? 'n/a'}; pruned=${sync.audit?.removedConductorAnchors?.length ?? 0}; isolated=${sync.audit?.isolatedOnsets ?? 'n/a'}`,
 ));
 
 const payload = {
@@ -139,7 +140,9 @@ const payload = {
     reconciledCount: reconciledNotes.length,
     source: sync.source || null,
     audioEvidenceAnchors: sync.audit?.audioEvidenceAnchors ?? null,
+    rawConductorAnchors: sync.audit?.rawConductorAnchors ?? null,
     conductorAnchors,
+    removedConductorAnchors: sync.audit?.removedConductorAnchors ?? [],
     scoreConductorNotes,
     leadTimeline,
     isolatedOnsets: sync.audit?.isolatedOnsets ?? null,

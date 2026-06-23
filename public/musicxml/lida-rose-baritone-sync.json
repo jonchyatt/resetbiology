@@ -2,7 +2,7 @@
  "song": "Lida Rose",
  "part": "Baritone",
  "source": "score-conductor Baritone timing from score rhythm plus measure-level isolated-audio anchors",
- "durationSec": 83.289977,
+ "durationSec": 83.24031746031746,
  "noteCount": 106,
  "audit": {
   "method": "score-conductor grid: BaritoneDominant-NoBaritone audio evidence downsampled to measure-level anchors; every note regenerated from score rhythm between anchors",
@@ -11,26 +11,89 @@
   "noBaritoneRawNotes": 1576,
   "isolatedOnsets": 193,
   "audioEvidenceAnchors": 82,
-  "conductorAnchors": 24,
-  "scoreConductorNotes": 82,
+  "rawConductorAnchors": 25,
+  "conductorAnchors": 20,
+  "removedConductorAnchors": [
+   {
+    "scoreIndex": 32,
+    "beat": 46,
+    "time": 31.43585714285714,
+    "measure": 13,
+    "reason": "measure-start",
+    "audioPitchMidi": 56,
+    "amplitude": 0.407609686255455,
+    "removedReason": "tempo-cliff",
+    "removedRateSecPerBeat": 0.398,
+    "previousRateSecPerBeat": 1.243
+   },
+   {
+    "scoreIndex": 104,
+    "beat": 117.5,
+    "time": 78.25487936507938,
+    "measure": 31,
+    "reason": "measure-start",
+    "audioPitchMidi": 54,
+    "amplitude": 0.7870898246765137,
+    "removedReason": "tempo-cliff",
+    "removedRateSecPerBeat": 0.383,
+    "previousRateSecPerBeat": 1.138
+   },
+   {
+    "scoreIndex": 16,
+    "beat": 26,
+    "time": 14.463409070294784,
+    "measure": 8,
+    "reason": "measure-start",
+    "audioPitchMidi": 58,
+    "amplitude": 0.8182521206992013,
+    "removedReason": "tempo-cliff",
+    "removedRateSecPerBeat": 1.026,
+    "previousRateSecPerBeat": 0.534
+   },
+   {
+    "scoreIndex": 4,
+    "beat": 19,
+    "time": 9.432437188208617,
+    "measure": 6,
+    "reason": "measure-start",
+    "audioPitchMidi": 56,
+    "amplitude": 0.39911199467522757,
+    "removedReason": "tempo-cliff",
+    "removedRateSecPerBeat": 0.903,
+    "previousRateSecPerBeat": 0.465
+   },
+   {
+    "scoreIndex": 63,
+    "beat": 73.5,
+    "time": 50.44261904761905,
+    "measure": 20,
+    "reason": "measure-start",
+    "audioPitchMidi": 63,
+    "amplitude": 0.6616496907340156,
+    "removedReason": "tempo-cliff",
+    "removedRateSecPerBeat": 0.607,
+    "previousRateSecPerBeat": 1.023
+   }
+  ],
+  "scoreConductorNotes": 86,
   "pitchRange": "C#3-D#4",
   "tempoSmoothness": {
    "noteLevelAudio": {
-    "medianSecPerBeat": 0.592,
+    "medianSecPerBeat": 0.606,
     "p90RateJumpSecPerBeat": 0.803,
     "maxRateJumpSecPerBeat": 1.392
    },
    "scoreConductor": {
-    "medianSecPerBeat": 0.614,
-    "p90RateJumpSecPerBeat": 0.244,
-    "maxRateJumpSecPerBeat": 0.845
+    "medianSecPerBeat": 0.618,
+    "p90RateJumpSecPerBeat": 0.072,
+    "maxRateJumpSecPerBeat": 0.303
    }
   },
   "timingDeltaFromLeadGrid": {
-   "meanAbsSec": 4.256,
-   "maxAbsSec": 7.52,
-   "maxAbsNote": 92,
-   "finalNoteDeltaSec": 7.205
+   "meanAbsSec": 4.217,
+   "maxAbsSec": 7.194,
+   "maxAbsNote": 98,
+   "finalNoteDeltaSec": 7.148
   },
   "config": {
    "rangePadSemitones": 2,
@@ -41,115 +104,119 @@
    "mergeGapSec": 0.12,
    "minAudioAnchors": 70,
    "minIsolatedOnsets": 120,
-   "minConductorAnchors": 20,
-   "maxConductorP90RateJump": 0.5
+   "minConductorAnchors": 18,
+   "maxConductorP90RateJump": 0.5,
+   "maxConductorMaxRateJump": 0.45,
+   "conductorMinSegmentSecPerBeat": 0.35,
+   "conductorMaxSegmentSecPerBeat": 1.08,
+   "conductorMaxAdjacentRateJump": 0.38
   }
  },
  "notes": [
   {
    "pitchMidi": 59,
    "startTimeSeconds": 5.25,
-   "durationSeconds": 0.465
+   "durationSeconds": 0.587
   },
   {
    "pitchMidi": 58,
-   "startTimeSeconds": 5.715,
-   "durationSeconds": 0.465
+   "startTimeSeconds": 5.838,
+   "durationSeconds": 0.587
   },
   {
    "pitchMidi": 57,
-   "startTimeSeconds": 6.18,
-   "durationSeconds": 0.464
+   "startTimeSeconds": 6.425,
+   "durationSeconds": 0.587
   },
   {
    "pitchMidi": 58,
-   "startTimeSeconds": 6.644,
-   "durationSeconds": 0.465
+   "startTimeSeconds": 7.013,
+   "durationSeconds": 0.587
   },
   {
    "pitchMidi": 56,
-   "startTimeSeconds": 9.432,
-   "durationSeconds": 0.451
+   "startTimeSeconds": 10.537,
+   "durationSeconds": 0.294
   },
   {
    "pitchMidi": 56,
-   "startTimeSeconds": 9.884,
-   "durationSeconds": 0.451
+   "startTimeSeconds": 10.831,
+   "durationSeconds": 0.293
   },
   {
    "pitchMidi": 61,
-   "startTimeSeconds": 10.335,
-   "durationSeconds": 0.903
+   "startTimeSeconds": 11.124,
+   "durationSeconds": 0.587
   },
   {
    "pitchMidi": 59,
-   "startTimeSeconds": 11.238,
-   "durationSeconds": 0.903
+   "startTimeSeconds": 11.712,
+   "durationSeconds": 0.587
   },
   {
    "pitchMidi": 63,
-   "startTimeSeconds": 12.141,
-   "durationSeconds": 0.451
+   "startTimeSeconds": 12.299,
+   "durationSeconds": 0.294
   },
   {
    "pitchMidi": 62,
    "startTimeSeconds": 12.593,
-   "durationSeconds": 0.267
+   "durationSeconds": 0.422
   },
   {
    "pitchMidi": 63,
-   "startTimeSeconds": 12.86,
-   "durationSeconds": 0.267
+   "startTimeSeconds": 13.015,
+   "durationSeconds": 0.423
   },
   {
    "pitchMidi": 63,
-   "startTimeSeconds": 13.127,
-   "durationSeconds": 0.267
+   "startTimeSeconds": 13.438,
+   "durationSeconds": 0.422
   },
   {
    "pitchMidi": 63,
-   "startTimeSeconds": 13.395,
-   "durationSeconds": 0.267
+   "startTimeSeconds": 13.86,
+   "durationSeconds": 0.423
   },
   {
    "pitchMidi": 57,
-   "startTimeSeconds": 13.662,
-   "durationSeconds": 0.267
+   "startTimeSeconds": 14.283,
+   "durationSeconds": 0.422
   },
   {
    "pitchMidi": 56,
-   "startTimeSeconds": 13.929,
-   "durationSeconds": 0.267
+   "startTimeSeconds": 14.705,
+   "durationSeconds": 0.423
   },
   {
    "pitchMidi": 57,
-   "startTimeSeconds": 14.196,
-   "durationSeconds": 0.267
+   "startTimeSeconds": 15.128,
+   "durationSeconds": 0.422
   },
   {
    "pitchMidi": 58,
-   "startTimeSeconds": 14.463,
-   "durationSeconds": 1.026
+   "startTimeSeconds": 15.55,
+   "durationSeconds": 0.845
   },
   {
    "pitchMidi": 58,
-   "startTimeSeconds": 15.49,
-   "durationSeconds": 1.026
+   "startTimeSeconds": 16.395,
+   "durationSeconds": 0.845
   },
   {
    "pitchMidi": 57,
-   "startTimeSeconds": 16.516,
-   "durationSeconds": 1.026
+   "startTimeSeconds": 17.24,
+   "durationSeconds": 0.845
   },
   {
    "pitchMidi": 58,
-   "startTimeSeconds": 17.542,
-   "durationSeconds": 1.026
+   "startTimeSeconds": 18.086,
+   "durationSeconds": 0.845
   },
   {
    "pitchMidi": 59,
-   "startTimeSeconds": 18.568,
-   "durationSeconds": 2.052
+   "startTimeSeconds": 18.931,
+   "durationSeconds": 1.69
   },
   {
    "pitchMidi": 54,
@@ -199,252 +266,252 @@
   {
    "pitchMidi": 60,
    "startTimeSeconds": 26.464,
-   "durationSeconds": 2.486
+   "durationSeconds": 1.641
   },
   {
    "pitchMidi": 60,
-   "startTimeSeconds": 28.95,
-   "durationSeconds": 2.486
+   "startTimeSeconds": 28.105,
+   "durationSeconds": 1.641
   },
   {
    "pitchMidi": 56,
-   "startTimeSeconds": 31.436,
-   "durationSeconds": 1.194
+   "startTimeSeconds": 29.746,
+   "durationSeconds": 2.461
   },
   {
    "pitchMidi": 60,
-   "startTimeSeconds": 32.63,
-   "durationSeconds": 0.199
+   "startTimeSeconds": 32.207,
+   "durationSeconds": 0.41
   },
   {
    "pitchMidi": 60,
-   "startTimeSeconds": 32.829,
-   "durationSeconds": 0.199
+   "startTimeSeconds": 32.617,
+   "durationSeconds": 0.41
   },
   {
    "pitchMidi": 59,
    "startTimeSeconds": 33.028,
-   "durationSeconds": 0.868
+   "durationSeconds": 0.828
   },
   {
    "pitchMidi": 60,
-   "startTimeSeconds": 33.896,
-   "durationSeconds": 0.868
+   "startTimeSeconds": 33.856,
+   "durationSeconds": 0.827
   },
   {
    "pitchMidi": 59,
-   "startTimeSeconds": 34.765,
-   "durationSeconds": 0.868
+   "startTimeSeconds": 34.683,
+   "durationSeconds": 0.828
   },
   {
    "pitchMidi": 55,
-   "startTimeSeconds": 35.633,
-   "durationSeconds": 0.868
+   "startTimeSeconds": 35.511,
+   "durationSeconds": 0.828
   },
   {
    "pitchMidi": 56,
-   "startTimeSeconds": 36.502,
-   "durationSeconds": 0.513
+   "startTimeSeconds": 36.339,
+   "durationSeconds": 0.546
   },
   {
    "pitchMidi": 57,
-   "startTimeSeconds": 37.015,
-   "durationSeconds": 0.257
+   "startTimeSeconds": 36.885,
+   "durationSeconds": 0.273
   },
   {
    "pitchMidi": 58,
-   "startTimeSeconds": 37.272,
-   "durationSeconds": 0.256
+   "startTimeSeconds": 37.158,
+   "durationSeconds": 0.273
   },
   {
    "pitchMidi": 61,
-   "startTimeSeconds": 37.528,
-   "durationSeconds": 0.513
+   "startTimeSeconds": 37.431,
+   "durationSeconds": 0.546
   },
   {
    "pitchMidi": 59,
-   "startTimeSeconds": 38.042,
-   "durationSeconds": 0.513
+   "startTimeSeconds": 37.977,
+   "durationSeconds": 0.546
   },
   {
    "pitchMidi": 61,
    "startTimeSeconds": 39.069,
-   "durationSeconds": 0.294
+   "durationSeconds": 0.307
   },
   {
    "pitchMidi": 61,
-   "startTimeSeconds": 39.363,
-   "durationSeconds": 0.294
+   "startTimeSeconds": 39.376,
+   "durationSeconds": 0.307
   },
   {
    "pitchMidi": 61,
-   "startTimeSeconds": 39.657,
-   "durationSeconds": 0.589
+   "startTimeSeconds": 39.683,
+   "durationSeconds": 0.614
   },
   {
    "pitchMidi": 61,
-   "startTimeSeconds": 40.246,
-   "durationSeconds": 0.589
+   "startTimeSeconds": 40.297,
+   "durationSeconds": 0.614
   },
   {
    "pitchMidi": 61,
-   "startTimeSeconds": 40.835,
-   "durationSeconds": 0.317
+   "startTimeSeconds": 40.911,
+   "durationSeconds": 0.307
   },
   {
    "pitchMidi": 60,
-   "startTimeSeconds": 41.152,
-   "durationSeconds": 0.317
+   "startTimeSeconds": 41.218,
+   "durationSeconds": 0.309
   },
   {
    "pitchMidi": 61,
-   "startTimeSeconds": 41.47,
-   "durationSeconds": 0.317
+   "startTimeSeconds": 41.527,
+   "durationSeconds": 0.309
   },
   {
    "pitchMidi": 61,
-   "startTimeSeconds": 41.787,
-   "durationSeconds": 0.317
+   "startTimeSeconds": 41.836,
+   "durationSeconds": 0.309
   },
   {
    "pitchMidi": 61,
-   "startTimeSeconds": 42.105,
-   "durationSeconds": 0.317
+   "startTimeSeconds": 42.146,
+   "durationSeconds": 0.309
   },
   {
    "pitchMidi": 61,
-   "startTimeSeconds": 42.422,
-   "durationSeconds": 0.317
+   "startTimeSeconds": 42.455,
+   "durationSeconds": 0.309
   },
   {
    "pitchMidi": 60,
-   "startTimeSeconds": 42.74,
-   "durationSeconds": 0.317
+   "startTimeSeconds": 42.764,
+   "durationSeconds": 0.309
   },
   {
    "pitchMidi": 59,
-   "startTimeSeconds": 43.057,
-   "durationSeconds": 0.635
+   "startTimeSeconds": 43.074,
+   "durationSeconds": 0.618
   },
   {
    "pitchMidi": 59,
    "startTimeSeconds": 43.692,
-   "durationSeconds": 0.86
+   "durationSeconds": 0.921
   },
   {
    "pitchMidi": 57,
-   "startTimeSeconds": 44.552,
-   "durationSeconds": 0.86
+   "startTimeSeconds": 44.613,
+   "durationSeconds": 0.921
   },
   {
    "pitchMidi": 58,
-   "startTimeSeconds": 45.412,
-   "durationSeconds": 0.86
+   "startTimeSeconds": 45.534,
+   "durationSeconds": 0.921
   },
   {
    "pitchMidi": 56,
-   "startTimeSeconds": 47.131,
-   "durationSeconds": 0.552
+   "startTimeSeconds": 47.375,
+   "durationSeconds": 0.393
   },
   {
    "pitchMidi": 56,
-   "startTimeSeconds": 47.683,
-   "durationSeconds": 0.552
+   "startTimeSeconds": 47.768,
+   "durationSeconds": 0.392
   },
   {
    "pitchMidi": 61,
-   "startTimeSeconds": 48.235,
-   "durationSeconds": 1.104
+   "startTimeSeconds": 48.16,
+   "durationSeconds": 0.785
   },
   {
    "pitchMidi": 59,
-   "startTimeSeconds": 49.339,
-   "durationSeconds": 1.104
+   "startTimeSeconds": 48.945,
+   "durationSeconds": 0.785
   },
   {
    "pitchMidi": 63,
-   "startTimeSeconds": 50.443,
-   "durationSeconds": 0.303
+   "startTimeSeconds": 49.73,
+   "durationSeconds": 0.393
   },
   {
    "pitchMidi": 62,
-   "startTimeSeconds": 50.746,
-   "durationSeconds": 0.303
+   "startTimeSeconds": 50.123,
+   "durationSeconds": 0.392
   },
   {
    "pitchMidi": 63,
-   "startTimeSeconds": 51.05,
-   "durationSeconds": 0.303
+   "startTimeSeconds": 50.515,
+   "durationSeconds": 0.393
   },
   {
    "pitchMidi": 63,
-   "startTimeSeconds": 51.353,
-   "durationSeconds": 0.303
+   "startTimeSeconds": 50.908,
+   "durationSeconds": 0.392
   },
   {
    "pitchMidi": 63,
-   "startTimeSeconds": 51.657,
-   "durationSeconds": 0.303
+   "startTimeSeconds": 51.3,
+   "durationSeconds": 0.393
   },
   {
    "pitchMidi": 57,
-   "startTimeSeconds": 51.96,
-   "durationSeconds": 0.303
+   "startTimeSeconds": 51.693,
+   "durationSeconds": 0.392
   },
   {
    "pitchMidi": 56,
-   "startTimeSeconds": 52.263,
-   "durationSeconds": 0.303
+   "startTimeSeconds": 52.085,
+   "durationSeconds": 0.393
   },
   {
    "pitchMidi": 57,
-   "startTimeSeconds": 52.567,
-   "durationSeconds": 0.303
+   "startTimeSeconds": 52.478,
+   "durationSeconds": 0.392
   },
   {
    "pitchMidi": 58,
    "startTimeSeconds": 52.87,
-   "durationSeconds": 0.615
+   "durationSeconds": 0.64
   },
   {
    "pitchMidi": 58,
-   "startTimeSeconds": 53.485,
-   "durationSeconds": 0.615
+   "startTimeSeconds": 53.511,
+   "durationSeconds": 0.64
   },
   {
    "pitchMidi": 57,
-   "startTimeSeconds": 54.1,
-   "durationSeconds": 0.615
+   "startTimeSeconds": 54.151,
+   "durationSeconds": 0.64
   },
   {
    "pitchMidi": 58,
-   "startTimeSeconds": 54.715,
-   "durationSeconds": 0.307
+   "startTimeSeconds": 54.791,
+   "durationSeconds": 0.32
   },
   {
    "pitchMidi": 58,
-   "startTimeSeconds": 55.022,
-   "durationSeconds": 0.307
+   "startTimeSeconds": 55.111,
+   "durationSeconds": 0.32
   },
   {
    "pitchMidi": 59,
-   "startTimeSeconds": 58.403,
-   "durationSeconds": 0.615
+   "startTimeSeconds": 58.633,
+   "durationSeconds": 0.536
   },
   {
    "pitchMidi": 59,
-   "startTimeSeconds": 59.018,
-   "durationSeconds": 0.307
+   "startTimeSeconds": 59.169,
+   "durationSeconds": 0.268
   },
   {
    "pitchMidi": 58,
-   "startTimeSeconds": 59.325,
-   "durationSeconds": 0.307
+   "startTimeSeconds": 59.437,
+   "durationSeconds": 0.267
   },
   {
    "pitchMidi": 59,
-   "startTimeSeconds": 59.633,
-   "durationSeconds": 0.607
+   "startTimeSeconds": 59.704,
+   "durationSeconds": 0.536
   },
   {
    "pitchMidi": 59,
@@ -554,27 +621,27 @@
   {
    "pitchMidi": 49,
    "startTimeSeconds": 75.978,
-   "durationSeconds": 1.138
+   "durationSeconds": 0.761
   },
   {
    "pitchMidi": 54,
-   "startTimeSeconds": 77.116,
-   "durationSeconds": 0.569
+   "startTimeSeconds": 76.739,
+   "durationSeconds": 0.38
   },
   {
    "pitchMidi": 54,
-   "startTimeSeconds": 77.686,
-   "durationSeconds": 0.569
+   "startTimeSeconds": 77.119,
+   "durationSeconds": 0.38
   },
   {
    "pitchMidi": 54,
-   "startTimeSeconds": 78.255,
-   "durationSeconds": 0.766
+   "startTimeSeconds": 77.5,
+   "durationSeconds": 1.521
   },
   {
    "pitchMidi": 55,
    "startTimeSeconds": 79.021,
-   "durationSeconds": 0.766
+   "durationSeconds": 1.522
   }
  ]
 }

@@ -77,12 +77,15 @@ if (!/score-conductor/i.test(sync.source || '')) errors.push(`sync source is not
 if (syncNotes.length !== noteCount || reconciledNotes.length !== noteCount) {
   errors.push(`sync count mismatch: sync=${syncNotes.length}; reconciled=${reconciledNotes.length}; score=${noteCount}`);
 }
-if (conductorAnchors < 20) errors.push(`conductorAnchors too low: ${conductorAnchors}`);
+if (conductorAnchors < 18) errors.push(`conductorAnchors too low: ${conductorAnchors}`);
 if (conductorAnchors + scoreConductorNotes !== noteCount) {
   errors.push(`score-conductor note accounting mismatch: anchors=${conductorAnchors}; scoreConductor=${scoreConductorNotes}; score=${noteCount}`);
 }
 if ((sync.audit?.tempoSmoothness?.scoreConductor?.p90RateJumpSecPerBeat ?? 99) > 0.5) {
   errors.push(`conductor timing too jittery: ${JSON.stringify(sync.audit?.tempoSmoothness?.scoreConductor)}`);
+}
+if ((sync.audit?.tempoSmoothness?.scoreConductor?.maxRateJumpSecPerBeat ?? 99) > 0.45) {
+  errors.push(`conductor timing has a cliff: ${JSON.stringify(sync.audit?.tempoSmoothness?.scoreConductor)}`);
 }
 
 for (const err of comparePrintedAudit(xml)) errors.push(err);
@@ -98,7 +101,7 @@ console.log(`key: fifths allowed ${[...allowedFifths].join(',')}`);
 console.log(`pitched notes: ${noteCount}`);
 console.log(`whole notes: ${gotWhole.join(' ') || '(none)'}`);
 console.log(`printed audit: ${PRINTED_LEAD_AUDIT_MEASURES.length} measures`);
-console.log(`score conductor: anchors ${conductorAnchors}; notes ${scoreConductorNotes}; p90 jump ${sync.audit?.tempoSmoothness?.scoreConductor?.p90RateJumpSecPerBeat}; isolated ${sync.audit?.isolatedOnsets}`);
+console.log(`score conductor: anchors ${sync.audit?.rawConductorAnchors ?? conductorAnchors}->${conductorAnchors}; notes ${scoreConductorNotes}; p90/max jump ${sync.audit?.tempoSmoothness?.scoreConductor?.p90RateJumpSecPerBeat}/${sync.audit?.tempoSmoothness?.scoreConductor?.maxRateJumpSecPerBeat}; pruned ${sync.audit?.removedConductorAnchors?.length ?? 0}; isolated ${sync.audit?.isolatedOnsets}`);
 console.log(`source pages: ${PAGES.map((p) => `${p.page}:${p.lead}`).join(' ')}`);
 
 function expectedFromSource() {

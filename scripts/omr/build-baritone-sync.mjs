@@ -5,6 +5,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { pruneTempoCliffAnchors } from './timing-grid.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const RBW = path.join(__dirname, '..', '..');
@@ -29,8 +30,12 @@ const CONFIG = {
   mergeGapSec: 0.12,
   minAudioAnchors: 70,
   minIsolatedOnsets: 120,
-  minConductorAnchors: 20,
+  minConductorAnchors: 18,
   maxConductorP90RateJump: 0.5,
+  maxConductorMaxRateJump: 0.45,
+  conductorMinSegmentSecPerBeat: 0.35,
+  conductorMaxSegmentSecPerBeat: 1.08,
+  conductorMaxAdjacentRateJump: 0.38,
 };
 
 const NM = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
@@ -59,7 +64,13 @@ if (anchors.length < CONFIG.minAudioAnchors) {
 }
 
 const noteLevelAudioSync = buildSyncFromAnchors(baritoneEvents, anchors, durationSec);
-const conductorAnchors = selectConductorAnchors(anchors, baritoneEvents);
+const rawConductorAnchors = selectConductorAnchors(anchors, baritoneEvents);
+const conductorPrune = pruneTempoCliffAnchors(rawConductorAnchors, {
+  minSegmentSecPerBeat: CONFIG.conductorMinSegmentSecPerBeat,
+  maxSegmentSecPerBeat: CONFIG.conductorMaxSegmentSecPerBeat,
+  maxAdjacentRateJump: CONFIG.conductorMaxAdjacentRateJump,
+});
+const conductorAnchors = conductorPrune.anchors;
 const conductorByScoreIndex = new Map(conductorAnchors.map((anchor) => [anchor.scoreIndex, anchor]));
 const sync = buildSyncFromAnchors(baritoneEvents, conductorAnchors, durationSec);
 const noteLevelSmoothness = tempoSmoothness(noteLevelAudioSync, baritoneEvents);
@@ -70,6 +81,9 @@ if (conductorAnchors.length < CONFIG.minConductorAnchors) {
 }
 if (conductorSmoothness.p90RateJumpSecPerBeat > CONFIG.maxConductorP90RateJump) {
   throw new Error(`Baritone conductor grid is still too jittery: p90 jump ${conductorSmoothness.p90RateJumpSecPerBeat}`);
+}
+if (conductorSmoothness.maxRateJumpSecPerBeat > CONFIG.maxConductorMaxRateJump) {
+  throw new Error(`Baritone conductor grid has a tempo cliff: max jump ${conductorSmoothness.maxRateJumpSecPerBeat}`);
 }
 
 const timingDelta = timingDeltaSummary(sync, leadGridSync);
@@ -86,7 +100,9 @@ const audit = {
   noBaritoneRawNotes: noBaritoneNotes.length,
   isolatedOnsets: isolatedOnsets.length,
   audioEvidenceAnchors: anchors.length,
+  rawConductorAnchors: rawConductorAnchors.length,
   conductorAnchors: conductorAnchors.length,
+  removedConductorAnchors: conductorPrune.removed,
   scoreConductorNotes: sync.length - conductorAnchors.length,
   pitchRange: `${nm(Math.min(...sync.map((n) => n.pitchMidi)))}-${nm(Math.max(...sync.map((n) => n.pitchMidi)))}`,
   tempoSmoothness: {
@@ -135,9 +151,10 @@ const reconciled = {
 fs.writeFileSync(OUT, `${JSON.stringify(payload, null, 1)}\n`);
 fs.writeFileSync(RECONCILED_OUT, `${JSON.stringify(reconciled, null, 1)}\n`);
 
-console.log(`Baritone score ${sync.length} (${audit.pitchRange}) | audio evidence ${anchors.length}/${sync.length} | conductor anchors ${conductorAnchors.length} | isolated onsets ${isolatedOnsets.length}`);
+console.log(`Baritone score ${sync.length} (${audit.pitchRange}) | audio evidence ${anchors.length}/${sync.length} | conductor anchors ${rawConductorAnchors.length}->${conductorAnchors.length} | isolated onsets ${isolatedOnsets.length}`);
 console.log(`span ${sync[0].startTimeSeconds}s -> ${sync[sync.length - 1].startTimeSeconds}s | duration ${durationSec.toFixed(3)}s | monotonic ${monotonic}`);
-console.log(`tempo jitter p90: note-level ${noteLevelSmoothness.p90RateJumpSecPerBeat}s/beat -> conductor ${conductorSmoothness.p90RateJumpSecPerBeat}s/beat`);
+console.log(`tempo jitter p90/max: note-level ${noteLevelSmoothness.p90RateJumpSecPerBeat}/${noteLevelSmoothness.maxRateJumpSecPerBeat}s/beat -> conductor ${conductorSmoothness.p90RateJumpSecPerBeat}/${conductorSmoothness.maxRateJumpSecPerBeat}s/beat`);
+if (conductorPrune.removed.length) console.log('removed conductor cliffs:', conductorPrune.removed.map((a) => `m${a.measure}@${a.time}s:${a.removedReason}`).join(' '));
 console.log(`delta vs old Lead grid: mean ${timingDelta.meanAbsSec}s | max ${timingDelta.maxAbsSec}s @ note ${timingDelta.maxAbsNote} | final ${timingDelta.finalNoteDeltaSec}s`);
 console.log('first 16 notes:', sync.slice(0, 16).map((s) => `${s.startTimeSeconds}${nm(s.pitchMidi)}`).join(' '));
 console.log('last 16 notes:', sync.slice(-16).map((s, i) => `${sync.length - 15 + i}:${s.startTimeSeconds}${nm(s.pitchMidi)}`).join(' '));

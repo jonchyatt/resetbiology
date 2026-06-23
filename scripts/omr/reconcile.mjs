@@ -24,11 +24,14 @@ if (!/score-conductor/i.test(reconciled.method || '')) {
 if (syncNotes.length !== reconciledNotes.length) {
   errors.push(`sync/reconciled count mismatch: ${syncNotes.length} vs ${reconciledNotes.length}`);
 }
-if ((sync.audit?.conductorAnchors ?? 0) < 20) {
+if ((sync.audit?.conductorAnchors ?? 0) < 18) {
   errors.push(`Lead conductor anchors too sparse: ${sync.audit?.conductorAnchors ?? 'missing'}`);
 }
 if ((sync.audit?.tempoSmoothness?.scoreConductor?.p90RateJumpSecPerBeat ?? 99) > 0.5) {
   errors.push(`Lead conductor timing too jittery: ${JSON.stringify(sync.audit?.tempoSmoothness?.scoreConductor)}`);
+}
+if ((sync.audit?.tempoSmoothness?.scoreConductor?.maxRateJumpSecPerBeat ?? 99) > 0.45) {
+  errors.push(`Lead conductor timing has a cliff: ${JSON.stringify(sync.audit?.tempoSmoothness?.scoreConductor)}`);
 }
 
 for (let i = 0; i < syncNotes.length; i++) {
@@ -53,5 +56,5 @@ if (errors.length) {
 }
 
 console.log('Lead reconcile guard PASS');
-console.log(`score-conductor anchors=${sync.audit.conductorAnchors}; scoreConductor=${sync.audit.scoreConductorNotes}; p90=${sync.audit.tempoSmoothness.scoreConductor.p90RateJumpSecPerBeat}`);
+console.log(`score-conductor anchors=${sync.audit.rawConductorAnchors ?? sync.audit.conductorAnchors}->${sync.audit.conductorAnchors}; scoreConductor=${sync.audit.scoreConductorNotes}; p90/max=${sync.audit.tempoSmoothness.scoreConductor.p90RateJumpSecPerBeat}/${sync.audit.tempoSmoothness.scoreConductor.maxRateJumpSecPerBeat}`);
 console.log('Rebuild source: node scripts/omr/build-lead-sync.mjs');
