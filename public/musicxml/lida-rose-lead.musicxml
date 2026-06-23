@@ -755,49 +755,16 @@
       </note>
     </measure>
     <!--=======================================================-->
-    <measure number="13" width="338">
-      <print new-system="yes"/>
-      <attributes>
-        <staff-details print-object="yes"></staff-details>
-      </attributes>
-      <direction placement="below">
-        <direction-type>
-          <pedal type="start" line="no" default-x="174" default-y="-85" halign="left"></pedal>
-        </direction-type>
-        <sound damper-pedal="yes"></sound>
-      </direction>
-      <note default-x="183">
+        <measure number="13" width="338">
+      <note>
         <pitch>
           <step>B</step>
           <alter>-1</alter>
           <octave>3</octave>
         </pitch>
-        <duration>24</duration>
+        <duration>48</duration>
         <voice>1</voice>
-        <type>half</type>
-        <stem default-y="-54">down</stem>
-        <notations>
-          <articulations>
-            <staccato placement="below" default-y="-74"></staccato>
-          </articulations>
-        </notations>
-      </note>
-      <note default-x="258">
-        <pitch>
-          <step>G</step>
-          <alter>-1</alter>
-          <octave>3</octave>
-        </pitch>
-        <duration>24</duration>
-        <voice>1</voice>
-        <type>half</type>
-        <stem default-y="5">up</stem>
-        <notations>
-          <articulations>
-            <staccato placement="below" default-y="-75"></staccato>
-            <staccatissimo placement="above" default-y="38"></staccatissimo>
-          </articulations>
-        </notations>
+        <type>whole</type>
       </note>
     </measure>
     <!--=======================================================-->

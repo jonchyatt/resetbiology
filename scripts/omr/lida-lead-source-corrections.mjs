@@ -1,27 +1,52 @@
 // Manual corrections for Lida Rose Lead (Ewart) where Audiveris missed visible
 // source notation. These are page-image-derived patches, not audio guesses.
 
-const P196_MISSING_FINAL_WHOLE_NOTE = `    <measure number="9" width="131">
+function wholeNoteMeasure({ number, width, step, alter = null, octave, duration }) {
+  return `    <measure number="${number}" width="${width}">
       <note>
         <pitch>
-          <step>C</step>
-          <alter>-1</alter>
-          <octave>4</octave>
+          <step>${step}</step>
+${alter == null ? '' : `          <alter>${alter}</alter>\n`}          <octave>${octave}</octave>
         </pitch>
-        <duration>48</duration>
+        <duration>${duration}</duration>
         <voice>1</voice>
         <type>whole</type>
       </note>
     </measure>`;
+}
 
-export function applyLeadMeasureCorrections(page, measures) {
-  if (page !== '196') return measures;
+export function applyLeadMeasureCorrections(page, measures, options = {}) {
+  const part = options.part || 'Lead';
+  const divisions = options.divisions || (page === '197' ? 6 : 12);
+  const fullMeasureDuration = divisions * 4;
 
   const out = [];
   for (const measure of measures) {
-    out.push(measure);
     const number = (measure.match(/<measure\b[^>]*number="([^"]+)"/) || [])[1];
-    if (number === '8') out.push(P196_MISSING_FINAL_WHOLE_NOTE);
+
+    if (page === '197' && part === 'Lead' && number === '4') {
+      out.push(wholeNoteMeasure({
+        number: '4',
+        width: '338',
+        step: 'B',
+        alter: -1,
+        octave: 3,
+        duration: fullMeasureDuration,
+      }));
+      continue;
+    }
+
+    out.push(measure);
+    if (page === '196' && part === 'Lead' && number === '8') {
+      out.push(wholeNoteMeasure({
+        number: '9',
+        width: '131',
+        step: 'C',
+        alter: -1,
+        octave: 4,
+        duration: fullMeasureDuration,
+      }));
+    }
   }
   return out;
 }

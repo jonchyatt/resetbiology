@@ -33,9 +33,9 @@ const NM = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 const nameOf = (m) => NM[((m % 12) + 12) % 12] + (Math.floor(m / 12) - 1);
 
 const PAGES = [
-  { pg: '196', path: SRC('lida-196.xml'), lead: 'P3' },
-  { pg: '197', path: SRC('lida-197.xml'), lead: 'P2' },
-  { pg: '198', path: SRC('lida-198.xml'), lead: 'P2' },
+  { pg: '196', path: SRC('lida-196.xml'), lead: 'P3', div: 12 },
+  { pg: '197', path: SRC('lida-197.xml'), lead: 'P2', div: 6 },
+  { pg: '198', path: SRC('lida-198.xml'), lead: 'P2', div: 4 },
 ];
 
 function getPart(xml, id) {
@@ -60,11 +60,11 @@ function parseNotes(body) {
 
 let cumBeats = 0;
 const omr = [];
-for (const { path: p, lead } of PAGES) {
+for (const { path: p, lead, div } of PAGES) {
   const xml = fs.readFileSync(p, 'utf8');
   const page = path.basename(p).match(/lida-(\d+)\.xml$/)?.[1] || '';
   const measures = (getPart(xml, lead).match(/<measure\b[\s\S]*?<\/measure>/g) || []).map(normalizeLeadMeasure);
-  const part = applyLeadMeasureCorrections(page, measures).join('\n');
+  const part = applyLeadMeasureCorrections(page, measures, { part: 'Lead', divisions: div }).join('\n');
   for (const n of parseNotes(part)) {
     if (!n.rest) omr.push({ midi: n.midi, startBeat: cumBeats, beats: n.beats });
     cumBeats += n.beats;

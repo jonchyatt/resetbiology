@@ -1,7 +1,7 @@
 {
  "song": "Lida Rose",
  "part": "Lead",
- "scoreVersion": "lida-rose-lead-six-flat-114",
+ "scoreVersion": "lida-rose-lead-six-flat-113",
  "source": "Manual phrase manifest from public/score/page-196.jpg, page-197.jpg, and page-198.jpg. Current Audiveris exports contain no lyric nodes.",
  "phrases": [
   {
@@ -26,47 +26,47 @@
    "label": "Ding, dong, ding, I can hear the chapel bell chime",
    "page": 197,
    "noteStart": 26,
-   "noteEnd": 37
+   "noteEnd": 36
   },
   {
    "id": "p197-pop-question",
    "shortLabel": "pop question",
    "label": "Ding, dong, ding, at the least suggestion, I'll pop the question",
    "page": 197,
-   "noteStart": 38,
-   "noteEnd": 65
+   "noteStart": 37,
+   "noteEnd": 64
   },
   {
    "id": "p197-sweetheart",
    "shortLabel": "sweetheart",
    "label": "Li-da Rose, I'm home again, Rose, without a sweetheart to my name",
    "page": 197,
-   "noteStart": 66,
-   "noteEnd": 83
+   "noteStart": 65,
+   "noteEnd": 82
   },
   {
    "id": "p198-everyone-knows",
    "shortLabel": "everyone knows",
    "label": "Li-da Rose, now everyone knows that I am hoping you're the same",
    "page": 198,
-   "noteStart": 84,
-   "noteEnd": 93
+   "noteStart": 83,
+   "noteEnd": 92
   },
   {
    "id": "p198-love-song",
    "shortLabel": "love song",
    "label": "So here is my love song; not fancy or fine",
    "page": 198,
-   "noteStart": 94,
-   "noteEnd": 101
+   "noteStart": 93,
+   "noteEnd": 100
   },
   {
    "id": "p198-be-mine",
    "shortLabel": "be mine",
    "label": "Li-da Rose, Oh, won't you be mine? Lida Rose, oh, Lida Rose",
    "page": 198,
-   "noteStart": 102,
-   "noteEnd": 114
+   "noteStart": 101,
+   "noteEnd": 113
   }
  ]
 }

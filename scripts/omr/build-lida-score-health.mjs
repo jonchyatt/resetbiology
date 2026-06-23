@@ -97,7 +97,7 @@ checks.push(check(
 checks.push(check(
   'note-count',
   'Pitched note count',
-  noteCount === expected.noteCount && noteCount === 114,
+  noteCount === expected.noteCount && noteCount === 113,
   `expected ${expected.noteCount}; got ${noteCount}`,
 ));
 
@@ -132,7 +132,7 @@ const confirmed = reconciledNotes.filter((n) => n.src === 'audio-confirmed').len
 const payload = {
   song: 'Lida Rose',
   part: 'Lead',
-  scoreVersion: 'lida-rose-lead-six-flat-114',
+  scoreVersion: 'lida-rose-lead-six-flat-113',
   sourcePages: PAGES.map((p) => `${p.page}:${p.lead}`),
   generatedAt: new Date().toISOString(),
   keyFifths: -6,
@@ -172,12 +172,12 @@ function readJson(file) {
 }
 
 function expectedFromSource() {
-  return expectedFromPages(PAGES);
+  return expectedFromPages(PAGES, 'Lead');
 }
 
 function buildAggregateHealth(generatedAt) {
   const parts = PART_SOURCES.map((partSource) => {
-    const expectedPart = expectedFromPages(partSource.pages);
+    const expectedPart = expectedFromPages(partSource.pages, partSource.part);
     const sourceNoteCount = expectedPart.noteCount;
     const sourceWholeNotes = expectedPart.wholeNotes;
     const sourceMeasures = Object.keys(expectedPart.pitchesByMeasure).length;
@@ -210,7 +210,7 @@ function buildAggregateHealth(generatedAt) {
   };
 }
 
-function expectedFromPages(pages) {
+function expectedFromPages(pages, partName) {
   const pitchesByMeasure = {};
   const wholeNotes = [];
   let outMeasure = 0;
@@ -218,8 +218,13 @@ function expectedFromPages(pages) {
   for (const page of pages) {
     const sourceXml = fs.readFileSync(page.file, 'utf8');
     const part = getPartInner(sourceXml, page.lead);
-    const measures = applyLeadMeasureCorrections(page.page, part.match(/<measure\b[\s\S]*?<\/measure>/g) || []);
-    for (const measure of measures) {
+    const divisions = Number((part.match(/<divisions>(\d+)<\/divisions>/) || [])[1] || 1);
+    const correctedMeasures = applyLeadMeasureCorrections(
+      page.page,
+      part.match(/<measure\b[\s\S]*?<\/measure>/g) || [],
+      { part: partName, divisions },
+    );
+    for (const measure of correctedMeasures) {
       outMeasure++;
       const normalized = normalizeLeadMeasure(measure);
       const pitches = extractPitchesFromMeasure(normalized);

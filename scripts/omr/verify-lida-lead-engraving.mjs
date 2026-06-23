@@ -76,7 +76,12 @@ function expectedFromSource() {
   for (const page of PAGES) {
     const sourceXml = fs.readFileSync(page.file, 'utf8');
     const part = getPartInner(sourceXml, page.lead);
-    const measures = applyLeadMeasureCorrections(page.page, part.match(/<measure\b[\s\S]*?<\/measure>/g) || []);
+    const divisions = Number((part.match(/<divisions>(\d+)<\/divisions>/) || [])[1] || 1);
+    const measures = applyLeadMeasureCorrections(
+      page.page,
+      part.match(/<measure\b[\s\S]*?<\/measure>/g) || [],
+      { part: 'Lead', divisions },
+    );
     for (const measure of measures) {
       outMeasure++;
       const normalized = normalizeLeadMeasure(measure);

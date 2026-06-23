@@ -3,7 +3,7 @@
  "part": "Lead",
  "source": "v3 isolated-Lead (LeadDominant − NoLead) subsequence-DTW anchors + rel-rhythm interpolation",
  "durationSec": 83.24208333333333,
- "noteCount": 114,
+ "noteCount": 113,
  "notes": [
   {
    "pitchMidi": 58,
@@ -158,37 +158,32 @@
   {
    "pitchMidi": 61,
    "startTimeSeconds": 24.64,
-   "durationSeconds": 1.882
-  },
-  {
-   "pitchMidi": 58,
-   "startTimeSeconds": 26.522,
-   "durationSeconds": 0.163
-  },
-  {
-   "pitchMidi": 61,
-   "startTimeSeconds": 26.685,
-   "durationSeconds": 0.162
+   "durationSeconds": 2.207
   },
   {
    "pitchMidi": 58,
    "startTimeSeconds": 26.847,
-   "durationSeconds": 0.737
+   "durationSeconds": 1.104
   },
   {
    "pitchMidi": 61,
-   "startTimeSeconds": 27.584,
-   "durationSeconds": 1.471
+   "startTimeSeconds": 27.951,
+   "durationSeconds": 1.104
   },
   {
    "pitchMidi": 58,
    "startTimeSeconds": 29.055,
-   "durationSeconds": 1.127
+   "durationSeconds": 2.963
   },
   {
-   "pitchMidi": 54,
-   "startTimeSeconds": 30.182,
-   "durationSeconds": 2.323
+   "pitchMidi": 61,
+   "startTimeSeconds": 32.018,
+   "durationSeconds": 0.162
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 32.18,
+   "durationSeconds": 0.325
   },
   {
    "pitchMidi": 60,

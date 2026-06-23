@@ -86,7 +86,7 @@ for (let pageIndex = 0; pageIndex < PAGES.length; pageIndex++) {
   inner = inner.replace(/<divisions>\d+<\/divisions>/g, `<divisions>${LCM}</divisions>`);
   inner = preservePrintBreaks(inner);
   let units = (inner.match(/<measure\b[\s\S]*?<\/measure>/g) || []).map(normalizeLeadMeasure);
-  units = applyLeadMeasureCorrections(pg, units);
+  units = applyLeadMeasureCorrections(pg, units, { part: 'Lead', divisions: LCM });
   if (pageIndex > 0 && units[0]) units[0] = forceSystemBreak(units[0]);
   perPage.push(units.reduce((c, u) => c + leadPitches(u).length, 0));
   measures.push(...units);

@@ -3,7 +3,7 @@
  "part": "Lead",
  "method": "engraving truth reconciled vs Lead-Dominant audio; engraving-recovered = audio missed it, noise dropped",
  "confirmed": 108,
- "recovered": 6,
+ "recovered": 5,
  "audioNoiseDropped": 86,
  "notes": [
   {
@@ -189,43 +189,37 @@
   {
    "pitchMidi": 61,
    "startTimeSeconds": 24.64,
-   "durationSeconds": 1.882,
+   "durationSeconds": 2.207,
    "src": "audio-confirmed"
-  },
-  {
-   "pitchMidi": 58,
-   "startTimeSeconds": 26.522,
-   "durationSeconds": 0.163,
-   "src": "audio-confirmed"
-  },
-  {
-   "pitchMidi": 61,
-   "startTimeSeconds": 26.685,
-   "durationSeconds": 0.162,
-   "src": "engraving-recovered"
   },
   {
    "pitchMidi": 58,
    "startTimeSeconds": 26.847,
-   "durationSeconds": 0.737,
+   "durationSeconds": 1.104,
    "src": "audio-confirmed"
   },
   {
    "pitchMidi": 61,
-   "startTimeSeconds": 27.584,
-   "durationSeconds": 1.471,
+   "startTimeSeconds": 27.951,
+   "durationSeconds": 1.104,
    "src": "engraving-recovered"
   },
   {
    "pitchMidi": 58,
    "startTimeSeconds": 29.055,
-   "durationSeconds": 1.127,
+   "durationSeconds": 2.963,
    "src": "audio-confirmed"
   },
   {
-   "pitchMidi": 54,
-   "startTimeSeconds": 30.182,
-   "durationSeconds": 2.323,
+   "pitchMidi": 61,
+   "startTimeSeconds": 32.018,
+   "durationSeconds": 0.162,
+   "src": "audio-confirmed"
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 32.18,
+   "durationSeconds": 0.325,
    "src": "audio-confirmed"
   },
   {

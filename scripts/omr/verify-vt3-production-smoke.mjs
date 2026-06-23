@@ -26,10 +26,10 @@ async function verifyArtifacts() {
   const pitched = [...xmlText.matchAll(/<note\b[\s\S]*?<\/note>/g)]
     .filter((m) => /<pitch>/.test(m[0]) && !/<rest\b/.test(m[0]) && !/<chord\s*\/?\s*>/.test(m[0]));
   assert(fifths.length === 1 && fifths[0] === -6, `expected deployed XML fifths=-6, got ${fifths.join(',') || 'none'}`);
-  assert(pitched.length === 114, `expected deployed XML 114 pitched notes, got ${pitched.length}`);
+  assert(pitched.length === 113, `expected deployed XML 113 pitched notes, got ${pitched.length}`);
   assert(health.keyFifths === -6, `expected health keyFifths=-6, got ${health.keyFifths}`);
-  assert(health.noteCount === 114, `expected health noteCount=114, got ${health.noteCount}`);
-  assert(Array.isArray(health.wholeNotes) && health.wholeNotes.map((n) => `${n.measure}:${n.pitch}`).join(' ') === '5:Cb4 9:Cb4',
+  assert(health.noteCount === 113, `expected health noteCount=113, got ${health.noteCount}`);
+  assert(Array.isArray(health.wholeNotes) && health.wholeNotes.map((n) => `${n.measure}:${n.pitch}`).join(' ') === '5:Cb4 9:Cb4 13:Bb3',
     `unexpected health whole notes ${JSON.stringify(health.wholeNotes)}`);
   assert(Array.isArray(health.checks) && health.checks.every((c) => c.status === 'pass'),
     `health checks failing: ${JSON.stringify(health.checks)}`);
@@ -39,8 +39,8 @@ async function verifyArtifacts() {
     `all-part checks failing: ${JSON.stringify(allHealth.checks)}`);
   assert(Array.isArray(phrases.phrases) && phrases.phrases.length >= 8,
     `expected phrase manifest, got ${JSON.stringify(phrases.phrases)}`);
-  assert(Array.isArray(noteMap.notes) && noteMap.notes.length === 114,
-    `expected 114 note-map entries, got ${noteMap.notes?.length}`);
+  assert(Array.isArray(noteMap.notes) && noteMap.notes.length === 113,
+    `expected 113 note-map entries, got ${noteMap.notes?.length}`);
   assert(noteMap.notes.every((n) => typeof n.phraseLabel === 'string' && n.phraseLabel.length > 0),
     `expected phrase labels on every note-map entry`);
   console.log('artifact smoke PASS');
@@ -80,14 +80,14 @@ async function verifyBrowser() {
       console.log('ui score-health PASS (library item unavailable in local fallback mode)');
       return;
     }
-    await page.getByText(/Score target\s+.*Lead\s+.*114/i).first().waitFor({ timeout: 10000 });
+    await page.getByText(/Score target\s+.*Lead\s+.*113/i).first().waitFor({ timeout: 10000 });
     console.log('ui score-health PASS');
 
     await page.getByRole('button', { name: /^Play/i }).first().click({ timeout: 6000 });
     await sleep(5600);
     const active = await page.evaluate(() => window.__VT3_SCORE_ACTIVE__ || null);
     assert(active && Number.isFinite(active.index), `expected active OSMD score note after playback, got ${JSON.stringify(active)}`);
-    assert(active.index >= 0 && active.index < 114, `active index out of range: ${active.index}`);
+    assert(active.index >= 0 && active.index < 113, `active index out of range: ${active.index}`);
     console.log(`active-note smoke PASS index=${active.index} pitch=${active.pitchName || active.pitchMidi}`);
   } finally {
     await browser.close();

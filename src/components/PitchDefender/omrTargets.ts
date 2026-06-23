@@ -12,7 +12,7 @@ export const OMR_TARGETS: OmrTarget[] = [
     song: 'Lida Rose',
     part: 'Lead',
     sourcePages: 'pp.196-198 (Audiveris)',
-    noteCount: 114,
+    noteCount: 113,
     notes: [
     { pitchMidi: 58, startTimeSeconds: 5.896, durationSeconds: 0.347 },
     { pitchMidi: 57, startTimeSeconds: 6.243, durationSeconds: 0.347 },
@@ -49,8 +49,7 @@ export const OMR_TARGETS: OmrTarget[] = [
     { pitchMidi: 61, startTimeSeconds: 30.522, durationSeconds: 0.347 },
     { pitchMidi: 58, startTimeSeconds: 30.869, durationSeconds: 0.347 },
     { pitchMidi: 61, startTimeSeconds: 31.216, durationSeconds: 0.694 },
-    { pitchMidi: 58, startTimeSeconds: 31.909, durationSeconds: 1.387 },
-    { pitchMidi: 54, startTimeSeconds: 33.297, durationSeconds: 1.387 },
+    { pitchMidi: 58, startTimeSeconds: 31.909, durationSeconds: 2.775 },
     { pitchMidi: 60, startTimeSeconds: 34.684, durationSeconds: 2.081 },
     { pitchMidi: 56, startTimeSeconds: 36.765, durationSeconds: 0.347 },
     { pitchMidi: 54, startTimeSeconds: 37.112, durationSeconds: 0.347 },

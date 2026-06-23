@@ -31,7 +31,7 @@ try {
   assert(report && typeof report === 'object', 'missing report object');
   assert(report.title, 'missing report title');
   assert(Number.isFinite(report.timeSeconds), `missing timeSeconds: ${JSON.stringify(report)}`);
-  assert(Number.isFinite(report.noteIndex) && report.noteIndex >= 1 && report.noteIndex <= 114,
+  assert(Number.isFinite(report.noteIndex) && report.noteIndex >= 1 && report.noteIndex <= 113,
     `noteIndex out of range: ${report.noteIndex}`);
   assert(Number.isFinite(report.measure), `missing measure: ${JSON.stringify(report)}`);
   assert(Number.isFinite(report.page) && [196, 197, 198].includes(report.page),
