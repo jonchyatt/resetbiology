@@ -9,6 +9,7 @@ import { applyLeadMeasureCorrections } from './lida-lead-source-corrections.mjs'
 import {
   EXPECTED_LEAD_NOTE_COUNT,
   LEAD_SCORE_VERSION,
+  LEAD_SECTION_TRANSITIONS,
   PRINTED_LEAD_AUDIT_MEASURES,
   pageForLeadMeasure,
 } from './lida-lead-printed-manifest.mjs';
@@ -62,14 +63,15 @@ const actual = extractMeasurePitches(xml);
 const actualWhole = extractWholeNotes(xml);
 const noteMap = extractNoteMap(xml, phraseManifest.phrases || []);
 const fifths = [...new Set([...xml.matchAll(/<fifths>(-?\d+)<\/fifths>/g)].map((m) => Number(m[1])))];
+const allowedFifths = new Set([PRINTED_FIFTHS, ...LEAD_SECTION_TRANSITIONS.map((t) => t.nextKeyFifths)]);
 const noteCount = Object.values(actual).reduce((sum, notes) => sum + notes.length, 0);
 const checks = [];
 
 checks.push(check(
   'key-fifths',
   'Printed key',
-  PRINTED_FIFTHS === -6 && fifths.length === 1 && fifths[0] === -6,
-  `expected -6; xml=${fifths.join(',') || 'none'} normalizer=${PRINTED_FIFTHS}`,
+  PRINTED_FIFTHS === -6 && fifths.length > 0 && fifths.every((f) => allowedFifths.has(f)),
+  `expected primary -6 plus allowed transitions; xml=${fifths.join(',') || 'none'} normalizer=${PRINTED_FIFTHS}`,
 ));
 
 const pitchErrors = [];
@@ -152,6 +154,7 @@ const payload = {
   keyFifths: -6,
   noteCount,
   wholeNotes: actualWhole,
+  sectionTransitions: LEAD_SECTION_TRANSITIONS,
   sync: {
     noteCount: syncNotes.length,
     reconciledCount: reconciledNotes.length,
@@ -356,8 +359,18 @@ function comparePrintedAudit(xmlText) {
     if (gotSummary !== expectedSummary) {
       errors.push(`m${audit.measure}: expected [${expectedSummary}], got [${gotSummary}] (${audit.source})`);
     }
+    const measureXml = getMeasureXml(xmlText, audit.measure);
+    for (const required of audit.requiredXml || []) {
+      if (!measureXml.includes(required)) {
+        errors.push(`m${audit.measure}: missing required notation ${required} (${audit.source})`);
+      }
+    }
   }
   return errors;
+}
+
+function getMeasureXml(xmlText, measure) {
+  return xmlText.match(new RegExp(`<measure number="${measure}"[\\s\\S]*?<\\/measure>`))?.[0] || '';
 }
 
 function extractMeasureNotes(xmlText) {

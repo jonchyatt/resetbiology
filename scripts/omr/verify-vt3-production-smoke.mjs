@@ -6,13 +6,15 @@ import { chromium } from 'playwright';
 import {
   EXPECTED_LEAD_NOTE_COUNT,
   LEAD_SCORE_VERSION,
+  LEAD_SECTION_TRANSITIONS,
 } from './lida-lead-printed-manifest.mjs';
 
 const VT3_URL = process.env.VT3_URL || 'https://resetbiology.com/pitch-defender/vocal-trainer-3';
 const origin = new URL(VT3_URL).origin;
 const allowEmptyLibrary = process.env.VT3_ALLOW_EMPTY_LIBRARY === '1';
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-const EXPECTED_WHOLE_NOTES = '5:Cb4 9:Cb4 13:Cb4';
+const EXPECTED_WHOLE_NOTES = '5:Cb4 9:Cb4 13:Cb4 21:Cb4 29:Eb4';
+const ALLOWED_FIFTHS = new Set([-6, ...LEAD_SECTION_TRANSITIONS.map((t) => t.nextKeyFifths)]);
 
 await verifyArtifacts();
 await verifyBrowser();
@@ -30,7 +32,8 @@ async function verifyArtifacts() {
   const fifths = [...new Set([...xmlText.matchAll(/<fifths>(-?\d+)<\/fifths>/g)].map((m) => Number(m[1])))];
   const pitched = [...xmlText.matchAll(/<note\b[\s\S]*?<\/note>/g)]
     .filter((m) => /<pitch>/.test(m[0]) && !/<rest\b/.test(m[0]) && !/<chord\s*\/?\s*>/.test(m[0]));
-  assert(fifths.length === 1 && fifths[0] === -6, `expected deployed XML fifths=-6, got ${fifths.join(',') || 'none'}`);
+  assert(fifths.length > 0 && fifths.every((f) => ALLOWED_FIFTHS.has(f)),
+    `expected deployed XML fifths in ${[...ALLOWED_FIFTHS].join(',')}, got ${fifths.join(',') || 'none'}`);
   assert(pitched.length === EXPECTED_LEAD_NOTE_COUNT, `expected deployed XML ${EXPECTED_LEAD_NOTE_COUNT} pitched notes, got ${pitched.length}`);
   assert(health.keyFifths === -6, `expected health keyFifths=-6, got ${health.keyFifths}`);
   assert(health.noteCount === EXPECTED_LEAD_NOTE_COUNT, `expected health noteCount=${EXPECTED_LEAD_NOTE_COUNT}, got ${health.noteCount}`);

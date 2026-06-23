@@ -25,6 +25,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { PRINTED_FIFTHS, normalizeLeadMeasure } from './lida-lead-key-normalize.mjs';
 import { applyLeadMeasureCorrections } from './lida-lead-source-corrections.mjs';
+import { LEAD_SECTION_TRANSITIONS } from './lida-lead-printed-manifest.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SRC = (f) => path.join(__dirname, 'source', f);
@@ -173,8 +174,11 @@ if (!nums.every((n, i) => n === i + 1)) errors.push(`measures not consecutive 1.
 const divs = [...new Set([...out.matchAll(/<divisions>(\d+)<\/divisions>/g)].map((m) => parseInt(m[1])))];
 if (divs.length !== 1 || divs[0] !== LCM) errors.push(`divisions not uniformly ${LCM}: ${divs}`);
 
+const allowedFifths = new Set([PRINTED_FIFTHS, ...LEAD_SECTION_TRANSITIONS.map((t) => t.nextKeyFifths)]);
 const fifths = [...new Set([...out.matchAll(/<fifths>(-?\d+)<\/fifths>/g)].map((m) => parseInt(m[1])))];
-if (fifths.length !== 1 || fifths[0] !== PRINTED_FIFTHS) errors.push(`key not uniformly ${PRINTED_FIFTHS}: ${fifths}`);
+if (!fifths.length || fifths.some((f) => !allowedFifths.has(f))) {
+  errors.push(`unexpected key fifths: ${fifths}; allowed ${[...allowedFifths].join(',')}`);
+}
 
 for (const measureMatch of out.matchAll(/<measure number="(\d+)"[\s\S]*?<\/measure>/g)) {
   const no = parseInt(measureMatch[1]);

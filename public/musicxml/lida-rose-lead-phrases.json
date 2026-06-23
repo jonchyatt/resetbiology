@@ -1,7 +1,7 @@
 {
  "song": "Lida Rose",
  "part": "Lead",
- "scoreVersion": "lida-rose-lead-six-flat-115",
+ "scoreVersion": "lida-rose-lead-six-flat-118",
  "source": "Manual phrase manifest from public/score/page-196.jpg, page-197.jpg, and page-198.jpg. Current Audiveris exports contain no lyric nodes.",
  "phrases": [
   {
@@ -42,31 +42,39 @@
    "label": "Li-da Rose, I'm home again, Rose, without a sweetheart to my name",
    "page": 197,
    "noteStart": 67,
-   "noteEnd": 84
+   "noteEnd": 85
   },
   {
    "id": "p198-everyone-knows",
    "shortLabel": "everyone knows",
    "label": "Li-da Rose, now everyone knows that I am hoping you're the same",
    "page": 198,
-   "noteStart": 85,
-   "noteEnd": 94
+   "noteStart": 86,
+   "noteEnd": 95
   },
   {
    "id": "p198-love-song",
    "shortLabel": "love song",
    "label": "So here is my love song; not fancy or fine",
    "page": 198,
-   "noteStart": 95,
-   "noteEnd": 102
+   "noteStart": 96,
+   "noteEnd": 104
   },
   {
    "id": "p198-be-mine",
    "shortLabel": "be mine",
    "label": "Li-da Rose, Oh, won't you be mine? Lida Rose, oh, Lida Rose",
    "page": 198,
-   "noteStart": 103,
-   "noteEnd": 115
+   "noteStart": 105,
+   "noteEnd": 117
+  },
+  {
+   "id": "p199-transition",
+   "shortLabel": "transition",
+   "label": "bar 34 to 35 held transition",
+   "page": 199,
+   "noteStart": 118,
+   "noteEnd": 118
   }
  ]
 }

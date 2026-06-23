@@ -1,15 +1,15 @@
 {
  "song": "Lida Rose",
  "part": "Lead",
- "scoreVersion": "lida-rose-lead-six-flat-115",
+ "scoreVersion": "lida-rose-lead-six-flat-118",
  "sourcePages": [
   "196:P3",
   "197:P2",
   "198:P2"
  ],
- "generatedAt": "2026-06-23T13:57:39.334Z",
+ "generatedAt": "2026-06-23T14:55:34.206Z",
  "keyFifths": -6,
- "noteCount": 115,
+ "noteCount": 118,
  "wholeNotes": [
   {
    "measure": 5,
@@ -22,12 +22,32 @@
   {
    "measure": 13,
    "pitch": "Cb4"
+  },
+  {
+   "measure": 21,
+   "pitch": "Cb4"
+  },
+  {
+   "measure": 29,
+   "pitch": "Eb4"
+  }
+ ],
+ "sectionTransitions": [
+  {
+   "fromMeasure": 34,
+   "toMeasure": 35,
+   "source": "page-198 bar 34 into page-199 bar 35",
+   "nextPage": 199,
+   "nextKeyFifths": 1,
+   "nextTime": "common",
+   "trainingTarget": true,
+   "detail": "same B-natural held into the next section for two beats"
   }
  ],
  "sync": {
-  "noteCount": 115,
-  "reconciledCount": 115,
-  "confirmed": 109,
+  "noteCount": 118,
+  "reconciledCount": 118,
+  "confirmed": 112,
   "recovered": 6
  },
  "checks": [
@@ -35,31 +55,31 @@
    "id": "key-fifths",
    "label": "Printed key",
    "status": "pass",
-   "detail": "expected -6; xml=-6 normalizer=-6"
+   "detail": "expected primary -6 plus allowed transitions; xml=-6,1 normalizer=-6"
   },
   {
    "id": "source-pitches",
    "label": "Source pitch sequence",
    "status": "pass",
-   "detail": "115 pitches match pp.196-198"
+   "detail": "118 pitches match pp.196-198"
   },
   {
    "id": "whole-notes",
    "label": "Whole-note survival",
    "status": "pass",
-   "detail": "expected [5:Cb4 9:Cb4 13:Cb4]; got [5:Cb4 9:Cb4 13:Cb4]"
+   "detail": "expected [5:Cb4 9:Cb4 13:Cb4 21:Cb4 29:Eb4]; got [5:Cb4 9:Cb4 13:Cb4 21:Cb4 29:Eb4]"
   },
   {
    "id": "note-count",
    "label": "Pitched note count",
    "status": "pass",
-   "detail": "expected 115; got 115"
+   "detail": "expected 118; got 118"
   },
   {
    "id": "printed-score-audit",
    "label": "Printed score audit",
    "status": "pass",
-   "detail": "4 printed-score measures match"
+   "detail": "8 printed-score measures match"
   },
   {
    "id": "no-courtesy-clefs",
@@ -71,7 +91,7 @@
    "id": "sync-count",
    "label": "Sync target count",
    "status": "pass",
-   "detail": "sync=115; reconciled=115; score=115"
+   "detail": "sync=118; reconciled=118; score=118"
   }
  ]
 }

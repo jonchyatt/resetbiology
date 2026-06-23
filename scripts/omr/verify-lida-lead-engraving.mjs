@@ -8,6 +8,7 @@ import { normalizeLeadMeasure, PRINTED_FIFTHS } from './lida-lead-key-normalize.
 import { applyLeadMeasureCorrections } from './lida-lead-source-corrections.mjs';
 import {
   EXPECTED_LEAD_NOTE_COUNT,
+  LEAD_SECTION_TRANSITIONS,
   PRINTED_LEAD_AUDIT_MEASURES,
 } from './lida-lead-printed-manifest.mjs';
 
@@ -23,10 +24,13 @@ const expected = expectedFromSource();
 const actual = extractMeasurePitches(xml);
 const actualWhole = extractWholeNotes(xml);
 const fifths = [...new Set([...xml.matchAll(/<fifths>(-?\d+)<\/fifths>/g)].map((m) => Number(m[1])))];
+const allowedFifths = new Set([PRINTED_FIFTHS, ...LEAD_SECTION_TRANSITIONS.map((t) => t.nextKeyFifths)]);
 
 const errors = [];
 if (PRINTED_FIFTHS !== -6) errors.push(`normalizer must target six flats (-6), got ${PRINTED_FIFTHS}`);
-if (fifths.length !== 1 || fifths[0] !== -6) errors.push(`expected only fifths=-6, got ${fifths.join(',') || 'none'}`);
+if (!fifths.length || fifths.some((f) => !allowedFifths.has(f))) {
+  errors.push(`unexpected fifths: got ${fifths.join(',') || 'none'}, allowed ${[...allowedFifths].join(',')}`);
+}
 
 for (const measureMatch of xml.matchAll(/<measure number="(\d+)"[\s\S]*?<\/measure>/g)) {
   const no = Number(measureMatch[1]);
@@ -70,7 +74,7 @@ if (errors.length) {
 }
 
 console.log('ENGRAVING VERIFY PASS');
-console.log('key: fifths=-6 only');
+console.log(`key: fifths allowed ${[...allowedFifths].join(',')}`);
 console.log(`pitched notes: ${noteCount}`);
 console.log(`whole notes: ${gotWhole.join(' ') || '(none)'}`);
 console.log(`printed audit: ${PRINTED_LEAD_AUDIT_MEASURES.length} measures`);
@@ -182,8 +186,18 @@ function comparePrintedAudit(xmlText) {
     if (gotSummary !== expectedSummary) {
       errors.push(`m${audit.measure}: printed score expected [${expectedSummary}], got [${gotSummary}] (${audit.source})`);
     }
+    const measureXml = getMeasureXml(xmlText, audit.measure);
+    for (const required of audit.requiredXml || []) {
+      if (!measureXml.includes(required)) {
+        errors.push(`m${audit.measure}: missing printed notation ${required} (${audit.source})`);
+      }
+    }
   }
   return errors;
+}
+
+function getMeasureXml(xmlText, measure) {
+  return xmlText.match(new RegExp(`<measure number="${measure}"[\\s\\S]*?<\\/measure>`))?.[0] || '';
 }
 
 function extractMeasureNotes(xmlText) {
