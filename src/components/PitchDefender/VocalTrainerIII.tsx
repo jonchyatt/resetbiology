@@ -252,12 +252,46 @@ function parseMmTitle(title: string): MmMeta | null {
   return { part, song, mix, mode };
 }
 
+const LIDA_ROSE_SCORE_PARTS = {
+  Lead: {
+    part: 'Lead',
+    label: 'Lida Rose · Lead',
+    musicXMLUrl: '/musicxml/lida-rose-lead.musicxml',
+    syncUrl: '/musicxml/lida-rose-lead-sync.json',
+    reconciledUrl: '/musicxml/lida-rose-lead-reconciled.json',
+    healthUrl: '/musicxml/lida-rose-lead-score-health.json',
+    phrasesUrl: '/musicxml/lida-rose-lead-phrases.json',
+    noteMapUrl: '/musicxml/lida-rose-lead-note-map.json',
+    title: 'Lida Rose — Lead (pp.196-198)',
+  },
+  Baritone: {
+    part: 'Baritone',
+    label: 'Lida Rose · Baritone',
+    musicXMLUrl: '/musicxml/lida-rose-baritone.musicxml',
+    syncUrl: '/musicxml/lida-rose-baritone-sync.json',
+    reconciledUrl: '/musicxml/lida-rose-baritone-reconciled.json',
+    healthUrl: '/musicxml/lida-rose-baritone-score-health.json',
+    phrasesUrl: '/musicxml/lida-rose-baritone-phrases.json',
+    noteMapUrl: '/musicxml/lida-rose-baritone-note-map.json',
+    title: 'Lida Rose — Baritone (pp.196-198)',
+  },
+} as const;
+
+type LidaRoseScorePart = typeof LIDA_ROSE_SCORE_PARTS[keyof typeof LIDA_ROSE_SCORE_PARTS];
+
+function getLidaRoseScorePart(mm: MmMeta | null): LidaRoseScorePart | null {
+  if (!mm || !/lida\s*rose/i.test(mm.song)) return null;
+  return LIDA_ROSE_SCORE_PARTS[mm.part as keyof typeof LIDA_ROSE_SCORE_PARTS] ?? null;
+}
+
 export default function VocalTrainerIII() {
   // ─── Library + selected template ────────────────────────────────────────
   const [library, setLibrary] = useState<LibraryItem[]>([]);
   const [loadingLibrary, setLoadingLibrary] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [currentTemplate, setCurrentTemplate] = useState<FullTemplate | null>(null);
+  const currentMm = useMemo(() => currentTemplate ? parseMmTitle(currentTemplate.title) : null, [currentTemplate]);
+  const lidaRoseScorePart = useMemo(() => getLidaRoseScorePart(currentMm), [currentMm]);
 
   // ─── Upload + extraction state ──────────────────────────────────────────
   const [uploadFile, setUploadFile] = useState<File | null>(null);
@@ -839,15 +873,22 @@ export default function VocalTrainerIII() {
   }, []);
 
   useEffect(() => {
+    plunkNotesRef.current = [];
+    plunkFetchStartedRef.current = false;
+    stopPlunkNodes();
+  }, [lidaRoseScorePart?.syncUrl, stopPlunkNodes]);
+
+  useEffect(() => {
     if (!plunkEnabled) {
       stopPlunkNodes();
       return;
     }
+    if (!lidaRoseScorePart?.syncUrl) return;
     if (plunkFetchStartedRef.current || plunkNotesRef.current.length) return;
     plunkFetchStartedRef.current = true;
     (async () => {
       try {
-        const r = await fetch('/musicxml/lida-rose-lead-sync.json', { cache: 'no-store' });
+        const r = await fetch(lidaRoseScorePart.syncUrl, { cache: 'no-store' });
         if (!r.ok) throw new Error(`fetch ${r.status} ${r.statusText}`);
         const j = await r.json();
         plunkNotesRef.current = Array.isArray(j.notes)
@@ -862,7 +903,7 @@ export default function VocalTrainerIII() {
         console.error('[VocalTrainer] plunk sync-note load failed:', e);
       }
     })();
-  }, [plunkEnabled, stopPlunkNodes]);
+  }, [lidaRoseScorePart?.syncUrl, plunkEnabled, stopPlunkNodes]);
 
   useEffect(() => {
     if (!plunkGainRef.current) return;
@@ -1438,9 +1479,6 @@ export default function VocalTrainerIII() {
     setExtractedNotes(prev => prev.filter((_, i) => i !== idx));
   }, []);
 
-  const currentMm = useMemo(() => currentTemplate ? parseMmTitle(currentTemplate.title) : null, [currentTemplate]);
-  const isLidaRoseLead = !!currentMm && /lida\s*rose/i.test(currentMm.song) && /lead/i.test(currentMm.part);
-
   // RECONCILED score-target lane: engraving truth RE-TIMED to the recording (v3 sync)
   // with audio-missed notes recovered + extraction noise dropped. Falls back to the
   // stale omrTargets span-scaled times only when no reconciled file exists.
@@ -1450,25 +1488,37 @@ export default function VocalTrainerIII() {
   const [phraseManifest, setPhraseManifest] = useState<PhraseManifestPayload | null>(null);
   const [leadNoteMap, setLeadNoteMap] = useState<LeadNoteMapPayload | null>(null);
   useEffect(() => {
-    if (isLidaRoseLead) {
-      fetch('/musicxml/lida-rose-lead-reconciled.json', { cache: 'no-store' })
+    if (lidaRoseScorePart) {
+      fetch(lidaRoseScorePart.reconciledUrl, { cache: 'no-store' })
         .then((r) => r.json()).then((j) => setReconciled(j.notes || null)).catch(() => setReconciled(null));
     } else setReconciled(null);
-  }, [isLidaRoseLead]);
+  }, [lidaRoseScorePart]);
   useEffect(() => {
     let cancelled = false;
-    fetch('/musicxml/lida-rose-lead-score-health.json', { cache: 'no-store' })
+    if (!lidaRoseScorePart) {
+      setScoreHealth(null);
+      return () => { cancelled = true; };
+    }
+    fetch(lidaRoseScorePart.healthUrl, { cache: 'no-store' })
       .then((r) => r.ok ? r.json() : null)
       .then((j) => { if (!cancelled) setScoreHealth(j || null); })
       .catch(() => { if (!cancelled) setScoreHealth(null); });
     return () => { cancelled = true; };
-  }, []);
+  }, [lidaRoseScorePart]);
   useEffect(() => {
     let cancelled = false;
+    if (!lidaRoseScorePart) {
+      setPhraseManifest(null);
+      setLeadNoteMap(null);
+    }
     Promise.all([
       fetch('/musicxml/lida-rose-score-health.json', { cache: 'no-store' }).then((r) => r.ok ? r.json() : null).catch(() => null),
-      fetch('/musicxml/lida-rose-lead-phrases.json', { cache: 'no-store' }).then((r) => r.ok ? r.json() : null).catch(() => null),
-      fetch('/musicxml/lida-rose-lead-note-map.json', { cache: 'no-store' }).then((r) => r.ok ? r.json() : null).catch(() => null),
+      lidaRoseScorePart
+        ? fetch(lidaRoseScorePart.phrasesUrl, { cache: 'no-store' }).then((r) => r.ok ? r.json() : null).catch(() => null)
+        : Promise.resolve(null),
+      lidaRoseScorePart
+        ? fetch(lidaRoseScorePart.noteMapUrl, { cache: 'no-store' }).then((r) => r.ok ? r.json() : null).catch(() => null)
+        : Promise.resolve(null),
     ]).then(([parts, phrases, noteMap]) => {
       if (cancelled) return;
       setScorePartHealth(parts);
@@ -1476,7 +1526,7 @@ export default function VocalTrainerIII() {
       setLeadNoteMap(noteMap);
     });
     return () => { cancelled = true; };
-  }, []);
+  }, [lidaRoseScorePart]);
   // OMR score-target lane: the REAL notated notes of the loaded part, off the sheet.
   const omrTarget = useMemo(() => {
     if (!currentMm) return null;
@@ -1784,7 +1834,7 @@ export default function VocalTrainerIII() {
     const report: EngravingReport = {
       id: `engraving-${Date.now()}`,
       createdAt: new Date().toISOString(),
-      title: currentTemplateRef.current?.title || 'Lida Rose - Lead',
+      title: currentTemplateRef.current?.title || lidaRoseScorePart?.label || 'Lida Rose',
       timeSeconds: practiceTimeRef.current,
       noteIndex: oneBasedIndex,
       measure: noteMeta?.measure ?? null,
@@ -1811,7 +1861,7 @@ export default function VocalTrainerIII() {
       setReportStatus('report saved');
     }
     window.setTimeout(() => setReportStatus(null), 3500);
-  }, [activePhrase, leadNoteMap, practicePhrases, scoreHealth?.scoreVersion]);
+  }, [activePhrase, leadNoteMap, lidaRoseScorePart?.label, practicePhrases, scoreHealth?.scoreVersion]);
 
   // ───────────────────────────────────────────────────────────────────────
   // Render
@@ -1886,7 +1936,9 @@ export default function VocalTrainerIII() {
               </button>
             </div>
             {scoreView === 'engraved' && (
-              <span className="text-xs text-cyan-400/70">Lida Rose · Lead — recreated from the score</span>
+              <span className="text-xs text-cyan-400/70">
+                {lidaRoseScorePart ? `${lidaRoseScorePart.label} - recreated from the score` : 'Lida Rose - select Lead or Baritone for engraving'}
+              </span>
             )}
             {scoreHealth && (
               <div className="ml-auto flex flex-wrap items-center gap-1 text-[11px]">
@@ -1917,13 +1969,17 @@ export default function VocalTrainerIII() {
           <div className="max-h-[46vh] min-h-[230px] overflow-auto rounded-lg" style={{ maskImage: 'linear-gradient(to bottom, transparent 0, #000 16px, #000 calc(100% - 24px), transparent 100%)', WebkitMaskImage: 'linear-gradient(to bottom, transparent 0, #000 16px, #000 calc(100% - 24px), transparent 100%)' }}>
             {scoreView === 'pages' ? (
               <ScoreViewer />
-            ) : (
+            ) : lidaRoseScorePart ? (
               <ScoreEngraving
-                musicXMLUrl="/musicxml/lida-rose-lead.musicxml"
-                syncUrl="/musicxml/lida-rose-lead-sync.json"
+                musicXMLUrl={lidaRoseScorePart.musicXMLUrl}
+                syncUrl={lidaRoseScorePart.syncUrl}
                 currentTime={practiceTime}
-                title="Lida Rose — Lead (pp.196–198)"
+                title={lidaRoseScorePart.title}
               />
+            ) : (
+              <div className="rounded-lg border border-cyan-500/20 bg-[#0a0a14] p-6 text-sm text-gray-400">
+                Pick a Lida Rose Lead or Baritone library item to load the engraved trainer score.
+              </div>
             )}
           </div>
         </section>

@@ -1,0 +1,644 @@
+{
+ "song": "Lida Rose",
+ "part": "Baritone",
+ "method": "engraving truth timed from Lead rubato grid; no Baritone BasicPitch extraction available yet",
+ "noteCount": 106,
+ "notes": [
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 4.914,
+   "durationSeconds": 0.592,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 5.506,
+   "durationSeconds": 0.802,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 57,
+   "startTimeSeconds": 6.308,
+   "durationSeconds": 0.348,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 6.656,
+   "durationSeconds": 0.581,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 56,
+   "startTimeSeconds": 10.212,
+   "durationSeconds": 0.371,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 56,
+   "startTimeSeconds": 10.583,
+   "durationSeconds": 0.267,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 61,
+   "startTimeSeconds": 10.85,
+   "durationSeconds": 0.65,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 11.5,
+   "durationSeconds": 0.536,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 63,
+   "startTimeSeconds": 12.036,
+   "durationSeconds": 0.36,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 62,
+   "startTimeSeconds": 12.396,
+   "durationSeconds": 0.148,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 63,
+   "startTimeSeconds": 12.544,
+   "durationSeconds": 0.148,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 63,
+   "startTimeSeconds": 12.692,
+   "durationSeconds": 0.147,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 63,
+   "startTimeSeconds": 12.839,
+   "durationSeconds": 0.149,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 57,
+   "startTimeSeconds": 12.988,
+   "durationSeconds": 0.87,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 56,
+   "startTimeSeconds": 13.858,
+   "durationSeconds": 0.164,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 57,
+   "startTimeSeconds": 14.022,
+   "durationSeconds": 0.825,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 14.847,
+   "durationSeconds": 0.456,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 15.303,
+   "durationSeconds": 0.457,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 57,
+   "startTimeSeconds": 15.76,
+   "durationSeconds": 0.458,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 16.218,
+   "durationSeconds": 0.882,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 17.1,
+   "durationSeconds": 1.121,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 54,
+   "startTimeSeconds": 18.221,
+   "durationSeconds": 1.121,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 19.342,
+   "durationSeconds": 1.655,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 21.825,
+   "durationSeconds": 0.414,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 22.24,
+   "durationSeconds": 0.414,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 22.654,
+   "durationSeconds": 0.36,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 61,
+   "startTimeSeconds": 23.014,
+   "durationSeconds": 0.119,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 23.133,
+   "durationSeconds": 0.12,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 61,
+   "startTimeSeconds": 23.253,
+   "durationSeconds": 0.12,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 23.373,
+   "durationSeconds": 1.267,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 60,
+   "startTimeSeconds": 24.64,
+   "durationSeconds": 2.045,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 60,
+   "startTimeSeconds": 26.685,
+   "durationSeconds": 1.418,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 56,
+   "startTimeSeconds": 28.103,
+   "durationSeconds": 0.714,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 60,
+   "startTimeSeconds": 28.817,
+   "durationSeconds": 0.119,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 60,
+   "startTimeSeconds": 28.936,
+   "durationSeconds": 0.119,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 29.055,
+   "durationSeconds": 0.563,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 60,
+   "startTimeSeconds": 29.618,
+   "durationSeconds": 0.564,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 30.182,
+   "durationSeconds": 1.161,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 55,
+   "startTimeSeconds": 31.343,
+   "durationSeconds": 1.162,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 56,
+   "startTimeSeconds": 32.505,
+   "durationSeconds": 0.166,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 57,
+   "startTimeSeconds": 32.671,
+   "durationSeconds": 0.083,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 32.755,
+   "durationSeconds": 0.083,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 61,
+   "startTimeSeconds": 32.838,
+   "durationSeconds": 0.166,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 33.004,
+   "durationSeconds": 1.244,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 61,
+   "startTimeSeconds": 34.776,
+   "durationSeconds": 0.433,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 61,
+   "startTimeSeconds": 35.209,
+   "durationSeconds": 0.235,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 61,
+   "startTimeSeconds": 35.444,
+   "durationSeconds": 0.34,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 61,
+   "startTimeSeconds": 35.784,
+   "durationSeconds": 0.341,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 61,
+   "startTimeSeconds": 36.125,
+   "durationSeconds": 0.171,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 60,
+   "startTimeSeconds": 36.296,
+   "durationSeconds": 0.17,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 61,
+   "startTimeSeconds": 36.466,
+   "durationSeconds": 0.17,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 61,
+   "startTimeSeconds": 36.636,
+   "durationSeconds": 0.17,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 61,
+   "startTimeSeconds": 36.806,
+   "durationSeconds": 0.171,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 61,
+   "startTimeSeconds": 36.977,
+   "durationSeconds": 0.17,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 60,
+   "startTimeSeconds": 37.147,
+   "durationSeconds": 0.171,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 37.318,
+   "durationSeconds": 0.34,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 37.658,
+   "durationSeconds": 0.566,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 57,
+   "startTimeSeconds": 38.224,
+   "durationSeconds": 1.123,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 39.347,
+   "durationSeconds": 0.789,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 56,
+   "startTimeSeconds": 41.044,
+   "durationSeconds": 0.174,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 56,
+   "startTimeSeconds": 41.218,
+   "durationSeconds": 0.209,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 61,
+   "startTimeSeconds": 41.427,
+   "durationSeconds": 2.457,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 43.884,
+   "durationSeconds": 0.575,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 63,
+   "startTimeSeconds": 44.459,
+   "durationSeconds": 0.081,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 62,
+   "startTimeSeconds": 44.541,
+   "durationSeconds": 0.394,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 63,
+   "startTimeSeconds": 44.935,
+   "durationSeconds": 0.395,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 63,
+   "startTimeSeconds": 45.33,
+   "durationSeconds": 0.174,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 63,
+   "startTimeSeconds": 45.504,
+   "durationSeconds": 0.175,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 57,
+   "startTimeSeconds": 45.679,
+   "durationSeconds": 0.28,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 56,
+   "startTimeSeconds": 45.959,
+   "durationSeconds": 0.28,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 57,
+   "startTimeSeconds": 46.239,
+   "durationSeconds": 0.28,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 46.519,
+   "durationSeconds": 0.56,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 47.079,
+   "durationSeconds": 0.56,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 57,
+   "startTimeSeconds": 47.639,
+   "durationSeconds": 0.56,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 48.199,
+   "durationSeconds": 0.28,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 48.479,
+   "durationSeconds": 0.499,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 51.814,
+   "durationSeconds": 0.453,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 52.267,
+   "durationSeconds": 0.917,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 53.184,
+   "durationSeconds": 0.302,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 53.486,
+   "durationSeconds": 0.575,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 54.062,
+   "durationSeconds": 1.097,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 55.159,
+   "durationSeconds": 2.434,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 58.404,
+   "durationSeconds": 0.101,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 58.505,
+   "durationSeconds": 0.08,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 61,
+   "startTimeSeconds": 58.555,
+   "durationSeconds": 0.08,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 58.606,
+   "durationSeconds": 0.149,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 61.988,
+   "durationSeconds": 0.125,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 62.113,
+   "durationSeconds": 0.125,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 62.238,
+   "durationSeconds": 0.25,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 63,
+   "startTimeSeconds": 62.489,
+   "durationSeconds": 0.25,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 62.739,
+   "durationSeconds": 0.25,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 60,
+   "startTimeSeconds": 62.989,
+   "durationSeconds": 2.655,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 65.644,
+   "durationSeconds": 2.126,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 67.77,
+   "durationSeconds": 0.08,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 54,
+   "startTimeSeconds": 67.805,
+   "durationSeconds": 0.08,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 53,
+   "startTimeSeconds": 67.822,
+   "durationSeconds": 0.08,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 54,
+   "startTimeSeconds": 67.84,
+   "durationSeconds": 0.08,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 49,
+   "startTimeSeconds": 67.875,
+   "durationSeconds": 0.215,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 54,
+   "startTimeSeconds": 68.09,
+   "durationSeconds": 0.371,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 53,
+   "startTimeSeconds": 68.461,
+   "durationSeconds": 0.587,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 54,
+   "startTimeSeconds": 69.048,
+   "durationSeconds": 0.999,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 49,
+   "startTimeSeconds": 70.047,
+   "durationSeconds": 0.621,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 54,
+   "startTimeSeconds": 70.668,
+   "durationSeconds": 0.209,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 54,
+   "startTimeSeconds": 70.877,
+   "durationSeconds": 0.082,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 54,
+   "startTimeSeconds": 70.959,
+   "durationSeconds": 0.857,
+   "src": "lead-timeline"
+  },
+  {
+   "pitchMidi": 55,
+   "startTimeSeconds": 71.816,
+   "durationSeconds": 1.129,
+   "src": "lead-timeline"
+  }
+ ]
+}

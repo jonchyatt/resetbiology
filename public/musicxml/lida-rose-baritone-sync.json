@@ -1,0 +1,539 @@
+{
+ "song": "Lida Rose",
+ "part": "Baritone",
+ "source": "score-beat interpolation onto corrected Lead sync timeline; Baritone template currently has empty extracted notes",
+ "durationSec": 83.289977,
+ "noteCount": 106,
+ "notes": [
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 4.914,
+   "durationSeconds": 0.592
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 5.506,
+   "durationSeconds": 0.802
+  },
+  {
+   "pitchMidi": 57,
+   "startTimeSeconds": 6.308,
+   "durationSeconds": 0.348
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 6.656,
+   "durationSeconds": 0.581
+  },
+  {
+   "pitchMidi": 56,
+   "startTimeSeconds": 10.212,
+   "durationSeconds": 0.371
+  },
+  {
+   "pitchMidi": 56,
+   "startTimeSeconds": 10.583,
+   "durationSeconds": 0.267
+  },
+  {
+   "pitchMidi": 61,
+   "startTimeSeconds": 10.85,
+   "durationSeconds": 0.65
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 11.5,
+   "durationSeconds": 0.536
+  },
+  {
+   "pitchMidi": 63,
+   "startTimeSeconds": 12.036,
+   "durationSeconds": 0.36
+  },
+  {
+   "pitchMidi": 62,
+   "startTimeSeconds": 12.396,
+   "durationSeconds": 0.148
+  },
+  {
+   "pitchMidi": 63,
+   "startTimeSeconds": 12.544,
+   "durationSeconds": 0.148
+  },
+  {
+   "pitchMidi": 63,
+   "startTimeSeconds": 12.692,
+   "durationSeconds": 0.147
+  },
+  {
+   "pitchMidi": 63,
+   "startTimeSeconds": 12.839,
+   "durationSeconds": 0.149
+  },
+  {
+   "pitchMidi": 57,
+   "startTimeSeconds": 12.988,
+   "durationSeconds": 0.87
+  },
+  {
+   "pitchMidi": 56,
+   "startTimeSeconds": 13.858,
+   "durationSeconds": 0.164
+  },
+  {
+   "pitchMidi": 57,
+   "startTimeSeconds": 14.022,
+   "durationSeconds": 0.825
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 14.847,
+   "durationSeconds": 0.456
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 15.303,
+   "durationSeconds": 0.457
+  },
+  {
+   "pitchMidi": 57,
+   "startTimeSeconds": 15.76,
+   "durationSeconds": 0.458
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 16.218,
+   "durationSeconds": 0.882
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 17.1,
+   "durationSeconds": 1.121
+  },
+  {
+   "pitchMidi": 54,
+   "startTimeSeconds": 18.221,
+   "durationSeconds": 1.121
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 19.342,
+   "durationSeconds": 1.655
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 21.825,
+   "durationSeconds": 0.414
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 22.24,
+   "durationSeconds": 0.414
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 22.654,
+   "durationSeconds": 0.36
+  },
+  {
+   "pitchMidi": 61,
+   "startTimeSeconds": 23.014,
+   "durationSeconds": 0.119
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 23.133,
+   "durationSeconds": 0.12
+  },
+  {
+   "pitchMidi": 61,
+   "startTimeSeconds": 23.253,
+   "durationSeconds": 0.12
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 23.373,
+   "durationSeconds": 1.267
+  },
+  {
+   "pitchMidi": 60,
+   "startTimeSeconds": 24.64,
+   "durationSeconds": 2.045
+  },
+  {
+   "pitchMidi": 60,
+   "startTimeSeconds": 26.685,
+   "durationSeconds": 1.418
+  },
+  {
+   "pitchMidi": 56,
+   "startTimeSeconds": 28.103,
+   "durationSeconds": 0.714
+  },
+  {
+   "pitchMidi": 60,
+   "startTimeSeconds": 28.817,
+   "durationSeconds": 0.119
+  },
+  {
+   "pitchMidi": 60,
+   "startTimeSeconds": 28.936,
+   "durationSeconds": 0.119
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 29.055,
+   "durationSeconds": 0.563
+  },
+  {
+   "pitchMidi": 60,
+   "startTimeSeconds": 29.618,
+   "durationSeconds": 0.564
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 30.182,
+   "durationSeconds": 1.161
+  },
+  {
+   "pitchMidi": 55,
+   "startTimeSeconds": 31.343,
+   "durationSeconds": 1.162
+  },
+  {
+   "pitchMidi": 56,
+   "startTimeSeconds": 32.505,
+   "durationSeconds": 0.166
+  },
+  {
+   "pitchMidi": 57,
+   "startTimeSeconds": 32.671,
+   "durationSeconds": 0.083
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 32.755,
+   "durationSeconds": 0.083
+  },
+  {
+   "pitchMidi": 61,
+   "startTimeSeconds": 32.838,
+   "durationSeconds": 0.166
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 33.004,
+   "durationSeconds": 1.244
+  },
+  {
+   "pitchMidi": 61,
+   "startTimeSeconds": 34.776,
+   "durationSeconds": 0.433
+  },
+  {
+   "pitchMidi": 61,
+   "startTimeSeconds": 35.209,
+   "durationSeconds": 0.235
+  },
+  {
+   "pitchMidi": 61,
+   "startTimeSeconds": 35.444,
+   "durationSeconds": 0.34
+  },
+  {
+   "pitchMidi": 61,
+   "startTimeSeconds": 35.784,
+   "durationSeconds": 0.341
+  },
+  {
+   "pitchMidi": 61,
+   "startTimeSeconds": 36.125,
+   "durationSeconds": 0.171
+  },
+  {
+   "pitchMidi": 60,
+   "startTimeSeconds": 36.296,
+   "durationSeconds": 0.17
+  },
+  {
+   "pitchMidi": 61,
+   "startTimeSeconds": 36.466,
+   "durationSeconds": 0.17
+  },
+  {
+   "pitchMidi": 61,
+   "startTimeSeconds": 36.636,
+   "durationSeconds": 0.17
+  },
+  {
+   "pitchMidi": 61,
+   "startTimeSeconds": 36.806,
+   "durationSeconds": 0.171
+  },
+  {
+   "pitchMidi": 61,
+   "startTimeSeconds": 36.977,
+   "durationSeconds": 0.17
+  },
+  {
+   "pitchMidi": 60,
+   "startTimeSeconds": 37.147,
+   "durationSeconds": 0.171
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 37.318,
+   "durationSeconds": 0.34
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 37.658,
+   "durationSeconds": 0.566
+  },
+  {
+   "pitchMidi": 57,
+   "startTimeSeconds": 38.224,
+   "durationSeconds": 1.123
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 39.347,
+   "durationSeconds": 0.789
+  },
+  {
+   "pitchMidi": 56,
+   "startTimeSeconds": 41.044,
+   "durationSeconds": 0.174
+  },
+  {
+   "pitchMidi": 56,
+   "startTimeSeconds": 41.218,
+   "durationSeconds": 0.209
+  },
+  {
+   "pitchMidi": 61,
+   "startTimeSeconds": 41.427,
+   "durationSeconds": 2.457
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 43.884,
+   "durationSeconds": 0.575
+  },
+  {
+   "pitchMidi": 63,
+   "startTimeSeconds": 44.459,
+   "durationSeconds": 0.081
+  },
+  {
+   "pitchMidi": 62,
+   "startTimeSeconds": 44.541,
+   "durationSeconds": 0.394
+  },
+  {
+   "pitchMidi": 63,
+   "startTimeSeconds": 44.935,
+   "durationSeconds": 0.395
+  },
+  {
+   "pitchMidi": 63,
+   "startTimeSeconds": 45.33,
+   "durationSeconds": 0.174
+  },
+  {
+   "pitchMidi": 63,
+   "startTimeSeconds": 45.504,
+   "durationSeconds": 0.175
+  },
+  {
+   "pitchMidi": 57,
+   "startTimeSeconds": 45.679,
+   "durationSeconds": 0.28
+  },
+  {
+   "pitchMidi": 56,
+   "startTimeSeconds": 45.959,
+   "durationSeconds": 0.28
+  },
+  {
+   "pitchMidi": 57,
+   "startTimeSeconds": 46.239,
+   "durationSeconds": 0.28
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 46.519,
+   "durationSeconds": 0.56
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 47.079,
+   "durationSeconds": 0.56
+  },
+  {
+   "pitchMidi": 57,
+   "startTimeSeconds": 47.639,
+   "durationSeconds": 0.56
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 48.199,
+   "durationSeconds": 0.28
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 48.479,
+   "durationSeconds": 0.499
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 51.814,
+   "durationSeconds": 0.453
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 52.267,
+   "durationSeconds": 0.917
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 53.184,
+   "durationSeconds": 0.302
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 53.486,
+   "durationSeconds": 0.575
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 54.062,
+   "durationSeconds": 1.097
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 55.159,
+   "durationSeconds": 2.434
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 58.404,
+   "durationSeconds": 0.101
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 58.505,
+   "durationSeconds": 0.08
+  },
+  {
+   "pitchMidi": 61,
+   "startTimeSeconds": 58.555,
+   "durationSeconds": 0.08
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 58.606,
+   "durationSeconds": 0.149
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 61.988,
+   "durationSeconds": 0.125
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 62.113,
+   "durationSeconds": 0.125
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 62.238,
+   "durationSeconds": 0.25
+  },
+  {
+   "pitchMidi": 63,
+   "startTimeSeconds": 62.489,
+   "durationSeconds": 0.25
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 62.739,
+   "durationSeconds": 0.25
+  },
+  {
+   "pitchMidi": 60,
+   "startTimeSeconds": 62.989,
+   "durationSeconds": 2.655
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 65.644,
+   "durationSeconds": 2.126
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 67.77,
+   "durationSeconds": 0.08
+  },
+  {
+   "pitchMidi": 54,
+   "startTimeSeconds": 67.805,
+   "durationSeconds": 0.08
+  },
+  {
+   "pitchMidi": 53,
+   "startTimeSeconds": 67.822,
+   "durationSeconds": 0.08
+  },
+  {
+   "pitchMidi": 54,
+   "startTimeSeconds": 67.84,
+   "durationSeconds": 0.08
+  },
+  {
+   "pitchMidi": 49,
+   "startTimeSeconds": 67.875,
+   "durationSeconds": 0.215
+  },
+  {
+   "pitchMidi": 54,
+   "startTimeSeconds": 68.09,
+   "durationSeconds": 0.371
+  },
+  {
+   "pitchMidi": 53,
+   "startTimeSeconds": 68.461,
+   "durationSeconds": 0.587
+  },
+  {
+   "pitchMidi": 54,
+   "startTimeSeconds": 69.048,
+   "durationSeconds": 0.999
+  },
+  {
+   "pitchMidi": 49,
+   "startTimeSeconds": 70.047,
+   "durationSeconds": 0.621
+  },
+  {
+   "pitchMidi": 54,
+   "startTimeSeconds": 70.668,
+   "durationSeconds": 0.209
+  },
+  {
+   "pitchMidi": 54,
+   "startTimeSeconds": 70.877,
+   "durationSeconds": 0.082
+  },
+  {
+   "pitchMidi": 54,
+   "startTimeSeconds": 70.959,
+   "durationSeconds": 0.857
+  },
+  {
+   "pitchMidi": 55,
+   "startTimeSeconds": 71.816,
+   "durationSeconds": 1.129
+  }
+ ]
+}

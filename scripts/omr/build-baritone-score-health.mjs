@@ -1,77 +1,44 @@
-// build-lida-score-health.mjs
-// Emits the VT3 score-health artifact consumed by VocalTrainerIII.
-// The artifact is derived from the corrected page-source MusicXML, not from the
-// rendered UI, so it can catch wrong key signatures, missing whole notes, and
-// accidental/courtesy-clef regressions before the trainer trusts a score.
+// build-baritone-score-health.mjs
+// Emits the VT3 score-health + note-map artifacts for Lida Rose Baritone.
 import fs from 'fs';
 import { normalizeLeadMeasure, PRINTED_FIFTHS } from './lida-lead-key-normalize.mjs';
 import { applyLeadMeasureCorrections } from './lida-lead-source-corrections.mjs';
 import {
-  EXPECTED_LEAD_NOTE_COUNT,
-  LEAD_SCORE_VERSION,
-  LEAD_SECTION_TRANSITIONS,
-  PRINTED_LEAD_AUDIT_MEASURES,
-  pageForLeadMeasure,
-} from './lida-lead-printed-manifest.mjs';
+  BARITONE_SCORE_VERSION,
+  EXPECTED_BARITONE_NOTE_COUNT,
+  PRINTED_BARITONE_AUDIT_MEASURES,
+  pageForBaritoneMeasure,
+} from './lida-baritone-printed-manifest.mjs';
 
-const XML = 'public/musicxml/lida-rose-lead.musicxml';
-const SYNC = 'public/musicxml/lida-rose-lead-sync.json';
-const RECONCILED = 'public/musicxml/lida-rose-lead-reconciled.json';
-const PHRASES = 'public/musicxml/lida-rose-lead-phrases.json';
-const OUT = 'public/musicxml/lida-rose-lead-score-health.json';
-const ALL_OUT = 'public/musicxml/lida-rose-score-health.json';
-const NOTE_MAP_OUT = 'public/musicxml/lida-rose-lead-note-map.json';
+const XML = 'public/musicxml/lida-rose-baritone.musicxml';
+const SYNC = 'public/musicxml/lida-rose-baritone-sync.json';
+const RECONCILED = 'public/musicxml/lida-rose-baritone-reconciled.json';
+const PHRASES = 'public/musicxml/lida-rose-baritone-phrases.json';
+const OUT = 'public/musicxml/lida-rose-baritone-score-health.json';
+const NOTE_MAP_OUT = 'public/musicxml/lida-rose-baritone-note-map.json';
 const PAGES = [
-  { page: '196', file: 'scripts/omr/source/lida-196.xml', lead: 'P3' },
-  { page: '197', file: 'scripts/omr/source/lida-197.xml', lead: 'P2' },
-  { page: '198', file: 'scripts/omr/source/lida-198.xml', lead: 'P2' },
-];
-const PART_SOURCES = [
-  {
-    part: 'Tenor',
-    pages: [
-      { page: '196', file: 'scripts/omr/source/lida-196.xml', lead: 'P2' },
-      { page: '197', file: 'scripts/omr/source/lida-197.xml', lead: 'P1' },
-      { page: '198', file: 'scripts/omr/source/lida-198.xml', lead: 'P1' },
-    ],
-  },
-  { part: 'Lead', pages: PAGES },
-  {
-    part: 'Baritone',
-    pages: [
-      { page: '196', file: 'scripts/omr/source/lida-196.xml', lead: 'P4' },
-      { page: '197', file: 'scripts/omr/source/lida-197.xml', lead: 'P3' },
-      { page: '198', file: 'scripts/omr/source/lida-198.xml', lead: 'P3' },
-    ],
-  },
-  {
-    part: 'Bass',
-    pages: [
-      { page: '196', file: 'scripts/omr/source/lida-196.xml', lead: 'P5' },
-      { page: '197', file: 'scripts/omr/source/lida-197.xml', lead: 'P4' },
-      { page: '198', file: 'scripts/omr/source/lida-198.xml', lead: 'P4' },
-    ],
-  },
+  { page: '196', file: 'scripts/omr/source/lida-196.xml', staff: 'P4' },
+  { page: '197', file: 'scripts/omr/source/lida-197.xml', staff: 'P3' },
+  { page: '198', file: 'scripts/omr/source/lida-198.xml', staff: 'P3' },
 ];
 
 const xml = fs.readFileSync(XML, 'utf8');
 const sync = readJson(SYNC);
 const reconciled = readJson(RECONCILED);
 const phraseManifest = fs.existsSync(PHRASES) ? readJson(PHRASES) : { phrases: [] };
-const expected = expectedFromSource();
+const expected = expectedFromPages(PAGES, 'Baritone');
 const actual = extractMeasurePitches(xml);
 const actualWhole = extractWholeNotes(xml);
 const noteMap = extractNoteMap(xml, phraseManifest.phrases || []);
 const fifths = [...new Set([...xml.matchAll(/<fifths>(-?\d+)<\/fifths>/g)].map((m) => Number(m[1])))];
-const allowedFifths = new Set([PRINTED_FIFTHS, ...LEAD_SECTION_TRANSITIONS.map((t) => t.nextKeyFifths)]);
 const noteCount = Object.values(actual).reduce((sum, notes) => sum + notes.length, 0);
 const checks = [];
 
 checks.push(check(
   'key-fifths',
   'Printed key',
-  PRINTED_FIFTHS === -6 && fifths.length > 0 && fifths.every((f) => allowedFifths.has(f)),
-  `expected primary -6 plus allowed transitions; xml=${fifths.join(',') || 'none'} normalizer=${PRINTED_FIFTHS}`,
+  PRINTED_FIFTHS === -6 && fifths.length > 0 && fifths.every((f) => f === PRINTED_FIFTHS),
+  `expected -6; xml=${fifths.join(',') || 'none'} normalizer=${PRINTED_FIFTHS}`,
 ));
 
 const pitchErrors = [];
@@ -105,16 +72,16 @@ checks.push(check(
 checks.push(check(
   'note-count',
   'Pitched note count',
-  noteCount === expected.noteCount && noteCount === EXPECTED_LEAD_NOTE_COUNT,
+  noteCount === expected.noteCount && noteCount === EXPECTED_BARITONE_NOTE_COUNT,
   `expected ${expected.noteCount}; got ${noteCount}`,
 ));
 
 const printedAuditErrors = comparePrintedAudit(xml);
 checks.push(check(
   'printed-score-audit',
-  'Printed score audit',
+  'Printed/source audit',
   printedAuditErrors.length === 0,
-  printedAuditErrors.length ? printedAuditErrors.join(' | ') : `${PRINTED_LEAD_AUDIT_MEASURES.length} printed-score measures match`,
+  printedAuditErrors.length ? printedAuditErrors.join(' | ') : `${PRINTED_BARITONE_AUDIT_MEASURES.length} Baritone audit measures match`,
 ));
 
 const clefErrors = [];
@@ -143,39 +110,32 @@ checks.push(check(
   `sync=${syncNotes.length}; reconciled=${reconciledNotes.length}; score=${noteCount}`,
 ));
 
-const recovered = reconciledNotes.filter((n) => n.src === 'engraving-recovered').length;
-const confirmed = reconciledNotes.filter((n) => n.src === 'audio-confirmed').length;
 const payload = {
   song: 'Lida Rose',
-  part: 'Lead',
-  scoreVersion: LEAD_SCORE_VERSION,
-  sourcePages: PAGES.map((p) => `${p.page}:${p.lead}`),
+  part: 'Baritone',
+  scoreVersion: BARITONE_SCORE_VERSION,
+  sourcePages: PAGES.map((p) => `${p.page}:${p.staff}`),
   generatedAt: new Date().toISOString(),
   keyFifths: -6,
   noteCount,
   wholeNotes: actualWhole,
-  sectionTransitions: LEAD_SECTION_TRANSITIONS,
   sync: {
     noteCount: syncNotes.length,
     reconciledCount: reconciledNotes.length,
-    confirmed,
-    recovered,
+    leadTimeline: reconciledNotes.filter((n) => n.src === 'lead-timeline').length,
   },
   checks,
 };
 
 fs.writeFileSync(OUT, `${JSON.stringify(payload, null, 1)}\n`);
-const aggregate = buildAggregateHealth(payload.generatedAt);
-fs.writeFileSync(ALL_OUT, `${JSON.stringify(aggregate, null, 1)}\n`);
 fs.writeFileSync(NOTE_MAP_OUT, `${JSON.stringify({
   song: 'Lida Rose',
-  part: 'Lead',
+  part: 'Baritone',
   scoreVersion: payload.scoreVersion,
   generatedAt: payload.generatedAt,
   notes: noteMap,
 }, null, 1)}\n`);
 console.log(`wrote ${OUT}`);
-console.log(`wrote ${ALL_OUT}`);
 console.log(`wrote ${NOTE_MAP_OUT}`);
 for (const c of checks) console.log(`${c.status.toUpperCase()} ${c.id}: ${c.detail}`);
 if (checks.some((c) => c.status !== 'pass')) process.exit(1);
@@ -188,50 +148,6 @@ function readJson(file) {
   return JSON.parse(fs.readFileSync(file, 'utf8'));
 }
 
-function expectedFromSource() {
-  return expectedFromPages(PAGES, 'Lead');
-}
-
-function buildAggregateHealth(generatedAt) {
-  const parts = PART_SOURCES.map((partSource) => {
-    const expectedPart = expectedFromPages(partSource.pages, partSource.part);
-    const sourceNoteCount = expectedPart.noteCount;
-    const sourceWholeNotes = expectedPart.wholeNotes;
-    const sourceMeasures = Object.keys(expectedPart.pitchesByMeasure).length;
-    const hasGeneratedMusicXml = fs.existsSync(`public/musicxml/lida-rose-${slugForPart(partSource.part)}.musicxml`);
-    return {
-      part: partSource.part,
-      sourcePages: partSource.pages.map((p) => `${p.page}:${p.lead}`),
-      sourceNoteCount,
-      sourceMeasures,
-      sourceWholeNotes,
-      generatedMusicXml: hasGeneratedMusicXml ? 'available' : 'not-yet-generated',
-      checks: [
-        check('source-readable', 'Source pages readable', sourceNoteCount > 0, `${sourceNoteCount} pitched notes from ${sourceMeasures} source measures`),
-        check('key-normalizer', 'Six-flat normalizer applies', PRINTED_FIFTHS === -6, `normalizer=${PRINTED_FIFTHS}`),
-      ],
-    };
-  });
-  const checks = [
-    check('four-part-source-map', 'Four-part source map', parts.length === 4, `${parts.map((p) => p.part).join(', ')}`),
-    check('all-source-parts-readable', 'All source parts readable', parts.every((p) => p.sourceNoteCount > 0), parts.map((p) => `${p.part}:${p.sourceNoteCount}`).join(' ')),
-    check('lead-output-generated', 'Lead generated MusicXML verified', parts.find((p) => p.part === 'Lead')?.generatedMusicXml === 'available', 'Lead is the current rendered VT3 score'),
-    check('baritone-output-generated', 'Baritone generated MusicXML verified', parts.find((p) => p.part === 'Baritone')?.generatedMusicXml === 'available', 'Baritone is available as a rendered VT3 score'),
-  ];
-  return {
-    song: 'Lida Rose',
-    scoreVersion: 'lida-rose-source-parts-six-flat',
-    generatedAt,
-    sourceImages: ['/score/page-196.jpg', '/score/page-197.jpg', '/score/page-198.jpg'],
-    parts,
-    checks,
-  };
-}
-
-function slugForPart(part) {
-  return part.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-}
-
 function expectedFromPages(pages, partName) {
   const pitchesByMeasure = {};
   const wholeNotes = [];
@@ -239,7 +155,7 @@ function expectedFromPages(pages, partName) {
 
   for (const page of pages) {
     const sourceXml = fs.readFileSync(page.file, 'utf8');
-    const part = getPartInner(sourceXml, page.lead);
+    const part = getPartInner(sourceXml, page.staff);
     const divisions = Number((part.match(/<divisions>(\d+)<\/divisions>/) || [])[1] || 1);
     const correctedMeasures = applyLeadMeasureCorrections(
       page.page,
@@ -326,7 +242,7 @@ function extractNoteMap(xmlText, phrases) {
       out.push({
         index,
         measure,
-        page: pageForLeadMeasure(measure),
+        page: pageForBaritoneMeasure(measure),
         pitch,
         phraseId: phrase?.id ?? null,
         phraseLabel: phrase?.label ?? null,
@@ -357,25 +273,15 @@ function spelledPitch(step, alter, octave) {
 function comparePrintedAudit(xmlText) {
   const measureNotes = extractMeasureNotes(xmlText);
   const errors = [];
-  for (const audit of PRINTED_LEAD_AUDIT_MEASURES) {
+  for (const audit of PRINTED_BARITONE_AUDIT_MEASURES) {
     const got = measureNotes[String(audit.measure)] || [];
     const gotSummary = got.map(noteSummary).join(' ');
     const expectedSummary = audit.notes.map(noteSummary).join(' ');
     if (gotSummary !== expectedSummary) {
       errors.push(`m${audit.measure}: expected [${expectedSummary}], got [${gotSummary}] (${audit.source})`);
     }
-    const measureXml = getMeasureXml(xmlText, audit.measure);
-    for (const required of audit.requiredXml || []) {
-      if (!measureXml.includes(required)) {
-        errors.push(`m${audit.measure}: missing required notation ${required} (${audit.source})`);
-      }
-    }
   }
   return errors;
-}
-
-function getMeasureXml(xmlText, measure) {
-  return xmlText.match(new RegExp(`<measure number="${measure}"[\\s\\S]*?<\\/measure>`))?.[0] || '';
 }
 
 function extractMeasureNotes(xmlText) {

@@ -46,7 +46,9 @@ async function load(url, stageName) {
 
 // ── score: clean Lead notes with their relative score rhythm ──
 const ts = fs.readFileSync(path.join(RBW, 'src', 'components', 'PitchDefender', 'omrTargets.ts'), 'utf8');
-const score = [...ts.matchAll(/pitchMidi:\s*(\d+),\s*startTimeSeconds:\s*([\d.]+),\s*durationSeconds:\s*([\d.]+)/g)]
+const leadTargetBlock = ts.match(/part: 'Lead',[\s\S]*?notes: \[([\s\S]*?)\n    \]/);
+if (!leadTargetBlock) throw new Error('missing Lead target in omrTargets.ts');
+const score = [...leadTargetBlock[1].matchAll(/pitchMidi:\s*(\d+),\s*startTimeSeconds:\s*([\d.]+),\s*durationSeconds:\s*([\d.]+)/g)]
   .map((m) => ({ midi: +m[1], rel: +m[2], dur: +m[3] }));
 const EXPECTED_SCORE_NOTES = score.length;
 const sMin = Math.min(...score.map((n) => n.midi)), sMax = Math.max(...score.map((n) => n.midi));

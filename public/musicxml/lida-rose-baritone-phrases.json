@@ -1,0 +1,56 @@
+{
+ "song": "Lida Rose",
+ "part": "Baritone",
+ "scoreVersion": "lida-rose-baritone-six-flat-106",
+ "source": "Manual phrase manifest for Oliver/Baritone from the generated pp.196-198 score-beat note map.",
+ "phrases": [
+  {
+   "id": "bar-p196-lida-home",
+   "shortLabel": "lida home",
+   "label": "Li-da Rose, I'm home again, Rose, about a thousand kisses shy",
+   "page": 196,
+   "noteStart": 1,
+   "noteEnd": 20
+  },
+  {
+   "id": "bar-p197-chapel-bell",
+   "shortLabel": "chapel bell",
+   "label": "Ding, dong, ding, I can hear the chapel bell chime",
+   "page": 197,
+   "noteStart": 21,
+   "noteEnd": 32
+  },
+  {
+   "id": "bar-p197-question-name",
+   "shortLabel": "question",
+   "label": "Ding, dong, ding, at the least suggestion I'll pop the question to my name",
+   "page": 197,
+   "noteStart": 33,
+   "noteEnd": 59
+  },
+  {
+   "id": "bar-p198-everyone-knows",
+   "shortLabel": "everyone knows",
+   "label": "Li-da Rose, now everyone knows that I am hoping you're the same",
+   "page": 198,
+   "noteStart": 60,
+   "noteEnd": 76
+  },
+  {
+   "id": "bar-p198-love-song",
+   "shortLabel": "love song",
+   "label": "So here is my love song; not fancy or fine",
+   "page": 198,
+   "noteStart": 77,
+   "noteEnd": 86
+  },
+  {
+   "id": "bar-p198-be-mine",
+   "shortLabel": "be mine",
+   "label": "Li-da Rose, Oh, won't you be mine? Lida Rose, oh, Lida Rose",
+   "page": 198,
+   "noteStart": 87,
+   "noteEnd": 106
+  }
+ ]
+}

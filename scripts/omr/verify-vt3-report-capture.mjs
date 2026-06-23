@@ -3,8 +3,16 @@
 // handoff artifact when the rendered OSMD score and source PDF/page image disagree.
 import { chromium } from 'playwright';
 import { EXPECTED_LEAD_NOTE_COUNT } from './lida-lead-printed-manifest.mjs';
+import { EXPECTED_BARITONE_NOTE_COUNT } from './lida-baritone-printed-manifest.mjs';
 
 const VT3_URL = process.env.VT3_URL || 'https://resetbiology.com/pitch-defender/vocal-trainer-3';
+const PART = process.env.VT3_PART || 'Lead';
+const PARTS = {
+  Lead: { expectedNoteCount: EXPECTED_LEAD_NOTE_COUNT, button: /Lead.*Lida Rose.*Dominant/i },
+  Baritone: { expectedNoteCount: EXPECTED_BARITONE_NOTE_COUNT, button: /Baritone.*Lida Rose.*Dominant/i },
+};
+const config = PARTS[PART];
+assert(config, `unknown VT3_PART=${PART}`);
 
 const browser = await chromium.launch({
   args: ['--autoplay-policy=no-user-gesture-required', '--use-fake-ui-for-media-stream'],
@@ -17,6 +25,11 @@ const page = await ctx.newPage();
 
 try {
   await page.goto(VT3_URL, { waitUntil: 'domcontentloaded', timeout: 60000 });
+  await page.locator('summary', { hasText: /^\s*Library/ }).first().click({ timeout: 5000 }).catch(() => {});
+  for (const s of await page.locator('summary', { hasText: new RegExp(PART) }).all()) {
+    await s.click({ timeout: 1200 }).catch(() => {});
+  }
+  await page.getByRole('button', { name: config.button }).first().click({ timeout: 6000 });
   await page.getByText(/Score PASS/i).first().waitFor({ timeout: 20000 });
   await page.getByText(/key -6/i).first().waitFor({ timeout: 20000 });
   await page.getByText(/4 parts/i).first().waitFor({ timeout: 20000 });
@@ -32,7 +45,7 @@ try {
   assert(report && typeof report === 'object', 'missing report object');
   assert(report.title, 'missing report title');
   assert(Number.isFinite(report.timeSeconds), `missing timeSeconds: ${JSON.stringify(report)}`);
-  assert(Number.isFinite(report.noteIndex) && report.noteIndex >= 1 && report.noteIndex <= EXPECTED_LEAD_NOTE_COUNT,
+  assert(Number.isFinite(report.noteIndex) && report.noteIndex >= 1 && report.noteIndex <= config.expectedNoteCount,
     `noteIndex out of range: ${report.noteIndex}`);
   assert(Number.isFinite(report.measure), `missing measure: ${JSON.stringify(report)}`);
   assert(Number.isFinite(report.page) && [196, 197, 198].includes(report.page),

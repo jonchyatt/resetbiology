@@ -1,7 +1,7 @@
 {
  "song": "Lida Rose",
  "scoreVersion": "lida-rose-source-parts-six-flat",
- "generatedAt": "2026-06-23T14:55:34.206Z",
+ "generatedAt": "2026-06-23T16:06:02.706Z",
  "sourceImages": [
   "/score/page-196.jpg",
   "/score/page-197.jpg",
@@ -91,7 +91,7 @@
    "sourceNoteCount": 106,
    "sourceMeasures": 25,
    "sourceWholeNotes": [],
-   "generatedMusicXml": "not-yet-generated",
+   "generatedMusicXml": "available",
    "checks": [
     {
      "id": "source-readable",
@@ -152,6 +152,12 @@
    "label": "Lead generated MusicXML verified",
    "status": "pass",
    "detail": "Lead is the current rendered VT3 score"
+  },
+  {
+   "id": "baritone-output-generated",
+   "label": "Baritone generated MusicXML verified",
+   "status": "pass",
+   "detail": "Baritone is available as a rendered VT3 score"
   }
  ]
 }

@@ -1,0 +1,63 @@
+{
+ "song": "Lida Rose",
+ "part": "Baritone",
+ "scoreVersion": "lida-rose-baritone-six-flat-106",
+ "sourcePages": [
+  "196:P4",
+  "197:P3",
+  "198:P3"
+ ],
+ "generatedAt": "2026-06-23T16:12:45.525Z",
+ "keyFifths": -6,
+ "noteCount": 106,
+ "wholeNotes": [],
+ "sync": {
+  "noteCount": 106,
+  "reconciledCount": 106,
+  "leadTimeline": 106
+ },
+ "checks": [
+  {
+   "id": "key-fifths",
+   "label": "Printed key",
+   "status": "pass",
+   "detail": "expected -6; xml=-6 normalizer=-6"
+  },
+  {
+   "id": "source-pitches",
+   "label": "Source pitch sequence",
+   "status": "pass",
+   "detail": "106 pitches match pp.196-198"
+  },
+  {
+   "id": "whole-notes",
+   "label": "Whole-note survival",
+   "status": "pass",
+   "detail": "expected []; got []"
+  },
+  {
+   "id": "note-count",
+   "label": "Pitched note count",
+   "status": "pass",
+   "detail": "expected 106; got 106"
+  },
+  {
+   "id": "printed-score-audit",
+   "label": "Printed/source audit",
+   "status": "pass",
+   "detail": "4 Baritone audit measures match"
+  },
+  {
+   "id": "no-courtesy-clefs",
+   "label": "No stray courtesy clefs",
+   "status": "pass",
+   "detail": "no later clefs in the line"
+  },
+  {
+   "id": "sync-count",
+   "label": "Sync target count",
+   "status": "pass",
+   "detail": "sync=106; reconciled=106; score=106"
+  }
+ ]
+}

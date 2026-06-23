@@ -1,5 +1,5 @@
 // verify-vt3-frames.mjs -- frame-sequence verification for VocalTrainer III.
-// Plays the production page, loads Lida Rose Lead Dominant, captures screenshots,
+// Plays the production page, loads a Lida Rose generated part, captures screenshots,
 // and records active OSMD note telemetry over time.
 //
 // Output: C:/Users/jonch/Projects/jarvis/data/vocal-trainer/runtime-logs/frames
@@ -8,6 +8,13 @@ import { chromium } from 'playwright';
 import fs from 'fs';
 
 const URL = process.env.VT3_URL || 'https://resetbiology.com/pitch-defender/vocal-trainer-3';
+const PART = process.env.VT3_PART || 'Lead';
+const PART_BUTTONS = {
+  Lead: /Lead.*Lida Rose.*Dominant/i,
+  Baritone: /Baritone.*Lida Rose.*Dominant/i,
+};
+const partButton = PART_BUTTONS[PART];
+if (!partButton) throw new Error(`unknown VT3_PART=${PART}`);
 const OUT = 'C:/Users/jonch/Projects/jarvis/data/vocal-trainer/runtime-logs/frames';
 fs.mkdirSync(OUT, { recursive: true });
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -28,12 +35,12 @@ await sleep(3500);
 try {
   await page.locator('summary', { hasText: /^\s*Library/ }).first().click({ timeout: 4000 }).catch(() => {});
   await sleep(400);
-  for (const s of await page.locator('summary', { hasText: /Lead/ }).all()) {
+  for (const s of await page.locator('summary', { hasText: new RegExp(PART) }).all()) {
     await s.click({ timeout: 1200 }).catch(() => {});
   }
   await sleep(400);
-  await page.getByRole('button', { name: /Lida Rose.*Dominant/i }).first().click({ timeout: 5000 });
-  console.log('loaded Lida Rose Lead Dominant');
+  await page.getByRole('button', { name: partButton }).first().click({ timeout: 5000 });
+  console.log(`loaded Lida Rose ${PART} Dominant`);
   await sleep(4000);
 } catch (e) {
   console.log('load item failed:', e.message);

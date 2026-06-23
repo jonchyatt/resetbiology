@@ -10,6 +10,13 @@ import sharp from 'sharp';
 
 const URL = process.env.VT3_URL || 'https://resetbiology.com/pitch-defender/vocal-trainer-3';
 const OUT = process.env.VT3_RENDER_OUT || 'C:/Users/jonch/Projects/jarvis/data/vocal-trainer/runtime-logs/render-source';
+const PART = process.env.VT3_PART || 'Lead';
+const PART_BUTTONS = {
+  Lead: /Lead.*Lida Rose.*Dominant/i,
+  Baritone: /Baritone.*Lida Rose.*Dominant/i,
+};
+const partButton = PART_BUTTONS[PART];
+assert(partButton, `unknown VT3_PART=${PART}`);
 const SOURCE_PAGES = [
   { page: 196, path: 'public/score/page-196.jpg' },
   { page: 197, path: 'public/score/page-197.jpg' },
@@ -24,6 +31,11 @@ const page = await ctx.newPage();
 
 try {
   await page.goto(URL, { waitUntil: 'domcontentloaded', timeout: 60000 });
+  await page.locator('summary', { hasText: /^\s*Library/ }).first().click({ timeout: 5000 }).catch(() => {});
+  for (const s of await page.locator('summary', { hasText: new RegExp(PART) }).all()) {
+    await s.click({ timeout: 1200 }).catch(() => {});
+  }
+  await page.getByRole('button', { name: partButton }).first().click({ timeout: 6000 });
   await page.getByText(/Score PASS/i).first().waitFor({ timeout: 20000 });
   await page.getByText(/key -6/i).first().waitFor({ timeout: 20000 });
   await page.getByText(/4 parts/i).first().waitFor({ timeout: 20000 });
@@ -49,6 +61,7 @@ try {
 
   const manifest = {
     url: URL,
+    part: PART,
     createdAt: new Date().toISOString(),
     sourceStats,
     render: { path: renderPath, ...renderStats },
