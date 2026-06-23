@@ -58,6 +58,12 @@ for (const cfg of PARTS) {
     `${cfg.part}: sync note count ${syncNotes.length} != ${cfg.expectedNoteCount}`);
   assert(xmlPitches.length === cfg.expectedNoteCount,
     `${cfg.part}: XML pitch count ${xmlPitches.length} != ${cfg.expectedNoteCount}`);
+  if (cfg.part === 'Baritone') {
+    assert(/isolated Baritone audio/i.test(sync.source || ''),
+      `${cfg.part}: plunk sync must use audio-derived Baritone timing, got ${sync.source || 'missing source'}`);
+    assert((health.sync?.audioConfirmed ?? 0) >= 70,
+      `${cfg.part}: audio-confirmed sync count too low: ${health.sync?.audioConfirmed ?? 'missing'}`);
+  }
 
   for (let i = 0; i < syncNotes.length; i++) {
     const note = syncNotes[i];

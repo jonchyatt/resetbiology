@@ -7,14 +7,24 @@
   "197:P3",
   "198:P3"
  ],
- "generatedAt": "2026-06-23T16:12:45.525Z",
+ "generatedAt": "2026-06-23T17:29:33.429Z",
  "keyFifths": -6,
  "noteCount": 106,
  "wholeNotes": [],
  "sync": {
   "noteCount": 106,
   "reconciledCount": 106,
-  "leadTimeline": 106
+  "source": "isolated Baritone audio sync from BaritoneDominant-NoBaritone BasicPitch anchors",
+  "audioConfirmed": 82,
+  "audioInterpolated": 24,
+  "leadTimeline": 0,
+  "isolatedOnsets": 193,
+  "timingDeltaFromLeadGrid": {
+   "meanAbsSec": 4.222,
+   "maxAbsSec": 7.54,
+   "maxAbsNote": 92,
+   "finalNoteDeltaSec": 7.205
+  }
  },
  "checks": [
   {
@@ -58,6 +68,12 @@
    "label": "Sync target count",
    "status": "pass",
    "detail": "sync=106; reconciled=106; score=106"
+  },
+  {
+   "id": "audio-derived-sync",
+   "label": "Audio-derived Baritone sync",
+   "status": "pass",
+   "detail": "confirmed=82; interpolated=24; leadTimeline=0; isolated=193"
   }
  ]
 }

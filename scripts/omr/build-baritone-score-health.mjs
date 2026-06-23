@@ -110,6 +110,19 @@ checks.push(check(
   `sync=${syncNotes.length}; reconciled=${reconciledNotes.length}; score=${noteCount}`,
 ));
 
+const audioConfirmed = reconciledNotes.filter((n) => n.src === 'audio-confirmed').length;
+const audioInterpolated = reconciledNotes.filter((n) => n.src === 'audio-interpolated').length;
+const leadTimeline = reconciledNotes.filter((n) => n.src === 'lead-timeline').length;
+checks.push(check(
+  'audio-derived-sync',
+  'Audio-derived Baritone sync',
+  /isolated Baritone audio/i.test(sync.source || '') &&
+    leadTimeline === 0 &&
+    audioConfirmed >= 70 &&
+    audioConfirmed + audioInterpolated === noteCount,
+  `confirmed=${audioConfirmed}; interpolated=${audioInterpolated}; leadTimeline=${leadTimeline}; isolated=${sync.audit?.isolatedOnsets ?? 'n/a'}`,
+));
+
 const payload = {
   song: 'Lida Rose',
   part: 'Baritone',
@@ -122,7 +135,12 @@ const payload = {
   sync: {
     noteCount: syncNotes.length,
     reconciledCount: reconciledNotes.length,
-    leadTimeline: reconciledNotes.filter((n) => n.src === 'lead-timeline').length,
+    source: sync.source || null,
+    audioConfirmed,
+    audioInterpolated,
+    leadTimeline,
+    isolatedOnsets: sync.audit?.isolatedOnsets ?? null,
+    timingDeltaFromLeadGrid: sync.audit?.timingDeltaFromLeadGrid ?? null,
   },
   checks,
 };

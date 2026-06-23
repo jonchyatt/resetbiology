@@ -1,644 +1,1234 @@
 {
  "song": "Lida Rose",
  "part": "Baritone",
- "method": "engraving truth timed from Lead rubato grid; no Baritone BasicPitch extraction available yet",
+ "method": "BaritoneDominant minus NoBaritone BasicPitch isolation; exact-pitch monotonic anchors with tempo-slope sanity gate; score-rhythm interpolation between anchors",
  "noteCount": 106,
+ "audit": {
+  "method": "BaritoneDominant minus NoBaritone BasicPitch isolation; exact-pitch monotonic anchors with tempo-slope sanity gate; score-rhythm interpolation between anchors",
+  "audioStage": "C:/Users/jonch/Projects/jarvis/data/vocal-trainer/runtime-logs/baritone-audio",
+  "dominantRawNotes": 1070,
+  "noBaritoneRawNotes": 1576,
+  "isolatedOnsets": 193,
+  "audioAnchors": 82,
+  "audioInterpolated": 24,
+  "pitchRange": "C#3-D#4",
+  "timingDeltaFromLeadGrid": {
+   "meanAbsSec": 4.222,
+   "maxAbsSec": 7.54,
+   "maxAbsNote": 92,
+   "finalNoteDeltaSec": 7.205
+  },
+  "config": {
+   "rangePadSemitones": 2,
+   "dominantAmpMin": 0.3,
+   "noBaritoneAmpMin": 0.21,
+   "subtractionWindowSec": 0.18,
+   "subtractionPitchClassDistance": 0,
+   "mergeGapSec": 0.12,
+   "minAudioAnchors": 70,
+   "minIsolatedOnsets": 120
+  }
+ },
  "notes": [
   {
    "pitchMidi": 59,
-   "startTimeSeconds": 4.914,
-   "durationSeconds": 0.592,
-   "src": "lead-timeline"
+   "startTimeSeconds": 5.25,
+   "durationSeconds": 0.29,
+   "measure": 4,
+   "scoreBeat": 10,
+   "scoreBeats": 1,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 59,
+   "audioStartTimeSeconds": 5.25,
+   "audioAmplitude": 0.637
   },
   {
    "pitchMidi": 58,
-   "startTimeSeconds": 5.506,
-   "durationSeconds": 0.802,
-   "src": "lead-timeline"
+   "startTimeSeconds": 5.541,
+   "durationSeconds": 0.512,
+   "measure": 4,
+   "scoreBeat": 11,
+   "scoreBeats": 1,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 58,
+   "audioStartTimeSeconds": 5.541,
+   "audioAmplitude": 0.775
   },
   {
    "pitchMidi": 57,
-   "startTimeSeconds": 6.308,
-   "durationSeconds": 0.348,
-   "src": "lead-timeline"
+   "startTimeSeconds": 6.053,
+   "durationSeconds": 0.557,
+   "measure": 4,
+   "scoreBeat": 12,
+   "scoreBeats": 1,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 57,
+   "audioStartTimeSeconds": 6.053,
+   "audioAmplitude": 0.826
   },
   {
    "pitchMidi": 58,
-   "startTimeSeconds": 6.656,
-   "durationSeconds": 0.581,
-   "src": "lead-timeline"
+   "startTimeSeconds": 6.61,
+   "durationSeconds": 0.47,
+   "measure": 4,
+   "scoreBeat": 13,
+   "scoreBeats": 1,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 58,
+   "audioStartTimeSeconds": 6.61,
+   "audioAmplitude": 0.558
   },
   {
    "pitchMidi": 56,
-   "startTimeSeconds": 10.212,
-   "durationSeconds": 0.371,
-   "src": "lead-timeline"
+   "startTimeSeconds": 9.432,
+   "durationSeconds": 0.93,
+   "measure": 6,
+   "scoreBeat": 19,
+   "scoreBeats": 0.5,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 56,
+   "audioStartTimeSeconds": 9.432,
+   "audioAmplitude": 0.399
   },
   {
    "pitchMidi": 56,
-   "startTimeSeconds": 10.583,
-   "durationSeconds": 0.267,
-   "src": "lead-timeline"
+   "startTimeSeconds": 10.363,
+   "durationSeconds": 0.534,
+   "measure": 6,
+   "scoreBeat": 19.5,
+   "scoreBeats": 0.5,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 56,
+   "audioStartTimeSeconds": 10.363,
+   "audioAmplitude": 0.698
   },
   {
    "pitchMidi": 61,
-   "startTimeSeconds": 10.85,
-   "durationSeconds": 0.65,
-   "src": "lead-timeline"
+   "startTimeSeconds": 10.897,
+   "durationSeconds": 0.905,
+   "measure": 6,
+   "scoreBeat": 20,
+   "scoreBeats": 1,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 61,
+   "audioStartTimeSeconds": 10.897,
+   "audioAmplitude": 0.574
   },
   {
    "pitchMidi": 59,
-   "startTimeSeconds": 11.5,
-   "durationSeconds": 0.536,
-   "src": "lead-timeline"
+   "startTimeSeconds": 11.802,
+   "durationSeconds": 0.527,
+   "measure": 6,
+   "scoreBeat": 21,
+   "scoreBeats": 1,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 59,
+   "audioStartTimeSeconds": 11.802,
+   "audioAmplitude": 0.312
   },
   {
    "pitchMidi": 63,
-   "startTimeSeconds": 12.036,
-   "durationSeconds": 0.36,
-   "src": "lead-timeline"
+   "startTimeSeconds": 12.329,
+   "durationSeconds": 0.264,
+   "measure": 7,
+   "scoreBeat": 22,
+   "scoreBeats": 0.5,
+   "src": "audio-interpolated"
   },
   {
    "pitchMidi": 62,
-   "startTimeSeconds": 12.396,
-   "durationSeconds": 0.148,
-   "src": "lead-timeline"
+   "startTimeSeconds": 12.593,
+   "durationSeconds": 0.296,
+   "measure": 7,
+   "scoreBeat": 22.5,
+   "scoreBeats": 0.5,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 62,
+   "audioStartTimeSeconds": 12.593,
+   "audioAmplitude": 0.636
   },
   {
    "pitchMidi": 63,
-   "startTimeSeconds": 12.544,
-   "durationSeconds": 0.148,
-   "src": "lead-timeline"
+   "startTimeSeconds": 12.889,
+   "durationSeconds": 0.296,
+   "measure": 7,
+   "scoreBeat": 23,
+   "scoreBeats": 0.5,
+   "src": "audio-interpolated"
   },
   {
    "pitchMidi": 63,
-   "startTimeSeconds": 12.692,
-   "durationSeconds": 0.147,
-   "src": "lead-timeline"
+   "startTimeSeconds": 13.185,
+   "durationSeconds": 0.319,
+   "measure": 7,
+   "scoreBeat": 23.5,
+   "scoreBeats": 0.5,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 63,
+   "audioStartTimeSeconds": 13.185,
+   "audioAmplitude": 0.333
   },
   {
    "pitchMidi": 63,
-   "startTimeSeconds": 12.839,
-   "durationSeconds": 0.149,
-   "src": "lead-timeline"
+   "startTimeSeconds": 13.504,
+   "durationSeconds": 0.319,
+   "measure": 7,
+   "scoreBeat": 24,
+   "scoreBeats": 0.5,
+   "src": "audio-interpolated"
   },
   {
    "pitchMidi": 57,
-   "startTimeSeconds": 12.988,
-   "durationSeconds": 0.87,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 56,
-   "startTimeSeconds": 13.858,
-   "durationSeconds": 0.164,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 57,
-   "startTimeSeconds": 14.022,
-   "durationSeconds": 0.825,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 58,
-   "startTimeSeconds": 14.847,
-   "durationSeconds": 0.456,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 58,
-   "startTimeSeconds": 15.303,
-   "durationSeconds": 0.457,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 57,
-   "startTimeSeconds": 15.76,
-   "durationSeconds": 0.458,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 58,
-   "startTimeSeconds": 16.218,
-   "durationSeconds": 0.882,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 59,
-   "startTimeSeconds": 17.1,
-   "durationSeconds": 1.121,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 54,
-   "startTimeSeconds": 18.221,
-   "durationSeconds": 1.121,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 59,
-   "startTimeSeconds": 19.342,
-   "durationSeconds": 1.655,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 59,
-   "startTimeSeconds": 21.825,
-   "durationSeconds": 0.414,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 59,
-   "startTimeSeconds": 22.24,
-   "durationSeconds": 0.414,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 58,
-   "startTimeSeconds": 22.654,
-   "durationSeconds": 0.36,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 61,
-   "startTimeSeconds": 23.014,
-   "durationSeconds": 0.119,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 58,
-   "startTimeSeconds": 23.133,
-   "durationSeconds": 0.12,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 61,
-   "startTimeSeconds": 23.253,
-   "durationSeconds": 0.12,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 58,
-   "startTimeSeconds": 23.373,
-   "durationSeconds": 1.267,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 60,
-   "startTimeSeconds": 24.64,
-   "durationSeconds": 2.045,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 60,
-   "startTimeSeconds": 26.685,
-   "durationSeconds": 1.418,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 56,
-   "startTimeSeconds": 28.103,
-   "durationSeconds": 0.714,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 60,
-   "startTimeSeconds": 28.817,
-   "durationSeconds": 0.119,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 60,
-   "startTimeSeconds": 28.936,
-   "durationSeconds": 0.119,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 59,
-   "startTimeSeconds": 29.055,
-   "durationSeconds": 0.563,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 60,
-   "startTimeSeconds": 29.618,
-   "durationSeconds": 0.564,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 59,
-   "startTimeSeconds": 30.182,
-   "durationSeconds": 1.161,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 55,
-   "startTimeSeconds": 31.343,
-   "durationSeconds": 1.162,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 56,
-   "startTimeSeconds": 32.505,
-   "durationSeconds": 0.166,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 57,
-   "startTimeSeconds": 32.671,
-   "durationSeconds": 0.083,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 58,
-   "startTimeSeconds": 32.755,
-   "durationSeconds": 0.083,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 61,
-   "startTimeSeconds": 32.838,
-   "durationSeconds": 0.166,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 59,
-   "startTimeSeconds": 33.004,
-   "durationSeconds": 1.244,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 61,
-   "startTimeSeconds": 34.776,
-   "durationSeconds": 0.433,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 61,
-   "startTimeSeconds": 35.209,
-   "durationSeconds": 0.235,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 61,
-   "startTimeSeconds": 35.444,
-   "durationSeconds": 0.34,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 61,
-   "startTimeSeconds": 35.784,
-   "durationSeconds": 0.341,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 61,
-   "startTimeSeconds": 36.125,
-   "durationSeconds": 0.171,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 60,
-   "startTimeSeconds": 36.296,
-   "durationSeconds": 0.17,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 61,
-   "startTimeSeconds": 36.466,
-   "durationSeconds": 0.17,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 61,
-   "startTimeSeconds": 36.636,
-   "durationSeconds": 0.17,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 61,
-   "startTimeSeconds": 36.806,
-   "durationSeconds": 0.171,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 61,
-   "startTimeSeconds": 36.977,
-   "durationSeconds": 0.17,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 60,
-   "startTimeSeconds": 37.147,
-   "durationSeconds": 0.171,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 59,
-   "startTimeSeconds": 37.318,
-   "durationSeconds": 0.34,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 59,
-   "startTimeSeconds": 37.658,
-   "durationSeconds": 0.566,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 57,
-   "startTimeSeconds": 38.224,
-   "durationSeconds": 1.123,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 58,
-   "startTimeSeconds": 39.347,
-   "durationSeconds": 0.789,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 56,
-   "startTimeSeconds": 41.044,
-   "durationSeconds": 0.174,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 56,
-   "startTimeSeconds": 41.218,
-   "durationSeconds": 0.209,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 61,
-   "startTimeSeconds": 41.427,
-   "durationSeconds": 2.457,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 59,
-   "startTimeSeconds": 43.884,
-   "durationSeconds": 0.575,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 63,
-   "startTimeSeconds": 44.459,
-   "durationSeconds": 0.081,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 62,
-   "startTimeSeconds": 44.541,
-   "durationSeconds": 0.394,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 63,
-   "startTimeSeconds": 44.935,
-   "durationSeconds": 0.395,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 63,
-   "startTimeSeconds": 45.33,
-   "durationSeconds": 0.174,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 63,
-   "startTimeSeconds": 45.504,
-   "durationSeconds": 0.175,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 57,
-   "startTimeSeconds": 45.679,
-   "durationSeconds": 0.28,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 56,
-   "startTimeSeconds": 45.959,
-   "durationSeconds": 0.28,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 57,
-   "startTimeSeconds": 46.239,
-   "durationSeconds": 0.28,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 58,
-   "startTimeSeconds": 46.519,
-   "durationSeconds": 0.56,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 58,
-   "startTimeSeconds": 47.079,
-   "durationSeconds": 0.56,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 57,
-   "startTimeSeconds": 47.639,
-   "durationSeconds": 0.56,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 58,
-   "startTimeSeconds": 48.199,
-   "durationSeconds": 0.28,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 58,
-   "startTimeSeconds": 48.479,
-   "durationSeconds": 0.499,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 59,
-   "startTimeSeconds": 51.814,
-   "durationSeconds": 0.453,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 59,
-   "startTimeSeconds": 52.267,
-   "durationSeconds": 0.917,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 58,
-   "startTimeSeconds": 53.184,
-   "durationSeconds": 0.302,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 59,
-   "startTimeSeconds": 53.486,
-   "durationSeconds": 0.575,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 59,
-   "startTimeSeconds": 54.062,
-   "durationSeconds": 1.097,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 59,
-   "startTimeSeconds": 55.159,
-   "durationSeconds": 2.434,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 58,
-   "startTimeSeconds": 58.404,
-   "durationSeconds": 0.101,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 58,
-   "startTimeSeconds": 58.505,
-   "durationSeconds": 0.08,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 61,
-   "startTimeSeconds": 58.555,
-   "durationSeconds": 0.08,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 58,
-   "startTimeSeconds": 58.606,
-   "durationSeconds": 0.149,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 59,
-   "startTimeSeconds": 61.988,
-   "durationSeconds": 0.125,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 59,
-   "startTimeSeconds": 62.113,
-   "durationSeconds": 0.125,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 59,
-   "startTimeSeconds": 62.238,
-   "durationSeconds": 0.25,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 63,
-   "startTimeSeconds": 62.489,
-   "durationSeconds": 0.25,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 59,
-   "startTimeSeconds": 62.739,
-   "durationSeconds": 0.25,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 60,
-   "startTimeSeconds": 62.989,
-   "durationSeconds": 2.655,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 59,
-   "startTimeSeconds": 65.644,
-   "durationSeconds": 2.126,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 58,
-   "startTimeSeconds": 67.77,
-   "durationSeconds": 0.08,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 54,
-   "startTimeSeconds": 67.805,
-   "durationSeconds": 0.08,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 53,
-   "startTimeSeconds": 67.822,
-   "durationSeconds": 0.08,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 54,
-   "startTimeSeconds": 67.84,
-   "durationSeconds": 0.08,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 49,
-   "startTimeSeconds": 67.875,
-   "durationSeconds": 0.215,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 54,
-   "startTimeSeconds": 68.09,
-   "durationSeconds": 0.371,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 53,
-   "startTimeSeconds": 68.461,
-   "durationSeconds": 0.587,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 54,
-   "startTimeSeconds": 69.048,
-   "durationSeconds": 0.999,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 49,
-   "startTimeSeconds": 70.047,
-   "durationSeconds": 0.621,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 54,
-   "startTimeSeconds": 70.668,
-   "durationSeconds": 0.209,
-   "src": "lead-timeline"
-  },
-  {
-   "pitchMidi": 54,
-   "startTimeSeconds": 70.877,
+   "startTimeSeconds": 13.824,
    "durationSeconds": 0.082,
-   "src": "lead-timeline"
+   "measure": 7,
+   "scoreBeat": 24.5,
+   "scoreBeats": 0.5,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 57,
+   "audioStartTimeSeconds": 13.824,
+   "audioAmplitude": 0.309
+  },
+  {
+   "pitchMidi": 56,
+   "startTimeSeconds": 13.906,
+   "durationSeconds": 0.197,
+   "measure": 7,
+   "scoreBeat": 25,
+   "scoreBeats": 0.5,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 56,
+   "audioStartTimeSeconds": 13.906,
+   "audioAmplitude": 0.541
+  },
+  {
+   "pitchMidi": 57,
+   "startTimeSeconds": 14.103,
+   "durationSeconds": 0.36,
+   "measure": 7,
+   "scoreBeat": 25.5,
+   "scoreBeats": 0.5,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 57,
+   "audioStartTimeSeconds": 14.103,
+   "audioAmplitude": 0.658
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 14.463,
+   "durationSeconds": 0.604,
+   "measure": 8,
+   "scoreBeat": 26,
+   "scoreBeats": 1,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 58,
+   "audioStartTimeSeconds": 14.463,
+   "audioAmplitude": 0.818
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 15.067,
+   "durationSeconds": 0.604,
+   "measure": 8,
+   "scoreBeat": 27,
+   "scoreBeats": 1,
+   "src": "audio-interpolated"
+  },
+  {
+   "pitchMidi": 57,
+   "startTimeSeconds": 15.671,
+   "durationSeconds": 0.477,
+   "measure": 8,
+   "scoreBeat": 28,
+   "scoreBeats": 1,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 57,
+   "audioStartTimeSeconds": 15.671,
+   "audioAmplitude": 0.774
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 16.148,
+   "durationSeconds": 1.491,
+   "measure": 8,
+   "scoreBeat": 29,
+   "scoreBeats": 1,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 58,
+   "audioStartTimeSeconds": 16.148,
+   "audioAmplitude": 0.823
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 17.639,
+   "durationSeconds": 2.982,
+   "measure": 9,
+   "scoreBeat": 30,
+   "scoreBeats": 2,
+   "src": "audio-interpolated"
   },
   {
    "pitchMidi": 54,
-   "startTimeSeconds": 70.959,
-   "durationSeconds": 0.857,
-   "src": "lead-timeline"
+   "startTimeSeconds": 20.621,
+   "durationSeconds": 1.119,
+   "measure": 9,
+   "scoreBeat": 32,
+   "scoreBeats": 2,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 54,
+   "audioStartTimeSeconds": 20.621,
+   "audioAmplitude": 0.806
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 21.74,
+   "durationSeconds": 1.12,
+   "measure": 10,
+   "scoreBeat": 34,
+   "scoreBeats": 2,
+   "src": "audio-interpolated"
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 23.42,
+   "durationSeconds": 0.406,
+   "measure": 10,
+   "scoreBeat": 37,
+   "scoreBeats": 0.5,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 59,
+   "audioStartTimeSeconds": 23.42,
+   "audioAmplitude": 0.336
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 23.826,
+   "durationSeconds": 0.175,
+   "measure": 10,
+   "scoreBeat": 37.5,
+   "scoreBeats": 0.5,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 59,
+   "audioStartTimeSeconds": 23.826,
+   "audioAmplitude": 0.373
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 24.002,
+   "durationSeconds": 1.021,
+   "measure": 11,
+   "scoreBeat": 38,
+   "scoreBeats": 1.5,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 58,
+   "audioStartTimeSeconds": 24.002,
+   "audioAmplitude": 0.782
+  },
+  {
+   "pitchMidi": 61,
+   "startTimeSeconds": 25.023,
+   "durationSeconds": 0.267,
+   "measure": 11,
+   "scoreBeat": 39.5,
+   "scoreBeats": 0.5,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 61,
+   "audioStartTimeSeconds": 25.023,
+   "audioAmplitude": 0.442
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 25.29,
+   "durationSeconds": 0.303,
+   "measure": 11,
+   "scoreBeat": 40,
+   "scoreBeats": 0.5,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 58,
+   "audioStartTimeSeconds": 25.29,
+   "audioAmplitude": 0.671
+  },
+  {
+   "pitchMidi": 61,
+   "startTimeSeconds": 25.593,
+   "durationSeconds": 0.302,
+   "measure": 11,
+   "scoreBeat": 40.5,
+   "scoreBeats": 0.5,
+   "src": "audio-interpolated"
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 25.895,
+   "durationSeconds": 0.569,
+   "measure": 11,
+   "scoreBeat": 41,
+   "scoreBeats": 1,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 58,
+   "audioStartTimeSeconds": 25.895,
+   "audioAmplitude": 0.641
+  },
+  {
+   "pitchMidi": 60,
+   "startTimeSeconds": 26.464,
+   "durationSeconds": 2.416,
+   "measure": 12,
+   "scoreBeat": 42,
+   "scoreBeats": 2,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 60,
+   "audioStartTimeSeconds": 26.464,
+   "audioAmplitude": 0.312
+  },
+  {
+   "pitchMidi": 60,
+   "startTimeSeconds": 28.88,
+   "durationSeconds": 2.555,
+   "measure": 12,
+   "scoreBeat": 44,
+   "scoreBeats": 2,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 60,
+   "audioStartTimeSeconds": 28.88,
+   "audioAmplitude": 0.807
+  },
+  {
+   "pitchMidi": 56,
+   "startTimeSeconds": 31.436,
+   "durationSeconds": 1.194,
+   "measure": 13,
+   "scoreBeat": 46,
+   "scoreBeats": 3,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 56,
+   "audioStartTimeSeconds": 31.436,
+   "audioAmplitude": 0.408
+  },
+  {
+   "pitchMidi": 60,
+   "startTimeSeconds": 32.63,
+   "durationSeconds": 0.199,
+   "measure": 13,
+   "scoreBeat": 49,
+   "scoreBeats": 0.5,
+   "src": "audio-interpolated"
+  },
+  {
+   "pitchMidi": 60,
+   "startTimeSeconds": 32.829,
+   "durationSeconds": 0.199,
+   "measure": 13,
+   "scoreBeat": 49.5,
+   "scoreBeats": 0.5,
+   "src": "audio-interpolated"
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 33.028,
+   "durationSeconds": 1.29,
+   "measure": 14,
+   "scoreBeat": 50,
+   "scoreBeats": 1,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 59,
+   "audioStartTimeSeconds": 33.028,
+   "audioAmplitude": 0.632
+  },
+  {
+   "pitchMidi": 60,
+   "startTimeSeconds": 34.318,
+   "durationSeconds": 0.487,
+   "measure": 14,
+   "scoreBeat": 51,
+   "scoreBeats": 1,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 60,
+   "audioStartTimeSeconds": 34.318,
+   "audioAmplitude": 0.444
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 34.805,
+   "durationSeconds": 0.743,
+   "measure": 14,
+   "scoreBeat": 52,
+   "scoreBeats": 1,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 59,
+   "audioStartTimeSeconds": 34.805,
+   "audioAmplitude": 0.324
   },
   {
    "pitchMidi": 55,
-   "startTimeSeconds": 71.816,
-   "durationSeconds": 1.129,
-   "src": "lead-timeline"
+   "startTimeSeconds": 35.548,
+   "durationSeconds": 0.953,
+   "measure": 14,
+   "scoreBeat": 53,
+   "scoreBeats": 1,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 55,
+   "audioStartTimeSeconds": 35.548,
+   "audioAmplitude": 0.5
+  },
+  {
+   "pitchMidi": 56,
+   "startTimeSeconds": 36.502,
+   "durationSeconds": 0.174,
+   "measure": 15,
+   "scoreBeat": 54,
+   "scoreBeats": 1,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 56,
+   "audioStartTimeSeconds": 36.502,
+   "audioAmplitude": 0.454
+  },
+  {
+   "pitchMidi": 57,
+   "startTimeSeconds": 36.676,
+   "durationSeconds": 0.348,
+   "measure": 15,
+   "scoreBeat": 55,
+   "scoreBeats": 0.5,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 57,
+   "audioStartTimeSeconds": 36.676,
+   "audioAmplitude": 0.654
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 37.024,
+   "durationSeconds": 0.604,
+   "measure": 15,
+   "scoreBeat": 55.5,
+   "scoreBeats": 0.5,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 58,
+   "audioStartTimeSeconds": 37.024,
+   "audioAmplitude": 0.503
+  },
+  {
+   "pitchMidi": 61,
+   "startTimeSeconds": 37.628,
+   "durationSeconds": 0.268,
+   "measure": 15,
+   "scoreBeat": 56,
+   "scoreBeats": 1,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 61,
+   "audioStartTimeSeconds": 37.628,
+   "audioAmplitude": 0.365
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 37.896,
+   "durationSeconds": 0.586,
+   "measure": 15,
+   "scoreBeat": 57,
+   "scoreBeats": 1,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 59,
+   "audioStartTimeSeconds": 37.896,
+   "audioAmplitude": 0.703
+  },
+  {
+   "pitchMidi": 61,
+   "startTimeSeconds": 39.069,
+   "durationSeconds": 0.58,
+   "measure": 16,
+   "scoreBeat": 59,
+   "scoreBeats": 0.5,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 61,
+   "audioStartTimeSeconds": 39.069,
+   "audioAmplitude": 0.755
+  },
+  {
+   "pitchMidi": 61,
+   "startTimeSeconds": 39.649,
+   "durationSeconds": 0.175,
+   "measure": 16,
+   "scoreBeat": 59.5,
+   "scoreBeats": 0.5,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 61,
+   "audioStartTimeSeconds": 39.649,
+   "audioAmplitude": 0.333
+  },
+  {
+   "pitchMidi": 61,
+   "startTimeSeconds": 39.825,
+   "durationSeconds": 0.505,
+   "measure": 16,
+   "scoreBeat": 60,
+   "scoreBeats": 1,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 61,
+   "audioStartTimeSeconds": 39.825,
+   "audioAmplitude": 0.46
+  },
+  {
+   "pitchMidi": 61,
+   "startTimeSeconds": 40.33,
+   "durationSeconds": 0.505,
+   "measure": 16,
+   "scoreBeat": 61,
+   "scoreBeats": 1,
+   "src": "audio-interpolated"
+  },
+  {
+   "pitchMidi": 61,
+   "startTimeSeconds": 40.835,
+   "durationSeconds": 0.383,
+   "measure": 17,
+   "scoreBeat": 62,
+   "scoreBeats": 0.5,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 61,
+   "audioStartTimeSeconds": 40.835,
+   "audioAmplitude": 0.556
+  },
+  {
+   "pitchMidi": 60,
+   "startTimeSeconds": 41.218,
+   "durationSeconds": 0.197,
+   "measure": 17,
+   "scoreBeat": 62.5,
+   "scoreBeats": 0.5,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 60,
+   "audioStartTimeSeconds": 41.218,
+   "audioAmplitude": 0.525
+  },
+  {
+   "pitchMidi": 61,
+   "startTimeSeconds": 41.415,
+   "durationSeconds": 0.448,
+   "measure": 17,
+   "scoreBeat": 63,
+   "scoreBeats": 0.5,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 61,
+   "audioStartTimeSeconds": 41.415,
+   "audioAmplitude": 0.685
+  },
+  {
+   "pitchMidi": 61,
+   "startTimeSeconds": 41.863,
+   "durationSeconds": 0.447,
+   "measure": 17,
+   "scoreBeat": 63.5,
+   "scoreBeats": 0.5,
+   "src": "audio-interpolated"
+  },
+  {
+   "pitchMidi": 61,
+   "startTimeSeconds": 42.31,
+   "durationSeconds": 0.151,
+   "measure": 17,
+   "scoreBeat": 64,
+   "scoreBeats": 0.5,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 61,
+   "audioStartTimeSeconds": 42.31,
+   "audioAmplitude": 0.335
+  },
+  {
+   "pitchMidi": 61,
+   "startTimeSeconds": 42.461,
+   "durationSeconds": 0.308,
+   "measure": 17,
+   "scoreBeat": 64.5,
+   "scoreBeats": 0.5,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 61,
+   "audioStartTimeSeconds": 42.461,
+   "audioAmplitude": 0.683
+  },
+  {
+   "pitchMidi": 60,
+   "startTimeSeconds": 42.769,
+   "durationSeconds": 0.308,
+   "measure": 17,
+   "scoreBeat": 65,
+   "scoreBeats": 0.5,
+   "src": "audio-interpolated"
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 43.077,
+   "durationSeconds": 0.615,
+   "measure": 18,
+   "scoreBeat": 65.5,
+   "scoreBeats": 1,
+   "src": "audio-interpolated"
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 43.692,
+   "durationSeconds": 0.779,
+   "measure": 18,
+   "scoreBeat": 66.5,
+   "scoreBeats": 1,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 59,
+   "audioStartTimeSeconds": 43.692,
+   "audioAmplitude": 0.411
+  },
+  {
+   "pitchMidi": 57,
+   "startTimeSeconds": 44.471,
+   "durationSeconds": 0.557,
+   "measure": 18,
+   "scoreBeat": 67.5,
+   "scoreBeats": 1,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 57,
+   "audioStartTimeSeconds": 44.471,
+   "audioAmplitude": 0.661
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 45.029,
+   "durationSeconds": 1.051,
+   "measure": 18,
+   "scoreBeat": 68.5,
+   "scoreBeats": 1,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 58,
+   "audioStartTimeSeconds": 45.029,
+   "audioAmplitude": 0.744
+  },
+  {
+   "pitchMidi": 56,
+   "startTimeSeconds": 47.131,
+   "durationSeconds": 0.244,
+   "measure": 19,
+   "scoreBeat": 70.5,
+   "scoreBeats": 0.5,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 56,
+   "audioStartTimeSeconds": 47.131,
+   "audioAmplitude": 0.616
+  },
+  {
+   "pitchMidi": 56,
+   "startTimeSeconds": 47.375,
+   "durationSeconds": 0.883,
+   "measure": 19,
+   "scoreBeat": 71,
+   "scoreBeats": 0.5,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 56,
+   "audioStartTimeSeconds": 47.375,
+   "audioAmplitude": 0.481
+  },
+  {
+   "pitchMidi": 61,
+   "startTimeSeconds": 48.258,
+   "durationSeconds": 1.766,
+   "measure": 19,
+   "scoreBeat": 71.5,
+   "scoreBeats": 1,
+   "src": "audio-interpolated"
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 50.025,
+   "durationSeconds": 0.418,
+   "measure": 19,
+   "scoreBeat": 72.5,
+   "scoreBeats": 1,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 59,
+   "audioStartTimeSeconds": 50.025,
+   "audioAmplitude": 0.682
+  },
+  {
+   "pitchMidi": 63,
+   "startTimeSeconds": 50.443,
+   "durationSeconds": 0.371,
+   "measure": 20,
+   "scoreBeat": 73.5,
+   "scoreBeats": 0.5,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 63,
+   "audioStartTimeSeconds": 50.443,
+   "audioAmplitude": 0.662
+  },
+  {
+   "pitchMidi": 62,
+   "startTimeSeconds": 50.814,
+   "durationSeconds": 0.267,
+   "measure": 20,
+   "scoreBeat": 74,
+   "scoreBeats": 0.5,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 62,
+   "audioStartTimeSeconds": 50.814,
+   "audioAmplitude": 0.623
+  },
+  {
+   "pitchMidi": 63,
+   "startTimeSeconds": 51.081,
+   "durationSeconds": 0.651,
+   "measure": 20,
+   "scoreBeat": 74.5,
+   "scoreBeats": 0.5,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 63,
+   "audioStartTimeSeconds": 51.081,
+   "audioAmplitude": 0.633
+  },
+  {
+   "pitchMidi": 63,
+   "startTimeSeconds": 51.733,
+   "durationSeconds": 0.267,
+   "measure": 20,
+   "scoreBeat": 75,
+   "scoreBeats": 0.5,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 63,
+   "audioStartTimeSeconds": 51.733,
+   "audioAmplitude": 0.301
+  },
+  {
+   "pitchMidi": 63,
+   "startTimeSeconds": 52,
+   "durationSeconds": 0.267,
+   "measure": 20,
+   "scoreBeat": 75.5,
+   "scoreBeats": 0.5,
+   "src": "audio-interpolated"
+  },
+  {
+   "pitchMidi": 57,
+   "startTimeSeconds": 52.267,
+   "durationSeconds": 0.371,
+   "measure": 20,
+   "scoreBeat": 76,
+   "scoreBeats": 0.5,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 57,
+   "audioStartTimeSeconds": 52.267,
+   "audioAmplitude": 0.686
+  },
+  {
+   "pitchMidi": 56,
+   "startTimeSeconds": 52.638,
+   "durationSeconds": 0.128,
+   "measure": 20,
+   "scoreBeat": 76.5,
+   "scoreBeats": 0.5,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 56,
+   "audioStartTimeSeconds": 52.638,
+   "audioAmplitude": 0.426
+  },
+  {
+   "pitchMidi": 57,
+   "startTimeSeconds": 52.766,
+   "durationSeconds": 0.104,
+   "measure": 20,
+   "scoreBeat": 77,
+   "scoreBeats": 0.5,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 57,
+   "audioStartTimeSeconds": 52.766,
+   "audioAmplitude": 0.302
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 52.87,
+   "durationSeconds": 0.552,
+   "measure": 21,
+   "scoreBeat": 77.5,
+   "scoreBeats": 1,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 58,
+   "audioStartTimeSeconds": 52.87,
+   "audioAmplitude": 0.806
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 53.423,
+   "durationSeconds": 0.552,
+   "measure": 21,
+   "scoreBeat": 78.5,
+   "scoreBeats": 1,
+   "src": "audio-interpolated"
+  },
+  {
+   "pitchMidi": 57,
+   "startTimeSeconds": 53.975,
+   "durationSeconds": 0.569,
+   "measure": 21,
+   "scoreBeat": 79.5,
+   "scoreBeats": 1,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 57,
+   "audioStartTimeSeconds": 53.975,
+   "audioAmplitude": 0.758
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 54.544,
+   "durationSeconds": 0.292,
+   "measure": 21,
+   "scoreBeat": 80.5,
+   "scoreBeats": 0.5,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 58,
+   "audioStartTimeSeconds": 54.544,
+   "audioAmplitude": 0.805
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 54.836,
+   "durationSeconds": 0.292,
+   "measure": 21,
+   "scoreBeat": 81,
+   "scoreBeats": 0.5,
+   "src": "audio-interpolated"
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 58.049,
+   "durationSeconds": 0.584,
+   "measure": 23,
+   "scoreBeat": 86.5,
+   "scoreBeats": 1,
+   "src": "audio-interpolated"
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 58.633,
+   "durationSeconds": 0.604,
+   "measure": 23,
+   "scoreBeat": 87.5,
+   "scoreBeats": 0.5,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 59,
+   "audioStartTimeSeconds": 58.633,
+   "audioAmplitude": 0.704
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 59.237,
+   "durationSeconds": 0.396,
+   "measure": 23,
+   "scoreBeat": 88,
+   "scoreBeats": 0.5,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 58,
+   "audioStartTimeSeconds": 59.237,
+   "audioAmplitude": 0.647
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 59.633,
+   "durationSeconds": 0.607,
+   "measure": 23,
+   "scoreBeat": 88.5,
+   "scoreBeats": 1,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 59,
+   "audioStartTimeSeconds": 59.633,
+   "audioAmplitude": 0.531
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 60.24,
+   "durationSeconds": 1.216,
+   "measure": 24,
+   "scoreBeat": 89.5,
+   "scoreBeats": 2,
+   "src": "audio-interpolated"
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 61.456,
+   "durationSeconds": 1.216,
+   "measure": 24,
+   "scoreBeat": 91.5,
+   "scoreBeats": 2,
+   "src": "audio-interpolated"
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 63.279,
+   "durationSeconds": 0.29,
+   "measure": 25,
+   "scoreBeat": 94.5,
+   "scoreBeats": 1,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 58,
+   "audioStartTimeSeconds": 63.279,
+   "audioAmplitude": 0.438
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 63.57,
+   "durationSeconds": 0.43,
+   "measure": 25,
+   "scoreBeat": 95.5,
+   "scoreBeats": 0.5,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 58,
+   "audioStartTimeSeconds": 63.57,
+   "audioAmplitude": 0.786
+  },
+  {
+   "pitchMidi": 61,
+   "startTimeSeconds": 64,
+   "durationSeconds": 0.255,
+   "measure": 25,
+   "scoreBeat": 96,
+   "scoreBeats": 0.5,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 61,
+   "audioStartTimeSeconds": 64,
+   "audioAmplitude": 0.648
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 64.256,
+   "durationSeconds": 0.587,
+   "measure": 25,
+   "scoreBeat": 96.5,
+   "scoreBeats": 1,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 58,
+   "audioStartTimeSeconds": 64.256,
+   "audioAmplitude": 0.794
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 67.776,
+   "durationSeconds": 0.36,
+   "measure": 27,
+   "scoreBeat": 102.5,
+   "scoreBeats": 0.5,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 59,
+   "audioStartTimeSeconds": 67.776,
+   "audioAmplitude": 0.655
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 68.136,
+   "durationSeconds": 0.36,
+   "measure": 27,
+   "scoreBeat": 103,
+   "scoreBeats": 0.5,
+   "src": "audio-interpolated"
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 68.496,
+   "durationSeconds": 0.72,
+   "measure": 27,
+   "scoreBeat": 103.5,
+   "scoreBeats": 1,
+   "src": "audio-interpolated"
+  },
+  {
+   "pitchMidi": 63,
+   "startTimeSeconds": 69.216,
+   "durationSeconds": 0.698,
+   "measure": 27,
+   "scoreBeat": 104.5,
+   "scoreBeats": 1,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 63,
+   "audioStartTimeSeconds": 69.216,
+   "audioAmplitude": 0.712
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 69.914,
+   "durationSeconds": 0.615,
+   "measure": 28,
+   "scoreBeat": 105.5,
+   "scoreBeats": 1,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 59,
+   "audioStartTimeSeconds": 69.914,
+   "audioAmplitude": 0.501
+  },
+  {
+   "pitchMidi": 60,
+   "startTimeSeconds": 70.529,
+   "durationSeconds": 0.302,
+   "measure": 28,
+   "scoreBeat": 106.5,
+   "scoreBeats": 1,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 60,
+   "audioStartTimeSeconds": 70.529,
+   "audioAmplitude": 0.418
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 70.831,
+   "durationSeconds": 1.464,
+   "measure": 28,
+   "scoreBeat": 107.5,
+   "scoreBeats": 2,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 59,
+   "audioStartTimeSeconds": 70.831,
+   "audioAmplitude": 0.554
+  },
+  {
+   "pitchMidi": 58,
+   "startTimeSeconds": 72.295,
+   "durationSeconds": 0.534,
+   "measure": 29,
+   "scoreBeat": 109.5,
+   "scoreBeats": 1,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 58,
+   "audioStartTimeSeconds": 72.295,
+   "audioAmplitude": 0.431
+  },
+  {
+   "pitchMidi": 54,
+   "startTimeSeconds": 72.829,
+   "durationSeconds": 0.267,
+   "measure": 29,
+   "scoreBeat": 110.5,
+   "scoreBeats": 0.5,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 54,
+   "audioStartTimeSeconds": 72.829,
+   "audioAmplitude": 0.834
+  },
+  {
+   "pitchMidi": 53,
+   "startTimeSeconds": 73.096,
+   "durationSeconds": 0.663,
+   "measure": 29,
+   "scoreBeat": 111,
+   "scoreBeats": 0.5,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 53,
+   "audioStartTimeSeconds": 73.096,
+   "audioAmplitude": 0.533
+  },
+  {
+   "pitchMidi": 54,
+   "startTimeSeconds": 73.759,
+   "durationSeconds": 0.279,
+   "measure": 29,
+   "scoreBeat": 111.5,
+   "scoreBeats": 1,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 54,
+   "audioStartTimeSeconds": 73.759,
+   "audioAmplitude": 0.683
+  },
+  {
+   "pitchMidi": 49,
+   "startTimeSeconds": 74.038,
+   "durationSeconds": 0.364,
+   "measure": 29,
+   "scoreBeat": 112.5,
+   "scoreBeats": 1,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 49,
+   "audioStartTimeSeconds": 74.038,
+   "audioAmplitude": 0.414
+  },
+  {
+   "pitchMidi": 54,
+   "startTimeSeconds": 74.402,
+   "durationSeconds": 0.182,
+   "measure": 30,
+   "scoreBeat": 113.5,
+   "scoreBeats": 0.5,
+   "src": "audio-interpolated"
+  },
+  {
+   "pitchMidi": 53,
+   "startTimeSeconds": 74.584,
+   "durationSeconds": 0.464,
+   "measure": 30,
+   "scoreBeat": 114,
+   "scoreBeats": 0.5,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 53,
+   "audioStartTimeSeconds": 74.584,
+   "audioAmplitude": 0.582
+  },
+  {
+   "pitchMidi": 54,
+   "startTimeSeconds": 75.048,
+   "durationSeconds": 0.93,
+   "measure": 30,
+   "scoreBeat": 114.5,
+   "scoreBeats": 1,
+   "src": "audio-interpolated"
+  },
+  {
+   "pitchMidi": 49,
+   "startTimeSeconds": 75.978,
+   "durationSeconds": 1.58,
+   "measure": 30,
+   "scoreBeat": 115.5,
+   "scoreBeats": 1,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 49,
+   "audioStartTimeSeconds": 75.978,
+   "audioAmplitude": 0.417
+  },
+  {
+   "pitchMidi": 54,
+   "startTimeSeconds": 77.558,
+   "durationSeconds": 0.174,
+   "measure": 30,
+   "scoreBeat": 116.5,
+   "scoreBeats": 0.5,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 54,
+   "audioStartTimeSeconds": 77.558,
+   "audioAmplitude": 0.471
+  },
+  {
+   "pitchMidi": 54,
+   "startTimeSeconds": 77.732,
+   "durationSeconds": 0.522,
+   "measure": 30,
+   "scoreBeat": 117,
+   "scoreBeats": 0.5,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 54,
+   "audioStartTimeSeconds": 77.732,
+   "audioAmplitude": 0.504
+  },
+  {
+   "pitchMidi": 54,
+   "startTimeSeconds": 78.255,
+   "durationSeconds": 0.766,
+   "measure": 31,
+   "scoreBeat": 117.5,
+   "scoreBeats": 2,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 54,
+   "audioStartTimeSeconds": 78.255,
+   "audioAmplitude": 0.787
+  },
+  {
+   "pitchMidi": 55,
+   "startTimeSeconds": 79.021,
+   "durationSeconds": 0.766,
+   "measure": 31,
+   "scoreBeat": 119.5,
+   "scoreBeats": 2,
+   "src": "audio-confirmed",
+   "audioPitchMidi": 55,
+   "audioStartTimeSeconds": 79.021,
+   "audioAmplitude": 0.47
   }
  ]
 }
