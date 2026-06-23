@@ -191,6 +191,11 @@ const MIC_PROFILES: Record<MicProfile, { label: string; gain: number; agc: boole
 const IS_MOBILE = typeof navigator !== 'undefined' && /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent);
 
 const VOL_MAX = 400; // V3: percent ceiling per stream (V1 was 200)
+const PLUNK_DEFAULT_VOL = 180;
+const PLUNK_GAIN_SCALE = 0.55;
+const PLUNK_LOOKAHEAD_SECONDS = 0.45;
+const PLUNK_SCHEDULER_MS = 35;
+const PLUNK_MAX_TONE_SECONDS = 4.0;
 const TAKE_HISTORY_KEY = 'vt3_take_summaries_v1';
 const ENGRAVING_REPORTS_KEY = 'vt3_engraving_reports_v1';
 
@@ -365,7 +370,7 @@ export default function VocalTrainerIII() {
   const [micProfile, setMicProfile] = useState<MicProfile>('usb');
   const [micEnabled, setMicEnabled] = useState(false);
   const [plunkEnabled, setPlunkEnabled] = useState(false);
-  const [plunkVol, setPlunkVol] = useState(110);
+  const [plunkVol, setPlunkVol] = useState(PLUNK_DEFAULT_VOL);
   // V3: per-stream balance (-1 hard-left … +1 hard-right). Defaults = V1's fixed pans.
   const [vocalPan, setVocalPan] = useState(-0.7);
   const [musicPan, setMusicPan] = useState(0);
@@ -410,11 +415,13 @@ export default function VocalTrainerIII() {
   const micPanNodeRef = useRef<StereoPannerNode | null>(null);
 
   const plunkEnabledRef = useRef(false);
-  const plunkVolRef = useRef(110);
+  const plunkVolRef = useRef(PLUNK_DEFAULT_VOL);
   const plunkNotesRef = useRef<SyncNote[]>([]);
   const plunkFetchStartedRef = useRef(false);
   const plunkOscsRef = useRef<any[]>([]);
   const plunkGainRef = useRef<GainNode | null>(null);
+  const plunkTimerRef = useRef<number | null>(null);
+  const plunkScheduledRef = useRef<Set<string>>(new Set());
 
   // V3: master brick-wall limiter — every stream routes through it so 400%
   // boosts get loud-but-clean instead of hard-clipping the destination.
@@ -863,14 +870,125 @@ export default function VocalTrainerIII() {
     return ctx;
   }, []);
 
+  const currentPlunkGain = () => (plunkVolRef.current / 100) * PLUNK_GAIN_SCALE;
+
+  const ensurePlunkGain = useCallback((ctx: AudioContext) => {
+    if (!plunkGainRef.current || plunkGainRef.current.context !== ctx) {
+      try { plunkGainRef.current?.disconnect(); } catch {}
+      const gain = ctx.createGain();
+      gain.gain.value = currentPlunkGain();
+      gain.connect(limiterRef.current ?? ctx.destination);
+      plunkGainRef.current = gain;
+    }
+    return plunkGainRef.current;
+  }, []);
+
   const stopPlunkNodes = useCallback(() => {
-    if (!plunkEnabledRef.current && plunkOscsRef.current.length === 0) return;
+    if (plunkTimerRef.current != null) {
+      window.clearInterval(plunkTimerRef.current);
+      plunkTimerRef.current = null;
+    }
     for (const node of plunkOscsRef.current) {
       try { if (typeof node.stop === 'function') node.stop(); } catch {}
       try { if (typeof node.disconnect === 'function') node.disconnect(); } catch {}
     }
     plunkOscsRef.current = [];
+    plunkScheduledRef.current.clear();
   }, []);
+
+  const playPlunkTone = useCallback((ctx: AudioContext, note: SyncNote, toneStart: number, scoreNow: number) => {
+    const noteEnd = note.startTimeSeconds + note.durationSeconds;
+    const remaining = note.startTimeSeconds < scoreNow
+      ? noteEnd - scoreNow
+      : note.durationSeconds;
+    const toneDuration = Math.max(0.04, Math.min(remaining, note.durationSeconds, PLUNK_MAX_TONE_SECONDS));
+    if (!Number.isFinite(toneDuration) || toneDuration <= 0.02) return;
+
+    const toneEnd = toneStart + toneDuration;
+    const freq = midiToFreq(note.pitchMidi);
+    const attack = Math.min(0.018, Math.max(0.005, toneDuration * 0.12));
+    const release = Math.min(0.18, Math.max(0.025, toneDuration * 0.22));
+    const releaseStart = Math.max(toneStart + attack, toneEnd - release);
+
+    const tri = ctx.createOscillator();
+    tri.type = 'triangle';
+    tri.frequency.setValueAtTime(freq, toneStart);
+
+    const sine = ctx.createOscillator();
+    sine.type = 'sine';
+    sine.frequency.setValueAtTime(freq, toneStart);
+    sine.detune.setValueAtTime(7, toneStart);
+
+    const partialGain = ctx.createGain();
+    partialGain.gain.setValueAtTime(0.28, toneStart);
+
+    const noteGain = ctx.createGain();
+    noteGain.gain.setValueAtTime(0, toneStart);
+    noteGain.gain.linearRampToValueAtTime(0.95, toneStart + attack);
+    noteGain.gain.setValueAtTime(0.78, releaseStart);
+    noteGain.gain.linearRampToValueAtTime(0, toneEnd);
+
+    const plunkGain = ensurePlunkGain(ctx);
+    tri.connect(noteGain);
+    sine.connect(partialGain).connect(noteGain);
+    noteGain.connect(plunkGain);
+    tri.start(toneStart);
+    sine.start(toneStart);
+    tri.stop(toneEnd + 0.01);
+    sine.stop(toneEnd + 0.01);
+    tri.onended = () => {
+      for (const node of [tri, sine, partialGain, noteGain]) {
+        try { node.disconnect(); } catch {}
+      }
+    };
+    plunkOscsRef.current.push(tri, sine, partialGain, noteGain);
+  }, [ensurePlunkGain]);
+
+  const schedulePlunkWindow = useCallback(() => {
+    if (!plunkEnabledRef.current) return;
+    const ctx = audioCtxRef.current;
+    if (!ctx || ctx.state === 'closed') return;
+    const notes = plunkNotesRef.current;
+    if (!notes.length) return;
+
+    const scoreNow = Math.max(0, ctx.currentTime - startedAtRef.current);
+    const windowEnd = scoreNow + PLUNK_LOOKAHEAD_SECONDS;
+    ensurePlunkGain(ctx).gain.setTargetAtTime(currentPlunkGain(), ctx.currentTime, 0.012);
+    let scheduledThisWindow = 0;
+
+    notes.forEach((note, index) => {
+      const noteEnd = note.startTimeSeconds + note.durationSeconds;
+      if (noteEnd < scoreNow - 0.015) return;
+      if (note.startTimeSeconds > windowEnd) return;
+      const key = `${index}:${note.startTimeSeconds.toFixed(4)}:${note.pitchMidi}`;
+      if (plunkScheduledRef.current.has(key)) return;
+      plunkScheduledRef.current.add(key);
+      const scoreAlignedStart = startedAtRef.current + note.startTimeSeconds;
+      const toneStart = Math.max(ctx.currentTime + 0.012, scoreAlignedStart);
+      playPlunkTone(ctx, note, toneStart, scoreNow);
+      scheduledThisWindow++;
+    });
+
+    (window as any).__VT3_PLUNK_ACTIVE__ = {
+      noteCount: notes.length,
+      scheduledCount: plunkScheduledRef.current.size,
+      scheduledThisWindow,
+      scoreNow,
+      windowEnd,
+      volumePercent: plunkVolRef.current,
+      gain: currentPlunkGain(),
+    };
+  }, [ensurePlunkGain, playPlunkTone]);
+
+  const startPlunkScheduler = useCallback(() => {
+    const ctx = audioCtxRef.current;
+    if (!ctx || !plunkEnabledRef.current) return;
+    ensurePlunkGain(ctx);
+    if (plunkTimerRef.current != null) window.clearInterval(plunkTimerRef.current);
+    plunkScheduledRef.current.clear();
+    schedulePlunkWindow();
+    plunkTimerRef.current = window.setInterval(schedulePlunkWindow, PLUNK_SCHEDULER_MS);
+  }, [ensurePlunkGain, schedulePlunkWindow]);
 
   useEffect(() => {
     plunkNotesRef.current = [];
@@ -892,12 +1010,12 @@ export default function VocalTrainerIII() {
         if (!r.ok) throw new Error(`fetch ${r.status} ${r.statusText}`);
         const j = await r.json();
         plunkNotesRef.current = Array.isArray(j.notes)
-          ? j.notes.filter((n: Partial<SyncNote> | null | undefined) =>
+          ? (j.notes.filter((n: Partial<SyncNote> | null | undefined) =>
               n != null
               && Number.isFinite(n.pitchMidi)
               && Number.isFinite(n.startTimeSeconds)
               && Number.isFinite(n.durationSeconds)
-            ) as SyncNote[]
+            ) as SyncNote[]).sort((a, b) => a.startTimeSeconds - b.startTimeSeconds)
           : [];
       } catch (e) {
         console.error('[VocalTrainer] plunk sync-note load failed:', e);
@@ -909,11 +1027,19 @@ export default function VocalTrainerIII() {
     if (!plunkGainRef.current) return;
     try {
       plunkGainRef.current.gain.setValueAtTime(
-        (plunkVolRef.current / 100) * 0.22,
+        currentPlunkGain(),
         plunkGainRef.current.context.currentTime,
       );
     } catch {}
   }, [plunkVol]);
+
+  useEffect(() => {
+    if (!plunkEnabled) {
+      stopPlunkNodes();
+      return;
+    }
+    if (playbackState === 'playing') startPlunkScheduler();
+  }, [plunkEnabled, playbackState, startPlunkScheduler, stopPlunkNodes]);
 
   // Stop any in-flight BufferSources (both vocal + music) + cancel the RAF tick.
   const stopAudioSource = useCallback(() => {
@@ -988,65 +1114,9 @@ export default function VocalTrainerIII() {
       };
     }
 
-    if (plunkEnabledRef.current && plunkNotesRef.current.length) {
-      try {
-        if (!plunkGainRef.current || plunkGainRef.current.context !== ctx) {
-          try { plunkGainRef.current?.disconnect(); } catch {}
-          const gain = ctx.createGain();
-          gain.connect(ctx.destination);
-          plunkGainRef.current = gain;
-        }
-        plunkGainRef.current.gain.setValueAtTime((plunkVolRef.current / 100) * 0.22, startAt);
-
-        for (const note of plunkNotesRef.current) {
-          const noteEnd = note.startTimeSeconds + note.durationSeconds;
-          if (noteEnd <= offset) continue;
-
-          const toneStart = startAt + Math.max(0, note.startTimeSeconds - offset);
-          const remaining = note.startTimeSeconds < offset
-            ? noteEnd - offset
-            : note.durationSeconds;
-          const toneDuration = Math.max(0.03, Math.min(remaining, note.durationSeconds, 1.3));
-          const toneEnd = toneStart + toneDuration;
-          const freq = midiToFreq(note.pitchMidi);
-          const attack = Math.min(0.02, Math.max(0.005, toneDuration * 0.2));
-          const release = Math.min(0.12, Math.max(0.015, toneDuration * 0.25));
-          const releaseStart = Math.max(toneStart + attack, toneEnd - release);
-
-          const tri = ctx.createOscillator();
-          tri.type = 'triangle';
-          tri.frequency.setValueAtTime(freq, toneStart);
-
-          const sine = ctx.createOscillator();
-          sine.type = 'sine';
-          sine.frequency.setValueAtTime(freq, toneStart);
-          sine.detune.setValueAtTime(7, toneStart);
-
-          const partialGain = ctx.createGain();
-          partialGain.gain.setValueAtTime(0.32, toneStart);
-
-          const noteGain = ctx.createGain();
-          noteGain.gain.setValueAtTime(0, toneStart);
-          noteGain.gain.linearRampToValueAtTime(0.9, toneStart + attack);
-          noteGain.gain.setValueAtTime(0.72, releaseStart);
-          noteGain.gain.linearRampToValueAtTime(0, toneEnd);
-
-          tri.connect(noteGain);
-          sine.connect(partialGain).connect(noteGain);
-          noteGain.connect(plunkGainRef.current);
-          tri.start(toneStart);
-          sine.start(toneStart);
-          tri.stop(toneEnd + 0.01);
-          sine.stop(toneEnd + 0.01);
-          plunkOscsRef.current.push(tri, sine, partialGain, noteGain);
-        }
-      } catch (e) {
-        console.error('[VocalTrainer] plunk scheduling failed:', e);
-      }
-    }
-
     // startedAt encodes (ctx.currentTime - offset) as-of the start moment.
     startedAtRef.current = startAt - offset;
+    if (plunkEnabledRef.current) startPlunkScheduler();
     setPlaybackState('playing');
 
     const tick = () => {
@@ -1075,7 +1145,7 @@ export default function VocalTrainerIII() {
       rafRef.current = requestAnimationFrame(tick);
     };
     rafRef.current = requestAnimationFrame(tick);
-  }, [ensureAudioGraph, saveTakeSummary, stopAudioSource]);
+  }, [ensureAudioGraph, saveTakeSummary, startPlunkScheduler, stopAudioSource]);
 
   // V3: keep a ref to the latest startAudioSource so the tick closure (and
   // seek) can restart playback without stale-closure issues.
@@ -2744,10 +2814,10 @@ export default function VocalTrainerIII() {
                 <input
                   type="range"
                   min={0}
-                  max={200}
+                  max={VOL_MAX}
                   step={1}
                   value={plunkVol}
-                  onChange={(e) => setPlunkVol(Math.max(0, Math.min(200, Number(e.target.value))))}
+                  onChange={(e) => setPlunkVol(Math.max(0, Math.min(VOL_MAX, Number(e.target.value))))}
                   className="w-full accent-emerald-500"
                 />
                 <span className="w-12 text-right font-mono text-emerald-300">{plunkVol}%</span>

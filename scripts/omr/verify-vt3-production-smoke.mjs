@@ -120,12 +120,20 @@ async function verifyBrowser() {
     await page.getByText(new RegExp(`Score target\\s+.*${PART}\\s+.*${config.expectedNoteCount}`, 'i')).first().waitFor({ timeout: 10000 });
     console.log('ui score-health PASS');
 
+    await page.locator('summary', { hasText: /Mixing desk/i }).first().click({ timeout: 5000 }).catch(() => {});
+    await page.getByLabel(/Plunk/i).check({ timeout: 5000 });
     await page.getByRole('button', { name: /^Play/i }).first().click({ timeout: 6000 });
     await sleep(5600);
     const active = await page.evaluate(() => window.__VT3_SCORE_ACTIVE__ || null);
     assert(active && Number.isFinite(active.index), `expected active OSMD score note after playback, got ${JSON.stringify(active)}`);
     assert(active.index >= 0 && active.index < config.expectedNoteCount, `active index out of range: ${active.index}`);
     console.log(`active-note smoke PASS index=${active.index} pitch=${active.pitchName || active.pitchMidi}`);
+    const plunk = await page.evaluate(() => window.__VT3_PLUNK_ACTIVE__ || null);
+    assert(plunk && plunk.noteCount === config.expectedNoteCount,
+      `expected plunk noteCount=${config.expectedNoteCount}, got ${JSON.stringify(plunk)}`);
+    assert(plunk.scheduledCount > 0, `expected plunk scheduler to schedule notes, got ${JSON.stringify(plunk)}`);
+    assert(plunk.volumePercent >= 180, `expected louder default plunk volume, got ${JSON.stringify(plunk)}`);
+    console.log(`plunk scheduler smoke PASS scheduled=${plunk.scheduledCount}/${plunk.noteCount} volume=${plunk.volumePercent}%`);
   } finally {
     await browser.close();
   }
