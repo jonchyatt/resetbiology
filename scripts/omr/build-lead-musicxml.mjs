@@ -10,7 +10,7 @@
 // Output: public/musicxml/lida-rose-lead.musicxml  (served to OSMD by URL)
 //
 // SELF-VERIFYING: re-reads its own output, extracts the melodic pitch sequence,
-// and asserts it equals the 113-note ground truth in omrTargets.ts. Exits non-zero
+// and asserts it equals the generated ground truth in omrTargets.ts. Exits non-zero
 // on any structural or pitch mismatch — OSMD renders bad MusicXML SILENTLY, so this
 // gate is mandatory before the file is trusted.
 //
@@ -24,6 +24,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { PRINTED_FIFTHS, normalizeLeadMeasure } from './lida-lead-key-normalize.mjs';
+import { applyLeadMeasureCorrections } from './lida-lead-source-corrections.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SRC = (f) => path.join(__dirname, 'source', f);
@@ -73,7 +74,8 @@ function leadPitches(partInner) {
 const FULL_MEASURE_REST = LCM * 4; // 4/4 at divisions 12 = 48 (Lida Rose is 4/4 throughout)
 const measures = [];
 const perPage = [];
-for (const { file, lead, div } of PAGES) {
+for (let pageIndex = 0; pageIndex < PAGES.length; pageIndex++) {
+  const { pg, file, lead, div } = PAGES[pageIndex];
   const xml = fs.readFileSync(SRC(file), 'utf8');
   let inner = getPartInner(xml, lead);
   const a = inner.indexOf('<measure ');
@@ -82,8 +84,10 @@ for (const { file, lead, div } of PAGES) {
   const factor = LCM / div;
   inner = inner.replace(/<duration>(\d+)<\/duration>/g, (_, n) => `<duration>${parseInt(n) * factor}</duration>`);
   inner = inner.replace(/<divisions>\d+<\/divisions>/g, `<divisions>${LCM}</divisions>`);
-  inner = inner.replace(/<print\b[\s\S]*?<\/print>\s*/g, ''); // drop ALL layout incl. <print new-system="yes"> so OSMD reflows
-  const units = (inner.match(/<measure\b[\s\S]*?<\/measure>/g) || []).map(normalizeLeadMeasure);
+  inner = preservePrintBreaks(inner);
+  let units = (inner.match(/<measure\b[\s\S]*?<\/measure>/g) || []).map(normalizeLeadMeasure);
+  units = applyLeadMeasureCorrections(pg, units);
+  if (pageIndex > 0 && units[0]) units[0] = forceSystemBreak(units[0]);
   perPage.push(units.reduce((c, u) => c + leadPitches(u).length, 0));
   measures.push(...units);
 }
@@ -99,6 +103,10 @@ for (let i = 0; i < measures.length; i++) {
     measures[i] = measures[i].replace(/<\/measure>$/, `  <note><rest measure="yes"/><duration>${FULL_MEASURE_REST}</duration><voice>1</voice></note>\n    </measure>`);
     filled++;
   }
+}
+
+for (let i = 1; i < measures.length; i++) {
+  measures[i] = stripRepeatedClef(measures[i]);
 }
 
 // renumber measures consecutively 1..N
@@ -168,6 +176,16 @@ if (divs.length !== 1 || divs[0] !== LCM) errors.push(`divisions not uniformly $
 const fifths = [...new Set([...out.matchAll(/<fifths>(-?\d+)<\/fifths>/g)].map((m) => parseInt(m[1])))];
 if (fifths.length !== 1 || fifths[0] !== PRINTED_FIFTHS) errors.push(`key not uniformly ${PRINTED_FIFTHS}: ${fifths}`);
 
+for (const measureMatch of out.matchAll(/<measure number="(\d+)"[\s\S]*?<\/measure>/g)) {
+  const no = parseInt(measureMatch[1]);
+  if (no <= 2) continue;
+  const body = measureMatch[0];
+  if (/<clef>/.test(body)) errors.push(`m${no}: repeated clef would render as a courtesy clef in OSMD`);
+  if (/(<clef>|<key>)/.test(body) && !/<print\b[^>]*new-(?:system|page)="yes"/.test(body)) {
+    errors.push(`m${no}: clef/key attributes without an explicit system break`);
+  }
+}
+
 const outInner = out.slice(out.indexOf('<part id="P1">'), out.indexOf('</part>'));
 const outPitches = leadPitches(outInner);
 const refPitches = [...fs.readFileSync(OMR_TS, 'utf8').matchAll(/pitchMidi:\s*(\d+)/g)].map((m) => parseInt(m[1]));
@@ -187,3 +205,22 @@ if (errors.length) {
 }
 console.log(`✓ VERIFY PASS — stitched melody == omrTargets.ts ground truth (${outPitches.length}/${refPitches.length})`);
 console.log('WROTE', path.relative(path.join(__dirname, '..', '..'), OUT));
+
+function preservePrintBreaks(xml) {
+  return xml.replace(/<print\b([^>]*)>[\s\S]*?<\/print>\s*/g, (_, attrs) => {
+    if (/\bnew-page="yes"/.test(attrs)) return '<print new-page="yes"/>\n      ';
+    if (/\bnew-system="yes"/.test(attrs)) return '<print new-system="yes"/>\n      ';
+    return '';
+  });
+}
+
+function forceSystemBreak(measureXml) {
+  if (/<print\b/.test(measureXml)) {
+    return measureXml.replace(/<print\b[^>]*(?:\/>|>[\s\S]*?<\/print>)/, '<print new-system="yes"/>');
+  }
+  return measureXml.replace(/(<measure\b[^>]*>\s*)/, '$1\n      <print new-system="yes"/>');
+}
+
+function stripRepeatedClef(measureXml) {
+  return measureXml.replace(/\s*<clef>[\s\S]*?<\/clef>/g, '');
+}

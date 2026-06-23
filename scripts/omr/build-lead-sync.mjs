@@ -12,7 +12,7 @@
 //   The NoLead's first onset (~4.9s) marks where the quartet enters → the intro
 //   is automatically excluded from the anchors.
 //   1) isolate the Lead onsets (LD − NL, range-gated, de-segmented).
-//   2) subsequence pitch-DTW: align the 113 engraved pitches to the isolated onsets
+//   2) subsequence pitch-DTW: align the engraved pitches to the isolated onsets
 //      (free start/end skips the intro/outro; octave-folded cost tolerates extraction
 //      octave errors; audio onsets may be skipped for over-segmentation).
 //   3) ANCHOR each confident 1:1 match to its recording time; between anchors,
@@ -44,10 +44,11 @@ async function load(url, stageName) {
   catch (e) { console.log(`  (fetch fail ${stageName}: ${e.message} — staged copy)`); return JSON.parse(fs.readFileSync(p, 'utf8')); }
 }
 
-// ── score: 113 Lead notes (clean) with their relative score rhythm ──
+// ── score: clean Lead notes with their relative score rhythm ──
 const ts = fs.readFileSync(path.join(RBW, 'src', 'components', 'PitchDefender', 'omrTargets.ts'), 'utf8');
 const score = [...ts.matchAll(/pitchMidi:\s*(\d+),\s*startTimeSeconds:\s*([\d.]+),\s*durationSeconds:\s*([\d.]+)/g)]
   .map((m) => ({ midi: +m[1], rel: +m[2], dur: +m[3] }));
+const EXPECTED_SCORE_NOTES = score.length;
 const sMin = Math.min(...score.map((n) => n.midi)), sMax = Math.max(...score.map((n) => n.midi));
 
 // ── isolate the Lead: LeadDominant − NoLead ──
@@ -145,7 +146,7 @@ for (let k = 0; k < N; k++) {
 // ── verify ──
 const monotonic = sync.every((s, k) => k === 0 || s.startTimeSeconds >= sync[k - 1].startTimeSeconds);
 const errors = [];
-if (sync.length !== 113) errors.push(`expected 113, got ${sync.length}`);
+if (sync.length !== EXPECTED_SCORE_NOTES) errors.push(`expected ${EXPECTED_SCORE_NOTES}, got ${sync.length}`);
 if (!monotonic) errors.push('not monotonic');
 if (sync[N - 1].startTimeSeconds > durationSec + 0.5) errors.push('last exceeds recording');
 

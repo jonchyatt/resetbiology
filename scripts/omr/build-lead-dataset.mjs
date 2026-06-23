@@ -17,6 +17,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { normalizeLeadMeasure } from './lida-lead-key-normalize.mjs';
+import { applyLeadMeasureCorrections } from './lida-lead-source-corrections.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SRC = (f) => path.join(__dirname, 'source', f);
@@ -61,7 +62,9 @@ let cumBeats = 0;
 const omr = [];
 for (const { path: p, lead } of PAGES) {
   const xml = fs.readFileSync(p, 'utf8');
-  const part = getPart(xml, lead).replace(/<measure\b[\s\S]*?<\/measure>/g, normalizeLeadMeasure);
+  const page = path.basename(p).match(/lida-(\d+)\.xml$/)?.[1] || '';
+  const measures = (getPart(xml, lead).match(/<measure\b[\s\S]*?<\/measure>/g) || []).map(normalizeLeadMeasure);
+  const part = applyLeadMeasureCorrections(page, measures).join('\n');
   for (const n of parseNotes(part)) {
     if (!n.rest) omr.push({ midi: n.midi, startBeat: cumBeats, beats: n.beats });
     cumBeats += n.beats;

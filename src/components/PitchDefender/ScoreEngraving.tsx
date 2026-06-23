@@ -101,6 +101,8 @@ export default function ScoreEngraving({ musicXMLUrl, title, zoom: initialZoom =
           drawTitle: true,
           drawPartNames: false,
           drawingParameters: 'default',
+          newSystemFromXML: true,
+          newSystemFromNewPageInXML: true,
           cursorsOptions: [{ type: 0, color: DARK.cursor, alpha: DARK.cursorAlpha, follow: true }],
         })
         osmd.Zoom = zoom

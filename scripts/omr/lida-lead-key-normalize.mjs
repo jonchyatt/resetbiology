@@ -1,5 +1,5 @@
-const PRINTED_FIFTHS = -4;
-const PRINTED_KEY_FLATS = new Set(['B', 'E', 'A', 'D']);
+const PRINTED_FIFTHS = -6;
+const PRINTED_KEY_FLATS = new Set(['B', 'E', 'A', 'D', 'G', 'C']);
 
 const ACCIDENTAL_ALTER = {
   natural: 0,
