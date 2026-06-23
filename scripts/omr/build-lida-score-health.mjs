@@ -6,6 +6,12 @@
 import fs from 'fs';
 import { normalizeLeadMeasure, PRINTED_FIFTHS } from './lida-lead-key-normalize.mjs';
 import { applyLeadMeasureCorrections } from './lida-lead-source-corrections.mjs';
+import {
+  EXPECTED_LEAD_NOTE_COUNT,
+  LEAD_SCORE_VERSION,
+  PRINTED_LEAD_AUDIT_MEASURES,
+  pageForLeadMeasure,
+} from './lida-lead-printed-manifest.mjs';
 
 const XML = 'public/musicxml/lida-rose-lead.musicxml';
 const SYNC = 'public/musicxml/lida-rose-lead-sync.json';
@@ -97,8 +103,16 @@ checks.push(check(
 checks.push(check(
   'note-count',
   'Pitched note count',
-  noteCount === expected.noteCount && noteCount === 113,
+  noteCount === expected.noteCount && noteCount === EXPECTED_LEAD_NOTE_COUNT,
   `expected ${expected.noteCount}; got ${noteCount}`,
+));
+
+const printedAuditErrors = comparePrintedAudit(xml);
+checks.push(check(
+  'printed-score-audit',
+  'Printed score audit',
+  printedAuditErrors.length === 0,
+  printedAuditErrors.length ? printedAuditErrors.join(' | ') : `${PRINTED_LEAD_AUDIT_MEASURES.length} printed-score measures match`,
 ));
 
 const clefErrors = [];
@@ -132,7 +146,7 @@ const confirmed = reconciledNotes.filter((n) => n.src === 'audio-confirmed').len
 const payload = {
   song: 'Lida Rose',
   part: 'Lead',
-  scoreVersion: 'lida-rose-lead-six-flat-113',
+  scoreVersion: LEAD_SCORE_VERSION,
   sourcePages: PAGES.map((p) => `${p.page}:${p.lead}`),
   generatedAt: new Date().toISOString(),
   keyFifths: -6,
@@ -304,7 +318,7 @@ function extractNoteMap(xmlText, phrases) {
       out.push({
         index,
         measure,
-        page: measure <= 9 ? 196 : measure <= 19 ? 197 : 198,
+        page: pageForLeadMeasure(measure),
         pitch,
         phraseId: phrase?.id ?? null,
         phraseLabel: phrase?.label ?? null,
@@ -330,4 +344,43 @@ function extractWholeNotesFromMeasure(measureXml) {
 function spelledPitch(step, alter, octave) {
   const suffix = alter === -2 ? 'bb' : alter === -1 ? 'b' : alter === 1 ? '#' : alter === 2 ? '##' : '';
   return `${step}${suffix}${octave}`;
+}
+
+function comparePrintedAudit(xmlText) {
+  const measureNotes = extractMeasureNotes(xmlText);
+  const errors = [];
+  for (const audit of PRINTED_LEAD_AUDIT_MEASURES) {
+    const got = measureNotes[String(audit.measure)] || [];
+    const gotSummary = got.map(noteSummary).join(' ');
+    const expectedSummary = audit.notes.map(noteSummary).join(' ');
+    if (gotSummary !== expectedSummary) {
+      errors.push(`m${audit.measure}: expected [${expectedSummary}], got [${gotSummary}] (${audit.source})`);
+    }
+  }
+  return errors;
+}
+
+function extractMeasureNotes(xmlText) {
+  const out = {};
+  for (const measureMatch of xmlText.matchAll(/<measure number="(\d+)"[\s\S]*?<\/measure>/g)) {
+    const divisions = Number((measureMatch[0].match(/<divisions>(\d+)<\/divisions>/) || [])[1] || 12);
+    const notes = [];
+    for (const noteMatch of measureMatch[0].matchAll(/<note\b[\s\S]*?<\/note>/g)) {
+      const noteXml = noteMatch[0];
+      if (/<rest\b/.test(noteXml) || /<chord\s*\/?\s*>/.test(noteXml)) continue;
+      const pitch = extractPitchesFromMeasure(noteXml)[0];
+      if (!pitch) continue;
+      const duration = Number((noteXml.match(/<duration>(\d+)<\/duration>/) || [])[1] || 0);
+      const type = (noteXml.match(/<type>([^<]+)<\/type>/) || [])[1] || '';
+      const dots = (noteXml.match(/<dot\s*\/>/g) || []).length;
+      notes.push({ pitch, beats: duration / divisions, type, ...(dots ? { dots } : {}) });
+    }
+    if (notes.length) out[measureMatch[1]] = notes;
+  }
+  return out;
+}
+
+function noteSummary(note) {
+  const dots = note.dots ? `.${note.dots}` : '';
+  return `${note.pitch}:${note.beats}:${note.type}${dots}`;
 }

@@ -28,12 +28,11 @@ export function applyLeadMeasureCorrections(page, measures, options = {}) {
       out.push(wholeNoteMeasure({
         number: '4',
         width: '338',
-        step: 'B',
+        step: 'C',
         alter: -1,
-        octave: 3,
+        octave: 4,
         duration: fullMeasureDuration,
       }));
-      continue;
     }
 
     out.push(measure);

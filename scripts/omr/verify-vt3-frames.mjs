@@ -7,7 +7,7 @@
 import { chromium } from 'playwright';
 import fs from 'fs';
 
-const URL = 'https://resetbiology.com/pitch-defender/vocal-trainer-3';
+const URL = process.env.VT3_URL || 'https://resetbiology.com/pitch-defender/vocal-trainer-3';
 const OUT = 'C:/Users/jonch/Projects/jarvis/data/vocal-trainer/runtime-logs/frames';
 fs.mkdirSync(OUT, { recursive: true });
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));

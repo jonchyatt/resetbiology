@@ -2,6 +2,7 @@
 // Reusable smoke for the VT3 "Report engraving" workflow. The report is the
 // handoff artifact when the rendered OSMD score and source PDF/page image disagree.
 import { chromium } from 'playwright';
+import { EXPECTED_LEAD_NOTE_COUNT } from './lida-lead-printed-manifest.mjs';
 
 const VT3_URL = process.env.VT3_URL || 'https://resetbiology.com/pitch-defender/vocal-trainer-3';
 
@@ -31,7 +32,7 @@ try {
   assert(report && typeof report === 'object', 'missing report object');
   assert(report.title, 'missing report title');
   assert(Number.isFinite(report.timeSeconds), `missing timeSeconds: ${JSON.stringify(report)}`);
-  assert(Number.isFinite(report.noteIndex) && report.noteIndex >= 1 && report.noteIndex <= 113,
+  assert(Number.isFinite(report.noteIndex) && report.noteIndex >= 1 && report.noteIndex <= EXPECTED_LEAD_NOTE_COUNT,
     `noteIndex out of range: ${report.noteIndex}`);
   assert(Number.isFinite(report.measure), `missing measure: ${JSON.stringify(report)}`);
   assert(Number.isFinite(report.page) && [196, 197, 198].includes(report.page),

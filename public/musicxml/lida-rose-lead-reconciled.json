@@ -2,9 +2,9 @@
  "song": "Lida Rose",
  "part": "Lead",
  "method": "engraving truth reconciled vs Lead-Dominant audio; engraving-recovered = audio missed it, noise dropped",
- "confirmed": 108,
- "recovered": 5,
- "audioNoiseDropped": 86,
+ "confirmed": 109,
+ "recovered": 6,
+ "audioNoiseDropped": 85,
  "notes": [
   {
    "pitchMidi": 58,
@@ -135,13 +135,13 @@
   {
    "pitchMidi": 61,
    "startTimeSeconds": 15.303,
-   "durationSeconds": 0.457,
+   "durationSeconds": 0.458,
    "src": "audio-confirmed"
   },
   {
    "pitchMidi": 60,
-   "startTimeSeconds": 15.76,
-   "durationSeconds": 0.458,
+   "startTimeSeconds": 15.761,
+   "durationSeconds": 0.457,
    "src": "audio-confirmed"
   },
   {
@@ -189,37 +189,49 @@
   {
    "pitchMidi": 61,
    "startTimeSeconds": 24.64,
-   "durationSeconds": 2.207,
+   "durationSeconds": 1.882,
    "src": "audio-confirmed"
   },
   {
    "pitchMidi": 58,
-   "startTimeSeconds": 26.847,
-   "durationSeconds": 1.104,
+   "startTimeSeconds": 26.522,
+   "durationSeconds": 0.163,
    "src": "audio-confirmed"
   },
   {
    "pitchMidi": 61,
-   "startTimeSeconds": 27.951,
-   "durationSeconds": 1.104,
+   "startTimeSeconds": 26.685,
+   "durationSeconds": 0.162,
    "src": "engraving-recovered"
   },
   {
    "pitchMidi": 58,
-   "startTimeSeconds": 29.055,
-   "durationSeconds": 2.963,
+   "startTimeSeconds": 26.847,
+   "durationSeconds": 0.419,
    "src": "audio-confirmed"
   },
   {
    "pitchMidi": 61,
-   "startTimeSeconds": 32.018,
-   "durationSeconds": 0.162,
+   "startTimeSeconds": 27.266,
+   "durationSeconds": 0.837,
+   "src": "engraving-recovered"
+  },
+  {
+   "pitchMidi": 59,
+   "startTimeSeconds": 28.103,
+   "durationSeconds": 0.952,
    "src": "audio-confirmed"
   },
   {
    "pitchMidi": 58,
-   "startTimeSeconds": 32.18,
-   "durationSeconds": 0.325,
+   "startTimeSeconds": 29.055,
+   "durationSeconds": 1.127,
+   "src": "audio-confirmed"
+  },
+  {
+   "pitchMidi": 54,
+   "startTimeSeconds": 30.182,
+   "durationSeconds": 2.323,
    "src": "audio-confirmed"
   },
   {
@@ -333,19 +345,19 @@
   {
    "pitchMidi": 58,
    "startTimeSeconds": 39.684,
-   "durationSeconds": 0.453,
-   "src": "audio-confirmed"
-  },
-  {
-   "pitchMidi": 49,
-   "startTimeSeconds": 40.137,
    "durationSeconds": 0.454,
    "src": "audio-confirmed"
   },
   {
    "pitchMidi": 49,
-   "startTimeSeconds": 40.591,
-   "durationSeconds": 0.453,
+   "startTimeSeconds": 40.138,
+   "durationSeconds": 0.452,
+   "src": "audio-confirmed"
+  },
+  {
+   "pitchMidi": 49,
+   "startTimeSeconds": 40.59,
+   "durationSeconds": 0.454,
    "src": "audio-confirmed"
   },
   {
@@ -651,13 +663,13 @@
   {
    "pitchMidi": 58,
    "startTimeSeconds": 76.361,
-   "durationSeconds": 0.285,
+   "durationSeconds": 0.284,
    "src": "audio-confirmed"
   },
   {
    "pitchMidi": 54,
-   "startTimeSeconds": 76.646,
-   "durationSeconds": 0.284,
+   "startTimeSeconds": 76.645,
+   "durationSeconds": 0.285,
    "src": "engraving-recovered"
   },
   {
@@ -681,7 +693,7 @@
   {
    "pitchMidi": 59,
    "startTimeSeconds": 79.01,
-   "durationSeconds": 1.387,
+   "durationSeconds": 1.343,
    "src": "audio-confirmed"
   }
  ]

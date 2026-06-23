@@ -1,7 +1,7 @@
 {
  "song": "Lida Rose",
  "part": "Lead",
- "scoreVersion": "lida-rose-lead-six-flat-113",
+ "scoreVersion": "lida-rose-lead-six-flat-115",
  "source": "Manual phrase manifest from public/score/page-196.jpg, page-197.jpg, and page-198.jpg. Current Audiveris exports contain no lyric nodes.",
  "phrases": [
   {
@@ -34,39 +34,39 @@
    "label": "Ding, dong, ding, at the least suggestion, I'll pop the question",
    "page": 197,
    "noteStart": 37,
-   "noteEnd": 64
+   "noteEnd": 66
   },
   {
    "id": "p197-sweetheart",
    "shortLabel": "sweetheart",
    "label": "Li-da Rose, I'm home again, Rose, without a sweetheart to my name",
    "page": 197,
-   "noteStart": 65,
-   "noteEnd": 82
+   "noteStart": 67,
+   "noteEnd": 84
   },
   {
    "id": "p198-everyone-knows",
    "shortLabel": "everyone knows",
    "label": "Li-da Rose, now everyone knows that I am hoping you're the same",
    "page": 198,
-   "noteStart": 83,
-   "noteEnd": 92
+   "noteStart": 85,
+   "noteEnd": 94
   },
   {
    "id": "p198-love-song",
    "shortLabel": "love song",
    "label": "So here is my love song; not fancy or fine",
    "page": 198,
-   "noteStart": 93,
-   "noteEnd": 100
+   "noteStart": 95,
+   "noteEnd": 102
   },
   {
    "id": "p198-be-mine",
    "shortLabel": "be mine",
    "label": "Li-da Rose, Oh, won't you be mine? Lida Rose, oh, Lida Rose",
    "page": 198,
-   "noteStart": 101,
-   "noteEnd": 113
+   "noteStart": 103,
+   "noteEnd": 115
   }
  ]
 }

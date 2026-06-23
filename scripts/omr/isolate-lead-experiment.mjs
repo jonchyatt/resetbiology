@@ -5,7 +5,7 @@
 // voices live in BOTH "Lead Dominant" and "No Lead". So:
 //     clean Lead  =  LeadDominant notes  −  NoLead notes  (matched by time+pitch)
 // If this holds, the isolated onsets (a) reveal the TRUE vocal entry (fixing the
-// ~6s-early bar) and (b) match the 113 engraved pitches = the verify ground truth.
+// ~6s-early bar) and (b) match the engraved pitches = the verify ground truth.
 //
 // Read-only experiment. Stages the two extractions for offline reuse. No deploy.
 // Run:  node scripts/omr/isolate-lead-experiment.mjs
@@ -38,7 +38,7 @@ const nlJ = await load(NL_URL, 'nl-lida-no-lead.json');
 const LD = ldJ.notes.map((n) => ({ m: n.pitchMidi, t: n.startTimeSeconds, d: n.durationSeconds })).sort((a, b) => a.t - b.t);
 const NL = nlJ.notes.map((n) => ({ m: n.pitchMidi, t: n.startTimeSeconds, d: n.durationSeconds })).sort((a, b) => a.t - b.t);
 
-// engraving: 113 Lead pitches + relative score rhythm
+// engraving: Lead pitches + relative score rhythm
 const ts = fs.readFileSync(OMR_TS, 'utf8');
 const eng = [...ts.matchAll(/pitchMidi:\s*(\d+),\s*startTimeSeconds:\s*([\d.]+),\s*durationSeconds:\s*([\d.]+)/g)]
   .map((m) => ({ m: +m[1], rel: +m[2], dur: +m[3] }));

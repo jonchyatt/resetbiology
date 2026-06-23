@@ -1,15 +1,15 @@
 {
  "song": "Lida Rose",
  "part": "Lead",
- "scoreVersion": "lida-rose-lead-six-flat-113",
+ "scoreVersion": "lida-rose-lead-six-flat-115",
  "sourcePages": [
   "196:P3",
   "197:P2",
   "198:P2"
  ],
- "generatedAt": "2026-06-23T12:31:57.578Z",
+ "generatedAt": "2026-06-23T13:57:39.334Z",
  "keyFifths": -6,
- "noteCount": 113,
+ "noteCount": 115,
  "wholeNotes": [
   {
    "measure": 5,
@@ -21,14 +21,14 @@
   },
   {
    "measure": 13,
-   "pitch": "Bb3"
+   "pitch": "Cb4"
   }
  ],
  "sync": {
-  "noteCount": 113,
-  "reconciledCount": 113,
-  "confirmed": 108,
-  "recovered": 5
+  "noteCount": 115,
+  "reconciledCount": 115,
+  "confirmed": 109,
+  "recovered": 6
  },
  "checks": [
   {
@@ -41,19 +41,25 @@
    "id": "source-pitches",
    "label": "Source pitch sequence",
    "status": "pass",
-   "detail": "113 pitches match pp.196-198"
+   "detail": "115 pitches match pp.196-198"
   },
   {
    "id": "whole-notes",
    "label": "Whole-note survival",
    "status": "pass",
-   "detail": "expected [5:Cb4 9:Cb4 13:Bb3]; got [5:Cb4 9:Cb4 13:Bb3]"
+   "detail": "expected [5:Cb4 9:Cb4 13:Cb4]; got [5:Cb4 9:Cb4 13:Cb4]"
   },
   {
    "id": "note-count",
    "label": "Pitched note count",
    "status": "pass",
-   "detail": "expected 113; got 113"
+   "detail": "expected 115; got 115"
+  },
+  {
+   "id": "printed-score-audit",
+   "label": "Printed score audit",
+   "status": "pass",
+   "detail": "4 printed-score measures match"
   },
   {
    "id": "no-courtesy-clefs",
@@ -65,7 +71,7 @@
    "id": "sync-count",
    "label": "Sync target count",
    "status": "pass",
-   "detail": "sync=113; reconciled=113; score=113"
+   "detail": "sync=115; reconciled=115; score=115"
   }
  ]
 }

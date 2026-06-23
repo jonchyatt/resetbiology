@@ -6,6 +6,10 @@
 import fs from 'fs';
 import { normalizeLeadMeasure, PRINTED_FIFTHS } from './lida-lead-key-normalize.mjs';
 import { applyLeadMeasureCorrections } from './lida-lead-source-corrections.mjs';
+import {
+  EXPECTED_LEAD_NOTE_COUNT,
+  PRINTED_LEAD_AUDIT_MEASURES,
+} from './lida-lead-printed-manifest.mjs';
 
 const XML = 'public/musicxml/lida-rose-lead.musicxml';
 const PAGES = [
@@ -55,6 +59,9 @@ if (gotWhole.join(' ') !== expectedWhole.join(' ')) {
 
 const noteCount = Object.values(actual).reduce((sum, notes) => sum + notes.length, 0);
 if (noteCount !== expected.noteCount) errors.push(`expected ${expected.noteCount} pitched notes, got ${noteCount}`);
+if (noteCount !== EXPECTED_LEAD_NOTE_COUNT) errors.push(`printed manifest expects ${EXPECTED_LEAD_NOTE_COUNT} pitched notes, got ${noteCount}`);
+
+for (const err of comparePrintedAudit(xml)) errors.push(err);
 
 if (errors.length) {
   console.error('ENGRAVING VERIFY FAILED');
@@ -66,6 +73,7 @@ console.log('ENGRAVING VERIFY PASS');
 console.log('key: fifths=-6 only');
 console.log(`pitched notes: ${noteCount}`);
 console.log(`whole notes: ${gotWhole.join(' ') || '(none)'}`);
+console.log(`printed audit: ${PRINTED_LEAD_AUDIT_MEASURES.length} measures`);
 console.log(`source pages: ${PAGES.map((p) => `${p.page}:${p.lead}`).join(' ')}`);
 
 function expectedFromSource() {
@@ -162,4 +170,43 @@ function extractWholeNotesFromMeasure(measureXml) {
 function spelledPitch(step, alter, octave) {
   const suffix = alter === -2 ? 'bb' : alter === -1 ? 'b' : alter === 1 ? '#' : alter === 2 ? '##' : '';
   return `${step}${suffix}${octave}`;
+}
+
+function comparePrintedAudit(xmlText) {
+  const measureNotes = extractMeasureNotes(xmlText);
+  const errors = [];
+  for (const audit of PRINTED_LEAD_AUDIT_MEASURES) {
+    const got = measureNotes[String(audit.measure)] || [];
+    const gotSummary = got.map(noteSummary).join(' ');
+    const expectedSummary = audit.notes.map(noteSummary).join(' ');
+    if (gotSummary !== expectedSummary) {
+      errors.push(`m${audit.measure}: printed score expected [${expectedSummary}], got [${gotSummary}] (${audit.source})`);
+    }
+  }
+  return errors;
+}
+
+function extractMeasureNotes(xmlText) {
+  const out = {};
+  for (const measureMatch of xmlText.matchAll(/<measure number="(\d+)"[\s\S]*?<\/measure>/g)) {
+    const divisions = Number((measureMatch[0].match(/<divisions>(\d+)<\/divisions>/) || [])[1] || 12);
+    const notes = [];
+    for (const noteMatch of measureMatch[0].matchAll(/<note\b[\s\S]*?<\/note>/g)) {
+      const noteXml = noteMatch[0];
+      if (/<rest\b/.test(noteXml) || /<chord\s*\/?\s*>/.test(noteXml)) continue;
+      const pitch = extractPitchesFromMeasure(noteXml)[0];
+      if (!pitch) continue;
+      const duration = Number((noteXml.match(/<duration>(\d+)<\/duration>/) || [])[1] || 0);
+      const type = (noteXml.match(/<type>([^<]+)<\/type>/) || [])[1] || '';
+      const dots = (noteXml.match(/<dot\s*\/>/g) || []).length;
+      notes.push({ pitch, beats: duration / divisions, type, ...(dots ? { dots } : {}) });
+    }
+    if (notes.length) out[measureMatch[1]] = notes;
+  }
+  return out;
+}
+
+function noteSummary(note) {
+  const dots = note.dots ? `.${note.dots}` : '';
+  return `${note.pitch}:${note.beats}:${note.type}${dots}`;
 }
