@@ -27,7 +27,7 @@ const PARTS = {
     expectedWholeNotes: '5:Cb4 9:Cb4 13:Cb4 21:Cb4 29:Eb4',
     minPhraseCount: 8,
     allowedFifths: ALLOWED_FIFTHS,
-    button: /Lead.*Lida Rose.*Dominant/i,
+    button: /(Lead.*Lida Rose.*Dominant|Lida Rose.*Lead Dominant)/i,
   },
   Baritone: {
     slug: 'baritone',
@@ -36,7 +36,7 @@ const PARTS = {
     expectedWholeNotes: '',
     minPhraseCount: 6,
     allowedFifths: new Set([-6]),
-    button: /Baritone.*Lida Rose.*Dominant/i,
+    button: /(Baritone.*Lida Rose.*Dominant|Lida Rose.*Baritone Dominant)/i,
   },
 };
 const config = PARTS[PART];
@@ -99,10 +99,13 @@ async function verifyBrowser() {
 
     await page.locator('summary', { hasText: /^\s*Library/ }).first().click({ timeout: 5000 }).catch(() => {});
     await sleep(300);
-    for (const s of await page.locator('summary', { hasText: new RegExp(PART) }).all()) {
-      await s.click({ timeout: 1200 }).catch(() => {});
+    const partSummary = page.locator('summary', { hasText: new RegExp(`^\\s*${PART}\\b`, 'i') }).first();
+    await partSummary.waitFor({ timeout: 15000 });
+    const partOpen = await partSummary.evaluate((el) => el.parentElement?.hasAttribute('open') ?? false);
+    if (!partOpen) {
+      await partSummary.click({ timeout: 3000 }).catch(() => {});
     }
-    await sleep(300);
+    await page.getByRole('button', { name: config.button }).first().waitFor({ state: 'visible', timeout: 15000 }).catch(() => {});
     try {
       await page.getByRole('button', { name: config.button }).first().click({ timeout: 6000 });
     } catch (e) {
