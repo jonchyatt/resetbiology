@@ -263,8 +263,11 @@ const LIDA_ROSE_SCORE_PARTS = {
     label: 'Lida Rose · Lead',
     musicXMLUrl: '/musicxml/lida-rose-lead.musicxml',
     syncUrl: '/musicxml/lida-rose-lead-sync.json',
+    syncV2Url: '/musicxml/lida-rose-lead-sync-v2.json',
     reconciledUrl: '/musicxml/lida-rose-lead-reconciled.json',
+    reconciledV2Url: '/musicxml/lida-rose-lead-reconciled-v2.json',
     healthUrl: '/musicxml/lida-rose-lead-score-health.json',
+    healthV2Url: '/musicxml/lida-rose-lead-score-health-v2.json',
     phrasesUrl: '/musicxml/lida-rose-lead-phrases.json',
     noteMapUrl: '/musicxml/lida-rose-lead-note-map.json',
     title: 'Lida Rose — Lead (pp.196-198)',
@@ -274,19 +277,40 @@ const LIDA_ROSE_SCORE_PARTS = {
     label: 'Lida Rose · Baritone',
     musicXMLUrl: '/musicxml/lida-rose-baritone.musicxml',
     syncUrl: '/musicxml/lida-rose-baritone-sync.json',
+    syncV2Url: '/musicxml/lida-rose-baritone-sync-v2.json',
     reconciledUrl: '/musicxml/lida-rose-baritone-reconciled.json',
+    reconciledV2Url: '/musicxml/lida-rose-baritone-reconciled-v2.json',
     healthUrl: '/musicxml/lida-rose-baritone-score-health.json',
+    healthV2Url: '/musicxml/lida-rose-baritone-score-health-v2.json',
     phrasesUrl: '/musicxml/lida-rose-baritone-phrases.json',
     noteMapUrl: '/musicxml/lida-rose-baritone-note-map.json',
     title: 'Lida Rose — Baritone (pp.196-198)',
   },
 } as const;
 
+type ScoreTimingMode = 'current' | 'v2';
 type LidaRoseScorePart = typeof LIDA_ROSE_SCORE_PARTS[keyof typeof LIDA_ROSE_SCORE_PARTS];
 
 function getLidaRoseScorePart(mm: MmMeta | null): LidaRoseScorePart | null {
   if (!mm || !/lida\s*rose/i.test(mm.song)) return null;
   return LIDA_ROSE_SCORE_PARTS[mm.part as keyof typeof LIDA_ROSE_SCORE_PARTS] ?? null;
+}
+
+function getActiveLidaRoseScorePart(part: LidaRoseScorePart | null, mode: ScoreTimingMode) {
+  if (!part) return null;
+  if (mode === 'current') {
+    return { ...part, timingMode: 'current' as const, timingLabel: 'Current' };
+  }
+  return {
+    ...part,
+    syncUrl: part.syncV2Url,
+    reconciledUrl: part.reconciledV2Url,
+    healthUrl: part.healthV2Url,
+    label: `${part.label} - Conductor v2`,
+    title: `${part.title} - Conductor v2`,
+    timingMode: 'v2' as const,
+    timingLabel: 'Conductor v2',
+  };
 }
 
 export default function VocalTrainerIII() {
@@ -313,6 +337,11 @@ export default function VocalTrainerIII() {
   // ─── V3.1: library grouping + per-item extraction ───────────────────────
   const [groupBy, setGroupBy] = useState<'part' | 'song' | 'mode' | 'flat'>('part');
   const [scoreView, setScoreView] = useState<'pages' | 'engraved'>('engraved');
+  const [scoreTimingMode, setScoreTimingMode] = useState<ScoreTimingMode>('v2');
+  const activeLidaRoseScorePart = useMemo(
+    () => getActiveLidaRoseScorePart(lidaRoseScorePart, scoreTimingMode),
+    [lidaRoseScorePart, scoreTimingMode],
+  );
   const [libFilter, setLibFilter] = useState('');
   const [collapsed, setCollapsed] = useState<Set<string>>(() => new Set());
   const [extractingId, setExtractingId] = useState<string | null>(null);
@@ -417,6 +446,8 @@ export default function VocalTrainerIII() {
   const plunkEnabledRef = useRef(false);
   const plunkVolRef = useRef(PLUNK_DEFAULT_VOL);
   const plunkNotesRef = useRef<SyncNote[]>([]);
+  const plunkSyncUrlRef = useRef<string | null>(null);
+  const plunkTimingModeRef = useRef<ScoreTimingMode>('v2');
   const plunkFetchStartedRef = useRef(false);
   const plunkOscsRef = useRef<any[]>([]);
   const plunkGainRef = useRef<GainNode | null>(null);
@@ -448,6 +479,10 @@ export default function VocalTrainerIII() {
   const micProfileRef = useRef<MicProfile>('usb');
   useEffect(() => { plunkEnabledRef.current = plunkEnabled; }, [plunkEnabled]);
   useEffect(() => { plunkVolRef.current = plunkVol; }, [plunkVol]);
+  useEffect(() => {
+    plunkSyncUrlRef.current = activeLidaRoseScorePart?.syncUrl ?? null;
+    plunkTimingModeRef.current = activeLidaRoseScorePart?.timingMode ?? scoreTimingMode;
+  }, [activeLidaRoseScorePart?.syncUrl, activeLidaRoseScorePart?.timingMode, scoreTimingMode]);
   // V3: pan mirrors for the same stable-callback reason.
   const vocalPanRef = useRef(-0.7);
   const musicPanRef = useRef(0);
@@ -977,6 +1012,8 @@ export default function VocalTrainerIII() {
       windowEnd,
       volumePercent: plunkVolRef.current,
       gain: currentPlunkGain(),
+      syncUrl: plunkSyncUrlRef.current,
+      timingMode: plunkTimingModeRef.current,
     };
   }, [ensurePlunkGain, playPlunkTone]);
 
@@ -994,19 +1031,19 @@ export default function VocalTrainerIII() {
     plunkNotesRef.current = [];
     plunkFetchStartedRef.current = false;
     stopPlunkNodes();
-  }, [lidaRoseScorePart?.syncUrl, stopPlunkNodes]);
+  }, [activeLidaRoseScorePart?.syncUrl, stopPlunkNodes]);
 
   useEffect(() => {
     if (!plunkEnabled) {
       stopPlunkNodes();
       return;
     }
-    if (!lidaRoseScorePart?.syncUrl) return;
+    if (!activeLidaRoseScorePart?.syncUrl) return;
     if (plunkFetchStartedRef.current || plunkNotesRef.current.length) return;
     plunkFetchStartedRef.current = true;
     (async () => {
       try {
-        const r = await fetch(lidaRoseScorePart.syncUrl, { cache: 'no-store' });
+        const r = await fetch(activeLidaRoseScorePart.syncUrl, { cache: 'no-store' });
         if (!r.ok) throw new Error(`fetch ${r.status} ${r.statusText}`);
         const j = await r.json();
         plunkNotesRef.current = Array.isArray(j.notes)
@@ -1021,7 +1058,7 @@ export default function VocalTrainerIII() {
         console.error('[VocalTrainer] plunk sync-note load failed:', e);
       }
     })();
-  }, [lidaRoseScorePart?.syncUrl, plunkEnabled, stopPlunkNodes]);
+  }, [activeLidaRoseScorePart?.syncUrl, plunkEnabled, stopPlunkNodes]);
 
   useEffect(() => {
     if (!plunkGainRef.current) return;
@@ -1558,23 +1595,23 @@ export default function VocalTrainerIII() {
   const [phraseManifest, setPhraseManifest] = useState<PhraseManifestPayload | null>(null);
   const [leadNoteMap, setLeadNoteMap] = useState<LeadNoteMapPayload | null>(null);
   useEffect(() => {
-    if (lidaRoseScorePart) {
-      fetch(lidaRoseScorePart.reconciledUrl, { cache: 'no-store' })
+    if (activeLidaRoseScorePart) {
+      fetch(activeLidaRoseScorePart.reconciledUrl, { cache: 'no-store' })
         .then((r) => r.json()).then((j) => setReconciled(j.notes || null)).catch(() => setReconciled(null));
     } else setReconciled(null);
-  }, [lidaRoseScorePart]);
+  }, [activeLidaRoseScorePart]);
   useEffect(() => {
     let cancelled = false;
-    if (!lidaRoseScorePart) {
+    if (!activeLidaRoseScorePart) {
       setScoreHealth(null);
       return () => { cancelled = true; };
     }
-    fetch(lidaRoseScorePart.healthUrl, { cache: 'no-store' })
+    fetch(activeLidaRoseScorePart.healthUrl, { cache: 'no-store' })
       .then((r) => r.ok ? r.json() : null)
       .then((j) => { if (!cancelled) setScoreHealth(j || null); })
       .catch(() => { if (!cancelled) setScoreHealth(null); });
     return () => { cancelled = true; };
-  }, [lidaRoseScorePart]);
+  }, [activeLidaRoseScorePart]);
   useEffect(() => {
     let cancelled = false;
     if (!lidaRoseScorePart) {
@@ -1904,7 +1941,7 @@ export default function VocalTrainerIII() {
     const report: EngravingReport = {
       id: `engraving-${Date.now()}`,
       createdAt: new Date().toISOString(),
-      title: currentTemplateRef.current?.title || lidaRoseScorePart?.label || 'Lida Rose',
+      title: currentTemplateRef.current?.title || activeLidaRoseScorePart?.label || 'Lida Rose',
       timeSeconds: practiceTimeRef.current,
       noteIndex: oneBasedIndex,
       measure: noteMeta?.measure ?? null,
@@ -1931,7 +1968,7 @@ export default function VocalTrainerIII() {
       setReportStatus('report saved');
     }
     window.setTimeout(() => setReportStatus(null), 3500);
-  }, [activePhrase, leadNoteMap, lidaRoseScorePart?.label, practicePhrases, scoreHealth?.scoreVersion]);
+  }, [activePhrase, activeLidaRoseScorePart?.label, leadNoteMap, practicePhrases, scoreHealth?.scoreVersion]);
 
   // ───────────────────────────────────────────────────────────────────────
   // Render
@@ -2005,9 +2042,31 @@ export default function VocalTrainerIII() {
                 🎼 Engraved ✨
               </button>
             </div>
+            {lidaRoseScorePart && (
+              <div className="inline-flex rounded-md border border-gray-700 overflow-hidden text-xs" aria-label="Score timing">
+                <button
+                  type="button"
+                  aria-pressed={scoreTimingMode === 'current'}
+                  onClick={() => setScoreTimingMode('current')}
+                  className={scoreTimingMode === 'current' ? 'px-3 py-1 bg-slate-600 text-white' : 'px-3 py-1 bg-gray-800 text-gray-300 hover:bg-gray-700'}
+                  title="Use the current production timing map"
+                >
+                  Current
+                </button>
+                <button
+                  type="button"
+                  aria-pressed={scoreTimingMode === 'v2'}
+                  onClick={() => setScoreTimingMode('v2')}
+                  className={scoreTimingMode === 'v2' ? 'px-3 py-1 bg-emerald-600 text-white' : 'px-3 py-1 bg-gray-800 text-gray-300 hover:bg-gray-700'}
+                  title="Use the shared conductor timing map"
+                >
+                  Conductor v2
+                </button>
+              </div>
+            )}
             {scoreView === 'engraved' && (
               <span className="text-xs text-cyan-400/70">
-                {lidaRoseScorePart ? `${lidaRoseScorePart.label} - recreated from the score` : 'Lida Rose - select Lead or Baritone for engraving'}
+                {activeLidaRoseScorePart ? `${activeLidaRoseScorePart.label} - ${activeLidaRoseScorePart.timingLabel}` : 'Lida Rose - select Lead or Baritone for engraving'}
               </span>
             )}
             {scoreHealth && (
@@ -2039,12 +2098,12 @@ export default function VocalTrainerIII() {
           <div className="max-h-[46vh] min-h-[230px] overflow-auto rounded-lg" style={{ maskImage: 'linear-gradient(to bottom, transparent 0, #000 16px, #000 calc(100% - 24px), transparent 100%)', WebkitMaskImage: 'linear-gradient(to bottom, transparent 0, #000 16px, #000 calc(100% - 24px), transparent 100%)' }}>
             {scoreView === 'pages' ? (
               <ScoreViewer />
-            ) : lidaRoseScorePart ? (
+            ) : activeLidaRoseScorePart ? (
               <ScoreEngraving
-                musicXMLUrl={lidaRoseScorePart.musicXMLUrl}
-                syncUrl={lidaRoseScorePart.syncUrl}
+                musicXMLUrl={activeLidaRoseScorePart.musicXMLUrl}
+                syncUrl={activeLidaRoseScorePart.syncUrl}
                 currentTime={practiceTime}
-                title={lidaRoseScorePart.title}
+                title={activeLidaRoseScorePart.title}
               />
             ) : (
               <div className="rounded-lg border border-cyan-500/20 bg-[#0a0a14] p-6 text-sm text-gray-400">

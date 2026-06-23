@@ -1,0 +1,119 @@
+{
+ "song": "Lida Rose",
+ "part": "Baritone",
+ "scoreVersion": "lida-rose-baritone-six-flat-106-conductor-v2",
+ "sourcePages": [
+  "196:P4",
+  "197:P3",
+  "198:P3"
+ ],
+ "generatedAt": "2026-06-23T21:29:26.357Z",
+ "keyFifths": -6,
+ "noteCount": 106,
+ "wholeNotes": [],
+ "sync": {
+  "noteCount": 106,
+  "reconciledCount": 106,
+  "source": "score-conductor-v2 shared Lead-led timing from corrected score rhythm",
+  "currentAudioEvidenceAnchors": 82,
+  "currentRawConductorAnchors": 25,
+  "currentConductorAnchors": 20,
+  "rawMasterAnchors": 25,
+  "masterAnchors": 24,
+  "conductorAnchors": 12,
+  "scoreConductorNotes": 94,
+  "confirmedPartAnchors": 2,
+  "rejectedPartAnchors": 18,
+  "removedMasterAnchors": [
+   {
+    "beat": 22.5,
+    "time": 12.593,
+    "measure": 7,
+    "scoreIndex": 5,
+    "reason": "measure-strong-note",
+    "sources": [
+     {
+      "part": "Baritone",
+      "measure": 7,
+      "scoreIndex": 9,
+      "time": 12.593,
+      "deltaFromLeadSec": 0.262,
+      "reason": "measure-strong-note"
+     }
+    ],
+    "removedReason": "tempo-cliff",
+    "removedRateSecPerBeat": 0.515,
+    "previousRateSecPerBeat": 1.114
+   }
+  ],
+  "tempoSmoothness": {
+   "scoreConductor": {
+    "medianSecPerBeat": 0.607,
+    "p90RateJumpSecPerBeat": 0.035,
+    "maxRateJumpSecPerBeat": 0.145
+   }
+  },
+  "timingDeltaFromCurrent": {
+   "meanAbsSec": 4.253,
+   "maxAbsSec": 7.148,
+   "maxAbsNote": 106,
+   "finalNoteDeltaSec": -7.148
+  }
+ },
+ "checks": [
+  {
+   "id": "key-fifths",
+   "label": "Printed key",
+   "status": "pass",
+   "detail": "expected -6; xml=-6 normalizer=-6"
+  },
+  {
+   "id": "source-pitches",
+   "label": "Source pitch sequence",
+   "status": "pass",
+   "detail": "106 pitches match pp.196-198"
+  },
+  {
+   "id": "whole-notes",
+   "label": "Whole-note survival",
+   "status": "pass",
+   "detail": "expected []; got []"
+  },
+  {
+   "id": "note-count",
+   "label": "Pitched note count",
+   "status": "pass",
+   "detail": "expected 106; got 106"
+  },
+  {
+   "id": "printed-score-audit",
+   "label": "Printed/source audit",
+   "status": "pass",
+   "detail": "4 Baritone audit measures match"
+  },
+  {
+   "id": "no-courtesy-clefs",
+   "label": "No stray courtesy clefs",
+   "status": "pass",
+   "detail": "no later clefs in the line"
+  },
+  {
+   "id": "sync-count",
+   "label": "Sync target count",
+   "status": "pass",
+   "detail": "sync=106; reconciled=106; score=106"
+  },
+  {
+   "id": "score-conductor-sync",
+   "label": "Score-conductor Baritone sync",
+   "status": "pass",
+   "detail": "masterAnchors=24; partAnchorStarts=12; scoreConductor=94; p90Jump=0.035; maxJump=0.145; deltaCurrentMean=4.253; rejectedPartAnchors=18"
+  },
+  {
+   "id": "shared-conductor-v2",
+   "label": "Shared conductor v2",
+   "status": "pass",
+   "detail": "primary=Lead; masterAnchors=24; confirmed=2; rejected=18"
+  }
+ ]
+}

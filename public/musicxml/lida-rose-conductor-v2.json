@@ -1,0 +1,706 @@
+{
+ "song": "Lida Rose",
+ "version": "lida-rose-conductor-v2",
+ "generatedAt": "2026-06-23T21:29:26.357Z",
+ "source": "lead-led shared score-conductor v2; Baritone anchors confirm only when close to the Lead conductor",
+ "primaryPart": "Lead",
+ "config": {
+  "baritoneConfirmToleranceSec": 0.55,
+  "minMasterAnchors": 20,
+  "maxP90RateJumpSecPerBeat": 0.5,
+  "maxRateJumpSecPerBeat": 0.45,
+  "conductorMinSegmentSecPerBeat": 0.35,
+  "conductorMaxSegmentSecPerBeat": 1.08,
+  "conductorMaxAdjacentRateJump": 0.38
+ },
+ "candidateAnchors": 26,
+ "confirmedPartAnchors": [
+  {
+   "part": "Baritone",
+   "beat": 10,
+   "time": 5.25,
+   "measure": 4,
+   "scoreIndex": 0,
+   "reason": "first-note",
+   "expectedLeadTimeSeconds": 4.914,
+   "deltaFromLeadSec": 0.336
+  },
+  {
+   "part": "Baritone",
+   "beat": 22.5,
+   "time": 12.593,
+   "measure": 7,
+   "scoreIndex": 9,
+   "reason": "measure-strong-note",
+   "expectedLeadTimeSeconds": 12.331,
+   "deltaFromLeadSec": 0.262
+  }
+ ],
+ "rejectedPartAnchors": [
+  {
+   "part": "Baritone",
+   "beat": 32,
+   "time": 20.621,
+   "measure": 9,
+   "scoreIndex": 21,
+   "reason": "measure-strong-note",
+   "expectedLeadTimeSeconds": 18.082,
+   "deltaFromLeadSec": 2.539,
+   "rejectedReason": "outside-lead-conductor-window",
+   "toleranceSec": 0.55
+  },
+  {
+   "part": "Baritone",
+   "beat": 37,
+   "time": 23.42,
+   "measure": 10,
+   "scoreIndex": 23,
+   "reason": "measure-strong-note",
+   "expectedLeadTimeSeconds": 21.242,
+   "deltaFromLeadSec": 2.178,
+   "rejectedReason": "outside-lead-conductor-window",
+   "toleranceSec": 0.55
+  },
+  {
+   "part": "Baritone",
+   "beat": 42,
+   "time": 26.464,
+   "measure": 12,
+   "scoreIndex": 30,
+   "reason": "measure-start",
+   "expectedLeadTimeSeconds": 24.408,
+   "deltaFromLeadSec": 2.056,
+   "rejectedReason": "outside-lead-conductor-window",
+   "toleranceSec": 0.55
+  },
+  {
+   "part": "Baritone",
+   "beat": 50,
+   "time": 33.028,
+   "measure": 14,
+   "scoreIndex": 35,
+   "reason": "measure-start",
+   "expectedLeadTimeSeconds": 29.055,
+   "deltaFromLeadSec": 3.973,
+   "rejectedReason": "outside-lead-conductor-window",
+   "toleranceSec": 0.55
+  },
+  {
+   "part": "Baritone",
+   "beat": 54,
+   "time": 36.339,
+   "measure": 15,
+   "scoreIndex": 39,
+   "reason": "measure-start",
+   "expectedLeadTimeSeconds": 31.355,
+   "deltaFromLeadSec": 4.984,
+   "rejectedReason": "outside-lead-conductor-window",
+   "toleranceSec": 0.55
+  },
+  {
+   "part": "Baritone",
+   "beat": 59,
+   "time": 39.069,
+   "measure": 16,
+   "scoreIndex": 44,
+   "reason": "measure-start",
+   "expectedLeadTimeSeconds": 34.365,
+   "deltaFromLeadSec": 4.704,
+   "rejectedReason": "outside-lead-conductor-window",
+   "toleranceSec": 0.55
+  },
+  {
+   "part": "Baritone",
+   "beat": 62.5,
+   "time": 41.218,
+   "measure": 17,
+   "scoreIndex": 49,
+   "reason": "measure-strong-note",
+   "expectedLeadTimeSeconds": 36.803,
+   "deltaFromLeadSec": 4.415,
+   "rejectedReason": "outside-lead-conductor-window",
+   "toleranceSec": 0.55
+  },
+  {
+   "part": "Baritone",
+   "beat": 66.5,
+   "time": 43.692,
+   "measure": 18,
+   "scoreIndex": 56,
+   "reason": "measure-strong-note",
+   "expectedLeadTimeSeconds": 39.518,
+   "deltaFromLeadSec": 4.174,
+   "rejectedReason": "outside-lead-conductor-window",
+   "toleranceSec": 0.55
+  },
+  {
+   "part": "Baritone",
+   "beat": 70.5,
+   "time": 47.375,
+   "measure": 19,
+   "scoreIndex": 59,
+   "reason": "measure-start",
+   "expectedLeadTimeSeconds": 42.233,
+   "deltaFromLeadSec": 5.142,
+   "rejectedReason": "outside-lead-conductor-window",
+   "toleranceSec": 0.55
+  },
+  {
+   "part": "Baritone",
+   "beat": 77.5,
+   "time": 52.87,
+   "measure": 21,
+   "scoreIndex": 71,
+   "reason": "measure-start",
+   "expectedLeadTimeSeconds": 46.519,
+   "deltaFromLeadSec": 6.351,
+   "rejectedReason": "outside-lead-conductor-window",
+   "toleranceSec": 0.55
+  },
+  {
+   "part": "Baritone",
+   "beat": 86.5,
+   "time": 58.633,
+   "measure": 23,
+   "scoreIndex": 76,
+   "reason": "measure-start",
+   "expectedLeadTimeSeconds": 52.07,
+   "deltaFromLeadSec": 6.563,
+   "rejectedReason": "outside-lead-conductor-window",
+   "toleranceSec": 0.55
+  },
+  {
+   "part": "Baritone",
+   "beat": 89.5,
+   "time": 60.24,
+   "measure": 24,
+   "scoreIndex": 80,
+   "reason": "measure-start",
+   "expectedLeadTimeSeconds": 53.879,
+   "deltaFromLeadSec": 6.361,
+   "rejectedReason": "outside-lead-conductor-window",
+   "toleranceSec": 0.55
+  },
+  {
+   "part": "Baritone",
+   "beat": 94.5,
+   "time": 63.279,
+   "measure": 25,
+   "scoreIndex": 82,
+   "reason": "measure-start",
+   "expectedLeadTimeSeconds": 56.815,
+   "deltaFromLeadSec": 6.464,
+   "rejectedReason": "outside-lead-conductor-window",
+   "toleranceSec": 0.55
+  },
+  {
+   "part": "Baritone",
+   "beat": 102.5,
+   "time": 67.776,
+   "measure": 27,
+   "scoreIndex": 86,
+   "reason": "measure-start",
+   "expectedLeadTimeSeconds": 61.429,
+   "deltaFromLeadSec": 6.347,
+   "rejectedReason": "outside-lead-conductor-window",
+   "toleranceSec": 0.55
+  },
+  {
+   "part": "Baritone",
+   "beat": 105.5,
+   "time": 69.914,
+   "measure": 28,
+   "scoreIndex": 90,
+   "reason": "measure-start",
+   "expectedLeadTimeSeconds": 63.184,
+   "deltaFromLeadSec": 6.73,
+   "rejectedReason": "outside-lead-conductor-window",
+   "toleranceSec": 0.55
+  },
+  {
+   "part": "Baritone",
+   "beat": 109.5,
+   "time": 72.295,
+   "measure": 29,
+   "scoreIndex": 93,
+   "reason": "measure-start",
+   "expectedLeadTimeSeconds": 65.956,
+   "deltaFromLeadSec": 6.339,
+   "rejectedReason": "outside-lead-conductor-window",
+   "toleranceSec": 0.55
+  },
+  {
+   "part": "Baritone",
+   "beat": 115.5,
+   "time": 75.978,
+   "measure": 30,
+   "scoreIndex": 101,
+   "reason": "measure-strong-note",
+   "expectedLeadTimeSeconds": 70.113,
+   "deltaFromLeadSec": 5.865,
+   "rejectedReason": "outside-lead-conductor-window",
+   "toleranceSec": 0.55
+  },
+  {
+   "part": "Baritone",
+   "beat": 119.5,
+   "time": 79.021,
+   "measure": 31,
+   "scoreIndex": 105,
+   "reason": "final-note",
+   "expectedLeadTimeSeconds": 71.873,
+   "deltaFromLeadSec": 7.148,
+   "rejectedReason": "outside-lead-conductor-window",
+   "toleranceSec": 0.55
+  }
+ ],
+ "rawMasterAnchors": 25,
+ "removedMasterAnchors": [
+  {
+   "beat": 22.5,
+   "time": 12.593,
+   "measure": 7,
+   "scoreIndex": 5,
+   "reason": "measure-strong-note",
+   "sources": [
+    {
+     "part": "Baritone",
+     "measure": 7,
+     "scoreIndex": 9,
+     "time": 12.593,
+     "deltaFromLeadSec": 0.262,
+     "reason": "measure-strong-note"
+    }
+   ],
+   "removedReason": "tempo-cliff",
+   "removedRateSecPerBeat": 0.515,
+   "previousRateSecPerBeat": 1.114
+  }
+ ],
+ "masterAnchors": 24,
+ "tempoSmoothness": {
+  "scoreConductor": {
+   "medianSecPerBeat": 0.607,
+   "p90RateJumpSecPerBeat": 0.243,
+   "maxRateJumpSecPerBeat": 0.289
+  }
+ },
+ "anchors": [
+  {
+   "beat": 8.5,
+   "time": 4.066,
+   "measure": 3,
+   "scoreIndex": 0,
+   "reason": "first-note",
+   "sources": [
+    {
+     "part": "Lead",
+     "measure": 3,
+     "scoreIndex": 0,
+     "time": 4.066,
+     "deltaFromLeadSec": 0,
+     "reason": "first-note"
+    }
+   ]
+  },
+  {
+   "beat": 10,
+   "time": 4.914,
+   "measure": 4,
+   "scoreIndex": 1,
+   "reason": "measure-start",
+   "sources": [
+    {
+     "part": "Lead",
+     "measure": 4,
+     "scoreIndex": 3,
+     "time": 4.914,
+     "deltaFromLeadSec": 0,
+     "reason": "measure-start"
+    },
+    {
+     "part": "Baritone",
+     "measure": 4,
+     "scoreIndex": 0,
+     "time": 5.25,
+     "deltaFromLeadSec": 0.336,
+     "reason": "first-note"
+    }
+   ]
+  },
+  {
+   "beat": 14,
+   "time": 7.237,
+   "measure": 5,
+   "scoreIndex": 2,
+   "reason": "measure-start",
+   "sources": [
+    {
+     "part": "Lead",
+     "measure": 5,
+     "scoreIndex": 7,
+     "time": 7.237,
+     "deltaFromLeadSec": 0,
+     "reason": "measure-start"
+    }
+   ]
+  },
+  {
+   "beat": 19,
+   "time": 10.212,
+   "measure": 6,
+   "scoreIndex": 3,
+   "reason": "measure-start",
+   "sources": [
+    {
+     "part": "Lead",
+     "measure": 6,
+     "scoreIndex": 8,
+     "time": 10.212,
+     "deltaFromLeadSec": 0,
+     "reason": "measure-start"
+    }
+   ]
+  },
+  {
+   "beat": 22,
+   "time": 12.036,
+   "measure": 7,
+   "scoreIndex": 4,
+   "reason": "measure-start",
+   "sources": [
+    {
+     "part": "Lead",
+     "measure": 7,
+     "scoreIndex": 12,
+     "time": 12.036,
+     "deltaFromLeadSec": 0,
+     "reason": "measure-start"
+    }
+   ]
+  },
+  {
+   "beat": 26,
+   "time": 14.394,
+   "measure": 8,
+   "scoreIndex": 6,
+   "reason": "measure-start",
+   "sources": [
+    {
+     "part": "Lead",
+     "measure": 8,
+     "scoreIndex": 20,
+     "time": 14.394,
+     "deltaFromLeadSec": 0,
+     "reason": "measure-start"
+    }
+   ]
+  },
+  {
+   "beat": 30,
+   "time": 16.822,
+   "measure": 9,
+   "scoreIndex": 7,
+   "reason": "measure-start",
+   "sources": [
+    {
+     "part": "Lead",
+     "measure": 9,
+     "scoreIndex": 24,
+     "time": 16.822,
+     "deltaFromLeadSec": 0,
+     "reason": "measure-start"
+    }
+   ]
+  },
+  {
+   "beat": 34,
+   "time": 19.342,
+   "measure": 10,
+   "scoreIndex": 8,
+   "reason": "measure-start",
+   "sources": [
+    {
+     "part": "Lead",
+     "measure": 10,
+     "scoreIndex": 25,
+     "time": 19.342,
+     "deltaFromLeadSec": 0,
+     "reason": "measure-start"
+    }
+   ]
+  },
+  {
+   "beat": 42,
+   "time": 24.408,
+   "measure": 12,
+   "scoreIndex": 9,
+   "reason": "measure-start",
+   "sources": [
+    {
+     "part": "Lead",
+     "measure": 12,
+     "scoreIndex": 30,
+     "time": 24.408,
+     "deltaFromLeadSec": 0,
+     "reason": "measure-start"
+    }
+   ]
+  },
+  {
+   "beat": 50,
+   "time": 29.055,
+   "measure": 14,
+   "scoreIndex": 10,
+   "reason": "measure-start",
+   "sources": [
+    {
+     "part": "Lead",
+     "measure": 14,
+     "scoreIndex": 36,
+     "time": 29.055,
+     "deltaFromLeadSec": 0,
+     "reason": "measure-start"
+    }
+   ]
+  },
+  {
+   "beat": 58,
+   "time": 33.655,
+   "measure": 16,
+   "scoreIndex": 11,
+   "reason": "measure-start",
+   "sources": [
+    {
+     "part": "Lead",
+     "measure": 16,
+     "scoreIndex": 41,
+     "time": 33.655,
+     "deltaFromLeadSec": 0,
+     "reason": "measure-start"
+    }
+   ]
+  },
+  {
+   "beat": 61,
+   "time": 35.785,
+   "measure": 17,
+   "scoreIndex": 12,
+   "reason": "measure-start",
+   "sources": [
+    {
+     "part": "Lead",
+     "measure": 17,
+     "scoreIndex": 45,
+     "time": 35.785,
+     "deltaFromLeadSec": 0,
+     "reason": "measure-start"
+    }
+   ]
+  },
+  {
+   "beat": 72,
+   "time": 43.251,
+   "measure": 20,
+   "scoreIndex": 13,
+   "reason": "measure-start",
+   "sources": [
+    {
+     "part": "Lead",
+     "measure": 20,
+     "scoreIndex": 62,
+     "time": 43.251,
+     "deltaFromLeadSec": 0,
+     "reason": "measure-start"
+    }
+   ]
+  },
+  {
+   "beat": 76,
+   "time": 45.679,
+   "measure": 21,
+   "scoreIndex": 14,
+   "reason": "measure-start",
+   "sources": [
+    {
+     "part": "Lead",
+     "measure": 21,
+     "scoreIndex": 66,
+     "time": 45.679,
+     "deltaFromLeadSec": 0,
+     "reason": "measure-start"
+    }
+   ]
+  },
+  {
+   "beat": 81,
+   "time": 48.479,
+   "measure": 22,
+   "scoreIndex": 15,
+   "reason": "measure-start",
+   "sources": [
+    {
+     "part": "Lead",
+     "measure": 22,
+     "scoreIndex": 67,
+     "time": 48.479,
+     "deltaFromLeadSec": 0,
+     "reason": "measure-start"
+    }
+   ]
+  },
+  {
+   "beat": 84,
+   "time": 50.524,
+   "measure": 23,
+   "scoreIndex": 16,
+   "reason": "measure-start",
+   "sources": [
+    {
+     "part": "Lead",
+     "measure": 23,
+     "scoreIndex": 71,
+     "time": 50.524,
+     "deltaFromLeadSec": 0,
+     "reason": "measure-start"
+    }
+   ]
+  },
+  {
+   "beat": 88,
+   "time": 52.998,
+   "measure": 24,
+   "scoreIndex": 17,
+   "reason": "measure-start",
+   "sources": [
+    {
+     "part": "Lead",
+     "measure": 24,
+     "scoreIndex": 79,
+     "time": 52.998,
+     "deltaFromLeadSec": 0,
+     "reason": "measure-start"
+    }
+   ]
+  },
+  {
+   "beat": 99,
+   "time": 59.457,
+   "measure": 26,
+   "scoreIndex": 18,
+   "reason": "measure-strong-note",
+   "sources": [
+    {
+     "part": "Lead",
+     "measure": 26,
+     "scoreIndex": 89,
+     "time": 59.457,
+     "deltaFromLeadSec": 0,
+     "reason": "measure-strong-note"
+    }
+   ]
+  },
+  {
+   "beat": 105,
+   "time": 62.838,
+   "measure": 28,
+   "scoreIndex": 19,
+   "reason": "measure-start",
+   "sources": [
+    {
+     "part": "Lead",
+     "measure": 28,
+     "scoreIndex": 92,
+     "time": 62.838,
+     "deltaFromLeadSec": 0,
+     "reason": "measure-start"
+    }
+   ]
+  },
+  {
+   "beat": 116,
+   "time": 70.459,
+   "measure": 31,
+   "scoreIndex": 20,
+   "reason": "measure-start",
+   "sources": [
+    {
+     "part": "Lead",
+     "measure": 31,
+     "scoreIndex": 101,
+     "time": 70.459,
+     "deltaFromLeadSec": 0,
+     "reason": "measure-start"
+    }
+   ]
+  },
+  {
+   "beat": 120,
+   "time": 72.075,
+   "measure": 32,
+   "scoreIndex": 21,
+   "reason": "measure-start",
+   "sources": [
+    {
+     "part": "Lead",
+     "measure": 32,
+     "scoreIndex": 104,
+     "time": 72.075,
+     "deltaFromLeadSec": 0,
+     "reason": "measure-start"
+    }
+   ]
+  },
+  {
+   "beat": 124,
+   "time": 74.816,
+   "measure": 33,
+   "scoreIndex": 22,
+   "reason": "measure-start",
+   "sources": [
+    {
+     "part": "Lead",
+     "measure": 33,
+     "scoreIndex": 109,
+     "time": 74.816,
+     "deltaFromLeadSec": 0,
+     "reason": "measure-start"
+    }
+   ]
+  },
+  {
+   "beat": 128,
+   "time": 78.079,
+   "measure": 34,
+   "scoreIndex": 23,
+   "reason": "measure-start",
+   "sources": [
+    {
+     "part": "Lead",
+     "measure": 34,
+     "scoreIndex": 115,
+     "time": 78.079,
+     "deltaFromLeadSec": 0,
+     "reason": "measure-start"
+    }
+   ]
+  },
+  {
+   "beat": 132,
+   "time": 80.369,
+   "measure": 35,
+   "scoreIndex": 24,
+   "reason": "measure-start",
+   "sources": [
+    {
+     "part": "Lead",
+     "measure": 35,
+     "scoreIndex": 117,
+     "time": 80.369,
+     "deltaFromLeadSec": 0,
+     "reason": "measure-start"
+    }
+   ]
+  }
+ ]
+}

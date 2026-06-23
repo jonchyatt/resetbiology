@@ -37,8 +37,9 @@ const nameOf = (midi) => ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 
 const errors = [];
 
 const vt3 = fs.readFileSync(VT3, 'utf8');
-assert(/fetch\(lidaRoseScorePart\.syncUrl/.test(vt3), 'plunk loader must fetch lidaRoseScorePart.syncUrl');
-assert(/syncUrl=\{lidaRoseScorePart\.syncUrl\}/.test(vt3), 'ScoreEngraving must receive the same selected-part syncUrl');
+assert(/fetch\(activeLidaRoseScorePart\.syncUrl/.test(vt3), 'plunk loader must fetch activeLidaRoseScorePart.syncUrl');
+assert(/syncUrl=\{activeLidaRoseScorePart\.syncUrl\}/.test(vt3), 'ScoreEngraving must receive the same active selected-part syncUrl');
+assert(/scoreTimingMode/.test(vt3) && /syncV2Url/.test(vt3), 'VT3 must expose the current/v2 score timing selector');
 assert(/startPlunkScheduler/.test(vt3), 'plunk must use the rolling scheduler path');
 assert(!/plunkGainRef\.current\s*=\s*gain;[\s\S]{0,120}gain\.connect\(ctx\.destination\)/.test(vt3),
   'plunk gain should route through the limiter, not directly to destination');

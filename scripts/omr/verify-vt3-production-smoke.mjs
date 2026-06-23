@@ -19,6 +19,8 @@ const allowEmptyLibrary = process.env.VT3_ALLOW_EMPTY_LIBRARY === '1';
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const ALLOWED_FIFTHS = new Set([-6, ...LEAD_SECTION_TRANSITIONS.map((t) => t.nextKeyFifths)]);
 const PART = process.env.VT3_PART || 'Lead';
+const TIMING_MODE = process.env.VT3_TIMING_MODE || 'v2';
+assert(['current', 'v2'].includes(TIMING_MODE), `unknown VT3_TIMING_MODE=${TIMING_MODE}; expected current or v2`);
 const PARTS = {
   Lead: {
     slug: 'lead',
@@ -48,8 +50,9 @@ await verifyBrowser();
 async function verifyArtifacts() {
   const [xmlText, health] = await Promise.all([
     fetchText(`${origin}/musicxml/lida-rose-${config.slug}.musicxml`),
-    fetchJson(`${origin}/musicxml/lida-rose-${config.slug}-score-health.json`),
+    fetchJson(`${origin}/musicxml/lida-rose-${config.slug}-score-health${TIMING_MODE === 'v2' ? '-v2' : ''}.json`),
   ]);
+  const sync = await fetchJson(`${origin}/musicxml/lida-rose-${config.slug}-sync${TIMING_MODE === 'v2' ? '-v2' : ''}.json`);
   const [allHealth, phrases, noteMap] = await Promise.all([
     fetchJson(`${origin}/musicxml/lida-rose-score-health.json`),
     fetchJson(`${origin}/musicxml/lida-rose-${config.slug}-phrases.json`),
@@ -63,7 +66,13 @@ async function verifyArtifacts() {
   assert(pitched.length === config.expectedNoteCount, `expected deployed XML ${config.expectedNoteCount} pitched notes, got ${pitched.length}`);
   assert(health.keyFifths === -6, `expected health keyFifths=-6, got ${health.keyFifths}`);
   assert(health.noteCount === config.expectedNoteCount, `expected health noteCount=${config.expectedNoteCount}, got ${health.noteCount}`);
-  assert(health.scoreVersion === config.scoreVersion, `expected scoreVersion=${config.scoreVersion}, got ${health.scoreVersion}`);
+  assert(health.scoreVersion === `${config.scoreVersion}${TIMING_MODE === 'v2' ? '-conductor-v2' : ''}`,
+    `expected scoreVersion=${config.scoreVersion}${TIMING_MODE === 'v2' ? '-conductor-v2' : ''}, got ${health.scoreVersion}`);
+  assert(Array.isArray(sync.notes) && sync.notes.length === config.expectedNoteCount,
+    `expected ${config.expectedNoteCount} ${TIMING_MODE} sync notes, got ${sync.notes?.length}`);
+  if (TIMING_MODE === 'v2') {
+    assert(/score-conductor-v2/i.test(sync.source || ''), `expected v2 sync source, got ${sync.source || 'missing'}`);
+  }
   assert(Array.isArray(health.wholeNotes) && health.wholeNotes.map((n) => `${n.measure}:${n.pitch}`).join(' ') === config.expectedWholeNotes,
     `unexpected health whole notes ${JSON.stringify(health.wholeNotes)}`);
   assert(Array.isArray(health.checks) && health.checks.every((c) => c.status === 'pass'),
@@ -78,7 +87,7 @@ async function verifyArtifacts() {
     `expected ${config.expectedNoteCount} note-map entries, got ${noteMap.notes?.length}`);
   assert(noteMap.notes.every((n) => typeof n.phraseLabel === 'string' && n.phraseLabel.length > 0),
     `expected phrase labels on every note-map entry`);
-  console.log(`${PART} artifact smoke PASS`);
+  console.log(`${PART} ${TIMING_MODE} artifact smoke PASS`);
 }
 
 async function verifyBrowser() {
@@ -113,6 +122,8 @@ async function verifyBrowser() {
       console.log('ui score-health SKIP (library item unavailable in local fallback mode)');
       return;
     }
+    const timingButton = page.getByRole('button', { name: TIMING_MODE === 'v2' ? /^Conductor v2$/i : /^Current$/i }).first();
+    await timingButton.click({ timeout: 6000 });
     await page.getByText(/Score PASS/i).first().waitFor({ timeout: 10000 });
     await page.getByText(/key -6/i).first().waitFor({ timeout: 10000 });
     await page.getByText(/4 parts/i).first().waitFor({ timeout: 10000 });
@@ -133,6 +144,10 @@ async function verifyBrowser() {
       `expected plunk noteCount=${config.expectedNoteCount}, got ${JSON.stringify(plunk)}`);
     assert(plunk.scheduledCount > 0, `expected plunk scheduler to schedule notes, got ${JSON.stringify(plunk)}`);
     assert(plunk.volumePercent >= 180, `expected louder default plunk volume, got ${JSON.stringify(plunk)}`);
+    assert(plunk.timingMode === TIMING_MODE, `expected plunk timingMode=${TIMING_MODE}, got ${JSON.stringify(plunk)}`);
+    if (TIMING_MODE === 'v2') {
+      assert(/-sync-v2\.json$/.test(plunk.syncUrl || ''), `expected v2 syncUrl, got ${JSON.stringify(plunk)}`);
+    }
     console.log(`plunk scheduler smoke PASS scheduled=${plunk.scheduledCount}/${plunk.noteCount} volume=${plunk.volumePercent}%`);
   } finally {
     await browser.close();
