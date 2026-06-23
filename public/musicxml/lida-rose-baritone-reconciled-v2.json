@@ -11,9 +11,9 @@
   "currentSource": "score-conductor Baritone timing from score rhythm plus measure-level isolated-audio anchors",
   "currentConductorAnchors": 20,
   "currentTempoSmoothness": {
-   "medianSecPerBeat": 0.618,
+   "medianSecPerBeat": 0.635,
    "p90RateJumpSecPerBeat": 0.072,
-   "maxRateJumpSecPerBeat": 0.303
+   "maxRateJumpSecPerBeat": 0.286
   },
   "rawMasterAnchors": 25,
   "masterAnchors": 24,
@@ -51,7 +51,7 @@
    }
   },
   "timingDeltaFromCurrent": {
-   "meanAbsSec": 4.253,
+   "meanAbsSec": 4.248,
    "maxAbsSec": 7.148,
    "maxAbsNote": 106,
    "finalNoteDeltaSec": -7.148
@@ -667,9 +667,6 @@
    "scoreBeat": 61,
    "scoreBeats": 1,
    "src": "conductor-anchor",
-   "audioEvidencePitchMidi": 61,
-   "audioEvidenceStartTimeSeconds": 40.835,
-   "audioEvidenceAmplitude": 0.556,
    "conductorReason": "shared-conductor-v2",
    "timingMode": "conductor-v2"
   },
@@ -681,6 +678,9 @@
    "scoreBeat": 62,
    "scoreBeats": 0.5,
    "src": "score-conductor",
+   "audioEvidencePitchMidi": 61,
+   "audioEvidenceStartTimeSeconds": 40.835,
+   "audioEvidenceAmplitude": 0.556,
    "timingMode": "conductor-v2"
   },
   {
@@ -1270,8 +1270,8 @@
    "scoreBeats": 1,
    "src": "score-conductor",
    "audioEvidencePitchMidi": 54,
-   "audioEvidenceStartTimeSeconds": 73.759,
-   "audioEvidenceAmplitude": 0.683,
+   "audioEvidenceStartTimeSeconds": 73.41,
+   "audioEvidenceAmplitude": 0.537,
    "timingMode": "conductor-v2"
   },
   {
@@ -1306,8 +1306,8 @@
    "scoreBeats": 0.5,
    "src": "score-conductor",
    "audioEvidencePitchMidi": 53,
-   "audioEvidenceStartTimeSeconds": 74.584,
-   "audioEvidenceAmplitude": 0.582,
+   "audioEvidenceStartTimeSeconds": 75.292,
+   "audioEvidenceAmplitude": 0.516,
    "timingMode": "conductor-v2"
   },
   {

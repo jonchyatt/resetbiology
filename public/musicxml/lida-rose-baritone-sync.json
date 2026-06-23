@@ -79,20 +79,20 @@
   "pitchRange": "C#3-D#4",
   "tempoSmoothness": {
    "noteLevelAudio": {
-    "medianSecPerBeat": 0.606,
+    "medianSecPerBeat": 0.607,
     "p90RateJumpSecPerBeat": 0.803,
     "maxRateJumpSecPerBeat": 1.392
    },
    "scoreConductor": {
-    "medianSecPerBeat": 0.618,
+    "medianSecPerBeat": 0.635,
     "p90RateJumpSecPerBeat": 0.072,
-    "maxRateJumpSecPerBeat": 0.303
+    "maxRateJumpSecPerBeat": 0.286
    }
   },
   "timingDeltaFromLeadGrid": {
-   "meanAbsSec": 4.217,
-   "maxAbsSec": 7.194,
-   "maxAbsNote": 98,
+   "meanAbsSec": 4.249,
+   "maxAbsSec": 7.148,
+   "maxAbsNote": 106,
    "finalNoteDeltaSec": 7.148
   },
   "config": {
@@ -336,62 +336,62 @@
   {
    "pitchMidi": 61,
    "startTimeSeconds": 39.069,
-   "durationSeconds": 0.307
+   "durationSeconds": 0.294
   },
   {
    "pitchMidi": 61,
-   "startTimeSeconds": 39.376,
-   "durationSeconds": 0.307
+   "startTimeSeconds": 39.363,
+   "durationSeconds": 0.294
   },
   {
    "pitchMidi": 61,
-   "startTimeSeconds": 39.683,
-   "durationSeconds": 0.614
+   "startTimeSeconds": 39.657,
+   "durationSeconds": 0.589
   },
   {
    "pitchMidi": 61,
-   "startTimeSeconds": 40.297,
-   "durationSeconds": 0.614
+   "startTimeSeconds": 40.246,
+   "durationSeconds": 0.589
   },
   {
    "pitchMidi": 61,
-   "startTimeSeconds": 40.911,
-   "durationSeconds": 0.307
+   "startTimeSeconds": 40.835,
+   "durationSeconds": 0.317
   },
   {
    "pitchMidi": 60,
-   "startTimeSeconds": 41.218,
-   "durationSeconds": 0.309
+   "startTimeSeconds": 41.152,
+   "durationSeconds": 0.317
   },
   {
    "pitchMidi": 61,
-   "startTimeSeconds": 41.527,
-   "durationSeconds": 0.309
+   "startTimeSeconds": 41.47,
+   "durationSeconds": 0.317
   },
   {
    "pitchMidi": 61,
-   "startTimeSeconds": 41.836,
-   "durationSeconds": 0.309
+   "startTimeSeconds": 41.787,
+   "durationSeconds": 0.317
   },
   {
    "pitchMidi": 61,
-   "startTimeSeconds": 42.146,
-   "durationSeconds": 0.309
+   "startTimeSeconds": 42.105,
+   "durationSeconds": 0.317
   },
   {
    "pitchMidi": 61,
-   "startTimeSeconds": 42.455,
-   "durationSeconds": 0.309
+   "startTimeSeconds": 42.422,
+   "durationSeconds": 0.317
   },
   {
    "pitchMidi": 60,
-   "startTimeSeconds": 42.764,
-   "durationSeconds": 0.309
+   "startTimeSeconds": 42.74,
+   "durationSeconds": 0.317
   },
   {
    "pitchMidi": 59,
-   "startTimeSeconds": 43.074,
-   "durationSeconds": 0.618
+   "startTimeSeconds": 43.057,
+   "durationSeconds": 0.635
   },
   {
    "pitchMidi": 59,

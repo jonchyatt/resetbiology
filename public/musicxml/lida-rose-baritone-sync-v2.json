@@ -12,9 +12,9 @@
   "currentSource": "score-conductor Baritone timing from score rhythm plus measure-level isolated-audio anchors",
   "currentConductorAnchors": 20,
   "currentTempoSmoothness": {
-   "medianSecPerBeat": 0.618,
+   "medianSecPerBeat": 0.635,
    "p90RateJumpSecPerBeat": 0.072,
-   "maxRateJumpSecPerBeat": 0.303
+   "maxRateJumpSecPerBeat": 0.286
   },
   "rawMasterAnchors": 25,
   "masterAnchors": 24,
@@ -52,7 +52,7 @@
    }
   },
   "timingDeltaFromCurrent": {
-   "meanAbsSec": 4.253,
+   "meanAbsSec": 4.248,
    "maxAbsSec": 7.148,
    "maxAbsNote": 106,
    "finalNoteDeltaSec": -7.148

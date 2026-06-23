@@ -45,6 +45,29 @@ node scripts/omr/build-lead-dataset.mjs
 Re-reads `source/*.xml`, re-runs the audio cross-check (skipped if offline), rewrites
 `omrTargets.ts`. Deterministic from the committed sources.
 
+## Lida Rose VT3 score-first pipeline
+
+Use this before trusting a new engraving, plunk lane, or highlight map:
+
+```bash
+node scripts/omr/run-lida-score-pipeline.mjs
+```
+
+Fast no-write gate:
+
+```bash
+node scripts/omr/run-lida-score-pipeline.mjs --verify-only
+```
+
+Pipeline order is intentional:
+
+1. Generate Lead and Baritone single-part MusicXML from the corrected page-source MusicXML.
+2. Run `verify-lida-score-source-gate.mjs`, which compares generated MusicXML back to the corrected source by measure: key signatures, note count, measure durations, whole notes, ties, clefs, accidentals, and printed audit measures.
+3. Only after the source gate passes, rebuild score-conductor timing, score-health, note maps, and `Conductor v2`.
+4. Verify engraving, conductor-v2, plunk sync, and UI wiring.
+
+Audio extraction is timing evidence only. Pitches and rhythms come from the corrected score. Noisy timing anchors must be pruned or rejected before plunk/highlight artifacts are trusted.
+
 ## Phase status
 
 - **Phase 1 (this):** discrete score-sequence lane, laid on the score's own rhythm and

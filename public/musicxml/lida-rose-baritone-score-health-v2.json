@@ -7,7 +7,7 @@
   "197:P3",
   "198:P3"
  ],
- "generatedAt": "2026-06-23T21:29:26.357Z",
+ "generatedAt": "2026-06-23T22:20:19.074Z",
  "keyFifths": -6,
  "noteCount": 106,
  "wholeNotes": [],
@@ -54,7 +54,7 @@
    }
   },
   "timingDeltaFromCurrent": {
-   "meanAbsSec": 4.253,
+   "meanAbsSec": 4.248,
    "maxAbsSec": 7.148,
    "maxAbsNote": 106,
    "finalNoteDeltaSec": -7.148
@@ -107,7 +107,7 @@
    "id": "score-conductor-sync",
    "label": "Score-conductor Baritone sync",
    "status": "pass",
-   "detail": "masterAnchors=24; partAnchorStarts=12; scoreConductor=94; p90Jump=0.035; maxJump=0.145; deltaCurrentMean=4.253; rejectedPartAnchors=18"
+   "detail": "masterAnchors=24; partAnchorStarts=12; scoreConductor=94; p90Jump=0.035; maxJump=0.145; deltaCurrentMean=4.248; rejectedPartAnchors=18"
   },
   {
    "id": "shared-conductor-v2",

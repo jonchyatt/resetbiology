@@ -7,7 +7,7 @@
   "197:P3",
   "198:P3"
  ],
- "generatedAt": "2026-06-23T19:30:11.571Z",
+ "generatedAt": "2026-06-23T22:20:19.019Z",
  "keyFifths": -6,
  "noteCount": 106,
  "wholeNotes": [],
@@ -85,20 +85,20 @@
   "isolatedOnsets": 193,
   "tempoSmoothness": {
    "noteLevelAudio": {
-    "medianSecPerBeat": 0.606,
+    "medianSecPerBeat": 0.607,
     "p90RateJumpSecPerBeat": 0.803,
     "maxRateJumpSecPerBeat": 1.392
    },
    "scoreConductor": {
-    "medianSecPerBeat": 0.618,
+    "medianSecPerBeat": 0.635,
     "p90RateJumpSecPerBeat": 0.072,
-    "maxRateJumpSecPerBeat": 0.303
+    "maxRateJumpSecPerBeat": 0.286
    }
   },
   "timingDeltaFromLeadGrid": {
-   "meanAbsSec": 4.217,
-   "maxAbsSec": 7.194,
-   "maxAbsNote": 98,
+   "meanAbsSec": 4.249,
+   "maxAbsSec": 7.148,
+   "maxAbsNote": 106,
    "finalNoteDeltaSec": 7.148
   }
  },
@@ -149,7 +149,7 @@
    "id": "score-conductor-sync",
    "label": "Score-conductor Baritone sync",
    "status": "pass",
-   "detail": "conductorAnchors=20; scoreConductor=86; leadTimeline=0; p90Jump=0.072; maxJump=0.303; pruned=5; isolated=193"
+   "detail": "conductorAnchors=20; scoreConductor=86; leadTimeline=0; p90Jump=0.072; maxJump=0.286; pruned=5; isolated=193"
   }
  ]
 }

@@ -1,7 +1,7 @@
 {
  "song": "Lida Rose",
  "version": "lida-rose-conductor-v2",
- "generatedAt": "2026-06-23T21:29:26.357Z",
+ "generatedAt": "2026-06-23T22:20:19.074Z",
  "source": "lead-led shared score-conductor v2; Baritone anchors confirm only when close to the Lead conductor",
  "primaryPart": "Lead",
  "config": {
@@ -111,13 +111,13 @@
   },
   {
    "part": "Baritone",
-   "beat": 62.5,
-   "time": 41.218,
+   "beat": 62,
+   "time": 40.835,
    "measure": 17,
-   "scoreIndex": 49,
-   "reason": "measure-strong-note",
-   "expectedLeadTimeSeconds": 36.803,
-   "deltaFromLeadSec": 4.415,
+   "scoreIndex": 48,
+   "reason": "measure-start",
+   "expectedLeadTimeSeconds": 36.464,
+   "deltaFromLeadSec": 4.371,
    "rejectedReason": "outside-lead-conductor-window",
    "toleranceSec": 0.55
   },
