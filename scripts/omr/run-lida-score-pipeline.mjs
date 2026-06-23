@@ -8,6 +8,7 @@
 import { spawnSync } from 'child_process';
 
 const verifyOnly = process.argv.includes('--verify-only');
+const visual = process.argv.includes('--visual');
 const started = Date.now();
 
 const phases = [
@@ -23,6 +24,14 @@ const phases = [
     name: '2. Gate generated engraving against corrected printed-source measures',
     commands: [
       ['node', 'scripts/omr/verify-lida-score-source-gate.mjs'],
+    ],
+  },
+  {
+    name: '2b. Build measure-level visual audit pack',
+    skip: !visual,
+    commands: [
+      ['node', 'scripts/omr/build-lida-visual-audit.mjs'],
+      ['node', 'scripts/omr/verify-lida-visual-audit.mjs'],
     ],
   },
   {
@@ -57,6 +66,9 @@ console.log(`\nLida score pipeline PASS (${((Date.now() - started) / 1000).toFix
 console.log(verifyOnly
   ? 'verify-only mode: no artifacts were regenerated'
   : 'regenerated artifacts are score-gated before timing/plunk output');
+if (visual) {
+  console.log('visual mode: measure-level printed-score crops were generated and verified before timing');
+}
 
 function run(command) {
   console.log(`$ ${command.join(' ')}`);

@@ -59,12 +59,29 @@ Fast no-write gate:
 node scripts/omr/run-lida-score-pipeline.mjs --verify-only
 ```
 
+Measure-by-measure visual audit gate:
+
+```bash
+node scripts/omr/run-lida-score-pipeline.mjs --verify-only --visual
+```
+
+The visual pass writes a local review pack to:
+
+```text
+C:/Users/jonch/Projects/jarvis/data/vocal-trainer/runtime-logs/lida-visual-audit/index.html
+```
+
+That pack contains one crop per generated measure, with neighboring-bar context,
+plus the generated note summary for the same bar. It is the systematic version of
+zooming in bar by bar and comparing the engraving against the printed score.
+
 Pipeline order is intentional:
 
 1. Generate Lead and Baritone single-part MusicXML from the corrected page-source MusicXML.
 2. Run `verify-lida-score-source-gate.mjs`, which compares generated MusicXML back to the corrected source by measure: key signatures, note count, measure durations, whole notes, ties, clefs, accidentals, and printed audit measures.
-3. Only after the source gate passes, rebuild score-conductor timing, score-health, note maps, and `Conductor v2`.
-4. Verify engraving, conductor-v2, plunk sync, and UI wiring.
+3. Optional `--visual`: build and verify per-measure printed-score crops before timing.
+4. Only after the source gate passes, rebuild score-conductor timing, score-health, note maps, and `Conductor v2`.
+5. Verify engraving, conductor-v2, plunk sync, and UI wiring.
 
 Audio extraction is timing evidence only. Pitches and rhythms come from the corrected score. Noisy timing anchors must be pruned or rejected before plunk/highlight artifacts are trusted.
 
