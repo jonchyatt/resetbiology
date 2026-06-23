@@ -67,7 +67,37 @@ interface FullTemplate {
   createdAt?: string;
 }
 
-type SyncNote = { pitchMidi: number; startTimeSeconds: number; durationSeconds: number };
+type PracticeNote = { pitchMidi: number; startTimeSeconds: number; durationSeconds: number; src?: string };
+type SyncNote = PracticeNote;
+
+interface ScoreHealthPayload {
+  song: string;
+  part: string;
+  scoreVersion: string;
+  keyFifths: number;
+  noteCount: number;
+  generatedAt: string;
+  wholeNotes: Array<{ measure: number; pitch: string }>;
+  checks: Array<{ id: string; label: string; status: 'pass' | 'fail'; detail: string }>;
+}
+
+interface PracticePhrase {
+  id: string;
+  label: string;
+  start: number;
+  end: number;
+  noteCount: number;
+}
+
+interface CoachStats {
+  samples: number;
+  onPitch: number;
+  sharp: number;
+  flat: number;
+  sumAbsCents: number;
+  sumSignedCents: number;
+  lastCents: number | null;
+}
 
 type MicProfile = 'phone' | 'laptop' | 'usb';
 
@@ -96,6 +126,29 @@ function midiToName(m: number): string {
 
 function midiToFreq(m: number): number {
   return 440 * Math.pow(2, (m - 69) / 12);
+}
+
+function freshCoachStats(): CoachStats {
+  return {
+    samples: 0,
+    onPitch: 0,
+    sharp: 0,
+    flat: 0,
+    sumAbsCents: 0,
+    sumSignedCents: 0,
+    lastCents: null,
+  };
+}
+
+function foldedPitchCents(micMidi: number, targetMidi: number): number {
+  const rawCents = (micMidi - targetMidi) * 100;
+  return ((rawCents + 600) % 1200 + 1200) % 1200 - 600;
+}
+
+function centsLabel(cents: number | null): string {
+  if (cents == null) return 'silent';
+  if (Math.abs(cents) < 5) return '0c';
+  return `${cents > 0 ? '+' : ''}${Math.round(cents)}c`;
 }
 
 // ─── V3.1: Music Man barbershop title taxonomy ──────────────────────────
@@ -291,8 +344,17 @@ export default function VocalTrainerIII() {
   // matchStartRef === 0 → idle. > 0 → locked at that timestamp.
   const [matchProgress, setMatchProgress] = useState(0);
   const matchStartRef = useRef(0);
-  const currentTargetRef = useRef<RawNote | null>(null);
+  const currentTargetRef = useRef<PracticeNote | null>(null);
   const livePitchFrameRef = useRef<number | null>(null);
+  const [coachStats, setCoachStats] = useState<CoachStats>(() => freshCoachStats());
+  const coachStatsRef = useRef<CoachStats>(freshCoachStats());
+  const lastCoachSampleMsRef = useRef(0);
+  const resetCoachStats = useCallback(() => {
+    const fresh = freshCoachStats();
+    coachStatsRef.current = fresh;
+    lastCoachSampleMsRef.current = 0;
+    setCoachStats(fresh);
+  }, []);
 
   // Editor scroll container for auto-scrolling the piano-roll with the playhead.
   const editorScrollRef = useRef<HTMLDivElement | null>(null);
@@ -864,12 +926,14 @@ export default function VocalTrainerIII() {
     pauseOffsetRef.current = 0;
     setPracticeTime(0);
     setPlaybackState('idle');
-  }, [stopAudioSource]);
+    resetCoachStats();
+  }, [stopAudioSource, resetCoachStats]);
 
   const playOrResume = useCallback(async () => {
     if (playbackState === 'playing') return;
+    if (playbackState === 'idle' || pauseOffsetRef.current <= 0.02) resetCoachStats();
     await startAudioSource();
-  }, [playbackState, startAudioSource]);
+  }, [playbackState, resetCoachStats, startAudioSource]);
 
   // Recompute the effective playback duration from whichever tracks are loaded.
   const recomputeDuration = useCallback(() => {
@@ -898,6 +962,15 @@ export default function VocalTrainerIII() {
       setPlaybackState('paused'); // show the playhead where they clicked
     }
   }, [playbackState, stopAudioSource]);
+
+  const loopPhrase = useCallback((phrase: PracticePhrase) => {
+    const dur = playbackDurationRef.current || phrase.end;
+    const start = Math.max(0, Math.min(phrase.start, dur - 0.01));
+    const end = Math.max(start + 0.2, Math.min(phrase.end, dur));
+    setLoopA(start);
+    setLoopB(end);
+    seekTo(start);
+  }, [seekTo]);
 
   // Click (or drag) on the seek bar → seek proportionally.
   const handleSeekBarPointer = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
@@ -1235,28 +1308,82 @@ export default function VocalTrainerIII() {
     setExtractedNotes(prev => prev.filter((_, i) => i !== idx));
   }, []);
 
+  const currentMm = useMemo(() => currentTemplate ? parseMmTitle(currentTemplate.title) : null, [currentTemplate]);
+  const isLidaRoseLead = !!currentMm && /lida\s*rose/i.test(currentMm.song) && /lead/i.test(currentMm.part);
+
   // RECONCILED score-target lane: engraving truth RE-TIMED to the recording (v3 sync)
   // with audio-missed notes recovered + extraction noise dropped. Falls back to the
   // stale omrTargets span-scaled times only when no reconciled file exists.
-  const [reconciled, setReconciled] = useState<Array<{ pitchMidi: number; startTimeSeconds: number; durationSeconds: number; src?: string }> | null>(null);
+  const [reconciled, setReconciled] = useState<PracticeNote[] | null>(null);
+  const [scoreHealth, setScoreHealth] = useState<ScoreHealthPayload | null>(null);
   useEffect(() => {
-    const mm = currentTemplate ? parseMmTitle(currentTemplate.title) : null;
-    if (mm && /lida\s*rose/i.test(mm.song) && /lead/i.test(mm.part)) {
+    if (isLidaRoseLead) {
       fetch('/musicxml/lida-rose-lead-reconciled.json', { cache: 'no-store' })
         .then((r) => r.json()).then((j) => setReconciled(j.notes || null)).catch(() => setReconciled(null));
     } else setReconciled(null);
-  }, [currentTemplate]);
+  }, [isLidaRoseLead]);
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/musicxml/lida-rose-lead-score-health.json', { cache: 'no-store' })
+      .then((r) => r.ok ? r.json() : null)
+      .then((j) => { if (!cancelled) setScoreHealth(j || null); })
+      .catch(() => { if (!cancelled) setScoreHealth(null); });
+    return () => { cancelled = true; };
+  }, []);
   // OMR score-target lane: the REAL notated notes of the loaded part, off the sheet.
   const omrTarget = useMemo(() => {
-    const mm = currentTemplate ? parseMmTitle(currentTemplate.title) : null;
-    if (!mm) return null;
-    if (reconciled && reconciled.length) return { part: mm.part, noteCount: reconciled.length, notes: reconciled, reconciled: true };
-    return getOmrTarget(mm.song, mm.part);
-  }, [currentTemplate, reconciled]);
+    if (!currentMm) return null;
+    if (reconciled && reconciled.length) return { part: currentMm.part, noteCount: reconciled.length, notes: reconciled, reconciled: true };
+    return getOmrTarget(currentMm.song, currentMm.part);
+  }, [currentMm, reconciled]);
   const omrSpan = useMemo(
     () => (omrTarget ? omrTarget.notes.reduce((mx, n) => Math.max(mx, n.startTimeSeconds + n.durationSeconds), 0) : 0),
     [omrTarget],
   );
+  const practicePhrases = useMemo<PracticePhrase[]>(() => {
+    if (!omrTarget?.notes.length) return [];
+    const notes = [...omrTarget.notes]
+      .filter((n): n is PracticeNote =>
+        Number.isFinite(n.pitchMidi)
+        && Number.isFinite(n.startTimeSeconds)
+        && Number.isFinite(n.durationSeconds)
+      )
+      .sort((a, b) => a.startTimeSeconds - b.startTimeSeconds);
+    const phrases: PracticePhrase[] = [];
+    let startIdx = 0;
+    const pushPhrase = (endIdx: number) => {
+      if (endIdx < startIdx) return;
+      const first = notes[startIdx];
+      const last = notes[endIdx];
+      if (!first || !last) return;
+      const start = Math.max(0, first.startTimeSeconds - 0.12);
+      const end = last.startTimeSeconds + last.durationSeconds + 0.18;
+      phrases.push({
+        id: `p${phrases.length + 1}`,
+        label: `P${phrases.length + 1}`,
+        start,
+        end,
+        noteCount: endIdx - startIdx + 1,
+      });
+    };
+    for (let i = 0; i < notes.length; i++) {
+      const note = notes[i];
+      const next = notes[i + 1];
+      const gap = next ? next.startTimeSeconds - (note.startTimeSeconds + note.durationSeconds) : 0;
+      const longHold = note.durationSeconds >= 1.3;
+      const phraseTooLong = i - startIdx >= 11;
+      const hasRest = gap >= 0.7;
+      if (i === notes.length - 1 || longHold || phraseTooLong || hasRest) {
+        pushPhrase(i);
+        startIdx = i + 1;
+      }
+    }
+    return phrases.filter((p) => p.noteCount >= 2 || p.end - p.start >= 1.2);
+  }, [omrTarget]);
+  const activePhraseId = useMemo(() => {
+    const active = practicePhrases.find((p) => practiceTime >= p.start && practiceTime <= p.end);
+    return active?.id ?? null;
+  }, [practicePhrases, practiceTime]);
   const editorWidth = useMemo(() => Math.max(800, Math.max(extractedDuration, omrSpan) * zoom), [extractedDuration, omrSpan, zoom]);
   const editorRowHeight = 6; // px per semitone
   const editorHeight = (PITCH_MAX - PITCH_MIN + 1) * editorRowHeight;
@@ -1270,6 +1397,14 @@ export default function VocalTrainerIII() {
       n => n.startTimeSeconds <= t && t < n.startTimeSeconds + n.durationSeconds,
     ) ?? null;
   }, [extractedNotes, practiceTime]);
+  const currentScoreTargetNote = useMemo<PracticeNote | null>(() => {
+    if (!omrTarget?.notes.length) return null;
+    const t = practiceTime;
+    return omrTarget.notes.find(
+      n => n.startTimeSeconds <= t && t < n.startTimeSeconds + n.durationSeconds,
+    ) ?? null;
+  }, [omrTarget, practiceTime]);
+  const practiceTargetNote = currentScoreTargetNote ?? currentTargetNote;
 
   // ─── V3.2: live pitch tracking loop — reference (playback) + voice (mic) ──
   // Reads both 2048-fft analysers each frame, runs pitchy, noise-gates +
@@ -1349,7 +1484,7 @@ export default function VocalTrainerIII() {
 
   // Keep a ref to the current target so the lock-tick loop reads the latest
   // value without re-subscribing on every target change.
-  useEffect(() => { currentTargetRef.current = currentTargetNote; }, [currentTargetNote]);
+  useEffect(() => { currentTargetRef.current = practiceTargetNote; }, [practiceTargetNote]);
 
   // ── Pitchforks v1 mic lock loop (THE canonical feedback meter) ──
   // Runs only while playing AND a target note exists. Resets matchStart on
@@ -1404,6 +1539,39 @@ export default function VocalTrainerIII() {
     return () => cancelAnimationFrame(raf);
   }, [playbackState]);
 
+  useEffect(() => {
+    if (playbackState !== 'playing') return;
+    let raf = 0;
+    const SAMPLE_MS = 140;
+    const COACH_TOLERANCE_CENTS = 60;
+    const tick = () => {
+      const now = performance.now();
+      if (now - lastCoachSampleMsRef.current >= SAMPLE_MS) {
+        lastCoachSampleMsRef.current = now;
+        const target = currentTargetRef.current;
+        const micMidi = trackMicMidiRef.current;
+        if (target && micMidi != null) {
+          const cents = foldedPitchCents(micMidi, target.pitchMidi);
+          const prev = coachStatsRef.current;
+          const next: CoachStats = {
+            samples: prev.samples + 1,
+            onPitch: prev.onPitch + (Math.abs(cents) <= COACH_TOLERANCE_CENTS ? 1 : 0),
+            sharp: prev.sharp + (cents > COACH_TOLERANCE_CENTS ? 1 : 0),
+            flat: prev.flat + (cents < -COACH_TOLERANCE_CENTS ? 1 : 0),
+            sumAbsCents: prev.sumAbsCents + Math.abs(cents),
+            sumSignedCents: prev.sumSignedCents + cents,
+            lastCents: cents,
+          };
+          coachStatsRef.current = next;
+          setCoachStats(next);
+        }
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [playbackState]);
+
   // ── Auto-scroll the piano-roll so the playhead stays visible ──
   useEffect(() => {
     if (playbackState !== 'playing') return;
@@ -1413,6 +1581,15 @@ export default function VocalTrainerIII() {
     const target = Math.max(0, playheadX - el.clientWidth / 3);
     el.scrollLeft = target;
   }, [practiceTime, zoom, playbackState]);
+
+  const scoreHealthOk = !!scoreHealth?.checks.length && scoreHealth.checks.every((c) => c.status === 'pass');
+  const scoreHealthFailCount = scoreHealth?.checks.filter((c) => c.status === 'fail').length ?? 0;
+  const coachAccuracyPct = coachStats.samples ? Math.round((coachStats.onPitch / coachStats.samples) * 100) : null;
+  const coachAvgCents = coachStats.samples ? coachStats.sumSignedCents / coachStats.samples : null;
+  const coachAbsCents = coachStats.samples ? coachStats.sumAbsCents / coachStats.samples : null;
+  const coachBias = coachAvgCents == null
+    ? 'silent'
+    : Math.abs(coachAvgCents) <= 8 ? 'centered' : coachAvgCents > 0 ? 'sharp' : 'flat';
 
   // ───────────────────────────────────────────────────────────────────────
   // Render
@@ -1468,7 +1645,7 @@ export default function VocalTrainerIII() {
 
         <section className="order-5 space-y-2">
           {/* ─── Sheet Music (real score, follow along) ─────────────────── */}
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <span className="text-xs text-gray-500">Score view:</span>
             <div className="inline-flex rounded-md border border-gray-700 overflow-hidden text-xs">
               <button
@@ -1488,6 +1665,16 @@ export default function VocalTrainerIII() {
             </div>
             {scoreView === 'engraved' && (
               <span className="text-xs text-cyan-400/70">Lida Rose · Lead — recreated from the score</span>
+            )}
+            {scoreHealth && (
+              <div className="ml-auto flex flex-wrap items-center gap-1 text-[11px]">
+                <span className={`px-2 py-0.5 rounded border ${scoreHealthOk ? 'border-emerald-500/50 bg-emerald-500/10 text-emerald-300' : 'border-rose-500/50 bg-rose-500/10 text-rose-300'}`}>
+                  Score {scoreHealthOk ? 'PASS' : `${scoreHealthFailCount} fail`}
+                </span>
+                <span className="px-2 py-0.5 rounded border border-cyan-500/30 bg-cyan-500/10 text-cyan-200">key {scoreHealth.keyFifths}</span>
+                <span className="px-2 py-0.5 rounded border border-fuchsia-500/30 bg-fuchsia-500/10 text-fuchsia-200">{scoreHealth.noteCount} notes</span>
+                <span className="px-2 py-0.5 rounded border border-amber-500/30 bg-amber-500/10 text-amber-200">{scoreHealth.wholeNotes.length} whole</span>
+              </div>
             )}
           </div>
           <div className="max-h-[46vh] min-h-[230px] overflow-auto rounded-lg" style={{ maskImage: 'linear-gradient(to bottom, transparent 0, #000 16px, #000 calc(100% - 24px), transparent 100%)', WebkitMaskImage: 'linear-gradient(to bottom, transparent 0, #000 16px, #000 calc(100% - 24px), transparent 100%)' }}>
@@ -1811,6 +1998,32 @@ export default function VocalTrainerIII() {
                 )}
               </div>
             </div>
+            {omrTarget && (
+              <div className="mb-2 grid grid-cols-2 md:grid-cols-5 gap-1.5 text-[11px]">
+                <div className="rounded border border-gray-800 bg-black/30 px-2 py-1">
+                  <div className="text-gray-500">Target</div>
+                  <div className="font-mono text-cyan-200">{currentScoreTargetNote ? midiToName(currentScoreTargetNote.pitchMidi) : '--'}</div>
+                </div>
+                <div className="rounded border border-gray-800 bg-black/30 px-2 py-1">
+                  <div className="text-gray-500">Score</div>
+                  <div className={scoreHealthOk ? 'text-emerald-300' : scoreHealth ? 'text-rose-300' : 'text-gray-400'}>
+                    {scoreHealth ? (scoreHealthOk ? 'verified' : `${scoreHealthFailCount} fail`) : `${omrTarget.noteCount} notes`}
+                  </div>
+                </div>
+                <div className="rounded border border-gray-800 bg-black/30 px-2 py-1">
+                  <div className="text-gray-500">Take</div>
+                  <div className="font-mono text-amber-200">{coachAccuracyPct == null ? '--' : `${coachAccuracyPct}%`}</div>
+                </div>
+                <div className="rounded border border-gray-800 bg-black/30 px-2 py-1">
+                  <div className="text-gray-500">Avg drift</div>
+                  <div className="font-mono text-fuchsia-200">{coachAvgCents == null ? '--' : `${centsLabel(coachAvgCents)} · ${coachBias}`}</div>
+                </div>
+                <div className="rounded border border-gray-800 bg-black/30 px-2 py-1">
+                  <div className="text-gray-500">Now</div>
+                  <div className="font-mono text-cyan-200">{centsLabel(coachStats.lastCents)}{coachAbsCents == null ? '' : ` · ${Math.round(coachAbsCents)}c mean`}</div>
+                </div>
+              </div>
+            )}
             <div
               ref={editorScrollRef}
               className="overflow-auto bg-black/50 rounded border border-gray-800"
@@ -1881,20 +2094,21 @@ export default function VocalTrainerIII() {
                     the audio extraction. Phase 1: discrete score sequence, NOT
                     sample-synced to playback. Additive — sits above the audio
                     notes/contour, below the live-pitch group. */}
-                {omrTarget && omrTarget.notes.map((n: { pitchMidi: number; startTimeSeconds: number; durationSeconds: number; src?: string }, i: number) => {
+                {omrTarget && omrTarget.notes.map((n: PracticeNote, i: number) => {
                   if (n.pitchMidi < PITCH_MIN || n.pitchMidi > PITCH_MAX) return null;
                   const x = n.startTimeSeconds * zoom;
                   const w = Math.max(3, n.durationSeconds * zoom);
                   const y = (PITCH_MAX - n.pitchMidi) * editorRowHeight;
                   const recovered = n.src === 'engraving-recovered';
+                  const active = currentScoreTargetNote === n;
                   return (
                     <rect key={`omr-${i}`} x={x} y={y + 0.5}
                       width={w} height={editorRowHeight - 1}
-                      fill={recovered ? 'rgba(251,191,36,0.22)' : 'rgba(232,121,249,0.10)'}
-                      stroke={recovered ? '#fbbf24' : '#e879f9'}
-                      strokeWidth={recovered ? 1.5 : 1} strokeDasharray={recovered ? undefined : '3 2'} rx={1}
+                      fill={active ? 'rgba(34,211,238,0.24)' : recovered ? 'rgba(251,191,36,0.22)' : 'rgba(232,121,249,0.10)'}
+                      stroke={active ? '#22d3ee' : recovered ? '#fbbf24' : '#e879f9'}
+                      strokeWidth={active ? 2 : recovered ? 1.5 : 1} strokeDasharray={active || recovered ? undefined : '3 2'} rx={1}
                       pointerEvents="none"
-                      style={{ filter: recovered ? 'drop-shadow(0 0 3px rgba(251,191,36,0.7))' : 'drop-shadow(0 0 2px rgba(232,121,249,0.45))' }} />
+                      style={{ filter: active ? 'drop-shadow(0 0 5px rgba(34,211,238,0.8))' : recovered ? 'drop-shadow(0 0 3px rgba(251,191,36,0.7))' : 'drop-shadow(0 0 2px rgba(232,121,249,0.45))' }} />
                   );
                 })}
                 {/* V3.2: live REFERENCE pitch (detected from the playing audio) +
@@ -2012,6 +2226,25 @@ export default function VocalTrainerIII() {
                 </div>
                 <span className="font-mono">{fmtTime(durationSec)}</span>
               </div>
+              {practicePhrases.length > 0 && (
+                <div className="mb-1 flex gap-1 overflow-x-auto pb-1">
+                  {practicePhrases.slice(0, 18).map((phrase) => (
+                    <button
+                      key={phrase.id}
+                      type="button"
+                      onClick={() => loopPhrase(phrase)}
+                      className={`shrink-0 rounded border px-2 py-0.5 text-[11px] font-semibold ${
+                        activePhraseId === phrase.id
+                          ? 'border-cyan-400 bg-cyan-500/20 text-cyan-100'
+                          : 'border-gray-700 bg-gray-800 text-gray-300 hover:border-cyan-500/50 hover:text-cyan-200'
+                      }`}
+                      title={`${fmtTime(phrase.start)}-${fmtTime(phrase.end)} · ${phrase.noteCount} notes`}
+                    >
+                      {phrase.label} <span className="font-mono text-gray-500">{fmtTime(phrase.start)}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
               <div
                 ref={seekBarElRef}
                 onPointerDown={handleSeekBarPointer}
