@@ -143,6 +143,25 @@ function fixBaritoneBar19(measureXml) {
   return measureXml.replace(/(\n?\s*)<\/measure>\s*$/, `\n${eighth}    </measure>`);
 }
 
+// Two half-notes in one bar (for homophonic 2-note bars Audiveris dropped, e.g.
+// baritone "hop-ing"). duration = full-measure ticks; each half = duration/2.
+function twoHalfMeasure({ number, width, notes, duration }) {
+  const half = duration / 2;
+  const noteXml = (n) => `      <note>
+        <pitch>
+          <step>${n.step}</step>
+${n.alter == null ? '' : `          <alter>${n.alter}</alter>\n`}          <octave>${n.octave}</octave>
+        </pitch>
+        <duration>${half}</duration>
+        <voice>1</voice>
+        <type>half</type>
+      </note>`;
+  return `    <measure number="${number}" width="${width}">
+${noteXml(notes[0])}
+${noteXml(notes[1])}
+    </measure>`;
+}
+
 export function applyLeadMeasureCorrections(page, measures, options = {}) {
   const part = options.part || 'Lead';
   const divisions = options.divisions || (page === '197' ? 6 : 12);
@@ -187,6 +206,25 @@ export function applyLeadMeasureCorrections(page, measures, options = {}) {
     if (page === '197' && part === 'Baritone' && number === '10') {
       out.push(measure);                                                          // printed bar 20
       out.push(wholeNoteMeasure({ number: '921', width: '131', step: 'C', alter: -1, octave: 4, duration: fullMeasureDuration })); // 21 "name" = Cb4
+      continue;
+    }
+
+    // Restore the 3 baritone bars Audiveris dropped to SILENCE (Oliver sings; the
+    // gate passed them as full-rests). These REPLACE the empty source measures.
+    //   bar 5  "sky"     = F3   — same Cb4-Lead cadence as "shy" (HIGH confidence)
+    //   bar 25 "hop-ing" = Db4, Bb3 — chord C#m→Eb; Bb3 completes the Eb triad (HIGH),
+    //                                 Db4 root-doubles the C#m (MODERATE — verify)
+    //   bar 29 "fine"    = Eb3  — doubles the Lead's held Eb4 an octave down (MODERATE — verify)
+    if (page === '196' && part === 'Baritone' && number === '5') {
+      out.push(wholeNoteMeasure({ number: '905', width: '129', step: 'F', octave: 3, duration: fullMeasureDuration }));
+      continue;
+    }
+    if (page === '198' && part === 'Baritone' && number === '4') {
+      out.push(twoHalfMeasure({ number: '925', width: '208', notes: [{ step: 'D', alter: -1, octave: 4 }, { step: 'B', alter: -1, octave: 3 }], duration: fullMeasureDuration }));
+      continue;
+    }
+    if (page === '198' && part === 'Baritone' && number === '8') {
+      out.push(wholeNoteMeasure({ number: '929', width: '126', step: 'E', alter: -1, octave: 3, duration: fullMeasureDuration }));
       continue;
     }
 

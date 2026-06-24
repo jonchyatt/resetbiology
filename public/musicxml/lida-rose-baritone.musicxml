@@ -184,11 +184,16 @@
       </note>
     </measure>
     <!--=======================================================-->
-    <measure number="5" width="129">
-      <barline location="right">
-        <bar-style>light-light</bar-style>
-      </barline>
-      <note><rest measure="yes"/><duration>48</duration><voice>1</voice></note>
+        <measure number="5" width="129">
+      <note>
+        <pitch>
+          <step>F</step>
+          <octave>3</octave>
+        </pitch>
+        <duration>48</duration>
+        <voice>1</voice>
+        <type>whole</type>
+      </note>
     </measure>
     <!--=======================================================-->
     <measure number="6" width="372">
@@ -1614,7 +1619,27 @@
       </note>
     </measure>
     <!--=======================================================-->
-    <measure number="25" width="147">  <note><rest measure="yes"/><duration>48</duration><voice>1</voice></note>
+        <measure number="25" width="208">
+      <note>
+        <pitch>
+          <step>D</step>
+          <alter>-1</alter>
+          <octave>4</octave>
+        </pitch>
+        <duration>24</duration>
+        <voice>1</voice>
+        <type>half</type>
+      </note>
+      <note>
+        <pitch>
+          <step>B</step>
+          <alter>-1</alter>
+          <octave>3</octave>
+        </pitch>
+        <duration>24</duration>
+        <voice>1</voice>
+        <type>half</type>
+      </note>
     </measure>
     <!--=======================================================-->
     <measure number="26" width="358">
@@ -1830,7 +1855,17 @@
       </note>
     </measure>
     <!--=======================================================-->
-    <measure number="29" width="126">  <note><rest measure="yes"/><duration>48</duration><voice>1</voice></note>
+        <measure number="29" width="126">
+      <note>
+        <pitch>
+          <step>E</step>
+          <alter>-1</alter>
+          <octave>3</octave>
+        </pitch>
+        <duration>48</duration>
+        <voice>1</voice>
+        <type>whole</type>
+      </note>
     </measure>
     <!--=======================================================-->
     <measure number="30" width="246">

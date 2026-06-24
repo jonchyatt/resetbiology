@@ -48,6 +48,6 @@ External GM: Frank Lloyd Wright (FLW). Each gate: measurable goal → hypothesis
 
 **Result: GATE PASS.** Lead 35 bars + Baritone 34 bars, all notation laws hold. "Safe to lock." Committed `e08fce21` (protect commit `852c53a5` before it). omrTargets regenerated (Lead 118, Baritone 106→110); both builds pitch-verify.
 
-**Found (gate-passing but NOT musically true):** baritone bars 5 "sky", 25 "hop-ing", 29 "fine" are silent full-rests — Oliver dropped by Audiveris, same class as the held bars, but the gate can't see "silent where the page shows singing." → G3 invariant + a quick fix pass.
+**Found + FIXED (Jon: "fix now"):** baritone bars 5 "sky", 25 "hop-ing", 29 "fine" were silent full-rests — Oliver dropped by Audiveris, same class as the held bars, but the gate can't see "silent where the page shows singing." Restored from the printed page + chord constraints: bar 5 = F3 (same Cb4-Lead cadence as "shy", HIGH), bar 25 = Db4 + Bb3 ("ing"=Bb3 completes the Eb triad HIGH; "hop"=Db4 root-double MODERATE), bar 29 = Eb3 (doubles Lead Eb4, MODERATE). Baritone now 114 notes, 0 silent sing-bars, gate still green. Moderate reads flagged for visual confirm when G4 plays them.
 
-**FLW verdict:** ⏳ AWAITING APPROVE — advance to G3/G4, and decision on whether to fix the 3 silent baritone bars now (Jon's "can't have an inaccurate score") or batch with the timing rebuild.
+**FLW verdict:** ✅ APPROVED (Jon, 2026-06-24) — "Fix now, then advance hold the true north." Silent bars fixed; advancing to G3.
