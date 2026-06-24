@@ -23,6 +23,10 @@ const phases = [
   {
     name: '2. Gate generated engraving against corrected printed-source measures',
     commands: [
+      // Absolute notation-law gate FIRST: catches mistakes IN the corrections
+      // (3-beat bars, cross-pitch ties, dropped/extra bars) that the source gate
+      // below — which grades the corrections against themselves — structurally cannot.
+      ['node', 'scripts/omr/verify-score-invariants.mjs', 'lida-rose'],
       ['node', 'scripts/omr/verify-lida-score-source-gate.mjs'],
     ],
   },
