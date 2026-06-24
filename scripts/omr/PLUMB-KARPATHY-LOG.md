@@ -50,4 +50,22 @@ External GM: Frank Lloyd Wright (FLW). Each gate: measurable goal → hypothesis
 
 **Found + FIXED (Jon: "fix now"):** baritone bars 5 "sky", 25 "hop-ing", 29 "fine" were silent full-rests — Oliver dropped by Audiveris, same class as the held bars, but the gate can't see "silent where the page shows singing." Restored from the printed page + chord constraints: bar 5 = F3 (same Cb4-Lead cadence as "shy", HIGH), bar 25 = Db4 + Bb3 ("ing"=Bb3 completes the Eb triad HIGH; "hop"=Db4 root-double MODERATE), bar 29 = Eb3 (doubles Lead Eb4, MODERATE). Baritone now 114 notes, 0 silent sing-bars, gate still green. Moderate reads flagged for visual confirm when G4 plays them.
 
-**FLW verdict:** ✅ APPROVED (Jon, 2026-06-24) — "Fix now, then advance hold the true north." Silent bars fixed; advancing to G3.
+**FLW verdict:** ✅ APPROVED (Jon, 2026-06-24) — "Fix now, then advance hold the true north." Silent bars fixed; advancing.
+
+---
+
+## G4 (step 1) — Plunk-from-score VERIFIER built + run (the True North gate)
+
+**Date:** 2026-06-24 (same session)
+
+**Measurable goal:** a gate that proves the plunk a singer matches plays the verified score note-for-note. Built `verify-plunk-from-score.mjs <songId>` — extracts the melodic pitch sequence from the verified MusicXML and from the sync JSON VT III actually fetches, asserts equality.
+
+**Measurement (run vs current sync):** **FAIL, quantified —**
+- Lead `-sync-v2.json` / `-sync.json`: 118 vs 118 notes, **first divergence @84: score E4 vs plunk D#4 (Eb4)** — the plunk still carries the OLD hallucinated m25 pitch, not today's E-natural correction.
+- Baritone: **score 114 vs plunk 106** — the plunk is missing all 8 notes added today (3 held bars + bar-19 eighth + 3 restored sing-bars); diverges @4 (F3 vs G#3, sequence shifted).
+
+**Result:** confirms G1's open delta concretely — the plunk source is correctly *wired* (reads sync-v2) but the sync is **stale**: it was built before the engraving was corrected. *This is why the plunk never felt score-driven.* The verifier is the permanent lock; it goes green only when the sync is rebuilt off the corrected score.
+
+**Next experiment (the metronome fix + True North):** rebuild `build-lead-sync.mjs` / `build-baritone-sync.mjs` to **pure-notation timing** — delete the audio-anchor machinery (`alignScoreToAudio` / `selectConductorAnchors` / `pruneTempoCliffAnchors`), walk score events `start += durationDivs/divisions × 60/bpm`, keep the `{pitchMidi,startTimeSeconds,durationSeconds}` shape. Then `verify-plunk-from-score.mjs` PASSES = plunk plays the verified score, dead-on, no audio. Recipe: `PLUMB-RESEARCH-SYNTHESIS.md`.
+
+**FLW verdict:** ⏳ gate defined + gap quantified. Handing off the sync rebuild (substantial) to a fresh session per context discipline.
