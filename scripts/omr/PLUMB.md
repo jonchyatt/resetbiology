@@ -47,30 +47,36 @@ The OLD gate (`verify-lida-score-source-gate.mjs`) compared the build to a re-ru
 5. **[TODO] Lyrics** — carry `<lyric>` from the source XML → attach to notes → verify present + aligned. (Audiveris already exports lyrics; the build currently strips them.)
 6. **App artifacts** — ~9 JSON/MusicXML files per song + `omrTargets.ts` entry + `ScoreViewer SONGS` row.
 
-## Current state (2026-06-24)
-- **1 of ~20 songs BUILT** (Lida Rose). Others = raw scans in `public/score/page-001..248.jpg`.
-- **Lida = octave-correct reference** (baritone reverted from a broken same-day octave experiment to known-good commit `1e86b846`), **but NOT 100% green** — gate flags 5 real gaps:
-  - Lead **m16, m18** — 3-beat bars (Audiveris under-read the tuplet) `[I1]`
-  - Lead **m25** — E♮(64)→E♭(63) cross-pitch tie `[I2]`
-  - Baritone — **missing held bars 9 / 13 / 21** (Oliver's shy/chime/name holds) `[I4]`
-  - Baritone **m17** — 42-tick bar `[I1]`
+## Current state (2026-06-24, end of session 2 — see PLUMB-KARPATHY-LOG.md for the gate log)
+- **1 of ~20 songs ENGRAVING-COMPLETE + 100% GREEN** (Lida Rose). Others = raw scans in `public/score/page-001..248.jpg`.
+- **Lida passes every notation law, both parts** — `node scripts/omr/verify-score-invariants.mjs lida-rose` → "GATE PASS … Safe to lock." Lead 35 bars / 118 notes, Baritone 34 bars / 114 notes.
+  - Lead m16/m18 de-tripletized (Audiveris faked a 2/3 triplet; the homophonic voices proved 4 plain quarters). Lead m25 restored to E-natural (normalize had key-flatted a tied E♮ → the cross-pitch tie).
+  - Baritone: dead `lida-baritone-source-corrections.mjs` bypassed; corrections now live in `applyLeadMeasureCorrections(... part:'Baritone')`. Inserted Oliver's 3 dropped held bars (9 "shy"=F3, 13 "chime"=Cb4, 21 "name"=Cb4) + completed bar 19's 8-eighth run + **restored 3 bars Audiveris had dropped to SILENCE** (5 "sky"=F3, 25 "hop-ing"=Db4+Bb3, 29 "fine"=Eb3 — moderate reads flagged for visual confirm when the plunk plays them).
+- **G4 plunk-from-score VERIFIER built** (`verify-plunk-from-score.mjs`) and **currently FAILS** — proving the live plunk does NOT play the corrected score: Lead diverges @84 (plunk has the old hallucinated m25 Eb, not E♮); Baritone 106 vs 114 (plunk missing all 8 notes added today). **The plunk source is wired right (reads sync-v2) but the SYNC IS STALE — frozen before the engraving was corrected.** This is why the plunk never felt score-driven.
+- Octave authority unchanged: the Audiveris source. The 2026-06-24 octave incident remains the reason corrections must never shift octave.
 
 ## Remaining steps to the finished product
-1. **Lida → 100% green:** print-pin the 2 Lead tuplet rhythms + the m24/25 tie pitch; insert Baritone's 3 held bars **at octave 3-4** + fix m17. Each print-verified; gate proves green.
-2. **Add the octave-vs-source invariant** (kills the 2026-06-24 class for every song).
-3. **Plunk-from-score verifier (the core of B):** assert the plunk/sync pitches == the verified MusicXML note-for-note, timing derived purely from score rhythm, dead-on. **CRITICAL CHECK FIRST:** confirm the *app* plays the plunk from the verified MusicXML/sync — NOT from the stale `omrTargets.ts` (whose own build comment calls it "OLD hallucinated OMR pitches"). If the live plunk is reading `omrTargets`, that is *why it never felt score-driven* despite the engraving work — the engraving and the plunk source were disconnected.
-4. **Lyrics pipeline** (C): carry source `<lyric>` → attach → verify.
-5. **Onboard orchestration** (D): one command, score → artifacts → gate → register. Prove on **song #2 (Goodnight Ladies)**.
-6. **End-to-end product gate:** green engraving + plunk==score + lyrics present + artifacts complete = "verified perfect."
+0. ✅ DONE — Lida → 100% green (both parts) + Oliver no longer silent anywhere. G4 verifier built. G1's critical check resolved: the app plays the plunk from the **sync JSON** (`VocalTrainerIII.tsx:1046` → `plunkNotesRef`), NOT `omrTargets` (that's visual-lane only). The sync is just STALE.
+1. **▶ NEXT — Rebuild the sync FROM the corrected score (THE metronome fix + the heart of True North "B").** Rewrite `build-lead-sync.mjs` + `build-baritone-sync.mjs` (and the conductor-v2 build the app fetches) to **pure-notation timing**: delete the audio-anchor machinery (`alignScoreToAudio` / `selectConductorAnchors` / `pruneTempoCliffAnchors`), walk score events `start += durationDivs/divisions × 60/bpm`, keep the `{pitchMidi,startTimeSeconds,durationSeconds}` shape so nothing downstream changes. **Done when `node scripts/omr/verify-plunk-from-score.mjs lida-rose` is GREEN** = plunk plays the verified score, dead-on, no recording. Full recipe + library choices: `PLUMB-RESEARCH-SYNTHESIS.md`.
+2. **Harden the gate (G3):** add the **octave-vs-source invariant** (generated octave == Audiveris source octave; corrections never shift octave — the 2026-06-24 class) AND the **silent-where-singing invariant** (flag a voice resting in a bar where ≥2 homophonic voices sing — the bar 5/25/29 blind spot the gate can't currently see).
+3. **Lyrics pipeline (G5):** carry source `<lyric>` → attach to notes → verify present + aligned.
+4. **Onboard orchestration (G6):** one command, score → artifacts → gate → register. Prove on **song #2 (Goodnight Ladies)**. Set Audiveris **`Implicit tuplets` ON** before re-OMR (root-fixes the tuplet class at the source — synthesis §2).
+5. **End-to-end product gate (G7):** green engraving + plunk==score (verifier green) + lyrics present + artifacts complete = "verified perfect."
 
 ## Backups (Jon flagged the corrections were untracked / unrecoverable)
 `/c/Users/jonch/omr-backups/20260624-094442-before-baritone-remint/` →
 `scripts-omr/` · `musicxml/` (current) · `source-PRIMARY-readonly/` · `experiment-extra/` (the broken octave experiment) · `system-gate-MINE/` (the gate).
 
-## Files I built today (currently UNTRACKED — commit to protect)
-- `scripts/omr/verify-score-invariants.mjs` (the gate)
-- `scripts/omr/songs/lida-rose.song.mjs` (the contract)
-- `scripts/omr/run-lida-score-pipeline.mjs` (wired the gate into pipeline phase 2)
+## Key files (all committed — session 2 commits 852c53a5 → feat plunk-verifier)
+- `scripts/omr/verify-score-invariants.mjs` — the law-gate (notation-law invariants)
+- `scripts/omr/verify-plunk-from-score.mjs` — **the G4 gate** (plunk pitches == verified score)
+- `scripts/omr/songs/lida-rose.song.mjs` — the declarative contract ("golden truth")
+- `scripts/omr/lida-lead-source-corrections.mjs` — ALL corrections (Lead + Baritone live here; the *baritone* file is dead)
+- `scripts/omr/_inspect-source.mjs` — homophony dumper (per-part per-bar notes + tick sums); the deterministic cross-check that powered every fix
+- `scripts/omr/build-{lead,baritone}-musicxml.mjs` — engraving builds (self-verify vs omrTargets)
+- `scripts/omr/build-lead-dataset.mjs` — regenerates `omrTargets.ts` (Lead + Baritone); run it after any correction so the builds' pitch-verify stays consistent
+- `scripts/omr/build-{lead,baritone}-sync.mjs` + `build-lida-conductor-v2.mjs` — **the sync builders to rewrite to pure-notation timing (step 1)**
+- `scripts/omr/PLUMB-KARPATHY-LOG.md` (gate log G1→G4) · `PLUMB-RESEARCH-SYNTHESIS.md` (the rebuild recipe)
 
 ## Hard-won lessons
 - OMR can't be perfected — fence it (gate + golden); a song locks only when green.
