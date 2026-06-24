@@ -486,7 +486,19 @@
       </note>
     </measure>
     <!--=======================================================-->
-    <measure number="9" width="350">
+        <measure number="9" width="131">
+      <note>
+        <pitch>
+          <step>F</step>
+          <octave>3</octave>
+        </pitch>
+        <duration>48</duration>
+        <voice>1</voice>
+        <type>whole</type>
+      </note>
+    </measure>
+    <!--=======================================================-->
+    <measure number="10" width="350">
 
       <print new-system="yes"/><attributes>
         <divisions>12</divisions>
@@ -527,7 +539,7 @@
       </note>
     </measure>
     <!--=======================================================-->
-    <measure number="10" width="270">
+    <measure number="11" width="270">
       <note default-x="35">
         <pitch>
           <step>C</step>
@@ -582,7 +594,7 @@
       </note>
     </measure>
     <!--=======================================================-->
-    <measure number="11" width="335">
+    <measure number="12" width="335">
       <note default-x="49">
         <pitch>
           <step>B</step>
@@ -697,7 +709,20 @@
       </note>
     </measure>
     <!--=======================================================-->
-    <measure number="12" width="338">
+        <measure number="13" width="131">
+      <note>
+        <pitch>
+          <step>C</step>
+          <alter>-1</alter>
+          <octave>4</octave>
+        </pitch>
+        <duration>48</duration>
+        <voice>1</voice>
+        <type>whole</type>
+      </note>
+    </measure>
+    <!--=======================================================-->
+    <measure number="14" width="338">
       <print new-system="yes"/>
       <attributes>
         <staff-details print-object="yes"></staff-details>
@@ -730,7 +755,7 @@
       </note>
     </measure>
     <!--=======================================================-->
-    <measure number="13" width="209">
+    <measure number="15" width="209">
       <note default-x="36">
         <pitch>
           <step>A</step>
@@ -784,7 +809,7 @@
       </note>
     </measure>
     <!--=======================================================-->
-    <measure number="14" width="271">
+    <measure number="16" width="271">
       <note default-x="50">
         <pitch>
           <step>C</step>
@@ -875,7 +900,7 @@
       </note>
     </measure>
     <!--=======================================================-->
-    <measure number="15" width="299">
+    <measure number="17" width="299">
       <direction placement="below">
         <direction-type>
           <dynamics default-y="-66" relative-x="-3">
@@ -986,7 +1011,7 @@
       </note>
     </measure>
     <!--=======================================================-->
-    <measure number="16" width="381">
+    <measure number="18" width="381">
       <print new-system="yes"/>
       <attributes>
         <staff-details print-object="yes"></staff-details>
@@ -1066,7 +1091,7 @@
       </note>
     </measure>
     <!--=======================================================-->
-    <measure number="17" width="358">
+    <measure number="19" width="358">
       <direction placement="below">
         <direction-type>
           <dynamics default-y="-63" relative-x="-16">
@@ -1196,9 +1221,19 @@
         <type>eighth</type>
         <stem default-y="-22">down</stem>
       </note>
+      <note>
+        <pitch>
+          <step>D</step>
+          <alter>-1</alter>
+          <octave>4</octave>
+        </pitch>
+        <duration>6</duration>
+        <voice>1</voice>
+        <type>eighth</type>
+      </note>
     </measure>
     <!--=======================================================-->
-    <measure number="18" width="244">
+    <measure number="20" width="244">
       <note default-x="50">
         <pitch>
           <step>C</step>
@@ -1270,7 +1305,20 @@
       </note>
     </measure>
     <!--=======================================================-->
-    <measure number="19" width="346">
+        <measure number="21" width="131">
+      <note>
+        <pitch>
+          <step>C</step>
+          <alter>-1</alter>
+          <octave>4</octave>
+        </pitch>
+        <duration>48</duration>
+        <voice>1</voice>
+        <type>whole</type>
+      </note>
+    </measure>
+    <!--=======================================================-->
+    <measure number="22" width="346">
 
       <print new-system="yes"/><attributes>
         <divisions>12</divisions>
@@ -1358,7 +1406,7 @@
       </note>
     </measure>
     <!--=======================================================-->
-    <measure number="20" width="336">
+    <measure number="23" width="336">
       <note default-x="30">
         <pitch>
           <step>E</step>
@@ -1487,7 +1535,7 @@
       </note>
     </measure>
     <!--=======================================================-->
-    <measure number="21" width="288">
+    <measure number="24" width="288">
       <note default-x="44">
         <pitch>
           <step>B</step>
@@ -1566,10 +1614,10 @@
       </note>
     </measure>
     <!--=======================================================-->
-    <measure number="22" width="147">  <note><rest measure="yes"/><duration>48</duration><voice>1</voice></note>
+    <measure number="25" width="147">  <note><rest measure="yes"/><duration>48</duration><voice>1</voice></note>
     </measure>
     <!--=======================================================-->
-    <measure number="23" width="358">
+    <measure number="26" width="358">
       <print new-system="yes"/>
       <attributes>
         <staff-details print-object="yes"></staff-details>
@@ -1659,7 +1707,7 @@
       </note>
     </measure>
     <!--=======================================================-->
-    <measure number="24" width="161">
+    <measure number="27" width="161">
       <direction placement="below">
         <direction-type>
           <dynamics default-y="-65" relative-x="-5">
@@ -1697,7 +1745,7 @@
       </note>
     </measure>
     <!--=======================================================-->
-    <measure number="25" width="225">
+    <measure number="28" width="225">
       <note default-x="20">
         <rest>
           <display-step>D</display-step>
@@ -1782,10 +1830,10 @@
       </note>
     </measure>
     <!--=======================================================-->
-    <measure number="26" width="126">  <note><rest measure="yes"/><duration>48</duration><voice>1</voice></note>
+    <measure number="29" width="126">  <note><rest measure="yes"/><duration>48</duration><voice>1</voice></note>
     </measure>
     <!--=======================================================-->
-    <measure number="27" width="246">
+    <measure number="30" width="246">
       <note default-x="21">
         <rest>
           <display-step>D</display-step>
@@ -1853,7 +1901,7 @@
       </note>
     </measure>
     <!--=======================================================-->
-    <measure number="28" width="346">
+    <measure number="31" width="346">
       <print new-system="yes"/>
       <attributes>
         <staff-details print-object="yes"></staff-details>
@@ -1925,7 +1973,7 @@
       </note>
     </measure>
     <!--=======================================================-->
-    <measure number="29" width="270">
+    <measure number="32" width="270">
       <note default-x="39">
         <pitch>
           <step>B</step>
@@ -2002,7 +2050,7 @@
       </note>
     </measure>
     <!--=======================================================-->
-    <measure number="30" width="269">
+    <measure number="33" width="269">
       <note default-x="22">
         <pitch>
           <step>G</step>
@@ -2098,7 +2146,7 @@
       </note>
     </measure>
     <!--=======================================================-->
-    <measure number="31" width="179">
+    <measure number="34" width="179">
       <direction placement="below">
         <direction-type>
           <dynamics default-y="-72" relative-x="-14">

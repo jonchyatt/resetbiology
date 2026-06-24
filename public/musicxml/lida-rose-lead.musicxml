@@ -874,13 +874,9 @@
           <step>F</step>
           <octave>3</octave>
         </pitch>
-        <duration>8</duration>
+        <duration>12</duration>
         <voice>1</voice>
         <type>quarter</type>
-        <time-modification>
-          <actual-notes>3</actual-notes>
-          <normal-notes>2</normal-notes>
-        </time-modification>
         <stem default-y="0">up</stem>
         <notations>
           <articulations>
@@ -888,7 +884,6 @@
             <accent placement="above" default-y="40"></accent>
             <staccato placement="above" default-y="40"></staccato>
           </articulations>
-          <tuplet type="start" number="1" placement="below"></tuplet>
           <slur type="start" number="1" placement="above" default-x="15" default-y="-31" bezier-x="12" bezier-y="2"></slur>
         </notations>
       </note>
@@ -898,13 +893,9 @@
           <alter>-1</alter>
           <octave>3</octave>
         </pitch>
-        <duration>8</duration>
+        <duration>12</duration>
         <voice>1</voice>
         <type>quarter</type>
-        <time-modification>
-          <actual-notes>3</actual-notes>
-          <normal-notes>2</normal-notes>
-        </time-modification>
         <stem default-y="5">up</stem>
         <notations>
           <articulations>
@@ -921,20 +912,15 @@
           <alter>-1</alter>
           <octave>3</octave>
         </pitch>
-        <duration>8</duration>
+        <duration>12</duration>
         <voice>1</voice>
         <type>quarter</type>
-        <time-modification>
-          <actual-notes>3</actual-notes>
-          <normal-notes>2</normal-notes>
-        </time-modification>
         <stem default-y="10">up</stem>
         <notations>
           <articulations>
             <staccato placement="below" default-y="-73"></staccato>
             <accent placement="above" default-y="35"></accent>
           </articulations>
-          <tuplet type="stop" number="1"></tuplet>
         </notations>
       </note>
       <note default-x="210">
@@ -1069,16 +1055,9 @@
           <display-step>B</display-step>
           <display-octave>3</display-octave>
         </rest>
-        <duration>8</duration>
+        <duration>12</duration>
         <voice>1</voice>
         <type>quarter</type>
-        <time-modification>
-          <actual-notes>3</actual-notes>
-          <normal-notes>2</normal-notes>
-        </time-modification>
-        <notations>
-          <tuplet type="start" number="1" placement="below"></tuplet>
-        </notations>
       </note>
       <note default-x="190">
         <pitch>
@@ -1118,13 +1097,9 @@
           <alter>-1</alter>
           <octave>3</octave>
         </pitch>
-        <duration>8</duration>
+        <duration>12</duration>
         <voice>1</voice>
         <type>quarter</type>
-        <time-modification>
-          <actual-notes>3</actual-notes>
-          <normal-notes>2</normal-notes>
-        </time-modification>
         <stem default-y="-54">down</stem>
       </note>
       <note default-x="331">
@@ -1133,20 +1108,15 @@
           <alter>-1</alter>
           <octave>3</octave>
         </pitch>
-        <duration>8</duration>
+        <duration>12</duration>
         <voice>1</voice>
         <type>quarter</type>
-        <time-modification>
-          <actual-notes>3</actual-notes>
-          <normal-notes>2</normal-notes>
-        </time-modification>
         <stem default-y="-9">up</stem>
         <notations>
           <articulations>
             <accent placement="below" default-y="-73"></accent>
             <staccato placement="below" default-y="-69"></staccato>
           </articulations>
-          <tuplet type="stop" number="1"></tuplet>
         </notations>
       </note>
     </measure>
@@ -1678,13 +1648,13 @@
       <note default-x="24">
         <pitch>
           <step>E</step>
-          <alter>-1</alter>
           <octave>4</octave>
         </pitch>
         <duration>24</duration>
         <tie type="stop"></tie>
         <voice>1</voice>
         <type>half</type>
+        <accidental>natural</accidental>
         <stem default-y="-39">down</stem>
         <notations>
           <tied type="stop"></tied>
