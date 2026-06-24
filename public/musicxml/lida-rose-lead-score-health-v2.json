@@ -1,13 +1,13 @@
 {
  "song": "Lida Rose",
  "part": "Lead",
- "scoreVersion": "lida-rose-lead-six-flat-118-conductor-v2",
+ "scoreVersion": "lida-rose-lead-six-flat-118-notation-v2",
  "sourcePages": [
   "196:P3",
   "197:P2",
   "198:P2"
  ],
- "generatedAt": "2026-06-23T22:20:19.074Z",
+ "generatedAt": "2026-06-24T22:20:24.936Z",
  "keyFifths": -6,
  "noteCount": 118,
  "wholeNotes": [
@@ -47,50 +47,13 @@
  "sync": {
   "noteCount": 118,
   "reconciledCount": 118,
-  "source": "score-conductor-v2 shared Lead-led timing from corrected score rhythm",
-  "currentAudioEvidenceAnchors": 83,
-  "currentRawConductorAnchors": 31,
-  "currentConductorAnchors": 24,
-  "rawMasterAnchors": 25,
-  "masterAnchors": 24,
-  "conductorAnchors": 24,
-  "scoreConductorNotes": 94,
-  "confirmedPartAnchors": 0,
-  "rejectedPartAnchors": 0,
-  "removedMasterAnchors": [
-   {
-    "beat": 22.5,
-    "time": 12.593,
-    "measure": 7,
-    "scoreIndex": 5,
-    "reason": "measure-strong-note",
-    "sources": [
-     {
-      "part": "Baritone",
-      "measure": 7,
-      "scoreIndex": 9,
-      "time": 12.593,
-      "deltaFromLeadSec": 0.262,
-      "reason": "measure-strong-note"
-     }
-    ],
-    "removedReason": "tempo-cliff",
-    "removedRateSecPerBeat": 0.515,
-    "previousRateSecPerBeat": 1.114
-   }
-  ],
-  "tempoSmoothness": {
-   "scoreConductor": {
-    "medianSecPerBeat": 0.618,
-    "p90RateJumpSecPerBeat": 0.031,
-    "maxRateJumpSecPerBeat": 0.289
-   }
-  },
-  "timingDeltaFromCurrent": {
-   "meanAbsSec": 0,
-   "maxAbsSec": 0.001,
-   "maxAbsNote": 54,
-   "finalNoteDeltaSec": 0
+  "source": "score-conductor-v2 shared Lead-led pure-notation timing from corrected score (no audio)",
+  "tempoBpm": 99,
+  "secondsPerBeat": 0.606,
+  "notationTiming": {
+   "ok": true,
+   "offBy": 0,
+   "detail": "bpm=99; spb=0.606; monotonic=true; offGrid=0/118"
   }
  },
  "checks": [
@@ -137,16 +100,10 @@
    "detail": "sync=118; reconciled=118; score=118"
   },
   {
-   "id": "score-conductor-sync",
-   "label": "Score-conductor sync",
+   "id": "notation-timing",
+   "label": "Pure-notation timing",
    "status": "pass",
-   "detail": "masterAnchors=24; partAnchorStarts=24; scoreConductor=94; p90Jump=0.031; maxJump=0.289; deltaCurrentMean=0; rejectedPartAnchors=0"
-  },
-  {
-   "id": "shared-conductor-v2",
-   "label": "Shared conductor v2",
-   "status": "pass",
-   "detail": "primary=Lead; masterAnchors=24; confirmed=2; rejected=18"
+   "detail": "bpm=99; spb=0.606; monotonic=true; offGrid=0/118"
   }
  ]
 }

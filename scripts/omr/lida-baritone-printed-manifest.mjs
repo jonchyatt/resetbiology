@@ -3,8 +3,8 @@
 // page-image-derived corrections here when Oliver's printed line is visually
 // audited the same way Ewart's Lead line was.
 
-export const BARITONE_SCORE_VERSION = 'lida-rose-baritone-six-flat-106';
-export const EXPECTED_BARITONE_NOTE_COUNT = 106;
+export const BARITONE_SCORE_VERSION = 'lida-rose-baritone-six-flat-114';
+export const EXPECTED_BARITONE_NOTE_COUNT = 114; // locked 2026-06-24: 3 held bars + bar-19 run + 3 restored sing-bars
 export const BARITONE_PAGE_BOUNDARIES = [
   { page: 196, measureStart: 1, measureEnd: 8 },
   { page: 197, measureStart: 9, measureEnd: 18 },

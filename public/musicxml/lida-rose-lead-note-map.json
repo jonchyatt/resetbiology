@@ -2,7 +2,7 @@
  "song": "Lida Rose",
  "part": "Lead",
  "scoreVersion": "lida-rose-lead-six-flat-118",
- "generatedAt": "2026-06-23T22:20:18.949Z",
+ "generatedAt": "2026-06-24T22:20:24.752Z",
  "notes": [
   {
    "index": 1,
@@ -764,7 +764,7 @@
    "index": 85,
    "measure": 25,
    "page": 198,
-   "pitch": "Eb4",
+   "pitch": "E4",
    "phraseId": "p197-sweetheart",
    "phraseLabel": "Li-da Rose, I'm home again, Rose, without a sweetheart to my name",
    "phraseShortLabel": "sweetheart"

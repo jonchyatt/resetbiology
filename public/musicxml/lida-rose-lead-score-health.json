@@ -7,7 +7,7 @@
   "197:P2",
   "198:P2"
  ],
- "generatedAt": "2026-06-23T22:20:18.949Z",
+ "generatedAt": "2026-06-24T22:20:24.752Z",
  "keyFifths": -6,
  "noteCount": 118,
  "wholeNotes": [
@@ -47,114 +47,13 @@
  "sync": {
   "noteCount": 118,
   "reconciledCount": 118,
-  "audioEvidenceAnchors": 83,
-  "rawConductorAnchors": 31,
-  "conductorAnchors": 24,
-  "removedConductorAnchors": [
-   {
-    "scoreIndex": 84,
-    "beat": 92.00000000000001,
-    "time": 58.354149206349206,
-    "measure": 25,
-    "reason": "measure-start",
-    "audioPitchMidi": 62,
-    "durationSeconds": 0.2089795918367372,
-    "removedReason": "tempo-cliff",
-    "removedRateSecPerBeat": 0.158,
-    "previousRateSecPerBeat": 1.339
-   },
-   {
-    "scoreIndex": 97,
-    "beat": 113.00000000000001,
-    "time": 67.02032789115646,
-    "measure": 30,
-    "reason": "measure-start",
-    "audioPitchMidi": 64,
-    "durationSeconds": 0.2205895691610067,
-    "removedReason": "tempo-cliff",
-    "removedRateSecPerBeat": 1.146,
-    "previousRateSecPerBeat": 0.153
-   },
-   {
-    "scoreIndex": 53,
-    "beat": 67.33333333333334,
-    "time": 37.94258004535148,
-    "measure": 18,
-    "reason": "measure-strong-note",
-    "audioPitchMidi": 48,
-    "durationSeconds": 0.3018594104308363,
-    "removedReason": "tempo-cliff",
-    "removedRateSecPerBeat": 1.137,
-    "previousRateSecPerBeat": 0.341
-   },
-   {
-    "scoreIndex": 35,
-    "beat": 46,
-    "time": 28.10250975056689,
-    "measure": 13,
-    "reason": "measure-start",
-    "audioPitchMidi": 59,
-    "durationSeconds": 0.18575963718820887,
-    "removedReason": "tempo-cliff",
-    "removedRateSecPerBeat": 0.238,
-    "previousRateSecPerBeat": 0.924
-   },
-   {
-    "scoreIndex": 96,
-    "beat": 108.00000000000001,
-    "time": 66.2540693877551,
-    "measure": 29,
-    "reason": "measure-start",
-    "audioPitchMidi": 64,
-    "durationSeconds": 0.4179591836734744,
-    "removedReason": "tempo-cliff",
-    "removedRateSecPerBeat": 0.526,
-    "previousRateSecPerBeat": 1.139
-   },
-   {
-    "scoreIndex": 38,
-    "beat": 54,
-    "time": 32.342719274376414,
-    "measure": 15,
-    "reason": "measure-start",
-    "audioPitchMidi": 60,
-    "durationSeconds": 0.3134693877551058,
-    "removedReason": "tempo-cliff",
-    "removedRateSecPerBeat": 0.328,
-    "previousRateSecPerBeat": 0.822
-   },
-   {
-    "scoreIndex": 27,
-    "beat": 38,
-    "time": 22.653578684807258,
-    "measure": 11,
-    "reason": "measure-start",
-    "audioPitchMidi": 54,
-    "durationSeconds": 0.32507936507936463,
-    "removedReason": "tempo-cliff",
-    "removedRateSecPerBeat": 0.439,
-    "previousRateSecPerBeat": 0.828
-   }
-  ],
-  "scoreConductorNotes": 94,
-  "isolatedOnsets": 121,
-  "tempoSmoothness": {
-   "noteLevelAudio": {
-    "medianSecPerBeat": 0.574,
-    "p90RateJumpSecPerBeat": 0.964,
-    "maxRateJumpSecPerBeat": 6.258
-   },
-   "scoreConductor": {
-    "medianSecPerBeat": 0.618,
-    "p90RateJumpSecPerBeat": 0.031,
-    "maxRateJumpSecPerBeat": 0.288
-   }
-  },
-  "timingDeltaFromNoteLevelAudio": {
-   "meanAbsSec": 0.446,
-   "maxAbsSec": 3.007,
-   "maxAbsNote": 85,
-   "finalNoteDeltaSec": 0
+  "source": "pure-notation timing from verified MusicXML (no audio)",
+  "tempoBpm": 99,
+  "secondsPerBeat": 0.606,
+  "notationTiming": {
+   "ok": true,
+   "offBy": 0,
+   "detail": "bpm=99; spb=0.606; monotonic=true; offGrid=0/118"
   }
  },
  "checks": [
@@ -201,10 +100,10 @@
    "detail": "sync=118; reconciled=118; score=118"
   },
   {
-   "id": "score-conductor-sync",
-   "label": "Score-conductor sync",
+   "id": "notation-timing",
+   "label": "Pure-notation timing",
    "status": "pass",
-   "detail": "conductorAnchors=24; scoreConductor=94; audioEvidence=83; p90Jump=0.031; maxJump=0.288; pruned=7; isolated=121"
+   "detail": "source=pure-notation timing from verified MusicXML (no audio); bpm=99; spb=0.606; monotonic=true; offGrid=0/118"
   }
  ]
 }

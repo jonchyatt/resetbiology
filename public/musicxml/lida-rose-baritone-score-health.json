@@ -1,105 +1,47 @@
 {
  "song": "Lida Rose",
  "part": "Baritone",
- "scoreVersion": "lida-rose-baritone-six-flat-106",
+ "scoreVersion": "lida-rose-baritone-six-flat-114",
  "sourcePages": [
   "196:P4",
   "197:P3",
   "198:P3"
  ],
- "generatedAt": "2026-06-23T22:20:19.019Z",
+ "generatedAt": "2026-06-24T22:20:24.857Z",
  "keyFifths": -6,
- "noteCount": 106,
- "wholeNotes": [],
- "sync": {
-  "noteCount": 106,
-  "reconciledCount": 106,
-  "source": "score-conductor Baritone timing from score rhythm plus measure-level isolated-audio anchors",
-  "audioEvidenceAnchors": 82,
-  "rawConductorAnchors": 25,
-  "conductorAnchors": 20,
-  "removedConductorAnchors": [
-   {
-    "scoreIndex": 32,
-    "beat": 46,
-    "time": 31.43585714285714,
-    "measure": 13,
-    "reason": "measure-start",
-    "audioPitchMidi": 56,
-    "amplitude": 0.407609686255455,
-    "removedReason": "tempo-cliff",
-    "removedRateSecPerBeat": 0.398,
-    "previousRateSecPerBeat": 1.243
-   },
-   {
-    "scoreIndex": 104,
-    "beat": 117.5,
-    "time": 78.25487936507938,
-    "measure": 31,
-    "reason": "measure-start",
-    "audioPitchMidi": 54,
-    "amplitude": 0.7870898246765137,
-    "removedReason": "tempo-cliff",
-    "removedRateSecPerBeat": 0.383,
-    "previousRateSecPerBeat": 1.138
-   },
-   {
-    "scoreIndex": 16,
-    "beat": 26,
-    "time": 14.463409070294784,
-    "measure": 8,
-    "reason": "measure-start",
-    "audioPitchMidi": 58,
-    "amplitude": 0.8182521206992013,
-    "removedReason": "tempo-cliff",
-    "removedRateSecPerBeat": 1.026,
-    "previousRateSecPerBeat": 0.534
-   },
-   {
-    "scoreIndex": 4,
-    "beat": 19,
-    "time": 9.432437188208617,
-    "measure": 6,
-    "reason": "measure-start",
-    "audioPitchMidi": 56,
-    "amplitude": 0.39911199467522757,
-    "removedReason": "tempo-cliff",
-    "removedRateSecPerBeat": 0.903,
-    "previousRateSecPerBeat": 0.465
-   },
-   {
-    "scoreIndex": 63,
-    "beat": 73.5,
-    "time": 50.44261904761905,
-    "measure": 20,
-    "reason": "measure-start",
-    "audioPitchMidi": 63,
-    "amplitude": 0.6616496907340156,
-    "removedReason": "tempo-cliff",
-    "removedRateSecPerBeat": 0.607,
-    "previousRateSecPerBeat": 1.023
-   }
-  ],
-  "scoreConductorNotes": 86,
-  "leadTimeline": 0,
-  "isolatedOnsets": 193,
-  "tempoSmoothness": {
-   "noteLevelAudio": {
-    "medianSecPerBeat": 0.607,
-    "p90RateJumpSecPerBeat": 0.803,
-    "maxRateJumpSecPerBeat": 1.392
-   },
-   "scoreConductor": {
-    "medianSecPerBeat": 0.635,
-    "p90RateJumpSecPerBeat": 0.072,
-    "maxRateJumpSecPerBeat": 0.286
-   }
+ "noteCount": 114,
+ "wholeNotes": [
+  {
+   "measure": 5,
+   "pitch": "F3"
   },
-  "timingDeltaFromLeadGrid": {
-   "meanAbsSec": 4.249,
-   "maxAbsSec": 7.148,
-   "maxAbsNote": 106,
-   "finalNoteDeltaSec": 7.148
+  {
+   "measure": 9,
+   "pitch": "F3"
+  },
+  {
+   "measure": 13,
+   "pitch": "Cb4"
+  },
+  {
+   "measure": 21,
+   "pitch": "Cb4"
+  },
+  {
+   "measure": 29,
+   "pitch": "Eb3"
+  }
+ ],
+ "sync": {
+  "noteCount": 114,
+  "reconciledCount": 114,
+  "source": "pure-notation timing from verified MusicXML (no audio)",
+  "tempoBpm": 99,
+  "secondsPerBeat": 0.606,
+  "notationTiming": {
+   "ok": true,
+   "offBy": 0,
+   "detail": "bpm=99; spb=0.606; monotonic=true; offGrid=0/114"
   }
  },
  "checks": [
@@ -113,25 +55,25 @@
    "id": "source-pitches",
    "label": "Source pitch sequence",
    "status": "pass",
-   "detail": "106 pitches match pp.196-198"
+   "detail": "114 pitches match pp.196-198"
   },
   {
    "id": "whole-notes",
    "label": "Whole-note survival",
    "status": "pass",
-   "detail": "expected []; got []"
+   "detail": "expected [5:F3 9:F3 13:Cb4 21:Cb4 29:Eb3]; got [5:F3 9:F3 13:Cb4 21:Cb4 29:Eb3]"
   },
   {
    "id": "note-count",
    "label": "Pitched note count",
    "status": "pass",
-   "detail": "expected 106; got 106"
+   "detail": "expected 114; got 114"
   },
   {
    "id": "printed-score-audit",
    "label": "Printed/source audit",
-   "status": "pass",
-   "detail": "4 Baritone audit measures match"
+   "status": "fail",
+   "detail": "m9: expected [Cb4:2:half Gb3:2:half], got [F3:4:whole] (page-197 Oliver chapel-bell system opening) | m18: expected [Cb4:1:quarter Cb4:1:quarter A3:1:quarter Bb3:1:quarter], got [Db4:0.5:eighth Db4:0.5:eighth Db4:1:quarter Db4:1:quarter] (page-197 Oliver end of sweetheart system) | m31: expected [Gb3:2:half G3:2:half], got [Cb4:1:quarter C4:1:quarter Cb4:2:half] (page-198 Oliver final active Lida Rose measure before page-turn residue)"
   },
   {
    "id": "no-courtesy-clefs",
@@ -143,13 +85,13 @@
    "id": "sync-count",
    "label": "Sync target count",
    "status": "pass",
-   "detail": "sync=106; reconciled=106; score=106"
+   "detail": "sync=114; reconciled=114; score=114"
   },
   {
-   "id": "score-conductor-sync",
-   "label": "Score-conductor Baritone sync",
+   "id": "notation-timing",
+   "label": "Pure-notation timing",
    "status": "pass",
-   "detail": "conductorAnchors=20; scoreConductor=86; leadTimeline=0; p90Jump=0.072; maxJump=0.286; pruned=5; isolated=193"
+   "detail": "source=pure-notation timing from verified MusicXML (no audio); bpm=99; spb=0.606; monotonic=true; offGrid=0/114"
   }
  ]
 }

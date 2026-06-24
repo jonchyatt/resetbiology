@@ -6,6 +6,8 @@
 import fs from 'fs';
 import { normalizeLeadMeasure, PRINTED_FIFTHS } from './lida-lead-key-normalize.mjs';
 import { applyLeadMeasureCorrections } from './lida-lead-source-corrections.mjs';
+import lidaContract from './songs/lida-rose.song.mjs';
+import { resolveTempoBpm, notationTimingCheck } from './score-timing.mjs';
 import {
   EXPECTED_LEAD_NOTE_COUNT,
   LEAD_SCORE_VERSION,
@@ -143,18 +145,13 @@ checks.push(check(
   `sync=${syncNotes.length}; reconciled=${reconciledNotes.length}; score=${noteCount}`,
 ));
 
-const conductorAnchors = reconciledNotes.filter((n) => n.src === 'conductor-anchor').length;
-const scoreConductorNotes = reconciledNotes.filter((n) => n.src === 'score-conductor').length;
-const conductorTempo = sync.audit?.tempoSmoothness?.scoreConductor;
+const bpm = resolveTempoBpm(lidaContract);
+const timing = notationTimingCheck(syncNotes, reconciledNotes, bpm);
 checks.push(check(
-  'score-conductor-sync',
-  'Score-conductor sync',
-  /score-conductor/i.test(sync.source || '') &&
-    conductorAnchors >= 18 &&
-    conductorAnchors + scoreConductorNotes === noteCount &&
-    (conductorTempo?.p90RateJumpSecPerBeat ?? 99) <= 0.5 &&
-    (conductorTempo?.maxRateJumpSecPerBeat ?? 99) <= 0.45,
-  `conductorAnchors=${conductorAnchors}; scoreConductor=${scoreConductorNotes}; audioEvidence=${sync.audit?.audioEvidenceAnchors ?? 'n/a'}; p90Jump=${conductorTempo?.p90RateJumpSecPerBeat ?? 'n/a'}; maxJump=${conductorTempo?.maxRateJumpSecPerBeat ?? 'n/a'}; pruned=${sync.audit?.removedConductorAnchors?.length ?? 0}; isolated=${sync.audit?.isolatedOnsets ?? 'n/a'}`,
+  'notation-timing',
+  'Pure-notation timing',
+  /notation/i.test(sync.source || '') && timing.ok,
+  `source=${sync.source || 'missing'}; ${timing.detail}`,
 ));
 
 const payload = {
@@ -170,14 +167,10 @@ const payload = {
   sync: {
     noteCount: syncNotes.length,
     reconciledCount: reconciledNotes.length,
-    audioEvidenceAnchors: sync.audit?.audioEvidenceAnchors ?? null,
-    rawConductorAnchors: sync.audit?.rawConductorAnchors ?? null,
-    conductorAnchors,
-    removedConductorAnchors: sync.audit?.removedConductorAnchors ?? [],
-    scoreConductorNotes,
-    isolatedOnsets: sync.audit?.isolatedOnsets ?? null,
-    tempoSmoothness: sync.audit?.tempoSmoothness ?? null,
-    timingDeltaFromNoteLevelAudio: sync.audit?.timingDeltaFromNoteLevelAudio ?? null,
+    source: sync.source || null,
+    tempoBpm: bpm,
+    secondsPerBeat: +(60 / bpm).toFixed(3),
+    notationTiming: timing,
   },
   checks,
 };

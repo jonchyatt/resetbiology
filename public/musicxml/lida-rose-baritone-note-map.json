@@ -1,8 +1,8 @@
 {
  "song": "Lida Rose",
  "part": "Baritone",
- "scoreVersion": "lida-rose-baritone-six-flat-106",
- "generatedAt": "2026-06-23T22:20:19.019Z",
+ "scoreVersion": "lida-rose-baritone-six-flat-114",
+ "generatedAt": "2026-06-24T22:20:24.857Z",
  "notes": [
   {
    "index": 1,
@@ -42,9 +42,9 @@
   },
   {
    "index": 5,
-   "measure": 6,
+   "measure": 5,
    "page": 196,
-   "pitch": "Ab3",
+   "pitch": "F3",
    "phraseId": "bar-p196-lida-home",
    "phraseLabel": "Li-da Rose, I'm home again, Rose, about a thousand kisses shy",
    "phraseShortLabel": "lida home"
@@ -62,7 +62,7 @@
    "index": 7,
    "measure": 6,
    "page": 196,
-   "pitch": "Db4",
+   "pitch": "Ab3",
    "phraseId": "bar-p196-lida-home",
    "phraseLabel": "Li-da Rose, I'm home again, Rose, about a thousand kisses shy",
    "phraseShortLabel": "lida home"
@@ -71,16 +71,16 @@
    "index": 8,
    "measure": 6,
    "page": 196,
-   "pitch": "Cb4",
+   "pitch": "Db4",
    "phraseId": "bar-p196-lida-home",
    "phraseLabel": "Li-da Rose, I'm home again, Rose, about a thousand kisses shy",
    "phraseShortLabel": "lida home"
   },
   {
    "index": 9,
-   "measure": 7,
+   "measure": 6,
    "page": 196,
-   "pitch": "Eb4",
+   "pitch": "Cb4",
    "phraseId": "bar-p196-lida-home",
    "phraseLabel": "Li-da Rose, I'm home again, Rose, about a thousand kisses shy",
    "phraseShortLabel": "lida home"
@@ -89,7 +89,7 @@
    "index": 10,
    "measure": 7,
    "page": 196,
-   "pitch": "D4",
+   "pitch": "Eb4",
    "phraseId": "bar-p196-lida-home",
    "phraseLabel": "Li-da Rose, I'm home again, Rose, about a thousand kisses shy",
    "phraseShortLabel": "lida home"
@@ -98,7 +98,7 @@
    "index": 11,
    "measure": 7,
    "page": 196,
-   "pitch": "Eb4",
+   "pitch": "D4",
    "phraseId": "bar-p196-lida-home",
    "phraseLabel": "Li-da Rose, I'm home again, Rose, about a thousand kisses shy",
    "phraseShortLabel": "lida home"
@@ -125,7 +125,7 @@
    "index": 14,
    "measure": 7,
    "page": 196,
-   "pitch": "A3",
+   "pitch": "Eb4",
    "phraseId": "bar-p196-lida-home",
    "phraseLabel": "Li-da Rose, I'm home again, Rose, about a thousand kisses shy",
    "phraseShortLabel": "lida home"
@@ -134,7 +134,7 @@
    "index": 15,
    "measure": 7,
    "page": 196,
-   "pitch": "Ab3",
+   "pitch": "A3",
    "phraseId": "bar-p196-lida-home",
    "phraseLabel": "Li-da Rose, I'm home again, Rose, about a thousand kisses shy",
    "phraseShortLabel": "lida home"
@@ -143,16 +143,16 @@
    "index": 16,
    "measure": 7,
    "page": 196,
-   "pitch": "A3",
+   "pitch": "Ab3",
    "phraseId": "bar-p196-lida-home",
    "phraseLabel": "Li-da Rose, I'm home again, Rose, about a thousand kisses shy",
    "phraseShortLabel": "lida home"
   },
   {
    "index": 17,
-   "measure": 8,
+   "measure": 7,
    "page": 196,
-   "pitch": "Bb3",
+   "pitch": "A3",
    "phraseId": "bar-p196-lida-home",
    "phraseLabel": "Li-da Rose, I'm home again, Rose, about a thousand kisses shy",
    "phraseShortLabel": "lida home"
@@ -170,7 +170,7 @@
    "index": 19,
    "measure": 8,
    "page": 196,
-   "pitch": "A3",
+   "pitch": "Bb3",
    "phraseId": "bar-p196-lida-home",
    "phraseLabel": "Li-da Rose, I'm home again, Rose, about a thousand kisses shy",
    "phraseShortLabel": "lida home"
@@ -179,16 +179,16 @@
    "index": 20,
    "measure": 8,
    "page": 196,
-   "pitch": "Bb3",
+   "pitch": "A3",
    "phraseId": "bar-p196-lida-home",
    "phraseLabel": "Li-da Rose, I'm home again, Rose, about a thousand kisses shy",
    "phraseShortLabel": "lida home"
   },
   {
    "index": 21,
-   "measure": 9,
-   "page": 197,
-   "pitch": "Cb4",
+   "measure": 8,
+   "page": 196,
+   "pitch": "Bb3",
    "phraseId": "bar-p197-chapel-bell",
    "phraseLabel": "Ding, dong, ding, I can hear the chapel bell chime",
    "phraseShortLabel": "chapel bell"
@@ -197,7 +197,7 @@
    "index": 22,
    "measure": 9,
    "page": 197,
-   "pitch": "Gb3",
+   "pitch": "F3",
    "phraseId": "bar-p197-chapel-bell",
    "phraseLabel": "Ding, dong, ding, I can hear the chapel bell chime",
    "phraseShortLabel": "chapel bell"
@@ -215,14 +215,14 @@
    "index": 24,
    "measure": 10,
    "page": 197,
-   "pitch": "Cb4",
+   "pitch": "Gb3",
    "phraseId": "bar-p197-chapel-bell",
    "phraseLabel": "Ding, dong, ding, I can hear the chapel bell chime",
    "phraseShortLabel": "chapel bell"
   },
   {
    "index": 25,
-   "measure": 10,
+   "measure": 11,
    "page": 197,
    "pitch": "Cb4",
    "phraseId": "bar-p197-chapel-bell",
@@ -233,7 +233,7 @@
    "index": 26,
    "measure": 11,
    "page": 197,
-   "pitch": "Bb3",
+   "pitch": "Cb4",
    "phraseId": "bar-p197-chapel-bell",
    "phraseLabel": "Ding, dong, ding, I can hear the chapel bell chime",
    "phraseShortLabel": "chapel bell"
@@ -242,14 +242,14 @@
    "index": 27,
    "measure": 11,
    "page": 197,
-   "pitch": "Db4",
+   "pitch": "Cb4",
    "phraseId": "bar-p197-chapel-bell",
    "phraseLabel": "Ding, dong, ding, I can hear the chapel bell chime",
    "phraseShortLabel": "chapel bell"
   },
   {
    "index": 28,
-   "measure": 11,
+   "measure": 12,
    "page": 197,
    "pitch": "Bb3",
    "phraseId": "bar-p197-chapel-bell",
@@ -258,7 +258,7 @@
   },
   {
    "index": 29,
-   "measure": 11,
+   "measure": 12,
    "page": 197,
    "pitch": "Db4",
    "phraseId": "bar-p197-chapel-bell",
@@ -267,7 +267,7 @@
   },
   {
    "index": 30,
-   "measure": 11,
+   "measure": 12,
    "page": 197,
    "pitch": "Bb3",
    "phraseId": "bar-p197-chapel-bell",
@@ -278,7 +278,7 @@
    "index": 31,
    "measure": 12,
    "page": 197,
-   "pitch": "C4",
+   "pitch": "Db4",
    "phraseId": "bar-p197-chapel-bell",
    "phraseLabel": "Ding, dong, ding, I can hear the chapel bell chime",
    "phraseShortLabel": "chapel bell"
@@ -287,7 +287,7 @@
    "index": 32,
    "measure": 12,
    "page": 197,
-   "pitch": "C4",
+   "pitch": "Bb3",
    "phraseId": "bar-p197-chapel-bell",
    "phraseLabel": "Ding, dong, ding, I can hear the chapel bell chime",
    "phraseShortLabel": "chapel bell"
@@ -296,14 +296,14 @@
    "index": 33,
    "measure": 13,
    "page": 197,
-   "pitch": "Ab3",
+   "pitch": "Cb4",
    "phraseId": "bar-p197-question-name",
    "phraseLabel": "Ding, dong, ding, at the least suggestion I'll pop the question to my name",
    "phraseShortLabel": "question"
   },
   {
    "index": 34,
-   "measure": 13,
+   "measure": 14,
    "page": 197,
    "pitch": "C4",
    "phraseId": "bar-p197-question-name",
@@ -312,7 +312,7 @@
   },
   {
    "index": 35,
-   "measure": 13,
+   "measure": 14,
    "page": 197,
    "pitch": "C4",
    "phraseId": "bar-p197-question-name",
@@ -321,16 +321,16 @@
   },
   {
    "index": 36,
-   "measure": 14,
+   "measure": 15,
    "page": 197,
-   "pitch": "Cb4",
+   "pitch": "Ab3",
    "phraseId": "bar-p197-question-name",
    "phraseLabel": "Ding, dong, ding, at the least suggestion I'll pop the question to my name",
    "phraseShortLabel": "question"
   },
   {
    "index": 37,
-   "measure": 14,
+   "measure": 15,
    "page": 197,
    "pitch": "C4",
    "phraseId": "bar-p197-question-name",
@@ -339,7 +339,16 @@
   },
   {
    "index": 38,
-   "measure": 14,
+   "measure": 15,
+   "page": 197,
+   "pitch": "C4",
+   "phraseId": "bar-p197-question-name",
+   "phraseLabel": "Ding, dong, ding, at the least suggestion I'll pop the question to my name",
+   "phraseShortLabel": "question"
+  },
+  {
+   "index": 39,
+   "measure": 16,
    "page": 197,
    "pitch": "Cb4",
    "phraseId": "bar-p197-question-name",
@@ -347,8 +356,26 @@
    "phraseShortLabel": "question"
   },
   {
-   "index": 39,
-   "measure": 14,
+   "index": 40,
+   "measure": 16,
+   "page": 197,
+   "pitch": "C4",
+   "phraseId": "bar-p197-question-name",
+   "phraseLabel": "Ding, dong, ding, at the least suggestion I'll pop the question to my name",
+   "phraseShortLabel": "question"
+  },
+  {
+   "index": 41,
+   "measure": 16,
+   "page": 197,
+   "pitch": "Cb4",
+   "phraseId": "bar-p197-question-name",
+   "phraseLabel": "Ding, dong, ding, at the least suggestion I'll pop the question to my name",
+   "phraseShortLabel": "question"
+  },
+  {
+   "index": 42,
+   "measure": 16,
    "page": 197,
    "pitch": "G3",
    "phraseId": "bar-p197-question-name",
@@ -356,8 +383,8 @@
    "phraseShortLabel": "question"
   },
   {
-   "index": 40,
-   "measure": 15,
+   "index": 43,
+   "measure": 17,
    "page": 197,
    "pitch": "Ab3",
    "phraseId": "bar-p197-question-name",
@@ -365,8 +392,8 @@
    "phraseShortLabel": "question"
   },
   {
-   "index": 41,
-   "measure": 15,
+   "index": 44,
+   "measure": 17,
    "page": 197,
    "pitch": "A3",
    "phraseId": "bar-p197-question-name",
@@ -374,8 +401,8 @@
    "phraseShortLabel": "question"
   },
   {
-   "index": 42,
-   "measure": 15,
+   "index": 45,
+   "measure": 17,
    "page": 197,
    "pitch": "Bb3",
    "phraseId": "bar-p197-question-name",
@@ -383,35 +410,8 @@
    "phraseShortLabel": "question"
   },
   {
-   "index": 43,
-   "measure": 15,
-   "page": 197,
-   "pitch": "Db4",
-   "phraseId": "bar-p197-question-name",
-   "phraseLabel": "Ding, dong, ding, at the least suggestion I'll pop the question to my name",
-   "phraseShortLabel": "question"
-  },
-  {
-   "index": 44,
-   "measure": 15,
-   "page": 197,
-   "pitch": "Cb4",
-   "phraseId": "bar-p197-question-name",
-   "phraseLabel": "Ding, dong, ding, at the least suggestion I'll pop the question to my name",
-   "phraseShortLabel": "question"
-  },
-  {
-   "index": 45,
-   "measure": 16,
-   "page": 197,
-   "pitch": "Db4",
-   "phraseId": "bar-p197-question-name",
-   "phraseLabel": "Ding, dong, ding, at the least suggestion I'll pop the question to my name",
-   "phraseShortLabel": "question"
-  },
-  {
    "index": 46,
-   "measure": 16,
+   "measure": 17,
    "page": 197,
    "pitch": "Db4",
    "phraseId": "bar-p197-question-name",
@@ -420,16 +420,16 @@
   },
   {
    "index": 47,
-   "measure": 16,
+   "measure": 17,
    "page": 197,
-   "pitch": "Db4",
+   "pitch": "Cb4",
    "phraseId": "bar-p197-question-name",
    "phraseLabel": "Ding, dong, ding, at the least suggestion I'll pop the question to my name",
    "phraseShortLabel": "question"
   },
   {
    "index": 48,
-   "measure": 16,
+   "measure": 18,
    "page": 197,
    "pitch": "Db4",
    "phraseId": "bar-p197-question-name",
@@ -438,7 +438,7 @@
   },
   {
    "index": 49,
-   "measure": 17,
+   "measure": 18,
    "page": 197,
    "pitch": "Db4",
    "phraseId": "bar-p197-question-name",
@@ -447,16 +447,16 @@
   },
   {
    "index": 50,
-   "measure": 17,
+   "measure": 18,
    "page": 197,
-   "pitch": "C4",
+   "pitch": "Db4",
    "phraseId": "bar-p197-question-name",
    "phraseLabel": "Ding, dong, ding, at the least suggestion I'll pop the question to my name",
    "phraseShortLabel": "question"
   },
   {
    "index": 51,
-   "measure": 17,
+   "measure": 18,
    "page": 197,
    "pitch": "Db4",
    "phraseId": "bar-p197-question-name",
@@ -465,8 +465,8 @@
   },
   {
    "index": 52,
-   "measure": 17,
-   "page": 197,
+   "measure": 19,
+   "page": 198,
    "pitch": "Db4",
    "phraseId": "bar-p197-question-name",
    "phraseLabel": "Ding, dong, ding, at the least suggestion I'll pop the question to my name",
@@ -474,17 +474,17 @@
   },
   {
    "index": 53,
-   "measure": 17,
-   "page": 197,
-   "pitch": "Db4",
+   "measure": 19,
+   "page": 198,
+   "pitch": "C4",
    "phraseId": "bar-p197-question-name",
    "phraseLabel": "Ding, dong, ding, at the least suggestion I'll pop the question to my name",
    "phraseShortLabel": "question"
   },
   {
    "index": 54,
-   "measure": 17,
-   "page": 197,
+   "measure": 19,
+   "page": 198,
    "pitch": "Db4",
    "phraseId": "bar-p197-question-name",
    "phraseLabel": "Ding, dong, ding, at the least suggestion I'll pop the question to my name",
@@ -492,61 +492,97 @@
   },
   {
    "index": 55,
-   "measure": 17,
-   "page": 197,
-   "pitch": "C4",
+   "measure": 19,
+   "page": 198,
+   "pitch": "Db4",
    "phraseId": "bar-p197-question-name",
    "phraseLabel": "Ding, dong, ding, at the least suggestion I'll pop the question to my name",
    "phraseShortLabel": "question"
   },
   {
    "index": 56,
-   "measure": 18,
-   "page": 197,
-   "pitch": "Cb4",
+   "measure": 19,
+   "page": 198,
+   "pitch": "Db4",
    "phraseId": "bar-p197-question-name",
    "phraseLabel": "Ding, dong, ding, at the least suggestion I'll pop the question to my name",
    "phraseShortLabel": "question"
   },
   {
    "index": 57,
-   "measure": 18,
-   "page": 197,
-   "pitch": "Cb4",
+   "measure": 19,
+   "page": 198,
+   "pitch": "Db4",
    "phraseId": "bar-p197-question-name",
    "phraseLabel": "Ding, dong, ding, at the least suggestion I'll pop the question to my name",
    "phraseShortLabel": "question"
   },
   {
    "index": 58,
-   "measure": 18,
-   "page": 197,
-   "pitch": "A3",
+   "measure": 19,
+   "page": 198,
+   "pitch": "C4",
    "phraseId": "bar-p197-question-name",
    "phraseLabel": "Ding, dong, ding, at the least suggestion I'll pop the question to my name",
    "phraseShortLabel": "question"
   },
   {
    "index": 59,
-   "measure": 18,
-   "page": 197,
-   "pitch": "Bb3",
+   "measure": 19,
+   "page": 198,
+   "pitch": "Db4",
    "phraseId": "bar-p197-question-name",
    "phraseLabel": "Ding, dong, ding, at the least suggestion I'll pop the question to my name",
    "phraseShortLabel": "question"
   },
   {
    "index": 60,
-   "measure": 19,
+   "measure": 20,
    "page": 198,
-   "pitch": "Ab3",
+   "pitch": "Cb4",
    "phraseId": "bar-p198-everyone-knows",
    "phraseLabel": "Li-da Rose, now everyone knows that I am hoping you're the same",
    "phraseShortLabel": "everyone knows"
   },
   {
    "index": 61,
-   "measure": 19,
+   "measure": 20,
+   "page": 198,
+   "pitch": "Cb4",
+   "phraseId": "bar-p198-everyone-knows",
+   "phraseLabel": "Li-da Rose, now everyone knows that I am hoping you're the same",
+   "phraseShortLabel": "everyone knows"
+  },
+  {
+   "index": 62,
+   "measure": 20,
+   "page": 198,
+   "pitch": "A3",
+   "phraseId": "bar-p198-everyone-knows",
+   "phraseLabel": "Li-da Rose, now everyone knows that I am hoping you're the same",
+   "phraseShortLabel": "everyone knows"
+  },
+  {
+   "index": 63,
+   "measure": 20,
+   "page": 198,
+   "pitch": "Bb3",
+   "phraseId": "bar-p198-everyone-knows",
+   "phraseLabel": "Li-da Rose, now everyone knows that I am hoping you're the same",
+   "phraseShortLabel": "everyone knows"
+  },
+  {
+   "index": 64,
+   "measure": 21,
+   "page": 198,
+   "pitch": "Cb4",
+   "phraseId": "bar-p198-everyone-knows",
+   "phraseLabel": "Li-da Rose, now everyone knows that I am hoping you're the same",
+   "phraseShortLabel": "everyone knows"
+  },
+  {
+   "index": 65,
+   "measure": 22,
    "page": 198,
    "pitch": "Ab3",
    "phraseId": "bar-p198-everyone-knows",
@@ -554,8 +590,17 @@
    "phraseShortLabel": "everyone knows"
   },
   {
-   "index": 62,
-   "measure": 19,
+   "index": 66,
+   "measure": 22,
+   "page": 198,
+   "pitch": "Ab3",
+   "phraseId": "bar-p198-everyone-knows",
+   "phraseLabel": "Li-da Rose, now everyone knows that I am hoping you're the same",
+   "phraseShortLabel": "everyone knows"
+  },
+  {
+   "index": 67,
+   "measure": 22,
    "page": 198,
    "pitch": "Db4",
    "phraseId": "bar-p198-everyone-knows",
@@ -563,8 +608,8 @@
    "phraseShortLabel": "everyone knows"
   },
   {
-   "index": 63,
-   "measure": 19,
+   "index": 68,
+   "measure": 22,
    "page": 198,
    "pitch": "Cb4",
    "phraseId": "bar-p198-everyone-knows",
@@ -572,8 +617,8 @@
    "phraseShortLabel": "everyone knows"
   },
   {
-   "index": 64,
-   "measure": 20,
+   "index": 69,
+   "measure": 23,
    "page": 198,
    "pitch": "Eb4",
    "phraseId": "bar-p198-everyone-knows",
@@ -581,8 +626,8 @@
    "phraseShortLabel": "everyone knows"
   },
   {
-   "index": 65,
-   "measure": 20,
+   "index": 70,
+   "measure": 23,
    "page": 198,
    "pitch": "D4",
    "phraseId": "bar-p198-everyone-knows",
@@ -590,80 +635,35 @@
    "phraseShortLabel": "everyone knows"
   },
   {
-   "index": 66,
-   "measure": 20,
-   "page": 198,
-   "pitch": "Eb4",
-   "phraseId": "bar-p198-everyone-knows",
-   "phraseLabel": "Li-da Rose, now everyone knows that I am hoping you're the same",
-   "phraseShortLabel": "everyone knows"
-  },
-  {
-   "index": 67,
-   "measure": 20,
-   "page": 198,
-   "pitch": "Eb4",
-   "phraseId": "bar-p198-everyone-knows",
-   "phraseLabel": "Li-da Rose, now everyone knows that I am hoping you're the same",
-   "phraseShortLabel": "everyone knows"
-  },
-  {
-   "index": 68,
-   "measure": 20,
-   "page": 198,
-   "pitch": "Eb4",
-   "phraseId": "bar-p198-everyone-knows",
-   "phraseLabel": "Li-da Rose, now everyone knows that I am hoping you're the same",
-   "phraseShortLabel": "everyone knows"
-  },
-  {
-   "index": 69,
-   "measure": 20,
-   "page": 198,
-   "pitch": "A3",
-   "phraseId": "bar-p198-everyone-knows",
-   "phraseLabel": "Li-da Rose, now everyone knows that I am hoping you're the same",
-   "phraseShortLabel": "everyone knows"
-  },
-  {
-   "index": 70,
-   "measure": 20,
-   "page": 198,
-   "pitch": "Ab3",
-   "phraseId": "bar-p198-everyone-knows",
-   "phraseLabel": "Li-da Rose, now everyone knows that I am hoping you're the same",
-   "phraseShortLabel": "everyone knows"
-  },
-  {
    "index": 71,
-   "measure": 20,
+   "measure": 23,
    "page": 198,
-   "pitch": "A3",
+   "pitch": "Eb4",
    "phraseId": "bar-p198-everyone-knows",
    "phraseLabel": "Li-da Rose, now everyone knows that I am hoping you're the same",
    "phraseShortLabel": "everyone knows"
   },
   {
    "index": 72,
-   "measure": 21,
+   "measure": 23,
    "page": 198,
-   "pitch": "Bb3",
+   "pitch": "Eb4",
    "phraseId": "bar-p198-everyone-knows",
    "phraseLabel": "Li-da Rose, now everyone knows that I am hoping you're the same",
    "phraseShortLabel": "everyone knows"
   },
   {
    "index": 73,
-   "measure": 21,
+   "measure": 23,
    "page": 198,
-   "pitch": "Bb3",
+   "pitch": "Eb4",
    "phraseId": "bar-p198-everyone-knows",
    "phraseLabel": "Li-da Rose, now everyone knows that I am hoping you're the same",
    "phraseShortLabel": "everyone knows"
   },
   {
    "index": 74,
-   "measure": 21,
+   "measure": 23,
    "page": 198,
    "pitch": "A3",
    "phraseId": "bar-p198-everyone-knows",
@@ -672,43 +672,25 @@
   },
   {
    "index": 75,
-   "measure": 21,
+   "measure": 23,
    "page": 198,
-   "pitch": "Bb3",
+   "pitch": "Ab3",
    "phraseId": "bar-p198-everyone-knows",
    "phraseLabel": "Li-da Rose, now everyone knows that I am hoping you're the same",
    "phraseShortLabel": "everyone knows"
   },
   {
    "index": 76,
-   "measure": 21,
+   "measure": 23,
    "page": 198,
-   "pitch": "Bb3",
+   "pitch": "A3",
    "phraseId": "bar-p198-everyone-knows",
    "phraseLabel": "Li-da Rose, now everyone knows that I am hoping you're the same",
    "phraseShortLabel": "everyone knows"
   },
   {
    "index": 77,
-   "measure": 23,
-   "page": 198,
-   "pitch": "Cb4",
-   "phraseId": "bar-p198-love-song",
-   "phraseLabel": "So here is my love song; not fancy or fine",
-   "phraseShortLabel": "love song"
-  },
-  {
-   "index": 78,
-   "measure": 23,
-   "page": 198,
-   "pitch": "Cb4",
-   "phraseId": "bar-p198-love-song",
-   "phraseLabel": "So here is my love song; not fancy or fine",
-   "phraseShortLabel": "love song"
-  },
-  {
-   "index": 79,
-   "measure": 23,
+   "measure": 24,
    "page": 198,
    "pitch": "Bb3",
    "phraseId": "bar-p198-love-song",
@@ -716,10 +698,28 @@
    "phraseShortLabel": "love song"
   },
   {
-   "index": 80,
-   "measure": 23,
+   "index": 78,
+   "measure": 24,
    "page": 198,
-   "pitch": "Cb4",
+   "pitch": "Bb3",
+   "phraseId": "bar-p198-love-song",
+   "phraseLabel": "So here is my love song; not fancy or fine",
+   "phraseShortLabel": "love song"
+  },
+  {
+   "index": 79,
+   "measure": 24,
+   "page": 198,
+   "pitch": "A3",
+   "phraseId": "bar-p198-love-song",
+   "phraseLabel": "So here is my love song; not fancy or fine",
+   "phraseShortLabel": "love song"
+  },
+  {
+   "index": 80,
+   "measure": 24,
+   "page": 198,
+   "pitch": "Bb3",
    "phraseId": "bar-p198-love-song",
    "phraseLabel": "So here is my love song; not fancy or fine",
    "phraseShortLabel": "love song"
@@ -728,16 +728,16 @@
    "index": 81,
    "measure": 24,
    "page": 198,
-   "pitch": "Cb4",
+   "pitch": "Bb3",
    "phraseId": "bar-p198-love-song",
    "phraseLabel": "So here is my love song; not fancy or fine",
    "phraseShortLabel": "love song"
   },
   {
    "index": 82,
-   "measure": 24,
+   "measure": 25,
    "page": 198,
-   "pitch": "Cb4",
+   "pitch": "Db4",
    "phraseId": "bar-p198-love-song",
    "phraseLabel": "So here is my love song; not fancy or fine",
    "phraseShortLabel": "love song"
@@ -753,25 +753,25 @@
   },
   {
    "index": 84,
-   "measure": 25,
+   "measure": 26,
    "page": 198,
-   "pitch": "Bb3",
+   "pitch": "Cb4",
    "phraseId": "bar-p198-love-song",
    "phraseLabel": "So here is my love song; not fancy or fine",
    "phraseShortLabel": "love song"
   },
   {
    "index": 85,
-   "measure": 25,
+   "measure": 26,
    "page": 198,
-   "pitch": "Db4",
+   "pitch": "Cb4",
    "phraseId": "bar-p198-love-song",
    "phraseLabel": "So here is my love song; not fancy or fine",
    "phraseShortLabel": "love song"
   },
   {
    "index": 86,
-   "measure": 25,
+   "measure": 26,
    "page": 198,
    "pitch": "Bb3",
    "phraseId": "bar-p198-love-song",
@@ -780,7 +780,7 @@
   },
   {
    "index": 87,
-   "measure": 27,
+   "measure": 26,
    "page": 198,
    "pitch": "Cb4",
    "phraseId": "bar-p198-be-mine",
@@ -807,9 +807,9 @@
   },
   {
    "index": 90,
-   "measure": 27,
+   "measure": 28,
    "page": 198,
-   "pitch": "Eb4",
+   "pitch": "Bb3",
    "phraseId": "bar-p198-be-mine",
    "phraseLabel": "Li-da Rose, Oh, won't you be mine? Lida Rose, oh, Lida Rose",
    "phraseShortLabel": "be mine"
@@ -818,7 +818,7 @@
    "index": 91,
    "measure": 28,
    "page": 198,
-   "pitch": "Cb4",
+   "pitch": "Bb3",
    "phraseId": "bar-p198-be-mine",
    "phraseLabel": "Li-da Rose, Oh, won't you be mine? Lida Rose, oh, Lida Rose",
    "phraseShortLabel": "be mine"
@@ -827,7 +827,7 @@
    "index": 92,
    "measure": 28,
    "page": 198,
-   "pitch": "C4",
+   "pitch": "Db4",
    "phraseId": "bar-p198-be-mine",
    "phraseLabel": "Li-da Rose, Oh, won't you be mine? Lida Rose, oh, Lida Rose",
    "phraseShortLabel": "be mine"
@@ -836,7 +836,7 @@
    "index": 93,
    "measure": 28,
    "page": 198,
-   "pitch": "Cb4",
+   "pitch": "Bb3",
    "phraseId": "bar-p198-be-mine",
    "phraseLabel": "Li-da Rose, Oh, won't you be mine? Lida Rose, oh, Lida Rose",
    "phraseShortLabel": "be mine"
@@ -845,86 +845,86 @@
    "index": 94,
    "measure": 29,
    "page": 198,
-   "pitch": "Bb3",
+   "pitch": "Eb3",
    "phraseId": "bar-p198-be-mine",
    "phraseLabel": "Li-da Rose, Oh, won't you be mine? Lida Rose, oh, Lida Rose",
    "phraseShortLabel": "be mine"
   },
   {
    "index": 95,
-   "measure": 29,
+   "measure": 30,
    "page": 198,
-   "pitch": "Gb3",
+   "pitch": "Cb4",
    "phraseId": "bar-p198-be-mine",
    "phraseLabel": "Li-da Rose, Oh, won't you be mine? Lida Rose, oh, Lida Rose",
    "phraseShortLabel": "be mine"
   },
   {
    "index": 96,
-   "measure": 29,
+   "measure": 30,
    "page": 198,
-   "pitch": "F3",
+   "pitch": "Cb4",
    "phraseId": "bar-p198-be-mine",
    "phraseLabel": "Li-da Rose, Oh, won't you be mine? Lida Rose, oh, Lida Rose",
    "phraseShortLabel": "be mine"
   },
   {
    "index": 97,
-   "measure": 29,
+   "measure": 30,
    "page": 198,
-   "pitch": "Gb3",
+   "pitch": "Cb4",
    "phraseId": "bar-p198-be-mine",
    "phraseLabel": "Li-da Rose, Oh, won't you be mine? Lida Rose, oh, Lida Rose",
    "phraseShortLabel": "be mine"
   },
   {
    "index": 98,
-   "measure": 29,
+   "measure": 30,
    "page": 198,
-   "pitch": "Db3",
+   "pitch": "Eb4",
    "phraseId": "bar-p198-be-mine",
    "phraseLabel": "Li-da Rose, Oh, won't you be mine? Lida Rose, oh, Lida Rose",
    "phraseShortLabel": "be mine"
   },
   {
    "index": 99,
-   "measure": 30,
+   "measure": 31,
    "page": 198,
-   "pitch": "Gb3",
+   "pitch": "Cb4",
    "phraseId": "bar-p198-be-mine",
    "phraseLabel": "Li-da Rose, Oh, won't you be mine? Lida Rose, oh, Lida Rose",
    "phraseShortLabel": "be mine"
   },
   {
    "index": 100,
-   "measure": 30,
+   "measure": 31,
    "page": 198,
-   "pitch": "F3",
+   "pitch": "C4",
    "phraseId": "bar-p198-be-mine",
    "phraseLabel": "Li-da Rose, Oh, won't you be mine? Lida Rose, oh, Lida Rose",
    "phraseShortLabel": "be mine"
   },
   {
    "index": 101,
-   "measure": 30,
+   "measure": 31,
    "page": 198,
-   "pitch": "Gb3",
+   "pitch": "Cb4",
    "phraseId": "bar-p198-be-mine",
    "phraseLabel": "Li-da Rose, Oh, won't you be mine? Lida Rose, oh, Lida Rose",
    "phraseShortLabel": "be mine"
   },
   {
    "index": 102,
-   "measure": 30,
+   "measure": 32,
    "page": 198,
-   "pitch": "Db3",
+   "pitch": "Bb3",
    "phraseId": "bar-p198-be-mine",
    "phraseLabel": "Li-da Rose, Oh, won't you be mine? Lida Rose, oh, Lida Rose",
    "phraseShortLabel": "be mine"
   },
   {
    "index": 103,
-   "measure": 30,
+   "measure": 32,
    "page": 198,
    "pitch": "Gb3",
    "phraseId": "bar-p198-be-mine",
@@ -933,16 +933,16 @@
   },
   {
    "index": 104,
-   "measure": 30,
+   "measure": 32,
    "page": 198,
-   "pitch": "Gb3",
+   "pitch": "F3",
    "phraseId": "bar-p198-be-mine",
    "phraseLabel": "Li-da Rose, Oh, won't you be mine? Lida Rose, oh, Lida Rose",
    "phraseShortLabel": "be mine"
   },
   {
    "index": 105,
-   "measure": 31,
+   "measure": 32,
    "page": 198,
    "pitch": "Gb3",
    "phraseId": "bar-p198-be-mine",
@@ -951,12 +951,84 @@
   },
   {
    "index": 106,
-   "measure": 31,
+   "measure": 32,
    "page": 198,
-   "pitch": "G3",
+   "pitch": "Db3",
    "phraseId": "bar-p198-be-mine",
    "phraseLabel": "Li-da Rose, Oh, won't you be mine? Lida Rose, oh, Lida Rose",
    "phraseShortLabel": "be mine"
+  },
+  {
+   "index": 107,
+   "measure": 33,
+   "page": 198,
+   "pitch": "Gb3",
+   "phraseId": null,
+   "phraseLabel": null,
+   "phraseShortLabel": null
+  },
+  {
+   "index": 108,
+   "measure": 33,
+   "page": 198,
+   "pitch": "F3",
+   "phraseId": null,
+   "phraseLabel": null,
+   "phraseShortLabel": null
+  },
+  {
+   "index": 109,
+   "measure": 33,
+   "page": 198,
+   "pitch": "Gb3",
+   "phraseId": null,
+   "phraseLabel": null,
+   "phraseShortLabel": null
+  },
+  {
+   "index": 110,
+   "measure": 33,
+   "page": 198,
+   "pitch": "Db3",
+   "phraseId": null,
+   "phraseLabel": null,
+   "phraseShortLabel": null
+  },
+  {
+   "index": 111,
+   "measure": 33,
+   "page": 198,
+   "pitch": "Gb3",
+   "phraseId": null,
+   "phraseLabel": null,
+   "phraseShortLabel": null
+  },
+  {
+   "index": 112,
+   "measure": 33,
+   "page": 198,
+   "pitch": "Gb3",
+   "phraseId": null,
+   "phraseLabel": null,
+   "phraseShortLabel": null
+  },
+  {
+   "index": 113,
+   "measure": 34,
+   "page": 198,
+   "pitch": "Gb3",
+   "phraseId": null,
+   "phraseLabel": null,
+   "phraseShortLabel": null
+  },
+  {
+   "index": 114,
+   "measure": 34,
+   "page": 198,
+   "pitch": "G3",
+   "phraseId": null,
+   "phraseLabel": null,
+   "phraseShortLabel": null
   }
  ]
 }

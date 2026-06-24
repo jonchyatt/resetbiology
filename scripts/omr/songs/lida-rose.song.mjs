@@ -19,6 +19,13 @@ export default {
   id: 'lida-rose',
   title: 'Lida Rose / Will I Ever Tell You? (#35)',
   meter: { beats: 4, beatType: 4 }, // common time throughout
+  // Tempo is golden-truth, read once into the contract — the OMR carries NO <sound tempo>,
+  // and pure-notation timing must never silently default to 120 bpm. The plunk plays the
+  // score at this single constant tempo (start = scoreBeat × 60/bpm), shared by BOTH parts
+  // so the duet stays aligned. 99 = the measured average tempo of the reference recording
+  // (Lead 138 beats / 83.24 s), rounded to a clean integer metronome. Replace with the
+  // printed score's tempo marking when a future song carries one.
+  tempoBpm: 99,
   // Octave authority = the Audiveris source staves (it reads staff position reliably).
   // Both parts must match those source octaves; corrections may fix dropped notes,
   // rhythm, or spelling but MUST NOT shift octave. (See the 2026-06-24 incident: an
@@ -37,18 +44,20 @@ export default {
       name: 'Baritone', // Oliver — bass (F/line4); source octave 3-4 (e.g. chime = Cb4)
       musicxml: 'public/musicxml/lida-rose-baritone.musicxml',
       expectedMeasures: 34, // Oliver sings bars 1..34, tacet at the bar-35 transition
-      expectedNotes: null,  // known-good build is octave-correct but still hold-incomplete
+      expectedNotes: 114,   // locked 2026-06-24: 3 held bars + bar-19 run + 3 restored sing-bars (gate-green)
       pickupMeasures: [1],
       keyFifths: [-6],
       clef: { sign: 'F', line: 4, octaveChange: 0 },
     },
   ],
-  // Open defects the gate currently (correctly) flags on the known-good build.
-  // The gate derives these from notation laws, not from this list — it's documentation.
+  // Open defects the gate currently flags on the known-good build. The gate derives these
+  // from notation laws, not from this list — it's documentation. All four below were RESOLVED
+  // 2026-06-24 (session 2): `verify-score-invariants.mjs lida-rose` is GATE PASS both parts.
+  // Kept here as the record of what the law-gate caught and the corrections fixed.
   knownOpenDefects: [
-    'Lead m16 / m18: under-filled (3 beats / 36 ticks) — Audiveris under-read the tuplet [I1]',
-    'Lead m24->m25: tie connects E-natural(64) to E-flat(63) — cross-pitch tie / OMR artifact [I2]',
-    'Baritone: 31 bars vs 34 — Oliver\'s held bars 9 (shy) / 13 (chime) / 21 (name) are missing [I4]',
-    'Baritone m17: under-filled (42 ticks) — Audiveris under-read [I1]',
+    // RESOLVED: Lead m16 / m18 under-filled tuplet [I1] — deTripletizeQuarterTriplets.
+    // RESOLVED: Lead m24->m25 cross-pitch tie E♮(64)->E♭(63) [I2] — fixLeadTieStopNatural.
+    // RESOLVED: Baritone 31 vs 34 bars [I4] — held bars 9/13/21 inserted (+ 5/25/29 restored).
+    // RESOLVED: Baritone m17 under-filled [I1] — bar-19 8-eighth run completed.
   ],
 };

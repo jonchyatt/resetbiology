@@ -69,3 +69,40 @@ External GM: Frank Lloyd Wright (FLW). Each gate: measurable goal → hypothesis
 **Next experiment (the metronome fix + True North):** rebuild `build-lead-sync.mjs` / `build-baritone-sync.mjs` to **pure-notation timing** — delete the audio-anchor machinery (`alignScoreToAudio` / `selectConductorAnchors` / `pruneTempoCliffAnchors`), walk score events `start += durationDivs/divisions × 60/bpm`, keep the `{pitchMidi,startTimeSeconds,durationSeconds}` shape. Then `verify-plunk-from-score.mjs` PASSES = plunk plays the verified score, dead-on, no audio. Recipe: `PLUMB-RESEARCH-SYNTHESIS.md`.
 
 **FLW verdict:** ⏳ gate defined + gap quantified. Handing off the sync rebuild (substantial) to a fresh session per context discipline.
+
+---
+
+## G4 (step 1 BUILD) — Sync rebuilt to pure-notation timing (the metronome fix)
+
+**Date:** 2026-06-24 (session 3 resume, fresh context)
+
+**Report to FLW — state absorbed:** True North = raw score in → flawless verified trainable product out, zero re-audit; the engraving is the foundation, the **plunk that plays plumb-true off the verified score** is the goal; deterministic code is the floor of truth, a song locks only when the gate is green. Current state: Lida 100% GREEN engraving both parts (Lead 35 bars/118 notes, Baritone 34 bars/114 notes); `verify-score-invariants.mjs lida-rose` PASS; `verify-plunk-from-score.mjs lida-rose` RED — the plunk sync is **stale** (frozen before the engraving was corrected): Lead diverges @84 (old m25 E♭ not E♮), Baritone 106 vs 114 (missing today's 8 added notes).
+
+**Measurable goal:** `node scripts/omr/verify-plunk-from-score.mjs lida-rose` GREEN — the plunk a singer matches plays the verified MusicXML note-for-note — by rebuilding the sync from the corrected score with **pure-notation timing** (no audio), while keeping `verify-score-invariants.mjs` GREEN and every other committed gate GREEN.
+
+**Hypothesis:** the plunk never felt score-driven because the sync timing is DTW-aligned to an audio recording (~24 conductor anchors + rubato) — research synthesis §0: MusicXML `<duration>/<divisions>` is authoritative and already tuplet-adjusted, so dead-on timing = `startBeat × 60/bpm`, no audio. Rebuilding pitch off the corrected XML fixes the pitch divergence by construction (same XML the gate reads); rebuilding timing off pure notation fixes Jon's "weird metronome."
+
+**Recon (artifact-verified, not estimated):**
+- Pipeline: v1 `build-{lead,baritone}-sync.mjs` → `-sync.json`/`-reconciled.json`; v2 `build-lida-conductor-v2.mjs` reads v1 reconciled `src==='conductor-anchor'` markers → `-sync-v2.json` (what VT III fetches for the plunk, line 1046 → `plunkNotesRef`) + `-reconciled-v2.json` (visual lane) + health.
+- **No `<sound tempo>` / `<metronome>` / `<per-minute>` in either MusicXML** (only `<sound dynamics>`). Per synthesis tempo-trap, BPM must be supplied + asserted, not defaulted. → BPM becomes **contract golden-truth** (`tempoBpm`).
+- **Measured tempo (deterministic, committed data):** Lead 118 notes / **138 beats** (m1 pickup=2, 34 bars × 4); Baritone 114 / **134 beats** (m1=2, 33 × 4) — every full bar = 4 beats, cross-validates the engraving. Avg = totalBeats/recordingDur×60: Lead 99.47, Baritone 96.53. **The two parts are sung together → must share ONE tempo grid** (else they drift seconds apart). Shared **tempoBpm = 99** (Lead-led measured average, rounded; spb 0.606, span 83.6s ≈ recording).
+- **Coupling discovered (the web Plumb warns of):** deleting the audio-conductor machinery turns 3 *other* committed gates RED — `build-lida-score-health.mjs` + `build-baritone-score-health.mjs` (`score-conductor-sync` check requires `conductorAnchors≥18` + `/score-conductor/` source) and `verify-vt3-plunk-sync.mjs` (same). True North A (100% green) + "gate stays green to advance" ⇒ these must MIGRATE to pure-notation invariants, not be shimmed. `EXPECTED_BARITONE_NOTE_COUNT=106` is also stale (score 114) — baritone health already failing today.
+
+**Experiment (the build — one unified timing core, no fan-out: deterministic timing math must be a single source of truth):**
+1. Shared `score-timing.mjs` — proven `scoreEventsFromXml` + `resolveTempoBpm(contract)` (throws if absent) + `buildNotationNotes(events,bpm)` (`start=startBeat×60/bpm`, `dur=beats×60/bpm`, clamp non-overlap).
+2. Contract: add `tempoBpm:99`, Baritone `expectedNotes:114`. Baritone manifest → 114 + version.
+3. Rewrite v1 lead+baritone + v2 conductor → pure-notation; self-verify count + pitch==XML inline.
+4. Migrate both health builders + `verify-vt3-plunk-sync.mjs` → `notation-timing` check (source `/notation/`, monotonic, every start == `round3(scoreBeat×60/bpm)` dead-on grid). Keep all source-side checks (key/pitch/whole-note/count/printed-audit/clef) intact.
+
+**Backup (iron rule):** `/c/Users/jonch/omr-backups/20260624-161235-before-sync-rebuild/` (10 scripts + 16 JSON).
+
+**Measurement + result: ✅ GREEN — the metronome is fixed.**
+- `verify-plunk-from-score.mjs lida-rose` → **PASS** all four: Lead `-sync-v2`/`-sync` 118 note-for-note, Baritone `-sync-v2`/`-sync` 114 note-for-note. The plunk now plays the verified score.
+- `verify-score-invariants.mjs lida-rose` → **PASS** both parts ("Safe to lock") — musicxml untouched, law gate stayed green.
+- `verify-vt3-plunk-sync.mjs` → **PASS** both parts (118/114, pure-notation source, dead-on grid).
+- Build artifacts: Lead 118 notes @ 99bpm → 82.42s, dead-on grid offGrid=0/118; Baritone 114 @ 99bpm → 81.21s, offGrid=0/114 (ends ~1.2s before Lead's tied bar-35 "Rose", correct — Baritone tacet there). Both parts on ONE shared 99bpm grid ⇒ duet stays aligned. Lead health 8/8 PASS.
+- Files: `score-timing.mjs` (new shared core) + rewritten `build-{lead,baritone}-sync.mjs` + `build-lida-conductor-v2.mjs` (all audio machinery deleted) + migrated `build-{lida,baritone}-score-health.mjs` + `verify-vt3-plunk-sync.mjs` (score-conductor → notation-timing check) + contract `tempoBpm:99`/Baritone `expectedNotes:114` + baritone manifest 106→114.
+
+**Finding surfaced (NOT a regression — the gate doing its job):** rebuilding Baritone health against the session-2-corrected score un-masked a stale **engraving-audit** discrepancy — `printed-score-audit` FAILs at generated m9/m18/m31 (e.g. m9 score `F3:whole` vs manifest `Cb4:half Gb3:half`). Git timeline proves it: `lida-baritone-printed-manifest.mjs` last touched **2026-06-23** (`37a75735`, pre-correction); the baritone score corrected **2026-06-24** (`0b14a143`). `PRINTED_BARITONE_AUDIT_MEASURES` is calibrated to the OLD reading. It was hidden until now only because the health JSON was stale (built against the old 106-note score). **NOT auto-fixed** — editing independent printed-page audit truth to match the build is the self-grading anti-pattern Plumb exists to kill; resolving m9/m18/m31 requires a VISUAL read of pp.197-198 (Oliver's line). This belongs to G3 (gate hardening) + the prompt's already-queued "baritone moderate reads need visual confirm when the plunk plays them." Timing/plunk/law gates are all green; the Baritone engraving layer is not fully locked until the page is read.
+
+**FLW verdict:** ⏳ AWAITING — step 1 (metronome/plunk) green on all timing+law gates; reporting for APPROVE to advance. G3 should fold in the Baritone audit-manifest reconcile (visual) alongside the octave-vs-source + silent-where-singing invariants.

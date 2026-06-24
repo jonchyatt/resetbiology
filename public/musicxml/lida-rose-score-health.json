@@ -1,7 +1,7 @@
 {
  "song": "Lida Rose",
  "scoreVersion": "lida-rose-source-parts-six-flat",
- "generatedAt": "2026-06-23T22:20:18.949Z",
+ "generatedAt": "2026-06-24T22:20:24.752Z",
  "sourceImages": [
   "/score/page-196.jpg",
   "/score/page-197.jpg",
@@ -88,16 +88,37 @@
     "197:P3",
     "198:P3"
    ],
-   "sourceNoteCount": 106,
-   "sourceMeasures": 25,
-   "sourceWholeNotes": [],
+   "sourceNoteCount": 114,
+   "sourceMeasures": 31,
+   "sourceWholeNotes": [
+    {
+     "measure": 5,
+     "pitch": "F3"
+    },
+    {
+     "measure": 9,
+     "pitch": "F3"
+    },
+    {
+     "measure": 13,
+     "pitch": "Cb4"
+    },
+    {
+     "measure": 21,
+     "pitch": "Cb4"
+    },
+    {
+     "measure": 29,
+     "pitch": "Eb3"
+    }
+   ],
    "generatedMusicXml": "available",
    "checks": [
     {
      "id": "source-readable",
      "label": "Source pages readable",
      "status": "pass",
-     "detail": "106 pitched notes from 25 source measures"
+     "detail": "114 pitched notes from 31 source measures"
     },
     {
      "id": "key-normalizer",
@@ -145,7 +166,7 @@
    "id": "all-source-parts-readable",
    "label": "All source parts readable",
    "status": "pass",
-   "detail": "Tenor:109 Lead:118 Baritone:106 Bass:99"
+   "detail": "Tenor:109 Lead:118 Baritone:114 Bass:99"
   },
   {
    "id": "lead-output-generated",

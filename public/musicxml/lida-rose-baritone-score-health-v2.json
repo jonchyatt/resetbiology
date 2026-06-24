@@ -1,63 +1,47 @@
 {
  "song": "Lida Rose",
  "part": "Baritone",
- "scoreVersion": "lida-rose-baritone-six-flat-106-conductor-v2",
+ "scoreVersion": "lida-rose-baritone-six-flat-114-notation-v2",
  "sourcePages": [
   "196:P4",
   "197:P3",
   "198:P3"
  ],
- "generatedAt": "2026-06-23T22:20:19.074Z",
+ "generatedAt": "2026-06-24T22:20:24.936Z",
  "keyFifths": -6,
- "noteCount": 106,
- "wholeNotes": [],
- "sync": {
-  "noteCount": 106,
-  "reconciledCount": 106,
-  "source": "score-conductor-v2 shared Lead-led timing from corrected score rhythm",
-  "currentAudioEvidenceAnchors": 82,
-  "currentRawConductorAnchors": 25,
-  "currentConductorAnchors": 20,
-  "rawMasterAnchors": 25,
-  "masterAnchors": 24,
-  "conductorAnchors": 12,
-  "scoreConductorNotes": 94,
-  "confirmedPartAnchors": 2,
-  "rejectedPartAnchors": 18,
-  "removedMasterAnchors": [
-   {
-    "beat": 22.5,
-    "time": 12.593,
-    "measure": 7,
-    "scoreIndex": 5,
-    "reason": "measure-strong-note",
-    "sources": [
-     {
-      "part": "Baritone",
-      "measure": 7,
-      "scoreIndex": 9,
-      "time": 12.593,
-      "deltaFromLeadSec": 0.262,
-      "reason": "measure-strong-note"
-     }
-    ],
-    "removedReason": "tempo-cliff",
-    "removedRateSecPerBeat": 0.515,
-    "previousRateSecPerBeat": 1.114
-   }
-  ],
-  "tempoSmoothness": {
-   "scoreConductor": {
-    "medianSecPerBeat": 0.607,
-    "p90RateJumpSecPerBeat": 0.035,
-    "maxRateJumpSecPerBeat": 0.145
-   }
+ "noteCount": 114,
+ "wholeNotes": [
+  {
+   "measure": 5,
+   "pitch": "F3"
   },
-  "timingDeltaFromCurrent": {
-   "meanAbsSec": 4.248,
-   "maxAbsSec": 7.148,
-   "maxAbsNote": 106,
-   "finalNoteDeltaSec": -7.148
+  {
+   "measure": 9,
+   "pitch": "F3"
+  },
+  {
+   "measure": 13,
+   "pitch": "Cb4"
+  },
+  {
+   "measure": 21,
+   "pitch": "Cb4"
+  },
+  {
+   "measure": 29,
+   "pitch": "Eb3"
+  }
+ ],
+ "sync": {
+  "noteCount": 114,
+  "reconciledCount": 114,
+  "source": "score-conductor-v2 shared Lead-led pure-notation timing from corrected score (no audio)",
+  "tempoBpm": 99,
+  "secondsPerBeat": 0.606,
+  "notationTiming": {
+   "ok": true,
+   "offBy": 0,
+   "detail": "bpm=99; spb=0.606; monotonic=true; offGrid=0/114"
   }
  },
  "checks": [
@@ -71,25 +55,25 @@
    "id": "source-pitches",
    "label": "Source pitch sequence",
    "status": "pass",
-   "detail": "106 pitches match pp.196-198"
+   "detail": "114 pitches match pp.196-198"
   },
   {
    "id": "whole-notes",
    "label": "Whole-note survival",
    "status": "pass",
-   "detail": "expected []; got []"
+   "detail": "expected [5:F3 9:F3 13:Cb4 21:Cb4 29:Eb3]; got [5:F3 9:F3 13:Cb4 21:Cb4 29:Eb3]"
   },
   {
    "id": "note-count",
    "label": "Pitched note count",
    "status": "pass",
-   "detail": "expected 106; got 106"
+   "detail": "expected 114; got 114"
   },
   {
    "id": "printed-score-audit",
    "label": "Printed/source audit",
-   "status": "pass",
-   "detail": "4 Baritone audit measures match"
+   "status": "fail",
+   "detail": "m9: expected [Cb4:2:half Gb3:2:half], got [F3:4:whole] (page-197 Oliver chapel-bell system opening) | m18: expected [Cb4:1:quarter Cb4:1:quarter A3:1:quarter Bb3:1:quarter], got [Db4:0.5:eighth Db4:0.5:eighth Db4:1:quarter Db4:1:quarter] (page-197 Oliver end of sweetheart system) | m31: expected [Gb3:2:half G3:2:half], got [Cb4:1:quarter C4:1:quarter Cb4:2:half] (page-198 Oliver final active Lida Rose measure before page-turn residue)"
   },
   {
    "id": "no-courtesy-clefs",
@@ -101,19 +85,13 @@
    "id": "sync-count",
    "label": "Sync target count",
    "status": "pass",
-   "detail": "sync=106; reconciled=106; score=106"
+   "detail": "sync=114; reconciled=114; score=114"
   },
   {
-   "id": "score-conductor-sync",
-   "label": "Score-conductor Baritone sync",
+   "id": "notation-timing",
+   "label": "Pure-notation timing",
    "status": "pass",
-   "detail": "masterAnchors=24; partAnchorStarts=12; scoreConductor=94; p90Jump=0.035; maxJump=0.145; deltaCurrentMean=4.248; rejectedPartAnchors=18"
-  },
-  {
-   "id": "shared-conductor-v2",
-   "label": "Shared conductor v2",
-   "status": "pass",
-   "detail": "primary=Lead; masterAnchors=24; confirmed=2; rejected=18"
+   "detail": "bpm=99; spb=0.606; monotonic=true; offGrid=0/114"
   }
  ]
 }
