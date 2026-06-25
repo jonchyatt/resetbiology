@@ -83,3 +83,24 @@ The guardrails are not narration. The gate is **`scripts/omr/verify-packet-ready
 - Refinement queued: ledger shows sharp spelling (A#/D#) — switch to flat (Bb/Eb/Db) to read against the 6-flat page.
 
 **NEXT (awaiting Jon + brothers' approval for STEP 2):** fill the 232-row ledger via INDEPENDENT reads (Argus vision + Claude vision, per measure-voice against the frozen page), categorize each row, surface BLOCKING rows to Jon — one system/page at a time. STOPPED here per Codex ("the only acceptable output of step one is the packet + readiness verdict").
+
+---
+
+## §8 — THE FULL PATHWAY (current state → PLUMB master)
+Every step names its ground-truth AUTHORITY and a GATE that is mechanical or Jon-signed. The pathway itself is theater-proof: no step advances on narration.
+
+### ARC A — Lock Lida Rose (the first verified-perfect product; proves the process end-to-end)
+- **✅ A1 — Freeze the verification packet.** authority: the printed page · gate: `verify-packet-ready.mjs` → PACKET-READY GREEN. **DONE.**
+- **A2 — Fill the engraving ledger** via INDEPENDENT reads (Argus vision + Claude vision), one page at a time; each of 232 rows = `match | ok-non-note | BLOCKING`. authority: the frozen page · gate: ledger filled + BLOCKING rows surfaced to Jon.
+- **A3 — Resolve BLOCKING rows.** each correction → the source-corrections file (NEVER the primary source) → rebuild musicxml → re-freeze → re-run ledger on the changed measures. Iterate to ZERO BLOCKING. authority: the page · gate: 0 BLOCKING.
+- **A4 — Jon sign-off** on the `ScoreVerify` overlay (reviews flagged + resolved rows, signs `MANIFEST.signoff.jon`). authority: Jon, court of record · gate: `verify-packet-ready.mjs` flips **ENGRAVING-LOCK → GREEN**. → **ENGRAVING LOCKED.**
+- **A5 — Re-verify the plunk** against the NOW-locked engraving (rebuild if A3 changed any note). authority: the locked score · gate: `verify-plunk-from-score` GREEN. → the metronome plays a locked score.
+- **A6 — Lyrics.** source `<lyric>` → attach to notes → verify present + aligned. authority: the page's lyrics · gate: lyrics-present check.
+- **A7 — PRODUCT GATE.** locked engraving + plunk==locked-score + lyrics present = **"Lida Rose = verified-perfect trainable product"** (the first). gate: mechanical product-check + Jon sign-off.
+
+### ARC B — The foundry at scale (the PLUMB master)
+- **B1 — Onboard orchestration.** ONE command runs A1→A7: raw scan → Audiveris OMR (`Implicit tuplets` ON) → engrave → freeze → ledger → blockers → sign-off → lock → plunk → lyrics → register. gate: the pipeline reproduces ARC A on demand.
+- **B2 — Prove on song #2 (Goodnight Ladies)** through the full pipeline. MEASURE: minutes of Jon-time per song (target → near-zero). gate: song #2 LOCKED via the pipeline.
+- **B3 — Harden the gate at scale.** octave-vs-source invariant + silent-where-singing invariant + `musicdiff` golden-file lock (a locked song STAYS locked across any re-OMR). gate: re-OMR of a locked song → 0 diffs.
+- **B4 — Scale** to the 6 barbershop + ~14 raw songs (the 248-page book). Each through the pipeline, each LOCKED. gate: each song's ENGRAVING-LOCK + PRODUCT GATE GREEN.
+- **B5 — WALK-AWAY STATE (the master).** "locked" is trustworthy without Jon re-auditing, because the mechanical gate + signed ledger make theater impossible. The library grows without Jon, or any Claude, squinting at a ledger line at 4 a.m. **← the system Jon walks away from.**
