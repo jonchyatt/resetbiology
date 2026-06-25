@@ -241,3 +241,26 @@ External GM: Frank Lloyd Wright (FLW). Each gate: measurable goal → hypothesis
 **Result:** Layer-2 triage closed FLW-clean. Gate: 5/232 filled · 5 BLOCKING · no sign-off → ENGRAVING-LOCK RED. Reached the A4 Jon court gate (legitimate stop) with `A4-BLOCKING-REPORT.md` + crops + both-eye reads + stratified-sample + the numbering finding. **m9 "shy"=F3 is the standout suspect** (both eyes read it well below F3; the printed-manifest's m9-region also disagrees with F3). Engraving NOT locked; no false green; nothing deployed (push held for Jon).
 
 **FLW verdict:** ✅ YELLOW/GREEN-for-Layer-2-triage (`b1v3xw927`). Stop for Jon A4 = ruled correct.
+
+---
+
+## MAPPING LOCKED (Codex HIGH "lock the staff/measure/row mapping first") + printed-manifest reconciled
+
+**Date:** 2026-06-25 (autonomous Gorr run, continued past the A4-surface per anti-stop). The numbering discovery above is now RESOLVED, deterministically.
+
+**Measurable goal:** ONE authoritative engraving-measure → page → source-bar map, replayed from the exact build, so no silent offset can hide; then reconcile the printed-manifest onto it to settle whether its m9/m18/m31 "FAILs" are real or artifacts.
+
+**Experiment:** `build-measure-map.mjs` replays the same assembly (normalize + applyLeadMeasureCorrections + trim + renumber) tagging each engraving measure's page + source-local provenance → `lock/lida-rose/measure-map.json`. Reconciles the baritone printed-manifest (cumulative-source-bar numbering) by mapping manifest-N → (page, page-local bar) → engraving measure, comparing by **MIDI** (enharmonic-safe).
+
+**Measurement (from the tool):**
+- **Page boundaries (authoritative): Lead p196=eng[1-9] p197=[10-21] p198=[22-35]; Baritone p196=[1-9] p197=[10-21] p198=[22-34].** The lock-packet PAGE_MAP was RIGHT; the offset panic was a false alarm — but now it is *proven*, not assumed. The 5 BLOCKING crops are confirmed on the correct pages (m5/m9→196, m21→197, m25/m29→198).
+- Baritone inserts at eng 5,9,13,21,25,29 (the restored/held bars — they have no source coordinates).
+- **Printed-manifest reconcile — ALL 4 POINTS AGREE BY MIDI** (the FAILs were numbering+spelling artifacts):
+  - manifest m4 → eng m4: Cb4 Bb3 A3 Bb3 ≡ B3 A#3 A3 A#3 ✓
+  - manifest m9 "chapel-bell" → eng m10: Cb4 Gb3 ≡ B3 F#3 ✓
+  - manifest m18 → eng m20: Cb4 Cb4 A3 Bb3 ≡ B3 B3 A3 A#3 ✓
+  - manifest m31 → eng m34: Gb3 G3 ≡ F#3 G3 ✓
+
+**Result:** (1) The mapping is LOCKED (`measure-map.json`) — silent-offset guard satisfied (Codex HIGH closed). (2) The baritone `printed-score-audit` m9/m18/m31 FAILs are CONFIRMED ARTIFACTS, not engraving errors — my decision to NOT add them to BLOCKING is vindicated; **the 5 BLOCKING set is complete.** (3) An INDEPENDENT human page-read (the printed-manifest) now CORROBORATES the engraving at 4 baritone points (eng m4/m10/m20/m34) — a real second signal toward the 227 raw-agreement rows (FLW MED#2). **Standing trap flagged:** `build-baritone-score-health.mjs` still emits those 3 false FAILs (it compares manifest-N to eng-N) — named next fix: migrate it to `measure-map.json` reconciliation + MIDI compare (do NOT touch the manifest pitches — that's the self-grading anti-pattern; fix only the alignment).
+
+**FLW verdict:** ⏳ self-gated deterministic step (no vision, no Jon) — logged for the record; folds into the A4 surface.

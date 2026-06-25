@@ -1,0 +1,539 @@
+{
+  "generatedAt": "2026-06-25T06:25:34.519Z",
+  "note": "authoritative engraving-measure -> page + source provenance (replayed from the build). insert=true means a held/restored bar with no source coordinates.",
+  "map": {
+    "Lead": [
+      {
+        "eng": 1,
+        "page": "page-196.jpg",
+        "srcPage": "196",
+        "srcLocal": "1",
+        "insert": false
+      },
+      {
+        "eng": 2,
+        "page": "page-196.jpg",
+        "srcPage": "196",
+        "srcLocal": "2",
+        "insert": false
+      },
+      {
+        "eng": 3,
+        "page": "page-196.jpg",
+        "srcPage": "196",
+        "srcLocal": "3",
+        "insert": false
+      },
+      {
+        "eng": 4,
+        "page": "page-196.jpg",
+        "srcPage": "196",
+        "srcLocal": "4",
+        "insert": false
+      },
+      {
+        "eng": 5,
+        "page": "page-196.jpg",
+        "srcPage": "196",
+        "srcLocal": "5",
+        "insert": false
+      },
+      {
+        "eng": 6,
+        "page": "page-196.jpg",
+        "srcPage": "196",
+        "srcLocal": "6",
+        "insert": false
+      },
+      {
+        "eng": 7,
+        "page": "page-196.jpg",
+        "srcPage": "196",
+        "srcLocal": "7",
+        "insert": false
+      },
+      {
+        "eng": 8,
+        "page": "page-196.jpg",
+        "srcPage": "196",
+        "srcLocal": "8",
+        "insert": false
+      },
+      {
+        "eng": 9,
+        "page": "page-196.jpg",
+        "srcPage": "196",
+        "srcLocal": "9",
+        "insert": true
+      },
+      {
+        "eng": 10,
+        "page": "page-197.jpg",
+        "srcPage": "197",
+        "srcLocal": "1",
+        "insert": false
+      },
+      {
+        "eng": 11,
+        "page": "page-197.jpg",
+        "srcPage": "197",
+        "srcLocal": "2",
+        "insert": false
+      },
+      {
+        "eng": 12,
+        "page": "page-197.jpg",
+        "srcPage": "197",
+        "srcLocal": "3",
+        "insert": false
+      },
+      {
+        "eng": 13,
+        "page": "page-197.jpg",
+        "srcPage": "197",
+        "srcLocal": "4",
+        "insert": false
+      },
+      {
+        "eng": 14,
+        "page": "page-197.jpg",
+        "srcPage": "197",
+        "srcLocal": "4",
+        "insert": false
+      },
+      {
+        "eng": 15,
+        "page": "page-197.jpg",
+        "srcPage": "197",
+        "srcLocal": "5",
+        "insert": false
+      },
+      {
+        "eng": 16,
+        "page": "page-197.jpg",
+        "srcPage": "197",
+        "srcLocal": "6",
+        "insert": false
+      },
+      {
+        "eng": 17,
+        "page": "page-197.jpg",
+        "srcPage": "197",
+        "srcLocal": "7",
+        "insert": false
+      },
+      {
+        "eng": 18,
+        "page": "page-197.jpg",
+        "srcPage": "197",
+        "srcLocal": "8",
+        "insert": false
+      },
+      {
+        "eng": 19,
+        "page": "page-197.jpg",
+        "srcPage": "197",
+        "srcLocal": "9",
+        "insert": false
+      },
+      {
+        "eng": 20,
+        "page": "page-197.jpg",
+        "srcPage": "197",
+        "srcLocal": "10",
+        "insert": false
+      },
+      {
+        "eng": 21,
+        "page": "page-197.jpg",
+        "srcPage": "197",
+        "srcLocal": "11",
+        "insert": true
+      },
+      {
+        "eng": 22,
+        "page": "page-198.jpg",
+        "srcPage": "198",
+        "srcLocal": "1",
+        "insert": false
+      },
+      {
+        "eng": 23,
+        "page": "page-198.jpg",
+        "srcPage": "198",
+        "srcLocal": "2",
+        "insert": false
+      },
+      {
+        "eng": 24,
+        "page": "page-198.jpg",
+        "srcPage": "198",
+        "srcLocal": "3",
+        "insert": false
+      },
+      {
+        "eng": 25,
+        "page": "page-198.jpg",
+        "srcPage": "198",
+        "srcLocal": "4",
+        "insert": false
+      },
+      {
+        "eng": 26,
+        "page": "page-198.jpg",
+        "srcPage": "198",
+        "srcLocal": "5",
+        "insert": false
+      },
+      {
+        "eng": 27,
+        "page": "page-198.jpg",
+        "srcPage": "198",
+        "srcLocal": "6",
+        "insert": false
+      },
+      {
+        "eng": 28,
+        "page": "page-198.jpg",
+        "srcPage": "198",
+        "srcLocal": "7",
+        "insert": false
+      },
+      {
+        "eng": 29,
+        "page": "page-198.jpg",
+        "srcPage": "198",
+        "srcLocal": "8",
+        "insert": false
+      },
+      {
+        "eng": 30,
+        "page": "page-198.jpg",
+        "srcPage": "198",
+        "srcLocal": "9",
+        "insert": false
+      },
+      {
+        "eng": 31,
+        "page": "page-198.jpg",
+        "srcPage": "198",
+        "srcLocal": "10",
+        "insert": false
+      },
+      {
+        "eng": 32,
+        "page": "page-198.jpg",
+        "srcPage": "198",
+        "srcLocal": "11",
+        "insert": false
+      },
+      {
+        "eng": 33,
+        "page": "page-198.jpg",
+        "srcPage": "198",
+        "srcLocal": "12",
+        "insert": false
+      },
+      {
+        "eng": 34,
+        "page": "page-198.jpg",
+        "srcPage": "198",
+        "srcLocal": "13",
+        "insert": false
+      },
+      {
+        "eng": 35,
+        "page": "page-198.jpg",
+        "srcPage": "198",
+        "srcLocal": "14",
+        "insert": false
+      }
+    ],
+    "Baritone": [
+      {
+        "eng": 1,
+        "page": "page-196.jpg",
+        "srcPage": "196",
+        "srcLocal": "1",
+        "insert": false
+      },
+      {
+        "eng": 2,
+        "page": "page-196.jpg",
+        "srcPage": "196",
+        "srcLocal": "2",
+        "insert": false
+      },
+      {
+        "eng": 3,
+        "page": "page-196.jpg",
+        "srcPage": "196",
+        "srcLocal": "3",
+        "insert": false
+      },
+      {
+        "eng": 4,
+        "page": "page-196.jpg",
+        "srcPage": "196",
+        "srcLocal": "4",
+        "insert": false
+      },
+      {
+        "eng": 5,
+        "page": "page-196.jpg",
+        "srcPage": "196",
+        "srcLocal": "905",
+        "insert": true
+      },
+      {
+        "eng": 6,
+        "page": "page-196.jpg",
+        "srcPage": "196",
+        "srcLocal": "6",
+        "insert": false
+      },
+      {
+        "eng": 7,
+        "page": "page-196.jpg",
+        "srcPage": "196",
+        "srcLocal": "7",
+        "insert": false
+      },
+      {
+        "eng": 8,
+        "page": "page-196.jpg",
+        "srcPage": "196",
+        "srcLocal": "8",
+        "insert": false
+      },
+      {
+        "eng": 9,
+        "page": "page-196.jpg",
+        "srcPage": "196",
+        "srcLocal": "900",
+        "insert": true
+      },
+      {
+        "eng": 10,
+        "page": "page-197.jpg",
+        "srcPage": "197",
+        "srcLocal": "1",
+        "insert": false
+      },
+      {
+        "eng": 11,
+        "page": "page-197.jpg",
+        "srcPage": "197",
+        "srcLocal": "2",
+        "insert": false
+      },
+      {
+        "eng": 12,
+        "page": "page-197.jpg",
+        "srcPage": "197",
+        "srcLocal": "3",
+        "insert": false
+      },
+      {
+        "eng": 13,
+        "page": "page-197.jpg",
+        "srcPage": "197",
+        "srcLocal": "913",
+        "insert": true
+      },
+      {
+        "eng": 14,
+        "page": "page-197.jpg",
+        "srcPage": "197",
+        "srcLocal": "4",
+        "insert": false
+      },
+      {
+        "eng": 15,
+        "page": "page-197.jpg",
+        "srcPage": "197",
+        "srcLocal": "5",
+        "insert": false
+      },
+      {
+        "eng": 16,
+        "page": "page-197.jpg",
+        "srcPage": "197",
+        "srcLocal": "6",
+        "insert": false
+      },
+      {
+        "eng": 17,
+        "page": "page-197.jpg",
+        "srcPage": "197",
+        "srcLocal": "7",
+        "insert": false
+      },
+      {
+        "eng": 18,
+        "page": "page-197.jpg",
+        "srcPage": "197",
+        "srcLocal": "8",
+        "insert": false
+      },
+      {
+        "eng": 19,
+        "page": "page-197.jpg",
+        "srcPage": "197",
+        "srcLocal": "9",
+        "insert": false
+      },
+      {
+        "eng": 20,
+        "page": "page-197.jpg",
+        "srcPage": "197",
+        "srcLocal": "10",
+        "insert": false
+      },
+      {
+        "eng": 21,
+        "page": "page-197.jpg",
+        "srcPage": "197",
+        "srcLocal": "921",
+        "insert": true
+      },
+      {
+        "eng": 22,
+        "page": "page-198.jpg",
+        "srcPage": "198",
+        "srcLocal": "1",
+        "insert": false
+      },
+      {
+        "eng": 23,
+        "page": "page-198.jpg",
+        "srcPage": "198",
+        "srcLocal": "2",
+        "insert": false
+      },
+      {
+        "eng": 24,
+        "page": "page-198.jpg",
+        "srcPage": "198",
+        "srcLocal": "3",
+        "insert": false
+      },
+      {
+        "eng": 25,
+        "page": "page-198.jpg",
+        "srcPage": "198",
+        "srcLocal": "925",
+        "insert": true
+      },
+      {
+        "eng": 26,
+        "page": "page-198.jpg",
+        "srcPage": "198",
+        "srcLocal": "5",
+        "insert": false
+      },
+      {
+        "eng": 27,
+        "page": "page-198.jpg",
+        "srcPage": "198",
+        "srcLocal": "6",
+        "insert": false
+      },
+      {
+        "eng": 28,
+        "page": "page-198.jpg",
+        "srcPage": "198",
+        "srcLocal": "7",
+        "insert": false
+      },
+      {
+        "eng": 29,
+        "page": "page-198.jpg",
+        "srcPage": "198",
+        "srcLocal": "929",
+        "insert": true
+      },
+      {
+        "eng": 30,
+        "page": "page-198.jpg",
+        "srcPage": "198",
+        "srcLocal": "9",
+        "insert": false
+      },
+      {
+        "eng": 31,
+        "page": "page-198.jpg",
+        "srcPage": "198",
+        "srcLocal": "10",
+        "insert": false
+      },
+      {
+        "eng": 32,
+        "page": "page-198.jpg",
+        "srcPage": "198",
+        "srcLocal": "11",
+        "insert": false
+      },
+      {
+        "eng": 33,
+        "page": "page-198.jpg",
+        "srcPage": "198",
+        "srcLocal": "12",
+        "insert": false
+      },
+      {
+        "eng": 34,
+        "page": "page-198.jpg",
+        "srcPage": "198",
+        "srcLocal": "13",
+        "insert": false
+      }
+    ]
+  },
+  "printedManifestReconcile": [
+    {
+      "manifestMeasure": 4,
+      "source": "page-196 Oliver first active Lida Rose measure",
+      "mappedTo": "196 local 4",
+      "expected": "Cb4 Bb3 A3 Bb3",
+      "reconciledEngMeasure": 4,
+      "engPitchesThere": "B3 A#3 A3 A#3",
+      "naiveSameNumberEng": "B3 A#3 A3 A#3",
+      "agreesByMidi": true,
+      "verdict": "AGREE (numbering+spelling artifact — NOT an error)"
+    },
+    {
+      "manifestMeasure": 9,
+      "source": "page-197 Oliver chapel-bell system opening",
+      "mappedTo": "197 local 1",
+      "expected": "Cb4 Gb3",
+      "reconciledEngMeasure": 10,
+      "engPitchesThere": "B3 F#3",
+      "naiveSameNumberEng": "F3",
+      "agreesByMidi": true,
+      "verdict": "AGREE (numbering+spelling artifact — NOT an error)"
+    },
+    {
+      "manifestMeasure": 18,
+      "source": "page-197 Oliver end of sweetheart system",
+      "mappedTo": "197 local 10",
+      "expected": "Cb4 Cb4 A3 Bb3",
+      "reconciledEngMeasure": 20,
+      "engPitchesThere": "B3 B3 A3 A#3",
+      "naiveSameNumberEng": "C#4 C#4 C#4 C#4",
+      "agreesByMidi": true,
+      "verdict": "AGREE (numbering+spelling artifact — NOT an error)"
+    },
+    {
+      "manifestMeasure": 31,
+      "source": "page-198 Oliver final active Lida Rose measure before page-turn residue",
+      "mappedTo": "198 local 13",
+      "expected": "Gb3 G3",
+      "reconciledEngMeasure": 34,
+      "engPitchesThere": "F#3 G3",
+      "naiveSameNumberEng": "B3 C4 B3",
+      "agreesByMidi": true,
+      "verdict": "AGREE (numbering+spelling artifact — NOT an error)"
+    }
+  ]
+}

@@ -1,8 +1,19 @@
 {
-  "generatedAt": "2026-06-25T06:18:34.383Z",
-  "purpose": "FLW MED (bw7ac7zmr): the 209 raw-agreement rows may carry a SHARED Audiveris error (raw==engraving but both wrong). This logs their verification STATUS, stratified — NOT a clearance. Court of record = Jon (A4).",
-  "rule": "A raw-agreement row rests on a SINGLE OMR read (Audiveris). It is NOT independently verified. No binding verdict is written for these rows (FLW HIGH).",
-  "intended_independent_signal": "lida-baritone-printed-manifest.mjs PRINTED_BARITONE_AUDIT_MEASURES (a human page-read) + a future Lead printed manifest. BLOCKER (found 2026-06-25): the printed-manifest uses a DIFFERENT measure numbering than the engraving (it omits the inserted held/restored bars), so build-baritone-score-health printed-audit FAILs at manifest-m9/m18/m31 are likely NUMBERING ARTIFACTS, not engraving errors. Reconciling the 4 numberings (engraving / source / printed-manifest / lock-packet PAGE_MAP) is the named NEXT deterministic step (Codex HIGH: lock the staff/measure/row mapping).",
+  "generatedAt": "2026-06-25T06:27:24.927Z",
+  "purpose": "FLW MED (bw7ac7zmr): the raw-agreement rows may carry a SHARED Audiveris error. This logs their verification STATUS + the independent cross-checks now available. NOT a clearance. Court of record = Jon (A4).",
+  "rule": "A raw-agreement row rests on Audiveris OMR. No binding verdict is written for these rows (FLW HIGH) until Jon or a reconciled independent read clears them.",
+  "independent_corroboration_AVAILABLE": {
+    "source": "lida-baritone-printed-manifest.mjs — an independent human page-read of Oliver (Baritone), reconciled onto the engraving via measure-map.json (MIDI-compared, enharmonic-safe).",
+    "result": "ALL 4 audit points AGREE with the engraving: manifest m4->eng m4, m9->eng m10, m18->eng m20, m31->eng m34. The earlier printed-audit m9/m18/m31 FAILs were numbering+spelling ARTIFACTS, not errors.",
+    "corroborated_engraving_measures_Baritone": [
+      4,
+      10,
+      20,
+      34
+    ],
+    "note": "This is a genuine second signal (not Audiveris) for these 4 baritone bars. A parallel Lead printed-manifest + a full second OMR (oemer, deferred) would extend independent coverage further."
+  },
+  "numbering_locked": "measure-map.json — page-196=eng[1-9], page-197=eng[10-21], page-198=eng[22-34/35]. The 4-way numbering conflict is resolved; the silent-offset risk (FLW #1) is closed.",
   "strata": {
     "Lead|page-196.jpg": {
       "count": 22,
@@ -48,5 +59,5 @@
     }
   },
   "total_raw_agreement": 209,
-  "decision": "Provisional. These rows enter Jon's A4 holistic read on Audiveris's single read; the per-note independent cross-check (printed-manifest) is pending numbering reconciliation. Vision sampling on dense crops was REJECTED as the independent signal (3x demonstrated unreliable: m5/m21/m29 two-eye scatter)."
+  "decision": "Provisional. Most raw-agreement rows still rest on Audiveris alone and enter Jon A4. Vision-sampling on dense crops REJECTED as unreliable (m5/m21/m29 two-eye scatter). The reconciled printed-manifest is the working independent-signal pattern; extend it (Lead manifest / oemer) to widen coverage next."
 }
