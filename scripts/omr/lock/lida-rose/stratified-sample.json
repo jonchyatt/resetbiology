@@ -1,0 +1,52 @@
+{
+  "generatedAt": "2026-06-25T06:18:34.383Z",
+  "purpose": "FLW MED (bw7ac7zmr): the 209 raw-agreement rows may carry a SHARED Audiveris error (raw==engraving but both wrong). This logs their verification STATUS, stratified — NOT a clearance. Court of record = Jon (A4).",
+  "rule": "A raw-agreement row rests on a SINGLE OMR read (Audiveris). It is NOT independently verified. No binding verdict is written for these rows (FLW HIGH).",
+  "intended_independent_signal": "lida-baritone-printed-manifest.mjs PRINTED_BARITONE_AUDIT_MEASURES (a human page-read) + a future Lead printed manifest. BLOCKER (found 2026-06-25): the printed-manifest uses a DIFFERENT measure numbering than the engraving (it omits the inserted held/restored bars), so build-baritone-score-health printed-audit FAILs at manifest-m9/m18/m31 are likely NUMBERING ARTIFACTS, not engraving errors. Reconciling the 4 numberings (engraving / source / printed-manifest / lock-packet PAGE_MAP) is the named NEXT deterministic step (Codex HIGH: lock the staff/measure/row mapping).",
+  "strata": {
+    "Lead|page-196.jpg": {
+      "count": 22,
+      "sample_anchor_rows": [
+        1,
+        2
+      ]
+    },
+    "Lead|page-197.jpg": {
+      "count": 41,
+      "sample_anchor_rows": [
+        26,
+        27
+      ]
+    },
+    "Lead|page-198.jpg": {
+      "count": 46,
+      "sample_anchor_rows": [
+        69,
+        71
+      ]
+    },
+    "Baritone|page-196.jpg": {
+      "count": 19,
+      "sample_anchor_rows": [
+        120,
+        121
+      ]
+    },
+    "Baritone|page-197.jpg": {
+      "count": 34,
+      "sample_anchor_rows": [
+        141,
+        142
+      ]
+    },
+    "Baritone|page-198.jpg": {
+      "count": 47,
+      "sample_anchor_rows": [
+        183,
+        184
+      ]
+    }
+  },
+  "total_raw_agreement": 209,
+  "decision": "Provisional. These rows enter Jon's A4 holistic read on Audiveris's single read; the per-note independent cross-check (printed-manifest) is pending numbering reconciliation. Vision sampling on dense crops was REJECTED as the independent signal (3x demonstrated unreliable: m5/m21/m29 two-eye scatter)."
+}

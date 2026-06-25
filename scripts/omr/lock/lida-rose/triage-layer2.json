@@ -1,0 +1,2418 @@
+{
+  "generatedAt": "2026-06-25T06:19:33.702Z",
+  "method": "Layer-2 triage: corrections-diff classification + corrections-file confidence + independent vision (Claude+Argus). Provisional — NOT a lock; court of record = Jon (A4).",
+  "counts": {
+    "raw-agreement": 209,
+    "deterministic": 8,
+    "intervention": 10,
+    "page-read-BLOCKING": 5
+  },
+  "rows": [
+    {
+      "row": 1,
+      "part": "Lead",
+      "measure": 3,
+      "page": "page-196.jpg",
+      "engraving_pitch": "A#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 2,
+      "part": "Lead",
+      "measure": 3,
+      "page": "page-196.jpg",
+      "engraving_pitch": "A3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 3,
+      "part": "Lead",
+      "measure": 3,
+      "page": "page-196.jpg",
+      "engraving_pitch": "A#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 4,
+      "part": "Lead",
+      "measure": 4,
+      "page": "page-196.jpg",
+      "engraving_pitch": "D#4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 5,
+      "part": "Lead",
+      "measure": 4,
+      "page": "page-196.jpg",
+      "engraving_pitch": "C#4",
+      "category": "deterministic",
+      "tier": "deterministic",
+      "why": "key-normalization: 6-flat key flats raw D-natural to Db (=C#4); raw exported without <alter>. Algorithmic — the page carries no accidental, so Db is forced by the key signature."
+    },
+    {
+      "row": 6,
+      "part": "Lead",
+      "measure": 4,
+      "page": "page-196.jpg",
+      "engraving_pitch": "C4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 7,
+      "part": "Lead",
+      "measure": 4,
+      "page": "page-196.jpg",
+      "engraving_pitch": "C#4",
+      "category": "deterministic",
+      "tier": "deterministic",
+      "why": "key-normalization: 6-flat key flats raw D-natural to Db (=C#4); raw exported without <alter>. Algorithmic — the page carries no accidental, so Db is forced by the key signature."
+    },
+    {
+      "row": 8,
+      "part": "Lead",
+      "measure": 5,
+      "page": "page-196.jpg",
+      "engraving_pitch": "B3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 9,
+      "part": "Lead",
+      "measure": 6,
+      "page": "page-196.jpg",
+      "engraving_pitch": "B3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 10,
+      "part": "Lead",
+      "measure": 6,
+      "page": "page-196.jpg",
+      "engraving_pitch": "A#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 11,
+      "part": "Lead",
+      "measure": 6,
+      "page": "page-196.jpg",
+      "engraving_pitch": "B3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 12,
+      "part": "Lead",
+      "measure": 6,
+      "page": "page-196.jpg",
+      "engraving_pitch": "C#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 13,
+      "part": "Lead",
+      "measure": 7,
+      "page": "page-196.jpg",
+      "engraving_pitch": "C4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 14,
+      "part": "Lead",
+      "measure": 7,
+      "page": "page-196.jpg",
+      "engraving_pitch": "B3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 15,
+      "part": "Lead",
+      "measure": 7,
+      "page": "page-196.jpg",
+      "engraving_pitch": "C4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 16,
+      "part": "Lead",
+      "measure": 7,
+      "page": "page-196.jpg",
+      "engraving_pitch": "C4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 17,
+      "part": "Lead",
+      "measure": 7,
+      "page": "page-196.jpg",
+      "engraving_pitch": "C4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 18,
+      "part": "Lead",
+      "measure": 7,
+      "page": "page-196.jpg",
+      "engraving_pitch": "C4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 19,
+      "part": "Lead",
+      "measure": 7,
+      "page": "page-196.jpg",
+      "engraving_pitch": "B3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 20,
+      "part": "Lead",
+      "measure": 7,
+      "page": "page-196.jpg",
+      "engraving_pitch": "C4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 21,
+      "part": "Lead",
+      "measure": 8,
+      "page": "page-196.jpg",
+      "engraving_pitch": "D#4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 22,
+      "part": "Lead",
+      "measure": 8,
+      "page": "page-196.jpg",
+      "engraving_pitch": "C#4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 23,
+      "part": "Lead",
+      "measure": 8,
+      "page": "page-196.jpg",
+      "engraving_pitch": "C4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 24,
+      "part": "Lead",
+      "measure": 8,
+      "page": "page-196.jpg",
+      "engraving_pitch": "C#4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 25,
+      "part": "Lead",
+      "measure": 9,
+      "page": "page-196.jpg",
+      "engraving_pitch": "B3",
+      "category": "intervention",
+      "tier": "intervention",
+      "why": "phrase-end held Cb4 (Audiveris dropped the whole-note bar; barbershop cadence)."
+    },
+    {
+      "row": 26,
+      "part": "Lead",
+      "measure": 10,
+      "page": "page-197.jpg",
+      "engraving_pitch": "D#4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 27,
+      "part": "Lead",
+      "measure": 10,
+      "page": "page-197.jpg",
+      "engraving_pitch": "B3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 28,
+      "part": "Lead",
+      "measure": 11,
+      "page": "page-197.jpg",
+      "engraving_pitch": "F#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 29,
+      "part": "Lead",
+      "measure": 11,
+      "page": "page-197.jpg",
+      "engraving_pitch": "D#4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 30,
+      "part": "Lead",
+      "measure": 11,
+      "page": "page-197.jpg",
+      "engraving_pitch": "D4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 31,
+      "part": "Lead",
+      "measure": 12,
+      "page": "page-197.jpg",
+      "engraving_pitch": "C#4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 32,
+      "part": "Lead",
+      "measure": 12,
+      "page": "page-197.jpg",
+      "engraving_pitch": "A#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 33,
+      "part": "Lead",
+      "measure": 12,
+      "page": "page-197.jpg",
+      "engraving_pitch": "C#4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 34,
+      "part": "Lead",
+      "measure": 12,
+      "page": "page-197.jpg",
+      "engraving_pitch": "A#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 35,
+      "part": "Lead",
+      "measure": 12,
+      "page": "page-197.jpg",
+      "engraving_pitch": "C#4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 36,
+      "part": "Lead",
+      "measure": 13,
+      "page": "page-197.jpg",
+      "engraving_pitch": "B3",
+      "category": "intervention",
+      "tier": "intervention",
+      "why": "phrase-end held Cb4 (dropped bar restored)."
+    },
+    {
+      "row": 37,
+      "part": "Lead",
+      "measure": 14,
+      "page": "page-197.jpg",
+      "engraving_pitch": "A#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 38,
+      "part": "Lead",
+      "measure": 14,
+      "page": "page-197.jpg",
+      "engraving_pitch": "F#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 39,
+      "part": "Lead",
+      "measure": 15,
+      "page": "page-197.jpg",
+      "engraving_pitch": "C4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 40,
+      "part": "Lead",
+      "measure": 15,
+      "page": "page-197.jpg",
+      "engraving_pitch": "G#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 41,
+      "part": "Lead",
+      "measure": 15,
+      "page": "page-197.jpg",
+      "engraving_pitch": "F#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 42,
+      "part": "Lead",
+      "measure": 16,
+      "page": "page-197.jpg",
+      "engraving_pitch": "F3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 43,
+      "part": "Lead",
+      "measure": 16,
+      "page": "page-197.jpg",
+      "engraving_pitch": "F#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 44,
+      "part": "Lead",
+      "measure": 16,
+      "page": "page-197.jpg",
+      "engraving_pitch": "G#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 45,
+      "part": "Lead",
+      "measure": 16,
+      "page": "page-197.jpg",
+      "engraving_pitch": "A#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 46,
+      "part": "Lead",
+      "measure": 17,
+      "page": "page-197.jpg",
+      "engraving_pitch": "C#4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 47,
+      "part": "Lead",
+      "measure": 17,
+      "page": "page-197.jpg",
+      "engraving_pitch": "C4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 48,
+      "part": "Lead",
+      "measure": 17,
+      "page": "page-197.jpg",
+      "engraving_pitch": "C#4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 49,
+      "part": "Lead",
+      "measure": 17,
+      "page": "page-197.jpg",
+      "engraving_pitch": "B3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 50,
+      "part": "Lead",
+      "measure": 17,
+      "page": "page-197.jpg",
+      "engraving_pitch": "C#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 51,
+      "part": "Lead",
+      "measure": 18,
+      "page": "page-197.jpg",
+      "engraving_pitch": "A#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 52,
+      "part": "Lead",
+      "measure": 18,
+      "page": "page-197.jpg",
+      "engraving_pitch": "A3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 53,
+      "part": "Lead",
+      "measure": 18,
+      "page": "page-197.jpg",
+      "engraving_pitch": "A#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 54,
+      "part": "Lead",
+      "measure": 18,
+      "page": "page-197.jpg",
+      "engraving_pitch": "C#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 55,
+      "part": "Lead",
+      "measure": 19,
+      "page": "page-197.jpg",
+      "engraving_pitch": "A#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 56,
+      "part": "Lead",
+      "measure": 19,
+      "page": "page-197.jpg",
+      "engraving_pitch": "A3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 57,
+      "part": "Lead",
+      "measure": 19,
+      "page": "page-197.jpg",
+      "engraving_pitch": "A#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 58,
+      "part": "Lead",
+      "measure": 19,
+      "page": "page-197.jpg",
+      "engraving_pitch": "C#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 59,
+      "part": "Lead",
+      "measure": 19,
+      "page": "page-197.jpg",
+      "engraving_pitch": "C#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 60,
+      "part": "Lead",
+      "measure": 19,
+      "page": "page-197.jpg",
+      "engraving_pitch": "A#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 61,
+      "part": "Lead",
+      "measure": 19,
+      "page": "page-197.jpg",
+      "engraving_pitch": "A3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 62,
+      "part": "Lead",
+      "measure": 19,
+      "page": "page-197.jpg",
+      "engraving_pitch": "A#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 63,
+      "part": "Lead",
+      "measure": 20,
+      "page": "page-197.jpg",
+      "engraving_pitch": "D#4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 64,
+      "part": "Lead",
+      "measure": 20,
+      "page": "page-197.jpg",
+      "engraving_pitch": "C#4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 65,
+      "part": "Lead",
+      "measure": 20,
+      "page": "page-197.jpg",
+      "engraving_pitch": "C4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 66,
+      "part": "Lead",
+      "measure": 20,
+      "page": "page-197.jpg",
+      "engraving_pitch": "C#4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 67,
+      "part": "Lead",
+      "measure": 21,
+      "page": "page-197.jpg",
+      "engraving_pitch": "B3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 68,
+      "part": "Lead",
+      "measure": 22,
+      "page": "page-198.jpg",
+      "engraving_pitch": "B3",
+      "category": "intervention",
+      "tier": "intervention",
+      "why": "phrase-end held Cb4 (dropped bar restored)."
+    },
+    {
+      "row": 69,
+      "part": "Lead",
+      "measure": 22,
+      "page": "page-198.jpg",
+      "engraving_pitch": "A#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 70,
+      "part": "Lead",
+      "measure": 22,
+      "page": "page-198.jpg",
+      "engraving_pitch": "B3",
+      "category": "intervention",
+      "tier": "intervention",
+      "why": "phrase-end held Cb4 (dropped bar restored)."
+    },
+    {
+      "row": 71,
+      "part": "Lead",
+      "measure": 22,
+      "page": "page-198.jpg",
+      "engraving_pitch": "C#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 72,
+      "part": "Lead",
+      "measure": 23,
+      "page": "page-198.jpg",
+      "engraving_pitch": "C4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 73,
+      "part": "Lead",
+      "measure": 23,
+      "page": "page-198.jpg",
+      "engraving_pitch": "B3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 74,
+      "part": "Lead",
+      "measure": 23,
+      "page": "page-198.jpg",
+      "engraving_pitch": "C4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 75,
+      "part": "Lead",
+      "measure": 23,
+      "page": "page-198.jpg",
+      "engraving_pitch": "C4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 76,
+      "part": "Lead",
+      "measure": 23,
+      "page": "page-198.jpg",
+      "engraving_pitch": "C4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 77,
+      "part": "Lead",
+      "measure": 23,
+      "page": "page-198.jpg",
+      "engraving_pitch": "C4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 78,
+      "part": "Lead",
+      "measure": 23,
+      "page": "page-198.jpg",
+      "engraving_pitch": "B3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 79,
+      "part": "Lead",
+      "measure": 23,
+      "page": "page-198.jpg",
+      "engraving_pitch": "C4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 80,
+      "part": "Lead",
+      "measure": 24,
+      "page": "page-198.jpg",
+      "engraving_pitch": "D#4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 81,
+      "part": "Lead",
+      "measure": 24,
+      "page": "page-198.jpg",
+      "engraving_pitch": "C#4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 82,
+      "part": "Lead",
+      "measure": 24,
+      "page": "page-198.jpg",
+      "engraving_pitch": "C4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 83,
+      "part": "Lead",
+      "measure": 24,
+      "page": "page-198.jpg",
+      "engraving_pitch": "C#4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 84,
+      "part": "Lead",
+      "measure": 24,
+      "page": "page-198.jpg",
+      "engraving_pitch": "E4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 85,
+      "part": "Lead",
+      "measure": 25,
+      "page": "page-198.jpg",
+      "engraving_pitch": "E4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 86,
+      "part": "Lead",
+      "measure": 25,
+      "page": "page-198.jpg",
+      "engraving_pitch": "D#4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 87,
+      "part": "Lead",
+      "measure": 26,
+      "page": "page-198.jpg",
+      "engraving_pitch": "D#4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 88,
+      "part": "Lead",
+      "measure": 26,
+      "page": "page-198.jpg",
+      "engraving_pitch": "D#4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 89,
+      "part": "Lead",
+      "measure": 26,
+      "page": "page-198.jpg",
+      "engraving_pitch": "D4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 90,
+      "part": "Lead",
+      "measure": 26,
+      "page": "page-198.jpg",
+      "engraving_pitch": "D#4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 91,
+      "part": "Lead",
+      "measure": 27,
+      "page": "page-198.jpg",
+      "engraving_pitch": "F#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 92,
+      "part": "Lead",
+      "measure": 27,
+      "page": "page-198.jpg",
+      "engraving_pitch": "G#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 93,
+      "part": "Lead",
+      "measure": 28,
+      "page": "page-198.jpg",
+      "engraving_pitch": "A#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 94,
+      "part": "Lead",
+      "measure": 28,
+      "page": "page-198.jpg",
+      "engraving_pitch": "C#4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 95,
+      "part": "Lead",
+      "measure": 28,
+      "page": "page-198.jpg",
+      "engraving_pitch": "A#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 96,
+      "part": "Lead",
+      "measure": 28,
+      "page": "page-198.jpg",
+      "engraving_pitch": "C#4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 97,
+      "part": "Lead",
+      "measure": 29,
+      "page": "page-198.jpg",
+      "engraving_pitch": "D#4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 98,
+      "part": "Lead",
+      "measure": 30,
+      "page": "page-198.jpg",
+      "engraving_pitch": "D#4",
+      "category": "intervention",
+      "tier": "intervention",
+      "why": "phrase Eb4 held (dropped bar restored)."
+    },
+    {
+      "row": 99,
+      "part": "Lead",
+      "measure": 30,
+      "page": "page-198.jpg",
+      "engraving_pitch": "D4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 100,
+      "part": "Lead",
+      "measure": 30,
+      "page": "page-198.jpg",
+      "engraving_pitch": "D#4",
+      "category": "intervention",
+      "tier": "intervention",
+      "why": "phrase Eb4 held (dropped bar restored)."
+    },
+    {
+      "row": 101,
+      "part": "Lead",
+      "measure": 30,
+      "page": "page-198.jpg",
+      "engraving_pitch": "F#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 102,
+      "part": "Lead",
+      "measure": 31,
+      "page": "page-198.jpg",
+      "engraving_pitch": "F3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 103,
+      "part": "Lead",
+      "measure": 31,
+      "page": "page-198.jpg",
+      "engraving_pitch": "F#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 104,
+      "part": "Lead",
+      "measure": 31,
+      "page": "page-198.jpg",
+      "engraving_pitch": "G#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 105,
+      "part": "Lead",
+      "measure": 32,
+      "page": "page-198.jpg",
+      "engraving_pitch": "F#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 106,
+      "part": "Lead",
+      "measure": 32,
+      "page": "page-198.jpg",
+      "engraving_pitch": "A#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 107,
+      "part": "Lead",
+      "measure": 32,
+      "page": "page-198.jpg",
+      "engraving_pitch": "A3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 108,
+      "part": "Lead",
+      "measure": 32,
+      "page": "page-198.jpg",
+      "engraving_pitch": "A#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 109,
+      "part": "Lead",
+      "measure": 32,
+      "page": "page-198.jpg",
+      "engraving_pitch": "F#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 110,
+      "part": "Lead",
+      "measure": 33,
+      "page": "page-198.jpg",
+      "engraving_pitch": "A#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 111,
+      "part": "Lead",
+      "measure": 33,
+      "page": "page-198.jpg",
+      "engraving_pitch": "A3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 112,
+      "part": "Lead",
+      "measure": 33,
+      "page": "page-198.jpg",
+      "engraving_pitch": "A#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 113,
+      "part": "Lead",
+      "measure": 33,
+      "page": "page-198.jpg",
+      "engraving_pitch": "F#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 114,
+      "part": "Lead",
+      "measure": 33,
+      "page": "page-198.jpg",
+      "engraving_pitch": "A#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 115,
+      "part": "Lead",
+      "measure": 33,
+      "page": "page-198.jpg",
+      "engraving_pitch": "A3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 116,
+      "part": "Lead",
+      "measure": 34,
+      "page": "page-198.jpg",
+      "engraving_pitch": "A#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 117,
+      "part": "Lead",
+      "measure": 34,
+      "page": "page-198.jpg",
+      "engraving_pitch": "B3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 118,
+      "part": "Lead",
+      "measure": 35,
+      "page": "page-199.jpg",
+      "engraving_pitch": "B3",
+      "category": "intervention",
+      "tier": "intervention",
+      "why": "transition tie-stop B3 half + half-rest (printed on p199 Ewart staff)."
+    },
+    {
+      "row": 119,
+      "part": "Baritone",
+      "measure": 4,
+      "page": "page-196.jpg",
+      "engraving_pitch": "B3",
+      "category": "intervention",
+      "tier": "intervention",
+      "why": "phrase-end Cb4 (cadence)."
+    },
+    {
+      "row": 120,
+      "part": "Baritone",
+      "measure": 4,
+      "page": "page-196.jpg",
+      "engraving_pitch": "A#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 121,
+      "part": "Baritone",
+      "measure": 4,
+      "page": "page-196.jpg",
+      "engraving_pitch": "A3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 122,
+      "part": "Baritone",
+      "measure": 4,
+      "page": "page-196.jpg",
+      "engraving_pitch": "A#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 123,
+      "part": "Baritone",
+      "measure": 5,
+      "page": "page-196.jpg",
+      "engraving_pitch": "F3",
+      "category": "page-read-BLOCKING",
+      "tier": "page-read",
+      "why": "restored-from-SILENCE bar \"sky\"=F3; corrections file labels HIGH (same Cb4-Lead cadence as \"shy\") but it is a page-image read — and vision flags an m5(high)/m9(low) tension since BOTH are claimed F3.",
+      "vision": {
+        "row": 123,
+        "word": "sky",
+        "engraving_claim": "F3",
+        "claude": {
+          "read": "F3?",
+          "confidence": "low-moderate",
+          "obs": "whole note sits HIGH on the staff (~4th line F3 / top region); tentatively consistent with F3"
+        },
+        "argus": {
+          "read": "Ab3",
+          "obs": "top line (A3), no accidental drawn",
+          "time_s": 20.1
+        },
+        "two_eye": "SCATTER — claude~F3 vs argus Ab3; eyes agree the note is HIGH but differ on exact line. Uncertain.",
+        "flag": "m5(high) vs m9(low) BOTH claimed F3 — cross-check the pair; restored-from-silence bar"
+      }
+    },
+    {
+      "row": 124,
+      "part": "Baritone",
+      "measure": 6,
+      "page": "page-196.jpg",
+      "engraving_pitch": "G#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 125,
+      "part": "Baritone",
+      "measure": 6,
+      "page": "page-196.jpg",
+      "engraving_pitch": "G#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 126,
+      "part": "Baritone",
+      "measure": 6,
+      "page": "page-196.jpg",
+      "engraving_pitch": "C#4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 127,
+      "part": "Baritone",
+      "measure": 6,
+      "page": "page-196.jpg",
+      "engraving_pitch": "B3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 128,
+      "part": "Baritone",
+      "measure": 7,
+      "page": "page-196.jpg",
+      "engraving_pitch": "D#4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 129,
+      "part": "Baritone",
+      "measure": 7,
+      "page": "page-196.jpg",
+      "engraving_pitch": "D4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 130,
+      "part": "Baritone",
+      "measure": 7,
+      "page": "page-196.jpg",
+      "engraving_pitch": "D#4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 131,
+      "part": "Baritone",
+      "measure": 7,
+      "page": "page-196.jpg",
+      "engraving_pitch": "D#4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 132,
+      "part": "Baritone",
+      "measure": 7,
+      "page": "page-196.jpg",
+      "engraving_pitch": "D#4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 133,
+      "part": "Baritone",
+      "measure": 7,
+      "page": "page-196.jpg",
+      "engraving_pitch": "A3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 134,
+      "part": "Baritone",
+      "measure": 7,
+      "page": "page-196.jpg",
+      "engraving_pitch": "G#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 135,
+      "part": "Baritone",
+      "measure": 7,
+      "page": "page-196.jpg",
+      "engraving_pitch": "A3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 136,
+      "part": "Baritone",
+      "measure": 8,
+      "page": "page-196.jpg",
+      "engraving_pitch": "A#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 137,
+      "part": "Baritone",
+      "measure": 8,
+      "page": "page-196.jpg",
+      "engraving_pitch": "A#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 138,
+      "part": "Baritone",
+      "measure": 8,
+      "page": "page-196.jpg",
+      "engraving_pitch": "A3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 139,
+      "part": "Baritone",
+      "measure": 8,
+      "page": "page-196.jpg",
+      "engraving_pitch": "A#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 140,
+      "part": "Baritone",
+      "measure": 9,
+      "page": "page-196.jpg",
+      "engraving_pitch": "F3",
+      "category": "page-read-BLOCKING",
+      "tier": "page-read",
+      "why": "held bar \"shy\"=F3 — corrections file explicitly \"page-image read (flagged for review)\". Vision: note sits LOW on staff, SUSPECTED below F3.",
+      "vision": {
+        "row": 140,
+        "word": "shy",
+        "engraving_claim": "F3",
+        "claude": {
+          "read": "below F3 (~G2-B2)",
+          "confidence": "low-moderate",
+          "obs": "whole note sits LOW on the staff, appears LOWER than the claimed F3 (4th line)"
+        },
+        "argus": {
+          "read": "Eb2",
+          "obs": "whole note on the first ledger line BELOW the bass staff; no accidental",
+          "time_s": 16.4
+        },
+        "two_eye": "STRONG AGREEMENT (direction) — BOTH eyes read this well BELOW the claimed F3 (4th line). The engraving F3 is a genuine pitch suspect.",
+        "flag": "TOP PRIORITY — two independent eyes both read LOW (below staff); engraving F3 likely too high. Page-image-read per corrections file."
+      }
+    },
+    {
+      "row": 141,
+      "part": "Baritone",
+      "measure": 10,
+      "page": "page-197.jpg",
+      "engraving_pitch": "B3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 142,
+      "part": "Baritone",
+      "measure": 10,
+      "page": "page-197.jpg",
+      "engraving_pitch": "F#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 143,
+      "part": "Baritone",
+      "measure": 11,
+      "page": "page-197.jpg",
+      "engraving_pitch": "B3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 144,
+      "part": "Baritone",
+      "measure": 11,
+      "page": "page-197.jpg",
+      "engraving_pitch": "B3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 145,
+      "part": "Baritone",
+      "measure": 11,
+      "page": "page-197.jpg",
+      "engraving_pitch": "B3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 146,
+      "part": "Baritone",
+      "measure": 12,
+      "page": "page-197.jpg",
+      "engraving_pitch": "A#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 147,
+      "part": "Baritone",
+      "measure": 12,
+      "page": "page-197.jpg",
+      "engraving_pitch": "C#4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 148,
+      "part": "Baritone",
+      "measure": 12,
+      "page": "page-197.jpg",
+      "engraving_pitch": "A#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 149,
+      "part": "Baritone",
+      "measure": 12,
+      "page": "page-197.jpg",
+      "engraving_pitch": "C#4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 150,
+      "part": "Baritone",
+      "measure": 12,
+      "page": "page-197.jpg",
+      "engraving_pitch": "A#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 151,
+      "part": "Baritone",
+      "measure": 13,
+      "page": "page-197.jpg",
+      "engraving_pitch": "B3",
+      "category": "intervention",
+      "tier": "intervention",
+      "why": "held bar \"chime\"=Cb4 — the contract’s named value."
+    },
+    {
+      "row": 152,
+      "part": "Baritone",
+      "measure": 14,
+      "page": "page-197.jpg",
+      "engraving_pitch": "C4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 153,
+      "part": "Baritone",
+      "measure": 14,
+      "page": "page-197.jpg",
+      "engraving_pitch": "C4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 154,
+      "part": "Baritone",
+      "measure": 15,
+      "page": "page-197.jpg",
+      "engraving_pitch": "G#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 155,
+      "part": "Baritone",
+      "measure": 15,
+      "page": "page-197.jpg",
+      "engraving_pitch": "C4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 156,
+      "part": "Baritone",
+      "measure": 15,
+      "page": "page-197.jpg",
+      "engraving_pitch": "C4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 157,
+      "part": "Baritone",
+      "measure": 16,
+      "page": "page-197.jpg",
+      "engraving_pitch": "B3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 158,
+      "part": "Baritone",
+      "measure": 16,
+      "page": "page-197.jpg",
+      "engraving_pitch": "C4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 159,
+      "part": "Baritone",
+      "measure": 16,
+      "page": "page-197.jpg",
+      "engraving_pitch": "B3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 160,
+      "part": "Baritone",
+      "measure": 16,
+      "page": "page-197.jpg",
+      "engraving_pitch": "G3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 161,
+      "part": "Baritone",
+      "measure": 17,
+      "page": "page-197.jpg",
+      "engraving_pitch": "G#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 162,
+      "part": "Baritone",
+      "measure": 17,
+      "page": "page-197.jpg",
+      "engraving_pitch": "A3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 163,
+      "part": "Baritone",
+      "measure": 17,
+      "page": "page-197.jpg",
+      "engraving_pitch": "A#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 164,
+      "part": "Baritone",
+      "measure": 17,
+      "page": "page-197.jpg",
+      "engraving_pitch": "C#4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 165,
+      "part": "Baritone",
+      "measure": 17,
+      "page": "page-197.jpg",
+      "engraving_pitch": "B3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 166,
+      "part": "Baritone",
+      "measure": 18,
+      "page": "page-197.jpg",
+      "engraving_pitch": "C#4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 167,
+      "part": "Baritone",
+      "measure": 18,
+      "page": "page-197.jpg",
+      "engraving_pitch": "C#4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 168,
+      "part": "Baritone",
+      "measure": 18,
+      "page": "page-197.jpg",
+      "engraving_pitch": "C#4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 169,
+      "part": "Baritone",
+      "measure": 18,
+      "page": "page-197.jpg",
+      "engraving_pitch": "C#4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 170,
+      "part": "Baritone",
+      "measure": 19,
+      "page": "page-197.jpg",
+      "engraving_pitch": "C#4",
+      "category": "deterministic",
+      "tier": "deterministic",
+      "why": "rhythm fix: homophony proved 8 eighths vs Audiveris’ 7; appended the symmetric closing Db4. Pitch follows the established run pattern."
+    },
+    {
+      "row": 171,
+      "part": "Baritone",
+      "measure": 19,
+      "page": "page-197.jpg",
+      "engraving_pitch": "C4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 172,
+      "part": "Baritone",
+      "measure": 19,
+      "page": "page-197.jpg",
+      "engraving_pitch": "C#4",
+      "category": "deterministic",
+      "tier": "deterministic",
+      "why": "rhythm fix: homophony proved 8 eighths vs Audiveris’ 7; appended the symmetric closing Db4. Pitch follows the established run pattern."
+    },
+    {
+      "row": 173,
+      "part": "Baritone",
+      "measure": 19,
+      "page": "page-197.jpg",
+      "engraving_pitch": "C#4",
+      "category": "deterministic",
+      "tier": "deterministic",
+      "why": "rhythm fix: homophony proved 8 eighths vs Audiveris’ 7; appended the symmetric closing Db4. Pitch follows the established run pattern."
+    },
+    {
+      "row": 174,
+      "part": "Baritone",
+      "measure": 19,
+      "page": "page-197.jpg",
+      "engraving_pitch": "C#4",
+      "category": "deterministic",
+      "tier": "deterministic",
+      "why": "rhythm fix: homophony proved 8 eighths vs Audiveris’ 7; appended the symmetric closing Db4. Pitch follows the established run pattern."
+    },
+    {
+      "row": 175,
+      "part": "Baritone",
+      "measure": 19,
+      "page": "page-197.jpg",
+      "engraving_pitch": "C#4",
+      "category": "deterministic",
+      "tier": "deterministic",
+      "why": "rhythm fix: homophony proved 8 eighths vs Audiveris’ 7; appended the symmetric closing Db4. Pitch follows the established run pattern."
+    },
+    {
+      "row": 176,
+      "part": "Baritone",
+      "measure": 19,
+      "page": "page-197.jpg",
+      "engraving_pitch": "C4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 177,
+      "part": "Baritone",
+      "measure": 19,
+      "page": "page-197.jpg",
+      "engraving_pitch": "C#4",
+      "category": "deterministic",
+      "tier": "deterministic",
+      "why": "rhythm fix: homophony proved 8 eighths vs Audiveris’ 7; appended the symmetric closing Db4. Pitch follows the established run pattern."
+    },
+    {
+      "row": 178,
+      "part": "Baritone",
+      "measure": 20,
+      "page": "page-197.jpg",
+      "engraving_pitch": "B3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 179,
+      "part": "Baritone",
+      "measure": 20,
+      "page": "page-197.jpg",
+      "engraving_pitch": "B3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 180,
+      "part": "Baritone",
+      "measure": 20,
+      "page": "page-197.jpg",
+      "engraving_pitch": "A3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 181,
+      "part": "Baritone",
+      "measure": 20,
+      "page": "page-197.jpg",
+      "engraving_pitch": "A#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 182,
+      "part": "Baritone",
+      "measure": 21,
+      "page": "page-197.jpg",
+      "engraving_pitch": "B3",
+      "category": "page-read-BLOCKING",
+      "tier": "page-read",
+      "why": "held bar \"name\"=Cb4 — corrections file \"page-image read\". Vision: page draws an editorial \"(b)\" flat => corroborates Cb4.",
+      "vision": {
+        "row": 182,
+        "word": "name",
+        "engraving_claim": "Cb4",
+        "claude": {
+          "read": "Cb4",
+          "confidence": "moderate",
+          "obs": "upper-staff note PRECEDED by an editorial '(b)' parenthetical flat — page's own marking confirms a flatted C => Cb4"
+        },
+        "argus": {
+          "read": "Ab3",
+          "obs": "whole note on the top line (A3) with a flat-in-parentheses drawn before it",
+          "time_s": 19
+        },
+        "two_eye": "PARTIAL — BOTH eyes SEE the editorial parenthetical flat (=> a flatted note), but disagree on line (claude Cb4 vs argus Ab3). Flat confirmed; exact pitch uncertain.",
+        "flag": "page editorial flat present (supports a flatted note); confirm Cb4 vs Ab3"
+      }
+    },
+    {
+      "row": 183,
+      "part": "Baritone",
+      "measure": 22,
+      "page": "page-198.jpg",
+      "engraving_pitch": "G#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 184,
+      "part": "Baritone",
+      "measure": 22,
+      "page": "page-198.jpg",
+      "engraving_pitch": "G#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 185,
+      "part": "Baritone",
+      "measure": 22,
+      "page": "page-198.jpg",
+      "engraving_pitch": "C#4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 186,
+      "part": "Baritone",
+      "measure": 22,
+      "page": "page-198.jpg",
+      "engraving_pitch": "B3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 187,
+      "part": "Baritone",
+      "measure": 23,
+      "page": "page-198.jpg",
+      "engraving_pitch": "D#4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 188,
+      "part": "Baritone",
+      "measure": 23,
+      "page": "page-198.jpg",
+      "engraving_pitch": "D4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 189,
+      "part": "Baritone",
+      "measure": 23,
+      "page": "page-198.jpg",
+      "engraving_pitch": "D#4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 190,
+      "part": "Baritone",
+      "measure": 23,
+      "page": "page-198.jpg",
+      "engraving_pitch": "D#4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 191,
+      "part": "Baritone",
+      "measure": 23,
+      "page": "page-198.jpg",
+      "engraving_pitch": "D#4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 192,
+      "part": "Baritone",
+      "measure": 23,
+      "page": "page-198.jpg",
+      "engraving_pitch": "A3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 193,
+      "part": "Baritone",
+      "measure": 23,
+      "page": "page-198.jpg",
+      "engraving_pitch": "G#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 194,
+      "part": "Baritone",
+      "measure": 23,
+      "page": "page-198.jpg",
+      "engraving_pitch": "A3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 195,
+      "part": "Baritone",
+      "measure": 24,
+      "page": "page-198.jpg",
+      "engraving_pitch": "A#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 196,
+      "part": "Baritone",
+      "measure": 24,
+      "page": "page-198.jpg",
+      "engraving_pitch": "A#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 197,
+      "part": "Baritone",
+      "measure": 24,
+      "page": "page-198.jpg",
+      "engraving_pitch": "A3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 198,
+      "part": "Baritone",
+      "measure": 24,
+      "page": "page-198.jpg",
+      "engraving_pitch": "A#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 199,
+      "part": "Baritone",
+      "measure": 24,
+      "page": "page-198.jpg",
+      "engraving_pitch": "A#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 200,
+      "part": "Baritone",
+      "measure": 25,
+      "page": "page-198.jpg",
+      "engraving_pitch": "C#4",
+      "category": "page-read-BLOCKING",
+      "tier": "split",
+      "why": "restored-from-SILENCE bar: \"hop\"=Db4 (corrections file MODERATE, root-double) + \"ing\"=Bb3 (HIGH, completes the Eb triad).",
+      "vision": {
+        "row": 200,
+        "word": "hop",
+        "engraving_claim": "Db4 (HALF)",
+        "claude": {
+          "read": "UNCLEAR",
+          "confidence": "none",
+          "obs": "restored-from-silence bar; cannot cleanly map 'hop' syllable to a single notehead across the context crop"
+        },
+        "argus": {
+          "read": "RHYTHM FLAG",
+          "obs": "HIGH: the notes on 'hop-ing' are QUARTER notes (solid noteheads), NOT whole/half; the only whole notes in view fall on 'same' two bars later",
+          "time_s": 114.9
+        },
+        "two_eye": "PITCH suspect (from-silence reconstruction); rhythm DOWNGRADED. Argus flagged quarters, but the homophonic Lead m25 is ALSO two half-notes (Lead E4:half + Eb4:half — and Lead's rhythm came from Audiveris's real page-read, only its pitch was corrected). So the half-note rhythm is structurally corroborated; Argus likely mis-segmented (it placed the whole-notes on 'same', the wrong bar).",
+        "structural": "Lead m25 = E4:half + Eb4:half (homophonic) corroborates Baritone 2-half rhythm. Pitch Db4 'hop' still a from-silence reconstruction.",
+        "flag": "PITCH still needs Jon (Db4 'hop' reconstructed); rhythm probably fine (Lead corroborates halves). 'ing'=Bb3 (row 201) is the HIGH Eb-triad completion."
+      }
+    },
+    {
+      "row": 201,
+      "part": "Baritone",
+      "measure": 25,
+      "page": "page-198.jpg",
+      "engraving_pitch": "A#3",
+      "category": "intervention",
+      "tier": "split",
+      "why": "restored-from-SILENCE bar: \"hop\"=Db4 (corrections file MODERATE, root-double) + \"ing\"=Bb3 (HIGH, completes the Eb triad)."
+    },
+    {
+      "row": 202,
+      "part": "Baritone",
+      "measure": 26,
+      "page": "page-198.jpg",
+      "engraving_pitch": "B3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 203,
+      "part": "Baritone",
+      "measure": 26,
+      "page": "page-198.jpg",
+      "engraving_pitch": "B3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 204,
+      "part": "Baritone",
+      "measure": 26,
+      "page": "page-198.jpg",
+      "engraving_pitch": "A#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 205,
+      "part": "Baritone",
+      "measure": 26,
+      "page": "page-198.jpg",
+      "engraving_pitch": "B3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 206,
+      "part": "Baritone",
+      "measure": 27,
+      "page": "page-198.jpg",
+      "engraving_pitch": "B3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 207,
+      "part": "Baritone",
+      "measure": 27,
+      "page": "page-198.jpg",
+      "engraving_pitch": "B3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 208,
+      "part": "Baritone",
+      "measure": 28,
+      "page": "page-198.jpg",
+      "engraving_pitch": "A#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 209,
+      "part": "Baritone",
+      "measure": 28,
+      "page": "page-198.jpg",
+      "engraving_pitch": "A#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 210,
+      "part": "Baritone",
+      "measure": 28,
+      "page": "page-198.jpg",
+      "engraving_pitch": "C#4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 211,
+      "part": "Baritone",
+      "measure": 28,
+      "page": "page-198.jpg",
+      "engraving_pitch": "A#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 212,
+      "part": "Baritone",
+      "measure": 29,
+      "page": "page-198.jpg",
+      "engraving_pitch": "D#3",
+      "category": "page-read-BLOCKING",
+      "tier": "page-read",
+      "why": "restored-from-SILENCE bar \"fine\"=Eb3 — corrections file MODERATE (octave-double of Lead Eb4). Vision: mid-staff, Eb3-vs-D3 ambiguous.",
+      "vision": {
+        "row": 212,
+        "word": "fine",
+        "engraving_claim": "Eb3",
+        "claude": {
+          "read": "Eb3?/D3?",
+          "confidence": "low",
+          "obs": "fermata note in the MIDDLE of the staff (~middle line D3 / 3rd space E3)"
+        },
+        "argus": {
+          "read": "Cb4",
+          "obs": "whole note on the first ledger line ABOVE the staff (C4); no accidental; fermata present",
+          "time_s": 12.8
+        },
+        "two_eye": "SCATTER (wide) — claude mid-staff (~Eb3/D3) vs argus above-staff (Cb4). Strong disagreement; genuinely uncertain.",
+        "flag": "cadential fermata; eyes disagree widely — needs Jon to set Eb3 vs alternatives"
+      }
+    },
+    {
+      "row": 213,
+      "part": "Baritone",
+      "measure": 30,
+      "page": "page-198.jpg",
+      "engraving_pitch": "B3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 214,
+      "part": "Baritone",
+      "measure": 30,
+      "page": "page-198.jpg",
+      "engraving_pitch": "B3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 215,
+      "part": "Baritone",
+      "measure": 30,
+      "page": "page-198.jpg",
+      "engraving_pitch": "B3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 216,
+      "part": "Baritone",
+      "measure": 30,
+      "page": "page-198.jpg",
+      "engraving_pitch": "D#4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 217,
+      "part": "Baritone",
+      "measure": 31,
+      "page": "page-198.jpg",
+      "engraving_pitch": "B3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 218,
+      "part": "Baritone",
+      "measure": 31,
+      "page": "page-198.jpg",
+      "engraving_pitch": "C4",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 219,
+      "part": "Baritone",
+      "measure": 31,
+      "page": "page-198.jpg",
+      "engraving_pitch": "B3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 220,
+      "part": "Baritone",
+      "measure": 32,
+      "page": "page-198.jpg",
+      "engraving_pitch": "A#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 221,
+      "part": "Baritone",
+      "measure": 32,
+      "page": "page-198.jpg",
+      "engraving_pitch": "F#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 222,
+      "part": "Baritone",
+      "measure": 32,
+      "page": "page-198.jpg",
+      "engraving_pitch": "F3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 223,
+      "part": "Baritone",
+      "measure": 32,
+      "page": "page-198.jpg",
+      "engraving_pitch": "F#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 224,
+      "part": "Baritone",
+      "measure": 32,
+      "page": "page-198.jpg",
+      "engraving_pitch": "C#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 225,
+      "part": "Baritone",
+      "measure": 33,
+      "page": "page-198.jpg",
+      "engraving_pitch": "F#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 226,
+      "part": "Baritone",
+      "measure": 33,
+      "page": "page-198.jpg",
+      "engraving_pitch": "F3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 227,
+      "part": "Baritone",
+      "measure": 33,
+      "page": "page-198.jpg",
+      "engraving_pitch": "F#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 228,
+      "part": "Baritone",
+      "measure": 33,
+      "page": "page-198.jpg",
+      "engraving_pitch": "C#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 229,
+      "part": "Baritone",
+      "measure": 33,
+      "page": "page-198.jpg",
+      "engraving_pitch": "F#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 230,
+      "part": "Baritone",
+      "measure": 33,
+      "page": "page-198.jpg",
+      "engraving_pitch": "F#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 231,
+      "part": "Baritone",
+      "measure": 34,
+      "page": "page-198.jpg",
+      "engraving_pitch": "F#3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    },
+    {
+      "row": 232,
+      "part": "Baritone",
+      "measure": 34,
+      "page": "page-198.jpg",
+      "engraving_pitch": "G3",
+      "category": "raw-agreement",
+      "tier": "raw-agreement",
+      "why": "raw Audiveris read == engraving (untouched). Shared-Audiveris-error risk (Codex HIGH) — covered by the stratified sample log, court of record = Jon."
+    }
+  ]
+}

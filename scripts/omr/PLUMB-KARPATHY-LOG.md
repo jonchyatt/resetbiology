@@ -164,3 +164,80 @@ External GM: Frank Lloyd Wright (FLW). Each gate: measurable goal → hypothesis
 **Result:** the judge narrowed 232 → **19 high-risk intervention rows** — exactly the documented session-2 corrections (held bars 9/13/21, restored sing-bars 5/25/29, bar-19 run, m25 region). The 213 matching rows = Audiveris's untouched read (Codex HIGH: could share an Audiveris error → Layer-2 covers). ENGRAVING-LOCK still RED. **The board now verifies 19 rows, not 232 — the scalable method.**
 
 **Next (autonomous, don't stop):** Layer 2 — independent page signal on the 19 (oemer second-OMR or Jon overlay), + spot the 213 match rows. Iterate until all 19 + the sample pass every board member, then A4.
+
+---
+
+## DETERMINISTIC JUDGE — Layer 2 method gate (REAL FLW consult, G3 — not narrated)
+
+**Date:** 2026-06-25 (autonomous Gorr resume, fresh context). Trigger: FLW consult #5 (unsure of next move) + #6 (method change) — the resume handoff named oemer as Layer 2 but the precondition was broken.
+
+**Measurable goal:** pick the Layer-2 external-signal method that fills/triages the 232-row ledger without (a) verification theater, (b) self-grading, or (c) a fragile dependency ritual — and have a REAL external GM rule on it.
+
+**Artifact-verified facts (Patek, not estimated):**
+- oemer NOT installed in ANY resolvable python (hermes venv: `No module named oemer`; no pipx/conda; filesystem search for an `oemer` package dir = empty). The handoff's "oemer 0.1.8 IS installed" was FALSE — the claimed-vs-ground-truth disease in miniature, caught by checking the artifact not the words.
+- Layer 1's 19 suspects map onto the documented corrections; the corrections file (`lida-lead-source-corrections.mjs`) self-categorizes them HIGH (homophony/contract/chord-proven) vs MODERATE/page-read. Genuinely-uncertain external-signal set ≈ 6 Baritone rows (ledger rows 123 m5, 140 m9, the m19 added eighth, 182 m21, 200 m25-hop, 212 m29).
+- Some divergences (e.g. Lead m4: raw D4 → engraving Db4) are **key-normalization effects** NOT in the human corrections file — algorithmic, so they can ONLY be adjudicated against the printed page, not by citing rationale.
+- Audiveris source XML carries pixel coords (`default-x`/`default-y` in tenths; page 1619×2224 tenths; JPG 794×1123) → deterministic tight per-measure cropping is possible (fixes A2's wide-crop contamination).
+
+**Experiment:** real FLW consult via `node scripts/boardroom.mjs codex --context flw-consult-layer2.md` (FLW framing + spec anchor + the proposed Layer-2 plan + 3 questions).
+
+**Measurement (the actual consult OUTPUT — recorded, never narrated):**
+- Output artifact: `…/tasks/bw7ac7zmr.output` (Codex 150.7s). Verdict: **APPROVE-WITH-CORRECTIONS** — "Do not require oemer first… right shape if treated as a ledger-fill and risk-triage method, not a lock proof."
+- Corrections (binding): **[HIGH]** do NOT label the 213 raw-agreement rows "match" — they must not be countable as final verdicts. **[MED]** Argus crops alone ≠ G2's two-eye standard — Claude vision must read independently too. **[MED]** corrections-file HIGH/MODERATE are internal until tied to the page/Jon. **[MED]** sampling the 213 is OK for A2 ONLY if stratified + logged. **[LOW]** verify all named artifacts (drift already shown).
+- DISSENT: sampling the 213 would be insufficient IF this were the GREEN gate; acceptable for A2 ONLY because rows stay provisional + sample is stratified + **A4/Jon remains the court of record**.
+
+**Result:** Layer-2 method LOCKED (FLW-corrected): tight deterministic crops → independent two-eye reads (Argus + Claude, blind) on the concentrated-risk rows + a stratified logged sample of the 213 → provisional triage in a SIDE artifact (binding `verdict` column stays honest) → music21 structural golden-lock → harden `verify-packet-ready.mjs` to reject non-final verdict tokens. oemer deferred (Codex-LAST) unless tight-crop review is inconclusive. ENGRAVING-LOCK stays RED → Jon A4.
+
+**FLW verdict:** ✅ APPROVE-WITH-CORRECTIONS (`bw7ac7zmr.output`, 150.7s) — corrections folded into the execution plan below.
+
+---
+
+## DETERMINISTIC JUDGE — Layer 2 EXECUTED (triage + two-eye vision + gate hardening)
+
+**Date:** 2026-06-25 (autonomous Gorr run, post-FLW-Layer-2-gate). FLW verdict applied: APPROVE-WITH-CORRECTIONS.
+
+**Measurable goal:** triage all 232 ledger rows + get an EXTERNAL page signal on the concentrated-risk rows + harden the gate so provisional rows can't masquerade as final — without claiming any lock (RED stays RED until Jon A4).
+
+**Experiment (FLW-corrected method, no oemer):**
+1. `verify-packet-ready.mjs` hardened (FLW HIGH): FINAL verdict vocabulary = {match, ok-non-note, BLOCKING}; any other token → RED + not counted as filled. Provisional triage moved to a SIDE artifact.
+2. Reused `build-lida-visual-audit.mjs` (sharp, layout-derived from Audiveris default-x) → per-measure page crops; tightened to single-staff 4× crops for the 5 suspects.
+3. Two independent BLIND eyes on the 5 suspects: Claude vision (direct) + Argus (`boardroom.mjs gemini --image`, batch `argus-reads.txt`).
+4. `build-triage-layer2.mjs` (deterministic): classified 232 from frozen corrections-diff + corrections-file confidence; wrote BLOCKING (only) into the binding ledger for the 5 page-read rows; re-hashed ledger → MANIFEST.
+
+**Measurement (from the tools / artifacts, not narration):**
+- Triage: **232 = 209 raw-agreement · 8 deterministic · 10 intervention · 5 page-read-BLOCKING** (`triage-layer2.json`).
+- Gate after BLOCKING written + re-hash: **5/232 verdicts filled · 5 BLOCKING · Jon sign-off NO → ENGRAVING-LOCK RED** (triple-blocked, correct). No HASH MISMATCH (re-hash valid). No non-final tokens.
+- **Two-eye vision findings (corroboration, NOT verdict):**
+  - **m9 "shy" (F3): STRONG 2-eye agreement the page note is LOW** — Claude ≈G2-B2, Argus Eb2 (ledger below staff). Engraving F3 (4th line) is a genuine PITCH suspect.
+  - **m25 "hop-ing" (Db4+Bb3 halves): RHYTHM suspect** — Argus HIGH: page shows QUARTER notes, not the reconstructed halves (the from-silence bar may have wrong rhythm). Claude: pitch unclear.
+  - m5/m21/m29: eyes SCATTER (m5 F3↔Ab3; m21 Cb4↔Ab3 with confirmed editorial flat; m29 Eb3↔Cb4) → unreadable by machine, all → Jon. The scatter re-proves vision ≠ court.
+
+**Result:** A2 triaged + the genuine BLOCKING set (5) surfaced with both-eye evidence + harmonic (Lead) context + per-suspect page crops, in `A4-BLOCKING-REPORT.md`. A3 (resolve BLOCKING) is inherently a Jon court read — the 5 cannot be adjudicated autonomously (proven by the vision scatter). Reached the **A4 Jon court-of-record gate**, a legitimate STOP per the autonomous directive. Deferred (clean): music21 (no pip in venv; in-toolchain structural supersedes) + oemer (Codex-LAST, install fragile) + golden-lock (premature to lock a score with 5 open BLOCKING rows — ARC-B B3) + ScoreVerify overlay BLOCKING-panel (PitchDefender UI → ui-specialist-gated).
+
+**New deliverables (committed):** hardened `verify-packet-ready.mjs` · `build-triage-layer2.mjs` · `triage-layer2.json` · `vision-reads.json` · `A4-BLOCKING-REPORT.md` · 5 crops in `lock/lida-rose/crops/`.
+
+**FLW verdict:** ⏳ reporting for the phase-complete gate (A2-triage done; BLOCKING surfaced; ready for Jon A4). Consult logged next.
+
+---
+
+## FLW PHASE-COMPLETE gate + the measure-numbering discovery (REAL consult, not narrated)
+
+**Date:** 2026-06-25 (autonomous Gorr run). FLW consult `b1v3xw927` / `flw-phase-complete.output` (Codex 128.1s).
+
+**FLW verdict: YELLOW / GREEN-for-Layer-2-triage** (NOT full A2, NOT engraving-lock). "No verification theater — the board looked at real frozen page crops, the gate stayed RED, vision treated as corroboration." Strengths: gate design (final-token constraint + provisional kept out of the binding ledger + re-hash), two-eye blind review, the disciplined stop for Jon, the deferrals.
+- **BINDING DISSENT (applied):** do NOT frame as "A2 fill complete" or "clearing 5 → GREEN." Reframed the A4 report: Layer-2 triage complete; 5 blockers need Jon; LOCK stays RED until BOTH ledger-completion AND Jon sign-off.
+- [MED] stratified raw-agreement sample artifact missing → **wrote `stratified-sample.json`** (6 strata part×page; documents the 209 rest on Audiveris's single read; names the printed-manifest as the intended independent signal + its numbering blocker; logs vision-sampling REJECTED as unreliable).
+- [LOW] tighten m25 → **DONE** (below).
+
+**DISCOVERY (deterministic cross-check, the most important systemic find this run): the measure/page mapping is NOT locked.** The baritone `printed-score-audit` FAILs at m9/m18/m31. Investigated against the SOURCE (the source files ARE the pages):
+- lida-196 = 8 bars, lida-197 = 10, lida-198 = 14 (32 source bars); engraving = 34/35 (corrections INSERTED held/restored bars, shifting all later numbers).
+- **FOUR conflicting numberings**: engraving (1–34) · raw source (32) · printed-manifest (`lida-baritone-printed-manifest.mjs`, pre-insert) · lock-packet `PAGE_MAP` (coarse guess).
+- ⇒ the printed-audit m9/m18/m31 FAILs are **likely NUMBERING ARTIFACTS, not engraving errors** (manifest-m9 "chapel-bell Cb4+Gb3" ≠ engraving-m9 "shy" F3 — different musical moments). I did NOT add m18/m31 to BLOCKING — acting on a mis-aligned signal IS the silent-offset trap (FLW's named #1 risk).
+- **The 5 BLOCKING rows are SAFE from this**: each is **lyric-anchored** (every crop verified to show the correct word: sky/shy/name/hop-ing/fine) and their page labels (m5/m9→196, m21→197, m25/m29→198) check out against the source.
+- **Named next deterministic step (Codex HIGH "lock the staff/measure/row mapping first"):** build ONE authoritative `engraving-measure → page → source-bar → lyric` map, reconcile the printed-manifest onto it → THEN it becomes a real independent cross-check for the 227 raw-agreement rows.
+
+**m25 tightened (FLW LOW):** measured — engraving Lead m25 = E♮4:half + Eb4:half; Baritone m25 = Db4:half + Bb3:half. The homophonic Lead corroborates the **two-half RHYTHM** (Lead rhythm came from Audiveris's real page-read; only its pitch was corrected). Argus's "quarters" flag = mis-segmentation (it misplaced the whole-notes onto "same"). m25 stays BLOCKING for PITCH only (the from-silence Db4 "hop"); rhythm-suspect downgraded.
+
+**Result:** Layer-2 triage closed FLW-clean. Gate: 5/232 filled · 5 BLOCKING · no sign-off → ENGRAVING-LOCK RED. Reached the A4 Jon court gate (legitimate stop) with `A4-BLOCKING-REPORT.md` + crops + both-eye reads + stratified-sample + the numbering finding. **m9 "shy"=F3 is the standout suspect** (both eyes read it well below F3; the printed-manifest's m9-region also disagrees with F3). Engraving NOT locked; no false green; nothing deployed (push held for Jon).
+
+**FLW verdict:** ✅ YELLOW/GREEN-for-Layer-2-triage (`b1v3xw927`). Stop for Jon A4 = ruled correct.

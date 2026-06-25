@@ -121,7 +121,7 @@ row,part,note_index,measure,page,engraving_pitch,page_pitch_read,verdict,reviewe
 120,Baritone,1,4,page-196.jpg,A#3,,,,
 121,Baritone,2,4,page-196.jpg,A3,,,,
 122,Baritone,3,4,page-196.jpg,A#3,,,,
-123,Baritone,4,5,page-196.jpg,F3,,,,
+123,Baritone,4,5,page-196.jpg,F3,,BLOCKING,claude+argus(vision); court=Jon,"sky" eng=F3; C:F3? A:Ab3; SCATTER — claude~F3 vs argus Ab3; eyes agree the note is HIGH but differ on exact line. Uncertain.
 124,Baritone,5,6,page-196.jpg,G#3,,,,
 125,Baritone,6,6,page-196.jpg,G#3,,,,
 126,Baritone,7,6,page-196.jpg,C#4,,,,
@@ -138,7 +138,7 @@ row,part,note_index,measure,page,engraving_pitch,page_pitch_read,verdict,reviewe
 137,Baritone,18,8,page-196.jpg,A#3,,,,
 138,Baritone,19,8,page-196.jpg,A3,,,,
 139,Baritone,20,8,page-196.jpg,A#3,,,,
-140,Baritone,21,9,page-196.jpg,F3,,,,
+140,Baritone,21,9,page-196.jpg,F3,,BLOCKING,claude+argus(vision); court=Jon,"shy" eng=F3; C:below F3 (~G2-B2) A:Eb2; STRONG AGREEMENT (direction) — BOTH eyes read this well BELOW the claimed F3 (4th line). The engraving F3 is a genuine pitch suspect.
 141,Baritone,22,10,page-197.jpg,B3,,,,
 142,Baritone,23,10,page-197.jpg,F#3,,,,
 143,Baritone,24,11,page-197.jpg,B3,,,,
@@ -180,7 +180,7 @@ row,part,note_index,measure,page,engraving_pitch,page_pitch_read,verdict,reviewe
 179,Baritone,60,20,page-197.jpg,B3,,,,
 180,Baritone,61,20,page-197.jpg,A3,,,,
 181,Baritone,62,20,page-197.jpg,A#3,,,,
-182,Baritone,63,21,page-197.jpg,B3,,,,
+182,Baritone,63,21,page-197.jpg,B3,,BLOCKING,claude+argus(vision); court=Jon,"name" eng=B3; C:Cb4 A:Ab3; PARTIAL — BOTH eyes SEE the editorial parenthetical flat (=> a flatted note); but disagree on line (claude Cb4 vs argus Ab3). Flat confirmed; exact pitch uncertain.
 183,Baritone,64,22,page-198.jpg,G#3,,,,
 184,Baritone,65,22,page-198.jpg,G#3,,,,
 185,Baritone,66,22,page-198.jpg,C#4,,,,
@@ -198,7 +198,7 @@ row,part,note_index,measure,page,engraving_pitch,page_pitch_read,verdict,reviewe
 197,Baritone,78,24,page-198.jpg,A3,,,,
 198,Baritone,79,24,page-198.jpg,A#3,,,,
 199,Baritone,80,24,page-198.jpg,A#3,,,,
-200,Baritone,81,25,page-198.jpg,C#4,,,,
+200,Baritone,81,25,page-198.jpg,C#4,,BLOCKING,claude+argus(vision); court=Jon,"hop" eng=C#4; C:UNCLEAR A:RHYTHM FLAG; PITCH suspect (from-silence reconstruction); rhythm DOWNGRADED. Argus flagged quarters; but the homophonic Lead m25 is ALSO two half-notes (Lead E4:half + Eb4:half — and Lead's rhythm came from Audiveris's real page-read; only its pitch was corrected). So the half-note rhythm is structurally corroborated; Argus likely mis-segmented (it placed the whole-notes on 'same'; the wrong bar).
 201,Baritone,82,25,page-198.jpg,A#3,,,,
 202,Baritone,83,26,page-198.jpg,B3,,,,
 203,Baritone,84,26,page-198.jpg,B3,,,,
@@ -210,7 +210,7 @@ row,part,note_index,measure,page,engraving_pitch,page_pitch_read,verdict,reviewe
 209,Baritone,90,28,page-198.jpg,A#3,,,,
 210,Baritone,91,28,page-198.jpg,C#4,,,,
 211,Baritone,92,28,page-198.jpg,A#3,,,,
-212,Baritone,93,29,page-198.jpg,D#3,,,,
+212,Baritone,93,29,page-198.jpg,D#3,,BLOCKING,claude+argus(vision); court=Jon,"fine" eng=D#3; C:Eb3?/D3? A:Cb4; SCATTER (wide) — claude mid-staff (~Eb3/D3) vs argus above-staff (Cb4). Strong disagreement; genuinely uncertain.
 213,Baritone,94,30,page-198.jpg,B3,,,,
 214,Baritone,95,30,page-198.jpg,B3,,,,
 215,Baritone,96,30,page-198.jpg,B3,,,,

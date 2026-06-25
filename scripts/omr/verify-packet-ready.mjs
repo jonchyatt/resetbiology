@@ -34,6 +34,12 @@ for (const f of files) {
 }
 
 // 2) ledger schema + coverage
+// FLW gate (2026-06-25, bw7ac7zmr.output, HIGH): a verdict is FINAL only if it is one of
+// these three tokens. Anything else in the verdict column (e.g. a "provisional-*" triage
+// label) is NOT a real verdict — it must NOT be counted as filled, and its presence is
+// flagged RED so a provisional row can never masquerade as an adjudicated one. The
+// scalable provisional triage lives in triage-layer2.json (a SIDE artifact), never here.
+const FINAL_VERDICTS = new Set(['match', 'ok-non-note', 'BLOCKING']);
 let filled = 0, blocking = 0, total = 0;
 if (fs.existsSync(abs(M.ledger.path))) {
   const lines = fs.readFileSync(abs(M.ledger.path), 'utf8').trim().split('\n');
@@ -41,11 +47,15 @@ if (fs.existsSync(abs(M.ledger.path))) {
   if (lines[0].split(',').join(',') !== need.join(',')) fail.push('LEDGER columns wrong');
   total = lines.length - 1;
   if (total !== M.ledger.rows) fail.push(`LEDGER rows ${total} != manifest ${M.ledger.rows}`);
+  let badTokens = 0;
   for (const ln of lines.slice(1)) {
     const v = (ln.split(',')[7] || '').trim();
-    if (v) filled++;
+    if (!v) continue;
+    if (!FINAL_VERDICTS.has(v)) { badTokens++; continue; }   // non-final token: not a verdict, not "filled"
+    filled++;
     if (v === 'BLOCKING') blocking++;
   }
+  if (badTokens) fail.push(`LEDGER has ${badTokens} non-final verdict token(s) — only ${[...FINAL_VERDICTS].join('/')} count; provisional triage belongs in triage-layer2.json`);
 }
 
 const packetReady = fail.length === 0;

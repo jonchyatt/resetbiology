@@ -57,7 +57,7 @@
   },
   "ledger": {
     "path": "scripts/omr/lock/lida-rose/discrepancy-ledger.csv",
-    "sha256": "504fcb1a54b4d92ab66a2b1ab4afbf7888d373d784a0f64df209765165fce16b",
+    "sha256": "593daecd5fc2da8ff15d7ae4fe21fba9e2f4d42b057500a5edd8af2d503832b2",
     "rows": 232,
     "columns": [
       "row",

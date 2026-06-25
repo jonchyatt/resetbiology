@@ -1,0 +1,43 @@
+{
+  "note": "Independent BLIND vision reads of the 5 concentrated-risk Baritone (OLIVER) page-read rows. G2: vision = corroboration, never court. Each crop = one bass-clef staff, 6 flats (Db/Bb), 4x upscaled, from the FROZEN page jpgs. Claude reads here; Argus (gemini) reads folded in separately. Court of record = Jon (A4).",
+  "generatedBy": "claude-opus + argus-gemini (blind, independent)",
+  "key": "6 flats — B E A D G C flat by default (Db major / Bb minor)",
+  "reads": {
+    "Baritone:5": {
+      "row": 123, "word": "sky", "engraving_claim": "F3",
+      "claude": { "read": "F3?", "confidence": "low-moderate", "obs": "whole note sits HIGH on the staff (~4th line F3 / top region); tentatively consistent with F3" },
+      "argus": { "read": "Ab3", "obs": "top line (A3), no accidental drawn", "time_s": 20.1 },
+      "two_eye": "SCATTER — claude~F3 vs argus Ab3; eyes agree the note is HIGH but differ on exact line. Uncertain.",
+      "flag": "m5(high) vs m9(low) BOTH claimed F3 — cross-check the pair; restored-from-silence bar"
+    },
+    "Baritone:9": {
+      "row": 140, "word": "shy", "engraving_claim": "F3",
+      "claude": { "read": "below F3 (~G2-B2)", "confidence": "low-moderate", "obs": "whole note sits LOW on the staff, appears LOWER than the claimed F3 (4th line)" },
+      "argus": { "read": "Eb2", "obs": "whole note on the first ledger line BELOW the bass staff; no accidental", "time_s": 16.4 },
+      "two_eye": "STRONG AGREEMENT (direction) — BOTH eyes read this well BELOW the claimed F3 (4th line). The engraving F3 is a genuine pitch suspect.",
+      "flag": "TOP PRIORITY — two independent eyes both read LOW (below staff); engraving F3 likely too high. Page-image-read per corrections file."
+    },
+    "Baritone:21": {
+      "row": 182, "word": "name", "engraving_claim": "Cb4",
+      "claude": { "read": "Cb4", "confidence": "moderate", "obs": "upper-staff note PRECEDED by an editorial '(b)' parenthetical flat — page's own marking confirms a flatted C => Cb4" },
+      "argus": { "read": "Ab3", "obs": "whole note on the top line (A3) with a flat-in-parentheses drawn before it", "time_s": 19.0 },
+      "two_eye": "PARTIAL — BOTH eyes SEE the editorial parenthetical flat (=> a flatted note), but disagree on line (claude Cb4 vs argus Ab3). Flat confirmed; exact pitch uncertain.",
+      "flag": "page editorial flat present (supports a flatted note); confirm Cb4 vs Ab3"
+    },
+    "Baritone:25": {
+      "row": 200, "word": "hop", "engraving_claim": "Db4 (HALF)",
+      "claude": { "read": "UNCLEAR", "confidence": "none", "obs": "restored-from-silence bar; cannot cleanly map 'hop' syllable to a single notehead across the context crop" },
+      "argus": { "read": "RHYTHM FLAG", "obs": "HIGH: the notes on 'hop-ing' are QUARTER notes (solid noteheads), NOT whole/half; the only whole notes in view fall on 'same' two bars later", "time_s": 114.9 },
+      "two_eye": "PITCH suspect (from-silence reconstruction); rhythm DOWNGRADED. Argus flagged quarters, but the homophonic Lead m25 is ALSO two half-notes (Lead E4:half + Eb4:half — and Lead's rhythm came from Audiveris's real page-read, only its pitch was corrected). So the half-note rhythm is structurally corroborated; Argus likely mis-segmented (it placed the whole-notes on 'same', the wrong bar).",
+      "structural": "Lead m25 = E4:half + Eb4:half (homophonic) corroborates Baritone 2-half rhythm. Pitch Db4 'hop' still a from-silence reconstruction.",
+      "flag": "PITCH still needs Jon (Db4 'hop' reconstructed); rhythm probably fine (Lead corroborates halves). 'ing'=Bb3 (row 201) is the HIGH Eb-triad completion."
+    },
+    "Baritone:29": {
+      "row": 212, "word": "fine", "engraving_claim": "Eb3",
+      "claude": { "read": "Eb3?/D3?", "confidence": "low", "obs": "fermata note in the MIDDLE of the staff (~middle line D3 / 3rd space E3)" },
+      "argus": { "read": "Cb4", "obs": "whole note on the first ledger line ABOVE the staff (C4); no accidental; fermata present", "time_s": 12.8 },
+      "two_eye": "SCATTER (wide) — claude mid-staff (~Eb3/D3) vs argus above-staff (Cb4). Strong disagreement; genuinely uncertain.",
+      "flag": "cadential fermata; eyes disagree widely — needs Jon to set Eb3 vs alternatives"
+    }
+  }
+}
