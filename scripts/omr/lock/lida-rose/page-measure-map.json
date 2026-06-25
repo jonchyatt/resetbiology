@@ -1,0 +1,37 @@
+{
+  "note": "page-N.jpg shows printed page N-3",
+  "pages": [
+    {
+      "page": "page-196.jpg",
+      "printed": 193,
+      "measures": [
+        1,
+        9
+      ]
+    },
+    {
+      "page": "page-197.jpg",
+      "printed": 194,
+      "measures": [
+        10,
+        21
+      ]
+    },
+    {
+      "page": "page-198.jpg",
+      "printed": 195,
+      "measures": [
+        22,
+        34
+      ]
+    },
+    {
+      "page": "page-199.jpg",
+      "printed": 196,
+      "measures": [
+        35,
+        35
+      ]
+    }
+  ]
+}

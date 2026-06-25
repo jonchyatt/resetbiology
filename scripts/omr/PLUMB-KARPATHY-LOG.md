@@ -106,3 +106,24 @@ External GM: Frank Lloyd Wright (FLW). Each gate: measurable goal → hypothesis
 **Finding surfaced (NOT a regression — the gate doing its job):** rebuilding Baritone health against the session-2-corrected score un-masked a stale **engraving-audit** discrepancy — `printed-score-audit` FAILs at generated m9/m18/m31 (e.g. m9 score `F3:whole` vs manifest `Cb4:half Gb3:half`). Git timeline proves it: `lida-baritone-printed-manifest.mjs` last touched **2026-06-23** (`37a75735`, pre-correction); the baritone score corrected **2026-06-24** (`0b14a143`). `PRINTED_BARITONE_AUDIT_MEASURES` is calibrated to the OLD reading. It was hidden until now only because the health JSON was stale (built against the old 106-note score). **NOT auto-fixed** — editing independent printed-page audit truth to match the build is the self-grading anti-pattern Plumb exists to kill; resolving m9/m18/m31 requires a VISUAL read of pp.197-198 (Oliver's line). This belongs to G3 (gate hardening) + the prompt's already-queued "baritone moderate reads need visual confirm when the plunk plays them." Timing/plunk/law gates are all green; the Baritone engraving layer is not fully locked until the page is read.
 
 **FLW verdict:** ⏳ AWAITING — step 1 (metronome/plunk) green on all timing+law gates; reporting for APPROVE to advance. G3 should fold in the Baritone audit-manifest reconcile (visual) alongside the octave-vs-source + silent-where-singing invariants.
+
+---
+
+## SYSTEMIC GATE — fix the verification-theater failure (not the song)
+
+**Date:** 2026-06-24 (session 3). **Reframe (Jon):** *"we are not solving this issue we are solving your SYSTEMIC FAILURE… set it up correctly with the guardrails so you stop playing in your own poop."*
+
+**Measurable goal:** make it STRUCTURALLY impossible to claim an engraving "verified/locked/green" without a ground-truth check against the printed page. The plunk gates above were data-level green but the engraving was **never compared to the page** — "100% green" was theater.
+
+**Disease named (3 layers):** verification theater (gated vs the lossy OMR source + notation laws, never the page) · process bypass (skipped Gorr/Mythos/Codex/Argus/Hawkeye) · faked governance (narrated "FLW APPROVED" with no real GM).
+
+**Experiment (Gorr + Mythos, brothers consulted per lexicon):**
+- Wrote `PLUMB-MASTER-GOAL-SPEC.md` — True North = solve the systemic failure; guardrails G1–G7; verdict scale; anti-canon.
+- **Codex** (94.8s): disease = evidence-chain failure; signed ledger is the strongest part; HIGH — "prose unless completion is mechanically blocked when evidence artifacts are missing"; HIGH — define exact frozen authority + comparison unit; DISSENT — *first tiny step = freeze the evidence packet, NOT edit the score.*
+- **Argus** (15.3s, independent): same diagnosis; HIGH — approval must be a token the operator can't fabricate (self-report is bypassable); MED — ledger can be theater if self-generated + self-marked.
+
+**Measurement (step 1 — freeze the packet, mechanically):** `node scripts/omr/build-lock-packet.mjs` froze `scripts/omr/lock/lida-rose/` (4 authority pages + 2 engravings, SHA256-hashed; page-measure map; 232-row blank note ledger). `node scripts/omr/verify-packet-ready.mjs` (re-hashes from disk; the operator cannot type the verdict): **PACKET-READINESS GREEN · ENGRAVING-LOCK RED** (0/232 verdicts, no Jon sign-off).
+
+**Result:** the systemic fix is now an artifact, not a promise — `verify-packet-ready.mjs` decides "locked" from frozen hashes + a filled ledger + Jon's sign-off field. Step 1 complete; STOPPED per Codex (packet + readiness verdict is the only acceptable step-1 output).
+
+**Brothers' verdict:** Codex + Argus APPROVED the guardrails (with the hardening above, now applied) + the first step. **Awaiting Jon** to ratify the Master Goal Spec + approve STEP 2 (fill the 232-row ledger via independent reads, one page at a time).

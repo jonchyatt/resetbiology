@@ -1,0 +1,79 @@
+{
+  "song": "lida-rose",
+  "purpose": "Plumb engraving-lock verification packet — step 1: FREEZE (do not edit the score)",
+  "frozenAt": "2026-06-25T04:15:28.706Z",
+  "authority": {
+    "type": "printed-page (court of record)",
+    "files": [
+      {
+        "path": "public/score/page-196.jpg",
+        "sha256": "c66aa25dda6400bfa060d57f1d4b7690c58d0da0a0039c072648a4267b2be44e"
+      },
+      {
+        "path": "public/score/page-197.jpg",
+        "sha256": "5a01dbb837d64fa3a9e70cac440758bd7b4dd33cdcba30cc921c4ef6a74f9613"
+      },
+      {
+        "path": "public/score/page-198.jpg",
+        "sha256": "10410e2a2bd9fb9482b930888fe6697f9a548416d9d578021951c389c749a965"
+      },
+      {
+        "path": "public/score/page-199.jpg",
+        "sha256": "6697fe591a7ef1661f179f8725fec42a161ea4c4194a30d3da5f24d1322bde84"
+      }
+    ]
+  },
+  "engraving": {
+    "musicxml": [
+      {
+        "part": "Lead",
+        "path": "public/musicxml/lida-rose-lead.musicxml",
+        "sha256": "62fd68f15fb092750a6f2c3f3e2fbaea19d9a11b6969264a77902d31586ed773",
+        "noteCount": 118
+      },
+      {
+        "part": "Baritone",
+        "path": "public/musicxml/lida-rose-baritone.musicxml",
+        "sha256": "fa1ebb391eff47e25d0d49f5b47e4f5a2e46bbef21c6d1ad28b525732138dbca",
+        "noteCount": 114
+      }
+    ],
+    "renders": [
+      {
+        "part": "Lead",
+        "path": "scripts/omr/lock/lida-rose/engraving-lead.png",
+        "sha256": "1ebe82d95e3b0075b58e8478b9f34056ccbac3b4c6708cf4abe4c4c7bbeeea71"
+      },
+      {
+        "part": "Baritone",
+        "path": "scripts/omr/lock/lida-rose/engraving-baritone.png",
+        "sha256": "4f5d8db45212ed6aaff0486c505029de504f0d4135b485f54f3f3e050993b1b2"
+      }
+    ]
+  },
+  "map": {
+    "path": "scripts/omr/lock/lida-rose/page-measure-map.json",
+    "sha256": "9de4bce0502f6a92293a886f33dc1930881a7880e72f1fa0a9bd3b596436fe41"
+  },
+  "ledger": {
+    "path": "scripts/omr/lock/lida-rose/discrepancy-ledger.csv",
+    "sha256": "504fcb1a54b4d92ab66a2b1ab4afbf7888d373d784a0f64df209765165fce16b",
+    "rows": 232,
+    "columns": [
+      "row",
+      "part",
+      "note_index",
+      "measure",
+      "page",
+      "engraving_pitch",
+      "page_pitch_read",
+      "verdict",
+      "reviewer",
+      "notes"
+    ]
+  },
+  "signoff": {
+    "jon": null,
+    "signedAt": null
+  }
+}
