@@ -1072,6 +1072,19 @@ export default function PitchDefender() {
                 <div className="text-[11px] font-normal mt-0.5 opacity-70">Blast Mix. Volume to 400% + L/R balance + live meters. Step-by-step guide built in.</div>
               </a>
               <a
+                href="/pitch-defender/score-verify"
+                title="Note-by-note audit: drag the scanned pages and the rendered engravings into overlay, blend opacity, and verify the engraving matches the printed score before trusting it. The lock-the-engraving surface."
+                className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
+                style={{
+                  background: 'rgba(220, 38, 38, 0.18)',
+                  color: '#fca5a5',
+                  border: '2px solid rgba(220, 38, 38, 0.5)',
+                }}
+              >
+                Score ⟷ Engraving Audit
+                <div className="text-[11px] font-normal mt-0.5 opacity-70">Drag scans + engravings into overlay. Verify note-by-note. Lock the engraving.</div>
+              </a>
+              <a
                 href="/pitch-defender/composer"
                 title="Type music in by hand: notes, lyrics, chords, slurs, dynamics. Saves once and is read by every other game. The canonical score path."
                 className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
