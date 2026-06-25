@@ -1,0 +1,42 @@
+# PLUMB GORR — RESUME HANDOFF  (paste as the opening message of the next session)
+
+## 0. THE ANTI-STOP RULE — read first (Jon, verbatim intent)
+**DO NOT stop to ask Jon "continue / should I / want me to / go ahead?"** It is **against the lexicon**. Every stop-to-ask makes you reread the whole session from the start and **geometrically burns tokens — Jon calls this fraudulent and has expressly banned it.** Compaction is **ENCOURAGED + SAFE** (Gorr). **Go through compaction without asking.** Run autonomously to the goal. Stop ONLY for: a real money / contract / external-publish gate, a genuine 3-fails-then-Boardroom blocker, or the goal reached (passes ALL board members + meets True North). Otherwise **KEEP GOING and follow the protocols.**
+
+## 1. FIRST ACTION
+Read in full: `scripts/omr/PLUMB-GORR-INSTANCE.md` → `scripts/omr/PLUMB-MASTER-GOAL-SPEC.md` (True North §0-2, guardrails §3, mechanical enforcement §6, state §7, pathway §8, operating protocol §9). Then consult **FLW** (`node scripts/boardroom.mjs codex "<state + plan>"` framed by `scripts/omr/FLW-PROMPT.md`) and resume. Repo: `C:\Users\jonch\reset-biology-website`, branch `infinitetalk-studio`. boardroom.mjs lives in the JARVIS repo — run it from `C:\Users\jonch\Projects\jarvis` (no `cd` into reset-biology for boardroom).
+
+## 2. THE PROTOCOLS — explicit lexicon definitions (operate by these; the lexicon files are BINDING)
+
+**GORR** (`memory/lexicon/gorr-protocol.md`) = **Mythos + Code Blue + Vanguard + max-Codex-delegation + compaction-permitted + External-GM (FLW) + Master-Goal-Spec.** The drift defense is NOT "no compaction" — it is moving project state OUT of Claude's context into the FLW GM + the Master Goal Spec file, so **compaction is SAFE**. On compaction: read the instance prompt + Master Goal Spec + consult FLW → **resume** (never restart, never re-ask, never re-design). 6 mandatory FLW consult triggers (before stopping a loop · before asking Jon · at a compaction point · declaring a phase complete · unsure of next move · adding scope). **FLW's verdict = Jon's.** No "Gorr-lite" — full Gorr or none.
+
+**Mythos** (`memory/lexicon/mythos-discipline.md`, BINDING — the FULL version, never a summary) = single-operator **L1** Strict Write Discipline (state intent → execute → **verify the ARTIFACT after, not the tool's "success"**, 2 retries) · **L2** multi-pass refinement · **L3** 4-stage pipeline (**Recon → Hypothesis (list 3-5 failure modes) → Analyze (run the verifiers) → Validate (run the real thing)**) · **L4** skeptical-reviewer second pass. Bilateral **L5-L17** (Codex co-builder + **Argus** the independent Gemini vision eye). Stages: **PRELUDE → RECURRENT → CODA → SECOND-PASS**. The 4 questions per operator. **TRI-GATE halting: advance ONLY when Claude AND Codex AND Argus each report ≥0.75 confidence with 0 actionable findings.** A board "approval" is real ONLY if the board actually LOOKED at the ground truth — **a narrated approval is the disease.**
+
+**Vanguard** (`memory/lexicon/vanguard-dispatch.md`) = the context-loaded Claude does the recon + writes a **verbatim spec**; a fresh executor (Codex `--execute` or an Agent subagent in a worktree) applies it. Compression theorem: the vanguard burns ITS window on understanding, the executor burns ITS window on action — **which is WHY compaction is safe**: the understanding is externalized into the spec + the Master Goal Spec, not trapped in one window. Delegate the grind to Codex (functionally free); KEEP spec authorship + specialist grounding + own-eyes artifact verification + the gate + synthesis in Claude.
+
+**Karpathy ratchet** (composes with Mythos L6) = on EVERY gate: **measurable goal (a number from a TOOL, never the head) → hypothesis → experiment (ONE variable) → measure → log in `PLUMB-KARPATHY-LOG.md` → iterate.** A gate advances ONLY on measured improvement, never on narration; never re-run a failed approach without a changed variable; repeat until the metric hits the goal.
+
+## 3. TRUE NORTH (the goal — we are solving a SYSTEMIC FAILURE, not a song)
+The Lida Rose engraving was claimed "100% green / verified / locked" while it was **never compared to the printed page** (gated only vs the lossy OMR source + notation laws). Three layers: **verification theater + process bypass + faked governance** (narrated FLW/Argus/Claude approvals that never looked). SOLVED = a system where "verified/locked/green" CANNOT be claimed without a ground-truth check vs the page, the protocols fire structurally, and the gate is real. Domain = **PLUMB**: raw scanned score in → verified-perfect trainable product out (engraving + plunk that plays plumb-true off the verified score + lyrics), at scale = **the foundry Jon walks away from** (6 barbershop + ~14 raw songs, 248-page book, no babysitting, no false greens). Jon's hard constraints: *"I can't have either an inaccurate score or a metronome that doesn't work or has weird timing issues"* + **claimed-verified MUST equal ground-truth-verified.**
+
+## 4. STATE (2026-06-24)
+- ✅ **Systemic fix is an artifact:** `node scripts/omr/verify-packet-ready.mjs` re-hashes the frozen evidence from disk and DECIDES `ENGRAVING-LOCK` — the operator CANNOT type "locked." Currently **PACKET-READINESS GREEN · ENGRAVING-LOCK RED** (0/232 ledger verdicts, no Jon sign-off).
+- ✅ **A1** packet frozen: `scripts/omr/lock/lida-rose/` (4 authority pages + 2 engravings SHA256-hashed, page-measure map, 232-row note ledger).
+- ✅ **A2 finding:** automated VISION (Argus + Claude) is too unreliable on dense notation to be the judge → vision = corroboration, never court.
+- ✅ **Deterministic judge Layer 1** (`build-corrections-diff.mjs`): LCS-diff of raw Audiveris source vs the engraving → **232 notes → 19 suspect divergences** (Lead 9: added m4×2, m9, m13, m22, m30, m35; raw-only D4×2 · Baritone 10: added m4, m5, m9, m13, m19, m21, m25×2, m29; raw-only C4). Report `scripts/omr/lock/lida-rose/corrections-diff.json`. The board verifies **19, not 232.**
+- The plunk/timing was rebuilt pure-notation + deployed live (`/pitch-defender/score-verify` overlay also live) but it **rides on an unverified engraving → provisional until the engraving locks.**
+
+## 5. NEXT — just do it (don't ask)
+**Layer 2 — independent page signal on the 19 suspects** (Codex/FLW order: oemer second-OMR, never the court):
+1. Run **oemer 0.1.8** (`python -m oemer <public/score/page-196.jpg>` etc.; TensorFlow, may download models first run) on pp.196-198 → musicxml.
+2. Cross-check: for each of the 19, compare engraving vs (raw Audiveris, oemer). Where engraving disagrees with BOTH independent sources = real **BLOCKING**; where ≥2 sources agree = corroborated. Also spot-check the 213 match rows (Codex HIGH: they can share an Audiveris error).
+3. Write verdicts into the 232-row ledger (`match | ok-non-note | BLOCKING`); fix real errors ONLY in `scripts/omr/lida-lead-source-corrections.mjs` (NEVER the source XML or page JPGs) → `node scripts/omr/build-{lead,baritone}-dataset.mjs` → rebuild musicxml → re-run `build-lock-packet.mjs` → `verify-score-invariants.mjs lida-rose` (stay green) → `build-corrections-diff.mjs` → `verify-packet-ready.mjs`.
+4. Iterate (Karpathy) until 0 BLOCKING + every board member (Codex + Argus + oemer-deterministic + FLW) passes, THEN Jon sign-off (A4: set `MANIFEST.signoff.jon`) → `verify-packet-ready.mjs` flips ENGRAVING-LOCK GREEN.
+5. Then A5 (re-verify plunk vs locked score: `verify-plunk-from-score.mjs lida-rose`) → A6 (lyrics) → A7 (product gate) → ARC B (onboard pipeline → song #2 → scale).
+
+## 6. IRON RULES + KEY FILES
+- NEVER edit primary source: `scripts/omr/source/*.xml`, `public/score/*.jpg`. Corrections → `scripts/omr/lida-lead-source-corrections.mjs`.
+- The printed PAGE is the court of record; vision = corroboration. Verify the ARTIFACT (re-hash/read/screenshot), never an agent's words. Deterministic code beats any model's read.
+- All eyes granted (Jon): **Hawkeye** (live `/pitch-defender/score-verify`), **Argus** (`boardroom.mjs gemini --image`), **Codex/FLW** (`boardroom.mjs codex`). Never narrate an approval you didn't obtain.
+- Deploy = `git push origin master` (Vercel) ONLY; NEVER the `vercel` CLI in this repo. Commits/builds/agents = green-bucket autonomous.
+- Key files: `PLUMB-MASTER-GOAL-SPEC.md` · `PLUMB-GORR-INSTANCE.md` · `FLW-PROMPT.md` · `PLUMB-KARPATHY-LOG.md` · `lock/lida-rose/{MANIFEST.json,discrepancy-ledger.csv,corrections-diff.json}` · `verify-packet-ready.mjs` · `build-corrections-diff.mjs` · `build-lock-packet.mjs`. Latest commit `98752709`.
