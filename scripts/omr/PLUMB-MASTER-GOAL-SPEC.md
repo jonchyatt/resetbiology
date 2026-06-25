@@ -111,20 +111,21 @@ Every step names its ground-truth AUTHORITY and a GATE that is mechanical or Jon
 
 This is a **Gorr instance** (Mythos + Code Blue + Vanguard + max-Codex-delegation + compaction-permitted + External-GM + this Master Goal Spec). Compaction is **encouraged**; project state lives HERE + in the FLW GM + the Karpathy log, so compaction is safe.
 
-### Karpathy ratchet — run on EVERY gate (G6)
+### Karpathy ratchet — the FULL ratchet, on EVERY gate (G6)
 1. **Measurable goal** — a number or a binary, from a TOOL (Patek precision: measure, never estimate; every number cited comes from a command, never the head).
-2. **Hypothesis** — what we expect + the failure mode.
-3. **Experiment** — the smallest change that tests it.
-4. **Measure** — run the tool; record the number.
+2. **Hypothesis** — what we expect + the failure mode it could hide.
+3. **Experiment** — the smallest change that tests it; **one variable at a time.**
+4. **Measure** — run the tool; record the number from the artifact, not the agent's words.
 5. **Log** — a row in `PLUMB-KARPATHY-LOG.md` (goal · hypothesis · experiment · measurement · result · FLW verdict).
-6. **Iterate** — each gate ratchets to a NEW level; never re-run a failed approach without a changed variable. A gate advances ONLY on improvement proven by measurement, never on narration.
+6. **Iterate** — each gate ratchets to a NEW level; **never re-run a failed approach without a changed variable**; a gate advances ONLY on improvement proven by measurement, never on narration. Repeat until the metric hits the goal.
 
-### Full Mythos — run the stages on every non-trivial step (per `memory/lexicon/mythos-discipline.md`)
-- **PRELUDE** — recon (read what the change touches) + arbitration (did Jon override a default this turn chain? his word wins).
-- **RECURRENT** — draft → self-critique → **cross-build with Codex (collaborative: "make it stronger / lock it in")** → integrate → lock-in. Argus (Gemini eye) forms an INDEPENDENT read; reconcile only at synthesis.
-- **CODA (SWD)** — state intent → execute → **verify the ARTIFACT after (grep/read/screenshot/re-hash), never the tool's "success"** → 2 retries max → else surface.
-- **SECOND PASS** — skeptical reviewer: "what is the weakest claim, what would make this stronger." Then ship.
-- **Halting = TRI-GATE:** advance only when **Claude AND Codex AND Argus** each report confidence ≥0.75 with 0 actionable findings. Specialist gate fires FIRST (ui-specialist for any UI). Bilateral mode mandatory for doctrine/high-stakes.
+### Full Mythos — the TRUE lexicon version, BINDING: `memory/lexicon/mythos-discipline.md` (read it whole; do NOT substitute this summary for the source)
+Run ALL of it on every non-trivial step — not a lite version:
+- **Single-operator layers:** **L1** Strict Write Discipline (intent → before-state → execute → **verify the ARTIFACT after**, 2 retries) · **L2** multi-pass refinement (draft → self-critique → integrate → validate) · **L3** 4-stage pipeline (**Recon → Hypothesis(list 3-5 failure modes) → Analyze(run the verifiers) → Validate(run the real thing)**) · **L4** skeptical-reviewer second pass (collaborative: "what would make this stronger / lock it in").
+- **Bilateral layers (Codex co-builder + Argus independent Gemini eye):** L5 evidence-state management · L6 outcome-ratchet · L7 specialist-grounding (the right specialist fires FIRST) · L8–L17 (reproducibility, implementation-binding, router hygiene, principal-override arbitration, …) per the lexicon.
+- **Stages:** PRELUDE (recon + arbitration: did Jon override a default this turn-chain? his word wins) → RECURRENT (draft → self-audit → cross-build collaboratively with Codex → integrate → lock-in; Argus forms an INDEPENDENT read, reconciled only at synthesis) → CODA (SWD) → SECOND PASS (skeptical reviewer).
+- **The 4 questions per operator** (Claude: dismissal-reflex audit; Codex: critique-reflex audit; Argus: "what does the IMAGE show that the text claims but doesn't deliver?").
+- **Halting = TRI-GATE:** advance ONLY when **Claude AND Codex AND Argus** each report confidence ≥0.75 with 0 actionable findings + 0 open HIGH dissent. Argus absent → record `argus: not_invoked`, never silent. **A board "approval" is real only if the board actually LOOKED — a narrated approval is the disease.**
 
 ### ALL EYES — Jon granted full permission 2026-06-24 ("I want all eyes available to you")
 - **Hawkeye** (HH Helium / Codex CDP) — the live hosted page is the visual court for any render/UI claim. Per-session go = GRANTED for this instance.
