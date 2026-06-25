@@ -104,3 +104,41 @@ Every step names its ground-truth AUTHORITY and a GATE that is mechanical or Jon
 - **B3 — Harden the gate at scale.** octave-vs-source invariant + silent-where-singing invariant + `musicdiff` golden-file lock (a locked song STAYS locked across any re-OMR). gate: re-OMR of a locked song → 0 diffs.
 - **B4 — Scale** to the 6 barbershop + ~14 raw songs (the 248-page book). Each through the pipeline, each LOCKED. gate: each song's ENGRAVING-LOCK + PRODUCT GATE GREEN.
 - **B5 — WALK-AWAY STATE (the master).** "locked" is trustworthy without Jon re-auditing, because the mechanical gate + signed ledger make theater impossible. The library grows without Jon, or any Claude, squinting at a ledger line at 4 a.m. **← the system Jon walks away from.**
+
+---
+
+## §9 — OPERATING PROTOCOL (how every step runs — Gorr instance)
+
+This is a **Gorr instance** (Mythos + Code Blue + Vanguard + max-Codex-delegation + compaction-permitted + External-GM + this Master Goal Spec). Compaction is **encouraged**; project state lives HERE + in the FLW GM + the Karpathy log, so compaction is safe.
+
+### Karpathy ratchet — run on EVERY gate (G6)
+1. **Measurable goal** — a number or a binary, from a TOOL (Patek precision: measure, never estimate; every number cited comes from a command, never the head).
+2. **Hypothesis** — what we expect + the failure mode.
+3. **Experiment** — the smallest change that tests it.
+4. **Measure** — run the tool; record the number.
+5. **Log** — a row in `PLUMB-KARPATHY-LOG.md` (goal · hypothesis · experiment · measurement · result · FLW verdict).
+6. **Iterate** — each gate ratchets to a NEW level; never re-run a failed approach without a changed variable. A gate advances ONLY on improvement proven by measurement, never on narration.
+
+### Full Mythos — run the stages on every non-trivial step (per `memory/lexicon/mythos-discipline.md`)
+- **PRELUDE** — recon (read what the change touches) + arbitration (did Jon override a default this turn chain? his word wins).
+- **RECURRENT** — draft → self-critique → **cross-build with Codex (collaborative: "make it stronger / lock it in")** → integrate → lock-in. Argus (Gemini eye) forms an INDEPENDENT read; reconcile only at synthesis.
+- **CODA (SWD)** — state intent → execute → **verify the ARTIFACT after (grep/read/screenshot/re-hash), never the tool's "success"** → 2 retries max → else surface.
+- **SECOND PASS** — skeptical reviewer: "what is the weakest claim, what would make this stronger." Then ship.
+- **Halting = TRI-GATE:** advance only when **Claude AND Codex AND Argus** each report confidence ≥0.75 with 0 actionable findings. Specialist gate fires FIRST (ui-specialist for any UI). Bilateral mode mandatory for doctrine/high-stakes.
+
+### ALL EYES — Jon granted full permission 2026-06-24 ("I want all eyes available to you")
+- **Hawkeye** (HH Helium / Codex CDP) — the live hosted page is the visual court for any render/UI claim. Per-session go = GRANTED for this instance.
+- **Argus** (`boardroom.mjs gemini --image`) — independent multimodal vision. Composite the engraving + the page crop into ONE image; ask it to read the page and compare. (Image calls can time out ~120s → retry / smaller crop.)
+- **Codex** (`boardroom.mjs codex`) — method, data cross-check, the evidence-chain ruling. NOT a vision eye.
+- **Claude's own vision** — read the crops/renders directly.
+- **"Tested by all team members"** (the True North bar) = **Codex + Argus + Hawkeye + Jon** all verify. Every visual claim gets ≥2 independent eyes BEFORE it enters the ledger.
+
+### FLW External GM (G3 — real, not narrated)
+FLW = the Codex GM consulted via `boardroom.mjs codex` with the FLW prompt as framing (`scripts/omr/FLW-PROMPT.md`), anchored on THIS file. Consult on the **6 mandatory triggers** (§3). The operator NEVER writes "FLW approved" — it records the actual consult output path + verdict. FLW's verdict = Jon's.
+
+### AUTONOMOUS RUN — Jon directive 2026-06-24 ("do not stop until it reaches the goal")
+**Run the pathway (§8) CONTINUOUSLY** — A2 → A3 → A4 → A5 → A6 → A7 → ARC B — all eyes, Karpathy-logged, Mythos-disciplined, compaction encouraged. **Do NOT stop at each tiny step to ask.** STOP ONLY for:
+1. **Jon's court-of-record sign-off gates** — A4 (engraving lock), A7 (product), and any money / contract / external-publish (green-bucket).
+2. A **genuine blocker** needing Jon (3 failed attempts → boardroom → Jon).
+3. **The True North reached** — all-team-verified, ENGRAVING-LOCK GREEN → PRODUCT GREEN → foundry proven.
+On compaction: read this file + the Gorr instance prompt + consult FLW, then RESUME — do not restart, do not re-ask. **Keep going until the goal.**
