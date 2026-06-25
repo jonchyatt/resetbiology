@@ -139,3 +139,11 @@ External GM: Frank Lloyd Wright (FLW). Each gate: measurable goal → hypothesis
 **page-196 staff-identity guard — CONFIRMED (Claude vision, hi-res per-voice crops):** EWART = Lead (treble-8vb: G clef + small 8, 6 flats) · OLIVER = Baritone (bass clef, 6 flats) · OLIN (bass) is the staff BELOW OLIVER — the earlier mis-crop read OLIN, now corrected. No silent staff offset on p196.
 
 **In flight:** blind Argus + Claude reads of EWART + OLIVER bars 6-9. Suspect flagged for Jon's overlay: Lead bar 6 "I'm" = Db3 (engraving claims a down-7th drop Cb4→Db3 — verify against the page). Ledger remains 0/232 filled until ≥2-eye agreement per row; ENGRAVING-LOCK stays RED.
+
+**Measurement (blind Argus vs engraving, p196 sys2 bars 6-9):** SUBSTANTIAL DIVERGENCE.
+- OLIVER: Argus blind `Gb3 Gb3 Ab3 Gb3 | Cb4 B3 Cb4 Db4 | Db4 Cb4 Bb3 Ab3 G3 Gb3 Ab3 Bb3 | Cb4` vs engraving `Ab3 Ab3 Db4 Cb4 | Eb4 D4 Eb4 Eb4 Eb4 A3 Ab3 A3 | Bb3 Bb3 A3 Bb3 | F3` — both 17 notes, different line.
+- EWART: Argus bar6 note2 `Ab3` vs engraving `Bb3`; Argus flags "'shy' is a whole note in bar 10" (measure-numbering offset — FLW's #1 risk).
+
+**Result (honest):** automated vision is INSUFFICIENT to confirm the engraving. The divergence does NOT prove the engraving wrong — Argus vision on a cropped dense staff is itself unreliable (crop contamination + bar-segmentation; Codex/FLW both warned). It proves the **automated eyes cannot be the judge** → the lock REQUIRES Jon on the overlay (A4, court of record), exactly as G2 encodes. Ledger stays 0 match; ENGRAVING-LOCK RED. Top suspects for Jon's focus: OLIVER bars 6-9 (contested line), Lead bar 6 "I'm"=Db3 (down-7th).
+
+**FLW gate:** reached the A4 court-of-record gate — automated A2 produced alignment-confirm + suspect-flags, but the lock is inherently Jon's read on the page (no automation can adjudicate). Surface to Jon.
