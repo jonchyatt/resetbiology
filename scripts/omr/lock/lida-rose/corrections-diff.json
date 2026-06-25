@@ -1,0 +1,45 @@
+{
+  "generatedAt": "2026-06-25T05:19:08.858Z",
+  "method": "corrections-diff: raw Audiveris source staff vs shipped engraving (MIDI sequence LCS)",
+  "parts": {
+    "Lead": {
+      "rawNotes": 113,
+      "engravingNotes": 118,
+      "matched": 111,
+      "divergences": 9,
+      "inserted": [
+        "m4:C#4",
+        "m4:C#4",
+        "m9:B3",
+        "m13:B3",
+        "m22:B3",
+        "m30:D#4",
+        "m35:B3"
+      ],
+      "raw_only": [
+        "D4",
+        "D4"
+      ]
+    },
+    "Baritone": {
+      "rawNotes": 106,
+      "engravingNotes": 114,
+      "matched": 105,
+      "divergences": 10,
+      "inserted": [
+        "m4:B3",
+        "m5:F3",
+        "m9:F3",
+        "m13:B3",
+        "m19:C#4",
+        "m21:B3",
+        "m25:C#4",
+        "m25:A#3",
+        "m29:D#3"
+      ],
+      "raw_only": [
+        "C4"
+      ]
+    }
+  }
+}

@@ -146,4 +146,21 @@ External GM: Frank Lloyd Wright (FLW). Each gate: measurable goal → hypothesis
 
 **Result (honest):** automated vision is INSUFFICIENT to confirm the engraving. The divergence does NOT prove the engraving wrong — Argus vision on a cropped dense staff is itself unreliable (crop contamination + bar-segmentation; Codex/FLW both warned). It proves the **automated eyes cannot be the judge** → the lock REQUIRES Jon on the overlay (A4, court of record), exactly as G2 encodes. Ledger stays 0 match; ENGRAVING-LOCK RED. Top suspects for Jon's focus: OLIVER bars 6-9 (contested line), Lead bar 6 "I'm"=Db3 (down-7th).
 
-**FLW gate:** reached the A4 court-of-record gate — automated A2 produced alignment-confirm + suspect-flags, but the lock is inherently Jon's read on the page (no automation can adjudicate). Surface to Jon.
+**FLW gate:** reached the A4 court-of-record gate — automated A2 produced alignment-confirm + suspect-flags, but the lock is inherently Jon's read on the page (no automation can adjudicate). Surface to Jon. → Jon: **"deterministic judge first."**
+
+---
+
+## DETERMINISTIC JUDGE — Layer 1 (corrections-diff). Jon: "deterministic judge first"; Codex/FLW approved layered triage
+
+**Date:** 2026-06-24 (autonomous Gorr run). Codex/FLW design (170s): layered deterministic triage — corrections-diff FIRST (expose Claude's edits, highest-risk rows, no new OMR dep) → music21/`musicdiff` → oemer second-OMR LAST (weak auxiliary, never court). Codex DISSENT: do NOT start with second OMR. Tooling: **oemer 0.1.8 installed**; music21 not; raw Audiveris source present.
+
+**Experiment:** `build-corrections-diff.mjs` — LCS-diff the RAW Audiveris source staff (no normalize, no correct, per the page→staff map) vs the shipped engraving, per part, by MIDI sequence.
+
+**Measurement (deterministic, from the tool):**
+- Lead: raw 113 vs engraving 118 → 111 matched, **9 divergences** (added m4 C#4×2 · m9 B3 · m13 B3 · m22 B3 · m30 D#4 · m35 B3 · raw-only D4×2).
+- Baritone: raw 106 vs engraving 114 → 105 matched, **10 divergences** (added m4 B3 · m5 F3 · m9 F3 · m13 B3 · m19 C#4 · m21 B3 · m25 C#4+A#3 · m29 D#3 · raw-only C4).
+- **TOTAL 19 suspect rows / 232.** Report: `scripts/omr/lock/lida-rose/corrections-diff.json`.
+
+**Result:** the judge narrowed 232 → **19 high-risk intervention rows** — exactly the documented session-2 corrections (held bars 9/13/21, restored sing-bars 5/25/29, bar-19 run, m25 region). The 213 matching rows = Audiveris's untouched read (Codex HIGH: could share an Audiveris error → Layer-2 covers). ENGRAVING-LOCK still RED. **The board now verifies 19 rows, not 232 — the scalable method.**
+
+**Next (autonomous, don't stop):** Layer 2 — independent page signal on the 19 (oemer second-OMR or Jon overlay), + spot the 213 match rows. Iterate until all 19 + the sample pass every board member, then A4.
