@@ -33,13 +33,12 @@ Crops: `scripts/omr/lock/lida-rose/crops/bari-mNN-tight.png` (bass clef, 6 flats
 
 ## 4. m21 "name" — row 182 — engraving says **Cb4** — flat confirmed, line uncertain
 - Both eyes SEE an **editorial "(♭)" parenthetical flat** drawn before the note (the page confirms a flatted pitch). They differ on line: Claude Cb4, Argus Ab3.
-- Lead sings **Cb4** here. Crop: `crops/bari-m21-tight.png`.
-- **Question:** Is the flatted "name" note Cb4 (unison with Lead) or Ab3?
+- Lead "name"=**Cb4** is now **independently corroborated** (printed-manifest) → a Baritone Cb4 would be a unison with Lead (natural barbershop). So the engraving's Cb4 is harmonically supported; just confirm it's Cb4 not Ab3. Crop: `crops/bari-m21-tight.png`. *(lower priority)*
 
 ## 5. m29 "fine" — row 212 — engraving says **Eb3** — wide scatter
 - Claude ≈ mid-staff (D3/Eb3); Argus = **Cb4** (ledger above staff). Cadential **fermata** note. Restored-from-silence.
-- Lead holds **Eb4** here (engraving's Eb3 = octave below Lead). Crop: `crops/bari-m29-tight.png`.
-- **Question:** Is the "fine" fermata note Eb3 (octave under Lead), Cb4, or other?
+- Lead "fine"=**Eb4** is now **independently corroborated** (printed-manifest) → the engraving's Baritone Eb3 = the octave-double of Lead (classic barbershop cadence), so it's harmonically natural. Crop: `crops/bari-m29-tight.png`.
+- **Question:** confirm the "fine" fermata note is Eb3 (octave under the confirmed Lead Eb4). *(Argus's Cb4 read is the scatter to resolve.)*
 
 ---
 
@@ -49,6 +48,6 @@ Crops: `scripts/omr/lock/lida-rose/crops/bari-mNN-tight.png` (bass clef, 6 flats
 3. Clearing these 5 takes BLOCKING to 0 — but the lock also needs **the remaining 227 rows to carry final verdicts** (they currently rest on Audiveris's single read, `stratified-sample.json`) **and** your `MANIFEST.signoff.jon`. Both, then `verify-packet-ready.mjs` flips **ENGRAVING-LOCK GREEN**.
 
 ## ✓ Measure-numbering — now LOCKED (was the #1 silent-offset risk; resolved this run)
-The cross-check exposed four conflicting numberings (engraving / raw source / printed-manifest / lock-packet PAGE_MAP). I built the authoritative map (`measure-map.json`, replayed from the build): **page-196 = eng m1–9, page-197 = eng m10–21, page-198 = eng m22–34** — which CONFIRMS the page labels for all 5 rows above (no offset). I then reconciled the independent printed page-read (`lida-baritone-printed-manifest.mjs`) onto it: once aligned by MIDI, **all 4 of its audit points AGREE with the engraving** (its "m9/m18/m31 FAILs" were numbering+spelling artifacts, not errors). Two consequences for you: (a) **the 5 rows above are the complete BLOCKING set** — no hidden suspects at m18/m31; (b) 4 baritone bars (eng m4/m10/m20/m34) now carry independent human-read corroboration. (Loose end, not yours: `build-baritone-score-health.mjs` still prints those 3 false FAILs until it's migrated to the new map — a named code fix, the engraving is fine.)
+The cross-check exposed four conflicting numberings (engraving / raw source / printed-manifest / lock-packet PAGE_MAP). I built the authoritative map (`measure-map.json`, replayed from the build): **page-196 = eng m1–9, page-197 = eng m10–21, page-198 = eng m22–34** — which CONFIRMS the page labels for all 5 rows above (no offset). I then reconciled BOTH independent printed page-reads (`lida-baritone-printed-manifest.mjs` + `lida-lead-printed-manifest.mjs`) onto it by MIDI: **all 12 audit points AGREE with the engraving** (Lead eng m9/13/14/15/21/29/34/35 + Baritone eng m4/10/20/34). The baritone "m9/m18/m31 FAILs" were numbering+spelling artifacts, not errors. Consequences for you: (a) **the 5 rows above are the complete BLOCKING set** — no hidden suspects; (b) 12 bars now carry independent human-read corroboration (not just Audiveris); (c) **harmonic context narrows the 5:** the Lead held notes at "shy"(Cb4), "name"(Cb4), "fine"(Eb4) are independently confirmed — so the questions below are about the lower Baritone voice *under a known Lead note*. (Loose end, not yours: `build-baritone-score-health.mjs` still prints 3 false FAILs until migrated to the new map — a named code fix; the engraving is fine.)
 
 Full triage of all 232 rows: `triage-layer2.json`. Both-eye reads: `vision-reads.json`. Raw-agreement status: `stratified-sample.json`.

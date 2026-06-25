@@ -14,6 +14,7 @@ import { normalizeLeadMeasure } from './lida-lead-key-normalize.mjs';
 import { applyLeadMeasureCorrections } from './lida-lead-source-corrections.mjs';
 import { scoreEventsFromXml, noteName } from './score-timing.mjs';
 import { PRINTED_BARITONE_AUDIT_MEASURES } from './lida-baritone-printed-manifest.mjs';
+import { PRINTED_LEAD_AUDIT_MEASURES } from './lida-lead-printed-manifest.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const RBW = path.join(__dirname, '..', '..');
@@ -103,8 +104,20 @@ for (const pt of PRINTED_BARITONE_AUDIT_MEASURES) {
   });
 }
 
+// ── Lead printed-manifest: uses ENGRAVING numbering directly (lyric-anchored to the inserted
+//    held bars), so compare manifest-N to engraving-N by MIDI. ──
+const leadEvents = scoreEventsFromXml(fs.readFileSync(path.join(RBW, 'public/musicxml/lida-rose-lead.musicxml'), 'utf8'));
+const leadMidiByMeasure = {}, leadNameByMeasure = {};
+for (const e of leadEvents) { (leadMidiByMeasure[e.measure] = leadMidiByMeasure[e.measure] || []).push(e.midi); (leadNameByMeasure[e.measure] = leadNameByMeasure[e.measure] || []).push(noteName(e.midi)); }
+const leadReconcile = PRINTED_LEAD_AUDIT_MEASURES.map((pt) => {
+  const expMidi = pt.notes.map((x) => pitchToMidi(x.pitch));
+  const got = leadMidiByMeasure[pt.measure] || [];
+  const same = expMidi.length === got.length && expMidi.every((v, i) => v === got[i]);
+  return { engMeasure: pt.measure, source: pt.source, expected: pt.notes.map((x) => x.pitch).join(' '), engPitches: (leadNameByMeasure[pt.measure] || []).join(' '), agreesByMidi: same };
+});
+
 fs.writeFileSync(path.join(__dirname, 'lock', 'lida-rose', 'measure-map.json'),
-  JSON.stringify({ generatedAt: new Date().toISOString(), note: 'authoritative engraving-measure -> page + source provenance (replayed from the build). insert=true means a held/restored bar with no source coordinates.', map, printedManifestReconcile: reconcile }, null, 2) + '\n');
+  JSON.stringify({ generatedAt: new Date().toISOString(), note: 'authoritative engraving-measure -> page + source provenance (replayed from the build). insert=true means a held/restored bar with no source coordinates.', map, printedManifestReconcile: reconcile, leadManifestReconcile: leadReconcile, independentlyCorroborated: { note: 'engraving measures where an INDEPENDENT human page-read manifest AGREES by MIDI (a second signal, not Audiveris)', Baritone: reconcile.filter((r) => r.agreesByMidi).map((r) => r.reconciledEngMeasure), Lead: leadReconcile.filter((r) => r.agreesByMidi).map((r) => r.engMeasure) } }, null, 2) + '\n');
 
 console.log('=== ENGRAVING -> PAGE boundaries (authoritative) ===');
 for (const part of ['Lead', 'Baritone']) {
@@ -120,4 +133,9 @@ for (const r of reconcile) {
   console.log(`   naive same-number eng m${r.manifestMeasure}: ${r.naiveSameNumberEng}  <- what the broken audit compared`);
   console.log(`   RECONCILED -> eng m${r.reconciledEngMeasure}: ${r.engPitchesThere}   ==>  ${r.verdict}`);
 }
+console.log('\n=== Lead printed-manifest (engraving numbering, MIDI) ===');
+const leadAgree = leadReconcile.filter((r) => r.agreesByMidi).length;
+console.log(`Lead: ${leadAgree}/${leadReconcile.length} AGREE — eng measures ${leadReconcile.filter((r) => r.agreesByMidi).map((r) => r.engMeasure).join(',')}`);
+leadReconcile.filter((r) => !r.agreesByMidi).forEach((r) => console.log(`  DIFFER eng m${r.engMeasure}: exp ${r.expected} vs eng ${r.engPitches} (${r.source})`));
+console.log(`\nINDEPENDENTLY CORROBORATED (human page-read agrees, not Audiveris): Baritone eng[${reconcile.filter((r) => r.agreesByMidi).map((r) => r.reconciledEngMeasure).join(',')}] + Lead eng[${leadReconcile.filter((r) => r.agreesByMidi).map((r) => r.engMeasure).join(',')}]`);
 console.log('\nwrote lock/lida-rose/measure-map.json');

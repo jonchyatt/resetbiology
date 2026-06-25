@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-25T06:25:34.519Z",
+  "generatedAt": "2026-06-25T06:31:19.343Z",
   "note": "authoritative engraving-measure -> page + source provenance (replayed from the build). insert=true means a held/restored bar with no source coordinates.",
   "map": {
     "Lead": [
@@ -535,5 +535,82 @@
       "agreesByMidi": true,
       "verdict": "AGREE (numbering+spelling artifact — NOT an error)"
     }
-  ]
+  ],
+  "leadManifestReconcile": [
+    {
+      "engMeasure": 9,
+      "source": "page-196 Ewart end of first Lida Rose system, lyric \"shy\"",
+      "expected": "Cb4",
+      "engPitches": "B3",
+      "agreesByMidi": true
+    },
+    {
+      "engMeasure": 13,
+      "source": "page-197 Ewart end of chapel-bell system, lyric \"chime\"",
+      "expected": "Cb4",
+      "engPitches": "B3",
+      "agreesByMidi": true
+    },
+    {
+      "engMeasure": 14,
+      "source": "page-197 Ewart second system, lyrics \"Ding, dong\"",
+      "expected": "Bb3 Gb3",
+      "engPitches": "A#3 F#3",
+      "agreesByMidi": true
+    },
+    {
+      "engMeasure": 15,
+      "source": "page-197 Ewart second system, lyric \"ding, at the\"",
+      "expected": "C4 Ab3 Gb3",
+      "engPitches": "C4 G#3 F#3",
+      "agreesByMidi": true
+    },
+    {
+      "engMeasure": 21,
+      "source": "page-197 Ewart end of sweetheart system, lyric \"name\"",
+      "expected": "Cb4",
+      "engPitches": "B3",
+      "agreesByMidi": true
+    },
+    {
+      "engMeasure": 29,
+      "source": "page-198 Ewart second system, lyric \"fine\"",
+      "expected": "Eb4",
+      "engPitches": "D#4",
+      "agreesByMidi": true
+    },
+    {
+      "engMeasure": 34,
+      "source": "page-198 Ewart end of song into page-199 measure 35",
+      "expected": "Bb3 B3",
+      "engPitches": "A#3 B3",
+      "agreesByMidi": true
+    },
+    {
+      "engMeasure": 35,
+      "source": "page-199 Ewart start of next section, held transition note",
+      "expected": "B3",
+      "engPitches": "B3",
+      "agreesByMidi": true
+    }
+  ],
+  "independentlyCorroborated": {
+    "note": "engraving measures where an INDEPENDENT human page-read manifest AGREES by MIDI (a second signal, not Audiveris)",
+    "Baritone": [
+      4,
+      10,
+      20,
+      34
+    ],
+    "Lead": [
+      9,
+      13,
+      14,
+      15,
+      21,
+      29,
+      34,
+      35
+    ]
+  }
 }

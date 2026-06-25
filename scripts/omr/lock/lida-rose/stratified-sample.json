@@ -3,15 +3,27 @@
   "purpose": "FLW MED (bw7ac7zmr): the raw-agreement rows may carry a SHARED Audiveris error. This logs their verification STATUS + the independent cross-checks now available. NOT a clearance. Court of record = Jon (A4).",
   "rule": "A raw-agreement row rests on Audiveris OMR. No binding verdict is written for these rows (FLW HIGH) until Jon or a reconciled independent read clears them.",
   "independent_corroboration_AVAILABLE": {
-    "source": "lida-baritone-printed-manifest.mjs — an independent human page-read of Oliver (Baritone), reconciled onto the engraving via measure-map.json (MIDI-compared, enharmonic-safe).",
-    "result": "ALL 4 audit points AGREE with the engraving: manifest m4->eng m4, m9->eng m10, m18->eng m20, m31->eng m34. The earlier printed-audit m9/m18/m31 FAILs were numbering+spelling ARTIFACTS, not errors.",
-    "corroborated_engraving_measures_Baritone": [
-      4,
-      10,
-      20,
-      34
-    ],
-    "note": "This is a genuine second signal (not Audiveris) for these 4 baritone bars. A parallel Lead printed-manifest + a full second OMR (oemer, deferred) would extend independent coverage further."
+    "source": "TWO independent human page-read manifests (lida-baritone + lida-lead printed-manifest), reconciled onto the engraving via measure-map.json (MIDI, enharmonic-safe).",
+    "result": "ALL 12 audit points AGREE with the engraving. The baritone printed-audit m9/m18/m31 FAILs were numbering+spelling ARTIFACTS, not errors.",
+    "corroborated_engraving_measures": {
+      "Lead": [
+        9,
+        13,
+        14,
+        15,
+        21,
+        29,
+        34,
+        35
+      ],
+      "Baritone": [
+        4,
+        10,
+        20,
+        34
+      ]
+    },
+    "note": "12 bars now have a second signal (not Audiveris). Of the 5 BLOCKING: m21 and m29 gain harmonic context (their corroborated Lead notes Cb4/Eb4 make the Baritone unison/octave-double natural). m9 stays the genuine outlier. Extending: oemer second-OMR (deferred) would widen coverage to all rows."
   },
   "numbering_locked": "measure-map.json — page-196=eng[1-9], page-197=eng[10-21], page-198=eng[22-34/35]. The 4-way numbering conflict is resolved; the silent-offset risk (FLW #1) is closed.",
   "strata": {
