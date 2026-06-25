@@ -127,3 +127,15 @@ External GM: Frank Lloyd Wright (FLW). Each gate: measurable goal → hypothesis
 **Result:** the systemic fix is now an artifact, not a promise — `verify-packet-ready.mjs` decides "locked" from frozen hashes + a filled ledger + Jon's sign-off field. Step 1 complete; STOPPED per Codex (packet + readiness verdict is the only acceptable step-1 output).
 
 **Brothers' verdict:** Codex + Argus APPROVED the guardrails (with the hardening above, now applied) + the first step. **Awaiting Jon** to ratify the Master Goal Spec + approve STEP 2 (fill the 232-row ledger via independent reads, one page at a time).
+
+---
+
+## A2 — fill the engraving ledger (in progress; Jon authorized autonomous run + all eyes)
+
+**Date:** 2026-06-24 (session 3, autonomous). Spec §9 operating protocol active.
+
+**FLW gate (real consult, 102s):** APPROVED A2 with two corrections — (1) **BLIND reads**: Argus/Claude read the page WITHOUT the engraving's claim, then compare. (2) **Guard staff/measure alignment FIRST** — FLW dissent: *"the #1 failure mode is not a bad pitch read; it is a silent staff/measure offset — if EWART/OLIVER are mislabeled every pitch verdict looks rigorous while aimed at the wrong evidence."* Also: a row is `match` only when ≥2 independent eyes agree; any disagreement = BLOCKING-suspect → Jon.
+
+**page-196 staff-identity guard — CONFIRMED (Claude vision, hi-res per-voice crops):** EWART = Lead (treble-8vb: G clef + small 8, 6 flats) · OLIVER = Baritone (bass clef, 6 flats) · OLIN (bass) is the staff BELOW OLIVER — the earlier mis-crop read OLIN, now corrected. No silent staff offset on p196.
+
+**In flight:** blind Argus + Claude reads of EWART + OLIVER bars 6-9. Suspect flagged for Jon's overlay: Lead bar 6 "I'm" = Db3 (engraving claims a down-7th drop Cb4→Db3 — verify against the page). Ledger remains 0/232 filled until ≥2-eye agreement per row; ENGRAVING-LOCK stays RED.
