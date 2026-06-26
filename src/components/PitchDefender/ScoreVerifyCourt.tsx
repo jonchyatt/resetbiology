@@ -5,7 +5,40 @@
 // Shows the 5 BLOCKING Baritone suspects (crop + engraving claim + 2 independent vision reads +
 // the question) and captures Jon's verdict per row. Vision = corroboration; Jon = court.
 // The lock still flips ONLY via the verified repo pipeline — this records Jon's signed read.
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
+
+// Renders ONE measure of an engraving part via OSMD (SVG) — so Jon can compare OUR engraving
+// notehead-by-notehead against the printed page crop. Scoped with drawFrom/UpToMeasureNumber.
+function EngravingMeasure({ part, measure }: { part: 'baritone' | 'lead'; measure: number }) {
+  const host = useRef<HTMLDivElement | null>(null)
+  const [err, setErr] = useState<string | null>(null)
+  const [ready, setReady] = useState(false)
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      const mod = await import('opensheetmusicdisplay')
+      if (cancelled || !host.current) return
+      host.current.innerHTML = ''
+      const osmd = new mod.OpenSheetMusicDisplay(host.current, {
+        autoResize: true, backend: 'svg', drawTitle: false, drawPartNames: false,
+        drawingParameters: 'compact', drawFromMeasureNumber: measure, drawUpToMeasureNumber: measure,
+      } as any)
+      const xml = await (await fetch(`/musicxml/lida-rose-${part}.musicxml`, { cache: 'no-store' })).text()
+      if (cancelled) return
+      await osmd.load(xml)
+      osmd.zoom = 1.4
+      osmd.render()
+      if (!cancelled) setReady(true)
+    })().catch((e) => { if (!cancelled) setErr(String(e)) })
+    return () => { cancelled = true }
+  }, [part, measure])
+  return (
+    <div className="bg-white rounded-lg p-2 overflow-x-auto min-h-[80px] flex items-center">
+      {err ? <span className="text-red-600 text-xs px-2">engraving render failed: {err}</span> : null}
+      <div ref={host} className={ready ? '' : 'opacity-40'} />
+    </div>
+  )
+}
 
 type Suspect = {
   id: string; measure: number; word: string; page: string; crop: string
@@ -112,10 +145,19 @@ export default function ScoreVerifyCourt() {
                 <span className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${priorityStyle(s.priority)}`}>{s.priority}</span>
               </div>
 
-              {/* crop */}
-              <button onClick={() => setZoom(s.crop)} className="block w-full mt-2 bg-white">
-                <img src={s.crop} alt={`page crop for ${s.word}`} className="w-full h-auto" loading="lazy" />
-              </button>
+              {/* OUR ENGRAVING vs THE PAGE — stacked for notehead comparison */}
+              <div className="px-4 mt-2 space-y-2">
+                <div>
+                  <div className="text-[11px] font-semibold uppercase tracking-wide text-emerald-400 mb-1">our engraving · Baritone m{s.measure}</div>
+                  <EngravingMeasure part="baritone" measure={s.measure} />
+                </div>
+                <div>
+                  <div className="text-[11px] font-semibold uppercase tracking-wide text-amber-400 mb-1">the printed page — tap to zoom</div>
+                  <button onClick={() => setZoom(s.crop)} className="block w-full bg-white rounded-lg overflow-hidden">
+                    <img src={s.crop} alt={`page crop for ${s.word}`} className="w-full h-auto" loading="lazy" />
+                  </button>
+                </div>
+              </div>
 
               <div className="px-4 py-3 space-y-3">
                 <div className="flex items-baseline gap-2 flex-wrap">
