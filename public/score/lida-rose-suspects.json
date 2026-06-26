@@ -1,0 +1,53 @@
+{
+  "song": "Lida Rose",
+  "part": "Baritone (Oliver)",
+  "generated": "2026-06-25 PLUMB Layer-2 (deterministic diff -> two independent eyes). Vision = corroboration; you are the court of record.",
+  "lockState": "ENGRAVING-LOCK RED — 5 BLOCKING, no sign-off. Clearing these + signing flips it green.",
+  "suspects": [
+    {
+      "id": "m9", "measure": 9, "word": "shy", "page": "page-196.jpg",
+      "crop": "/score/crops/bari-m09-tight.png",
+      "engraving": "F3", "priority": "TOP — likely WRONG",
+      "claude": "below F3 (~G2–B2)", "argus": "Eb2 (1st ledger line below staff)",
+      "synthesis": "Both independent eyes read this note well BELOW the claimed F3 (4th line). Strong suspect.",
+      "lead": "Lead 'shy' = Cb4 (independently confirmed)",
+      "question": "Where does the 'shy' whole-note sit — on the 4th line (F3), or low/below the staff?"
+    },
+    {
+      "id": "m25", "measure": 25, "word": "hop", "page": "page-198.jpg",
+      "crop": "/score/crops/bari-m25-tight.png",
+      "engraving": "Db4 (half)", "priority": "needs your eyes",
+      "claude": "unclear", "argus": "scattered",
+      "synthesis": "Bar reconstructed from silence (Audiveris dropped it). Rhythm corroborated as two halves by the Lead; only the PITCHES are a guess (Db4 'hop', Bb3 'ing').",
+      "lead": "Lead m25 = E4 + Eb4 (halves)",
+      "question": "What pitches are 'hop' and 'ing' on the page? (engraving guesses Db4 + Bb3)"
+    },
+    {
+      "id": "m5", "measure": 5, "word": "sky", "page": "page-196.jpg",
+      "crop": "/score/crops/bari-m05-tight.png",
+      "engraving": "F3", "priority": "needs your eyes",
+      "claude": "F3? (high on staff)", "argus": "Ab3 (top line)",
+      "synthesis": "Restored-from-silence bar. Eyes agree it sits HIGH but differ on the line. Cross-check vs m9 — engraving claims F3 for BOTH, yet m5 reads high and m9 reads low.",
+      "lead": "Lead 'sky' = Cb4",
+      "question": "Is 'sky' F3, Ab3, or other — and is it really the same pitch as m9 'shy'?"
+    },
+    {
+      "id": "m21", "measure": 21, "word": "name", "page": "page-197.jpg",
+      "crop": "/score/crops/bari-m21-tight.png",
+      "engraving": "Cb4", "priority": "probably FINE — quick confirm",
+      "claude": "Cb4", "argus": "Ab3",
+      "synthesis": "Page draws an editorial (♭) before the note (a flatted pitch is confirmed). Lead 'name' = Cb4 is independently confirmed, so a Baritone Cb4 = unison is natural.",
+      "lead": "Lead 'name' = Cb4 (independently confirmed)",
+      "question": "Is the flatted 'name' note Cb4 (unison with Lead) or Ab3?"
+    },
+    {
+      "id": "m29", "measure": 29, "word": "fine", "page": "page-198.jpg",
+      "crop": "/score/crops/bari-m29-tight.png",
+      "engraving": "Eb3", "priority": "probably FINE — quick confirm",
+      "claude": "Eb3? / D3? (mid-staff)", "argus": "Cb4 (above staff)",
+      "synthesis": "Cadential fermata, restored-from-silence. Lead 'fine' = Eb4 is independently confirmed, so the engraving's Baritone Eb3 = octave-double of Lead (classic barbershop) is natural.",
+      "lead": "Lead 'fine' = Eb4 (independently confirmed)",
+      "question": "Confirm the 'fine' fermata note is Eb3 (octave under the confirmed Lead Eb4)."
+    }
+  ]
+}

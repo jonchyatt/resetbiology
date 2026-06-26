@@ -181,7 +181,8 @@ export default function ScoreVerify() {
       <div className="sticky top-0 z-[9999] flex flex-wrap items-center gap-3 border-b border-neutral-400 bg-neutral-900/95 px-4 py-2 text-sm text-neutral-100">
         <span className="font-semibold">Score ⟷ Engraving — note-by-note audit</span>
         <span className="text-neutral-400">drag headers to arrange · drag ⌟ to resize · slide opacity to overlay engraving on the scan</span>
-        <button onClick={resetLayout} className="ml-auto rounded border border-neutral-500 px-2 py-0.5 hover:bg-neutral-700">Reset layout</button>
+        <a href="/pitch-defender/score-verify/court" className="ml-auto rounded border border-emerald-500 bg-emerald-700/30 px-2 py-0.5 text-emerald-200 hover:bg-emerald-700/60">📱 A4 Court read (phone)</a>
+        <button onClick={resetLayout} className="rounded border border-neutral-500 px-2 py-0.5 hover:bg-neutral-700">Reset layout</button>
       </div>
 
       {/* panes */}
