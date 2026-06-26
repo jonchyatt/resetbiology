@@ -1,53 +1,44 @@
 {
   "song": "Lida Rose",
-  "part": "Baritone (Oliver)",
-  "generated": "2026-06-25 PLUMB Layer-2 (deterministic diff -> two independent eyes). Vision = corroboration; you are the court of record.",
-  "lockState": "ENGRAVING-LOCK RED — 5 BLOCKING, no sign-off. Clearing these + signing flips it green.",
+  "part": "Baritone (OLIVER)",
+  "generated": "2026-06-26 — rebuilt after a staff-offset bug was caught. The earlier single-note crops sometimes landed on OLIN (Bass) instead of OLIVER (Baritone), so the per-note 'reads low' findings were unreliable. Now each card shows OUR full engraving line vs the printed system with all voices LABELED — compare our engraving to the OLIVER staff.",
+  "howto": "For each card: OUR ENGRAVING is the Baritone line we generated. THE PAGE shows the printed system — your line is OLIVER (the middle staff, labeled). Trace left to right; the note to scrutinize is the one we RECONSTRUCTED (Audiveris had dropped it). Mark Correct or Wrong + the right pitch.",
+  "lockState": "ENGRAVING-LOCK RED — these 5 reconstructed bars need your sign-off.",
   "suspects": [
     {
       "id": "m9", "measure": 9, "word": "shy", "page": "page-196.jpg",
-      "crop": "/score/crops/bari-m09-tight.png",
-      "engraving": "F3", "priority": "TOP — likely WRONG",
-      "claude": "below F3 (~G2–B2)", "argus": "Eb2 (1st ledger line below staff)",
-      "synthesis": "Both independent eyes read this note well BELOW the claimed F3 (4th line). Strong suspect.",
-      "lead": "Lead 'shy' = Cb4 (independently confirmed)",
-      "question": "Where does the 'shy' whole-note sit — on the 4th line (F3), or low/below the staff?"
-    },
-    {
-      "id": "m25", "measure": 25, "word": "hop", "page": "page-198.jpg",
-      "crop": "/score/crops/bari-m25-tight.png",
-      "engraving": "Db4 (half)", "priority": "needs your eyes",
-      "claude": "unclear", "argus": "scattered",
-      "synthesis": "Bar reconstructed from silence (Audiveris dropped it). Rhythm corroborated as two halves by the Lead; only the PITCHES are a guess (Db4 'hop', Bb3 'ing').",
-      "lead": "Lead m25 = E4 + Eb4 (halves)",
-      "question": "What pitches are 'hop' and 'ing' on the page? (engraving guesses Db4 + Bb3)"
+      "engCrop": "/score/crops/engraving-bari-m09.png", "crop": "/score/crops/pagefull-bari-m09.png",
+      "measures": "6–9", "priority": "reconstructed note — verify",
+      "reconstructed": "The held whole-note on \"shy\" (last bar) — Audiveris dropped this bar entirely; we reconstructed it as F3.",
+      "question": "On the OLIVER staff, does the held \"shy\" note match our F3 (4th line up)? (Ignore OLIN below — that's the Bass.)"
     },
     {
       "id": "m5", "measure": 5, "word": "sky", "page": "page-196.jpg",
-      "crop": "/score/crops/bari-m05-tight.png",
-      "engraving": "F3", "priority": "needs your eyes",
-      "claude": "F3? (high on staff)", "argus": "Ab3 (top line)",
-      "synthesis": "Restored-from-silence bar. Eyes agree it sits HIGH but differ on the line. Cross-check vs m9 — engraving claims F3 for BOTH, yet m5 reads high and m9 reads low.",
-      "lead": "Lead 'sky' = Cb4",
-      "question": "Is 'sky' F3, Ab3, or other — and is it really the same pitch as m9 'shy'?"
+      "engCrop": "/score/crops/engraving-bari-m05.png", "crop": "/score/crops/pagefull-bari-m05.png",
+      "measures": "1–5", "priority": "reconstructed note — verify",
+      "reconstructed": "The note on \"sky\" (last bar) — a bar Audiveris dropped to silence; we reconstructed it as F3.",
+      "question": "On the OLIVER staff, does \"sky\" match our F3?"
     },
     {
       "id": "m21", "measure": 21, "word": "name", "page": "page-197.jpg",
-      "crop": "/score/crops/bari-m21-tight.png",
-      "engraving": "Cb4", "priority": "probably FINE — quick confirm",
-      "claude": "Cb4", "argus": "Ab3",
-      "synthesis": "Page draws an editorial (♭) before the note (a flatted pitch is confirmed). Lead 'name' = Cb4 is independently confirmed, so a Baritone Cb4 = unison is natural.",
-      "lead": "Lead 'name' = Cb4 (independently confirmed)",
-      "question": "Is the flatted 'name' note Cb4 (unison with Lead) or Ab3?"
+      "engCrop": "/score/crops/engraving-bari-m21.png", "crop": "/score/crops/pagefull-bari-m21.png",
+      "measures": "18–21", "priority": "reconstructed note — verify",
+      "reconstructed": "The held note on \"name\" (last bar) — dropped by Audiveris; we reconstructed it as Cb4. The page may show an editorial (♭) here.",
+      "question": "On the OLIVER staff, does the held \"name\" note match our Cb4?"
+    },
+    {
+      "id": "m25", "measure": 25, "word": "hop-ing", "page": "page-198.jpg",
+      "engCrop": "/score/crops/engraving-bari-m25.png", "crop": "/score/crops/pagefull-bari-m25.png",
+      "measures": "22–25", "priority": "reconstructed note — verify",
+      "reconstructed": "The \"hop-ing\" bar (last bar) — Audiveris dropped it to silence; we reconstructed it as Db4 + Bb3 (two halves).",
+      "question": "On the OLIVER staff, what are the \"hop\" and \"ing\" pitches/rhythm vs our Db4 + Bb3?"
     },
     {
       "id": "m29", "measure": 29, "word": "fine", "page": "page-198.jpg",
-      "crop": "/score/crops/bari-m29-tight.png",
-      "engraving": "Eb3", "priority": "probably FINE — quick confirm",
-      "claude": "Eb3? / D3? (mid-staff)", "argus": "Cb4 (above staff)",
-      "synthesis": "Cadential fermata, restored-from-silence. Lead 'fine' = Eb4 is independently confirmed, so the engraving's Baritone Eb3 = octave-double of Lead (classic barbershop) is natural.",
-      "lead": "Lead 'fine' = Eb4 (independently confirmed)",
-      "question": "Confirm the 'fine' fermata note is Eb3 (octave under the confirmed Lead Eb4)."
+      "engCrop": "/score/crops/engraving-bari-m29.png", "crop": "/score/crops/pagefull-bari-m29.png",
+      "measures": "26–30", "priority": "reconstructed note — verify",
+      "reconstructed": "The cadential \"fine\" note (with fermata) — dropped by Audiveris; we reconstructed it as Eb3 (octave under the Lead's Eb4).",
+      "question": "On the OLIVER staff, does the \"fine\" fermata note match our Eb3?"
     }
   ]
 }

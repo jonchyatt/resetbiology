@@ -7,14 +7,12 @@
 // The lock still flips ONLY via the verified repo pipeline — this records Jon's signed read.
 import { useEffect, useState, useCallback } from 'react'
 
-const engravingCrop = (measure: number) => `/score/crops/engraving-bari-m${String(measure).padStart(2, '0')}.png`
-
 type Suspect = {
-  id: string; measure: number; word: string; page: string; crop: string
-  engraving: string; priority: string; claude: string; argus: string
-  synthesis: string; lead: string; question: string
+  id: string; measure: number; word: string; page: string
+  crop: string; engCrop: string; measures: string
+  priority: string; reconstructed: string; question: string
 }
-type SuspectDoc = { song: string; part: string; generated: string; lockState: string; suspects: Suspect[] }
+type SuspectDoc = { song: string; part: string; generated: string; howto: string; lockState: string; suspects: Suspect[] }
 type Verdict = { verdict: 'correct' | 'wrong' | null; correctedPitch?: string; note?: string }
 
 const LS_KEY = 'scoreVerifyVerdicts.v1'
@@ -61,7 +59,7 @@ export default function ScoreVerifyCourt() {
     const payload = {
       signedBy: 'Jon',
       verdicts: doc.suspects.map((s) => ({
-        id: s.id, word: s.word, measure: s.measure, engraving: s.engraving,
+        id: s.id, word: s.word, measure: s.measure, reconstructed: s.reconstructed,
         verdict: verdicts[s.id]?.verdict || null,
         correctedPitch: verdicts[s.id]?.correctedPitch || null,
         note: verdicts[s.id]?.note || null,
@@ -100,9 +98,7 @@ export default function ScoreVerifyCourt() {
 
       <main className="px-4 py-4 max-w-xl mx-auto space-y-4 pb-32">
         <p className="text-sm text-neutral-300 leading-relaxed">
-          The verifier narrowed 232 notes to <b>{total}</b> the machine couldn’t settle — they need your eyes on the page.
-          Tap each crop to zoom. Mark <b>Correct</b> or <b>Wrong</b> (and the right pitch). Two independent eyes are shown as
-          corroboration only — your call is the record.
+          {doc.howto || 'Compare OUR engraving line to the OLIVER (Baritone) staff on the page, then mark each.'}
         </p>
 
         {doc.suspects.map((s, i) => {
@@ -114,38 +110,25 @@ export default function ScoreVerifyCourt() {
                 <span className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${priorityStyle(s.priority)}`}>{s.priority}</span>
               </div>
 
-              {/* OUR ENGRAVING vs THE PAGE — stacked for notehead comparison */}
+              {/* OUR ENGRAVING (one line) vs THE PRINTED SYSTEM (all voices labeled) */}
               <div className="px-4 mt-2 space-y-2">
                 <div>
-                  <div className="text-[11px] font-semibold uppercase tracking-wide text-emerald-400 mb-1">our engraving · Baritone m{s.measure}</div>
-                  <button onClick={() => setZoom(engravingCrop(s.measure))} className="block w-full bg-white rounded-lg overflow-hidden">
-                    <img src={engravingCrop(s.measure)} alt={`our engraving of m${s.measure}`} className="w-full h-auto" loading="lazy" />
+                  <div className="text-[11px] font-semibold uppercase tracking-wide text-emerald-400 mb-1">our engraving · Baritone, measures {s.measures} — tap to zoom</div>
+                  <button onClick={() => setZoom(s.engCrop)} className="block w-full bg-white rounded-lg overflow-hidden">
+                    <img src={s.engCrop} alt={`our engraving, measures ${s.measures}`} className="w-full h-auto" loading="lazy" />
                   </button>
                 </div>
                 <div>
-                  <div className="text-[11px] font-semibold uppercase tracking-wide text-amber-400 mb-1">the printed page — tap to zoom</div>
+                  <div className="text-[11px] font-semibold uppercase tracking-wide text-amber-400 mb-1">the printed page — your line is <span className="text-amber-200">OLIVER</span> (middle staff) · tap to zoom</div>
                   <button onClick={() => setZoom(s.crop)} className="block w-full bg-white rounded-lg overflow-hidden">
-                    <img src={s.crop} alt={`page crop for ${s.word}`} className="w-full h-auto" loading="lazy" />
+                    <img src={s.crop} alt={`printed system for ${s.word}`} className="w-full h-auto" loading="lazy" />
                   </button>
                 </div>
               </div>
 
               <div className="px-4 py-3 space-y-3">
-                <div className="flex items-baseline gap-2 flex-wrap">
-                  <span className="text-xs uppercase tracking-wide text-neutral-500">engraving says</span>
-                  <span className="text-lg font-bold text-amber-300">{s.engraving}</span>
-                </div>
+                <p className="text-xs text-neutral-400"><span className="text-neutral-300 font-semibold">Reconstructed:</span> {s.reconstructed}</p>
                 <p className="text-sm font-medium text-neutral-100">{s.question}</p>
-
-                <details className="text-xs text-neutral-400">
-                  <summary className="cursor-pointer select-none text-neutral-300">what the two eyes saw</summary>
-                  <div className="mt-2 space-y-1">
-                    <div><b>Claude:</b> {s.claude}</div>
-                    <div><b>Argus:</b> {s.argus}</div>
-                    <div className="text-neutral-300">{s.synthesis}</div>
-                    <div className="text-emerald-300">{s.lead}</div>
-                  </div>
-                </details>
 
                 {/* verdict */}
                 <div className="grid grid-cols-2 gap-2 pt-1">
