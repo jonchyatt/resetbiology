@@ -368,6 +368,27 @@ const ROLE_BADGE: Record<ItemRole, { label: string; cls: string }> = {
   needs:     { label: 'Needs extraction', cls: 'bg-amber-900/50 text-amber-300 border-amber-700/50' },
 };
 
+// Codex addendum #4 — a normalized frontend model derived from the API item, so
+// search/chips/favorites don't re-parse messy titles everywhere.
+type LibraryAsset = {
+  id: string; rawTitle: string; displayTitle: string;
+  song: string; part: string; role: ItemRole;
+  audioUrl: string | null; noteCount: number; hasNotes: boolean;
+  createdAt: string | null; favorite: boolean;
+};
+function normalizeAsset(item: LibraryItem, favorites: Set<string>): LibraryAsset {
+  const mm = parseMmTitle(item.title);
+  const song = mm?.song || 'Other';
+  const part = mm?.part || '—';
+  return {
+    id: item.id, rawTitle: item.title,
+    displayTitle: mm ? `${song} · ${part}` : item.title,
+    song, part, role: classifyRole(mm, item),
+    audioUrl: item.audioUrl, noteCount: item.noteCount, hasNotes: item.noteCount > 0,
+    createdAt: item.createdAt, favorite: favorites.has(item.id),
+  };
+}
+
 const LIDA_ROSE_SCORE_PARTS = {
   Lead: {
     part: 'Lead',
@@ -454,13 +475,46 @@ export default function VocalTrainerIII() {
     [lidaRoseScorePart, scoreTimingMode],
   );
   const [libFilter, setLibFilter] = useState('');
+  // Codex addendum: favorites (localStorage) + filter chips
+  const [favorites, setFavorites] = useState<Set<string>>(() => new Set());
+  const [chips, setChips] = useState<Set<string>>(() => new Set());
+  useEffect(() => { try { const s = localStorage.getItem('vt3_favorites'); if (s) setFavorites(new Set(JSON.parse(s))); } catch {} }, []);
+  const toggleFavorite = useCallback((id: string) => {
+    setFavorites((prev) => {
+      const n = new Set(prev); if (n.has(id)) n.delete(id); else n.add(id);
+      try { localStorage.setItem('vt3_favorites', JSON.stringify([...n])); } catch {}
+      return n;
+    });
+  }, []);
+  const toggleChip = useCallback((c: string) => {
+    setChips((prev) => { const n = new Set(prev); if (n.has(c)) n.delete(c); else n.add(c); return n; });
+  }, []);
   const [collapsed, setCollapsed] = useState<Set<string>>(() => new Set());
   const [extractingId, setExtractingId] = useState<string | null>(null);
   const [extractAllRun, setExtractAllRun] = useState(false);
 
   const libraryGroups = useMemo(() => {
     const q = libFilter.trim().toLowerCase();
-    const items = q ? library.filter((i) => i.title.toLowerCase().includes(q)) : library;
+    const tokens = q ? q.split(/\s+/) : [];
+    const curSong = (currentMm?.song || '').toLowerCase();
+    const pass = (it: LibraryItem) => {
+      const a = normalizeAsset(it, favorites);
+      if (tokens.length) {
+        const hay = `${a.song} ${a.part} ${a.role} ${it.title} ${a.hasNotes ? 'notes' : 'needs extraction'}`.toLowerCase();
+        if (!tokens.every((t) => hay.includes(t))) return false;
+      }
+      if (chips.size) {
+        if (chips.has('favorites') && !a.favorite) return false;
+        if (chips.has('reference') && a.role !== 'reference') return false;
+        if (chips.has('backing') && a.role !== 'backing') return false;
+        if (chips.has('original') && a.role !== 'original') return false;
+        if (chips.has('hasNotes') && !a.hasNotes) return false;
+        if (chips.has('needs') && a.role !== 'needs') return false;
+        if (chips.has('currentSong') && a.song.toLowerCase() !== curSong) return false;
+      }
+      return true;
+    };
+    const items = library.filter(pass);
     if (groupBy === 'flat') return [{ key: 'all', label: `All songs (${items.length})`, items }];
     const map = new Map<string, LibraryItem[]>();
     const order: string[] = [];
@@ -485,7 +539,13 @@ export default function VocalTrainerIII() {
       items: map.get(key)!.slice().sort((a, b) =>
         (b.noteCount > 0 ? 1 : 0) - (a.noteCount > 0 ? 1 : 0) || a.title.localeCompare(b.title)),
     }));
-  }, [library, groupBy, libFilter]);
+  }, [library, groupBy, libFilter, favorites, chips, currentMm]);
+
+  // Pinned Favorites — starred items, regardless of group/collapse (addendum #1)
+  const favoriteAssets = useMemo(
+    () => library.filter((i) => favorites.has(i.id)).map((i) => normalizeAsset(i, favorites)),
+    [library, favorites],
+  );
 
   // Collapse ALL groups by default — compact page (Jon 2026-06-27: "stop having the libraries
   // default to open"). Playable items still sort to the top within each group when expanded.
@@ -2593,11 +2653,49 @@ export default function VocalTrainerIII() {
                   type="text"
                   value={libFilter}
                   onChange={(e) => setLibFilter(e.target.value)}
-                  placeholder="Filter songs…"
+                  placeholder="Search Library (song · part · role)…"
                   className="flex-1 min-w-[140px] bg-gray-800 border border-gray-700 rounded px-2 py-1 text-sm text-gray-100"
                 />
                 <span className="text-xs text-gray-500 whitespace-nowrap">{library.length} in library</span>
               </div>
+
+              {/* filter chips (addendum #3) */}
+              <div className="flex flex-wrap items-center gap-1 mb-2">
+                {[
+                  { k: 'favorites', label: '★ Favorites' },
+                  { k: 'currentSong', label: 'Current song' },
+                  { k: 'reference', label: 'Reference' },
+                  { k: 'backing', label: 'Backing' },
+                  { k: 'original', label: 'Original' },
+                  { k: 'hasNotes', label: 'Has notes' },
+                  { k: 'needs', label: 'Needs extraction' },
+                ].map((c) => (
+                  <button key={c.k} onClick={() => toggleChip(c.k)}
+                    className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border ${chips.has(c.k) ? 'bg-amber-600 border-amber-400 text-white' : 'bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700'}`}>{c.label}</button>
+                ))}
+                {chips.size > 0 && <button onClick={() => setChips(new Set())} className="px-2 py-0.5 rounded-full text-[10px] text-gray-400 hover:text-gray-200">clear</button>}
+              </div>
+
+              {/* pinned Favorites (addendum #1) — load directly, no scrolling */}
+              {favoriteAssets.length > 0 && (
+                <div className="mb-3 rounded-lg border border-amber-500/30 bg-amber-950/10 p-2">
+                  <div className="text-xs font-bold text-amber-300 mb-1.5">★ Favorites</div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                    {favoriteAssets.map((a) => (
+                      <div key={a.id} className={`relative rounded-lg border flex items-center gap-2 px-2 py-1.5 ${selectedId === a.id ? 'border-amber-400 bg-amber-500/10' : 'border-gray-700/70 bg-gray-800/40 hover:border-gray-600'}`}>
+                        <button onClick={() => toggleFavorite(a.id)} aria-label="Unfavorite" title="Unfavorite" className="text-amber-400 text-sm shrink-0">★</button>
+                        <button onClick={() => setSelectedId(a.id)} className="flex-1 min-w-0 text-left">
+                          <div className="text-sm font-medium text-gray-100 truncate">{a.displayTitle}</div>
+                          <div className="flex items-center gap-1.5 mt-0.5">
+                            <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold border ${ROLE_BADGE[a.role].cls}`}>{ROLE_BADGE[a.role].label}</span>
+                            {a.hasNotes && <span className="text-[10px] text-emerald-400">{a.noteCount} notes</span>}
+                          </div>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {libraryGroups.map((group) => {
                 const missing = group.items.filter((i) => i.noteCount === 0 && i.audioUrl).length;
@@ -2646,12 +2744,20 @@ export default function VocalTrainerIII() {
                           >
                             <button
                               type="button"
+                              onClick={(e) => { e.stopPropagation(); toggleFavorite(item.id); }}
+                              aria-label={favorites.has(item.id) ? 'Unfavorite' : 'Favorite'}
+                              title="Favorite"
+                              className="absolute top-1 left-1 z-10 w-6 h-6 grid place-items-center text-sm leading-none"
+                            >
+                              <span className={favorites.has(item.id) ? 'text-amber-400' : 'text-gray-600 hover:text-amber-300'}>{favorites.has(item.id) ? '★' : '☆'}</span>
+                            </button>
+                            <button
+                              type="button"
                               onClick={() => setSelectedId(item.id)}
                               aria-pressed={selectedId === item.id}
-                              className="block w-full text-left px-3 pt-3 pb-1 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-amber-400/70 hover:bg-white/[0.02]"
+                              className="block w-full text-left pl-7 pr-14 pt-3 pb-1 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-amber-400/70 hover:bg-white/[0.02]"
                             >
-                              <div className="font-medium text-gray-100 truncate pr-14 flex items-center gap-1.5">
-                                <span className="text-amber-500/70">★</span>
+                              <div className="font-medium text-gray-100 truncate flex items-center gap-1.5">
                                 <span className="truncate">{primary}</span>
                                 <span className={`shrink-0 px-1.5 py-0.5 rounded text-[9px] font-bold border ${ROLE_BADGE[role].cls}`}>{ROLE_BADGE[role].label}</span>
                               </div>
