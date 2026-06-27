@@ -17,7 +17,6 @@ const SONGS = [
   { id: 'itsyou', label: "It's You", dir: '/itsyou-baritone' },
   { id: 'goodnight', label: 'Goodnight Ladies', dir: '/goodnight-baritone' },
 ];
-const VIEW_H = 200;        // displayed ribbon height (px)
 const MARKER_FRAC = 0.28;  // the "now" line sits this far from the left
 
 export default function BaritoneBallTrainer() {
@@ -30,11 +29,12 @@ export default function BaritoneBallTrainer() {
   const [dur, setDur] = useState(0);
   const [t, setT] = useState(0);
   const [vw, setVw] = useState(0);
+  const [viewH, setViewH] = useState(320);
 
   const audioRef = useRef<HTMLAudioElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const dir = SONGS[songIdx].dir;
-  const dispW = ribbon ? ribbon.w * (VIEW_H / ribbon.h) : 0;
+  const dispW = ribbon ? ribbon.w * (viewH / ribbon.h) : 0;
 
   useEffect(() => {
     setRibbon(null); setNotReady(false); setPlaying(false); setT(0); setOffset(0); setScale(1);
@@ -43,7 +43,7 @@ export default function BaritoneBallTrainer() {
       .catch(() => setNotReady(true));
   }, [dir]);
   useEffect(() => {
-    const on = () => setVw(scrollRef.current?.clientWidth || 0);
+    const on = () => { setVw(scrollRef.current?.clientWidth || 0); setViewH(Math.min(Math.max(260, window.innerHeight * 0.52), 480)); };
     on(); window.addEventListener('resize', on); return () => window.removeEventListener('resize', on);
   }, [ribbon]);
 
@@ -111,16 +111,16 @@ export default function BaritoneBallTrainer() {
       {/* horizontal ribbon viewport with a fixed "now" marker */}
       {notReady && <div className="rounded-lg border border-gray-800 bg-gray-900/50 p-6 text-center text-sm text-gray-400">This song&apos;s ribbon is still being built — Lida Rose is ready now.</div>}
       {ribbon && (
-        <div className="relative rounded-lg border border-gray-800 bg-white overflow-hidden" style={{ height: VIEW_H }}>
+        <div className="relative rounded-lg border border-gray-800 bg-white overflow-hidden" style={{ height: viewH }}>
           <div ref={scrollRef} className="absolute inset-0 overflow-x-hidden">
             <img src={`${dir}/ribbon.jpg`} alt="baritone line" draggable={false}
-              style={{ height: VIEW_H, width: dispW, maxWidth: 'none' }} className="select-none" />
+              style={{ height: viewH, width: dispW, maxWidth: 'none' }} className="select-none" />
           </div>
           {/* the "now" marker + bouncing ball */}
           <div className="absolute top-0 bottom-0 pointer-events-none" style={{ left: `${MARKER_FRAC * 100}%` }}>
             <div className="absolute top-0 bottom-0 w-[2px] bg-amber-500/70" />
             <div className="absolute w-5 h-5 rounded-full -translate-x-1/2"
-              style={{ left: 0, top: VIEW_H * 0.30 - 10 + (playing ? Math.abs(Math.sin(t * 3)) * -14 : 0),
+              style={{ left: 0, top: viewH * 0.30 - 10 + (playing ? Math.abs(Math.sin(t * 3)) * -14 : 0),
                 background: 'radial-gradient(circle at 38% 34%, #fff7d6 0%, #ffd24a 45%, #ff7a00 100%)', boxShadow: '0 0 12px 3px rgba(255,170,40,0.7)' }} />
           </div>
         </div>

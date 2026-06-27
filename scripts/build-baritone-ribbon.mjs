@@ -13,8 +13,10 @@ const PDF = 'C:/Users/jonch/Downloads/The Music Man - Complete.pdf';
 const PDFTOPPM = 'C:/Users/jonch/AppData/Local/Microsoft/WinGet/Packages/oschwartz10612.Poppler_Microsoft.Winget.Source_8wekyb3d8bbwe/poppler-25.07.0/Library/bin/pdftoppm.exe';
 const DPI = 300;
 const RIBBON_H = 360;          // final ribbon height (px)
-const CROP_UP = 0.024;
-const CROP_DOWN = 0.016;
+const CROP_UP = 0.040;         // generous — capture high notes + a margin (don't cut edges)
+const CROP_DOWN = 0.046;       // …and the lyrics below the staff
+const LEAD_TRIM = 250;         // px trimmed off the LEFT of every strip after the first,
+                               // dropping the repeated clef+key-sig so it reads as ONE staff
 
 // song → first PDF page (verified: Lida Rose printed 193 = PDF 196)
 const SONG = process.argv[2] || 'lida-baritone';
@@ -53,8 +55,18 @@ for (let i = 0; i < data.pages.length; i++) {
   console.log(`page ${i + 1} (pdf ${pdfPage}): ${page.bands.length} strips`);
 }
 
-// concat horizontally with a thin separator
-const SEP = 6;
+// drop the repeated clef + key-signature from every strip after the first so the
+// systems flow into ONE continuous staff (Jon: "clip the white").
+for (let i = 1; i < strips.length; i++) {
+  const s = strips[i];
+  if (s.w > LEAD_TRIM + 60) {
+    s.buf = await sharp(s.buf).extract({ left: LEAD_TRIM, top: 0, width: s.w - LEAD_TRIM, height: RIBBON_H }).jpeg({ quality: 92 }).toBuffer();
+    s.w = s.w - LEAD_TRIM;
+  }
+}
+
+// concat horizontally — no separator, one continuous staff
+const SEP = 0;
 const totalW = strips.reduce((s, x) => s + x.w, 0) + SEP * (strips.length - 1);
 const composites = [];
 let x = 0;
