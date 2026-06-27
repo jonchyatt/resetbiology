@@ -376,17 +376,13 @@ export default function VocalTrainerIII() {
     }));
   }, [library, groupBy, libFilter]);
 
-  // Auto-EXPAND groups that contain a playable item; collapse only the decoy-only groups.
-  // (V3.5 — Jon 2026-06-26: his son couldn't find the Baritone because everything was collapsed
-  // behind 8 "no melody yet" decoys. Discoverability now beats the old V3.4.3 collapse-all.)
+  // Collapse ALL groups by default — compact page (Jon 2026-06-27: "stop having the libraries
+  // default to open"). Playable items still sort to the top within each group when expanded.
   const didInitCollapse = useRef(false);
   useEffect(() => {
     if (didInitCollapse.current || libraryGroups.length === 0) return;
     didInitCollapse.current = true;
-    if (libraryGroups.length > 1) {
-      const decoyOnly = libraryGroups.filter((g) => !g.items.some((i) => i.noteCount > 0)).map((g) => g.key);
-      setCollapsed(new Set(decoyOnly));
-    }
+    if (libraryGroups.length > 1) setCollapsed(new Set(libraryGroups.map((g) => g.key)));
   }, [libraryGroups]);
 
   // ─── Editor state ───────────────────────────────────────────────────────
@@ -1748,7 +1744,10 @@ export default function VocalTrainerIII() {
     return active ?? null;
   }, [practicePhrases, practiceTime]);
   const activePhraseId = activePhrase?.id ?? null;
-  const editorWidth = useMemo(() => Math.max(800, Math.max(extractedDuration, omrSpan) * zoom), [extractedDuration, omrSpan, zoom]);
+  // V3.6: size the tracker to the AUDIO length (durationSec) too — else when the recording is
+  // longer than the notes (studio full-song vs partial score), the playhead runs off the right
+  // edge and scroll freezes partway. (Jon 2026-06-27)
+  const editorWidth = useMemo(() => Math.max(800, Math.max(extractedDuration, omrSpan, durationSec) * zoom), [extractedDuration, omrSpan, durationSec, zoom]);
   const editorRowHeight = 6; // px per semitone
   const editorHeight = (PITCH_MAX - PITCH_MIN + 1) * editorRowHeight;
 
@@ -2153,7 +2152,7 @@ export default function VocalTrainerIII() {
         </section>
 
         {/* ─── Library ───────────────────────────────────────────────── */}
-        <details open className="order-3 bg-gray-900/60 border border-amber-500/20 rounded-lg p-3">
+        <details className="order-3 bg-gray-900/60 border border-amber-500/20 rounded-lg p-3">
           <summary className="cursor-pointer select-none text-sm font-semibold text-amber-300 marker:text-amber-500">
             Library <span className="text-xs font-normal text-gray-500">— saved templates and extraction tools</span>
           </summary>
