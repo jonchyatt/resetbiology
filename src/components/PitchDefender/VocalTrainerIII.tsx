@@ -389,6 +389,25 @@ function normalizeAsset(item: LibraryItem, favorites: Set<string>): LibraryAsset
   };
 }
 
+// Codex addendum #6 — collapse likely duplicates (same song+part+role) to ONE
+// canonical item (most notes / has audio wins); the rest go under "More versions".
+function dedupeItems(items: LibraryItem[]): { canonical: LibraryItem[]; more: LibraryItem[] } {
+  const byKey = new Map<string, LibraryItem[]>();
+  for (const it of items) {
+    const mm = parseMmTitle(it.title);
+    const key = `${(mm?.song || '?').toLowerCase()}|${(mm?.part || '?').toLowerCase()}|${classifyRole(mm, it)}`;
+    if (!byKey.has(key)) byKey.set(key, []);
+    byKey.get(key)!.push(it);
+  }
+  const canonical: LibraryItem[] = [], more: LibraryItem[] = [];
+  for (const arr of byKey.values()) {
+    arr.sort((a, b) => (b.noteCount - a.noteCount) || ((b.audioUrl ? 1 : 0) - (a.audioUrl ? 1 : 0)) || a.title.localeCompare(b.title));
+    canonical.push(arr[0]);
+    more.push(...arr.slice(1));
+  }
+  return { canonical, more };
+}
+
 const LIDA_ROSE_SCORE_PARTS = {
   Lead: {
     part: 'Lead',
@@ -692,6 +711,15 @@ export default function VocalTrainerIII() {
     if (orbSeekTimer.current) { clearTimeout(orbSeekTimer.current); orbSeekTimer.current = null; }
     try { (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId); } catch {}
     if (d && !d.moved && !d.didLong) orbSeekFromEvent(e); // a plain tap = seek there
+  };
+  // Soft reload of the CURRENT song — re-fetch template + re-decode audio + reset
+  // the score, without a full page reload (keeps mic permission, page state). For
+  // when playback/score gets into a bad spot (Jon 2026-06-27).
+  const reloadSong = () => {
+    const id = selectedId;
+    if (!id) return;
+    setSelectedId(null);
+    setTimeout(() => setSelectedId(id), 60);
   };
   // Long-press nav: scroll to a section by matching its heading text (first hit wins).
   const orbJumpTo = (keywords: string[]) => {
@@ -2727,8 +2755,9 @@ export default function VocalTrainerIII() {
                         ⚡ Extract all {missing} vocal lines
                       </button>
                     )}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 mt-1">
-                      {group.items.map((item) => {
+                    {(() => {
+                      const { canonical, more } = dedupeItems(group.items);
+                      const renderCard = (item: LibraryItem) => {
                         const mm = parseMmTitle(item.title);
                         const role = classifyRole(mm, item);
                         const primary = mm ? (groupBy === 'part' ? mm.song : mm.part) : item.title;
@@ -2785,8 +2814,19 @@ export default function VocalTrainerIII() {
                             </div>
                           </div>
                         );
-                      })}
-                    </div>
+                      };
+                      return (
+                        <>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 mt-1">{canonical.map(renderCard)}</div>
+                          {more.length > 0 && (
+                            <details className="mt-2 border-t border-gray-800 pt-2">
+                              <summary className="text-[11px] text-gray-500 cursor-pointer select-none marker:text-gray-600">▸ More versions ({more.length}) — duplicates / older extractions</summary>
+                              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 mt-1 opacity-75">{more.map(renderCard)}</div>
+                            </details>
+                          )}
+                        </>
+                      );
+                    })()}
                   </details>
                 );
               })}
@@ -3551,6 +3591,7 @@ export default function VocalTrainerIII() {
               <button onClick={() => orbJumpTo(['score view', 'sheet music', 'score'])} className="text-left text-xs text-neutral-200 hover:bg-neutral-800 rounded px-2 py-1.5 whitespace-nowrap">🎼 Score</button>
               <button onClick={() => orbJumpTo(['tracker', 'note editor', 'zoom'])} className="text-left text-xs text-neutral-200 hover:bg-neutral-800 rounded px-2 py-1.5 whitespace-nowrap">📊 Tracker</button>
               <button onClick={() => { setMixerOpen(true); setOrbNavOpen(false); }} className="text-left text-xs text-amber-200 hover:bg-neutral-800 rounded px-2 py-1.5 whitespace-nowrap">🎛️ Mixing Desk</button>
+              <button onClick={() => { reloadSong(); setOrbNavOpen(false); }} disabled={!selectedId} className="text-left text-xs text-cyan-200 hover:bg-neutral-800 rounded px-2 py-1.5 whitespace-nowrap disabled:opacity-40">↻ Reload song</button>
               <button onClick={() => { window.scrollTo({ top: 0, behavior: 'smooth' }); setOrbNavOpen(false); }} className="text-left text-xs text-neutral-200 hover:bg-neutral-800 rounded px-2 py-1.5 whitespace-nowrap">⬆️ Top</button>
             </div>
           )}
