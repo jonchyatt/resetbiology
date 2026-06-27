@@ -455,7 +455,7 @@ export default function VocalTrainerIII() {
   const [micVol, setMicVol] = useState(150);      // 0-VOL_MAX percent (V3: starts hotter — raw mic is quiet vs mastered tracks)
   const [micProfile, setMicProfile] = useState<MicProfile>('usb');
   const [micEnabled, setMicEnabled] = useState(false);
-  const [plunkEnabled, setPlunkEnabled] = useState(true); // V3.5: ON by default — you load a part to HEAR it (Jon 2026-06-26)
+  const [plunkEnabled, setPlunkEnabled] = useState(false); // V3.7: OFF by default — plunk is opt-in (Jon 2026-06-27)
   const [plunkVol, setPlunkVol] = useState(PLUNK_DEFAULT_VOL);
   // V3: per-stream balance (-1 hard-left … +1 hard-right). Defaults = V1's fixed pans.
   const [vocalPan, setVocalPan] = useState(-0.7);
@@ -1645,15 +1645,27 @@ export default function VocalTrainerIII() {
   // V3: release the mic when the page is hidden/left. A held mic stream keeps
   // Android Bluetooth in SCO call-mode and breaks ALL phone audio until reboot.
   useEffect(() => {
-    const release = () => { if (micEnabledRef.current) stopMicMonitor(); };
-    const onVis = () => { if (document.visibilityState === 'hidden') release(); };
+    let micWasOn = false;
+    const release = () => { if (micEnabledRef.current) { micWasOn = true; stopMicMonitor(); } };
+    const onVis = () => {
+      if (document.visibilityState === 'hidden') {
+        release();
+      } else {
+        // V3.7: back on the page — un-stall. Phone Chrome suspends the
+        // AudioContext (clock + buffer playback freeze) and we released the mic;
+        // resume the context so playback/clock continue, and re-arm the mic.
+        const ctx = audioCtxRef.current;
+        if (ctx && ctx.state === 'suspended') ctx.resume().catch(() => {});
+        if (micWasOn) { micWasOn = false; setTimeout(() => { startMicMonitor(); }, 80); }
+      }
+    };
     document.addEventListener('visibilitychange', onVis);
     window.addEventListener('pagehide', release);
     return () => {
       document.removeEventListener('visibilitychange', onVis);
       window.removeEventListener('pagehide', release);
     };
-  }, [stopMicMonitor]);
+  }, [stopMicMonitor, startMicMonitor]);
 
   // Decode template audio when the current template changes. Split out from the
   // template-metadata effect so loadTemplateAudio is defined by this point.
@@ -3159,7 +3171,7 @@ export default function VocalTrainerIII() {
         onPointerMove={onOrbMove}
         onPointerUp={onOrbUp}
         style={orbPos ? { left: orbPos.x, top: orbPos.y } : { right: 14, bottom: 84 }}
-        className="fixed z-[10000] select-none"
+        className="fixed z-[10000] select-none flex flex-col items-end gap-1"
       >
         <div className="flex items-center gap-1 rounded-full bg-neutral-900/90 backdrop-blur border border-amber-500/40 shadow-2xl px-1.5 py-1.5">
           <div onPointerDown={onOrbDown} className="cursor-grab active:cursor-grabbing px-1 text-amber-400/70 leading-none" title="drag the player">⠿</div>
@@ -3172,6 +3184,15 @@ export default function VocalTrainerIII() {
           <button onClick={() => setLoopWhole((v) => !v)} className={`w-9 h-9 rounded-full text-sm flex items-center justify-center ${loopWhole ? 'bg-cyan-600 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`} title="Loop whole song">↻</button>
           <div className="px-1.5 text-[10px] font-mono text-neutral-400 tabular-nums">{practiceTime.toFixed(1)}s</div>
         </div>
+        {/* V3.7: tempo right on the orb — slower / readout(tap=100%) / faster */}
+        {durationSec > 0 && (
+          <div className="flex items-center gap-1 rounded-full bg-neutral-900/90 backdrop-blur border border-purple-500/40 shadow-2xl px-1.5 py-1">
+            <button onClick={() => changeTempo(tempoPct - 5)} className="w-8 h-8 rounded-full bg-neutral-800 hover:bg-neutral-700 text-purple-200 text-sm flex items-center justify-center" title="Slower (pitch locked)">⏪</button>
+            <button onClick={() => changeTempo(100)} className={`min-w-[44px] h-8 rounded-full text-[11px] font-bold flex items-center justify-center tabular-nums ${tempoPct === 100 ? 'bg-neutral-800 text-neutral-300' : 'bg-purple-700/70 text-white'}`} title="Tempo — tap to reset to 100%">{tempoPct < 100 ? '🐢' : tempoPct > 100 ? '🐇' : ''}{tempoPct}%</button>
+            <button onClick={() => changeTempo(tempoPct + 5)} className="w-8 h-8 rounded-full bg-neutral-800 hover:bg-neutral-700 text-purple-200 text-sm flex items-center justify-center" title="Faster (pitch locked)">⏩</button>
+            {stretching && <span className="px-1 text-[9px] text-purple-300 animate-pulse">…</span>}
+          </div>
+        )}
       </div>
     </div>
   );
