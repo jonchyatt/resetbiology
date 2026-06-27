@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lida Rose OLIVER Five-Bar Proof</title>
+  <style>
+    :root { color-scheme: dark; --bg:#0d0f12; --panel:#171b21; --ink:#f4f1e8; --muted:#b8b2a5; --line:#303846; --red:#ff4444; --green:#39d98a; --gold:#ffd166; }
+    * { box-sizing: border-box; }
+    body { margin:0; background:var(--bg); color:var(--ink); font-family: system-ui, -apple-system, Segoe UI, sans-serif; line-height:1.35; }
+    header { position:sticky; top:0; z-index:5; background:rgba(13,15,18,.96); border-bottom:1px solid var(--line); padding:14px 14px 12px; }
+    h1 { margin:0 0 8px; font-size:22px; letter-spacing:0; }
+    .status { display:flex; align-items:center; gap:10px; font-weight:800; font-size:16px; }
+    .pill { padding:8px 10px; border-radius:6px; border:1px solid var(--red); color:#fff; background:#4a1111; }
+    .pill.locked { border-color:var(--green); background:#0f3f2a; }
+    main { padding:14px; max-width:980px; margin:0 auto; }
+    .rule { border:1px solid var(--gold); background:#26200f; color:#fff4c2; padding:10px; border-radius:6px; margin-bottom:14px; font-weight:650; }
+    .card { border:1px solid var(--line); background:var(--panel); border-radius:8px; padding:12px; margin:0 0 18px; }
+    h2 { margin:0 0 8px; font-size:22px; }
+    .result { font-size:20px; font-weight:850; color:#fff; background:#123521; border:1px solid #2ec27e; padding:9px; border-radius:6px; margin-bottom:10px; }
+    .grid { display:grid; gap:8px; }
+    .fact { border-left:4px solid var(--gold); padding:8px 9px; background:#101319; color:var(--ink); }
+    .fact strong { color:#fff; }
+    .scroll { overflow-x:auto; border:1px solid var(--line); background:#050607; border-radius:6px; margin-top:10px; }
+    .imageWrap { position:relative; min-width:720px; }
+    .imageWrap img { display:block; width:100%; height:auto; }
+    .rowBox { position:absolute; border:4px solid var(--red); background:rgba(255,68,68,.08); pointer-events:none; }
+    .caption { color:var(--muted); font-size:13px; padding:7px 8px; border-top:1px solid var(--line); }
+    .zoom { margin-top:10px; border:1px solid var(--line); border-radius:6px; background:#050607; overflow:hidden; }
+    .zoom img { display:block; width:100%; height:auto; }
+    .confirm { display:flex; gap:10px; align-items:flex-start; padding:10px 0 0; font-size:18px; font-weight:800; }
+    input[type="checkbox"] { width:28px; height:28px; flex:0 0 28px; }
+    .small { color:var(--muted); font-size:13px; }
+    @media (max-width: 560px) {
+      main { padding:10px; }
+      .card { padding:10px; }
+      h1 { font-size:20px; }
+      h2 { font-size:20px; }
+      .result { font-size:19px; }
+      .imageWrap { min-width:780px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Lida Rose OLIVER five-bar proof</h1>
+    <div class="status"><span id="lockPill" class="pill">NOT LOCKED - Jon visual signoff required</span><span id="count">0/5 confirmed</span></div>
+  </header>
+  <main>
+    <div class="rule">Ground truth is the printed page. The red box marks the OLIVER staff row; the blue box marks the disputed note area. This page is a phone audit surface, not a lock by itself.</div>
+    <section class="card" id="m5">
+    <h2>m5 - &quot;sky&quot;</h2>
+    <div class="result">Ab3 whole note</div>
+    <div class="grid">
+      <div class="fact"><strong>Staff identity:</strong> First printed quartet system, OLIVER staff is labeled directly.</div>
+      <div class="fact"><strong>Printed-page read:</strong> The notehead is on the top line of the bass staff. Bass-clef top line is A; six-flat key makes it A-flat.</div>
+      <div class="fact"><strong>Chord check:</strong> Cadence under confirmed Lead Cb4. With Bass below, Ab3 supplies the Ab-minor cadence tone.</div>
+    </div>
+    
+    <div class="scroll">
+    <div class="imageWrap">
+      <img src="img/p196-system-1-full.png" alt="Full system crop - red box is OLIVER staff">
+      <div class="rowBox" style="left:0.000%;top:55.625%;width:100.000%;height:25.000%;"></div>
+    </div>
+    <div class="caption">Full system crop - red box is OLIVER staff</div>
+  </div>
+    <div class="zoom">
+      <img src="img/m5-oliver-zoom.png" alt="m5 - &quot;sky&quot; OLIVER zoom">
+      <div class="caption">Zoom on the target OLIVER note(s). Source: page-196.jpg.</div>
+    </div>
+    <label class="confirm"><input type="checkbox" data-confirm="m5"><span>I visually confirm m5 - &quot;sky&quot; = Ab3 whole note</span></label>
+  </section>
+<section class="card" id="m9">
+    <h2>m9 - &quot;shy&quot;</h2>
+    <div class="result">Ab3 whole note</div>
+    <div class="grid">
+      <div class="fact"><strong>Staff identity:</strong> Second printed quartet system, OLIVER staff is labeled directly.</div>
+      <div class="fact"><strong>Printed-page read:</strong> The whole note sits on the OLIVER bass-staff top line: A-flat in six flats.</div>
+      <div class="fact"><strong>Chord check:</strong> Same cadence family as m5 under confirmed Lead Cb4; Ab3 is the baritone cadence tone.</div>
+    </div>
+    
+    <div class="scroll">
+    <div class="imageWrap">
+      <img src="img/p196-system-2-full.png" alt="Full system crop - red box is OLIVER staff">
+      <div class="rowBox" style="left:0.000%;top:47.018%;width:100.000%;height:23.158%;"></div>
+    </div>
+    <div class="caption">Full system crop - red box is OLIVER staff</div>
+  </div>
+    <div class="zoom">
+      <img src="img/m9-oliver-zoom.png" alt="m9 - &quot;shy&quot; OLIVER zoom">
+      <div class="caption">Zoom on the target OLIVER note(s). Source: page-196.jpg.</div>
+    </div>
+    <label class="confirm"><input type="checkbox" data-confirm="m9"><span>I visually confirm m9 - &quot;shy&quot; = Ab3 whole note</span></label>
+  </section>
+<section class="card" id="m21">
+    <h2>m21 - &quot;name&quot;</h2>
+    <div class="result">Ab3 whole note</div>
+    <div class="grid">
+      <div class="fact"><strong>Staff identity:</strong> Page 197 labels the first system: JACEY, EWART, OLIVER, OLIN. In the target system, OLIVER is the third staff.</div>
+      <div class="fact"><strong>Printed-page read:</strong> On the third staff of the target system, the held note is on the bass-staff top line with a printed flat reminder: Ab3.</div>
+      <div class="fact"><strong>Chord check:</strong> Cadence under confirmed Lead Cb4; Ab3 supplies the lower Ab-minor chord tone.</div>
+    </div>
+    <div class="scroll">
+    <div class="imageWrap">
+      <img src="img/p197-label-proof.png" alt="Staff-order proof for this page">
+      
+    </div>
+    <div class="caption">Staff-order proof for this page</div>
+  </div>
+    <div class="scroll">
+    <div class="imageWrap">
+      <img src="img/p197-m21-system.png" alt="Full system crop - red box is OLIVER staff">
+      <div class="rowBox" style="left:0.000%;top:52.308%;width:100.000%;height:22.308%;"></div>
+    </div>
+    <div class="caption">Full system crop - red box is OLIVER staff</div>
+  </div>
+    <div class="zoom">
+      <img src="img/m21-oliver-zoom.png" alt="m21 - &quot;name&quot; OLIVER zoom">
+      <div class="caption">Zoom on the target OLIVER note(s). Source: page-197.jpg.</div>
+    </div>
+    <label class="confirm"><input type="checkbox" data-confirm="m21"><span>I visually confirm m21 - &quot;name&quot; = Ab3 whole note</span></label>
+  </section>
+<section class="card" id="m25">
+    <h2>m25 - &quot;hop-ing&quot;</h2>
+    <div class="result">Ab3 half, then Bb3 half</div>
+    <div class="grid">
+      <div class="fact"><strong>Staff identity:</strong> First printed system on page 198 has OLIVER labeled directly.</div>
+      <div class="fact"><strong>Printed-page read:</strong> First half: top-line A in six flats = Ab3. Second half: space above the bass staff = B, flat by key = Bb3.</div>
+      <div class="fact"><strong>Chord check:</strong> Other voices from source/page: first half has Db3, E-natural4, Ab4; second half has Eb3, Eb4, G4. OLIVER reads as Ab3 -&gt; Bb3.</div>
+    </div>
+    
+    <div class="scroll">
+    <div class="imageWrap">
+      <img src="img/p198-system-1-full.png" alt="Full system crop - red box is OLIVER staff">
+      <div class="rowBox" style="left:0.000%;top:48.571%;width:100.000%;height:22.857%;"></div>
+    </div>
+    <div class="caption">Full system crop - red box is OLIVER staff</div>
+  </div>
+    <div class="zoom">
+      <img src="img/m25-oliver-zoom.png" alt="m25 - &quot;hop-ing&quot; OLIVER zoom">
+      <div class="caption">Zoom on the target OLIVER note(s). Source: page-198.jpg.</div>
+    </div>
+    <label class="confirm"><input type="checkbox" data-confirm="m25"><span>I visually confirm m25 - &quot;hop-ing&quot; = Ab3 half, then Bb3 half</span></label>
+  </section>
+<section class="card" id="m29">
+    <h2>m29 - &quot;fine&quot;</h2>
+    <div class="result">Bb3 whole note with fermata</div>
+    <div class="grid">
+      <div class="fact"><strong>Staff identity:</strong> Page 198 labels OLIVER on system 1; in the target system, OLIVER remains the third staff.</div>
+      <div class="fact"><strong>Printed-page read:</strong> The fermata whole note sits in the space above the bass staff. That space is B; six-flat key makes it Bb3.</div>
+      <div class="fact"><strong>Chord check:</strong> Cadential Eb sonority under confirmed Lead Eb4. Bb3 is the fifth of the Eb cadence, not the old Eb3 octave-double guess.</div>
+    </div>
+    <div class="scroll">
+    <div class="imageWrap">
+      <img src="img/p198-system-1-full.png" alt="Staff-order proof for this page">
+      
+    </div>
+    <div class="caption">Staff-order proof for this page</div>
+  </div>
+    <div class="scroll">
+    <div class="imageWrap">
+      <img src="img/p198-m29-system.png" alt="Full system crop - red box is OLIVER staff">
+      <div class="rowBox" style="left:0.000%;top:55.510%;width:100.000%;height:24.490%;"></div>
+    </div>
+    <div class="caption">Full system crop - red box is OLIVER staff</div>
+  </div>
+    <div class="zoom">
+      <img src="img/m29-oliver-zoom.png" alt="m29 - &quot;fine&quot; OLIVER zoom">
+      <div class="caption">Zoom on the target OLIVER note(s). Source: page-198.jpg.</div>
+    </div>
+    <label class="confirm"><input type="checkbox" data-confirm="m29"><span>I visually confirm m29 - &quot;fine&quot; = Bb3 whole note with fermata</span></label>
+  </section>
+  </main>
+  <script>
+    const ids = ["m5","m9","m21","m25","m29"];
+    const key = 'lida-oliver-proof-confirmed-v1';
+    const state = JSON.parse(localStorage.getItem(key) || '{}');
+    function refresh() {
+      let n = 0;
+      for (const id of ids) {
+        const el = document.querySelector('[data-confirm="' + id + '"]');
+        el.checked = !!state[id];
+        if (state[id]) n++;
+      }
+      document.getElementById('count').textContent = n + '/' + ids.length + ' confirmed';
+      const pill = document.getElementById('lockPill');
+      if (n === ids.length) {
+        pill.textContent = 'ALL FIVE VISUALLY CONFIRMED ON THIS DEVICE';
+        pill.classList.add('locked');
+      } else {
+        pill.textContent = 'NOT LOCKED - Jon visual signoff required';
+        pill.classList.remove('locked');
+      }
+    }
+    document.addEventListener('change', (event) => {
+      const id = event.target && event.target.getAttribute('data-confirm');
+      if (!id) return;
+      state[id] = event.target.checked;
+      localStorage.setItem(key, JSON.stringify(state));
+      refresh();
+    });
+    refresh();
+  </script>
+</body>
+</html>

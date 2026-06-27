@@ -55,7 +55,7 @@
    "src": "score-notation"
   },
   {
-   "pitchMidi": 53,
+   "pitchMidi": 56,
    "startTimeSeconds": 8.485,
    "durationSeconds": 2.424,
    "measure": 5,
@@ -208,7 +208,7 @@
    "src": "score-notation"
   },
   {
-   "pitchMidi": 53,
+   "pitchMidi": 56,
    "startTimeSeconds": 18.182,
    "durationSeconds": 2.424,
    "measure": 9,
@@ -586,7 +586,7 @@
    "src": "score-notation"
   },
   {
-   "pitchMidi": 59,
+   "pitchMidi": 56,
    "startTimeSeconds": 47.273,
    "durationSeconds": 2.424,
    "measure": 21,
@@ -748,7 +748,7 @@
    "src": "score-notation"
   },
   {
-   "pitchMidi": 61,
+   "pitchMidi": 56,
    "startTimeSeconds": 56.97,
    "durationSeconds": 1.212,
    "measure": 25,
@@ -856,7 +856,7 @@
    "src": "score-notation"
   },
   {
-   "pitchMidi": 51,
+   "pitchMidi": 58,
    "startTimeSeconds": 66.667,
    "durationSeconds": 2.424,
    "measure": 29,

@@ -7,17 +7,17 @@
   "197:P3",
   "198:P3"
  ],
- "generatedAt": "2026-06-24T22:20:24.857Z",
+ "generatedAt": "2026-06-26T23:58:58.930Z",
  "keyFifths": -6,
  "noteCount": 114,
  "wholeNotes": [
   {
    "measure": 5,
-   "pitch": "F3"
+   "pitch": "Ab3"
   },
   {
    "measure": 9,
-   "pitch": "F3"
+   "pitch": "Ab3"
   },
   {
    "measure": 13,
@@ -25,11 +25,11 @@
   },
   {
    "measure": 21,
-   "pitch": "Cb4"
+   "pitch": "Ab3"
   },
   {
    "measure": 29,
-   "pitch": "Eb3"
+   "pitch": "Bb3"
   }
  ],
  "sync": {
@@ -61,7 +61,7 @@
    "id": "whole-notes",
    "label": "Whole-note survival",
    "status": "pass",
-   "detail": "expected [5:F3 9:F3 13:Cb4 21:Cb4 29:Eb3]; got [5:F3 9:F3 13:Cb4 21:Cb4 29:Eb3]"
+   "detail": "expected [5:Ab3 9:Ab3 13:Cb4 21:Ab3 29:Bb3]; got [5:Ab3 9:Ab3 13:Cb4 21:Ab3 29:Bb3]"
   },
   {
    "id": "note-count",
@@ -73,7 +73,7 @@
    "id": "printed-score-audit",
    "label": "Printed/source audit",
    "status": "fail",
-   "detail": "m9: expected [Cb4:2:half Gb3:2:half], got [F3:4:whole] (page-197 Oliver chapel-bell system opening) | m18: expected [Cb4:1:quarter Cb4:1:quarter A3:1:quarter Bb3:1:quarter], got [Db4:0.5:eighth Db4:0.5:eighth Db4:1:quarter Db4:1:quarter] (page-197 Oliver end of sweetheart system) | m31: expected [Gb3:2:half G3:2:half], got [Cb4:1:quarter C4:1:quarter Cb4:2:half] (page-198 Oliver final active Lida Rose measure before page-turn residue)"
+   "detail": "m9: expected [Cb4:2:half Gb3:2:half], got [Ab3:4:whole] (page-197 Oliver chapel-bell system opening) | m18: expected [Cb4:1:quarter Cb4:1:quarter A3:1:quarter Bb3:1:quarter], got [Db4:0.5:eighth Db4:0.5:eighth Db4:1:quarter Db4:1:quarter] (page-197 Oliver end of sweetheart system) | m31: expected [Gb3:2:half G3:2:half], got [Cb4:1:quarter C4:1:quarter Cb4:2:half] (page-198 Oliver final active Lida Rose measure before page-turn residue)"
   },
   {
    "id": "no-courtesy-clefs",

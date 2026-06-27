@@ -40,6 +40,41 @@ import { PitchDetector } from 'pitchy';
 import ScoreViewer from './ScoreViewer';
 import ScoreEngraving from './ScoreEngraving';
 import { getOmrTarget } from './omrTargets';
+import { SoundTouch, SimpleFilter, WebAudioBufferSource } from 'soundtouchjs';
+
+// V3.7 — Pitch-preserving time-stretch (the Tempo Trainer).
+// Render `buffer` to a NEW AudioBuffer whose duration is scaled by 1/speed
+// (speed>1 = faster/shorter, speed<1 = slower/longer) while keeping pitch dead
+// constant. This is a real phase-vocoder (SoundTouch), NOT AudioBufferSourceNode
+// .playbackRate (which would chipmunk/Darth-Vader the pitch). We render OFFLINE,
+// before play, then play the stretched buffer at native rate — so the proven
+// sample-accurate lockstep player (the dichotic engine) is left completely intact.
+function stretchBuffer(ctx: AudioContext, buffer: AudioBuffer, speed: number): AudioBuffer {
+  const st = new SoundTouch();
+  st.tempo = speed; // tempo>1 → faster, pitch unchanged
+  const source = new WebAudioBufferSource(buffer);
+  const filter = new SimpleFilter(source, st);
+  const BLOCK = 8192;
+  const interleaved = new Float32Array(BLOCK * 2);
+  // Upper-bound the output length (frames grow as 1/speed), then trim to actual.
+  const cap = Math.ceil(buffer.length / Math.max(0.25, speed)) + BLOCK * 4;
+  const left = new Float32Array(cap);
+  const right = new Float32Array(cap);
+  let total = 0;
+  let n = filter.extract(interleaved, BLOCK);
+  while (n > 0 && total + n <= cap) {
+    for (let i = 0; i < n; i++) {
+      left[total + i] = interleaved[i * 2];
+      right[total + i] = interleaved[i * 2 + 1];
+    }
+    total += n;
+    n = filter.extract(interleaved, BLOCK);
+  }
+  const out = ctx.createBuffer(2, Math.max(1, total), buffer.sampleRate);
+  out.copyToChannel(left.subarray(0, total), 0);
+  out.copyToChannel(right.subarray(0, total), 1);
+  return out;
+}
 
 // Convert a frequency (Hz) to a MIDI note number (69 = A4 = 440 Hz).
 function freqToMidi(freq: number): number {
@@ -434,6 +469,11 @@ export default function VocalTrainerIII() {
   const loopBRef = useRef<number | null>(null);
   const [loopWhole, setLoopWhole] = useState(false); // V3.6: loop the WHOLE song (Jon 2026-06-27)
   const loopWholeRef = useRef(false);
+  // V3.7: pitch-preserving Tempo (the Tempo Trainer). Percent of original speed,
+  // 50–125, default 100. Singers think in "tempo," so that's the label.
+  const [tempoPct, setTempoPct] = useState(100);
+  const tempoRef = useRef(1);          // tempoPct/100, read by the audio clock + plunk
+  const [stretching, setStretching] = useState(false); // true while rendering stretched buffers
   useEffect(() => { loopARef.current = loopA; }, [loopA]);
   useEffect(() => { loopBRef.current = loopB; }, [loopB]);
   useEffect(() => { loopWholeRef.current = loopWhole; }, [loopWhole]);
@@ -450,12 +490,16 @@ export default function VocalTrainerIII() {
   const vocalPanNodeRef = useRef<StereoPannerNode | null>(null);
   const vocalSourceRef = useRef<AudioBufferSourceNode | null>(null);
   const vocalBufRef = useRef<AudioBuffer | null>(null);
+  const vocalPlayBufRef = useRef<AudioBuffer | null>(null); // V3.7: tempo-stretched; null ⇒ 100% ⇒ play original
 
   // Music chain (center, optional)
   const musicGainNodeRef = useRef<GainNode | null>(null);
   const musicPanNodeRef = useRef<StereoPannerNode | null>(null);
   const musicSourceRef = useRef<AudioBufferSourceNode | null>(null);
   const musicBufRef = useRef<AudioBuffer | null>(null);
+  const musicPlayBufRef = useRef<AudioBuffer | null>(null); // V3.7: tempo-stretched; null ⇒ 100% ⇒ play original
+  // Which (source buffers, speed) the current stretched play buffers were rendered for.
+  const tempoStampRef = useRef<{ voc: AudioBuffer | null; mus: AudioBuffer | null; spd: number }>({ voc: null, mus: null, spd: 1 });
 
   const playbackDurationRef = useRef(0);
   const startedAtRef = useRef(0);
@@ -961,7 +1005,10 @@ export default function VocalTrainerIII() {
     const remaining = note.startTimeSeconds < scoreNow
       ? noteEnd - scoreNow
       : note.durationSeconds;
-    const toneDuration = Math.max(0.04, Math.min(remaining, note.durationSeconds, PLUNK_MAX_TONE_SECONDS));
+    // song-seconds of audible note, then ÷spd to wall-clock so the blip lasts as
+    // long as the (stretched) note. Cap stays a wall-clock ceiling.
+    const songDur = Math.max(0.04, Math.min(remaining, note.durationSeconds));
+    const toneDuration = Math.min(songDur / (tempoRef.current || 1), PLUNK_MAX_TONE_SECONDS);
     if (!Number.isFinite(toneDuration) || toneDuration <= 0.02) return;
 
     const toneEnd = toneStart + toneDuration;
@@ -1011,7 +1058,8 @@ export default function VocalTrainerIII() {
     const notes = plunkNotesRef.current;
     if (!notes.length) return;
 
-    const scoreNow = Math.max(0, ctx.currentTime - startedAtRef.current);
+    const spd = tempoRef.current || 1;
+    const scoreNow = Math.max(0, (ctx.currentTime - startedAtRef.current) * spd); // song-seconds
     const windowEnd = scoreNow + PLUNK_LOOKAHEAD_SECONDS;
     ensurePlunkGain(ctx).gain.setTargetAtTime(currentPlunkGain(), ctx.currentTime, 0.012);
     let scheduledThisWindow = 0;
@@ -1023,7 +1071,8 @@ export default function VocalTrainerIII() {
       const key = `${index}:${note.startTimeSeconds.toFixed(4)}:${note.pitchMidi}`;
       if (plunkScheduledRef.current.has(key)) return;
       plunkScheduledRef.current.add(key);
-      const scoreAlignedStart = startedAtRef.current + note.startTimeSeconds;
+      // note time is song-seconds; convert to wall-clock for scheduling (÷spd)
+      const scoreAlignedStart = startedAtRef.current + note.startTimeSeconds / spd;
       const toneStart = Math.max(ctx.currentTime + 0.012, scoreAlignedStart);
       playPlunkTone(ctx, note, toneStart, scoreNow);
       scheduledThisWindow++;
@@ -1137,6 +1186,55 @@ export default function VocalTrainerIII() {
     }
   }, [stopPlunkNodes]);
 
+  // V3.7: make sure the tempo-stretched play buffers match the current
+  // (source buffers, speed). Renders only when something changed — at 100% it
+  // clears the play buffers so the originals play (zero-cost identity path).
+  const ensureTempoBuffers = useCallback(() => {
+    const spd = tempoRef.current || 1;
+    if (Math.abs(spd - 1) < 0.001) {
+      vocalPlayBufRef.current = null;
+      musicPlayBufRef.current = null;
+      tempoStampRef.current = { voc: null, mus: null, spd: 1 };
+      return;
+    }
+    const s = tempoStampRef.current;
+    const fresh = s.spd === spd && s.voc === vocalBufRef.current && s.mus === musicBufRef.current
+      && (!!vocalPlayBufRef.current || !vocalBufRef.current)
+      && (!!musicPlayBufRef.current || !musicBufRef.current);
+    if (fresh) return;
+    const ctx = ensureAudioGraph();
+    vocalPlayBufRef.current = vocalBufRef.current ? stretchBuffer(ctx, vocalBufRef.current, spd) : null;
+    musicPlayBufRef.current = musicBufRef.current ? stretchBuffer(ctx, musicBufRef.current, spd) : null;
+    tempoStampRef.current = { voc: vocalBufRef.current, mus: musicBufRef.current, spd };
+  }, [ensureAudioGraph]);
+
+  // V3.7: change tempo (percent of original). Pitch-locked. Re-renders the
+  // stretched buffers and, if playing, seamlessly resumes at the same song spot.
+  const changeTempo = useCallback((pct: number) => {
+    const clamped = Math.max(50, Math.min(125, Math.round(pct)));
+    const newSpd = clamped / 100;
+    const oldSpd = tempoRef.current || 1;
+    const ctx = audioCtxRef.current;
+    const wasPlaying = playbackState === 'playing';
+    // current song-position under the OLD tempo (must read before we change it)
+    const pos = wasPlaying && ctx
+      ? Math.max(0, Math.min((ctx.currentTime - startedAtRef.current) * oldSpd, playbackDurationRef.current))
+      : pauseOffsetRef.current;
+    if (wasPlaying) stopAudioSource();
+    setTempoPct(clamped);
+    tempoRef.current = newSpd;
+    const needsRender = Math.abs(newSpd - 1) > 0.001 && (!!vocalBufRef.current || !!musicBufRef.current);
+    setStretching(needsRender);
+    // defer the (blocking) render so the "Stretching…" hint paints first
+    setTimeout(() => {
+      ensureTempoBuffers();
+      setStretching(false);
+      pauseOffsetRef.current = pos;
+      setPracticeTime(pos);
+      if (wasPlaying) startAudioSourceRef.current?.();
+    }, needsRender ? 30 : 0);
+  }, [playbackState, ensureTempoBuffers, stopAudioSource]);
+
   // Start playback from pauseOffsetRef. Fires both vocal + music sources in
   // lockstep so they stay synchronized even under pause/resume.
   const startAudioSource = useCallback(async () => {
@@ -1152,6 +1250,13 @@ export default function VocalTrainerIII() {
     // Clean up any lingering sources (no state change).
     stopAudioSource();
 
+    // V3.7: make the tempo-stretched buffers current for (source, speed); at
+    // 100% the play refs stay null and we play the originals (identity path).
+    ensureTempoBuffers();
+    const spd = tempoRef.current || 1;
+    const vocPlay = vocalPlayBufRef.current ?? vocBuf;
+    const musPlay = musicPlayBufRef.current ?? musBuf;
+
     const offset = Math.max(0, Math.min(
       pauseOffsetRef.current,
       playbackDurationRef.current - 0.01,
@@ -1160,12 +1265,13 @@ export default function VocalTrainerIII() {
     // Fire both sources at the SAME ctx.currentTime so they stay aligned.
     const startAt = ctx.currentTime + 0.02; // tiny lookahead to align both
 
-    if (vocBuf) {
+    if (vocPlay) {
       const src = ctx.createBufferSource();
-      src.buffer = vocBuf;
+      src.buffer = vocPlay;
       src.connect(vocalGainNodeRef.current!);
-      const vocOffset = Math.min(offset, vocBuf.duration - 0.01);
-      src.start(startAt, Math.max(0, vocOffset));
+      // offset is ORIGINAL song-seconds; the play buffer is time-scaled by 1/spd
+      const vocOffset = Math.min(offset, (vocBuf?.duration ?? offset)) / spd;
+      src.start(startAt, Math.max(0, Math.min(vocOffset, vocPlay.duration - 0.01)));
       vocalSourceRef.current = src;
       src.onended = () => {
         if (vocalSourceRef.current === src) {
@@ -1175,12 +1281,12 @@ export default function VocalTrainerIII() {
         }
       };
     }
-    if (musBuf) {
+    if (musPlay) {
       const src = ctx.createBufferSource();
-      src.buffer = musBuf;
+      src.buffer = musPlay;
       src.connect(musicGainNodeRef.current!);
-      const musOffset = Math.min(offset, musBuf.duration - 0.01);
-      src.start(startAt, Math.max(0, musOffset));
+      const musOffset = Math.min(offset, (musBuf?.duration ?? offset)) / spd;
+      src.start(startAt, Math.max(0, Math.min(musOffset, musPlay.duration - 0.01)));
       musicSourceRef.current = src;
       src.onended = () => {
         if (musicSourceRef.current === src) {
@@ -1189,16 +1295,18 @@ export default function VocalTrainerIII() {
       };
     }
 
-    // startedAt encodes (ctx.currentTime - offset) as-of the start moment.
-    startedAtRef.current = startAt - offset;
+    // startedAt anchors the song clock: songtime = (currentTime - startedAt)*spd,
+    // and equals `offset` at this start moment.
+    startedAtRef.current = startAt - offset / spd;
     if (plunkEnabledRef.current) startPlunkScheduler();
     setPlaybackState('playing');
 
     const tick = () => {
       const c = audioCtxRef.current;
       if (!c) return;
-      const elapsed = c.currentTime - startedAtRef.current;
-      setPracticeTime(Math.max(0, elapsed));
+      // song-seconds = wall-seconds × speed (the play buffer is time-scaled 1/spd)
+      const elapsed = Math.max(0, (c.currentTime - startedAtRef.current) * (tempoRef.current || 1));
+      setPracticeTime(elapsed);
       // V3: A/B loop — when the playhead crosses B, jump back to A and keep going.
       const la = loopARef.current;
       const lb = loopBRef.current;
@@ -1228,7 +1336,7 @@ export default function VocalTrainerIII() {
       rafRef.current = requestAnimationFrame(tick);
     };
     rafRef.current = requestAnimationFrame(tick);
-  }, [ensureAudioGraph, saveTakeSummary, startPlunkScheduler, stopAudioSource]);
+  }, [ensureAudioGraph, ensureTempoBuffers, saveTakeSummary, startPlunkScheduler, stopAudioSource]);
 
   // V3: keep a ref to the latest startAudioSource so the tick closure (and
   // seek) can restart playback without stale-closure issues.
@@ -1237,7 +1345,7 @@ export default function VocalTrainerIII() {
   const pausePlayback = useCallback(() => {
     const ctx = audioCtxRef.current;
     if (!ctx || playbackState !== 'playing') return;
-    const elapsed = ctx.currentTime - startedAtRef.current;
+    const elapsed = (ctx.currentTime - startedAtRef.current) * (tempoRef.current || 1);
     pauseOffsetRef.current = Math.max(0, Math.min(elapsed, playbackDurationRef.current));
     stopAudioSource();
     setPracticeTime(pauseOffsetRef.current);
@@ -2765,6 +2873,31 @@ export default function VocalTrainerIII() {
                   )}
                 </div>
                 <span className="font-mono">{fmtTime(durationSec)}</span>
+              </div>
+              {/* V3.7: Tempo Trainer — pitch-preserving slow-down / speed-up */}
+              <div className="mb-2 flex flex-wrap items-center gap-2 rounded-lg border border-purple-500/30 bg-purple-950/20 px-2 py-1.5">
+                <span className="text-[11px] font-bold text-purple-200">🐢 Tempo</span>
+                <span className={`font-mono text-xs ${tempoPct === 100 ? 'text-gray-400' : 'text-purple-300 font-bold'}`}>{tempoPct}%</span>
+                <input
+                  type="range" min={50} max={125} step={5} value={tempoPct}
+                  onChange={(e) => changeTempo(Number(e.target.value))}
+                  className="flex-1 min-w-[120px] accent-purple-400"
+                  title="Slow down to learn, speed up to test — pitch never changes"
+                />
+                <div className="flex items-center gap-1">
+                  {[60, 75, 90, 100, 110].map((p) => (
+                    <button
+                      key={p}
+                      onClick={() => changeTempo(p)}
+                      className={`px-1.5 py-0.5 rounded text-[10px] font-bold border ${tempoPct === p ? 'bg-purple-600/70 border-purple-400 text-white' : 'bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700'}`}
+                    >
+                      {p}
+                    </button>
+                  ))}
+                </div>
+                {stretching
+                  ? <span className="text-[10px] text-purple-300 animate-pulse">stretching…</span>
+                  : <span className="text-[10px] text-gray-500">pitch locked 🔒</span>}
               </div>
               {practicePhrases.length > 0 && (
                 <div className="mb-1 flex gap-1 overflow-x-auto pb-1">
