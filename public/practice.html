@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Practice — Music Man</title>
+<style>
+  :root { --amber:#ffcf3a; }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body { margin:0; background:#0b0b10; color:#eee; font:15px/1.45 -apple-system,Segoe UI,Roboto,sans-serif; }
+  .wrap { max-width:720px; margin:0 auto; padding:18px 14px calc(24px + env(safe-area-inset-bottom)); }
+  h1 { font-size:22px; margin:4px 2px 2px; color:#ffe49a; }
+  .tag { color:#8a8a99; font-size:13px; margin:0 2px 16px; }
+  .sec { font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:#7a7a8a; margin:20px 2px 8px; }
+  .resume { display:flex; align-items:center; gap:12px; width:100%; text-align:left; cursor:pointer;
+            background:linear-gradient(90deg,#2a2410,#1a1a26); border:1px solid #5a4a1a; color:#ffe49a;
+            border-radius:14px; padding:14px 16px; font-size:15px; }
+  .resume b { color:#fff; } .resume .go { margin-left:auto; font-size:20px; }
+  .presets { display:flex; gap:8px; overflow-x:auto; padding:2px; -webkit-overflow-scrolling:touch; }
+  .preset { flex:0 0 auto; border:1px solid #34343f; background:#16161f; color:#cfcfe0; border-radius:999px;
+            padding:9px 14px; font-size:13px; cursor:pointer; white-space:nowrap; }
+  .preset.on { background:var(--amber); color:#0b0b10; border-color:var(--amber); font-weight:600; }
+  .preset .sub { display:block; font-size:10px; opacity:.7; font-weight:400; }
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .song { position:relative; text-align:left; cursor:pointer; border:1px solid #2c2c38; border-radius:16px;
+          padding:16px 14px; background:linear-gradient(150deg,#191924,#121219); color:#eee; min-height:96px;
+          display:flex; flex-direction:column; justify-content:space-between; }
+  .song:active { transform:scale(.985); }
+  .song .ic { font-size:22px; }
+  .song .ti { font-size:16px; font-weight:600; color:#fff; margin-top:8px; }
+  .song .me { font-size:11px; color:#8a8a99; margin-top:2px; }
+  .song .play { position:absolute; right:12px; top:12px; width:30px; height:30px; border-radius:50%;
+                background:var(--amber); color:#0b0b10; display:grid; place-items:center; font-size:14px; }
+  .foot { margin-top:22px; text-align:center; }
+  .foot a { color:#8a8a99; font-size:12px; text-decoration:none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Practice</h1>
+  <p class="tag">Pick a way to practice, then tap a song. You'll read the real score with your line lit up.</p>
+
+  <button class="resume" id="resume" style="display:none"></button>
+
+  <div class="sec">How do you want to practice?</div>
+  <div class="presets" id="presets"></div>
+
+  <div class="sec">Songs · Baritone (Oliver)</div>
+  <div class="grid" id="songs"></div>
+
+  <div class="foot"><a href="/score-follow.html">Open the score viewer directly →</a></div>
+</div>
+
+<script>
+const SONGS = [
+  { id:'sincere',   label:'Ice Cream / Sincere', pp:'pp. 86–89',   ic:'🍦' },
+  { id:'itsyou',    label:"It's You",            pp:'pp. 97+',     ic:'💛' },
+  { id:'lida',      label:'Lida Rose',           pp:'pp. 193+',    ic:'🌹' },
+  { id:'goodnight', label:'Goodnight Ladies',    pp:'pp. 105+',    ic:'🌙' },
+];
+// task presets -> state bundle handed to score-follow via URL params
+const PRESETS = [
+  { id:'follow',  label:'Follow Score',     sub:'just watch your line',  p:{} },
+  { id:'learn',   label:'Learn My Part',    sub:'voice on · slowed',     p:{ mic:1, slow:0.8 } },
+  { id:'loop',    label:'Loop Phrase',      sub:'repeat a tricky bit',   p:{ mic:1, slow:0.8, loop:1 } },
+  { id:'quartet', label:'Sing With Quartet',sub:'full speed, full mix',  p:{} },
+  { id:'check',   label:'Performance Check',sub:'voice on · full speed', p:{ mic:1 } },
+];
+const $ = (s) => document.querySelector(s);
+let preset = PRESETS[0];
+
+// presets row
+const pr = $('#presets');
+PRESETS.forEach((x,i)=>{ const b=document.createElement('button'); b.className='preset'+(i===0?' on':'');
+  b.innerHTML=`${x.label}<span class="sub">${x.sub}</span>`;
+  b.onclick=()=>{ preset=x; [...pr.children].forEach(c=>c.classList.remove('on')); b.classList.add('on'); };
+  pr.appendChild(b); });
+
+function launch(songId){
+  const q = new URLSearchParams({ song:songId, preset:preset.id, ...preset.p });
+  try{ localStorage.setItem('sf_recent', JSON.stringify({ song:songId, preset:preset.id, label:SONGS.find(s=>s.id===songId).label, presetLabel:preset.label, ts:Date.now() })); }catch(e){}
+  location.href = '/score-follow.html?' + q.toString();
+}
+
+// song cards
+const g = $('#songs');
+SONGS.forEach(s=>{ const b=document.createElement('button'); b.className='song';
+  b.innerHTML=`<div class="play">▶</div><div class="ic">${s.ic}</div><div><div class="ti">${s.label}</div><div class="me">${s.pp}</div></div>`;
+  b.onclick=()=>launch(s.id); g.appendChild(b); });
+
+// continue last
+try{ const r=JSON.parse(localStorage.getItem('sf_recent')||'null');
+  if(r){ const el=$('#resume'); el.style.display='flex';
+    el.innerHTML=`<span>↻</span><span>Continue <b>${r.label}</b> · ${r.presetLabel}</span><span class="go">▶</span>`;
+    el.onclick=()=>{ const pz=PRESETS.find(p=>p.id===r.preset)||PRESETS[0]; const q=new URLSearchParams({song:r.song,preset:pz.id,...pz.p}); location.href='/score-follow.html?'+q.toString(); }; }
+}catch(e){}
+</script>
+</body>
+</html>

@@ -8,10 +8,11 @@
   :root { --amber: #ffcf3a; }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html,body { margin:0; background:#0b0b10; color:#eee; font:14px/1.4 -apple-system,Segoe UI,Roboto,sans-serif; }
-  .wrap { max-width:760px; margin:0 auto; padding:10px 10px 188px; }
-  .hdr { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin:6px 2px 10px; }
+  .wrap { max-width:760px; margin:0 auto; padding:10px 10px 190px; }
+  .hdr { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin:6px 2px 10px; }
+  a.back { color:#9a9aab; text-decoration:none; font-size:13px; padding:6px 9px; border:1px solid #2c2c38; border-radius:8px; }
   select#song { background:#1a1a26; color:#ffd86b; border:1px solid #3a3a4a; border-radius:8px; padding:7px 10px; font-size:15px; font-weight:600; }
-  .sub { font-size:12px; color:#8a8a99; }
+  .sub { font-size:12px; color:#8a8a99; flex:1 1 100%; }
   .stage { position:relative; width:100%; border-radius:12px; overflow:hidden; background:#fff; box-shadow:0 8px 30px rgba(0,0,0,.5); }
   .stage img { display:block; width:100%; height:auto; user-select:none; -webkit-user-drag:none; }
   #band { position:absolute; pointer-events:none; border-radius:6px; background:linear-gradient(90deg, rgba(255,207,58,.16), rgba(255,207,58,.10)); box-shadow:0 0 0 1px rgba(255,207,58,.35) inset; transition:top .2s, left .2s, width .2s, height .2s; }
@@ -24,7 +25,9 @@
   button.play { width:50px; height:50px; border-radius:50%; border:0; font-size:21px; color:#0b0b10; background:var(--amber); display:grid; place-items:center; cursor:pointer; flex:0 0 auto; }
   button.mic { height:38px; border-radius:19px; border:1px solid #3a3a4a; background:#1a1a26; color:#9a9aab; font-size:12px; padding:0 14px; cursor:pointer; flex:0 0 auto; }
   button.mic.on { background:#1f3a2a; border-color:#3ad07a; color:#7fe6a8; }
-  .lab { font-size:11px; color:#9a9aab; width:50px; flex:0 0 auto; }
+  button.mic.want { border-color:var(--amber); color:var(--amber); animation:pulse 1.4s infinite; }
+  @keyframes pulse { 0%,100%{ box-shadow:0 0 0 0 rgba(255,207,58,.4);} 50%{ box-shadow:0 0 0 6px rgba(255,207,58,0);} }
+  .lab { font-size:11px; color:#9a9aab; width:64px; flex:0 0 auto; }
   input[type=range] { flex:1; accent-color:var(--amber); }
   .val { font:11px ui-monospace,monospace; color:#ffd86b; width:42px; text-align:right; flex:0 0 auto; }
   .time { font:12px ui-monospace,monospace; color:#9a9aab; }
@@ -33,7 +36,11 @@
 </head>
 <body>
 <div class="wrap">
-  <div class="hdr"><select id="song"></select><span class="sub">Baritone (OLIVER) · your line lights up · your voice rides the staff</span></div>
+  <div class="hdr">
+    <a href="/practice.html" class="back">‹ Practice</a>
+    <select id="song"></select>
+    <span class="sub">Baritone (OLIVER) · your line lights up · your voice rides the staff</span>
+  </div>
   <div class="stage" id="stage">
     <img id="page" alt="score page" />
     <div id="band"></div><div id="trail"></div><div id="cursor"></div><div id="pitch"></div>
@@ -48,8 +55,8 @@
     <span class="page-pill" id="pagepill">pg 1</span>
   </div>
   <div class="row"><span class="lab">Start</span><input type="range" id="offset" min="0" max="25" step="0.1" value="0" /><span class="val" id="offsetv">0.0s</span></div>
-  <div class="row"><span class="lab">Speed</span><input type="range" id="speed" min="0.5" max="1.8" step="0.01" value="1" /><span class="val" id="speedv">1.00×</span></div>
-  <div class="row"><span class="lab">Slow</span><input type="range" id="rate" min="0.5" max="1" step="0.05" value="1" /><span class="val" id="ratev">1.00×</span></div>
+  <div class="row"><span class="lab">Line speed</span><input type="range" id="speed" min="0.5" max="1.8" step="0.01" value="1" /><span class="val" id="speedv">1.00×</span></div>
+  <div class="row"><span class="lab">Slow audio</span><input type="range" id="rate" min="0.5" max="1" step="0.05" value="1" /><span class="val" id="ratev">1.00×</span></div>
 </div>
 
 <audio id="audio" preload="auto"></audio>
@@ -65,9 +72,14 @@ const $ = (id) => document.getElementById(id);
 const page=$('page'), band=$('band'), cursor=$('cursor'), trail=$('trail'), pitchDot=$('pitch'), stage=$('stage'), audio=$('audio');
 let DIR=SONGS[0].dir, songId=SONGS[0].id, systems=[], curPageIdx=-1, dur=0, ready=false;
 
+// ---- practice preset from the launcher ----
+const PARAMS = new URLSearchParams(location.search);
+const WANT_MIC = PARAMS.get('mic')==='1';
+const PRESET_SLOW = parseFloat(PARAMS.get('slow')||'1');
+
 const sel=$('song');
 SONGS.forEach((s,i)=>{ const o=document.createElement('option'); o.value=i; o.textContent=s.label; sel.appendChild(o); });
-const qp=new URLSearchParams(location.search).get('song');
+const qp=PARAMS.get('song');
 const startIdx=Math.max(0,SONGS.findIndex(s=>s.id===qp));
 sel.value=startIdx; sel.addEventListener('change',()=>loadSong(+sel.value));
 
@@ -100,21 +112,19 @@ function place(t){
   band.style.left=left+'px'; band.style.top=top+'px'; band.style.width=width+'px'; band.style.height=height+'px';
   cursor.style.left=(nowX-1.5)+'px'; cursor.style.top=top+'px'; cursor.style.height=height+'px';
   trail.style.left=left+'px'; trail.style.top=top+'px'; trail.style.height=height+'px'; trail.style.width=Math.max(0,nowX-left)+'px';
-  // auto-scroll the active system into view (keep it ~38% down the viewport)
   if(Math.round(top)!==lastBandTop){ lastBandTop=Math.round(top);
     const rect=stage.getBoundingClientRect(), absY=window.scrollY+rect.top+top;
     window.scrollTo({top:Math.max(0,absY-window.innerHeight*0.38), behavior:'smooth'}); }
 }
 
-// ---- voice → staff (the pitch marker) ----
+// ---- voice -> staff ----
 let ac=null, analyser=null, buf=null, micOn=false, rafId=0;
 function midiToStaffOffsetPx(midi, s){
-  // bass clef: middle line = D3 (MIDI 50). staff occupies ~0.62*band height, centered on yc.
-  const H=page.clientHeight||1, staffPx=s.bh*0.62*H, halfStep=staffPx/8; // 8 diatonic steps top↔bottom
-  const names=[0,0,1,1,2,3,3,4,4,5,5,6]; // semitone→letter index (C..B), nearest letter
+  const H=page.clientHeight||1, staffPx=s.bh*0.62*H, halfStep=staffPx/8;
+  const names=[0,0,1,1,2,3,3,4,4,5,5,6];
   const oct=Math.floor(midi/12)-1, li=names[((midi%12)+12)%12];
-  const steps=(oct-3)*7 + (li-1);        // diatonic steps above D3 (+ up)
-  return -steps*halfStep;                 // up = negative y
+  const steps=(oct-3)*7 + (li-1);
+  return -steps*halfStep;
 }
 function freqToMidi(f){ return 69 + 12*Math.log2(f/440); }
 function autoCorrelate(b, sr){
@@ -123,7 +133,7 @@ function autoCorrelate(b, sr){
   for(let i=1;i<b.length/2;i++) if(Math.abs(b[b.length-i])<0.2){r2=b.length-i;break;}
   const c=b.slice(r1,r2), n=c.length, corr=new Array(n).fill(0);
   for(let l=0;l<n;l++) for(let i=0;i<n-l;i++) corr[l]+=c[i]*c[i+l];
-  let d=0; while(corr[d]>corr[d+1]) d++;
+  let d=0; while(d<n-1 && corr[d]>corr[d+1]) d++;
   let max=-1,pos=-1; for(let i=d;i<n;i++) if(corr[i]>max){max=corr[i];pos=i;}
   if(pos<=0) return -1;
   return sr/pos;
@@ -134,12 +144,10 @@ function micLoop(){
   analyser.getFloatTimeDomainData(buf);
   const f=autoCorrelate(buf, ac.sampleRate);
   if(f>60 && f<500){
-    const midi=freqToMidi(f), W=stage.clientWidth, H=page.clientHeight||1, s=curBand;
-    const x=parseFloat(cursor.style.left)+1.5;
-    const y=s.yc*H + midiToStaffOffsetPx(midi, s);
+    const H=page.clientHeight||1, s=curBand;
+    const x=parseFloat(cursor.style.left)+1.5, y=s.yc*H + midiToStaffOffsetPx(freqToMidi(f), s);
     pitchDot.style.left=x+'px'; pitchDot.style.top=y+'px';
-    // green when near the printed staff centre band, amber-ish otherwise
-    const off=Math.abs(y - s.yc*H), good=off < s.bh*0.55*H;
+    const good=Math.abs(y - s.yc*H) < s.bh*0.55*H;
     pitchDot.style.color=good?'#39d98a':'#ff9d3a'; pitchDot.style.background='currentColor'; pitchDot.style.opacity=0.95;
   } else pitchDot.style.opacity=0;
 }
@@ -149,21 +157,28 @@ async function toggleMic(){
     const stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false}});
     ac=new (window.AudioContext||window.webkitAudioContext)(); const src=ac.createMediaStreamSource(stream);
     analyser=ac.createAnalyser(); analyser.fftSize=2048; buf=new Float32Array(analyser.fftSize); src.connect(analyser);
-    micOn=true; $('mic').classList.add('on'); micLoop();
+    micOn=true; $('mic').classList.add('on'); $('mic').classList.remove('want'); micLoop();
   }catch(e){ alert('Mic needs permission (and HTTPS). Tap allow when prompted.'); }
 }
 $('mic').addEventListener('click', toggleMic);
 
 const fmt=(s)=>`${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
-audio.addEventListener('loadedmetadata',()=>{ dur=audio.duration||0; $('time').textContent=`0:00 / ${fmt(dur)}`; });
+audio.addEventListener('loadedmetadata',()=>{ dur=audio.duration||0; audio.playbackRate=parseFloat($('rate').value)||1; $('time').textContent=`0:00 / ${fmt(dur)}`; });
 audio.addEventListener('timeupdate',()=>{ place(audio.currentTime); $('time').textContent=`${fmt(audio.currentTime)} / ${fmt(dur)}`; });
 audio.addEventListener('ended',()=>$('play').textContent='▶');
-$('play').addEventListener('click',()=>{ if(audio.paused){audio.play();$('play').textContent='⏸';}else{audio.pause();$('play').textContent='▶';} });
+$('play').addEventListener('click',()=>{
+  if(WANT_MIC && !micOn) toggleMic();
+  if(audio.paused){audio.play();$('play').textContent='⏸';}else{audio.pause();$('play').textContent='▶';}
+});
 $('offset').addEventListener('input',e=>{ $('offsetv').textContent=(+e.target.value).toFixed(1)+'s'; place(audio.currentTime); saveNudge(); });
 $('speed').addEventListener('input',e=>{ $('speedv').textContent=(+e.target.value).toFixed(2)+'×'; place(audio.currentTime); saveNudge(); });
 $('rate').addEventListener('input',e=>{ audio.playbackRate=+e.target.value; $('ratev').textContent=(+e.target.value).toFixed(2)+'×'; });
 window.addEventListener('resize',()=>place(audio.currentTime));
 page.addEventListener('load',()=>place(audio.currentTime));
+
+// apply preset
+if(PRESET_SLOW<1){ $('rate').value=PRESET_SLOW; $('ratev').textContent=PRESET_SLOW.toFixed(2)+'×'; audio.playbackRate=PRESET_SLOW; }
+if(WANT_MIC){ $('mic').classList.add('want'); }
 loadSong(startIdx);
 </script>
 </body>
