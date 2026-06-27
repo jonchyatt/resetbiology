@@ -35,15 +35,16 @@ notes = addPitchBendsToNoteEvents(contours, notes);
 let timed = noteFramesToTime(notes).filter((n) => n.pitchMidi >= 36 && n.pitchMidi <= 84);
 timed.sort((a, b) => a.startTimeSeconds - b.startTimeSeconds);
 
-// greedy melody line: keep the top note in each 50ms window (de-polyphonize)
-function melodyLine(arr, windowSec = 0.05) {
+// melody line for an ISOLATED MONO voice: keep the LOUDEST partial in each window
+// (the fundamental, not the highest overtone). 'top pitch' picks overtones on solo voice.
+function melodyLine(arr, windowSec = 0.07) {
   if (!arr.length) return [];
   const s = [...arr].sort((a, b) => a.startTimeSeconds - b.startTimeSeconds);
   const out = []; let i = 0;
   while (i < s.length) {
     const t0 = s[i].startTimeSeconds; let best = s[i]; let j = i + 1;
     while (j < s.length && s[j].startTimeSeconds - t0 < windowSec) {
-      if (s[j].pitchMidi > best.pitchMidi || (s[j].pitchMidi === best.pitchMidi && s[j].amplitude > best.amplitude)) best = s[j];
+      if ((s[j].amplitude ?? 0) > (best.amplitude ?? 0)) best = s[j];
       j++;
     }
     out.push(best); i = j;
@@ -58,6 +59,8 @@ const out = {
   rawNoteCount: timed.length,
   melodyNoteCount: melody.length,
   notes: melody.map((n) => ({ pitchMidi: n.pitchMidi, startTimeSeconds: Number(n.startTimeSeconds.toFixed(4)), durationSeconds: Number(n.durationSeconds.toFixed(4)), amplitude: Number((n.amplitude ?? 0).toFixed(3)) })),
+  // full polyphonic output (clamped) so re-filtering can happen WITHOUT re-running the model
+  rawPoly: timed.map((n) => ({ pitchMidi: n.pitchMidi, startTimeSeconds: Number(n.startTimeSeconds.toFixed(4)), durationSeconds: Number(n.durationSeconds.toFixed(4)), amplitude: Number((n.amplitude ?? 0).toFixed(3)) })),
 };
 fs.writeFileSync(outPath, JSON.stringify(out, null, 2));
 const NM = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
