@@ -349,6 +349,25 @@ function parseMmTitle(title: string): MmMeta | null {
   return { part, song, mix, mode };
 }
 
+// Codex cleanup #4 — classify a library item into a ROLE so cards show a short
+// label + badge instead of a giant "BARITONE ONLY (isolated · left ear)" string.
+type ItemRole = 'reference' | 'backing' | 'original' | 'notes' | 'needs';
+function classifyRole(mm: MmMeta | null, item: { noteCount: number; audioUrl: string | null; title: string }): ItemRole {
+  const mix = (mm?.mix || item.title).toLowerCase();
+  if (/\bno\s|minus|backing/.test(mix)) return 'backing';
+  if (/original|stereo/.test(mix)) return 'original';
+  if (!item.audioUrl && item.noteCount > 0) return 'notes';
+  if (item.noteCount === 0) return 'needs';
+  return 'reference';
+}
+const ROLE_BADGE: Record<ItemRole, { label: string; cls: string }> = {
+  reference: { label: 'Reference', cls: 'bg-emerald-900/50 text-emerald-300 border-emerald-700/50' },
+  backing:   { label: 'Backing',   cls: 'bg-blue-900/50 text-blue-300 border-blue-700/50' },
+  original:  { label: 'Original',  cls: 'bg-purple-900/50 text-purple-300 border-purple-700/50' },
+  notes:     { label: 'Notes',     cls: 'bg-gray-700/60 text-gray-300 border-gray-600/50' },
+  needs:     { label: 'Needs extraction', cls: 'bg-amber-900/50 text-amber-300 border-amber-700/50' },
+};
+
 const LIDA_ROSE_SCORE_PARTS = {
   Lead: {
     part: 'Lead',
@@ -427,7 +446,7 @@ export default function VocalTrainerIII() {
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
 
   // ─── V3.1: library grouping + per-item extraction ───────────────────────
-  const [groupBy, setGroupBy] = useState<'part' | 'song' | 'mode' | 'flat'>('part');
+  const [groupBy, setGroupBy] = useState<'part' | 'song' | 'mode' | 'flat'>('song'); // Codex #4: Song-first
   const [scoreView, setScoreView] = useState<'pages' | 'engraved'>('engraved');
   const [scoreTimingMode, setScoreTimingMode] = useState<ScoreTimingMode>('v2');
   const activeLidaRoseScorePart = useMemo(
@@ -488,6 +507,7 @@ export default function VocalTrainerIII() {
   const [orbExpanded, setOrbExpanded] = useState(false); // V3.8: WODEN-style — short-press menu (transport)
   const [scoreFocus, setScoreFocus] = useState(false);   // V3.8: Score Focus — hide everything but the score + orb (Codex cleanup #1)
   const [sourcesOpen, setSourcesOpen] = useState(false); // V3.8: Sources drawer — Library + Add/Extract behind an orb button (Codex #3 / Jon)
+  const [helpOpen, setHelpOpen] = useState(false);       // V3.8: 'How to practice' guide behind a ? help button (Codex #8)
   const [abOpen, setAbOpen] = useState(false);           // V3.8: long-press Play → A/B/repeat cluster for focus practice (Jon)
   const [editNotes, setEditNotes] = useState(false);     // V3.8: Pitch Tracker defaults to TRACKING; toggle to correct/delete notes (Codex cleanup #5)
   const playLongTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -2335,7 +2355,7 @@ export default function VocalTrainerIII() {
         {(scoreFocus || sourcesOpen) && (
           <style>{`.vt3-focus > :not(.vt3-keep){display:none!important} .vt3-sources > :not(.vt3-src-keep){display:none!important}`}</style>
         )}
-        {scoreFocus && !sourcesOpen && (
+        {scoreFocus && !sourcesOpen && !mixerOpen && (
           <button onClick={() => setScoreFocus(false)} aria-label="Exit Focus"
             className="vt3-keep fixed top-2 left-2 z-[10000] px-3 py-1.5 rounded-full bg-neutral-900/90 backdrop-blur border border-amber-500/50 text-amber-200 text-xs font-semibold shadow-lg">
             ✕ Exit Focus
@@ -2366,11 +2386,16 @@ export default function VocalTrainerIII() {
               )}
             </p>
           </div>
-          <a href="/pitch-defender" className="text-sm text-amber-400 hover:text-amber-300">← Back to Pitch Defender</a>
+          <div className="flex items-center gap-2 shrink-0">
+            <button onClick={() => setHelpOpen((v) => !v)} aria-label="Help"
+              className={`px-2 py-1 rounded-full text-xs font-bold border ${helpOpen ? 'bg-cyan-700 border-cyan-400 text-white' : 'bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700'}`}
+              title="How to practice (7-step guide)">? Help</button>
+            <a href="/pitch-defender" className="text-sm text-amber-400 hover:text-amber-300">← Back</a>
+          </div>
         </header>
 
         {/* ─── How to use (step-by-step for practice sessions) ─────────── */}
-        <details className="order-7 bg-gray-900/60 border border-cyan-500/30 rounded-lg p-3 open:pb-4">
+        <details className={`order-7 bg-gray-900/60 border border-cyan-500/30 rounded-lg p-3 open:pb-4 ${helpOpen ? '' : 'hidden'}`} open={helpOpen}>
           <summary className="text-lg font-semibold text-cyan-300 cursor-pointer select-none">
             🎵 How to practice your part <span className="text-sm font-normal text-gray-400">— tap for the 7-step guide · WIRED headphones required</span>
           </summary>
@@ -2494,7 +2519,7 @@ export default function VocalTrainerIII() {
         </section>
 
         {/* ─── Library ───────────────────────────────────────────────── */}
-        <details className="vt3-src-keep order-5 bg-gray-900/60 border border-amber-500/20 rounded-lg p-3" open={sourcesOpen}>
+        <details className={`vt3-src-keep order-5 bg-gray-900/60 border border-amber-500/20 rounded-lg p-3 ${sourcesOpen ? '' : 'hidden'}`} open={sourcesOpen}>
           <summary className="cursor-pointer select-none text-sm font-semibold text-amber-300 marker:text-amber-500">
             Library <span className="text-xs font-normal text-gray-500">— saved templates and extraction tools</span>
           </summary>
@@ -2571,9 +2596,8 @@ export default function VocalTrainerIII() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 mt-1">
                       {group.items.map((item) => {
                         const mm = parseMmTitle(item.title);
-                        const leaf = mm && groupBy === 'part' ? `${mm.song} · ${mm.mix}`
-                          : mm && groupBy === 'song' ? `${mm.part} · ${mm.mix}`
-                          : item.title;
+                        const role = classifyRole(mm, item);
+                        const primary = mm ? (groupBy === 'part' ? mm.song : mm.part) : item.title;
                         const busy = extractingId === item.id;
                         return (
                           <div
@@ -2590,8 +2614,10 @@ export default function VocalTrainerIII() {
                               aria-pressed={selectedId === item.id}
                               className="block w-full text-left px-3 pt-3 pb-1 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-amber-400/70 hover:bg-white/[0.02]"
                             >
-                              <div className="font-medium text-gray-100 truncate pr-14">
-                                <span className="text-amber-500/70">★</span> {leaf}
+                              <div className="font-medium text-gray-100 truncate pr-14 flex items-center gap-1.5">
+                                <span className="text-amber-500/70">★</span>
+                                <span className="truncate">{primary}</span>
+                                <span className={`shrink-0 px-1.5 py-0.5 rounded text-[9px] font-bold border ${ROLE_BADGE[role].cls}`}>{ROLE_BADGE[role].label}</span>
                               </div>
                               <div className="text-xs mt-1 flex items-center gap-2">
                                 {item.noteCount > 0
@@ -2627,7 +2653,7 @@ export default function VocalTrainerIII() {
         </details>
 
         {/* ─── Upload + extraction ───────────────────────────────────── */}
-        <details className="vt3-src-keep order-6 bg-gray-900/60 border border-amber-500/20 rounded-lg p-3" open={sourcesOpen}>
+        <details className={`vt3-src-keep order-6 bg-gray-900/60 border border-amber-500/20 rounded-lg p-3 ${sourcesOpen ? '' : 'hidden'}`} open={sourcesOpen}>
           <summary className="cursor-pointer select-none text-sm font-semibold text-amber-300 marker:text-amber-500">
             Add / Extract <span className="text-xs font-normal text-gray-500">— add stems or extract notes</span>
           </summary>
@@ -3310,14 +3336,15 @@ export default function VocalTrainerIII() {
         )}
       </div>
 
-      {/* ── TransportOrb — hidden while the desk (the boss) is open; the desk's ✕ collapses back to it ── */}
-      {!mixerOpen && (
+      {/* ── TransportOrb — ALWAYS visible so every icon toggles its surface shut on re-tap.
+            Parks top-left while the Mixing Desk is open (desk ✕ is top-right, so no collision). ── */}
+      {true && (
       <div
         onPointerDown={onOrbDown}
         onPointerMove={onOrbMove}
         onPointerUp={onOrbUp}
         onClickCapture={onOrbClickCapture}
-        style={{ touchAction: 'none', ...(orbPos ? { left: orbPos.x, top: orbPos.y } : { right: 14, bottom: 84 }) }}
+        style={{ touchAction: 'none', ...(mixerOpen ? { top: 12, left: 12 } : (orbPos ? { left: orbPos.x, top: orbPos.y } : { right: 14, bottom: 84 })) }}
         className="fixed z-[10000] select-none"
       >
         <div className="flex items-center gap-1.5 flex-row-reverse">
@@ -3358,7 +3385,7 @@ export default function VocalTrainerIII() {
               <button onClick={() => setLoopWhole((v) => !v)} className={`w-9 h-9 rounded-full text-sm grid place-items-center ${loopWhole ? 'bg-cyan-600 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`} title="Loop whole song">↻</button>
               <button onClick={() => setMixerOpen((v) => !v)} aria-label="Mixer" className={`w-9 h-9 rounded-full text-sm grid place-items-center ${mixerOpen ? 'bg-amber-600 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`} title="Mixing desk (volumes · pan · tempo · loops)">🎛️</button>
               <button onClick={() => setScoreFocus((v) => !v)} aria-label={scoreFocus ? 'Exit Focus' : 'Score Focus'} className={`w-9 h-9 rounded-full text-sm grid place-items-center ${scoreFocus ? 'bg-amber-600 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`} title="Score Focus — hide everything but the score">⛶</button>
-              <button onClick={() => { setScoreFocus(false); setSourcesOpen(true); }} aria-label="Sources" className={`w-9 h-9 rounded-full text-sm grid place-items-center ${sourcesOpen ? 'bg-amber-600 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`} title="Sources — Library + Add/Extract">📂</button>
+              <button onClick={() => { setSourcesOpen((v) => { if (!v) setScoreFocus(false); return !v; }); }} aria-label="Sources" className={`w-9 h-9 rounded-full text-sm grid place-items-center ${sourcesOpen ? 'bg-amber-600 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`} title="Sources — Library + Add/Extract (tap again to close)">📂</button>
               <div className="px-1.5 text-[10px] font-mono text-neutral-400 tabular-nums">{practiceTime.toFixed(1)}s</div>
             </div>
           )}
