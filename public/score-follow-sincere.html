@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Sincere — score follow (Baritone)</title>
+<style>
+  :root { --amber: #ffcf3a; }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html,body { margin:0; background:#0b0b10; color:#eee; font:14px/1.4 -apple-system,Segoe UI,Roboto,sans-serif; }
+  .wrap { max-width:760px; margin:0 auto; padding:10px 10px 120px; }
+  h1 { font-size:15px; font-weight:600; margin:6px 2px 10px; color:#ffd86b; letter-spacing:.2px; }
+  h1 small { color:#8a8a99; font-weight:400; }
+  .stage { position:relative; width:100%; border-radius:12px; overflow:hidden; background:#fff;
+           box-shadow:0 8px 30px rgba(0,0,0,.5); }
+  .stage img { display:block; width:100%; height:auto; user-select:none; -webkit-user-drag:none; }
+  /* the soft band over the CURRENT baritone system (so the eye knows which line is yours) */
+  #band { position:absolute; pointer-events:none; border-radius:6px;
+          background:linear-gradient(90deg, rgba(255,207,58,.16), rgba(255,207,58,.10));
+          box-shadow:0 0 0 1px rgba(255,207,58,.35) inset; transition:top .25s, left .25s, width .25s, height .25s; }
+  /* the moving cursor that "lights up" the line as we pass over it */
+  #cursor { position:absolute; pointer-events:none; width:3px; border-radius:3px;
+            background:var(--amber); box-shadow:0 0 10px 3px rgba(255,207,58,.8); }
+  /* the trailing glow that has already been sung */
+  #trail { position:absolute; pointer-events:none; border-radius:5px;
+           background:linear-gradient(90deg, rgba(255,207,58,0), rgba(255,207,58,.28)); }
+  .controls { position:fixed; left:0; right:0; bottom:0; background:#15151fee; backdrop-filter:blur(8px);
+              border-top:1px solid #2a2a38; padding:10px 12px calc(10px + env(safe-area-inset-bottom)); }
+  .row { display:flex; align-items:center; gap:12px; max-width:760px; margin:0 auto; }
+  .row + .row { margin-top:8px; }
+  button.play { width:52px; height:52px; border-radius:50%; border:0; font-size:22px; color:#0b0b10;
+                background:var(--amber); display:grid; place-items:center; cursor:pointer; }
+  .lab { font-size:11px; color:#9a9aab; width:46px; flex:0 0 auto; }
+  input[type=range] { flex:1; accent-color:var(--amber); }
+  .val { font:11px ui-monospace,monospace; color:#ffd86b; width:42px; text-align:right; flex:0 0 auto; }
+  .time { font:12px ui-monospace,monospace; color:#9a9aab; }
+  .page-pill { margin-left:auto; font-size:11px; color:#9a9aab; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Ice Cream / Sincere &nbsp;<small>— Baritone (OLIVER) · your line lights up as you sing</small></h1>
+  <div class="stage" id="stage">
+    <img id="page" alt="score page" />
+    <div id="band"></div>
+    <div id="trail"></div>
+    <div id="cursor"></div>
+  </div>
+</div>
+
+<div class="controls">
+  <div class="row">
+    <button class="play" id="play">▶</button>
+    <span class="time" id="time">0:00 / 0:00</span>
+    <span class="page-pill" id="pagepill">pg 1</span>
+  </div>
+  <div class="row">
+    <span class="lab">Start</span>
+    <input type="range" id="offset" min="0" max="20" step="0.1" value="0" />
+    <span class="val" id="offsetv">0.0s</span>
+  </div>
+  <div class="row">
+    <span class="lab">Speed</span>
+    <input type="range" id="speed" min="0.5" max="1.8" step="0.01" value="1" />
+    <span class="val" id="speedv">1.00×</span>
+  </div>
+</div>
+
+<audio id="audio" src="/sincere-baritone/audio.mp3" preload="auto"></audio>
+
+<script>
+const DIR = '/sincere-baritone';
+const $ = (id) => document.getElementById(id);
+const page = $('page'), band = $('band'), cursor = $('cursor'), trail = $('trail'), stage = $('stage');
+const audio = $('audio');
+let systems = [];   // flattened: {page, x0,x1,yc,bh}
+let curPageIdx = -1;
+let dur = 0, ready = false;
+
+fetch(`${DIR}/path.json`).then(r=>r.json()).then(data=>{
+  data.pages.forEach((pg, pi) => (pg.bands||[]).forEach(b =>
+    systems.push({ page: pi, x0:b.x0, x1:b.x1, yc:b.yc, bh:b.bh })));
+  ready = systems.length > 0;
+  showPage(0);
+});
+
+function showPage(pi){
+  if (pi === curPageIdx) return;
+  curPageIdx = pi;
+  page.src = `${DIR}/page-${String(pi+1).padStart(2,'0')}.jpg`;
+  $('pagepill').textContent = `pg ${pi+1}`;
+}
+
+// time -> which system + fraction across it (equal slice per system, nudged by start/speed)
+function place(t){
+  if (!ready || !dur) return;
+  const offset = parseFloat($('offset').value);
+  const speed = parseFloat($('speed').value);
+  const eff = Math.max(0, (t - offset)) * speed;
+  const slice = dur / systems.length;            // seconds per system (baseline)
+  let idx = Math.floor(eff / slice);
+  if (idx >= systems.length) idx = systems.length - 1;
+  const frac = Math.min(1, (eff - idx*slice) / slice);
+  const s = systems[idx];
+  showPage(s.page);
+  const W = stage.clientWidth, H = page.clientHeight || (W * page.naturalHeight/Math.max(1,page.naturalWidth));
+  const left = s.x0*W, top = (s.yc - s.bh*0.75)*H, width = (s.x1-s.x0)*W, height = s.bh*1.5*H;
+  band.style.left=left+'px'; band.style.top=top+'px'; band.style.width=width+'px'; band.style.height=height+'px';
+  const nowX = left + frac*width;
+  cursor.style.left=(nowX-1.5)+'px'; cursor.style.top=top+'px'; cursor.style.height=height+'px';
+  trail.style.left=left+'px'; trail.style.top=top+'px'; trail.style.height=height+'px'; trail.style.width=(nowX-left)+'px';
+}
+
+const fmt = (s)=>`${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
+audio.addEventListener('loadedmetadata', ()=>{ dur=audio.duration||0; $('time').textContent=`0:00 / ${fmt(dur)}`; });
+audio.addEventListener('timeupdate', ()=>{ place(audio.currentTime); $('time').textContent=`${fmt(audio.currentTime)} / ${fmt(dur)}`; });
+$('play').addEventListener('click', ()=>{ if(audio.paused){audio.play();$('play').textContent='⏸';} else {audio.pause();$('play').textContent='▶';} });
+$('offset').addEventListener('input', e=>{ $('offsetv').textContent=(+e.target.value).toFixed(1)+'s'; place(audio.currentTime); });
+$('speed').addEventListener('input', e=>{ $('speedv').textContent=(+e.target.value).toFixed(2)+'×'; place(audio.currentTime); });
+window.addEventListener('resize', ()=>place(audio.currentTime));
+page.addEventListener('load', ()=>place(audio.currentTime));
+</script>
+</body>
+</html>

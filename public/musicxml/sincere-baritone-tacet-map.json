@@ -1,0 +1,27 @@
+{
+  "song": "Ice Cream / Sincere",
+  "voice": "Baritone (OLIVER)",
+  "printedPages": [86, 87, 88, 89],
+  "sourcePagesHighlighted": ["public/sincere-baritone/page-01.jpg ... page-04.jpg (IMG 443-446)"],
+  "key": { "fifths": 3, "name": "A major" },
+  "clef": "bass",
+  "totalMeasures": 45,
+  "builtBy": "own-eyes read of the 4 highlighted pages, 2026-06-27 (R1.5); clip-binding confirmed at R2",
+  "note": "Sincere is mostly CONTINUOUS singing after the intro — minimal tacet (unlike Lida). Tacet = intro mm1-3 + brief m14. Clip order 01..10 maps to consecutive sung phrases below.",
+  "tacet": [
+    { "measures": [1, 3], "reason": "intro — HAROLD pitch-pipe + spoken dialogue (JACEY/OLIN/HAROLD), no baritone" },
+    { "measure": 14, "reason": "3/4 meter change — OLIVER measure rest before the 'Any-' pickup" }
+  ],
+  "phrases": [
+    { "seq": 1, "page": 86, "measures": [4, 9],  "sings": true, "lyric": "(2 fermata whole-rests) … Ice Cree-em", "clip": "01", "clipNotes": 2 },
+    { "seq": 2, "page": 87, "measures": [10, 13], "sings": true, "lyric": "Ice Cream. Ice Cream. Ice Cream.—", "clip": "02", "clipNotes": 4 },
+    { "seq": 3, "page": 87, "measures": [15, 19], "sings": true, "lyric": "—An-y… Sin in \"sin-cere\"? Where is the good in \"good-", "clip": "03", "clipNotes": 9 },
+    { "seq": 4, "page": 88, "measures": [20, 24], "sings": true, "lyric": "bye\"? In \"good-bye\"? Your ap-pre-hen-sions con-fuse me,", "clip": "04", "clipNotes": 10 },
+    { "seq": 5, "page": 88, "measures": [25, 29], "sings": true, "lyric": "dear, puz-zle and mys-ti-fy. Mys-t-ify… Tell me,", "clip": "05", "clipNotes": 13 },
+    { "seq": 6, "page": 88, "measures": [30, 33], "sings": true, "lyric": "What can be fair in \"fare-well\",— dear, while", "clip": "06", "clipNotes": 12 },
+    { "seq": 7, "page": 89, "measures": [34, 37], "sings": true, "lyric": "one sin-gle star shines a-bove?—", "clip": "07", "clipNotes": 9 },
+    { "seq": 8, "page": 89, "measures": [38, 41], "sings": true, "lyric": "How can there be an-y sin in \"sin-cere\"?", "clip": "08", "clipNotes": 8 },
+    { "seq": 9, "page": 89, "measures": [42, 45], "sings": true, "lyric": "Aren't we sin-cere-ly in love? Oh, we're in love. (molto ritard, 4/4, fermata cadence)", "clip": "09+10", "clipNotes": 21, "note": "final phrase likely spans clips 09 and 10 (21 notes) — confirm split at R2" }
+  ],
+  "openForR2": "clip↔measure binding is by lyric+order here; R2 confirms by matching each clip's OMR'd notes to its measure range. The seq-9 clip split (09 vs 10) resolves when clip lyrics are read."
+}
