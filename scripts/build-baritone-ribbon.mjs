@@ -13,8 +13,8 @@ const PDF = 'C:/Users/jonch/Downloads/The Music Man - Complete.pdf';
 const PDFTOPPM = 'C:/Users/jonch/AppData/Local/Microsoft/WinGet/Packages/oschwartz10612.Poppler_Microsoft.Winget.Source_8wekyb3d8bbwe/poppler-25.07.0/Library/bin/pdftoppm.exe';
 const DPI = 300;
 const RIBBON_H = 360;          // final ribbon height (px)
-const CROP_UP = 0.027;
-const CROP_DOWN = 0.040;
+const CROP_UP = 0.024;
+const CROP_DOWN = 0.016;
 
 // song → first PDF page (verified: Lida Rose printed 193 = PDF 196)
 const SONG = process.argv[2] || 'lida-baritone';
