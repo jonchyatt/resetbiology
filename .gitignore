@@ -65,3 +65,4 @@ data/vocal-trainer/*.wav
 data/studio-baritone/*.mp3
 data/studio-baritone/*.f32
 data/studio-baritone/*.pdf
+_verify-*.mjs
