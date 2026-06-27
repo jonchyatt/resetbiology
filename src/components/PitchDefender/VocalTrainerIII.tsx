@@ -487,6 +487,9 @@ export default function VocalTrainerIII() {
   const [mixerOpen, setMixerOpen] = useState(false); // V3.7: full Mixing Desk as an orb-launched bottom-sheet
   const [orbExpanded, setOrbExpanded] = useState(false); // V3.8: WODEN-style — short-press menu (transport)
   const [scoreFocus, setScoreFocus] = useState(false);   // V3.8: Score Focus — hide everything but the score + orb (Codex cleanup #1)
+  const [abOpen, setAbOpen] = useState(false);           // V3.8: long-press Play → A/B/repeat cluster for focus practice (Jon)
+  const playLongTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const playDidLongRef = useRef(false);
   const [orbNavOpen, setOrbNavOpen] = useState(false);   // V3.8: WODEN-style — long-press menu (jump/nav)
   // WODEN-style free drag: grab ANYWHERE on the orb and move it in 2D. A small
   // threshold distinguishes a tap (button press) from a drag, and we only capture
@@ -520,6 +523,7 @@ export default function VocalTrainerIII() {
     d.moved = true;
     orbMovedRef.current = true;
     if (orbLongTimer.current) { clearTimeout(orbLongTimer.current); orbLongTimer.current = null; } // a drag cancels long-press
+    if (playLongTimer.current) { clearTimeout(playLongTimer.current); playLongTimer.current = null; }
     const x = Math.max(4, Math.min(window.innerWidth - 48, d.ox + ddx));
     const y = Math.max(4, Math.min(window.innerHeight - 48, d.oy + ddy));
     setOrbPos({ x, y });
@@ -560,6 +564,19 @@ export default function VocalTrainerIII() {
   };
   const onBallCancel = () => { if (orbLongTimer.current) { clearTimeout(orbLongTimer.current); orbLongTimer.current = null; } };
   const onBallDouble = () => { orbDidDoubleRef.current = true; setOrbNavOpen(false); setOrbExpanded(false); setMixerOpen(true); };
+  // Play button: SHORT press = play/pause; LONG press (500ms) = toggle the A/B/
+  // repeat cluster for focus-practice looping (Jon 2026-06-27).
+  const onPlayDown = () => {
+    playDidLongRef.current = false;
+    if (playLongTimer.current) clearTimeout(playLongTimer.current);
+    playLongTimer.current = setTimeout(() => { playDidLongRef.current = true; setAbOpen((v) => !v); }, 500);
+  };
+  const onPlayUp = () => {
+    if (playLongTimer.current) { clearTimeout(playLongTimer.current); playLongTimer.current = null; }
+    if (playDidLongRef.current || orbMovedRef.current) return;
+    if (playbackState === 'playing') pausePlayback(); else playOrResume();
+  };
+  const onPlayCancel = () => { if (playLongTimer.current) { clearTimeout(playLongTimer.current); playLongTimer.current = null; } };
   // Long-press nav: scroll to a section by matching its heading text (first hit wins).
   const orbJumpTo = (keywords: string[]) => {
     const els = Array.from(document.querySelectorAll('h1,h2,h3,summary'));
@@ -3308,9 +3325,9 @@ export default function VocalTrainerIII() {
           {orbExpanded && (
             <div className="flex items-center gap-1 rounded-full bg-neutral-900/92 backdrop-blur border border-amber-500/40 shadow-2xl px-1.5 py-1.5">
               {playbackState === 'playing' ? (
-                <button onClick={pausePlayback} className="w-11 h-11 rounded-full bg-amber-600 hover:bg-amber-500 text-white text-lg grid place-items-center" title="Pause">⏸</button>
+                <button onPointerDown={onPlayDown} onPointerUp={onPlayUp} onPointerCancel={onPlayCancel} onPointerLeave={onPlayCancel} aria-label="Pause" className="w-11 h-11 rounded-full bg-amber-600 hover:bg-amber-500 text-white text-lg grid place-items-center" title="Pause · long-press → A/B loop">⏸</button>
               ) : (
-                <button onClick={playOrResume} disabled={!vocalBufRef.current && !musicBufRef.current} className="w-11 h-11 rounded-full bg-emerald-600 hover:bg-emerald-500 disabled:bg-neutral-700 disabled:text-neutral-500 text-white text-lg grid place-items-center" title="Play">▶</button>
+                <button onPointerDown={onPlayDown} onPointerUp={onPlayUp} onPointerCancel={onPlayCancel} onPointerLeave={onPlayCancel} disabled={!vocalBufRef.current && !musicBufRef.current} aria-label="Play" className="w-11 h-11 rounded-full bg-emerald-600 hover:bg-emerald-500 disabled:bg-neutral-700 disabled:text-neutral-500 text-white text-lg grid place-items-center" title="Play · long-press → A/B loop">▶</button>
               )}
               <button onClick={stopPlayback} className="w-9 h-9 rounded-full bg-neutral-700 hover:bg-neutral-600 text-white text-sm grid place-items-center" title="Stop">⏹</button>
               <button onClick={() => setLoopWhole((v) => !v)} className={`w-9 h-9 rounded-full text-sm grid place-items-center ${loopWhole ? 'bg-cyan-600 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`} title="Loop whole song">↻</button>
@@ -3330,6 +3347,18 @@ export default function VocalTrainerIII() {
               <button onClick={() => orbJumpTo(['tracker', 'note editor', 'zoom'])} className="text-left text-xs text-neutral-200 hover:bg-neutral-800 rounded px-2 py-1.5 whitespace-nowrap">📊 Tracker</button>
               <button onClick={() => { setMixerOpen(true); setOrbNavOpen(false); }} className="text-left text-xs text-amber-200 hover:bg-neutral-800 rounded px-2 py-1.5 whitespace-nowrap">🎛️ Mixing Desk</button>
               <button onClick={() => { window.scrollTo({ top: 0, behavior: 'smooth' }); setOrbNavOpen(false); }} className="text-left text-xs text-neutral-200 hover:bg-neutral-800 rounded px-2 py-1.5 whitespace-nowrap">⬆️ Top</button>
+            </div>
+          )}
+
+          {/* long-press Play → A/B + repeat cluster (focus-practice looping) */}
+          {abOpen && (
+            <div className="flex items-center gap-1 rounded-full bg-neutral-900/95 backdrop-blur border border-green-500/40 shadow-2xl px-1.5 py-1.5">
+              <button onClick={markLoopA} aria-label="Loop A" title="Set loop start (A) at the playhead" className={`px-2.5 h-9 rounded-full text-xs font-bold ${loopA != null ? 'bg-green-700 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`}>A{loopA != null ? '•' : ''}</button>
+              <button onClick={markLoopB} aria-label="Loop B" title="Set loop end (B) at the playhead" className={`px-2.5 h-9 rounded-full text-xs font-bold ${loopB != null ? 'bg-green-700 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`}>B{loopB != null ? '•' : ''}</button>
+              <button onClick={() => setLoopWhole((v) => !v)} aria-label="Repeat" title="Repeat whole song" className={`w-9 h-9 rounded-full text-sm grid place-items-center ${loopWhole ? 'bg-cyan-600 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`}>↻</button>
+              {(loopA != null || loopB != null) && (
+                <button onClick={clearLoop} aria-label="Clear loop" title="Clear A/B loop" className="w-9 h-9 rounded-full text-sm grid place-items-center bg-neutral-800 text-neutral-400 hover:bg-neutral-700">✕</button>
+              )}
             </div>
           )}
         </div>
