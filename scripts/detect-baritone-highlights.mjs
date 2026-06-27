@@ -6,7 +6,9 @@ import path from 'path';
 
 const DIR = process.argv[2] || 'public/lida-baritone';
 const URLBASE = '/' + DIR.replace(/^public\//, '');
-const isYellow = (r, g, b) => r > 170 && g > 165 && b < 175 && Math.abs(r - g) < 48 && (r - b) > 32;
+// Pale-yellow highlight: high R+G, a clear R−B gap (rejects white where R≈G≈B),
+// R≈G (yellow, not orange/green). Robust across scan + HEIC-converted shades.
+const isYellow = (r, g, b) => r > 195 && g > 188 && (r - b) > 30 && Math.abs(r - g) < 40;
 
 async function detect(file) {
   const { data, info } = await sharp(file).raw().toBuffer({ resolveWithObject: true });

@@ -13,6 +13,7 @@ type Page = { file: string; w: number; h: number; bands: Band[] };
 const SONGS = [
   { id: 'lida-rose', label: 'Lida Rose', dir: '/lida-baritone' },
   { id: 'sincere', label: 'Ice Cream / Sincere', dir: '/sincere-baritone' },
+  { id: 'itsyou', label: "It's You", dir: '/itsyou-baritone' },
 ];
 const GAP = 10;
 
