@@ -512,6 +512,10 @@ export default function VocalTrainerIII() {
   const [editNotes, setEditNotes] = useState(false);     // V3.8: Pitch Tracker defaults to TRACKING; toggle to correct/delete notes (Codex cleanup #5)
   const playLongTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const playDidLongRef = useRef(false);
+  // V3.8: orb progress bar — tap = seek there, hold = A/B + speed popup, drag = scrub
+  const orbSeekElRef = useRef<HTMLDivElement | null>(null);
+  const orbSeekTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const orbSeekRef = useRef<{ x: number; moved: boolean; didLong: boolean } | null>(null);
   const [orbNavOpen, setOrbNavOpen] = useState(false);   // V3.8: WODEN-style — long-press menu (jump/nav)
   // WODEN-style free drag: grab ANYWHERE on the orb and move it in 2D. A small
   // threshold distinguishes a tap (button press) from a drag, and we only capture
@@ -599,6 +603,36 @@ export default function VocalTrainerIII() {
     if (playbackState === 'playing') pausePlayback(); else playOrResume();
   };
   const onPlayCancel = () => { if (playLongTimer.current) { clearTimeout(playLongTimer.current); playLongTimer.current = null; } };
+  // Orb progress bar gestures: tap → seek there · hold → A/B + speed popup · drag → scrub.
+  const orbSeekFromEvent = (e: React.PointerEvent) => {
+    const el = orbSeekElRef.current; if (!el) return;
+    const r = el.getBoundingClientRect();
+    const frac = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width));
+    seekTo(frac * (playbackDurationRef.current || 0));
+  };
+  const onOrbSeekDown = (e: React.PointerEvent) => {
+    e.stopPropagation(); // don't start an orb drag
+    try { (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId); } catch {}
+    orbSeekRef.current = { x: e.clientX, moved: false, didLong: false };
+    if (orbSeekTimer.current) clearTimeout(orbSeekTimer.current);
+    orbSeekTimer.current = setTimeout(() => { const d = orbSeekRef.current; if (d && !d.moved) { d.didLong = true; setAbOpen(true); } }, 500);
+  };
+  const onOrbSeekMove = (e: React.PointerEvent) => {
+    const d = orbSeekRef.current; if (!d) return;
+    e.stopPropagation();
+    if (Math.abs(e.clientX - d.x) > 5) {
+      d.moved = true;
+      if (orbSeekTimer.current) { clearTimeout(orbSeekTimer.current); orbSeekTimer.current = null; }
+      orbSeekFromEvent(e); // live scrub
+    }
+  };
+  const onOrbSeekUp = (e: React.PointerEvent) => {
+    e.stopPropagation();
+    const d = orbSeekRef.current; orbSeekRef.current = null;
+    if (orbSeekTimer.current) { clearTimeout(orbSeekTimer.current); orbSeekTimer.current = null; }
+    try { (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId); } catch {}
+    if (d && !d.moved && !d.didLong) orbSeekFromEvent(e); // a plain tap = seek there
+  };
   // Long-press nav: scroll to a section by matching its heading text (first hit wins).
   const orbJumpTo = (keywords: string[]) => {
     const els = Array.from(document.querySelectorAll('h1,h2,h3,summary'));
@@ -3375,7 +3409,8 @@ export default function VocalTrainerIII() {
 
           {/* expanding control menu — only when the orb is open */}
           {orbExpanded && (
-            <div className="flex items-center gap-1 rounded-full bg-neutral-900/92 backdrop-blur border border-amber-500/40 shadow-2xl px-1.5 py-1.5">
+            <div className="flex flex-col gap-1.5 rounded-2xl bg-neutral-900/92 backdrop-blur border border-amber-500/40 shadow-2xl px-1.5 py-1.5">
+              <div className="flex items-center gap-1">
               {playbackState === 'playing' ? (
                 <button onPointerDown={onPlayDown} onPointerUp={onPlayUp} onPointerCancel={onPlayCancel} onPointerLeave={onPlayCancel} aria-label="Pause" className="w-11 h-11 rounded-full bg-amber-600 hover:bg-amber-500 text-white text-lg grid place-items-center" title="Pause · long-press → A/B loop">⏸</button>
               ) : (
@@ -3387,6 +3422,15 @@ export default function VocalTrainerIII() {
               <button onClick={() => setScoreFocus((v) => !v)} aria-label={scoreFocus ? 'Exit Focus' : 'Score Focus'} className={`w-9 h-9 rounded-full text-sm grid place-items-center ${scoreFocus ? 'bg-amber-600 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`} title="Score Focus — hide everything but the score">⛶</button>
               <button onClick={() => { setSourcesOpen((v) => { if (!v) setScoreFocus(false); return !v; }); }} aria-label="Sources" className={`w-9 h-9 rounded-full text-sm grid place-items-center ${sourcesOpen ? 'bg-amber-600 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`} title="Sources — Library + Add/Extract (tap again to close)">📂</button>
               <div className="px-1.5 text-[10px] font-mono text-neutral-400 tabular-nums">{practiceTime.toFixed(1)}s</div>
+              </div>
+              {/* progress bar — tap to seek there · hold for A/B + speed · drag to scrub */}
+              {durationSec > 0 && (
+                <div ref={orbSeekElRef} onPointerDown={onOrbSeekDown} onPointerMove={onOrbSeekMove} onPointerUp={onOrbSeekUp} style={{ touchAction: 'none' }} className="relative h-2.5 mx-1 mb-0.5 rounded-full bg-neutral-700 cursor-pointer" title="Tap to seek · hold for A/B + speed">
+                  <div className="absolute inset-y-0 left-0 rounded-full bg-amber-400" style={{ width: `${Math.min(100, (practiceTime / durationSec) * 100)}%` }} />
+                  {loopA != null && <div className="absolute inset-y-0 w-[2px] bg-green-400" style={{ left: `${Math.min(100, (loopA / durationSec) * 100)}%` }} />}
+                  {loopB != null && <div className="absolute inset-y-0 w-[2px] bg-green-400" style={{ left: `${Math.min(100, (loopB / durationSec) * 100)}%` }} />}
+                </div>
+              )}
             </div>
           )}
 
@@ -3403,15 +3447,17 @@ export default function VocalTrainerIII() {
             </div>
           )}
 
-          {/* long-press Play → A/B + repeat cluster (focus-practice looping) */}
+          {/* hold the progress bar → A/B loop + SPEED knob (focus practice — NOT the whole mixer) */}
           {abOpen && (
-            <div className="flex items-center gap-1 rounded-full bg-neutral-900/95 backdrop-blur border border-green-500/40 shadow-2xl px-1.5 py-1.5">
+            <div className="flex items-center gap-2 rounded-2xl bg-neutral-900/95 backdrop-blur border border-green-500/40 shadow-2xl px-2 py-2">
               <button onClick={markLoopA} aria-label="Loop A" title="Set loop start (A) at the playhead" className={`px-2.5 h-9 rounded-full text-xs font-bold ${loopA != null ? 'bg-green-700 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`}>A{loopA != null ? '•' : ''}</button>
               <button onClick={markLoopB} aria-label="Loop B" title="Set loop end (B) at the playhead" className={`px-2.5 h-9 rounded-full text-xs font-bold ${loopB != null ? 'bg-green-700 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`}>B{loopB != null ? '•' : ''}</button>
               <button onClick={() => setLoopWhole((v) => !v)} aria-label="Repeat" title="Repeat whole song" className={`w-9 h-9 rounded-full text-sm grid place-items-center ${loopWhole ? 'bg-cyan-600 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`}>↻</button>
               {(loopA != null || loopB != null) && (
                 <button onClick={clearLoop} aria-label="Clear loop" title="Clear A/B loop" className="w-9 h-9 rounded-full text-sm grid place-items-center bg-neutral-800 text-neutral-400 hover:bg-neutral-700">✕</button>
               )}
+              <div className="w-px h-10 bg-neutral-700 mx-0.5" />
+              <MixKnob label="Speed" value={tempoPct} min={50} max={200} step={5} onChange={changeTempo} format={(v) => `${v}%`} color="#a78bfa" size={34} />
             </div>
           )}
         </div>
