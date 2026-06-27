@@ -582,7 +582,7 @@ export default function VocalTrainerIII() {
   // reachable Play/Stop. It IS the Play button, so it can never be permanently covered.
   // Phone: floats freely; position persisted per device. ──
   const [orbPos, setOrbPos] = useState<{ x: number; y: number } | null>(null);
-  const [mixerOpen, setMixerOpen] = useState(true); // V3.7: full Mixing Desk as an orb-launched bottom-sheet. Jon 2026-06-27 "put on main screen, we hid it" → default OPEN (mixer visible on load; orb double-tap still toggles it).
+  const [mixerOpen, setMixerOpen] = useState(false); // V3.7: full Mixing Desk as an orb-launched bottom-sheet. (Reverted the default-open 2026-06-27: an open mixer with NO loader = "knobs that don't tune anything" per Jon. Needs a track loader before it's useful on the main screen; standalone /mixpad.html is the working dichotic pad for now.)
   const [orbExpanded, setOrbExpanded] = useState(false); // V3.8: WODEN-style — short-press menu (transport)
   const [scoreFocus, setScoreFocus] = useState(false);   // V3.8: Score Focus — hide everything but the score + orb (Codex cleanup #1)
   const [sourcesOpen, setSourcesOpen] = useState(false); // V3.8: Sources drawer — Library + Add/Extract behind an orb button (Codex #3 / Jon)

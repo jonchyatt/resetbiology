@@ -10,86 +10,85 @@
   html,body{margin:0;min-height:100%;background:#0b0b10;color:#eee;font:15px/1.45 -apple-system,Segoe UI,Roboto,sans-serif;}
   .wrap{max-width:560px;margin:0 auto;padding:18px 16px calc(28px + env(safe-area-inset-bottom));}
   h1{font-size:20px;margin:4px 0 2px;color:#ffe49a;}
-  .tag{color:#8a8a99;font-size:13px;margin:0 0 18px;}
-  .play{display:flex;align-items:center;gap:14px;margin:14px 0 22px;}
+  .tag{color:#8a8a99;font-size:13px;margin:0 0 16px;}
+  .play{display:flex;align-items:center;gap:14px;margin:12px 0 20px;}
   .pbtn{width:64px;height:64px;border-radius:50%;border:0;font-size:26px;color:#0b0b10;background:var(--amber);display:grid;place-items:center;cursor:pointer;}
   .tm{font:13px ui-monospace,monospace;color:#9a9aab;}
-  .lane{border:1px solid #2a2a38;border-radius:16px;padding:16px;margin-bottom:14px;background:#13131b;}
-  .lane.right{border-left:4px solid var(--r);}
-  .lane.left{border-left:4px solid var(--l);}
-  .lhdr{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px;}
+  .lane{border:1px solid #2a2a38;border-radius:16px;padding:14px 16px;margin-bottom:14px;background:#13131b;}
+  .lane.bari{border-left:4px solid var(--r);} .lane.quart{border-left:4px solid var(--l);}
+  .lhdr{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px;}
   .lhdr .nm{font-size:16px;font-weight:700;color:#fff;}
-  .ear{font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;}
-  .ear.r{background:rgba(255,122,92,.18);color:var(--r);}
-  .ear.l{background:rgba(92,200,255,.18);color:var(--l);}
+  .ear{font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;background:#23232e;color:#cfcfe0;}
+  .vlbl{font-size:11px;color:#7a7a8a;margin:8px 0 3px;display:flex;justify-content:space-between;}
   .vrow{display:flex;align-items:center;gap:12px;}
-  .vrow input{flex:1;height:30px;}
-  input[type=range].r{accent-color:var(--r);} input[type=range].l{accent-color:var(--l);}
+  .vrow input{flex:1;height:32px;}
+  input[type=range].volB{accent-color:var(--r);} input[type=range].volQ{accent-color:var(--l);}
+  input[type=range].pan{accent-color:var(--amber);}
   .pct{font:12px ui-monospace,monospace;width:46px;text-align:right;color:#cfcfe0;}
-  .swap{margin-top:6px;width:100%;padding:12px;border-radius:12px;border:1px solid #3a3a4a;background:#1a1a26;color:#cfcfe0;font-size:14px;cursor:pointer;}
-  .note{font-size:12px;color:#6a6a7a;margin-top:14px;text-align:center;}
+  .note{font-size:12px;color:#6a6a7a;margin-top:8px;text-align:center;}
 </style>
 </head>
 <body>
 <div class="wrap">
   <h1>Sincere — Mix Pad</h1>
-  <p class="tag">Dichotic practice: your part in one ear, the quartet (without you) in the other. Headphones on.</p>
+  <p class="tag">Dichotic practice. Slide each part anywhere from left ear to right. Headphones on.</p>
 
-  <div class="play">
-    <button class="pbtn" id="play">▶</button>
-    <span class="tm" id="tm">0:00 / 0:00</span>
+  <div class="play"><button class="pbtn" id="play">▶</button><span class="tm" id="tm">0:00 / 0:00</span></div>
+
+  <div class="lane bari">
+    <div class="lhdr"><span class="nm">Your part · Baritone</span><span class="ear" id="earBari">RIGHT</span></div>
+    <div class="vlbl"><span>Volume</span></div>
+    <div class="vrow"><input type="range" class="volB" id="volBari" min="0" max="150" value="100"><span class="pct" id="volBariV">100%</span></div>
+    <div class="vlbl"><span>Left ear</span><span>Right ear</span></div>
+    <div class="vrow"><input type="range" class="pan" id="panBari" min="-100" max="100" value="100"><span class="pct" id="panBariV">R</span></div>
   </div>
 
-  <div class="lane right" id="laneBari">
-    <div class="lhdr"><span class="nm">Your part · Baritone</span><span class="ear r" id="earBari">RIGHT</span></div>
-    <div class="vrow"><input type="range" class="r" id="volBari" min="0" max="150" value="100"><span class="pct" id="volBariV">100%</span></div>
+  <div class="lane quart">
+    <div class="lhdr"><span class="nm">Quartet · no baritone</span><span class="ear" id="earQ">LEFT</span></div>
+    <div class="vlbl"><span>Volume</span></div>
+    <div class="vrow"><input type="range" class="volQ" id="volQ" min="0" max="150" value="100"><span class="pct" id="volQV">100%</span></div>
+    <div class="vlbl"><span>Left ear</span><span>Right ear</span></div>
+    <div class="vrow"><input type="range" class="pan" id="panQ" min="-100" max="100" value="-100"><span class="pct" id="panQV">L</span></div>
   </div>
 
-  <div class="lane left" id="laneQ">
-    <div class="lhdr"><span class="nm">Quartet · no baritone</span><span class="ear l" id="earQ">LEFT</span></div>
-    <div class="vrow"><input type="range" class="l" id="volQ" min="0" max="150" value="100"><span class="pct" id="volQV">100%</span></div>
-  </div>
-
-  <button class="swap" id="swap">⇄ Swap ears</button>
-  <p class="note">Hard-wired Sincere preset · baritone-only + quartet-minus-baritone</p>
+  <p class="note">Hard-wired Sincere · baritone-only + quartet-minus-baritone · slide them together for blend practice</p>
 </div>
 
 <script>
 const $=(id)=>document.getElementById(id);
-const baA=new Audio('/sincere-baritone/audio.mp3');     // baritone only (your part)
-const quA=new Audio('/sincere-baritone/quartet.m4a');   // quartet, no baritone
+const baA=new Audio('/sincere-baritone/audio.mp3');
+const quA=new Audio('/sincere-baritone/quartet.m4a');
 baA.preload='auto'; quA.preload='auto';
-let ctx,gBa,gQu,pBa,pQu,wired=false,baritoneRight=true;
+let ctx,gBa,gQu,pBa,pQu,wired=false;
 
 function wire(){
   if(wired)return; wired=true;
   ctx=new (window.AudioContext||window.webkitAudioContext)();
   const sBa=ctx.createMediaElementSource(baA), sQu=ctx.createMediaElementSource(quA);
-  gBa=ctx.createGain(); gQu=ctx.createGain();
-  pBa=ctx.createStereoPanner(); pQu=ctx.createStereoPanner();
+  gBa=ctx.createGain(); gQu=ctx.createGain(); pBa=ctx.createStereoPanner(); pQu=ctx.createStereoPanner();
   sBa.connect(gBa).connect(pBa).connect(ctx.destination);
   sQu.connect(gQu).connect(pQu).connect(ctx.destination);
-  applyPan(); applyVol();
+  applyVol(); applyPan();
 }
-function applyPan(){ if(!pBa)return; pBa.pan.value=baritoneRight?1:-1; pQu.pan.value=baritoneRight?-1:1;
-  $('earBari').textContent=baritoneRight?'RIGHT':'LEFT'; $('earBari').className='ear '+(baritoneRight?'r':'l');
-  $('earQ').textContent=baritoneRight?'LEFT':'RIGHT'; $('earQ').className='ear '+(baritoneRight?'l':'r'); }
-function applyVol(){ if(!gBa)return; gBa.gain.value=(+$('volBari').value)/100; gQu.gain.value=(+$('volQ').value)/100; }
+const earLbl=(v)=> v>=60?'RIGHT': v<=-60?'LEFT': v>=20?'R-ish': v<=-20?'L-ish':'CENTER';
+function applyVol(){ if(gBa){gBa.gain.value=(+$('volBari').value)/100; gQu.gain.value=(+$('volQ').value)/100;} }
+function applyPan(){ const pb=+$('panBari').value, pq=+$('panQ').value;
+  if(pBa){ pBa.pan.value=pb/100; pQu.pan.value=pq/100; }
+  $('earBari').textContent=earLbl(pb); $('panBariV').textContent=pb>0?'R':pb<0?'L':'C';
+  $('earQ').textContent=earLbl(pq); $('panQV').textContent=pq>0?'R':pq<0?'L':'C'; }
 
 const fmt=(s)=>`${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
-function toggle(){
-  wire(); if(ctx.state==='suspended')ctx.resume();
+$('play').addEventListener('click',()=>{ wire(); if(ctx.state==='suspended')ctx.resume();
   if(baA.paused){ quA.currentTime=baA.currentTime; baA.play(); quA.play(); $('play').textContent='⏸'; }
-  else { baA.pause(); quA.pause(); $('play').textContent='▶'; }
-}
-$('play').addEventListener('click',toggle);
-// keep the two tracks locked in time
+  else { baA.pause(); quA.pause(); $('play').textContent='▶'; } });
 setInterval(()=>{ if(!baA.paused && Math.abs(baA.currentTime-quA.currentTime)>0.04) quA.currentTime=baA.currentTime; },250);
 baA.addEventListener('timeupdate',()=>$('tm').textContent=`${fmt(baA.currentTime)} / ${fmt(baA.duration||0)}`);
 baA.addEventListener('ended',()=>{quA.pause();$('play').textContent='▶';});
 $('volBari').addEventListener('input',e=>{$('volBariV').textContent=e.target.value+'%';applyVol();});
 $('volQ').addEventListener('input',e=>{$('volQV').textContent=e.target.value+'%';applyVol();});
-$('swap').addEventListener('click',()=>{baritoneRight=!baritoneRight;applyPan();});
+$('panBari').addEventListener('input',applyPan);
+$('panQ').addEventListener('input',applyPan);
+applyPan();
 </script>
 </body>
 </html>
