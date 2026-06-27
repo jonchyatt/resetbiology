@@ -76,6 +76,63 @@ function stretchBuffer(ctx: AudioContext, buffer: AudioBuffer, speed: number): A
   return out;
 }
 
+// V3.8 — a real mixing-console dial. Small by default; SHORT-PRESS opens a big
+// spin-knob you drag up/down to set, then collapse back (Jon: "literal dials that
+// short press to open bigger spin knobs"). Drag-on-small also works for quick nudges.
+function MixKnob({ label, value, min, max, step, onChange, format, color = '#fbbf24', size = 40 }: {
+  label: string; value: number; min: number; max: number; step: number;
+  onChange: (v: number) => void; format: (v: number) => string; color?: string; size?: number;
+}) {
+  const [open, setOpen] = useState(false);
+  const drag = useRef<{ y: number; v: number; moved: boolean } | null>(null);
+  const pct = max === min ? 0 : (value - min) / (max - min);
+  const angle = -135 + pct * 270;
+  const clampStep = (v: number) => Math.max(min, Math.min(max, Math.round(v / step) * step));
+  const Dial = ({ sz }: { sz: number }) => (
+    <div className="relative rounded-full" style={{
+      width: sz, height: sz,
+      background: 'radial-gradient(circle at 38% 34%, #5b6675 0%, #2a323e 62%, #0c1017 100%)',
+      boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.18), inset 0 -2px 4px rgba(0,0,0,0.5), 0 2px 5px rgba(0,0,0,0.6)',
+    }}>
+      <div className="absolute left-1/2 top-1/2" style={{
+        width: Math.max(2, sz * 0.045), height: sz * 0.4, background: color,
+        transformOrigin: 'bottom center', transform: `translate(-50%,-100%) rotate(${angle}deg)`,
+        borderRadius: 3, boxShadow: `0 0 5px ${color}`,
+      }} />
+    </div>
+  );
+  const onDown = (e: React.PointerEvent) => { (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId); drag.current = { y: e.clientY, v: value, moved: false }; };
+  const onMove = (e: React.PointerEvent) => {
+    const d = drag.current; if (!d) return;
+    if (Math.abs(e.clientY - d.y) < 3 && !d.moved) return;
+    d.moved = true;
+    onChange(clampStep(d.v + ((d.y - e.clientY) / 140) * (max - min)));
+  };
+  const onUp = () => { drag.current = null; };
+  return (
+    <div className="flex flex-col items-center gap-0.5 leading-none">
+      <button onClick={() => setOpen(true)} className="grid place-items-center" title={`${label} — tap to adjust`}><Dial sz={size} /></button>
+      <span className="text-[8px] uppercase tracking-wide text-gray-500">{label}</span>
+      <span className="text-[9px] font-mono" style={{ color }}>{format(value)}</span>
+      {open && (
+        <div className="fixed inset-0 z-[10002] grid place-items-center bg-black/55" onClick={() => setOpen(false)}>
+          <div className="rounded-2xl bg-neutral-900 border border-neutral-700 px-6 py-5 shadow-2xl flex flex-col items-center gap-3" onClick={(e) => e.stopPropagation()}>
+            <div className="text-sm font-semibold text-gray-200">{label}</div>
+            <div onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} className="touch-none cursor-ns-resize select-none"><Dial sz={120} /></div>
+            <div className="text-xl font-mono" style={{ color }}>{format(value)}</div>
+            <div className="flex items-center gap-3">
+              <button onClick={() => onChange(clampStep(value - step * 4))} className="w-10 h-10 rounded-full bg-neutral-800 hover:bg-neutral-700 text-white text-lg">−</button>
+              <button onClick={() => onChange(clampStep(value + step * 4))} className="w-10 h-10 rounded-full bg-neutral-800 hover:bg-neutral-700 text-white text-lg">+</button>
+            </div>
+            <div className="text-[10px] text-gray-500">drag the knob up / down to spin</div>
+            <button onClick={() => setOpen(false)} className="mt-1 px-5 py-1.5 rounded-full bg-neutral-800 hover:bg-neutral-700 text-gray-200 text-sm">✕ Close</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // Convert a frequency (Hz) to a MIDI note number (69 = A4 = 440 Hz).
 function freqToMidi(freq: number): number {
   if (freq <= 0) return 0;
@@ -2894,7 +2951,7 @@ export default function VocalTrainerIII() {
 
         {/* ─── Mixing Desk — collapsible bottom-sheet, launched from the orb 🎛️ ── */}
         {mixerOpen && (
-        <section className="fixed inset-x-2 bottom-2 z-[9998] max-h-[82vh] overflow-y-auto bg-gray-900/95 backdrop-blur border border-amber-500/50 rounded-xl p-3 shadow-2xl">
+        <section className="fixed right-2 bottom-2 z-[9998] w-[min(360px,94vw)] max-h-[86vh] overflow-y-auto bg-gray-900/95 backdrop-blur border border-amber-500/50 rounded-xl p-2.5 shadow-2xl">
           <div className="flex items-center justify-between mb-0.5">
             <h2 className="text-base font-semibold text-amber-300">🎛️ Mixing Desk</h2>
             <button onClick={() => setMixerOpen(false)} className="w-8 h-8 rounded-full bg-neutral-800 hover:bg-neutral-700 text-neutral-300 text-sm flex items-center justify-center" title="Collapse the desk back to the orb">✕</button>
@@ -3091,56 +3148,21 @@ export default function VocalTrainerIII() {
                 : <span className="text-[10px] text-gray-500">pitch locked 🔒</span>}
             </div>
             <div className="space-y-3">
-          {/* V3 mixing desk: per-stream volume (0-400%) + L/R balance + live level meter */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {/* V3.8 console: compact channel strips — small knobs, tap to spin bigger */}
+          <div className="grid grid-cols-3 gap-1.5">
             {([
-              {
-                name: 'Vocals', color: 'amber', vol: vocalVol, pan: vocalPan,
-                onVol: handleVocalVolChange, onPan: handleVocalPanChange,
-                meterRef: vocalMeterElRef, accent: 'accent-amber-500',
-                text: 'text-amber-400', mono: 'text-amber-300',
-              },
-              {
-                name: 'Music', color: 'purple', vol: musicVol, pan: musicPan,
-                onVol: handleMusicVolChange, onPan: handleMusicPanChange,
-                meterRef: musicMeterElRef, accent: 'accent-purple-500',
-                text: 'text-purple-400', mono: 'text-purple-300',
-              },
-              {
-                name: 'Mic / voice', color: 'cyan', vol: micVol, pan: micPan,
-                onVol: handleMicVolChange, onPan: handleMicPanChange,
-                meterRef: micMeterElRef, accent: 'accent-cyan-500',
-                text: 'text-cyan-400', mono: 'text-cyan-300',
-              },
+              { name: 'Vocals', hex: '#fbbf24', vol: vocalVol, pan: vocalPan, onVol: handleVocalVolChange, onPan: handleVocalPanChange, meterRef: vocalMeterElRef, text: 'text-amber-400' },
+              { name: 'Music', hex: '#a78bfa', vol: musicVol, pan: musicPan, onVol: handleMusicVolChange, onPan: handleMusicPanChange, meterRef: musicMeterElRef, text: 'text-purple-400' },
+              { name: 'Mic', hex: '#22d3ee', vol: micVol, pan: micPan, onVol: handleMicVolChange, onPan: handleMicPanChange, meterRef: micMeterElRef, text: 'text-cyan-400' },
             ] as const).map((ch) => (
-              <div key={ch.name} className="text-xs text-gray-400 bg-gray-900/60 border border-gray-800 rounded-lg p-2">
-                <div className="flex justify-between items-baseline mb-1">
-                  <span className={ch.text}>{ch.name}</span>
-                  <span className={`${ch.mono} font-mono`}>{ch.vol}%</span>
-                </div>
-                <input
-                  type="range" min={0} max={VOL_MAX} step={1}
-                  value={ch.vol}
-                  onChange={(e) => ch.onVol(Number(e.target.value))}
-                  className={`w-full ${ch.accent}`}
-                />
-                {/* Live level meter (post-gain) — proof the slider is doing something */}
-                <div className="h-1.5 w-full bg-gray-800 rounded overflow-hidden my-1">
+              <div key={ch.name} className="flex flex-col items-center gap-2 bg-gray-950/50 border border-gray-800 rounded-lg px-1 py-2">
+                <span className={`text-[10px] font-bold uppercase tracking-wide ${ch.text}`}>{ch.name}</span>
+                <MixKnob label="Vol" value={ch.vol} min={0} max={VOL_MAX} step={5} onChange={ch.onVol} format={(v) => `${v}%`} color={ch.hex} />
+                <MixKnob label="Pan" value={ch.pan} min={-1} max={1} step={0.05} onChange={ch.onPan} format={(v) => (Math.abs(v) < 0.025 ? 'C' : v < 0 ? `L${Math.round(-v * 100)}` : `R${Math.round(v * 100)}`)} color={ch.hex} />
+                {/* live level meter — proof the channel is flowing */}
+                <div className="h-1 w-full bg-gray-800 rounded overflow-hidden">
                   <div ref={ch.meterRef} className="h-full rounded transition-none" style={{ width: '0%' }} />
                 </div>
-                <div className="flex justify-between items-baseline mb-1 mt-1">
-                  <span className="text-gray-500">L</span>
-                  <span className="text-gray-400 font-mono">
-                    {ch.pan === 0 ? 'CENTER' : ch.pan < 0 ? `${Math.round(-ch.pan * 100)}% LEFT` : `${Math.round(ch.pan * 100)}% RIGHT`}
-                  </span>
-                  <span className="text-gray-500">R</span>
-                </div>
-                <input
-                  type="range" min={-1} max={1} step={0.05}
-                  value={ch.pan}
-                  onChange={(e) => ch.onPan(Number(e.target.value))}
-                  className={`w-full ${ch.accent}`}
-                />
               </div>
             ))}
           </div>
@@ -3214,13 +3236,14 @@ export default function VocalTrainerIII() {
         )}
       </div>
 
-      {/* ── V3.6 TransportOrb — floating, draggable, always-reachable transport ── */}
+      {/* ── TransportOrb — hidden while the desk (the boss) is open; the desk's ✕ collapses back to it ── */}
+      {!mixerOpen && (
       <div
         onPointerDown={onOrbDown}
         onPointerMove={onOrbMove}
         onPointerUp={onOrbUp}
         onClickCapture={onOrbClickCapture}
-        style={{ touchAction: 'none', ...(mixerOpen ? { top: 12, right: 12 } : (orbPos ? { left: orbPos.x, top: orbPos.y } : { right: 14, bottom: 84 })) }}
+        style={{ touchAction: 'none', ...(orbPos ? { left: orbPos.x, top: orbPos.y } : { right: 14, bottom: 84 }) }}
         className="fixed z-[10000] select-none"
       >
         <div className="flex items-center gap-1.5 flex-row-reverse">
@@ -3283,6 +3306,7 @@ export default function VocalTrainerIII() {
           @keyframes vtorb-outer { 0%,100%{transform:scale(0.9);opacity:0.3} 50%{transform:scale(1.2);opacity:0.55} }
         `}</style>
       </div>
+      )}
     </div>
   );
 }
