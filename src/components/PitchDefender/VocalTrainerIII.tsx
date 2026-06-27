@@ -486,6 +486,7 @@ export default function VocalTrainerIII() {
   const [orbPos, setOrbPos] = useState<{ x: number; y: number } | null>(null);
   const [mixerOpen, setMixerOpen] = useState(false); // V3.7: full Mixing Desk as an orb-launched bottom-sheet
   const [orbExpanded, setOrbExpanded] = useState(false); // V3.8: WODEN-style — short-press menu (transport)
+  const [scoreFocus, setScoreFocus] = useState(false);   // V3.8: Score Focus — hide everything but the score + orb (Codex cleanup #1)
   const [orbNavOpen, setOrbNavOpen] = useState(false);   // V3.8: WODEN-style — long-press menu (jump/nav)
   // WODEN-style free drag: grab ANYWHERE on the orb and move it in 2D. A small
   // threshold distinguishes a tap (button press) from a drag, and we only capture
@@ -1802,6 +1803,7 @@ export default function VocalTrainerIII() {
   useEffect(() => {
     if (!currentTemplate?.audioUrl) return;
     loadTemplateAudio(currentTemplate.audioUrl, currentTemplate.title);
+    setScoreFocus(true); // Codex cleanup #1: after loading a song, default into score-focused layout
   }, [currentTemplate, loadTemplateAudio]);
 
   // Update vocal track volume live (without restarting playback).
@@ -2306,7 +2308,16 @@ export default function VocalTrainerIII() {
       {/* Full-viewport dark backdrop — kills the white strip above the global-nav offset (V3.4 QA).
           Root is `relative isolate` so this -z-10 layer stays scoped to this stacking context. */}
       <div aria-hidden className="fixed inset-0 -z-10 bg-[#08080f] pointer-events-none" />
-      <div className="max-w-6xl mx-auto flex flex-col gap-3">
+      <div className={`max-w-6xl mx-auto flex flex-col gap-3 ${scoreFocus ? 'vt3-focus' : ''}`}>
+        {scoreFocus && (
+          <style>{`.vt3-focus > :not(.vt3-keep){display:none!important}`}</style>
+        )}
+        {scoreFocus && (
+          <button onClick={() => setScoreFocus(false)} aria-label="Exit Focus"
+            className="vt3-keep fixed top-2 left-2 z-[10000] px-3 py-1.5 rounded-full bg-neutral-900/90 backdrop-blur border border-amber-500/50 text-amber-200 text-xs font-semibold shadow-lg">
+            ✕ Exit Focus
+          </button>
+        )}
         <header className="order-1 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-amber-300">Vocal Trainer III</h1>
@@ -2359,7 +2370,7 @@ export default function VocalTrainerIII() {
           </p>
         </details>
 
-        <section className="order-2 space-y-2">
+        <section className="vt3-keep order-2 space-y-2">
           {/* ─── Sheet Music (real score, follow along) ─────────────────── */}
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-xs text-gray-500">Score view:</span>
@@ -3303,7 +3314,8 @@ export default function VocalTrainerIII() {
               )}
               <button onClick={stopPlayback} className="w-9 h-9 rounded-full bg-neutral-700 hover:bg-neutral-600 text-white text-sm grid place-items-center" title="Stop">⏹</button>
               <button onClick={() => setLoopWhole((v) => !v)} className={`w-9 h-9 rounded-full text-sm grid place-items-center ${loopWhole ? 'bg-cyan-600 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`} title="Loop whole song">↻</button>
-              <button onClick={() => setMixerOpen((v) => !v)} className={`w-9 h-9 rounded-full text-sm grid place-items-center ${mixerOpen ? 'bg-amber-600 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`} title="Mixing desk (volumes · pan · tempo · loops)">🎛️</button>
+              <button onClick={() => setMixerOpen((v) => !v)} aria-label="Mixer" className={`w-9 h-9 rounded-full text-sm grid place-items-center ${mixerOpen ? 'bg-amber-600 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`} title="Mixing desk (volumes · pan · tempo · loops)">🎛️</button>
+              <button onClick={() => setScoreFocus((v) => !v)} aria-label={scoreFocus ? 'Exit Focus' : 'Score Focus'} className={`w-9 h-9 rounded-full text-sm grid place-items-center ${scoreFocus ? 'bg-amber-600 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`} title="Score Focus — hide everything but the score">⛶</button>
               <div className="px-1.5 text-[10px] font-mono text-neutral-400 tabular-nums">{practiceTime.toFixed(1)}s</div>
             </div>
           )}
