@@ -2543,6 +2543,8 @@ export default function VocalTrainerIII() {
                 syncUrl={activeLidaRoseScorePart.syncUrl}
                 currentTime={practiceTime}
                 title={activeLidaRoseScorePart.title}
+                liveMidiRef={trackMicMidiRef}
+                trailRef={micTrailRef}
               />
             ) : (
               <div className="rounded-lg border border-cyan-500/20 bg-[#0a0a14] p-6 text-sm text-gray-400">

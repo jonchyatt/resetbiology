@@ -28,6 +28,8 @@ interface ScoreEngravingProps {
   zoom?: number
   syncUrl?: string        // per-note recording timestamps (lida-rose-lead-sync.json)
   currentTime?: number    // VT3 practiceTime (audio clock seconds)
+  liveMidiRef?: { current: number | null }                                   // live voice pitch (fractional MIDI)
+  trailRef?: { current: { t: number; midi: number; on: boolean }[] }         // glowing voice trail (~1.2s)
 }
 
 // Dark palette — matches the site's #0a0a14 surface (same values as SheetMusicViewer).
@@ -42,8 +44,13 @@ const DARK = {
   activeNote: '#fbbf24',
 }
 
-export default function ScoreEngraving({ musicXMLUrl, title, zoom: initialZoom = 0.8, syncUrl, currentTime }: ScoreEngravingProps) {
+export default function ScoreEngraving({ musicXMLUrl, title, zoom: initialZoom = 0.8, syncUrl, currentTime, liveMidiRef, trailRef }: ScoreEngravingProps) {
   const containerRef = useRef<HTMLDivElement>(null)
+  // ── live pitch ribbon overlay (SVG elements driven imperatively each frame) ──
+  const ribbonHeadRef = useRef<SVGCircleElement>(null)
+  const ribbonConnRef = useRef<SVGLineElement>(null)
+  const ribbonTrailRef = useRef<SVGPolylineElement>(null)
+  const ribbonRafRef = useRef<number | null>(null)
   const osmdRef = useRef<any>(null)
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading')
   const [error, setError] = useState<string | null>(null)
@@ -223,6 +230,58 @@ export default function ScoreEngraving({ musicXMLUrl, title, zoom: initialZoom =
     return () => window.removeEventListener('resize', onResize)
   }, [status])
 
+  // ─── Live pitch ribbon: your voice riding the staff, green when on-pitch ──
+  // Reuses VT3's micTrailRef + live MIDI. The OSMD cursor gives X + the staff's
+  // vertical span; the target note (sync) anchors pitch→Y so on-pitch sits on the
+  // line and sharp/flat float above/below. No numbers — co-located feedback only.
+  useEffect(() => {
+    if (status !== 'ready' || (!liveMidiRef && !trailRef)) return
+    const TAIL_MS = 1200, PX_PER_MS = 0.06
+    const loop = () => {
+      const wrap = wrapperRef.current
+      const cur = osmdRef.current?.cursor
+      const cel = cur?.cursorElement || (typeof document !== 'undefined' ? document.getElementById('cursorImg-0') : null)
+      const head = ribbonHeadRef.current, conn = ribbonConnRef.current, trail = ribbonTrailRef.current
+      if (wrap && cel && head && conn && trail) {
+        const wr = wrap.getBoundingClientRect()
+        const cr = cel.getBoundingClientRect()
+        const cursorX = (cr.left - wr.left) + cr.width / 2
+        const cursorTop = cr.top - wr.top
+        const cursorH = cr.height || 60
+        const targetMidi = syncNotesRef.current[curIdxRef.current]?.pitchMidi ?? null
+        const live = liveMidiRef?.current ?? null
+        const pxPerSemi = cursorH / 26
+        const centerY = cursorTop + cursorH * 0.5
+        const yOf = (midi: number) => targetMidi != null ? centerY - (midi - targetMidi) * pxPerSemi : centerY
+        const now = (typeof performance !== 'undefined' ? performance.now() : Date.now())
+        const pts = trailRef?.current || []
+        let d = ''
+        for (let i = 0; i < pts.length; i++) {
+          const age = now - pts[i].t
+          if (age > TAIL_MS) continue
+          d += (d ? ' ' : '') + `${(cursorX - age * PX_PER_MS).toFixed(1)},${yOf(pts[i].midi).toFixed(1)}`
+        }
+        trail.setAttribute('points', d)
+        if (live != null && targetMidi != null) {
+          const onPitch = Math.abs(live - targetMidi) <= 0.7
+          const ly = yOf(live)
+          const color = onPitch ? '#4ade80' : '#22d3ee'
+          head.setAttribute('cx', cursorX.toFixed(1)); head.setAttribute('cy', ly.toFixed(1))
+          head.setAttribute('fill', color); head.setAttribute('opacity', '1')
+          conn.setAttribute('x1', cursorX.toFixed(1)); conn.setAttribute('y1', centerY.toFixed(1))
+          conn.setAttribute('x2', cursorX.toFixed(1)); conn.setAttribute('y2', ly.toFixed(1))
+          conn.setAttribute('stroke', color); conn.setAttribute('opacity', '0.8')
+          trail.setAttribute('stroke', onPitch ? 'rgba(74,222,128,0.55)' : 'rgba(34,211,238,0.5)')
+        } else {
+          head.setAttribute('opacity', '0'); conn.setAttribute('opacity', '0'); trail.setAttribute('points', '')
+        }
+      }
+      ribbonRafRef.current = requestAnimationFrame(loop)
+    }
+    ribbonRafRef.current = requestAnimationFrame(loop)
+    return () => { if (ribbonRafRef.current) cancelAnimationFrame(ribbonRafRef.current) }
+  }, [status, liveMidiRef, trailRef])
+
   return (
     <div data-vt3-score-panel="engraving" className="rounded-lg border border-cyan-500/20 bg-[#0a0a14] p-3">
       <div className="flex items-center justify-between mb-2">
@@ -249,6 +308,12 @@ export default function ScoreEngraving({ musicXMLUrl, title, zoom: initialZoom =
       {status === 'error' && <p className="text-sm text-red-400 py-8 text-center">Could not render score: {error}</p>}
       <div ref={wrapperRef} className="relative">
         <div ref={containerRef} className="overflow-x-auto" />
+        {/* live pitch ribbon overlay — your voice riding the staff */}
+        <svg className="pointer-events-none absolute inset-0 w-full h-full" style={{ overflow: 'visible' }}>
+          <polyline ref={ribbonTrailRef} fill="none" stroke="rgba(34,211,238,0.5)" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" points="" style={{ filter: 'drop-shadow(0 0 4px rgba(34,211,238,0.6))' }} />
+          <line ref={ribbonConnRef} stroke="#22d3ee" strokeWidth={1.5} opacity={0} />
+          <circle ref={ribbonHeadRef} r={5} fill="#22d3ee" opacity={0} style={{ filter: 'drop-shadow(0 0 6px rgba(74,222,128,0.8))' }} />
+        </svg>
       </div>
     </div>
   )
