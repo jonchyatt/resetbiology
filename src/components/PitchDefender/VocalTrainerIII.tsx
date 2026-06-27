@@ -2309,16 +2309,25 @@ export default function VocalTrainerIII() {
       <div className="max-w-6xl mx-auto flex flex-col gap-3">
         <header className="order-1 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-amber-300">Vocal Trainer III <span className="text-base font-semibold text-cyan-400 align-middle">· Blast Mix</span></h1>
-            <p className="text-sm text-gray-400 mt-1">
-              Upload a reference recording → extract melody → practice with dichotic L/R audio → full mixing desk (volume · balance · meters).
+            <h1 className="text-2xl font-bold text-amber-300">Vocal Trainer III</h1>
+            {/* Cockpit state — compact, no paragraph instructions (Codex cleanup #2) */}
+            <p className="text-sm mt-1 flex flex-wrap items-center gap-1.5">
+              {playbackLabel ? (
+                <>
+                  <span className="text-amber-200 font-semibold">{playbackLabel}</span>
+                  <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-900/50 text-emerald-300 border border-emerald-700/50">Audio loaded</span>
+                  <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-purple-900/40 text-purple-200 border border-purple-700/50">Tempo {tempoPct}%</span>
+                </>
+              ) : (
+                <span className="text-gray-500">Pick a part to start — tap the 🔆 orb for controls.</span>
+              )}
             </p>
           </div>
           <a href="/pitch-defender" className="text-sm text-amber-400 hover:text-amber-300">← Back to Pitch Defender</a>
         </header>
 
         {/* ─── How to use (step-by-step for practice sessions) ─────────── */}
-        <details className="order-2 bg-gray-900/60 border border-cyan-500/30 rounded-lg p-3 open:pb-4">
+        <details className="order-7 bg-gray-900/60 border border-cyan-500/30 rounded-lg p-3 open:pb-4">
           <summary className="text-lg font-semibold text-cyan-300 cursor-pointer select-none">
             🎵 How to practice your part <span className="text-sm font-normal text-gray-400">— tap for the 7-step guide · WIRED headphones required</span>
           </summary>
@@ -2350,7 +2359,7 @@ export default function VocalTrainerIII() {
           </p>
         </details>
 
-        <section className="order-5 space-y-2">
+        <section className="order-2 space-y-2">
           {/* ─── Sheet Music (real score, follow along) ─────────────────── */}
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-xs text-gray-500">Score view:</span>
@@ -2442,7 +2451,7 @@ export default function VocalTrainerIII() {
         </section>
 
         {/* ─── Library ───────────────────────────────────────────────── */}
-        <details className="order-3 bg-gray-900/60 border border-amber-500/20 rounded-lg p-3">
+        <details className="order-5 bg-gray-900/60 border border-amber-500/20 rounded-lg p-3">
           <summary className="cursor-pointer select-none text-sm font-semibold text-amber-300 marker:text-amber-500">
             Library <span className="text-xs font-normal text-gray-500">— saved templates and extraction tools</span>
           </summary>
@@ -2575,7 +2584,7 @@ export default function VocalTrainerIII() {
         </details>
 
         {/* ─── Upload + extraction ───────────────────────────────────── */}
-        <details className="order-4 bg-gray-900/60 border border-amber-500/20 rounded-lg p-3">
+        <details className="order-6 bg-gray-900/60 border border-amber-500/20 rounded-lg p-3">
           <summary className="cursor-pointer select-none text-sm font-semibold text-amber-300 marker:text-amber-500">
             Upload + Extract <span className="text-xs font-normal text-gray-500">— add stems or extract notes</span>
           </summary>
@@ -2749,11 +2758,9 @@ export default function VocalTrainerIII() {
 
         {/* ─── Editor (piano-roll) ───────────────────────────────────── */}
         {(extractedNotes.length > 0 || omrTarget) && (
-          <section className="order-6 bg-gray-900/60 border border-amber-500/20 rounded-lg p-3">
+          <section className="order-3 bg-gray-900/60 border border-amber-500/20 rounded-lg p-3">
             <div className="flex items-center justify-between mb-3 gap-2">
-              <h2 className="text-lg font-semibold text-amber-300">
-                Note Editor{extractedNotes.length > 0 ? ' — click any note to delete' : ''}
-              </h2>
+              <h2 className="text-lg font-semibold text-amber-300">Pitch Tracker</h2>
               <div className="flex items-center flex-wrap gap-2 text-xs text-gray-400">
                 <span>Zoom</span>
                 <input
