@@ -62,3 +62,6 @@ data/vocal-trainer/*.mp3
 data/vocal-trainer/*.wav
 
 .env*.local
+data/studio-baritone/*.mp3
+data/studio-baritone/*.f32
+data/studio-baritone/*.pdf
