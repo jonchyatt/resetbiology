@@ -2509,6 +2509,7 @@ export default function VocalTrainerIII() {
             </p>
           </div>
           <div className="flex items-center gap-2 shrink-0">
+            <a href="/pitch-defender/baritone-ball" className="px-2 py-1 rounded-full text-xs font-bold border border-amber-500/50 bg-amber-600/20 text-amber-200 hover:bg-amber-600/40" title="Follow-the-bouncing-ball baritone practice">🎈 Ball</a>
             <button onClick={() => setHelpOpen((v) => !v)} aria-label="Help"
               className={`px-2 py-1 rounded-full text-xs font-bold border ${helpOpen ? 'bg-cyan-700 border-cyan-400 text-white' : 'bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700'}`}
               title="How to practice (7-step guide)">? Help</button>
@@ -3592,6 +3593,7 @@ export default function VocalTrainerIII() {
               <button onClick={() => orbJumpTo(['tracker', 'note editor', 'zoom'])} className="text-left text-xs text-neutral-200 hover:bg-neutral-800 rounded px-2 py-1.5 whitespace-nowrap">📊 Tracker</button>
               <button onClick={() => { setMixerOpen(true); setOrbNavOpen(false); }} className="text-left text-xs text-amber-200 hover:bg-neutral-800 rounded px-2 py-1.5 whitespace-nowrap">🎛️ Mixing Desk</button>
               <button onClick={() => { reloadSong(); setOrbNavOpen(false); }} disabled={!selectedId} className="text-left text-xs text-cyan-200 hover:bg-neutral-800 rounded px-2 py-1.5 whitespace-nowrap disabled:opacity-40">↻ Reload song</button>
+              <a href="/pitch-defender/baritone-ball" className="block text-left text-xs text-amber-200 hover:bg-neutral-800 rounded px-2 py-1.5 whitespace-nowrap">🎈 Ball trainer</a>
               <button onClick={() => { window.scrollTo({ top: 0, behavior: 'smooth' }); setOrbNavOpen(false); }} className="text-left text-xs text-neutral-200 hover:bg-neutral-800 rounded px-2 py-1.5 whitespace-nowrap">⬆️ Top</button>
             </div>
           )}
