@@ -1037,15 +1037,28 @@ export default function VocalTrainerIII() {
     plunkNotesRef.current = [];
     plunkFetchStartedRef.current = false;
     stopPlunkNodes();
-  }, [activeLidaRoseScorePart?.syncUrl, stopPlunkNodes]);
+  }, [activeLidaRoseScorePart?.syncUrl, currentTemplate?.id, stopPlunkNodes]);
 
   useEffect(() => {
     if (!plunkEnabled) {
       stopPlunkNodes();
       return;
     }
-    if (!activeLidaRoseScorePart?.syncUrl) return;
     if (plunkFetchStartedRef.current || plunkNotesRef.current.length) return;
+    // V3.6 (Jon 2026-06-27): PLUNK MIRRORS THE VOICE — the loaded item's own EXTRACTED notes
+    // drive the plunk, for EVERY song (not just Lida Rose). Fixes "nothing came out" on the
+    // studio items + uses the better isolated-audio notes. Falls back to the score sync only
+    // when an item has no notes of its own.
+    const tplNotes = currentTemplate?.notes;
+    if (Array.isArray(tplNotes) && tplNotes.length) {
+      plunkNotesRef.current = (tplNotes
+        .filter((n) => n != null && Number.isFinite(n.pitchMidi) && Number.isFinite(n.startTimeSeconds) && Number.isFinite(n.durationSeconds))
+        .map((n) => ({ pitchMidi: n.pitchMidi, startTimeSeconds: n.startTimeSeconds, durationSeconds: n.durationSeconds }))
+        .sort((a, b) => a.startTimeSeconds - b.startTimeSeconds)) as SyncNote[];
+      plunkFetchStartedRef.current = true;
+      return;
+    }
+    if (!activeLidaRoseScorePart?.syncUrl) return;
     plunkFetchStartedRef.current = true;
     (async () => {
       try {
@@ -1064,7 +1077,7 @@ export default function VocalTrainerIII() {
         console.error('[VocalTrainer] plunk sync-note load failed:', e);
       }
     })();
-  }, [activeLidaRoseScorePart?.syncUrl, plunkEnabled, stopPlunkNodes]);
+  }, [activeLidaRoseScorePart?.syncUrl, plunkEnabled, currentTemplate, stopPlunkNodes]);
 
   useEffect(() => {
     if (!plunkGainRef.current) return;
