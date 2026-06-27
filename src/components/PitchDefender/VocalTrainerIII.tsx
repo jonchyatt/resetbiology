@@ -369,17 +369,24 @@ export default function VocalTrainerIII() {
     return order.map((key) => ({
       key,
       label: `${key} (${map.get(key)!.length})`,
-      items: map.get(key)!.slice().sort((a, b) => a.title.localeCompare(b.title)),
+      // Playable items (have an extracted melody) FIRST, then alphabetical — so the one good
+      // Baritone/Lead track isn't buried under "no melody yet" decoys (V3.5 discoverability fix).
+      items: map.get(key)!.slice().sort((a, b) =>
+        (b.noteCount > 0 ? 1 : 0) - (a.noteCount > 0 ? 1 : 0) || a.title.localeCompare(b.title)),
     }));
   }, [library, groupBy, libFilter]);
 
-  // Default-collapse ALL library groups so the page opens compact with every voice-part header
-  // visible at once (Jon directive); user taps their part to expand (V3.4.3 QA).
+  // Auto-EXPAND groups that contain a playable item; collapse only the decoy-only groups.
+  // (V3.5 — Jon 2026-06-26: his son couldn't find the Baritone because everything was collapsed
+  // behind 8 "no melody yet" decoys. Discoverability now beats the old V3.4.3 collapse-all.)
   const didInitCollapse = useRef(false);
   useEffect(() => {
     if (didInitCollapse.current || libraryGroups.length === 0) return;
     didInitCollapse.current = true;
-    if (libraryGroups.length > 1) setCollapsed(new Set(libraryGroups.map((g) => g.key)));
+    if (libraryGroups.length > 1) {
+      const decoyOnly = libraryGroups.filter((g) => !g.items.some((i) => i.noteCount > 0)).map((g) => g.key);
+      setCollapsed(new Set(decoyOnly));
+    }
   }, [libraryGroups]);
 
   // ─── Editor state ───────────────────────────────────────────────────────
@@ -398,7 +405,7 @@ export default function VocalTrainerIII() {
   const [micVol, setMicVol] = useState(150);      // 0-VOL_MAX percent (V3: starts hotter — raw mic is quiet vs mastered tracks)
   const [micProfile, setMicProfile] = useState<MicProfile>('usb');
   const [micEnabled, setMicEnabled] = useState(false);
-  const [plunkEnabled, setPlunkEnabled] = useState(false);
+  const [plunkEnabled, setPlunkEnabled] = useState(true); // V3.5: ON by default — you load a part to HEAR it (Jon 2026-06-26)
   const [plunkVol, setPlunkVol] = useState(PLUNK_DEFAULT_VOL);
   // V3: per-stream balance (-1 hard-left … +1 hard-right). Defaults = V1's fixed pans.
   const [vocalPan, setVocalPan] = useState(-0.7);

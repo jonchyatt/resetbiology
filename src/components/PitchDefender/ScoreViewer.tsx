@@ -6,7 +6,7 @@
 // table of contents; PDF page = printed page + 3 (front-matter offset, verified
 // on "Goodnight Ladies" = printed 97 → PDF 100).
 
-import { useState } from 'react';
+import { useState, useRef, type TouchEvent as ReactTouchEvent } from 'react';
 
 interface SongRef { title: string; page: number; bbs?: boolean }
 
@@ -38,6 +38,19 @@ export default function ScoreViewer() {
   const [page, setPage] = useState(1);
   const [zoom, setZoom] = useState(false);
   const clamp = (n: number) => Math.max(1, Math.min(TOTAL_PAGES, n));
+  const go = (n: number) => setPage(clamp(n));
+
+  // Horizontal swipe → turn the page (works even while zoomed/scrolled).
+  const touch = useRef<{ x: number; y: number } | null>(null);
+  const onTouchStart = (e: ReactTouchEvent) => { const t = e.touches[0]; touch.current = { x: t.clientX, y: t.clientY }; };
+  const onTouchEnd = (e: ReactTouchEvent) => {
+    if (!touch.current) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - touch.current.x, dy = t.clientY - touch.current.y;
+    // a mostly-horizontal swipe of >50px turns the page; vertical scroll is left alone
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) go(page + (dx < 0 ? 1 : -1));
+    touch.current = null;
+  };
 
   return (
     <details className="bg-gray-900/60 border border-amber-500/20 rounded-lg p-4">
@@ -81,17 +94,34 @@ export default function ScoreViewer() {
         <span className="text-[10px] text-gray-600">★ = barbershop quartet number</span>
       </div>
 
-      <div className="mt-3 overflow-auto bg-white rounded border border-gray-700" style={{ maxHeight: '72vh' }}>
-        <img
-          src={`/score/page-${pad(page)}.jpg`}
-          alt={`Music Man score — page ${page}`}
-          style={{ width: zoom ? 'auto' : '100%', maxWidth: zoom ? 'none' : '100%', display: 'block', margin: '0 auto' }}
-          key={page}
-        />
+      <div className="relative mt-3">
+        <div
+          className="overflow-auto bg-white rounded border border-gray-700"
+          style={{ maxHeight: '88vh' }}
+          onTouchStart={onTouchStart}
+          onTouchEnd={onTouchEnd}
+        >
+          <img
+            src={`/score/page-${pad(page)}.jpg`}
+            alt={`Music Man score — page ${page}`}
+            style={{ width: zoom ? 'auto' : '100%', maxWidth: zoom ? 'none' : '100%', display: 'block', margin: '0 auto' }}
+            key={page}
+          />
+        </div>
+        {/* always-visible page arrows — stay put while you scroll up/down to read */}
+        <button onClick={() => go(page - 1)} aria-label="previous page"
+          className="absolute left-1 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/55 text-white text-xl flex items-center justify-center backdrop-blur active:bg-black/80 disabled:opacity-30"
+          disabled={page <= 1}>‹</button>
+        <button onClick={() => go(page + 1)} aria-label="next page"
+          className="absolute right-1 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/55 text-white text-xl flex items-center justify-center backdrop-blur active:bg-black/80 disabled:opacity-30"
+          disabled={page >= TOTAL_PAGES}>›</button>
+        <div className="absolute bottom-1 left-1/2 -translate-x-1/2 text-[11px] text-white bg-black/55 rounded-full px-2.5 py-0.5 backdrop-blur pointer-events-none">
+          p.{page} / {TOTAL_PAGES}
+        </div>
       </div>
       <p className="text-[10px] text-gray-600 mt-1">
-        Pick your song, keep this open beside the player, and follow the notes as the track plays. Page jumps are
-        approximate — use ◀ ▶ to nudge if a song starts a page over.
+        Swipe left/right (or tap the ‹ › arrows) to turn pages — they stay put while you scroll up/down to read.
+        Page jumps are approximate; nudge with the arrows if a song starts a page over.
       </p>
     </details>
   );
