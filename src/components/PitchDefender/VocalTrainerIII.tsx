@@ -427,6 +427,7 @@ export default function VocalTrainerIII() {
   // reachable Play/Stop. It IS the Play button, so it can never be permanently covered.
   // Phone: floats freely; position persisted per device. ──
   const [orbPos, setOrbPos] = useState<{ x: number; y: number } | null>(null);
+  const [mixerOpen, setMixerOpen] = useState(false); // V3.7: full Mixing Desk as an orb-launched bottom-sheet
   const orbDragRef = useRef<{ dx: number; dy: number } | null>(null);
   useEffect(() => { try { const s = localStorage.getItem('vt3_orb_pos'); if (s) setOrbPos(JSON.parse(s)); } catch {} }, []);
   const onOrbDown = (e: React.PointerEvent) => {
@@ -1211,7 +1212,7 @@ export default function VocalTrainerIII() {
   // V3.7: change tempo (percent of original). Pitch-locked. Re-renders the
   // stretched buffers and, if playing, seamlessly resumes at the same song spot.
   const changeTempo = useCallback((pct: number) => {
-    const clamped = Math.max(50, Math.min(125, Math.round(pct)));
+    const clamped = Math.max(50, Math.min(200, Math.round(pct)));
     const newSpd = clamped / 100;
     const oldSpd = tempoRef.current || 1;
     const ctx = audioCtxRef.current;
@@ -2822,9 +2823,13 @@ export default function VocalTrainerIII() {
           </section>
         )}
 
-        {/* ─── Dichotic Player (three independent channels) ───────────── */}
-        <section className="order-7 bg-gray-900/60 border border-amber-500/20 rounded-lg p-3">
-          <h2 className="text-base font-semibold text-amber-300 mb-0.5">Dichotic Player</h2>
+        {/* ─── Mixing Desk — collapsible bottom-sheet, launched from the orb 🎛️ ── */}
+        {mixerOpen && (
+        <section className="fixed inset-x-2 bottom-24 z-[9998] max-h-[74vh] overflow-y-auto bg-gray-900/95 backdrop-blur border border-amber-500/50 rounded-xl p-3 shadow-2xl">
+          <div className="flex items-center justify-between mb-0.5">
+            <h2 className="text-base font-semibold text-amber-300">🎛️ Mixing Desk</h2>
+            <button onClick={() => setMixerOpen(false)} className="w-8 h-8 rounded-full bg-neutral-800 hover:bg-neutral-700 text-neutral-300 text-sm flex items-center justify-center" title="Collapse the desk back to the orb">✕</button>
+          </div>
           <p className="text-xs text-gray-500 mb-2">
             Three independent channels — Vocals hard-LEFT, Music center, Mic hard-RIGHT. Upload
             separate stems above; adjust each volume independently. Headphones required.
@@ -2891,13 +2896,13 @@ export default function VocalTrainerIII() {
                 <span className="text-[11px] font-bold text-purple-200">🐢 Tempo</span>
                 <span className={`font-mono text-xs ${tempoPct === 100 ? 'text-gray-400' : 'text-purple-300 font-bold'}`}>{tempoPct}%</span>
                 <input
-                  type="range" min={50} max={125} step={5} value={tempoPct}
+                  type="range" min={50} max={200} step={5} value={tempoPct}
                   onChange={(e) => changeTempo(Number(e.target.value))}
                   className="flex-1 min-w-[120px] accent-purple-400"
                   title="Slow down to learn, speed up to test — pitch never changes"
                 />
                 <div className="flex items-center gap-1">
-                  {[60, 75, 90, 100, 110].map((p) => (
+                  {[60, 75, 90, 100, 125, 150, 200].map((p) => (
                     <button
                       key={p}
                       onClick={() => changeTempo(p)}
@@ -3164,6 +3169,7 @@ export default function VocalTrainerIII() {
             </div>
           </details>
         </section>
+        )}
       </div>
 
       {/* ── V3.6 TransportOrb — floating, draggable, always-reachable transport ── */}
@@ -3182,6 +3188,7 @@ export default function VocalTrainerIII() {
           )}
           <button onClick={stopPlayback} className="w-9 h-9 rounded-full bg-neutral-700 hover:bg-neutral-600 text-white text-sm flex items-center justify-center" title="Stop">⏹</button>
           <button onClick={() => setLoopWhole((v) => !v)} className={`w-9 h-9 rounded-full text-sm flex items-center justify-center ${loopWhole ? 'bg-cyan-600 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`} title="Loop whole song">↻</button>
+          <button onClick={() => setMixerOpen((v) => !v)} className={`w-9 h-9 rounded-full text-sm flex items-center justify-center ${mixerOpen ? 'bg-amber-600 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`} title="Mixing desk (volumes · pan · tempo · loops)">🎛️</button>
           <div className="px-1.5 text-[10px] font-mono text-neutral-400 tabular-nums">{practiceTime.toFixed(1)}s</div>
         </div>
         {/* V3.7: tempo right on the orb — slower / readout(tap=100%) / faster */}
