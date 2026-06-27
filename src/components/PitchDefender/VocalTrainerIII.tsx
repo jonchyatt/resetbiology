@@ -1151,16 +1151,19 @@ export default function VocalTrainerIII() {
     const sine = ctx.createOscillator();
     sine.type = 'sine';
     sine.frequency.setValueAtTime(freq, toneStart);
-    sine.detune.setValueAtTime(7, toneStart);
+    sine.detune.setValueAtTime(3, toneStart);
 
     const partialGain = ctx.createGain();
-    partialGain.gain.setValueAtTime(0.28, toneStart);
+    partialGain.gain.setValueAtTime(0.7, toneStart);
 
     const noteGain = ctx.createGain();
-    noteGain.gain.setValueAtTime(0, toneStart);
-    noteGain.gain.linearRampToValueAtTime(0.95, toneStart + attack);
-    noteGain.gain.setValueAtTime(0.78, releaseStart);
-    noteGain.gain.linearRampToValueAtTime(0, toneEnd);
+    // V3.8: gentle acoustic envelope (matched to ChoirPractice.playGuideNote) —
+    // soft peak + exponential decay instead of a 0.95 spike + linear-to-zero
+    // "plunk." This is why choir tones sound nicer; same fix here.
+    noteGain.gain.setValueAtTime(0.0001, toneStart);
+    noteGain.gain.linearRampToValueAtTime(0.22, toneStart + attack);
+    noteGain.gain.setValueAtTime(0.16, releaseStart);
+    noteGain.gain.exponentialRampToValueAtTime(0.0008, toneEnd);
 
     const plunkGain = ensurePlunkGain(ctx);
     tri.connect(noteGain);
@@ -2605,6 +2608,17 @@ export default function VocalTrainerIII() {
                   className="sr-only"
                 />
               </label>
+              {/* V3.8: Track 1 picks from the SAME library as Track 2 — all tracks equal (Jon 2026-06-27) */}
+              <div className="mt-2">
+                <select
+                  value=""
+                  onChange={(e) => { const it = library.find((x) => x.id === e.target.value); if (it?.audioUrl) { setUploadFile(null); loadTemplateAudio(it.audioUrl, it.title); } }}
+                  className="w-full bg-gray-800 border border-amber-700/50 rounded px-2 py-1.5 text-xs text-gray-100"
+                >
+                  <option value="">📚 …or pick a Library track (any part)</option>
+                  {library.filter((x) => x.audioUrl).map((x) => <option key={x.id} value={x.id}>{x.title}</option>)}
+                </select>
+              </div>
             </div>
 
             {/* Music stem (optional third channel) */}
