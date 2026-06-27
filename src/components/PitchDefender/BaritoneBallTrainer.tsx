@@ -14,6 +14,7 @@ const SONGS = [
   { id: 'lida-rose', label: 'Lida Rose', dir: '/lida-baritone' },
   { id: 'sincere', label: 'Ice Cream / Sincere', dir: '/sincere-baritone' },
   { id: 'itsyou', label: "It's You", dir: '/itsyou-baritone' },
+  { id: 'goodnight', label: 'Goodnight Ladies', dir: '/goodnight-baritone' },
 ];
 const GAP = 10;
 
@@ -164,7 +165,7 @@ export default function BaritoneBallTrainer() {
           {resting && (
             <div className="absolute z-10 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-full bg-cyan-700/90 text-white text-sm font-semibold"
               style={{ top: (layout.offsets[curPage] || 0) + (layout.heights[curPage] || 0) * 0.18 }}>
-              🎤 Rest — the ladies sing
+              🎤 Rest — you don&apos;t sing here
             </div>
           )}
         </div>
