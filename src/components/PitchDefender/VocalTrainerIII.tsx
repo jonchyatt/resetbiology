@@ -1340,6 +1340,27 @@ export default function VocalTrainerIII() {
     }
   }, [ensureAudioGraph, stopAudioSource, recomputeDuration]);
 
+  // V3.6: load Track 2 (music/backing) from a LIBRARY item's audioUrl — the fix for the
+  // "Track 2 only takes a dropped file, not a library item" gap (Jon 2026-06-27).
+  const loadMusicFromUrl = useCallback(async (url: string, title: string) => {
+    stopAudioSource();
+    pauseOffsetRef.current = 0;
+    setPracticeTime(0);
+    setPlaybackState('idle');
+    musicBufRef.current = null;
+    try {
+      const ctx = ensureAudioGraph();
+      const ab = await (await fetch(url)).arrayBuffer();
+      const buf = await ctx.decodeAudioData(ab);
+      musicBufRef.current = buf;
+      setMusicFileName(title);
+      recomputeDuration();
+      setStatusMsg(`Loaded "${title}" as Track 2 (${buf.duration.toFixed(1)}s). Press Play.`);
+    } catch (e) {
+      setStatusMsg(`Could not load Track 2 from library: ${e instanceof Error ? e.message : e}`);
+    }
+  }, [ensureAudioGraph, stopAudioSource, recomputeDuration]);
+
   // Clear the music track.
   const clearMusicFile = useCallback(() => {
     stopAudioSource();
@@ -2339,6 +2360,17 @@ export default function VocalTrainerIII() {
                   className="sr-only"
                 />
               </label>
+              {/* V3.6: pick Track 2 from the SAME library (e.g. a "Minus"/backing track) */}
+              <div className="mt-2">
+                <select
+                  value=""
+                  onChange={(e) => { const it = library.find((x) => x.id === e.target.value); if (it?.audioUrl) { setMusicFile(null); loadMusicFromUrl(it.audioUrl, it.title); } }}
+                  className="w-full bg-gray-800 border border-purple-700/50 rounded px-2 py-1.5 text-xs text-gray-100"
+                >
+                  <option value="">📚 …or pick a Library track (e.g. a “Minus” backing)</option>
+                  {library.filter((x) => x.audioUrl).map((x) => <option key={x.id} value={x.id}>{x.title}</option>)}
+                </select>
+              </div>
             </div>
           </div>
 
