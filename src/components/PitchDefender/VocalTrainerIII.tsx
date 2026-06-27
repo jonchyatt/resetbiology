@@ -428,20 +428,50 @@ export default function VocalTrainerIII() {
   // Phone: floats freely; position persisted per device. ──
   const [orbPos, setOrbPos] = useState<{ x: number; y: number } | null>(null);
   const [mixerOpen, setMixerOpen] = useState(false); // V3.7: full Mixing Desk as an orb-launched bottom-sheet
-  const orbDragRef = useRef<{ dx: number; dy: number } | null>(null);
+  // WODEN-style free drag: grab ANYWHERE on the orb and move it in 2D. A small
+  // threshold distinguishes a tap (button press) from a drag, and we only capture
+  // the pointer once it's truly a drag so button taps still fire.
+  const orbDragRef = useRef<{ sx: number; sy: number; ox: number; oy: number; pid: number; moved: boolean; cap: boolean } | null>(null);
+  const orbWasDragRef = useRef(false);
   useEffect(() => { try { const s = localStorage.getItem('vt3_orb_pos'); if (s) setOrbPos(JSON.parse(s)); } catch {} }, []);
+  // Keep the orb on-screen across rotation / resize (else it vanishes off-edge).
+  useEffect(() => {
+    const reclamp = () => setOrbPos((p) => p ? {
+      x: Math.max(4, Math.min(window.innerWidth - 48, p.x)),
+      y: Math.max(4, Math.min(window.innerHeight - 48, p.y)),
+    } : p);
+    window.addEventListener('resize', reclamp);
+    window.addEventListener('orientationchange', reclamp);
+    return () => { window.removeEventListener('resize', reclamp); window.removeEventListener('orientationchange', reclamp); };
+  }, []);
   const onOrbDown = (e: React.PointerEvent) => {
-    const el = e.currentTarget as HTMLElement; el.setPointerCapture(e.pointerId);
-    const r = (el.parentElement as HTMLElement).getBoundingClientRect();
-    orbDragRef.current = { dx: e.clientX - r.left, dy: e.clientY - r.top };
+    orbWasDragRef.current = false;
+    const r = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    orbDragRef.current = { sx: e.clientX, sy: e.clientY, ox: r.left, oy: r.top, pid: e.pointerId, moved: false, cap: false };
   };
   const onOrbMove = (e: React.PointerEvent) => {
-    if (!orbDragRef.current) return;
-    const x = Math.max(6, Math.min(window.innerWidth - 200, e.clientX - orbDragRef.current.dx));
-    const y = Math.max(6, Math.min(window.innerHeight - 70, e.clientY - orbDragRef.current.dy));
+    const d = orbDragRef.current;
+    if (!d || e.pointerId !== d.pid) return;
+    const ddx = e.clientX - d.sx, ddy = e.clientY - d.sy;
+    if (!d.moved && Math.hypot(ddx, ddy) < 6) return; // below threshold ⇒ still a tap
+    if (!d.cap) { try { (e.currentTarget as HTMLElement).setPointerCapture(d.pid); d.cap = true; } catch {} }
+    d.moved = true;
+    const x = Math.max(4, Math.min(window.innerWidth - 48, d.ox + ddx));
+    const y = Math.max(4, Math.min(window.innerHeight - 48, d.oy + ddy));
     setOrbPos({ x, y });
   };
-  const onOrbUp = () => { orbDragRef.current = null; try { setOrbPos((p) => { if (p) localStorage.setItem('vt3_orb_pos', JSON.stringify(p)); return p; }); } catch {} };
+  const onOrbUp = (e: React.PointerEvent) => {
+    const d = orbDragRef.current;
+    orbDragRef.current = null;
+    if (!d) return;
+    if (d.cap) { try { (e.currentTarget as HTMLElement).releasePointerCapture(d.pid); } catch {} }
+    orbWasDragRef.current = d.moved;
+    if (d.moved) { try { setOrbPos((p) => { if (p) localStorage.setItem('vt3_orb_pos', JSON.stringify(p)); return p; }); } catch {} }
+  };
+  // Swallow the click that ends a drag so a Play/Stop/gear tap doesn't fire after moving.
+  const onOrbClickCapture = (e: React.MouseEvent) => {
+    if (orbWasDragRef.current) { e.stopPropagation(); e.preventDefault(); orbWasDragRef.current = false; }
+  };
 
   // ─── Dichotic player state (shared between Quick Play and template practice) ──
   // Three independent tracks:
@@ -2825,7 +2855,7 @@ export default function VocalTrainerIII() {
 
         {/* ─── Mixing Desk — collapsible bottom-sheet, launched from the orb 🎛️ ── */}
         {mixerOpen && (
-        <section className="fixed inset-x-2 bottom-24 z-[9998] max-h-[74vh] overflow-y-auto bg-gray-900/95 backdrop-blur border border-amber-500/50 rounded-xl p-3 shadow-2xl">
+        <section className="fixed inset-x-2 bottom-2 z-[9998] max-h-[82vh] overflow-y-auto bg-gray-900/95 backdrop-blur border border-amber-500/50 rounded-xl p-3 shadow-2xl">
           <div className="flex items-center justify-between mb-0.5">
             <h2 className="text-base font-semibold text-amber-300">🎛️ Mixing Desk</h2>
             <button onClick={() => setMixerOpen(false)} className="w-8 h-8 rounded-full bg-neutral-800 hover:bg-neutral-700 text-neutral-300 text-sm flex items-center justify-center" title="Collapse the desk back to the orb">✕</button>
@@ -3012,31 +3042,11 @@ export default function VocalTrainerIII() {
             )}
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-2">
-            <button
-              onClick={playOrResume}
-              disabled={playbackState === 'playing' || (!vocalBufRef.current && !musicBufRef.current)}
-              className="px-3 py-2 rounded-lg text-sm font-semibold text-white transition-colors shadow-sm bg-emerald-600 hover:bg-emerald-500 disabled:bg-gray-800 disabled:text-gray-600 disabled:shadow-none"
-            >
-              {playbackState === 'paused' ? 'Resume ▶' : 'Play ▶'}
-            </button>
-            <button
-              onClick={pausePlayback}
-              disabled={playbackState !== 'playing'}
-              className="px-3 py-2 rounded-lg text-sm font-semibold text-white transition-colors shadow-sm bg-slate-600 hover:bg-slate-500 disabled:bg-gray-800 disabled:text-gray-600 disabled:shadow-none"
-            >
-              Pause ⏸
-            </button>
-            <button
-              onClick={stopPlayback}
-              disabled={playbackState === 'idle'}
-              className="px-3 py-2 rounded-lg text-sm font-semibold text-white transition-colors shadow-sm bg-rose-600/90 hover:bg-rose-500 disabled:bg-gray-800 disabled:text-gray-600 disabled:shadow-none"
-            >
-              Stop ■
-            </button>
+          {/* Transport lives on the orb — the desk only carries the mic toggle. */}
+          <div className="mb-2">
             <button
               onClick={toggleMicMonitor}
-              className={`px-3 py-2 rounded-lg text-sm font-semibold text-white transition-colors shadow-sm ${
+              className={`w-full px-3 py-2 rounded-lg text-sm font-semibold text-white transition-colors shadow-sm ${
                 micEnabled ? 'bg-rose-600 hover:bg-rose-500 ring-2 ring-rose-400/50' : 'bg-cyan-600 hover:bg-cyan-500'
               }`}
             >
@@ -3044,11 +3054,9 @@ export default function VocalTrainerIII() {
             </button>
           </div>
 
-          <details className="rounded-lg border border-gray-800 bg-gray-950/40 p-2">
-            <summary className="cursor-pointer select-none text-xs font-semibold text-gray-300 marker:text-amber-500">
-              Mixing desk, plunk, output, mic profile
-            </summary>
-            <div className="mt-3 space-y-3">
+          <div className="rounded-lg border border-gray-800 bg-gray-950/40 p-2">
+            <div className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-2">Mixing desk · plunk · output · mic profile</div>
+            <div className="space-y-3">
           {/* V3 mixing desk: per-stream volume (0-400%) + L/R balance + live level meter */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {([
@@ -3167,20 +3175,22 @@ export default function VocalTrainerIII() {
             </label>
           </div>
             </div>
-          </details>
+          </div>
         </section>
         )}
       </div>
 
       {/* ── V3.6 TransportOrb — floating, draggable, always-reachable transport ── */}
       <div
+        onPointerDown={onOrbDown}
         onPointerMove={onOrbMove}
         onPointerUp={onOrbUp}
-        style={orbPos ? { left: orbPos.x, top: orbPos.y } : { right: 14, bottom: 84 }}
-        className="fixed z-[10000] select-none flex flex-col items-end gap-1"
+        onClickCapture={onOrbClickCapture}
+        style={{ touchAction: 'none', ...(mixerOpen ? { top: 12, right: 12 } : (orbPos ? { left: orbPos.x, top: orbPos.y } : { right: 14, bottom: 84 })) }}
+        className="fixed z-[10000] select-none cursor-grab active:cursor-grabbing"
       >
         <div className="flex items-center gap-1 rounded-full bg-neutral-900/90 backdrop-blur border border-amber-500/40 shadow-2xl px-1.5 py-1.5">
-          <div onPointerDown={onOrbDown} className="cursor-grab active:cursor-grabbing px-1 text-amber-400/70 leading-none" title="drag the player">⠿</div>
+          <div className="px-0.5 text-amber-400/60 leading-none pointer-events-none" title="drag the player anywhere">⠿</div>
           {playbackState === 'playing' ? (
             <button onClick={pausePlayback} className="w-11 h-11 rounded-full bg-amber-600 hover:bg-amber-500 text-white text-lg flex items-center justify-center" title="Pause">⏸</button>
           ) : (
@@ -3191,15 +3201,6 @@ export default function VocalTrainerIII() {
           <button onClick={() => setMixerOpen((v) => !v)} className={`w-9 h-9 rounded-full text-sm flex items-center justify-center ${mixerOpen ? 'bg-amber-600 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`} title="Mixing desk (volumes · pan · tempo · loops)">🎛️</button>
           <div className="px-1.5 text-[10px] font-mono text-neutral-400 tabular-nums">{practiceTime.toFixed(1)}s</div>
         </div>
-        {/* V3.7: tempo right on the orb — slower / readout(tap=100%) / faster */}
-        {durationSec > 0 && (
-          <div className="flex items-center gap-1 rounded-full bg-neutral-900/90 backdrop-blur border border-purple-500/40 shadow-2xl px-1.5 py-1">
-            <button onClick={() => changeTempo(tempoPct - 5)} className="w-8 h-8 rounded-full bg-neutral-800 hover:bg-neutral-700 text-purple-200 text-sm flex items-center justify-center" title="Slower (pitch locked)">⏪</button>
-            <button onClick={() => changeTempo(100)} className={`min-w-[44px] h-8 rounded-full text-[11px] font-bold flex items-center justify-center tabular-nums ${tempoPct === 100 ? 'bg-neutral-800 text-neutral-300' : 'bg-purple-700/70 text-white'}`} title="Tempo — tap to reset to 100%">{tempoPct < 100 ? '🐢' : tempoPct > 100 ? '🐇' : ''}{tempoPct}%</button>
-            <button onClick={() => changeTempo(tempoPct + 5)} className="w-8 h-8 rounded-full bg-neutral-800 hover:bg-neutral-700 text-purple-200 text-sm flex items-center justify-center" title="Faster (pitch locked)">⏩</button>
-            {stretching && <span className="px-1 text-[9px] text-purple-300 animate-pulse">…</span>}
-          </div>
-        )}
       </div>
     </div>
   );
