@@ -6,7 +6,7 @@
 // table of contents; PDF page = printed page + 3 (front-matter offset, verified
 // on "Goodnight Ladies" = printed 97 → PDF 100).
 
-import { useState, useRef, type TouchEvent as ReactTouchEvent } from 'react';
+import { useState, useRef, useEffect, type TouchEvent as ReactTouchEvent } from 'react';
 
 interface SongRef { title: string; page: number; bbs?: boolean }
 
@@ -34,11 +34,13 @@ const SONGS: SongRef[] = [
 const TOTAL_PAGES = 248;
 const pad = (n: number) => String(n).padStart(3, '0');
 
-export default function ScoreViewer() {
+export default function ScoreViewer({ jumpToPage }: { jumpToPage?: number | null } = {}) {
   const [page, setPage] = useState(1);
   const [zoom, setZoom] = useState(false);
   const clamp = (n: number) => Math.max(1, Math.min(TOTAL_PAGES, n));
   const go = (n: number) => setPage(clamp(n));
+  // V3.6: when a song is selected in the trainer, default the viewer to that song's pages.
+  useEffect(() => { if (jumpToPage && jumpToPage > 0) setPage(clamp(jumpToPage)); }, [jumpToPage]);
 
   // Horizontal swipe → turn the page (works even while zoomed/scrolled).
   const touch = useRef<{ x: number; y: number } | null>(null);

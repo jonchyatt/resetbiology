@@ -1748,6 +1748,14 @@ export default function VocalTrainerIII() {
   // longer than the notes (studio full-song vs partial score), the playhead runs off the right
   // edge and scroll freezes partway. (Jon 2026-06-27)
   const editorWidth = useMemo(() => Math.max(800, Math.max(extractedDuration, omrSpan, durationSec) * zoom), [extractedDuration, omrSpan, durationSec, zoom]);
+  // V3.6: default the Sheet-Music viewer to the selected song's pages (Jon 2026-06-27).
+  const selectedSongPage = useMemo(() => {
+    const t = currentTemplate?.title; if (!t) return null;
+    const song = (parseMmTitle(t)?.song || t).toLowerCase();
+    const MAP: Record<string, number> = { 'lida rose': 196, 'sincere': 89, 'goodnight ladies': 100, "it's you": 165 };
+    for (const [k, p] of Object.entries(MAP)) if (song.includes(k)) return p;
+    return null;
+  }, [currentTemplate]);
   const editorRowHeight = 6; // px per semitone
   const editorHeight = (PITCH_MAX - PITCH_MIN + 1) * editorRowHeight;
 
@@ -2135,7 +2143,7 @@ export default function VocalTrainerIII() {
           </div>
           <div className="max-h-[46vh] min-h-[230px] overflow-auto rounded-lg" style={{ maskImage: 'linear-gradient(to bottom, transparent 0, #000 16px, #000 calc(100% - 24px), transparent 100%)', WebkitMaskImage: 'linear-gradient(to bottom, transparent 0, #000 16px, #000 calc(100% - 24px), transparent 100%)' }}>
             {scoreView === 'pages' ? (
-              <ScoreViewer />
+              <ScoreViewer jumpToPage={selectedSongPage} />
             ) : activeLidaRoseScorePart ? (
               <ScoreEngraving
                 musicXMLUrl={activeLidaRoseScorePart.musicXMLUrl}
