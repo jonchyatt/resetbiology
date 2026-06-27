@@ -4,7 +4,8 @@ import sharp from 'sharp';
 import fs from 'fs';
 import path from 'path';
 
-const DIR = 'public/lida-baritone';
+const DIR = process.argv[2] || 'public/lida-baritone';
+const URLBASE = '/' + DIR.replace(/^public\//, '');
 const isYellow = (r, g, b) => r > 170 && g > 165 && b < 175 && Math.abs(r - g) < 48 && (r - b) > 32;
 
 async function detect(file) {
@@ -33,10 +34,22 @@ async function detect(file) {
     } else if (cur) { if (cur.y1 - cur.y0 > 6) bands.push(cur); cur = null; }
   }
   if (cur && cur.y1 - cur.y0 > 6) bands.push(cur);
+  // merge fragments of the same highlight band (notes/staff lines split a band into
+  // pieces); any two bands whose vertical gap is < 2.5% of page height = one band.
+  bands.sort((a, b) => a.y0 - b.y0);
+  const merged = [];
+  for (const b of bands) {
+    const last = merged[merged.length - 1];
+    if (last && (b.y0 - last.y1) < H * 0.025) {
+      last.y1 = Math.max(last.y1, b.y1);
+      last.x0 = Math.min(last.x0, b.x0);
+      last.x1 = Math.max(last.x1, b.x1);
+    } else merged.push({ ...b });
+  }
   // normalize to 0..1 of the page
   return {
     w: W, h: H,
-    bands: bands.map((b) => ({
+    bands: merged.map((b) => ({
       x0: +(b.x0 / W).toFixed(4), x1: +(b.x1 / W).toFixed(4),
       yc: +(((b.y0 + b.y1) / 2) / H).toFixed(4), bh: +((b.y1 - b.y0) / H).toFixed(4),
     })),
@@ -47,7 +60,7 @@ const files = fs.readdirSync(DIR).filter((f) => /^page-\d+\.jpg$/.test(f)).sort(
 const pages = [];
 for (const f of files) {
   const d = await detect(path.join(DIR, f));
-  pages.push({ file: `/lida-baritone/${f}`, ...d });
+  pages.push({ file: `${URLBASE}/${f}`, ...d });
   console.log(`${f}: ${d.bands.length} bands → ${d.bands.map((b) => `y${b.yc}[${b.x0}-${b.x1}]`).join(' ')}`);
 }
 fs.writeFileSync(path.join(DIR, 'path.json'), JSON.stringify({ pages }, null, 0));

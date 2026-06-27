@@ -10,10 +10,15 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 type Band = { x0: number; x1: number; yc: number; bh: number };
 type Page = { file: string; w: number; h: number; bands: Band[] };
 
+const SONGS = [
+  { id: 'lida-rose', label: 'Lida Rose', dir: '/lida-baritone' },
+  { id: 'sincere', label: 'Ice Cream / Sincere', dir: '/sincere-baritone' },
+];
 const GAP = 10;
 
 export default function BaritoneBallTrainer() {
   const [pages, setPages] = useState<Page[]>([]);
+  const [songIdx, setSongIdx] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [mode, setMode] = useState<'ball' | 'scroll'>('ball'); // 'scroll' = no guide, just glide the pages (Jon's fallback)
   const [secPerLine, setSecPerLine] = useState(4);   // the dumb tempo knob
@@ -28,7 +33,10 @@ export default function BaritoneBallTrainer() {
   const idxRef = useRef(0);
   const startRef = useRef(0);
 
-  useEffect(() => { fetch('/lida-baritone/path.json').then((r) => r.json()).then((d) => setPages(d.pages || [])).catch(() => {}); }, []);
+  useEffect(() => {
+    setPlaying(false); idxRef.current = 0; setBall((b) => ({ ...b, show: false })); setResting(false); setPages([]);
+    fetch(`${SONGS[songIdx].dir}/path.json`).then((r) => r.json()).then((d) => setPages(d.pages || [])).catch(() => {});
+  }, [songIdx]);
   useEffect(() => {
     const on = () => setWidth(scrollRef.current?.clientWidth || wrapRef.current?.clientWidth || 0);
     on(); window.addEventListener('resize', on); return () => window.removeEventListener('resize', on);
@@ -106,9 +114,16 @@ export default function BaritoneBallTrainer() {
 
   return (
     <div ref={wrapRef} className="max-w-3xl mx-auto px-3 py-4">
-      <div className="flex items-center justify-between mb-2">
-        <h1 className="text-xl font-bold text-amber-300">🎈 Lida Rose · Baritone — Follow the Ball</h1>
-        <a href="/pitch-defender/vocal-trainer-3" className="text-sm text-amber-400 hover:text-amber-300">← Trainer</a>
+      <div className="flex items-center justify-between gap-2 mb-2">
+        <div className="flex items-center gap-2 min-w-0">
+          <span className="text-xl">🎈</span>
+          <select value={songIdx} onChange={(e) => setSongIdx(Number(e.target.value))}
+            className="bg-gray-800 border border-amber-500/40 rounded px-2 py-1 text-sm font-bold text-amber-300">
+            {SONGS.map((s, i) => <option key={s.id} value={i}>{s.label}</option>)}
+          </select>
+          <span className="text-sm text-gray-400 whitespace-nowrap hidden sm:inline">· Baritone</span>
+        </div>
+        <a href="/pitch-defender/vocal-trainer-3" className="text-sm text-amber-400 hover:text-amber-300 whitespace-nowrap">← Trainer</a>
       </div>
 
       {/* control bar */}
