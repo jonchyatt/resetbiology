@@ -428,11 +428,16 @@ export default function VocalTrainerIII() {
   // Phone: floats freely; position persisted per device. ──
   const [orbPos, setOrbPos] = useState<{ x: number; y: number } | null>(null);
   const [mixerOpen, setMixerOpen] = useState(false); // V3.7: full Mixing Desk as an orb-launched bottom-sheet
+  const [orbExpanded, setOrbExpanded] = useState(false); // V3.8: WODEN-style — short-press menu (transport)
+  const [orbNavOpen, setOrbNavOpen] = useState(false);   // V3.8: WODEN-style — long-press menu (jump/nav)
   // WODEN-style free drag: grab ANYWHERE on the orb and move it in 2D. A small
   // threshold distinguishes a tap (button press) from a drag, and we only capture
   // the pointer once it's truly a drag so button taps still fire.
   const orbDragRef = useRef<{ sx: number; sy: number; ox: number; oy: number; pid: number; moved: boolean; cap: boolean } | null>(null);
-  const orbWasDragRef = useRef(false);
+  const orbMovedRef = useRef(false);   // true during a drag + 400ms after — gates tap/long/double like WODEN
+  const orbLongTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const orbDidLongRef = useRef(false);
+  const orbDidDoubleRef = useRef(false);
   useEffect(() => { try { const s = localStorage.getItem('vt3_orb_pos'); if (s) setOrbPos(JSON.parse(s)); } catch {} }, []);
   // Keep the orb on-screen across rotation / resize (else it vanishes off-edge).
   useEffect(() => {
@@ -445,7 +450,6 @@ export default function VocalTrainerIII() {
     return () => { window.removeEventListener('resize', reclamp); window.removeEventListener('orientationchange', reclamp); };
   }, []);
   const onOrbDown = (e: React.PointerEvent) => {
-    orbWasDragRef.current = false;
     const r = (e.currentTarget as HTMLElement).getBoundingClientRect();
     orbDragRef.current = { sx: e.clientX, sy: e.clientY, ox: r.left, oy: r.top, pid: e.pointerId, moved: false, cap: false };
   };
@@ -456,6 +460,8 @@ export default function VocalTrainerIII() {
     if (!d.moved && Math.hypot(ddx, ddy) < 6) return; // below threshold ⇒ still a tap
     if (!d.cap) { try { (e.currentTarget as HTMLElement).setPointerCapture(d.pid); d.cap = true; } catch {} }
     d.moved = true;
+    orbMovedRef.current = true;
+    if (orbLongTimer.current) { clearTimeout(orbLongTimer.current); orbLongTimer.current = null; } // a drag cancels long-press
     const x = Math.max(4, Math.min(window.innerWidth - 48, d.ox + ddx));
     const y = Math.max(4, Math.min(window.innerHeight - 48, d.oy + ddy));
     setOrbPos({ x, y });
@@ -465,12 +471,45 @@ export default function VocalTrainerIII() {
     orbDragRef.current = null;
     if (!d) return;
     if (d.cap) { try { (e.currentTarget as HTMLElement).releasePointerCapture(d.pid); } catch {} }
-    orbWasDragRef.current = d.moved;
-    if (d.moved) { try { setOrbPos((p) => { if (p) localStorage.setItem('vt3_orb_pos', JSON.stringify(p)); return p; }); } catch {} }
+    // keep movedRef true briefly so the tap/long/double arbitration (fires up to +260ms) is suppressed
+    if (d.moved) {
+      try { setOrbPos((p) => { if (p) localStorage.setItem('vt3_orb_pos', JSON.stringify(p)); return p; }); } catch {}
+      setTimeout(() => { orbMovedRef.current = false; }, 400);
+    }
   };
-  // Swallow the click that ends a drag so a Play/Stop/gear tap doesn't fire after moving.
+  // Swallow the click that ends a drag so a menu-button tap doesn't fire after moving.
   const onOrbClickCapture = (e: React.MouseEvent) => {
-    if (orbWasDragRef.current) { e.stopPropagation(); e.preventDefault(); orbWasDragRef.current = false; }
+    if (orbMovedRef.current) { e.stopPropagation(); e.preventDefault(); }
+  };
+  // ── Orb ball gestures (WODEN model): short-press → transport menu, long-press
+  //    (500ms) → jump/nav menu, double-tap → Mixing Desk. Drag suppresses all. ──
+  const onBallDown = () => {
+    orbDidLongRef.current = false;
+    if (orbLongTimer.current) clearTimeout(orbLongTimer.current);
+    orbLongTimer.current = setTimeout(() => {
+      if (orbMovedRef.current) return;       // dragging — not a long-press
+      orbDidLongRef.current = true;
+      setOrbNavOpen(true); setOrbExpanded(false);
+    }, 500);
+  };
+  const onBallUp = () => {
+    if (orbLongTimer.current) { clearTimeout(orbLongTimer.current); orbLongTimer.current = null; }
+    if (orbDidLongRef.current) return;
+    setTimeout(() => {                        // +260ms so a double-tap can pre-empt the single
+      if (!orbDidDoubleRef.current && !orbMovedRef.current) { setOrbNavOpen(false); setOrbExpanded((v) => !v); }
+      orbDidDoubleRef.current = false;
+    }, 260);
+  };
+  const onBallCancel = () => { if (orbLongTimer.current) { clearTimeout(orbLongTimer.current); orbLongTimer.current = null; } };
+  const onBallDouble = () => { orbDidDoubleRef.current = true; setOrbNavOpen(false); setOrbExpanded(false); setMixerOpen(true); };
+  // Long-press nav: scroll to a section by matching its heading text (first hit wins).
+  const orbJumpTo = (keywords: string[]) => {
+    const els = Array.from(document.querySelectorAll('h1,h2,h3,summary'));
+    for (const kw of keywords) {
+      const t = els.find((e) => (e.textContent || '').toLowerCase().includes(kw));
+      if (t) { t.scrollIntoView({ behavior: 'smooth', block: 'start' }); break; }
+    }
+    setOrbNavOpen(false);
   };
 
   // ─── Dichotic player state (shared between Quick Play and template practice) ──
@@ -2860,11 +2899,6 @@ export default function VocalTrainerIII() {
             <h2 className="text-base font-semibold text-amber-300">🎛️ Mixing Desk</h2>
             <button onClick={() => setMixerOpen(false)} className="w-8 h-8 rounded-full bg-neutral-800 hover:bg-neutral-700 text-neutral-300 text-sm flex items-center justify-center" title="Collapse the desk back to the orb">✕</button>
           </div>
-          <p className="text-xs text-gray-500 mb-2">
-            Three independent channels — Vocals hard-LEFT, Music center, Mic hard-RIGHT. Upload
-            separate stems above; adjust each volume independently. Headphones required.
-          </p>
-
           <div className="mb-2 text-xs">
             {playbackLabel ? (
               <span className="text-amber-300">{playbackLabel}</span>
@@ -2920,31 +2954,6 @@ export default function VocalTrainerIII() {
                   )}
                 </div>
                 <span className="font-mono">{fmtTime(durationSec)}</span>
-              </div>
-              {/* V3.7: Tempo Trainer — pitch-preserving slow-down / speed-up */}
-              <div className="mb-2 flex flex-wrap items-center gap-2 rounded-lg border border-purple-500/30 bg-purple-950/20 px-2 py-1.5">
-                <span className="text-[11px] font-bold text-purple-200">🐢 Tempo</span>
-                <span className={`font-mono text-xs ${tempoPct === 100 ? 'text-gray-400' : 'text-purple-300 font-bold'}`}>{tempoPct}%</span>
-                <input
-                  type="range" min={50} max={200} step={5} value={tempoPct}
-                  onChange={(e) => changeTempo(Number(e.target.value))}
-                  className="flex-1 min-w-[120px] accent-purple-400"
-                  title="Slow down to learn, speed up to test — pitch never changes"
-                />
-                <div className="flex items-center gap-1">
-                  {[60, 75, 90, 100, 125, 150, 200].map((p) => (
-                    <button
-                      key={p}
-                      onClick={() => changeTempo(p)}
-                      className={`px-1.5 py-0.5 rounded text-[10px] font-bold border ${tempoPct === p ? 'bg-purple-600/70 border-purple-400 text-white' : 'bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700'}`}
-                    >
-                      {p}
-                    </button>
-                  ))}
-                </div>
-                {stretching
-                  ? <span className="text-[10px] text-purple-300 animate-pulse">stretching…</span>
-                  : <span className="text-[10px] text-gray-500">pitch locked 🔒</span>}
               </div>
               {practicePhrases.length > 0 && (
                 <div className="mb-1 flex gap-1 overflow-x-auto pb-1">
@@ -3056,6 +3065,31 @@ export default function VocalTrainerIII() {
 
           <div className="rounded-lg border border-gray-800 bg-gray-950/40 p-2">
             <div className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-2">Mixing desk · plunk · output · mic profile</div>
+            {/* V3.7: Tempo Trainer — pitch-preserving slow-down / speed-up (lives in the desk) */}
+            <div className="mb-3 flex flex-wrap items-center gap-2 rounded-lg border border-purple-500/30 bg-purple-950/20 px-2 py-1.5">
+              <span className="text-[11px] font-bold text-purple-200">🐢 Tempo</span>
+              <span className={`font-mono text-xs ${tempoPct === 100 ? 'text-gray-400' : 'text-purple-300 font-bold'}`}>{tempoPct}%</span>
+              <input
+                type="range" min={50} max={200} step={5} value={tempoPct}
+                onChange={(e) => changeTempo(Number(e.target.value))}
+                className="flex-1 min-w-[120px] accent-purple-400"
+                title="Slow down to learn, speed up to test — pitch never changes"
+              />
+              <div className="flex items-center gap-1 flex-wrap">
+                {[60, 75, 90, 100, 125, 150, 200].map((p) => (
+                  <button
+                    key={p}
+                    onClick={() => changeTempo(p)}
+                    className={`px-1.5 py-0.5 rounded text-[10px] font-bold border ${tempoPct === p ? 'bg-purple-600/70 border-purple-400 text-white' : 'bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700'}`}
+                  >
+                    {p}
+                  </button>
+                ))}
+              </div>
+              {stretching
+                ? <span className="text-[10px] text-purple-300 animate-pulse">stretching…</span>
+                : <span className="text-[10px] text-gray-500">pitch locked 🔒</span>}
+            </div>
             <div className="space-y-3">
           {/* V3 mixing desk: per-stream volume (0-400%) + L/R balance + live level meter */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -3187,20 +3221,67 @@ export default function VocalTrainerIII() {
         onPointerUp={onOrbUp}
         onClickCapture={onOrbClickCapture}
         style={{ touchAction: 'none', ...(mixerOpen ? { top: 12, right: 12 } : (orbPos ? { left: orbPos.x, top: orbPos.y } : { right: 14, bottom: 84 })) }}
-        className="fixed z-[10000] select-none cursor-grab active:cursor-grabbing"
+        className="fixed z-[10000] select-none"
       >
-        <div className="flex items-center gap-1 rounded-full bg-neutral-900/90 backdrop-blur border border-amber-500/40 shadow-2xl px-1.5 py-1.5">
-          <div className="px-0.5 text-amber-400/60 leading-none pointer-events-none" title="drag the player anywhere">⠿</div>
-          {playbackState === 'playing' ? (
-            <button onClick={pausePlayback} className="w-11 h-11 rounded-full bg-amber-600 hover:bg-amber-500 text-white text-lg flex items-center justify-center" title="Pause">⏸</button>
-          ) : (
-            <button onClick={playOrResume} disabled={!vocalBufRef.current && !musicBufRef.current} className="w-11 h-11 rounded-full bg-emerald-600 hover:bg-emerald-500 disabled:bg-neutral-700 disabled:text-neutral-500 text-white text-lg flex items-center justify-center" title="Play">▶</button>
+        <div className="flex items-center gap-1.5 flex-row-reverse">
+          {/* WODEN-style tiny solar orb — tap to expand/collapse, drag to move */}
+          <button
+            onPointerDown={onBallDown}
+            onPointerUp={onBallUp}
+            onPointerCancel={onBallCancel}
+            onPointerLeave={onBallCancel}
+            onDoubleClick={onBallDouble}
+            title="Tap → controls · long-press → jump menu · double-tap → mixing desk · drag → move"
+            className="relative shrink-0 grid place-items-center rounded-full border backdrop-blur-md shadow-lg cursor-grab active:cursor-grabbing"
+            style={{
+              width: 56, height: 56, background: 'rgba(5,5,16,0.5)',
+              borderColor: playbackState === 'playing' ? '#fbbf24' : 'rgba(245,158,11,0.55)',
+              boxShadow: playbackState === 'playing' ? '0 0 24px #fbbf24aa' : '0 0 14px rgba(245,158,11,0.5)',
+            }}
+          >
+            <span className="relative block" style={{ width: 50, height: 50 }}>
+              <span className="absolute rounded-full" style={{ inset: '-6px', background: 'radial-gradient(circle, rgba(255,77,13,0.35) 0%, rgba(255,40,0,0.15) 50%, transparent 72%)', animation: 'vtorb-outer 4.2s ease-in-out infinite' }} />
+              <span className="absolute rounded-full" style={{ inset: '-3px', background: 'radial-gradient(circle, rgba(255,153,38,0.6) 0%, rgba(255,64,0,0.3) 55%, transparent 75%)', animation: 'vtorb-mid 3.5s ease-in-out infinite' }} />
+              <span className="absolute rounded-full" style={{ inset: '0px', background: 'radial-gradient(circle at 45% 42%, rgba(255,245,220,0.95) 0%, rgba(255,220,130,0.9) 25%, rgba(255,170,50,0.8) 50%, rgba(255,90,15,0.6) 75%, rgba(200,40,0,0.3) 100%)', boxShadow: '0 0 12px 2px rgba(255,170,50,0.4), 0 0 24px 4px rgba(255,100,20,0.2), inset 0 0 8px 2px rgba(255,240,200,0.3)', animation: 'vtorb-core 3s ease-in-out infinite' }} />
+              {playbackState === 'playing' && (
+                <span className="absolute inset-0 grid place-items-center text-[#3a1500] text-base pointer-events-none">❚❚</span>
+              )}
+            </span>
+          </button>
+
+          {/* expanding control menu — only when the orb is open */}
+          {orbExpanded && (
+            <div className="flex items-center gap-1 rounded-full bg-neutral-900/92 backdrop-blur border border-amber-500/40 shadow-2xl px-1.5 py-1.5">
+              {playbackState === 'playing' ? (
+                <button onClick={pausePlayback} className="w-11 h-11 rounded-full bg-amber-600 hover:bg-amber-500 text-white text-lg grid place-items-center" title="Pause">⏸</button>
+              ) : (
+                <button onClick={playOrResume} disabled={!vocalBufRef.current && !musicBufRef.current} className="w-11 h-11 rounded-full bg-emerald-600 hover:bg-emerald-500 disabled:bg-neutral-700 disabled:text-neutral-500 text-white text-lg grid place-items-center" title="Play">▶</button>
+              )}
+              <button onClick={stopPlayback} className="w-9 h-9 rounded-full bg-neutral-700 hover:bg-neutral-600 text-white text-sm grid place-items-center" title="Stop">⏹</button>
+              <button onClick={() => setLoopWhole((v) => !v)} className={`w-9 h-9 rounded-full text-sm grid place-items-center ${loopWhole ? 'bg-cyan-600 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`} title="Loop whole song">↻</button>
+              <button onClick={() => setMixerOpen((v) => !v)} className={`w-9 h-9 rounded-full text-sm grid place-items-center ${mixerOpen ? 'bg-amber-600 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`} title="Mixing desk (volumes · pan · tempo · loops)">🎛️</button>
+              <div className="px-1.5 text-[10px] font-mono text-neutral-400 tabular-nums">{practiceTime.toFixed(1)}s</div>
+            </div>
           )}
-          <button onClick={stopPlayback} className="w-9 h-9 rounded-full bg-neutral-700 hover:bg-neutral-600 text-white text-sm flex items-center justify-center" title="Stop">⏹</button>
-          <button onClick={() => setLoopWhole((v) => !v)} className={`w-9 h-9 rounded-full text-sm flex items-center justify-center ${loopWhole ? 'bg-cyan-600 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`} title="Loop whole song">↻</button>
-          <button onClick={() => setMixerOpen((v) => !v)} className={`w-9 h-9 rounded-full text-sm flex items-center justify-center ${mixerOpen ? 'bg-amber-600 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`} title="Mixing desk (volumes · pan · tempo · loops)">🎛️</button>
-          <div className="px-1.5 text-[10px] font-mono text-neutral-400 tabular-nums">{practiceTime.toFixed(1)}s</div>
+
+          {/* long-press → jump / nav menu */}
+          {orbNavOpen && (
+            <div className="flex flex-col gap-0.5 rounded-2xl bg-neutral-900/95 backdrop-blur border border-cyan-500/40 shadow-2xl p-1.5">
+              <div className="text-[9px] uppercase tracking-wider text-neutral-500 px-2 pb-0.5">Jump to</div>
+              <button onClick={() => orbJumpTo(['library'])} className="text-left text-xs text-neutral-200 hover:bg-neutral-800 rounded px-2 py-1.5 whitespace-nowrap">📚 Library</button>
+              <button onClick={() => orbJumpTo(['upload'])} className="text-left text-xs text-neutral-200 hover:bg-neutral-800 rounded px-2 py-1.5 whitespace-nowrap">⬆ Upload / Extract</button>
+              <button onClick={() => orbJumpTo(['score view', 'sheet music', 'score'])} className="text-left text-xs text-neutral-200 hover:bg-neutral-800 rounded px-2 py-1.5 whitespace-nowrap">🎼 Score</button>
+              <button onClick={() => orbJumpTo(['tracker', 'note editor', 'zoom'])} className="text-left text-xs text-neutral-200 hover:bg-neutral-800 rounded px-2 py-1.5 whitespace-nowrap">📊 Tracker</button>
+              <button onClick={() => { setMixerOpen(true); setOrbNavOpen(false); }} className="text-left text-xs text-amber-200 hover:bg-neutral-800 rounded px-2 py-1.5 whitespace-nowrap">🎛️ Mixing Desk</button>
+              <button onClick={() => { window.scrollTo({ top: 0, behavior: 'smooth' }); setOrbNavOpen(false); }} className="text-left text-xs text-neutral-200 hover:bg-neutral-800 rounded px-2 py-1.5 whitespace-nowrap">⬆️ Top</button>
+            </div>
+          )}
         </div>
+        <style>{`
+          @keyframes vtorb-core { 0%,100%{transform:scale(0.92);opacity:0.85} 50%{transform:scale(1.08);opacity:1} }
+          @keyframes vtorb-mid { 0%,100%{transform:scale(0.95);opacity:0.5} 50%{transform:scale(1.15);opacity:0.75} }
+          @keyframes vtorb-outer { 0%,100%{transform:scale(0.9);opacity:0.3} 50%{transform:scale(1.2);opacity:0.55} }
+        `}</style>
       </div>
     </div>
   );
