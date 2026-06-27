@@ -488,6 +488,7 @@ export default function VocalTrainerIII() {
   const [orbExpanded, setOrbExpanded] = useState(false); // V3.8: WODEN-style — short-press menu (transport)
   const [scoreFocus, setScoreFocus] = useState(false);   // V3.8: Score Focus — hide everything but the score + orb (Codex cleanup #1)
   const [abOpen, setAbOpen] = useState(false);           // V3.8: long-press Play → A/B/repeat cluster for focus practice (Jon)
+  const [editNotes, setEditNotes] = useState(false);     // V3.8: Pitch Tracker defaults to TRACKING; toggle to correct/delete notes (Codex cleanup #5)
   const playLongTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const playDidLongRef = useRef(false);
   const [orbNavOpen, setOrbNavOpen] = useState(false);   // V3.8: WODEN-style — long-press menu (jump/nav)
@@ -2788,7 +2789,17 @@ export default function VocalTrainerIII() {
         {(extractedNotes.length > 0 || omrTarget) && (
           <section className="order-3 bg-gray-900/60 border border-amber-500/20 rounded-lg p-3">
             <div className="flex items-center justify-between mb-3 gap-2">
-              <h2 className="text-lg font-semibold text-amber-300">Pitch Tracker</h2>
+              <div className="flex items-center gap-2">
+                <h2 className="text-lg font-semibold text-amber-300">Pitch Tracker</h2>
+                <button
+                  onClick={() => setEditNotes((v) => !v)}
+                  aria-label={editNotes ? 'Done editing notes' : 'Edit notes'}
+                  className={`px-2 py-0.5 rounded text-[11px] font-semibold border ${editNotes ? 'bg-amber-600 border-amber-400 text-white' : 'bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700'}`}
+                  title="Toggle note-correcting (click notes to delete bad ones)"
+                >
+                  {editNotes ? '✓ Done' : '✎ Correct'}
+                </button>
+              </div>
               <div className="flex items-center flex-wrap gap-2 text-xs text-gray-400">
                 <span>Zoom</span>
                 <input
@@ -2893,10 +2904,10 @@ export default function VocalTrainerIII() {
                       opacity={0.5 + Math.min(0.5, n.amplitude * 0.7)}
                       stroke={isCurrent ? '#fde047' : undefined}
                       strokeWidth={isCurrent ? 1.5 : 0}
-                      onClick={() => deleteNote(idx)}
-                      style={{ cursor: 'pointer' }}
+                      onClick={editNotes ? () => deleteNote(idx) : undefined}
+                      style={{ cursor: editNotes ? 'pointer' : 'default' }}
                     >
-                      <title>{midiToName(n.pitchMidi)} · t={n.startTimeSeconds.toFixed(2)}s · click to delete</title>
+                      <title>{midiToName(n.pitchMidi)} · t={n.startTimeSeconds.toFixed(2)}s{editNotes ? ' · click to delete' : ''}</title>
                     </rect>
                   );
                 })}
