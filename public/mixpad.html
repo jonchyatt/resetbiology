@@ -31,7 +31,7 @@
 <body>
 <div class="wrap">
   <h1>Sincere — Mix Pad</h1>
-  <p class="tag">Dichotic practice. Slide each part anywhere from left ear to right. Headphones on.</p>
+  <p class="tag">One stereo recording, split: your part + the quartet as two tracks you can balance and slide between ears. Headphones on.</p>
 
   <div class="play"><button class="pbtn" id="play">▶</button><span class="tm" id="tm">0:00 / 0:00</span></div>
 
@@ -51,23 +51,24 @@
     <div class="vrow"><input type="range" class="pan" id="panQ" min="-100" max="100" value="-100"><span class="pct" id="panQV">L</span></div>
   </div>
 
-  <p class="note">Hard-wired Sincere · baritone-only + quartet-minus-baritone · slide them together for blend practice</p>
+  <p class="note">Split from one baked-stereo recording (your part = left channel, quartet = right channel) → cross-routed, fully controllable. Always perfectly in sync.</p>
 </div>
 
 <script>
 const $=(id)=>document.getElementById(id);
-const baA=new Audio('/sincere-baritone/bari.mp3');      // Sincere - Baritone (your part)
-const quA=new Audio('/sincere-baritone/quartet.mp3');   // Sincere - Baritone Minus (quartet, no baritone) — same package, matched
-baA.preload='auto'; quA.preload='auto';
+// ONE baked-stereo file: LEFT channel = baritone (your part), RIGHT channel = quartet (no baritone).
+const audio=new Audio('/sincere-baritone/stereo.mp3'); audio.preload='auto';
 let ctx,gBa,gQu,pBa,pQu,wired=false;
 
 function wire(){
   if(wired)return; wired=true;
   ctx=new (window.AudioContext||window.webkitAudioContext)();
-  const sBa=ctx.createMediaElementSource(baA), sQu=ctx.createMediaElementSource(quA);
+  const src=ctx.createMediaElementSource(audio);
+  const split=ctx.createChannelSplitter(2);
+  src.connect(split);
   gBa=ctx.createGain(); gQu=ctx.createGain(); pBa=ctx.createStereoPanner(); pQu=ctx.createStereoPanner();
-  sBa.connect(gBa).connect(pBa).connect(ctx.destination);
-  sQu.connect(gQu).connect(pQu).connect(ctx.destination);
+  split.connect(gBa,0); gBa.connect(pBa).connect(ctx.destination);   // ch0 LEFT = baritone
+  split.connect(gQu,1); gQu.connect(pQu).connect(ctx.destination);   // ch1 RIGHT = quartet
   applyVol(); applyPan();
 }
 const earLbl=(v)=> v>=60?'RIGHT': v<=-60?'LEFT': v>=20?'R-ish': v<=-20?'L-ish':'CENTER';
@@ -79,11 +80,9 @@ function applyPan(){ const pb=+$('panBari').value, pq=+$('panQ').value;
 
 const fmt=(s)=>`${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
 $('play').addEventListener('click',()=>{ wire(); if(ctx.state==='suspended')ctx.resume();
-  if(baA.paused){ quA.currentTime=baA.currentTime; baA.play(); quA.play(); $('play').textContent='⏸'; }
-  else { baA.pause(); quA.pause(); $('play').textContent='▶'; } });
-setInterval(()=>{ if(!baA.paused && Math.abs(baA.currentTime-quA.currentTime)>0.04) quA.currentTime=baA.currentTime; },250);
-baA.addEventListener('timeupdate',()=>$('tm').textContent=`${fmt(baA.currentTime)} / ${fmt(baA.duration||0)}`);
-baA.addEventListener('ended',()=>{quA.pause();$('play').textContent='▶';});
+  if(audio.paused){ audio.play(); $('play').textContent='⏸'; } else { audio.pause(); $('play').textContent='▶'; } });
+audio.addEventListener('timeupdate',()=>$('tm').textContent=`${fmt(audio.currentTime)} / ${fmt(audio.duration||0)}`);
+audio.addEventListener('ended',()=>$('play').textContent='▶');
 $('volBari').addEventListener('input',e=>{$('volBariV').textContent=e.target.value+'%';applyVol();});
 $('volQ').addEventListener('input',e=>{$('volQV').textContent=e.target.value+'%';applyVol();});
 $('panBari').addEventListener('input',applyPan);
