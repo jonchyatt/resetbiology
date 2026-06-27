@@ -388,6 +388,25 @@ export default function VocalTrainerIII() {
   // ─── Editor state ───────────────────────────────────────────────────────
   const [zoom, setZoom] = useState(80); // px per second
 
+  // ─── V3.6 TransportOrb (Codex layout plan, Jon 2026-06-27): floating, draggable, always-
+  // reachable Play/Stop. It IS the Play button, so it can never be permanently covered.
+  // Phone: floats freely; position persisted per device. ──
+  const [orbPos, setOrbPos] = useState<{ x: number; y: number } | null>(null);
+  const orbDragRef = useRef<{ dx: number; dy: number } | null>(null);
+  useEffect(() => { try { const s = localStorage.getItem('vt3_orb_pos'); if (s) setOrbPos(JSON.parse(s)); } catch {} }, []);
+  const onOrbDown = (e: React.PointerEvent) => {
+    const el = e.currentTarget as HTMLElement; el.setPointerCapture(e.pointerId);
+    const r = (el.parentElement as HTMLElement).getBoundingClientRect();
+    orbDragRef.current = { dx: e.clientX - r.left, dy: e.clientY - r.top };
+  };
+  const onOrbMove = (e: React.PointerEvent) => {
+    if (!orbDragRef.current) return;
+    const x = Math.max(6, Math.min(window.innerWidth - 200, e.clientX - orbDragRef.current.dx));
+    const y = Math.max(6, Math.min(window.innerHeight - 70, e.clientY - orbDragRef.current.dy));
+    setOrbPos({ x, y });
+  };
+  const onOrbUp = () => { orbDragRef.current = null; try { setOrbPos((p) => { if (p) localStorage.setItem('vt3_orb_pos', JSON.stringify(p)); return p; }); } catch {} };
+
   // ─── Dichotic player state (shared between Quick Play and template practice) ──
   // Three independent tracks:
   //   1. Vocals  — hard-LEFT   (Jon's vocal-only stem)
@@ -3000,6 +3019,26 @@ export default function VocalTrainerIII() {
             </div>
           </details>
         </section>
+      </div>
+
+      {/* ── V3.6 TransportOrb — floating, draggable, always-reachable transport ── */}
+      <div
+        onPointerMove={onOrbMove}
+        onPointerUp={onOrbUp}
+        style={orbPos ? { left: orbPos.x, top: orbPos.y } : { right: 14, bottom: 84 }}
+        className="fixed z-[10000] select-none"
+      >
+        <div className="flex items-center gap-1 rounded-full bg-neutral-900/90 backdrop-blur border border-amber-500/40 shadow-2xl px-1.5 py-1.5">
+          <div onPointerDown={onOrbDown} className="cursor-grab active:cursor-grabbing px-1 text-amber-400/70 leading-none" title="drag the player">⠿</div>
+          {playbackState === 'playing' ? (
+            <button onClick={pausePlayback} className="w-11 h-11 rounded-full bg-amber-600 hover:bg-amber-500 text-white text-lg flex items-center justify-center" title="Pause">⏸</button>
+          ) : (
+            <button onClick={playOrResume} disabled={!vocalBufRef.current && !musicBufRef.current} className="w-11 h-11 rounded-full bg-emerald-600 hover:bg-emerald-500 disabled:bg-neutral-700 disabled:text-neutral-500 text-white text-lg flex items-center justify-center" title="Play">▶</button>
+          )}
+          <button onClick={stopPlayback} className="w-9 h-9 rounded-full bg-neutral-700 hover:bg-neutral-600 text-white text-sm flex items-center justify-center" title="Stop">⏹</button>
+          <button onClick={() => setLoopWhole((v) => !v)} className={`w-9 h-9 rounded-full text-sm flex items-center justify-center ${loopWhole ? 'bg-cyan-600 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`} title="Loop whole song">↻</button>
+          <div className="px-1.5 text-[10px] font-mono text-neutral-400 tabular-nums">{practiceTime.toFixed(1)}s</div>
+        </div>
       </div>
     </div>
   );
