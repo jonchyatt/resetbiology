@@ -1824,6 +1824,9 @@ export default function VocalTrainerIII() {
     loadTemplateAudio(currentTemplate.audioUrl, currentTemplate.title);
     setSourcesOpen(false);  // close the Sources drawer after a pick…
     setScoreFocus(true);    // …and default into score-focused layout (Codex #1/#3)
+    // load wires audio + SCORE together: show the engraved staff if this part has
+    // one (Lida Rose Lead/Baritone), else fall back to the printed PDF pages.
+    setScoreView(getLidaRoseScorePart(parseMmTitle(currentTemplate.title)) ? 'engraved' : 'pages');
   }, [currentTemplate, loadTemplateAudio]);
 
   // Update vocal track volume live (without restarting playback).
@@ -2661,7 +2664,7 @@ export default function VocalTrainerIII() {
               <div className="mt-2">
                 <select
                   value=""
-                  onChange={(e) => { const it = library.find((x) => x.id === e.target.value); if (it?.audioUrl) { setUploadFile(null); loadTemplateAudio(it.audioUrl, it.title); setSourcesOpen(false); setScoreFocus(true); } }}
+                  onChange={(e) => { const it = library.find((x) => x.id === e.target.value); if (it) { setUploadFile(null); setSelectedId(it.id); /* canonical load → wires audio + notes + score together */ } }}
                   className="w-full bg-gray-800 border border-amber-700/50 rounded px-2 py-1.5 text-xs text-gray-100"
                 >
                   <option value="">📚 …or pick a Library track (any part)</option>
