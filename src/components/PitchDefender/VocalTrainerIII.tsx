@@ -2121,7 +2121,7 @@ export default function VocalTrainerIII() {
         </section>
 
         {/* ─── Library ───────────────────────────────────────────────── */}
-        <details className="order-3 bg-gray-900/60 border border-amber-500/20 rounded-lg p-3">
+        <details open className="order-3 bg-gray-900/60 border border-amber-500/20 rounded-lg p-3">
           <summary className="cursor-pointer select-none text-sm font-semibold text-amber-300 marker:text-amber-500">
             Library <span className="text-xs font-normal text-gray-500">— saved templates and extraction tools</span>
           </summary>
