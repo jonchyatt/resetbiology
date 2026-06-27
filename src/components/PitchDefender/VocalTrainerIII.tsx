@@ -487,6 +487,7 @@ export default function VocalTrainerIII() {
   const [mixerOpen, setMixerOpen] = useState(false); // V3.7: full Mixing Desk as an orb-launched bottom-sheet
   const [orbExpanded, setOrbExpanded] = useState(false); // V3.8: WODEN-style — short-press menu (transport)
   const [scoreFocus, setScoreFocus] = useState(false);   // V3.8: Score Focus — hide everything but the score + orb (Codex cleanup #1)
+  const [sourcesOpen, setSourcesOpen] = useState(false); // V3.8: Sources drawer — Library + Add/Extract behind an orb button (Codex #3 / Jon)
   const [abOpen, setAbOpen] = useState(false);           // V3.8: long-press Play → A/B/repeat cluster for focus practice (Jon)
   const [editNotes, setEditNotes] = useState(false);     // V3.8: Pitch Tracker defaults to TRACKING; toggle to correct/delete notes (Codex cleanup #5)
   const playLongTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -1821,7 +1822,8 @@ export default function VocalTrainerIII() {
   useEffect(() => {
     if (!currentTemplate?.audioUrl) return;
     loadTemplateAudio(currentTemplate.audioUrl, currentTemplate.title);
-    setScoreFocus(true); // Codex cleanup #1: after loading a song, default into score-focused layout
+    setSourcesOpen(false);  // close the Sources drawer after a pick…
+    setScoreFocus(true);    // …and default into score-focused layout (Codex #1/#3)
   }, [currentTemplate, loadTemplateAudio]);
 
   // Update vocal track volume live (without restarting playback).
@@ -2326,15 +2328,24 @@ export default function VocalTrainerIII() {
       {/* Full-viewport dark backdrop — kills the white strip above the global-nav offset (V3.4 QA).
           Root is `relative isolate` so this -z-10 layer stays scoped to this stacking context. */}
       <div aria-hidden className="fixed inset-0 -z-10 bg-[#08080f] pointer-events-none" />
-      <div className={`max-w-6xl mx-auto flex flex-col gap-3 ${scoreFocus ? 'vt3-focus' : ''}`}>
-        {scoreFocus && (
-          <style>{`.vt3-focus > :not(.vt3-keep){display:none!important}`}</style>
+      <div className={`max-w-6xl mx-auto flex flex-col gap-3 ${scoreFocus ? 'vt3-focus' : ''} ${sourcesOpen ? 'vt3-sources' : ''}`}>
+        {(scoreFocus || sourcesOpen) && (
+          <style>{`.vt3-focus > :not(.vt3-keep){display:none!important} .vt3-sources > :not(.vt3-src-keep){display:none!important}`}</style>
         )}
-        {scoreFocus && (
+        {scoreFocus && !sourcesOpen && (
           <button onClick={() => setScoreFocus(false)} aria-label="Exit Focus"
             className="vt3-keep fixed top-2 left-2 z-[10000] px-3 py-1.5 rounded-full bg-neutral-900/90 backdrop-blur border border-amber-500/50 text-amber-200 text-xs font-semibold shadow-lg">
             ✕ Exit Focus
           </button>
+        )}
+        {sourcesOpen && (
+          <div className="vt3-src-keep flex items-center justify-between sticky top-0 z-[20] bg-[#08080f]/95 backdrop-blur py-1">
+            <h2 className="text-lg font-bold text-amber-300">📂 Sources</h2>
+            <button onClick={() => setSourcesOpen(false)} aria-label="Close Sources"
+              className="px-3 py-1.5 rounded-full bg-neutral-800 hover:bg-neutral-700 border border-neutral-600 text-gray-200 text-xs font-semibold">
+              ✕ Done
+            </button>
+          </div>
         )}
         <header className="order-1 flex items-center justify-between">
           <div>
@@ -2480,7 +2491,7 @@ export default function VocalTrainerIII() {
         </section>
 
         {/* ─── Library ───────────────────────────────────────────────── */}
-        <details className="order-5 bg-gray-900/60 border border-amber-500/20 rounded-lg p-3">
+        <details className="vt3-src-keep order-5 bg-gray-900/60 border border-amber-500/20 rounded-lg p-3" open={sourcesOpen}>
           <summary className="cursor-pointer select-none text-sm font-semibold text-amber-300 marker:text-amber-500">
             Library <span className="text-xs font-normal text-gray-500">— saved templates and extraction tools</span>
           </summary>
@@ -2613,11 +2624,11 @@ export default function VocalTrainerIII() {
         </details>
 
         {/* ─── Upload + extraction ───────────────────────────────────── */}
-        <details className="order-6 bg-gray-900/60 border border-amber-500/20 rounded-lg p-3">
+        <details className="vt3-src-keep order-6 bg-gray-900/60 border border-amber-500/20 rounded-lg p-3" open={sourcesOpen}>
           <summary className="cursor-pointer select-none text-sm font-semibold text-amber-300 marker:text-amber-500">
-            Upload + Extract <span className="text-xs font-normal text-gray-500">— add stems or extract notes</span>
+            Add / Extract <span className="text-xs font-normal text-gray-500">— add stems or extract notes</span>
           </summary>
-          <h2 className="text-lg font-semibold text-amber-300 mb-3">Upload + Extract</h2>
+          <h2 className="text-lg font-semibold text-amber-300 mb-3">Add / Extract</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {/* Vocals stem (primary) */}
             <div
@@ -2650,7 +2661,7 @@ export default function VocalTrainerIII() {
               <div className="mt-2">
                 <select
                   value=""
-                  onChange={(e) => { const it = library.find((x) => x.id === e.target.value); if (it?.audioUrl) { setUploadFile(null); loadTemplateAudio(it.audioUrl, it.title); } }}
+                  onChange={(e) => { const it = library.find((x) => x.id === e.target.value); if (it?.audioUrl) { setUploadFile(null); loadTemplateAudio(it.audioUrl, it.title); setSourcesOpen(false); setScoreFocus(true); } }}
                   className="w-full bg-gray-800 border border-amber-700/50 rounded px-2 py-1.5 text-xs text-gray-100"
                 >
                   <option value="">📚 …or pick a Library track (any part)</option>
@@ -2702,7 +2713,7 @@ export default function VocalTrainerIII() {
               <div className="mt-2">
                 <select
                   value=""
-                  onChange={(e) => { const it = library.find((x) => x.id === e.target.value); if (it?.audioUrl) { setMusicFile(null); loadMusicFromUrl(it.audioUrl, it.title); } }}
+                  onChange={(e) => { const it = library.find((x) => x.id === e.target.value); if (it?.audioUrl) { setMusicFile(null); loadMusicFromUrl(it.audioUrl, it.title); setSourcesOpen(false); } }}
                   className="w-full bg-gray-800 border border-purple-700/50 rounded px-2 py-1.5 text-xs text-gray-100"
                 >
                   <option value="">📚 …or pick a Library track (e.g. a “Minus” backing)</option>
@@ -3344,6 +3355,7 @@ export default function VocalTrainerIII() {
               <button onClick={() => setLoopWhole((v) => !v)} className={`w-9 h-9 rounded-full text-sm grid place-items-center ${loopWhole ? 'bg-cyan-600 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`} title="Loop whole song">↻</button>
               <button onClick={() => setMixerOpen((v) => !v)} aria-label="Mixer" className={`w-9 h-9 rounded-full text-sm grid place-items-center ${mixerOpen ? 'bg-amber-600 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`} title="Mixing desk (volumes · pan · tempo · loops)">🎛️</button>
               <button onClick={() => setScoreFocus((v) => !v)} aria-label={scoreFocus ? 'Exit Focus' : 'Score Focus'} className={`w-9 h-9 rounded-full text-sm grid place-items-center ${scoreFocus ? 'bg-amber-600 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`} title="Score Focus — hide everything but the score">⛶</button>
+              <button onClick={() => { setScoreFocus(false); setSourcesOpen(true); }} aria-label="Sources" className={`w-9 h-9 rounded-full text-sm grid place-items-center ${sourcesOpen ? 'bg-amber-600 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`} title="Sources — Library + Add/Extract">📂</button>
               <div className="px-1.5 text-[10px] font-mono text-neutral-400 tabular-nums">{practiceTime.toFixed(1)}s</div>
             </div>
           )}
