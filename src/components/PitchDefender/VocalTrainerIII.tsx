@@ -417,8 +417,11 @@ export default function VocalTrainerIII() {
   const [loopB, setLoopB] = useState<number | null>(null);
   const loopARef = useRef<number | null>(null);
   const loopBRef = useRef<number | null>(null);
+  const [loopWhole, setLoopWhole] = useState(false); // V3.6: loop the WHOLE song (Jon 2026-06-27)
+  const loopWholeRef = useRef(false);
   useEffect(() => { loopARef.current = loopA; }, [loopA]);
   useEffect(() => { loopBRef.current = loopB; }, [loopB]);
+  useEffect(() => { loopWholeRef.current = loopWhole; }, [loopWhole]);
   const startAudioSourceRef = useRef<(() => Promise<void>) | null>(null);
   const seekBarElRef = useRef<HTMLDivElement | null>(null);
 
@@ -1179,6 +1182,14 @@ export default function VocalTrainerIII() {
         return;
       }
       if (elapsed >= playbackDurationRef.current) {
+        // V3.6: full-song loop — restart from 0 instead of stopping (Jon 2026-06-27)
+        if (loopWholeRef.current) {
+          stopAudioSource();
+          pauseOffsetRef.current = 0;
+          setPracticeTime(0);
+          startAudioSourceRef.current?.();
+          return;
+        }
         saveTakeSummary('ended', playbackDurationRef.current);
         stopAudioSource();
         pauseOffsetRef.current = 0;
@@ -2661,6 +2672,13 @@ export default function VocalTrainerIII() {
                     title="Set loop END at the playhead (must be after A)"
                   >
                     B {loopB != null ? fmtTime(loopB) : ''}
+                  </button>
+                  <button
+                    onClick={() => setLoopWhole((v) => !v)}
+                    className={`px-2 py-0.5 rounded text-[11px] font-bold border ${loopWhole ? 'bg-cyan-700/60 border-cyan-400 text-cyan-100' : 'bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700'}`}
+                    title="Loop the WHOLE song — restarts from the top when it ends"
+                  >
+                    ↻ Song
                   </button>
                   {(loopA != null || loopB != null) && (
                     <button
