@@ -33,7 +33,7 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>Sincere — Mix Pad</h1>
+  <h1 id="mpTitle">Mix Pad</h1>
   <p class="tag">One stereo recording, split: your part + the quartet as two tracks you can balance and slide between ears. Headphones on.</p>
 
   <div class="play">
@@ -64,7 +64,11 @@
 
 <script>
 const $=(id)=>document.getElementById(id);
-const audio=new Audio('/sincere-baritone/stereo.mp3'); audio.preload='auto';
+const SONGS={ sincere:'Ice Cream / Sincere', itsyou:"It's You", lida:'Lida Rose', goodnight:'Goodnight Ladies' };
+const SONG=(()=>{ const s=new URLSearchParams(location.search).get('song'); return SONGS[s]?s:'sincere'; })();
+document.title=`${SONGS[SONG]} — Dichotic Mix Pad`;
+$('mpTitle').textContent=`${SONGS[SONG]} — Mix Pad`;
+const audio=new Audio(`/${SONG}-baritone/stereo.mp3`); audio.preload='auto';
 let ctx,gBa,gQu,pBa,pQu,lim,wired=false,scrubbing=false;
 
 function wire(){

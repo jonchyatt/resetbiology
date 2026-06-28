@@ -363,10 +363,13 @@ function syncButtons() {
   });
 }
 
+const mixFrame = byId('mixFrame');
+
 function loadScore() {
   currentSongLabel.textContent = getSong(activeSong).label;
-  mixNote.textContent = activeSong === 'sincere' ? '' : 'Mix pad: Sincere only for now';
+  mixNote.textContent = '';
   scoreFrame.src = buildScoreUrl();
+  mixFrame.src = '/mixpad.html?song=' + encodeURIComponent(activeSong);
   syncButtons();
 }
 
