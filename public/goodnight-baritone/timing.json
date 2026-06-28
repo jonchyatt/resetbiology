@@ -1,0 +1,1 @@
+{"source": "aubio onset-density auto-timing", "systems": 9, "onsets": 88, "taps": [{"sys": 0, "t": 0.0}, {"sys": 1, "t": 5.4}, {"sys": 2, "t": 8.37}, {"sys": 3, "t": 14.03}, {"sys": 4, "t": 18.12}, {"sys": 5, "t": 25.62}, {"sys": 6, "t": 30.47}, {"sys": 7, "t": 37.29}, {"sys": 8, "t": 47.36}]}

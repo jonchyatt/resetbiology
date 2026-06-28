@@ -93,6 +93,7 @@ const $=(id)=>document.getElementById(id);
 const viewer=$('viewer'),canvas=$('canvas'),page=$('page'),band=$('band'),cursor=$('cursor'),trail=$('trail'),pitchDot=$('pitch'),audio=$('audio');
 let DIR=SONGS[0].dir,songId=SONGS[0].id,systems=[],curPageIdx=-1,dur=0,ready=false;
 let TAPS={}; try{TAPS=JSON.parse(localStorage.getItem('sf_taps')||'{}');}catch(e){}
+let AUTO={};   // per-song onset-density timing from <song>/timing.json (default; manual taps override)
 let tapMode=false, tapList=[];
 const PARAMS=new URLSearchParams(location.search), WANT_MIC=PARAMS.get('mic')==='1', PRESET_SLOW=parseFloat(PARAMS.get('slow')||'1');
 const ZOOM=1.75; // zoom the page so the staff is readable; auto-follow pans to the cursor
@@ -112,6 +113,7 @@ function loadSong(i){
   audio.pause();$('play').textContent='▶';audio.currentTime=0;audio.src=`${DIR}/audio.mp3`;
   band.style.width=trail.style.width=cursor.style.height='0px';loadNudge();
   fetch(`${DIR}/path.json`).then(r=>r.json()).then(d=>{(d.pages||[]).forEach((pg,pi)=>(pg.bands||[]).forEach(b=>systems.push({page:pi,x0:b.x0,x1:b.x1,yc:b.yc,bh:b.bh})));ready=systems.length>0;showPage(0);}).catch(()=>{});
+  fetch(`${DIR}/timing.json`).then(r=>r.ok?r.json():null).then(d=>{ if(d&&d.taps&&d.taps.length>=2) AUTO[songId]=d.taps; }).catch(()=>{});
 }
 function showPage(pi){if(pi===curPageIdx)return;curPageIdx=pi;page.src=`${DIR}/page-${String(pi+1).padStart(2,'0')}.jpg`;}
 
@@ -120,7 +122,7 @@ function place(t){
   if(!ready||!dur)return;
   let idx, frac;
   if(tapMode){ idx=Math.max(0,Math.min(systems.length-1,tapList.length-1)); frac=0; }
-  else { const taps=TAPS[songId];
+  else { const taps=TAPS[songId]||AUTO[songId];   // manual tap-the-beat overrides the auto onset-timing
     if(taps&&taps.length>=2){ let i=0; while(i<taps.length-1 && t>=taps[i+1].t) i++;
       idx=Math.min(systems.length-1,taps[i].sys); const tn=(i+1<taps.length)?taps[i+1].t:dur;
       frac=Math.min(1,Math.max(0,(t-taps[i].t)/Math.max(0.15,tn-taps[i].t))); }
@@ -129,7 +131,7 @@ function place(t){
   const s=systems[idx]; curBand=s;
   showPage(s.page);
   const W=canvas.clientWidth,H=page.clientHeight||(W*page.naturalHeight/Math.max(1,page.naturalWidth));
-  const left=s.x0*W,top=(s.yc-s.bh*0.9)*H,width=(s.x1-s.x0)*W,height=s.bh*1.8*H,nowX=left+frac*width,cy=s.yc*H;
+  const left=s.x0*W,top=(s.yc-s.bh*0.55)*H,width=(s.x1-s.x0)*W,height=s.bh*1.15*H,nowX=left+frac*width,cy=s.yc*H;
   band.style.left=left+'px';band.style.top=top+'px';band.style.width=width+'px';band.style.height=height+'px';
   cursor.style.left=(nowX-2)+'px';cursor.style.top=top+'px';cursor.style.height=height+'px';
   trail.style.left=left+'px';trail.style.top=top+'px';trail.style.height=height+'px';trail.style.width=Math.max(0,nowX-left)+'px';
