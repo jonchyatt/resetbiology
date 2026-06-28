@@ -131,7 +131,7 @@ function place(t){
   const s=systems[idx]; curBand=s;
   showPage(s.page);
   const W=canvas.clientWidth,H=page.clientHeight||(W*page.naturalHeight/Math.max(1,page.naturalWidth));
-  const left=s.x0*W,top=(s.yc-s.bh*0.55)*H,width=(s.x1-s.x0)*W,height=s.bh*1.15*H,nowX=left+frac*width,cy=s.yc*H;
+  const left=s.x0*W,top=(s.yc-s.bh*0.42)*H,width=(s.x1-s.x0)*W,height=s.bh*0.84*H,nowX=left+frac*width,cy=s.yc*H;
   band.style.left=left+'px';band.style.top=top+'px';band.style.width=width+'px';band.style.height=height+'px';
   cursor.style.left=(nowX-2)+'px';cursor.style.top=top+'px';cursor.style.height=height+'px';
   trail.style.left=left+'px';trail.style.top=top+'px';trail.style.height=height+'px';trail.style.width=Math.max(0,nowX-left)+'px';
