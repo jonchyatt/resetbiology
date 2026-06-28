@@ -12,9 +12,9 @@
   #viewer { position:fixed; inset:0; overflow:auto; background:#0b0b10; -webkit-overflow-scrolling:touch; }
   #canvas { position:relative; }
   #canvas img { display:block; width:100%; height:auto; user-select:none; -webkit-user-drag:none; }
-  #band { position:absolute; pointer-events:none; border-radius:8px; background:linear-gradient(90deg, rgba(255,207,58,.18), rgba(255,207,58,.10)); box-shadow:0 0 0 1.5px rgba(255,207,58,.4) inset; transition:top .15s,left .15s,width .15s,height .15s; }
-  #cursor { position:absolute; pointer-events:none; width:4px; border-radius:4px; background:var(--amber); box-shadow:0 0 12px 4px rgba(255,207,58,.85); }
-  #trail { position:absolute; pointer-events:none; border-radius:6px; background:linear-gradient(90deg, rgba(255,207,58,0), rgba(255,207,58,.3)); }
+  #band { position:absolute; pointer-events:none; border-radius:8px; background:rgba(56,217,169,.20); box-shadow:0 0 0 1.5px rgba(56,217,169,.6) inset; transition:top .15s,left .15s,width .15s,height .15s; }
+  #cursor { position:absolute; pointer-events:none; width:4px; border-radius:4px; background:#23d6a0; box-shadow:0 0 13px 4px rgba(35,214,160,.85); }
+  #trail { position:absolute; pointer-events:none; border-radius:6px; background:linear-gradient(90deg, rgba(35,214,160,0), rgba(35,214,160,.34)); }
   #pitch { position:absolute; pointer-events:none; width:18px; height:18px; margin:-9px 0 0 -9px; border-radius:50%; opacity:0; transition:opacity .12s; box-shadow:0 0 9px 2px currentColor; }
   /* floating minimal dock — auto-hides; tap screen to toggle */
   #dock { position:fixed; left:50%; bottom:14px; transform:translateX(-50%); display:flex; align-items:center; gap:12px;
