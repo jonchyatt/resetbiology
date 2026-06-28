@@ -65,7 +65,16 @@
 <script>
 const $=(id)=>document.getElementById(id);
 const SONGS={ sincere:'Ice Cream / Sincere', itsyou:"It's You", lida:'Lida Rose', goodnight:'Goodnight Ladies' };
-const SONG=(()=>{ const s=new URLSearchParams(location.search).get('song'); return SONGS[s]?s:'sincere'; })();
+const PARAMS=new URLSearchParams(location.search);
+// ?setup=<b64> — the same v:1 round-trip payload the PC Studio builds; here we consume song + mix.
+let SETUP=null;
+(function(){ const raw=PARAMS.get('setup'); if(!raw) return;
+  try{ if(raw.length>4000) throw new Error('payload too long');
+    const o=JSON.parse(decodeURIComponent(escape(atob(raw.replace(/-/g,'+').replace(/_/g,'/')))));
+    if(o&&o.v===1) SETUP=o; else throw new Error('unknown payload version');
+  }catch(e){ console.warn('[mixpad] setup payload ignored:',e.message); SETUP=null; }
+})();
+const SONG=(()=>{ const s=(SETUP&&SETUP.song)||PARAMS.get('song'); return SONGS[s]?s:'sincere'; })();
 document.title=`${SONGS[SONG]} — Dichotic Mix Pad`;
 $('mpTitle').textContent=`${SONGS[SONG]} — Mix Pad`;
 const audio=new Audio(`/${SONG}-baritone/stereo.mp3`); audio.preload='auto';
@@ -105,6 +114,11 @@ $('volBari').addEventListener('input',e=>{$('volBariV').textContent=e.target.val
 $('volQ').addEventListener('input',e=>{$('volQV').textContent=e.target.value+'%';applyVol();});
 $('panBari').addEventListener('input',applyPan);
 $('panQ').addEventListener('input',applyPan);
+// Apply a carried mix from the PC Studio (?setup=) so the dichotic balance rides to the phone too.
+if(SETUP&&SETUP.mix){ const m=SETUP.mix; const set=(id,v)=>{ if(v!=null && !Number.isNaN(+v)){ $(id).value=v; } };
+  set('volBari',m.volB); set('panBari',m.panB); set('volQ',m.volQ); set('panQ',m.panQ);
+  $('volBariV').textContent=$('volBari').value+'%'; $('volQV').textContent=$('volQ').value+'%';
+  applyVol(); }
 applyPan();
 </script>
 </body>
