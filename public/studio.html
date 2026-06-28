@@ -98,6 +98,50 @@
       text-overflow:ellipsis;
     }
     .top-note { color:#797989; font-size:12px; }
+    .top-actions { display:flex; align-items:center; gap:14px; }
+    .share-btn {
+      border:1px solid rgba(255,207,58,.55);
+      background:#211d12;
+      color:#ffe49a;
+      cursor:pointer;
+      min-height:34px;
+      border-radius:999px;
+      padding:0 14px;
+      font-size:13px;
+      font-weight:600;
+    }
+    .share-btn:hover { background:#2a2415; }
+    #shareUrl {
+      width:100%;
+      margin:4px 0 12px;
+      padding:9px 10px;
+      border:1px solid var(--line);
+      border-radius:6px;
+      background:#0e0e16;
+      color:#e8e8ef;
+      font:12px ui-monospace,monospace;
+    }
+    #shareQr {
+      display:grid;
+      place-items:center;
+      min-height:220px;
+      background:#fff;
+      border-radius:8px;
+      padding:12px;
+    }
+    .share-hint { margin:12px 0 0; color:#9b9bad; font-size:12px; }
+    .share-row { display:flex; gap:8px; align-items:center; }
+    .share-row #shareUrl { margin:0; }
+    #shareCopy {
+      flex:0 0 auto;
+      border:1px solid var(--line);
+      background:var(--amber);
+      color:#0b0b10;
+      font-weight:700;
+      border-radius:6px;
+      padding:9px 14px;
+      cursor:pointer;
+    }
     .library {
       grid-area:library;
       min-width:0;
@@ -275,7 +319,10 @@
       <h1>Vocal Studio</h1>
       <div class="current-song" id="currentSong">Ice Cream / Sincere</div>
     </div>
-    <div class="top-note">Score + mix practice</div>
+    <div class="top-actions">
+      <span class="top-note">Score + mix practice</span>
+      <button class="share-btn" id="shareBtn" type="button">📱 Send to phone</button>
+    </div>
   </header>
 
   <aside class="library" aria-label="Library">
@@ -317,6 +364,22 @@
   </div>
 </div>
 
+<div class="tutorial" id="shareOverlay" hidden>
+  <div class="tutorial-panel" role="dialog" aria-modal="true" aria-labelledby="shareTitle">
+    <div class="tutorial-head">
+      <h2 id="shareTitle">Send to phone</h2>
+      <button class="tutorial-close" id="shareClose" type="button" aria-label="Close">&times;</button>
+    </div>
+    <div id="shareQr"></div>
+    <div class="share-row">
+      <input id="shareUrl" type="text" readonly />
+      <button id="shareCopy" type="button">Copy</button>
+    </div>
+    <p class="share-hint">Scan with the phone camera, or copy the link. Your song, practice mode, and tap-the-beat timing carry over — the score follows dead-on on the phone.</p>
+  </div>
+</div>
+
+<script src="/qrcode.min.js"></script>
 <script>
 const SONGS = [
   { id:'sincere', label:'Ice Cream / Sincere' },
@@ -409,7 +472,52 @@ byId('tutorial').addEventListener('click', (event) => {
   if (event.target.id === 'tutorial') event.currentTarget.hidden = true;
 });
 document.addEventListener('keydown', (event) => {
-  if (event.key === 'Escape') byId('tutorial').hidden = true;
+  if (event.key === 'Escape') { byId('tutorial').hidden = true; byId('shareOverlay').hidden = true; }
+});
+
+// --- Send to phone: serialize studio state into a stateless ?setup= payload (v:1) + QR ---
+function buildSetupPayload() {
+  const preset = getPreset(activePreset);
+  let taps = null;
+  try { taps = (JSON.parse(localStorage.getItem('sf_taps') || '{}'))[activeSong] || null; } catch (e) {}
+  let mix = null;
+  try {
+    const w = byId('mixFrame').contentWindow;
+    if (w && w.document.getElementById('volBari')) {
+      const g = (id) => +w.document.getElementById(id).value;
+      mix = { volB: g('volBari'), panB: g('panBari'), volQ: g('volQ'), panQ: g('panQ') };
+    }
+  } catch (e) {}
+  const p = { v: 1, song: activeSong, params: preset.params || {} };
+  if (Array.isArray(taps) && taps.length >= 2) p.taps = taps;
+  if (mix) p.mix = mix;
+  return p;
+}
+function encodeSetup(o) {
+  return btoa(unescape(encodeURIComponent(JSON.stringify(o))))
+    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+function shareUrlFor() {
+  return location.origin + '/score-follow.html?setup=' + encodeSetup(buildSetupPayload());
+}
+function openShare() {
+  const url = shareUrlFor();
+  byId('shareUrl').value = url;
+  const qr = byId('shareQr');
+  qr.innerHTML = '';
+  try { new QRCode(qr, { text: url, width: 220, height: 220 }); }
+  catch (e) { qr.textContent = 'QR unavailable — copy the link.'; }
+  byId('shareOverlay').hidden = false;
+}
+byId('shareBtn').addEventListener('click', openShare);
+byId('shareCopy').addEventListener('click', () => {
+  const inp = byId('shareUrl'); inp.select();
+  try { navigator.clipboard.writeText(inp.value); } catch (e) { document.execCommand('copy'); }
+  const b = byId('shareCopy'); const t = b.textContent; b.textContent = 'Copied'; setTimeout(() => b.textContent = t, 1200);
+});
+byId('shareClose').addEventListener('click', () => byId('shareOverlay').hidden = true);
+byId('shareOverlay').addEventListener('click', (event) => {
+  if (event.target.id === 'shareOverlay') event.currentTarget.hidden = true;
 });
 
 loadScore();

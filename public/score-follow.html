@@ -95,13 +95,30 @@ let DIR=SONGS[0].dir,songId=SONGS[0].id,systems=[],curPageIdx=-1,dur=0,ready=fal
 let TAPS={}; try{TAPS=JSON.parse(localStorage.getItem('sf_taps')||'{}');}catch(e){}
 let AUTO={};   // per-song onset-density timing from <song>/timing.json (default; manual taps override)
 let tapMode=false, tapList=[];
-const PARAMS=new URLSearchParams(location.search), WANT_MIC=PARAMS.get('mic')==='1', PRESET_SLOW=parseFloat(PARAMS.get('slow')||'1');
+const PARAMS=new URLSearchParams(location.search);
+// ?setup=<b64> — preset round-trip payload built on the PC Studio (PC sets up → phone runs).
+// v:1 carries {song, params:{mic,slow,loop}, taps[], mix?}. Reject anything else WITHOUT breaking the page.
+let SETUP=null;
+(function(){ const raw=PARAMS.get('setup'); if(!raw) return;
+  try{ if(raw.length>4000) throw new Error('payload too long');
+    const b64=raw.replace(/-/g,'+').replace(/_/g,'/');
+    const o=JSON.parse(decodeURIComponent(escape(atob(b64))));
+    if(o&&o.v===1) SETUP=o; else throw new Error('unknown payload version');
+  }catch(e){ console.warn('[score-follow] setup payload ignored:',e.message); SETUP=null; }
+})();
+// Import the calibrated tap-the-beat timing onto THIS device + persist it (the load-bearing bridge).
+if(SETUP&&SETUP.song&&Array.isArray(SETUP.taps)&&SETUP.taps.length>=2){
+  TAPS[SETUP.song]=SETUP.taps; try{localStorage.setItem('sf_taps',JSON.stringify(TAPS));}catch(e){}
+}
+const _SP=(SETUP&&SETUP.params)||{};
+const WANT_MIC=PARAMS.get('mic')==='1' || _SP.mic===1 || _SP.mic==='1';
+const PRESET_SLOW=parseFloat(PARAMS.get('slow') || (_SP.slow!=null?String(_SP.slow):'1'));
 const ZOOM=1.75; // zoom the page so the staff is readable; auto-follow pans to the cursor
 function sizeCanvas(){ canvas.style.width=Math.round(window.innerWidth*ZOOM)+'px'; }
 
 const sel=$('song');
 SONGS.forEach((s,i)=>{const o=document.createElement('option');o.value=i;o.textContent=s.label;sel.appendChild(o);});
-const startIdx=Math.max(0,SONGS.findIndex(s=>s.id===PARAMS.get('song')));
+const startIdx=Math.max(0,SONGS.findIndex(s=>s.id===((SETUP&&SETUP.song)||PARAMS.get('song'))));
 sel.value=startIdx; sel.addEventListener('change',()=>loadSong(+sel.value));
 
 function saveNudge(){try{localStorage.setItem('sf_'+songId,JSON.stringify({o:+$('offset').value,s:+$('speed').value}));}catch(e){}}
