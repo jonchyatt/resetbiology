@@ -419,7 +419,7 @@ $('setB').addEventListener('click',()=>{ bPoint=A().currentTime; if(aPoint!=null
 $('loopToggle').addEventListener('click',()=>{ loopAB=!loopAB; $('loopToggle').classList.toggle('on',loopAB); $('loopToggle').setAttribute('aria-pressed',loopAB?'true':'false'); saveLoop(); });
 $('loopClear').addEventListener('click',()=>{ aPoint=bPoint=null; loopAB=false; $('loopToggle').classList.remove('on'); $('loopToggle').setAttribute('aria-pressed','false'); loopStamp(); updateBand(); saveLoop(); });
 $('loopRecall').addEventListener('click',()=>{ try{ const v=(JSON.parse(localStorage.getItem('mp_loops')||'{}'))[SONG]; if(!v)return; aPoint=(v.a!=null?v.a:null); bPoint=(v.b!=null?v.b:null); loopAB=!!v.loopAB; if(v.rate)setRate(v.rate); $('loopToggle').classList.toggle('on',loopAB); $('loopToggle').setAttribute('aria-pressed',loopAB?'true':'false'); loopStamp(); updateBand(); }catch(e){} });
-$('tempo').addEventListener('input',e=>setRate(+e.target.value));
+$('tempo').addEventListener('input',e=>{ setRate(+e.target.value); saveLoop(); });
 audio.addEventListener('loadedmetadata',updateBand); bgAudio.addEventListener('loadedmetadata',updateBand);
 window.addEventListener('resize',updateBand);
 loopStamp();
