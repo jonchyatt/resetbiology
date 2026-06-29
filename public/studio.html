@@ -130,6 +130,32 @@
       padding:12px;
     }
     .share-hint { margin:12px 0 0; color:#9b9bad; font-size:12px; }
+    .calibrate-btn {
+      border:1px solid rgba(255,207,58,.55);
+      background:#211d12;
+      color:#ffe49a;
+      cursor:pointer;
+      min-height:34px;
+      border-radius:999px;
+      padding:0 14px;
+      font-size:13px;
+      font-weight:600;
+    }
+    .calibrate-btn:hover { background:#2a2415; }
+    .cal-instr { color:#cfcfde; margin:0 0 14px; line-height:1.5; }
+    .cal-target {
+      width:100%; height:88px; border-radius:18px;
+      background:var(--amber); color:#0b0b10;
+      font-size:22px; font-weight:800;
+      display:grid; place-items:center; cursor:pointer; user-select:none;
+    }
+    .cal-target:active { transform:scale(.98); }
+    .cal-count { text-align:center; color:#9b9bad; font:14px ui-monospace,monospace; margin:12px 0; }
+    .cal-actions { display:flex; gap:10px; }
+    .cal-actions button { flex:1; min-height:42px; border-radius:10px; cursor:pointer; font-size:14px; font-weight:600; }
+    #calDone, #calSavedClose { border:1px solid var(--amber); background:var(--amber); color:#0b0b10; }
+    #calCancel { border:1px solid var(--line); background:var(--panel); color:#cfcfde; }
+    .cal-saved { color:#bdf07a; text-align:center; margin:6px 0 16px; line-height:1.5; }
     .share-row { display:flex; gap:8px; align-items:center; }
     .share-row #shareUrl { margin:0; }
     #shareCopy {
@@ -321,6 +347,7 @@
     </div>
     <div class="top-actions">
       <span class="top-note">Score + mix practice</span>
+      <button class="calibrate-btn" id="calibrateBtn" type="button">🎯 Calibrate timing</button>
       <button class="share-btn" id="shareBtn" type="button">📱 Send to phone</button>
     </div>
   </header>
@@ -376,6 +403,28 @@
       <button id="shareCopy" type="button">Copy</button>
     </div>
     <p class="share-hint">Scan with the phone camera, or copy the link. Your song, practice mode, and tap-the-beat timing carry over — the score follows dead-on on the phone.</p>
+  </div>
+</div>
+
+<div class="tutorial" id="calibrateOverlay" hidden>
+  <div class="tutorial-panel" role="dialog" aria-modal="true" aria-labelledby="calTitle" tabindex="-1">
+    <div class="tutorial-head">
+      <h2 id="calTitle">Calibrate timing</h2>
+      <button class="tutorial-close" id="calClose" type="button" aria-label="Close">&times;</button>
+    </div>
+    <div id="calBody">
+      <p class="cal-instr">Press <b>SPACEBAR</b> (or tap the bar) each time your line starts a <b>NEW ROW</b>. The light will follow your taps — dead-on.</p>
+      <div class="cal-target" id="calTarget" role="button" tabindex="-1">TAP</div>
+      <p class="cal-count" id="calCount">0 / 0</p>
+      <div class="cal-actions">
+        <button id="calDone" type="button">Done</button>
+        <button id="calCancel" type="button">Cancel</button>
+      </div>
+    </div>
+    <div id="calSaved" style="display:none">
+      <p class="cal-saved">✓ Timing saved for <span id="calSavedSong"></span> — it'll carry to the phone when you Send to phone.</p>
+      <div class="cal-actions"><button id="calSavedClose" type="button">Close</button></div>
+    </div>
   </div>
 </div>
 
@@ -472,7 +521,8 @@ byId('tutorial').addEventListener('click', (event) => {
   if (event.target.id === 'tutorial') event.currentTarget.hidden = true;
 });
 document.addEventListener('keydown', (event) => {
-  if (event.key === 'Escape') { byId('tutorial').hidden = true; byId('shareOverlay').hidden = true; }
+  if (event.key === 'Escape') { byId('tutorial').hidden = true; byId('shareOverlay').hidden = true;
+    if (!byId('calibrateOverlay').hidden) { if (calActive) Tap.cancel(); finishCal(false); } }
 });
 
 // --- Send to phone: serialize studio state into a stateless ?setup= payload (v:1) + QR ---
@@ -518,6 +568,60 @@ byId('shareCopy').addEventListener('click', () => {
 byId('shareClose').addEventListener('click', () => byId('shareOverlay').hidden = true);
 byId('shareOverlay').addEventListener('click', (event) => {
   if (event.target.id === 'shareOverlay') event.currentTarget.hidden = true;
+});
+
+// --- PC Tap-the-beat: drive the score iframe's EXISTING tap engine via one adapter (FLW: adapter, not scattered DOM pokes) ---
+const Tap = {
+  win() { try { return scoreFrame.contentWindow; } catch (e) { return null; } },
+  doc() { try { return this.win().document; } catch (e) { return null; } },
+  ready() { const w = this.win(), d = this.doc(); return !!(w && typeof w.startTap === 'function' && d && d.getElementById('tapbtn')); },
+  start() { this.win().startTap(); const tw = this.doc().getElementById('tapwrap'); if (tw) tw.style.display = 'none'; }, // ours is the visible surface
+  tap() { const b = this.doc().getElementById('tapbtn'); if (b) b.click(); },
+  msg() { const m = this.doc().getElementById('tapmsg'); return m ? m.textContent : ''; },
+  save() { const w = this.win(); if (w && typeof w.saveTap === 'function') w.saveTap(); },
+  cancel() { const d = this.doc(), c = d && d.getElementById('tapcancel'); if (c) c.click(); },
+  saved(song) { try { return (JSON.parse(this.win().localStorage.getItem('sf_taps') || '{}'))[song] || null; } catch (e) { return null; } }
+};
+let calActive = false;
+function onCalKey(e) {
+  if (byId('calibrateOverlay').hidden) return;
+  if (e.code === 'Space' || e.key === ' ') { if (e.repeat) return; e.preventDefault(); doCalTap(); }
+}
+function doCalTap() {
+  if (!calActive) return;
+  Tap.tap();
+  const mm = Tap.msg().match(/(\d+)\s*\/\s*(\d+)/);
+  if (mm) { byId('calCount').textContent = mm[1] + ' / ' + mm[2];
+    if (+mm[1] >= +mm[2] && +mm[2] > 0) finishCal(true); }   // score-follow auto-saved at the last row
+}
+function openCalibrate() {
+  if (!Tap.ready()) { const b = byId('calibrateBtn'); const t = b.textContent; b.textContent = '⏳ Score loading…'; setTimeout(() => b.textContent = t, 1500); return; }
+  Tap.start(); calActive = true;
+  byId('calBody').style.display = 'block'; byId('calSaved').style.display = 'none';
+  byId('calCount').textContent = '0 / 0';
+  byId('calibrateOverlay').hidden = false;
+  document.addEventListener('keydown', onCalKey);
+  byId('calibrateOverlay').querySelector('.tutorial-panel').focus();
+}
+function finishCal(saved) {
+  calActive = false; document.removeEventListener('keydown', onCalKey);
+  if (saved) {
+    byId('calBody').style.display = 'none';
+    byId('calSavedSong').textContent = getSong(activeSong).label;
+    byId('calSaved').style.display = 'block';
+    if (!byId('shareOverlay').hidden) openShare();   // STALE-SHARE GUARD: refresh an open link/QR with the new taps
+  } else {
+    byId('calibrateOverlay').hidden = true; byId('calibrateBtn').focus();
+  }
+}
+byId('calibrateBtn').addEventListener('click', openCalibrate);
+byId('calTarget').addEventListener('click', doCalTap);
+byId('calDone').addEventListener('click', () => { Tap.save(); const t = Tap.saved(activeSong); finishCal(Array.isArray(t) && t.length >= 2); });
+byId('calCancel').addEventListener('click', () => { Tap.cancel(); finishCal(false); });
+byId('calClose').addEventListener('click', () => { Tap.cancel(); finishCal(false); });
+byId('calSavedClose').addEventListener('click', () => { byId('calibrateOverlay').hidden = true; byId('calibrateBtn').focus(); });
+byId('calibrateOverlay').addEventListener('click', (event) => {
+  if (event.target.id === 'calibrateOverlay') { if (calActive) Tap.cancel(); finishCal(false); byId('calibrateOverlay').hidden = true; }
 });
 
 loadScore();
