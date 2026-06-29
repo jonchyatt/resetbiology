@@ -55,12 +55,11 @@
   .dlhdr{font-size:12px;color:#7a7a8a;margin:0 0 10px;}
   .dllink{display:block;min-height:46px;line-height:46px;margin:8px 0;border:1px solid #3a3a4a;border-radius:12px;background:#16161f;color:#cfcfe0;font-size:14px;font-weight:600;text-decoration:none;}
   .dllink:active{background:#1f1f2a;}
-  .partbadge{font-size:11px;font-weight:800;letter-spacing:.06em;padding:2px 8px;border-radius:999px;background:#211d12;border:1px solid rgba(255,207,58,.55);color:#ffe49a;vertical-align:middle;}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1 id="mpTitle">Mix Pad <span class="partbadge" id="partBadge"></span></h1>
+  <h1 id="mpTitle">Mix Pad</h1>
   <p class="tag">One stereo recording split into your part + quartet, plus a row-start guide / plunk you can balance and slide between ears. Headphones on.</p>
 
   <div class="play">
@@ -140,10 +139,10 @@ const SONG=(()=>{ const s=(SETUP&&SETUP.song)||PARAMS.get('song'); return SONGS[
 const PART=(()=>{ const p=(SETUP&&SETUP.part)||PARAMS.get('part'); return (p==='lead'||p==='baritone')?p:'baritone'; })();
 const PARTLABEL=PART[0].toUpperCase()+PART.slice(1);
 const PARTDIR=`/${SONG}-${PART}/`;
+const PARTKEY=`${SONG}-${PART}`;   // tap-timing + loops are per song AND part (lead != baritone)
 document.title=`${SONGS[SONG]} · ${PARTLABEL} — Dichotic Mix Pad`;
 $('mpTitle').textContent=`${SONGS[SONG]} · ${PARTLABEL} — Mix Pad`;
 $('partLaneName').textContent=`Your part · ${PARTLABEL}`;
-$('partBadge').textContent=PARTLABEL.toUpperCase();
 $('quartLaneName').textContent=`Quartet · no ${PART}`;
 // Download links for the current song's source tracks (song-specific filenames so Files-app saves don't collide)
 (function(){ const slug=SONGS[SONG].replace(/[^a-z0-9]+/gi,'-').toLowerCase().replace(/^-|-$/g,'');
@@ -167,12 +166,10 @@ function normalizeTaps(raw){
   return raw.map((x,i)=>({sys:Number.isFinite(+x.sys)?+x.sys:i,t:+x.t}))
     .filter(x=>Number.isFinite(x.t)&&x.t>=0).sort((a,b)=>a.t-b.t);
 }
-const PARTKEY=`${SONG}-${PART}`;   // tap-timing + loops are per song AND part — lead timing != baritone (ui-specialist BLOCK fix)
 let TAP_STORE={}; try{TAP_STORE=JSON.parse(localStorage.getItem('sf_taps')||'{}');}catch(e){}
 if(SETUP&&SETUP.song&&Array.isArray(SETUP.taps)&&SETUP.taps.length>=2){
   TAP_STORE[`${SETUP.song}-${SETUP.part||'baritone'}`]=SETUP.taps; try{localStorage.setItem('sf_taps',JSON.stringify(TAP_STORE));}catch(e){}
 }
-// baritone falls back to the bare-song key so the existing score-follow/studio round-trip data still applies; lead is isolated
 let guideTaps=normalizeTaps(TAP_STORE[PARTKEY] || (PART==='baritone'?TAP_STORE[SONG]:null)), guideFetch=null;
 function setGuideTaps(raw){ guideTaps=normalizeTaps(raw); resetGuideCursor(audio.currentTime||0); }
 async function ensureGuideTaps(){
