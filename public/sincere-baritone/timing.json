@@ -1,1 +1,1 @@
-{"source": "aubio onset-density auto-timing", "systems": 10, "onsets": 138, "taps": [{"sys": 0, "t": 0.33}, {"sys": 1, "t": 10.13}, {"sys": 2, "t": 23.5}, {"sys": 3, "t": 41.74}, {"sys": 4, "t": 46.92}, {"sys": 5, "t": 61.78}, {"sys": 6, "t": 73.2}, {"sys": 7, "t": 94.36}, {"sys": 8, "t": 108.43}, {"sys": 9, "t": 127.32}]}
+{"lead": 9.5, "method": "music-start park + even-pace default; tap-the-beat locks the real per-staff timing (continuous legato singing has no acoustic system boundaries, so pure-audio auto-timing can only approximate)", "systems": 10}
