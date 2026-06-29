@@ -105,6 +105,10 @@ if('mediaSession' in navigator){
   try{ navigator.mediaSession.metadata=new MediaMetadata({title:`${SONGS[SONG]} — Mix Pad`,artist:'Vocal Trainer',album:'The Music Man'});
     navigator.mediaSession.setActionHandler('play',()=>$('play').click());
     navigator.mediaSession.setActionHandler('pause',()=>$('play').click());
+    // seek from the lock-screen/notification — drives the SAME audio element (no parallel path)
+    navigator.mediaSession.setActionHandler('seekbackward',(d)=>{ audio.currentTime=Math.max(0,audio.currentTime-(d.seekOffset||10)); });
+    navigator.mediaSession.setActionHandler('seekforward',(d)=>{ audio.currentTime=Math.min(audio.duration||0,audio.currentTime+(d.seekOffset||10)); });
+    navigator.mediaSession.setActionHandler('seekto',(d)=>{ if(d.fastSeek&&'fastSeek' in audio){audio.fastSeek(d.seekTime);return;} audio.currentTime=d.seekTime; });
   }catch(e){}
 }
 
@@ -120,6 +124,8 @@ function wire(){
   split.connect(gBa,0); gBa.connect(pBa).connect(lim);   // ch0 LEFT = baritone -> RIGHT ear
   split.connect(gQu,1); gQu.connect(pQu).connect(lim);   // ch1 RIGHT = quartet -> LEFT ear
   lim.connect(ctx.destination);
+  // Android background: if the OS suspends the graph while we should be playing, pull it back up.
+  ctx.onstatechange=()=>{ if(ctx.state==='suspended' && !audio.paused) ctx.resume().catch(()=>{}); };
   applyVol(); applyPan();
 }
 const earLbl=(v)=> v>=60?'RIGHT': v<=-60?'LEFT': v>=20?'R-ish': v<=-20?'L-ish':'CENTER';
@@ -135,7 +141,13 @@ $('play').addEventListener('click',()=>{ wire(); if(ctx.state==='suspended')ctx.
   else { audio.pause(); $('play').textContent='▶'; releaseAwake(); if('mediaSession' in navigator)navigator.mediaSession.playbackState='paused'; } });
 $('rep').addEventListener('click',()=>{ audio.loop=!audio.loop; $('rep').classList.toggle('on',audio.loop); });
 audio.addEventListener('timeupdate',()=>{ $('tm').textContent=`${fmt(audio.currentTime)} / ${fmt(audio.duration||0)}`;
-  if(!scrubbing && audio.duration) $('seek').value=Math.round(audio.currentTime/audio.duration*1000); });
+  if(!scrubbing && audio.duration) $('seek').value=Math.round(audio.currentTime/audio.duration*1000);
+  if('mediaSession' in navigator && navigator.mediaSession.setPositionState && audio.duration){
+    try{ navigator.mediaSession.setPositionState({duration:audio.duration,position:Math.min(audio.currentTime,audio.duration),playbackRate:audio.playbackRate||1}); }catch(e){}
+  } });
+// Diagnostic logger — leaves evidence in the console for Jon's on-device background test (FLW refinement).
+window.bgDiag=()=>{ const d={currentTime:+audio.currentTime.toFixed(2),paused:audio.paused,ctxState:(typeof ctx!=='undefined'&&ctx)?ctx.state:'no-ctx',visibility:document.visibilityState,mediaSession:'mediaSession' in navigator,wakeLock:!!wakeLock,playbackState:('mediaSession' in navigator)?navigator.mediaSession.playbackState:'n/a'}; console.log('[mixpad bgDiag]',JSON.stringify(d)); return d; };
+document.addEventListener('visibilitychange',()=>{ if('bgDiag' in window) window.bgDiag(); });
 audio.addEventListener('ended',()=>{ if(!audio.loop){ $('play').textContent='▶'; releaseAwake(); if('mediaSession' in navigator)navigator.mediaSession.playbackState='paused'; } });
 $('seek').addEventListener('input',()=>{ scrubbing=true; if(audio.duration){ const t=(+$('seek').value)/1000*audio.duration; $('tm').textContent=`${fmt(t)} / ${fmt(audio.duration)}`; } });
 $('seek').addEventListener('change',()=>{ if(audio.duration) audio.currentTime=(+$('seek').value)/1000*audio.duration; scrubbing=false; });
