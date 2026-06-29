@@ -220,7 +220,8 @@ async function lockForPocket(){
     $('lockedCap').style.display='block';
     await new Promise(r=>{ if(bgAudio.readyState>=1) return r(); bgAudio.onloadedmetadata=r; });
     bgAudio.currentTime=Math.min(pos, bgAudio.duration||pos);   // timestamp handoff
-    if(wasPlaying){ await bgAudio.play(); $('play').textContent='⏸'; if('mediaSession' in navigator)navigator.mediaSession.playbackState='playing'; }
+    if(wasPlaying){ try{ await bgAudio.play(); $('play').textContent='⏸'; if('mediaSession' in navigator)navigator.mediaSession.playbackState='playing'; }
+      catch(e){ $('play').textContent='▶'; } }   // autoplay can be blocked post-bake (gesture spent) -> stay LOCKED + ready, user taps play
     lb.textContent='🔓 Unlock to adjust'; lb.classList.add('on');
   }catch(e){ console.warn('[mixpad] bake failed:',e.message);
     locked=false; document.body.classList.remove('locked'); $('lockedCap').style.display='none';
