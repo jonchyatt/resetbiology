@@ -15,6 +15,12 @@
   .pbtn{width:60px;height:60px;border-radius:50%;border:0;font-size:24px;color:#0b0b10;background:var(--amber);display:grid;place-items:center;cursor:pointer;flex:0 0 auto;}
   .rbtn{width:46px;height:46px;border-radius:50%;border:1px solid #3a3a4a;background:#1a1a26;color:#9a9aab;font-size:18px;display:grid;place-items:center;cursor:pointer;flex:0 0 auto;}
   .rbtn.on{background:#23341f;border-color:#9bd35a;color:#bdf07a;}
+  .bgrow{margin:0 0 14px;}
+  .lockbtn{width:100%;min-height:42px;border-radius:12px;border:1px solid #3a3a4a;background:#1a1a26;color:#cfcfe0;font-size:14px;font-weight:600;cursor:pointer;}
+  .lockbtn.on{background:#23341f;border-color:#9bd35a;color:#bdf07a;}
+  .lockbtn:disabled{opacity:.6;cursor:default;}
+  body.locked .vrow{opacity:.45;pointer-events:none;}
+  .locked-cap{color:#7a7a8a;text-align:center;margin:-6px 0 12px;}
   .tm{font:13px ui-monospace,monospace;color:#9a9aab;margin-left:auto;}
   .seek{width:100%;height:30px;accent-color:var(--amber);margin:0 0 18px;}
   .lane{border:1px solid #2a2a38;border-radius:16px;padding:14px 16px;margin-bottom:14px;background:#13131b;}
@@ -43,6 +49,9 @@
   </div>
   <input type="range" class="seek" id="seek" min="0" max="1000" value="0" />
   <p class="note" id="awake" style="display:none;margin:-8px 0 14px">🔆 Screen stays on while playing — don't press the power button.</p>
+  <div class="bgrow"><button class="lockbtn" id="lockBtn" type="button">🔒 Lock mix for pocket</button></div>
+  <p class="note locked-cap" id="lockedCap" style="display:none">🔒 Locked — unlock to adjust the balance.</p>
+  <audio id="bgAudio" style="display:none" playsinline></audio>
 
   <div class="lane bari">
     <div class="lhdr"><span class="nm">Your part · Baritone</span><span class="ear" id="earBari">RIGHT</span></div>
@@ -80,6 +89,11 @@ document.title=`${SONGS[SONG]} — Dichotic Mix Pad`;
 $('mpTitle').textContent=`${SONGS[SONG]} — Mix Pad`;
 const audio=new Audio(`/${SONG}-baritone/stereo.mp3`); audio.preload='auto';
 let ctx,gBa,gQu,pBa,pQu,lim,wired=false,scrubbing=false;
+// iPhone pocket mode: when LOCKED, playback is a baked stereo WAV in a bare <audio> (iOS backgrounds it);
+// the live Web-Audio graph can't. A() = whichever element is currently the source of truth for transport.
+const bgAudio=document.getElementById('bgAudio');
+let locked=false, bakedUrl=null, srcBuf=null;
+const A=()=>locked?bgAudio:audio;
 
 // --- Keep the phone screen awake while playing (it auto-sleeps mid-workout and kills the audio) ---
 let wakeLock=null;
@@ -136,25 +150,92 @@ function applyPan(){ const pb=+$('panBari').value, pq=+$('panQ').value;
   $('earQ').textContent=earLbl(pq); $('panQV').textContent=pq>0?'R':pq<0?'L':'C'; }
 
 const fmt=(s)=>`${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
-$('play').addEventListener('click',()=>{ wire(); if(ctx.state==='suspended')ctx.resume();
-  if(audio.paused){ audio.play(); $('play').textContent='⏸'; keepAwake(); if('mediaSession' in navigator)navigator.mediaSession.playbackState='playing'; }
-  else { audio.pause(); $('play').textContent='▶'; releaseAwake(); if('mediaSession' in navigator)navigator.mediaSession.playbackState='paused'; } });
-$('rep').addEventListener('click',()=>{ audio.loop=!audio.loop; $('rep').classList.toggle('on',audio.loop); });
-audio.addEventListener('timeupdate',()=>{ $('tm').textContent=`${fmt(audio.currentTime)} / ${fmt(audio.duration||0)}`;
-  if(!scrubbing && audio.duration) $('seek').value=Math.round(audio.currentTime/audio.duration*1000);
-  if('mediaSession' in navigator && navigator.mediaSession.setPositionState && audio.duration){
-    try{ navigator.mediaSession.setPositionState({duration:audio.duration,position:Math.min(audio.currentTime,audio.duration),playbackRate:audio.playbackRate||1}); }catch(e){}
-  } });
+$('play').addEventListener('click',()=>{ if(!locked){ wire(); if(ctx.state==='suspended')ctx.resume(); }
+  const el=A();
+  if(el.paused){ el.play(); $('play').textContent='⏸'; if(!locked)keepAwake(); if('mediaSession' in navigator)navigator.mediaSession.playbackState='playing'; }
+  else { el.pause(); $('play').textContent='▶'; if(!locked)releaseAwake(); if('mediaSession' in navigator)navigator.mediaSession.playbackState='paused'; } });
+$('rep').addEventListener('click',()=>{ const el=A(); el.loop=!el.loop; $('rep').classList.toggle('on',el.loop); });
+function onTime(){ const el=A(); $('tm').textContent=`${fmt(el.currentTime)} / ${fmt(el.duration||0)}`;
+  if(!scrubbing && el.duration) $('seek').value=Math.round(el.currentTime/el.duration*1000);
+  if('mediaSession' in navigator && navigator.mediaSession.setPositionState && el.duration){
+    try{ navigator.mediaSession.setPositionState({duration:el.duration,position:Math.min(el.currentTime,el.duration),playbackRate:el.playbackRate||1}); }catch(e){}
+  } }
+audio.addEventListener('timeupdate',onTime); bgAudio.addEventListener('timeupdate',onTime);
 // Diagnostic logger — leaves evidence in the console for Jon's on-device background test (FLW refinement).
 window.bgDiag=()=>{ const d={currentTime:+audio.currentTime.toFixed(2),paused:audio.paused,ctxState:(typeof ctx!=='undefined'&&ctx)?ctx.state:'no-ctx',visibility:document.visibilityState,mediaSession:'mediaSession' in navigator,wakeLock:!!wakeLock,playbackState:('mediaSession' in navigator)?navigator.mediaSession.playbackState:'n/a'}; console.log('[mixpad bgDiag]',JSON.stringify(d)); return d; };
 document.addEventListener('visibilitychange',()=>{ if('bgDiag' in window) window.bgDiag(); });
-audio.addEventListener('ended',()=>{ if(!audio.loop){ $('play').textContent='▶'; releaseAwake(); if('mediaSession' in navigator)navigator.mediaSession.playbackState='paused'; } });
-$('seek').addEventListener('input',()=>{ scrubbing=true; if(audio.duration){ const t=(+$('seek').value)/1000*audio.duration; $('tm').textContent=`${fmt(t)} / ${fmt(audio.duration)}`; } });
-$('seek').addEventListener('change',()=>{ if(audio.duration) audio.currentTime=(+$('seek').value)/1000*audio.duration; scrubbing=false; });
+function onEnded(){ const el=A(); if(!el.loop){ $('play').textContent='▶'; if(!locked)releaseAwake(); if('mediaSession' in navigator)navigator.mediaSession.playbackState='paused'; } }
+audio.addEventListener('ended',onEnded); bgAudio.addEventListener('ended',onEnded);
+$('seek').addEventListener('input',()=>{ scrubbing=true; const el=A(); if(el.duration){ const t=(+$('seek').value)/1000*el.duration; $('tm').textContent=`${fmt(t)} / ${fmt(el.duration)}`; } });
+$('seek').addEventListener('change',()=>{ const el=A(); if(el.duration) el.currentTime=(+$('seek').value)/1000*el.duration; scrubbing=false; });
 $('volBari').addEventListener('input',e=>{$('volBariV').textContent=e.target.value+'%';applyVol();});
 $('volQ').addEventListener('input',e=>{$('volQV').textContent=e.target.value+'%';applyVol();});
 $('panBari').addEventListener('input',applyPan);
 $('panQ').addEventListener('input',applyPan);
+
+// --- iPhone pocket mode: bake the CURRENT dichotic balance to a stereo WAV, play via bare <audio> (iOS backgrounds it) ---
+function bufToWav(buf){
+  const nCh=buf.numberOfChannels, len=buf.length, sr=buf.sampleRate, blockAlign=nCh*2, dataLen=len*blockAlign;
+  const ab=new ArrayBuffer(44+dataLen), dv=new DataView(ab); let p=0;
+  const ws=(s)=>{ for(let i=0;i<s.length;i++) dv.setUint8(p++,s.charCodeAt(i)); };
+  const w32=(v)=>{ dv.setUint32(p,v,true); p+=4; }; const w16=(v)=>{ dv.setUint16(p,v,true); p+=2; };
+  ws('RIFF'); w32(36+dataLen); ws('WAVE'); ws('fmt '); w32(16); w16(1); w16(nCh); w32(sr); w32(sr*blockAlign); w16(blockAlign); w16(16); ws('data'); w32(dataLen);
+  const chans=[]; for(let c=0;c<nCh;c++) chans.push(buf.getChannelData(c));
+  for(let i=0;i<len;i++){ for(let c=0;c<nCh;c++){ let s=Math.max(-1,Math.min(1,chans[c][i])); dv.setInt16(p, s<0?s*0x8000:s*0x7FFF, true); p+=2; } }
+  return new Blob([ab],{type:'audio/wav'});
+}
+async function getSrcBuffer(){
+  if(srcBuf) return srcBuf;
+  const ab=await (await fetch(audio.src)).arrayBuffer();
+  const tmp=new (window.AudioContext||window.webkitAudioContext)();
+  srcBuf=await tmp.decodeAudioData(ab); try{tmp.close();}catch(e){} return srcBuf;
+}
+async function bakeMix(){   // mirrors the live graph EXACTLY (split -> gain -> pan -> 250%/limiter)
+  const buf=await getSrcBuffer();
+  const oc=new OfflineAudioContext(2, buf.length, buf.sampleRate);
+  const src=oc.createBufferSource(); src.buffer=buf;
+  const split=oc.createChannelSplitter(2);
+  const gB=oc.createGain(), gQ=oc.createGain(), pB=oc.createStereoPanner(), pQ=oc.createStereoPanner();
+  const lm=oc.createDynamicsCompressor(); lm.threshold.value=-1.5; lm.knee.value=0; lm.ratio.value=20; lm.attack.value=0.003; lm.release.value=0.05;
+  gB.gain.value=(+$('volBari').value)/100; gQ.gain.value=(+$('volQ').value)/100;
+  pB.pan.value=(+$('panBari').value)/100; pQ.pan.value=(+$('panQ').value)/100;
+  src.connect(split);
+  split.connect(gB,0); gB.connect(pB).connect(lm);   // ch0 baritone
+  split.connect(gQ,1); gQ.connect(pQ).connect(lm);   // ch1 quartet
+  lm.connect(oc.destination); src.start(0);
+  return await oc.startRendering();
+}
+async function lockForPocket(){
+  if(locked) return; const lb=$('lockBtn');
+  lb.textContent='⏳ Baking…'; lb.disabled=true; $('play').disabled=true;
+  try{
+    const pos=audio.currentTime, wasPlaying=!audio.paused, wantLoop=audio.loop;
+    const rendered=await bakeMix();
+    if(bakedUrl) URL.revokeObjectURL(bakedUrl);
+    bakedUrl=URL.createObjectURL(bufToWav(rendered));
+    audio.pause();                                   // stop the live Web-Audio graph
+    bgAudio.src=bakedUrl; bgAudio.loop=wantLoop;
+    locked=true; document.body.classList.add('locked');
+    releaseAwake(); $('awake').style.display='none'; // pocket mode: screen-off is the GOAL, don't keep it awake
+    $('lockedCap').style.display='block';
+    await new Promise(r=>{ if(bgAudio.readyState>=1) return r(); bgAudio.onloadedmetadata=r; });
+    bgAudio.currentTime=Math.min(pos, bgAudio.duration||pos);   // timestamp handoff
+    if(wasPlaying){ await bgAudio.play(); $('play').textContent='⏸'; if('mediaSession' in navigator)navigator.mediaSession.playbackState='playing'; }
+    lb.textContent='🔓 Unlock to adjust'; lb.classList.add('on');
+  }catch(e){ console.warn('[mixpad] bake failed:',e.message);
+    locked=false; document.body.classList.remove('locked'); $('lockedCap').style.display='none';
+    lb.textContent='🔒 Lock mix for pocket'; lb.classList.remove('on'); }
+  finally{ lb.disabled=false; $('play').disabled=false; }
+}
+function unlock(){
+  if(!locked) return; const pos=bgAudio.currentTime, wasPlaying=!bgAudio.paused, wantLoop=bgAudio.loop;
+  bgAudio.pause(); locked=false; document.body.classList.remove('locked'); $('lockedCap').style.display='none';
+  const lb=$('lockBtn'); lb.textContent='🔒 Lock mix for pocket'; lb.classList.remove('on');
+  wire(); if(ctx.state==='suspended')ctx.resume();
+  audio.loop=wantLoop; audio.currentTime=Math.min(pos, audio.duration||pos);   // return to live graph at the same spot
+  if(wasPlaying){ audio.play(); $('play').textContent='⏸'; keepAwake(); if('mediaSession' in navigator)navigator.mediaSession.playbackState='playing'; }
+}
+$('lockBtn').addEventListener('click',()=>{ locked?unlock():lockForPocket(); });
 // Apply a carried mix from the PC Studio (?setup=) so the dichotic balance rides to the phone too.
 if(SETUP&&SETUP.mix){ const m=SETUP.mix; const set=(id,v)=>{ if(v!=null && !Number.isNaN(+v)){ $(id).value=v; } };
   set('volBari',m.volB); set('panBari',m.panB); set('volQ',m.volQ); set('panQ',m.panQ);
