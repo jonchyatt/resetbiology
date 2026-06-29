@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Sincere — Dichotic Mix Pad</title>
 <style>
-  :root{ --amber:#ffcf3a; --r:#ff7a5c; --l:#5cc8ff; }
+  :root{ --amber:#ffcf3a; --r:#ff7a5c; --l:#5cc8ff; --g:#9bd35a; }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   html,body{margin:0;min-height:100%;background:#0b0b10;color:#eee;font:15px/1.45 -apple-system,Segoe UI,Roboto,sans-serif;}
   .wrap{max-width:560px;margin:0 auto;padding:18px 16px calc(28px + env(safe-area-inset-bottom));}
@@ -19,19 +19,22 @@
   .lockbtn{width:100%;min-height:42px;border-radius:12px;border:1px solid #3a3a4a;background:#1a1a26;color:#cfcfe0;font-size:14px;font-weight:600;cursor:pointer;}
   .lockbtn.on{background:#23341f;border-color:#9bd35a;color:#bdf07a;}
   .lockbtn:disabled{opacity:.6;cursor:default;}
-  body.locked .vrow{opacity:.45;pointer-events:none;}
+  body.locked .vrow, body.locked .trackBtns{opacity:.45;pointer-events:none;}
   .locked-cap{color:#7a7a8a;text-align:center;margin:-6px 0 12px;}
   .tm{font:13px ui-monospace,monospace;color:#9a9aab;margin-left:auto;}
   .seek{width:100%;height:30px;accent-color:var(--amber);margin:0 0 18px;}
   .lane{border:1px solid #2a2a38;border-radius:16px;padding:14px 16px;margin-bottom:14px;background:#13131b;}
-  .lane.bari{border-left:4px solid var(--r);} .lane.quart{border-left:4px solid var(--l);}
-  .lhdr{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px;}
+  .lane.bari{border-left:4px solid var(--r);} .lane.quart{border-left:4px solid var(--l);} .lane.guide{border-left:4px solid var(--g);}
+  .lhdr{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;}
   .lhdr .nm{font-size:16px;font-weight:700;color:#fff;}
+  .trackBtns{display:flex;align-items:center;gap:6px;flex:0 0 auto;}
   .ear{font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;background:#23232e;color:#cfcfe0;}
+  .msbtn{width:34px;height:30px;border-radius:999px;border:1px solid #3a3a4a;background:#1a1a26;color:#9a9aab;font-size:12px;font-weight:800;display:grid;place-items:center;cursor:pointer;}
+  .msbtn.on{background:#23341f;border-color:#9bd35a;color:#bdf07a;}
   .vlbl{font-size:11px;color:#7a7a8a;margin:8px 0 3px;display:flex;justify-content:space-between;}
   .vrow{display:flex;align-items:center;gap:12px;}
   .vrow input{flex:1;height:32px;}
-  input[type=range].volB{accent-color:var(--r);} input[type=range].volQ{accent-color:var(--l);}
+  input[type=range].volB{accent-color:var(--r);} input[type=range].volQ{accent-color:var(--l);} input[type=range].volG{accent-color:var(--g);}
   input[type=range].pan{accent-color:var(--amber);}
   .pct{font:12px ui-monospace,monospace;width:46px;text-align:right;color:#cfcfe0;}
   .note{font-size:12px;color:#6a6a7a;margin-top:8px;text-align:center;}
@@ -40,7 +43,7 @@
 <body>
 <div class="wrap">
   <h1 id="mpTitle">Mix Pad</h1>
-  <p class="tag">One stereo recording, split: your part + the quartet as two tracks you can balance and slide between ears. Headphones on.</p>
+  <p class="tag">One stereo recording split into your part + quartet, plus a row-start guide / plunk you can balance and slide between ears. Headphones on.</p>
 
   <div class="play">
     <button class="pbtn" id="play">▶</button>
@@ -69,7 +72,15 @@
     <div class="vrow"><input type="range" class="pan" id="panQ" min="-100" max="100" value="-100"><span class="pct" id="panQV">L</span></div>
   </div>
 
-  <p class="note">Split from one baked-stereo recording (your part = left channel, quartet = right channel) → cross-routed, always perfectly in sync. Volume to 250% through a brick-wall limiter.</p>
+  <div class="lane guide">
+    <div class="lhdr"><span class="nm">Guide / plunk</span><span class="ear" id="earGuide">CENTER</span></div>
+    <div class="vlbl"><span>Volume</span></div>
+    <div class="vrow"><input type="range" class="volG" id="volGuide" min="0" max="250" value="70"><span class="pct" id="volGuideV">70%</span></div>
+    <div class="vlbl"><span>Left ear</span><span>Right ear</span></div>
+    <div class="vrow"><input type="range" class="pan" id="panGuide" min="-100" max="100" value="0"><span class="pct" id="panGuideV">C</span></div>
+  </div>
+
+  <p class="note">Baritone and quartet stay split from one baked-stereo recording → cross-routed, always perfectly in sync. The guide / plunk is scheduled from row timing into the same limiter.</p>
 </div>
 
 <script>
@@ -88,12 +99,74 @@ const SONG=(()=>{ const s=(SETUP&&SETUP.song)||PARAMS.get('song'); return SONGS[
 document.title=`${SONGS[SONG]} — Dichotic Mix Pad`;
 $('mpTitle').textContent=`${SONGS[SONG]} — Mix Pad`;
 const audio=new Audio(`/${SONG}-baritone/stereo.mp3`); audio.preload='auto';
-let ctx,gBa,gQu,pBa,pQu,lim,wired=false,scrubbing=false;
+let ctx,gBa,gQu,gGuide,pBa,pQu,pGuide,lim,wired=false,scrubbing=false;
 // iPhone pocket mode: when LOCKED, playback is a baked stereo WAV in a bare <audio> (iOS backgrounds it);
 // the live Web-Audio graph can't. A() = whichever element is currently the source of truth for transport.
 const bgAudio=document.getElementById('bgAudio');
 let locked=false, bakedUrl=null, srcBuf=null;
 const A=()=>locked?bgAudio:audio;
+
+// Executive design decision: track 3 is a synthesized row-start guide tone, not audio.mp3.
+// That preserves the one-file dichotic transport and avoids reintroducing second-MP3 drift.
+function normalizeTaps(raw){
+  if(!Array.isArray(raw)) return [];
+  return raw.map((x,i)=>({sys:Number.isFinite(+x.sys)?+x.sys:i,t:+x.t}))
+    .filter(x=>Number.isFinite(x.t)&&x.t>=0).sort((a,b)=>a.t-b.t);
+}
+let TAP_STORE={}; try{TAP_STORE=JSON.parse(localStorage.getItem('sf_taps')||'{}');}catch(e){}
+if(SETUP&&SETUP.song&&Array.isArray(SETUP.taps)&&SETUP.taps.length>=2){
+  TAP_STORE[SETUP.song]=SETUP.taps; try{localStorage.setItem('sf_taps',JSON.stringify(TAP_STORE));}catch(e){}
+}
+let guideTaps=normalizeTaps(TAP_STORE[SONG]), guideFetch=null;
+function setGuideTaps(raw){ guideTaps=normalizeTaps(raw); resetGuideCursor(audio.currentTime||0); }
+async function ensureGuideTaps(){
+  if(guideTaps.length) return guideTaps;
+  if(!guideFetch){
+    guideFetch=fetch(`/${SONG}-baritone/timing.json`).then(r=>r.ok?r.json():null)
+      .then(d=>{ if(d&&Array.isArray(d.taps)&&d.taps.length>=2) setGuideTaps(d.taps); return guideTaps; })
+      .catch(()=>guideTaps);
+  }
+  return guideFetch;
+}
+ensureGuideTaps();
+
+const TRACKS=[
+  {id:'bari',name:'Baritone',vol:'volBari',volV:'volBariV',pan:'panBari',panV:'panBariV',ear:'earBari',gain:()=>gBa,panner:()=>pBa},
+  {id:'quart',name:'Quartet',vol:'volQ',volV:'volQV',pan:'panQ',panV:'panQV',ear:'earQ',gain:()=>gQu,panner:()=>pQu},
+  {id:'guide',name:'Guide / plunk',vol:'volGuide',volV:'volGuideV',pan:'panGuide',panV:'panGuideV',ear:'earGuide',gain:()=>gGuide,panner:()=>pGuide}
+];
+const trackState={bari:{mute:false,solo:false},quart:{mute:false,solo:false},guide:{mute:false,solo:false}};
+function anySolo(){ return TRACKS.some(t=>trackState[t.id].solo); }
+function effectiveGain(id){
+  const t=TRACKS.find(x=>x.id===id), st=trackState[id];
+  if(!t||st.mute||(anySolo()&&!st.solo)) return 0;
+  return (+$(t.vol).value)/100;
+}
+function renderTrackButtons(){
+  TRACKS.forEach(t=>['mute','solo'].forEach(mode=>{
+    const btn=$(`${mode}-${t.id}`); if(!btn) return;
+    btn.classList.toggle('on',trackState[t.id][mode]);
+    btn.setAttribute('aria-pressed',trackState[t.id][mode]?'true':'false');
+  }));
+}
+function mountTrackButtons(){
+  TRACKS.forEach(t=>{
+    const ear=$(t.ear), hdr=ear&&ear.closest('.lhdr'); if(!hdr||hdr.querySelector('.trackBtns')) return;
+    const wrap=document.createElement('div'); wrap.className='trackBtns';
+    wrap.appendChild(ear);
+    [['mute','M'],['solo','S']].forEach(([mode,label])=>{
+      const btn=document.createElement('button');
+      btn.type='button'; btn.className='msbtn'; btn.id=`${mode}-${t.id}`;
+      btn.textContent=label; btn.title=`${mode} ${t.name}`;
+      btn.setAttribute('aria-label',`${mode} ${t.name}`); btn.setAttribute('aria-pressed','false');
+      btn.addEventListener('click',()=>{ trackState[t.id][mode]=!trackState[t.id][mode]; renderTrackButtons(); applyVol(); });
+      wrap.appendChild(btn);
+    });
+    hdr.appendChild(wrap);
+  });
+  renderTrackButtons();
+}
+mountTrackButtons();
 
 // --- Keep the phone screen awake while playing (it auto-sleeps mid-workout and kills the audio) ---
 let wakeLock=null;
@@ -132,28 +205,74 @@ function wire(){
   const src=ctx.createMediaElementSource(audio);
   const split=ctx.createChannelSplitter(2);
   src.connect(split);
-  gBa=ctx.createGain(); gQu=ctx.createGain(); pBa=ctx.createStereoPanner(); pQu=ctx.createStereoPanner();
+  gBa=ctx.createGain(); gQu=ctx.createGain(); gGuide=ctx.createGain();
+  pBa=ctx.createStereoPanner(); pQu=ctx.createStereoPanner(); pGuide=ctx.createStereoPanner();
   lim=ctx.createDynamicsCompressor();           // brick-wall limiter so 250% can't harshly clip
   lim.threshold.value=-1.5; lim.knee.value=0; lim.ratio.value=20; lim.attack.value=0.003; lim.release.value=0.05;
   split.connect(gBa,0); gBa.connect(pBa).connect(lim);   // ch0 LEFT = baritone -> RIGHT ear
   split.connect(gQu,1); gQu.connect(pQu).connect(lim);   // ch1 RIGHT = quartet -> LEFT ear
+  gGuide.connect(pGuide).connect(lim);                    // track3 guide taps are scheduled into this same limiter
   lim.connect(ctx.destination);
   // Android background: if the OS suspends the graph while we should be playing, pull it back up.
   ctx.onstatechange=()=>{ if(ctx.state==='suspended' && !audio.paused) ctx.resume().catch(()=>{}); };
   applyVol(); applyPan();
 }
 const earLbl=(v)=> v>=60?'RIGHT': v<=-60?'LEFT': v>=20?'R-ish': v<=-20?'L-ish':'CENTER';
-function applyVol(){ if(gBa){gBa.gain.value=(+$('volBari').value)/100; gQu.gain.value=(+$('volQ').value)/100;} }
-function applyPan(){ const pb=+$('panBari').value, pq=+$('panQ').value;
-  if(pBa){ pBa.pan.value=pb/100; pQu.pan.value=pq/100; }
+function panTxt(v){ return v>0?'R':v<0?'L':'C'; }
+function applyVol(){
+  if(gBa){ gBa.gain.value=effectiveGain('bari'); gQu.gain.value=effectiveGain('quart'); gGuide.gain.value=effectiveGain('guide'); }
+}
+function applyPan(){ const pb=+$('panBari').value, pq=+$('panQ').value, pg=+$('panGuide').value;
+  if(pBa){ pBa.pan.value=pb/100; pQu.pan.value=pq/100; pGuide.pan.value=pg/100; }
   $('earBari').textContent=earLbl(pb); $('panBariV').textContent=pb>0?'R':pb<0?'L':'C';
-  $('earQ').textContent=earLbl(pq); $('panQV').textContent=pq>0?'R':pq<0?'L':'C'; }
+  $('earQ').textContent=earLbl(pq); $('panQV').textContent=panTxt(pq);
+  $('earGuide').textContent=earLbl(pg); $('panGuideV').textContent=panTxt(pg); }
+
+const GUIDE_FREQ=740, GUIDE_DUR=0.075, GUIDE_LOOKAHEAD=0.28, GUIDE_INTERVAL=70;
+let guideTimer=null, guideNextIdx=0, guideLastAudioTime=0, guideNodes=[];
+function resetGuideCursor(t){
+  guideNextIdx=0; guideLastAudioTime=t||0; stopGuideNodes();
+  while(guideNextIdx<guideTaps.length && guideTaps[guideNextIdx].t<guideLastAudioTime-0.025) guideNextIdx++;
+}
+function scheduleGuidePlunk(ac,dest,at,remember){
+  const osc=ac.createOscillator(), env=ac.createGain();
+  osc.type='sine'; osc.frequency.value=GUIDE_FREQ;
+  env.gain.setValueAtTime(0.0001,at);
+  env.gain.exponentialRampToValueAtTime(0.62,at+0.008);
+  env.gain.exponentialRampToValueAtTime(0.0001,at+GUIDE_DUR);
+  osc.connect(env).connect(dest); osc.start(at); osc.stop(at+GUIDE_DUR+0.025);
+  if(remember){
+    const item={osc,env}; guideNodes.push(item);
+    osc.onended=()=>{ guideNodes=guideNodes.filter(x=>x!==item); try{osc.disconnect(); env.disconnect();}catch(e){} };
+  }
+}
+function stopGuideNodes(){
+  guideNodes.forEach(n=>{ try{n.osc.onended=null; n.osc.stop(0);}catch(e){} try{n.osc.disconnect(); n.env.disconnect();}catch(e){} });
+  guideNodes=[];
+}
+function scheduleGuide(){
+  if(!ctx||!gGuide||locked||audio.paused||!guideTaps.length) return;
+  const t=audio.currentTime, rate=audio.playbackRate||1;
+  if(t+0.35<guideLastAudioTime) resetGuideCursor(t);
+  guideLastAudioTime=t;
+  while(guideNextIdx<guideTaps.length && guideTaps[guideNextIdx].t<t-0.025) guideNextIdx++;
+  while(guideNextIdx<guideTaps.length && guideTaps[guideNextIdx].t<=t+(GUIDE_LOOKAHEAD*rate)){
+    const dt=(guideTaps[guideNextIdx].t-t)/rate;
+    if(dt>=-0.025) scheduleGuidePlunk(ctx,gGuide,ctx.currentTime+Math.max(0,dt),true);
+    guideNextIdx++;
+  }
+}
+function startGuide(){
+  if(locked||!ctx||!gGuide) return;
+  ensureGuideTaps().then(()=>{ if(locked||audio.paused) return; resetGuideCursor(audio.currentTime||0); scheduleGuide(); if(!guideTimer) guideTimer=setInterval(scheduleGuide,GUIDE_INTERVAL); });
+}
+function stopGuide(){ if(guideTimer){ clearInterval(guideTimer); guideTimer=null; } stopGuideNodes(); }
 
 const fmt=(s)=>`${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
 $('play').addEventListener('click',()=>{ if(!locked){ wire(); if(ctx.state==='suspended')ctx.resume(); }
   const el=A();
-  if(el.paused){ el.play(); $('play').textContent='⏸'; if(!locked)keepAwake(); if('mediaSession' in navigator)navigator.mediaSession.playbackState='playing'; }
-  else { el.pause(); $('play').textContent='▶'; if(!locked)releaseAwake(); if('mediaSession' in navigator)navigator.mediaSession.playbackState='paused'; } });
+  if(el.paused){ el.play(); $('play').textContent='⏸'; if(!locked){ keepAwake(); startGuide(); } if('mediaSession' in navigator)navigator.mediaSession.playbackState='playing'; }
+  else { el.pause(); $('play').textContent='▶'; if(!locked){ releaseAwake(); stopGuide(); } if('mediaSession' in navigator)navigator.mediaSession.playbackState='paused'; } });
 $('rep').addEventListener('click',()=>{ const el=A(); el.loop=!el.loop; $('rep').classList.toggle('on',el.loop); });
 function onTime(){ const el=A(); $('tm').textContent=`${fmt(el.currentTime)} / ${fmt(el.duration||0)}`;
   if(!scrubbing && el.duration) $('seek').value=Math.round(el.currentTime/el.duration*1000);
@@ -164,14 +283,18 @@ audio.addEventListener('timeupdate',onTime); bgAudio.addEventListener('timeupdat
 // Diagnostic logger — leaves evidence in the console for Jon's on-device background test (FLW refinement).
 window.bgDiag=()=>{ const d={currentTime:+audio.currentTime.toFixed(2),paused:audio.paused,ctxState:(typeof ctx!=='undefined'&&ctx)?ctx.state:'no-ctx',visibility:document.visibilityState,mediaSession:'mediaSession' in navigator,wakeLock:!!wakeLock,playbackState:('mediaSession' in navigator)?navigator.mediaSession.playbackState:'n/a'}; console.log('[mixpad bgDiag]',JSON.stringify(d)); return d; };
 document.addEventListener('visibilitychange',()=>{ if('bgDiag' in window) window.bgDiag(); });
-function onEnded(){ const el=A(); if(!el.loop){ $('play').textContent='▶'; if(!locked)releaseAwake(); if('mediaSession' in navigator)navigator.mediaSession.playbackState='paused'; } }
+function onEnded(){ const el=A(); if(!el.loop){ $('play').textContent='▶'; if(!locked){ releaseAwake(); stopGuide(); } if('mediaSession' in navigator)navigator.mediaSession.playbackState='paused'; } }
 audio.addEventListener('ended',onEnded); bgAudio.addEventListener('ended',onEnded);
 $('seek').addEventListener('input',()=>{ scrubbing=true; const el=A(); if(el.duration){ const t=(+$('seek').value)/1000*el.duration; $('tm').textContent=`${fmt(t)} / ${fmt(el.duration)}`; } });
 $('seek').addEventListener('change',()=>{ const el=A(); if(el.duration) el.currentTime=(+$('seek').value)/1000*el.duration; scrubbing=false; });
+audio.addEventListener('seeking',()=>{ if(!locked) resetGuideCursor(audio.currentTime||0); });
+audio.addEventListener('seeked',()=>{ if(!locked){ resetGuideCursor(audio.currentTime||0); if(!audio.paused) scheduleGuide(); } });
 $('volBari').addEventListener('input',e=>{$('volBariV').textContent=e.target.value+'%';applyVol();});
 $('volQ').addEventListener('input',e=>{$('volQV').textContent=e.target.value+'%';applyVol();});
+$('volGuide').addEventListener('input',e=>{$('volGuideV').textContent=e.target.value+'%';applyVol();});
 $('panBari').addEventListener('input',applyPan);
 $('panQ').addEventListener('input',applyPan);
+$('panGuide').addEventListener('input',applyPan);
 
 // --- iPhone pocket mode: bake the CURRENT dichotic balance to a stereo WAV, play via bare <audio> (iOS backgrounds it) ---
 function bufToWav(buf){
@@ -192,16 +315,19 @@ async function getSrcBuffer(){
 }
 async function bakeMix(){   // mirrors the live graph EXACTLY (split -> gain -> pan -> 250%/limiter)
   const buf=await getSrcBuffer();
+  await ensureGuideTaps();
   const oc=new OfflineAudioContext(2, buf.length, buf.sampleRate);
   const src=oc.createBufferSource(); src.buffer=buf;
   const split=oc.createChannelSplitter(2);
-  const gB=oc.createGain(), gQ=oc.createGain(), pB=oc.createStereoPanner(), pQ=oc.createStereoPanner();
+  const gB=oc.createGain(), gQ=oc.createGain(), gG=oc.createGain(), pB=oc.createStereoPanner(), pQ=oc.createStereoPanner(), pG=oc.createStereoPanner();
   const lm=oc.createDynamicsCompressor(); lm.threshold.value=-1.5; lm.knee.value=0; lm.ratio.value=20; lm.attack.value=0.003; lm.release.value=0.05;
-  gB.gain.value=(+$('volBari').value)/100; gQ.gain.value=(+$('volQ').value)/100;
-  pB.pan.value=(+$('panBari').value)/100; pQ.pan.value=(+$('panQ').value)/100;
+  gB.gain.value=effectiveGain('bari'); gQ.gain.value=effectiveGain('quart'); gG.gain.value=effectiveGain('guide');
+  pB.pan.value=(+$('panBari').value)/100; pQ.pan.value=(+$('panQ').value)/100; pG.pan.value=(+$('panGuide').value)/100;
   src.connect(split);
   split.connect(gB,0); gB.connect(pB).connect(lm);   // ch0 baritone
   split.connect(gQ,1); gQ.connect(pQ).connect(lm);   // ch1 quartet
+  gG.connect(pG).connect(lm);                         // track3 guide / plunk
+  guideTaps.forEach(x=>{ if(x.t<=buf.duration+0.1) scheduleGuidePlunk(oc,gG,Math.max(0,x.t),false); });
   lm.connect(oc.destination); src.start(0);
   return await oc.startRendering();
 }
@@ -213,7 +339,7 @@ async function lockForPocket(){
     const rendered=await bakeMix();
     if(bakedUrl) URL.revokeObjectURL(bakedUrl);
     bakedUrl=URL.createObjectURL(bufToWav(rendered));
-    audio.pause();                                   // stop the live Web-Audio graph
+    audio.pause(); stopGuide();                      // stop the live Web-Audio graph
     bgAudio.src=bakedUrl; bgAudio.loop=wantLoop;
     locked=true; document.body.classList.add('locked');
     releaseAwake(); $('awake').style.display='none'; // pocket mode: screen-off is the GOAL, don't keep it awake
@@ -234,13 +360,13 @@ function unlock(){
   const lb=$('lockBtn'); lb.textContent='🔒 Lock mix for pocket'; lb.classList.remove('on');
   wire(); if(ctx.state==='suspended')ctx.resume();
   audio.loop=wantLoop; audio.currentTime=Math.min(pos, audio.duration||pos);   // return to live graph at the same spot
-  if(wasPlaying){ audio.play(); $('play').textContent='⏸'; keepAwake(); if('mediaSession' in navigator)navigator.mediaSession.playbackState='playing'; }
+  if(wasPlaying){ audio.play(); $('play').textContent='⏸'; keepAwake(); startGuide(); if('mediaSession' in navigator)navigator.mediaSession.playbackState='playing'; }
 }
 $('lockBtn').addEventListener('click',()=>{ locked?unlock():lockForPocket(); });
 // Apply a carried mix from the PC Studio (?setup=) so the dichotic balance rides to the phone too.
 if(SETUP&&SETUP.mix){ const m=SETUP.mix; const set=(id,v)=>{ if(v!=null && !Number.isNaN(+v)){ $(id).value=v; } };
-  set('volBari',m.volB); set('panBari',m.panB); set('volQ',m.volQ); set('panQ',m.panQ);
-  $('volBariV').textContent=$('volBari').value+'%'; $('volQV').textContent=$('volQ').value+'%';
+  set('volBari',m.volB); set('panBari',m.panB); set('volQ',m.volQ); set('panQ',m.panQ); set('volGuide',m.volG); set('panGuide',m.panG);
+  $('volBariV').textContent=$('volBari').value+'%'; $('volQV').textContent=$('volQ').value+'%'; $('volGuideV').textContent=$('volGuide').value+'%';
   applyVol(); }
 applyPan();
 </script>
