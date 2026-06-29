@@ -51,6 +51,10 @@
   input[type=range].pan{accent-color:var(--amber);}
   .pct{font:12px ui-monospace,monospace;width:46px;text-align:right;color:#cfcfe0;}
   .note{font-size:12px;color:#6a6a7a;margin-top:8px;text-align:center;}
+  .dlblock{margin:22px 0 8px;text-align:center;}
+  .dlhdr{font-size:12px;color:#7a7a8a;margin:0 0 10px;}
+  .dllink{display:block;min-height:46px;line-height:46px;margin:8px 0;border:1px solid #3a3a4a;border-radius:12px;background:#16161f;color:#cfcfe0;font-size:14px;font-weight:600;text-decoration:none;}
+  .dllink:active{background:#1f1f2a;}
 </style>
 </head>
 <body>
@@ -110,6 +114,12 @@
   </div>
 
   <p class="note">Baritone and quartet stay split from one baked-stereo recording → cross-routed, always perfectly in sync. The guide / plunk is scheduled from row timing into the same limiter.</p>
+
+  <div class="dlblock">
+    <p class="dlhdr">Download the source tracks (long-press → "Download Linked File" on iPhone):</p>
+    <a class="dllink" id="dlFull" download>⬇️ Full mix — your part + quartet</a>
+    <a class="dllink" id="dlPart" download>⬇️ Your part only — baritone</a>
+  </div>
 </div>
 
 <script>
@@ -127,6 +137,12 @@ let SETUP=null;
 const SONG=(()=>{ const s=(SETUP&&SETUP.song)||PARAMS.get('song'); return SONGS[s]?s:'sincere'; })();
 document.title=`${SONGS[SONG]} — Dichotic Mix Pad`;
 $('mpTitle').textContent=`${SONGS[SONG]} — Mix Pad`;
+// Download links for the current song's source tracks (song-specific filenames so Files-app saves don't collide)
+(function(){ const slug=SONGS[SONG].replace(/[^a-z0-9]+/gi,'-').toLowerCase().replace(/^-|-$/g,'');
+  const full=$('dlFull'), part=$('dlPart');
+  full.href=`/${SONG}-baritone/stereo.mp3`; full.setAttribute('download',`${slug}-full-mix.mp3`);
+  part.href=`/${SONG}-baritone/audio.mp3`; part.setAttribute('download',`${slug}-baritone.mp3`);
+})();
 const audio=new Audio(`/${SONG}-baritone/stereo.mp3`); audio.preload='auto';
 let ctx,gBa,gQu,gGuide,pBa,pQu,pGuide,lim,wired=false,scrubbing=false;
 // iPhone pocket mode: when LOCKED, playback is a baked stereo WAV in a bare <audio> (iOS backgrounds it);
