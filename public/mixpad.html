@@ -22,7 +22,20 @@
   body.locked .vrow, body.locked .trackBtns{opacity:.45;pointer-events:none;}
   .locked-cap{color:#7a7a8a;text-align:center;margin:-6px 0 12px;}
   .tm{font:13px ui-monospace,monospace;color:#9a9aab;margin-left:auto;}
-  .seek{width:100%;height:30px;accent-color:var(--amber);margin:0 0 18px;}
+  .seekwrap{position:relative;height:30px;margin:0 0 8px;}
+  .seek{width:100%;height:30px;accent-color:var(--amber);margin:0;position:relative;z-index:2;}
+  .loopband,.looptick{display:none;position:absolute;pointer-events:none;z-index:3;}
+  .loopband.on,.looptick.on{display:block;}
+  .loopband{top:13px;height:4px;border-radius:999px;background:rgba(255,207,58,.18);}
+  .looptick{top:8px;width:2px;height:14px;border-radius:2px;background:var(--amber);transform:translateX(-1px);}
+  .looprow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 12px;}
+  .loopbuttons{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+  .loopbtn{min-height:34px;border-radius:10px;border:1px solid #3a3a4a;background:#1a1a26;color:#cfcfe0;font-size:12px;font-weight:800;padding:0 9px;cursor:pointer;}
+  .loopbtn.on{background:#23341f;border-color:#9bd35a;color:#bdf07a;}
+  .loopstamp{font:12px ui-monospace,monospace;color:#9a9aab;display:flex;gap:8px;white-space:nowrap;}
+  .tempo{display:flex;align-items:center;gap:7px;min-width:190px;flex:1 1 190px;font-size:12px;font-weight:800;color:#cfcfe0;}
+  .tempo input{flex:1;height:30px;accent-color:var(--amber);}
+  .tempoV{font:12px ui-monospace,monospace;width:38px;text-align:right;color:#ffe49a;}
   .lane{border:1px solid #2a2a38;border-radius:16px;padding:14px 16px;margin-bottom:14px;background:#13131b;}
   .lane.bari{border-left:4px solid var(--r);} .lane.quart{border-left:4px solid var(--l);} .lane.guide{border-left:4px solid var(--g);}
   .lhdr{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;}
@@ -50,7 +63,23 @@
     <button class="rbtn" id="rep" title="Repeat">🔁</button>
     <span class="tm" id="tm">0:00 / 0:00</span>
   </div>
-  <input type="range" class="seek" id="seek" min="0" max="1000" value="0" />
+  <div class="seekwrap" id="seekWrap">
+    <input type="range" class="seek" id="seek" min="0" max="1000" value="0" />
+    <div class="loopband" id="loopBand" aria-hidden="true"></div>
+    <div class="looptick" id="loopTickA" aria-hidden="true"></div>
+    <div class="looptick" id="loopTickB" aria-hidden="true"></div>
+  </div>
+  <div class="looprow" id="loopRow">
+    <div class="loopbuttons">
+      <button class="loopbtn" id="setA" type="button">Set A</button>
+      <button class="loopbtn" id="setB" type="button">Set B</button>
+      <button class="loopbtn" id="loopToggle" type="button" aria-pressed="false">⟳ Loop A–B</button>
+      <button class="loopbtn" id="loopClear" type="button">Clear</button>
+      <button class="loopbtn" id="loopRecall" type="button">↻ Last loop</button>
+    </div>
+    <div class="loopstamp"><span id="aTime">A --:--</span><span id="bTime">B --:--</span></div>
+    <label class="tempo" for="tempo">Tempo <input type="range" id="tempo" min="0.5" max="1" step="0.05" value="1"><span class="tempoV" id="tempoV">1.0×</span></label>
+  </div>
   <p class="note" id="awake" style="display:none;margin:-8px 0 14px">🔆 Screen stays on while playing — don't press the power button.</p>
   <div class="bgrow"><button class="lockbtn" id="lockBtn" type="button">🔒 Lock mix for pocket</button></div>
   <p class="note locked-cap" id="lockedCap" style="display:none">🔒 Locked — unlock to adjust the balance.</p>
@@ -274,7 +303,9 @@ $('play').addEventListener('click',()=>{ if(!locked){ wire(); if(ctx.state==='su
   if(el.paused){ el.play(); $('play').textContent='⏸'; if(!locked){ keepAwake(); startGuide(); } if('mediaSession' in navigator)navigator.mediaSession.playbackState='playing'; }
   else { el.pause(); $('play').textContent='▶'; if(!locked){ releaseAwake(); stopGuide(); } if('mediaSession' in navigator)navigator.mediaSession.playbackState='paused'; } });
 $('rep').addEventListener('click',()=>{ const el=A(); el.loop=!el.loop; $('rep').classList.toggle('on',el.loop); });
-function onTime(){ const el=A(); $('tm').textContent=`${fmt(el.currentTime)} / ${fmt(el.duration||0)}`;
+function onTime(){ const el=A();
+  if(loopAB && aPoint!=null && bPoint!=null && bPoint>aPoint && el.currentTime>=bPoint){ el.currentTime=aPoint; }  // A-B loop: backward seek reuses the guide-cursor reset
+  $('tm').textContent=`${fmt(el.currentTime)} / ${fmt(el.duration||0)}`;
   if(!scrubbing && el.duration) $('seek').value=Math.round(el.currentTime/el.duration*1000);
   if('mediaSession' in navigator && navigator.mediaSession.setPositionState && el.duration){
     try{ navigator.mediaSession.setPositionState({duration:el.duration,position:Math.min(el.currentTime,el.duration),playbackRate:el.playbackRate||1}); }catch(e){}
@@ -368,6 +399,31 @@ if(SETUP&&SETUP.mix){ const m=SETUP.mix; const set=(id,v)=>{ if(v!=null && !Numb
   set('volBari',m.volB); set('panBari',m.panB); set('volQ',m.volQ); set('panQ',m.panQ); set('volGuide',m.volG); set('panGuide',m.panG);
   $('volBariV').textContent=$('volBari').value+'%'; $('volQV').textContent=$('volQ').value+'%'; $('volGuideV').textContent=$('volGuide').value+'%';
   applyVol(); }
+
+// --- Loop-a-phrase: A-B drill + pitch-preserving Tempo (Codex scaffold; JS completed by Opus after codex sandbox block) ---
+let aPoint=null, bPoint=null, loopAB=false;
+try{ audio.preservesPitch=true; audio.mozPreservesPitch=true; audio.webkitPreservesPitch=true; }catch(e){}
+try{ bgAudio.preservesPitch=true; bgAudio.mozPreservesPitch=true; bgAudio.webkitPreservesPitch=true; }catch(e){}
+function loopStamp(){ $('aTime').textContent='A '+(aPoint!=null?fmt(aPoint):'--:--'); $('bTime').textContent='B '+(bPoint!=null?fmt(bPoint):'--:--'); }
+function pctToX(pct){ const w=$('seekWrap').clientWidth||0, th=16; return (th/2)+pct*Math.max(0,w-th); }   // pad half the range thumb so the band aligns
+function updateBand(){ const el=A(), dur=el.duration||audio.duration||0; const band=$('loopBand'),tA=$('loopTickA'),tB=$('loopTickB');
+  if(aPoint==null||bPoint==null||!dur||bPoint<=aPoint){ [band,tA,tB].forEach(x=>x.classList.remove('on')); return; }
+  const xa=pctToX(Math.min(1,aPoint/dur)), xb=pctToX(Math.min(1,bPoint/dur));
+  band.style.left=xa+'px'; band.style.width=Math.max(0,xb-xa)+'px'; band.classList.add('on');
+  tA.style.left=xa+'px'; tA.classList.add('on'); tB.style.left=xb+'px'; tB.classList.add('on'); }
+function saveLoop(){ try{ const all=JSON.parse(localStorage.getItem('mp_loops')||'{}'); all[SONG]={a:aPoint,b:bPoint,rate:+$('tempo').value,loopAB}; localStorage.setItem('mp_loops',JSON.stringify(all)); }catch(e){} }
+function setRate(r){ const v=Math.max(0.5,Math.min(1,+r||1)); $('tempo').value=v; $('tempoV').textContent=String(+v.toFixed(2))+'×';
+  try{ audio.playbackRate=v; bgAudio.playbackRate=v; }catch(e){} }
+$('setA').addEventListener('click',()=>{ aPoint=A().currentTime; if(bPoint!=null&&bPoint<=aPoint)bPoint=null; loopStamp(); updateBand(); saveLoop(); });
+$('setB').addEventListener('click',()=>{ bPoint=A().currentTime; if(aPoint!=null&&aPoint>=bPoint){ const t=aPoint; aPoint=bPoint; bPoint=t; } loopStamp(); updateBand(); saveLoop(); });
+$('loopToggle').addEventListener('click',()=>{ loopAB=!loopAB; $('loopToggle').classList.toggle('on',loopAB); $('loopToggle').setAttribute('aria-pressed',loopAB?'true':'false'); saveLoop(); });
+$('loopClear').addEventListener('click',()=>{ aPoint=bPoint=null; loopAB=false; $('loopToggle').classList.remove('on'); $('loopToggle').setAttribute('aria-pressed','false'); loopStamp(); updateBand(); saveLoop(); });
+$('loopRecall').addEventListener('click',()=>{ try{ const v=(JSON.parse(localStorage.getItem('mp_loops')||'{}'))[SONG]; if(!v)return; aPoint=(v.a!=null?v.a:null); bPoint=(v.b!=null?v.b:null); loopAB=!!v.loopAB; if(v.rate)setRate(v.rate); $('loopToggle').classList.toggle('on',loopAB); $('loopToggle').setAttribute('aria-pressed',loopAB?'true':'false'); loopStamp(); updateBand(); }catch(e){} });
+$('tempo').addEventListener('input',e=>setRate(+e.target.value));
+audio.addEventListener('loadedmetadata',updateBand); bgAudio.addEventListener('loadedmetadata',updateBand);
+window.addEventListener('resize',updateBand);
+loopStamp();
+
 applyPan();
 </script>
 </body>
