@@ -42,6 +42,7 @@
     <span class="tm" id="tm">0:00 / 0:00</span>
   </div>
   <input type="range" class="seek" id="seek" min="0" max="1000" value="0" />
+  <p class="note" id="awake" style="display:none;margin:-8px 0 14px">🔆 Screen stays on while playing — don't press the power button.</p>
 
   <div class="lane bari">
     <div class="lhdr"><span class="nm">Your part · Baritone</span><span class="ear" id="earBari">RIGHT</span></div>
@@ -80,6 +81,33 @@ $('mpTitle').textContent=`${SONGS[SONG]} — Mix Pad`;
 const audio=new Audio(`/${SONG}-baritone/stereo.mp3`); audio.preload='auto';
 let ctx,gBa,gQu,pBa,pQu,lim,wired=false,scrubbing=false;
 
+// --- Keep the phone screen awake while playing (it auto-sleeps mid-workout and kills the audio) ---
+let wakeLock=null;
+async function keepAwake(){
+  if(!('wakeLock' in navigator)) return;            // iOS <16.4 / unsupported: silently no-op
+  try{ wakeLock=await navigator.wakeLock.request('screen');
+    wakeLock.addEventListener('release',()=>{ wakeLock=null; });
+    $('awake').style.display='block';
+  }catch(e){ /* rejects on low battery / no gesture — must NOT break playback */ }
+}
+async function releaseAwake(){
+  try{ if(wakeLock){ await wakeLock.release(); wakeLock=null; } }catch(e){}
+  $('awake').style.display='none';
+}
+// The lock auto-releases when the tab hides; re-acquire on return + resume a suspended graph.
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState!=='visible') return;
+  if(wired && ctx && ctx.state==='suspended') ctx.resume();
+  if(!audio.paused) keepAwake();
+});
+// MediaSession: lock-screen/headset controls drive the SAME play/pause logic (not a parallel path).
+if('mediaSession' in navigator){
+  try{ navigator.mediaSession.metadata=new MediaMetadata({title:`${SONGS[SONG]} — Mix Pad`,artist:'Vocal Trainer',album:'The Music Man'});
+    navigator.mediaSession.setActionHandler('play',()=>$('play').click());
+    navigator.mediaSession.setActionHandler('pause',()=>$('play').click());
+  }catch(e){}
+}
+
 function wire(){
   if(wired)return; wired=true;
   ctx=new (window.AudioContext||window.webkitAudioContext)();
@@ -103,11 +131,12 @@ function applyPan(){ const pb=+$('panBari').value, pq=+$('panQ').value;
 
 const fmt=(s)=>`${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
 $('play').addEventListener('click',()=>{ wire(); if(ctx.state==='suspended')ctx.resume();
-  if(audio.paused){ audio.play(); $('play').textContent='⏸'; } else { audio.pause(); $('play').textContent='▶'; } });
+  if(audio.paused){ audio.play(); $('play').textContent='⏸'; keepAwake(); if('mediaSession' in navigator)navigator.mediaSession.playbackState='playing'; }
+  else { audio.pause(); $('play').textContent='▶'; releaseAwake(); if('mediaSession' in navigator)navigator.mediaSession.playbackState='paused'; } });
 $('rep').addEventListener('click',()=>{ audio.loop=!audio.loop; $('rep').classList.toggle('on',audio.loop); });
 audio.addEventListener('timeupdate',()=>{ $('tm').textContent=`${fmt(audio.currentTime)} / ${fmt(audio.duration||0)}`;
   if(!scrubbing && audio.duration) $('seek').value=Math.round(audio.currentTime/audio.duration*1000); });
-audio.addEventListener('ended',()=>{ if(!audio.loop)$('play').textContent='▶'; });
+audio.addEventListener('ended',()=>{ if(!audio.loop){ $('play').textContent='▶'; releaseAwake(); if('mediaSession' in navigator)navigator.mediaSession.playbackState='paused'; } });
 $('seek').addEventListener('input',()=>{ scrubbing=true; if(audio.duration){ const t=(+$('seek').value)/1000*audio.duration; $('tm').textContent=`${fmt(t)} / ${fmt(audio.duration)}`; } });
 $('seek').addEventListener('change',()=>{ if(audio.duration) audio.currentTime=(+$('seek').value)/1000*audio.duration; scrubbing=false; });
 $('volBari').addEventListener('input',e=>{$('volBariV').textContent=e.target.value+'%';applyVol();});
