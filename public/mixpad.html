@@ -55,11 +55,12 @@
   .dlhdr{font-size:12px;color:#7a7a8a;margin:0 0 10px;}
   .dllink{display:block;min-height:46px;line-height:46px;margin:8px 0;border:1px solid #3a3a4a;border-radius:12px;background:#16161f;color:#cfcfe0;font-size:14px;font-weight:600;text-decoration:none;}
   .dllink:active{background:#1f1f2a;}
+  .partbadge{font-size:11px;font-weight:800;letter-spacing:.06em;padding:2px 8px;border-radius:999px;background:#211d12;border:1px solid rgba(255,207,58,.55);color:#ffe49a;vertical-align:middle;}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1 id="mpTitle">Mix Pad</h1>
+  <h1 id="mpTitle">Mix Pad <span class="partbadge" id="partBadge"></span></h1>
   <p class="tag">One stereo recording split into your part + quartet, plus a row-start guide / plunk you can balance and slide between ears. Headphones on.</p>
 
   <div class="play">
@@ -90,7 +91,7 @@
   <audio id="bgAudio" style="display:none" playsinline></audio>
 
   <div class="lane bari">
-    <div class="lhdr"><span class="nm">Your part · Baritone</span><span class="ear" id="earBari">RIGHT</span></div>
+    <div class="lhdr"><span class="nm" id="partLaneName">Your part</span><span class="ear" id="earBari">RIGHT</span></div>
     <div class="vlbl"><span>Volume</span></div>
     <div class="vrow"><input type="range" class="volB" id="volBari" min="0" max="250" value="100"><span class="pct" id="volBariV">100%</span></div>
     <div class="vlbl"><span>Left ear</span><span>Right ear</span></div>
@@ -98,7 +99,7 @@
   </div>
 
   <div class="lane quart">
-    <div class="lhdr"><span class="nm">Quartet · no baritone</span><span class="ear" id="earQ">LEFT</span></div>
+    <div class="lhdr"><span class="nm" id="quartLaneName">Quartet</span><span class="ear" id="earQ">LEFT</span></div>
     <div class="vlbl"><span>Volume</span></div>
     <div class="vrow"><input type="range" class="volQ" id="volQ" min="0" max="250" value="100"><span class="pct" id="volQV">100%</span></div>
     <div class="vlbl"><span>Left ear</span><span>Right ear</span></div>
@@ -113,12 +114,12 @@
     <div class="vrow"><input type="range" class="pan" id="panGuide" min="-100" max="100" value="0"><span class="pct" id="panGuideV">C</span></div>
   </div>
 
-  <p class="note">Baritone and quartet stay split from one baked-stereo recording → cross-routed, always perfectly in sync. The guide / plunk is scheduled from row timing into the same limiter.</p>
+  <p class="note">Your part and quartet stay split from one baked-stereo recording → cross-routed, always perfectly in sync. The guide / plunk is scheduled from row timing into the same limiter.</p>
 
   <div class="dlblock">
     <p class="dlhdr">Download the source tracks (long-press → "Download Linked File" on iPhone):</p>
     <a class="dllink" id="dlFull" download>⬇️ Full mix — your part + quartet</a>
-    <a class="dllink" id="dlPart" download>⬇️ Your part only — baritone</a>
+    <a class="dllink" id="dlPart" download>⬇️ Your part only</a>
   </div>
 </div>
 
@@ -135,15 +136,23 @@ let SETUP=null;
   }catch(e){ console.warn('[mixpad] setup payload ignored:',e.message); SETUP=null; }
 })();
 const SONG=(()=>{ const s=(SETUP&&SETUP.song)||PARAMS.get('song'); return SONGS[s]?s:'sincere'; })();
-document.title=`${SONGS[SONG]} — Dichotic Mix Pad`;
-$('mpTitle').textContent=`${SONGS[SONG]} — Mix Pad`;
+// ?part= chooses the learning voice; setup.part is accepted for round-trip parity.
+const PART=(()=>{ const p=(SETUP&&SETUP.part)||PARAMS.get('part'); return (p==='lead'||p==='baritone')?p:'baritone'; })();
+const PARTLABEL=PART[0].toUpperCase()+PART.slice(1);
+const PARTDIR=`/${SONG}-${PART}/`;
+document.title=`${SONGS[SONG]} · ${PARTLABEL} — Dichotic Mix Pad`;
+$('mpTitle').textContent=`${SONGS[SONG]} · ${PARTLABEL} — Mix Pad`;
+$('partLaneName').textContent=`Your part · ${PARTLABEL}`;
+$('partBadge').textContent=PARTLABEL.toUpperCase();
+$('quartLaneName').textContent=`Quartet · no ${PART}`;
 // Download links for the current song's source tracks (song-specific filenames so Files-app saves don't collide)
 (function(){ const slug=SONGS[SONG].replace(/[^a-z0-9]+/gi,'-').toLowerCase().replace(/^-|-$/g,'');
   const full=$('dlFull'), part=$('dlPart');
-  full.href=`/${SONG}-baritone/stereo.mp3`; full.setAttribute('download',`${slug}-full-mix.mp3`);
-  part.href=`/${SONG}-baritone/audio.mp3`; part.setAttribute('download',`${slug}-baritone.mp3`);
+  full.href=`${PARTDIR}stereo.mp3`; full.setAttribute('download',`${slug}-${PART}-full-mix.mp3`);
+  part.href=`${PARTDIR}audio.mp3`; part.setAttribute('download',`${slug}-${PART}.mp3`);
+  part.textContent=`⬇️ Your part only — ${PARTLABEL}`;
 })();
-const audio=new Audio(`/${SONG}-baritone/stereo.mp3`); audio.preload='auto';
+const audio=new Audio(`${PARTDIR}stereo.mp3`); audio.preload='auto';
 let ctx,gBa,gQu,gGuide,pBa,pQu,pGuide,lim,wired=false,scrubbing=false;
 // iPhone pocket mode: when LOCKED, playback is a baked stereo WAV in a bare <audio> (iOS backgrounds it);
 // the live Web-Audio graph can't. A() = whichever element is currently the source of truth for transport.
@@ -158,16 +167,18 @@ function normalizeTaps(raw){
   return raw.map((x,i)=>({sys:Number.isFinite(+x.sys)?+x.sys:i,t:+x.t}))
     .filter(x=>Number.isFinite(x.t)&&x.t>=0).sort((a,b)=>a.t-b.t);
 }
+const PARTKEY=`${SONG}-${PART}`;   // tap-timing + loops are per song AND part — lead timing != baritone (ui-specialist BLOCK fix)
 let TAP_STORE={}; try{TAP_STORE=JSON.parse(localStorage.getItem('sf_taps')||'{}');}catch(e){}
 if(SETUP&&SETUP.song&&Array.isArray(SETUP.taps)&&SETUP.taps.length>=2){
-  TAP_STORE[SETUP.song]=SETUP.taps; try{localStorage.setItem('sf_taps',JSON.stringify(TAP_STORE));}catch(e){}
+  TAP_STORE[`${SETUP.song}-${SETUP.part||'baritone'}`]=SETUP.taps; try{localStorage.setItem('sf_taps',JSON.stringify(TAP_STORE));}catch(e){}
 }
-let guideTaps=normalizeTaps(TAP_STORE[SONG]), guideFetch=null;
+// baritone falls back to the bare-song key so the existing score-follow/studio round-trip data still applies; lead is isolated
+let guideTaps=normalizeTaps(TAP_STORE[PARTKEY] || (PART==='baritone'?TAP_STORE[SONG]:null)), guideFetch=null;
 function setGuideTaps(raw){ guideTaps=normalizeTaps(raw); resetGuideCursor(audio.currentTime||0); }
 async function ensureGuideTaps(){
   if(guideTaps.length) return guideTaps;
   if(!guideFetch){
-    guideFetch=fetch(`/${SONG}-baritone/timing.json`).then(r=>r.ok?r.json():null)
+    guideFetch=fetch(`${PARTDIR}timing.json`).then(r=>r.ok?r.json():null)
       .then(d=>{ if(d&&Array.isArray(d.taps)&&d.taps.length>=2) setGuideTaps(d.taps); return guideTaps; })
       .catch(()=>guideTaps);
   }
@@ -176,7 +187,7 @@ async function ensureGuideTaps(){
 ensureGuideTaps();
 
 const TRACKS=[
-  {id:'bari',name:'Baritone',vol:'volBari',volV:'volBariV',pan:'panBari',panV:'panBariV',ear:'earBari',gain:()=>gBa,panner:()=>pBa},
+  {id:'bari',name:PARTLABEL,vol:'volBari',volV:'volBariV',pan:'panBari',panV:'panBariV',ear:'earBari',gain:()=>gBa,panner:()=>pBa},
   {id:'quart',name:'Quartet',vol:'volQ',volV:'volQV',pan:'panQ',panV:'panQV',ear:'earQ',gain:()=>gQu,panner:()=>pQu},
   {id:'guide',name:'Guide / plunk',vol:'volGuide',volV:'volGuideV',pan:'panGuide',panV:'panGuideV',ear:'earGuide',gain:()=>gGuide,panner:()=>pGuide}
 ];
@@ -254,7 +265,7 @@ function wire(){
   pBa=ctx.createStereoPanner(); pQu=ctx.createStereoPanner(); pGuide=ctx.createStereoPanner();
   lim=ctx.createDynamicsCompressor();           // brick-wall limiter so 250% can't harshly clip
   lim.threshold.value=-1.5; lim.knee.value=0; lim.ratio.value=20; lim.attack.value=0.003; lim.release.value=0.05;
-  split.connect(gBa,0); gBa.connect(pBa).connect(lim);   // ch0 LEFT = baritone -> RIGHT ear
+  split.connect(gBa,0); gBa.connect(pBa).connect(lim);   // ch0 LEFT = your part -> RIGHT ear
   split.connect(gQu,1); gQu.connect(pQu).connect(lim);   // ch1 RIGHT = quartet -> LEFT ear
   gGuide.connect(pGuide).connect(lim);                    // track3 guide taps are scheduled into this same limiter
   lim.connect(ctx.destination);
@@ -371,7 +382,7 @@ async function bakeMix(){   // mirrors the live graph EXACTLY (split -> gain -> 
   gB.gain.value=effectiveGain('bari'); gQ.gain.value=effectiveGain('quart'); gG.gain.value=effectiveGain('guide');
   pB.pan.value=(+$('panBari').value)/100; pQ.pan.value=(+$('panQ').value)/100; pG.pan.value=(+$('panGuide').value)/100;
   src.connect(split);
-  split.connect(gB,0); gB.connect(pB).connect(lm);   // ch0 baritone
+  split.connect(gB,0); gB.connect(pB).connect(lm);   // ch0 your part
   split.connect(gQ,1); gQ.connect(pQ).connect(lm);   // ch1 quartet
   gG.connect(pG).connect(lm);                         // track3 guide / plunk
   guideTaps.forEach(x=>{ if(x.t<=buf.duration+0.1) scheduleGuidePlunk(oc,gG,Math.max(0,x.t),false); });
@@ -427,14 +438,14 @@ function updateBand(){ const el=A(), dur=el.duration||audio.duration||0; const b
   const xa=pctToX(Math.min(1,aPoint/dur)), xb=pctToX(Math.min(1,bPoint/dur));
   band.style.left=xa+'px'; band.style.width=Math.max(0,xb-xa)+'px'; band.classList.add('on');
   tA.style.left=xa+'px'; tA.classList.add('on'); tB.style.left=xb+'px'; tB.classList.add('on'); }
-function saveLoop(){ try{ const all=JSON.parse(localStorage.getItem('mp_loops')||'{}'); all[SONG]={a:aPoint,b:bPoint,rate:+$('tempo').value,loopAB}; localStorage.setItem('mp_loops',JSON.stringify(all)); }catch(e){} }
+function saveLoop(){ try{ const all=JSON.parse(localStorage.getItem('mp_loops')||'{}'); all[PARTKEY]={a:aPoint,b:bPoint,rate:+$('tempo').value,loopAB}; localStorage.setItem('mp_loops',JSON.stringify(all)); }catch(e){} }
 function setRate(r){ const v=Math.max(0.5,Math.min(1,+r||1)); $('tempo').value=v; $('tempoV').textContent=String(+v.toFixed(2))+'×';
   try{ audio.playbackRate=v; bgAudio.playbackRate=v; }catch(e){} }
 $('setA').addEventListener('click',()=>{ aPoint=A().currentTime; if(bPoint!=null&&bPoint<=aPoint)bPoint=null; loopStamp(); updateBand(); saveLoop(); });
 $('setB').addEventListener('click',()=>{ bPoint=A().currentTime; if(aPoint!=null&&aPoint>=bPoint){ const t=aPoint; aPoint=bPoint; bPoint=t; } loopStamp(); updateBand(); saveLoop(); });
 $('loopToggle').addEventListener('click',()=>{ loopAB=!loopAB; $('loopToggle').classList.toggle('on',loopAB); $('loopToggle').setAttribute('aria-pressed',loopAB?'true':'false'); saveLoop(); });
 $('loopClear').addEventListener('click',()=>{ aPoint=bPoint=null; loopAB=false; $('loopToggle').classList.remove('on'); $('loopToggle').setAttribute('aria-pressed','false'); loopStamp(); updateBand(); saveLoop(); });
-$('loopRecall').addEventListener('click',()=>{ try{ const v=(JSON.parse(localStorage.getItem('mp_loops')||'{}'))[SONG]; if(!v)return; aPoint=(v.a!=null?v.a:null); bPoint=(v.b!=null?v.b:null); loopAB=!!v.loopAB; if(v.rate)setRate(v.rate); $('loopToggle').classList.toggle('on',loopAB); $('loopToggle').setAttribute('aria-pressed',loopAB?'true':'false'); loopStamp(); updateBand(); }catch(e){} });
+$('loopRecall').addEventListener('click',()=>{ try{ const v=(JSON.parse(localStorage.getItem('mp_loops')||'{}'))[PARTKEY]; if(!v)return; aPoint=(v.a!=null?v.a:null); bPoint=(v.b!=null?v.b:null); loopAB=!!v.loopAB; if(v.rate)setRate(v.rate); $('loopToggle').classList.toggle('on',loopAB); $('loopToggle').setAttribute('aria-pressed',loopAB?'true':'false'); loopStamp(); updateBand(); }catch(e){} });
 $('tempo').addEventListener('input',e=>{ setRate(+e.target.value); saveLoop(); });
 audio.addEventListener('loadedmetadata',updateBand); bgAudio.addEventListener('loadedmetadata',updateBand);
 window.addEventListener('resize',updateBand);
