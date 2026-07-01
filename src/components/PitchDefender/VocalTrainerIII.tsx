@@ -2680,7 +2680,9 @@ export default function VocalTrainerIII() {
             )}
             {scoreView !== 'pages' && (
               <span className="text-xs text-cyan-400/70">
-                {activeLidaRoseScorePart ? `${activeLidaRoseScorePart.label} - ${activeLidaRoseScorePart.timingLabel}` : 'Lida Rose - select Tenor, Lead, Baritone, or Bass for engraving'}
+                {activeLidaRoseScorePart
+                  ? `${activeLidaRoseScorePart.label}${activeLidaRoseScorePart.label.includes(activeLidaRoseScorePart.timingLabel) ? '' : ` - ${activeLidaRoseScorePart.timingLabel}`}`
+                  : 'Lida Rose - select Tenor, Lead, Baritone, or Bass for engraving'}
               </span>
             )}
             {scoreHealth && (
@@ -3341,14 +3343,14 @@ export default function VocalTrainerIII() {
             <h2 className="text-base font-semibold text-amber-300">🎛️ Mixing Desk</h2>
             <button onClick={() => setMixerOpen(false)} className="w-8 h-8 rounded-full bg-neutral-800 hover:bg-neutral-700 text-neutral-300 text-sm flex items-center justify-center lg:hidden" title="Collapse the desk back to the orb">✕</button>
           </div>
-          <div className="mb-2 text-xs">
+          <div className="mb-2 text-xs flex items-baseline gap-2 min-w-0">
             {playbackLabel ? (
-              <span className="text-amber-300">{playbackLabel}</span>
+              <span className="text-amber-300 truncate min-w-0 flex-1" title={playbackLabel}>{playbackLabel}</span>
             ) : (
-              <span className="text-gray-500">Nothing loaded. Drop a vocal or music stem above, or pick a library template.</span>
+              <span className="text-gray-500">Nothing loaded — pick a song below, or add stems via the Library.</span>
             )}
             {playbackState !== 'idle' && (
-              <span className="ml-3 text-gray-500">
+              <span className="text-gray-500 shrink-0 whitespace-nowrap font-mono">
                 {playbackState === 'paused' ? '⏸' : '▶'} {practiceTime.toFixed(2)}s
                 {playbackDurationRef.current > 0 && ` / ${playbackDurationRef.current.toFixed(2)}s`}
               </span>
