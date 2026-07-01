@@ -28,6 +28,7 @@ interface ScoreEngravingProps {
   zoom?: number
   syncUrl?: string        // per-note recording timestamps (lida-rose-lead-sync.json)
   currentTime?: number    // VT3 practiceTime (audio clock seconds)
+  highlightPart?: string  // quartet view: only this part lights up
   liveMidiRef?: { current: number | null }                                   // live voice pitch (fractional MIDI)
   trailRef?: { current: { t: number; midi: number; on: boolean }[] }         // glowing voice trail (~1.2s)
 }
@@ -44,7 +45,7 @@ const DARK = {
   activeNote: '#fbbf24',
 }
 
-export default function ScoreEngraving({ musicXMLUrl, title, zoom: initialZoom = 0.8, syncUrl, currentTime, liveMidiRef, trailRef }: ScoreEngravingProps) {
+export default function ScoreEngraving({ musicXMLUrl, title, zoom: initialZoom = 0.8, syncUrl, currentTime, highlightPart, liveMidiRef, trailRef }: ScoreEngravingProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   // ── live pitch ribbon overlay (SVG elements driven imperatively each frame) ──
   const ribbonHeadRef = useRef<SVGCircleElement>(null)
@@ -63,6 +64,7 @@ export default function ScoreEngraving({ musicXMLUrl, title, zoom: initialZoom =
   const curStepRef = useRef(0)                // cursor's current absolute step
   const curIdxRef = useRef(-1)                // last highlighted sync-note index
   const activeGNotesRef = useRef<any[]>([])   // currently colored OSMD graphical notes
+  const staffIndexBaseRef = useRef<number | null>(null)
   const wrapperRef = useRef<HTMLDivElement | null>(null)  // nearest stable anchor for score scrolling
 
   const applyColors = useCallback((osmd: any) => {
@@ -128,7 +130,8 @@ export default function ScoreEngraving({ musicXMLUrl, title, zoom: initialZoom =
               const sj = await sresp.json()
               if (cancelled) return
               syncNotesRef.current = sj.notes || []
-              stepOrdinalRef.current = buildStepOrdinals(osmd, syncNotesRef.current)
+              staffIndexBaseRef.current = detectStaffIndexBase(osmd)
+              stepOrdinalRef.current = buildStepOrdinals(osmd, syncNotesRef.current, highlightPart, staffIndexBaseRef.current)
               const np = stepOrdinalRef.current.length
               const ns = syncNotesRef.current.length
               if (np !== ns) console.warn(`ScoreEngraving: aligned cursor notes ${np} != sync notes ${ns} - highlight may drift`)
@@ -153,7 +156,7 @@ export default function ScoreEngraving({ musicXMLUrl, title, zoom: initialZoom =
     }
     // zoom handled by the re-zoom effect (no refetch); currentTime by the sing-out effect
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [musicXMLUrl, syncUrl, applyColors])
+  }, [musicXMLUrl, syncUrl, highlightPart, applyColors])
 
   // ─── Sing-out: drive the cursor to the note at currentTime ───────────
   useEffect(() => {
@@ -185,10 +188,11 @@ export default function ScoreEngraving({ musicXMLUrl, title, zoom: initialZoom =
       curStepRef.current = s
 
       clearGraphicalNotes(activeGNotesRef.current)
-      const gNotes = typeof cur.GNotesUnderCursor === 'function' ? (cur.GNotesUnderCursor() || []) : []
+      const allGNotes = typeof cur.GNotesUnderCursor === 'function' ? (cur.GNotesUnderCursor() || []) : []
+      const gNotes = filterScoreObjectsByPart(allGNotes, highlightPart, staffIndexBaseRef.current)
       colorGraphicalNotes(gNotes, DARK.activeNote)
       activeGNotesRef.current = gNotes
-      publishActiveNoteTelemetry(idx, sn[idx], s)
+      publishActiveNoteTelemetry(idx, sn[idx], s, highlightPart, gNotes.length)
 
       // Use OSMD's invisible cursor as a layout-aware position source for scroll.
       const cel = cur.cursorElement || document.getElementById('cursorImg-0')
@@ -207,7 +211,7 @@ export default function ScoreEngraving({ musicXMLUrl, title, zoom: initialZoom =
         } catch { /* ok */ }
       }
     } catch { /* ok */ }
-  }, [currentTime, status, syncReady])
+  }, [currentTime, status, syncReady, highlightPart])
 
   // ─── Re-zoom without refetch ─────────────────────────────────────────
   useEffect(() => {
@@ -336,11 +340,13 @@ function colorGraphicalNotes(gNotes: any[], color: string) {
   }
 }
 
-function publishActiveNoteTelemetry(index: number, note: SyncNote | undefined, cursorStep: number) {
+function publishActiveNoteTelemetry(index: number, note: SyncNote | undefined, cursorStep: number, highlightPart?: string, coloredNoteCount = 0) {
   if (typeof window === 'undefined') return
   ;(window as any).__VT3_SCORE_ACTIVE__ = {
     index,
     cursorStep,
+    highlightPart: highlightPart ?? null,
+    coloredNoteCount,
     pitchMidi: note?.pitchMidi ?? null,
     pitchName: note ? midiName(note.pitchMidi) : null,
     startTimeSeconds: note?.startTimeSeconds ?? null,
@@ -355,11 +361,94 @@ function midiName(midi: number): string {
 
 type CursorPitchStop = { step: number; pitchMidi: number }
 
+const QUARTET_STAFF_ORDER: Record<string, number> = {
+  Tenor: 0,
+  Lead: 1,
+  Baritone: 2,
+  Bass: 3,
+}
+
+function detectStaffIndexBase(osmd: any): number | null {
+  const cur = osmd?.cursor
+  if (!cur) return null
+  const indices: number[] = []
+  try { cur.reset() } catch { return null }
+  let guard = 0
+  while (!cur.Iterator?.EndReached && guard < 200) {
+    let notes: any[] = []
+    try { notes = cur.NotesUnderCursor() || [] } catch { notes = [] }
+    for (const note of notes) {
+      const staffIndex = scoreObjectStaffIndex(note)
+      if (staffIndex != null) indices.push(staffIndex)
+    }
+    try { cur.next() } catch { break }
+    guard++
+  }
+  try { cur.reset() } catch { /* ok */ }
+  if (!indices.length) return null
+  return Math.min(...indices) === 0 ? 0 : 1
+}
+
+function filterScoreObjectsByPart<T>(items: T[], partName?: string, staffIndexBase: number | null = null): T[] {
+  if (!partName) return items
+  const filtered = (items || []).filter((item) => scoreObjectMatchesPart(item, partName, staffIndexBase))
+  return filtered.length ? filtered : items
+}
+
+function scoreObjectMatchesPart(item: any, partName: string, staffIndexBase: number | null): boolean {
+  const partLower = partName.toLowerCase()
+  if (scoreObjectPartStrings(item).some((value) => value.toLowerCase().includes(partLower))) return true
+
+  const expectedOrder = QUARTET_STAFF_ORDER[partName]
+  const staffIndex = scoreObjectStaffIndex(item)
+  if (expectedOrder == null || staffIndex == null || staffIndexBase == null) return false
+  return staffIndex === expectedOrder + staffIndexBase
+}
+
+function scoreObjectPartStrings(item: any): string[] {
+  const out: string[] = []
+  const candidates = [
+    item?.sourceNote?.ParentVoiceEntry?.ParentSourceStaffEntry?.ParentStaff?.ParentInstrument?.Name,
+    item?.sourceNote?.ParentVoiceEntry?.ParentSourceStaffEntry?.ParentStaff?.ParentInstrument?.PartName,
+    item?.sourceNote?.ParentVoiceEntry?.ParentSourceStaffEntry?.ParentStaff?.ParentInstrument?.Id,
+    item?.SourceNote?.ParentVoiceEntry?.ParentSourceStaffEntry?.ParentStaff?.ParentInstrument?.Name,
+    item?.ParentVoiceEntry?.ParentSourceStaffEntry?.ParentStaff?.ParentInstrument?.Name,
+    item?.ParentVoiceEntry?.ParentSourceStaffEntry?.ParentStaff?.ParentInstrument?.PartName,
+    item?.ParentSourceStaffEntry?.ParentStaff?.ParentInstrument?.Name,
+    item?.parentStaffEntry?.parentStaff?.parentInstrument?.name,
+    item?.parentStaffEntry?.parentStaff?.ParentInstrument?.Name,
+  ]
+  for (const value of candidates) {
+    if (typeof value === 'string' && value.trim()) out.push(value.trim())
+  }
+  return out
+}
+
+function scoreObjectStaffIndex(item: any): number | null {
+  const candidates = [
+    item?.sourceNote?.ParentVoiceEntry?.ParentSourceStaffEntry?.ParentStaff?.idInMusicSheet,
+    item?.sourceNote?.ParentVoiceEntry?.ParentSourceStaffEntry?.ParentStaff?.Id,
+    item?.SourceNote?.ParentVoiceEntry?.ParentSourceStaffEntry?.ParentStaff?.idInMusicSheet,
+    item?.ParentVoiceEntry?.ParentSourceStaffEntry?.ParentStaff?.idInMusicSheet,
+    item?.ParentVoiceEntry?.ParentSourceStaffEntry?.ParentStaff?.Id,
+    item?.ParentSourceStaffEntry?.ParentStaff?.idInMusicSheet,
+    item?.parentStaffEntry?.parentStaff?.idInMusicSheet,
+    item?.parentStaffEntry?.parentStaff?.Id,
+    item?.ParentStaffEntry?.ParentStaff?.idInMusicSheet,
+    item?.ParentStaffEntry?.ParentStaff?.Id,
+  ]
+  for (const value of candidates) {
+    const numeric = numberOrNull(value)
+    if (numeric != null) return numeric
+  }
+  return null
+}
+
 // Walk the cursor once, keep each pitched stop's absolute cursor step plus MIDI
 // pitch, then align those stops to the sync notes by pitch. This avoids assuming
 // OSMD cursor stops are 1:1 with sung notes: tied/held continuation stops can be
 // skipped while later sync notes keep their correct cursor step.
-function buildStepOrdinals(osmd: any, syncNotes: SyncNote[]): number[] {
+function buildStepOrdinals(osmd: any, syncNotes: SyncNote[], highlightPart?: string, staffIndexBase: number | null = null): number[] {
   const cur = osmd.cursor
   if (!cur || !syncNotes.length) return []
   cur.reset()
@@ -369,6 +458,7 @@ function buildStepOrdinals(osmd: any, syncNotes: SyncNote[]): number[] {
   while (!cur.Iterator?.EndReached && guard < 100000) {
     let notes: any[] = []
     try { notes = cur.NotesUnderCursor() || [] } catch { notes = [] }
+    notes = filterScoreObjectsByPart(notes, highlightPart, staffIndexBase)
     const pitchMidi = firstPitchMidi(notes)
     if (pitchMidi != null) stops.push({ step, pitchMidi })
     cur.next()

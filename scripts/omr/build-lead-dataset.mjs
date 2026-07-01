@@ -7,12 +7,28 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { normalizeLeadMeasure } from './lida-lead-key-normalize.mjs';
 import { applyLeadMeasureCorrections } from './lida-lead-source-corrections.mjs';
+import { applyTenorMeasureCorrections } from './lida-tenor-source-corrections.mjs';
+import { applyBassMeasureCorrections } from './lida-bass-source-corrections.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SRC = (f) => path.join(__dirname, 'source', f);
 const OUT = path.join(__dirname, '..', '..', 'src', 'components', 'PitchDefender', 'omrTargets.ts');
 
 const PARTS = [
+  {
+    song: 'Lida Rose',
+    part: 'Tenor',
+    sourcePages: 'pp.196-198 (Audiveris + printed corrections)',
+    pages: [
+      { pg: '196', path: SRC('lida-196.xml'), staff: 'P2' },
+      { pg: '197', path: SRC('lida-197.xml'), staff: 'P1' },
+      { pg: '198', path: SRC('lida-198.xml'), staff: 'P1' },
+    ],
+    audioTemplateUrl: null,
+    fallbackDurationSec: 84.848,
+    countEmptyMeasures: true,
+    applyCorrections: applyTenorMeasureCorrections,
+  },
   {
     song: 'Lida Rose',
     part: 'Lead',
@@ -25,6 +41,7 @@ const PARTS = [
     audioTemplateUrl: 'https://vv03sd8jufykivax.public.blob.vercel-storage.com/vocal-trainer/1781240825294-lead-lida-rose-lead-dominant/template.json',
     fallbackDurationSec: 83.242,
     countEmptyMeasures: false,
+    applyCorrections: applyLeadMeasureCorrections,
   },
   {
     song: 'Lida Rose',
@@ -38,6 +55,21 @@ const PARTS = [
     audioTemplateUrl: 'https://vv03sd8jufykivax.public.blob.vercel-storage.com/vocal-trainer/1781240808729-baritone-lida-rose-baritone-dominant/template.json',
     fallbackDurationSec: 83.289977,
     countEmptyMeasures: true,
+    applyCorrections: applyLeadMeasureCorrections,
+  },
+  {
+    song: 'Lida Rose',
+    part: 'Bass',
+    sourcePages: 'pp.196-198 (Audiveris + printed corrections)',
+    pages: [
+      { pg: '196', path: SRC('lida-196.xml'), staff: 'P5' },
+      { pg: '197', path: SRC('lida-197.xml'), staff: 'P4' },
+      { pg: '198', path: SRC('lida-198.xml'), staff: 'P4' },
+    ],
+    audioTemplateUrl: null,
+    fallbackDurationSec: 84.848,
+    countEmptyMeasures: true,
+    applyCorrections: applyBassMeasureCorrections,
   },
 ];
 
@@ -95,15 +127,17 @@ function sourceMeasures(partConfig) {
   for (const page of partConfig.pages) {
     const xml = fs.readFileSync(page.path, 'utf8');
     const inner = getPartInner(xml, page.staff);
+    const divisions = Number((inner.match(/<divisions>(\d+)<\/divisions>/) || [])[1] || 1);
     const pageMeasures = (inner.match(/<measure\b[\s\S]*?<\/measure>/g) || [])
       .map(normalizeLeadMeasure);
-    measures.push(...applyLeadMeasureCorrections(page.pg, pageMeasures, { part: partConfig.part }));
+    measures.push(...partConfig.applyCorrections(page.pg, pageMeasures, { part: partConfig.part, divisions }));
   }
   while (measures.length && !/<note\b/.test(measures[measures.length - 1])) measures.pop();
   return measures;
 }
 
 async function durationFor(partConfig) {
+  if (!partConfig.audioTemplateUrl) return partConfig.fallbackDurationSec;
   try {
     const audio = await (await fetch(partConfig.audioTemplateUrl)).json();
     return Number(audio.durationSec) || partConfig.fallbackDurationSec;
@@ -150,9 +184,8 @@ ${notesStr},
 const ts = `// AUTO-GENERATED - do not hand-edit. Regenerate via scripts/omr/build-lead-dataset.mjs
 // Optical Music Recognition (Audiveris 5.10.2) of "The Music Man" full score,
 // Lida Rose pp.196-198. These are score-derived part lanes for Vocal Trainer III.
-// The Lead timing is superseded by lida-rose-lead-sync.json. Baritone timing is
-// superseded by lida-rose-baritone-sync.json, which maps Oliver's staff onto the
-// corrected Lead rubato timeline.
+// Runtime timing is superseded by each lida-rose-<part>-sync.json.
+// omrTargets remains the visual-lane fallback and build-time pitch oracle.
 export interface OmrTargetNote { pitchMidi: number; startTimeSeconds: number; durationSeconds: number }
 export interface OmrTarget { song: string; part: string; sourcePages: string; noteCount: number; notes: OmrTargetNote[] }
 

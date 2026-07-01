@@ -6,6 +6,8 @@
 import fs from 'fs';
 import { normalizeLeadMeasure, PRINTED_FIFTHS } from './lida-lead-key-normalize.mjs';
 import { applyLeadMeasureCorrections } from './lida-lead-source-corrections.mjs';
+import { applyTenorMeasureCorrections } from './lida-tenor-source-corrections.mjs';
+import { applyBassMeasureCorrections } from './lida-bass-source-corrections.mjs';
 import lidaContract from './songs/lida-rose.song.mjs';
 import { resolveTempoBpm, notationTimingCheck } from './score-timing.mjs';
 import {
@@ -206,6 +208,7 @@ function expectedFromSource() {
 function buildAggregateHealth(generatedAt) {
   const parts = PART_SOURCES.map((partSource) => {
     const expectedPart = expectedFromPages(partSource.pages, partSource.part);
+    const contractPart = lidaContract.parts.find((p) => p.name === partSource.part);
     const sourceNoteCount = expectedPart.noteCount;
     const sourceWholeNotes = expectedPart.wholeNotes;
     const sourceMeasures = Object.keys(expectedPart.pitchesByMeasure).length;
@@ -219,6 +222,7 @@ function buildAggregateHealth(generatedAt) {
       generatedMusicXml: hasGeneratedMusicXml ? 'available' : 'not-yet-generated',
       checks: [
         check('source-readable', 'Source pages readable', sourceNoteCount > 0, `${sourceNoteCount} pitched notes from ${sourceMeasures} source measures`),
+        check('contract-note-count', 'Contract note count', sourceNoteCount === contractPart?.expectedNotes, `contract=${contractPart?.expectedNotes ?? 'missing'} source=${sourceNoteCount}`),
         check('key-normalizer', 'Six-flat normalizer applies', PRINTED_FIFTHS === -6, `normalizer=${PRINTED_FIFTHS}`),
       ],
     };
@@ -226,8 +230,8 @@ function buildAggregateHealth(generatedAt) {
   const checks = [
     check('four-part-source-map', 'Four-part source map', parts.length === 4, `${parts.map((p) => p.part).join(', ')}`),
     check('all-source-parts-readable', 'All source parts readable', parts.every((p) => p.sourceNoteCount > 0), parts.map((p) => `${p.part}:${p.sourceNoteCount}`).join(' ')),
-    check('lead-output-generated', 'Lead generated MusicXML verified', parts.find((p) => p.part === 'Lead')?.generatedMusicXml === 'available', 'Lead is the current rendered VT3 score'),
-    check('baritone-output-generated', 'Baritone generated MusicXML verified', parts.find((p) => p.part === 'Baritone')?.generatedMusicXml === 'available', 'Baritone is available as a rendered VT3 score'),
+    check('all-output-generated', 'All generated MusicXML verified', parts.every((p) => p.generatedMusicXml === 'available'), parts.map((p) => `${p.part}:${p.generatedMusicXml}`).join(' ')),
+    check('all-contract-counts', 'All contract counts match source', parts.every((p) => p.checks.find((c) => c.id === 'contract-note-count')?.status === 'pass'), parts.map((p) => `${p.part}:${p.sourceNoteCount}`).join(' ')),
   ];
   return {
     song: 'Lida Rose',
@@ -252,17 +256,17 @@ function expectedFromPages(pages, partName) {
     const sourceXml = fs.readFileSync(page.file, 'utf8');
     const part = getPartInner(sourceXml, page.lead);
     const divisions = Number((part.match(/<divisions>(\d+)<\/divisions>/) || [])[1] || 1);
-    const correctedMeasures = applyLeadMeasureCorrections(
+    const sourceMeasures = (part.match(/<measure\b[\s\S]*?<\/measure>/g) || []).map(normalizeLeadMeasure);
+    const correctedMeasures = correctionForPart(partName)(
       page.page,
-      part.match(/<measure\b[\s\S]*?<\/measure>/g) || [],
+      sourceMeasures,
       { part: partName, divisions },
     );
     for (const measure of correctedMeasures) {
       outMeasure++;
-      const normalized = normalizeLeadMeasure(measure);
-      const pitches = extractPitchesFromMeasure(normalized);
+      const pitches = extractPitchesFromMeasure(measure);
       if (pitches.length) pitchesByMeasure[String(outMeasure)] = pitches;
-      for (const pitch of extractWholeNotesFromMeasure(normalized)) {
+      for (const pitch of extractWholeNotesFromMeasure(measure)) {
         wholeNotes.push({ measure: outMeasure, pitch });
       }
     }
@@ -278,6 +282,12 @@ function expectedFromPages(pages, partName) {
     wholeNotes: wholeNotes.filter((n) => n.measure <= outMeasure),
     noteCount: Object.values(pitchesByMeasure).reduce((sum, notes) => sum + notes.length, 0),
   };
+}
+
+function correctionForPart(partName) {
+  if (partName === 'Tenor') return applyTenorMeasureCorrections;
+  if (partName === 'Bass') return applyBassMeasureCorrections;
+  return applyLeadMeasureCorrections;
 }
 
 function getPartInner(sourceXml, id) {

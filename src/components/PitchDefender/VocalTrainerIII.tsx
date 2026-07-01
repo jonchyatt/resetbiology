@@ -408,7 +408,23 @@ function dedupeItems(items: LibraryItem[]): { canonical: LibraryItem[]; more: Li
   return { canonical, more };
 }
 
+const LIDA_ROSE_QUARTET_MUSICXML_URL = '/musicxml/lida-rose-quartet.musicxml';
+
 const LIDA_ROSE_SCORE_PARTS = {
+  Tenor: {
+    part: 'Tenor',
+    label: 'Lida Rose - Tenor',
+    musicXMLUrl: '/musicxml/lida-rose-tenor.musicxml',
+    syncUrl: '/musicxml/lida-rose-tenor-sync.json',
+    syncV2Url: '/musicxml/lida-rose-tenor-sync.json',
+    reconciledUrl: '/musicxml/lida-rose-tenor-reconciled.json',
+    reconciledV2Url: '/musicxml/lida-rose-tenor-reconciled.json',
+    healthUrl: '/musicxml/lida-rose-tenor-score-health.json',
+    healthV2Url: '/musicxml/lida-rose-tenor-score-health.json',
+    phrasesUrl: '/musicxml/lida-rose-tenor-phrases.json',
+    noteMapUrl: '/musicxml/lida-rose-tenor-note-map.json',
+    title: 'Lida Rose - Tenor (pp.196-198)',
+  },
   Lead: {
     part: 'Lead',
     label: 'Lida Rose · Lead',
@@ -437,6 +453,20 @@ const LIDA_ROSE_SCORE_PARTS = {
     noteMapUrl: '/musicxml/lida-rose-baritone-note-map.json',
     title: 'Lida Rose — Baritone (pp.196-198)',
   },
+  Bass: {
+    part: 'Bass',
+    label: 'Lida Rose - Bass',
+    musicXMLUrl: '/musicxml/lida-rose-bass.musicxml',
+    syncUrl: '/musicxml/lida-rose-bass-sync.json',
+    syncV2Url: '/musicxml/lida-rose-bass-sync.json',
+    reconciledUrl: '/musicxml/lida-rose-bass-reconciled.json',
+    reconciledV2Url: '/musicxml/lida-rose-bass-reconciled.json',
+    healthUrl: '/musicxml/lida-rose-bass-score-health.json',
+    healthV2Url: '/musicxml/lida-rose-bass-score-health.json',
+    phrasesUrl: '/musicxml/lida-rose-bass-phrases.json',
+    noteMapUrl: '/musicxml/lida-rose-bass-note-map.json',
+    title: 'Lida Rose - Bass (pp.196-198)',
+  },
 } as const;
 
 type ScoreTimingMode = 'current' | 'v2';
@@ -452,15 +482,19 @@ function getActiveLidaRoseScorePart(part: LidaRoseScorePart | null, mode: ScoreT
   if (mode === 'current') {
     return { ...part, timingMode: 'current' as const, timingLabel: 'Current' };
   }
+  const syncUrl = part.syncV2Url;
+  const reconciledUrl = part.reconciledV2Url;
+  const healthUrl = part.healthV2Url;
+  const usesV2 = syncUrl !== part.syncUrl || reconciledUrl !== part.reconciledUrl || healthUrl !== part.healthUrl;
   return {
     ...part,
-    syncUrl: part.syncV2Url,
-    reconciledUrl: part.reconciledV2Url,
-    healthUrl: part.healthV2Url,
-    label: `${part.label} - Conductor v2`,
-    title: `${part.title} - Conductor v2`,
-    timingMode: 'v2' as const,
-    timingLabel: 'Conductor v2',
+    syncUrl,
+    reconciledUrl,
+    healthUrl,
+    label: usesV2 ? `${part.label} - Conductor v2` : part.label,
+    title: usesV2 ? `${part.title} - Conductor v2` : part.title,
+    timingMode: usesV2 ? 'v2' as const : 'current' as const,
+    timingLabel: usesV2 ? 'Conductor v2' : 'Current',
   };
 }
 
@@ -487,7 +521,7 @@ export default function VocalTrainerIII() {
 
   // ─── V3.1: library grouping + per-item extraction ───────────────────────
   const [groupBy, setGroupBy] = useState<'part' | 'song' | 'mode' | 'flat'>('song'); // Codex #4: Song-first
-  const [scoreView, setScoreView] = useState<'pages' | 'engraved'>('engraved');
+  const [scoreView, setScoreView] = useState<'pages' | 'engraved' | 'together'>('engraved');
   const [scoreTimingMode, setScoreTimingMode] = useState<ScoreTimingMode>('v2');
   const activeLidaRoseScorePart = useMemo(
     () => getActiveLidaRoseScorePart(lidaRoseScorePart, scoreTimingMode),
@@ -2569,6 +2603,13 @@ export default function VocalTrainerIII() {
               >
                 🎼 Engraved ✨
               </button>
+              <button
+                type="button"
+                onClick={() => setScoreView('together')}
+                className={scoreView === 'together' ? 'px-3 py-1 bg-emerald-600 text-white' : 'px-3 py-1 bg-gray-800 text-gray-300 hover:bg-gray-700'}
+              >
+                Everybody together
+              </button>
             </div>
             {lidaRoseScorePart && (
               <div className="inline-flex rounded-md border border-gray-700 overflow-hidden text-xs" aria-label="Score timing">
@@ -2592,9 +2633,9 @@ export default function VocalTrainerIII() {
                 </button>
               </div>
             )}
-            {scoreView === 'engraved' && (
+            {scoreView !== 'pages' && (
               <span className="text-xs text-cyan-400/70">
-                {activeLidaRoseScorePart ? `${activeLidaRoseScorePart.label} - ${activeLidaRoseScorePart.timingLabel}` : 'Lida Rose - select Lead or Baritone for engraving'}
+                {activeLidaRoseScorePart ? `${activeLidaRoseScorePart.label} - ${activeLidaRoseScorePart.timingLabel}` : 'Lida Rose - select Tenor, Lead, Baritone, or Bass for engraving'}
               </span>
             )}
             {scoreHealth && (
@@ -2628,16 +2669,19 @@ export default function VocalTrainerIII() {
               <ScoreViewer jumpToPage={selectedSongPage} />
             ) : activeLidaRoseScorePart ? (
               <ScoreEngraving
-                musicXMLUrl={activeLidaRoseScorePart.musicXMLUrl}
+                musicXMLUrl={scoreView === 'together' ? LIDA_ROSE_QUARTET_MUSICXML_URL : activeLidaRoseScorePart.musicXMLUrl}
                 syncUrl={activeLidaRoseScorePart.syncUrl}
                 currentTime={practiceTime}
-                title={activeLidaRoseScorePart.title}
+                title={scoreView === 'together'
+                  ? `Lida Rose - everybody together (${activeLidaRoseScorePart.part} active)`
+                  : activeLidaRoseScorePart.title}
+                highlightPart={scoreView === 'together' ? activeLidaRoseScorePart.part : undefined}
                 liveMidiRef={trackMicMidiRef}
                 trailRef={micTrailRef}
               />
             ) : (
               <div className="rounded-lg border border-cyan-500/20 bg-[#0a0a14] p-6 text-sm text-gray-400">
-                Pick a Lida Rose Lead or Baritone library item to load the engraved trainer score.
+                Pick a Lida Rose Tenor, Lead, Baritone, or Bass library item to load the engraved trainer score.
               </div>
             )}
           </div>

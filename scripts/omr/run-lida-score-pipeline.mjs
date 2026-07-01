@@ -16,8 +16,11 @@ const phases = [
     name: '1. Generate engraving MusicXML from corrected source pages',
     skip: verifyOnly,
     commands: [
+      ['node', 'scripts/omr/build-tenor-musicxml.mjs'],
       ['node', 'scripts/omr/build-lead-musicxml.mjs'],
       ['node', 'scripts/omr/build-baritone-musicxml.mjs'],
+      ['node', 'scripts/omr/build-bass-musicxml.mjs'],
+      ['node', 'scripts/omr/build-lida-quartet-musicxml.mjs'],
     ],
   },
   {
@@ -42,10 +45,14 @@ const phases = [
     name: '3. Derive timing only after the score gate passes',
     skip: verifyOnly,
     commands: [
+      ['node', 'scripts/omr/build-tenor-sync.mjs'],
       ['node', 'scripts/omr/build-lead-sync.mjs'],
       ['node', 'scripts/omr/build-baritone-sync.mjs'],
+      ['node', 'scripts/omr/build-bass-sync.mjs'],
+      ['node', 'scripts/omr/build-tenor-score-health.mjs'],
       ['node', 'scripts/omr/build-lida-score-health.mjs'],
       ['node', 'scripts/omr/build-baritone-score-health.mjs'],
+      ['node', 'scripts/omr/build-bass-score-health.mjs'],
       ['node', 'scripts/omr/build-lida-conductor-v2.mjs'],
     ],
   },

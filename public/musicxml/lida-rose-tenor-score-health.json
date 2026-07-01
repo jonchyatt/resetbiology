@@ -1,0 +1,115 @@
+{
+ "song": "Lida Rose",
+ "part": "Tenor",
+ "scoreVersion": "lida-rose-tenor-six-flat-115-unverified",
+ "sourcePages": [
+  "196:P2",
+  "197:P1",
+  "198:P1"
+ ],
+ "generatedAt": "2026-07-01T21:02:52.881Z",
+ "keyFifths": -6,
+ "noteCount": 115,
+ "wholeNotes": [
+  {
+   "measure": 5,
+   "pitch": "F4"
+  },
+  {
+   "measure": 9,
+   "pitch": "F4"
+  },
+  {
+   "measure": 13,
+   "pitch": "Gb4"
+  },
+  {
+   "measure": 21,
+   "pitch": "F4"
+  },
+  {
+   "measure": 29,
+   "pitch": "G4"
+  }
+ ],
+ "sectionTransitions": [
+  {
+   "fromMeasure": 34,
+   "toMeasure": 35,
+   "source": "page-198 bar 34 into page-199 bar 35",
+   "nextPage": 199,
+   "nextKeyFifths": 1,
+   "detail": "D4 holds into the next G-major section for two beats"
+  }
+ ],
+ "verificationStatus": "UNVERIFIED",
+ "sync": {
+  "noteCount": 115,
+  "reconciledCount": 115,
+  "source": "pure-notation timing from verified MusicXML (UNVERIFIED: no committed audio library template URL)",
+  "verificationStatus": "UNVERIFIED",
+  "audioStem": {
+   "localPath": "C:/Users/jonch/Music/MusicMan/MusicManStuff/Tenor/Lida Rose - Tenor Dominant.m4a",
+   "localExists": true,
+   "libraryTemplateUrl": null,
+   "note": "local stem exists but no committed template/onset artifact was available in this repo"
+  },
+  "tempoBpm": 99,
+  "secondsPerBeat": 0.606,
+  "notationTiming": {
+   "ok": true,
+   "offBy": 0,
+   "detail": "bpm=99; spb=0.606; monotonic=true; offGrid=0/115"
+  }
+ },
+ "checks": [
+  {
+   "id": "key-fifths",
+   "label": "Printed key",
+   "status": "pass",
+   "detail": "expected -6,1; xml=-6,1 normalizer=-6"
+  },
+  {
+   "id": "source-pitches",
+   "label": "Source pitch sequence",
+   "status": "pass",
+   "detail": "115 pitches match pp.196-198 plus transition"
+  },
+  {
+   "id": "whole-notes",
+   "label": "Whole-note survival",
+   "status": "pass",
+   "detail": "expected [5:F4 9:F4 13:Gb4 21:F4 29:G4]; got [5:F4 9:F4 13:Gb4 21:F4 29:G4]"
+  },
+  {
+   "id": "note-count",
+   "label": "Pitched note count",
+   "status": "pass",
+   "detail": "expected 115; got 115"
+  },
+  {
+   "id": "printed-score-audit",
+   "label": "Printed score audit",
+   "status": "pass",
+   "detail": "6 audit measures match"
+  },
+  {
+   "id": "no-courtesy-clefs",
+   "label": "No stray courtesy clefs",
+   "status": "pass",
+   "detail": "no later clefs in the line"
+  },
+  {
+   "id": "sync-count",
+   "label": "Sync target count",
+   "status": "pass",
+   "detail": "sync=115; reconciled=115; score=115"
+  },
+  {
+   "id": "notation-timing",
+   "label": "Score-rhythm timing",
+   "status": "pass",
+   "detail": "source=pure-notation timing from verified MusicXML (UNVERIFIED: no committed audio library template URL); bpm=99; spb=0.606; monotonic=true; offGrid=0/115"
+  }
+ ]
+}

@@ -32,6 +32,15 @@ export default {
   // experiment dropped the Baritone an octave below the source and broke the part.)
   parts: [
     {
+      name: 'Tenor', // Jacey - treble-8vb (G/line2/clef-octave-change -1); source octave 3-4
+      musicxml: 'public/musicxml/lida-rose-tenor.musicxml',
+      expectedMeasures: 35, // bars 1..34 + the held transition bar 35
+      expectedNotes: 115,
+      pickupMeasures: [1],
+      keyFifths: [-6, 1], // Gb major, then G major at m35
+      clef: { sign: 'G', line: 2, octaveChange: -1 },
+    },
+    {
       name: 'Lead', // Ewart — treble-8vb (G/line2/clef-octave-change -1); source octave 3-4
       musicxml: 'public/musicxml/lida-rose-lead.musicxml',
       expectedMeasures: 35, // bars 1..34 + the tied transition bar 35
@@ -47,6 +56,15 @@ export default {
       expectedNotes: 114,   // locked 2026-06-24: 3 held bars + bar-19 run + 3 restored sing-bars (gate-green)
       pickupMeasures: [1],
       keyFifths: [-6],
+      clef: { sign: 'F', line: 4, octaveChange: 0 },
+    },
+    {
+      name: 'Bass', // Olin - bass (F/line4); source octave 2-3
+      musicxml: 'public/musicxml/lida-rose-bass.musicxml',
+      expectedMeasures: 35, // bars 1..34 + the held root into transition bar 35
+      expectedNotes: 106,
+      pickupMeasures: [1],
+      keyFifths: [-6, 1], // Gb major, then G major at m35
       clef: { sign: 'F', line: 4, octaveChange: 0 },
     },
   ],

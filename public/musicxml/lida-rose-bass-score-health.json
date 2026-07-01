@@ -1,0 +1,123 @@
+{
+ "song": "Lida Rose",
+ "part": "Bass",
+ "scoreVersion": "lida-rose-bass-six-flat-106-unverified",
+ "sourcePages": [
+  "196:P5",
+  "197:P4",
+  "198:P4"
+ ],
+ "generatedAt": "2026-07-01T21:03:02.146Z",
+ "keyFifths": -6,
+ "noteCount": 106,
+ "wholeNotes": [
+  {
+   "measure": 5,
+   "pitch": "Db3"
+  },
+  {
+   "measure": 9,
+   "pitch": "Db3"
+  },
+  {
+   "measure": 13,
+   "pitch": "Eb3"
+  },
+  {
+   "measure": 21,
+   "pitch": "Db3"
+  },
+  {
+   "measure": 29,
+   "pitch": "Eb3"
+  },
+  {
+   "measure": 32,
+   "pitch": "Gb2"
+  },
+  {
+   "measure": 33,
+   "pitch": "Gb2"
+  }
+ ],
+ "sectionTransitions": [
+  {
+   "fromMeasure": 34,
+   "toMeasure": 35,
+   "source": "page-198 bar 34 into page-199 bar 35",
+   "nextPage": 199,
+   "nextKeyFifths": 1,
+   "detail": "G2 root holds into the next G-major section for two beats"
+  }
+ ],
+ "verificationStatus": "UNVERIFIED",
+ "sync": {
+  "noteCount": 106,
+  "reconciledCount": 106,
+  "source": "pure-notation timing from verified MusicXML (UNVERIFIED: no committed audio library template URL)",
+  "verificationStatus": "UNVERIFIED",
+  "audioStem": {
+   "localPath": "C:/Users/jonch/Music/MusicMan/MusicManStuff/Bass/Lida Rose - Bass Dominant.m4a",
+   "localExists": true,
+   "libraryTemplateUrl": null,
+   "note": "local stem exists but no committed template/onset artifact was available in this repo"
+  },
+  "tempoBpm": 99,
+  "secondsPerBeat": 0.606,
+  "notationTiming": {
+   "ok": true,
+   "offBy": 0,
+   "detail": "bpm=99; spb=0.606; monotonic=true; offGrid=0/106"
+  }
+ },
+ "checks": [
+  {
+   "id": "key-fifths",
+   "label": "Printed key",
+   "status": "pass",
+   "detail": "expected -6,1; xml=-6,1 normalizer=-6"
+  },
+  {
+   "id": "source-pitches",
+   "label": "Source pitch sequence",
+   "status": "pass",
+   "detail": "106 pitches match pp.196-198 plus transition"
+  },
+  {
+   "id": "whole-notes",
+   "label": "Whole-note survival",
+   "status": "pass",
+   "detail": "expected [5:Db3 9:Db3 13:Eb3 21:Db3 29:Eb3 32:Gb2 33:Gb2]; got [5:Db3 9:Db3 13:Eb3 21:Db3 29:Eb3 32:Gb2 33:Gb2]"
+  },
+  {
+   "id": "note-count",
+   "label": "Pitched note count",
+   "status": "pass",
+   "detail": "expected 106; got 106"
+  },
+  {
+   "id": "printed-score-audit",
+   "label": "Printed score audit",
+   "status": "pass",
+   "detail": "9 audit measures match"
+  },
+  {
+   "id": "no-courtesy-clefs",
+   "label": "No stray courtesy clefs",
+   "status": "pass",
+   "detail": "no later clefs in the line"
+  },
+  {
+   "id": "sync-count",
+   "label": "Sync target count",
+   "status": "pass",
+   "detail": "sync=106; reconciled=106; score=106"
+  },
+  {
+   "id": "notation-timing",
+   "label": "Score-rhythm timing",
+   "status": "pass",
+   "detail": "source=pure-notation timing from verified MusicXML (UNVERIFIED: no committed audio library template URL); bpm=99; spb=0.606; monotonic=true; offGrid=0/106"
+  }
+ ]
+}

@@ -1,7 +1,7 @@
 {
  "song": "Lida Rose",
  "scoreVersion": "lida-rose-source-parts-six-flat",
- "generatedAt": "2026-06-24T22:20:24.752Z",
+ "generatedAt": "2026-07-01T21:12:16.313Z",
  "sourceImages": [
   "/score/page-196.jpg",
   "/score/page-197.jpg",
@@ -15,16 +15,43 @@
     "197:P1",
     "198:P1"
    ],
-   "sourceNoteCount": 109,
-   "sourceMeasures": 26,
-   "sourceWholeNotes": [],
-   "generatedMusicXml": "not-yet-generated",
+   "sourceNoteCount": 115,
+   "sourceMeasures": 32,
+   "sourceWholeNotes": [
+    {
+     "measure": 5,
+     "pitch": "F4"
+    },
+    {
+     "measure": 9,
+     "pitch": "F4"
+    },
+    {
+     "measure": 13,
+     "pitch": "Gb4"
+    },
+    {
+     "measure": 21,
+     "pitch": "F4"
+    },
+    {
+     "measure": 29,
+     "pitch": "G4"
+    }
+   ],
+   "generatedMusicXml": "available",
    "checks": [
     {
      "id": "source-readable",
      "label": "Source pages readable",
      "status": "pass",
-     "detail": "109 pitched notes from 26 source measures"
+     "detail": "115 pitched notes from 32 source measures"
+    },
+    {
+     "id": "contract-note-count",
+     "label": "Contract note count",
+     "status": "pass",
+     "detail": "contract=115 source=115"
     },
     {
      "id": "key-normalizer",
@@ -74,6 +101,12 @@
      "detail": "118 pitched notes from 33 source measures"
     },
     {
+     "id": "contract-note-count",
+     "label": "Contract note count",
+     "status": "pass",
+     "detail": "contract=118 source=118"
+    },
+    {
      "id": "key-normalizer",
      "label": "Six-flat normalizer applies",
      "status": "pass",
@@ -93,11 +126,11 @@
    "sourceWholeNotes": [
     {
      "measure": 5,
-     "pitch": "F3"
+     "pitch": "Ab3"
     },
     {
      "measure": 9,
-     "pitch": "F3"
+     "pitch": "Ab3"
     },
     {
      "measure": 13,
@@ -105,11 +138,11 @@
     },
     {
      "measure": 21,
-     "pitch": "Cb4"
+     "pitch": "Ab3"
     },
     {
      "measure": 29,
-     "pitch": "Eb3"
+     "pitch": "Bb3"
     }
    ],
    "generatedMusicXml": "available",
@@ -119,6 +152,12 @@
      "label": "Source pages readable",
      "status": "pass",
      "detail": "114 pitched notes from 31 source measures"
+    },
+    {
+     "id": "contract-note-count",
+     "label": "Contract note count",
+     "status": "pass",
+     "detail": "contract=114 source=114"
     },
     {
      "id": "key-normalizer",
@@ -135,16 +174,51 @@
     "197:P4",
     "198:P4"
    ],
-   "sourceNoteCount": 99,
-   "sourceMeasures": 24,
-   "sourceWholeNotes": [],
-   "generatedMusicXml": "not-yet-generated",
+   "sourceNoteCount": 106,
+   "sourceMeasures": 32,
+   "sourceWholeNotes": [
+    {
+     "measure": 5,
+     "pitch": "Db3"
+    },
+    {
+     "measure": 9,
+     "pitch": "Db3"
+    },
+    {
+     "measure": 13,
+     "pitch": "Eb3"
+    },
+    {
+     "measure": 21,
+     "pitch": "Db3"
+    },
+    {
+     "measure": 29,
+     "pitch": "Eb3"
+    },
+    {
+     "measure": 32,
+     "pitch": "Gb2"
+    },
+    {
+     "measure": 33,
+     "pitch": "Gb2"
+    }
+   ],
+   "generatedMusicXml": "available",
    "checks": [
     {
      "id": "source-readable",
      "label": "Source pages readable",
      "status": "pass",
-     "detail": "99 pitched notes from 24 source measures"
+     "detail": "106 pitched notes from 32 source measures"
+    },
+    {
+     "id": "contract-note-count",
+     "label": "Contract note count",
+     "status": "pass",
+     "detail": "contract=106 source=106"
     },
     {
      "id": "key-normalizer",
@@ -166,19 +240,19 @@
    "id": "all-source-parts-readable",
    "label": "All source parts readable",
    "status": "pass",
-   "detail": "Tenor:109 Lead:118 Baritone:114 Bass:99"
+   "detail": "Tenor:115 Lead:118 Baritone:114 Bass:106"
   },
   {
-   "id": "lead-output-generated",
-   "label": "Lead generated MusicXML verified",
+   "id": "all-output-generated",
+   "label": "All generated MusicXML verified",
    "status": "pass",
-   "detail": "Lead is the current rendered VT3 score"
+   "detail": "Tenor:available Lead:available Baritone:available Bass:available"
   },
   {
-   "id": "baritone-output-generated",
-   "label": "Baritone generated MusicXML verified",
+   "id": "all-contract-counts",
+   "label": "All contract counts match source",
    "status": "pass",
-   "detail": "Baritone is available as a rendered VT3 score"
+   "detail": "Tenor:115 Lead:118 Baritone:114 Bass:106"
   }
  ]
 }
