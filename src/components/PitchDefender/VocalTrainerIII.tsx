@@ -501,6 +501,25 @@ function getActiveLidaRoseScorePart(part: LidaRoseScorePart | null, mode: ScoreT
 export default function VocalTrainerIII() {
   // ─── Library + selected template ────────────────────────────────────────
   const [library, setLibrary] = useState<LibraryItem[]>([]);
+  // Desk quick-picks: best item per Music Man song × part (Dominant/learn first,
+  // extracted first) so the Mixing Desk always offers a one-tap load (FLW #5).
+  const mmQuickPicks = useMemo(() => {
+    const best = new Map<string, { id: string; songLabel: string; partLabel: string; score: number }>();
+    for (const item of library) {
+      const meta = parseMmTitle(item.title);
+      if (!meta) continue;
+      const key = `${meta.song}|${meta.part}`;
+      const score = (meta.mode === 'learn' ? 2 : 0) + (item.noteCount > 0 ? 1 : 0);
+      const prev = best.get(key);
+      if (!prev || score > prev.score) {
+        const modeTag = meta.mode === 'learn' ? ' (learn)' : meta.mode === 'sing-in' ? ' (sing-in)' : '';
+        best.set(key, { id: item.id, songLabel: meta.song, partLabel: `${meta.part}${modeTag}`, score });
+      }
+    }
+    return [...best.values()]
+      .sort((a, b) => a.songLabel.localeCompare(b.songLabel) || a.partLabel.localeCompare(b.partLabel))
+      .slice(0, 24);
+  }, [library]);
   const [loadingLibrary, setLoadingLibrary] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [currentTemplate, setCurrentTemplate] = useState<FullTemplate | null>(null);
@@ -618,6 +637,16 @@ export default function VocalTrainerIII() {
   const [orbPos, setOrbPos] = useState<{ x: number; y: number } | null>(null);
   const [mixerOpen, setMixerOpen] = useState(false); // V3.7: full Mixing Desk as an orb-launched bottom-sheet. (Reverted the default-open 2026-06-27: an open mixer with NO loader = "knobs that don't tune anything" per Jon. Needs a track loader before it's useful on the main screen; standalone /mixpad.html is the working dichotic pad for now.)
   const [orbExpanded, setOrbExpanded] = useState(false); // V3.8: WODEN-style — short-press menu (transport)
+  // ≥1024px the Mixing Desk docks right — the orb's default park moves bottom-LEFT
+  // so it never overlays the rail (Argus HIGH 2026-07-01: orb blocked controls).
+  const [isLgViewport, setIsLgViewport] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 1024px)');
+    const apply = () => setIsLgViewport(mq.matches);
+    apply();
+    mq.addEventListener('change', apply);
+    return () => mq.removeEventListener('change', apply);
+  }, []);
   const [scoreFocus, setScoreFocus] = useState(false);   // V3.8: Score Focus — hide everything but the score + orb (Codex cleanup #1)
   const [sourcesOpen, setSourcesOpen] = useState(false); // V3.8: Sources drawer — Library + Add/Extract behind an orb button (Codex #3 / Jon)
   const [helpOpen, setHelpOpen] = useState(false);       // V3.8: 'How to practice' guide behind a ? help button (Codex #8)
@@ -1998,8 +2027,10 @@ export default function VocalTrainerIII() {
   useEffect(() => {
     if (!currentTemplate?.audioUrl) return;
     loadTemplateAudio(currentTemplate.audioUrl, currentTemplate.title);
-    setSourcesOpen(false);  // close the Sources drawer after a pick…
-    setScoreFocus(true);    // …and default into score-focused layout (Codex #1/#3)
+    setSourcesOpen(false);  // close the Sources drawer after a pick
+    // Score Focus is EXPLICIT-ONLY (the ⛶ toggle). Auto-entering focus on load
+    // buried the mixer/transport/library behind an empty screen — Jon 2026-07-01
+    // "no mix board, it hides behind the focus screen." FLW refinement #1.
     // load wires audio + SCORE together: show the engraved staff if this part has
     // one (Lida Rose Lead/Baritone), else fall back to the printed PDF pages.
     setScoreView(getLidaRoseScorePart(parseMmTitle(currentTemplate.title)) ? 'engraved' : 'pages');
@@ -2031,6 +2062,18 @@ export default function VocalTrainerIII() {
       micUserGainNodeRef.current.gain.value = clamped / 100;
     }
   }, []);
+
+  // Mute / Solo per lane (FLW #4) — applied at the gain nodes so the knob values
+  // survive; re-applies on play restarts (nodes are recreated per playback).
+  const [laneMute, setLaneMute] = useState<Record<string, boolean>>({});
+  const [laneSolo, setLaneSolo] = useState<string | null>(null);
+  useEffect(() => {
+    const eff = (name: string, vol: number) =>
+      laneMute[name] || (laneSolo !== null && laneSolo !== name) ? 0 : vol / 100;
+    if (vocalGainNodeRef.current) vocalGainNodeRef.current.gain.value = eff('Vocals', vocalVol);
+    if (musicGainNodeRef.current) musicGainNodeRef.current.gain.value = eff('Music', musicVol);
+    if (micUserGainNodeRef.current) micUserGainNodeRef.current.gain.value = eff('Mic', micVol);
+  }, [laneMute, laneSolo, vocalVol, musicVol, micVol, playbackState]);
 
   // V3: live balance updates per stream (no playback restart).
   const handleVocalPanChange = useCallback((v: number) => {
@@ -2507,9 +2550,11 @@ export default function VocalTrainerIII() {
       {/* Full-viewport dark backdrop — kills the white strip above the global-nav offset (V3.4 QA).
           Root is `relative isolate` so this -z-10 layer stays scoped to this stacking context. */}
       <div aria-hidden className="fixed inset-0 -z-10 bg-[#08080f] pointer-events-none" />
-      <div className={`max-w-6xl mx-auto flex flex-col gap-3 ${scoreFocus ? 'vt3-focus' : ''} ${sourcesOpen ? 'vt3-sources' : ''}`}>
+      {/* ≥1024px: the Mixing Desk docks as a persistent right rail (FLW #3 — score,
+          transport, loop, and mix visible together on PC); pr clears its width. */}
+      <div className={`max-w-6xl mx-auto flex flex-col gap-3 lg:pr-[380px] ${scoreFocus ? 'vt3-focus' : ''} ${sourcesOpen ? 'vt3-sources' : ''}`}>
         {(scoreFocus || sourcesOpen) && (
-          <style>{`.vt3-focus > :not(.vt3-keep){display:none!important} .vt3-sources > :not(.vt3-src-keep){display:none!important}`}</style>
+          <style>{`.vt3-focus > :not(.vt3-keep){display:none!important} @media (max-width:1023.98px){.vt3-sources > :not(.vt3-src-keep){display:none!important}}`}</style>
         )}
         {scoreFocus && !sourcesOpen && !mixerOpen && (
           <button onClick={() => setScoreFocus(false)} aria-label="Exit Focus"
@@ -2681,7 +2726,20 @@ export default function VocalTrainerIII() {
               />
             ) : (
               <div className="rounded-lg border border-cyan-500/20 bg-[#0a0a14] p-6 text-sm text-gray-400">
-                Pick a Lida Rose Tenor, Lead, Baritone, or Bass library item to load the engraved trainer score.
+                <div className="text-base font-semibold text-gray-200 mb-1">
+                  {library.length === 0 ? 'Loading the library…' : 'Nothing loaded yet'}
+                </div>
+                <p className="mb-3">
+                  Pick a song from the Library — a Lida Rose Tenor / Lead / Baritone / Bass item lights up the engraved
+                  trainer score; every other song opens its printed pages.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => { setSourcesOpen(true); setScoreFocus(false); setOrbExpanded(false); }}
+                  className="px-4 py-2 rounded-lg bg-amber-600 hover:bg-amber-500 text-white text-sm font-semibold shadow"
+                >
+                  📂 Open the Library
+                </button>
               </div>
             )}
           </div>
@@ -3276,12 +3334,12 @@ export default function VocalTrainerIII() {
           </section>
         )}
 
-        {/* ─── Mixing Desk — collapsible bottom-sheet, launched from the orb 🎛️ ── */}
-        {mixerOpen && (
-        <section className="fixed right-2 bottom-2 z-[9998] w-[min(360px,94vw)] max-h-[86vh] overflow-y-auto bg-gray-900/95 backdrop-blur border border-amber-500/50 rounded-xl p-2.5 shadow-2xl">
+        {/* ─── Mixing Desk — phone: orb-launched bottom-sheet · PC (≥1024px): ALWAYS-ON
+              right rail (FLW #3: no hidden mixer on desktop; Jon 2026-07-01) ── */}
+        <section className={`${mixerOpen ? 'fixed' : 'hidden'} right-2 bottom-2 z-[9998] w-[min(360px,94vw)] max-h-[86vh] overflow-y-auto bg-gray-900/95 backdrop-blur border border-amber-500/50 rounded-xl p-2.5 shadow-2xl lg:block lg:fixed lg:top-16 lg:bottom-2 lg:max-h-none`}>
           <div className="flex items-center justify-between mb-0.5">
             <h2 className="text-base font-semibold text-amber-300">🎛️ Mixing Desk</h2>
-            <button onClick={() => setMixerOpen(false)} className="w-8 h-8 rounded-full bg-neutral-800 hover:bg-neutral-700 text-neutral-300 text-sm flex items-center justify-center" title="Collapse the desk back to the orb">✕</button>
+            <button onClick={() => setMixerOpen(false)} className="w-8 h-8 rounded-full bg-neutral-800 hover:bg-neutral-700 text-neutral-300 text-sm flex items-center justify-center lg:hidden" title="Collapse the desk back to the orb">✕</button>
           </div>
           <div className="mb-2 text-xs">
             {playbackLabel ? (
@@ -3296,6 +3354,47 @@ export default function VocalTrainerIII() {
               </span>
             )}
           </div>
+
+          {/* PC transport — real buttons (FLW #4: long-press stays a bonus, never the only path) */}
+          <div className="mb-2 flex items-center gap-2">
+            {playbackState === 'playing' ? (
+              <button onClick={pausePlayback} className="flex-1 px-3 py-2 rounded-lg bg-amber-600 hover:bg-amber-500 text-white text-sm font-semibold">⏸ Pause</button>
+            ) : (
+              <button onClick={playOrResume} disabled={!vocalBufRef.current && !musicBufRef.current} className="flex-1 px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:bg-neutral-800 disabled:text-neutral-500 text-white text-sm font-semibold">▶ Play</button>
+            )}
+            <button onClick={stopPlayback} className="px-3 py-2 rounded-lg bg-neutral-700 hover:bg-neutral-600 text-white text-sm" title="Stop">⏹</button>
+          </div>
+
+          {/* Load-from-the-desk (FLW #5: the desk must never render as inert knobs).
+              Same pick path as the Library — one button per Music Man song × part. */}
+          {!playbackLabel && (
+            <div className="mb-2 rounded-lg border border-amber-500/30 bg-amber-950/10 p-2">
+              <div className="text-[11px] font-bold text-amber-300 uppercase tracking-wide mb-1.5">Load a song</div>
+              {mmQuickPicks.length > 0 ? (
+                <div className="grid grid-cols-1 gap-1 max-h-48 overflow-y-auto pr-1">
+                  {mmQuickPicks.map((pick) => (
+                    <button
+                      key={pick.id}
+                      type="button"
+                      onClick={() => setSelectedId(pick.id)}
+                      className="text-left px-2 py-1.5 rounded bg-gray-800/80 hover:bg-gray-700 text-xs text-gray-100"
+                    >
+                      <span className="font-semibold">{pick.songLabel}</span>
+                      <span className="text-gray-400"> — {pick.partLabel}</span>
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => { setSourcesOpen(true); setScoreFocus(false); setOrbExpanded(false); }}
+                  className="w-full px-2 py-1.5 rounded bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold"
+                >
+                  📂 Open the Library
+                </button>
+              )}
+            </div>
+          )}
 
           {/* V3: click-to-seek bar + A/B loop (YouTube-style scrubber) */}
           {durationSec > 0 && (
@@ -3486,6 +3585,23 @@ export default function VocalTrainerIII() {
                 <span className={`text-[10px] font-bold uppercase tracking-wide ${ch.text}`}>{ch.name}</span>
                 <MixKnob label="Vol" value={ch.vol} min={0} max={VOL_MAX} step={5} onChange={ch.onVol} format={(v) => `${v}%`} color={ch.hex} />
                 <MixKnob label="Pan" value={ch.pan} min={-1} max={1} step={0.05} onChange={ch.onPan} format={(v) => (Math.abs(v) < 0.025 ? 'C' : v < 0 ? `L${Math.round(-v * 100)}` : `R${Math.round(v * 100)}`)} color={ch.hex} />
+                {/* Mute / Solo — visible PC affordances (FLW #4), mixpad-proven UX */}
+                <div className="flex gap-1">
+                  <button
+                    type="button"
+                    onClick={() => setLaneMute((m) => ({ ...m, [ch.name]: !m[ch.name] }))}
+                    aria-label={`Mute ${ch.name}`}
+                    aria-pressed={!!laneMute[ch.name]}
+                    className={`w-7 h-6 rounded text-[10px] font-bold border ${laneMute[ch.name] ? 'bg-rose-700/70 border-rose-400 text-white' : 'bg-gray-800 border-gray-700 text-gray-400 hover:bg-gray-700'}`}
+                  >M</button>
+                  <button
+                    type="button"
+                    onClick={() => setLaneSolo((s) => (s === ch.name ? null : ch.name))}
+                    aria-label={`Solo ${ch.name}`}
+                    aria-pressed={laneSolo === ch.name}
+                    className={`w-7 h-6 rounded text-[10px] font-bold border ${laneSolo === ch.name ? 'bg-amber-600/80 border-amber-400 text-white' : 'bg-gray-800 border-gray-700 text-gray-400 hover:bg-gray-700'}`}
+                  >S</button>
+                </div>
                 {/* live level meter — proof the channel is flowing */}
                 <div className="h-1 w-full bg-gray-800 rounded overflow-hidden">
                   <div ref={ch.meterRef} className="h-full rounded transition-none" style={{ width: '0%' }} />
@@ -3560,7 +3676,6 @@ export default function VocalTrainerIII() {
             </div>
           </div>
         </section>
-        )}
       </div>
 
       {/* ── TransportOrb — ALWAYS visible so every icon toggles its surface shut on re-tap.
@@ -3571,7 +3686,7 @@ export default function VocalTrainerIII() {
         onPointerMove={onOrbMove}
         onPointerUp={onOrbUp}
         onClickCapture={onOrbClickCapture}
-        style={{ touchAction: 'none', ...(mixerOpen ? { top: 12, left: 12 } : (orbPos ? { left: orbPos.x, top: orbPos.y } : { right: 14, bottom: 84 })) }}
+        style={{ touchAction: 'none', ...(mixerOpen && !isLgViewport ? { top: 12, left: 12 } : (orbPos ? { left: orbPos.x, top: orbPos.y } : (isLgViewport ? { left: 14, bottom: 84 } : { right: 14, bottom: 84 }))) }}
         className="fixed z-[10000] select-none"
       >
         <div className="flex items-center gap-1.5 flex-row-reverse">
@@ -3613,7 +3728,7 @@ export default function VocalTrainerIII() {
               <button onClick={() => setLoopWhole((v) => !v)} className={`w-9 h-9 rounded-full text-sm grid place-items-center ${loopWhole ? 'bg-cyan-600 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`} title="Loop whole song">↻</button>
               <button onClick={() => setMixerOpen((v) => !v)} aria-label="Mixer" className={`w-9 h-9 rounded-full text-sm grid place-items-center ${mixerOpen ? 'bg-amber-600 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`} title="Mixing desk (volumes · pan · tempo · loops)">🎛️</button>
               <button onClick={() => setScoreFocus((v) => !v)} aria-label={scoreFocus ? 'Exit Focus' : 'Score Focus'} className={`w-9 h-9 rounded-full text-sm grid place-items-center ${scoreFocus ? 'bg-amber-600 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`} title="Score Focus — hide everything but the score">⛶</button>
-              <button onClick={() => { setSourcesOpen((v) => { if (!v) setScoreFocus(false); return !v; }); }} aria-label="Sources" className={`w-9 h-9 rounded-full text-sm grid place-items-center ${sourcesOpen ? 'bg-amber-600 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`} title="Sources — Library + Add/Extract (tap again to close)">📂</button>
+              <button onClick={() => { setSourcesOpen((v) => { if (!v) { setScoreFocus(false); setOrbExpanded(false); } return !v; }); }} aria-label="Sources" className={`w-9 h-9 rounded-full text-sm grid place-items-center ${sourcesOpen ? 'bg-amber-600 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`} title="Sources — Library + Add/Extract (tap again to close)">📂</button>
               <div className="px-1.5 text-[10px] font-mono text-neutral-400 tabular-nums">{practiceTime.toFixed(1)}s</div>
               </div>
               {/* progress bar — tap to seek there · hold for A/B + speed · drag to scrub */}
