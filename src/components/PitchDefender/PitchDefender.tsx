@@ -966,6 +966,20 @@ export default function PitchDefender() {
                 <div className="text-[11px] font-normal mt-0.5 opacity-70">Sprite remake — Frankenstein storm rod. Side + FPS view.</div>
               </a>
               <a
+                href="/pitch-defender/pitchforks-3"
+                title="Frankenstein-lightning ear trainer. Villagers carry 2/3/4-tine pitchforks; hold the active note to burn each tine in sequence."
+                className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
+                style={{
+                  background: 'rgba(56, 189, 248, 0.16)',
+                  color: '#7dd3fc',
+                  border: '2px solid rgba(56, 189, 248, 0.48)',
+                  fontFamily: 'monospace',
+                }}
+              >
+                Pitchforks III
+                <div className="text-[11px] font-normal mt-0.5 opacity-70">Tine-sequence lightning loop. Hold each note to burn the fork.</div>
+              </a>
+              <a
                 href="/pitch-defender/retro"
                 title="Pixel-art Space Invaders for pitch identification. Sing OR click any alien's note — cannon auto-aims to the most-urgent matching alien. EASY mode caps difficulty for training; TRUE PLAY ramps faster."
                 className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
