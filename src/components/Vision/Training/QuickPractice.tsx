@@ -14,8 +14,8 @@ import {
   Waves
 } from 'lucide-react'
 import { visionExercises, VisionExercise } from '@/data/visionExercises'
-import GuidedExercise from './GuidedExercise'
 import GaborTraining from './GaborTraining'
+import { SessionRunner, getEngineForExercise } from '@/components/Vision/Engines'
 
 const CATEGORY_CONFIG = {
   downshift: { icon: Eye, color: 'blue', label: 'Relaxation' },
@@ -54,8 +54,13 @@ export default function QuickPractice() {
   // Show guided exercise if one is selected
   if (selectedExercise) {
     return (
-      <GuidedExercise
-        exercise={selectedExercise}
+      <SessionRunner
+        items={[{
+          exercise: selectedExercise,
+          engine: getEngineForExercise(selectedExercise),
+        }]}
+        deviceMode="phone"
+        difficulty="standard"
         onComplete={handleExerciseComplete}
         onBack={() => setSelectedExercise(null)}
       />
