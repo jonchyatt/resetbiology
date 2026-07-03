@@ -128,6 +128,31 @@ interface HudState {
   streak: number
 }
 
+type Pf3ResetReason = 'confident-wrong' | 'silence' | null
+
+interface Pf3DebugState {
+  demoStep: string
+  chargeProgress: number
+  chargeLevel: number
+  silenceFreezeObserved: boolean
+  resetCount: number
+  lastResetReason: Pf3ResetReason
+  strikeCount: number
+  burnedTines: number
+  ashCount: number
+  wave: number
+  waveBannerVisible: boolean
+  fullSequenceComplete: boolean
+}
+
+declare global {
+  interface Window {
+    __pf3?: {
+      getState: () => Readonly<Pf3DebugState>
+    }
+  }
+}
+
 const defaultFrankMeta: FrankMeta = {
   frame_w: 32,
   frame_h: 48,
@@ -307,6 +332,13 @@ export default function PitchforksIII() {
   const demoTargetRef = useRef('')
   const demoTargetStartedRef = useRef(0)
   const demoLockCountRef = useRef(0)
+  const demoStepRef = useRef('idle')
+  const silenceFreezeObservedRef = useRef(false)
+  const resetCountRef = useRef(0)
+  const lastResetReasonRef = useRef<Pf3ResetReason>(null)
+  const burnedTinesRef = useRef(0)
+  const ashCountRef = useRef(0)
+  const fullSequenceCompleteRef = useRef(false)
   const phaseRef = useRef<Phase>('menu')
   const cueVolumeRef = useRef(100)
   const sfxVolumeRef = useRef(100)
@@ -414,6 +446,50 @@ export default function PitchforksIII() {
     }
   }, [getActiveVillager])
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    if (!demoMode) {
+      delete window.__pf3
+      return
+    }
+
+    const getState = (): Readonly<Pf3DebugState> => {
+      const rt = runtimeRef.current
+      const active = getActiveTarget()
+      const chargeLevel = active
+        ? Math.max(
+            active.villager.burned,
+            Math.min(active.villager.totalTines, Math.round(lockProgressRef.current * active.villager.totalTines)),
+          )
+        : 0
+
+      return Object.freeze({
+        demoStep: demoStepRef.current,
+        chargeProgress: lockProgressRef.current,
+        chargeLevel,
+        silenceFreezeObserved: silenceFreezeObservedRef.current,
+        resetCount: resetCountRef.current,
+        lastResetReason: lastResetReasonRef.current,
+        strikeCount: demoLockCountRef.current,
+        burnedTines: burnedTinesRef.current,
+        ashCount: ashCountRef.current,
+        wave: rt.wave,
+        waveBannerVisible: rt.bannerTimer > 0,
+        fullSequenceComplete: fullSequenceCompleteRef.current,
+      })
+    }
+    const hook = Object.freeze({ getState })
+
+    Object.defineProperty(window, '__pf3', {
+      configurable: true,
+      value: hook,
+    })
+
+    return () => {
+      if (window.__pf3 === hook) delete window.__pf3
+    }
+  }, [demoMode, getActiveTarget])
+
   const playCue = useCallback((note: string) => {
     if (!audioCueRef.current) return
     setPianoVolume(cueVolumeRef.current)
@@ -459,6 +535,7 @@ export default function PitchforksIII() {
     lockHeldMsRef.current = 0
     lockProgressRef.current = 0
     tintRef.current = null
+    if (demoRef.current) demoStepRef.current = 'wave-banner'
     setHud({ wave, hearts: rt.hearts, score: rt.score, streak: rt.streak })
   }, [])
 
@@ -488,16 +565,21 @@ export default function PitchforksIII() {
     const { villager, tineIndex } = target
     addBolt(villager, tineIndex)
     villager.burned += 1
+    burnedTinesRef.current += 1
     lockHeldMsRef.current = 0
     lockProgressRef.current = 0
     tintRef.current = null
     activeKeyRef.current = ''
     demoLockCountRef.current += 1
+    if (demoRef.current) demoStepRef.current = 'strike'
     localSfx('strike', sfxVolumeRef.current)
 
     if (villager.burned >= villager.totalTines) {
       villager.state = 'ash'
       villager.ashTimer = 1.1
+      ashCountRef.current += 1
+      fullSequenceCompleteRef.current = true
+      if (demoRef.current) demoStepRef.current = 'ash'
       rt.streak += 1
       rt.score += 120 + villager.totalTines * 60 + Math.min(rt.streak, 12) * 15
       localSfx('ash', sfxVolumeRef.current)
@@ -516,21 +598,27 @@ export default function PitchforksIII() {
 
     if (firstTargetScript) {
       if (elapsed < 160) {
+        demoStepRef.current = 'charge-start'
         return { note: target.note, frequency: targetFreq, cents: 0, confidence: 0.96, isActive: true }
       }
-      if (elapsed < 650) {
+      if (elapsed < 860) {
+        demoStepRef.current = lockProgressRef.current > 0 ? 'silence-freeze' : 'silence-prime'
         return { note: target.note, frequency: 0, cents: 0, confidence: 0, isActive: false }
       }
-      if (elapsed < 900) {
+      if (elapsed < 1110) {
         const wrong = semiToName(nameToSemi(target.note) + 2)
+        demoStepRef.current = 'confident-wrong'
         return { note: wrong, frequency: noteToFreq(wrong), cents: 0, confidence: 0.98, isActive: true }
       }
+      demoStepRef.current = 'charge-recover'
       return { note: target.note, frequency: targetFreq, cents: 0, confidence: 0.98, isActive: true }
     }
 
     if (elapsed < 90) {
+      demoStepRef.current = 'target-silence-prime'
       return { note: target.note, frequency: 0, cents: 0, confidence: 0, isActive: false }
     }
+    demoStepRef.current = 'charge-hold'
     return { note: target.note, frequency: targetFreq, cents: 0, confidence: 0.98, isActive: true }
   }, [])
 
@@ -541,6 +629,7 @@ export default function PitchforksIII() {
       lockHeldMsRef.current = 0
       lockProgressRef.current = 0
       tintRef.current = null
+      if (demoRef.current) demoStepRef.current = 'idle'
       return
     }
 
@@ -563,6 +652,10 @@ export default function PitchforksIII() {
 
     const source = demoRef.current ? demoPitchRef.current : pitchRef.current
     if (!source?.isActive || source.confidence < CONFIDENCE_FLOOR || source.frequency <= 0) {
+      if (demoRef.current && lockProgressRef.current > 0) {
+        silenceFreezeObservedRef.current = true
+        demoStepRef.current = 'silence-freeze'
+      }
       tintRef.current = null
       return
     }
@@ -578,8 +671,14 @@ export default function PitchforksIII() {
         strikeActiveTine(target)
       }
     } else {
+      const hadCharge = lockHeldMsRef.current > 0 || lockProgressRef.current > 0
       lockHeldMsRef.current = 0
       lockProgressRef.current = 0
+      if (demoRef.current && hadCharge) {
+        resetCountRef.current += 1
+        lastResetReasonRef.current = 'confident-wrong'
+        demoStepRef.current = 'confident-wrong-reset'
+      }
     }
   }, [demoPitchForTarget, getActiveTarget, pitchRef, playCue, strikeActiveTine])
 
@@ -851,6 +950,13 @@ export default function PitchforksIII() {
     activeKeyRef.current = ''
     demoTargetRef.current = ''
     demoLockCountRef.current = 0
+    demoStepRef.current = 'idle'
+    silenceFreezeObservedRef.current = false
+    resetCountRef.current = 0
+    lastResetReasonRef.current = null
+    burnedTinesRef.current = 0
+    ashCountRef.current = 0
+    fullSequenceCompleteRef.current = false
     lockHeldMsRef.current = 0
     lockProgressRef.current = 0
     tintRef.current = null
