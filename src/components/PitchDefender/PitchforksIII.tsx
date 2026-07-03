@@ -30,10 +30,18 @@ const FRANK_X = 54
 const FRANK_Y = 196
 const FRANK_REACH_X = 138
 const GROUND_Y = 330
-const STARTING_HEARTS = 3
-const TONE_SUPPRESS_MS = 350
+const STARTING_HEALTH = 5
+const TONE_MS = 1000
+const TONE_SPACING_MS = 1200
+const ECHO_TAIL_MS = 600
+const TONE_SUPPRESS_MS = TONE_MS + ECHO_TAIL_MS
+const TRAIL_MS = 1000
+const PITCH_BAR_Y = H - 52
+const PITCH_BAR_H = 12
+const PITCH_BAR_X = 34
+const PITCH_BAR_W = W - PITCH_BAR_X * 2
 
-type Phase = 'menu' | 'playing' | 'game_over'
+type Phase = 'menu' | 'tutorial' | 'playing' | 'game_over'
 type TineCount = 2 | 3 | 4
 type VillagerState = 'waiting' | 'walking' | 'ash'
 
@@ -81,6 +89,10 @@ interface Villager {
   notes: string[]
   burned: number
   state: VillagerState
+  spawnIndex: number
+  attackTimer: number
+  attackTimerMax: number
+  sequenceCued: boolean
   walkFrame: number
   walkClock: number
   ashTimer: number
@@ -97,6 +109,13 @@ interface Bolt {
   maxLife: number
 }
 
+interface TrailPoint {
+  at: number
+  deviation: number
+  onTarget: boolean
+  note: string
+}
+
 interface WavePlan {
   wave: number
   count: number
@@ -109,7 +128,7 @@ interface Runtime {
   villagers: Villager[]
   bolts: Bolt[]
   wave: number
-  hearts: number
+  health: number
   score: number
   streak: number
   spawned: number
@@ -119,11 +138,12 @@ interface Runtime {
   nextWavePending: boolean
   animClock: number
   gameOver: boolean
+  firstVillagerId: number | null
 }
 
 interface HudState {
   wave: number
-  hearts: number
+  health: number
   score: number
   streak: number
 }
@@ -143,6 +163,19 @@ interface Pf3DebugState {
   wave: number
   waveBannerVisible: boolean
   fullSequenceComplete: boolean
+  barVisible: boolean
+  barDotDeviation: number | null
+  barOnTarget: boolean
+  trailLength: number
+  replayVisible: boolean
+  cuePlaying: boolean
+  matchingSuppressed: boolean
+  timersPaused: boolean
+  timerBarVisible: boolean
+  activeAttackTimerPct: number | null
+  lockWhileSuppressed: boolean
+  tutorialAvailable: boolean
+  healthPips: number
 }
 
 declare global {
@@ -215,13 +248,14 @@ function pickNote(index: number, wave: number): string {
 }
 
 function fixedWaveDirector(wave: number, demo: boolean): WavePlan {
-  const count = Math.min(2 + wave, 6)
-  const spawnInterval = Math.max(0.75, 1.55 - wave * 0.11)
-  const speed = 21 + Math.min(wave, 8) * 3.3
-  if (demo && wave === 1) {
-    return { wave, count: 3, spawnInterval: 0.45, speed: 16, tineCounts: [2, 3, 4] }
+  // ported shape from Pitchforks.tsx:326-341, adapted to III's tine waves.
+  const speed = Math.min(60, 22 + (wave - 1) * 6)
+  if (wave === 1) {
+    return { wave, count: 3, spawnInterval: demo ? 0.01 : 0, speed, tineCounts: [2, 3, 4] }
   }
 
+  const count = Math.min(2 + wave, 6)
+  const spawnInterval = Math.max(0.9, 3.1 - (wave - 1) * 0.35)
   const p4 = Math.min(0.38, 0.2 + (wave - 1) * 0.035)
   const p2 = Math.max(0.24, 0.5 - (wave - 1) * 0.045)
   const tineCounts: TineCount[] = []
@@ -236,13 +270,19 @@ function fixedWaveDirector(wave: number, demo: boolean): WavePlan {
   return { wave, count, spawnInterval, speed, tineCounts }
 }
 
+function attackTimeForWave(wave: number, index: number): number {
+  const base = wave <= 1 ? 25 : wave <= 2 ? 18 : wave <= 4 ? 12 : 8
+  const stagger = wave <= 2 ? 6 : 4
+  return base + index * stagger
+}
+
 function makeInitialRuntime(demo: boolean): Runtime {
   const plan = fixedWaveDirector(1, demo)
   return {
     villagers: [],
     bolts: [],
     wave: 1,
-    hearts: STARTING_HEARTS,
+    health: STARTING_HEALTH,
     score: 0,
     streak: 0,
     spawned: 0,
@@ -252,6 +292,7 @@ function makeInitialRuntime(demo: boolean): Runtime {
     nextWavePending: false,
     animClock: 0,
     gameOver: false,
+    firstVillagerId: null,
   }
 }
 
@@ -263,6 +304,14 @@ function colorForCents(absCents: number): string | null {
   const g = Math.round(255 + (205 - 255) * t)
   const b = Math.round(159 + (70 - 159) * t)
   return `rgb(${r}, ${g}, ${b})`
+}
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.max(min, Math.min(max, value))
+}
+
+function pitchDeviationSemis(source: PitchInfo, targetNote: string): number {
+  return octaveFoldedCents(source.frequency, noteToFreq(targetNote)) / 100
 }
 
 function localSfx(kind: 'strike' | 'ash' | 'hurt', volumePct: number) {
@@ -344,18 +393,32 @@ export default function PitchforksIII() {
   const sfxVolumeRef = useRef(100)
   const noteNamesRef = useRef(true)
   const audioCueRef = useRef(true)
+  const currentPromptRef = useRef('')
+  const cueTimeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([])
+  const cuePlayingUntilRef = useRef(0)
+  const matchingSuppressedUntilRef = useRef(0)
+  const timersPausedRef = useRef(false)
+  const firstLockGraceRef = useRef(false)
+  const isListeningRef = useRef(false)
+  const micErrorRef = useRef<string | null>(null)
+  const pitchTrailRef = useRef<TrailPoint[]>([])
+  const barDotDeviationRef = useRef<number | null>(null)
+  const barOnTargetRef = useRef(false)
+  const barVisibleRef = useRef(false)
+  const activeVillagerIdRef = useRef<number | null>(null)
+  const lockWhileSuppressedRef = useRef(false)
 
   const [phase, setPhase] = useState<Phase>('menu')
   const [assetsReady, setAssetsReady] = useState(false)
   const [assetError, setAssetError] = useState<string | null>(null)
-  const [hud, setHud] = useState<HudState>({ wave: 1, hearts: STARTING_HEARTS, score: 0, streak: 0 })
+  const [hud, setHud] = useState<HudState>({ wave: 1, health: STARTING_HEALTH, score: 0, streak: 0 })
   const [noteNamesOn, setNoteNamesOn] = useState(true)
   const [audioCueOn, setAudioCueOn] = useState(true)
   const [cueVolume, setCueVolume] = useState(100)
   const [sfxVolume, setSfxVolume] = useState(100)
   const [demoMode, setDemoMode] = useState(false)
 
-  const { pitch, pitchRef, startListening, stopListening, error: micError } = usePitchDetection({ noiseGateDb: -45 })
+  const { isListening, pitch, pitchRef, startListening, stopListening, error: micError } = usePitchDetection({ noiseGateDb: -45 })
 
   useEffect(() => {
     noteNamesRef.current = noteNamesOn
@@ -373,6 +436,14 @@ export default function PitchforksIII() {
   useEffect(() => {
     sfxVolumeRef.current = sfxVolume
   }, [sfxVolume])
+
+  useEffect(() => {
+    isListeningRef.current = isListening
+  }, [isListening])
+
+  useEffect(() => {
+    micErrorRef.current = micError
+  }, [micError])
 
   useEffect(() => {
     const isDemo = new URLSearchParams(window.location.search).get('demo') === '1'
@@ -446,6 +517,77 @@ export default function PitchforksIII() {
     }
   }, [getActiveVillager])
 
+  const setPromptText = useCallback((text: string) => {
+    currentPromptRef.current = text
+  }, [])
+
+  const clearCueTimers = useCallback(() => {
+    for (const id of cueTimeoutsRef.current) clearTimeout(id)
+    cueTimeoutsRef.current = []
+    cuePlayingUntilRef.current = 0
+    matchingSuppressedUntilRef.current = 0
+  }, [])
+
+  const cuePlayingNow = useCallback(() => performance.now() < cuePlayingUntilRef.current, [])
+
+  const matchingSuppressedNow = useCallback(() => {
+    return performance.now() < matchingSuppressedUntilRef.current || isWithinToneSuppressionWindow()
+  }, [])
+
+  const timersPausedNow = useCallback(() => {
+    const active = getActiveTarget()
+    const micUnavailable = !demoRef.current && (!isListeningRef.current || !!micErrorRef.current)
+    const firstLockGrace = firstLockGraceRef.current &&
+      !!active &&
+      active.villager.id === runtimeRef.current.firstVillagerId
+    const paused = matchingSuppressedNow() || micUnavailable || firstLockGrace
+    timersPausedRef.current = paused
+    return paused
+  }, [getActiveTarget, matchingSuppressedNow])
+
+  const playVillagerSequence = useCallback((villager: Villager, mode: 'cue' | 'replay') => {
+    if (!villager.notes.length) return
+    clearCueTimers()
+
+    const now = performance.now()
+    const toneWindowMs = (villager.notes.length - 1) * TONE_SPACING_MS + TONE_MS
+    const suppressMs = toneWindowMs + ECHO_TAIL_MS
+    cuePlayingUntilRef.current = now + toneWindowMs
+    matchingSuppressedUntilRef.current = now + suppressMs
+    timersPausedRef.current = true
+    markToneEmitted(suppressMs)
+    if (demoRef.current) demoStepRef.current = mode === 'replay' ? 'replay-cue' : 'auto-cue'
+
+    villager.notes.forEach((note, index) => {
+      const id = setTimeout(() => {
+        setPromptText(index === 0 ? `Sing: ${note}` : `Now: ${note}`)
+        if (mode === 'replay' || audioCueRef.current) {
+          setPianoVolume(cueVolumeRef.current)
+          try {
+            playPianoNote(note, { exact: true })
+          } finally {
+            markToneEmitted(TONE_SUPPRESS_MS)
+          }
+        } else {
+          markToneEmitted(TONE_SUPPRESS_MS)
+        }
+      }, index * TONE_SPACING_MS)
+      cueTimeoutsRef.current.push(id)
+    })
+
+    const doneId = setTimeout(() => {
+      if (
+        phaseRef.current === 'playing' &&
+        activeVillagerIdRef.current === villager.id &&
+        villager.state === 'walking'
+      ) {
+        const note = villager.notes[villager.burned]
+        if (note) setPromptText(villager.burned === 0 ? `Sing: ${note}` : `Now: ${note}`)
+      }
+    }, suppressMs)
+    cueTimeoutsRef.current.push(doneId)
+  }, [clearCueTimers, setPromptText])
+
   useEffect(() => {
     if (typeof window === 'undefined') return
     if (!demoMode) {
@@ -476,6 +618,21 @@ export default function PitchforksIII() {
         wave: rt.wave,
         waveBannerVisible: rt.bannerTimer > 0,
         fullSequenceComplete: fullSequenceCompleteRef.current,
+        barVisible: barVisibleRef.current,
+        barDotDeviation: barDotDeviationRef.current,
+        barOnTarget: barOnTargetRef.current,
+        trailLength: pitchTrailRef.current.length,
+        replayVisible: phaseRef.current === 'playing',
+        cuePlaying: cuePlayingNow(),
+        matchingSuppressed: matchingSuppressedNow(),
+        timersPaused: timersPausedRef.current,
+        timerBarVisible: phaseRef.current === 'playing' && !!active,
+        activeAttackTimerPct: active
+          ? clamp(active.villager.attackTimer / Math.max(0.001, active.villager.attackTimerMax), 0, 1)
+          : null,
+        lockWhileSuppressed: lockWhileSuppressedRef.current,
+        tutorialAvailable: true,
+        healthPips: rt.health,
       })
     }
     const hook = Object.freeze({ getState })
@@ -488,38 +645,35 @@ export default function PitchforksIII() {
     return () => {
       if (window.__pf3 === hook) delete window.__pf3
     }
-  }, [demoMode, getActiveTarget])
-
-  const playCue = useCallback((note: string) => {
-    if (!audioCueRef.current) return
-    setPianoVolume(cueVolumeRef.current)
-    try {
-      playPianoNote(note, { exact: true })
-    } catch {
-      markToneEmitted(TONE_SUPPRESS_MS)
-    }
-  }, [])
+  }, [cuePlayingNow, demoMode, getActiveTarget, matchingSuppressedNow])
 
   const spawnVillager = useCallback(() => {
     const rt = runtimeRef.current
     if (rt.spawned >= rt.plan.count) return
+    const spawnIndex = rt.spawned
     const totalTines = rt.plan.tineCounts[rt.spawned] ?? 2
-    const lane = rt.spawned % 3
+    const lane = spawnIndex % 3
     const notes = Array.from({ length: totalTines }, (_, i) => pickNote(rt.spawned + i, rt.wave))
+    const attackTimer = attackTimeForWave(rt.wave, spawnIndex)
     const v: Villager = {
       id: ++nextIdRef.current,
       totalTines,
-      x: W + 26 + lane * 16,
+      x: rt.wave === 1 ? W + 60 + spawnIndex * 70 : W + 42 + lane * 18,
       y: GROUND_Y - defaultVillagerMeta.frame_h * SPRITE_SCALE - lane * 6,
       speed: rt.plan.speed + lane * 1.8,
       notes,
       burned: 0,
       state: 'walking',
+      spawnIndex,
+      attackTimer,
+      attackTimerMax: attackTimer,
+      sequenceCued: false,
       walkFrame: 0,
       walkClock: 0,
       ashTimer: 0,
     }
     rt.villagers.push(v)
+    if (rt.firstVillagerId === null) rt.firstVillagerId = v.id
     rt.spawned += 1
   }, [])
 
@@ -532,12 +686,14 @@ export default function PitchforksIII() {
     rt.bannerTimer = 1.15
     rt.nextWavePending = false
     activeKeyRef.current = ''
+    activeVillagerIdRef.current = null
     lockHeldMsRef.current = 0
     lockProgressRef.current = 0
     tintRef.current = null
+    setPromptText('')
     if (demoRef.current) demoStepRef.current = 'wave-banner'
-    setHud({ wave, hearts: rt.hearts, score: rt.score, streak: rt.streak })
-  }, [])
+    setHud({ wave, health: rt.health, score: rt.score, streak: rt.streak })
+  }, [setPromptText])
 
   const addBolt = useCallback((villager: Villager, tineIndex: number) => {
     const a = assetsRef.current
@@ -571,6 +727,7 @@ export default function PitchforksIII() {
     tintRef.current = null
     activeKeyRef.current = ''
     demoLockCountRef.current += 1
+    if (matchingSuppressedNow()) lockWhileSuppressedRef.current = true
     if (demoRef.current) demoStepRef.current = 'strike'
     localSfx('strike', sfxVolumeRef.current)
 
@@ -581,11 +738,16 @@ export default function PitchforksIII() {
       fullSequenceCompleteRef.current = true
       if (demoRef.current) demoStepRef.current = 'ash'
       rt.streak += 1
-      rt.score += 120 + villager.totalTines * 60 + Math.min(rt.streak, 12) * 15
+      const comboMult = rt.streak >= 10 ? 3 : rt.streak >= 5 ? 2 : 1
+      rt.score += (100 + villager.totalTines * 20) * comboMult
       localSfx('ash', sfxVolumeRef.current)
-      setHud({ wave: rt.wave, hearts: rt.hearts, score: rt.score, streak: rt.streak })
+      setHud({ wave: rt.wave, health: rt.health, score: rt.score, streak: rt.streak })
+    } else {
+      const nextNote = villager.notes[villager.burned]
+      if (nextNote) setPromptText(`Now: ${nextNote}`)
     }
-  }, [addBolt])
+    if (firstLockGraceRef.current) firstLockGraceRef.current = false
+  }, [addBolt, matchingSuppressedNow, setPromptText])
 
   const demoPitchForTarget = useCallback((target: NonNullable<ReturnType<typeof getActiveTarget>>, now: number): PitchInfo | null => {
     if (demoTargetRef.current !== target.key) {
@@ -596,16 +758,21 @@ export default function PitchforksIII() {
     const targetFreq = noteToFreq(target.note)
     const firstTargetScript = demoLockCountRef.current === 0
 
+    if (ashCountRef.current > 0) {
+      demoStepRef.current = 'attack-countdown'
+      return { note: target.note, frequency: 0, cents: 0, confidence: 0, isActive: false }
+    }
+
     if (firstTargetScript) {
       if (elapsed < 160) {
         demoStepRef.current = 'charge-start'
         return { note: target.note, frequency: targetFreq, cents: 0, confidence: 0.96, isActive: true }
       }
-      if (elapsed < 860) {
+      if (elapsed < 900) {
         demoStepRef.current = lockProgressRef.current > 0 ? 'silence-freeze' : 'silence-prime'
         return { note: target.note, frequency: 0, cents: 0, confidence: 0, isActive: false }
       }
-      if (elapsed < 1110) {
+      if (elapsed < 1700) {
         const wrong = semiToName(nameToSemi(target.note) + 2)
         demoStepRef.current = 'confident-wrong'
         return { note: wrong, frequency: noteToFreq(wrong), cents: 0, confidence: 0.98, isActive: true }
@@ -626,11 +793,26 @@ export default function PitchforksIII() {
     const target = getActiveTarget()
     if (!target) {
       activeKeyRef.current = ''
+      activeVillagerIdRef.current = null
       lockHeldMsRef.current = 0
       lockProgressRef.current = 0
       tintRef.current = null
+      setPromptText('')
       if (demoRef.current) demoStepRef.current = 'idle'
       return
+    }
+
+    if (activeVillagerIdRef.current !== target.villager.id) {
+      activeVillagerIdRef.current = target.villager.id
+      activeKeyRef.current = ''
+      lockHeldMsRef.current = 0
+      lockProgressRef.current = 0
+      tintRef.current = null
+      setPromptText(`Sing: ${target.villager.notes[0]}`)
+      if (!target.villager.sequenceCued) {
+        target.villager.sequenceCued = true
+        playVillagerSequence(target.villager, 'cue')
+      }
     }
 
     if (activeKeyRef.current !== target.key) {
@@ -638,10 +820,12 @@ export default function PitchforksIII() {
       lockHeldMsRef.current = 0
       lockProgressRef.current = 0
       tintRef.current = null
-      playCue(target.note)
+      if (!cuePlayingNow()) {
+        setPromptText(target.villager.burned === 0 ? `Sing: ${target.note}` : `Now: ${target.note}`)
+      }
     }
 
-    if (isWithinToneSuppressionWindow()) {
+    if (matchingSuppressedNow()) {
       return
     }
 
@@ -680,7 +864,16 @@ export default function PitchforksIII() {
         demoStepRef.current = 'confident-wrong-reset'
       }
     }
-  }, [demoPitchForTarget, getActiveTarget, pitchRef, playCue, strikeActiveTine])
+  }, [
+    cuePlayingNow,
+    demoPitchForTarget,
+    getActiveTarget,
+    matchingSuppressedNow,
+    pitchRef,
+    playVillagerSequence,
+    setPromptText,
+    strikeActiveTine,
+  ])
 
   const updateGame = useCallback((dt: number) => {
     const rt = runtimeRef.current
@@ -689,54 +882,71 @@ export default function PitchforksIII() {
     if (rt.bannerTimer > 0) {
       rt.bannerTimer = Math.max(0, rt.bannerTimer - dt)
       if (rt.bannerTimer === 0 && rt.spawned === 0) {
-        spawnVillager()
+        if (rt.wave === 1) {
+          while (rt.spawned < rt.plan.count) spawnVillager()
+        } else {
+          spawnVillager()
+        }
       }
     } else {
-      rt.spawnClock += dt
-      if (rt.spawned < rt.plan.count && rt.spawnClock >= rt.plan.spawnInterval) {
-        rt.spawnClock = 0
-        spawnVillager()
+      if (rt.wave === 1 && rt.spawned === 0) {
+        while (rt.spawned < rt.plan.count) spawnVillager()
+      } else {
+        rt.spawnClock += dt
+        if (rt.spawned < rt.plan.count && rt.spawnClock >= rt.plan.spawnInterval) {
+          rt.spawnClock = 0
+          spawnVillager()
+        }
       }
     }
 
     for (const v of rt.villagers) {
       if (v.state === 'walking') {
-        v.x -= v.speed * dt
+        v.x = Math.max(FRANK_REACH_X, v.x - v.speed * dt)
         v.walkClock += dt
         if (v.walkClock >= 0.16) {
           v.walkClock = 0
           v.walkFrame = (v.walkFrame + 1) % 4
-        }
-        if (v.x <= FRANK_REACH_X) {
-          v.state = 'ash'
-          v.ashTimer = 0.9
-          rt.hearts = Math.max(0, rt.hearts - 1)
-          rt.streak = 0
-          activeKeyRef.current = ''
-          lockHeldMsRef.current = 0
-          lockProgressRef.current = 0
-          tintRef.current = null
-          localSfx('hurt', sfxVolumeRef.current)
-          setHud({ wave: rt.wave, hearts: rt.hearts, score: rt.score, streak: rt.streak })
-          if (rt.hearts <= 0) {
-            rt.gameOver = true
-            phaseRef.current = 'game_over'
-            setPhase('game_over')
-            return
-          }
         }
       } else if (v.state === 'ash') {
         v.ashTimer -= dt
       }
     }
 
-    rt.villagers = rt.villagers.filter(v => v.state !== 'ash' || v.ashTimer > 0)
     for (let i = rt.bolts.length - 1; i >= 0; i--) {
       rt.bolts[i].life += dt
       if (rt.bolts[i].life >= rt.bolts[i].maxLife) rt.bolts.splice(i, 1)
     }
 
     processLock(dt)
+    const timersPaused = timersPausedNow()
+    const active = getActiveTarget()
+    if (active?.villager.state === 'walking' && !timersPaused) {
+      const v = active.villager
+      v.attackTimer = Math.max(0, v.attackTimer - dt)
+      if (v.attackTimer <= 0) {
+        v.state = 'ash'
+        v.ashTimer = 0.9
+        rt.health = Math.max(0, rt.health - 1)
+        rt.streak = 0
+        activeKeyRef.current = ''
+        activeVillagerIdRef.current = null
+        lockHeldMsRef.current = 0
+        lockProgressRef.current = 0
+        tintRef.current = null
+        setPromptText('')
+        localSfx('hurt', sfxVolumeRef.current)
+        setHud({ wave: rt.wave, health: rt.health, score: rt.score, streak: rt.streak })
+        if (rt.health <= 0) {
+          rt.gameOver = true
+          phaseRef.current = 'game_over'
+          setPhase('game_over')
+          return
+        }
+      }
+    }
+
+    rt.villagers = rt.villagers.filter(v => v.state !== 'ash' || v.ashTimer > 0)
 
     const waveClear = rt.spawned >= rt.plan.count && rt.villagers.every(v => v.state !== 'walking')
     if (waveClear && !rt.nextWavePending) {
@@ -746,7 +956,7 @@ export default function PitchforksIII() {
         startWave(runtimeRef.current.wave + 1)
       }, 900)
     }
-  }, [processLock, spawnVillager, startWave])
+  }, [getActiveTarget, processLock, setPromptText, spawnVillager, startWave, timersPausedNow])
 
   const drawBolt = useCallback((ctx: CanvasRenderingContext2D, b: Bolt) => {
     const t = 1 - b.life / b.maxLife
@@ -803,7 +1013,7 @@ export default function PitchforksIII() {
     }
 
     if (v.state !== 'walking') return
-    const active = activeKeyRef.current.startsWith(`${v.id}:`)
+    const active = activeVillagerIdRef.current === v.id || activeKeyRef.current.startsWith(`${v.id}:`)
     const progress = active ? lockProgressRef.current : 0
     const displayBurn = active
       ? Math.max(v.burned, Math.min(v.totalTines, Math.round(progress * v.totalTines)))
@@ -856,7 +1066,120 @@ export default function PitchforksIII() {
       ctx.fillStyle = '#f4f7fb'
       ctx.fillText(note, lx, ly)
     }
+
+    if (active) {
+      // ported from Pitchforks.tsx:576-584, using III's per-villager timer.
+      const pct = clamp(v.attackTimer / Math.max(0.001, v.attackTimerMax), 0, 1)
+      const barW = 58
+      const barH = 5
+      const bx = v.x + sw / 2 - barW / 2
+      const by = v.y - 25
+      ctx.fillStyle = 'rgba(8, 10, 18, 0.88)'
+      ctx.fillRect(bx, by, barW, barH)
+      ctx.fillStyle = timersPausedRef.current ? '#7dd3fc' : pct > 0.3 ? '#fbbf24' : '#ef4444'
+      ctx.fillRect(bx, by, barW * pct, barH)
+      ctx.strokeStyle = timersPausedRef.current ? 'rgba(125,211,252,0.85)' : '#555'
+      ctx.lineWidth = 1
+      ctx.strokeRect(bx, by, barW, barH)
+    }
   }, [])
+
+  const drawPitchBar = useCallback((ctx: CanvasRenderingContext2D) => {
+    // ported from Pitchforks.tsx:602-658, with a 1s convergence trail.
+    barVisibleRef.current = phaseRef.current === 'playing'
+    const active = getActiveTarget()
+    const now = performance.now()
+    const centerX = PITCH_BAR_X + PITCH_BAR_W / 2
+    const centerY = PITCH_BAR_Y + PITCH_BAR_H / 2
+    const targetZoneW = PITCH_BAR_W * (3 / 12)
+
+    ctx.fillStyle = 'rgba(20,20,30,0.78)'
+    ctx.fillRect(PITCH_BAR_X, PITCH_BAR_Y, PITCH_BAR_W, PITCH_BAR_H)
+    ctx.strokeStyle = '#333'
+    ctx.lineWidth = 1
+    ctx.strokeRect(PITCH_BAR_X, PITCH_BAR_Y, PITCH_BAR_W, PITCH_BAR_H)
+    ctx.fillStyle = 'rgba(74,222,128,0.16)'
+    ctx.fillRect(centerX - targetZoneW / 2, PITCH_BAR_Y, targetZoneW, PITCH_BAR_H)
+
+    pitchTrailRef.current = pitchTrailRef.current.filter(p => now - p.at <= TRAIL_MS)
+    const source = demoRef.current ? demoPitchRef.current : pitchRef.current
+    const canUseSource = !!active &&
+      !matchingSuppressedNow() &&
+      !!source?.isActive &&
+      source.confidence >= CONFIDENCE_FLOOR &&
+      source.frequency > 0
+
+    const xForDeviation = (deviation: number) => {
+      const clamped = clamp(deviation, -6, 6)
+      return centerX + (clamped / 6) * (PITCH_BAR_W / 2)
+    }
+
+    if (canUseSource && active && source) {
+      const deviation = pitchDeviationSemis(source, active.note)
+      const clampedDeviation = clamp(deviation, -6, 6)
+      const onTarget = Math.abs(deviation) <= 1.5
+      barDotDeviationRef.current = clampedDeviation
+      barOnTargetRef.current = onTarget
+      pitchTrailRef.current.push({ at: now, deviation: clampedDeviation, onTarget, note: source.note })
+    } else {
+      barDotDeviationRef.current = null
+      barOnTargetRef.current = false
+    }
+
+    const trail = pitchTrailRef.current
+    if (trail.length > 1) {
+      for (let i = 1; i < trail.length; i++) {
+        const prev = trail[i - 1]
+        const cur = trail[i]
+        const alpha = clamp(1 - (now - cur.at) / TRAIL_MS, 0, 1)
+        ctx.strokeStyle = `rgba(125, 211, 252, ${0.08 + alpha * 0.22})`
+        ctx.lineWidth = 2
+        ctx.beginPath()
+        ctx.moveTo(xForDeviation(prev.deviation), centerY)
+        ctx.lineTo(xForDeviation(cur.deviation), centerY)
+        ctx.stroke()
+      }
+    }
+    for (const point of trail) {
+      const alpha = clamp(1 - (now - point.at) / TRAIL_MS, 0, 1)
+      ctx.fillStyle = point.onTarget
+        ? `rgba(74, 222, 128, ${0.08 + alpha * 0.38})`
+        : `rgba(248, 113, 113, ${0.08 + alpha * 0.34})`
+      ctx.beginPath()
+      ctx.arc(xForDeviation(point.deviation), centerY, 2 + alpha * 2, 0, Math.PI * 2)
+      ctx.fill()
+    }
+
+    if (canUseSource && source) {
+      const dotX = xForDeviation(barDotDeviationRef.current ?? 0)
+      const onTarget = barOnTargetRef.current
+      if (onTarget) {
+        ctx.fillStyle = 'rgba(74,222,128,0.3)'
+        ctx.beginPath()
+        ctx.arc(dotX, centerY, 11, 0, Math.PI * 2)
+        ctx.fill()
+      }
+      ctx.fillStyle = onTarget ? '#4ade80' : '#f87171'
+      ctx.beginPath()
+      ctx.arc(dotX, centerY, 5.5, 0, Math.PI * 2)
+      ctx.fill()
+      ctx.font = 'bold 9px monospace'
+      ctx.textAlign = 'center'
+      ctx.fillText(source.note || '', dotX, PITCH_BAR_Y - 4)
+    } else {
+      ctx.fillStyle = '#555'
+      ctx.font = '8px monospace'
+      ctx.textAlign = 'center'
+      ctx.fillText('sing...', centerX, centerY + 3)
+    }
+
+    if (active) {
+      ctx.fillStyle = '#4ade80'
+      ctx.font = '8px monospace'
+      ctx.textAlign = 'center'
+      ctx.fillText(`target: ${active.note}`, centerX, PITCH_BAR_Y + PITCH_BAR_H + 12)
+    }
+  }, [getActiveTarget, matchingSuppressedNow, pitchRef])
 
   const render = useCallback((ctx: CanvasRenderingContext2D) => {
     const rt = runtimeRef.current
@@ -896,6 +1219,11 @@ export default function PitchforksIII() {
       ctx.beginPath()
       ctx.ellipse(FRANK_X + 48, FRANK_Y + fm.frame_h * SPRITE_SCALE - 7, 35, 6, 0, 0, Math.PI * 2)
       ctx.fill()
+      // ported from Pitchforks.tsx:518-523; health lives on the monster.
+      for (let i = 0; i < STARTING_HEALTH; i++) {
+        ctx.fillStyle = i < rt.health ? '#4ade80' : '#333'
+        ctx.fillRect(FRANK_X + 7 + i * 13, FRANK_Y - 8, 10, 4)
+      }
     }
 
     const ordered = [...rt.villagers].sort((x, y) => x.y - y.y)
@@ -915,6 +1243,21 @@ export default function PitchforksIII() {
       ctx.restore()
     }
 
+    if (rt.streak >= 3) {
+      ctx.fillStyle = rt.streak >= 10 ? '#ff6090' : '#ffc83c'
+      ctx.font = 'bold 14px monospace'
+      ctx.textAlign = 'center'
+      ctx.fillText(`${rt.streak}x COMBO`, W / 2, 18)
+    }
+
+    const prompt = currentPromptRef.current
+    if (prompt && getActiveTarget()) {
+      ctx.fillStyle = '#f4f7fb'
+      ctx.font = 'bold 15px monospace'
+      ctx.textAlign = 'center'
+      ctx.fillText(prompt, W / 2, 40)
+    }
+
     const active = getActiveTarget()
     if (active) {
       const meta = a.villagerMeta[active.villager.totalTines]
@@ -927,7 +1270,8 @@ export default function PitchforksIII() {
       ctx.arc(x, y, 12 + lockProgressRef.current * 8, 0, Math.PI * 2)
       ctx.stroke()
     }
-  }, [drawBolt, drawVillager, getActiveTarget])
+    drawPitchBar(ctx)
+  }, [drawBolt, drawPitchBar, drawVillager, getActiveTarget])
 
   const loop = useCallback((ts: number) => {
     if (phaseRef.current !== 'playing') return
@@ -945,9 +1289,11 @@ export default function PitchforksIII() {
   const startGame = useCallback(async () => {
     initAudio()
     setPianoVolume(cueVolumeRef.current)
+    clearCueTimers()
     runtimeRef.current = makeInitialRuntime(demoRef.current)
     nextIdRef.current = 0
     activeKeyRef.current = ''
+    activeVillagerIdRef.current = null
     demoTargetRef.current = ''
     demoLockCountRef.current = 0
     demoStepRef.current = 'idle'
@@ -960,7 +1306,15 @@ export default function PitchforksIII() {
     lockHeldMsRef.current = 0
     lockProgressRef.current = 0
     tintRef.current = null
-    setHud({ wave: 1, hearts: STARTING_HEARTS, score: 0, streak: 0 })
+    currentPromptRef.current = ''
+    timersPausedRef.current = false
+    firstLockGraceRef.current = true
+    pitchTrailRef.current = []
+    barDotDeviationRef.current = null
+    barOnTargetRef.current = false
+    barVisibleRef.current = false
+    lockWhileSuppressedRef.current = false
+    setHud({ wave: 1, health: STARTING_HEALTH, score: 0, streak: 0 })
     if (!demoRef.current) {
       await startListening()
     }
@@ -969,19 +1323,21 @@ export default function PitchforksIII() {
     lastTimeRef.current = 0
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
     rafRef.current = requestAnimationFrame(loop)
-  }, [loop, startListening])
+  }, [clearCueTimers, loop, startListening])
 
   const quitToMenu = useCallback(() => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
+    clearCueTimers()
     phaseRef.current = 'menu'
     stopListening()
     setPhase('menu')
-  }, [stopListening])
+  }, [clearCueTimers, stopListening])
 
   useEffect(() => () => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
+    clearCueTimers()
     stopListening()
-  }, [stopListening])
+  }, [clearCueTimers, stopListening])
 
   const hearingActive = demoMode ? !!demoPitchRef.current?.isActive : !!pitch?.isActive
 
@@ -1017,8 +1373,16 @@ export default function PitchforksIII() {
             setSfxVolume={setSfxVolume}
           />
           <button
-            onClick={startGame}
+            onClick={() => {
+              if (demoMode) {
+                startGame()
+              } else {
+                phaseRef.current = 'tutorial'
+                setPhase('tutorial')
+              }
+            }}
             disabled={!assetsReady}
+            data-testid="pf3-how-to-play"
             className="mt-5 w-full py-3 text-lg font-black tracking-widest border transition active:scale-[0.99] disabled:opacity-50"
             style={{
               background: assetsReady ? '#bfefff' : '#25313c',
@@ -1026,9 +1390,84 @@ export default function PitchforksIII() {
               borderColor: '#e8fbff',
             }}
           >
-            START
+            {demoMode ? 'START DEMO' : 'HOW TO PLAY'}
           </button>
         </div>
+      </div>
+    )
+  }
+
+  if (phase === 'tutorial') {
+    return (
+      <div className="fixed inset-0 bg-[#070914] text-gray-100 flex flex-col items-center justify-center px-6" style={{ fontFamily: 'monospace' }}>
+        <h2 className="text-2xl font-black text-[#4ade80] mb-4 tracking-widest" style={{ textShadow: '0 0 15px rgba(74,222,128,0.3)' }}>
+          HOW TO PLAY
+        </h2>
+
+        <div className="max-w-md space-y-4 mb-8">
+          <div className="flex items-start gap-3">
+            <div className="text-2xl">🧟</div>
+            <div>
+              <div className="text-sm text-green-300 font-bold">You are the monster</div>
+              <div className="text-xs text-gray-400">Defend yourself by singing the notes carried by the villagers.</div>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-3">
+            <div className="text-2xl">🔱</div>
+            <div>
+              <div className="text-sm text-yellow-300 font-bold">Forks and tines</div>
+              <div className="text-xs text-gray-400">Each tine is one note. Multi-tine forks are sung in order.</div>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-3">
+            <div className="text-2xl">🔊</div>
+            <div>
+              <div className="text-sm text-cyan-300 font-bold">Replay anytime</div>
+              <div className="text-xs text-gray-400">Use REPLAY NOTES to hear the active villager again.</div>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-3">
+            <div className="text-2xl">📊</div>
+            <div>
+              <div className="text-sm text-purple-300 font-bold">Watch the pitch bar</div>
+              <div className="text-xs text-gray-400">Dot left is too low, dot right is too high, green is on target.</div>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-3">
+            <div className="text-2xl">🐢</div>
+            <div>
+              <div className="text-sm text-gray-300 font-bold">Level 1 is slow</div>
+              <div className="text-xs text-gray-400">Few villagers, generous spacing, and lots of time.</div>
+            </div>
+          </div>
+        </div>
+
+        <button
+          onClick={startGame}
+          className="px-10 py-4 text-lg font-bold tracking-widest transition-all active:scale-95"
+          style={{
+            background: '#4ade80',
+            color: '#0a0812',
+            border: '2px solid #6ee7a0',
+            boxShadow: '0 0 20px rgba(74,222,128,0.3)',
+          }}
+        >
+          START GAME
+        </button>
+
+        <button
+          onClick={() => {
+            phaseRef.current = 'menu'
+            setPhase('menu')
+          }}
+          className="mt-4 text-xs text-gray-600 hover:text-gray-400 transition-colors"
+        >
+          Back to menu
+        </button>
       </div>
     )
   }
@@ -1068,14 +1507,9 @@ export default function PitchforksIII() {
       />
 
       <div className="absolute top-3 left-3 flex items-center gap-3 text-xs bg-black/45 border border-gray-800 px-3 py-2">
-        <div className="flex gap-1" aria-label="hearts">
-          {Array.from({ length: STARTING_HEARTS }, (_, i) => (
-            <span key={i} className={i < hud.hearts ? 'w-3 h-3 bg-red-400 inline-block' : 'w-3 h-3 bg-gray-700 inline-block'} />
-          ))}
-        </div>
         <span>Score {hud.score}</span>
-        <span>Streak {hud.streak}</span>
         <span>Wave {hud.wave}</span>
+        {hud.streak >= 3 && <span>Combo {hud.streak}x</span>}
         <span
           className={`w-3 h-3 rounded-full inline-block ${hearingActive ? 'bg-green-300 animate-ping' : 'bg-gray-600'}`}
           title="Mic activity"
@@ -1087,6 +1521,19 @@ export default function PitchforksIII() {
           DEMO
         </div>
       )}
+
+      <div className="absolute bottom-20 left-1/2 -translate-x-1/2 text-center">
+        <button
+          onClick={() => {
+            const active = getActiveTarget()
+            if (active) playVillagerSequence(active.villager, 'replay')
+          }}
+          className="px-4 py-2 rounded-lg text-xs font-bold text-yellow-300 border border-yellow-600 active:scale-95 transition-all hover:bg-yellow-600/20"
+          style={{ background: 'rgba(0,0,0,0.5)' }}
+        >
+          🔊 REPLAY NOTES
+        </button>
+      </div>
 
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-[min(96vw,760px)] bg-black/55 border border-gray-800 px-3 py-2">
         <div className="flex flex-wrap items-center justify-center gap-3">
