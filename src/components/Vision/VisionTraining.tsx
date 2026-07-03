@@ -10,7 +10,9 @@ import {
   Award,
   Smartphone,
   Monitor,
-  RotateCcw
+  RotateCcw,
+  Moon,
+  Sun
 } from 'lucide-react'
 import { PortalHeader } from '@/components/Navigation/PortalHeader'
 import CurriculumOverview from './Training/CurriculumOverview'
@@ -19,6 +21,7 @@ import QuickPractice from './Training/QuickPractice'
 import TrainingSession from './Training/TrainingSession'
 
 type TabMode = 'today' | 'trainer' | 'exercises'
+const NIGHT_MODE_KEY = 'visionTraining.nightMode'
 
 interface EnrollmentData {
   currentWeek: number
@@ -56,6 +59,7 @@ export function VisionTraining() {
   const [loading, setLoading] = useState(true)
   const [enrollmentData, setEnrollmentData] = useState<EnrollmentData | null>(null)
   const [todaySession, setTodaySession] = useState<TodaySessionData | null>(null)
+  const [nightMode, setNightMode] = useState(false)
 
   // Trainer settings
   const [trainerVisionType, setTrainerVisionType] = useState<'near' | 'far'>('near')
@@ -64,6 +68,11 @@ export function VisionTraining() {
   const [binocularMode, setBinocularMode] = useState<'off' | 'duplicate' | 'redgreen' | 'grid-square' | 'grid-slanted' | 'alternating'>('off')
   const [untimedMode, setUntimedMode] = useState(false)
   const [isTrainingActive, setIsTrainingActive] = useState(false)
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    setNightMode(window.localStorage.getItem(NIGHT_MODE_KEY) === 'true')
+  }, [])
 
   // Dispatch binocular training mode events for hiding UI elements
   useEffect(() => {
@@ -133,11 +142,28 @@ export function VisionTraining() {
     }
   }
 
+  const toggleNightMode = () => {
+    setNightMode(current => {
+      const next = !current
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem(NIGHT_MODE_KEY, String(next))
+      }
+      return next
+    })
+  }
+
+  const pageShellClass = nightMode
+    ? 'min-h-screen bg-[#070604]'
+    : 'min-h-screen bg-gradient-to-br from-gray-900 to-gray-800'
+  const pageBackgroundImage = nightMode
+    ? 'linear-gradient(rgba(8, 6, 3, 0.88), rgba(5, 4, 2, 0.94)), url(/hero-background.jpg)'
+    : 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url(/hero-background.jpg)'
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800"
+      <div className={pageShellClass}
         style={{
-          backgroundImage: 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url(/hero-background.jpg)',
+          backgroundImage: pageBackgroundImage,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundAttachment: 'fixed'
@@ -169,9 +195,11 @@ export function VisionTraining() {
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800"
+    <div
+      className={pageShellClass}
+      data-vision-night-mode={nightMode ? 'true' : 'false'}
       style={{
-        backgroundImage: 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url(/hero-background.jpg)',
+        backgroundImage: pageBackgroundImage,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundAttachment: 'fixed'
@@ -192,7 +220,7 @@ export function VisionTraining() {
         </div>
 
         {/* Tab Navigation - 3 tabs only */}
-        <div className="flex justify-center gap-2 md:gap-4 mb-3 md:mb-6 px-4">
+        <div className="flex flex-wrap justify-center gap-2 md:gap-4 mb-3 md:mb-6 px-4">
           {tabs.map(tab => {
             const Icon = tab.icon
             const isActive = activeTab === tab.id
@@ -210,6 +238,19 @@ export function VisionTraining() {
               </button>
             )
           })}
+          <button
+            type="button"
+            onClick={toggleNightMode}
+            aria-pressed={nightMode}
+            className={`px-4 md:px-5 py-3 rounded-lg font-semibold transition-all duration-300 flex items-center gap-2 ${
+              nightMode
+                ? 'bg-amber-500/20 text-amber-100 border border-amber-500/40'
+                : 'bg-gray-800/30 backdrop-blur-sm text-gray-300 hover:bg-gray-700/30'
+            }`}
+          >
+            {nightMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            <span className="hidden sm:inline">{nightMode ? 'Day Mode' : 'Night Mode'}</span>
+          </button>
         </div>
 
         {/* Tab Content */}
@@ -222,7 +263,11 @@ export function VisionTraining() {
                 {isEnrolled && enrollmentData && todaySession ? (
                   <>
                     {/* Compact Progress Bar */}
-                    <div className="bg-gradient-to-br from-gray-800/60 to-gray-900/60 backdrop-blur-sm rounded-xl p-4 border border-primary-400/20">
+                    <div className={`backdrop-blur-sm rounded-xl p-4 border ${
+                      nightMode
+                        ? 'bg-gradient-to-br from-[#17100a]/85 to-[#0c0906]/85 border-amber-900/40'
+                        : 'bg-gradient-to-br from-gray-800/60 to-gray-900/60 border-primary-400/20'
+                    }`}>
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-3">
                           <span className="text-white font-semibold">
@@ -256,7 +301,7 @@ export function VisionTraining() {
                     </div>
 
                     {/* Daily Practice Component (has session content + progress summary) */}
-                    <DailyPractice />
+                    <DailyPractice nightMode={nightMode} />
                   </>
                 ) : (
                   /* Not Enrolled - Show Curriculum Overview with enrollment */
@@ -270,7 +315,11 @@ export function VisionTraining() {
               <div className="space-y-4">
                 {/* Settings card - ONLY show when NOT training */}
                 {!isTrainingActive && (
-                  <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-xl p-4 sm:p-6 border border-primary-400/20 shadow-lg">
+                  <div className={`backdrop-blur-sm rounded-xl p-4 sm:p-6 border shadow-lg ${
+                    nightMode
+                      ? 'bg-gradient-to-br from-[#17100a]/90 to-[#0c0906]/90 border-amber-900/40'
+                      : 'bg-gradient-to-br from-gray-800/80 to-gray-900/80 border-primary-400/20'
+                  }`}>
                     {/* Header with inline Start Training */}
                     <div className="flex items-start justify-between gap-3 mb-3">
                       <div>
@@ -443,7 +492,7 @@ export function VisionTraining() {
                 {isTrainingActive && binocularMode !== 'off' ? (
                   typeof window !== 'undefined' ? createPortal(
                     /* Fullscreen overlay for binocular — hides navbars and microphone */
-                    <div className="fixed inset-0 w-full h-full z-[99999] bg-gray-900 flex flex-col overflow-hidden">
+                    <div className={`fixed inset-0 w-full h-full z-[99999] flex flex-col overflow-hidden ${nightMode ? 'bg-[#050403]' : 'bg-gray-900'}`}>
                       <div className="flex-1 flex flex-col">
                         <TrainingSession
                           visionType={trainerVisionType}
@@ -451,6 +500,7 @@ export function VisionTraining() {
                           deviceMode={trainerDeviceMode}
                           binocularMode={binocularMode}
                           untimed={untimedMode}
+                          nightMode={nightMode}
                           onExit={() => setIsTrainingActive(false)}
                           onActiveChange={(active) => {
                             if (!active) setIsTrainingActive(false)
@@ -464,7 +514,7 @@ export function VisionTraining() {
                   <div className="space-y-4">
                     <button
                       onClick={() => setIsTrainingActive(false)}
-                      className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+                      className={`flex items-center gap-2 transition-colors ${nightMode ? 'text-amber-100/60 hover:text-amber-100' : 'text-gray-400 hover:text-white'}`}
                     >
                       <RotateCcw className="w-4 h-4" />
                       Back to Settings
@@ -475,6 +525,7 @@ export function VisionTraining() {
                       deviceMode={trainerDeviceMode}
                       binocularMode={binocularMode}
                       untimed={untimedMode}
+                      nightMode={nightMode}
                       onActiveChange={(active) => {
                         if (!active) setIsTrainingActive(false)
                       }}
