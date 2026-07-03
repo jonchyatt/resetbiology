@@ -1,3 +1,16 @@
+export type VisionExerciseDemo =
+  | {
+      type: 'video';
+      url: string;
+      posterUrl?: string;
+      caption?: string;
+    }
+  | {
+      type: 'animation';
+      animation: 'focus-pushups' | 'smooth-tracking' | 'peripheral-pointing' | 'eye-jumps' | 'mirror-scan';
+      caption?: string;
+    };
+
 export type VisionExercise = {
   id: string;
   title: string;
@@ -13,6 +26,7 @@ export type VisionExercise = {
     far?: string;
   };
   checkpoints: string[];
+  demo?: VisionExerciseDemo;
   guidance: {
     heading: string;
     detail: string;
@@ -52,6 +66,11 @@ export const visionExercises: VisionExercise[] = [
     focus: ['accommodation', 'distance control'],
     equipment: ['Pencil/card', 'measuring tape'],
     distanceTargets: { near: '10 cm', far: '60 cm' },
+    demo: {
+      type: 'animation',
+      animation: 'focus-pushups',
+      caption: 'Move the target between arm length and near blur while keeping the letters clear.'
+    },
     checkpoints: [
       'Start at arm’s length with sharp focus.',
       'Slide target toward nose in 0.5 cm increments while keeping shoulders stacked.',
@@ -72,6 +91,11 @@ export const visionExercises: VisionExercise[] = [
     summary: 'Slow figure-eight pursuit work to polish eye-only movement and quiet the cervical spine.',
     focus: ['smooth pursuit', 'neck freedom'],
     equipment: ['Wall target', 'metronome (optional)'],
+    demo: {
+      type: 'animation',
+      animation: 'smooth-tracking',
+      caption: 'Follow the moving target with eyes only while the head stays still.'
+    },
     checkpoints: [
       'Anchor chin with a light nod; imagine ears growing tall.',
       'Trace horizontal infinity sign with eyes only for 60 sec.',
@@ -92,6 +116,11 @@ export const visionExercises: VisionExercise[] = [
     summary: 'Identifies objects without direct gaze to expand spatial mapping and reduce tunnel vision.',
     focus: ['peripheral awareness', 'proprioception'],
     equipment: ['Room objects', 'sticky dots'],
+    demo: {
+      type: 'animation',
+      animation: 'peripheral-pointing',
+      caption: 'Keep fixation centered while cues appear at the edge of the visual field.'
+    },
     checkpoints: [
       'Stare at a central focal point on wall.',
       'Call out the color/shape of items detected in the edges.',
@@ -113,6 +142,11 @@ export const visionExercises: VisionExercise[] = [
     focus: ['accommodation', 'depth perception'],
     equipment: ['Two cards with letters'],
     distanceTargets: { near: '15 cm', far: '90 cm' },
+    demo: {
+      type: 'animation',
+      animation: 'focus-pushups',
+      caption: 'Switch clarity between the near card and the far card on each breath.'
+    },
     checkpoints: [
       'Alternate reading near card vs. far card every inhale/exhale.',
       'Say the letter aloud to confirm clarity.',
@@ -132,6 +166,11 @@ export const visionExercises: VisionExercise[] = [
     summary: 'High-velocity saccades between targets to sharpen reaction time and reading endurance.',
     focus: ['saccades', 'speed'],
     equipment: ['Two wall targets'],
+    demo: {
+      type: 'animation',
+      animation: 'eye-jumps',
+      caption: 'Jump gaze cleanly between targets without moving the head.'
+    },
     checkpoints: [
       'Place targets 60° apart at eye level.',
       'Jump gaze between them on metronome beats.',
@@ -172,6 +211,11 @@ export const visionExercises: VisionExercise[] = [
     summary: 'Mirror provides instant feedback on head stillness while eyes sweep in quadrants.',
     focus: ['stability', 'awareness'],
     equipment: ['Full-length mirror'],
+    demo: {
+      type: 'animation',
+      animation: 'mirror-scan',
+      caption: 'Trace the frame with your eyes while the head stays centered.'
+    },
     checkpoints: [
       'Stand one meter away; soften knees.',
       'Trace rectangle path with eyes while ensuring head stays centered.',
