@@ -995,6 +995,17 @@ model VisionSession {
   chartSize    String   // Which line was being tested (e.g., "20/20", "20/40")
   duration     Int      // Session duration in seconds
   success      Boolean  // Did they pass this level?
+
+  // Optional binocular training metadata
+  deviceMode                   String? // "phone" | "desktop"
+  trainingFocus                String? // "near" | "far"
+  binocularMode                String? // "duplicate" | "redgreen" | "grid-square" | "grid-slanted" | "alternating"
+  sessionSource                String? // "focus" | "daily"
+  binocularOutcome             String? // "completed" | "exited" | "reset"
+  binocularFusionHeldSeconds   Int?
+  binocularAttempts            Int?
+  binocularCorrect             Int?
+
   createdAt    DateTime @default(now())
   user         User     @relation(fields: [userId], references: [id])
 
@@ -1146,6 +1157,7 @@ model VisionDailySession {
 
   // Performance data
   accuracy          Float?   // Overall accuracy if tracked
+  binocularResults  Json?    // Optional binocular bout summaries captured during the daily flow
   notes             String?  // User notes
   coachFeedback     String?  // Any specific feedback
 
