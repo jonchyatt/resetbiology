@@ -34,6 +34,7 @@ import { ActivePool } from './engine/types'
 import { usePitchDetection } from './usePitchDetection'
 import { initAudio, loadPianoSamples, playPianoNote, playSfx } from './audioEngine'
 import { noteToFreq, octaveFoldedCents } from './pitchMath'
+import { removePitchScore, savePitchScore, usePitchScoreSync } from './scoreSync'
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
@@ -348,6 +349,19 @@ export default function NoteTutor() {
   const { isListening, pitch, startListening, stopListening, pitchRef } =
     usePitchDetection({ noiseGateDb: -45 })
 
+  usePitchScoreSync({
+    keys: [STORAGE_KEY],
+    onHydrate: (scores) => {
+      const payload = scores[STORAGE_KEY]?.payload
+      if (!payload || typeof payload !== 'object' || Array.isArray(payload)) return
+      const parsed = payload as Partial<Persisted>
+      if (parsed.colorHints === undefined) parsed.colorHints = true
+      if (parsed.noteRamp === undefined) parsed.noteRamp = null
+      setState(ensurePoolForOctave(parsed as Persisted))
+      setMode(parsed.preferredMode ?? 'staff')
+    },
+  })
+
   // ─── Load persisted ─────────────────────────────────────────────────────
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -370,7 +384,7 @@ export default function NoteTutor() {
   const persist = useCallback((s: Persisted) => {
     if (typeof window === 'undefined') return
     try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(s))
+      savePitchScore(STORAGE_KEY, s)
     } catch { /* quota — drop */ }
   }, [])
 
@@ -735,7 +749,7 @@ export default function NoteTutor() {
   const resetProgress = useCallback(() => {
     if (!confirm('Wipe all Note Tutor progress and start over? Mastery, pool, sequence training, and the color-hints toggle all reset.')) return
     try {
-      if (typeof window !== 'undefined') window.localStorage.removeItem(STORAGE_KEY)
+      if (typeof window !== 'undefined') removePitchScore(STORAGE_KEY)
     } catch { /* quota or private mode */ }
     clearAllTimers()
     processingRef.current = false
