@@ -13,7 +13,7 @@ import {
 } from './gameEngine'
 import Alien from './Alien'
 import NoteButtons from './NoteButtons'
-import PitchGuidance from './PitchGuidance'
+import PitchforksChargeBar from './PitchforksChargeBar'
 import StaffDisplay from './StaffDisplay'
 import GameHUD from './GameHUD'
 import WaveIntro from './WaveIntro'
@@ -1187,22 +1187,11 @@ export default function PitchDefender() {
               Visible in ALL game modes when the singer is currently locking.
               Yellow under 80%, green at/above. Gated to lockProgress > 0 so an
               empty bar isn't visual noise. */}
-          {lockProgress > 0 && (
-            <div className="absolute left-1/2 -translate-x-1/2 z-30 pointer-events-none"
-                 style={{ bottom: 110 }}>
-              <div className="w-40 h-2 rounded-full overflow-hidden"
-                   style={{ background: 'rgba(40,40,60,0.7)', boxShadow: '0 0 12px rgba(0,0,0,0.6)' }}>
-                <div className="h-full rounded-full transition-[width] duration-75 ease-linear"
-                     style={{
-                       width: `${lockProgress * 100}%`,
-                       background: lockProgress >= 0.8 ? '#4ade80' : '#fbbf24',
-                       boxShadow: lockProgress >= 0.8
-                         ? '0 0 10px #4ade80'
-                         : '0 0 6px #fbbf24',
-                     }} />
-              </div>
-            </div>
-          )}
+          <PitchforksChargeBar
+            progress={lockProgress}
+            className="absolute left-1/2 -translate-x-1/2 z-30"
+            style={{ bottom: 110 }}
+          />
 
           {/* Alien field */}
           <div
@@ -1238,15 +1227,6 @@ export default function PitchDefender() {
                         glowColor={`hsl(${alien.noteHue}, 80%, 60%)`}
                       />
                     </div>
-                  )}
-                  {/* Pitch guidance overlay — Echo Cannon only, active alien only */}
-                  {gameMode === 'echoCannon' && isActiveAlien && (
-                    <PitchGuidance
-                      targetNote={alien.note}
-                      pitch={pitch}
-                      isLocking={lockProgress > 0}
-                      lockProgress={lockProgress}
-                    />
                   )}
                 </div>
               )})}
@@ -1336,34 +1316,9 @@ export default function PitchDefender() {
                 }}>
                   {micError ? `MIC ERROR: ${micError}` : isListening ? 'LISTENING' : 'MIC OFF'}
                 </div>
-                {pitch?.isActive ? (
-                  <div className="flex items-center justify-center gap-4">
-                    <div className="text-3xl font-bold text-white" style={{
-                      textShadow: lockProgress > 0
-                        ? `0 0 ${10 + lockProgress * 20}px #4ade80`
-                        : '0 0 8px rgba(255,255,255,0.3)',
-                      color: lockProgress > 0.5 ? '#4ade80' : 'white',
-                    }}>
-                      {pitch.note}
-                    </div>
-                    <div className="text-sm" style={{
-                      color: Math.abs(pitch.cents) <= 15 ? '#4ade80' : Math.abs(pitch.cents) <= 30 ? '#e8a838' : '#f87171',
-                    }}>
-                      {pitch.cents > 0 ? '+' : ''}{pitch.cents}c
-                    </div>
-                    {lockProgress > 0 && (
-                      <div className="w-20 h-2 rounded-full overflow-hidden" style={{ background: 'rgba(40,40,60,0.6)' }}>
-                        <div className="h-full rounded-full transition-all" style={{
-                          width: `${lockProgress * 100}%`,
-                          background: lockProgress >= 0.8 ? '#4ade80' : '#3FBFB5',
-                          boxShadow: `0 0 8px ${lockProgress >= 0.8 ? '#4ade80' : '#3FBFB5'}`,
-                        }} />
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <div className="text-lg text-gray-600">Sing a note...</div>
-                )}
+                <div className={pitch?.isActive ? 'text-lg text-green-300' : 'text-lg text-gray-600'}>
+                  {pitch?.isActive ? 'Voice detected' : 'Sing a note...'}
+                </div>
                 <button
                   onClick={replayNote}
                   className="text-xs text-gray-500 hover:text-gray-300 transition-colors px-3 py-1 mt-2"

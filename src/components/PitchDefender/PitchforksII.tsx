@@ -25,14 +25,16 @@ import { useState, useRef, useCallback, useEffect } from 'react'
 import Link from 'next/link'
 import { PitchFusion, type FusedPitch } from './pitchFusion'
 import { initAudio, playPianoNote } from './audioEngine'
+import PitchforksChargeBar from './PitchforksChargeBar'
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
 const W = 640
 const H = 360
 const SPRITE_SCALE = 3                  // native pixel art scaled 3x in canvas
-const TOLERANCE_SEMI = 1.5              // pitch-match tolerance
-const HOLD_MS = 220                     // must hold correct pitch this long to fire
+const TOLERANCE_SEMI = 0.7              // 70 cents, Pitchforks-v1 parity
+const HOLD_MS = 300                     // must hold correct pitch this long to fire
+const CONFIDENCE_FLOOR = 0.75
 const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
 
 const ASSET_BASE = '/images/pitchforks'
@@ -166,6 +168,7 @@ export default function PitchforksII() {
   const [view, setView] = useState<ViewMode>('side')
   const [hud, setHud] = useState({ score: 0, lives: 3, target: '' })
   const [pitchHint, setPitchHint] = useState<'low' | 'on' | 'high' | null>(null)
+  const [matchProgress, setMatchProgress] = useState(0)
   const [assetsReady, setAssetsReady] = useState(false)
   const [assetError, setAssetError] = useState<string | null>(null)
 
@@ -378,10 +381,10 @@ export default function PitchforksII() {
     // Pitch matching
     const tgt = targetRef.current
     const p = pitchRef.current
-    if (tgt && p?.isActive) {
+    if (tgt && p?.isActive && p.confidence >= CONFIDENCE_FLOOR) {
       const dev = p.staffPosition - tgt.semi
       const absDev = Math.abs(dev)
-      // Octave-flexible: also allow ±12, ±24
+      // Octave-fold once into pitch-class distance, matching Pitchforks v1.
       const folded = Math.min(absDev, Math.abs(absDev - 12), Math.abs(absDev - 24))
       if (folded <= TOLERANCE_SEMI) {
         setPitchHint('on')
@@ -397,12 +400,12 @@ export default function PitchforksII() {
         }
       } else {
         setPitchHint(dev < 0 ? 'low' : 'high')
-        matchProgressRef.current = Math.max(0, matchProgressRef.current - dt * 400)
+        matchProgressRef.current = 0
       }
     } else {
       setPitchHint(null)
-      matchProgressRef.current = Math.max(0, matchProgressRef.current - dt * 200)
     }
+    setMatchProgress(Math.min(1, matchProgressRef.current / HOLD_MS))
 
     // Update bolts
     for (let i = boltsRef.current.length - 1; i >= 0; i--) {
@@ -470,10 +473,6 @@ export default function PitchforksII() {
       ctx.textAlign = 'right'
       ctx.fillStyle = pitchHint === 'on' ? '#7dffb0' : pitchHint === 'low' ? '#ffd166' : pitchHint === 'high' ? '#ff8a8a' : '#cce6ff'
       ctx.fillText(`SING ${semiToName(targetRef.current.semi)}`, W - 10, 12)
-      // hold meter
-      const pct = Math.min(1, matchProgressRef.current / HOLD_MS)
-      ctx.fillStyle = 'rgba(120,255,160,0.8)'
-      ctx.fillRect(W - 110, 18, 100 * pct, 3)
     }
   }, [pitchHint])
 
@@ -759,6 +758,12 @@ export default function PitchforksII() {
             imageRendering: 'pixelated',
             background: '#0a0a18',
           }}
+        />
+        <PitchforksChargeBar
+          progress={matchProgress}
+          width={140}
+          className="absolute left-1/2 -translate-x-1/2"
+          style={{ bottom: 18 }}
         />
         {phase === 'menu' && assetsReady && (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 rounded-xl">
