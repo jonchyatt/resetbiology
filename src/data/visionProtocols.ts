@@ -142,8 +142,8 @@ export const visionMetrics = [
   },
   {
     label: 'Far Snellen distance',
-    target: '3 m clear 20/20 line',
-    howTo: 'Use the Snellen trainer or printed chart and log the furthest clean line.',
+    target: '100 cm clear 20/20 line',
+    howTo: 'Use the Snellen trainer or printed chart within reachable desktop distance and log the furthest clean line.',
   },
   {
     label: 'Smooth pursuit stability',

@@ -20,6 +20,7 @@ import {
   Lock
 } from 'lucide-react'
 import { visionMasterProgram } from '@/data/visionProtocols'
+import LessonHistory from './LessonHistory'
 
 interface CompletedSession {
   week: number
@@ -31,6 +32,7 @@ interface CompletedSession {
 
 interface ProgramProgressProps {
   enrollment: {
+    startDate?: string
     currentWeek: number
     currentDay: number
     sessionsCompleted: number
@@ -46,7 +48,7 @@ interface ProgramProgressProps {
     }
   }
   completedSessions: CompletedSession[]
-  onMarkComplete: (week: number, day: number) => Promise<void>
+  onMarkComplete: (week: number, day: number, localDate?: string) => Promise<void>
   onStartSession: (week: number, day: number) => void
 }
 
@@ -171,6 +173,13 @@ export default function ProgramProgress({
           </div>
         </div>
       </div>
+
+      <LessonHistory
+        enrollment={enrollment}
+        completedSessions={completedSessions}
+        onMakeUpLesson={onMarkComplete}
+        onStartSession={onStartSession}
+      />
 
       {/* 12-Week Plan with Completion Status */}
       <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-xl p-6 border border-primary-400/20 shadow-lg">
@@ -345,7 +354,7 @@ export default function ProgramProgress({
                                             ) : (
                                               <CheckCircle className="w-3 h-3" />
                                             )}
-                                            Mark Done
+                                            Make Up
                                           </button>
                                         ) : (
                                           <span className="text-xs text-gray-500">Upcoming</span>

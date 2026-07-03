@@ -73,6 +73,14 @@ export default function TrainingSession({
   const difficulty = DIFFICULTY_LEVELS[currentLevel - 1] || DIFFICULTY_LEVELS[0]
   const accuracy = attempts > 0 ? (correct / attempts) * 100 : 0
   const currentGlassesStage = READER_GLASSES_STAGES[readerGlassesStage] || READER_GLASSES_STAGES[0]
+  const minTrainingDistanceCm = deviceMode === 'desktop' ? 60 : 20
+  const maxTrainingDistanceCm = deviceMode === 'desktop' ? 100 : 60
+  const clampDistanceForDevice = (distanceCm: number) => {
+    return Math.min(maxTrainingDistanceCm, Math.max(minTrainingDistanceCm, distanceCm))
+  }
+  const trainingDistanceCm = distanceProgressionMode
+    ? clampDistanceForDevice(targetDistanceCm)
+    : clampDistanceForDevice(difficulty.targetDistance)
 
   // Reset target distance if device mode changes
   useEffect(() => {
@@ -217,7 +225,7 @@ export default function TrainingSession({
         body: JSON.stringify({
           visionType,
           exerciseType,
-          distanceCm: distanceProgressionMode ? targetDistanceCm : difficulty.targetDistance,
+          distanceCm: trainingDistanceCm,
           accuracy,
           level: difficulty.label,
           duration: sessionDuration,
@@ -302,9 +310,9 @@ export default function TrainingSession({
               }}
               onDistanceAdjust={(direction) => {
                 if (direction === 'further') {
-                  setTargetDistanceCm(prev => Math.min(prev + 1, 100))
+                  setTargetDistanceCm(prev => clampDistanceForDevice(prev + 1))
                 } else {
-                  setTargetDistanceCm(prev => Math.max(prev - 1, 15))
+                  setTargetDistanceCm(prev => clampDistanceForDevice(prev - 1))
                 }
               }}
             />
@@ -321,9 +329,9 @@ export default function TrainingSession({
               }}
               onDistanceAdjust={(direction) => {
                 if (direction === 'further') {
-                  setTargetDistanceCm(prev => Math.min(prev + 1, 100))
+                  setTargetDistanceCm(prev => clampDistanceForDevice(prev + 1))
                 } else {
-                  setTargetDistanceCm(prev => Math.max(prev - 1, 15))
+                  setTargetDistanceCm(prev => clampDistanceForDevice(prev - 1))
                 }
               }}
             />
@@ -399,7 +407,7 @@ export default function TrainingSession({
       )}
 
       {/* Distance Progression Panel - for near vision training - hide when active */}
-      {!isActive && visionType === 'near' && distanceProgressionMode && (
+      {!isActive && deviceMode === 'phone' && visionType === 'near' && distanceProgressionMode && (
         <div className="bg-gradient-to-r from-blue-600/20 to-cyan-600/20 border border-blue-400/30 rounded-lg p-5">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
@@ -428,12 +436,14 @@ export default function TrainingSession({
             <div className="bg-gray-700 rounded-full h-4 overflow-hidden">
               <div
                 className="h-full bg-gradient-to-r from-blue-500 to-cyan-400 transition-all duration-500"
-                style={{ width: `${((targetDistanceCm - 20) / 40) * 100}%` }}
+                style={{
+                  width: `${((trainingDistanceCm - minTrainingDistanceCm) / (maxTrainingDistanceCm - minTrainingDistanceCm)) * 100}%`
+                }}
               />
             </div>
             <div className="flex justify-between text-xs text-gray-500 mt-1">
-              <span>20 cm (close)</span>
-              <span>60 cm (arm's length)</span>
+              <span>{minTrainingDistanceCm} cm (close)</span>
+              <span>{maxTrainingDistanceCm} cm (arm's length)</span>
             </div>
           </div>
 
@@ -498,7 +508,7 @@ export default function TrainingSession({
       {/* Distance guidance - hide when active to keep chart visible */}
       {!isActive && (
         <DistanceGuidance
-          targetDistanceCm={distanceProgressionMode ? targetDistanceCm : difficulty.targetDistance}
+          targetDistanceCm={trainingDistanceCm}
           visionType={visionType}
           deviceMode={deviceMode}
         />
