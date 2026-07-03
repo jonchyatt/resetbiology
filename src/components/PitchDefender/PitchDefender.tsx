@@ -23,7 +23,7 @@ import { noteToFreq, octaveFoldedCents } from './pitchMath'
 import ParentSettings, { DEFAULT_SETTINGS, type GameSettings } from './ParentSettings'
 import {
   initAudio, playSfx as _sfx, loadPianoSamples as _loadSamples,
-  playPianoNote, startMusic, stopMusic, changeMusic, setMicActive,
+  playPianoNote, startMusic, stopMusic, changeMusic, setMicActive, setPianoVolume,
 } from './audioEngine'
 import './animations.css'
 
@@ -59,6 +59,7 @@ export default function PitchDefender() {
   const [gameSettings, setGameSettings] = useState<GameSettings>(DEFAULT_SETTINGS)
   const [screenShake, setScreenShake] = useState(false)
   const [lockProgress, setLockProgress] = useState(0)
+  const [cueVolume, setCueVolume] = useState(100)
   const [laser, setLaser] = useState<{ fromX: number; fromY: number; toX: number; toY: number; hue: number } | null>(null)
   const [particles, setParticles] = useState<{ id: number; x: number; y: number; tx: number; ty: number; size: number; hue: number; duration: number }[]>([])
 
@@ -90,6 +91,7 @@ export default function PitchDefender() {
 
   // Mute music when mic is active (prevents speaker→mic feedback in Echo Cannon)
   useEffect(() => { setMicActive(isListening) }, [isListening])
+  useEffect(() => { setPianoVolume(cueVolume) }, [cueVolume])
 
   // ─── Load persisted data ─────────────────────────────────────────────────
   useEffect(() => {
@@ -829,6 +831,19 @@ export default function PitchDefender() {
             </button>
           </div>
 
+          <label className="flex items-center gap-3 mb-6">
+            <span className="text-xs text-gray-500 w-20">Cue Vol</span>
+            <input
+              type="range"
+              min={0}
+              max={200}
+              value={cueVolume}
+              onChange={e => setCueVolume(Number(e.target.value))}
+              className="w-40 h-1 accent-purple-500"
+            />
+            <span className="text-xs text-purple-300 font-mono w-10 text-right">{cueVolume}%</span>
+          </label>
+
           <button
             onClick={startGame}
             className="px-10 py-4 rounded-2xl text-xl font-bold text-white transition-all active:scale-95"
@@ -1048,7 +1063,7 @@ export default function PitchDefender() {
               </a>
               <a
                 href="/pitch-defender/vocal-trainer"
-                title="Diction training. Drag-drop a recording, BasicPitch extracts the melody, then practice in dichotic mode — recorded voice in your LEFT ear, your live mic in your RIGHT ear. Saves every track to the Synthesia library too."
+                title="Diction training. Drag-drop a recording, BasicPitch extracts the melody, then practice with separated reference and live-mic balance. Saves every track to the Synthesia library too."
                 className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
                 style={{
                   background: 'rgba(20, 100, 130, 0.25)',
@@ -1370,6 +1385,18 @@ export default function PitchDefender() {
                 >
                   TAP TO REPLAY TARGET
                 </button>
+                <label className="mt-2 flex items-center justify-center gap-2 text-[11px] text-gray-500">
+                  Cue
+                  <input
+                    type="range"
+                    min={0}
+                    max={200}
+                    value={cueVolume}
+                    onChange={e => setCueVolume(Number(e.target.value))}
+                    className="w-28 h-1 accent-purple-500"
+                  />
+                  <span className="text-purple-300 font-mono w-10 text-right">{cueVolume}%</span>
+                </label>
               </div>
             ) : (
               /* ── Note Blaster: tap buttons ── */
@@ -1382,6 +1409,18 @@ export default function PitchDefender() {
                   >
                     TAP TO REPLAY NOTE
                   </button>
+                  <label className="ml-3 inline-flex items-center gap-2 text-[11px] text-gray-500">
+                    Cue
+                    <input
+                      type="range"
+                      min={0}
+                      max={200}
+                      value={cueVolume}
+                      onChange={e => setCueVolume(Number(e.target.value))}
+                      className="w-28 h-1 accent-teal-500"
+                    />
+                    <span className="text-teal-300 font-mono w-10 text-right">{cueVolume}%</span>
+                  </label>
                 </div>
                 <NoteButtons
                   unlockedNotes={state.unlockedNotes}
