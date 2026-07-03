@@ -257,7 +257,17 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'Not enrolled in program' }, { status: 400 })
       }
 
-      const { week, day, baselineMinutes, exerciseMinutes, exercisesCompleted, nearSnellenResult, farSnellenResult, notes } = data
+      const {
+        week,
+        day,
+        baselineMinutes,
+        exerciseMinutes,
+        exercisesCompleted,
+        nearSnellenResult,
+        farSnellenResult,
+        binocularResults,
+        notes
+      } = data
 
       // Check if session already completed today
       const todayLocalDate = new Date().toISOString().split('T')[0]
@@ -292,6 +302,7 @@ export async function POST(req: NextRequest) {
           exercisesCompleted: exercisesCompleted || [],
           nearSnellenResult,
           farSnellenResult,
+          binocularResults: binocularResults || null,
           notes,
           localDate: todayLocalDate
         }

@@ -451,6 +451,7 @@ export function VisionTraining() {
                           deviceMode={trainerDeviceMode}
                           binocularMode={binocularMode}
                           untimed={untimedMode}
+                          sessionSource="focus"
                           onExit={() => setIsTrainingActive(false)}
                           onActiveChange={(active) => {
                             if (!active) setIsTrainingActive(false)
@@ -475,6 +476,7 @@ export function VisionTraining() {
                       deviceMode={trainerDeviceMode}
                       binocularMode={binocularMode}
                       untimed={untimedMode}
+                      sessionSource="focus"
                       onActiveChange={(active) => {
                         if (!active) setIsTrainingActive(false)
                       }}

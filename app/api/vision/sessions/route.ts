@@ -126,7 +126,15 @@ export async function POST(request: Request) {
       accuracy,
       chartSize,
       duration,
-      success
+      success,
+      deviceMode,
+      trainingFocus,
+      binocularMode,
+      sessionSource,
+      binocularOutcome,
+      binocularFusionHeldSeconds,
+      binocularAttempts,
+      binocularCorrect
     } = body
 
     // Validate required fields
@@ -146,7 +154,15 @@ export async function POST(request: Request) {
         accuracy,
         chartSize: chartSize || '20/20',
         duration: duration || 0,
-        success: success || false
+        success: success || false,
+        deviceMode: deviceMode || null,
+        trainingFocus: trainingFocus || visionType,
+        binocularMode: binocularMode && binocularMode !== 'off' ? binocularMode : null,
+        sessionSource: sessionSource || null,
+        binocularOutcome: binocularOutcome || null,
+        binocularFusionHeldSeconds: binocularFusionHeldSeconds ?? null,
+        binocularAttempts: binocularAttempts ?? null,
+        binocularCorrect: binocularCorrect ?? null
       }
     })
 

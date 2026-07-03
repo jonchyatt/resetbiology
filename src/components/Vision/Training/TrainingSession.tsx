@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import SnellenChart from './SnellenChart'
 import BinocularChart from './BinocularChart'
 import type { BinocularMode } from './BinocularChart'
@@ -14,8 +14,25 @@ interface TrainingSessionProps {
   deviceMode?: 'phone' | 'desktop'
   binocularMode?: BinocularMode
   untimed?: boolean
+  sessionSource?: 'focus' | 'daily'
+  onBinocularResult?: (result: BinocularTrainingResult) => void | Promise<void>
   onActiveChange?: (isActive: boolean) => void
   onExit?: () => void
+}
+
+type BinocularOutcome = 'completed' | 'exited' | 'reset'
+
+export interface BinocularTrainingResult {
+  binocularMode: BinocularMode
+  deviceMode: 'phone' | 'desktop'
+  trainingFocus: 'near' | 'far'
+  durationSeconds: number
+  outcome: BinocularOutcome
+  fusionHeldSeconds: number
+  attempts: number
+  correct: number
+  accuracy: number
+  source: 'focus' | 'daily'
 }
 
 // Reader glasses progression for nearsightedness training
@@ -49,6 +66,8 @@ export default function TrainingSession({
   deviceMode = 'phone',
   binocularMode = 'off',
   untimed = false,
+  sessionSource = 'focus',
+  onBinocularResult,
   onActiveChange,
   onExit
 }: TrainingSessionProps) {
@@ -69,10 +88,15 @@ export default function TrainingSession({
   const [distanceProgressionMode, setDistanceProgressionMode] = useState(visionType === 'near')
   const [showGlassesPrompt, setShowGlassesPrompt] = useState(false)
   const [consecutiveSuccessAtMax, setConsecutiveSuccessAtMax] = useState(0)
+  const binocularRecordedRef = useRef(false)
 
   const difficulty = DIFFICULTY_LEVELS[currentLevel - 1] || DIFFICULTY_LEVELS[0]
   const accuracy = attempts > 0 ? (correct / attempts) * 100 : 0
   const currentGlassesStage = READER_GLASSES_STAGES[readerGlassesStage] || READER_GLASSES_STAGES[0]
+
+  useEffect(() => {
+    binocularRecordedRef.current = false
+  }, [binocularMode, deviceMode, exerciseType, initialLevel, sessionSource, visionType])
 
   // Reset target distance if device mode changes
   useEffect(() => {
@@ -145,7 +169,11 @@ export default function TrainingSession({
           setTimeout(() => {
             setSessionComplete(true)
             setIsActive(false)
-            saveSession(true)
+            if (isBinocular) {
+              void recordBinocularBout('completed', true)
+            } else {
+              void saveSession(true)
+            }
           }, 1500)
         }
       } else {
@@ -209,7 +237,28 @@ export default function TrainingSession({
     }
   }
 
-  const saveSession = async (success: boolean) => {
+  const buildBinocularResult = (outcome: BinocularOutcome): BinocularTrainingResult => {
+    const durationSeconds = Math.max(sessionDuration, 1)
+    const effectiveAccuracy = attempts > 0 ? (correct / attempts) * 100 : 0
+    const fusionHeldSeconds = attempts > 0
+      ? Math.round(durationSeconds * (correct / attempts))
+      : durationSeconds
+
+    return {
+      binocularMode: binocularMode as BinocularMode,
+      deviceMode,
+      trainingFocus: visionType,
+      durationSeconds,
+      outcome,
+      fusionHeldSeconds,
+      attempts,
+      correct,
+      accuracy: effectiveAccuracy,
+      source: sessionSource
+    }
+  }
+
+  const saveSession = async (success: boolean, binocularResult?: BinocularTrainingResult) => {
     try {
       await fetch('/api/vision/sessions', {
         method: 'POST',
@@ -218,10 +267,20 @@ export default function TrainingSession({
           visionType,
           exerciseType,
           distanceCm: distanceProgressionMode ? targetDistanceCm : difficulty.targetDistance,
-          accuracy,
-          level: difficulty.label,
-          duration: sessionDuration,
-          success
+          accuracy: binocularResult?.accuracy ?? accuracy,
+          chartSize: difficulty.label,
+          duration: binocularResult?.durationSeconds ?? sessionDuration,
+          success,
+          ...(binocularResult ? {
+            deviceMode: binocularResult.deviceMode,
+            trainingFocus: binocularResult.trainingFocus,
+            binocularMode: binocularResult.binocularMode,
+            sessionSource: binocularResult.source,
+            binocularOutcome: binocularResult.outcome,
+            binocularFusionHeldSeconds: binocularResult.fusionHeldSeconds,
+            binocularAttempts: binocularResult.attempts,
+            binocularCorrect: binocularResult.correct
+          } : {})
         })
       })
     } catch (error) {
@@ -229,7 +288,30 @@ export default function TrainingSession({
     }
   }
 
+  const recordBinocularBout = async (outcome: BinocularOutcome, success = false) => {
+    if (!isBinocular || binocularRecordedRef.current) return
+
+    binocularRecordedRef.current = true
+    const result = buildBinocularResult(outcome)
+    try {
+      await onBinocularResult?.(result)
+    } catch (error) {
+      console.error('Failed to handle binocular result:', error)
+    }
+    await saveSession(success, result)
+  }
+
+  const handleExit = () => {
+    void recordBinocularBout('exited', false)
+    if (onExit) {
+      onExit()
+    } else {
+      setIsActive(false)
+    }
+  }
+
   const resetSession = () => {
+    void recordBinocularBout('reset', false)
     setCurrentLevel(initialLevel)
     setAttempts(0)
     setCorrect(0)
@@ -264,7 +346,7 @@ export default function TrainingSession({
             </div>
             <div className="flex items-center gap-2">
               <button
-                onClick={onExit || (() => setIsActive(false))}
+                onClick={handleExit}
                 className="px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm font-semibold flex items-center gap-1.5 transition-all"
                 title="Exit training (ESC)"
               >

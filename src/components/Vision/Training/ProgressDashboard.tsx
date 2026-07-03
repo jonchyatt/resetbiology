@@ -21,12 +21,53 @@ interface VisionSession {
   chartSize: string
   duration: number
   success: boolean
+  deviceMode?: string | null
+  trainingFocus?: string | null
+  binocularMode?: string | null
+  sessionSource?: string | null
+  binocularOutcome?: string | null
+  binocularFusionHeldSeconds?: number | null
   createdAt: string
+}
+
+interface BinocularModeSummary {
+  mode: string
+  bouts: number
+  totalSeconds: number
+  totalMinutes: number
+  fusionHeldSeconds: number
+  fusionHeldMinutes: number
+  focusCounts: Record<string, number>
+  deviceCounts: Record<string, number>
+}
+
+interface BinocularSummary {
+  totalBouts: number
+  totalSeconds: number
+  modeBreakdown: BinocularModeSummary[]
+}
+
+const BINOCULAR_MODE_LABELS: Record<string, string> = {
+  duplicate: 'Duplicate',
+  redgreen: 'Red/Green',
+  'grid-square': 'Grid Square',
+  'grid-slanted': 'Grid Slanted',
+  alternating: 'Alternating'
+}
+
+function formatMode(mode?: string | null) {
+  if (!mode) return ''
+  return BINOCULAR_MODE_LABELS[mode] || mode
 }
 
 export default function ProgressDashboard() {
   const [progress, setProgress] = useState<VisionProgress[]>([])
   const [recentSessions, setRecentSessions] = useState<VisionSession[]>([])
+  const [binocularSummary, setBinocularSummary] = useState<BinocularSummary>({
+    totalBouts: 0,
+    totalSeconds: 0,
+    modeBreakdown: []
+  })
   const [weeklyStats, setWeeklyStats] = useState({
     sessionsThisWeek: 0,
     avgAccuracyThisWeek: 0,
@@ -46,6 +87,11 @@ export default function ProgressDashboard() {
       if (data.success) {
         setProgress(data.progress || [])
         setRecentSessions(data.recentSessions || [])
+        setBinocularSummary(data.binocularSummary || {
+          totalBouts: 0,
+          totalSeconds: 0,
+          modeBreakdown: []
+        })
         setWeeklyStats(data.weeklyStats || {
           sessionsThisWeek: 0,
           avgAccuracyThisWeek: 0,
@@ -61,6 +107,7 @@ export default function ProgressDashboard() {
 
   const nearProgress = progress.find(p => p.visionType === 'near')
   const farProgress = progress.find(p => p.visionType === 'far')
+  const totalBinocularMinutes = Math.round((binocularSummary.totalSeconds / 60) * 10) / 10
 
   if (loading) {
     return (
@@ -96,6 +143,59 @@ export default function ProgressDashboard() {
             </p>
           </div>
         </div>
+      </div>
+
+      {/* Binocular training usage */}
+      <div className="bg-gray-900/40 border border-orange-400/30 rounded-lg p-6 shadow-inner">
+        <h4 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+          <Eye className="w-5 h-5 text-orange-400" />
+          Binocular Training Usage
+        </h4>
+        {binocularSummary.totalBouts > 0 ? (
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-gray-800/50 rounded-lg p-4">
+                <p className="text-gray-400 text-sm mb-1">Bouts Logged</p>
+                <p className="text-2xl font-bold text-white">{binocularSummary.totalBouts}</p>
+              </div>
+              <div className="bg-gray-800/50 rounded-lg p-4">
+                <p className="text-gray-400 text-sm mb-1">Training Minutes</p>
+                <p className="text-2xl font-bold text-orange-300">{totalBinocularMinutes}</p>
+              </div>
+              <div className="bg-gray-800/50 rounded-lg p-4">
+                <p className="text-gray-400 text-sm mb-1">Modes Used</p>
+                <p className="text-2xl font-bold text-primary-300">{binocularSummary.modeBreakdown.length}</p>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              {binocularSummary.modeBreakdown.map((mode) => (
+                <div key={mode.mode} className="bg-gray-800/50 rounded-lg p-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <p className="text-white font-semibold">{formatMode(mode.mode)}</p>
+                      <p className="text-xs text-gray-400">
+                        {mode.bouts} bout{mode.bouts === 1 ? '' : 's'} - {mode.totalMinutes} min
+                      </p>
+                    </div>
+                    <div className="text-right text-xs text-gray-400">
+                      <p>Fusion held: {mode.fusionHeldMinutes} min</p>
+                      <p>
+                        {Object.entries(mode.deviceCounts)
+                          .map(([device, count]) => `${device}: ${count}`)
+                          .join(' | ') || 'No device data'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <p className="text-gray-400 text-sm">
+            No binocular training recorded yet. Complete or exit a binocular focus-training bout to see mode usage here.
+          </p>
+        )}
       </div>
 
       {/* Vision type progress */}
@@ -204,6 +304,11 @@ export default function ProgressDashboard() {
                     </span>
                     {session.success && (
                       <Award className="w-4 h-4 text-yellow-400" />
+                    )}
+                    {session.binocularMode && (
+                      <span className="px-2 py-0.5 rounded text-xs font-semibold bg-orange-500/20 text-orange-300">
+                        {formatMode(session.binocularMode)}
+                      </span>
                     )}
                   </div>
                   <p className="text-xs text-gray-400">

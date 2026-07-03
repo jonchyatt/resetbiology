@@ -13,7 +13,8 @@ import {
   Coffee,
   BookOpen
 } from 'lucide-react'
-import TrainingSession from './TrainingSession'
+import TrainingSession, { type BinocularTrainingResult } from './TrainingSession'
+import type { BinocularMode } from './BinocularChart'
 
 interface DailySession {
   day: number
@@ -72,6 +73,15 @@ interface ProgramInfo {
   phases: { name: string; weeks: string; focus: string }[]
 }
 
+const dailyBinocularModes: Array<{ value: BinocularMode; label: string }> = [
+  { value: 'off', label: 'Standard' },
+  { value: 'duplicate', label: 'Duplicate' },
+  { value: 'redgreen', label: 'Red/Green' },
+  { value: 'grid-square', label: 'Grid Square' },
+  { value: 'grid-slanted', label: 'Grid Slanted' },
+  { value: 'alternating', label: 'Alternating' }
+]
+
 export default function DailyPractice() {
   const [loading, setLoading] = useState(true)
   const [enrolled, setEnrolled] = useState(false)
@@ -87,6 +97,9 @@ export default function DailyPractice() {
   const [nearSnellenResult, setNearSnellenResult] = useState('')
   const [farSnellenResult, setFarSnellenResult] = useState('')
   const [enrolling, setEnrolling] = useState(false)
+  const [dailyBinocularMode, setDailyBinocularMode] = useState<BinocularMode>('off')
+  const [dailyDeviceMode, setDailyDeviceMode] = useState<'phone' | 'desktop'>('phone')
+  const [dailyBinocularResults, setDailyBinocularResults] = useState<BinocularTrainingResult[]>([])
 
   useEffect(() => {
     loadProgram()
@@ -166,6 +179,7 @@ export default function DailyPractice() {
             exercisesCompleted: completedExercises,
             nearSnellenResult: nearSnellenResult || null,
             farSnellenResult: farSnellenResult || null,
+            binocularResults: dailyBinocularResults.length > 0 ? dailyBinocularResults : null,
             notes: sessionNotes || null
           }
         })
@@ -173,6 +187,7 @@ export default function DailyPractice() {
 
       const data = await response.json()
       if (data.success) {
+        setDailyBinocularResults([])
         loadProgram() // Reload to show completion
       }
     } catch (error) {
@@ -385,6 +400,36 @@ export default function DailyPractice() {
     )
   }
 
+  const renderDailyTrainerControls = () => (
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div>
+        <label className="text-gray-400 text-xs block mb-1">Trainer Mode</label>
+        <select
+          value={dailyBinocularMode}
+          onChange={(e) => setDailyBinocularMode(e.target.value as BinocularMode)}
+          className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white text-sm"
+        >
+          {dailyBinocularModes.map((mode) => (
+            <option key={mode.value} value={mode.value}>
+              {mode.label}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <label className="text-gray-400 text-xs block mb-1">Device</label>
+        <select
+          value={dailyDeviceMode}
+          onChange={(e) => setDailyDeviceMode(e.target.value as 'phone' | 'desktop')}
+          className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white text-sm"
+        >
+          <option value="phone">Phone</option>
+          <option value="desktop">Desktop</option>
+        </select>
+      </div>
+    </div>
+  )
+
   // Show Snellen trainer
   if (showSnellenTrainer) {
     return (
@@ -400,6 +445,12 @@ export default function DailyPractice() {
           visionType="near"
           exerciseType="letters"
           initialLevel={1}
+          deviceMode={dailyDeviceMode}
+          binocularMode={dailyBinocularMode}
+          sessionSource="daily"
+          onBinocularResult={(result) => {
+            setDailyBinocularResults(prev => [...prev, result])
+          }}
         />
       </div>
     )
@@ -473,6 +524,7 @@ export default function DailyPractice() {
                     Open Trainer
                   </button>
                 </div>
+                {renderDailyTrainerControls()}
 
                 <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-xl p-4 border border-primary-400/20">
                   <div className="flex items-center gap-3 mb-3">
@@ -576,6 +628,10 @@ export default function DailyPractice() {
                           <option value="20/15">20/15</option>
                         </select>
                       </div>
+                    </div>
+
+                    <div className="mb-4">
+                      {renderDailyTrainerControls()}
                     </div>
 
                     <div className="flex gap-3">
