@@ -8,6 +8,7 @@ import {
   BookOpen,
   Flame,
   Award,
+  TrendingUp,
   Smartphone,
   Monitor,
   RotateCcw
@@ -17,8 +18,9 @@ import CurriculumOverview from './Training/CurriculumOverview'
 import DailyPractice from './Training/DailyPractice'
 import QuickPractice from './Training/QuickPractice'
 import TrainingSession from './Training/TrainingSession'
+import ProgressDashboard from './Training/ProgressDashboard'
 
-type TabMode = 'today' | 'trainer' | 'exercises'
+type TabMode = 'today' | 'trainer' | 'progress' | 'exercises'
 
 interface EnrollmentData {
   currentWeek: number
@@ -165,6 +167,7 @@ export function VisionTraining() {
       icon: Play
     },
     { id: 'trainer' as TabMode, label: 'Focus Training', icon: Eye },
+    ...(isEnrolled ? [{ id: 'progress' as TabMode, label: 'Progress', icon: TrendingUp }] : []),
     { id: 'exercises' as TabMode, label: 'Vision Library', icon: BookOpen },
   ]
 
@@ -480,8 +483,13 @@ export function VisionTraining() {
                       }}
                     />
                   </div>
-                ) : null}
+            ) : null}
               </div>
+            )}
+
+            {/* PROGRESS TAB */}
+            {activeTab === 'progress' && isEnrolled && (
+              <ProgressDashboard />
             )}
 
             {/* VISION LIBRARY TAB (renamed from Quick Exercises) */}
