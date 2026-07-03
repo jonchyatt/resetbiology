@@ -24,6 +24,12 @@ interface VisionSession {
   createdAt: string
 }
 
+function formatTrainingDistance(distanceCm: number) {
+  const rounded = Math.round(distanceCm)
+  if (rounded > 100) return '100 cm cap'
+  return `${rounded} cm`
+}
+
 export default function ProgressDashboard() {
   const [progress, setProgress] = useState<VisionProgress[]>([])
   const [recentSessions, setRecentSessions] = useState<VisionSession[]>([])
@@ -117,7 +123,7 @@ export default function ProgressDashboard() {
               <div className="flex justify-between items-center">
                 <span className="text-gray-400">Best Distance:</span>
                 <span className="text-secondary-400 font-semibold">
-                  {nearProgress.maxDistanceCm} cm
+                  {formatTrainingDistance(nearProgress.maxDistanceCm)}
                 </span>
               </div>
               <div className="flex justify-between items-center">
@@ -155,7 +161,7 @@ export default function ProgressDashboard() {
               <div className="flex justify-between items-center">
                 <span className="text-gray-400">Best Distance:</span>
                 <span className="text-secondary-400 font-semibold">
-                  {(farProgress.maxDistanceCm / 100).toFixed(1)} m
+                  {formatTrainingDistance(farProgress.maxDistanceCm)}
                 </span>
               </div>
               <div className="flex justify-between items-center">
@@ -208,9 +214,7 @@ export default function ProgressDashboard() {
                   </div>
                   <p className="text-xs text-gray-400">
                     {new Date(session.createdAt).toLocaleString()} • {
-                      session.visionType === 'near'
-                        ? `${session.distanceCm} cm`
-                        : `${(session.distanceCm / 100).toFixed(1)} m`
+                      formatTrainingDistance(session.distanceCm)
                     }
                   </p>
                 </div>

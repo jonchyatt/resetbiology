@@ -1,6 +1,6 @@
 'use client'
 
-import { Ruler, Monitor, Smartphone } from 'lucide-react'
+import { Monitor, Ruler, Smartphone } from 'lucide-react'
 
 interface DistanceGuidanceProps {
   targetDistanceCm: number
@@ -8,26 +8,26 @@ interface DistanceGuidanceProps {
   deviceMode?: 'phone' | 'desktop'
 }
 
-// Simple distance guidance (text-only) so users know how to position themselves.
 export default function DistanceGuidance({
   targetDistanceCm,
   visionType,
   deviceMode = 'phone'
 }: DistanceGuidanceProps) {
+  const recommendedRange = deviceMode === 'phone' ? '20-60 cm' : '60-100 cm'
+
   const getDistanceDescription = () => {
     if (deviceMode === 'phone') {
       if (targetDistanceCm <= 25) return "Close - about a hand's length away"
-      if (targetDistanceCm <= 40) return "Comfortable reading distance"
-      if (targetDistanceCm <= 60) return "Extended arm's length - push the blur"
-      return "Maximum arm's reach - challenge your edge of clarity"
+      if (targetDistanceCm <= 40) return 'Comfortable reading distance'
+      return "Extended arm's length - push the blur"
     }
-    // Desktop mode
-    if (targetDistanceCm <= 60) return "Close desktop viewing"
-    if (targetDistanceCm <= 80) return "Normal desk distance"
-    return "Extended desk distance - lean back slightly"
+
+    if (targetDistanceCm <= 60) return 'Close desktop viewing'
+    if (targetDistanceCm <= 80) return 'Normal desk distance'
+    return 'Extended desk distance - stay within reach'
   }
 
-  const isPhoneAppropriate = visionType === 'near' || targetDistanceCm <= 100
+  const isPhoneAppropriate = deviceMode !== 'phone' || targetDistanceCm <= 60
 
   return (
     <div className="bg-gray-900/40 border border-primary-400/30 rounded-lg p-4 shadow-inner">
@@ -37,7 +37,7 @@ export default function DistanceGuidance({
           <span className="text-white font-semibold">Distance Guide</span>
         </div>
         <div className="text-xl font-bold text-secondary-400">
-          {visionType === 'near' ? `${targetDistanceCm} cm` : `${(targetDistanceCm / 100).toFixed(1)} m`}
+          {targetDistanceCm} cm
         </div>
       </div>
 
@@ -73,16 +73,17 @@ export default function DistanceGuidance({
             <span>Consider switching to Desktop mode</span>
           </div>
           <p className="text-yellow-200/70 mt-1 text-xs">
-            Larger screens work better for advanced distance training.
+            Larger screens work better when training beyond arm's length.
           </p>
         </div>
       )}
 
       <div className="mt-3 text-xs text-gray-400 space-y-1">
-        <p>• Hold your {deviceMode === 'phone' ? 'phone' : 'screen'} at the distance shown above</p>
-        <p>• Keep your head still, move only your eyes</p>
-        <p>• Blink naturally between attempts</p>
-        <p>• Find your "edge of clarity" - where text is just barely readable</p>
+        <p>- Hold your {deviceMode === 'phone' ? 'phone' : 'screen'} at the distance shown above.</p>
+        <p>- Recommended {deviceMode === 'phone' ? 'phone' : 'desktop'} range: {recommendedRange}.</p>
+        <p>- Keep your head still, move only your eyes.</p>
+        <p>- Blink naturally between attempts.</p>
+        <p>- Find your edge of clarity, where text is just barely readable.</p>
       </div>
     </div>
   )

@@ -192,7 +192,7 @@ export const visionExercises: VisionExercise[] = [
     focus: ['gait', 'vision'],
     equipment: ['Printed/onscreen chart'],
     checkpoints: [
-      'Start 2 m from chart, heel-to-toe walk toward/away.',
+      'Start 60-100 cm from the chart, heel-to-toe walk toward/away within reach.',
       'Read next lower line each step.',
       'Switch to E-directional cues midday to vary stimulus.',
     ],
@@ -232,7 +232,7 @@ export const visionExercises: VisionExercise[] = [
       'Change symbol size (large > small) each minute.',
     ],
     guidance: [
-      { heading: 'Distance layering', detail: 'Alternate near (40 cm) vs. far (2 m) projections every loop.' },
+      { heading: 'Distance layering', detail: 'Alternate near (40 cm) vs. desk-distance (90 cm) projections every loop.' },
     ],
     progression: 'Add light head nods on the vertical midline after week 2.',
   },
