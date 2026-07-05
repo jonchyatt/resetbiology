@@ -12,6 +12,7 @@ import {
   setPianoVolume,
   isWithinToneSuppressionWindow,
 } from './audioEngine'
+import { NOTE_COLORS } from '@/lib/fsrs'
 
 const W = 720
 const H = 405
@@ -109,6 +110,18 @@ interface Bolt {
   maxLife: number
 }
 
+type BurstKind = 'strike' | 'kill'
+
+interface Burst {
+  x: number
+  y: number
+  hue: number
+  kind: BurstKind
+  seed: number
+  life: number
+  maxLife: number
+}
+
 interface TrailPoint {
   at: number
   deviation: number
@@ -127,6 +140,7 @@ interface WavePlan {
 interface Runtime {
   villagers: Villager[]
   bolts: Bolt[]
+  bursts: Burst[]
   wave: number
   health: number
   score: number
@@ -178,6 +192,12 @@ interface Pf3DebugState {
   lockWhileSuppressed: boolean
   tutorialAvailable: boolean
   healthPips: number
+  burstCount: number
+  lastStrikeNote: string | null
+  lastStrikeHue: number | null
+  lastKillNote: string | null
+  lastKillHue: number | null
+  roarFiredCount: number
 }
 
 declare global {
@@ -283,6 +303,7 @@ function makeInitialRuntime(demo: boolean): Runtime {
   return {
     villagers: [],
     bolts: [],
+    bursts: [],
     wave: 1,
     health: STARTING_HEALTH,
     score: 0,
@@ -312,11 +333,15 @@ function clamp(value: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, value))
 }
 
+function hueForNote(note: string | undefined): number {
+  return note ? (NOTE_COLORS[note]?.hue ?? 0) : 0
+}
+
 function pitchDeviationSemis(source: PitchInfo, targetNote: string): number {
   return octaveFoldedCents(source.frequency, noteToFreq(targetNote)) / 100
 }
 
-function localSfx(kind: 'strike' | 'ash' | 'hurt', volumePct: number) {
+function localSfx(kind: 'strike' | 'ash' | 'hurt' | 'roar', volumePct: number) {
   if (typeof window === 'undefined') return
   const AudioCtor = window.AudioContext || (window as any).webkitAudioContext
   if (!AudioCtor) return
@@ -325,6 +350,7 @@ function localSfx(kind: 'strike' | 'ash' | 'hurt', volumePct: number) {
   master.gain.value = Math.max(0, Math.min(2, volumePct / 100))
   master.connect(ctx.destination)
   const now = ctx.currentTime
+  let closeAfterMs = 450
 
   if (kind === 'strike') {
     const osc = ctx.createOscillator()
@@ -350,6 +376,56 @@ function localSfx(kind: 'strike' | 'ash' | 'hurt', volumePct: number) {
     gain.connect(master)
     osc.start(now)
     osc.stop(now + 0.31)
+  } else if (kind === 'roar') {
+    closeAfterMs = 780
+    const low = ctx.createOscillator()
+    const detuned = ctx.createOscillator()
+    const filter = ctx.createBiquadFilter()
+    const growl = ctx.createGain()
+
+    low.type = 'sawtooth'
+    low.frequency.setValueAtTime(92, now)
+    low.frequency.exponentialRampToValueAtTime(58, now + 0.56)
+    detuned.type = 'sawtooth'
+    detuned.frequency.setValueAtTime(77, now)
+    detuned.frequency.exponentialRampToValueAtTime(51, now + 0.58)
+    detuned.detune.setValueAtTime(-18, now)
+    filter.type = 'lowpass'
+    filter.frequency.setValueAtTime(480, now)
+    filter.frequency.exponentialRampToValueAtTime(145, now + 0.58)
+    filter.Q.value = 2.5
+    growl.gain.setValueAtTime(0.001, now)
+    growl.gain.linearRampToValueAtTime(0.18, now + 0.045)
+    growl.gain.exponentialRampToValueAtTime(0.001, now + 0.6)
+
+    low.connect(filter)
+    detuned.connect(filter)
+    filter.connect(growl)
+    growl.connect(master)
+    low.start(now)
+    detuned.start(now)
+    low.stop(now + 0.62)
+    detuned.stop(now + 0.62)
+
+    const noiseBuffer = ctx.createBuffer(1, Math.floor(ctx.sampleRate * 0.16), ctx.sampleRate)
+    const data = noiseBuffer.getChannelData(0)
+    for (let i = 0; i < data.length; i++) {
+      const fade = 1 - i / data.length
+      data[i] = (Math.random() * 2 - 1) * fade
+    }
+    const noise = ctx.createBufferSource()
+    const noiseFilter = ctx.createBiquadFilter()
+    const noiseGain = ctx.createGain()
+    noise.buffer = noiseBuffer
+    noiseFilter.type = 'bandpass'
+    noiseFilter.frequency.setValueAtTime(170, now)
+    noiseFilter.Q.value = 0.8
+    noiseGain.gain.setValueAtTime(0.07, now)
+    noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.14)
+    noise.connect(noiseFilter)
+    noiseFilter.connect(noiseGain)
+    noiseGain.connect(master)
+    noise.start(now)
   } else {
     const osc = ctx.createOscillator()
     const gain = ctx.createGain()
@@ -364,7 +440,7 @@ function localSfx(kind: 'strike' | 'ash' | 'hurt', volumePct: number) {
     osc.stop(now + 0.19)
   }
 
-  window.setTimeout(() => ctx.close().catch(() => {}), 450)
+  window.setTimeout(() => ctx.close().catch(() => {}), closeAfterMs)
 }
 
 export default function PitchforksIII() {
@@ -389,6 +465,11 @@ export default function PitchforksIII() {
   const lastResetReasonRef = useRef<Pf3ResetReason>(null)
   const burnedTinesRef = useRef(0)
   const ashCountRef = useRef(0)
+  const lastStrikeNoteRef = useRef<string | null>(null)
+  const lastStrikeHueRef = useRef<number | null>(null)
+  const lastKillNoteRef = useRef<string | null>(null)
+  const lastKillHueRef = useRef<number | null>(null)
+  const roarFiredCountRef = useRef(0)
   const fullSequenceCompleteRef = useRef(false)
   const phaseRef = useRef<Phase>('menu')
   const cueVolumeRef = useRef(100)
@@ -664,6 +745,12 @@ export default function PitchforksIII() {
         lockWhileSuppressed: lockWhileSuppressedRef.current,
         tutorialAvailable: true,
         healthPips: rt.health,
+        burstCount: rt.bursts.length,
+        lastStrikeNote: lastStrikeNoteRef.current,
+        lastStrikeHue: lastStrikeHueRef.current,
+        lastKillNote: lastKillNoteRef.current,
+        lastKillHue: lastKillHueRef.current,
+        roarFiredCount: roarFiredCountRef.current,
       })
     }
     const hook = Object.freeze({ getState })
@@ -747,10 +834,30 @@ export default function PitchforksIII() {
     })
   }, [])
 
+  const addBurst = useCallback((villager: Villager, hue: number, kind: BurstKind) => {
+    const meta = assetsRef.current.villagerMeta[villager.totalTines]
+    const sw = meta.frame_w * SPRITE_SCALE
+    const sh = meta.frame_h * SPRITE_SCALE
+    runtimeRef.current.bursts.push({
+      x: villager.x + sw / 2,
+      y: villager.y + sh / 2,
+      hue,
+      kind,
+      seed: (villager.id * 37 + villager.burned * 19 + hue * 3 + (kind === 'kill' ? 137 : 0)) % 997,
+      life: 0,
+      maxLife: kind === 'kill' ? 0.58 : 0.26,
+    })
+  }, [])
+
   const strikeActiveTine = useCallback((target: NonNullable<ReturnType<typeof getActiveTarget>>) => {
     const rt = runtimeRef.current
     const { villager, tineIndex } = target
+    const strikeNote = target.note ?? villager.notes[villager.burned]
+    const strikeHue = hueForNote(strikeNote)
+    lastStrikeNoteRef.current = strikeNote ?? null
+    lastStrikeHueRef.current = strikeHue
     addBolt(villager, tineIndex)
+    addBurst(villager, strikeHue, 'strike')
     villager.burned += 1
     burnedTinesRef.current += 1
     lockHeldMsRef.current = 0
@@ -771,14 +878,19 @@ export default function PitchforksIII() {
       rt.streak += 1
       const comboMult = rt.streak >= 10 ? 3 : rt.streak >= 5 ? 2 : 1
       rt.score += (100 + villager.totalTines * 20) * comboMult
+      lastKillNoteRef.current = strikeNote ?? null
+      lastKillHueRef.current = strikeHue
+      addBurst(villager, strikeHue, 'kill')
       localSfx('ash', sfxVolumeRef.current)
+      localSfx('roar', sfxVolumeRef.current)
+      roarFiredCountRef.current += 1
       setHud({ wave: rt.wave, health: rt.health, score: rt.score, streak: rt.streak })
     } else {
       const nextNote = villager.notes[villager.burned]
       if (nextNote) setPromptText(`Now: ${nextNote}`)
     }
     if (firstLockGraceRef.current) firstLockGraceRef.current = false
-  }, [addBolt, matchingSuppressedNow, setPromptText])
+  }, [addBolt, addBurst, matchingSuppressedNow, setPromptText])
 
   const demoPitchForTarget = useCallback((target: NonNullable<ReturnType<typeof getActiveTarget>>, now: number): PitchInfo | null => {
     if (demoTargetRef.current !== target.key) {
@@ -948,6 +1060,10 @@ export default function PitchforksIII() {
       rt.bolts[i].life += dt
       if (rt.bolts[i].life >= rt.bolts[i].maxLife) rt.bolts.splice(i, 1)
     }
+    for (let i = rt.bursts.length - 1; i >= 0; i--) {
+      rt.bursts[i].life += dt
+      if (rt.bursts[i].life >= rt.bursts[i].maxLife) rt.bursts.splice(i, 1)
+    }
 
     processLock(dt)
     const timersPaused = timersPausedNow()
@@ -1011,6 +1127,49 @@ export default function PitchforksIII() {
     ctx.beginPath()
     ctx.arc(b.toX, b.toY, 5 + 10 * t, 0, Math.PI * 2)
     ctx.fill()
+    ctx.restore()
+  }, [])
+
+  const drawBurst = useCallback((ctx: CanvasRenderingContext2D, b: Burst) => {
+    const progress = clamp(b.life / b.maxLife, 0, 1)
+    const fade = Math.max(0, 1 - progress)
+    const ease = 1 - Math.pow(1 - progress, 3)
+    const kill = b.kind === 'kill'
+    const radius = kill ? 18 + ease * 58 : 9 + ease * 24
+    const flashAlpha = kill ? 0.46 * fade : 0.28 * fade
+
+    ctx.save()
+    ctx.globalCompositeOperation = 'screen'
+    const gradient = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, radius)
+    gradient.addColorStop(0, `hsla(${b.hue}, 100%, 70%, ${flashAlpha})`)
+    gradient.addColorStop(0.42, `hsla(${b.hue}, 95%, 52%, ${flashAlpha * 0.5})`)
+    gradient.addColorStop(1, `hsla(${b.hue}, 90%, 45%, 0)`)
+    ctx.fillStyle = gradient
+    ctx.beginPath()
+    ctx.arc(b.x, b.y, radius, 0, Math.PI * 2)
+    ctx.fill()
+
+    ctx.globalAlpha = fade
+    ctx.strokeStyle = `hsla(${b.hue}, 100%, ${kill ? 68 : 62}%, ${kill ? 0.82 : 0.58})`
+    ctx.lineWidth = kill ? 3 : 1.8
+    ctx.beginPath()
+    ctx.arc(b.x, b.y, radius * (kill ? 0.76 : 0.62), 0, Math.PI * 2)
+    ctx.stroke()
+
+    const sparkCount = kill ? 10 : 5
+    for (let i = 0; i < sparkCount; i++) {
+      const turn = (i / sparkCount) * Math.PI * 2 + b.seed * 0.019
+      const spread = (kill ? 28 : 15) * ease * (0.82 + ((b.seed + i * 23) % 17) / 60)
+      const sx = b.x + Math.cos(turn) * spread
+      const sy = b.y + Math.sin(turn) * spread * 0.72
+      const tail = kill ? 8 : 4
+      ctx.strokeStyle = `hsla(${b.hue}, 100%, 72%, ${fade * (kill ? 0.9 : 0.62)})`
+      ctx.lineWidth = kill ? 2 : 1.2
+      ctx.beginPath()
+      ctx.moveTo(sx - Math.cos(turn) * tail, sy - Math.sin(turn) * tail * 0.72)
+      ctx.lineTo(sx, sy)
+      ctx.stroke()
+    }
     ctx.restore()
   }, [])
 
@@ -1259,6 +1418,7 @@ export default function PitchforksIII() {
 
     const ordered = [...rt.villagers].sort((x, y) => x.y - y.y)
     for (const v of ordered) drawVillager(ctx, v)
+    for (const burst of rt.bursts) drawBurst(ctx, burst)
     for (const bolt of rt.bolts) drawBolt(ctx, bolt)
 
     if (rt.bannerTimer > 0) {
@@ -1302,7 +1462,7 @@ export default function PitchforksIII() {
       ctx.stroke()
     }
     drawPitchBar(ctx)
-  }, [drawBolt, drawPitchBar, drawVillager, getActiveTarget])
+  }, [drawBolt, drawBurst, drawPitchBar, drawVillager, getActiveTarget])
 
   const loop = useCallback((ts: number) => {
     if (phaseRef.current !== 'playing') return
@@ -1333,6 +1493,11 @@ export default function PitchforksIII() {
     lastResetReasonRef.current = null
     burnedTinesRef.current = 0
     ashCountRef.current = 0
+    lastStrikeNoteRef.current = null
+    lastStrikeHueRef.current = null
+    lastKillNoteRef.current = null
+    lastKillHueRef.current = null
+    roarFiredCountRef.current = 0
     fullSequenceCompleteRef.current = false
     lockHeldMsRef.current = 0
     lockProgressRef.current = 0
