@@ -148,6 +148,8 @@ interface HudState {
   streak: number
 }
 
+type MicHudState = 'demo' | 'cue' | 'listening' | 'waiting' | 'blocked'
+
 type Pf3ResetReason = 'confident-wrong' | 'silence' | null
 
 interface Pf3DebugState {
@@ -407,6 +409,7 @@ export default function PitchforksIII() {
   const barVisibleRef = useRef(false)
   const activeVillagerIdRef = useRef<number | null>(null)
   const lockWhileSuppressedRef = useRef(false)
+  const micHudStateRef = useRef<MicHudState>('waiting')
 
   const [phase, setPhase] = useState<Phase>('menu')
   const [assetsReady, setAssetsReady] = useState(false)
@@ -417,6 +420,7 @@ export default function PitchforksIII() {
   const [cueVolume, setCueVolume] = useState(100)
   const [sfxVolume, setSfxVolume] = useState(100)
   const [demoMode, setDemoMode] = useState(false)
+  const [micHudState, setMicHudState] = useState<MicHudState>('waiting')
 
   const { isListening, pitch, pitchRef, startListening, stopListening, error: micError } = usePitchDetection({ noiseGateDb: -45 })
 
@@ -532,6 +536,33 @@ export default function PitchforksIII() {
 
   const matchingSuppressedNow = useCallback(() => {
     return performance.now() < matchingSuppressedUntilRef.current || isWithinToneSuppressionWindow()
+  }, [])
+
+  const syncMicHudState = useCallback(() => {
+    const next: MicHudState = demoRef.current
+      ? 'demo'
+      : micErrorRef.current
+        ? 'blocked'
+        : matchingSuppressedNow()
+          ? 'cue'
+          : isListeningRef.current
+            ? 'listening'
+            : 'waiting'
+    if (micHudStateRef.current !== next) {
+      micHudStateRef.current = next
+      setMicHudState(next)
+    }
+  }, [matchingSuppressedNow])
+
+  useEffect(() => {
+    syncMicHudState()
+  }, [isListening, micError, syncMicHudState])
+
+  const resumeCueAudioFromGesture = useCallback(() => {
+    try {
+      initAudio()
+      setPianoVolume(cueVolumeRef.current)
+    } catch {}
   }, [])
 
   const timersPausedNow = useCallback(() => {
@@ -1282,13 +1313,13 @@ export default function PitchforksIII() {
     const dt = lastTimeRef.current ? Math.min(0.05, (ts - lastTimeRef.current) / 1000) : 0
     lastTimeRef.current = ts
     updateGame(dt)
+    syncMicHudState()
     render(ctx)
     if (!runtimeRef.current.gameOver) rafRef.current = requestAnimationFrame(loop)
-  }, [render, updateGame])
+  }, [render, syncMicHudState, updateGame])
 
   const startGame = useCallback(async () => {
-    initAudio()
-    setPianoVolume(cueVolumeRef.current)
+    resumeCueAudioFromGesture()
     clearCueTimers()
     runtimeRef.current = makeInitialRuntime(demoRef.current)
     nextIdRef.current = 0
@@ -1314,6 +1345,8 @@ export default function PitchforksIII() {
     barOnTargetRef.current = false
     barVisibleRef.current = false
     lockWhileSuppressedRef.current = false
+    micHudStateRef.current = demoRef.current ? 'demo' : 'waiting'
+    setMicHudState(micHudStateRef.current)
     setHud({ wave: 1, health: STARTING_HEALTH, score: 0, streak: 0 })
     if (!demoRef.current) {
       await startListening()
@@ -1323,13 +1356,15 @@ export default function PitchforksIII() {
     lastTimeRef.current = 0
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
     rafRef.current = requestAnimationFrame(loop)
-  }, [clearCueTimers, loop, startListening])
+  }, [clearCueTimers, loop, resumeCueAudioFromGesture, startListening])
 
   const quitToMenu = useCallback(() => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
     clearCueTimers()
     phaseRef.current = 'menu'
     stopListening()
+    micHudStateRef.current = 'waiting'
+    setMicHudState('waiting')
     setPhase('menu')
   }, [clearCueTimers, stopListening])
 
@@ -1339,7 +1374,34 @@ export default function PitchforksIII() {
     stopListening()
   }, [clearCueTimers, stopListening])
 
-  const hearingActive = demoMode ? !!demoPitchRef.current?.isActive : !!pitch?.isActive
+  const micHudView: Record<MicHudState, { label: string; className: string; dotClassName: string }> = {
+    demo: {
+      label: 'Demo mode',
+      className: 'border-cyan-500/50 text-cyan-100 bg-cyan-950/45',
+      dotClassName: 'bg-cyan-300',
+    },
+    cue: {
+      label: 'Cue...',
+      className: 'border-amber-500/60 text-amber-100 bg-amber-950/45',
+      dotClassName: 'bg-amber-300 animate-pulse',
+    },
+    listening: {
+      label: 'Mic listening',
+      className: 'border-green-500/60 text-green-100 bg-green-950/45',
+      dotClassName: pitch?.isActive ? 'bg-green-300 animate-ping' : 'bg-green-500',
+    },
+    waiting: {
+      label: 'Mic waiting',
+      className: 'border-gray-700 text-gray-300 bg-black/35',
+      dotClassName: 'bg-gray-500',
+    },
+    blocked: {
+      label: 'Mic blocked',
+      className: 'border-red-500/60 text-red-100 bg-red-950/45',
+      dotClassName: 'bg-red-400',
+    },
+  }
+  const activeMicHud = micHudView[micHudState]
 
   if (phase === 'menu') {
     return (
@@ -1497,46 +1559,51 @@ export default function PitchforksIII() {
   }
 
   return (
-    <div className="fixed inset-0 bg-black text-gray-100 flex items-center justify-center" style={{ fontFamily: 'monospace' }}>
-      <canvas
-        ref={canvasRef}
-        width={W}
-        height={H}
-        className="w-full h-full max-w-[1280px] max-h-[720px]"
-        style={{ imageRendering: 'pixelated' }}
-      />
-
-      <div className="absolute top-3 left-3 flex items-center gap-3 text-xs bg-black/45 border border-gray-800 px-3 py-2">
-        <span>Score {hud.score}</span>
-        <span>Wave {hud.wave}</span>
-        {hud.streak >= 3 && <span>Combo {hud.streak}x</span>}
-        <span
-          className={`w-3 h-3 rounded-full inline-block ${hearingActive ? 'bg-green-300 animate-ping' : 'bg-gray-600'}`}
-          title="Mic activity"
+    <div className="fixed inset-0 overflow-hidden bg-black text-gray-100 flex flex-col" style={{ fontFamily: 'monospace' }}>
+      <div className="relative flex-1 min-h-0 flex items-center justify-center">
+        <canvas
+          ref={canvasRef}
+          width={W}
+          height={H}
+          className="block w-full h-full max-w-[1280px] max-h-[720px] object-contain"
+          style={{ imageRendering: 'pixelated' }}
         />
+
+        <div className="absolute top-3 left-3 flex flex-wrap items-center gap-2 text-xs bg-black/60 border border-gray-800 px-3 py-2">
+          <span>Score {hud.score}</span>
+          <span>Wave {hud.wave}</span>
+          {hud.streak >= 3 && <span>Combo {hud.streak}x</span>}
+          <span
+            className={`inline-flex min-h-7 items-center gap-2 border px-2 py-1 font-bold ${activeMicHud.className}`}
+            title={activeMicHud.label}
+          >
+            <span className={`h-2.5 w-2.5 rounded-full ${activeMicHud.dotClassName}`} />
+            {activeMicHud.label}
+          </span>
+        </div>
+
+        {demoMode && (
+          <div className="absolute top-3 right-3 text-[11px] font-bold tracking-widest text-cyan-200 bg-black/60 border border-cyan-500/50 px-2 py-1">
+            DEMO
+          </div>
+        )}
       </div>
 
-      {demoMode && (
-        <div className="absolute top-3 right-3 text-[11px] font-bold tracking-widest text-cyan-200 bg-black/45 border border-cyan-500/50 px-2 py-1">
-          DEMO
-        </div>
-      )}
-
-      <div className="absolute bottom-20 left-1/2 -translate-x-1/2 text-center">
+      <div
+        className="w-full shrink-0 bg-[#070914] border-t border-gray-800 flex flex-col items-center gap-2 px-3 pt-3"
+        style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 0.75rem)' }}
+      >
         <button
           onClick={() => {
             const active = getActiveTarget()
             if (active) playVillagerSequence(active.villager, 'replay')
           }}
-          className="px-4 py-2 rounded-lg text-xs font-bold text-yellow-300 border border-yellow-600 active:scale-95 transition-all hover:bg-yellow-600/20"
-          style={{ background: 'rgba(0,0,0,0.5)' }}
+          data-testid="pf3-replay-notes"
+          className="min-h-[44px] w-full max-w-[360px] px-5 py-2 text-sm font-black tracking-widest text-yellow-200 border border-yellow-500 bg-yellow-950/45 active:scale-95 transition-all hover:bg-yellow-900/50"
         >
           🔊 REPLAY NOTES
         </button>
-      </div>
-
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-[min(96vw,760px)] bg-black/55 border border-gray-800 px-3 py-2">
-        <div className="flex flex-wrap items-center justify-center gap-3">
+        <div className="flex w-full max-w-[760px] flex-wrap items-center justify-center gap-2">
           <SettingsRow
             noteNamesOn={noteNamesOn}
             setNoteNamesOn={setNoteNamesOn}
@@ -1548,7 +1615,7 @@ export default function PitchforksIII() {
             setSfxVolume={setSfxVolume}
             compact
           />
-          <button onClick={quitToMenu} className="text-xs text-gray-400 hover:text-gray-100 border border-gray-700 px-2 py-1">
+          <button onClick={quitToMenu} className="min-h-8 text-xs text-gray-300 hover:text-gray-100 border border-gray-700 px-3 py-1">
             Quit
           </button>
         </div>
@@ -1569,7 +1636,7 @@ function SettingsRow(props: {
   compact?: boolean
 }) {
   return (
-    <div className={`flex flex-wrap items-center ${props.compact ? 'gap-2 text-[11px]' : 'gap-3 text-xs'}`}>
+    <div className={`flex max-w-full flex-wrap items-center justify-center ${props.compact ? 'gap-2 text-[11px]' : 'gap-3 text-xs'}`}>
       <button
         onClick={() => props.setNoteNamesOn(!props.noteNamesOn)}
         className={`px-2 py-1 border ${props.noteNamesOn ? 'border-cyan-400 text-cyan-100 bg-cyan-950/40' : 'border-gray-700 text-gray-400'}`}
