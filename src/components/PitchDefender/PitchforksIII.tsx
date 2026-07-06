@@ -43,7 +43,7 @@ const PITCH_BAR_X = 34
 const PITCH_BAR_W = W - PITCH_BAR_X * 2
 
 type Phase = 'menu' | 'tutorial' | 'playing' | 'game_over'
-type TineCount = 2 | 3 | 4
+type TineCount = 1 | 2 | 3 | 4
 type VillagerState = 'waiting' | 'walking' | 'ash'
 
 interface FrankMeta {
@@ -233,11 +233,11 @@ const defaultForkMeta: ForkMeta = {
 function emptyAssets(): Assets {
   return {
     frankMeta: defaultFrankMeta,
-    villagerMeta: { 2: defaultVillagerMeta, 3: defaultVillagerMeta, 4: defaultVillagerMeta },
-    forkMeta: { 2: defaultForkMeta, 3: defaultForkMeta, 4: defaultForkMeta },
-    walkLeft: { 2: undefined, 3: undefined, 4: undefined },
+    villagerMeta: { 1: defaultVillagerMeta, 2: defaultVillagerMeta, 3: defaultVillagerMeta, 4: defaultVillagerMeta },
+    forkMeta: { 1: defaultForkMeta, 2: defaultForkMeta, 3: defaultForkMeta, 4: defaultForkMeta },
+    walkLeft: { 1: undefined, 2: undefined, 3: undefined, 4: undefined },
     burnedLeft: {},
-    ashLeft: { 2: undefined, 3: undefined, 4: undefined },
+    ashLeft: { 1: undefined, 2: undefined, 3: undefined, 4: undefined },
     fork: {},
     forkGlow: {},
   }
@@ -265,29 +265,39 @@ function nameToSemi(name: string): number {
   return (parseInt(match[2], 10) - 4) * 12 + NOTE_NAMES.indexOf(match[1])
 }
 
+// Note pool grows slowly: start with a tiny singable set, add one note per wave.
+function poolForWave(wave: number): string[] {
+  return NOTE_POOL.slice(0, Math.min(NOTE_POOL.length, 3 + Math.max(0, wave - 1)))
+}
 function pickNote(index: number, wave: number): string {
-  return NOTE_POOL[(index * 3 + wave * 2) % NOTE_POOL.length]
+  const pool = poolForWave(wave)
+  return pool[(index * 3 + wave * 2) % pool.length]
 }
 
+// Hand-tuned onboarding — "levels within levels, slow advances." Level 1 is
+// four single notes then one 2-note; tine count climbs one wave at a time.
+const EARLY_WAVES: Record<number, TineCount[]> = {
+  1: [1, 1, 1, 1, 2],
+  2: [1, 1, 2, 2, 2],
+  3: [2, 2, 2, 2, 3],
+  4: [2, 2, 3, 3, 3],
+  5: [2, 3, 3, 3, 4],
+}
 function fixedWaveDirector(wave: number, demo: boolean): WavePlan {
-  // ported shape from Pitchforks.tsx:326-341, adapted to III's tine waves.
-  const speed = Math.min(60, 22 + (wave - 1) * 6)
-  if (wave === 1) {
-    return { wave, count: 3, spawnInterval: demo ? 0.01 : 0, speed, tineCounts: [2, 3, 4] }
+  const speed = Math.min(56, 15 + (wave - 1) * 5)
+  const early = EARLY_WAVES[wave]
+  if (early) {
+    // Spawn one villager at a time so a new player faces a single note, then the next.
+    return { wave, count: early.length, spawnInterval: demo ? 0.01 : Math.max(1.4, 3.2 - (wave - 1) * 0.3), speed, tineCounts: early }
   }
-
-  const count = Math.min(2 + wave, 6)
-  const spawnInterval = Math.max(0.9, 3.1 - (wave - 1) * 0.35)
-  const p4 = Math.min(0.38, 0.2 + (wave - 1) * 0.035)
-  const p2 = Math.max(0.24, 0.5 - (wave - 1) * 0.045)
+  // Wave 6+: probabilistic, slowly harder; 4-tine stays rare.
+  const count = Math.min(4 + Math.floor((wave - 5) / 2), 6)
+  const spawnInterval = demo ? 0.01 : Math.max(0.9, 2.2 - (wave - 6) * 0.15)
+  const p4 = Math.min(0.34, 0.12 + (wave - 6) * 0.03)
   const tineCounts: TineCount[] = []
   for (let i = 0; i < count; i++) {
-    if (wave === 1) {
-      tineCounts.push(([2, 3, 4] as TineCount[])[i % 3])
-      continue
-    }
     const roll = Math.random()
-    tineCounts.push(roll < p2 ? 2 : roll < p2 + (1 - p2 - p4) ? 3 : 4)
+    tineCounts.push(roll < 0.45 ? 2 : roll < 1 - p4 ? 3 : 4)
   }
   return { wave, count, spawnInterval, speed, tineCounts }
 }
@@ -486,6 +496,7 @@ export default function PitchforksIII() {
   const micErrorRef = useRef<string | null>(null)
   const pitchTrailRef = useRef<TrailPoint[]>([])
   const barDotDeviationRef = useRef<number | null>(null)
+  const smoothDevRef = useRef(0)
   const barOnTargetRef = useRef(false)
   const barVisibleRef = useRef(false)
   const activeVillagerIdRef = useRef<number | null>(null)
@@ -552,6 +563,7 @@ export default function PitchforksIII() {
           if (forks.ok) {
             const parsed = await forks.json()
             a.forkMeta = {
+              1: parsed['2tine'] ?? defaultForkMeta,
               2: parsed['2tine'] ?? defaultForkMeta,
               3: parsed['3tine'] ?? defaultForkMeta,
               4: parsed['4tine'] ?? defaultForkMeta,
@@ -574,6 +586,15 @@ export default function PitchforksIII() {
             if (meta.ok) a.villagerMeta[n] = await meta.json()
           } catch {}
         }
+        // 1-tine (single-note) tier reuses 2-tine art for now (real 1-tine sprite = art gate).
+        a.walkLeft[1] = a.walkLeft[2]
+        a.ashLeft[1] = a.ashLeft[2]
+        a.villagerMeta[1] = a.villagerMeta[2]
+        a.forkMeta[1] = a.forkMeta[2]
+        a.fork['1_0'] = a.fork['2_0']
+        a.fork['1_1'] = a.fork['2_1']
+        a.forkGlow['1_0'] = a.forkGlow['2_0']
+        a.forkGlow['1_1'] = a.forkGlow['2_1']
         if (!cancelled) setAssetsReady(true)
       } catch (err) {
         if (!cancelled) setAssetError(err instanceof Error ? err.message : 'Sprite load failed')
@@ -1310,7 +1331,9 @@ export default function PitchforksIII() {
       const onTarget = Math.abs(deviation) <= 1.5
       barDotDeviationRef.current = clampedDeviation
       barOnTargetRef.current = onTarget
-      pitchTrailRef.current.push({ at: now, deviation: clampedDeviation, onTarget, note: source.note })
+      // Ease the readout toward the detected pitch so it glides instead of jittering frame-to-frame.
+      smoothDevRef.current += (clampedDeviation - smoothDevRef.current) * 0.28
+      pitchTrailRef.current.push({ at: now, deviation: smoothDevRef.current, onTarget, note: source.note })
     } else {
       barDotDeviationRef.current = null
       barOnTargetRef.current = false
@@ -1341,7 +1364,7 @@ export default function PitchforksIII() {
     }
 
     if (canUseSource && source) {
-      const dotX = xForDeviation(barDotDeviationRef.current ?? 0)
+      const dotX = xForDeviation(smoothDevRef.current)
       const onTarget = barOnTargetRef.current
       if (onTarget) {
         ctx.fillStyle = 'rgba(74,222,128,0.3)'
