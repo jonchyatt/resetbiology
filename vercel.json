@@ -6,6 +6,10 @@
       "schedule": "*/5 * * * *"
     },
     {
+      "path": "/api/cron/drive-sync-drain",
+      "schedule": "*/5 * * * *"
+    },
+    {
       "path": "/api/notifications/replenish-queue",
       "schedule": "0 2 * * *"
     },

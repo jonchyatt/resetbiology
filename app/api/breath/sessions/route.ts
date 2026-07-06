@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth0 } from '@/lib/auth0'
 import { getUserFromSession } from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma'
-import { syncUserDataForDate } from '@/lib/google-drive'
+import { enqueueDriveSync } from '@/lib/driveSyncQueue'
 
 function startOfDay(date: Date) {
   const d = new Date(date)
@@ -200,10 +200,8 @@ export async function POST(request: NextRequest) {
       durationSeconds: totalDuration / 1000,
     })
 
-    // Sync to Google Drive (non-blocking)
-    syncUserDataForDate(user.id, new Date()).catch(err => {
-      console.error('Drive sync failed:', err)
-    })
+    // Queue Google Drive sync (non-blocking)
+    enqueueDriveSync(user.id, new Date(), ['breath']).catch(err => console.error('Drive enqueue failed:', err))
 
     return NextResponse.json({
       success: true,

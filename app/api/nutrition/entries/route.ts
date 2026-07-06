@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { auth0 } from '@/lib/auth0'
 import { getUserFromSession } from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma'
-import { syncUserDataForDate } from '@/lib/google-drive'
+import { enqueueDriveSync } from '@/lib/driveSyncQueue'
 
 // GET: Load user's food entries
 export async function GET(request: Request) {
@@ -204,10 +204,8 @@ export async function POST(request: Request) {
       }
     }
 
-    // Sync to Google Drive (non-blocking)
-    syncUserDataForDate(user.id, new Date()).catch(err => {
-      console.error('Drive sync failed:', err)
-    })
+    // Queue Google Drive sync (non-blocking)
+    enqueueDriveSync(user.id, new Date(), ['nutrition']).catch(err => console.error('Drive enqueue failed:', err))
 
     return NextResponse.json({
       success: true,

@@ -80,6 +80,22 @@ model User {
   @@map("users")
 }
 
+model DriveSyncOutbox {
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String    @db.ObjectId
+  domain     String    // journal|workouts|nutrition|peptides|breath|vision|nback|dailyTasks|checkins|modules
+  dateStr    String    // YYYY-MM-DD
+  status     String    @default("pending") // pending|inflight|done|failed|user_removed
+  attempts   Int       @default(0)
+  lastError  String?
+  leaseUntil DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@unique([userId, domain, dateStr])
+  @@index([status, leaseUntil, createdAt]) // covers the FIFO claim query (status+lease filter, createdAt sort)
+}
+
 model ClientProgress {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
   userId     String   @db.ObjectId
