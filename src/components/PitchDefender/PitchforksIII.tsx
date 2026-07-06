@@ -167,6 +167,13 @@ interface Runtime {
   firstVillagerId: number | null
 }
 
+interface ActiveTarget {
+  villager: Villager
+  tineIndex: number
+  note: string
+  key: string
+}
+
 interface HudState {
   wave: number
   health: number
@@ -185,6 +192,84 @@ interface NewNoteCeremonyState {
   note: string | null
   toneFired: boolean
 }
+
+type VillagerView = Readonly<{
+  id: number
+  totalTines: TineCount
+  x: number
+  y: number
+  lane: number
+  speed: number
+  notes: ReadonlyArray<string>
+  burned: number
+  state: VillagerState
+  spawnIndex: number
+  attackTimer: number
+  attackTimerMax: number
+  sequenceCued: boolean
+  walkFrame: number
+  ashTimer: number
+  active: boolean
+  displayBurn: number
+  timerPct: number
+}>
+
+type BoltView = Readonly<Bolt>
+type BurstView = Readonly<Burst>
+type TrailPointView = Readonly<TrailPoint>
+
+type ActiveView = Readonly<{
+  villagerId: number
+  tineIndex: number
+  note: string
+  key: string
+}>
+
+type TunerView = Readonly<{
+  visible: boolean
+  now: number
+  targetNote: string | null
+  sourceNote: string | null
+  canUseSource: boolean
+  dotDeviation: number | null
+  renderDeviation: number | null
+  onTarget: boolean
+  trail: ReadonlyArray<TrailPointView>
+}>
+
+type ViewState = Readonly<{
+  phase: Phase
+  animClock: number
+  gameOver: boolean
+  villagers: ReadonlyArray<VillagerView>
+  active: ActiveView | null
+  charge: Readonly<{
+    progress: number
+    level: number
+    tint: string | null
+    charging: boolean
+  }>
+  bolts: ReadonlyArray<BoltView>
+  bursts: ReadonlyArray<BurstView>
+  hud: Readonly<{
+    wave: number
+    health: number
+    score: number
+    streak: number
+  }>
+  waveBanner: Readonly<{
+    visible: boolean
+    timer: number
+  }>
+  prompt: Readonly<{
+    visible: boolean
+    text: string
+  }>
+  noteNamesVisible: boolean
+  timersPaused: boolean
+  tuner: TunerView
+  ceremony: Readonly<NewNoteCeremonyState>
+}>
 
 interface NoteHealthDebug {
   hue: number
@@ -243,6 +328,7 @@ declare global {
   interface Window {
     __pf3?: {
       getState: () => Readonly<Pf3DebugState>
+      readonly viewState: Readonly<ViewState> | null
     }
   }
 }
@@ -442,6 +528,449 @@ function pitchDeviationSemis(source: PitchInfo, targetNote: string): number {
   return octaveFoldedCents(source.frequency, noteToFreq(targetNote)) / 100
 }
 
+type BuildViewStateArgs = Readonly<{
+  runtime: Runtime
+  phase: Phase
+  active: ActiveTarget | null
+  activeVillagerId: number | null
+  activeKey: string
+  chargeProgress: number
+  tint: string | null
+  noteNamesVisible: boolean
+  timersPaused: boolean
+  prompt: string
+  tuner: TunerView
+  ceremony: NewNoteCeremonyState
+}>
+
+function buildViewState(args: BuildViewStateArgs): ViewState {
+  const {
+    runtime,
+    phase,
+    active,
+    activeVillagerId,
+    activeKey,
+    chargeProgress,
+    tint,
+    noteNamesVisible,
+    timersPaused,
+    prompt,
+    tuner,
+    ceremony,
+  } = args
+  const chargeLevel = active
+    ? Math.max(
+        active.villager.burned,
+        Math.min(active.villager.totalTines, Math.round(chargeProgress * active.villager.totalTines)),
+      )
+    : 0
+
+  return {
+    phase,
+    animClock: runtime.animClock,
+    gameOver: runtime.gameOver,
+    villagers: runtime.villagers.map(v => {
+      const isActive = activeVillagerId === v.id || activeKey.startsWith(`${v.id}:`)
+      const displayBurn = isActive
+        ? Math.max(v.burned, Math.min(v.totalTines, Math.round(chargeProgress * v.totalTines)))
+        : v.burned
+      return {
+        id: v.id,
+        totalTines: v.totalTines,
+        x: v.x,
+        y: v.y,
+        lane: v.spawnIndex % 3,
+        speed: v.speed,
+        notes: [...v.notes],
+        burned: v.burned,
+        state: v.state,
+        spawnIndex: v.spawnIndex,
+        attackTimer: v.attackTimer,
+        attackTimerMax: v.attackTimerMax,
+        sequenceCued: v.sequenceCued,
+        walkFrame: v.walkFrame,
+        ashTimer: v.ashTimer,
+        active: isActive,
+        displayBurn,
+        timerPct: clamp(v.attackTimer / Math.max(0.001, v.attackTimerMax), 0, 1),
+      }
+    }),
+    active: active
+      ? {
+          villagerId: active.villager.id,
+          tineIndex: active.tineIndex,
+          note: active.note,
+          key: active.key,
+        }
+      : null,
+    charge: {
+      progress: chargeProgress,
+      level: chargeLevel,
+      tint,
+      charging: chargeProgress > 0 || runtime.bolts.length > 0,
+    },
+    bolts: runtime.bolts.map(b => ({ ...b })),
+    bursts: runtime.bursts.map(b => ({ ...b })),
+    hud: {
+      wave: runtime.wave,
+      health: runtime.health,
+      score: runtime.score,
+      streak: runtime.streak,
+    },
+    waveBanner: {
+      visible: runtime.bannerTimer > 0,
+      timer: runtime.bannerTimer,
+    },
+    prompt: {
+      visible: !!prompt && !!active,
+      text: prompt,
+    },
+    noteNamesVisible,
+    timersPaused,
+    tuner: {
+      ...tuner,
+      trail: tuner.trail.map(point => ({ ...point })),
+    },
+    ceremony: {
+      active: ceremony.active,
+      note: ceremony.note,
+      toneFired: ceremony.toneFired,
+    },
+  }
+}
+
+function freezeViewStateForDebug(view: ViewState, debug: boolean): ViewState {
+  if (debug || process.env.NODE_ENV !== 'production') return Object.freeze(view)
+  return view
+}
+
+function drawBoltView(ctx: CanvasRenderingContext2D, b: BoltView) {
+  const t = 1 - b.life / b.maxLife
+  ctx.save()
+  ctx.globalAlpha = Math.max(0, t)
+  ctx.lineCap = 'round'
+  ctx.lineJoin = 'round'
+  const jitter = () => (Math.random() - 0.5) * 10
+  for (const width of [10, 5, 2]) {
+    ctx.strokeStyle = width === 2 ? '#ffffff' : width === 5 ? '#9fe7ff' : 'rgba(80, 190, 255, 0.32)'
+    ctx.lineWidth = width
+    ctx.beginPath()
+    ctx.moveTo(b.fromX, b.fromY)
+    ctx.lineTo((b.fromX + b.pivotX) / 2 + jitter(), (b.fromY + b.pivotY) / 2 + jitter())
+    ctx.lineTo(b.pivotX, b.pivotY)
+    ctx.lineTo((b.pivotX + b.toX) / 2 + jitter(), (b.pivotY + b.toY) / 2 + jitter())
+    ctx.lineTo(b.toX, b.toY)
+    ctx.stroke()
+  }
+  ctx.fillStyle = 'rgba(255,255,255,0.9)'
+  ctx.beginPath()
+  ctx.arc(b.toX, b.toY, 5 + 10 * t, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.restore()
+}
+
+function drawBurstView(ctx: CanvasRenderingContext2D, b: BurstView) {
+  const progress = clamp(b.life / b.maxLife, 0, 1)
+  const fade = Math.max(0, 1 - progress)
+  const ease = 1 - Math.pow(1 - progress, 3)
+  const kill = b.kind === 'kill'
+  const radius = kill ? 18 + ease * 58 : 9 + ease * 24
+  const flashAlpha = kill ? 0.46 * fade : 0.28 * fade
+
+  ctx.save()
+  ctx.globalCompositeOperation = 'screen'
+  const gradient = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, radius)
+  gradient.addColorStop(0, `hsla(${b.hue}, 100%, 70%, ${flashAlpha})`)
+  gradient.addColorStop(0.42, `hsla(${b.hue}, 95%, 52%, ${flashAlpha * 0.5})`)
+  gradient.addColorStop(1, `hsla(${b.hue}, 90%, 45%, 0)`)
+  ctx.fillStyle = gradient
+  ctx.beginPath()
+  ctx.arc(b.x, b.y, radius, 0, Math.PI * 2)
+  ctx.fill()
+
+  ctx.globalAlpha = fade
+  ctx.strokeStyle = `hsla(${b.hue}, 100%, ${kill ? 68 : 62}%, ${kill ? 0.82 : 0.58})`
+  ctx.lineWidth = kill ? 3 : 1.8
+  ctx.beginPath()
+  ctx.arc(b.x, b.y, radius * (kill ? 0.76 : 0.62), 0, Math.PI * 2)
+  ctx.stroke()
+
+  const sparkCount = kill ? 10 : 5
+  for (let i = 0; i < sparkCount; i++) {
+    const turn = (i / sparkCount) * Math.PI * 2 + b.seed * 0.019
+    const spread = (kill ? 28 : 15) * ease * (0.82 + ((b.seed + i * 23) % 17) / 60)
+    const sx = b.x + Math.cos(turn) * spread
+    const sy = b.y + Math.sin(turn) * spread * 0.72
+    const tail = kill ? 8 : 4
+    ctx.strokeStyle = `hsla(${b.hue}, 100%, 72%, ${fade * (kill ? 0.9 : 0.62)})`
+    ctx.lineWidth = kill ? 2 : 1.2
+    ctx.beginPath()
+    ctx.moveTo(sx - Math.cos(turn) * tail, sy - Math.sin(turn) * tail * 0.72)
+    ctx.lineTo(sx, sy)
+    ctx.stroke()
+  }
+  ctx.restore()
+}
+
+function drawVillagerView(ctx: CanvasRenderingContext2D, v: VillagerView, view: ViewState, assets: Assets) {
+  const meta = assets.villagerMeta[v.totalTines]
+  const sw = meta.frame_w * SPRITE_SCALE
+  const sh = meta.frame_h * SPRITE_SCALE
+  let img: HTMLImageElement | undefined
+  let strip = false
+  if (v.state === 'ash' || v.burned >= v.totalTines) {
+    img = assets.ashLeft[v.totalTines]
+  } else if (v.burned > 0) {
+    img = assets.burnedLeft[`${v.totalTines}_${v.burned}`]
+  } else {
+    img = assets.walkLeft[v.totalTines]
+    strip = true
+  }
+  if (!img) return
+
+  ctx.fillStyle = 'rgba(0,0,0,0.45)'
+  ctx.beginPath()
+  ctx.ellipse(v.x + sw / 2, v.y + sh - 4, sw * 0.38, 5, 0, 0, Math.PI * 2)
+  ctx.fill()
+
+  ctx.imageSmoothingEnabled = false
+  if (strip) {
+    ctx.drawImage(img, v.walkFrame * meta.frame_w, 0, meta.frame_w, meta.frame_h, v.x, v.y, sw, sh)
+  } else {
+    ctx.drawImage(img, v.x, v.y, sw, sh)
+  }
+
+  if (v.state !== 'walking') return
+  const progress = v.active ? view.charge.progress : 0
+  const forkKey = `${v.totalTines}_${v.displayBurn}`
+  const baseImg = assets.fork[forkKey] ?? assets.fork[`${v.totalTines}_${v.burned}`]
+  const glowImg = assets.forkGlow[forkKey] ?? assets.forkGlow[`${v.totalTines}_${v.burned}`]
+  const forkMeta = assets.forkMeta[v.totalTines]
+  const forkW = forkMeta.frame_w * SPRITE_SCALE
+  const forkH = forkMeta.frame_h * SPRITE_SCALE
+  const fx = v.x + (meta.frame_w - meta.fork_base.x) * SPRITE_SCALE - (forkMeta.frame_w - forkMeta.handle_base.x) * SPRITE_SCALE
+  const fy = v.y + meta.fork_base.y * SPRITE_SCALE - forkMeta.handle_base.y * SPRITE_SCALE
+
+  if (baseImg) {
+    ctx.save()
+    ctx.translate(fx + forkW, fy)
+    ctx.scale(-1, 1)
+    ctx.drawImage(baseImg, 0, 0, forkW, forkH)
+    if (v.active && glowImg) {
+      ctx.globalAlpha = 0.25 + progress * 0.75
+      ctx.drawImage(glowImg, 0, 0, forkW, forkH)
+    }
+    ctx.restore()
+  }
+
+  if (v.active && view.charge.tint) {
+    ctx.save()
+    ctx.globalAlpha = 0.48
+    ctx.fillStyle = view.charge.tint
+    ctx.beginPath()
+    ctx.ellipse(fx + forkW / 2, fy + 7, 19 + progress * 12, 18 + progress * 8, 0, 0, Math.PI * 2)
+    ctx.fill()
+    ctx.restore()
+  }
+
+  if (v.active && view.noteNamesVisible) {
+    const note = v.notes[v.burned]
+    ctx.font = 'bold 14px monospace'
+    ctx.textAlign = 'center'
+    const lx = fx + forkW / 2
+    const ly = fy - 7
+    const tw = ctx.measureText(note).width + 12
+    ctx.fillStyle = 'rgba(8, 10, 18, 0.86)'
+    ctx.strokeStyle = view.charge.tint ?? 'rgba(130,210,255,0.62)'
+    ctx.lineWidth = 1
+    ctx.beginPath()
+    ctx.roundRect(lx - tw / 2, ly - 14, tw, 18, 5)
+    ctx.fill()
+    ctx.stroke()
+    ctx.fillStyle = '#f4f7fb'
+    ctx.fillText(note, lx, ly)
+  }
+
+  if (v.active) {
+    // ported from Pitchforks.tsx:576-584, using III's per-villager timer.
+    const barW = 58
+    const barH = 5
+    const bx = v.x + sw / 2 - barW / 2
+    const by = v.y - 25
+    ctx.fillStyle = 'rgba(8, 10, 18, 0.88)'
+    ctx.fillRect(bx, by, barW, barH)
+    ctx.fillStyle = view.timersPaused ? '#7dd3fc' : v.timerPct > 0.3 ? '#fbbf24' : '#ef4444'
+    ctx.fillRect(bx, by, barW * v.timerPct, barH)
+    ctx.strokeStyle = view.timersPaused ? 'rgba(125,211,252,0.85)' : '#555'
+    ctx.lineWidth = 1
+    ctx.strokeRect(bx, by, barW, barH)
+  }
+}
+
+function drawPitchBarView(ctx: CanvasRenderingContext2D, tuner: TunerView) {
+  // ported from Pitchforks.tsx:602-658, with a 1s convergence trail.
+  const centerX = PITCH_BAR_X + PITCH_BAR_W / 2
+  const centerY = PITCH_BAR_Y + PITCH_BAR_H / 2
+  const targetZoneW = PITCH_BAR_W * (3 / 12)
+
+  ctx.fillStyle = 'rgba(20,20,30,0.78)'
+  ctx.fillRect(PITCH_BAR_X, PITCH_BAR_Y, PITCH_BAR_W, PITCH_BAR_H)
+  ctx.strokeStyle = '#333'
+  ctx.lineWidth = 1
+  ctx.strokeRect(PITCH_BAR_X, PITCH_BAR_Y, PITCH_BAR_W, PITCH_BAR_H)
+  ctx.fillStyle = 'rgba(74,222,128,0.16)'
+  ctx.fillRect(centerX - targetZoneW / 2, PITCH_BAR_Y, targetZoneW, PITCH_BAR_H)
+
+  const xForDeviation = (deviation: number) => {
+    const clamped = clamp(deviation, -6, 6)
+    return centerX + (clamped / 6) * (PITCH_BAR_W / 2)
+  }
+
+  const trail = tuner.trail
+  if (trail.length > 1) {
+    for (let i = 1; i < trail.length; i++) {
+      const prev = trail[i - 1]
+      const cur = trail[i]
+      const alpha = clamp(1 - (tuner.now - cur.at) / TRAIL_MS, 0, 1)
+      ctx.strokeStyle = `rgba(125, 211, 252, ${0.08 + alpha * 0.22})`
+      ctx.lineWidth = 2
+      ctx.beginPath()
+      ctx.moveTo(xForDeviation(prev.deviation), centerY)
+      ctx.lineTo(xForDeviation(cur.deviation), centerY)
+      ctx.stroke()
+    }
+  }
+  for (const point of trail) {
+    const alpha = clamp(1 - (tuner.now - point.at) / TRAIL_MS, 0, 1)
+    ctx.fillStyle = point.onTarget
+      ? `rgba(74, 222, 128, ${0.08 + alpha * 0.38})`
+      : `rgba(248, 113, 113, ${0.08 + alpha * 0.34})`
+    ctx.beginPath()
+    ctx.arc(xForDeviation(point.deviation), centerY, 2 + alpha * 2, 0, Math.PI * 2)
+    ctx.fill()
+  }
+
+  if (tuner.canUseSource && tuner.renderDeviation !== null) {
+    const dotX = xForDeviation(tuner.renderDeviation)
+    if (tuner.onTarget) {
+      ctx.fillStyle = 'rgba(74,222,128,0.3)'
+      ctx.beginPath()
+      ctx.arc(dotX, centerY, 11, 0, Math.PI * 2)
+      ctx.fill()
+    }
+    ctx.fillStyle = tuner.onTarget ? '#4ade80' : '#f87171'
+    ctx.beginPath()
+    ctx.arc(dotX, centerY, 5.5, 0, Math.PI * 2)
+    ctx.fill()
+    ctx.font = 'bold 9px monospace'
+    ctx.textAlign = 'center'
+    ctx.fillText(tuner.sourceNote || '', dotX, PITCH_BAR_Y - 4)
+  } else {
+    ctx.fillStyle = '#555'
+    ctx.font = '8px monospace'
+    ctx.textAlign = 'center'
+    ctx.fillText('sing...', centerX, centerY + 3)
+  }
+
+  if (tuner.targetNote) {
+    ctx.fillStyle = '#4ade80'
+    ctx.font = '8px monospace'
+    ctx.textAlign = 'center'
+    ctx.fillText(`target: ${tuner.targetNote}`, centerX, PITCH_BAR_Y + PITCH_BAR_H + 12)
+  }
+}
+
+function renderView(ctx: CanvasRenderingContext2D, view: ViewState, assets: Assets) {
+  const sky = ctx.createLinearGradient(0, 0, 0, H)
+  sky.addColorStop(0, '#070914')
+  sky.addColorStop(0.58, '#171228')
+  sky.addColorStop(1, '#151910')
+  ctx.fillStyle = sky
+  ctx.fillRect(0, 0, W, H)
+
+  ctx.fillStyle = '#283019'
+  ctx.fillRect(0, GROUND_Y, W, H - GROUND_Y)
+  ctx.fillStyle = 'rgba(255,255,255,0.38)'
+  for (let i = 0; i < 34; i++) {
+    ctx.fillRect((i * 89 + 17) % W, (i * 37 + 19) % 155, 1, 1)
+  }
+
+  const frank = view.charge.charging ? assets.frankCharge : assets.frankIdle
+  if (frank) {
+    const fm = assets.frankMeta
+    const frame = Math.floor(view.animClock * (view.charge.charging ? 8 : 4)) % fm.frames
+    ctx.imageSmoothingEnabled = false
+    ctx.drawImage(
+      frank,
+      frame * fm.frame_w,
+      0,
+      fm.frame_w,
+      fm.frame_h,
+      FRANK_X,
+      FRANK_Y,
+      fm.frame_w * SPRITE_SCALE,
+      fm.frame_h * SPRITE_SCALE,
+    )
+    ctx.fillStyle = 'rgba(0,0,0,0.48)'
+    ctx.beginPath()
+    ctx.ellipse(FRANK_X + 48, FRANK_Y + fm.frame_h * SPRITE_SCALE - 7, 35, 6, 0, 0, Math.PI * 2)
+    ctx.fill()
+    // ported from Pitchforks.tsx:518-523; health lives on the monster.
+    for (let i = 0; i < STARTING_HEALTH; i++) {
+      ctx.fillStyle = i < view.hud.health ? '#4ade80' : '#333'
+      ctx.fillRect(FRANK_X + 7 + i * 13, FRANK_Y - 8, 10, 4)
+    }
+  }
+
+  const ordered = [...view.villagers].sort((x, y) => x.y - y.y)
+  for (const v of ordered) drawVillagerView(ctx, v, view, assets)
+  for (const burst of view.bursts) drawBurstView(ctx, burst)
+  for (const bolt of view.bolts) drawBoltView(ctx, bolt)
+
+  if (view.waveBanner.visible) {
+    const alpha = Math.min(1, view.waveBanner.timer / 0.35)
+    ctx.save()
+    ctx.globalAlpha = alpha
+    ctx.fillStyle = 'rgba(0,0,0,0.44)'
+    ctx.fillRect(0, 150, W, 72)
+    ctx.fillStyle = '#f6f8ff'
+    ctx.font = 'bold 30px monospace'
+    ctx.textAlign = 'center'
+    ctx.fillText(`WAVE ${view.hud.wave}`, W / 2, 195)
+    ctx.restore()
+  }
+
+  if (view.hud.streak >= 3) {
+    ctx.fillStyle = view.hud.streak >= 10 ? '#ff6090' : '#ffc83c'
+    ctx.font = 'bold 14px monospace'
+    ctx.textAlign = 'center'
+    ctx.fillText(`${view.hud.streak}x COMBO`, W / 2, 18)
+  }
+
+  if (view.prompt.visible) {
+    ctx.fillStyle = '#f4f7fb'
+    ctx.font = 'bold 15px monospace'
+    ctx.textAlign = 'center'
+    ctx.fillText(view.prompt.text, W / 2, 40)
+  }
+
+  if (view.active) {
+    const villager = view.villagers.find(v => v.id === view.active?.villagerId)
+    if (villager) {
+      const meta = assets.villagerMeta[villager.totalTines]
+      const tine = meta.tines[Math.max(0, Math.min(view.active.tineIndex, meta.tines.length - 1))]
+      const x = villager.x + (meta.frame_w - tine.x) * SPRITE_SCALE
+      const y = villager.y + tine.y * SPRITE_SCALE
+      ctx.strokeStyle = view.charge.tint ?? 'rgba(160,210,255,0.62)'
+      ctx.lineWidth = 1.5
+      ctx.beginPath()
+      ctx.arc(x, y, 12 + view.charge.progress * 8, 0, Math.PI * 2)
+      ctx.stroke()
+    }
+  }
+  drawPitchBarView(ctx, view.tuner)
+}
+
 function localSfx(kind: 'strike' | 'ash' | 'hurt' | 'roar', volumePct: number) {
   if (typeof window === 'undefined') return
   const AudioCtor = window.AudioContext || (window as any).webkitAudioContext
@@ -604,6 +1133,7 @@ export default function PitchforksIII() {
   const activeVillagerIdRef = useRef<number | null>(null)
   const lockWhileSuppressedRef = useRef(false)
   const micHudStateRef = useRef<MicHudState>('waiting')
+  const viewStateRef = useRef<ViewState | null>(null)
 
   const [phase, setPhase] = useState<Phase>('menu')
   const [assetsReady, setAssetsReady] = useState(false)
@@ -762,7 +1292,7 @@ export default function PitchforksIII() {
     return walkers[0]
   }, [])
 
-  const getActiveTarget = useCallback(() => {
+  const getActiveTarget = useCallback((): ActiveTarget | null => {
     const villager = getActiveVillager()
     if (!villager) return null
     const tineIndex = villager.totalTines - 1 - villager.burned
@@ -1106,7 +1636,14 @@ export default function PitchforksIII() {
       saveFsrs()
       return { unlockedCount: unlockedNotesRef.current.length, notes: [...unlockedNotesRef.current] }
     }
-    const hook = Object.freeze({ getState, review, resetDebug })
+    const hook = Object.freeze({
+      getState,
+      get viewState() {
+        return viewStateRef.current
+      },
+      review,
+      resetDebug,
+    })
 
     Object.defineProperty(window, '__pf3', {
       configurable: true,
@@ -1485,192 +2022,10 @@ export default function PitchforksIII() {
     }
   }, [getActiveTarget, processLock, reviewTargetNote, setPromptText, spawnVillager, startWave, timersPausedNow])
 
-  const drawBolt = useCallback((ctx: CanvasRenderingContext2D, b: Bolt) => {
-    const t = 1 - b.life / b.maxLife
-    ctx.save()
-    ctx.globalAlpha = Math.max(0, t)
-    ctx.lineCap = 'round'
-    ctx.lineJoin = 'round'
-    const jitter = () => (Math.random() - 0.5) * 10
-    for (const width of [10, 5, 2]) {
-      ctx.strokeStyle = width === 2 ? '#ffffff' : width === 5 ? '#9fe7ff' : 'rgba(80, 190, 255, 0.32)'
-      ctx.lineWidth = width
-      ctx.beginPath()
-      ctx.moveTo(b.fromX, b.fromY)
-      ctx.lineTo((b.fromX + b.pivotX) / 2 + jitter(), (b.fromY + b.pivotY) / 2 + jitter())
-      ctx.lineTo(b.pivotX, b.pivotY)
-      ctx.lineTo((b.pivotX + b.toX) / 2 + jitter(), (b.pivotY + b.toY) / 2 + jitter())
-      ctx.lineTo(b.toX, b.toY)
-      ctx.stroke()
-    }
-    ctx.fillStyle = 'rgba(255,255,255,0.9)'
-    ctx.beginPath()
-    ctx.arc(b.toX, b.toY, 5 + 10 * t, 0, Math.PI * 2)
-    ctx.fill()
-    ctx.restore()
-  }, [])
-
-  const drawBurst = useCallback((ctx: CanvasRenderingContext2D, b: Burst) => {
-    const progress = clamp(b.life / b.maxLife, 0, 1)
-    const fade = Math.max(0, 1 - progress)
-    const ease = 1 - Math.pow(1 - progress, 3)
-    const kill = b.kind === 'kill'
-    const radius = kill ? 18 + ease * 58 : 9 + ease * 24
-    const flashAlpha = kill ? 0.46 * fade : 0.28 * fade
-
-    ctx.save()
-    ctx.globalCompositeOperation = 'screen'
-    const gradient = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, radius)
-    gradient.addColorStop(0, `hsla(${b.hue}, 100%, 70%, ${flashAlpha})`)
-    gradient.addColorStop(0.42, `hsla(${b.hue}, 95%, 52%, ${flashAlpha * 0.5})`)
-    gradient.addColorStop(1, `hsla(${b.hue}, 90%, 45%, 0)`)
-    ctx.fillStyle = gradient
-    ctx.beginPath()
-    ctx.arc(b.x, b.y, radius, 0, Math.PI * 2)
-    ctx.fill()
-
-    ctx.globalAlpha = fade
-    ctx.strokeStyle = `hsla(${b.hue}, 100%, ${kill ? 68 : 62}%, ${kill ? 0.82 : 0.58})`
-    ctx.lineWidth = kill ? 3 : 1.8
-    ctx.beginPath()
-    ctx.arc(b.x, b.y, radius * (kill ? 0.76 : 0.62), 0, Math.PI * 2)
-    ctx.stroke()
-
-    const sparkCount = kill ? 10 : 5
-    for (let i = 0; i < sparkCount; i++) {
-      const turn = (i / sparkCount) * Math.PI * 2 + b.seed * 0.019
-      const spread = (kill ? 28 : 15) * ease * (0.82 + ((b.seed + i * 23) % 17) / 60)
-      const sx = b.x + Math.cos(turn) * spread
-      const sy = b.y + Math.sin(turn) * spread * 0.72
-      const tail = kill ? 8 : 4
-      ctx.strokeStyle = `hsla(${b.hue}, 100%, 72%, ${fade * (kill ? 0.9 : 0.62)})`
-      ctx.lineWidth = kill ? 2 : 1.2
-      ctx.beginPath()
-      ctx.moveTo(sx - Math.cos(turn) * tail, sy - Math.sin(turn) * tail * 0.72)
-      ctx.lineTo(sx, sy)
-      ctx.stroke()
-    }
-    ctx.restore()
-  }, [])
-
-  const drawVillager = useCallback((ctx: CanvasRenderingContext2D, v: Villager) => {
-    const a = assetsRef.current
-    const meta = a.villagerMeta[v.totalTines]
-    const sw = meta.frame_w * SPRITE_SCALE
-    const sh = meta.frame_h * SPRITE_SCALE
-    let img: HTMLImageElement | undefined
-    let strip = false
-    if (v.state === 'ash' || v.burned >= v.totalTines) {
-      img = a.ashLeft[v.totalTines]
-    } else if (v.burned > 0) {
-      img = a.burnedLeft[`${v.totalTines}_${v.burned}`]
-    } else {
-      img = a.walkLeft[v.totalTines]
-      strip = true
-    }
-    if (!img) return
-
-    ctx.fillStyle = 'rgba(0,0,0,0.45)'
-    ctx.beginPath()
-    ctx.ellipse(v.x + sw / 2, v.y + sh - 4, sw * 0.38, 5, 0, 0, Math.PI * 2)
-    ctx.fill()
-
-    ctx.imageSmoothingEnabled = false
-    if (strip) {
-      ctx.drawImage(img, v.walkFrame * meta.frame_w, 0, meta.frame_w, meta.frame_h, v.x, v.y, sw, sh)
-    } else {
-      ctx.drawImage(img, v.x, v.y, sw, sh)
-    }
-
-    if (v.state !== 'walking') return
-    const active = activeVillagerIdRef.current === v.id || activeKeyRef.current.startsWith(`${v.id}:`)
-    const progress = active ? lockProgressRef.current : 0
-    const displayBurn = active
-      ? Math.max(v.burned, Math.min(v.totalTines, Math.round(progress * v.totalTines)))
-      : v.burned
-    const forkKey = `${v.totalTines}_${displayBurn}`
-    const baseImg = a.fork[forkKey] ?? a.fork[`${v.totalTines}_${v.burned}`]
-    const glowImg = a.forkGlow[forkKey] ?? a.forkGlow[`${v.totalTines}_${v.burned}`]
-    const forkMeta = a.forkMeta[v.totalTines]
-    const forkW = forkMeta.frame_w * SPRITE_SCALE
-    const forkH = forkMeta.frame_h * SPRITE_SCALE
-    const fx = v.x + (meta.frame_w - meta.fork_base.x) * SPRITE_SCALE - (forkMeta.frame_w - forkMeta.handle_base.x) * SPRITE_SCALE
-    const fy = v.y + meta.fork_base.y * SPRITE_SCALE - forkMeta.handle_base.y * SPRITE_SCALE
-
-    if (baseImg) {
-      ctx.save()
-      ctx.translate(fx + forkW, fy)
-      ctx.scale(-1, 1)
-      ctx.drawImage(baseImg, 0, 0, forkW, forkH)
-      if (active && glowImg) {
-        ctx.globalAlpha = 0.25 + progress * 0.75
-        ctx.drawImage(glowImg, 0, 0, forkW, forkH)
-      }
-      ctx.restore()
-    }
-
-    if (active && tintRef.current) {
-      ctx.save()
-      ctx.globalAlpha = 0.48
-      ctx.fillStyle = tintRef.current
-      ctx.beginPath()
-      ctx.ellipse(fx + forkW / 2, fy + 7, 19 + progress * 12, 18 + progress * 8, 0, 0, Math.PI * 2)
-      ctx.fill()
-      ctx.restore()
-    }
-
-    if (active && noteNamesRef.current) {
-      const note = v.notes[v.burned]
-      ctx.font = 'bold 14px monospace'
-      ctx.textAlign = 'center'
-      const lx = fx + forkW / 2
-      const ly = fy - 7
-      const tw = ctx.measureText(note).width + 12
-      ctx.fillStyle = 'rgba(8, 10, 18, 0.86)'
-      ctx.strokeStyle = tintRef.current ?? 'rgba(130,210,255,0.62)'
-      ctx.lineWidth = 1
-      ctx.beginPath()
-      ctx.roundRect(lx - tw / 2, ly - 14, tw, 18, 5)
-      ctx.fill()
-      ctx.stroke()
-      ctx.fillStyle = '#f4f7fb'
-      ctx.fillText(note, lx, ly)
-    }
-
-    if (active) {
-      // ported from Pitchforks.tsx:576-584, using III's per-villager timer.
-      const pct = clamp(v.attackTimer / Math.max(0.001, v.attackTimerMax), 0, 1)
-      const barW = 58
-      const barH = 5
-      const bx = v.x + sw / 2 - barW / 2
-      const by = v.y - 25
-      ctx.fillStyle = 'rgba(8, 10, 18, 0.88)'
-      ctx.fillRect(bx, by, barW, barH)
-      ctx.fillStyle = timersPausedRef.current ? '#7dd3fc' : pct > 0.3 ? '#fbbf24' : '#ef4444'
-      ctx.fillRect(bx, by, barW * pct, barH)
-      ctx.strokeStyle = timersPausedRef.current ? 'rgba(125,211,252,0.85)' : '#555'
-      ctx.lineWidth = 1
-      ctx.strokeRect(bx, by, barW, barH)
-    }
-  }, [])
-
-  const drawPitchBar = useCallback((ctx: CanvasRenderingContext2D) => {
-    // ported from Pitchforks.tsx:602-658, with a 1s convergence trail.
-    barVisibleRef.current = phaseRef.current === 'playing'
-    const active = getActiveTarget()
+  const updatePitchBarState = useCallback((active: ActiveTarget | null): TunerView => {
+    const visible = phaseRef.current === 'playing'
+    barVisibleRef.current = visible
     const now = performance.now()
-    const centerX = PITCH_BAR_X + PITCH_BAR_W / 2
-    const centerY = PITCH_BAR_Y + PITCH_BAR_H / 2
-    const targetZoneW = PITCH_BAR_W * (3 / 12)
-
-    ctx.fillStyle = 'rgba(20,20,30,0.78)'
-    ctx.fillRect(PITCH_BAR_X, PITCH_BAR_Y, PITCH_BAR_W, PITCH_BAR_H)
-    ctx.strokeStyle = '#333'
-    ctx.lineWidth = 1
-    ctx.strokeRect(PITCH_BAR_X, PITCH_BAR_Y, PITCH_BAR_W, PITCH_BAR_H)
-    ctx.fillStyle = 'rgba(74,222,128,0.16)'
-    ctx.fillRect(centerX - targetZoneW / 2, PITCH_BAR_Y, targetZoneW, PITCH_BAR_H)
-
     pitchTrailRef.current = pitchTrailRef.current.filter(p => now - p.at <= TRAIL_MS)
     const source = demoRef.current ? demoPitchRef.current : pitchRef.current
     const canUseSource = !!active &&
@@ -1679,10 +2034,8 @@ export default function PitchforksIII() {
       source.confidence >= CONFIDENCE_FLOOR &&
       source.frequency > 0
 
-    const xForDeviation = (deviation: number) => {
-      const clamped = clamp(deviation, -6, 6)
-      return centerX + (clamped / 6) * (PITCH_BAR_W / 2)
-    }
+    let sourceNote: string | null = null
+    let renderDeviation: number | null = null
 
     if (canUseSource && active && source) {
       const deviation = pitchDeviationSemis(source, active.note)
@@ -1693,158 +2046,25 @@ export default function PitchforksIII() {
       // Ease the readout toward the detected pitch so it glides instead of jittering frame-to-frame.
       smoothDevRef.current += (clampedDeviation - smoothDevRef.current) * 0.28
       pitchTrailRef.current.push({ at: now, deviation: smoothDevRef.current, onTarget, note: source.note })
+      sourceNote = source.note || ''
+      renderDeviation = smoothDevRef.current
     } else {
       barDotDeviationRef.current = null
       barOnTargetRef.current = false
     }
 
-    const trail = pitchTrailRef.current
-    if (trail.length > 1) {
-      for (let i = 1; i < trail.length; i++) {
-        const prev = trail[i - 1]
-        const cur = trail[i]
-        const alpha = clamp(1 - (now - cur.at) / TRAIL_MS, 0, 1)
-        ctx.strokeStyle = `rgba(125, 211, 252, ${0.08 + alpha * 0.22})`
-        ctx.lineWidth = 2
-        ctx.beginPath()
-        ctx.moveTo(xForDeviation(prev.deviation), centerY)
-        ctx.lineTo(xForDeviation(cur.deviation), centerY)
-        ctx.stroke()
-      }
+    return {
+      visible,
+      now,
+      targetNote: active?.note ?? null,
+      sourceNote,
+      canUseSource,
+      dotDeviation: barDotDeviationRef.current,
+      renderDeviation,
+      onTarget: barOnTargetRef.current,
+      trail: pitchTrailRef.current,
     }
-    for (const point of trail) {
-      const alpha = clamp(1 - (now - point.at) / TRAIL_MS, 0, 1)
-      ctx.fillStyle = point.onTarget
-        ? `rgba(74, 222, 128, ${0.08 + alpha * 0.38})`
-        : `rgba(248, 113, 113, ${0.08 + alpha * 0.34})`
-      ctx.beginPath()
-      ctx.arc(xForDeviation(point.deviation), centerY, 2 + alpha * 2, 0, Math.PI * 2)
-      ctx.fill()
-    }
-
-    if (canUseSource && source) {
-      const dotX = xForDeviation(smoothDevRef.current)
-      const onTarget = barOnTargetRef.current
-      if (onTarget) {
-        ctx.fillStyle = 'rgba(74,222,128,0.3)'
-        ctx.beginPath()
-        ctx.arc(dotX, centerY, 11, 0, Math.PI * 2)
-        ctx.fill()
-      }
-      ctx.fillStyle = onTarget ? '#4ade80' : '#f87171'
-      ctx.beginPath()
-      ctx.arc(dotX, centerY, 5.5, 0, Math.PI * 2)
-      ctx.fill()
-      ctx.font = 'bold 9px monospace'
-      ctx.textAlign = 'center'
-      ctx.fillText(source.note || '', dotX, PITCH_BAR_Y - 4)
-    } else {
-      ctx.fillStyle = '#555'
-      ctx.font = '8px monospace'
-      ctx.textAlign = 'center'
-      ctx.fillText('sing...', centerX, centerY + 3)
-    }
-
-    if (active) {
-      ctx.fillStyle = '#4ade80'
-      ctx.font = '8px monospace'
-      ctx.textAlign = 'center'
-      ctx.fillText(`target: ${active.note}`, centerX, PITCH_BAR_Y + PITCH_BAR_H + 12)
-    }
-  }, [getActiveTarget, matchingSuppressedNow, pitchRef])
-
-  const render = useCallback((ctx: CanvasRenderingContext2D) => {
-    const rt = runtimeRef.current
-    const a = assetsRef.current
-    const sky = ctx.createLinearGradient(0, 0, 0, H)
-    sky.addColorStop(0, '#070914')
-    sky.addColorStop(0.58, '#171228')
-    sky.addColorStop(1, '#151910')
-    ctx.fillStyle = sky
-    ctx.fillRect(0, 0, W, H)
-
-    ctx.fillStyle = '#283019'
-    ctx.fillRect(0, GROUND_Y, W, H - GROUND_Y)
-    ctx.fillStyle = 'rgba(255,255,255,0.38)'
-    for (let i = 0; i < 34; i++) {
-      ctx.fillRect((i * 89 + 17) % W, (i * 37 + 19) % 155, 1, 1)
-    }
-
-    const charging = lockProgressRef.current > 0 || rt.bolts.length > 0
-    const frank = charging ? a.frankCharge : a.frankIdle
-    if (frank) {
-      const fm = a.frankMeta
-      const frame = Math.floor(rt.animClock * (charging ? 8 : 4)) % fm.frames
-      ctx.imageSmoothingEnabled = false
-      ctx.drawImage(
-        frank,
-        frame * fm.frame_w,
-        0,
-        fm.frame_w,
-        fm.frame_h,
-        FRANK_X,
-        FRANK_Y,
-        fm.frame_w * SPRITE_SCALE,
-        fm.frame_h * SPRITE_SCALE,
-      )
-      ctx.fillStyle = 'rgba(0,0,0,0.48)'
-      ctx.beginPath()
-      ctx.ellipse(FRANK_X + 48, FRANK_Y + fm.frame_h * SPRITE_SCALE - 7, 35, 6, 0, 0, Math.PI * 2)
-      ctx.fill()
-      // ported from Pitchforks.tsx:518-523; health lives on the monster.
-      for (let i = 0; i < STARTING_HEALTH; i++) {
-        ctx.fillStyle = i < rt.health ? '#4ade80' : '#333'
-        ctx.fillRect(FRANK_X + 7 + i * 13, FRANK_Y - 8, 10, 4)
-      }
-    }
-
-    const ordered = [...rt.villagers].sort((x, y) => x.y - y.y)
-    for (const v of ordered) drawVillager(ctx, v)
-    for (const burst of rt.bursts) drawBurst(ctx, burst)
-    for (const bolt of rt.bolts) drawBolt(ctx, bolt)
-
-    if (rt.bannerTimer > 0) {
-      const alpha = Math.min(1, rt.bannerTimer / 0.35)
-      ctx.save()
-      ctx.globalAlpha = alpha
-      ctx.fillStyle = 'rgba(0,0,0,0.44)'
-      ctx.fillRect(0, 150, W, 72)
-      ctx.fillStyle = '#f6f8ff'
-      ctx.font = 'bold 30px monospace'
-      ctx.textAlign = 'center'
-      ctx.fillText(`WAVE ${rt.wave}`, W / 2, 195)
-      ctx.restore()
-    }
-
-    if (rt.streak >= 3) {
-      ctx.fillStyle = rt.streak >= 10 ? '#ff6090' : '#ffc83c'
-      ctx.font = 'bold 14px monospace'
-      ctx.textAlign = 'center'
-      ctx.fillText(`${rt.streak}x COMBO`, W / 2, 18)
-    }
-
-    const prompt = currentPromptRef.current
-    if (prompt && getActiveTarget()) {
-      ctx.fillStyle = '#f4f7fb'
-      ctx.font = 'bold 15px monospace'
-      ctx.textAlign = 'center'
-      ctx.fillText(prompt, W / 2, 40)
-    }
-
-    const active = getActiveTarget()
-    if (active) {
-      const meta = a.villagerMeta[active.villager.totalTines]
-      const tine = meta.tines[Math.max(0, Math.min(active.tineIndex, meta.tines.length - 1))]
-      const x = active.villager.x + (meta.frame_w - tine.x) * SPRITE_SCALE
-      const y = active.villager.y + tine.y * SPRITE_SCALE
-      ctx.strokeStyle = tintRef.current ?? 'rgba(160,210,255,0.62)'
-      ctx.lineWidth = 1.5
-      ctx.beginPath()
-      ctx.arc(x, y, 12 + lockProgressRef.current * 8, 0, Math.PI * 2)
-      ctx.stroke()
-    }
-    drawPitchBar(ctx)
-  }, [drawBolt, drawBurst, drawPitchBar, drawVillager, getActiveTarget])
+  }, [matchingSuppressedNow, pitchRef])
 
   const loop = useCallback((ts: number) => {
     if (phaseRef.current !== 'playing') return
@@ -1856,15 +2076,33 @@ export default function PitchforksIII() {
     lastTimeRef.current = ts
     updateGame(dt)
     syncMicHudState()
-    render(ctx)
+    const active = getActiveTarget()
+    const tuner = updatePitchBarState(active)
+    const view = freezeViewStateForDebug(buildViewState({
+      runtime: runtimeRef.current,
+      phase: phaseRef.current,
+      active,
+      activeVillagerId: activeVillagerIdRef.current,
+      activeKey: activeKeyRef.current,
+      chargeProgress: lockProgressRef.current,
+      tint: tintRef.current,
+      noteNamesVisible: noteNamesRef.current,
+      timersPaused: timersPausedRef.current,
+      prompt: currentPromptRef.current,
+      tuner,
+      ceremony: ceremonyRef.current,
+    }), demoRef.current || fsrsDebugRef.current)
+    viewStateRef.current = view
+    renderView(ctx, view, assetsRef.current)
     if (!runtimeRef.current.gameOver) rafRef.current = requestAnimationFrame(loop)
-  }, [render, syncMicHudState, updateGame])
+  }, [getActiveTarget, syncMicHudState, updateGame, updatePitchBarState])
 
   const startGame = useCallback(async () => {
     resumeCueAudioFromGesture()
     clearCueTimers()
     clearNewNoteCeremony()
     runtimeRef.current = makeInitialRuntime(demoRef.current)
+    viewStateRef.current = null
     nextIdRef.current = 0
     activeKeyRef.current = ''
     activeVillagerIdRef.current = null
@@ -1916,6 +2154,7 @@ export default function PitchforksIII() {
     clearCueTimers()
     clearNewNoteCeremony()
     phaseRef.current = 'menu'
+    viewStateRef.current = null
     stopListening()
     micHudStateRef.current = 'waiting'
     setMicHudState('waiting')
