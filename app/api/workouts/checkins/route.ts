@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth0 } from '@/lib/auth0';
 import { prisma } from '@/lib/prisma';
+import { enqueueDriveSync } from '@/lib/driveSyncQueue';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -111,6 +112,9 @@ export async function POST(request: Request) {
         });
       }
     }
+
+    // Queue Google Drive sync (non-blocking)
+    enqueueDriveSync(user.id, new Date(), ['checkins']).catch(err => console.error('Drive enqueue failed:', err))
 
     return NextResponse.json({ ok: true, checkIn });
   } catch (error: any) {

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth0 } from '@/lib/auth0'
 import { getUserFromSession } from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma'
+import { enqueueDriveSync } from '@/lib/driveSyncQueue'
 
 type TasksPayload = Record<string, boolean>
 
@@ -179,6 +180,9 @@ export async function POST(request: NextRequest) {
       },
       pointsAwarded,
     }
+
+    // Queue Google Drive sync (non-blocking)
+    enqueueDriveSync(user.id, new Date(), ['journal']).catch(err => console.error('Drive enqueue failed:', err))
 
     return NextResponse.json(responsePayload)
 

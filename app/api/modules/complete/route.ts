@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth0 } from '@/lib/auth0'
 import { getUserFromSession } from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma'
+import { enqueueDriveSync } from '@/lib/driveSyncQueue'
 
 function startOfDay(date: Date) {
   const d = new Date(date)
@@ -191,6 +192,9 @@ export async function POST(request: NextRequest) {
     })
 
     const journalNote = await appendModuleToJournal(user.id, new Date(), moduleId)
+
+    // Queue Google Drive sync (non-blocking)
+    enqueueDriveSync(user.id, new Date(), ['modules']).catch(err => console.error('Drive enqueue failed:', err))
 
     return NextResponse.json({
       success: true,

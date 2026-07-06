@@ -272,6 +272,108 @@ export function formatWorkoutSummary(session: {
   return content
 }
 
+// Format daily tasks for Drive
+export function formatDailyTasks(tasks: Array<{
+  taskName: string
+  completed: boolean
+}>, dateStr: string): string {
+  let content = `# Daily Tasks — ${dateStr}\n\n`
+
+  for (const task of tasks) {
+    content += `- [${task.completed ? 'x' : ' '}] ${task.taskName}\n`
+  }
+
+  return content
+}
+
+// Format workout check-ins for Drive
+export function formatCheckins(checkins: Array<{
+  createdAt: Date
+  localTime?: string | null
+  readinessScore?: number | null
+  energyLevel?: number | null
+  sorenessLevel?: number | null
+  sleepHours?: number | null
+  stressLevel?: number | null
+  mood?: string | null
+  painNotes?: string | null
+  notes?: string | null
+  tags: string[]
+}>, dateStr: string): string {
+  let content = `# Workout Check-ins — ${dateStr}\n\n`
+
+  checkins.forEach((checkin, idx) => {
+    // Prefer the client's captured local time; the worker runs server-side so
+    // formatting createdAt here would render the wrong timezone (Argus MED).
+    const timeStr = checkin.localTime || new Date(checkin.createdAt).toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+    })
+
+    content += `## Check-in ${idx + 1} - ${timeStr}\n\n`
+    if (checkin.readinessScore !== null && checkin.readinessScore !== undefined) {
+      content += `**Readiness:** ${checkin.readinessScore}\n`
+    }
+    if (checkin.energyLevel !== null && checkin.energyLevel !== undefined) {
+      content += `**Energy:** ${checkin.energyLevel}\n`
+    }
+    if (checkin.sorenessLevel !== null && checkin.sorenessLevel !== undefined) {
+      content += `**Soreness:** ${checkin.sorenessLevel}\n`
+    }
+    if (checkin.sleepHours !== null && checkin.sleepHours !== undefined) {
+      content += `**Sleep Hours:** ${checkin.sleepHours}\n`
+    }
+    if (checkin.stressLevel !== null && checkin.stressLevel !== undefined) {
+      content += `**Stress:** ${checkin.stressLevel}\n`
+    }
+    if (checkin.mood) {
+      content += `**Mood:** ${checkin.mood}\n`
+    }
+    if (checkin.painNotes) {
+      content += `**Pain Notes:** ${checkin.painNotes}\n`
+    }
+    if (checkin.notes) {
+      content += `**Notes:** ${checkin.notes}\n`
+    }
+    if (checkin.tags.length > 0) {
+      content += `**Tags:** ${checkin.tags.join(', ')}\n`
+    }
+    content += '\n'
+  })
+
+  return content
+}
+
+// Format module completions for Drive
+export function formatModuleCompletions(mods: Array<{
+  moduleId: string
+  completedAt: Date
+  localTime?: string | null
+  audioDuration?: number | null
+  fullCompletion: boolean
+}>, dateStr: string): string {
+  let content = `# Module Completions — ${dateStr}\n\n`
+
+  mods.forEach((mod, idx) => {
+    // Prefer the client's captured local time (Argus MED — worker is server-side).
+    const timeStr = mod.localTime || new Date(mod.completedAt).toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+    })
+
+    content += `## Completion ${idx + 1}\n\n`
+    content += `**Module ID:** ${mod.moduleId}\n`
+    content += `**Completed At:** ${timeStr}\n`
+    content += `**Full Completion:** ${mod.fullCompletion ? 'Yes' : 'No'}\n`
+    if (mod.audioDuration !== null && mod.audioDuration !== undefined) {
+      content += `**Audio Duration:** ${mod.audioDuration}\n`
+    }
+    content += '\n'
+  })
+
+  return content
+}
+
 // Format nutrition log for Drive
 export function formatNutritionLog(entries: Array<{
   name: string
@@ -537,6 +639,9 @@ const DRIVE_SYNC_DOMAINS = [
   'breath',
   'vision',
   'nback',
+  'dailyTasks',
+  'checkins',
+  'modules',
 ] as const
 
 const DRIVE_SYNC_LABELS: Record<
@@ -550,6 +655,9 @@ const DRIVE_SYNC_LABELS: Record<
   breath: { synced: 'Breath sessions', error: 'Breath sync failed' },
   vision: { synced: 'Vision sessions', error: 'Vision sync failed' },
   nback: { synced: 'Memory training', error: 'Memory sync failed' },
+  dailyTasks: { synced: 'Daily tasks', error: 'Daily tasks sync failed' },
+  checkins: { synced: 'Workout check-ins', error: 'Check-in sync failed' },
+  modules: { synced: 'Module completions', error: 'Module sync failed' },
 }
 
 function getDateWindow(date: Date) {
@@ -663,6 +771,108 @@ async function syncDomainForDateWithResult(
       }
 
       return DRIVE_SYNC_LABELS.workouts.synced
+    }
+
+    case 'dailyTasks': {
+      const dailyTasks = await prisma.dailyTask.findMany({
+        where: {
+          userId,
+          date: {
+            gte: startOfDay,
+            lte: endOfDay,
+          },
+        },
+        orderBy: { taskName: 'asc' },
+      })
+
+      if (dailyTasks.length === 0) return null
+
+      const progressFolderId = await getSubfolderId(drive, driveFolder, 'Progress Reports')
+      if (!progressFolderId) return null
+
+      const content = formatDailyTasks(
+        dailyTasks.map(task => ({
+          taskName: task.taskName,
+          completed: task.completed,
+        })),
+        dateStr
+      )
+      const fileName = `daily-tasks-${dateStr}.md`
+      await uploadTextFile(drive, progressFolderId, fileName, content, 'text/markdown')
+
+      return DRIVE_SYNC_LABELS.dailyTasks.synced
+    }
+
+    case 'checkins': {
+      const checkins = await prisma.workoutCheckIn.findMany({
+        where: {
+          userId,
+          createdAt: {
+            gte: startOfDay,
+            lte: endOfDay,
+          },
+        },
+        orderBy: { createdAt: 'asc' },
+      })
+
+      if (checkins.length === 0) return null
+
+      const progressFolderId = await getSubfolderId(drive, driveFolder, 'Progress Reports')
+      if (!progressFolderId) return null
+
+      const content = formatCheckins(
+        checkins.map(checkin => ({
+          createdAt: checkin.createdAt,
+          localTime: checkin.localTime,
+          readinessScore: checkin.readinessScore,
+          energyLevel: checkin.energyLevel,
+          sorenessLevel: checkin.sorenessLevel,
+          sleepHours: checkin.sleepHours,
+          stressLevel: checkin.stressLevel,
+          mood: checkin.mood,
+          painNotes: checkin.painNotes,
+          notes: checkin.notes,
+          tags: checkin.tags,
+        })),
+        dateStr
+      )
+      const fileName = `checkins-${dateStr}.md`
+      await uploadTextFile(drive, progressFolderId, fileName, content, 'text/markdown')
+
+      return DRIVE_SYNC_LABELS.checkins.synced
+    }
+
+    case 'modules': {
+      const moduleCompletions = await prisma.moduleCompletion.findMany({
+        where: {
+          userId,
+          completedAt: {
+            gte: startOfDay,
+            lte: endOfDay,
+          },
+        },
+        orderBy: { completedAt: 'asc' },
+      })
+
+      if (moduleCompletions.length === 0) return null
+
+      const progressFolderId = await getSubfolderId(drive, driveFolder, 'Progress Reports')
+      if (!progressFolderId) return null
+
+      const content = formatModuleCompletions(
+        moduleCompletions.map(mod => ({
+          moduleId: mod.moduleId,
+          completedAt: mod.completedAt,
+          localTime: mod.localTime,
+          audioDuration: mod.audioDuration,
+          fullCompletion: mod.fullCompletion,
+        })),
+        dateStr
+      )
+      const fileName = `modules-${dateStr}.md`
+      await uploadTextFile(drive, progressFolderId, fileName, content, 'text/markdown')
+
+      return DRIVE_SYNC_LABELS.modules.synced
     }
 
     case 'nutrition': {
