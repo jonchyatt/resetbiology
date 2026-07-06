@@ -12,14 +12,25 @@ import {
   setPianoVolume,
   isWithinToneSuppressionWindow,
 } from './audioEngine'
-import { NOTE_COLORS } from '@/lib/fsrs'
+import {
+  NOTE_COLORS,
+  autoGrade,
+  createNote,
+  currentR,
+  pickNextNote,
+  reviewNote,
+  type NoteMemory,
+} from '@/lib/fsrs'
+import { INTRO_ORDER, UNLOCK_THRESHOLDS } from './types'
 
 const W = 720
 const H = 405
 const SPRITE_SCALE = 3
 const ASSET_BASE = '/images/pitchforks'
-const NOTE_POOL = ['C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4', 'C5']
 const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+const FSRS_KEY = 'pitch_fsrs_memory'
+const FSRS_DEBUG_KEY = 'pitch_fsrs_debug'
+const STARTING_NOTES = [INTRO_ORDER[0], INTRO_ORDER[1]]
 
 // ported from Pitchforks.tsx:430-432
 const CONFIDENCE_FLOOR = 0.75
@@ -198,6 +209,15 @@ interface Pf3DebugState {
   lastKillNote: string | null
   lastKillHue: number | null
   roarFiredCount: number
+  unlockedCount: number
+  unlockedNotes: string[]
+  noteR: Record<string, number>
+  selectedNotes: string[]
+  activeNote: string | null
+  activeSequence: string[]
+  fsrsDebug: boolean
+  fsrsStoreKey: string
+  newNoteUnlocked: string | null
 }
 
 declare global {
@@ -265,13 +285,12 @@ function nameToSemi(name: string): number {
   return (parseInt(match[2], 10) - 4) * 12 + NOTE_NAMES.indexOf(match[1])
 }
 
-// Note pool grows slowly: start with a tiny singable set, add one note per wave.
-function poolForWave(wave: number): string[] {
-  return NOTE_POOL.slice(0, Math.min(NOTE_POOL.length, 3 + Math.max(0, wave - 1)))
-}
-function pickNote(index: number, wave: number): string {
-  const pool = poolForWave(wave)
-  return pool[(index * 3 + wave * 2) % pool.length]
+function noteRSnapshot(notes: string[], memory: Record<string, NoteMemory>): Record<string, number> {
+  const result: Record<string, number> = {}
+  for (const note of notes) {
+    result[note] = Number(currentR(memory[note] ?? createNote(note)).toFixed(4))
+  }
+  return result
 }
 
 // Hand-tuned onboarding — "levels within levels, slow advances." Level 1 is
@@ -460,6 +479,14 @@ export default function PitchforksIII() {
   const runtimeRef = useRef<Runtime>(makeInitialRuntime(false))
   const assetsRef = useRef<Assets>(emptyAssets())
   const nextIdRef = useRef(0)
+  const fsrsRef = useRef<Record<string, NoteMemory>>({})
+  const unlockedNotesRef = useRef<string[]>([...STARTING_NOTES])
+  const consecutiveCorrectRef = useRef(0)
+  const fsrsDebugRef = useRef(false)
+  const promptStartedAtRef = useRef(0)
+  const activePromptKeyRef = useRef('')
+  const failureGradedKeysRef = useRef<Set<string>>(new Set())
+  const newNoteTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const lockHeldMsRef = useRef(0)
   const lockProgressRef = useRef(0)
   const activeKeyRef = useRef('')
@@ -512,6 +539,9 @@ export default function PitchforksIII() {
   const [cueVolume, setCueVolume] = useState(100)
   const [sfxVolume, setSfxVolume] = useState(100)
   const [demoMode, setDemoMode] = useState(false)
+  const [fsrsDebugMode, setFsrsDebugMode] = useState(false)
+  const [unlockedNotes, setUnlockedNotes] = useState<string[]>([...STARTING_NOTES])
+  const [newNoteUnlocked, setNewNoteUnlocked] = useState<string | null>(null)
   const [micHudState, setMicHudState] = useState<MicHudState>('waiting')
 
   const { isListening, pitch, pitchRef, startListening, stopListening, error: micError } = usePitchDetection({ noiseGateDb: -45 })
@@ -541,10 +571,53 @@ export default function PitchforksIII() {
     micErrorRef.current = micError
   }, [micError])
 
+  const fsrsStorageKey = useCallback(() => {
+    return demoRef.current || fsrsDebugRef.current ? FSRS_DEBUG_KEY : FSRS_KEY
+  }, [])
+
+  const saveFsrs = useCallback(() => {
+    try {
+      localStorage.setItem(fsrsStorageKey(), JSON.stringify(fsrsRef.current))
+    } catch {}
+  }, [fsrsStorageKey])
+
+  const ensureNoteMemory = useCallback((note: string) => {
+    if (!fsrsRef.current[note]) fsrsRef.current[note] = createNote(note)
+    return fsrsRef.current[note]
+  }, [])
+
   useEffect(() => {
-    const isDemo = new URLSearchParams(window.location.search).get('demo') === '1'
+    const params = new URLSearchParams(window.location.search)
+    const isDemo = params.get('demo') === '1'
+    const isFsrsDebug = params.get('fsrsDebug') === '1'
     demoRef.current = isDemo
+    fsrsDebugRef.current = isFsrsDebug
     setDemoMode(isDemo)
+    setFsrsDebugMode(isFsrsDebug)
+
+    try {
+      const raw = localStorage.getItem(isDemo || isFsrsDebug ? FSRS_DEBUG_KEY : FSRS_KEY)
+      if (raw) fsrsRef.current = JSON.parse(raw)
+    } catch { /* fresh start */ }
+
+    // Restore unlocked notes: only notes that have been REVIEWED (lastReview > 0)
+    // AND that appear in INTRO_ORDER in sequence (no gaps from other modes pre-seeding)
+    const reviewed = new Set(
+      Object.entries(fsrsRef.current)
+        .filter(([, m]) => m.lastReview > 0)
+        .map(([k]) => k)
+    )
+    const restored: string[] = []
+    for (const note of INTRO_ORDER) {
+      if (reviewed.has(note)) restored.push(note)
+      else break // stop at first unreviewed — no gaps
+    }
+    if (restored.length >= 2) {
+      setUnlockedNotes(restored)
+      unlockedNotesRef.current = restored
+    }
+
+    for (const note of unlockedNotesRef.current) ensureNoteMemory(note)
   }, [])
 
   useEffect(() => {
@@ -678,6 +751,65 @@ export default function PitchforksIII() {
     return paused
   }, [getActiveTarget, matchingSuppressedNow])
 
+  const showNewNoteUnlocked = useCallback((note: string) => {
+    if (newNoteTimerRef.current) clearTimeout(newNoteTimerRef.current)
+    setNewNoteUnlocked(note)
+    newNoteTimerRef.current = setTimeout(() => {
+      setNewNoteUnlocked(null)
+      newNoteTimerRef.current = null
+    }, 2000)
+  }, [])
+
+  const maybeUnlockNextNote = useCallback((consecutive: number) => {
+    const currentPool = unlockedNotesRef.current
+    const currentPoolSize = currentPool.length
+    const threshold = UNLOCK_THRESHOLDS[currentPoolSize]
+    if (threshold && consecutive >= threshold && currentPoolSize < INTRO_ORDER.length) {
+      const nextNote = INTRO_ORDER[currentPoolSize]
+      const newPool = [...currentPool, nextNote]
+      unlockedNotesRef.current = newPool
+      setUnlockedNotes(newPool)
+      ensureNoteMemory(nextNote)
+      saveFsrs()
+      showNewNoteUnlocked(nextNote)
+    }
+  }, [ensureNoteMemory, saveFsrs, showNewNoteUnlocked])
+
+  const latencyForTarget = useCallback((target: NonNullable<ReturnType<typeof getActiveTarget>>) => {
+    if (activePromptKeyRef.current === target.key && promptStartedAtRef.current > 0) {
+      return Math.max(0, performance.now() - promptStartedAtRef.current)
+    }
+    return 2000
+  }, [])
+
+  const reviewTargetNote = useCallback((
+    target: NonNullable<ReturnType<typeof getActiveTarget>>,
+    correct: boolean,
+  ) => {
+    if (!target.note) return false
+    if (matchingSuppressedNow()) return false
+    if (!demoRef.current && !isListeningRef.current) return false
+
+    if (!correct) {
+      if (failureGradedKeysRef.current.has(target.key)) return false
+      failureGradedKeysRef.current.add(target.key)
+    }
+
+    const mem = ensureNoteMemory(target.note)
+    const grade = autoGrade(correct, latencyForTarget(target))
+    fsrsRef.current[target.note] = reviewNote(mem, grade)
+    saveFsrs()
+
+    if (correct) {
+      const nextConsecutive = consecutiveCorrectRef.current + 1
+      consecutiveCorrectRef.current = nextConsecutive
+      maybeUnlockNextNote(nextConsecutive)
+    } else {
+      consecutiveCorrectRef.current = 0
+    }
+    return true
+  }, [ensureNoteMemory, latencyForTarget, matchingSuppressedNow, maybeUnlockNextNote, saveFsrs])
+
   const playVillagerSequence = useCallback((villager: Villager, mode: 'cue' | 'replay') => {
     if (!villager.notes.length) return
     clearCueTimers()
@@ -694,6 +826,10 @@ export default function PitchforksIII() {
     villager.notes.forEach((note, index) => {
       const id = setTimeout(() => {
         setPromptText(index === 0 ? `Sing: ${note}` : `Now: ${note}`)
+        if (index === villager.burned) {
+          activePromptKeyRef.current = `${villager.id}:${index}`
+          promptStartedAtRef.current = performance.now()
+        }
         if (mode === 'replay' || audioCueRef.current) {
           setPianoVolume(cueVolumeRef.current)
           try {
@@ -715,7 +851,11 @@ export default function PitchforksIII() {
         villager.state === 'walking'
       ) {
         const note = villager.notes[villager.burned]
-        if (note) setPromptText(villager.burned === 0 ? `Sing: ${note}` : `Now: ${note}`)
+        if (note) {
+          activePromptKeyRef.current = `${villager.id}:${villager.burned}`
+          promptStartedAtRef.current = performance.now()
+          setPromptText(villager.burned === 0 ? `Sing: ${note}` : `Now: ${note}`)
+        }
       }
     }, suppressMs)
     cueTimeoutsRef.current.push(doneId)
@@ -723,7 +863,7 @@ export default function PitchforksIII() {
 
   useEffect(() => {
     if (typeof window === 'undefined') return
-    if (!demoMode) {
+    if (!demoMode && !fsrsDebugMode) {
       delete window.__pf3
       return
     }
@@ -772,6 +912,15 @@ export default function PitchforksIII() {
         lastKillNote: lastKillNoteRef.current,
         lastKillHue: lastKillHueRef.current,
         roarFiredCount: roarFiredCountRef.current,
+        unlockedCount: unlockedNotesRef.current.length,
+        unlockedNotes: [...unlockedNotesRef.current],
+        noteR: noteRSnapshot(unlockedNotesRef.current, fsrsRef.current),
+        selectedNotes: rt.villagers.flatMap(v => v.notes),
+        activeNote: active?.note ?? null,
+        activeSequence: active ? [...active.villager.notes] : [],
+        fsrsDebug: demoRef.current || fsrsDebugRef.current,
+        fsrsStoreKey: fsrsStorageKey(),
+        newNoteUnlocked,
       })
     }
     const hook = Object.freeze({ getState })
@@ -784,7 +933,22 @@ export default function PitchforksIII() {
     return () => {
       if (window.__pf3 === hook) delete window.__pf3
     }
-  }, [cuePlayingNow, demoMode, getActiveTarget, matchingSuppressedNow])
+  }, [cuePlayingNow, demoMode, fsrsDebugMode, fsrsStorageKey, getActiveTarget, matchingSuppressedNow, newNoteUnlocked])
+
+  const pickVillagerNotes = useCallback((totalTines: TineCount) => {
+    const pool = unlockedNotesRef.current.length > 0 ? unlockedNotesRef.current : [...STARTING_NOTES]
+    for (const note of pool) ensureNoteMemory(note)
+
+    const notes: string[] = []
+    let exclude: string | null = null
+    for (let i = 0; i < totalTines; i++) {
+      const nextNote = pickNextNote(pool, fsrsRef.current, exclude)
+      ensureNoteMemory(nextNote)
+      notes.push(nextNote)
+      exclude = nextNote
+    }
+    return notes
+  }, [ensureNoteMemory])
 
   const spawnVillager = useCallback(() => {
     const rt = runtimeRef.current
@@ -792,7 +956,7 @@ export default function PitchforksIII() {
     const spawnIndex = rt.spawned
     const totalTines = rt.plan.tineCounts[rt.spawned] ?? 2
     const lane = spawnIndex % 3
-    const notes = Array.from({ length: totalTines }, (_, i) => pickNote(rt.spawned + i, rt.wave))
+    const notes = pickVillagerNotes(totalTines)
     const attackTimer = attackTimeForWave(rt.wave, spawnIndex)
     const v: Villager = {
       id: ++nextIdRef.current,
@@ -814,7 +978,7 @@ export default function PitchforksIII() {
     rt.villagers.push(v)
     if (rt.firstVillagerId === null) rt.firstVillagerId = v.id
     rt.spawned += 1
-  }, [])
+  }, [pickVillagerNotes])
 
   const startWave = useCallback((wave: number) => {
     const rt = runtimeRef.current
@@ -826,6 +990,8 @@ export default function PitchforksIII() {
     rt.nextWavePending = false
     activeKeyRef.current = ''
     activeVillagerIdRef.current = null
+    activePromptKeyRef.current = ''
+    promptStartedAtRef.current = 0
     lockHeldMsRef.current = 0
     lockProgressRef.current = 0
     tintRef.current = null
@@ -875,6 +1041,7 @@ export default function PitchforksIII() {
     const { villager, tineIndex } = target
     const strikeNote = target.note ?? villager.notes[villager.burned]
     const strikeHue = hueForNote(strikeNote)
+    reviewTargetNote(target, true)
     lastStrikeNoteRef.current = strikeNote ?? null
     lastStrikeHueRef.current = strikeHue
     addBolt(villager, tineIndex)
@@ -908,10 +1075,14 @@ export default function PitchforksIII() {
       setHud({ wave: rt.wave, health: rt.health, score: rt.score, streak: rt.streak })
     } else {
       const nextNote = villager.notes[villager.burned]
-      if (nextNote) setPromptText(`Now: ${nextNote}`)
+      if (nextNote) {
+        activePromptKeyRef.current = `${villager.id}:${villager.burned}`
+        promptStartedAtRef.current = performance.now()
+        setPromptText(`Now: ${nextNote}`)
+      }
     }
     if (firstLockGraceRef.current) firstLockGraceRef.current = false
-  }, [addBolt, addBurst, matchingSuppressedNow, setPromptText])
+  }, [addBolt, addBurst, matchingSuppressedNow, reviewTargetNote, setPromptText])
 
   const demoPitchForTarget = useCallback((target: NonNullable<ReturnType<typeof getActiveTarget>>, now: number): PitchInfo | null => {
     if (demoTargetRef.current !== target.key) {
@@ -1019,6 +1190,10 @@ export default function PitchforksIII() {
         strikeActiveTine(target)
       }
     } else {
+      // v1 confident-wrong = charge RESET only, NO FSRS review (FLW GREEN-LIGHT option A,
+      // flw-out-9b). FSRS grades exactly once per villager-tine encounter at resolution:
+      // strike = correct (latency-graded), timeout = failure. A beginner's approach wobble
+      // is not a recall failure — the real failure is not resolving the tine in time.
       const hadCharge = lockHeldMsRef.current > 0 || lockProgressRef.current > 0
       lockHeldMsRef.current = 0
       lockProgressRef.current = 0
@@ -1093,6 +1268,7 @@ export default function PitchforksIII() {
       const v = active.villager
       v.attackTimer = Math.max(0, v.attackTimer - dt)
       if (v.attackTimer <= 0) {
+        reviewTargetNote(active, false)
         v.state = 'ash'
         v.ashTimer = 0.9
         rt.health = Math.max(0, rt.health - 1)
@@ -1124,7 +1300,7 @@ export default function PitchforksIII() {
         startWave(runtimeRef.current.wave + 1)
       }, 900)
     }
-  }, [getActiveTarget, processLock, setPromptText, spawnVillager, startWave, timersPausedNow])
+  }, [getActiveTarget, processLock, reviewTargetNote, setPromptText, spawnVillager, startWave, timersPausedNow])
 
   const drawBolt = useCallback((ctx: CanvasRenderingContext2D, b: Bolt) => {
     const t = 1 - b.life / b.maxLife
@@ -1504,10 +1680,19 @@ export default function PitchforksIII() {
   const startGame = useCallback(async () => {
     resumeCueAudioFromGesture()
     clearCueTimers()
+    if (newNoteTimerRef.current) {
+      clearTimeout(newNoteTimerRef.current)
+      newNoteTimerRef.current = null
+    }
     runtimeRef.current = makeInitialRuntime(demoRef.current)
     nextIdRef.current = 0
     activeKeyRef.current = ''
     activeVillagerIdRef.current = null
+    activePromptKeyRef.current = ''
+    promptStartedAtRef.current = 0
+    failureGradedKeysRef.current = new Set()
+    consecutiveCorrectRef.current = 0
+    for (const note of unlockedNotesRef.current) ensureNoteMemory(note)
     demoTargetRef.current = ''
     demoLockCountRef.current = 0
     demoStepRef.current = 'idle'
@@ -1533,6 +1718,7 @@ export default function PitchforksIII() {
     barOnTargetRef.current = false
     barVisibleRef.current = false
     lockWhileSuppressedRef.current = false
+    setNewNoteUnlocked(null)
     micHudStateRef.current = demoRef.current ? 'demo' : 'waiting'
     setMicHudState(micHudStateRef.current)
     setHud({ wave: 1, health: STARTING_HEALTH, score: 0, streak: 0 })
@@ -1544,21 +1730,27 @@ export default function PitchforksIII() {
     lastTimeRef.current = 0
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
     rafRef.current = requestAnimationFrame(loop)
-  }, [clearCueTimers, loop, resumeCueAudioFromGesture, startListening])
+  }, [clearCueTimers, ensureNoteMemory, loop, resumeCueAudioFromGesture, startListening])
 
   const quitToMenu = useCallback(() => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
     clearCueTimers()
+    if (newNoteTimerRef.current) {
+      clearTimeout(newNoteTimerRef.current)
+      newNoteTimerRef.current = null
+    }
     phaseRef.current = 'menu'
     stopListening()
     micHudStateRef.current = 'waiting'
     setMicHudState('waiting')
+    setNewNoteUnlocked(null)
     setPhase('menu')
   }, [clearCueTimers, stopListening])
 
   useEffect(() => () => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
     clearCueTimers()
+    if (newNoteTimerRef.current) clearTimeout(newNoteTimerRef.current)
     stopListening()
   }, [clearCueTimers, stopListening])
 
@@ -1609,7 +1801,8 @@ export default function PitchforksIII() {
             </Link>
           </div>
           <h1 className="text-3xl font-black tracking-widest text-cyan-200 mb-1">PITCHFORKS III</h1>
-          <div className="text-sm text-gray-400 mb-5">Frankenstein lightning ear trainer</div>
+          <div className="text-sm text-gray-400 mb-2">Frankenstein lightning ear trainer</div>
+          <div className="text-xs text-green-200/80 mb-5">{unlockedNotes.length} notes unlocked</div>
           {assetError && <div className="text-sm text-red-300 mb-4">{assetError}</div>}
           {micError && !demoMode && <div className="text-xs text-red-300 mb-4">{micError}</div>}
           <SettingsRow
@@ -1773,6 +1966,11 @@ export default function PitchforksIII() {
         {demoMode && (
           <div className="absolute top-3 right-3 text-[11px] font-bold tracking-widest text-cyan-200 bg-black/60 border border-cyan-500/50 px-2 py-1">
             DEMO
+          </div>
+        )}
+        {newNoteUnlocked && (
+          <div className="absolute top-16 left-1/2 -translate-x-1/2 border border-green-300/60 bg-green-950/80 px-4 py-2 text-sm font-black tracking-widest text-green-100 shadow-[0_0_24px_rgba(74,222,128,0.25)]">
+            New note: {newNoteUnlocked}
           </div>
         )}
       </div>
