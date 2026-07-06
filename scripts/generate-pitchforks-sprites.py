@@ -741,8 +741,16 @@ def write_atlas_index():
 #  visually verify the fork still lands near the grip after assembling.
 # ──────────────────────────────────────────────────────────────────────────
 def assemble_villager_2tine_from_source(source_path, out_dir=None):
+    # CW review (cw-consult-16) caught: LANCZOS violates the rail's own "pixel art =
+    # nearest-neighbor ONLY" hard blocker AND produces a very high opaque-color count
+    # (measured 160 unique colors / 1536px + 428px of partial alpha on the first pass —
+    # the definition of the anti-aliased "blur" the row-6 gpt-image-2 test already
+    # failed on). Switched to NEAREST + a two-stage chroma-key (pre-crop generous key,
+    # POST-resize magenta-ish cleanup) so resampling never reintroduces fringe that a
+    # single pre-resize key pass would miss once pixels get resampled together.
     if not HAS_PIL:
         raise RuntimeError("assembler mode requires Pillow (PIL) — not available in this environment")
+    import colorsys
     src = Image.open(source_path).convert("RGBA")
     w, h = src.size
     n_frames = 4
@@ -751,12 +759,32 @@ def assemble_villager_2tine_from_source(source_path, out_dir=None):
     MAGENTA = (255, 0, 255)
     THRESH = 60
 
-    px = src.load()
-    for y in range(h):
-        for x in range(w):
-            r, g, b, a = px[x, y]
-            if abs(r - MAGENTA[0]) < THRESH and abs(g - MAGENTA[1]) < THRESH and abs(b - MAGENTA[2]) < THRESH:
-                px[x, y] = (r, g, b, 0)
+    def chroma_key(im, thresh):
+        # RGB-distance pass — catches pixels close to pure magenta.
+        p = im.load()
+        iw, ih = im.size
+        for y in range(ih):
+            for x in range(iw):
+                r, g, b, a = p[x, y]
+                if abs(r - MAGENTA[0]) < thresh and abs(g - MAGENTA[1]) < thresh and abs(b - MAGENTA[2]) < thresh:
+                    p[x, y] = (r, g, b, 0)
+
+    def chroma_key_hue(im, hue_lo=0.80, hue_hi=0.92, min_sat=0.35):
+        # Hue-band pass — catches magenta-FAMILY fringe (anti-aliased blends toward
+        # magenta) that RGB-distance can miss once resampling shifts exact values.
+        # Magenta hue ~0.833 (300deg/360deg) in colorsys's 0-1 space.
+        p = im.load()
+        iw, ih = im.size
+        for y in range(ih):
+            for x in range(iw):
+                r, g, b, a = p[x, y]
+                if a == 0:
+                    continue
+                hh, ss, vv = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
+                if hue_lo <= hh <= hue_hi and ss >= min_sat:
+                    p[x, y] = (r, g, b, 0)
+
+    chroma_key(src, THRESH)
 
     out_frames = []
     for i in range(n_frames):
@@ -770,7 +798,15 @@ def assemble_villager_2tine_from_source(source_path, out_dir=None):
         scale = min(22 / ch, FRAME_W / cw)
         new_w = max(1, round(cw * scale))
         new_h = max(1, round(ch * scale))
-        resized = cropped.resize((new_w, new_h), Image.LANCZOS)
+        resized = cropped.resize((new_w, new_h), Image.NEAREST)
+        # Second cleanup pass AFTER resize, by HUE not RGB-distance: NEAREST can still
+        # select a source pixel that was semi-magenta-tinted near an edge (didn't cross
+        # the RGB THRESH pre-resize but reads as visible fringe post-resize at native
+        # sprite scale). Hue-band catches the whole magenta FAMILY regardless of exact
+        # brightness/saturation, which a fixed RGB threshold missed (measured: 4 residual
+        # magenta-ish opaque pixels visible at native scale before this pass was added).
+        chroma_key(resized, 90)
+        chroma_key_hue(resized)
         canvas = Image.new("RGBA", (FRAME_W, FRAME_H), (0, 0, 0, 0))
         # Bias +2px right of dead-center: villager_2tine.json's fork_base (grip anchor,
         # where the separately-composited fork attaches) sits at x=14, near the right
