@@ -923,7 +923,42 @@ export default function PitchforksIII() {
         newNoteUnlocked,
       })
     }
-    const hook = Object.freeze({ getState })
+    // fsrsDebug-gated test hook: drives the REAL grade/unlock path (autoGrade →
+    // reviewNote → maybeUnlockNextNote) so the behavioral FLW receipts (unlock
+    // progression, one-review-per-resolution, failure resets streak) are
+    // machine-provable without the scripted single-villager demo. Inert in normal
+    // play — this whole effect only runs when demo/fsrsDebug is on.
+    const review = (note: string, correct: boolean) => {
+      const mem = ensureNoteMemory(note)
+      const grade = autoGrade(correct, correct ? 800 : 2000)
+      fsrsRef.current[note] = reviewNote(mem, grade)
+      saveFsrs()
+      if (correct) {
+        consecutiveCorrectRef.current += 1
+        maybeUnlockNextNote(consecutiveCorrectRef.current)
+      } else {
+        consecutiveCorrectRef.current = 0
+      }
+      return {
+        note,
+        grade,
+        consecutive: consecutiveCorrectRef.current,
+        unlockedCount: unlockedNotesRef.current.length,
+        unlockedNotes: [...unlockedNotesRef.current],
+        phase: fsrsRef.current[note].phase,
+        lapses: fsrsRef.current[note].lapses,
+      }
+    }
+    const resetDebug = () => {
+      fsrsRef.current = {}
+      unlockedNotesRef.current = [...STARTING_NOTES]
+      setUnlockedNotes([...STARTING_NOTES])
+      consecutiveCorrectRef.current = 0
+      for (const n of unlockedNotesRef.current) ensureNoteMemory(n)
+      saveFsrs()
+      return { unlockedCount: unlockedNotesRef.current.length, notes: [...unlockedNotesRef.current] }
+    }
+    const hook = Object.freeze({ getState, review, resetDebug })
 
     Object.defineProperty(window, '__pf3', {
       configurable: true,
@@ -933,7 +968,7 @@ export default function PitchforksIII() {
     return () => {
       if (window.__pf3 === hook) delete window.__pf3
     }
-  }, [cuePlayingNow, demoMode, fsrsDebugMode, fsrsStorageKey, getActiveTarget, matchingSuppressedNow, newNoteUnlocked])
+  }, [cuePlayingNow, demoMode, ensureNoteMemory, fsrsDebugMode, fsrsStorageKey, getActiveTarget, matchingSuppressedNow, maybeUnlockNextNote, newNoteUnlocked, saveFsrs])
 
   const pickVillagerNotes = useCallback((totalTines: TineCount) => {
     const pool = unlockedNotesRef.current.length > 0 ? unlockedNotesRef.current : [...STARTING_NOTES]
