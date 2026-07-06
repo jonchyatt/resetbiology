@@ -725,6 +725,75 @@ def write_atlas_index():
     (OUT/"atlas.json").write_text(json.dumps(idx, indent=2))
 
 # ──────────────────────────────────────────────────────────────────────────
+#  ASSEMBLER MODE (C2, Karpathy row 22) — ingest an externally-generated
+#  4-frame walk-cycle source image (AI-generated, chroma-keyed magenta bg)
+#  and deterministically assemble it into the villager_2tine_walk.png slot,
+#  replacing the procedural draw_villager_side() output for THIS variant only.
+#
+#  Why deterministic, not another model call: a model asked to hit the exact
+#  16x24 pixel grid reintroduces the fringe/blur defect from the row-6
+#  gpt-image-2 test. Here the MODEL emits a larger, readable source image;
+#  this function (the SCRIPT) emits the sprite — chroma-key -> per-frame
+#  alpha bbox crop -> LANCZOS downscale into the frozen 16x24 contract ->
+#  re-strip. Scope: 2-tine walk-cycle ONLY (VANGUARD-SPEC-C2-villager-batch1.md)
+#  — burned/ash states + 3/4-tine variants are untouched (still procedural).
+#  fork_base/fork_tip/tines anchors in villager_2tine.json are left UNCHANGED;
+#  visually verify the fork still lands near the grip after assembling.
+# ──────────────────────────────────────────────────────────────────────────
+def assemble_villager_2tine_from_source(source_path, out_dir=None):
+    if not HAS_PIL:
+        raise RuntimeError("assembler mode requires Pillow (PIL) — not available in this environment")
+    src = Image.open(source_path).convert("RGBA")
+    w, h = src.size
+    n_frames = 4
+    frame_w_src = w // n_frames
+    FRAME_W, FRAME_H = 16, 24
+    MAGENTA = (255, 0, 255)
+    THRESH = 60
+
+    px = src.load()
+    for y in range(h):
+        for x in range(w):
+            r, g, b, a = px[x, y]
+            if abs(r - MAGENTA[0]) < THRESH and abs(g - MAGENTA[1]) < THRESH and abs(b - MAGENTA[2]) < THRESH:
+                px[x, y] = (r, g, b, 0)
+
+    out_frames = []
+    for i in range(n_frames):
+        frame = src.crop((i * frame_w_src, 0, (i + 1) * frame_w_src, h))
+        bbox = frame.getbbox()
+        if bbox is None:
+            raise RuntimeError(f"assembler: frame {i} fully transparent after chroma-key — aborting, source unusable")
+        cropped = frame.crop(bbox)
+        cw, ch = cropped.size
+        # Fit height to 22px (2px floor+headroom margin), cap width at frame width — preserve aspect.
+        scale = min(22 / ch, FRAME_W / cw)
+        new_w = max(1, round(cw * scale))
+        new_h = max(1, round(ch * scale))
+        resized = cropped.resize((new_w, new_h), Image.LANCZOS)
+        canvas = Image.new("RGBA", (FRAME_W, FRAME_H), (0, 0, 0, 0))
+        # Bias +2px right of dead-center: villager_2tine.json's fork_base (grip anchor,
+        # where the separately-composited fork attaches) sits at x=14, near the right
+        # edge of the 16-wide frame — nudging the character right tightens the gap
+        # between the drawn fist and that anchor without touching the frozen JSON.
+        paste_x = min(FRAME_W - new_w, (FRAME_W - new_w) // 2 + 2)
+        paste_y = FRAME_H - new_h - 1  # 1px floor margin, matches procedural sprites' ground contact
+        canvas.paste(resized, (paste_x, paste_y), resized)
+        out_frames.append(canvas)
+
+    strip = Image.new("RGBA", (FRAME_W * n_frames, FRAME_H), (0, 0, 0, 0))
+    for i, f in enumerate(out_frames):
+        strip.paste(f, (i * FRAME_W, 0), f)
+
+    target_dir = Path(out_dir) if out_dir else OUT
+    right_path = target_dir / "villager_2tine_walk.png"
+    left_path = target_dir / "villager_2tine_walk_left.png"
+    strip.save(right_path, "PNG", optimize=True)
+    strip.transpose(Image.FLIP_LEFT_RIGHT).save(left_path, "PNG", optimize=True)
+    print(f"assembled {right_path.name} + {left_path.name} from {source_path} ({n_frames} frames, {FRAME_W}x{FRAME_H} each)")
+    return right_path
+
+# ──────────────────────────────────────────────────────────────────────────
 #  MAIN
 # ──────────────────────────────────────────────────────────────────────────
 def main():
@@ -740,4 +809,8 @@ def main():
     for f in files: print(f"    {f.name}")
 
 if __name__ == "__main__":
-    main()
+    import sys
+    if len(sys.argv) >= 3 and sys.argv[1] == "--assemble-2tine":
+        assemble_villager_2tine_from_source(sys.argv[2])
+    else:
+        main()
