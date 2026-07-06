@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react'
 import Link from 'next/link'
 import { usePitchDetection, type PitchInfo } from './usePitchDetection'
 import { noteToFreq, octaveFoldedCents } from './pitchMath'
@@ -47,6 +47,7 @@ const TONE_MS = 1000
 const TONE_SPACING_MS = 1200
 const ECHO_TAIL_MS = 600
 const TONE_SUPPRESS_MS = TONE_MS + ECHO_TAIL_MS
+const NEW_NOTE_CEREMONY_MS = 2400
 const TRAIL_MS = 1000
 const PITCH_BAR_Y = H - 52
 const PITCH_BAR_H = 12
@@ -177,6 +178,20 @@ type MicHudState = 'demo' | 'cue' | 'listening' | 'waiting' | 'blocked'
 
 type Pf3ResetReason = 'confident-wrong' | 'silence' | null
 
+type CeremonyToneAttempt = 'played' | 'suppressed' | 'pending' | 'disabled'
+
+interface NewNoteCeremonyState {
+  active: boolean
+  note: string | null
+  toneFired: boolean
+}
+
+interface NoteHealthDebug {
+  hue: number
+  r: number
+  intensity: number
+}
+
 interface Pf3DebugState {
   demoStep: string
   chargeProgress: number
@@ -212,6 +227,10 @@ interface Pf3DebugState {
   unlockedCount: number
   unlockedNotes: string[]
   noteR: Record<string, number>
+  noteHealth: Record<string, NoteHealthDebug>
+  ceremonyActive: boolean
+  ceremonyNote: string | null
+  ceremonyToneFired: boolean
   selectedNotes: string[]
   activeNote: string | null
   activeSequence: string[]
@@ -291,6 +310,59 @@ function noteRSnapshot(notes: string[], memory: Record<string, NoteMemory>): Rec
     result[note] = Number(currentR(memory[note] ?? createNote(note)).toFixed(4))
   }
   return result
+}
+
+function noteHealthIntensity(r: number): number {
+  // Low retrievability should look more urgent; high retrievability stays calm but legible.
+  return Number(clamp(0.2 + (1 - clamp(r, 0, 1)) * 0.8, 0.2, 1).toFixed(4))
+}
+
+function noteHealthFor(note: string, memory: Record<string, NoteMemory>): NoteHealthDebug {
+  const r = clamp(currentR(memory[note] ?? createNote(note)), 0, 1)
+  return {
+    hue: hueForNote(note),
+    r: Number(r.toFixed(4)),
+    intensity: noteHealthIntensity(r),
+  }
+}
+
+function noteHealthSnapshot(notes: string[], memory: Record<string, NoteMemory>): Record<string, NoteHealthDebug> {
+  const result: Record<string, NoteHealthDebug> = {}
+  for (const note of notes) result[note] = noteHealthFor(note, memory)
+  return result
+}
+
+function noteChipStyle(note: string, memory: Record<string, NoteMemory>): CSSProperties {
+  const { hue, intensity } = noteHealthFor(note, memory)
+  const saturation = Math.round(34 + intensity * 56)
+  const fillLight = Math.round(12 + intensity * 18)
+  const borderLight = Math.round(38 + intensity * 24)
+  const textLight = Math.round(72 + intensity * 12)
+  return {
+    color: `hsl(${hue}, ${saturation}%, ${textLight}%)`,
+    background: `linear-gradient(180deg, hsla(${hue}, ${saturation}%, ${fillLight + 7}%, 0.88), hsla(${hue}, ${saturation}%, ${fillLight}%, 0.72))`,
+    borderColor: `hsla(${hue}, ${saturation}%, ${borderLight}%, 0.86)`,
+    boxShadow: `0 0 ${Math.round(4 + intensity * 12)}px hsla(${hue}, ${saturation}%, ${borderLight}%, ${0.12 + intensity * 0.22})`,
+  }
+}
+
+function ceremonyBannerStyle(note: string): CSSProperties {
+  const hue = hueForNote(note)
+  return {
+    borderColor: `hsla(${hue}, 88%, 68%, 0.78)`,
+    background: `linear-gradient(180deg, hsla(${hue}, 62%, 17%, 0.94), rgba(6, 8, 18, 0.9))`,
+    boxShadow: `0 0 28px hsla(${hue}, 82%, 58%, 0.34)`,
+  }
+}
+
+function ceremonyNoteStyle(note: string): CSSProperties {
+  const hue = hueForNote(note)
+  return {
+    color: `hsl(${hue}, 92%, 78%)`,
+    background: `hsla(${hue}, 78%, 24%, 0.72)`,
+    borderColor: `hsla(${hue}, 88%, 66%, 0.84)`,
+    boxShadow: `0 0 18px hsla(${hue}, 88%, 60%, 0.32)`,
+  }
 }
 
 // Hand-tuned onboarding — "levels within levels, slow advances." Level 1 is
@@ -487,6 +559,9 @@ export default function PitchforksIII() {
   const activePromptKeyRef = useRef('')
   const failureGradedKeysRef = useRef<Set<string>>(new Set())
   const newNoteTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const ceremonyToneTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const ceremonyRef = useRef<NewNoteCeremonyState>({ active: false, note: null, toneFired: false })
+  const pianoSamplesReadyRef = useRef(false)
   const lockHeldMsRef = useRef(0)
   const lockProgressRef = useRef(0)
   const activeKeyRef = useRef('')
@@ -542,6 +617,7 @@ export default function PitchforksIII() {
   const [fsrsDebugMode, setFsrsDebugMode] = useState(false)
   const [unlockedNotes, setUnlockedNotes] = useState<string[]>([...STARTING_NOTES])
   const [newNoteUnlocked, setNewNoteUnlocked] = useState<string | null>(null)
+  const [ceremony, setCeremony] = useState<NewNoteCeremonyState>({ active: false, note: null, toneFired: false })
   const [micHudState, setMicHudState] = useState<MicHudState>('waiting')
 
   const { isListening, pitch, pitchRef, startListening, stopListening, error: micError } = usePitchDetection({ noiseGateDb: -45 })
@@ -673,7 +749,9 @@ export default function PitchforksIII() {
         if (!cancelled) setAssetError(err instanceof Error ? err.message : 'Sprite load failed')
       }
     })()
-    loadPianoSamples().catch(() => {})
+    loadPianoSamples()
+      .then(() => { pianoSamplesReadyRef.current = true })
+      .catch(() => { pianoSamplesReadyRef.current = false })
     return () => { cancelled = true }
   }, [])
 
@@ -751,14 +829,79 @@ export default function PitchforksIII() {
     return paused
   }, [getActiveTarget, matchingSuppressedNow])
 
-  const showNewNoteUnlocked = useCallback((note: string) => {
-    if (newNoteTimerRef.current) clearTimeout(newNoteTimerRef.current)
-    setNewNoteUnlocked(note)
-    newNoteTimerRef.current = setTimeout(() => {
-      setNewNoteUnlocked(null)
-      newNoteTimerRef.current = null
-    }, 2000)
+  const setCeremonySnapshot = useCallback((next: NewNoteCeremonyState) => {
+    ceremonyRef.current = next
+    setCeremony(next)
   }, [])
+
+  const clearCeremonyTimers = useCallback(() => {
+    if (newNoteTimerRef.current) {
+      clearTimeout(newNoteTimerRef.current)
+      newNoteTimerRef.current = null
+    }
+    if (ceremonyToneTimerRef.current) {
+      clearTimeout(ceremonyToneTimerRef.current)
+      ceremonyToneTimerRef.current = null
+    }
+  }, [])
+
+  const clearNewNoteCeremony = useCallback(() => {
+    clearCeremonyTimers()
+    setNewNoteUnlocked(null)
+    setCeremonySnapshot({ active: false, note: null, toneFired: false })
+  }, [clearCeremonyTimers, setCeremonySnapshot])
+
+  const tryPlayCeremonyTone = useCallback((note: string): CeremonyToneAttempt => {
+    if (!audioCueRef.current || cueVolumeRef.current <= 0) return 'disabled'
+    if (!pianoSamplesReadyRef.current) return 'pending'
+    if (matchingSuppressedNow()) return 'suppressed'
+    try {
+      initAudio()
+      setPianoVolume(cueVolumeRef.current)
+      playPianoNote(note, { exact: true })
+      markToneEmitted(TONE_SUPPRESS_MS)
+      return 'played'
+    } catch {
+      return 'disabled'
+    }
+  }, [matchingSuppressedNow])
+
+  const markCeremonyToneFired = useCallback((note: string) => {
+    const current = ceremonyRef.current
+    if (!current.active || current.note !== note || current.toneFired) return
+    setCeremonySnapshot({ ...current, toneFired: true })
+  }, [setCeremonySnapshot])
+
+  const scheduleCeremonyTone = useCallback((note: string) => {
+    const attempt = tryPlayCeremonyTone(note)
+    if (attempt === 'played') {
+      markCeremonyToneFired(note)
+      return
+    }
+    if (attempt !== 'suppressed' && attempt !== 'pending') return
+
+    const localSuppressionRemaining = Math.max(0, matchingSuppressedUntilRef.current - performance.now())
+    const waitMs = attempt === 'pending'
+      ? 250
+      : Math.max(180, localSuppressionRemaining + 80, TONE_SUPPRESS_MS + 80)
+
+    ceremonyToneTimerRef.current = setTimeout(() => {
+      ceremonyToneTimerRef.current = null
+      const current = ceremonyRef.current
+      if (!current.active || current.note !== note || current.toneFired) return
+      if (tryPlayCeremonyTone(note) === 'played') markCeremonyToneFired(note)
+    }, waitMs)
+  }, [markCeremonyToneFired, tryPlayCeremonyTone])
+
+  const showNewNoteUnlocked = useCallback((note: string) => {
+    clearCeremonyTimers()
+    setNewNoteUnlocked(note)
+    setCeremonySnapshot({ active: true, note, toneFired: false })
+    scheduleCeremonyTone(note)
+    newNoteTimerRef.current = setTimeout(() => {
+      clearNewNoteCeremony()
+    }, NEW_NOTE_CEREMONY_MS)
+  }, [clearCeremonyTimers, clearNewNoteCeremony, scheduleCeremonyTone, setCeremonySnapshot])
 
   const maybeUnlockNextNote = useCallback((consecutive: number) => {
     const currentPool = unlockedNotesRef.current
@@ -915,6 +1058,10 @@ export default function PitchforksIII() {
         unlockedCount: unlockedNotesRef.current.length,
         unlockedNotes: [...unlockedNotesRef.current],
         noteR: noteRSnapshot(unlockedNotesRef.current, fsrsRef.current),
+        noteHealth: noteHealthSnapshot(unlockedNotesRef.current, fsrsRef.current),
+        ceremonyActive: ceremonyRef.current.active,
+        ceremonyNote: ceremonyRef.current.note,
+        ceremonyToneFired: ceremonyRef.current.toneFired,
         selectedNotes: rt.villagers.flatMap(v => v.notes),
         activeNote: active?.note ?? null,
         activeSequence: active ? [...active.villager.notes] : [],
@@ -950,6 +1097,7 @@ export default function PitchforksIII() {
       }
     }
     const resetDebug = () => {
+      clearNewNoteCeremony()
       fsrsRef.current = {}
       unlockedNotesRef.current = [...STARTING_NOTES]
       setUnlockedNotes([...STARTING_NOTES])
@@ -968,7 +1116,7 @@ export default function PitchforksIII() {
     return () => {
       if (window.__pf3 === hook) delete window.__pf3
     }
-  }, [cuePlayingNow, demoMode, ensureNoteMemory, fsrsDebugMode, fsrsStorageKey, getActiveTarget, matchingSuppressedNow, maybeUnlockNextNote, newNoteUnlocked, saveFsrs])
+  }, [clearNewNoteCeremony, cuePlayingNow, demoMode, ensureNoteMemory, fsrsDebugMode, fsrsStorageKey, getActiveTarget, matchingSuppressedNow, maybeUnlockNextNote, newNoteUnlocked, saveFsrs])
 
   const pickVillagerNotes = useCallback((totalTines: TineCount) => {
     const pool = unlockedNotesRef.current.length > 0 ? unlockedNotesRef.current : [...STARTING_NOTES]
@@ -1715,10 +1863,7 @@ export default function PitchforksIII() {
   const startGame = useCallback(async () => {
     resumeCueAudioFromGesture()
     clearCueTimers()
-    if (newNoteTimerRef.current) {
-      clearTimeout(newNoteTimerRef.current)
-      newNoteTimerRef.current = null
-    }
+    clearNewNoteCeremony()
     runtimeRef.current = makeInitialRuntime(demoRef.current)
     nextIdRef.current = 0
     activeKeyRef.current = ''
@@ -1753,7 +1898,6 @@ export default function PitchforksIII() {
     barOnTargetRef.current = false
     barVisibleRef.current = false
     lockWhileSuppressedRef.current = false
-    setNewNoteUnlocked(null)
     micHudStateRef.current = demoRef.current ? 'demo' : 'waiting'
     setMicHudState(micHudStateRef.current)
     setHud({ wave: 1, health: STARTING_HEALTH, score: 0, streak: 0 })
@@ -1765,29 +1909,25 @@ export default function PitchforksIII() {
     lastTimeRef.current = 0
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
     rafRef.current = requestAnimationFrame(loop)
-  }, [clearCueTimers, ensureNoteMemory, loop, resumeCueAudioFromGesture, startListening])
+  }, [clearCueTimers, clearNewNoteCeremony, ensureNoteMemory, loop, resumeCueAudioFromGesture, startListening])
 
   const quitToMenu = useCallback(() => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
     clearCueTimers()
-    if (newNoteTimerRef.current) {
-      clearTimeout(newNoteTimerRef.current)
-      newNoteTimerRef.current = null
-    }
+    clearNewNoteCeremony()
     phaseRef.current = 'menu'
     stopListening()
     micHudStateRef.current = 'waiting'
     setMicHudState('waiting')
-    setNewNoteUnlocked(null)
     setPhase('menu')
-  }, [clearCueTimers, stopListening])
+  }, [clearCueTimers, clearNewNoteCeremony, stopListening])
 
   useEffect(() => () => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
     clearCueTimers()
-    if (newNoteTimerRef.current) clearTimeout(newNoteTimerRef.current)
+    clearCeremonyTimers()
     stopListening()
-  }, [clearCueTimers, stopListening])
+  }, [clearCeremonyTimers, clearCueTimers, stopListening])
 
   const micHudView: Record<MicHudState, { label: string; className: string; dotClassName: string }> = {
     demo: {
@@ -1817,10 +1957,26 @@ export default function PitchforksIII() {
     },
   }
   const activeMicHud = micHudView[micHudState]
+  const newNoteCeremonyBanner = ceremony.active && ceremony.note ? (
+    <div
+      className="absolute top-16 left-1/2 z-20 flex -translate-x-1/2 items-center gap-3 border px-4 py-2 text-sm font-black tracking-widest text-gray-100"
+      style={ceremonyBannerStyle(ceremony.note)}
+      data-testid="pf3-new-note-ceremony"
+    >
+      <span>New note</span>
+      <span
+        className="inline-flex min-h-7 min-w-12 items-center justify-center border px-2 py-1"
+        style={ceremonyNoteStyle(ceremony.note)}
+      >
+        {ceremony.note}
+      </span>
+    </div>
+  ) : null
 
   if (phase === 'menu') {
     return (
       <div className="fixed inset-0 bg-[#070914] text-gray-100 flex items-center justify-center px-4" style={{ fontFamily: 'monospace' }}>
+        {newNoteCeremonyBanner}
         {demoMode && (
           <div className="absolute top-4 right-4 text-[11px] font-bold tracking-widest text-cyan-200 border border-cyan-500/50 px-2 py-1">
             DEMO
@@ -1837,7 +1993,20 @@ export default function PitchforksIII() {
           </div>
           <h1 className="text-3xl font-black tracking-widest text-cyan-200 mb-1">PITCHFORKS III</h1>
           <div className="text-sm text-gray-400 mb-2">Frankenstein lightning ear trainer</div>
-          <div className="text-xs text-green-200/80 mb-5">{unlockedNotes.length} notes unlocked</div>
+          <div className="mb-5">
+            <div className="text-xs text-green-200/80 mb-2">{unlockedNotes.length} notes unlocked</div>
+            <div className="flex flex-wrap gap-1.5" aria-label="Unlocked notes">
+              {unlockedNotes.map(note => (
+                <span
+                  key={note}
+                  className="inline-flex min-h-6 min-w-10 items-center justify-center border px-2 py-1 text-[11px] font-black tracking-widest"
+                  style={noteChipStyle(note, fsrsRef.current)}
+                >
+                  {note}
+                </span>
+              ))}
+            </div>
+          </div>
           {assetError && <div className="text-sm text-red-300 mb-4">{assetError}</div>}
           {micError && !demoMode && <div className="text-xs text-red-300 mb-4">{micError}</div>}
           <SettingsRow
@@ -2003,11 +2172,7 @@ export default function PitchforksIII() {
             DEMO
           </div>
         )}
-        {newNoteUnlocked && (
-          <div className="absolute top-16 left-1/2 -translate-x-1/2 border border-green-300/60 bg-green-950/80 px-4 py-2 text-sm font-black tracking-widest text-green-100 shadow-[0_0_24px_rgba(74,222,128,0.25)]">
-            New note: {newNoteUnlocked}
-          </div>
-        )}
+        {newNoteCeremonyBanner}
       </div>
 
       <div
