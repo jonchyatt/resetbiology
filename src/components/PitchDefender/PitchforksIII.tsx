@@ -53,6 +53,12 @@ const PITCH_BAR_Y = H - 52
 const PITCH_BAR_H = 12
 const PITCH_BAR_X = 34
 const PITCH_BAR_W = W - PITCH_BAR_X * 2
+const DUNGEON_FLOOR_Y = GROUND_Y - 42
+const DUNGEON_TORCHES = [
+  { x: 126, y: 126, phase: 0.2 },
+  { x: 358, y: 104, phase: 1.9 },
+  { x: 594, y: 132, phase: 3.4 },
+] as const
 
 type Phase = 'menu' | 'tutorial' | 'playing' | 'game_over'
 type TineCount = 1 | 2 | 3 | 4
@@ -880,20 +886,187 @@ function drawPitchBarView(ctx: CanvasRenderingContext2D, tuner: TunerView) {
   }
 }
 
-function renderView(ctx: CanvasRenderingContext2D, view: ViewState, assets: Assets) {
-  const sky = ctx.createLinearGradient(0, 0, 0, H)
-  sky.addColorStop(0, '#070914')
-  sky.addColorStop(0.58, '#171228')
-  sky.addColorStop(1, '#151910')
-  ctx.fillStyle = sky
+function drawDungeonArch(ctx: CanvasRenderingContext2D, cx: number, topY: number, width: number, bottomY: number) {
+  const radius = width / 2
+
+  ctx.save()
+  ctx.beginPath()
+  ctx.moveTo(cx - radius, bottomY)
+  ctx.lineTo(cx - radius, topY + radius)
+  ctx.arc(cx, topY + radius, radius, Math.PI, 0)
+  ctx.lineTo(cx + radius, bottomY)
+  ctx.closePath()
+  const recess = ctx.createLinearGradient(cx, topY, cx, bottomY)
+  recess.addColorStop(0, '#050608')
+  recess.addColorStop(0.58, '#10110d')
+  recess.addColorStop(1, '#18180f')
+  ctx.fillStyle = recess
+  ctx.fill()
+
+  ctx.lineWidth = 9
+  ctx.strokeStyle = 'rgba(52, 49, 39, 0.76)'
+  ctx.stroke()
+  ctx.lineWidth = 2
+  ctx.strokeStyle = 'rgba(168, 139, 86, 0.16)'
+  ctx.stroke()
+  ctx.restore()
+}
+
+function drawDungeonFloor(ctx: CanvasRenderingContext2D) {
+  const floor = ctx.createLinearGradient(0, DUNGEON_FLOOR_Y, 0, H)
+  floor.addColorStop(0, '#202018')
+  floor.addColorStop(0.55, '#29251a')
+  floor.addColorStop(1, '#15140f')
+  ctx.fillStyle = floor
+  ctx.fillRect(0, DUNGEON_FLOOR_Y, W, H - DUNGEON_FLOOR_Y)
+
+  const path = ctx.createLinearGradient(0, DUNGEON_FLOOR_Y, 0, H)
+  path.addColorStop(0, 'rgba(79, 72, 52, 0.32)')
+  path.addColorStop(1, 'rgba(35, 31, 23, 0.72)')
+  ctx.beginPath()
+  ctx.moveTo(82, DUNGEON_FLOOR_Y)
+  ctx.lineTo(W - 82, DUNGEON_FLOOR_Y)
+  ctx.lineTo(W + 64, H)
+  ctx.lineTo(-64, H)
+  ctx.closePath()
+  ctx.fillStyle = path
+  ctx.fill()
+
+  ctx.save()
+  ctx.lineWidth = 1
+  ctx.strokeStyle = 'rgba(238, 221, 166, 0.08)'
+  for (let i = 1; i <= 5; i++) {
+    const t = i / 5
+    const y = DUNGEON_FLOOR_Y + Math.pow(t, 1.45) * (H - DUNGEON_FLOOR_Y)
+    ctx.beginPath()
+    ctx.moveTo(0, y)
+    ctx.lineTo(W, y)
+    ctx.stroke()
+  }
+
+  ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)'
+  for (let i = -4; i <= 4; i++) {
+    const bottomX = W / 2 + i * 92
+    ctx.beginPath()
+    ctx.moveTo(W / 2, DUNGEON_FLOOR_Y - 22)
+    ctx.lineTo(bottomX, H)
+    ctx.stroke()
+  }
+  ctx.restore()
+}
+
+function drawDungeonTorchGlow(
+  ctx: CanvasRenderingContext2D,
+  torch: (typeof DUNGEON_TORCHES)[number],
+  animClock: number,
+) {
+  const flicker =
+    Math.sin(animClock * 5.7 + torch.phase) * 0.55 +
+    Math.sin(animClock * 12.3 + torch.phase * 1.6) * 0.45
+  const radius = 54 + flicker * 7
+  const alpha = 0.15 + flicker * 0.025
+
+  ctx.save()
+  ctx.globalCompositeOperation = 'lighter'
+  const glow = ctx.createRadialGradient(torch.x, torch.y, 0, torch.x, torch.y, radius)
+  glow.addColorStop(0, `rgba(255, 179, 72, ${alpha})`)
+  glow.addColorStop(0.38, `rgba(205, 91, 32, ${alpha * 0.42})`)
+  glow.addColorStop(1, 'rgba(105, 45, 20, 0)')
+  ctx.fillStyle = glow
+  ctx.beginPath()
+  ctx.arc(torch.x, torch.y, radius, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.restore()
+}
+
+function drawDungeonTorchFixture(
+  ctx: CanvasRenderingContext2D,
+  torch: (typeof DUNGEON_TORCHES)[number],
+  animClock: number,
+) {
+  const flameShift = Math.sin(animClock * 9.2 + torch.phase) * 2
+
+  ctx.save()
+  ctx.strokeStyle = 'rgba(61, 46, 32, 0.78)'
+  ctx.lineWidth = 4
+  ctx.lineCap = 'round'
+  ctx.beginPath()
+  ctx.moveTo(torch.x - 10, torch.y + 19)
+  ctx.lineTo(torch.x + 7, torch.y + 6)
+  ctx.stroke()
+
+  ctx.fillStyle = '#3b2c20'
+  ctx.fillRect(torch.x - 14, torch.y + 17, 18, 5)
+
+  ctx.globalCompositeOperation = 'lighter'
+  ctx.fillStyle = 'rgba(255, 130, 38, 0.8)'
+  ctx.beginPath()
+  ctx.ellipse(torch.x, torch.y + 2, 7, 12 + flameShift, 0, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.fillStyle = 'rgba(255, 230, 128, 0.86)'
+  ctx.beginPath()
+  ctx.ellipse(torch.x + 1, torch.y + 1, 3.5, 7 + flameShift * 0.45, 0, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.restore()
+}
+
+function drawDungeonBackground(ctx: CanvasRenderingContext2D, animClock: number) {
+  const wall = ctx.createLinearGradient(0, 0, 0, H)
+  wall.addColorStop(0, '#07080c')
+  wall.addColorStop(0.32, '#171816')
+  wall.addColorStop(0.72, '#222016')
+  wall.addColorStop(1, '#11130d')
+  ctx.fillStyle = wall
   ctx.fillRect(0, 0, W, H)
 
-  ctx.fillStyle = '#283019'
-  ctx.fillRect(0, GROUND_Y, W, H - GROUND_Y)
-  ctx.fillStyle = 'rgba(255,255,255,0.38)'
-  for (let i = 0; i < 34; i++) {
-    ctx.fillRect((i * 89 + 17) % W, (i * 37 + 19) % 155, 1, 1)
+  ctx.save()
+  ctx.lineWidth = 1
+  for (let row = 0; row < 12; row++) {
+    const y = 12 + row * 24
+    ctx.strokeStyle = 'rgba(238, 226, 178, 0.06)'
+    ctx.beginPath()
+    ctx.moveTo(0, y)
+    ctx.lineTo(W, y)
+    ctx.stroke()
+
+    ctx.strokeStyle = 'rgba(0, 0, 0, 0.22)'
+    const offset = row % 2 === 0 ? 0 : 45
+    for (let x = offset; x < W + 92; x += 92) {
+      ctx.beginPath()
+      ctx.moveTo(x, y)
+      ctx.lineTo(x - 5 + (row % 3) * 3, Math.min(DUNGEON_FLOOR_Y, y + 23))
+      ctx.stroke()
+    }
   }
+
+  ctx.fillStyle = 'rgba(122, 141, 74, 0.12)'
+  ctx.fillRect(0, DUNGEON_FLOOR_Y - 18, W, 18)
+  for (let i = 0; i < 42; i++) {
+    const x = (i * 67 + 19) % W
+    const y = 28 + ((i * 41 + 11) % 226)
+    ctx.fillStyle = i % 3 === 0 ? 'rgba(205, 197, 155, 0.1)' : 'rgba(0, 0, 0, 0.16)'
+    ctx.fillRect(x, y, 2 + (i % 2), 1)
+  }
+  ctx.restore()
+
+  drawDungeonArch(ctx, 96, 72, 92, DUNGEON_FLOOR_Y + 8)
+  drawDungeonArch(ctx, 274, 54, 122, DUNGEON_FLOOR_Y + 18)
+  drawDungeonArch(ctx, 462, 58, 112, DUNGEON_FLOOR_Y + 14)
+  drawDungeonArch(ctx, 642, 84, 82, DUNGEON_FLOOR_Y + 6)
+  drawDungeonFloor(ctx)
+
+  for (const torch of DUNGEON_TORCHES) drawDungeonTorchGlow(ctx, torch, animClock)
+  for (const torch of DUNGEON_TORCHES) drawDungeonTorchFixture(ctx, torch, animClock)
+
+  const vignette = ctx.createRadialGradient(W / 2, GROUND_Y - 78, 160, W / 2, GROUND_Y - 78, 430)
+  vignette.addColorStop(0, 'rgba(0, 0, 0, 0)')
+  vignette.addColorStop(1, 'rgba(0, 0, 0, 0.44)')
+  ctx.fillStyle = vignette
+  ctx.fillRect(0, 0, W, H)
+}
+
+function renderView(ctx: CanvasRenderingContext2D, view: ViewState, assets: Assets) {
+  drawDungeonBackground(ctx, view.animClock)
 
   const frank = view.charge.charging ? assets.frankCharge : assets.frankIdle
   if (frank) {
