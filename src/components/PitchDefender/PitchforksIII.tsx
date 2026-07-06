@@ -1753,7 +1753,7 @@ export default function PitchforksIII() {
           ref={canvasRef}
           width={W}
           height={H}
-          className="block w-full h-full max-w-[1280px] max-h-[720px] object-contain"
+          className="block w-full h-auto max-w-[1280px] max-h-[720px] object-contain mx-auto"
           style={{ imageRendering: 'pixelated' }}
         />
 
