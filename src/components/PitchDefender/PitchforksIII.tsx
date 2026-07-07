@@ -824,41 +824,49 @@ function drawFrankChargeView(ctx: CanvasRenderingContext2D, view: ViewState, ass
   ctx.fill()
   ctx.restore()
 
-  // Neck-bolt spark arcs — two short jittered polylines, refreshed every 3rd frame.
+  // Neck-bolt spark arcs — two short jittered pixel-block trails (Argus consult:
+  // snapped to a SPRITE_SCALE-sized grid + filled squares instead of a stroked line,
+  // so the effect reads as native pixel-art crackle rather than a smooth vector
+  // clashing with the 6x-upscaled sprite; angle skews upward with per-refresh
+  // random variance so it crackles rather than reading as a static outward pin).
   const boltY = FRANK_Y + spriteH * 0.31
   const anchors = [
-    { x: FRANK_X + spriteW * 0.26, y: boltY },
-    { x: FRANK_X + spriteW * 0.74, y: boltY },
+    { x: FRANK_X + spriteW * 0.26, y: boltY, outDir: -1 },
+    { x: FRANK_X + spriteW * 0.74, y: boltY, outDir: 1 },
   ]
-  const sparkMag = 2 + progress * 5
-  const sparkAlpha = 0.2 + progress * 0.5
+  const sparkReach = 6 + progress * 9
+  const sparkAlpha = 0.25 + progress * 0.55
+  const pixelUnit = SPRITE_SCALE
+  const snap = (v: number) => Math.round(v / pixelUnit) * pixelUnit
 
   frankSparkJitterFrame++
   const refresh = frankSparkJitterFrame % 3 === 0 || frankSparkPoints[0][0].x === 0
 
   ctx.save()
-  ctx.lineCap = 'round'
-  ctx.lineJoin = 'round'
   ctx.globalCompositeOperation = 'lighter'
   for (let a = 0; a < anchors.length; a++) {
     const anchor = anchors[a]
     const points = frankSparkPoints[a]
-    const dir = a === 0 ? -1 : 1
     if (refresh) {
+      // mostly-upward direction (-90deg) with per-refresh random lean, not a fixed
+      // near-horizontal shape — reads as actively arcing, not a static wing/pin.
+      const angle = -Math.PI / 2 + anchor.outDir * (0.35 + Math.random() * 0.5)
+      const dx = Math.cos(angle)
+      const dy = Math.sin(angle)
       points[0].x = anchor.x
       points[0].y = anchor.y
       for (let i = 1; i <= FRANK_SPARK_SEGMENTS; i++) {
         const t = i / FRANK_SPARK_SEGMENTS
-        points[i].x = anchor.x + dir * t * 11 + (Math.random() - 0.5) * sparkMag
-        points[i].y = anchor.y - t * 9 + (Math.random() - 0.5) * sparkMag
+        points[i].x = anchor.x + dx * t * sparkReach + (Math.random() - 0.5) * pixelUnit * 1.5
+        points[i].y = anchor.y + dy * t * sparkReach + (Math.random() - 0.5) * pixelUnit * 1.5
       }
     }
-    ctx.beginPath()
-    ctx.moveTo(points[0].x, points[0].y)
-    for (let i = 1; i <= FRANK_SPARK_SEGMENTS; i++) ctx.lineTo(points[i].x, points[i].y)
-    ctx.strokeStyle = `rgba(159,231,255,${sparkAlpha})`
-    ctx.lineWidth = 1.5
-    ctx.stroke()
+    ctx.fillStyle = `rgba(159,231,255,${sparkAlpha})`
+    for (let i = 0; i <= FRANK_SPARK_SEGMENTS; i++) {
+      const px = snap(points[i].x)
+      const py = snap(points[i].y)
+      ctx.fillRect(px - pixelUnit / 2, py - pixelUnit / 2, pixelUnit, pixelUnit)
+    }
   }
   ctx.restore()
 }
