@@ -1,68 +1,9 @@
-import { PrismaClient } from '@prisma/client'
+// One-shot: expose hidden/evaluation surfaces in the Portal for Fable review.
+// Idempotent: safe to re-run; upsert is keyed on slug.
 
-const prisma = new PrismaClient()
+import { prisma } from '../src/lib/prisma'
 
 const modules = [
-  {
-    slug: 'peptides',
-    label: 'Peptides',
-    href: '/peptides',
-    icon: 'Target',
-    colorFrom: 'from-teal-600/30',
-    colorTo: 'to-teal-700/30',
-    borderColor: 'border-teal-400/30',
-    iconColor: 'text-teal-300',
-    enabled: true,
-    order: 1,
-  },
-  {
-    slug: 'workout',
-    label: 'Workout',
-    href: '/workout',
-    icon: 'Dumbbell',
-    colorFrom: 'from-green-600/30',
-    colorTo: 'to-green-700/30',
-    borderColor: 'border-green-400/30',
-    iconColor: 'text-green-300',
-    enabled: true,
-    order: 2,
-  },
-  {
-    slug: 'nutrition',
-    label: 'Nutrition',
-    href: '/nutrition',
-    icon: 'Apple',
-    colorFrom: 'from-amber-600/30',
-    colorTo: 'to-amber-700/30',
-    borderColor: 'border-amber-400/30',
-    iconColor: 'text-amber-300',
-    enabled: true,
-    order: 3,
-  },
-  {
-    slug: 'modules',
-    label: 'Modules',
-    href: '/modules',
-    icon: 'Brain',
-    colorFrom: 'from-purple-600/30',
-    colorTo: 'to-purple-700/30',
-    borderColor: 'border-purple-400/30',
-    iconColor: 'text-purple-300',
-    enabled: true,
-    order: 4,
-  },
-  {
-    slug: 'breath',
-    label: 'Breathe',
-    href: '/breath',
-    icon: 'Wind',
-    colorFrom: 'from-blue-600/30',
-    colorTo: 'to-blue-700/30',
-    borderColor: 'border-blue-400/30',
-    iconColor: 'text-blue-300',
-    enabled: true,
-    order: 5,
-  },
   {
     slug: 'meditation-visuals',
     label: 'Meditation Visuals',
@@ -162,20 +103,27 @@ const modules = [
 ]
 
 async function main() {
-  console.log('Seeding portal modules...')
-
   for (const mod of modules) {
     await prisma.portalModule.upsert({
       where: { slug: mod.slug },
       update: mod,
       create: mod,
     })
-    console.log(`  ${mod.enabled ? '✓' : '○'} ${mod.label} (${mod.slug})`)
   }
 
-  console.log(`\nDone! ${modules.length} modules seeded.`)
+  const all = await prisma.portalModule.findMany({
+    where: { enabled: true },
+    orderBy: { order: 'asc' },
+    select: { slug: true, label: true, href: true, order: true },
+  })
+  console.log(JSON.stringify(all, null, 2))
 }
 
 main()
-  .catch(console.error)
-  .finally(() => prisma.$disconnect())
+  .catch((error) => {
+    console.error(error)
+    process.exit(1)
+  })
+  .finally(async () => {
+    await prisma.$disconnect()
+  })
