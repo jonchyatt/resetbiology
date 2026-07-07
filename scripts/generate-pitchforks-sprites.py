@@ -849,6 +849,79 @@ def assemble_villager_2tine_from_source(source_path, out_dir=None):
     print(f"assembled {right_path.name} + {left_path.name} from {source_path} ({n_frames} frames, {FRAME_W}x{FRAME_H} each)")
     return right_path
 
+def assemble_frankenstein_idle_from_source(source_path, out_dir=None):
+    # C5 proof-of-contract (single AI-sourced idle pose, matching the C2 villager
+    # discipline: one asset proves the contract before any bulk commitment).
+    # Unlike the villager, this is ONE static pose, not 4 independently-generated
+    # walk frames — CW's "procedural guarantees frame-to-frame consistency, AI
+    # doesn't" principle applies here too: the 4-frame strip's subtle breathing
+    # motion is synthesized procedurally (a few px of vertical bob), not AI-drawn,
+    # so there is zero risk of the character drifting between frames.
+    # `frankenstein_charging.png` is intentionally left untouched this pass —
+    # idle-only, same scope discipline as C2's "walk-cycle ONLY, burned/ash later."
+    if not HAS_PIL:
+        raise RuntimeError("assembler mode requires Pillow (PIL) — not available in this environment")
+    import colorsys
+    src = Image.open(source_path).convert("RGBA")
+    FRAME_W, FRAME_H = 32, 48
+    N_FRAMES = 4
+    MAGENTA = (255, 0, 255)
+    THRESH = 60
+
+    def chroma_key(im, thresh):
+        p = im.load()
+        iw, ih = im.size
+        for y in range(ih):
+            for x in range(iw):
+                r, g, b, a = p[x, y]
+                if abs(r - MAGENTA[0]) < thresh and abs(g - MAGENTA[1]) < thresh and abs(b - MAGENTA[2]) < thresh:
+                    p[x, y] = (r, g, b, 0)
+
+    def chroma_key_hue(im, hue_lo=0.80, hue_hi=0.92, min_sat=0.35):
+        p = im.load()
+        iw, ih = im.size
+        for y in range(ih):
+            for x in range(iw):
+                r, g, b, a = p[x, y]
+                if a == 0:
+                    continue
+                hh, ss, vv = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
+                if hue_lo <= hh <= hue_hi and ss >= min_sat:
+                    p[x, y] = (r, g, b, 0)
+
+    chroma_key(src, THRESH)
+    bbox = src.getbbox()
+    if bbox is None:
+        raise RuntimeError("assembler: source fully transparent after chroma-key — aborting, source unusable")
+    cropped = src.crop(bbox)
+    cw, ch = cropped.size
+    # Fit to frame with a 1px floor margin + slight headroom, preserve aspect.
+    scale = min((FRAME_H - 2) / ch, FRAME_W / cw)
+    new_w = max(1, round(cw * scale))
+    new_h = max(1, round(ch * scale))
+    resized = cropped.resize((new_w, new_h), Image.NEAREST)
+    chroma_key(resized, 90)
+    chroma_key_hue(resized)
+
+    base_x = (FRAME_W - new_w) // 2
+    base_y = FRAME_H - new_h - 1  # 1px floor margin, matches villager ground contact
+
+    # Procedural breathing bob (0, -1, 0, +1px) — the ONLY thing that varies
+    # frame-to-frame; the character pixels themselves are identical every frame.
+    bob = [0, -1, 0, 1]
+    strip = Image.new("RGBA", (FRAME_W * N_FRAMES, FRAME_H), (0, 0, 0, 0))
+    for i, dy in enumerate(bob):
+        frame = Image.new("RGBA", (FRAME_W, FRAME_H), (0, 0, 0, 0))
+        y = max(0, min(FRAME_H - new_h, base_y + dy))
+        frame.paste(resized, (base_x, y), resized)
+        strip.paste(frame, (i * FRAME_W, 0), frame)
+
+    target_dir = Path(out_dir) if out_dir else OUT
+    idle_path = target_dir / "frankenstein_idle.png"
+    strip.save(idle_path, "PNG", optimize=True)
+    print(f"assembled {idle_path.name} from {source_path} ({N_FRAMES} frames, {FRAME_W}x{FRAME_H} each, procedural breathing bob)")
+    return idle_path
+
 # ──────────────────────────────────────────────────────────────────────────
 #  MAIN
 # ──────────────────────────────────────────────────────────────────────────
