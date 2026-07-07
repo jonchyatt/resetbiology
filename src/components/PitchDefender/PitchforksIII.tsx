@@ -91,6 +91,16 @@ let chargeArcJitterFrame = 0
 // needs the cheaper path before C13 lands real detection.
 let chargeArcQuality: 'full' | 'lite' = 'full'
 
+// C5: Frankenstein neck-bolt/fist spark arcs while charging. Two short jittered
+// polylines anchored near frankMeta.rod_tip (same anchor C4's lightning already
+// terminates at) — pre-allocated, mutated in place, same zero-per-frame-allocation
+// discipline as chargeArcPoints above.
+const FRANK_SPARK_SEGMENTS = 5
+const frankSparkPoints: { x: number; y: number }[][] = [0, 1].map(() =>
+  Array.from({ length: FRANK_SPARK_SEGMENTS + 1 }, () => ({ x: 0, y: 0 })),
+)
+let frankSparkJitterFrame = 0
+
 type Phase = 'menu' | 'tutorial' | 'playing' | 'game_over'
 type TineCount = 1 | 2 | 3 | 4
 type VillagerState = 'waiting' | 'walking' | 'ash'
@@ -782,6 +792,77 @@ function drawChargeArcView(ctx: CanvasRenderingContext2D, view: ViewState, asset
   ctx.restore()
 }
 
+// C5: Frankenstein charging overlay — torso glow + neck-bolt spark arcs, code-only,
+// reusing the idle art. Strictly gated on progress>0 (never `charging`, which per
+// row-25/FLW stays true post-strike via bolts.length>0 — that would relight this
+// with no real hold, the exact fake-feedback failure mode HARD BLOCKER checklist
+// item 1 bans). Same 20Hz-jitter-refresh / pre-allocated-buffer discipline as C4's
+// drawChargeArcView above (CW: zero per-frame allocation).
+function drawFrankChargeView(ctx: CanvasRenderingContext2D, view: ViewState, assets: Assets) {
+  const progress = view.charge.progress
+  if (progress <= 0) return
+
+  const fm = assets.frankMeta
+  const spriteW = fm.frame_w * SPRITE_SCALE
+  const spriteH = fm.frame_h * SPRITE_SCALE
+  const cx = FRANK_X + spriteW / 2
+  const cy = FRANK_Y + spriteH * 0.42
+
+  // Torso glow — screen-blend radial, same recipe as drawBurstView, scaled by progress.
+  // Deliberately supplemental (FLW consult-22 MED): the fork-path feedback stays the
+  // primary training surface, this is a secondary reactive read on Frank himself.
+  const glowRadius = 20 + progress * 26
+  const glowAlpha = 0.1 + progress * 0.22
+  ctx.save()
+  ctx.globalCompositeOperation = 'screen'
+  const gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, glowRadius)
+  gradient.addColorStop(0, `rgba(159,231,255,${glowAlpha})`)
+  gradient.addColorStop(1, 'rgba(159,231,255,0)')
+  ctx.fillStyle = gradient
+  ctx.beginPath()
+  ctx.arc(cx, cy, glowRadius, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.restore()
+
+  // Neck-bolt spark arcs — two short jittered polylines, refreshed every 3rd frame.
+  const boltY = FRANK_Y + spriteH * 0.31
+  const anchors = [
+    { x: FRANK_X + spriteW * 0.26, y: boltY },
+    { x: FRANK_X + spriteW * 0.74, y: boltY },
+  ]
+  const sparkMag = 2 + progress * 5
+  const sparkAlpha = 0.2 + progress * 0.5
+
+  frankSparkJitterFrame++
+  const refresh = frankSparkJitterFrame % 3 === 0 || frankSparkPoints[0][0].x === 0
+
+  ctx.save()
+  ctx.lineCap = 'round'
+  ctx.lineJoin = 'round'
+  ctx.globalCompositeOperation = 'lighter'
+  for (let a = 0; a < anchors.length; a++) {
+    const anchor = anchors[a]
+    const points = frankSparkPoints[a]
+    const dir = a === 0 ? -1 : 1
+    if (refresh) {
+      points[0].x = anchor.x
+      points[0].y = anchor.y
+      for (let i = 1; i <= FRANK_SPARK_SEGMENTS; i++) {
+        const t = i / FRANK_SPARK_SEGMENTS
+        points[i].x = anchor.x + dir * t * 11 + (Math.random() - 0.5) * sparkMag
+        points[i].y = anchor.y - t * 9 + (Math.random() - 0.5) * sparkMag
+      }
+    }
+    ctx.beginPath()
+    ctx.moveTo(points[0].x, points[0].y)
+    for (let i = 1; i <= FRANK_SPARK_SEGMENTS; i++) ctx.lineTo(points[i].x, points[i].y)
+    ctx.strokeStyle = `rgba(159,231,255,${sparkAlpha})`
+    ctx.lineWidth = 1.5
+    ctx.stroke()
+  }
+  ctx.restore()
+}
+
 function drawBurstView(ctx: CanvasRenderingContext2D, b: BurstView) {
   const progress = clamp(b.life / b.maxLife, 0, 1)
   const fade = Math.max(0, 1 - progress)
@@ -1183,10 +1264,16 @@ function drawDungeonBackground(ctx: CanvasRenderingContext2D, animClock: number)
 function renderView(ctx: CanvasRenderingContext2D, view: ViewState, assets: Assets) {
   drawDungeonBackground(ctx, view.animClock)
 
-  const frank = view.charge.charging ? assets.frankCharge : assets.frankIdle
+  // C5: always the real AI-sourced idle art. The prior charging?frankCharge:frankIdle
+  // swap pointed at a stale session-1 placeholder (frankenstein_charging.png never got
+  // the C5 art pass) — every held note was flashing Frankenstein back to the ugly
+  // green-blob sprite. Charging is now a code-only overlay on the SAME idle art
+  // (drawFrankChargeView below), not an asset swap. frankCharge stays loaded but
+  // inert this pass (FLW consult-22 LOW: real 2nd pose is a later art-lane item).
+  const frank = assets.frankIdle
   if (frank) {
     const fm = assets.frankMeta
-    const frame = Math.floor(view.animClock * (view.charge.charging ? 8 : 4)) % fm.frames
+    const frame = Math.floor(view.animClock * (view.charge.progress > 0 ? 8 : 4)) % fm.frames
     ctx.imageSmoothingEnabled = false
     ctx.drawImage(
       frank,
@@ -1203,6 +1290,7 @@ function renderView(ctx: CanvasRenderingContext2D, view: ViewState, assets: Asse
     ctx.beginPath()
     ctx.ellipse(FRANK_X + 48, FRANK_Y + fm.frame_h * SPRITE_SCALE - 7, 35, 6, 0, 0, Math.PI * 2)
     ctx.fill()
+    drawFrankChargeView(ctx, view, assets)
     // ported from Pitchforks.tsx:518-523; health lives on the monster.
     for (let i = 0; i < STARTING_HEALTH; i++) {
       ctx.fillStyle = i < view.hud.health ? '#4ade80' : '#333'
