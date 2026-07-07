@@ -27,6 +27,20 @@ Past sessions cost real money by ignoring this. **Do not be that session.** The 
 
 ---
 
+# 🚨 MONGO ATLAS QUOTA — TTL INDEX REQUIRED ON EVERY LOG/QUEUE COLLECTION
+
+**This has caused two production outages** (2026-04-26: `scheduledNotification` queue, 6,365 stale rows; 2026-07-06/07: `cron_health_checks` monitoring log, 5,999 stale rows) — both times an unbounded Mongo collection filled the Atlas free-tier 512MB quota and **blocked ALL writes cluster-wide**, not just writes to that one collection. The second incident happened on a collection that was *added specifically to monitor the first incident* — the monitoring tool itself became the next outage.
+
+**HARD RULE:** any new Mongo/Prisma model used as a log, queue, audit trail, or health-check history **must ship with a retention mechanism from the first commit**, not as a follow-up. Two acceptable patterns:
+1. A native Mongo TTL index (`db.collection.createIndex({ <dateField>: 1 }, { expireAfterSeconds: N })`) — preferred, since it's enforced by MongoDB's background thread independent of whether any app code ever runs again.
+2. An app-level prune call on every write to that collection (acceptable as defense-in-depth alongside #1, not a substitute for it).
+
+Before merging any PR that adds a new Mongo collection intended for logs/queue/audit data, check: does it have a TTL index or equivalent bounded-retention plan? If not, that's a blocker, not a nice-to-have.
+
+Full incident writeup: `data/rb-drive-vault/FINDING-connect-unauthorized.md` (jarvis repo) and `docs/PHASE-2-DRIVE-PRIMARY.md` §Why this architecture, item 2.
+
+---
+
 # ⚡ FIRST ACTION EVERY SESSION
 
 **READ THIS FILE IMMEDIATELY:** `.hos/SESSION-INIT.md`
