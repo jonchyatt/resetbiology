@@ -10,7 +10,7 @@ import TrialSubscription from "@/components/Subscriptions/TrialSubscription"
 import { VaultBanner } from "@/components/Vault/VaultBanner"
 
 const iconMap: Record<string, LucideIcon> = {
-  Target, Dumbbell, Apple, Brain, Wind, BookOpen, Eye, Zap, Music,
+  Target, Dumbbell, Apple, Brain, Wind, BookOpen, Eye, Zap, Music, Sparkles,
 }
 
 interface PortalModuleData {
@@ -26,6 +26,27 @@ interface PortalModuleData {
   order: number
 }
 
+const meditationRoomModule: PortalModuleData = {
+  slug: 'meditation-room',
+  label: 'Meditation Room',
+  href: '/visuals/breathing',
+  icon: 'Sparkles',
+  colorFrom: 'from-fuchsia-600/30',
+  colorTo: 'to-fuchsia-700/30',
+  borderColor: 'border-fuchsia-400/30',
+  iconColor: 'text-fuchsia-300',
+  enabled: true,
+  order: 10,
+}
+
+const withMeditationRoomModule = (modules: PortalModuleData[]) => {
+  if (modules.some((mod) => mod.slug === meditationRoomModule.slug)) {
+    return modules
+  }
+
+  return [...modules, meditationRoomModule].sort((a, b) => a.order - b.order)
+}
+
 // Hardcoded fallback if API fails
 const fallbackModules: PortalModuleData[] = [
   { slug: 'peptides', label: 'Peptides', href: '/peptides', icon: 'Target', colorFrom: 'from-teal-600/30', colorTo: 'to-teal-700/30', borderColor: 'border-teal-400/30', iconColor: 'text-teal-300', enabled: true, order: 1 },
@@ -37,6 +58,7 @@ const fallbackModules: PortalModuleData[] = [
   { slug: 'vision-training', label: 'Vision', href: '/vision-training', icon: 'Eye', colorFrom: 'from-cyan-600/30', colorTo: 'to-cyan-700/30', borderColor: 'border-cyan-400/30', iconColor: 'text-cyan-300', enabled: true, order: 7 },
   { slug: 'ear-training', label: 'Ear Training', href: '/ear-training', icon: 'Music', colorFrom: 'from-rose-600/30', colorTo: 'to-pink-700/30', borderColor: 'border-rose-400/30', iconColor: 'text-rose-300', enabled: true, order: 8 },
   { slug: 'education', label: 'Education', href: '/education', icon: 'BookOpen', colorFrom: 'from-indigo-600/30', colorTo: 'to-indigo-700/30', borderColor: 'border-indigo-400/30', iconColor: 'text-indigo-300', enabled: true, order: 9 },
+  meditationRoomModule,
 ]
 
 interface DailyJournalData {
@@ -101,7 +123,7 @@ export function EnhancedDashboard() {
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data) && data.length > 0) {
-          setPortalModules(data)
+          setPortalModules(withMeditationRoomModule(data))
         } else {
           setPortalModules(fallbackModules)
         }
