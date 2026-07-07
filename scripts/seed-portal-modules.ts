@@ -126,7 +126,7 @@ const modules = [
   {
     slug: 'voice-training',
     label: 'Voice Training',
-    href: '/voice-training',
+    href: '/pitch-defender',
     icon: 'Music',
     colorFrom: 'from-fuchsia-600/30',
     colorTo: 'to-cyan-700/30',
