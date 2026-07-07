@@ -1089,7 +1089,10 @@ function drawPitchBarView(ctx: CanvasRenderingContext2D, tuner: TunerView) {
   }
 
   if (tuner.targetNote) {
-    ctx.fillStyle = '#4ade80'
+    // Argus video-review consult: low contrast against the dark dungeon floor in green;
+    // switched to the brand-orange highlight (matches the C5 UI-reskin palette) for
+    // readability under duress, per the explicit suggested fix.
+    ctx.fillStyle = '#fdba74'
     ctx.font = '8px monospace'
     ctx.textAlign = 'center'
     ctx.fillText(`target: ${tuner.targetNote}`, centerX, PITCH_BAR_Y + PITCH_BAR_H + 12)
