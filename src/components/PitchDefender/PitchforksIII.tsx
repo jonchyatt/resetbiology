@@ -1398,6 +1398,7 @@ export default function PitchforksIII() {
   const lastResetReasonRef = useRef<Pf3ResetReason>(null)
   const burnedTinesRef = useRef(0)
   const ashCountRef = useRef(0)
+  const lastAshAtRef = useRef(0)
   const lastStrikeNoteRef = useRef<string | null>(null)
   const lastStrikeHueRef = useRef<number | null>(null)
   const lastKillNoteRef = useRef<string | null>(null)
@@ -2076,6 +2077,7 @@ export default function PitchforksIII() {
       villager.state = 'ash'
       villager.ashTimer = 1.1
       ashCountRef.current += 1
+      lastAshAtRef.current = performance.now()
       fullSequenceCompleteRef.current = true
       if (demoRef.current) demoStepRef.current = 'ash'
       rt.streak += 1
@@ -2108,7 +2110,7 @@ export default function PitchforksIII() {
     const targetFreq = noteToFreq(target.note)
     const firstTargetScript = demoLockCountRef.current === 0
 
-    if (ashCountRef.current > 0) {
+    if (now - lastAshAtRef.current < 220) {
       demoStepRef.current = 'attack-countdown'
       return { note: target.note, frequency: 0, cents: 0, confidence: 0, isActive: false }
     }
@@ -2414,6 +2416,7 @@ export default function PitchforksIII() {
     lastResetReasonRef.current = null
     burnedTinesRef.current = 0
     ashCountRef.current = 0
+    lastAshAtRef.current = 0
     lastStrikeNoteRef.current = null
     lastStrikeHueRef.current = null
     lastKillNoteRef.current = null
