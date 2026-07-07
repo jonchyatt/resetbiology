@@ -2571,8 +2571,8 @@ export default function PitchforksIII() {
   const micHudView: Record<MicHudState, { label: string; className: string; dotClassName: string }> = {
     demo: {
       label: 'Demo mode',
-      className: 'border-cyan-500/50 text-cyan-100 bg-cyan-950/45',
-      dotClassName: 'bg-cyan-300',
+      className: 'border-orange-500/50 text-orange-100 bg-orange-950/45',
+      dotClassName: 'bg-orange-300',
     },
     cue: {
       label: 'Cue...',
@@ -2617,20 +2617,20 @@ export default function PitchforksIII() {
       <div className="fixed inset-0 bg-[#070914] text-gray-100 flex items-center justify-center px-4" style={{ fontFamily: 'monospace' }}>
         {newNoteCeremonyBanner}
         {demoMode && (
-          <div className="absolute top-4 right-4 text-[11px] font-bold tracking-widest text-cyan-200 border border-cyan-500/50 px-2 py-1">
+          <div className="absolute top-4 right-4 text-[11px] font-bold tracking-widest text-orange-200 border border-orange-500/50 px-2 py-1">
             DEMO
           </div>
         )}
-        <div className="w-full max-w-lg border border-cyan-900/60 bg-black/30 p-5">
+        <div className="w-full max-w-lg border border-orange-900/60 bg-black/30 p-5">
           <div className="flex items-center justify-between mb-4">
-            <Link href="/pitch-defender" className="text-xs text-cyan-300 hover:text-cyan-100">
+            <Link href="/pitch-defender" className="text-xs text-orange-300 hover:text-orange-100">
               Back
             </Link>
             <Link href="/pitch-defender/pitchforks" className="text-xs text-gray-500 hover:text-gray-300">
               V1
             </Link>
           </div>
-          <h1 className="text-3xl font-black tracking-widest text-cyan-200 mb-1">PITCHFORKS III</h1>
+          <h1 className="text-3xl font-black tracking-widest text-orange-200 mb-1">PITCHFORKS III</h1>
           <div className="text-sm text-gray-400 mb-2">Frankenstein lightning ear trainer</div>
           <div className="mb-5">
             <div className="text-xs text-green-200/80 mb-2">{unlockedNotes.length} notes unlocked</div>
@@ -2710,7 +2710,7 @@ export default function PitchforksIII() {
           <div className="flex items-start gap-3">
             <div className="text-2xl">🔊</div>
             <div>
-              <div className="text-sm text-cyan-300 font-bold">Replay anytime</div>
+              <div className="text-sm text-orange-300 font-bold">Replay anytime</div>
               <div className="text-xs text-gray-400">Use REPLAY NOTES to hear the active villager again.</div>
             </div>
           </div>
@@ -2761,16 +2761,16 @@ export default function PitchforksIII() {
   if (phase === 'game_over') {
     return (
       <div className="fixed inset-0 bg-[#070914] text-gray-100 flex items-center justify-center px-4" style={{ fontFamily: 'monospace' }}>
-        {demoMode && <div className="absolute top-4 right-4 text-[11px] font-bold tracking-widest text-cyan-200">DEMO</div>}
+        {demoMode && <div className="absolute top-4 right-4 text-[11px] font-bold tracking-widest text-orange-200">DEMO</div>}
         <div className="w-full max-w-md border border-red-900/60 bg-black/35 p-5 text-center">
           <div className="text-3xl font-black text-red-300 tracking-widest mb-4">GAME OVER</div>
           <div className="grid grid-cols-3 gap-3 mb-5 text-sm">
             <div><div className="text-gray-500">Score</div><div className="text-xl text-white">{hud.score}</div></div>
-            <div><div className="text-gray-500">Wave</div><div className="text-xl text-cyan-200">{hud.wave}</div></div>
+            <div><div className="text-gray-500">Wave</div><div className="text-xl text-orange-200">{hud.wave}</div></div>
             <div><div className="text-gray-500">Streak</div><div className="text-xl text-green-200">{hud.streak}</div></div>
           </div>
           <div className="flex gap-3">
-            <button onClick={startGame} className="flex-1 py-2 bg-cyan-200 text-[#071018] font-bold border border-cyan-100">
+            <button onClick={startGame} className="flex-1 py-2 bg-orange-200 text-[#071018] font-bold border border-orange-100">
               AGAIN
             </button>
             <button onClick={quitToMenu} className="flex-1 py-2 border border-gray-700 text-gray-300">
@@ -2807,7 +2807,7 @@ export default function PitchforksIII() {
         </div>
 
         {demoMode && (
-          <div className="absolute top-3 right-3 text-[11px] font-bold tracking-widest text-cyan-200 bg-black/60 border border-cyan-500/50 px-2 py-1">
+          <div className="absolute top-3 right-3 text-[11px] font-bold tracking-widest text-orange-200 bg-black/60 border border-orange-500/50 px-2 py-1">
             DEMO
           </div>
         )}
@@ -2864,13 +2864,13 @@ function SettingsRow(props: {
     <div className={`flex max-w-full flex-wrap items-center justify-center ${props.compact ? 'gap-2 text-[11px]' : 'gap-3 text-xs'}`}>
       <button
         onClick={() => props.setNoteNamesOn(!props.noteNamesOn)}
-        className={`px-2 py-1 border ${props.noteNamesOn ? 'border-cyan-400 text-cyan-100 bg-cyan-950/40' : 'border-gray-700 text-gray-400'}`}
+        className={`px-2 py-1 border ${props.noteNamesOn ? 'border-orange-400 text-orange-100 bg-orange-950/40' : 'border-gray-700 text-gray-400'}`}
       >
         Note names {props.noteNamesOn ? 'ON' : 'OFF'}
       </button>
       <button
         onClick={() => props.setAudioCueOn(!props.audioCueOn)}
-        className={`px-2 py-1 border ${props.audioCueOn ? 'border-cyan-400 text-cyan-100 bg-cyan-950/40' : 'border-gray-700 text-gray-400'}`}
+        className={`px-2 py-1 border ${props.audioCueOn ? 'border-orange-400 text-orange-100 bg-orange-950/40' : 'border-gray-700 text-gray-400'}`}
       >
         Audio cue {props.audioCueOn ? 'ON' : 'OFF'}
       </button>
@@ -2882,7 +2882,7 @@ function SettingsRow(props: {
           max={200}
           value={props.cueVolume}
           onChange={e => props.setCueVolume(Number(e.target.value))}
-          className="w-24 accent-cyan-300"
+          className="w-24 accent-orange-300"
         />
       </label>
       <label className="flex items-center gap-2 text-gray-300">
@@ -2893,7 +2893,7 @@ function SettingsRow(props: {
           max={200}
           value={props.sfxVolume}
           onChange={e => props.setSfxVolume(Number(e.target.value))}
-          className="w-24 accent-cyan-300"
+          className="w-24 accent-orange-300"
         />
       </label>
     </div>
