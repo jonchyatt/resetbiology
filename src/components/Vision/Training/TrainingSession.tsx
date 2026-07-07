@@ -14,6 +14,7 @@ interface TrainingSessionProps {
   deviceMode?: 'phone' | 'desktop'
   binocularMode?: BinocularMode
   untimed?: boolean
+  nightMode?: boolean
   onActiveChange?: (isActive: boolean) => void
   onExit?: () => void
 }
@@ -49,6 +50,7 @@ export default function TrainingSession({
   deviceMode = 'phone',
   binocularMode = 'off',
   untimed = false,
+  nightMode = false,
   onActiveChange,
   onExit
 }: TrainingSessionProps) {
@@ -73,6 +75,17 @@ export default function TrainingSession({
   const difficulty = DIFFICULTY_LEVELS[currentLevel - 1] || DIFFICULTY_LEVELS[0]
   const accuracy = attempts > 0 ? (correct / attempts) * 100 : 0
   const currentGlassesStage = READER_GLASSES_STAGES[readerGlassesStage] || READER_GLASSES_STAGES[0]
+  const chartShellClass = nightMode
+    ? 'relative rounded-xl overflow-hidden bg-[#050403] ring-1 ring-amber-900/40'
+    : 'relative'
+  const statsBarClass = nightMode
+    ? 'bg-[#0d0905]/95 backdrop-blur-sm border-b border-amber-900/40 px-4 py-2 flex items-center justify-between'
+    : 'bg-gray-900/80 backdrop-blur-sm px-4 py-2 flex items-center justify-between'
+  const inactivePanelClass = nightMode
+    ? 'bg-[#100b07]/80 border border-amber-900/40 rounded-lg p-6 shadow-inner'
+    : 'bg-gray-900/40 border border-primary-400/30 rounded-lg p-6 shadow-inner'
+  const statTileClass = nightMode ? 'bg-[#17100a]/80' : 'bg-gray-800/50'
+  const mutedTextClass = nightMode ? 'text-amber-100/60' : 'text-gray-400'
 
   // Reset target distance if device mode changes
   useEffect(() => {
@@ -250,9 +263,9 @@ export default function TrainingSession({
     <div className="space-y-4">
       {/* CHART FIRST when active - this is the main focus! */}
       {isActive && !sessionComplete && (
-        <div className="relative">
+        <div className={chartShellClass}>
           {/* Unified stats bar — matches mockup: stats left, controls right */}
-          <div className="bg-gray-900/80 backdrop-blur-sm px-4 py-2 flex items-center justify-between">
+          <div className={statsBarClass}>
             <div className="flex items-center gap-4 text-sm">
               <span className="text-white font-semibold">{difficulty.label}</span>
               <span className="text-gray-600">|</span>
@@ -333,13 +346,13 @@ export default function TrainingSession({
 
       {/* Header with stats - show when NOT active */}
       {!isActive && (
-        <div className="bg-gray-900/40 border border-primary-400/30 rounded-lg p-6 shadow-inner">
+        <div className={inactivePanelClass}>
         <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
           <div>
             <h3 className="text-2xl font-bold text-white mb-1">
               Level {currentLevel} - {difficulty.label}
             </h3>
-            <p className="text-gray-400 text-sm">
+            <p className={`${mutedTextClass} text-sm`}>
               {visionType === 'near' ? 'Near Vision' : 'Far Vision'} Training
             </p>
           </div>
@@ -376,22 +389,22 @@ export default function TrainingSession({
 
         {/* Session stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-gray-800/50 rounded-lg p-3">
-            <p className="text-gray-400 text-xs mb-1">Time</p>
+          <div className={`${statTileClass} rounded-lg p-3`}>
+            <p className={`${mutedTextClass} text-xs mb-1`}>Time</p>
             <p className="text-white text-xl font-bold">{formatTime(sessionDuration)}</p>
           </div>
-          <div className="bg-gray-800/50 rounded-lg p-3">
-            <p className="text-gray-400 text-xs mb-1">Accuracy</p>
+          <div className={`${statTileClass} rounded-lg p-3`}>
+            <p className={`${mutedTextClass} text-xs mb-1`}>Accuracy</p>
             <p className={`text-xl font-bold ${accuracy >= difficulty.requiredAccuracy ? 'text-secondary-400' : 'text-yellow-400'}`}>
               {accuracy.toFixed(0)}%
             </p>
           </div>
-          <div className="bg-gray-800/50 rounded-lg p-3">
-            <p className="text-gray-400 text-xs mb-1">Attempts</p>
+          <div className={`${statTileClass} rounded-lg p-3`}>
+            <p className={`${mutedTextClass} text-xs mb-1`}>Attempts</p>
             <p className="text-white text-xl font-bold">{attempts}/10</p>
           </div>
-          <div className="bg-gray-800/50 rounded-lg p-3">
-            <p className="text-gray-400 text-xs mb-1">Required</p>
+          <div className={`${statTileClass} rounded-lg p-3`}>
+            <p className={`${mutedTextClass} text-xs mb-1`}>Required</p>
             <p className="text-primary-400 text-xl font-bold">{difficulty.requiredAccuracy}%</p>
           </div>
         </div>
@@ -400,7 +413,11 @@ export default function TrainingSession({
 
       {/* Distance Progression Panel - for near vision training - hide when active */}
       {!isActive && visionType === 'near' && distanceProgressionMode && (
-        <div className="bg-gradient-to-r from-blue-600/20 to-cyan-600/20 border border-blue-400/30 rounded-lg p-5">
+        <div className={`border rounded-lg p-5 ${
+          nightMode
+            ? 'bg-gradient-to-r from-[#17100a]/85 to-[#0d0905]/85 border-amber-900/40'
+            : 'bg-gradient-to-r from-blue-600/20 to-cyan-600/20 border-blue-400/30'
+        }`}>
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-blue-500/20 rounded-lg">
@@ -523,7 +540,9 @@ export default function TrainingSession({
 
       {/* Instructions for first-time users */}
       {!isActive && !sessionComplete && attempts === 0 && (
-        <div className="bg-blue-500/10 border border-blue-400/30 rounded-lg p-6">
+        <div className={`border rounded-lg p-6 ${
+          nightMode ? 'bg-amber-950/20 border-amber-900/40' : 'bg-blue-500/10 border-blue-400/30'
+        }`}>
           <h4 className="text-blue-300 font-semibold mb-3">How to Train:</h4>
           <ul className="text-gray-300 space-y-2 text-sm">
             <li>• Press Start to begin your training session</li>

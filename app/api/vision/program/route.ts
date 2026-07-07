@@ -213,6 +213,7 @@ export async function POST(req: NextRequest) {
           sessionTitle: sessionData.title,
           baselineMinutes: sessionData.baselineMinutes,
           exerciseMinutes: sessionData.exerciseMinutes,
+          breathWarmupMinutes: 0,
           totalMinutes: sessionData.baselineMinutes + sessionData.exerciseMinutes,
           exercisesCompleted: sessionData.exerciseIds,
           localDate: localDate || new Date().toISOString().split('T')[0],
@@ -257,7 +258,10 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'Not enrolled in program' }, { status: 400 })
       }
 
-      const { week, day, baselineMinutes, exerciseMinutes, exercisesCompleted, nearSnellenResult, farSnellenResult, notes } = data
+      const { week, day, baselineMinutes, exerciseMinutes, breathWarmupMinutes, exercisesCompleted, nearSnellenResult, farSnellenResult, notes } = data
+      const completedBaselineMinutes = baselineMinutes || 0
+      const completedExerciseMinutes = exerciseMinutes || 0
+      const completedBreathWarmupMinutes = Math.max(0, Math.min(3, Number(breathWarmupMinutes) || 0))
 
       // Check if session already completed today
       const todayLocalDate = new Date().toISOString().split('T')[0]
@@ -286,9 +290,10 @@ export async function POST(req: NextRequest) {
           week,
           day,
           sessionTitle: sessionData?.title || `Week ${week} Day ${day}`,
-          baselineMinutes: baselineMinutes || 0,
-          exerciseMinutes: exerciseMinutes || 0,
-          totalMinutes: (baselineMinutes || 0) + (exerciseMinutes || 0),
+          baselineMinutes: completedBaselineMinutes,
+          exerciseMinutes: completedExerciseMinutes,
+          breathWarmupMinutes: completedBreathWarmupMinutes,
+          totalMinutes: completedBaselineMinutes + completedExerciseMinutes + completedBreathWarmupMinutes,
           exercisesCompleted: exercisesCompleted || [],
           nearSnellenResult,
           farSnellenResult,
@@ -330,7 +335,7 @@ export async function POST(req: NextRequest) {
         where: { id: enrollment.id },
         data: {
           sessionsCompleted: enrollment.sessionsCompleted + 1,
-          totalPracticeMinutes: enrollment.totalPracticeMinutes + (baselineMinutes || 0) + (exerciseMinutes || 0),
+          totalPracticeMinutes: enrollment.totalPracticeMinutes + completedBaselineMinutes + completedExerciseMinutes + completedBreathWarmupMinutes,
           streakDays: newStreakDays,
           longestStreak: Math.max(enrollment.longestStreak, newStreakDays),
           lastSessionDate: new Date(),
