@@ -60,6 +60,21 @@ const DUNGEON_TORCHES = [
   { x: 594, y: 132, phase: 3.4 },
 ] as const
 
+// C3: fork pose lean. Villagers face/advance toward Frankenstein (FRANK_X, left side),
+// so a negative angle here tips the tine end toward him — "gripped forward," not a
+// vertical rod. Pivots around the villager's own fork_base anchor (rotation-invariant;
+// strike/tineIndex targeting never reads rendered fork pixels, only villagerMeta.tines).
+const FORK_LEAN_DEG = -18
+
+function rotateAroundPivot(px: number, py: number, cx: number, cy: number, deg: number) {
+  const rad = (deg * Math.PI) / 180
+  const cos = Math.cos(rad)
+  const sin = Math.sin(rad)
+  const dx = px - cx
+  const dy = py - cy
+  return { x: cx + dx * cos - dy * sin, y: cy + dx * sin + dy * cos }
+}
+
 type Phase = 'menu' | 'tutorial' | 'playing' | 'game_over'
 type TineCount = 1 | 2 | 3 | 4
 type VillagerState = 'waiting' | 'walking' | 'ash'
@@ -756,9 +771,14 @@ function drawVillagerView(ctx: CanvasRenderingContext2D, v: VillagerView, view: 
   const forkH = forkMeta.frame_h * SPRITE_SCALE
   const fx = v.x + (meta.frame_w - meta.fork_base.x) * SPRITE_SCALE - (forkMeta.frame_w - forkMeta.handle_base.x) * SPRITE_SCALE
   const fy = v.y + meta.fork_base.y * SPRITE_SCALE - forkMeta.handle_base.y * SPRITE_SCALE
+  const forkPivotX = v.x + (meta.frame_w - meta.fork_base.x) * SPRITE_SCALE
+  const forkPivotY = v.y + meta.fork_base.y * SPRITE_SCALE
 
   if (baseImg) {
     ctx.save()
+    ctx.translate(forkPivotX, forkPivotY)
+    ctx.rotate((FORK_LEAN_DEG * Math.PI) / 180)
+    ctx.translate(-forkPivotX, -forkPivotY)
     ctx.translate(fx + forkW, fy)
     ctx.scale(-1, 1)
     ctx.drawImage(baseImg, 0, 0, forkW, forkH)
@@ -769,12 +789,15 @@ function drawVillagerView(ctx: CanvasRenderingContext2D, v: VillagerView, view: 
     ctx.restore()
   }
 
+  const tineTipAnchor = rotateAroundPivot(fx + forkW / 2, fy + 7, forkPivotX, forkPivotY, FORK_LEAN_DEG)
+  const noteLabelAnchor = rotateAroundPivot(fx + forkW / 2, fy - 7, forkPivotX, forkPivotY, FORK_LEAN_DEG)
+
   if (v.active && view.charge.tint) {
     ctx.save()
     ctx.globalAlpha = 0.48
     ctx.fillStyle = view.charge.tint
     ctx.beginPath()
-    ctx.ellipse(fx + forkW / 2, fy + 7, 19 + progress * 12, 18 + progress * 8, 0, 0, Math.PI * 2)
+    ctx.ellipse(tineTipAnchor.x, tineTipAnchor.y, 19 + progress * 12, 18 + progress * 8, 0, 0, Math.PI * 2)
     ctx.fill()
     ctx.restore()
   }
@@ -783,8 +806,8 @@ function drawVillagerView(ctx: CanvasRenderingContext2D, v: VillagerView, view: 
     const note = v.notes[v.burned]
     ctx.font = 'bold 14px monospace'
     ctx.textAlign = 'center'
-    const lx = fx + forkW / 2
-    const ly = fy - 7
+    const lx = noteLabelAnchor.x
+    const ly = noteLabelAnchor.y
     const tw = ctx.measureText(note).width + 12
     ctx.fillStyle = 'rgba(8, 10, 18, 0.86)'
     ctx.strokeStyle = view.charge.tint ?? 'rgba(130,210,255,0.62)'
@@ -1132,8 +1155,11 @@ function renderView(ctx: CanvasRenderingContext2D, view: ViewState, assets: Asse
     if (villager) {
       const meta = assets.villagerMeta[villager.totalTines]
       const tine = meta.tines[Math.max(0, Math.min(view.active.tineIndex, meta.tines.length - 1))]
-      const x = villager.x + (meta.frame_w - tine.x) * SPRITE_SCALE
-      const y = villager.y + tine.y * SPRITE_SCALE
+      const forkPivotX = villager.x + (meta.frame_w - meta.fork_base.x) * SPRITE_SCALE
+      const forkPivotY = villager.y + meta.fork_base.y * SPRITE_SCALE
+      const rawX = villager.x + (meta.frame_w - tine.x) * SPRITE_SCALE
+      const rawY = villager.y + tine.y * SPRITE_SCALE
+      const { x, y } = rotateAroundPivot(rawX, rawY, forkPivotX, forkPivotY, FORK_LEAN_DEG)
       ctx.strokeStyle = view.charge.tint ?? 'rgba(160,210,255,0.62)'
       ctx.lineWidth = 1.5
       ctx.beginPath()
@@ -1900,8 +1926,11 @@ export default function PitchforksIII() {
     const tine = vMeta.tines[Math.max(0, Math.min(tineIndex, vMeta.tines.length - 1))]
     const pivotX = FRANK_X + frankMeta.rod_tip.x * SPRITE_SCALE
     const pivotY = FRANK_Y + frankMeta.rod_tip.y * SPRITE_SCALE
-    const toX = villager.x + (vMeta.frame_w - tine.x) * SPRITE_SCALE
-    const toY = villager.y + tine.y * SPRITE_SCALE
+    const forkPivotX = villager.x + (vMeta.frame_w - vMeta.fork_base.x) * SPRITE_SCALE
+    const forkPivotY = villager.y + vMeta.fork_base.y * SPRITE_SCALE
+    const rawToX = villager.x + (vMeta.frame_w - tine.x) * SPRITE_SCALE
+    const rawToY = villager.y + tine.y * SPRITE_SCALE
+    const { x: toX, y: toY } = rotateAroundPivot(rawToX, rawToY, forkPivotX, forkPivotY, FORK_LEAN_DEG)
     runtimeRef.current.bolts.push({
       fromX: pivotX + 26,
       fromY: 18,
