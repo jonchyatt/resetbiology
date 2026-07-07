@@ -455,10 +455,13 @@ def draw_pitchfork(tines=3, burned=0, glow=False):
     The fork hangs vertically. Handle at bottom (attaches to fork_base).
     Tines fan out at the top.
     burned: how many tines have been snapped off (from rightmost first)
-    glow: brighten the metal (used as a "target" highlight)
+    glow: burning-ember tip + brightened shaft (the "target" highlight)
+
+    C3 Q2 (procedural ladder, no AI-sourcing — forks are a small geometric
+    object, and burn-ladder frame-to-frame consistency is exactly what
+    procedural guarantees and AI generation doesn't; see CW consult-27).
     """
     c = Canvas(8, 16)
-    metal = F3 if glow else FM
 
     # Handle (vertical wood pole)
     c.vline(3, 6, 10, FW)
@@ -483,14 +486,31 @@ def draw_pitchfork(tines=3, burned=0, glow=False):
     for i, tx in enumerate(xs):
         is_burned = i >= (tines - burned)  # rightmost burns first
         if is_burned:
-            # stub: 1 px charred remnant
+            # charred stub: soot cap + dark remnant — 2px, reads as "snapped off"
+            # distinctly from a live tine at any burn stage (sharper falloff than
+            # the prior single flat pixel)
+            c.set(tx, 3, BK)
             c.set(tx, 4, A2)
         else:
-            # full tine: 4 pixels tall, with point at top
-            c.vline(tx, 1, 4, metal)
-            c.set(tx, 0, BK)            # tip outline
+            # full tine: 4px shaft with a real highlight->shadow gradient
+            # (metal-tine shading) instead of a flat single-color line
+            hi = F3 if glow else FM
+            lo = FM if glow else F2
+            c.set(tx, 1, hi)
+            c.set(tx, 2, hi)
+            c.set(tx, 3, lo)
+            c.set(tx, 4, lo)
+            # tip: dedicated fork-ember color when glowing (not the frank
+            # eye-glow color — palette-correct per CW's cohesion ask),
+            # plain outline otherwise
+            c.set(tx, 0, FB if glow else BK)
             if glow:
-                c.set(tx, 0, EG)        # glowing tip
+                # soft ember halo flanking the tip — reads as glowing,
+                # not just a brighter solid color
+                if tx - 1 >= 0:
+                    c.set(tx - 1, 0, EM)
+                if tx + 1 <= 7:
+                    c.set(tx + 1, 0, EM)
     return c
 
 def gen_pitchforks():
