@@ -75,6 +75,22 @@ function rotateAroundPivot(px: number, py: number, cx: number, cy: number, deg: 
   return { x: cx + dx * cos - dy * sin, y: cy + dx * sin + dy * cos }
 }
 
+// C4: continuous charge-arc render cache. Pre-allocated once and mutated in place
+// (CW consult-28, 0.86 conf: zero per-frame allocation is the single most important
+// mobile-Safari perf rule for a per-frame polyline). Purely a rendering jitter cache,
+// not gameplay state — renderView still emits everything logic-observable from
+// (view, assets) only, same C0 render-seam guarantee.
+const CHARGE_ARC_MAX_SEGMENTS = 16
+const chargeArcPoints: { x: number; y: number }[] = Array.from(
+  { length: CHARGE_ARC_MAX_SEGMENTS + 1 },
+  () => ({ x: 0, y: 0 }),
+)
+let chargeArcJitterFrame = 0
+// Structural degrade hook per CW's ask — no auto-detection wired yet (nothing to
+// measure from; iPhone is the real gate at C13). Set to 'lite' manually if a device
+// needs the cheaper path before C13 lands real detection.
+let chargeArcQuality: 'full' | 'lite' = 'full'
+
 type Phase = 'menu' | 'tutorial' | 'playing' | 'game_over'
 type TineCount = 1 | 2 | 3 | 4
 type VillagerState = 'waiting' | 'walking' | 'ash'
@@ -690,6 +706,82 @@ function drawBoltView(ctx: CanvasRenderingContext2D, b: BoltView) {
   ctx.restore()
 }
 
+// C4: reactive lightning while the player HOLDS a note (the buildup), distinct from
+// drawBoltView above (the one-shot strike flash). Gated strictly on charge.progress > 0
+// — NOT charge.charging, which stays true for ~0.34s after a strike via
+// `bolts.length > 0` (FLW consult-20 HIGH finding) and would relight this arc with no
+// real hold in progress. Duplicates the tine-position math from the target-glow-ring
+// block below rather than extracting a shared helper — CW consult-28: HARD BLOCKER 4 +
+// the C0-frozen-core guarantee outweigh DRY on a function this small; a shared helper
+// would touch code the ring-render path already ships verified.
+function drawChargeArcView(ctx: CanvasRenderingContext2D, view: ViewState, assets: Assets) {
+  const progress = view.charge.progress
+  if (!view.active || progress <= 0) return
+  const villager = view.villagers.find(v => v.id === view.active?.villagerId)
+  if (!villager) return
+  const meta = assets.villagerMeta[villager.totalTines]
+  const tine = meta.tines[Math.max(0, Math.min(view.active.tineIndex, meta.tines.length - 1))]
+  const forkPivotX = villager.x + (meta.frame_w - meta.fork_base.x) * SPRITE_SCALE
+  const forkPivotY = villager.y + meta.fork_base.y * SPRITE_SCALE
+  const rawX = villager.x + (meta.frame_w - tine.x) * SPRITE_SCALE
+  const rawY = villager.y + tine.y * SPRITE_SCALE
+  const target = rotateAroundPivot(rawX, rawY, forkPivotX, forkPivotY, FORK_LEAN_DEG)
+
+  const originX = FRANK_X + assets.frankMeta.rod_tip.x * SPRITE_SCALE
+  const originY = FRANK_Y + assets.frankMeta.rod_tip.y * SPRITE_SCALE
+
+  const lite = chargeArcQuality === 'lite'
+  const maxSegments = lite ? 8 : CHARGE_ARC_MAX_SEGMENTS
+  const minSegments = lite ? 3 : 4
+  const segments = Math.max(minSegments, Math.min(maxSegments, Math.round(minSegments + progress * (maxSegments - minSegments))))
+  const jitterMag = 3 + progress * 9
+
+  // Jitter refresh throttled to ~20Hz at 60fps (every 3rd frame) — CW: cheaper AND
+  // avoids strobe. Buffer is pre-allocated (module scope) and mutated in place, never
+  // reallocated per frame.
+  chargeArcJitterFrame++
+  const stale = chargeArcPoints[0].x === 0 && chargeArcPoints[0].y === 0
+  if (stale || chargeArcJitterFrame % 3 === 0) {
+    chargeArcPoints[0].x = originX
+    chargeArcPoints[0].y = originY
+    for (let i = 1; i < segments; i++) {
+      const t = i / segments
+      chargeArcPoints[i].x = originX + (target.x - originX) * t + (Math.random() - 0.5) * jitterMag
+      chargeArcPoints[i].y = originY + (target.y - originY) * t + (Math.random() - 0.5) * jitterMag
+    }
+    chargeArcPoints[segments].x = target.x
+    chargeArcPoints[segments].y = target.y
+  }
+
+  // Peak alpha kept below the strike-flash's (drawBoltView) so the release still
+  // reads as the event, not lost in the buildup (CW: strike-swallow risk).
+  const alpha = 0.16 + progress * 0.4
+  ctx.save()
+  ctx.lineCap = 'round'
+  ctx.lineJoin = 'round'
+  ctx.beginPath()
+  ctx.moveTo(chargeArcPoints[0].x, chargeArcPoints[0].y)
+  for (let i = 1; i <= segments; i++) ctx.lineTo(chargeArcPoints[i].x, chargeArcPoints[i].y)
+
+  ctx.globalCompositeOperation = 'source-over'
+  ctx.strokeStyle = `rgba(80,190,255,${alpha * 0.5})`
+  ctx.lineWidth = lite ? 3 : 4
+  ctx.stroke()
+
+  ctx.strokeStyle = `rgba(159,231,255,${alpha * 0.82})`
+  ctx.lineWidth = lite ? 1.5 : 2
+  ctx.stroke()
+
+  if (!lite) {
+    // additive-blend white core, limited to this one layer only (CW: cost control)
+    ctx.globalCompositeOperation = 'lighter'
+    ctx.strokeStyle = `rgba(255,255,255,${alpha})`
+    ctx.lineWidth = 1
+    ctx.stroke()
+  }
+  ctx.restore()
+}
+
 function drawBurstView(ctx: CanvasRenderingContext2D, b: BurstView) {
   const progress = clamp(b.life / b.maxLife, 0, 1)
   const fade = Math.max(0, 1 - progress)
@@ -1120,6 +1212,7 @@ function renderView(ctx: CanvasRenderingContext2D, view: ViewState, assets: Asse
 
   const ordered = [...view.villagers].sort((x, y) => x.y - y.y)
   for (const v of ordered) drawVillagerView(ctx, v, view, assets)
+  drawChargeArcView(ctx, view, assets)
   for (const burst of view.bursts) drawBurstView(ctx, burst)
   for (const bolt of view.bolts) drawBoltView(ctx, bolt)
 
