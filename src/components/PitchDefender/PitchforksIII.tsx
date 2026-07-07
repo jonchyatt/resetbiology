@@ -811,8 +811,10 @@ function drawFrankChargeView(ctx: CanvasRenderingContext2D, view: ViewState, ass
   // Torso glow — screen-blend radial, same recipe as drawBurstView, scaled by progress.
   // Deliberately supplemental (FLW consult-22 MED): the fork-path feedback stays the
   // primary training surface, this is a secondary reactive read on Frank himself.
-  const glowRadius = 20 + progress * 26
-  const glowAlpha = 0.1 + progress * 0.22
+  // Argus video-review consult: alpha now ramps on a power curve (progress^1.6), not
+  // linear — reads as faint-then-building rather than a near-binary on/off flip.
+  const glowRadius = 18 + progress * 28
+  const glowAlpha = 0.06 + Math.pow(progress, 1.6) * 0.32
   ctx.save()
   ctx.globalCompositeOperation = 'screen'
   const gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, glowRadius)
@@ -834,13 +836,17 @@ function drawFrankChargeView(ctx: CanvasRenderingContext2D, view: ViewState, ass
     { x: FRANK_X + spriteW * 0.26, y: boltY, outDir: -1 },
     { x: FRANK_X + spriteW * 0.74, y: boltY, outDir: 1 },
   ]
-  const sparkReach = 6 + progress * 9
-  const sparkAlpha = 0.25 + progress * 0.55
+  const sparkReach = 5 + progress * 11
+  const sparkAlpha = 0.16 + Math.pow(progress, 1.4) * 0.68
   const pixelUnit = SPRITE_SCALE
   const snap = (v: number) => Math.round(v / pixelUnit) * pixelUnit
 
+  // Argus video-review consult: crackle rate now accelerates with charge — every
+  // 4th frame near-empty (a faint early tell), down to every frame near-full (a
+  // rapid crackle), instead of a flat every-3rd-frame flicker throughout the hold.
   frankSparkJitterFrame++
-  const refresh = frankSparkJitterFrame % 3 === 0 || frankSparkPoints[0][0].x === 0
+  const refreshInterval = Math.max(1, Math.round(4 - progress * 3))
+  const refresh = frankSparkJitterFrame % refreshInterval === 0 || frankSparkPoints[0][0].x === 0
 
   ctx.save()
   ctx.globalCompositeOperation = 'lighter'
