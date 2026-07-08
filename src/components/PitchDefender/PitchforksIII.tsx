@@ -32,6 +32,8 @@ const ASSET_BASE = '/images/pitchforks'
 const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
 const FSRS_KEY = 'pitch_fsrs_memory'
 const FSRS_DEBUG_KEY = 'pitch_fsrs_debug'
+const MASTERY_PROGRESS_KEY = 'pitchforks3_mastery_progress'
+const MASTERY_PROGRESS_DEBUG_KEY = 'pitchforks3_mastery_progress_debug'
 const STARTING_NOTES = [INTRO_ORDER[0], INTRO_ORDER[1]]
 
 // ported from Pitchforks.tsx:430-432
@@ -50,6 +52,9 @@ const TONE_SPACING_MS = 1200
 const ECHO_TAIL_MS = 600
 const TONE_SUPPRESS_MS = TONE_MS + ECHO_TAIL_MS
 const NEW_NOTE_CEREMONY_MS = 2400
+const NOTE_MASTERED_CEREMONY_MS = 2400
+const MASTERY_STABILITY_DAYS = 21
+const MASTERY_SESSION_COUNT = 3
 const TRAIL_MS = 1000
 const PITCH_BAR_Y = H - 52
 const PITCH_BAR_H = 12
@@ -243,6 +248,11 @@ interface NewNoteCeremonyState {
   tonePulseKey: number
 }
 
+type MasteryProgress = Record<string, {
+  sessionIds: string[]
+  masteredAt: number | null
+}>
+
 type VillagerView = Readonly<{
   id: number
   totalTines: TineCount
@@ -324,6 +334,8 @@ type ViewState = Readonly<{
   timersPaused: boolean
   tuner: TunerView
   ceremony: Readonly<NewNoteCeremonyState>
+  noteMastered: string | null
+  noteMasteredAgeMs: number
 }>
 
 interface NoteHealthDebug {
@@ -371,6 +383,8 @@ interface Pf3DebugState {
   ceremonyActive: boolean
   ceremonyNote: string | null
   ceremonyToneFired: boolean
+  noteMastered: string | null
+  masteredNotes: string[]
   selectedNotes: string[]
   activeNote: string | null
   activeSequence: string[]
@@ -652,6 +666,8 @@ type BuildViewStateArgs = Readonly<{
   prompt: string
   tuner: TunerView
   ceremony: NewNoteCeremonyState
+  noteMastered: string | null
+  noteMasteredAgeMs: number
   fsrsMemory: Readonly<Record<string, NoteMemory>>
 }>
 
@@ -671,6 +687,8 @@ function buildViewState(args: BuildViewStateArgs): ViewState {
     prompt,
     tuner,
     ceremony,
+    noteMastered,
+    noteMasteredAgeMs,
     fsrsMemory,
   } = args
   const chargeLevel = active
@@ -762,6 +780,8 @@ function buildViewState(args: BuildViewStateArgs): ViewState {
       toneFired: ceremony.toneFired,
       tonePulseKey: ceremony.tonePulseKey,
     },
+    noteMastered,
+    noteMasteredAgeMs,
   }
 }
 
@@ -1428,6 +1448,69 @@ function drawDungeonBackground(ctx: CanvasRenderingContext2D, animClock: number)
   ctx.fillRect(0, 0, W, H)
 }
 
+function drawNoteMasteredCeremony(
+  ctx: CanvasRenderingContext2D,
+  note: string,
+  ageMs: number,
+  animClock: number,
+  reducedMotion: boolean,
+) {
+  const progress = clamp(ageMs / NOTE_MASTERED_CEREMONY_MS, 0, 1)
+  const alpha = Math.min(clamp(progress / 0.18, 0, 1), clamp((1 - progress) / 0.24, 0, 1))
+  if (alpha <= 0) return
+
+  const hue = hueForNote(note)
+  const cx = W / 2
+  const cy = 190
+  const settle = 1 - Math.pow(1 - progress, 3)
+  const pulse = reducedMotion ? 0 : Math.sin(animClock * 2.4) * 2.5
+
+  ctx.save()
+  ctx.globalAlpha = alpha
+  ctx.fillStyle = 'rgba(2, 7, 14, 0.64)'
+  ctx.fillRect(0, 128, W, 124)
+
+  const glow = ctx.createRadialGradient(cx, cy, 8, cx, cy, 164)
+  glow.addColorStop(0, `hsla(${hue}, 96%, 70%, 0.34)`)
+  glow.addColorStop(0.42, `hsla(${hue}, 82%, 42%, 0.16)`)
+  glow.addColorStop(1, `hsla(${hue}, 70%, 18%, 0)`)
+  ctx.fillStyle = glow
+  ctx.fillRect(0, 72, W, 236)
+
+  ctx.lineCap = 'round'
+  for (let i = 0; i < 3; i++) {
+    const ringProgress = clamp(settle - i * 0.12, 0, 1)
+    const radius = 76 - ringProgress * 30 + i * 10 + pulse
+    ctx.strokeStyle = `hsla(${hue}, ${92 - i * 10}%, ${68 - i * 6}%, ${0.38 - i * 0.08})`
+    ctx.lineWidth = 2.4 - i * 0.35
+    ctx.beginPath()
+    ctx.arc(cx, cy, radius, Math.PI * 0.08, Math.PI * 1.92)
+    ctx.stroke()
+  }
+
+  ctx.fillStyle = `hsla(${hue}, 92%, 78%, 0.92)`
+  ctx.font = 'bold 15px monospace'
+  ctx.textAlign = 'center'
+  ctx.fillText('NOTE MASTERED', cx, cy - 32)
+
+  ctx.fillStyle = '#f7fbff'
+  ctx.shadowColor = `hsla(${hue}, 96%, 70%, 0.72)`
+  ctx.shadowBlur = 18
+  ctx.font = 'bold 42px monospace'
+  ctx.fillText(note, cx, cy + 16)
+
+  ctx.shadowBlur = 0
+  ctx.strokeStyle = `hsla(${hue}, 90%, 72%, 0.72)`
+  ctx.lineWidth = 1.5
+  ctx.beginPath()
+  ctx.moveTo(cx - 68, cy + 36)
+  ctx.lineTo(cx - 18, cy + 36)
+  ctx.moveTo(cx + 18, cy + 36)
+  ctx.lineTo(cx + 68, cy + 36)
+  ctx.stroke()
+  ctx.restore()
+}
+
 function renderView(ctx: CanvasRenderingContext2D, view: ViewState, assets: Assets) {
   drawDungeonBackground(ctx, view.animClock)
 
@@ -1470,6 +1553,9 @@ function renderView(ctx: CanvasRenderingContext2D, view: ViewState, assets: Asse
   drawChargeArcView(ctx, view, assets)
   for (const burst of view.bursts) drawBurstView(ctx, burst)
   for (const bolt of view.bolts) drawBoltView(ctx, bolt)
+  if (view.noteMastered) {
+    drawNoteMasteredCeremony(ctx, view.noteMastered, view.noteMasteredAgeMs, view.animClock, view.reducedMotion)
+  }
 
   if (view.waveBanner.visible) {
     const alpha = Math.min(1, view.waveBanner.timer / 0.35)
@@ -1628,6 +1714,8 @@ export default function PitchforksIII() {
   const assetsRef = useRef<Assets>(emptyAssets())
   const nextIdRef = useRef(0)
   const fsrsRef = useRef<Record<string, NoteMemory>>({})
+  const masteryProgressRef = useRef<MasteryProgress>({})
+  const masterySessionIdRef = useRef('')
   const unlockedNotesRef = useRef<string[]>([...STARTING_NOTES])
   const consecutiveCorrectRef = useRef(0)
   const fsrsDebugRef = useRef(false)
@@ -1635,6 +1723,9 @@ export default function PitchforksIII() {
   const activePromptKeyRef = useRef('')
   const failureGradedKeysRef = useRef<Set<string>>(new Set())
   const newNoteTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const noteMasteredTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const noteMasteredRef = useRef<string | null>(null)
+  const noteMasteredStartedAtRef = useRef(0)
   const ceremonyToneTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const ceremonyRef = useRef<NewNoteCeremonyState>({ active: false, note: null, toneFired: false, tonePulseKey: 0 })
   const pianoSamplesReadyRef = useRef(false)
@@ -1699,6 +1790,7 @@ export default function PitchforksIII() {
   const [fsrsDebugMode, setFsrsDebugMode] = useState(false)
   const [unlockedNotes, setUnlockedNotes] = useState<string[]>([...STARTING_NOTES])
   const [newNoteUnlocked, setNewNoteUnlocked] = useState<string | null>(null)
+  const [noteMastered, setNoteMastered] = useState<string | null>(null)
   const [ceremony, setCeremony] = useState<NewNoteCeremonyState>({ active: false, note: null, toneFired: false, tonePulseKey: 0 })
   const [micHudState, setMicHudState] = useState<MicHudState>('waiting')
 
@@ -1741,11 +1833,30 @@ export default function PitchforksIII() {
     return demoRef.current || fsrsDebugRef.current ? FSRS_DEBUG_KEY : FSRS_KEY
   }, [])
 
+  const masteryStorageKey = useCallback(() => {
+    return demoRef.current || fsrsDebugRef.current ? MASTERY_PROGRESS_DEBUG_KEY : MASTERY_PROGRESS_KEY
+  }, [])
+
   const saveFsrs = useCallback(() => {
     try {
       localStorage.setItem(fsrsStorageKey(), JSON.stringify(fsrsRef.current))
     } catch {}
   }, [fsrsStorageKey])
+
+  const saveMasteryProgress = useCallback(() => {
+    try {
+      localStorage.setItem(masteryStorageKey(), JSON.stringify(masteryProgressRef.current))
+    } catch {}
+  }, [masteryStorageKey])
+
+  const getMasterySessionId = useCallback(() => {
+    if (!masterySessionIdRef.current) {
+      masterySessionIdRef.current = typeof crypto !== 'undefined' && crypto.randomUUID
+        ? crypto.randomUUID()
+        : `${Date.now()}-${Math.random().toString(36).slice(2)}`
+    }
+    return masterySessionIdRef.current
+  }, [])
 
   const ensureNoteMemory = useCallback((note: string) => {
     if (!fsrsRef.current[note]) fsrsRef.current[note] = createNote(note)
@@ -1760,11 +1871,20 @@ export default function PitchforksIII() {
     fsrsDebugRef.current = isFsrsDebug
     setDemoMode(isDemo)
     setFsrsDebugMode(isFsrsDebug)
+    getMasterySessionId()
 
     try {
       const raw = localStorage.getItem(isDemo || isFsrsDebug ? FSRS_DEBUG_KEY : FSRS_KEY)
       if (raw) fsrsRef.current = JSON.parse(raw)
     } catch { /* fresh start */ }
+
+    try {
+      const rawMastery = localStorage.getItem(isDemo || isFsrsDebug ? MASTERY_PROGRESS_DEBUG_KEY : MASTERY_PROGRESS_KEY)
+      if (rawMastery) {
+        const parsed = JSON.parse(rawMastery)
+        if (parsed && typeof parsed === 'object') masteryProgressRef.current = parsed as MasteryProgress
+      }
+    } catch { /* fresh mastery progress */ }
 
     // Restore unlocked notes: only notes that have been REVIEWED (lastReview > 0)
     // AND that appear in INTRO_ORDER in sequence (no gaps from other modes pre-seeding)
@@ -1784,7 +1904,7 @@ export default function PitchforksIII() {
     }
 
     for (const note of unlockedNotesRef.current) ensureNoteMemory(note)
-  }, [])
+  }, [ensureNoteMemory, getMasterySessionId])
 
   useEffect(() => {
     let cancelled = false
@@ -1941,6 +2061,52 @@ export default function PitchforksIII() {
     setCeremonySnapshot({ active: false, note: null, toneFired: false, tonePulseKey: 0 })
   }, [clearCeremonyTimers, setCeremonySnapshot])
 
+  const clearNoteMasteredTimer = useCallback(() => {
+    if (noteMasteredTimerRef.current) {
+      clearTimeout(noteMasteredTimerRef.current)
+      noteMasteredTimerRef.current = null
+    }
+  }, [])
+
+  const clearNoteMasteredCeremony = useCallback(() => {
+    clearNoteMasteredTimer()
+    noteMasteredRef.current = null
+    noteMasteredStartedAtRef.current = 0
+    setNoteMastered(null)
+  }, [clearNoteMasteredTimer])
+
+  const showNoteMastered = useCallback((note: string) => {
+    clearNoteMasteredCeremony()
+    noteMasteredRef.current = note
+    noteMasteredStartedAtRef.current = performance.now()
+    setNoteMastered(note)
+    noteMasteredTimerRef.current = setTimeout(() => {
+      clearNoteMasteredCeremony()
+    }, NOTE_MASTERED_CEREMONY_MS)
+  }, [clearNoteMasteredCeremony])
+
+  const recordMasteryProgressForReview = useCallback((note: string) => {
+    const reviewed = fsrsRef.current[note]
+    if (!reviewed || reviewed.S < MASTERY_STABILITY_DAYS) return
+
+    const current = masteryProgressRef.current[note] ?? { sessionIds: [], masteredAt: null }
+    const priorSessionIds = Array.isArray(current.sessionIds) ? current.sessionIds : []
+    const masteredAt = current.masteredAt ?? null
+    const sessionId = getMasterySessionId()
+    const sessionIds = priorSessionIds.includes(sessionId)
+      ? priorSessionIds
+      : [...priorSessionIds, sessionId]
+    const crossedNow = masteredAt === null && sessionIds.length >= MASTERY_SESSION_COUNT
+    if (sessionIds === priorSessionIds && !crossedNow) return
+
+    masteryProgressRef.current[note] = {
+      sessionIds,
+      masteredAt: crossedNow ? Date.now() : masteredAt,
+    }
+    saveMasteryProgress()
+    if (crossedNow) showNoteMastered(note)
+  }, [getMasterySessionId, saveMasteryProgress, showNoteMastered])
+
   const tryPlayCeremonyTone = useCallback((note: string): CeremonyToneAttempt => {
     if (!audioCueRef.current || cueVolumeRef.current <= 0) return 'disabled'
     if (!pianoSamplesReadyRef.current) return 'pending'
@@ -2046,6 +2212,7 @@ export default function PitchforksIII() {
     const grade = autoGrade(correct, latencyForTarget(target))
     fsrsRef.current[target.note] = reviewNote(mem, grade)
     saveFsrs()
+    if (correct) recordMasteryProgressForReview(target.note)
 
     if (correct) {
       const nextConsecutive = consecutiveCorrectRef.current + 1
@@ -2055,7 +2222,7 @@ export default function PitchforksIII() {
       consecutiveCorrectRef.current = 0
     }
     return true
-  }, [ensureNoteMemory, latencyForTarget, matchingSuppressedNow, maybeUnlockNextNote, saveFsrs])
+  }, [ensureNoteMemory, latencyForTarget, matchingSuppressedNow, maybeUnlockNextNote, recordMasteryProgressForReview, saveFsrs])
 
   const playVillagerSequence = useCallback((villager: Villager, mode: 'cue' | 'replay') => {
     if (!villager.notes.length) return
@@ -2166,6 +2333,10 @@ export default function PitchforksIII() {
         ceremonyActive: ceremonyRef.current.active,
         ceremonyNote: ceremonyRef.current.note,
         ceremonyToneFired: ceremonyRef.current.toneFired,
+        noteMastered,
+        masteredNotes: Object.entries(masteryProgressRef.current)
+          .filter(([, progress]) => progress.masteredAt !== null)
+          .map(([masteredNote]) => masteredNote),
         selectedNotes: rt.villagers.flatMap(v => v.notes),
         activeNote: active?.note ?? null,
         activeSequence: active ? [...active.villager.notes] : [],
@@ -2184,6 +2355,7 @@ export default function PitchforksIII() {
       const grade = autoGrade(correct, correct ? 800 : 2000)
       fsrsRef.current[note] = reviewNote(mem, grade)
       saveFsrs()
+      if (correct) recordMasteryProgressForReview(note)
       if (correct) {
         consecutiveCorrectRef.current += 1
         maybeUnlockNextNote(consecutiveCorrectRef.current)
@@ -2202,13 +2374,20 @@ export default function PitchforksIII() {
     }
     const resetDebug = () => {
       clearNewNoteCeremony()
+      clearNoteMasteredCeremony()
       fsrsRef.current = {}
+      masteryProgressRef.current = {}
       unlockedNotesRef.current = [...STARTING_NOTES]
       setUnlockedNotes([...STARTING_NOTES])
       consecutiveCorrectRef.current = 0
       for (const n of unlockedNotesRef.current) ensureNoteMemory(n)
       saveFsrs()
+      saveMasteryProgress()
       return { unlockedCount: unlockedNotesRef.current.length, notes: [...unlockedNotesRef.current] }
+    }
+    const showMasteryCeremony = (note: string) => {
+      showNoteMastered(note)
+      return { note, noteMastered: noteMasteredRef.current }
     }
     const hook = Object.freeze({
       getState,
@@ -2217,6 +2396,7 @@ export default function PitchforksIII() {
       },
       review,
       resetDebug,
+      showMasteryCeremony,
     })
 
     Object.defineProperty(window, '__pf3', {
@@ -2227,7 +2407,7 @@ export default function PitchforksIII() {
     return () => {
       if (window.__pf3 === hook) delete window.__pf3
     }
-  }, [clearNewNoteCeremony, cuePlayingNow, demoMode, ensureNoteMemory, fsrsDebugMode, fsrsStorageKey, getActiveTarget, matchingSuppressedNow, maybeUnlockNextNote, newNoteUnlocked, saveFsrs])
+  }, [clearNewNoteCeremony, clearNoteMasteredCeremony, cuePlayingNow, demoMode, ensureNoteMemory, fsrsDebugMode, fsrsStorageKey, getActiveTarget, matchingSuppressedNow, maybeUnlockNextNote, newNoteUnlocked, noteMastered, recordMasteryProgressForReview, saveFsrs, saveMasteryProgress, showNoteMastered])
 
   const pickVillagerNotes = useCallback((totalTines: TineCount) => {
     const pool = unlockedNotesRef.current.length > 0 ? unlockedNotesRef.current : [...STARTING_NOTES]
@@ -2671,6 +2851,10 @@ export default function PitchforksIII() {
       prompt: currentPromptRef.current,
       tuner,
       ceremony: ceremonyRef.current,
+      noteMastered: noteMasteredRef.current,
+      noteMasteredAgeMs: noteMasteredStartedAtRef.current > 0
+        ? performance.now() - noteMasteredStartedAtRef.current
+        : 0,
       fsrsMemory: fsrsRef.current,
     }), demoRef.current || fsrsDebugRef.current)
     viewStateRef.current = view
@@ -2682,6 +2866,7 @@ export default function PitchforksIII() {
     resumeCueAudioFromGesture()
     clearCueTimers()
     clearNewNoteCeremony()
+    clearNoteMasteredCeremony()
     runtimeRef.current = makeInitialRuntime(demoRef.current)
     viewStateRef.current = null
     nextIdRef.current = 0
@@ -2729,26 +2914,28 @@ export default function PitchforksIII() {
     lastTimeRef.current = 0
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
     rafRef.current = requestAnimationFrame(loop)
-  }, [clearCueTimers, clearNewNoteCeremony, ensureNoteMemory, loop, resumeCueAudioFromGesture, startListening])
+  }, [clearCueTimers, clearNewNoteCeremony, clearNoteMasteredCeremony, ensureNoteMemory, loop, resumeCueAudioFromGesture, startListening])
 
   const quitToMenu = useCallback(() => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
     clearCueTimers()
     clearNewNoteCeremony()
+    clearNoteMasteredCeremony()
     phaseRef.current = 'menu'
     viewStateRef.current = null
     stopListening()
     micHudStateRef.current = 'waiting'
     setMicHudState('waiting')
     setPhase('menu')
-  }, [clearCueTimers, clearNewNoteCeremony, stopListening])
+  }, [clearCueTimers, clearNewNoteCeremony, clearNoteMasteredCeremony, stopListening])
 
   useEffect(() => () => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
     clearCueTimers()
     clearCeremonyTimers()
+    clearNoteMasteredTimer()
     stopListening()
-  }, [clearCeremonyTimers, clearCueTimers, stopListening])
+  }, [clearCeremonyTimers, clearCueTimers, clearNoteMasteredTimer, stopListening])
 
   const micHudView: Record<MicHudState, { label: string; className: string; dotClassName: string }> = {
     demo: {
