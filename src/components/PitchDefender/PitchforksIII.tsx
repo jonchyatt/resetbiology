@@ -563,6 +563,37 @@ function colorForCents(absCents: number): string | null {
   return `rgb(${r}, ${g}, ${b})`
 }
 
+function drawForkAccuracyRibbon(
+  ctx: CanvasRenderingContext2D,
+  anchor: Readonly<{ x: number; y: number }>,
+  tint: string | null,
+  progress: number,
+) {
+  if (!tint) return
+
+  const width = 26 + progress * 8
+  const height = 6 + progress * 3
+  const x = anchor.x - width / 2
+  const y = anchor.y - height / 2
+
+  ctx.save()
+  ctx.shadowColor = tint
+  ctx.shadowBlur = 10 + progress * 8
+  ctx.globalAlpha = 0.64
+  ctx.fillStyle = tint
+  ctx.beginPath()
+  ctx.roundRect(x, y, width, height, height / 2)
+  ctx.fill()
+  ctx.globalAlpha = 0.86
+  ctx.lineWidth = 1
+  ctx.strokeStyle = tint
+  ctx.beginPath()
+  ctx.moveTo(anchor.x - width * 0.32, anchor.y)
+  ctx.lineTo(anchor.x + width * 0.32, anchor.y)
+  ctx.stroke()
+  ctx.restore()
+}
+
 function clamp(value: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, value))
 }
@@ -980,13 +1011,7 @@ function drawVillagerView(ctx: CanvasRenderingContext2D, v: VillagerView, view: 
   const noteLabelAnchor = rotateAroundPivot(fx + forkW / 2, fy - 7, forkPivotX, forkPivotY, FORK_LEAN_DEG)
 
   if (v.active && view.charge.tint) {
-    ctx.save()
-    ctx.globalAlpha = 0.48
-    ctx.fillStyle = view.charge.tint
-    ctx.beginPath()
-    ctx.ellipse(tineTipAnchor.x, tineTipAnchor.y, 19 + progress * 12, 18 + progress * 8, 0, 0, Math.PI * 2)
-    ctx.fill()
-    ctx.restore()
+    drawForkAccuracyRibbon(ctx, tineTipAnchor, view.charge.tint, progress)
   }
 
   if (v.active && view.noteNamesVisible) {
@@ -1034,9 +1059,51 @@ function drawPitchBarView(ctx: CanvasRenderingContext2D, tuner: TunerView) {
   ctx.strokeStyle = '#333'
   ctx.lineWidth = 1
   ctx.strokeRect(PITCH_BAR_X, PITCH_BAR_Y, PITCH_BAR_W, PITCH_BAR_H)
+  ctx.save()
+  ctx.strokeStyle = 'rgba(253, 186, 116, 0.62)'
+  ctx.fillStyle = 'rgba(253, 186, 116, 0.48)'
+  ctx.shadowColor = '#fdba74'
+  ctx.shadowBlur = 4
+  ctx.lineWidth = 1
+  ctx.lineCap = 'round'
+  const left = PITCH_BAR_X
+  const right = PITCH_BAR_X + PITCH_BAR_W
+  const top = PITCH_BAR_Y
+  const bottom = PITCH_BAR_Y + PITCH_BAR_H
+  const drawCornerRune = (x: number, y: number, sx: 1 | -1, sy: 1 | -1) => {
+    ctx.beginPath()
+    ctx.moveTo(x + sx * 4, y + sy * 1)
+    ctx.lineTo(x + sx * 12, y + sy * 1)
+    ctx.moveTo(x + sx * 1, y + sy * 4)
+    ctx.lineTo(x + sx * 1, y + sy * 12)
+    ctx.moveTo(x + sx * 7, y + sy * 4)
+    ctx.lineTo(x + sx * 13, y + sy * 10)
+    ctx.moveTo(x + sx * 4, y + sy * 7)
+    ctx.lineTo(x + sx * 10, y + sy * 13)
+    ctx.stroke()
+  }
+  const drawDiamond = (x: number, y: number) => {
+    ctx.beginPath()
+    ctx.moveTo(x, y - 3)
+    ctx.lineTo(x + 3, y)
+    ctx.lineTo(x, y + 3)
+    ctx.lineTo(x - 3, y)
+    ctx.closePath()
+    ctx.fill()
+  }
+  drawCornerRune(left, top, 1, 1)
+  drawCornerRune(right, top, -1, 1)
+  drawCornerRune(left, bottom, 1, -1)
+  drawCornerRune(right, bottom, -1, -1)
+  drawDiamond(centerX, top)
+  drawDiamond(centerX, bottom)
+  drawDiamond(left, centerY)
+  drawDiamond(right, centerY)
+  ctx.restore()
   ctx.fillStyle = 'rgba(74,222,128,0.16)'
   ctx.fillRect(centerX - targetZoneW / 2, PITCH_BAR_Y, targetZoneW, PITCH_BAR_H)
 
+  const semisToCents = (semis: number) => Math.min(300, Math.abs(semis) * 100)
   const xForDeviation = (deviation: number) => {
     const clamped = clamp(deviation, -6, 6)
     return centerX + (clamped / 6) * (PITCH_BAR_W / 2)
@@ -1058,23 +1125,28 @@ function drawPitchBarView(ctx: CanvasRenderingContext2D, tuner: TunerView) {
   }
   for (const point of trail) {
     const alpha = clamp(1 - (tuner.now - point.at) / TRAIL_MS, 0, 1)
-    ctx.fillStyle = point.onTarget
-      ? `rgba(74, 222, 128, ${0.08 + alpha * 0.38})`
-      : `rgba(248, 113, 113, ${0.08 + alpha * 0.34})`
+    ctx.save()
+    ctx.globalAlpha = 0.08 + alpha * 0.36
+    ctx.fillStyle = colorForCents(semisToCents(point.deviation)) ?? '#f87171'
     ctx.beginPath()
     ctx.arc(xForDeviation(point.deviation), centerY, 2 + alpha * 2, 0, Math.PI * 2)
     ctx.fill()
+    ctx.restore()
   }
 
   if (tuner.canUseSource && tuner.renderDeviation !== null) {
     const dotX = xForDeviation(tuner.renderDeviation)
+    const dotColor = colorForCents(semisToCents(tuner.renderDeviation)) ?? '#f87171'
     if (tuner.onTarget) {
-      ctx.fillStyle = 'rgba(74,222,128,0.3)'
+      ctx.save()
+      ctx.globalAlpha = 0.3
+      ctx.fillStyle = dotColor
       ctx.beginPath()
       ctx.arc(dotX, centerY, 11, 0, Math.PI * 2)
       ctx.fill()
+      ctx.restore()
     }
-    ctx.fillStyle = tuner.onTarget ? '#4ade80' : '#f87171'
+    ctx.fillStyle = dotColor
     ctx.beginPath()
     ctx.arc(dotX, centerY, 5.5, 0, Math.PI * 2)
     ctx.fill()
