@@ -18,6 +18,7 @@ import {
   createNote,
   currentR,
   pickNextNote,
+  retrievability,
   reviewNote,
   type NoteMemory,
 } from '@/lib/fsrs'
@@ -259,6 +260,9 @@ type VillagerView = Readonly<{
   active: boolean
   displayBurn: number
   timerPct: number
+  soulR: number      // 0-1, currentR() for this villager's active note (notes[burned])
+  soulCalm: number   // 0-1, retrievability(1, mem.S) for the same note, fixed 1-day-out reference
+  soulHue: number     // hueForNote() for the same note
 }>
 
 type BoltView = Readonly<Bolt>
@@ -313,6 +317,8 @@ type ViewState = Readonly<{
     text: string
   }>
   noteNamesVisible: boolean
+  synesthesiaOn: boolean
+  reducedMotion: boolean
   timersPaused: boolean
   tuner: TunerView
   ceremony: Readonly<NewNoteCeremonyState>
@@ -627,10 +633,13 @@ type BuildViewStateArgs = Readonly<{
   chargeProgress: number
   tint: string | null
   noteNamesVisible: boolean
+  synesthesiaOn: boolean
+  reducedMotion: boolean
   timersPaused: boolean
   prompt: string
   tuner: TunerView
   ceremony: NewNoteCeremonyState
+  fsrsMemory: Readonly<Record<string, NoteMemory>>
 }>
 
 function buildViewState(args: BuildViewStateArgs): ViewState {
@@ -643,10 +652,13 @@ function buildViewState(args: BuildViewStateArgs): ViewState {
     chargeProgress,
     tint,
     noteNamesVisible,
+    synesthesiaOn,
+    reducedMotion,
     timersPaused,
     prompt,
     tuner,
     ceremony,
+    fsrsMemory,
   } = args
   const chargeLevel = active
     ? Math.max(
@@ -664,6 +676,11 @@ function buildViewState(args: BuildViewStateArgs): ViewState {
       const displayBurn = isActive
         ? Math.max(v.burned, Math.min(v.totalTines, Math.round(chargeProgress * v.totalTines)))
         : v.burned
+      const activeNote = v.notes[Math.min(v.burned, v.notes.length - 1)]
+      const mem = fsrsMemory[activeNote] ?? createNote(activeNote)
+      const soulR = currentR(mem)
+      const soulCalm = retrievability(1, mem.S)
+      const soulHue = hueForNote(activeNote)
       return {
         id: v.id,
         totalTines: v.totalTines,
@@ -683,6 +700,9 @@ function buildViewState(args: BuildViewStateArgs): ViewState {
         active: isActive,
         displayBurn,
         timerPct: clamp(v.attackTimer / Math.max(0.001, v.attackTimerMax), 0, 1),
+        soulR,
+        soulCalm,
+        soulHue,
       }
     }),
     active: active
@@ -716,6 +736,8 @@ function buildViewState(args: BuildViewStateArgs): ViewState {
       text: prompt,
     },
     noteNamesVisible,
+    synesthesiaOn,
+    reducedMotion,
     timersPaused,
     tuner: {
       ...tuner,
@@ -985,10 +1007,17 @@ function drawVillagerView(ctx: CanvasRenderingContext2D, v: VillagerView, view: 
   ctx.fill()
 
   ctx.imageSmoothingEnabled = false
+  const agitation = clamp(1 - v.soulR, 0, 1)
+  const calm = clamp(v.soulCalm, 0, 1)
+  let offsetPx = agitation * 1.0 * Math.sin(view.animClock * 1.35 + v.spawnIndex * 0.73)
+  offsetPx *= 1 - calm * 0.7
+  if (view.reducedMotion) offsetPx = 0
+  const spriteX = v.x + offsetPx
+  const spriteY = v.y + offsetPx * 0.35
   if (strip) {
-    ctx.drawImage(img, v.walkFrame * meta.frame_w, 0, meta.frame_w, meta.frame_h, v.x, v.y, sw, sh)
+    ctx.drawImage(img, v.walkFrame * meta.frame_w, 0, meta.frame_w, meta.frame_h, spriteX, spriteY, sw, sh)
   } else {
-    ctx.drawImage(img, v.x, v.y, sw, sh)
+    ctx.drawImage(img, spriteX, spriteY, sw, sh)
   }
 
   if (v.state !== 'walking') return
@@ -1013,7 +1042,7 @@ function drawVillagerView(ctx: CanvasRenderingContext2D, v: VillagerView, view: 
     ctx.scale(-1, 1)
     ctx.drawImage(baseImg, 0, 0, forkW, forkH)
     if (v.active && glowImg) {
-      ctx.globalAlpha = 0.25 + progress * 0.75
+      ctx.globalAlpha = clamp(0.25 + progress * 0.75 + agitation * 0.15 * (1 - calm * 0.5), 0, 1)
       ctx.drawImage(glowImg, 0, 0, forkW, forkH)
     }
     ctx.restore()
@@ -1021,6 +1050,19 @@ function drawVillagerView(ctx: CanvasRenderingContext2D, v: VillagerView, view: 
 
   const tineTipAnchor = rotateAroundPivot(fx + forkW / 2, fy + 7, forkPivotX, forkPivotY, FORK_LEAN_DEG)
   const noteLabelAnchor = rotateAroundPivot(fx + forkW / 2, fy - 7, forkPivotX, forkPivotY, FORK_LEAN_DEG)
+
+  if (view.synesthesiaOn) {
+    const aura = `hsla(${v.soulHue}, 70%, 60%, 0.25)`
+    ctx.save()
+    ctx.globalCompositeOperation = 'lighter'
+    ctx.fillStyle = aura
+    ctx.shadowColor = aura
+    ctx.shadowBlur = 10
+    ctx.beginPath()
+    ctx.arc(tineTipAnchor.x, tineTipAnchor.y, 6 + progress * 3, 0, Math.PI * 2)
+    ctx.fill()
+    ctx.restore()
+  }
 
   if (v.active && view.charge.tint) {
     drawForkAccuracyRibbon(ctx, tineTipAnchor, view.charge.tint, progress)
@@ -1599,6 +1641,8 @@ export default function PitchforksIII() {
   const sfxVolumeRef = useRef(100)
   const noteNamesRef = useRef(true)
   const audioCueRef = useRef(true)
+  const synesthesiaRef = useRef(false)
+  const reducedMotionRef = useRef(false)
   const currentPromptRef = useRef('')
   const cueTimeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([])
   const cuePlayingUntilRef = useRef(0)
@@ -1623,6 +1667,8 @@ export default function PitchforksIII() {
   const [hud, setHud] = useState<HudState>({ wave: 1, health: STARTING_HEALTH, score: 0, streak: 0 })
   const [noteNamesOn, setNoteNamesOn] = useState(true)
   const [audioCueOn, setAudioCueOn] = useState(true)
+  const [synesthesiaOn, setSynesthesiaOn] = useState(false)
+  const [reducedMotion, setReducedMotion] = useState(false)
   const [cueVolume, setCueVolume] = useState(100)
   const [sfxVolume, setSfxVolume] = useState(100)
   const [demoMode, setDemoMode] = useState(false)
@@ -1641,6 +1687,14 @@ export default function PitchforksIII() {
   useEffect(() => {
     audioCueRef.current = audioCueOn
   }, [audioCueOn])
+
+  useEffect(() => {
+    synesthesiaRef.current = synesthesiaOn
+  }, [synesthesiaOn])
+
+  useEffect(() => {
+    reducedMotionRef.current = reducedMotion
+  }, [reducedMotion])
 
   useEffect(() => {
     cueVolumeRef.current = cueVolume
@@ -2573,10 +2627,13 @@ export default function PitchforksIII() {
       chargeProgress: lockProgressRef.current,
       tint: tintRef.current,
       noteNamesVisible: noteNamesRef.current,
+      synesthesiaOn: synesthesiaRef.current,
+      reducedMotion: reducedMotionRef.current,
       timersPaused: timersPausedRef.current,
       prompt: currentPromptRef.current,
       tuner,
       ceremony: ceremonyRef.current,
+      fsrsMemory: fsrsRef.current,
     }), demoRef.current || fsrsDebugRef.current)
     viewStateRef.current = view
     renderView(ctx, view, assetsRef.current)
@@ -2740,6 +2797,10 @@ export default function PitchforksIII() {
             setNoteNamesOn={setNoteNamesOn}
             audioCueOn={audioCueOn}
             setAudioCueOn={setAudioCueOn}
+            synesthesiaOn={synesthesiaOn}
+            setSynesthesiaOn={setSynesthesiaOn}
+            reducedMotion={reducedMotion}
+            setReducedMotion={setReducedMotion}
             cueVolume={cueVolume}
             setCueVolume={setCueVolume}
             sfxVolume={sfxVolume}
@@ -2921,6 +2982,10 @@ export default function PitchforksIII() {
             setNoteNamesOn={setNoteNamesOn}
             audioCueOn={audioCueOn}
             setAudioCueOn={setAudioCueOn}
+            synesthesiaOn={synesthesiaOn}
+            setSynesthesiaOn={setSynesthesiaOn}
+            reducedMotion={reducedMotion}
+            setReducedMotion={setReducedMotion}
             cueVolume={cueVolume}
             setCueVolume={setCueVolume}
             sfxVolume={sfxVolume}
@@ -2941,6 +3006,10 @@ function SettingsRow(props: {
   setNoteNamesOn: (value: boolean) => void
   audioCueOn: boolean
   setAudioCueOn: (value: boolean) => void
+  synesthesiaOn: boolean
+  setSynesthesiaOn: (value: boolean) => void
+  reducedMotion: boolean
+  setReducedMotion: (value: boolean) => void
   cueVolume: number
   setCueVolume: (value: number) => void
   sfxVolume: number
@@ -2960,6 +3029,18 @@ function SettingsRow(props: {
         className={`px-2 py-1 border ${props.audioCueOn ? 'border-orange-400 text-orange-100 bg-orange-950/40' : 'border-gray-700 text-gray-400'}`}
       >
         Audio cue {props.audioCueOn ? 'ON' : 'OFF'}
+      </button>
+      <button
+        onClick={() => props.setSynesthesiaOn(!props.synesthesiaOn)}
+        className={`px-2 py-1 border ${props.synesthesiaOn ? 'border-orange-400 text-orange-100 bg-orange-950/40' : 'border-gray-700 text-gray-400'}`}
+      >
+        Note colors {props.synesthesiaOn ? 'ON' : 'OFF'}
+      </button>
+      <button
+        onClick={() => props.setReducedMotion(!props.reducedMotion)}
+        className={`px-2 py-1 border ${props.reducedMotion ? 'border-orange-400 text-orange-100 bg-orange-950/40' : 'border-gray-700 text-gray-400'}`}
+      >
+        Reduced motion {props.reducedMotion ? 'ON' : 'OFF'}
       </button>
       <label className="flex items-center gap-2 text-gray-300">
         Cue
