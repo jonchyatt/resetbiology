@@ -1052,14 +1052,24 @@ function drawVillagerView(ctx: CanvasRenderingContext2D, v: VillagerView, view: 
   const noteLabelAnchor = rotateAroundPivot(fx + forkW / 2, fy - 7, forkPivotX, forkPivotY, FORK_LEAN_DEG)
 
   if (view.synesthesiaOn) {
-    const aura = `hsla(${v.soulHue}, 70%, 60%, 0.25)`
+    // Argus MED (C7 same-session): a flat same-alpha wash camouflages against
+    // UI elements sharing this note's hue family (e.g. the cyan G4 note-name
+    // badge). Fix mirrors C6's white-core-pip pattern: a bright saturated
+    // core fading through the note hue to transparent reads as a distinct
+    // aura instead of a flat color bleed.
+    const auraRadius = 6 + progress * 3
+    const auraGradient = ctx.createRadialGradient(
+      tineTipAnchor.x, tineTipAnchor.y, 0,
+      tineTipAnchor.x, tineTipAnchor.y, auraRadius,
+    )
+    auraGradient.addColorStop(0, `hsla(${v.soulHue}, 90%, 88%, 0.55)`)
+    auraGradient.addColorStop(0.45, `hsla(${v.soulHue}, 80%, 65%, 0.32)`)
+    auraGradient.addColorStop(1, `hsla(${v.soulHue}, 70%, 60%, 0)`)
     ctx.save()
     ctx.globalCompositeOperation = 'lighter'
-    ctx.fillStyle = aura
-    ctx.shadowColor = aura
-    ctx.shadowBlur = 10
+    ctx.fillStyle = auraGradient
     ctx.beginPath()
-    ctx.arc(tineTipAnchor.x, tineTipAnchor.y, 6 + progress * 3, 0, Math.PI * 2)
+    ctx.arc(tineTipAnchor.x, tineTipAnchor.y, auraRadius, 0, Math.PI * 2)
     ctx.fill()
     ctx.restore()
   }
