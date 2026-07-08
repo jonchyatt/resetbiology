@@ -2413,6 +2413,36 @@ export default function PitchforksIII() {
     const pool = unlockedNotesRef.current.length > 0 ? unlockedNotesRef.current : [...STARTING_NOTES]
     for (const note of pool) ensureNoteMemory(note)
 
+    if (totalTines > 1) {
+      const isMasteredNote = (note: string) => {
+        const masteredAt = masteryProgressRef.current[note]?.masteredAt
+        return masteredAt !== null && masteredAt !== undefined
+      }
+      const masteredPool = pool.filter(isMasteredNote)
+
+      if (masteredPool.length > 0) {
+        const weakPool = pool.filter(note => !isMasteredNote(note))
+        const notes: string[] = []
+        let exclude: string | null = null
+
+        if (weakPool.length > 0) {
+          const weakNote = pickNextNote(weakPool, fsrsRef.current, exclude)
+          ensureNoteMemory(weakNote)
+          notes.push(weakNote)
+          exclude = weakNote
+        }
+
+        while (notes.length < totalTines) {
+          const masteredNote = pickNextNote(masteredPool, fsrsRef.current, exclude)
+          ensureNoteMemory(masteredNote)
+          notes.push(masteredNote)
+          exclude = masteredNote
+        }
+
+        return notes
+      }
+    }
+
     const notes: string[] = []
     let exclude: string | null = null
     for (let i = 0; i < totalTines; i++) {
