@@ -2389,6 +2389,16 @@ export default function PitchforksIII() {
       showNoteMastered(note)
       return { note, noteMastered: noteMasteredRef.current }
     }
+    const forceMasteryForTest = (note: string) => {
+      ensureNoteMemory(note)
+      const prior = masteryProgressRef.current[note] ?? { sessionIds: [], masteredAt: null }
+      masteryProgressRef.current[note] = {
+        sessionIds: prior.sessionIds.length > 0 ? prior.sessionIds : ['debug-forced-session'],
+        masteredAt: Date.now(),
+      }
+      saveMasteryProgress()
+      return { note, masteredAt: masteryProgressRef.current[note].masteredAt }
+    }
     const hook = Object.freeze({
       getState,
       get viewState() {
@@ -2397,6 +2407,7 @@ export default function PitchforksIII() {
       review,
       resetDebug,
       showMasteryCeremony,
+      forceMasteryForTest,
     })
 
     Object.defineProperty(window, '__pf3', {
