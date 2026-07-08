@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react'
 import Link from 'next/link'
+import { RotateCcw } from 'lucide-react'
 import { usePitchDetection, type PitchInfo } from './usePitchDetection'
 import { noteToFreq, octaveFoldedCents } from './pitchMath'
 import {
@@ -239,6 +240,7 @@ interface NewNoteCeremonyState {
   active: boolean
   note: string | null
   toneFired: boolean
+  tonePulseKey: number
 }
 
 type VillagerView = Readonly<{
@@ -494,13 +496,24 @@ function ceremonyBannerStyle(note: string): CSSProperties {
   }
 }
 
-function ceremonyNoteStyle(note: string): CSSProperties {
+function ceremonyNoteStyle(note: string, memory: Record<string, NoteMemory>, toneFired: boolean): CSSProperties {
+  const base = noteChipStyle(note, memory)
   const hue = hueForNote(note)
   return {
-    color: `hsl(${hue}, 92%, 78%)`,
-    background: `hsla(${hue}, 78%, 24%, 0.72)`,
-    borderColor: `hsla(${hue}, 88%, 66%, 0.84)`,
-    boxShadow: `0 0 18px hsla(${hue}, 88%, 60%, 0.32)`,
+    ...base,
+    boxShadow: toneFired
+      ? `${base.boxShadow ?? ''}, 0 0 22px hsla(${hue}, 90%, 66%, 0.44)`
+      : base.boxShadow,
+  }
+}
+
+function ceremonyReplayButtonStyle(note: string): CSSProperties {
+  const hue = hueForNote(note)
+  return {
+    color: `hsl(${hue}, 88%, 82%)`,
+    borderColor: `hsla(${hue}, 78%, 64%, 0.72)`,
+    background: `hsla(${hue}, 56%, 18%, 0.72)`,
+    boxShadow: `0 0 12px hsla(${hue}, 78%, 56%, 0.24)`,
   }
 }
 
@@ -747,6 +760,7 @@ function buildViewState(args: BuildViewStateArgs): ViewState {
       active: ceremony.active,
       note: ceremony.note,
       toneFired: ceremony.toneFired,
+      tonePulseKey: ceremony.tonePulseKey,
     },
   }
 }
@@ -1622,7 +1636,7 @@ export default function PitchforksIII() {
   const failureGradedKeysRef = useRef<Set<string>>(new Set())
   const newNoteTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const ceremonyToneTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const ceremonyRef = useRef<NewNoteCeremonyState>({ active: false, note: null, toneFired: false })
+  const ceremonyRef = useRef<NewNoteCeremonyState>({ active: false, note: null, toneFired: false, tonePulseKey: 0 })
   const pianoSamplesReadyRef = useRef(false)
   const lockHeldMsRef = useRef(0)
   const lockProgressRef = useRef(0)
@@ -1685,7 +1699,7 @@ export default function PitchforksIII() {
   const [fsrsDebugMode, setFsrsDebugMode] = useState(false)
   const [unlockedNotes, setUnlockedNotes] = useState<string[]>([...STARTING_NOTES])
   const [newNoteUnlocked, setNewNoteUnlocked] = useState<string | null>(null)
-  const [ceremony, setCeremony] = useState<NewNoteCeremonyState>({ active: false, note: null, toneFired: false })
+  const [ceremony, setCeremony] = useState<NewNoteCeremonyState>({ active: false, note: null, toneFired: false, tonePulseKey: 0 })
   const [micHudState, setMicHudState] = useState<MicHudState>('waiting')
 
   const { isListening, pitch, pitchRef, startListening, stopListening, error: micError } = usePitchDetection({ noiseGateDb: -45 })
@@ -1924,7 +1938,7 @@ export default function PitchforksIII() {
   const clearNewNoteCeremony = useCallback(() => {
     clearCeremonyTimers()
     setNewNoteUnlocked(null)
-    setCeremonySnapshot({ active: false, note: null, toneFired: false })
+    setCeremonySnapshot({ active: false, note: null, toneFired: false, tonePulseKey: 0 })
   }, [clearCeremonyTimers, setCeremonySnapshot])
 
   const tryPlayCeremonyTone = useCallback((note: string): CeremonyToneAttempt => {
@@ -1944,11 +1958,18 @@ export default function PitchforksIII() {
 
   const markCeremonyToneFired = useCallback((note: string) => {
     const current = ceremonyRef.current
-    if (!current.active || current.note !== note || current.toneFired) return
-    setCeremonySnapshot({ ...current, toneFired: true })
+    if (!current.active || current.note !== note) return
+    setCeremonySnapshot({ ...current, toneFired: true, tonePulseKey: current.tonePulseKey + 1 })
   }, [setCeremonySnapshot])
 
-  const scheduleCeremonyTone = useCallback((note: string) => {
+  const scheduleCeremonyTone = useCallback((note: string, replay = false) => {
+    const scheduledFor = ceremonyRef.current
+    if (!scheduledFor.active || scheduledFor.note !== note || (!replay && scheduledFor.toneFired)) return
+    if (ceremonyToneTimerRef.current) {
+      clearTimeout(ceremonyToneTimerRef.current)
+      ceremonyToneTimerRef.current = null
+    }
+
     const attempt = tryPlayCeremonyTone(note)
     if (attempt === 'played') {
       markCeremonyToneFired(note)
@@ -1964,7 +1985,7 @@ export default function PitchforksIII() {
     ceremonyToneTimerRef.current = setTimeout(() => {
       ceremonyToneTimerRef.current = null
       const current = ceremonyRef.current
-      if (!current.active || current.note !== note || current.toneFired) return
+      if (!current.active || current.note !== note || (!replay && current.toneFired)) return
       if (tryPlayCeremonyTone(note) === 'played') markCeremonyToneFired(note)
     }, waitMs)
   }, [markCeremonyToneFired, tryPlayCeremonyTone])
@@ -1972,12 +1993,19 @@ export default function PitchforksIII() {
   const showNewNoteUnlocked = useCallback((note: string) => {
     clearCeremonyTimers()
     setNewNoteUnlocked(note)
-    setCeremonySnapshot({ active: true, note, toneFired: false })
+    setCeremonySnapshot({ active: true, note, toneFired: false, tonePulseKey: 0 })
     scheduleCeremonyTone(note)
     newNoteTimerRef.current = setTimeout(() => {
       clearNewNoteCeremony()
     }, NEW_NOTE_CEREMONY_MS)
   }, [clearCeremonyTimers, clearNewNoteCeremony, scheduleCeremonyTone, setCeremonySnapshot])
+
+  const replayNewNoteCeremonyTone = useCallback((note: string) => {
+    const current = ceremonyRef.current
+    if (!current.active || current.note !== note) return
+    if (phaseRef.current === 'playing' && lockProgressRef.current > 0 && lockProgressRef.current < 1) return
+    scheduleCeremonyTone(note, true)
+  }, [scheduleCeremonyTone])
 
   const maybeUnlockNextNote = useCallback((consecutive: number) => {
     const currentPool = unlockedNotesRef.current
@@ -2758,11 +2786,21 @@ export default function PitchforksIII() {
     >
       <span>New note</span>
       <span
-        className="inline-flex min-h-7 min-w-12 items-center justify-center border px-2 py-1"
-        style={ceremonyNoteStyle(ceremony.note)}
+        key={ceremony.tonePulseKey}
+        className={`inline-flex min-h-7 min-w-12 items-center justify-center border px-2 py-1 text-[12px] font-black tracking-widest${ceremony.toneFired ? ' animate-pulse' : ''}`}
+        style={ceremonyNoteStyle(ceremony.note, fsrsRef.current, ceremony.toneFired)}
       >
         {ceremony.note}
       </span>
+      <button
+        type="button"
+        onClick={() => replayNewNoteCeremonyTone(ceremony.note!)}
+        className="inline-flex min-h-7 min-w-7 items-center justify-center border p-1 transition active:scale-95"
+        style={ceremonyReplayButtonStyle(ceremony.note)}
+        aria-label="Replay note tone"
+      >
+        <RotateCcw size={14} strokeWidth={3} aria-hidden="true" />
+      </button>
     </div>
   ) : null
 
