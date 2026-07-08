@@ -2795,7 +2795,7 @@ export default function PitchforksIII() {
       <button
         type="button"
         onClick={() => replayNewNoteCeremonyTone(ceremony.note!)}
-        className="inline-flex min-h-7 min-w-7 items-center justify-center border p-1 transition active:scale-95"
+        className="inline-flex min-h-7 min-w-7 items-center justify-center border p-1 transition hover:brightness-125 hover:scale-105 active:scale-95"
         style={ceremonyReplayButtonStyle(ceremony.note)}
         aria-label="Replay note tone"
       >
