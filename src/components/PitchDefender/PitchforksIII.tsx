@@ -584,12 +584,24 @@ function drawForkAccuracyRibbon(
   ctx.beginPath()
   ctx.roundRect(x, y, width, height, height / 2)
   ctx.fill()
+  // bright near-white core (SimplySing "current" pattern) so the ribbon reads as a
+  // distinct meter and doesn't camouflage against other same-hue green UI nearby
+  // (note-name label outline, fork-glow sprite) -- Argus HIGH finding, C6 refinement.
+  ctx.shadowBlur = 4
+  ctx.globalAlpha = 0.92
+  ctx.fillStyle = '#f4fff9'
+  ctx.beginPath()
+  ctx.roundRect(anchor.x - width * 0.22, y + height * 0.28, width * 0.44, height * 0.44, height * 0.22)
+  ctx.fill()
   ctx.globalAlpha = 0.86
+  ctx.shadowBlur = 10 + progress * 8
   ctx.lineWidth = 1
   ctx.strokeStyle = tint
   ctx.beginPath()
-  ctx.moveTo(anchor.x - width * 0.32, anchor.y)
-  ctx.lineTo(anchor.x + width * 0.32, anchor.y)
+  ctx.moveTo(anchor.x - width * 0.5, anchor.y)
+  ctx.lineTo(anchor.x - width * 0.28, anchor.y)
+  ctx.moveTo(anchor.x + width * 0.28, anchor.y)
+  ctx.lineTo(anchor.x + width * 0.5, anchor.y)
   ctx.stroke()
   ctx.restore()
 }
