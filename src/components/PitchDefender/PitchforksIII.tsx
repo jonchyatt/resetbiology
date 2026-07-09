@@ -54,6 +54,8 @@ const TONE_SUPPRESS_MS = TONE_MS + ECHO_TAIL_MS
 const NEW_NOTE_CEREMONY_MS = 2400
 const NOTE_MASTERED_CEREMONY_MS = 2400
 const WAVE_RECEIPT_MS = 1900
+const SHAKE_PEAK_PX = 4
+const SHAKE_MS = 200
 const MASTERY_STABILITY_DAYS = 21
 const MASTERY_SESSION_COUNT = 3
 const TRAIL_MS = 1000
@@ -312,6 +314,11 @@ type BoltView = Readonly<Bolt>
 type BurstView = Readonly<Burst>
 type TrailPointView = Readonly<TrailPoint>
 
+type ShakeView = Readonly<{
+  x: number
+  y: number
+}>
+
 type ActiveView = Readonly<{
   villagerId: number
   tineIndex: number
@@ -345,6 +352,7 @@ type ViewState = Readonly<{
   }>
   bolts: ReadonlyArray<BoltView>
   bursts: ReadonlyArray<BurstView>
+  shake: ShakeView
   hud: Readonly<{
     wave: number
     health: number
@@ -710,6 +718,7 @@ type BuildViewStateArgs = Readonly<{
   noteMastered: string | null
   noteMasteredAgeMs: number
   waveReceipt: WaveReceiptState
+  shake: ShakeView
   fsrsMemory: Readonly<Record<string, NoteMemory>>
 }>
 
@@ -732,6 +741,7 @@ function buildViewState(args: BuildViewStateArgs): ViewState {
     noteMastered,
     noteMasteredAgeMs,
     waveReceipt,
+    shake,
     fsrsMemory,
   } = args
   const chargeLevel = active
@@ -801,6 +811,7 @@ function buildViewState(args: BuildViewStateArgs): ViewState {
     },
     bolts: runtime.bolts.map(b => ({ ...b })),
     bursts: runtime.bursts.map(b => ({ ...b })),
+    shake,
     hud: {
       wave: runtime.wave,
       health: runtime.health,
@@ -1742,6 +1753,8 @@ function drawWaveReceipt(
 }
 
 function renderView(ctx: CanvasRenderingContext2D, view: ViewState, assets: Assets) {
+  ctx.save()
+  ctx.translate(view.shake.x, view.shake.y)
   drawDungeonBackground(ctx, view.animClock)
 
   // C5: always the real AI-sourced idle art. The prior charging?frankCharge:frankIdle
@@ -1783,6 +1796,8 @@ function renderView(ctx: CanvasRenderingContext2D, view: ViewState, assets: Asse
   drawChargeArcView(ctx, view, assets)
   for (const burst of view.bursts) drawBurstView(ctx, burst)
   for (const bolt of view.bolts) drawBoltView(ctx, bolt)
+  ctx.restore()
+
   if (view.noteMastered) {
     drawNoteMasteredCeremony(ctx, view.noteMastered, view.noteMasteredAgeMs, view.animClock, view.reducedMotion)
   }
@@ -1989,6 +2004,7 @@ export default function PitchforksIII() {
   const lastStrikeHueRef = useRef<number | null>(null)
   const lastKillNoteRef = useRef<string | null>(null)
   const lastKillHueRef = useRef<number | null>(null)
+  const shakeStartedAtRef = useRef<number>(0)
   const roarFiredCountRef = useRef(0)
   const fullSequenceCompleteRef = useRef(false)
   const phaseRef = useRef<Phase>('menu')
@@ -2892,6 +2908,7 @@ export default function PitchforksIII() {
       lastKillNoteRef.current = strikeNote ?? null
       lastKillHueRef.current = strikeHue
       addBurst(villager, strikeHue, 'kill')
+      shakeStartedAtRef.current = performance.now()
       localSfx('ash', sfxVolumeRef.current)
       localSfx('roar', sfxVolumeRef.current)
       roarFiredCountRef.current += 1
@@ -3182,6 +3199,17 @@ export default function PitchforksIII() {
     syncMicHudState()
     const active = getActiveTarget()
     const tuner = updatePitchBarState(active)
+    const frameNow = performance.now()
+    const shakeElapsedMs = frameNow - shakeStartedAtRef.current
+    const shakeProgress = !reducedMotionRef.current && shakeStartedAtRef.current > 0 && shakeElapsedMs < SHAKE_MS
+      ? 1 - Math.max(0, shakeElapsedMs) / SHAKE_MS
+      : 0
+    const shake: ShakeView = shakeProgress > 0
+      ? {
+          x: Math.sin(runtimeRef.current.animClock * 47) * SHAKE_PEAK_PX * shakeProgress,
+          y: Math.sin(runtimeRef.current.animClock * 61) * SHAKE_PEAK_PX * shakeProgress * 0.6,
+        }
+      : { x: 0, y: 0 }
     const view = freezeViewStateForDebug(buildViewState({
       runtime: runtimeRef.current,
       phase: phaseRef.current,
@@ -3209,6 +3237,7 @@ export default function PitchforksIII() {
               : 0,
           }
         : waveReceiptRef.current,
+      shake,
       fsrsMemory: fsrsRef.current,
     }), demoRef.current || fsrsDebugRef.current)
     viewStateRef.current = view
@@ -3248,6 +3277,7 @@ export default function PitchforksIII() {
     lastStrikeHueRef.current = null
     lastKillNoteRef.current = null
     lastKillHueRef.current = null
+    shakeStartedAtRef.current = 0
     roarFiredCountRef.current = 0
     fullSequenceCompleteRef.current = false
     lockHeldMsRef.current = 0
