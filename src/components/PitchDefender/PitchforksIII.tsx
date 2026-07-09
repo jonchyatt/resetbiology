@@ -56,6 +56,7 @@ const NOTE_MASTERED_CEREMONY_MS = 2400
 const WAVE_RECEIPT_MS = 1900
 const SHAKE_PEAK_PX = 4
 const SHAKE_MS = 200
+const FRANK_REACTION_MS = 260
 const MASTERY_STABILITY_DAYS = 21
 const MASTERY_SESSION_COUNT = 3
 const TRAIL_MS = 1000
@@ -180,6 +181,7 @@ interface Bolt {
 }
 
 type BurstKind = 'strike' | 'kill'
+type FrankReactionKind = 'kill' | 'miss'
 
 interface Burst {
   x: number
@@ -352,6 +354,10 @@ type ViewState = Readonly<{
   }>
   bolts: ReadonlyArray<BoltView>
   bursts: ReadonlyArray<BurstView>
+  frankReaction: Readonly<{
+    kind: FrankReactionKind
+    ageMs: number
+  }> | null
   shake: ShakeView
   hud: Readonly<{
     wave: number
@@ -718,6 +724,7 @@ type BuildViewStateArgs = Readonly<{
   noteMastered: string | null
   noteMasteredAgeMs: number
   waveReceipt: WaveReceiptState
+  frankReaction: ViewState['frankReaction']
   shake: ShakeView
   fsrsMemory: Readonly<Record<string, NoteMemory>>
 }>
@@ -741,6 +748,7 @@ function buildViewState(args: BuildViewStateArgs): ViewState {
     noteMastered,
     noteMasteredAgeMs,
     waveReceipt,
+    frankReaction,
     shake,
     fsrsMemory,
   } = args
@@ -811,6 +819,7 @@ function buildViewState(args: BuildViewStateArgs): ViewState {
     },
     bolts: runtime.bolts.map(b => ({ ...b })),
     bursts: runtime.bursts.map(b => ({ ...b })),
+    frankReaction,
     shake,
     hud: {
       wave: runtime.wave,
@@ -1767,18 +1776,65 @@ function renderView(ctx: CanvasRenderingContext2D, view: ViewState, assets: Asse
   if (frank) {
     const fm = assets.frankMeta
     const frame = Math.floor(view.animClock * (view.charge.progress > 0 ? 8 : 4)) % fm.frames
+    const spriteW = fm.frame_w * SPRITE_SCALE
+    const spriteH = fm.frame_h * SPRITE_SCALE
+    const reaction = view.frankReaction
+    const reactionPhase = reaction ? clamp(reaction.ageMs / FRANK_REACTION_MS, 0, 1) : 1
+    const reactionBeat = reaction ? Math.sin(reactionPhase * Math.PI) : 0
+    const reactionFade = reaction ? 1 - reactionPhase : 0
+    const motionBeat = view.reducedMotion ? 0 : reactionBeat
+    const scaleX = reaction?.kind === 'kill' ? 1 + motionBeat * 0.08 : reaction?.kind === 'miss' ? 1 - motionBeat * 0.05 : 1
+    const scaleY = reaction?.kind === 'kill' ? 1 + motionBeat * 0.08 : reaction?.kind === 'miss' ? 1 + motionBeat * 0.035 : 1
+    const drawW = spriteW * scaleX
+    const drawH = spriteH * scaleY
+    const drawX = FRANK_X - (drawW - spriteW) / 2 + (reaction?.kind === 'miss' ? -5 * motionBeat : 0)
+    const drawY = FRANK_Y - (drawH - spriteH) + (reaction?.kind === 'kill' ? -4 * motionBeat : 0)
     ctx.imageSmoothingEnabled = false
+    if (reaction?.kind === 'kill') {
+      ctx.save()
+      ctx.globalCompositeOperation = 'screen'
+      ctx.globalAlpha = 0.36 * reactionFade
+      const glowX = FRANK_X + spriteW / 2
+      const glowY = FRANK_Y + spriteH * 0.42
+      const glow = ctx.createRadialGradient(glowX, glowY, 5, glowX, glowY, 42 + 18 * reactionBeat)
+      glow.addColorStop(0, 'rgba(250, 204, 21, 0.9)')
+      glow.addColorStop(0.54, 'rgba(74, 222, 128, 0.24)')
+      glow.addColorStop(1, 'rgba(250, 204, 21, 0)')
+      ctx.fillStyle = glow
+      ctx.beginPath()
+      ctx.arc(glowX, glowY, 46 + 18 * reactionBeat, 0, Math.PI * 2)
+      ctx.fill()
+      ctx.restore()
+    }
+    ctx.save()
+    ctx.globalAlpha = reaction?.kind === 'miss' ? 1 - reactionFade * 0.34 : 1
     ctx.drawImage(
       frank,
       frame * fm.frame_w,
       0,
       fm.frame_w,
       fm.frame_h,
-      FRANK_X,
-      FRANK_Y,
-      fm.frame_w * SPRITE_SCALE,
-      fm.frame_h * SPRITE_SCALE,
+      drawX,
+      drawY,
+      drawW,
+      drawH,
     )
+    if (reaction?.kind === 'kill') {
+      ctx.globalCompositeOperation = 'lighter'
+      ctx.globalAlpha = 0.28 * reactionFade
+      ctx.drawImage(
+        frank,
+        frame * fm.frame_w,
+        0,
+        fm.frame_w,
+        fm.frame_h,
+        drawX,
+        drawY,
+        drawW,
+        drawH,
+      )
+    }
+    ctx.restore()
     ctx.fillStyle = 'rgba(0,0,0,0.48)'
     ctx.beginPath()
     ctx.ellipse(FRANK_X + 48, FRANK_Y + fm.frame_h * SPRITE_SCALE - 7, 35, 6, 0, 0, Math.PI * 2)
@@ -2005,6 +2061,9 @@ export default function PitchforksIII() {
   const lastKillNoteRef = useRef<string | null>(null)
   const lastKillHueRef = useRef<number | null>(null)
   const shakeStartedAtRef = useRef<number>(0)
+  // Event-only mascot flash; future blind lanes should keep it on the resolved game event.
+  const frankReactionKindRef = useRef<FrankReactionKind | null>(null)
+  const frankReactionStartedAtRef = useRef(0)
   const roarFiredCountRef = useRef(0)
   const fullSequenceCompleteRef = useRef(false)
   const phaseRef = useRef<Phase>('menu')
@@ -2909,6 +2968,8 @@ export default function PitchforksIII() {
       lastKillHueRef.current = strikeHue
       addBurst(villager, strikeHue, 'kill')
       shakeStartedAtRef.current = performance.now()
+      frankReactionKindRef.current = 'kill'
+      frankReactionStartedAtRef.current = performance.now()
       localSfx('ash', sfxVolumeRef.current)
       localSfx('roar', sfxVolumeRef.current)
       roarFiredCountRef.current += 1
@@ -3109,6 +3170,8 @@ export default function PitchforksIII() {
       v.attackTimer = Math.max(0, v.attackTimer - dt)
       if (v.attackTimer <= 0) {
         reviewTargetNote(active, false)
+        frankReactionKindRef.current = 'miss'
+        frankReactionStartedAtRef.current = performance.now()
         v.state = 'ash'
         v.ashTimer = 0.9
         rt.health = Math.max(0, rt.health - 1)
@@ -3210,6 +3273,17 @@ export default function PitchforksIII() {
           y: Math.sin(runtimeRef.current.animClock * 61) * SHAKE_PEAK_PX * shakeProgress * 0.6,
         }
       : { x: 0, y: 0 }
+    let frankReaction: ViewState['frankReaction'] = null
+    const frankReactionKind = frankReactionKindRef.current
+    if (frankReactionKind && frankReactionStartedAtRef.current > 0) {
+      const ageMs = frameNow - frankReactionStartedAtRef.current
+      if (ageMs < FRANK_REACTION_MS) {
+        frankReaction = { kind: frankReactionKind, ageMs }
+      } else {
+        frankReactionKindRef.current = null
+        frankReactionStartedAtRef.current = 0
+      }
+    }
     const view = freezeViewStateForDebug(buildViewState({
       runtime: runtimeRef.current,
       phase: phaseRef.current,
@@ -3237,6 +3311,7 @@ export default function PitchforksIII() {
               : 0,
           }
         : waveReceiptRef.current,
+      frankReaction,
       shake,
       fsrsMemory: fsrsRef.current,
     }), demoRef.current || fsrsDebugRef.current)
@@ -3278,6 +3353,8 @@ export default function PitchforksIII() {
     lastKillNoteRef.current = null
     lastKillHueRef.current = null
     shakeStartedAtRef.current = 0
+    frankReactionKindRef.current = null
+    frankReactionStartedAtRef.current = 0
     roarFiredCountRef.current = 0
     fullSequenceCompleteRef.current = false
     lockHeldMsRef.current = 0
