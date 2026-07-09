@@ -53,6 +53,7 @@ const ECHO_TAIL_MS = 600
 const TONE_SUPPRESS_MS = TONE_MS + ECHO_TAIL_MS
 const NEW_NOTE_CEREMONY_MS = 2400
 const NOTE_MASTERED_CEREMONY_MS = 2400
+const WAVE_RECEIPT_MS = 1900
 const MASTERY_STABILITY_DAYS = 21
 const MASTERY_SESSION_COUNT = 3
 const TRAIL_MS = 1000
@@ -248,10 +249,40 @@ interface NewNoteCeremonyState {
   tonePulseKey: number
 }
 
+type WaveReceiptState = Readonly<{
+  visible: boolean
+  timer: number
+  heard: readonly string[]
+  sung: readonly string[]
+  mastered: readonly string[]
+}>
+
 type MasteryProgress = Record<string, {
   sessionIds: string[]
   masteredAt: number | null
 }>
+
+type NoteChipPalette = Readonly<{
+  hue: number
+  saturation: number
+  fillLight: number
+  borderLight: number
+  textLight: number
+  glowPx: number
+  glowAlpha: number
+}>
+
+type WaveReceiptView = WaveReceiptState & Readonly<{
+  noteStyles: Readonly<Record<string, NoteChipPalette>>
+}>
+
+const EMPTY_WAVE_RECEIPT: WaveReceiptState = {
+  visible: false,
+  timer: 0,
+  heard: [],
+  sung: [],
+  mastered: [],
+}
 
 type VillagerView = Readonly<{
   id: number
@@ -324,6 +355,7 @@ type ViewState = Readonly<{
     visible: boolean
     timer: number
   }>
+  waveReceipt: WaveReceiptView
   prompt: Readonly<{
     visible: boolean
     text: string
@@ -472,7 +504,7 @@ function noteHealthIntensity(r: number): number {
   return Number(clamp(0.2 + (1 - clamp(r, 0, 1)) * 0.8, 0.2, 1).toFixed(4))
 }
 
-function noteHealthFor(note: string, memory: Record<string, NoteMemory>): NoteHealthDebug {
+function noteHealthFor(note: string, memory: Readonly<Record<string, NoteMemory>>): NoteHealthDebug {
   const r = clamp(currentR(memory[note] ?? createNote(note)), 0, 1)
   return {
     hue: hueForNote(note),
@@ -481,23 +513,32 @@ function noteHealthFor(note: string, memory: Record<string, NoteMemory>): NoteHe
   }
 }
 
-function noteHealthSnapshot(notes: string[], memory: Record<string, NoteMemory>): Record<string, NoteHealthDebug> {
+function noteHealthSnapshot(notes: string[], memory: Readonly<Record<string, NoteMemory>>): Record<string, NoteHealthDebug> {
   const result: Record<string, NoteHealthDebug> = {}
   for (const note of notes) result[note] = noteHealthFor(note, memory)
   return result
 }
 
-function noteChipStyle(note: string, memory: Record<string, NoteMemory>): CSSProperties {
+function noteChipPalette(note: string, memory: Readonly<Record<string, NoteMemory>>): NoteChipPalette {
   const { hue, intensity } = noteHealthFor(note, memory)
-  const saturation = Math.round(34 + intensity * 56)
-  const fillLight = Math.round(12 + intensity * 18)
-  const borderLight = Math.round(38 + intensity * 24)
-  const textLight = Math.round(72 + intensity * 12)
+  return {
+    hue,
+    saturation: Math.round(34 + intensity * 56),
+    fillLight: Math.round(12 + intensity * 18),
+    borderLight: Math.round(38 + intensity * 24),
+    textLight: Math.round(72 + intensity * 12),
+    glowPx: Math.round(4 + intensity * 12),
+    glowAlpha: 0.12 + intensity * 0.22,
+  }
+}
+
+function noteChipStyle(note: string, memory: Readonly<Record<string, NoteMemory>>): CSSProperties {
+  const { hue, saturation, fillLight, borderLight, textLight, glowPx, glowAlpha } = noteChipPalette(note, memory)
   return {
     color: `hsl(${hue}, ${saturation}%, ${textLight}%)`,
     background: `linear-gradient(180deg, hsla(${hue}, ${saturation}%, ${fillLight + 7}%, 0.88), hsla(${hue}, ${saturation}%, ${fillLight}%, 0.72))`,
     borderColor: `hsla(${hue}, ${saturation}%, ${borderLight}%, 0.86)`,
-    boxShadow: `0 0 ${Math.round(4 + intensity * 12)}px hsla(${hue}, ${saturation}%, ${borderLight}%, ${0.12 + intensity * 0.22})`,
+    boxShadow: `0 0 ${glowPx}px hsla(${hue}, ${saturation}%, ${borderLight}%, ${glowAlpha})`,
   }
 }
 
@@ -510,7 +551,7 @@ function ceremonyBannerStyle(note: string): CSSProperties {
   }
 }
 
-function ceremonyNoteStyle(note: string, memory: Record<string, NoteMemory>, toneFired: boolean): CSSProperties {
+function ceremonyNoteStyle(note: string, memory: Readonly<Record<string, NoteMemory>>, toneFired: boolean): CSSProperties {
   const base = noteChipStyle(note, memory)
   const hue = hueForNote(note)
   return {
@@ -668,6 +709,7 @@ type BuildViewStateArgs = Readonly<{
   ceremony: NewNoteCeremonyState
   noteMastered: string | null
   noteMasteredAgeMs: number
+  waveReceipt: WaveReceiptState
   fsrsMemory: Readonly<Record<string, NoteMemory>>
 }>
 
@@ -689,6 +731,7 @@ function buildViewState(args: BuildViewStateArgs): ViewState {
     ceremony,
     noteMastered,
     noteMasteredAgeMs,
+    waveReceipt,
     fsrsMemory,
   } = args
   const chargeLevel = active
@@ -697,6 +740,12 @@ function buildViewState(args: BuildViewStateArgs): ViewState {
         Math.min(active.villager.totalTines, Math.round(chargeProgress * active.villager.totalTines)),
       )
     : 0
+  const receiptNoteStyles: Record<string, NoteChipPalette> = {}
+  if (waveReceipt.visible) {
+    for (const note of new Set([...waveReceipt.heard, ...waveReceipt.sung, ...waveReceipt.mastered])) {
+      receiptNoteStyles[note] = noteChipPalette(note, fsrsMemory)
+    }
+  }
 
   return {
     phase,
@@ -761,6 +810,10 @@ function buildViewState(args: BuildViewStateArgs): ViewState {
     waveBanner: {
       visible: runtime.bannerTimer > 0,
       timer: runtime.bannerTimer,
+    },
+    waveReceipt: {
+      ...waveReceipt,
+      noteStyles: receiptNoteStyles,
     },
     prompt: {
       visible: !!prompt && !!active,
@@ -1511,6 +1564,183 @@ function drawNoteMasteredCeremony(
   ctx.restore()
 }
 
+function waveReceiptChipWidth(ctx: CanvasRenderingContext2D, note: string, noteNamesVisible: boolean) {
+  ctx.font = 'bold 13px monospace'
+  return noteNamesVisible ? Math.max(36, Math.ceil(ctx.measureText(note).width) + 18) : 24
+}
+
+function measureWaveReceiptRows(
+  ctx: CanvasRenderingContext2D,
+  notes: readonly string[],
+  noteNamesVisible: boolean,
+  startX: number,
+  maxX: number,
+) {
+  if (notes.length === 0) return 1
+  let rows = 1
+  let x = startX
+  for (const note of notes) {
+    const width = waveReceiptChipWidth(ctx, note, noteNamesVisible)
+    if (x > startX && x + width > maxX) {
+      rows += 1
+      x = startX
+    }
+    x += width + 8
+  }
+  return rows
+}
+
+function drawWaveReceiptChip(
+  ctx: CanvasRenderingContext2D,
+  note: string,
+  x: number,
+  y: number,
+  noteNamesVisible: boolean,
+  palette: NoteChipPalette,
+  mastered: boolean,
+) {
+  const width = waveReceiptChipWidth(ctx, note, noteNamesVisible)
+  const height = 24
+  const gradient = ctx.createLinearGradient(0, y - height / 2, 0, y + height / 2)
+  gradient.addColorStop(0, `hsla(${palette.hue}, ${palette.saturation}%, ${palette.fillLight + 7}%, 0.88)`)
+  gradient.addColorStop(1, `hsla(${palette.hue}, ${palette.saturation}%, ${palette.fillLight}%, 0.72)`)
+
+  ctx.save()
+  ctx.shadowColor = `hsla(${palette.hue}, ${palette.saturation}%, ${palette.borderLight}%, ${mastered ? 0.44 : palette.glowAlpha})`
+  ctx.shadowBlur = mastered ? Math.max(16, palette.glowPx + 6) : palette.glowPx
+  ctx.fillStyle = gradient
+  ctx.strokeStyle = `hsla(${palette.hue}, ${palette.saturation}%, ${mastered ? 72 : palette.borderLight}%, ${mastered ? 0.9 : 0.86})`
+  ctx.lineWidth = mastered ? 1.6 : 1
+  ctx.beginPath()
+  ctx.roundRect(x, y - height / 2, width, height, 6)
+  ctx.fill()
+  ctx.stroke()
+
+  if (noteNamesVisible) {
+    ctx.shadowBlur = 0
+    ctx.fillStyle = mastered ? '#f7fbff' : `hsl(${palette.hue}, ${palette.saturation}%, ${palette.textLight}%)`
+    ctx.font = 'bold 13px monospace'
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.fillText(note, x + width / 2, y + 1)
+  }
+  ctx.restore()
+  return width
+}
+
+function drawWaveReceiptRow(
+  ctx: CanvasRenderingContext2D,
+  receipt: WaveReceiptView,
+  label: string,
+  notes: readonly string[],
+  y: number,
+  noteNamesVisible: boolean,
+  mastered: boolean,
+) {
+  const labelX = 112
+  const chipStartX = 228
+  const maxX = W - 112
+  let x = chipStartX
+  let chipY = y + 12
+
+  ctx.font = 'bold 12px monospace'
+  ctx.textAlign = 'left'
+  ctx.textBaseline = 'middle'
+  ctx.fillStyle = mastered ? '#f7fbff' : '#a9b5c8'
+  ctx.fillText(label, labelX, chipY)
+
+  if (notes.length === 0) {
+    ctx.fillStyle = 'rgba(211, 222, 238, 0.5)'
+    ctx.font = 'bold 11px monospace'
+    ctx.fillText('NONE', chipStartX, chipY)
+    return y + 30
+  }
+
+  for (const note of notes) {
+    const palette = receipt.noteStyles[note] ?? noteChipPalette(note, {})
+    const width = waveReceiptChipWidth(ctx, note, noteNamesVisible)
+    if (x > chipStartX && x + width > maxX) {
+      x = chipStartX
+      chipY += 30
+    }
+    drawWaveReceiptChip(ctx, note, x, chipY, noteNamesVisible, palette, mastered)
+    x += width + 8
+  }
+
+  return chipY + 18
+}
+
+function drawWaveReceipt(
+  ctx: CanvasRenderingContext2D,
+  receipt: WaveReceiptView,
+  noteNamesVisible: boolean,
+  animClock: number,
+  reducedMotion: boolean,
+) {
+  if (!receipt.visible) return
+
+  const durationSeconds = WAVE_RECEIPT_MS / 1000
+  const alpha = Math.min(1, receipt.timer / 0.18, (durationSeconds - receipt.timer) / 0.22)
+  if (alpha <= 0) return
+
+  const cardX = 80
+  const cardW = W - cardX * 2
+  const chipStartX = 228
+  const maxX = W - 112
+  const heardRows = measureWaveReceiptRows(ctx, receipt.heard, noteNamesVisible, chipStartX, maxX)
+  const sungRows = measureWaveReceiptRows(ctx, receipt.sung, noteNamesVisible, chipStartX, maxX)
+  const masteredRows = receipt.mastered.length > 0
+    ? measureWaveReceiptRows(ctx, receipt.mastered, noteNamesVisible, chipStartX, maxX)
+    : 0
+  const cardH = 92 + heardRows * 30 + sungRows * 30 + (receipt.mastered.length > 0 ? 18 + masteredRows * 30 : 0)
+  const cardY = Math.max(74, 192 - cardH / 2)
+  const pulse = reducedMotion ? 0 : Math.sin(animClock * 2.6) * 2
+
+  ctx.save()
+  ctx.globalAlpha = alpha
+  ctx.fillStyle = 'rgba(2, 7, 14, 0.72)'
+  ctx.fillRect(0, cardY - 20, W, cardH + 40)
+
+  ctx.shadowColor = 'rgba(125, 211, 252, 0.28)'
+  ctx.shadowBlur = 18 + Math.max(0, pulse)
+  ctx.fillStyle = 'rgba(8, 13, 24, 0.9)'
+  ctx.strokeStyle = 'rgba(148, 163, 184, 0.48)'
+  ctx.lineWidth = 1
+  ctx.beginPath()
+  ctx.roundRect(cardX, cardY, cardW, cardH, 8)
+  ctx.fill()
+  ctx.stroke()
+
+  ctx.shadowBlur = 0
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
+  ctx.fillStyle = '#f6f8ff'
+  ctx.font = 'bold 22px monospace'
+  ctx.fillText('WAVE CLEAR', W / 2, cardY + 28)
+
+  ctx.fillStyle = 'rgba(211, 222, 238, 0.72)'
+  ctx.font = 'bold 11px monospace'
+  const summary = `${receipt.heard.length} heard | ${receipt.sung.length} sung${receipt.mastered.length > 0 ? ` | ${receipt.mastered.length} mastered` : ''}`
+  ctx.fillText(summary, W / 2, cardY + 50)
+
+  let rowY = cardY + 66
+  rowY = drawWaveReceiptRow(ctx, receipt, 'HEARD', receipt.heard, rowY, noteNamesVisible, false)
+  rowY = drawWaveReceiptRow(ctx, receipt, 'SUNG', receipt.sung, rowY, noteNamesVisible, false)
+
+  if (receipt.mastered.length > 0) {
+    const glowY = rowY + 19
+    const glow = ctx.createRadialGradient(W / 2, glowY, 8, W / 2, glowY, 210)
+    glow.addColorStop(0, 'rgba(191, 239, 255, 0.22)')
+    glow.addColorStop(0.46, 'rgba(96, 165, 250, 0.1)')
+    glow.addColorStop(1, 'rgba(96, 165, 250, 0)')
+    ctx.fillStyle = glow
+    ctx.fillRect(cardX, rowY - 6, cardW, 54 + masteredRows * 12)
+    drawWaveReceiptRow(ctx, receipt, 'MASTERED', receipt.mastered, rowY + 8, noteNamesVisible, true)
+  }
+
+  ctx.restore()
+}
+
 function renderView(ctx: CanvasRenderingContext2D, view: ViewState, assets: Assets) {
   drawDungeonBackground(ctx, view.animClock)
 
@@ -1555,6 +1785,10 @@ function renderView(ctx: CanvasRenderingContext2D, view: ViewState, assets: Asse
   for (const bolt of view.bolts) drawBoltView(ctx, bolt)
   if (view.noteMastered) {
     drawNoteMasteredCeremony(ctx, view.noteMastered, view.noteMasteredAgeMs, view.animClock, view.reducedMotion)
+  }
+
+  if (view.waveReceipt.visible) {
+    drawWaveReceipt(ctx, view.waveReceipt, view.noteNamesVisible, view.animClock, view.reducedMotion)
   }
 
   if (view.waveBanner.visible) {
@@ -1715,6 +1949,9 @@ export default function PitchforksIII() {
   const nextIdRef = useRef(0)
   const fsrsRef = useRef<Record<string, NoteMemory>>({})
   const masteryProgressRef = useRef<MasteryProgress>({})
+  const waveNotesHeardRef = useRef<Set<string>>(new Set())
+  const waveNotesSungRef = useRef<Set<string>>(new Set())
+  const waveStartedAtRef = useRef<number>(0)
   const masterySessionIdRef = useRef('')
   const unlockedNotesRef = useRef<string[]>([...STARTING_NOTES])
   const consecutiveCorrectRef = useRef(0)
@@ -1724,8 +1961,11 @@ export default function PitchforksIII() {
   const failureGradedKeysRef = useRef<Set<string>>(new Set())
   const newNoteTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const noteMasteredTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const waveReceiptTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const noteMasteredRef = useRef<string | null>(null)
   const noteMasteredStartedAtRef = useRef(0)
+  const waveReceiptRef = useRef<WaveReceiptState>(EMPTY_WAVE_RECEIPT)
+  const waveReceiptStartedAtRef = useRef(0)
   const ceremonyToneTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const ceremonyRef = useRef<NewNoteCeremonyState>({ active: false, note: null, toneFired: false, tonePulseKey: 0 })
   const pianoSamplesReadyRef = useRef(false)
@@ -1792,6 +2032,7 @@ export default function PitchforksIII() {
   const [unlockedNotes, setUnlockedNotes] = useState<string[]>([...STARTING_NOTES])
   const [newNoteUnlocked, setNewNoteUnlocked] = useState<string | null>(null)
   const [noteMastered, setNoteMastered] = useState<string | null>(null)
+  const [, setWaveReceipt] = useState<WaveReceiptState>(EMPTY_WAVE_RECEIPT)
   const [ceremony, setCeremony] = useState<NewNoteCeremonyState>({ active: false, note: null, toneFired: false, tonePulseKey: 0 })
   const [micHudState, setMicHudState] = useState<MicHudState>('waiting')
   const [heardYou, setHeardYou] = useState(false)
@@ -2083,6 +2324,47 @@ export default function PitchforksIII() {
     setNoteMastered(null)
   }, [clearNoteMasteredTimer])
 
+  const clearWaveReceiptTimer = useCallback(() => {
+    if (waveReceiptTimerRef.current) {
+      clearTimeout(waveReceiptTimerRef.current)
+      waveReceiptTimerRef.current = null
+    }
+  }, [])
+
+  const setWaveReceiptSnapshot = useCallback((next: WaveReceiptState) => {
+    waveReceiptRef.current = next
+    setWaveReceipt(next)
+  }, [])
+
+  const clearWaveReceipt = useCallback(() => {
+    clearWaveReceiptTimer()
+    waveReceiptStartedAtRef.current = 0
+    setWaveReceiptSnapshot(EMPTY_WAVE_RECEIPT)
+  }, [clearWaveReceiptTimer, setWaveReceiptSnapshot])
+
+  const showWaveReceipt = useCallback((snapshot: WaveReceiptState) => {
+    clearWaveReceiptTimer()
+    waveReceiptStartedAtRef.current = performance.now()
+    setWaveReceiptSnapshot(snapshot)
+    waveReceiptTimerRef.current = setTimeout(() => {
+      clearWaveReceipt()
+    }, WAVE_RECEIPT_MS)
+  }, [clearWaveReceipt, clearWaveReceiptTimer, setWaveReceiptSnapshot])
+
+  const snapshotWaveReceipt = useCallback((): WaveReceiptState => {
+    const mastered = Object.entries(masteryProgressRef.current)
+      .filter(([, progress]) => progress.masteredAt !== null && progress.masteredAt >= waveStartedAtRef.current)
+      .map(([note]) => note)
+
+    return {
+      visible: true,
+      timer: 0,
+      heard: [...waveNotesHeardRef.current],
+      sung: [...waveNotesSungRef.current],
+      mastered,
+    }
+  }, [])
+
   const showNoteMastered = useCallback((note: string) => {
     clearNoteMasteredCeremony()
     noteMasteredRef.current = note
@@ -2223,6 +2505,7 @@ export default function PitchforksIII() {
     if (correct) recordMasteryProgressForReview(target.note)
 
     if (correct) {
+      waveNotesSungRef.current.add(target.note)
       const nextConsecutive = consecutiveCorrectRef.current + 1
       consecutiveCorrectRef.current = nextConsecutive
       maybeUnlockNextNote(nextConsecutive)
@@ -2235,6 +2518,9 @@ export default function PitchforksIII() {
   const playVillagerSequence = useCallback((villager: Villager, mode: 'cue' | 'replay') => {
     if (!villager.notes.length) return
     clearCueTimers()
+    if (mode === 'cue') {
+      for (const note of villager.notes) waveNotesHeardRef.current.add(note)
+    }
 
     const now = performance.now()
     const toneWindowMs = (villager.notes.length - 1) * TONE_SPACING_MS + TONE_MS
@@ -2511,6 +2797,10 @@ export default function PitchforksIII() {
 
   const startWave = useCallback((wave: number) => {
     const rt = runtimeRef.current
+    waveNotesHeardRef.current = new Set()
+    waveNotesSungRef.current = new Set()
+    waveStartedAtRef.current = Date.now()
+    clearWaveReceipt()
     rt.wave = wave
     rt.plan = fixedWaveDirector(wave, demoRef.current)
     rt.spawned = 0
@@ -2527,7 +2817,7 @@ export default function PitchforksIII() {
     setPromptText('')
     if (demoRef.current) demoStepRef.current = 'wave-banner'
     setHud({ wave, health: rt.health, score: rt.score, streak: rt.streak })
-  }, [setPromptText])
+  }, [clearWaveReceipt, setPromptText])
 
   const addBolt = useCallback((villager: Villager, tineIndex: number) => {
     const a = assetsRef.current
@@ -2827,13 +3117,14 @@ export default function PitchforksIII() {
 
     const waveClear = rt.spawned >= rt.plan.count && rt.villagers.every(v => v.state !== 'walking')
     if (waveClear && !rt.nextWavePending) {
+      showWaveReceipt(snapshotWaveReceipt())
       rt.nextWavePending = true
       setTimeout(() => {
         if (phaseRef.current !== 'playing') return
         startWave(runtimeRef.current.wave + 1)
-      }, 900)
+      }, WAVE_RECEIPT_MS)
     }
-  }, [getActiveTarget, processLock, reviewTargetNote, setPromptText, spawnVillager, startWave, timersPausedNow])
+  }, [getActiveTarget, processLock, reviewTargetNote, setPromptText, showWaveReceipt, snapshotWaveReceipt, spawnVillager, startWave, timersPausedNow])
 
   const updatePitchBarState = useCallback((active: ActiveTarget | null): TunerView => {
     const visible = phaseRef.current === 'playing'
@@ -2910,6 +3201,14 @@ export default function PitchforksIII() {
       noteMasteredAgeMs: noteMasteredStartedAtRef.current > 0
         ? performance.now() - noteMasteredStartedAtRef.current
         : 0,
+      waveReceipt: waveReceiptRef.current.visible
+        ? {
+            ...waveReceiptRef.current,
+            timer: waveReceiptStartedAtRef.current > 0
+              ? (performance.now() - waveReceiptStartedAtRef.current) / 1000
+              : 0,
+          }
+        : waveReceiptRef.current,
       fsrsMemory: fsrsRef.current,
     }), demoRef.current || fsrsDebugRef.current)
     viewStateRef.current = view
@@ -2922,9 +3221,13 @@ export default function PitchforksIII() {
     clearCueTimers()
     clearNewNoteCeremony()
     clearNoteMasteredCeremony()
+    clearWaveReceipt()
     runtimeRef.current = makeInitialRuntime(demoRef.current)
     viewStateRef.current = null
     nextIdRef.current = 0
+    waveNotesHeardRef.current = new Set()
+    waveNotesSungRef.current = new Set()
+    waveStartedAtRef.current = Date.now()
     activeKeyRef.current = ''
     activeVillagerIdRef.current = null
     activePromptKeyRef.current = ''
@@ -2966,7 +3269,7 @@ export default function PitchforksIII() {
     lastTimeRef.current = 0
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
     rafRef.current = requestAnimationFrame(loop)
-  }, [clearCueTimers, clearNewNoteCeremony, clearNoteMasteredCeremony, ensureNoteMemory, loop, resumeCueAudioFromGesture])
+  }, [clearCueTimers, clearNewNoteCeremony, clearNoteMasteredCeremony, clearWaveReceipt, ensureNoteMemory, loop, resumeCueAudioFromGesture])
 
   const startGame = useCallback(() => {
     beginPlaying()
@@ -2989,21 +3292,23 @@ export default function PitchforksIII() {
     clearCueTimers()
     clearNewNoteCeremony()
     clearNoteMasteredCeremony()
+    clearWaveReceipt()
     phaseRef.current = 'menu'
     viewStateRef.current = null
     stopListening()
     micHudStateRef.current = 'waiting'
     setMicHudState('waiting')
     setPhase('menu')
-  }, [clearCueTimers, clearNewNoteCeremony, clearNoteMasteredCeremony, stopListening])
+  }, [clearCueTimers, clearNewNoteCeremony, clearNoteMasteredCeremony, clearWaveReceipt, stopListening])
 
   useEffect(() => () => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
     clearCueTimers()
     clearCeremonyTimers()
     clearNoteMasteredTimer()
+    clearWaveReceiptTimer()
     stopListening()
-  }, [clearCeremonyTimers, clearCueTimers, clearNoteMasteredTimer, stopListening])
+  }, [clearCeremonyTimers, clearCueTimers, clearNoteMasteredTimer, clearWaveReceiptTimer, stopListening])
 
   const micHudView: Record<MicHudState, { label: string; className: string; dotClassName: string }> = {
     demo: {
