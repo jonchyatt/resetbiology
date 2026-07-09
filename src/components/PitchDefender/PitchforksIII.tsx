@@ -2407,6 +2407,11 @@ export default function PitchforksIII() {
       saveMasteryProgress()
       return { note, masteredAt: masteryProgressRef.current[note].masteredAt }
     }
+    const simulateHeardYouForTest = () => {
+      heardYouRef.current = true
+      setHeardYou(true)
+      return { heardYou: true }
+    }
     const hook = Object.freeze({
       getState,
       get viewState() {
@@ -2416,6 +2421,7 @@ export default function PitchforksIII() {
       resetDebug,
       showMasteryCeremony,
       forceMasteryForTest,
+      simulateHeardYouForTest,
     })
 
     Object.defineProperty(window, '__pf3', {
