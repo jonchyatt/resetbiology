@@ -3507,7 +3507,7 @@ export default function PitchforksIII() {
           </div>
           <h1 className="text-3xl font-black tracking-widest text-orange-200 mb-1">PITCHFORKS III</h1>
           <div className="text-sm text-gray-400 mb-2">Frankenstein lightning ear trainer</div>
-          <div className="mb-5 grid grid-cols-4 gap-1.5" aria-label="World Map">
+          <div className="mb-5 grid grid-cols-2 sm:grid-cols-4 gap-1.5" aria-label="World Map">
             {WORLD_REGISTRY.map(world => {
               const unlocked = isWorldUnlocked(world.id)
               const current = world.playable && unlocked
