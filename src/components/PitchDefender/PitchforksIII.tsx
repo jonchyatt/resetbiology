@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react'
 import Link from 'next/link'
-import { RotateCcw } from 'lucide-react'
+import { Mic, RotateCcw } from 'lucide-react'
 import { usePitchDetection, type PitchInfo } from './usePitchDetection'
 import { noteToFreq, octaveFoldedCents } from './pitchMath'
 import {
@@ -108,7 +108,7 @@ const frankSparkPoints: { x: number; y: number }[][] = [0, 1].map(() =>
 )
 let frankSparkJitterFrame = 0
 
-type Phase = 'menu' | 'tutorial' | 'playing' | 'game_over'
+type Phase = 'menu' | 'tutorial' | 'calibrating' | 'playing' | 'game_over'
 type TineCount = 1 | 2 | 3 | 4
 type VillagerState = 'waiting' | 'walking' | 'ash'
 
@@ -1766,6 +1766,7 @@ export default function PitchforksIII() {
   const firstLockGraceRef = useRef(false)
   const isListeningRef = useRef(false)
   const micErrorRef = useRef<string | null>(null)
+  const heardYouRef = useRef(false)
   const pitchTrailRef = useRef<TrailPoint[]>([])
   const barDotDeviationRef = useRef<number | null>(null)
   const smoothDevRef = useRef(0)
@@ -1793,6 +1794,7 @@ export default function PitchforksIII() {
   const [noteMastered, setNoteMastered] = useState<string | null>(null)
   const [ceremony, setCeremony] = useState<NewNoteCeremonyState>({ active: false, note: null, toneFired: false, tonePulseKey: 0 })
   const [micHudState, setMicHudState] = useState<MicHudState>('waiting')
+  const [heardYou, setHeardYou] = useState(false)
 
   const { isListening, pitch, pitchRef, startListening, stopListening, error: micError } = usePitchDetection({ noiseGateDb: -45 })
 
@@ -1828,6 +1830,12 @@ export default function PitchforksIII() {
   useEffect(() => {
     micErrorRef.current = micError
   }, [micError])
+
+  useEffect(() => {
+    if (phase !== 'calibrating' || !pitch?.isActive || heardYouRef.current) return
+    heardYouRef.current = true
+    setHeardYou(true)
+  }, [phase, pitch?.isActive])
 
   const fsrsStorageKey = useCallback(() => {
     return demoRef.current || fsrsDebugRef.current ? FSRS_DEBUG_KEY : FSRS_KEY
@@ -2903,7 +2911,7 @@ export default function PitchforksIII() {
     if (!runtimeRef.current.gameOver) rafRef.current = requestAnimationFrame(loop)
   }, [getActiveTarget, syncMicHudState, updateGame, updatePitchBarState])
 
-  const startGame = useCallback(async () => {
+  const beginPlaying = useCallback(() => {
     resumeCueAudioFromGesture()
     clearCueTimers()
     clearNewNoteCeremony()
@@ -2947,15 +2955,28 @@ export default function PitchforksIII() {
     micHudStateRef.current = demoRef.current ? 'demo' : 'waiting'
     setMicHudState(micHudStateRef.current)
     setHud({ wave: 1, health: STARTING_HEALTH, score: 0, streak: 0 })
-    if (!demoRef.current) {
-      await startListening()
-    }
     setPhase('playing')
     phaseRef.current = 'playing'
     lastTimeRef.current = 0
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
     rafRef.current = requestAnimationFrame(loop)
-  }, [clearCueTimers, clearNewNoteCeremony, clearNoteMasteredCeremony, ensureNoteMemory, loop, resumeCueAudioFromGesture, startListening])
+  }, [clearCueTimers, clearNewNoteCeremony, clearNoteMasteredCeremony, ensureNoteMemory, loop, resumeCueAudioFromGesture])
+
+  const startGame = useCallback(() => {
+    beginPlaying()
+  }, [beginPlaying])
+
+  const beginCalibration = useCallback(async () => {
+    if (demoRef.current) {
+      beginPlaying()
+      return
+    }
+    heardYouRef.current = false
+    setHeardYou(false)
+    phaseRef.current = 'calibrating'
+    setPhase('calibrating')
+    await startListening()
+  }, [beginPlaying, startListening])
 
   const quitToMenu = useCallback(() => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
@@ -3006,6 +3027,14 @@ export default function PitchforksIII() {
     },
   }
   const activeMicHud = micHudView[micHudState]
+  const calibrationReady = heardYou && !micError
+  const calibrationHudLabel = micError
+    ? activeMicHud.label
+    : heardYou
+      ? 'We hear you!'
+      : micHudState === 'waiting'
+        ? 'Connecting mic...'
+        : activeMicHud.label
   const newNoteCeremonyBanner = ceremony.active && ceremony.note ? (
     <div
       className="absolute top-16 left-1/2 z-20 flex -translate-x-1/2 items-center gap-3 border px-4 py-2 text-sm font-black tracking-widest text-gray-100"
@@ -3157,7 +3186,7 @@ export default function PitchforksIII() {
         </div>
 
         <button
-          onClick={startGame}
+          onClick={beginCalibration}
           className="px-10 py-4 text-lg font-bold tracking-widest transition-all active:scale-95"
           style={{
             background: '#4ade80',
@@ -3182,6 +3211,42 @@ export default function PitchforksIII() {
     )
   }
 
+  if (phase === 'calibrating') {
+    return (
+      <div className="fixed inset-0 bg-[#070914] text-gray-100 flex flex-col items-center justify-center px-6" style={{ fontFamily: 'monospace' }}>
+        <div className="w-full max-w-md border border-green-900/60 bg-black/35 p-6 text-center">
+          <div className={`mx-auto mb-5 inline-flex items-center gap-3 border px-5 py-3 text-sm font-black tracking-widest ${activeMicHud.className}`}>
+            <Mic size={28} strokeWidth={2.5} aria-hidden="true" />
+            <span className={`h-4 w-4 rounded-full ${activeMicHud.dotClassName}`} aria-hidden="true" />
+            <span>{calibrationHudLabel}</span>
+          </div>
+
+          <h2 className="mb-3 text-xl font-black tracking-widest text-green-200">MIC CHECK</h2>
+          <p className="mb-5 text-sm text-gray-300">Hum or sing anything. We just need to hear your voice.</p>
+
+          {micError && <div className="mb-5 text-xs text-red-300">{micError}</div>}
+
+          <button
+            type="button"
+            onClick={beginPlaying}
+            disabled={!calibrationReady}
+            className="w-full py-3 text-sm font-black tracking-widest border border-green-200 bg-green-300 text-[#071018] transition active:scale-[0.99] disabled:border-gray-700 disabled:bg-gray-800 disabled:text-gray-500 disabled:opacity-70"
+          >
+            Enter the Village
+          </button>
+
+          <button
+            type="button"
+            onClick={quitToMenu}
+            className="mt-4 text-xs text-gray-500 transition-colors hover:text-gray-300"
+          >
+            Back to menu
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   if (phase === 'game_over') {
     return (
       <div className="fixed inset-0 bg-[#070914] text-gray-100 flex items-center justify-center px-4" style={{ fontFamily: 'monospace' }}>
@@ -3194,7 +3259,7 @@ export default function PitchforksIII() {
             <div><div className="text-gray-500">Streak</div><div className="text-xl text-green-200">{hud.streak}</div></div>
           </div>
           <div className="flex gap-3">
-            <button onClick={startGame} className="flex-1 py-2 bg-orange-200 text-[#071018] font-bold border border-orange-100">
+            <button onClick={beginCalibration} className="flex-1 py-2 bg-orange-200 text-[#071018] font-bold border border-orange-100">
               AGAIN
             </button>
             <button onClick={quitToMenu} className="flex-1 py-2 border border-gray-700 text-gray-300">
