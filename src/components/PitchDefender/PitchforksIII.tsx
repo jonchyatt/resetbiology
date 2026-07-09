@@ -2773,6 +2773,12 @@ export default function PitchforksIII() {
       setHeardYou(true)
       return { heardYou: true }
     }
+    const forceMissForTest = () => {
+      getActiveTarget()
+      frankReactionKindRef.current = 'miss'
+      frankReactionStartedAtRef.current = performance.now()
+      return { triggered: true }
+    }
     const hook = Object.freeze({
       getState,
       get viewState() {
@@ -2783,6 +2789,7 @@ export default function PitchforksIII() {
       showMasteryCeremony,
       forceMasteryForTest,
       simulateHeardYouForTest,
+      forceMissForTest,
     })
 
     Object.defineProperty(window, '__pf3', {
