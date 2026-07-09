@@ -24,6 +24,7 @@ import {
   type NoteMemory,
 } from '@/lib/fsrs'
 import { INTRO_ORDER, UNLOCK_THRESHOLDS } from './types'
+import { WORLD_REGISTRY, isWorldUnlocked } from './pitchforks3WorldRegistry'
 
 const W = 720
 const H = 405
@@ -3506,6 +3507,45 @@ export default function PitchforksIII() {
           </div>
           <h1 className="text-3xl font-black tracking-widest text-orange-200 mb-1">PITCHFORKS III</h1>
           <div className="text-sm text-gray-400 mb-2">Frankenstein lightning ear trainer</div>
+          <div className="mb-5 grid grid-cols-4 gap-1.5" aria-label="World Map">
+            {WORLD_REGISTRY.map(world => {
+              const unlocked = isWorldUnlocked(world.id)
+              const current = world.playable && unlocked
+
+              return (
+                <div
+                  key={world.id}
+                  className={[
+                    'min-h-28 border px-2 py-2 text-left',
+                    current
+                      ? 'border-orange-200 bg-orange-500/10 text-orange-100'
+                      : 'border-gray-700/80 bg-black/20 text-gray-400',
+                  ].join(' ')}
+                  aria-disabled={unlocked ? undefined : true}
+                >
+                  <div className="min-h-8">
+                    {current ? (
+                      <span className="inline-flex border border-orange-200/60 px-1 py-0.5 text-[9px] font-black text-orange-100">
+                        PLAYING
+                      </span>
+                    ) : (
+                      <span className="text-sm text-gray-500" aria-hidden="true">
+                        &#128274;
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-[10px] font-black uppercase leading-tight">
+                    {world.name}
+                  </div>
+                  {!current && (
+                    <div className="mt-2 text-[10px] leading-snug text-gray-500">
+                      {world.gateLabel}
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
           <div className="mb-5">
             <div className="text-xs text-green-200/80 mb-2">{unlockedNotes.length} notes unlocked</div>
             <div className="flex flex-wrap gap-1.5" aria-label="Unlocked notes">
