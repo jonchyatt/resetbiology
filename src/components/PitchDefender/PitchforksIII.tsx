@@ -29,6 +29,14 @@ import { WORLD_REGISTRY, isWorldUnlocked } from './pitchforks3WorldRegistry'
 const W = 720
 const H = 405
 const SPRITE_SCALE = 3
+// Frankenstein's native sprite resolution was bumped 3x (32x48 -> 96x144, C11
+// 2026-07-09) to hold more detail while rendering at the SAME on-screen size as
+// before -- so Frankenstein-specific anchor/draw math divides SPRITE_SCALE by 3
+// instead of using it directly. Villager sprites are UNCHANGED native resolution
+// and must keep using SPRITE_SCALE directly. Do not use FRANK_SPRITE_SCALE for
+// anything villager-related, and do not use SPRITE_SCALE directly for anything
+// that reads from assets.frankMeta / frankMeta.
+const FRANK_SPRITE_SCALE = SPRITE_SCALE / 3
 const ASSET_BASE = '/images/pitchforks'
 const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
 const FSRS_KEY = 'pitch_fsrs_memory'
@@ -910,8 +918,8 @@ function drawChargeArcView(ctx: CanvasRenderingContext2D, view: ViewState, asset
   const rawY = villager.y + tine.y * SPRITE_SCALE
   const target = rotateAroundPivot(rawX, rawY, forkPivotX, forkPivotY, FORK_LEAN_DEG)
 
-  const originX = FRANK_X + assets.frankMeta.rod_tip.x * SPRITE_SCALE
-  const originY = FRANK_Y + assets.frankMeta.rod_tip.y * SPRITE_SCALE
+  const originX = FRANK_X + assets.frankMeta.rod_tip.x * FRANK_SPRITE_SCALE
+  const originY = FRANK_Y + assets.frankMeta.rod_tip.y * FRANK_SPRITE_SCALE
 
   const lite = chargeArcQuality === 'lite'
   const maxSegments = lite ? 8 : CHARGE_ARC_MAX_SEGMENTS
@@ -976,8 +984,8 @@ function drawFrankChargeView(ctx: CanvasRenderingContext2D, view: ViewState, ass
   if (progress <= 0) return
 
   const fm = assets.frankMeta
-  const spriteW = fm.frame_w * SPRITE_SCALE
-  const spriteH = fm.frame_h * SPRITE_SCALE
+  const spriteW = fm.frame_w * FRANK_SPRITE_SCALE
+  const spriteH = fm.frame_h * FRANK_SPRITE_SCALE
   const cx = FRANK_X + spriteW / 2
   const cy = FRANK_Y + spriteH * 0.42
 
@@ -1777,8 +1785,8 @@ function renderView(ctx: CanvasRenderingContext2D, view: ViewState, assets: Asse
   if (frank) {
     const fm = assets.frankMeta
     const frame = Math.floor(view.animClock * (view.charge.progress > 0 ? 8 : 4)) % fm.frames
-    const spriteW = fm.frame_w * SPRITE_SCALE
-    const spriteH = fm.frame_h * SPRITE_SCALE
+    const spriteW = fm.frame_w * FRANK_SPRITE_SCALE
+    const spriteH = fm.frame_h * FRANK_SPRITE_SCALE
     const reaction = view.frankReaction
     const reactionPhase = reaction ? clamp(reaction.ageMs / FRANK_REACTION_MS, 0, 1) : 1
     const reactionBeat = reaction ? Math.sin(reactionPhase * Math.PI) : 0
@@ -1838,7 +1846,7 @@ function renderView(ctx: CanvasRenderingContext2D, view: ViewState, assets: Asse
     ctx.restore()
     ctx.fillStyle = 'rgba(0,0,0,0.48)'
     ctx.beginPath()
-    ctx.ellipse(FRANK_X + 48, FRANK_Y + fm.frame_h * SPRITE_SCALE - 7, 35, 6, 0, 0, Math.PI * 2)
+    ctx.ellipse(FRANK_X + 48, FRANK_Y + fm.frame_h * FRANK_SPRITE_SCALE - 7, 35, 6, 0, 0, Math.PI * 2)
     ctx.fill()
     drawFrankChargeView(ctx, view, assets)
     // ported from Pitchforks.tsx:518-523; health lives on the monster.
@@ -2907,8 +2915,8 @@ export default function PitchforksIII() {
     const frankMeta = a.frankMeta
     const vMeta = a.villagerMeta[villager.totalTines]
     const tine = vMeta.tines[Math.max(0, Math.min(tineIndex, vMeta.tines.length - 1))]
-    const pivotX = FRANK_X + frankMeta.rod_tip.x * SPRITE_SCALE
-    const pivotY = FRANK_Y + frankMeta.rod_tip.y * SPRITE_SCALE
+    const pivotX = FRANK_X + frankMeta.rod_tip.x * FRANK_SPRITE_SCALE
+    const pivotY = FRANK_Y + frankMeta.rod_tip.y * FRANK_SPRITE_SCALE
     const forkPivotX = villager.x + (vMeta.frame_w - vMeta.fork_base.x) * SPRITE_SCALE
     const forkPivotY = villager.y + vMeta.fork_base.y * SPRITE_SCALE
     const rawToX = villager.x + (vMeta.frame_w - tine.x) * SPRITE_SCALE
