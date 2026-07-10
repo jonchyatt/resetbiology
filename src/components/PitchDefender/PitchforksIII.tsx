@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react'
 import Link from 'next/link'
 import { Mic, RotateCcw } from 'lucide-react'
 import { usePitchDetection, type PitchInfo } from './usePitchDetection'
@@ -28,6 +28,8 @@ import { WORLD_REGISTRY, isWorldUnlocked } from './pitchforks3WorldRegistry'
 
 const W = 720
 const H = 405
+const MAX_CANVAS_DISPLAY_W = 1280
+const MAX_CANVAS_DISPLAY_H = 720
 const SPRITE_SCALE = 3
 // Frankenstein's native sprite resolution was bumped 3x (32x48 -> 96x144, C11
 // 2026-07-09) to hold more detail while rendering at the SAME on-screen size as
@@ -2021,6 +2023,7 @@ function localSfx(kind: 'strike' | 'ash' | 'hurt' | 'roar', volumePct: number) {
 }
 
 export default function PitchforksIII() {
+  const canvasContainerRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const rafRef = useRef(0)
   const lastTimeRef = useRef(0)
@@ -2120,6 +2123,7 @@ export default function PitchforksIII() {
   const [ceremony, setCeremony] = useState<NewNoteCeremonyState>({ active: false, note: null, toneFired: false, tonePulseKey: 0 })
   const [micHudState, setMicHudState] = useState<MicHudState>('waiting')
   const [heardYou, setHeardYou] = useState(false)
+  const [canvasDisplaySize, setCanvasDisplaySize] = useState(() => ({ width: W, height: H }))
 
   const { isListening, pitch, pitchRef, startListening, stopListening, error: micError } = usePitchDetection({ noiseGateDb: -45 })
 
@@ -2161,6 +2165,41 @@ export default function PitchforksIII() {
     heardYouRef.current = true
     setHeardYou(true)
   }, [phase, pitch?.isActive])
+
+  useLayoutEffect(() => {
+    if (phase !== 'playing') return
+    const container = canvasContainerRef.current
+    if (!container) return
+
+    const gameAspect = W / H
+    const updateCanvasDisplaySize = () => {
+      const { width: containerWidth, height: containerHeight } = container.getBoundingClientRect()
+      if (containerWidth <= 0 || containerHeight <= 0) return
+
+      const availableWidth = Math.min(containerWidth, MAX_CANVAS_DISPLAY_W)
+      const availableHeight = Math.min(containerHeight, MAX_CANVAS_DISPLAY_H)
+      const containerAspect = availableWidth / availableHeight
+      const nextSize = containerAspect > gameAspect
+        ? { height: availableHeight, width: availableHeight * gameAspect }
+        : { width: availableWidth, height: availableWidth / gameAspect }
+
+      setCanvasDisplaySize((prev) => {
+        if (Math.abs(prev.width - nextSize.width) < 0.5 && Math.abs(prev.height - nextSize.height) < 0.5) return prev
+        return nextSize
+      })
+    }
+
+    updateCanvasDisplaySize()
+
+    if (typeof ResizeObserver !== 'undefined') {
+      const observer = new ResizeObserver(updateCanvasDisplaySize)
+      observer.observe(container)
+      return () => observer.disconnect()
+    }
+
+    window.addEventListener('resize', updateCanvasDisplaySize)
+    return () => window.removeEventListener('resize', updateCanvasDisplaySize)
+  }, [phase])
 
   const fsrsStorageKey = useCallback(() => {
     return demoRef.current || fsrsDebugRef.current ? FSRS_DEBUG_KEY : FSRS_KEY
@@ -3749,13 +3788,13 @@ export default function PitchforksIII() {
 
   return (
     <div className="fixed inset-0 overflow-hidden bg-black text-gray-100 flex flex-col" style={{ fontFamily: 'monospace' }}>
-      <div className="relative flex-1 min-h-0 flex items-center justify-center">
+      <div ref={canvasContainerRef} className="relative flex-1 min-h-0 flex items-center justify-center">
         <canvas
           ref={canvasRef}
           width={W}
           height={H}
-          className="block w-full h-auto max-w-[1280px] max-h-[720px] object-contain mx-auto"
-          style={{ imageRendering: 'pixelated' }}
+          className="block object-contain mx-auto"
+          style={{ width: canvasDisplaySize.width, height: canvasDisplaySize.height, imageRendering: 'pixelated' }}
         />
 
         <div className="absolute top-3 left-3 flex flex-wrap items-center gap-2 text-xs bg-black/60 border border-gray-800 px-3 py-2">
