@@ -2605,9 +2605,11 @@ export default function PitchforksIII() {
     if (mode === 'cue') {
       for (const note of villager.notes) waveNotesHeardRef.current.add(note)
     }
+    const liveNotes = villager.notes.slice(villager.burned)
+    if (!liveNotes.length) return
 
     const now = performance.now()
-    const toneWindowMs = (villager.notes.length - 1) * TONE_SPACING_MS + TONE_MS
+    const toneWindowMs = (liveNotes.length - 1) * TONE_SPACING_MS + TONE_MS
     const suppressMs = toneWindowMs + ECHO_TAIL_MS
     cuePlayingUntilRef.current = now + toneWindowMs
     matchingSuppressedUntilRef.current = now + suppressMs
@@ -2615,9 +2617,10 @@ export default function PitchforksIII() {
     markToneEmitted(suppressMs)
     if (demoRef.current) demoStepRef.current = mode === 'replay' ? 'replay-cue' : 'auto-cue'
 
-    villager.notes.forEach((note, index) => {
+    liveNotes.forEach((note, i) => {
+      const index = villager.burned + i
       const id = setTimeout(() => {
-        setPromptText(index === 0 ? `Sing: ${note}` : `Now: ${note}`)
+        setPromptText(i === 0 ? `Sing: ${note}` : `Now: ${note}`)
         if (index === villager.burned) {
           activePromptKeyRef.current = `${villager.id}:${index}`
           promptStartedAtRef.current = performance.now()
@@ -2632,7 +2635,7 @@ export default function PitchforksIII() {
         } else {
           markToneEmitted(TONE_SUPPRESS_MS)
         }
-      }, index * TONE_SPACING_MS)
+      }, i * TONE_SPACING_MS)
       cueTimeoutsRef.current.push(id)
     })
 
