@@ -849,6 +849,74 @@ def assemble_villager_2tine_from_source(source_path, out_dir=None):
     print(f"assembled {right_path.name} + {left_path.name} from {source_path} ({n_frames} frames, {FRAME_W}x{FRAME_H} each)")
     return right_path
 
+def assemble_villager_2tine_damage_from_source(source_path, state, out_dir=None):
+    """Assemble one AI-sourced static 2-tine damage pose into both directions."""
+    if not HAS_PIL:
+        raise RuntimeError("assembler mode requires Pillow (PIL) — not available in this environment")
+    import colorsys
+    state_names = {
+        "burned_1": "villager_2tine_burned_1",
+        "burned_2": "villager_2tine_burned_2",
+        "ash": "villager_2tine_ash",
+    }
+    if state not in state_names:
+        raise ValueError(f"unknown 2-tine damage state: {state!r}")
+
+    src = Image.open(source_path).convert("RGBA")
+    FRAME_W, FRAME_H = 16, 24
+    MAGENTA = (255, 0, 255)
+    THRESH = 60
+
+    def chroma_key(im, thresh):
+        p = im.load()
+        iw, ih = im.size
+        for y in range(ih):
+            for x in range(iw):
+                r, g, b, a = p[x, y]
+                if abs(r - MAGENTA[0]) < thresh and abs(g - MAGENTA[1]) < thresh and abs(b - MAGENTA[2]) < thresh:
+                    p[x, y] = (r, g, b, 0)
+
+    def chroma_key_hue(im, hue_lo=0.80, hue_hi=0.92, min_sat=0.35):
+        p = im.load()
+        iw, ih = im.size
+        for y in range(ih):
+            for x in range(iw):
+                r, g, b, a = p[x, y]
+                if a == 0:
+                    continue
+                hh, ss, vv = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
+                if hue_lo <= hh <= hue_hi and ss >= min_sat:
+                    p[x, y] = (r, g, b, 0)
+
+    # Match the proven single-pose Frankenstein assembler exactly: key first,
+    # crop to the alpha bbox, NEAREST-resize, then clean RGB + hue fringe again.
+    chroma_key(src, THRESH)
+    bbox = src.getbbox()
+    if bbox is None:
+        raise RuntimeError("assembler: source fully transparent after chroma-key — aborting, source unusable")
+    cropped = src.crop(bbox)
+    cw, ch = cropped.size
+    scale = min((FRAME_H - 2) / ch, FRAME_W / cw)
+    new_w = max(1, round(cw * scale))
+    new_h = max(1, round(ch * scale))
+    resized = cropped.resize((new_w, new_h), Image.NEAREST)
+    chroma_key(resized, 90)
+    chroma_key_hue(resized)
+
+    frame = Image.new("RGBA", (FRAME_W, FRAME_H), (0, 0, 0, 0))
+    paste_x = (FRAME_W - new_w) // 2
+    paste_y = FRAME_H - new_h - 1
+    frame.paste(resized, (paste_x, paste_y), resized)
+
+    target_dir = Path(out_dir) if out_dir else OUT
+    stem = state_names[state]
+    right_path = target_dir / f"{stem}.png"
+    left_path = target_dir / f"{stem}_left.png"
+    frame.save(right_path, "PNG", optimize=True)
+    frame.transpose(Image.FLIP_LEFT_RIGHT).save(left_path, "PNG", optimize=True)
+    print(f"assembled {right_path.name} + {left_path.name} from {source_path} ({FRAME_W}x{FRAME_H})")
+    return right_path
+
 def assemble_frankenstein_idle_from_source(source_path, out_dir=None):
     # C5 proof-of-contract (single AI-sourced idle pose, matching the C2 villager
     # discipline: one asset proves the contract before any bulk commitment).
@@ -941,5 +1009,7 @@ if __name__ == "__main__":
     import sys
     if len(sys.argv) >= 3 and sys.argv[1] == "--assemble-2tine":
         assemble_villager_2tine_from_source(sys.argv[2])
+    elif len(sys.argv) >= 4 and sys.argv[1] == "--assemble-2tine-damage":
+        assemble_villager_2tine_damage_from_source(sys.argv[3], sys.argv[2])
     else:
         main()
