@@ -394,6 +394,7 @@ type ViewState = Readonly<{
     text: string
   }>
   noteNamesVisible: boolean
+  staffNotationVisible: boolean
   synesthesiaOn: boolean
   reducedMotion: boolean
   timersPaused: boolean
@@ -734,6 +735,7 @@ type BuildViewStateArgs = Readonly<{
   chargeProgress: number
   tint: string | null
   noteNamesVisible: boolean
+  staffNotationVisible: boolean
   synesthesiaOn: boolean
   reducedMotion: boolean
   timersPaused: boolean
@@ -758,6 +760,7 @@ function buildViewState(args: BuildViewStateArgs): ViewState {
     chargeProgress,
     tint,
     noteNamesVisible,
+    staffNotationVisible,
     synesthesiaOn,
     reducedMotion,
     timersPaused,
@@ -859,6 +862,7 @@ function buildViewState(args: BuildViewStateArgs): ViewState {
       text: prompt,
     },
     noteNamesVisible,
+    staffNotationVisible,
     synesthesiaOn,
     reducedMotion,
     timersPaused,
@@ -1418,6 +1422,227 @@ function drawPitchBarView(ctx: CanvasRenderingContext2D, tuner: TunerView) {
     ctx.textAlign = 'center'
     ctx.fillText(`target: ${tuner.targetNote}`, centerX, PITCH_BAR_Y + PITCH_BAR_H + 12)
   }
+}
+
+const STAFF_PANEL_X = 430
+const STAFF_PANEL_Y = 54
+const STAFF_PANEL_W = 274
+const STAFF_PANEL_H = 112
+const STAFF_LEFT = STAFF_PANEL_X + 42
+const STAFF_RIGHT = STAFF_PANEL_X + STAFF_PANEL_W - 12
+const STAFF_BOTTOM_LINE_Y = STAFF_PANEL_Y + 55
+const STAFF_LINE_GAP = 8
+const STAFF_LETTER_STEP = { C: 0, D: 1, E: 2, F: 3, G: 4, A: 5, B: 6 } as const
+
+type StaffNote = Readonly<{
+  name: string
+  letter: keyof typeof STAFF_LETTER_STEP
+  accidental: '' | '#' | 'b'
+  octave: number
+  stepFromE4: number
+}>
+
+function staffNote(note: string | null): StaffNote | null {
+  if (!note) return null
+  const match = /^([A-G])([#b]?)(-?\d+)$/.exec(note)
+  if (!match) return null
+  const letter = match[1] as StaffNote['letter']
+  const accidental = match[2] as StaffNote['accidental']
+  const octave = Number(match[3])
+  return {
+    name: note,
+    letter,
+    accidental,
+    octave,
+    stepFromE4: octave * 7 + STAFF_LETTER_STEP[letter] - (4 * 7 + STAFF_LETTER_STEP.E),
+  }
+}
+
+function staffY(note: StaffNote): number {
+  return STAFF_BOTTOM_LINE_Y - note.stepFromE4 * (STAFF_LINE_GAP / 2)
+}
+
+function drawLedgerLines(ctx: CanvasRenderingContext2D, x: number, note: StaffNote) {
+  ctx.strokeStyle = 'rgba(226, 232, 240, 0.72)'
+  ctx.lineWidth = 1
+  if (note.stepFromE4 < 0) {
+    for (let step = -2; step >= note.stepFromE4; step -= 2) {
+      const y = STAFF_BOTTOM_LINE_Y - step * (STAFF_LINE_GAP / 2)
+      ctx.beginPath()
+      ctx.moveTo(x - 11, y)
+      ctx.lineTo(x + 11, y)
+      ctx.stroke()
+    }
+  } else if (note.stepFromE4 > 8) {
+    for (let step = 10; step <= note.stepFromE4; step += 2) {
+      const y = STAFF_BOTTOM_LINE_Y - step * (STAFF_LINE_GAP / 2)
+      ctx.beginPath()
+      ctx.moveTo(x - 11, y)
+      ctx.lineTo(x + 11, y)
+      ctx.stroke()
+    }
+  }
+}
+
+function drawStaffNoteHead(
+  ctx: CanvasRenderingContext2D,
+  note: StaffNote,
+  x: number,
+  spent: boolean,
+  target: boolean,
+) {
+  const y = staffY(note)
+  drawLedgerLines(ctx, x, note)
+
+  ctx.save()
+  ctx.globalAlpha = spent ? 0.42 : 1
+  ctx.fillStyle = spent ? '#9ca3af' : '#86efac'
+  ctx.strokeStyle = spent ? '#4b5563' : '#166534'
+  ctx.lineWidth = 1.5
+  ctx.beginPath()
+  ctx.ellipse(x, y, 7, 4.5, -0.28, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.stroke()
+  const stemDown = note.stepFromE4 >= 4
+  ctx.beginPath()
+  ctx.moveTo(x + (stemDown ? -6 : 6), y + (stemDown ? 1 : -1))
+  ctx.lineTo(x + (stemDown ? -6 : 6), y + (stemDown ? 22 : -22))
+  ctx.stroke()
+  if (note.accidental) {
+    ctx.fillStyle = spent ? '#9ca3af' : '#e5e7eb'
+    ctx.font = '15px "Segoe UI Symbol", serif'
+    ctx.textAlign = 'center'
+    ctx.fillText(note.accidental === '#' ? '♯' : '♭', x - 12, y + 5)
+  }
+  ctx.restore()
+
+  if (spent) {
+    ctx.save()
+    ctx.strokeStyle = '#d1d5db'
+    ctx.lineWidth = 2
+    ctx.globalAlpha = 0.82
+    ctx.beginPath()
+    ctx.moveTo(x - 10, y + 8)
+    ctx.lineTo(x + 10, y - 8)
+    ctx.stroke()
+    ctx.restore()
+  } else if (target) {
+    ctx.save()
+    ctx.strokeStyle = '#fdba74'
+    ctx.shadowColor = '#fdba74'
+    ctx.shadowBlur = 8
+    ctx.lineWidth = 1.5
+    ctx.beginPath()
+    ctx.arc(x, y, 11, 0, Math.PI * 2)
+    ctx.stroke()
+    ctx.restore()
+  }
+}
+
+function drawStaffNotationView(ctx: CanvasRenderingContext2D, view: ViewState) {
+  if (!view.tuner.visible) return
+
+  ctx.save()
+  ctx.fillStyle = 'rgba(7, 9, 20, 0.9)'
+  ctx.strokeStyle = 'rgba(253, 186, 116, 0.48)'
+  ctx.lineWidth = 1
+  ctx.beginPath()
+  ctx.roundRect(STAFF_PANEL_X, STAFF_PANEL_Y, STAFF_PANEL_W, STAFF_PANEL_H, 8)
+  ctx.fill()
+  ctx.stroke()
+
+  ctx.strokeStyle = 'rgba(226, 232, 240, 0.72)'
+  for (let line = 0; line < 5; line++) {
+    const y = STAFF_BOTTOM_LINE_Y - line * STAFF_LINE_GAP
+    ctx.beginPath()
+    ctx.moveTo(STAFF_LEFT, y)
+    ctx.lineTo(STAFF_RIGHT, y)
+    ctx.stroke()
+  }
+
+  ctx.fillStyle = '#e5e7eb'
+  ctx.font = '54px "Segoe UI Symbol", "Noto Music", serif'
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'alphabetic'
+  ctx.fillText('𝄞', STAFF_PANEL_X + 25, STAFF_BOTTOM_LINE_Y + 17)
+
+  const activeVillager = view.active
+    ? view.villagers.find(villager => villager.id === view.active?.villagerId)
+    : null
+  const queue = activeVillager?.notes ?? []
+  const queueLeft = STAFF_LEFT + 42
+  const queueRight = STAFF_RIGHT - 24
+  const stepX = queue.length > 1 ? (queueRight - queueLeft) / (queue.length - 1) : 0
+
+  for (let index = 0; index < queue.length; index++) {
+    const note = staffNote(queue[index])
+    if (!note) continue
+    const x = queue.length === 1 ? (queueLeft + queueRight) / 2 : queueLeft + stepX * index
+    const spent = !!activeVillager && index < activeVillager.burned
+    const target = !!activeVillager && index === activeVillager.burned
+    drawStaffNoteHead(ctx, note, x, spent, target)
+
+    if (view.noteNamesVisible) {
+      ctx.save()
+      ctx.globalAlpha = spent ? 0.45 : 1
+      ctx.fillStyle = spent ? '#9ca3af' : '#bbf7d0'
+      ctx.font = 'bold 9px monospace'
+      ctx.textAlign = 'center'
+      ctx.fillText(note.name, x, STAFF_PANEL_Y + STAFF_PANEL_H - 7)
+      if (spent) {
+        const width = ctx.measureText(note.name).width + 4
+        ctx.strokeStyle = '#d1d5db'
+        ctx.lineWidth = 1.5
+        ctx.beginPath()
+        ctx.moveTo(x - width / 2, STAFF_PANEL_Y + STAFF_PANEL_H - 10)
+        ctx.lineTo(x + width / 2, STAFF_PANEL_Y + STAFF_PANEL_H - 10)
+        ctx.stroke()
+      }
+      ctx.restore()
+    }
+  }
+
+  const source = staffNote(view.tuner.sourceNote)
+  if (
+    source &&
+    activeVillager &&
+    view.tuner.canUseSource &&
+    view.tuner.renderDeviation !== null &&
+    activeVillager.burned < queue.length
+  ) {
+    const targetX = queue.length === 1
+      ? (queueLeft + queueRight) / 2
+      : queueLeft + stepX * activeVillager.burned
+    const rawSourceY = staffY(source)
+    const sourceY = clamp(rawSourceY, STAFF_PANEL_Y + 8, STAFF_PANEL_Y + STAFF_PANEL_H - 16)
+    const cents = Math.min(300, Math.abs(view.tuner.renderDeviation) * 100)
+    const color = colorForCents(cents) ?? '#f87171'
+    if (sourceY === rawSourceY) drawLedgerLines(ctx, targetX, source)
+    ctx.save()
+    ctx.fillStyle = color
+    ctx.strokeStyle = '#071018'
+    ctx.lineWidth = 1.5
+    ctx.shadowColor = color
+    ctx.shadowBlur = view.tuner.onTarget ? 10 : 4
+    ctx.beginPath()
+    ctx.moveTo(targetX, sourceY - 5)
+    ctx.lineTo(targetX + 5, sourceY)
+    ctx.lineTo(targetX, sourceY + 5)
+    ctx.lineTo(targetX - 5, sourceY)
+    ctx.closePath()
+    ctx.fill()
+    ctx.stroke()
+    if (view.noteNamesVisible) {
+      ctx.shadowBlur = 0
+      ctx.fillStyle = '#f4f7fb'
+      ctx.font = 'bold 9px monospace'
+      ctx.textAlign = 'left'
+      ctx.fillText(source.name, targetX + 8, sourceY + 3)
+    }
+    ctx.restore()
+  }
+
+  ctx.restore()
 }
 
 function drawDungeonArch(ctx: CanvasRenderingContext2D, cx: number, topY: number, width: number, bottomY: number) {
@@ -1985,6 +2210,7 @@ function renderView(ctx: CanvasRenderingContext2D, view: ViewState, assets: Asse
     }
   }
   drawPitchBarView(ctx, view.tuner)
+  if (view.staffNotationVisible) drawStaffNotationView(ctx, view)
 }
 
 function localSfx(kind: 'strike' | 'ash' | 'hurt' | 'roar', volumePct: number) {
@@ -2150,6 +2376,7 @@ export default function PitchforksIII() {
   const sfxVolumeRef = useRef(100)
   const noteNamesRef = useRef(true)
   const audioCueRef = useRef(true)
+  const staffNotationRef = useRef(false)
   const synesthesiaRef = useRef(false)
   const reducedMotionRef = useRef(false)
   const currentPromptRef = useRef('')
@@ -2177,6 +2404,7 @@ export default function PitchforksIII() {
   const [hud, setHud] = useState<HudState>({ wave: 1, health: STARTING_HEALTH, score: 0, streak: 0 })
   const [noteNamesOn, setNoteNamesOn] = useState(true)
   const [audioCueOn, setAudioCueOn] = useState(true)
+  const [staffNotationOn, setStaffNotationOn] = useState(false)
   const [synesthesiaOn, setSynesthesiaOn] = useState(false)
   const [reducedMotion, setReducedMotion] = useState(false)
   const [cueVolume, setCueVolume] = useState(100)
@@ -2201,6 +2429,10 @@ export default function PitchforksIII() {
   useEffect(() => {
     audioCueRef.current = audioCueOn
   }, [audioCueOn])
+
+  useEffect(() => {
+    staffNotationRef.current = staffNotationOn
+  }, [staffNotationOn])
 
   useEffect(() => {
     synesthesiaRef.current = synesthesiaOn
@@ -3418,6 +3650,7 @@ export default function PitchforksIII() {
       chargeProgress: lockProgressRef.current,
       tint: tintRef.current,
       noteNamesVisible: noteNamesRef.current,
+      staffNotationVisible: staffNotationRef.current,
       synesthesiaOn: synesthesiaRef.current,
       reducedMotion: reducedMotionRef.current,
       timersPaused: timersPausedRef.current,
@@ -3684,6 +3917,8 @@ export default function PitchforksIII() {
             setNoteNamesOn={setNoteNamesOn}
             audioCueOn={audioCueOn}
             setAudioCueOn={setAudioCueOn}
+            staffNotationOn={staffNotationOn}
+            setStaffNotationOn={setStaffNotationOn}
             synesthesiaOn={synesthesiaOn}
             setSynesthesiaOn={setSynesthesiaOn}
             reducedMotion={reducedMotion}
@@ -3905,6 +4140,8 @@ export default function PitchforksIII() {
             setNoteNamesOn={setNoteNamesOn}
             audioCueOn={audioCueOn}
             setAudioCueOn={setAudioCueOn}
+            staffNotationOn={staffNotationOn}
+            setStaffNotationOn={setStaffNotationOn}
             synesthesiaOn={synesthesiaOn}
             setSynesthesiaOn={setSynesthesiaOn}
             reducedMotion={reducedMotion}
@@ -3929,6 +4166,8 @@ function SettingsRow(props: {
   setNoteNamesOn: (value: boolean) => void
   audioCueOn: boolean
   setAudioCueOn: (value: boolean) => void
+  staffNotationOn: boolean
+  setStaffNotationOn: (value: boolean) => void
   synesthesiaOn: boolean
   setSynesthesiaOn: (value: boolean) => void
   reducedMotion: boolean
@@ -3952,6 +4191,14 @@ function SettingsRow(props: {
         className={`px-2 py-1 border ${props.audioCueOn ? 'border-orange-400 text-orange-100 bg-orange-950/40' : 'border-gray-700 text-gray-400'}`}
       >
         Audio cue {props.audioCueOn ? 'ON' : 'OFF'}
+      </button>
+      <button
+        onClick={() => props.setStaffNotationOn(!props.staffNotationOn)}
+        aria-pressed={props.staffNotationOn}
+        data-testid="pf3-staff-notation-toggle"
+        className={`px-2 py-1 border ${props.staffNotationOn ? 'border-orange-400 text-orange-100 bg-orange-950/40' : 'border-gray-700 text-gray-400'}`}
+      >
+        Staff notation {props.staffNotationOn ? 'ON' : 'OFF'}
       </button>
       <button
         onClick={() => props.setSynesthesiaOn(!props.synesthesiaOn)}
