@@ -60,7 +60,7 @@ const GROUND_Y = 330
 const STARTING_HEALTH = 5
 const TONE_MS = 1000
 const TONE_SPACING_MS = 1200
-const ECHO_TAIL_MS = 600
+const ECHO_TAIL_MS = 350
 const TONE_SUPPRESS_MS = TONE_MS + ECHO_TAIL_MS
 const NEW_NOTE_CEREMONY_MS = 2400
 const NOTE_MASTERED_CEREMONY_MS = 2400
@@ -2651,9 +2651,7 @@ export default function PitchforksIII() {
     const toneWindowMs = (liveNotes.length - 1) * TONE_SPACING_MS + TONE_MS
     const suppressMs = toneWindowMs + ECHO_TAIL_MS
     cuePlayingUntilRef.current = now + toneWindowMs
-    matchingSuppressedUntilRef.current = now + suppressMs
     timersPausedRef.current = true
-    markToneEmitted(suppressMs)
     if (demoRef.current) demoStepRef.current = mode === 'replay' ? 'replay-cue' : 'auto-cue'
 
     liveNotes.forEach((note, i) => {
@@ -2669,9 +2667,11 @@ export default function PitchforksIII() {
           try {
             playPianoNote(note, { exact: true })
           } finally {
+            matchingSuppressedUntilRef.current = performance.now() + TONE_SUPPRESS_MS
             markToneEmitted(TONE_SUPPRESS_MS)
           }
         } else {
+          matchingSuppressedUntilRef.current = performance.now() + TONE_SUPPRESS_MS
           markToneEmitted(TONE_SUPPRESS_MS)
         }
       }, i * TONE_SPACING_MS)
