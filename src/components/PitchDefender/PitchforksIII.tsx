@@ -107,6 +107,14 @@ const chargeArcPoints: { x: number; y: number }[] = Array.from(
   { length: CHARGE_ARC_MAX_SEGMENTS + 1 },
   () => ({ x: 0, y: 0 }),
 )
+const CHARGE_ARC_MAX_BRANCHES = 4
+const CHARGE_ARC_MAX_BRANCH_SEGMENTS = 3
+const chargeArcBranchPoints: { x: number; y: number }[][] = Array.from(
+  { length: CHARGE_ARC_MAX_BRANCHES },
+  () => Array.from({ length: CHARGE_ARC_MAX_BRANCH_SEGMENTS + 1 }, () => ({ x: 0, y: 0 })),
+)
+let chargeArcBranchCount = 0
+let chargeArcBranchSegments = 0
 let chargeArcJitterFrame = 0
 // Structural degrade hook per CW's ask — no auto-detection wired yet (nothing to
 // measure from; iPhone is the real gate at C13). Set to 'lite' manually if a device
@@ -944,6 +952,43 @@ function drawChargeArcView(ctx: CanvasRenderingContext2D, view: ViewState, asset
     }
     chargeArcPoints[segments].x = target.x
     chargeArcPoints[segments].y = target.y
+
+    // Branch density, length, and detail all ride the existing segment scale so the
+    // forks build with the real charge. Lite/reduced-motion paths pay no branch draw.
+    if (lite || view.reducedMotion) {
+      chargeArcBranchCount = 0
+    } else {
+      const segmentScale = (segments - minSegments) / (maxSegments - minSegments)
+      chargeArcBranchCount = 2 + Math.round(segmentScale * (CHARGE_ARC_MAX_BRANCHES - 2))
+      chargeArcBranchSegments = 2 + Math.round(segmentScale * (CHARGE_ARC_MAX_BRANCH_SEGMENTS - 2))
+      const branchLengthScale = 0.15 + segmentScale * 0.15
+
+      for (let branch = 0; branch < chargeArcBranchCount; branch++) {
+        const anchorIndex = Math.max(
+          1,
+          Math.min(segments - 1, Math.round(((branch + 1) * segments) / (chargeArcBranchCount + 1))),
+        )
+        const before = chargeArcPoints[anchorIndex - 1]
+        const after = chargeArcPoints[anchorIndex + 1]
+        const anchor = chargeArcPoints[anchorIndex]
+        const localDx = after.x - before.x
+        const localDy = after.y - before.y
+        const localSegmentLength = Math.hypot(localDx, localDy) / 2
+        const forkDirection = Math.random() < 0.5 ? -1 : 1
+        const forkAngle =
+          Math.atan2(localDy, localDx) +
+          forkDirection * (20 + Math.random() * 25) * (Math.PI / 180)
+        const branchSegmentLength = localSegmentLength * branchLengthScale
+        const points = chargeArcBranchPoints[branch]
+        points[0].x = anchor.x
+        points[0].y = anchor.y
+        for (let point = 1; point <= chargeArcBranchSegments; point++) {
+          const stepAngle = forkAngle + (Math.random() - 0.5) * 0.32
+          points[point].x = points[point - 1].x + Math.cos(stepAngle) * branchSegmentLength
+          points[point].y = points[point - 1].y + Math.sin(stepAngle) * branchSegmentLength
+        }
+      }
+    }
   }
 
   // Peak alpha kept below the strike-flash's (drawBoltView) so the release still
@@ -970,6 +1015,28 @@ function drawChargeArcView(ctx: CanvasRenderingContext2D, view: ViewState, asset
     ctx.globalCompositeOperation = 'lighter'
     ctx.strokeStyle = `rgba(255,255,255,${alpha})`
     ctx.lineWidth = 1
+    ctx.stroke()
+  }
+
+  if (!lite && !view.reducedMotion && chargeArcBranchCount > 0) {
+    ctx.beginPath()
+    for (let branch = 0; branch < chargeArcBranchCount; branch++) {
+      const points = chargeArcBranchPoints[branch]
+      ctx.moveTo(points[0].x, points[0].y)
+      for (let point = 1; point <= chargeArcBranchSegments; point++) {
+        ctx.lineTo(points[point].x, points[point].y)
+      }
+    }
+    ctx.globalCompositeOperation = 'source-over'
+    ctx.strokeStyle = `rgba(80,190,255,${alpha * 0.28})`
+    ctx.lineWidth = 2
+    ctx.stroke()
+    ctx.strokeStyle = `rgba(159,231,255,${alpha * 0.5})`
+    ctx.lineWidth = 1
+    ctx.stroke()
+    ctx.globalCompositeOperation = 'lighter'
+    ctx.strokeStyle = `rgba(255,255,255,${alpha * 0.55})`
+    ctx.lineWidth = 0.5
     ctx.stroke()
   }
   ctx.restore()
