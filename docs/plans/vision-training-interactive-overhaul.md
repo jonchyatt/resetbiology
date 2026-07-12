@@ -124,6 +124,7 @@ The 51 PDFs in `screenfit/` hold the original coaching language, rep schemes, an
 | 2026-07-12 | WP4 | SessionRunner v2 (intro→engine→interlude→report full-screen flow, exit-confirm, safety copy) + engine registry + DailyPractice guided-path wiring (manual list kept) + QuickPractice engine wiring | (this) | tsc clean |
 | 2026-07-12 | WP5 | SnellenWalksEngine (Codex High) + engineResults persistence on BOTH `/api/vision/sessions` and `/api/vision/program` complete_session (shared validator `src/lib/vision/engineResultsPayload.ts`, Mongo raw $set, additive) + performanceBonus stacking | (this) | tsc clean |
 | TODO | WP1-3 | `prefers-reduced-motion` low-motion fallback inside engines (§4.8) | | |
-| TODO | — | Gate 1: live resetbiology.com phone-viewport verify + dual-eye pass on animated engines | | |
+| 2026-07-12 | Gate1 | SHIPPED to master + live verify at 390×844 on resetbiology.com: pursuit/saccade/downshift/peripheral render + run, zero page errors (receipt: jarvis `data/rb-vision-interactive/runtime-logs/gate1-receipt-2026-07-12.md`, shots 01-10) | 4bf42898 | Eye-1 static PASS; dual-eye video pass still open |
+| TODO | — | Gate 1 completion: dual-eye video pass; sample FocusRhythm/SnellenWalks/laterality | | |
 | TODO | — | Gate 2: WebKit/iPhone pass + persistence end-to-end verify | | |
 | TODO | WP6-8 | charts, weekly assessment ritual, AI coach (CF free tier), intro/report polish, night mode | | |
