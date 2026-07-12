@@ -17,6 +17,8 @@ import {
 import MiniBreathExercise from '@/components/Breath/MiniBreathExercise'
 import TrainingSession from './TrainingSession'
 import SessionRunner, { type SessionRunnerFinishPayload } from './SessionRunner'
+import WeeklyAssessment, { type WeeklyAssessmentResult } from './WeeklyAssessment'
+import ProgressDashboard from './ProgressDashboard'
 import type { EngineResult } from '@/components/Vision/Engines/types'
 
 const BREATH_WARMUP_ENABLED_KEY = 'visionTraining.breathWarmupEnabled'
@@ -107,6 +109,40 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
   const [showBreathWarmup, setShowBreathWarmup] = useState(false)
   const [showGuidedRunner, setShowGuidedRunner] = useState(false)
   const [engineResults, setEngineResults] = useState<EngineResult[]>([])
+  const [showWeeklyAssessment, setShowWeeklyAssessment] = useState(false)
+  const [assessmentDoneWeek, setAssessmentDoneWeek] = useState<number | null>(null)
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const stored = window.localStorage.getItem('vision-assessment-done-week')
+      if (stored) setAssessmentDoneWeek(Number(stored))
+    }
+  }, [])
+
+  const completeWeeklyAssessment = async (results: WeeklyAssessmentResult) => {
+    try {
+      await fetch('/api/vision/program', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'update_baselines',
+          data: {
+            nearSnellen: results.nearSnellen,
+            farSnellen: results.farSnellen,
+            nearPointCm: results.npcCm
+          }
+        })
+      })
+    } catch (error) {
+      console.error('Failed to save assessment baselines:', error)
+    }
+    if (todaySession && typeof window !== 'undefined') {
+      window.localStorage.setItem('vision-assessment-done-week', String(todaySession.week))
+      setAssessmentDoneWeek(todaySession.week)
+    }
+    setShowWeeklyAssessment(false)
+    loadProgram()
+  }
 
   useEffect(() => {
     loadProgram()
@@ -427,8 +463,43 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
 
   // Session already completed today
   if (todaySession.completed) {
+    const isPhaseEnd = todaySession.day === 5 && todaySession.week % 2 === 0
+    const assessmentPending = isPhaseEnd && assessmentDoneWeek !== todaySession.week
+
+    if (showWeeklyAssessment) {
+      return (
+        <WeeklyAssessment
+          enrollment={{
+            initialNearSnellen: enrollment.initialNearSnellen,
+            initialFarSnellen: enrollment.initialFarSnellen,
+            currentNearSnellen: enrollment.currentNearSnellen,
+            currentFarSnellen: enrollment.currentFarSnellen,
+            currentWeek: todaySession.week
+          }}
+          onComplete={completeWeeklyAssessment}
+          onSkip={() => setShowWeeklyAssessment(false)}
+          onOpenTrainer={() => { setShowWeeklyAssessment(false); setShowSnellenTrainer(true) }}
+        />
+      )
+    }
+
     return (
       <div className="space-y-6">
+        {assessmentPending && (
+          <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm border border-secondary-400/40 rounded-xl p-6 text-center shadow-lg">
+            <Target className="w-10 h-10 text-secondary-400 mx-auto mb-2" />
+            <h3 className="text-xl font-bold text-white mb-1">Phase {Math.ceil(todaySession.week / 2)} check-in</h3>
+            <p className="text-gray-300 text-sm mb-4">
+              Two weeks banked. Let&apos;s look at what changed since you started.
+            </p>
+            <button
+              onClick={() => setShowWeeklyAssessment(true)}
+              className="px-8 py-3 bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 text-white font-bold rounded-xl transition-all"
+            >
+              See my progress
+            </button>
+          </div>
+        )}
         <div className="bg-gradient-to-br from-secondary-600/20 to-primary-600/20 backdrop-blur-sm border border-secondary-400/30 rounded-xl p-8 text-center shadow-lg">
           <Trophy className="w-16 h-16 text-secondary-400 mx-auto mb-4" />
           <h3 className="text-2xl font-bold text-white mb-2">Session Complete!</h3>
@@ -449,6 +520,9 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
             Come back tomorrow for Day {todaySession.day < 5 ? todaySession.day + 1 : 1} of Week {todaySession.day < 5 ? todaySession.week : todaySession.week + 1}
           </p>
         </div>
+
+        {/* Measured progress — natural review moment after today's work is banked */}
+        <ProgressDashboard />
       </div>
     )
   }

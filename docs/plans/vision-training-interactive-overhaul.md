@@ -140,4 +140,5 @@ The 51 PDFs in `screenfit/` hold the original coaching language, rep schemes, an
 | 2026-07-12 | Gate1 | SHIPPED to master + live verify at 390×844 on resetbiology.com: pursuit/saccade/downshift/peripheral render + run, zero page errors (receipt: jarvis `data/rb-vision-interactive/runtime-logs/gate1-receipt-2026-07-12.md`, shots 01-10) | 4bf42898 | Eye-1 static PASS; dual-eye video pass still open |
 | TODO | — | Gate 1 completion: dual-eye video pass; sample FocusRhythm/SnellenWalks/laterality | | |
 | TODO | — | Gate 2: WebKit/iPhone pass + persistence end-to-end verify | | |
-| TODO | WP6-8 | charts, weekly assessment ritual, AI coach (CF free tier), intro/report polish, night mode | | |
+| 2026-07-12 | WP6 | Measured Progress charts (hand-rolled SVG sparklines, direction-aware coloring, phase-gate ticks; `metricTrends` via raw Mongo read w/ graceful degrade) + WeeklyAssessment ritual (intro→snellen→npc→reveal, before/after) — Sonnet builder D. Orchestrator wired: phase check-in card on completed day-5 even weeks, PATCH update_baselines on complete, ProgressDashboard now also on Today tab post-completion | 7c3b0bbf + (this) | tsc clean; live verify pending |
+| TODO | WP7-8 | AI coach (CF free tier) · W2b ritual items · night mode | | |
