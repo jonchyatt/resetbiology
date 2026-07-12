@@ -3211,10 +3211,10 @@ export default function PitchforksIII() {
       x: rt.wave === 1
         ? W + 60 + spawnIndex * 70
         : demoRef.current
-          ? W + 42 + spawnIndex * 70
+          ? W + 42 + spawnIndex * 110
           : W + 42 + lane * 18,
       y: GROUND_Y - defaultVillagerMeta.frame_h * SPRITE_SCALE - lane * 6,
-      speed: rt.plan.speed + lane * 1.8,
+      speed: rt.plan.speed + (demoRef.current ? 0 : lane * 1.8),
       notes,
       burned: 0,
       state: 'walking',
