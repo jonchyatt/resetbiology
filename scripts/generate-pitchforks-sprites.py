@@ -1014,6 +1014,43 @@ def _extract_opaque_palette(paths):
     return tuple(sorted(palette))
 
 
+def _dominant_opaque_bbox(image):
+    """Return the largest connected opaque subject, ignoring neighboring-cell bleed."""
+    width, height = image.size
+    opaque = image.getchannel("A").load()
+    visited = bytearray(width * height)
+    components = []
+
+    for start_y in range(height):
+        for start_x in range(width):
+            start_index = start_y * width + start_x
+            if visited[start_index] or opaque[start_x, start_y] == 0:
+                continue
+            visited[start_index] = 1
+            stack = [(start_x, start_y)]
+            area = 0
+            min_x = max_x = start_x
+            min_y = max_y = start_y
+            while stack:
+                x, y = stack.pop()
+                area += 1
+                min_x = min(min_x, x)
+                max_x = max(max_x, x)
+                min_y = min(min_y, y)
+                max_y = max(max_y, y)
+                for nx, ny in ((x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)):
+                    if nx < 0 or nx >= width or ny < 0 or ny >= height:
+                        continue
+                    index = ny * width + nx
+                    if visited[index] or opaque[nx, ny] == 0:
+                        continue
+                    visited[index] = 1
+                    stack.append((nx, ny))
+            components.append((area, (min_x, min_y, max_x + 1, max_y + 1)))
+
+    return max(components, key=lambda component: component[0])[1] if components else None
+
+
 def _key_fit_palette_lock(cell, frame_size, palette, right_bias=0):
     """Key one generated cell, NEAREST-fit it, then optionally lock its opaque RGB palette."""
     frame_w, frame_h = frame_size
@@ -1030,7 +1067,7 @@ def _key_fit_palette_lock(cell, frame_size, palette, right_bias=0):
                 continue
             pixels[x, y] = (r, g, b, 0 if _is_magenta_family((r, g, b)) else 255)
 
-    bbox = cell.getbbox()
+    bbox = _dominant_opaque_bbox(cell)
     if bbox is None:
         raise RuntimeError("roster assembler cell is empty after chroma-key")
     cropped = cell.crop(bbox)
@@ -1162,6 +1199,54 @@ def verify_roster_assembler():
             raise RuntimeError(f"roster assembler round-trip drift: {', '.join(mismatches)}")
     print("roster assembler fixture PASS: 6/6 runtime-used 2-tine outputs pixel-identical")
 
+    bleed_fixture = Image.new("RGBA", (100, 100), (255, 0, 255, 255))
+    bleed_pixels = bleed_fixture.load()
+    for y in range(20, 80):
+        for x in range(20, 40):
+            bleed_pixels[x, y] = (90, 70, 50, 255)
+    for y in range(45, 50):
+        for x in range(92, 97):
+            bleed_pixels[x, y] = (90, 70, 50, 255)
+    fitted = _key_fit_palette_lock(bleed_fixture, (16, 24), None)
+    if fitted.getbbox()[3] - fitted.getbbox()[1] != 22:
+        raise RuntimeError("dominant-subject fixture shrank because neighboring-cell bleed entered the fit")
+    print("roster assembler bleed fixture PASS: dominant subject retains 22px fitted height")
+
+
+def verify_roster_outputs():
+    """Validate every runtime-used C11c output against the frozen native contract."""
+    palette = set(_extract_opaque_palette([
+        OUT / "villager_2tine_walk.png",
+        OUT / "villager_2tine_burned_1.png",
+        OUT / "villager_2tine_burned_2.png",
+        OUT / "villager_2tine_ash.png",
+    ]))
+    checked = 0
+    for tines in (3, 4):
+        stems = [f"villager_{tines}tine_walk"]
+        stems += [f"villager_{tines}tine_burned_{index}" for index in range(1, tines)]
+        stems += [f"villager_{tines}tine_ash"]
+        for stem in stems:
+            right = Image.open(OUT / f"{stem}.png").convert("RGBA")
+            left = Image.open(OUT / f"{stem}_left.png").convert("RGBA")
+            expected_size = (64, 24) if stem.endswith("_walk") else (16, 24)
+            if right.size != expected_size or left.size != expected_size:
+                raise RuntimeError(f"{stem}: expected {expected_size}, got {right.size}/{left.size}")
+            if left.tobytes() != right.transpose(Image.FLIP_LEFT_RIGHT).tobytes():
+                raise RuntimeError(f"{stem}: left output is not an exact mirror")
+            for image in (right, left):
+                for r, g, b, a in image.getdata():
+                    if a not in (0, 255):
+                        raise RuntimeError(f"{stem}: partial alpha survived")
+                    if a and (_is_magenta_family((r, g, b)) or (r, g, b) not in palette):
+                        raise RuntimeError(f"{stem}: opaque pixel escaped key/palette lock")
+            if "_ash" not in stem:
+                bbox = right.getbbox()
+                if bbox is None or bbox[3] - bbox[1] < 18:
+                    raise RuntimeError(f"{stem}: subject collapsed below 18px native height")
+            checked += 2
+    print(f"roster output verification PASS: {checked}/18 runtime assets")
+
 
 def main():
     print(f"Generating into {OUT}")
@@ -1179,6 +1264,8 @@ if __name__ == "__main__":
     import sys
     if len(sys.argv) == 2 and sys.argv[1] == "--verify-roster-assembler":
         verify_roster_assembler()
+    elif len(sys.argv) == 2 and sys.argv[1] == "--verify-roster-outputs":
+        verify_roster_outputs()
     elif len(sys.argv) >= 3 and sys.argv[1] == "--assemble-2tine":
         assemble_villager_2tine_from_source(sys.argv[2])
     elif len(sys.argv) >= 4 and sys.argv[1] == "--assemble-2tine-damage":
