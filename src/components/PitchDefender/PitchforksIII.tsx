@@ -3208,7 +3208,11 @@ export default function PitchforksIII() {
     const v: Villager = {
       id: ++nextIdRef.current,
       totalTines,
-      x: rt.wave === 1 ? W + 60 + spawnIndex * 70 : W + 42 + lane * 18,
+      x: rt.wave === 1
+        ? W + 60 + spawnIndex * 70
+        : demoRef.current
+          ? W + 42 + spawnIndex * 70
+          : W + 42 + lane * 18,
       y: GROUND_Y - defaultVillagerMeta.frame_h * SPRITE_SCALE - lane * 6,
       speed: rt.plan.speed + lane * 1.8,
       notes,
