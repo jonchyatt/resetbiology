@@ -67,6 +67,7 @@ export interface SessionRunnerSaveContext {
   day: number
   baselineMinutes: number
   exerciseMinutes: number
+  breathWarmupMinutes?: number
   nearSnellenResult?: string | null
   farSnellenResult?: string | null
   notes?: string | null

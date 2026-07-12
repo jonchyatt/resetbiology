@@ -197,6 +197,7 @@ export default function SessionRunner({
               day: saveContext.day,
               baselineMinutes: saveContext.baselineMinutes,
               exerciseMinutes: saveContext.exerciseMinutes,
+              breathWarmupMinutes: saveContext.breathWarmupMinutes ?? 0,
               exercisesCompleted: finalResults.map((result) => result.exerciseId),
               nearSnellenResult: saveContext.nearSnellenResult || null,
               farSnellenResult: saveContext.farSnellenResult || null,
