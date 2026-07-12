@@ -95,6 +95,14 @@ const bridgeTools: ToolCard[] = [
     panel: "from-rose-600/20 to-amber-700/20 border-rose-300/30",
   },
   {
+    title: "Retro Blaster II",
+    href: "/pitch-defender/retro-2",
+    description: "Rebuilt arcade ear-trainer — sing or key the note carried by each descending alien.",
+    icon: Sparkles,
+    accent: "text-cyan-200",
+    panel: "from-cyan-600/20 to-blue-700/20 border-cyan-300/30",
+  },
+  {
     title: "Lyrics Trainer",
     href: "/pitch-defender/lyrics-trainer",
     description: "Backward-chain lyric and monologue memory for vocal performance.",
