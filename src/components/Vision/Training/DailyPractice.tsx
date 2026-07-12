@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import {
   Clock,
   CheckCircle,
@@ -11,20 +11,10 @@ import {
   Eye,
   Zap,
   Coffee,
-  BookOpen,
-  Wind
+  BookOpen
 } from 'lucide-react'
-import MiniBreathExercise from '@/components/Breath/MiniBreathExercise'
 import TrainingSession from './TrainingSession'
-
-const BREATH_WARMUP_ENABLED_KEY = 'visionTraining.breathWarmupEnabled'
-const BREATH_WARMUP_MINUTES_KEY = 'visionTraining.breathWarmupMinutes'
-
-type BreathWarmupStatus = 'pending' | 'complete' | 'skipped'
-
-interface DailyPracticeProps {
-  nightMode?: boolean
-}
+import { SessionRunner, getEngineForExercise } from '@/components/Vision/Engines'
 
 interface DailySession {
   day: number
@@ -83,13 +73,12 @@ interface ProgramInfo {
   phases: { name: string; weeks: string; focus: string }[]
 }
 
-export default function DailyPractice({ nightMode = false }: DailyPracticeProps) {
+export default function DailyPractice() {
   const [loading, setLoading] = useState(true)
   const [enrolled, setEnrolled] = useState(false)
   const [enrollment, setEnrollment] = useState<Enrollment | null>(null)
   const [todaySession, setTodaySession] = useState<TodaySessionData | null>(null)
   const [programInfo, setProgramInfo] = useState<ProgramInfo | null>(null)
-  const [activeExercise, setActiveExercise] = useState<number>(0)
   const [sessionStarted, setSessionStarted] = useState(false)
   const [baselineComplete, setBaselineComplete] = useState(false)
   const [completedExercises, setCompletedExercises] = useState<string[]>([])
@@ -98,27 +87,17 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
   const [nearSnellenResult, setNearSnellenResult] = useState('')
   const [farSnellenResult, setFarSnellenResult] = useState('')
   const [enrolling, setEnrolling] = useState(false)
-  const [breathWarmupEnabled, setBreathWarmupEnabled] = useState(true)
-  const [breathWarmupMinutes, setBreathWarmupMinutes] = useState(1)
-  const [breathWarmupStatus, setBreathWarmupStatus] = useState<BreathWarmupStatus>('pending')
-  const [showBreathWarmup, setShowBreathWarmup] = useState(false)
+
+  const engineItems = useMemo(() => {
+    const exercises = todaySession?.session?.exercises || []
+    return exercises.map((exercise: any) => ({
+      exercise,
+      engine: getEngineForExercise(exercise),
+    }))
+  }, [todaySession?.session?.exercises])
 
   useEffect(() => {
     loadProgram()
-  }, [])
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-
-    const storedEnabled = window.localStorage.getItem(BREATH_WARMUP_ENABLED_KEY)
-    if (storedEnabled !== null) {
-      setBreathWarmupEnabled(storedEnabled === 'true')
-    }
-
-    const storedMinutes = Number(window.localStorage.getItem(BREATH_WARMUP_MINUTES_KEY))
-    if ([1, 2, 3].includes(storedMinutes)) {
-      setBreathWarmupMinutes(storedMinutes)
-    }
   }, [])
 
   const loadProgram = async () => {
@@ -165,85 +144,6 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
       console.error('Failed to enroll:', error)
     } finally {
       setEnrolling(false)
-    }
-  }
-
-  const completeExercise = (exerciseId: string) => {
-    if (!completedExercises.includes(exerciseId)) {
-      setCompletedExercises([...completedExercises, exerciseId])
-    }
-    // Move to next exercise
-    if (todaySession?.session?.exercises && activeExercise < todaySession.session.exercises.length - 1) {
-      setActiveExercise(activeExercise + 1)
-    }
-  }
-
-  const updateBreathWarmupEnabled = (enabled: boolean) => {
-    setBreathWarmupEnabled(enabled)
-    if (typeof window !== 'undefined') {
-      window.localStorage.setItem(BREATH_WARMUP_ENABLED_KEY, String(enabled))
-    }
-  }
-
-  const updateBreathWarmupMinutes = (minutes: number) => {
-    setBreathWarmupMinutes(minutes)
-    if (typeof window !== 'undefined') {
-      window.localStorage.setItem(BREATH_WARMUP_MINUTES_KEY, String(minutes))
-    }
-  }
-
-  const startSessionWithOptionalWarmup = () => {
-    if (breathWarmupEnabled) {
-      setBreathWarmupStatus('pending')
-      setShowBreathWarmup(true)
-      return
-    }
-
-    setBreathWarmupStatus('skipped')
-    setSessionStarted(true)
-  }
-
-  const completeBreathWarmup = () => {
-    setBreathWarmupStatus('complete')
-    setShowBreathWarmup(false)
-    setSessionStarted(true)
-  }
-
-  const skipBreathWarmup = () => {
-    setBreathWarmupStatus('skipped')
-    setShowBreathWarmup(false)
-    setSessionStarted(true)
-  }
-
-  const completeSession = async () => {
-    if (!todaySession?.session || !enrollment) return
-
-    try {
-      const response = await fetch('/api/vision/program', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'complete_session',
-          data: {
-            week: todaySession.week,
-            day: todaySession.day,
-            baselineMinutes: todaySession.session.baselineMinutes,
-            exerciseMinutes: todaySession.session.exerciseMinutes,
-            breathWarmupMinutes: breathWarmupStatus === 'complete' ? breathWarmupMinutes : 0,
-            exercisesCompleted: completedExercises,
-            nearSnellenResult: nearSnellenResult || null,
-            farSnellenResult: farSnellenResult || null,
-            notes: sessionNotes || null
-          }
-        })
-      })
-
-      const data = await response.json()
-      if (data.success) {
-        loadProgram() // Reload to show completion
-      }
-    } catch (error) {
-      console.error('Failed to complete session:', error)
     }
   }
 
@@ -467,67 +367,7 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
           visionType="near"
           exerciseType="letters"
           initialLevel={1}
-          nightMode={nightMode}
         />
-      </div>
-    )
-  }
-
-  const plannedWarmupMinutes = breathWarmupEnabled ? breathWarmupMinutes : 0
-  const plannedTotalMinutes = session.totalMinutes + plannedWarmupMinutes
-  const warmupExercise = {
-    name: `${breathWarmupMinutes}-Minute Vision Warm-Up`,
-    inhaleMs: 4000,
-    exhaleMs: 6000,
-    inhaleHoldMs: 0,
-    exhaleHoldMs: 0,
-    breathsPerCycle: breathWarmupMinutes * 6,
-    cyclesTarget: 1,
-    backgroundMusic: null,
-    musicVolume: 0
-  }
-  const warmChromeClass = nightMode
-    ? 'bg-gradient-to-br from-[#17100a]/90 to-[#0c0906]/90 backdrop-blur-sm border border-amber-900/40'
-    : 'bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm border border-primary-400/20'
-  const warmSubtleTextClass = nightMode ? 'text-amber-100/70' : 'text-gray-400'
-
-  if (showBreathWarmup) {
-    return (
-      <div className="space-y-6">
-        <button
-          onClick={skipBreathWarmup}
-          className="text-primary-400 hover:text-primary-300 flex items-center gap-2"
-        >
-          <ChevronRight className="w-4 h-4 rotate-180" />
-          Skip warm-up
-        </button>
-
-        <div className={`${warmChromeClass} rounded-xl p-6 shadow-lg`}>
-          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-5">
-            <div>
-              <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                <Wind className="w-5 h-5 text-primary-400" />
-                Breathing Warm-Up
-              </h3>
-              <p className={`${warmSubtleTextClass} text-sm mt-1`}>
-                {breathWarmupMinutes} minute{breathWarmupMinutes === 1 ? '' : 's'} before today's vision work
-              </p>
-            </div>
-            <button
-              onClick={skipBreathWarmup}
-              className="px-4 py-2 rounded-lg bg-gray-700/70 hover:bg-gray-600 text-gray-200 text-sm font-semibold transition-colors"
-            >
-              Skip warm-up
-            </button>
-          </div>
-
-          <MiniBreathExercise
-            compact
-            showCloseButton={false}
-            exercise={warmupExercise}
-            onClose={completeBreathWarmup}
-          />
-        </div>
       </div>
     )
   }
@@ -544,7 +384,7 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
                 <span className="text-xs font-semibold text-primary-400 uppercase tracking-wider">
                   {todaySession.phase}
                 </span>
-                <span className="text-gray-500">•</span>
+                <span className="text-gray-500">&bull;</span>
                 <span className="text-xs text-gray-400">
                   Week {todaySession.week}, Day {todaySession.day}
                 </span>
@@ -555,7 +395,7 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
             <div className="text-right">
               <div className="flex items-center gap-1 text-gray-400">
                 <Clock className="w-4 h-4" />
-                <span className="text-sm">{plannedTotalMinutes} min</span>
+                <span className="text-sm">{session.totalMinutes} min</span>
               </div>
             </div>
           </div>
@@ -574,7 +414,7 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
                 <ul className="space-y-1">
                   {todaySession.weekGoals.map((goal, idx) => (
                     <li key={idx} className="text-gray-300 text-sm flex items-start gap-2">
-                      <span className="text-primary-400">•</span>
+                      <span className="text-primary-400">&bull;</span>
                       {goal}
                     </li>
                   ))}
@@ -625,56 +465,6 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
                 </div>
               </div>
 
-              {/* Breath warm-up preference */}
-              <div className={`${warmChromeClass} rounded-xl p-4`}>
-                <div className="flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-primary-500/20 rounded-lg">
-                      <Wind className="w-5 h-5 text-primary-400" />
-                    </div>
-                    <div>
-                      <div className="text-white font-semibold">Breathing Warm-Up</div>
-                      <div className={`${warmSubtleTextClass} text-sm`}>
-                        {breathWarmupEnabled ? `${breathWarmupMinutes} minute${breathWarmupMinutes === 1 ? '' : 's'}` : 'Skipped by default'}
-                      </div>
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    aria-pressed={breathWarmupEnabled}
-                    onClick={() => updateBreathWarmupEnabled(!breathWarmupEnabled)}
-                    className={`relative h-7 w-12 rounded-full transition-colors ${
-                      breathWarmupEnabled ? 'bg-secondary-500' : 'bg-gray-600'
-                    }`}
-                  >
-                    <span
-                      className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow transition-all ${
-                        breathWarmupEnabled ? 'left-6' : 'left-1'
-                      }`}
-                    />
-                  </button>
-                </div>
-
-                {breathWarmupEnabled && (
-                  <div className="grid grid-cols-3 gap-2 mt-4">
-                    {[1, 2, 3].map(minutes => (
-                      <button
-                        key={minutes}
-                        type="button"
-                        onClick={() => updateBreathWarmupMinutes(minutes)}
-                        className={`py-2 rounded-lg text-sm font-semibold transition-all ${
-                          breathWarmupMinutes === minutes
-                            ? 'bg-primary-600 text-white shadow-md shadow-primary-500/20'
-                            : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/50'
-                        }`}
-                      >
-                        {minutes} min
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-
               {/* Coaching cues */}
               <div className="bg-yellow-500/10 backdrop-blur-sm border border-yellow-500/30 rounded-xl p-4">
                 <h4 className="text-yellow-300 font-semibold mb-2 flex items-center gap-2">
@@ -683,14 +473,14 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
                 </h4>
                 <ul className="space-y-1">
                   {session.coachingCues.map((cue, idx) => (
-                    <li key={idx} className="text-yellow-200/80 text-sm">• {cue}</li>
+                    <li key={idx} className="text-yellow-200/80 text-sm">&bull; {cue}</li>
                   ))}
                 </ul>
               </div>
 
               {/* Start button */}
               <button
-                onClick={startSessionWithOptionalWarmup}
+                onClick={() => setSessionStarted(true)}
                 className="w-full py-4 bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 text-white font-bold text-lg rounded-xl transition-all flex items-center justify-center gap-2"
               >
                 <Play className="w-5 h-5" />
@@ -773,86 +563,17 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
                 </div>
               )}
 
-              {/* Phase 2: Exercises */}
+              {/* Phase 2: Interactive engines */}
               {baselineComplete && (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between mb-2">
                     <h4 className="text-white font-bold text-lg flex items-center gap-2">
                       <Zap className="w-5 h-5 text-secondary-400" />
-                      Step 2: Exercises
+                      Step 2: Interactive Engines
                     </h4>
                     <span className="text-sm text-gray-400">
                       {completedExercises.length}/{session.exercises.length} complete
                     </span>
-                  </div>
-
-                  {/* Exercise list */}
-                  <div className="space-y-3">
-                    {session.exercises.map((exercise: any, idx: number) => {
-                      const isCompleted = completedExercises.includes(exercise.id)
-                      const isActive = idx === activeExercise
-
-                      return (
-                        <div
-                          key={exercise.id}
-                          className={`rounded-lg p-4 transition-all ${
-                            isCompleted
-                              ? 'bg-secondary-500/20 border border-secondary-400/30'
-                              : isActive
-                              ? 'bg-primary-500/20 border border-primary-400/50'
-                              : 'bg-gray-800/30 border border-gray-700/30'
-                          }`}
-                        >
-                          <div className="flex items-start justify-between">
-                            <div className="flex items-start gap-3">
-                              <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${
-                                isCompleted ? 'bg-secondary-500' : isActive ? 'bg-primary-500' : 'bg-gray-700'
-                              }`}>
-                                {isCompleted ? (
-                                  <CheckCircle className="w-4 h-4 text-white" />
-                                ) : (
-                                  <span className="text-xs text-white">{idx + 1}</span>
-                                )}
-                              </div>
-                              <div>
-                                <div className="text-white font-semibold">{exercise.title}</div>
-                                <div className="text-gray-400 text-sm">{exercise.duration} • {exercise.category}</div>
-                                {isActive && !isCompleted && (
-                                  <p className="text-gray-300 text-sm mt-2">{exercise.summary}</p>
-                                )}
-                              </div>
-                            </div>
-                            {!isCompleted && (
-                              <button
-                                onClick={() => completeExercise(exercise.id)}
-                                className={`px-3 py-1 rounded text-sm font-medium ${
-                                  isActive
-                                    ? 'bg-secondary-500 hover:bg-secondary-600 text-white'
-                                    : 'bg-gray-700 hover:bg-gray-600 text-gray-300'
-                                }`}
-                              >
-                                {isActive ? 'Complete' : 'Mark Done'}
-                              </button>
-                            )}
-                          </div>
-
-                          {/* Expanded view for active exercise */}
-                          {isActive && !isCompleted && exercise.checkpoints && (
-                            <div className="mt-4 pt-4 border-t border-gray-700/50">
-                              <div className="text-sm text-gray-400 mb-2">Checkpoints:</div>
-                              <ul className="space-y-1">
-                                {exercise.checkpoints.slice(0, 3).map((checkpoint: string, cidx: number) => (
-                                  <li key={cidx} className="text-gray-300 text-sm flex items-start gap-2">
-                                    <span className="text-primary-400">•</span>
-                                    {checkpoint}
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
-                        </div>
-                      )
-                    })}
                   </div>
 
                   {/* Session notes */}
@@ -867,15 +588,25 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
                     />
                   </div>
 
-                  {/* Complete session button */}
-                  {completedExercises.length === session.exercises.length && (
-                    <button
-                      onClick={completeSession}
-                      className="w-full py-4 bg-gradient-to-r from-secondary-500 to-primary-500 hover:from-secondary-600 hover:to-primary-600 text-white font-bold text-lg rounded-xl transition-all flex items-center justify-center gap-2 mt-4"
-                    >
-                      <Trophy className="w-5 h-5" />
-                      Complete Today's Session
-                    </button>
+                  {engineItems.length > 0 && (
+                    <SessionRunner
+                      items={engineItems}
+                      deviceMode="phone"
+                      difficulty="standard"
+                      saveContext={{
+                        week: todaySession.week,
+                        day: todaySession.day,
+                        baselineMinutes: session.baselineMinutes,
+                        exerciseMinutes: session.exerciseMinutes,
+                        nearSnellenResult: nearSnellenResult || null,
+                        farSnellenResult: farSnellenResult || null,
+                        notes: sessionNotes || null,
+                      }}
+                      onComplete={(result) => {
+                        setCompletedExercises(result.exercisesCompleted)
+                        if (result.saved) loadProgram()
+                      }}
+                    />
                   )}
                 </div>
               )}
