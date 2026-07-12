@@ -993,6 +993,176 @@ def assemble_frankenstein_idle_from_source(source_path, out_dir=None):
 # ──────────────────────────────────────────────────────────────────────────
 #  MAIN
 # ──────────────────────────────────────────────────────────────────────────
+def _is_magenta_family(rgb):
+    """C11c flat-key rejection predicate; shared by keying and final validation."""
+    import colorsys
+    r, g, b = rgb
+    near_key = (r - 255) ** 2 + g ** 2 + (b - 255) ** 2 < 90 ** 2
+    hue, saturation, _ = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
+    return near_key or (0.78 <= hue <= 0.95 and saturation >= 0.50)
+
+
+def _extract_opaque_palette(paths):
+    palette = set()
+    for path in paths:
+        image = Image.open(path).convert("RGBA")
+        for r, g, b, a in image.getdata():
+            if a and not _is_magenta_family((r, g, b)):
+                palette.add((r, g, b))
+    if not palette:
+        raise RuntimeError("palette lock has no opaque colors")
+    return tuple(sorted(palette))
+
+
+def _key_fit_palette_lock(cell, frame_size, palette, right_bias=0):
+    """Key one generated cell, NEAREST-fit it, then optionally lock its opaque RGB palette."""
+    frame_w, frame_h = frame_size
+    cell = cell.convert("RGBA")
+    # Verification fixtures are already-native transparent atlas cells. Returning
+    # them unchanged proves the sheet split/strip/mirror path cannot drift shipped pixels.
+    if cell.size == frame_size and any(a == 0 for _, _, _, a in cell.getdata()):
+        return cell
+    pixels = cell.load()
+    for y in range(cell.height):
+        for x in range(cell.width):
+            r, g, b, a = pixels[x, y]
+            if a == 0:
+                continue
+            pixels[x, y] = (r, g, b, 0 if _is_magenta_family((r, g, b)) else 255)
+
+    bbox = cell.getbbox()
+    if bbox is None:
+        raise RuntimeError("roster assembler cell is empty after chroma-key")
+    cropped = cell.crop(bbox)
+    scale = min((frame_h - 2) / cropped.height, frame_w / cropped.width)
+    new_w = max(1, round(cropped.width * scale))
+    new_h = max(1, round(cropped.height * scale))
+    resized = cropped.resize((new_w, new_h), Image.NEAREST)
+    frame = Image.new("RGBA", frame_size, (0, 0, 0, 0))
+    paste_x = min(frame_w - new_w, max(0, (frame_w - new_w) // 2 + right_bias))
+    paste_y = frame_h - new_h - 1
+    frame.paste(resized, (paste_x, paste_y), resized)
+
+    if palette is None:
+        return frame
+
+    locked = frame.load()
+    for y in range(frame_h):
+        for x in range(frame_w):
+            r, g, b, a = locked[x, y]
+            if a == 0:
+                locked[x, y] = (0, 0, 0, 0)
+                continue
+            nearest = min(
+                palette,
+                key=lambda color: (
+                    (color[0] - r) ** 2 + (color[1] - g) ** 2 + (color[2] - b) ** 2
+                ),
+            )
+            locked[x, y] = (*nearest, 255)
+    return frame
+
+
+def assemble_villager_lifecycle_sheet(source_path, tines, out_dir=None):
+    """Assemble a C11c 5x2 sheet into frozen 16x24 walk/burn/ash atlas slots."""
+    if not HAS_PIL:
+        raise RuntimeError("assembler mode requires Pillow (PIL) - not available in this environment")
+    if tines not in (2, 3, 4):
+        raise ValueError("roster lifecycle assembler supports 2, 3, or 4 tines")
+
+    src = Image.open(source_path).convert("RGBA")
+    target_dir = Path(out_dir) if out_dir else OUT
+    target_dir.mkdir(parents=True, exist_ok=True)
+    palette = _extract_opaque_palette([
+        OUT / "villager_2tine_walk.png",
+        OUT / "villager_2tine_burned_1.png",
+        OUT / "villager_2tine_burned_2.png",
+        OUT / "villager_2tine_ash.png",
+    ])
+
+    def source_cell(column, row):
+        # Built-in image generation may return odd dimensions; rounded proportional
+        # boundaries retain the strict 5x2 layout without resampling the source sheet.
+        left = round(column * src.width / 5)
+        right = round((column + 1) * src.width / 5)
+        top = round(row * src.height / 2)
+        bottom = round((row + 1) * src.height / 2)
+        return src.crop((left, top, right, bottom))
+
+    walk_frames = [
+        _key_fit_palette_lock(source_cell(i, 0), (16, 24), palette, right_bias=2)
+        for i in range(4)
+    ]
+    walk_strip = Image.new("RGBA", (64, 24), (0, 0, 0, 0))
+    for i, frame in enumerate(walk_frames):
+        walk_strip.paste(frame, (i * 16, 0), frame)
+
+    walk_path = target_dir / f"villager_{tines}tine_walk.png"
+    walk_left_path = target_dir / f"villager_{tines}tine_walk_left.png"
+    walk_strip.save(walk_path, "PNG", optimize=True)
+    walk_strip.transpose(Image.FLIP_LEFT_RIGHT).save(walk_left_path, "PNG", optimize=True)
+
+    # Runtime loads k < totalTines and transitions the final strike straight to ash.
+    for burn_index in range(1, tines):
+        frame = _key_fit_palette_lock(source_cell(burn_index - 1, 1), (16, 24), palette)
+        right_path = target_dir / f"villager_{tines}tine_burned_{burn_index}.png"
+        left_path = target_dir / f"villager_{tines}tine_burned_{burn_index}_left.png"
+        frame.save(right_path, "PNG", optimize=True)
+        frame.transpose(Image.FLIP_LEFT_RIGHT).save(left_path, "PNG", optimize=True)
+
+    ash = _key_fit_palette_lock(source_cell(tines, 1), (16, 24), palette)
+    ash_path = target_dir / f"villager_{tines}tine_ash.png"
+    ash_left_path = target_dir / f"villager_{tines}tine_ash_left.png"
+    ash.save(ash_path, "PNG", optimize=True)
+    ash.transpose(Image.FLIP_LEFT_RIGHT).save(ash_left_path, "PNG", optimize=True)
+    print(f"assembled complete {tines}-tine lifecycle from {source_path} into {target_dir}")
+    return walk_path
+
+
+def verify_roster_assembler():
+    """Round-trip the shipped 2-tine lifecycle through the generic C11c contract."""
+    import tempfile
+    source_paths = {
+        "walk": OUT / "villager_2tine_walk.png",
+        "walk_left": OUT / "villager_2tine_walk_left.png",
+        "burned_1": OUT / "villager_2tine_burned_1.png",
+        "burned_1_left": OUT / "villager_2tine_burned_1_left.png",
+        "ash": OUT / "villager_2tine_ash.png",
+        "ash_left": OUT / "villager_2tine_ash_left.png",
+    }
+    sheet = Image.new("RGBA", (80, 48), (0, 0, 0, 0))
+    walk = Image.open(source_paths["walk"]).convert("RGBA")
+    for i in range(4):
+        frame = walk.crop((i * 16, 0, (i + 1) * 16, 24))
+        sheet.paste(frame, (i * 16, 0), frame)
+    for i, state in ((0, "burned_1"), (2, "ash")):
+        frame = Image.open(source_paths[state]).convert("RGBA")
+        sheet.paste(frame, (i * 16, 24), frame)
+
+    with tempfile.TemporaryDirectory(prefix="pitchforks-roster-") as tmp:
+        tmp_dir = Path(tmp)
+        fixture = tmp_dir / "2tine-fixture.png"
+        sheet.save(fixture, "PNG")
+        assemble_villager_lifecycle_sheet(fixture, 2, tmp_dir)
+        emitted = {
+            "walk": tmp_dir / "villager_2tine_walk.png",
+            "walk_left": tmp_dir / "villager_2tine_walk_left.png",
+            "burned_1": tmp_dir / "villager_2tine_burned_1.png",
+            "burned_1_left": tmp_dir / "villager_2tine_burned_1_left.png",
+            "ash": tmp_dir / "villager_2tine_ash.png",
+            "ash_left": tmp_dir / "villager_2tine_ash_left.png",
+        }
+        mismatches = []
+        for key, expected_path in source_paths.items():
+            expected = Image.open(expected_path).convert("RGBA")
+            actual = Image.open(emitted[key]).convert("RGBA")
+            if expected.size != actual.size or expected.tobytes() != actual.tobytes():
+                mismatches.append(key)
+        if mismatches:
+            raise RuntimeError(f"roster assembler round-trip drift: {', '.join(mismatches)}")
+    print("roster assembler fixture PASS: 6/6 runtime-used 2-tine outputs pixel-identical")
+
+
 def main():
     print(f"Generating into {OUT}")
     gen_frankenstein()
@@ -1007,9 +1177,13 @@ def main():
 
 if __name__ == "__main__":
     import sys
-    if len(sys.argv) >= 3 and sys.argv[1] == "--assemble-2tine":
+    if len(sys.argv) == 2 and sys.argv[1] == "--verify-roster-assembler":
+        verify_roster_assembler()
+    elif len(sys.argv) >= 3 and sys.argv[1] == "--assemble-2tine":
         assemble_villager_2tine_from_source(sys.argv[2])
     elif len(sys.argv) >= 4 and sys.argv[1] == "--assemble-2tine-damage":
         assemble_villager_2tine_damage_from_source(sys.argv[3], sys.argv[2])
+    elif len(sys.argv) >= 4 and sys.argv[1] == "--assemble-roster-lifecycle":
+        assemble_villager_lifecycle_sheet(sys.argv[3], int(sys.argv[2]))
     else:
         main()
