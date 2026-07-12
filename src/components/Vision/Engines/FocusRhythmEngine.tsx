@@ -49,9 +49,12 @@ const NPC_PROMPT_INTERVAL_SEC = 60
 type Flash = 'correct' | 'wrong' | null
 
 export default function FocusRhythmEngine({ exercise, prescription, muted, onProgress, onComplete, onExit }: EngineProps) {
+  // bpm is a per-beat rate (matches SaccadeEngine + the doctrine text: "metronome
+  // at 50 bpm" / "one respiratory cycle per switch") — each beat is ONE movement
+  // (far->near or near->far), not a full round trip. A full rep is 2 beats.
   const bpm = Math.max(6, prescription.bpm || 30)
-  const cycleSeconds = useMemo(() => (60 / bpm) * (1 / Math.max(0.5, prescription.speedMultiplier || 1)), [bpm, prescription.speedMultiplier])
-  const halfSeconds = cycleSeconds / 2
+  const halfSeconds = useMemo(() => (60 / bpm) * (1 / Math.max(0.5, prescription.speedMultiplier || 1)), [bpm, prescription.speedMultiplier])
+  const cycleSeconds = halfSeconds * 2
   const holdSeconds = Math.min(halfSeconds * 0.45, 2.5)
   const transitionSeconds = Math.max(0.4, halfSeconds - holdSeconds)
   const targetSeconds = Math.max(30, prescription.targetSeconds || 180)
