@@ -1113,7 +1113,6 @@ def assemble_villager_lifecycle_sheet(source_path, tines, out_dir=None):
     palette = _extract_opaque_palette([
         OUT / "villager_2tine_walk.png",
         OUT / "villager_2tine_burned_1.png",
-        OUT / "villager_2tine_burned_2.png",
         OUT / "villager_2tine_ash.png",
     ])
 
@@ -1218,11 +1217,10 @@ def verify_roster_outputs():
     palette = set(_extract_opaque_palette([
         OUT / "villager_2tine_walk.png",
         OUT / "villager_2tine_burned_1.png",
-        OUT / "villager_2tine_burned_2.png",
         OUT / "villager_2tine_ash.png",
     ]))
     checked = 0
-    for tines in (3, 4):
+    for tines in (2, 3, 4):
         stems = [f"villager_{tines}tine_walk"]
         stems += [f"villager_{tines}tine_burned_{index}" for index in range(1, tines)]
         stems += [f"villager_{tines}tine_ash"]
@@ -1245,7 +1243,7 @@ def verify_roster_outputs():
                 if bbox is None or bbox[3] - bbox[1] < 18:
                     raise RuntimeError(f"{stem}: subject collapsed below 18px native height")
             checked += 2
-    print(f"roster output verification PASS: {checked}/18 runtime assets")
+    print(f"roster output verification PASS: {checked}/24 runtime assets")
 
 
 def main():
