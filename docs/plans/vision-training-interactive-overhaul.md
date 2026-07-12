@@ -60,6 +60,16 @@ Each engine is ONE new file in `src/components/Vision/Engines/`. Registry `Engin
 - **W2.5 Progress charts** — trend lines per metric (NPC cm ↓, saccade bpm ↑, peripheral ms ↓, Snellen line) in ProgressDashboard from the new metrics JSON; phase gates drawn as milestones.
 - **W2.6 Weekly assessment ritual** — end of each 2-week phase: guided re-baseline (near/far Snellen + NPC) with before/after reveal. This is the retention hook — visible proof it's working.
 
+### Tier 2b — Ritual layer (FLW/5.6 consult 2, 2026-07-12 — full list: jarvis rail `runtime-logs/flw-consult-2-*-verdict.log`)
+Shipped same-day: comeback mode (W2b-a, lapse >48h → "Welcome back — today counts", lifetime-sessions identity framing, streak hidden not shamed) · momentum arc interludes (arrival→build→peak→landing copy + spoken) · arrival/victory audio motifs · pride-first report (identity line → session score → strongest-exercise signal w/ personal-best detection → tomorrow's promise) · "last time: N — edge it" continuity callbacks (localStorage; durable server-side version deferred).
+- **W2b.1 First-session proof-before-commitment** (HIGH): first-run runner variant — shortest valid coached win BEFORE enrollment ask; enrollment reframed as "claiming the journey." Touches CurriculumOverview.
+- **W2b.2 Audio director** (HIGH): one module above SpeechQueue/Metronome/tones owning the session's sound identity — arrival signature, rising midpoint texture, completion motif, reduced-stimulation mode. Motifs shipped; the director abstraction is the remaining work.
+- **W2b.3 Coach personalities** (MED): Calm Guide / Focused Trainer / Playful Partner / Minimal Cues — script cadence + verbosity + sound palette; prescriptions and safety copy invariant.
+- **W2b.4 60-session journey map** (MED): every completion = a visible tile/constellation point/path segment; phase landmarks visible just far enough ahead to pull. Renders from completion count + phase gates.
+- **W2b.5 Milestone reveals** (MED): phase-gate transitions unlock a new sound layer / coach acknowledgment / visual environment — hooked to EXISTING phase gates, never a second progression system.
+- **W2b.6 Daily agency** (MED): intro mood pick Quiet/Steady/Energized → voice density + sound + animation intensity ONLY (never exercise selection, difficulty, or safety).
+- **W2b.7 Durable last-time callbacks** (MED): replace localStorage with per-exercise history from persisted engineResults (read path lands with WP6 metricTrends).
+
 ### Tier 3 — Intelligence layer
 - **W3.1 AI Vision Coach** — post-session feedback + Q&A + plan adjustment suggestions. MUST run CF Workers AI free tier (hard doctrine: `feedback_no_paid_burn_for_free_users.md`) — never a paid key for anonymous users.
 - **W3.2 Breath integration** — Breathe app protocols embedded as the downshift engine's backend; session data cross-posts to breath history.
@@ -123,7 +133,10 @@ The 51 PDFs in `screenfit/` hold the original coaching language, rep schemes, an
 | 2026-07-12 | WP3 | PeripheralEngine (3 modes: ring-detection w/ fixation probes + decoys, mirror-scan quadrants, crossed-laterality w/ rule flips) — Sonnet builder C | (this) | tsc clean |
 | 2026-07-12 | WP4 | SessionRunner v2 (intro→engine→interlude→report full-screen flow, exit-confirm, safety copy) + engine registry + DailyPractice guided-path wiring (manual list kept) + QuickPractice engine wiring | (this) | tsc clean |
 | 2026-07-12 | WP5 | SnellenWalksEngine (Codex High) + engineResults persistence on BOTH `/api/vision/sessions` and `/api/vision/program` complete_session (shared validator `src/lib/vision/engineResultsPayload.ts`, Mongo raw $set, additive) + performanceBonus stacking | (this) | tsc clean |
-| TODO | WP1-3 | `prefers-reduced-motion` low-motion fallback inside engines (§4.8) | | |
+| 2026-07-12 | Gate1+ | Sampled remaining engines on live: FocusRhythm (letter game + bpm HUD), SnellenWalks (Clear/Blurry adaptive), Laterality (crossed L/R) — shots 11-13, zero page errors. TUNING TODO: FocusRhythm rep pacing reads fast at week 1 (4 reps in 5s) | — | Eye-1 static PASS |
+| 2026-07-12 | W2b | Ritual layer v1 (consult 2): comeback mode, momentum interludes, arrival/victory motifs, pride-first report w/ PB detection + tomorrow promise, last-time callbacks (localStorage), reduced-motion speed cap at both launch sites, API exposes lastSessionDate | (this) | tsc clean |
+| TODO | WP1-3 | engine-internal reduced-motion handling beyond the runner-level speed cap (§4.8) | | |
+| TODO | W1.2 | FocusRhythm pacing calibration (cycle length vs bpm semantics) | | |
 | 2026-07-12 | Gate1 | SHIPPED to master + live verify at 390×844 on resetbiology.com: pursuit/saccade/downshift/peripheral render + run, zero page errors (receipt: jarvis `data/rb-vision-interactive/runtime-logs/gate1-receipt-2026-07-12.md`, shots 01-10) | 4bf42898 | Eye-1 static PASS; dual-eye video pass still open |
 | TODO | — | Gate 1 completion: dual-eye video pass; sample FocusRhythm/SnellenWalks/laterality | | |
 | TODO | — | Gate 2: WebKit/iPhone pass + persistence end-to-end verify | | |

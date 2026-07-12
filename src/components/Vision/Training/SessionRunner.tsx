@@ -16,8 +16,9 @@ import {
   CheckCircle,
 } from 'lucide-react'
 import { visionExerciseMap, type VisionExercise } from '@/data/visionExercises'
-import { resolvePrescription } from '@/lib/vision/prescription'
-import { SpeechQueue, unlockAudio } from '@/lib/vision/audioKit'
+import { resolvePrescription, findSession } from '@/lib/vision/prescription'
+import { prefersReducedMotion } from '@/lib/vision/canvasKit'
+import { SpeechQueue, unlockAudio, playArrivalMotif, playVictoryMotif } from '@/lib/vision/audioKit'
 import { getEngine } from '@/components/Vision/Engines'
 import type { EngineResult } from '@/components/Vision/Engines/types'
 import GuidedExercise from './GuidedExercise'
@@ -30,7 +31,38 @@ import GuidedExercise from './GuidedExercise'
  */
 
 const MUTE_KEY = 'vision-runner-muted'
+const LAST_METRICS_KEY = 'vision-last-metrics'
 const INTERLUDE_SECONDS = 20
+
+type LastMetricsMap = Record<string, { score: number; date: string }>
+
+function readLastMetrics(): LastMetricsMap {
+  if (typeof window === 'undefined') return {}
+  try {
+    return JSON.parse(window.localStorage.getItem(LAST_METRICS_KEY) || '{}')
+  } catch {
+    return {}
+  }
+}
+
+function writeLastMetric(exerciseId: string, score: number): void {
+  if (typeof window === 'undefined') return
+  try {
+    const map = readLastMetrics()
+    map[exerciseId] = { score, date: new Date().toISOString().slice(0, 10) }
+    window.localStorage.setItem(LAST_METRICS_KEY, JSON.stringify(map))
+  } catch {
+    /* storage unavailable — continuity callbacks just don't show */
+  }
+}
+
+/** Momentum framing for interludes (consult 2 #4): arrival → build → peak → landing. */
+function interludeMomentum(nextIndex: number, total: number): string {
+  const fraction = nextIndex / Math.max(1, total - 1)
+  if (fraction <= 0.34) return 'Warmed up. Building now.'
+  if (fraction < 0.75) return 'Peak block coming — this is the one that counts.'
+  return 'Landing phase. Finish strong.'
+}
 
 type RunnerStage =
   | { kind: 'intro' }
@@ -54,6 +86,10 @@ interface SessionRunnerProps {
   sessionFocus: string
   coachingCues: string[]
   streakDays?: number
+  /** Lifetime completed sessions — identity framing, never resets (consult 2 #6) */
+  sessionsCompleted?: number
+  /** ISO date of last completed session — drives comeback mode (consult 2 #2) */
+  lastSessionDate?: string | null
   onFinish: (payload: SessionRunnerFinishPayload) => void
   onExit: () => void
 }
@@ -89,6 +125,8 @@ export default function SessionRunner({
   sessionFocus,
   coachingCues,
   streakDays = 0,
+  sessionsCompleted = 0,
+  lastSessionDate = null,
   onFinish,
   onExit,
 }: SessionRunnerProps) {
@@ -153,17 +191,33 @@ export default function SessionRunner({
     return Math.round(results.reduce((a, r) => a + r.score, 0) / results.length)
   }, [results])
 
+  // Comeback mode: gone >48h with real history behind them. Never announce
+  // failure — lifetime progress is the identity, the streak is just a bonus.
+  const isComeback = useMemo(() => {
+    if (sessionsCompleted < 2 || !lastSessionDate) return false
+    const gap = Date.now() - new Date(lastSessionDate).getTime()
+    return Number.isFinite(gap) && gap > 48 * 3600 * 1000
+  }, [sessionsCompleted, lastSessionDate])
+
+  const lastMetrics = useMemo(() => readLastMetrics(), [])
+
   const begin = useCallback(() => {
     unlockAudio()
-    speak(`${sessionTitle}. ${exercises.length} exercises. I'll walk you through every one. Let's begin.`, true)
+    playArrivalMotif()
+    const opener = isComeback
+      ? `Welcome back. Today counts. ${sessionTitle}. ${exercises.length} exercises — I'll carry you through every one.`
+      : `${sessionTitle}. ${exercises.length} exercises. I'll walk you through every one. Let's begin.`
+    speak(opener, true)
     setStage({ kind: 'exercise', index: 0 })
-  }, [speak, sessionTitle, exercises.length])
+  }, [speak, sessionTitle, exercises.length, isComeback])
 
   const advanceFrom = useCallback((index: number) => {
     if (index >= exercises.length - 1) {
+      playVictoryMotif()
       speak('Session complete. Look at what you just did.', true)
       setStage({ kind: 'report' })
     } else {
+      speak(interludeMomentum(index + 1, exercises.length))
       setStage({ kind: 'interlude', nextIndex: index + 1 })
     }
   }, [exercises.length, speak])
@@ -171,6 +225,7 @@ export default function SessionRunner({
   const handleEngineComplete = useCallback((index: number) => (result: EngineResult) => {
     resultsRef.current = [...resultsRef.current, result]
     setResults(resultsRef.current)
+    writeLastMetric(result.exerciseId, result.score)
     speak(encouragementFor(result.score, index))
     advanceFrom(index)
   }, [advanceFrom, speak])
@@ -249,10 +304,26 @@ export default function SessionRunner({
             <div className="text-xs font-semibold text-primary-400 uppercase tracking-widest mb-3">
               {phase} • Week {week}, Day {day}
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">{sessionTitle}</h1>
-            <p className="text-gray-300 max-w-md mb-6">{sessionFocus}</p>
+            {isComeback ? (
+              <>
+                <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">Welcome back.</h1>
+                <p className="text-secondary-300 font-semibold mb-1">Today counts.</p>
+                <p className="text-gray-300 max-w-md mb-2">{sessionTitle} — {sessionFocus}</p>
+                <p className="text-gray-500 text-sm max-w-md mb-6">
+                  {sessionsCompleted} sessions are already banked. Nothing erases that.
+                </p>
+              </>
+            ) : (
+              <>
+                <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">{sessionTitle}</h1>
+                <p className="text-gray-300 max-w-md mb-2">{sessionFocus}</p>
+                {sessionsCompleted > 0 && (
+                  <p className="text-gray-500 text-sm mb-4">Session {sessionsCompleted + 1} of your journey</p>
+                )}
+              </>
+            )}
 
-            {streakDays > 0 && (
+            {streakDays > 0 && !isComeback && (
               <div className="flex items-center gap-2 mb-6 px-4 py-2 bg-orange-500/10 border border-orange-400/30 rounded-full">
                 <Flame className="w-4 h-4 text-orange-400" />
                 <span className="text-orange-200 text-sm font-semibold">{streakDays}-day streak on the line</span>
@@ -303,6 +374,10 @@ export default function SessionRunner({
           if (!exercise) return null
           const Engine = getEngine(exercise.id)
           const prescription = resolvePrescription(exercise.id, week)
+          // Safety (plan §4.8): honor OS reduced-motion by slowing all engine animation
+          if (prefersReducedMotion()) {
+            prescription.speedMultiplier = Math.min(prescription.speedMultiplier, 0.6)
+          }
           return (
             <div className="min-h-full flex flex-col px-3 py-3 md:px-6 md:py-4">
               <div className="text-center mb-2">
@@ -368,11 +443,20 @@ export default function SessionRunner({
               </div>
               <p className="text-gray-400 text-sm mb-8">Let your eyes rest before the next round.</p>
 
+              <p className="text-primary-200/80 text-sm font-medium mb-6">
+                {interludeMomentum(stage.nextIndex, exercises.length)}
+              </p>
+
               {next && (
                 <div className="bg-gray-800/60 backdrop-blur-sm border border-primary-400/20 rounded-2xl px-6 py-4 max-w-sm mb-8">
                   <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Up next</div>
                   <div className="text-white font-bold text-lg">{next.title}</div>
                   <p className="text-gray-400 text-sm mt-1">{next.summary}</p>
+                  {lastMetrics[next.id] && (
+                    <p className="text-secondary-300/90 text-xs mt-2">
+                      Last time: {lastMetrics[next.id].score} — see if you can edge it.
+                    </p>
+                  )}
                 </div>
               )}
 
@@ -387,18 +471,38 @@ export default function SessionRunner({
           )
         })()}
 
-        {stage.kind === 'report' && (
+        {stage.kind === 'report' && (() => {
+          // Identity first, then ONE meaningful signal, then the promise (consult 2 #5)
+          const best = results.reduce<EngineResult | null>(
+            (acc, r) => (acc === null || r.score > acc.score ? r : acc), null)
+          const bestExercise = best ? visionExerciseMap[best.exerciseId] : null
+          const isPersonalBest = best !== null &&
+            (lastMetrics[best.exerciseId] === undefined || best.score > lastMetrics[best.exerciseId].score)
+          const tomorrow = day < 5 ? findSession(week, day + 1) : findSession(week + 1, 1)
+          return (
           <div className="min-h-full flex flex-col items-center justify-center px-6 py-10">
             <Trophy className="w-16 h-16 text-secondary-400 mb-4" />
-            <h2 className="text-3xl font-bold text-white mb-1">Session Complete</h2>
-            <p className="text-gray-400 mb-6">{sessionTitle} — Week {week}, Day {day}</p>
+            <h2 className="text-3xl font-bold text-white mb-1">You showed up.</h2>
+            <p className="text-gray-300 mb-1">
+              That&apos;s <span className="text-secondary-300 font-bold">{sessionsCompleted + 1} sessions</span> of training banked.
+            </p>
+            <p className="text-gray-500 text-sm mb-6">{sessionTitle} — Week {week}, Day {day}</p>
 
-            <div className="text-center mb-8">
+            <div className="text-center mb-4">
               <div className="text-6xl font-black text-secondary-400">
                 {totalScore}
               </div>
               <div className="text-gray-500 text-sm uppercase tracking-wider mt-1">Session score</div>
             </div>
+
+            {best && bestExercise && (
+              <div className="flex items-center gap-2 mb-6 px-4 py-2 bg-secondary-500/10 border border-secondary-400/30 rounded-full">
+                <Target className="w-4 h-4 text-secondary-400" />
+                <span className="text-secondary-200 text-sm">
+                  Strongest: {bestExercise.title} ({best.score}){isPersonalBest ? ' — personal best' : ''}
+                </span>
+              </div>
+            )}
 
             <div className="w-full max-w-sm space-y-2 mb-8">
               {exercises.map(ex => {
@@ -432,6 +536,12 @@ export default function SessionRunner({
               })}
             </div>
 
+            {tomorrow && (
+              <p className="text-gray-500 text-sm mb-6">
+                Tomorrow: <span className="text-gray-300">{tomorrow.title}</span> — {tomorrow.focus}
+              </p>
+            )}
+
             <button
               onClick={finish}
               className="px-12 py-4 bg-gradient-to-r from-secondary-500 to-primary-500 hover:from-secondary-600 hover:to-primary-600 text-white font-bold text-lg rounded-2xl shadow-lg shadow-secondary-500/30 transition-all flex items-center gap-2"
@@ -440,7 +550,8 @@ export default function SessionRunner({
               Log &amp; Finish
             </button>
           </div>
-        )}
+          )
+        })()}
       </div>
 
       {/* Exit confirmation */}

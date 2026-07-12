@@ -77,6 +77,7 @@ export async function GET(req: NextRequest) {
         totalPracticeMinutes: enrollment.totalPracticeMinutes,
         streakDays: enrollment.streakDays,
         longestStreak: enrollment.longestStreak,
+        lastSessionDate: enrollment.lastSessionDate,
         currentReaderStage: enrollment.currentReaderStage,
         initialNearSnellen: enrollment.initialNearSnellen,
         initialFarSnellen: enrollment.initialFarSnellen,

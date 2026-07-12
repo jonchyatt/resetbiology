@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { TrendingUp, Eye, Calendar, Award } from 'lucide-react'
+import { useEffect, useId, useState } from 'react'
+import { TrendingUp, Eye, Calendar, Award, Activity } from 'lucide-react'
 
 interface VisionProgress {
   id: string
@@ -24,6 +24,264 @@ interface VisionSession {
   createdAt: string
 }
 
+// ---- Measured Progress (W2.5) ----
+// engineResults-derived trend series from GET /api/vision/progress `metricTrends`.
+// Metrics are training-performance proxies, never clinical measurements (plan §4.9) —
+// the only acuity language allowed here is around the user's own logged Snellen self-tests.
+interface MetricPoint {
+  date: string
+  value: number
+  exerciseId: string
+}
+
+interface SnellenPoint {
+  date: string
+  value: number
+  raw: string
+}
+
+interface SessionScorePoint {
+  date: string
+  score: number
+  week?: number
+}
+
+interface MetricTrendsResponse {
+  snellenTrend?: { near: SnellenPoint[]; far: SnellenPoint[] }
+  sessionScores?: SessionScorePoint[]
+  [metricKey: string]: unknown
+}
+
+const PHASE_GATE_WEEKS = [2, 4, 6, 8, 10, 12]
+
+const KNOWN_METRICS: Record<string, { label: string; unit: string; direction: 'higher' | 'lower' }> = {
+  accuracyPct: { label: 'Accuracy', unit: '%', direction: 'higher' },
+  npcCm: { label: 'Near Point of Convergence', unit: 'cm', direction: 'lower' },
+  peakBpm: { label: 'Peak Tempo Reached', unit: 'bpm', direction: 'higher' },
+  tempoBpm: { label: 'Tempo Reached', unit: 'bpm', direction: 'higher' },
+  smoothnessScore: { label: 'Tracking Smoothness', unit: 'pts', direction: 'higher' },
+  meanReactionMs: { label: 'Reaction Time', unit: 'ms', direction: 'lower' },
+  smallestClearLine: { label: 'Furthest Clear Line (Walks)', unit: 'lvl', direction: 'higher' },
+  timeOnTargetPct: { label: 'Time On Target', unit: '%', direction: 'higher' },
+  detectionPct: { label: 'Detection Rate', unit: '%', direction: 'higher' },
+  fixationCompliancePct: { label: 'Fixation Compliance', unit: '%', direction: 'higher' },
+  maxEccentricityRing: { label: 'Peripheral Range', unit: '%', direction: 'higher' },
+  falsePositives: { label: 'False Positives', unit: '', direction: 'lower' },
+  lateralityErrorRate: { label: 'Laterality Error Rate', unit: '%', direction: 'lower' },
+  clearPct: { label: 'Clear Steps', unit: '%', direction: 'higher' },
+  stepsCompleted: { label: 'Steps Completed', unit: '', direction: 'higher' },
+  roundsCompleted: { label: 'Rounds Completed', unit: '', direction: 'higher' },
+  repsCompleted: { label: 'Reps Completed', unit: '', direction: 'higher' },
+  cyclesCompleted: { label: 'Breathing Cycles', unit: '', direction: 'higher' },
+  expectedCycles: { label: 'Target Cycles', unit: '', direction: 'higher' },
+  stagesCompleted: { label: 'Stages Completed', unit: '', direction: 'higher' },
+}
+
+function metricMeta(key: string): { label: string; unit: string; direction: 'higher' | 'lower' } {
+  if (KNOWN_METRICS[key]) return KNOWN_METRICS[key]
+  const lowerBetter = /reaction|error|latency|falsePositive/i.test(key)
+  const unit = /Pct$/.test(key) ? '%' : /Ms$/.test(key) ? 'ms' : /Cm$/.test(key) ? 'cm' : /Bpm$/.test(key) ? 'bpm' : ''
+  const label = key
+    .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+    .replace(/^./, c => c.toUpperCase())
+  return { label, unit, direction: lowerBetter ? 'lower' : 'higher' }
+}
+
+function formatShortDate(iso: string): string {
+  const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) return iso
+  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+}
+
+type TrendDirection = 'up' | 'down' | 'flat'
+
+function trendDirection(values: number[]): TrendDirection {
+  if (values.length < 2) return 'flat'
+  const chunk = Math.max(1, Math.floor(values.length / 3))
+  const early = values.slice(0, chunk).reduce((a, v) => a + v, 0) / chunk
+  const recent = values.slice(-chunk).reduce((a, v) => a + v, 0) / chunk
+  const delta = recent - early
+  const threshold = Math.max(Math.abs(early) * 0.03, 0.01)
+  if (Math.abs(delta) < threshold) return 'flat'
+  return delta > 0 ? 'up' : 'down'
+}
+
+function trendBadge(direction: TrendDirection, better: 'higher' | 'lower'): { label: string; color: string } {
+  if (direction === 'flat') return { label: 'Holding steady', color: '#3FBFB5' }
+  const improving = (direction === 'up' && better === 'higher') || (direction === 'down' && better === 'lower')
+  if (improving) return { label: direction === 'up' ? 'Improving ↑' : 'Improving ↓', color: '#72C247' }
+  return { label: direction === 'up' ? 'Trending up ↑' : 'Trending down ↓', color: '#fbbf24' }
+}
+
+/**
+ * Self-contained inline SVG line/area sparkline. No chart library — responsive
+ * width via viewBox + preserveAspectRatio, fixed logical height.
+ */
+function Sparkline({
+  values,
+  color,
+  height = 120,
+  milestoneIndices,
+}: {
+  values: number[]
+  color: string
+  height?: number
+  milestoneIndices?: number[]
+}) {
+  const gradId = useId()
+  const width = 300
+  const padding = 8
+
+  if (values.length === 0) return null
+
+  const min = Math.min(...values)
+  const max = Math.max(...values)
+  const flat = max === min
+  const stepX = values.length > 1 ? (width - padding * 2) / (values.length - 1) : 0
+
+  const coords = values.map((v, i) => {
+    const x = padding + i * stepX
+    const norm = flat ? 0.5 : (v - min) / (max - min)
+    const y = height - padding - norm * (height - padding * 2)
+    return [x, y] as const
+  })
+
+  const linePath = coords.map(([x, y], i) => `${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`).join(' ')
+  const areaPath =
+    coords.length > 0
+      ? `${linePath} L${coords[coords.length - 1][0].toFixed(1)},${height - padding} L${coords[0][0].toFixed(1)},${height - padding} Z`
+      : ''
+
+  return (
+    <svg viewBox={`0 0 ${width} ${height}`} className="w-full" style={{ height }} preserveAspectRatio="none">
+      <defs>
+        <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity="0.35" />
+          <stop offset="100%" stopColor={color} stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      {milestoneIndices?.map((i) => {
+        if (i < 0 || i >= coords.length) return null
+        const x = coords[i][0]
+        return (
+          <line
+            key={`milestone-${i}`}
+            x1={x}
+            x2={x}
+            y1={0}
+            y2={height}
+            stroke="#9ca3af"
+            strokeOpacity={0.3}
+            strokeDasharray="2,3"
+          />
+        )
+      })}
+      <path d={areaPath} fill={`url(#${gradId})`} stroke="none" />
+      <path d={linePath} fill="none" stroke={color} strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" />
+      {coords.map(([x, y], i) => (
+        <circle key={i} cx={x} cy={y} r={i === coords.length - 1 ? 3.5 : 2} fill={color} />
+      ))}
+    </svg>
+  )
+}
+
+function MetricCard({ metricKey, points }: { metricKey: string; points: MetricPoint[] }) {
+  if (points.length === 0) return null
+  const meta = metricMeta(metricKey)
+  const values = points.map(p => p.value)
+  const direction = trendDirection(values)
+  const badge = trendBadge(direction, meta.direction)
+  const last = points[points.length - 1]
+
+  return (
+    <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-xl p-4 border border-primary-400/20">
+      <div className="flex items-center justify-between mb-1 gap-2">
+        <h5 className="text-white font-semibold text-sm">{meta.label}</h5>
+        <span className="text-xs font-bold whitespace-nowrap" style={{ color: badge.color }}>
+          {badge.label}
+        </span>
+      </div>
+      <p className="text-2xl font-bold text-white mb-2">
+        {last.value}
+        {meta.unit ? <span className="text-sm text-gray-400 ml-1">{meta.unit}</span> : null}
+      </p>
+      <Sparkline values={values} color={badge.color} height={90} />
+      <div className="flex justify-between text-xs text-gray-500 mt-1">
+        <span>{formatShortDate(points[0].date)}</span>
+        <span>{formatShortDate(last.date)}</span>
+      </div>
+    </div>
+  )
+}
+
+function SessionScoreChart({ points }: { points: SessionScorePoint[] }) {
+  if (points.length === 0) return null
+  const values = points.map(p => p.score)
+  const direction = trendDirection(values)
+  const badge = trendBadge(direction, 'higher')
+
+  const milestoneIndices: number[] = []
+  const seenWeeks = new Set<number>()
+  points.forEach((p, i) => {
+    if (p.week === undefined) return
+    if (PHASE_GATE_WEEKS.includes(p.week) && !seenWeeks.has(p.week)) {
+      seenWeeks.add(p.week)
+      milestoneIndices.push(i)
+    }
+  })
+
+  return (
+    <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 border border-primary-400/30 rounded-lg p-6 backdrop-blur-sm shadow-inner">
+      <div className="flex items-center justify-between mb-2 gap-2">
+        <h4 className="text-lg font-bold text-white flex items-center gap-2">
+          <Activity className="w-5 h-5 text-primary-400" />
+          Session Score Trend
+        </h4>
+        <span className="text-xs font-bold whitespace-nowrap" style={{ color: badge.color }}>
+          {badge.label}
+        </span>
+      </div>
+      <p className="text-gray-400 text-xs mb-3">
+        Guided-session performance score over time. Dashed lines mark 2-week phase gates.
+      </p>
+      <Sparkline values={values} color={badge.color} height={120} milestoneIndices={milestoneIndices} />
+      <div className="flex justify-between text-xs text-gray-500 mt-1">
+        <span>{formatShortDate(points[0].date)}</span>
+        <span>{formatShortDate(points[points.length - 1].date)}</span>
+      </div>
+    </div>
+  )
+}
+
+function SnellenTrendCard({ title, points }: { title: string; points: SnellenPoint[] }) {
+  if (points.length === 0) return null
+  const values = points.map(p => p.value)
+  // Smaller denominator ("20/20" beats "20/40") = better, so this is lower-better.
+  const direction = trendDirection(values)
+  const badge = trendBadge(direction, 'lower')
+  const first = points[0]
+  const last = points[points.length - 1]
+
+  return (
+    <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-xl p-4 border border-primary-400/20">
+      <div className="flex items-center justify-between mb-1 gap-2">
+        <h5 className="text-white font-semibold text-sm">{title} Self-Test Trend</h5>
+        <span className="text-xs font-bold whitespace-nowrap" style={{ color: badge.color }}>
+          {badge.label}
+        </span>
+      </div>
+      <p className="text-gray-400 text-xs mb-2">
+        Started {first.raw} → Now {last.raw} (your own logged Snellen self-tests)
+      </p>
+      <Sparkline values={values} color={badge.color} height={90} />
+      <div className="flex justify-between text-xs text-gray-500 mt-1">
+        <span>{formatShortDate(first.date)}</span>
+        <span>{formatShortDate(last.date)}</span>
+      </div>
+    </div>
+  )
+}
+
 export default function ProgressDashboard() {
   const [progress, setProgress] = useState<VisionProgress[]>([])
   const [recentSessions, setRecentSessions] = useState<VisionSession[]>([])
@@ -32,6 +290,7 @@ export default function ProgressDashboard() {
     avgAccuracyThisWeek: 0,
     successRateThisWeek: 0
   })
+  const [metricTrends, setMetricTrends] = useState<MetricTrendsResponse | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -51,6 +310,7 @@ export default function ProgressDashboard() {
           avgAccuracyThisWeek: 0,
           successRateThisWeek: 0
         })
+        setMetricTrends(data.metricTrends || null)
       }
     } catch (error) {
       console.error('Failed to load progress:', error)
@@ -61,6 +321,21 @@ export default function ProgressDashboard() {
 
   const nearProgress = progress.find(p => p.visionType === 'near')
   const farProgress = progress.find(p => p.visionType === 'far')
+
+  const metricEntries: [string, MetricPoint[]][] = metricTrends
+    ? Object.entries(metricTrends).filter(
+        (entry): entry is [string, MetricPoint[]] =>
+          entry[0] !== 'snellenTrend' &&
+          entry[0] !== 'sessionScores' &&
+          Array.isArray(entry[1]) &&
+          entry[1].length > 0
+      )
+    : []
+  const sessionScorePoints = metricTrends?.sessionScores ?? []
+  const nearSnellenTrend = metricTrends?.snellenTrend?.near ?? []
+  const farSnellenTrend = metricTrends?.snellenTrend?.far ?? []
+  const hasMeasuredProgress =
+    metricEntries.length > 0 || sessionScorePoints.length > 0 || nearSnellenTrend.length > 0 || farSnellenTrend.length > 0
 
   if (loading) {
     return (
@@ -229,6 +504,41 @@ export default function ProgressDashboard() {
           </div>
         ) : (
           <p className="text-gray-400 text-sm">No training sessions yet. Start training to see your progress!</p>
+        )}
+      </div>
+
+      {/* Measured Progress (W2.5) — guided-session trend lines, additive */}
+      <div className="space-y-4">
+        <h3 className="text-xl font-bold text-white flex items-center gap-2">
+          <Activity className="w-6 h-6 text-primary-400" />
+          Measured Progress
+        </h3>
+
+        {!hasMeasuredProgress ? (
+          <div className="bg-gray-900/40 border border-primary-400/30 rounded-lg p-8 shadow-inner text-center">
+            <p className="text-gray-400 text-sm">
+              Run guided sessions to start building your progress picture.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {sessionScorePoints.length > 0 && <SessionScoreChart points={sessionScorePoints} />}
+
+            {(nearSnellenTrend.length > 0 || farSnellenTrend.length > 0) && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <SnellenTrendCard title="Near Vision" points={nearSnellenTrend} />
+                <SnellenTrendCard title="Far Vision" points={farSnellenTrend} />
+              </div>
+            )}
+
+            {metricEntries.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {metricEntries.map(([key, points]) => (
+                  <MetricCard key={key} metricKey={key} points={points} />
+                ))}
+              </div>
+            )}
+          </div>
         )}
       </div>
     </div>

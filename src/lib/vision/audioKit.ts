@@ -45,6 +45,18 @@ export function playTone(frequency = 440, durationMs = 100, volume = 0.3): void 
   }
 }
 
+/** Session ritual signatures (consult 2 #3): recognizable arrival + victory motifs. */
+export function playArrivalMotif(): void {
+  playTone(392, 140, 0.2) // G4
+  setTimeout(() => playTone(523, 220, 0.22), 160) // C5
+}
+
+export function playVictoryMotif(): void {
+  playTone(523, 130, 0.25) // C5
+  setTimeout(() => playTone(659, 130, 0.25), 150) // E5
+  setTimeout(() => playTone(784, 320, 0.28), 300) // G5
+}
+
 // ---------------------------------------------------------------------------
 // SpeechQueue
 // ---------------------------------------------------------------------------

@@ -50,6 +50,7 @@ interface Enrollment {
   totalPracticeMinutes: number
   streakDays: number
   longestStreak: number
+  lastSessionDate?: string | null
   currentReaderStage: number
   initialNearSnellen: string | null
   initialFarSnellen: string | null
@@ -826,6 +827,8 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
                       sessionFocus={session.focus}
                       coachingCues={session.coachingCues}
                       streakDays={enrollment.streakDays}
+                      sessionsCompleted={enrollment.sessionsCompleted}
+                      lastSessionDate={enrollment.lastSessionDate ?? null}
                       onFinish={handleRunnerFinish}
                       onExit={() => setShowGuidedRunner(false)}
                     />
