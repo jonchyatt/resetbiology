@@ -136,7 +136,7 @@ The 51 PDFs in `screenfit/` hold the original coaching language, rep schemes, an
 | 2026-07-12 | Gate1+ | Sampled remaining engines on live: FocusRhythm (letter game + bpm HUD), SnellenWalks (Clear/Blurry adaptive), Laterality (crossed L/R) — shots 11-13, zero page errors. TUNING TODO: FocusRhythm rep pacing reads fast at week 1 (4 reps in 5s) | — | Eye-1 static PASS |
 | 2026-07-12 | W2b | Ritual layer v1 (consult 2): comeback mode, momentum interludes, arrival/victory motifs, pride-first report w/ PB detection + tomorrow promise, last-time callbacks (localStorage), reduced-motion speed cap at both launch sites, API exposes lastSessionDate | (this) | tsc clean |
 | TODO | WP1-3 | engine-internal reduced-motion handling beyond the runner-level speed cap (§4.8) | | |
-| TODO | W1.2 | FocusRhythm pacing calibration (cycle length vs bpm semantics) | | |
+| 2026-07-12 | W1.2 | FocusRhythm pacing fix: bpm reinterpreted as per-beat rate (60/bpm = one movement), not full-cycle rate — was running reps 2x too fast (measured 4 reps/5s at 50bpm vs. intended ~25/min). Matches SaccadeEngine's existing beat semantics + doctrine text ("metronome at 50 bpm", "one respiratory cycle per switch") | bc40b533 | tsc clean; live re-verify pending |
 | 2026-07-12 | Gate1 | SHIPPED to master + live verify at 390×844 on resetbiology.com: pursuit/saccade/downshift/peripheral render + run, zero page errors (receipt: jarvis `data/rb-vision-interactive/runtime-logs/gate1-receipt-2026-07-12.md`, shots 01-10) | 4bf42898 | Eye-1 static PASS; dual-eye video pass still open |
 | TODO | — | Gate 1 completion: dual-eye video pass; sample FocusRhythm/SnellenWalks/laterality | | |
 | TODO | — | Gate 2: WebKit/iPhone pass + persistence end-to-end verify | | |
