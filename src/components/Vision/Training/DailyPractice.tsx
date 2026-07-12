@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import {
   Clock,
   CheckCircle,
@@ -16,6 +16,7 @@ import {
 } from 'lucide-react'
 import MiniBreathExercise from '@/components/Breath/MiniBreathExercise'
 import TrainingSession from './TrainingSession'
+import { SessionRunner, getEngineForExercise } from '@/components/Vision/Engines'
 
 const BREATH_WARMUP_ENABLED_KEY = 'visionTraining.breathWarmupEnabled'
 const BREATH_WARMUP_MINUTES_KEY = 'visionTraining.breathWarmupMinutes'
@@ -89,7 +90,6 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
   const [enrollment, setEnrollment] = useState<Enrollment | null>(null)
   const [todaySession, setTodaySession] = useState<TodaySessionData | null>(null)
   const [programInfo, setProgramInfo] = useState<ProgramInfo | null>(null)
-  const [activeExercise, setActiveExercise] = useState<number>(0)
   const [sessionStarted, setSessionStarted] = useState(false)
   const [baselineComplete, setBaselineComplete] = useState(false)
   const [completedExercises, setCompletedExercises] = useState<string[]>([])
@@ -102,6 +102,14 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
   const [breathWarmupMinutes, setBreathWarmupMinutes] = useState(1)
   const [breathWarmupStatus, setBreathWarmupStatus] = useState<BreathWarmupStatus>('pending')
   const [showBreathWarmup, setShowBreathWarmup] = useState(false)
+
+  const engineItems = useMemo(() => {
+    const exercises = todaySession?.session?.exercises || []
+    return exercises.map((exercise: any) => ({
+      exercise,
+      engine: getEngineForExercise(exercise),
+    }))
+  }, [todaySession?.session?.exercises])
 
   useEffect(() => {
     loadProgram()
@@ -168,16 +176,6 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
     }
   }
 
-  const completeExercise = (exerciseId: string) => {
-    if (!completedExercises.includes(exerciseId)) {
-      setCompletedExercises([...completedExercises, exerciseId])
-    }
-    // Move to next exercise
-    if (todaySession?.session?.exercises && activeExercise < todaySession.session.exercises.length - 1) {
-      setActiveExercise(activeExercise + 1)
-    }
-  }
-
   const updateBreathWarmupEnabled = (enabled: boolean) => {
     setBreathWarmupEnabled(enabled)
     if (typeof window !== 'undefined') {
@@ -213,38 +211,6 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
     setBreathWarmupStatus('skipped')
     setShowBreathWarmup(false)
     setSessionStarted(true)
-  }
-
-  const completeSession = async () => {
-    if (!todaySession?.session || !enrollment) return
-
-    try {
-      const response = await fetch('/api/vision/program', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'complete_session',
-          data: {
-            week: todaySession.week,
-            day: todaySession.day,
-            baselineMinutes: todaySession.session.baselineMinutes,
-            exerciseMinutes: todaySession.session.exerciseMinutes,
-            breathWarmupMinutes: breathWarmupStatus === 'complete' ? breathWarmupMinutes : 0,
-            exercisesCompleted: completedExercises,
-            nearSnellenResult: nearSnellenResult || null,
-            farSnellenResult: farSnellenResult || null,
-            notes: sessionNotes || null
-          }
-        })
-      })
-
-      const data = await response.json()
-      if (data.success) {
-        loadProgram() // Reload to show completion
-      }
-    } catch (error) {
-      console.error('Failed to complete session:', error)
-    }
   }
 
   if (loading) {
@@ -773,86 +739,17 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
                 </div>
               )}
 
-              {/* Phase 2: Exercises */}
+              {/* Phase 2: Interactive engines */}
               {baselineComplete && (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between mb-2">
                     <h4 className="text-white font-bold text-lg flex items-center gap-2">
                       <Zap className="w-5 h-5 text-secondary-400" />
-                      Step 2: Exercises
+                      Step 2: Interactive Engines
                     </h4>
                     <span className="text-sm text-gray-400">
                       {completedExercises.length}/{session.exercises.length} complete
                     </span>
-                  </div>
-
-                  {/* Exercise list */}
-                  <div className="space-y-3">
-                    {session.exercises.map((exercise: any, idx: number) => {
-                      const isCompleted = completedExercises.includes(exercise.id)
-                      const isActive = idx === activeExercise
-
-                      return (
-                        <div
-                          key={exercise.id}
-                          className={`rounded-lg p-4 transition-all ${
-                            isCompleted
-                              ? 'bg-secondary-500/20 border border-secondary-400/30'
-                              : isActive
-                              ? 'bg-primary-500/20 border border-primary-400/50'
-                              : 'bg-gray-800/30 border border-gray-700/30'
-                          }`}
-                        >
-                          <div className="flex items-start justify-between">
-                            <div className="flex items-start gap-3">
-                              <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${
-                                isCompleted ? 'bg-secondary-500' : isActive ? 'bg-primary-500' : 'bg-gray-700'
-                              }`}>
-                                {isCompleted ? (
-                                  <CheckCircle className="w-4 h-4 text-white" />
-                                ) : (
-                                  <span className="text-xs text-white">{idx + 1}</span>
-                                )}
-                              </div>
-                              <div>
-                                <div className="text-white font-semibold">{exercise.title}</div>
-                                <div className="text-gray-400 text-sm">{exercise.duration} • {exercise.category}</div>
-                                {isActive && !isCompleted && (
-                                  <p className="text-gray-300 text-sm mt-2">{exercise.summary}</p>
-                                )}
-                              </div>
-                            </div>
-                            {!isCompleted && (
-                              <button
-                                onClick={() => completeExercise(exercise.id)}
-                                className={`px-3 py-1 rounded text-sm font-medium ${
-                                  isActive
-                                    ? 'bg-secondary-500 hover:bg-secondary-600 text-white'
-                                    : 'bg-gray-700 hover:bg-gray-600 text-gray-300'
-                                }`}
-                              >
-                                {isActive ? 'Complete' : 'Mark Done'}
-                              </button>
-                            )}
-                          </div>
-
-                          {/* Expanded view for active exercise */}
-                          {isActive && !isCompleted && exercise.checkpoints && (
-                            <div className="mt-4 pt-4 border-t border-gray-700/50">
-                              <div className="text-sm text-gray-400 mb-2">Checkpoints:</div>
-                              <ul className="space-y-1">
-                                {exercise.checkpoints.slice(0, 3).map((checkpoint: string, cidx: number) => (
-                                  <li key={cidx} className="text-gray-300 text-sm flex items-start gap-2">
-                                    <span className="text-primary-400">•</span>
-                                    {checkpoint}
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
-                        </div>
-                      )
-                    })}
                   </div>
 
                   {/* Session notes */}
@@ -867,15 +764,26 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
                     />
                   </div>
 
-                  {/* Complete session button */}
-                  {completedExercises.length === session.exercises.length && (
-                    <button
-                      onClick={completeSession}
-                      className="w-full py-4 bg-gradient-to-r from-secondary-500 to-primary-500 hover:from-secondary-600 hover:to-primary-600 text-white font-bold text-lg rounded-xl transition-all flex items-center justify-center gap-2 mt-4"
-                    >
-                      <Trophy className="w-5 h-5" />
-                      Complete Today's Session
-                    </button>
+                  {engineItems.length > 0 && (
+                    <SessionRunner
+                      items={engineItems}
+                      deviceMode="phone"
+                      difficulty="standard"
+                      saveContext={{
+                        week: todaySession.week,
+                        day: todaySession.day,
+                        baselineMinutes: session.baselineMinutes,
+                        exerciseMinutes: session.exerciseMinutes,
+                        breathWarmupMinutes: breathWarmupStatus === 'complete' ? breathWarmupMinutes : 0,
+                        nearSnellenResult: nearSnellenResult || null,
+                        farSnellenResult: farSnellenResult || null,
+                        notes: sessionNotes || null,
+                      }}
+                      onComplete={(result) => {
+                        setCompletedExercises(result.exercisesCompleted)
+                        if (result.saved) loadProgram()
+                      }}
+                    />
                   )}
                 </div>
               )}
