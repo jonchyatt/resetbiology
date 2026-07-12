@@ -74,10 +74,12 @@ Each engine is ONE new file in `src/components/Vision/Engines/`. Registry `Engin
 1. **Never strip**: 3-tab layout, 6 binocular modes, phase gating, streaks/points, untimed mode, enrollment flow. New engines are ADDITIVE (`feedback_never_strip_features_silently.md`, `feedback_v2_alongside_v1.md`).
 2. **Deploy = `git push origin master` ONLY.** NEVER run `vercel` CLI in this repo (duplicate-project trap; cost money twice). Live Vercel project is `app`.
 3. **Layout trap**: routes live in `/app/`, components in `/src/components/` — search both before declaring anything missing.
-4. **Verify on the LIVE site** (resetbiology.com) at phone viewport — localhost proof is not proof; HH Chromium ≠ iOS Safari proof, so keep all interactions touch-first, no hover-dependent UI.
+4. **Verify on the LIVE site** (resetbiology.com) at phone viewport — localhost proof is not proof; HH Chromium ≠ iOS Safari proof, so keep all interactions touch-first, no hover-dependent UI. **The ship gate additionally requires one real WebKit pass** (Jon's iPhone Safari or a WebKit runner): touch targets, TTS/audio unlock, fullscreen portal behavior, orientation change, canvas frame rate.
 5. **Free-tier AI only** for anonymous-user features.
 6. **Mobile-first**: most users train on a phone held at arm's length. Big targets, landscape support for binocular, TTS because eyes are busy.
 7. **DB additive-only**: new metrics ride in existing JSON fields or new nullable columns; no destructive Prisma migrations.
+8. **Safety is part of the engine contract** (FLW HIGH, 2026-07-12): every engine pausable/abortable at any instant (X always visible), runner intro states the stop rule (pain / dizziness / double vision / persistent blur = stop now), interludes are mandatory rest, palming dimming user-escapable, `prefers-reduced-motion` gets a low-motion fallback (canvasKit exposes `prefersReducedMotion()`; engines not yet honoring it carry a ledger TODO). Safety copy sourced from ScreenFit PDFs when mining scripts (§8).
+9. **Metrics are training-performance proxies, not clinical measurements** (FLW HIGH, 2026-07-12): central-probe accuracy proxies fixation compliance, pointer tracing proxies pursuit smoothness, letter confirmation proxies clarity. UI copy and API naming must never imply measured acuity improvement beyond the user's own logged Snellen self-tests. No medical-outcome claims anywhere.
 
 ## 5. Work packages + delegation map
 
@@ -95,12 +97,14 @@ Disjoint file ownership so parallel builders never collide. Registry wiring (`En
 | WP7 | W3.1 AI coach (CF Worker + UI card) | new worker + `Training/CoachCard.tsx` | Codex High | WP5 |
 | WP8 | W2.1 intro / W2.4 report polish / W3.4 night mode | inside SessionRunner files | any | WP4 |
 
-**Acceptance per engine (definition of done):** full-screen on phone viewport · driven by prescription (week 1 vs week 9 observably different) · at least one REAL user interaction that produces a metric · TTS + visual cues · pause/resume/mute · returns `EngineResult` · completion feeds existing session API · zero TypeScript errors (`npx tsc --noEmit`) · zero console errors in a live run.
+**Acceptance per engine (definition of done):** full-screen on phone viewport · driven by prescription (week 1 vs week 9 observably different) · at least one REAL user interaction that produces a metric · TTS + visual cues · pause/resume/mute · abortable at any instant · returns `EngineResult` to the runner (persistence is WP5's job — Gate 1 validates engines NON-persistently; FLW consistency fix 2026-07-12) · zero TypeScript errors (`npx tsc --noEmit`) · zero console errors in a live run.
 
-**Gate:** after WP1–4 land → deploy → verify each engine on live resetbiology.com at 390×844 viewport (screenshots into `jarvis/data/rb-vision-interactive/runtime-logs/`) → dual-eye pass on the animated engines → then WP5–8.
+**Gate 1 (engine validation, non-persistent):** after WP1–4 land → deploy → verify each engine on live resetbiology.com at 390×844 viewport (screenshots into `jarvis/data/rb-vision-interactive/runtime-logs/`) → dual-eye pass on the animated engines. **Gate 2 (ship):** WP5 persistence verified end-to-end + one real WebKit/iPhone pass (§4.4) → then WP6–8.
 
-## 6. Build order (if you only have N hours)
-1. WP0 (2h) → 2. WP4 runner skeleton with v1 GuidedExercise as engine shim (2h — DEMO-ABLE HERE: full guided session flow exists even before new engines) → 3. WP1–WP3 in parallel (engines swap in one by one) → 4. WP5 → 5. WP6 → 6. WP7/WP8.
+**Progression data rule (FLW MED, 2026-07-12):** engines never parse free-form progression prose at runtime; dosing rules live as structured fields (see `TEMPO_TABLE` in `src/lib/vision/prescription.ts` — extend that table, never regex exercise strings).
+
+## 6. Build order (dependency sequence — durations intentionally unstated)
+1. WP0 → 2. WP4 runner skeleton with v1 GuidedExercise as engine shim (DEMO-ABLE HERE: full guided session flow exists even before new engines) → 3. WP1–WP3 in parallel (engines swap in one by one) → 4. WP5 → 5. WP6 → 6. WP7/WP8.
 
 ## 7. What "inspiring" means, concretely (for whoever builds T2)
 The user should feel: *briefed* (intro tells them today's mission and why), *carried* (never wonders "what now?" — the runner always moves), *seen* (voice reacts to their actual performance numbers), *proven* (weekly before/after reveals), *rewarded* (points reflect real gains, streak fire, personal bests). Copy tone: coach-warm, zero clinical dryness.
@@ -112,3 +116,14 @@ The 51 PDFs in `screenfit/` hold the original coaching language, rep schemes, an
 | Date | WP | What landed | Commit | Verified? |
 |---|---|---|---|---|
 | 2026-07-12 | — | This plan written; rail claimed (jarvis `data/rb-vision-interactive/`) | — | n/a |
+| 2026-07-12 | WP0 | VisionEngine contract + prescription resolver + canvasKit (cached Gabor, parametric paths) + audioKit (SpeechQueue, lookahead Metronome) | 61481062 | tsc clean |
+| 2026-07-12 | — | FLW consult 1 verdict applied: §4.8 safety contract, §4.9 proxy-metrics rule, Gate 1/2 split, structured-progression rule, WebKit ship-gate; rail MASTER-GOAL-SPEC bound in jarvis `data/rb-vision-interactive/` | (this) | n/a |
+| 2026-07-12 | WP1 | DownshiftEngine (orb-paced, palming auto-dim) + FocusRhythmEngine (depth-target letter-confirm game, NPC logging) — Sonnet builder A | (this) | tsc clean |
+| 2026-07-12 | WP2 | PursuitEngine (3-stage paths, trace-mode smoothness scoring, watch-only fallback) + SaccadeEngine (metronome jumps, letter probes, adaptive ±5 bpm ratchet) — Sonnet builder B | (this) | tsc clean |
+| 2026-07-12 | WP3 | PeripheralEngine (3 modes: ring-detection w/ fixation probes + decoys, mirror-scan quadrants, crossed-laterality w/ rule flips) — Sonnet builder C | (this) | tsc clean |
+| 2026-07-12 | WP4 | SessionRunner v2 (intro→engine→interlude→report full-screen flow, exit-confirm, safety copy) + engine registry + DailyPractice guided-path wiring (manual list kept) + QuickPractice engine wiring | (this) | tsc clean |
+| 2026-07-12 | WP5 | SnellenWalksEngine (Codex High) + engineResults persistence on BOTH `/api/vision/sessions` and `/api/vision/program` complete_session (shared validator `src/lib/vision/engineResultsPayload.ts`, Mongo raw $set, additive) + performanceBonus stacking | (this) | tsc clean |
+| TODO | WP1-3 | `prefers-reduced-motion` low-motion fallback inside engines (§4.8) | | |
+| TODO | — | Gate 1: live resetbiology.com phone-viewport verify + dual-eye pass on animated engines | | |
+| TODO | — | Gate 2: WebKit/iPhone pass + persistence end-to-end verify | | |
+| TODO | WP6-8 | charts, weekly assessment ritual, AI coach (CF free tier), intro/report polish, night mode | | |

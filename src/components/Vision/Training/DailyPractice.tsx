@@ -16,6 +16,8 @@ import {
 } from 'lucide-react'
 import MiniBreathExercise from '@/components/Breath/MiniBreathExercise'
 import TrainingSession from './TrainingSession'
+import SessionRunner, { type SessionRunnerFinishPayload } from './SessionRunner'
+import type { EngineResult } from '@/components/Vision/Engines/types'
 
 const BREATH_WARMUP_ENABLED_KEY = 'visionTraining.breathWarmupEnabled'
 const BREATH_WARMUP_MINUTES_KEY = 'visionTraining.breathWarmupMinutes'
@@ -102,6 +104,8 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
   const [breathWarmupMinutes, setBreathWarmupMinutes] = useState(1)
   const [breathWarmupStatus, setBreathWarmupStatus] = useState<BreathWarmupStatus>('pending')
   const [showBreathWarmup, setShowBreathWarmup] = useState(false)
+  const [showGuidedRunner, setShowGuidedRunner] = useState(false)
+  const [engineResults, setEngineResults] = useState<EngineResult[]>([])
 
   useEffect(() => {
     loadProgram()
@@ -215,6 +219,15 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
     setSessionStarted(true)
   }
 
+  const handleRunnerFinish = (payload: SessionRunnerFinishPayload) => {
+    setEngineResults(payload.results)
+    setCompletedExercises(prev => {
+      const merged = new Set([...prev, ...payload.performedExerciseIds])
+      return Array.from(merged)
+    })
+    setShowGuidedRunner(false)
+  }
+
   const completeSession = async () => {
     if (!todaySession?.session || !enrollment) return
 
@@ -233,7 +246,8 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
             exercisesCompleted: completedExercises,
             nearSnellenResult: nearSnellenResult || null,
             farSnellenResult: farSnellenResult || null,
-            notes: sessionNotes || null
+            notes: sessionNotes || null,
+            engineResults: engineResults.length > 0 ? engineResults : undefined
           }
         })
       })
@@ -785,6 +799,41 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
                       {completedExercises.length}/{session.exercises.length} complete
                     </span>
                   </div>
+
+                  {/* Guided session — the primary path */}
+                  {completedExercises.length < session.exercises.length && (
+                    <button
+                      onClick={() => setShowGuidedRunner(true)}
+                      className="w-full py-5 bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 text-white rounded-xl transition-all shadow-lg shadow-primary-500/30 hover:scale-[1.01] active:scale-[0.99]"
+                    >
+                      <span className="font-bold text-lg flex items-center justify-center gap-2">
+                        <Play className="w-5 h-5" />
+                        Start Guided Session
+                      </span>
+                      <span className="block text-sm text-white/80 mt-1">
+                        Your coach walks you through all {session.exercises.length} exercises — animated, timed, scored
+                      </span>
+                    </button>
+                  )}
+
+                  {showGuidedRunner && (
+                    <SessionRunner
+                      exerciseIds={session.exerciseIds?.length ? session.exerciseIds : session.exercises.map((e: any) => e.id)}
+                      week={todaySession.week}
+                      day={todaySession.day}
+                      phase={todaySession.phase}
+                      sessionTitle={session.title}
+                      sessionFocus={session.focus}
+                      coachingCues={session.coachingCues}
+                      streakDays={enrollment.streakDays}
+                      onFinish={handleRunnerFinish}
+                      onExit={() => setShowGuidedRunner(false)}
+                    />
+                  )}
+
+                  <p className="text-gray-500 text-xs text-center">
+                    Prefer to pace yourself? Mark exercises done manually below.
+                  </p>
 
                   {/* Exercise list */}
                   <div className="space-y-3">

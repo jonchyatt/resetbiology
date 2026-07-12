@@ -16,6 +16,8 @@ import {
 import { visionExercises, VisionExercise } from '@/data/visionExercises'
 import GuidedExercise from './GuidedExercise'
 import GaborTraining from './GaborTraining'
+import { getEngine } from '@/components/Vision/Engines'
+import { resolvePrescription } from '@/lib/vision/prescription'
 
 const CATEGORY_CONFIG = {
   downshift: { icon: Eye, color: 'blue', label: 'Relaxation' },
@@ -51,8 +53,21 @@ export default function QuickPractice() {
     setSelectedExercise(null)
   }
 
-  // Show guided exercise if one is selected
+  // Show interactive engine (v2) or guided exercise (v1 fallback) if one is selected
   if (selectedExercise) {
+    const Engine = getEngine(selectedExercise.id)
+    if (Engine) {
+      return (
+        <div className="min-h-[70vh] flex flex-col">
+          <Engine
+            exercise={selectedExercise}
+            prescription={resolvePrescription(selectedExercise.id, 0)}
+            onComplete={handleExerciseComplete}
+            onExit={() => setSelectedExercise(null)}
+          />
+        </div>
+      )
+    }
     return (
       <GuidedExercise
         exercise={selectedExercise}
