@@ -20,8 +20,10 @@ import { resolvePrescription, findSession } from '@/lib/vision/prescription'
 import { prefersReducedMotion } from '@/lib/vision/canvasKit'
 import { SpeechQueue, unlockAudio, playArrivalMotif, playVictoryMotif } from '@/lib/vision/audioKit'
 import { getEngine } from '@/components/Vision/Engines'
-import type { EngineResult } from '@/components/Vision/Engines/types'
+import { clampScore, type EngineResult } from '@/components/Vision/Engines/types'
 import GuidedExercise from './GuidedExercise'
+import SnellenQuickCheck, { type SnellenQuickCheckResult } from './SnellenQuickCheck'
+import { CHART_LINE_TO_SNELLEN } from './SnellenChart'
 
 /**
  * SessionRunner v2 (W0.5 / WP4) — the guided daily session experience.
@@ -68,6 +70,7 @@ type RunnerStage =
   | { kind: 'intro' }
   | { kind: 'exercise'; index: number }
   | { kind: 'interlude'; nextIndex: number }
+  | { kind: 'proof' }
   | { kind: 'report' }
 
 export interface SessionRunnerFinishPayload {
@@ -141,6 +144,10 @@ export default function SessionRunner({
   const speechRef = useRef<SpeechQueue | null>(null)
   const resultsRef = useRef<EngineResult[]>([])
   const skippedRef = useRef<string[]>([])
+  // W0.5 proof stage (near-only quick check after the last engine, before report).
+  // Kept OUT of resultsRef/totalScore — it's an optional add-on, never gates the
+  // session score or "performed" exercise count. Only feeds the persisted payload.
+  const proofResultRef = useRef<EngineResult | null>(null)
 
   const exercises: VisionExercise[] = useMemo(
     () => exerciseIds.map(id => visionExerciseMap[id]).filter(Boolean),
@@ -211,16 +218,40 @@ export default function SessionRunner({
     setStage({ kind: 'exercise', index: 0 })
   }, [speak, sessionTitle, exercises.length, isComeback])
 
+  const goToReport = useCallback(() => {
+    playVictoryMotif()
+    speak('Session complete. Look at what you just did.', true)
+    setStage({ kind: 'report' })
+  }, [speak])
+
   const advanceFrom = useCallback((index: number) => {
     if (index >= exercises.length - 1) {
-      playVictoryMotif()
-      speak('Session complete. Look at what you just did.', true)
-      setStage({ kind: 'report' })
+      speak('Last one down. One quick vision check, then your report.', true)
+      setStage({ kind: 'proof' })
     } else {
       speak(interludeMomentum(index + 1, exercises.length))
       setStage({ kind: 'interlude', nextIndex: index + 1 })
     }
   }, [exercises.length, speak])
+
+  // Amendment 8: skippable, never blocks report. Amendment 1: only a completed
+  // + confirmed SnellenQuickCheck run persists anything (skip = proofResultRef stays null).
+  const handleProofComplete = useCallback((result: SnellenQuickCheckResult) => {
+    const lineIdx = result.nearSnellen ? CHART_LINE_TO_SNELLEN.indexOf(result.nearSnellen) : -1
+    proofResultRef.current = {
+      exerciseId: 'snellen-proof',
+      durationSec: result.durationSec,
+      completed: true,
+      score: lineIdx >= 0 ? clampScore(((lineIdx + 1) / CHART_LINE_TO_SNELLEN.length) * 100) : 0,
+      metrics: lineIdx >= 0 ? { nearSnellenLine: lineIdx + 1 } : {},
+    }
+    goToReport()
+  }, [goToReport])
+
+  const handleProofSkip = useCallback(() => {
+    proofResultRef.current = null
+    goToReport()
+  }, [goToReport])
 
   const handleEngineComplete = useCallback((index: number) => (result: EngineResult) => {
     resultsRef.current = [...resultsRef.current, result]
@@ -240,8 +271,15 @@ export default function SessionRunner({
   }, [advanceFrom, exercises])
 
   const finish = useCallback(() => {
+    // Proof result (if the user completed the W0.5 check) rides along in `results`
+    // ONLY for the persisted payload — it never touches totalScore or
+    // performedExerciseIds above, so it can't affect session scoring or the
+    // exercise-completion bar (it isn't one of today's prescribed exerciseIds).
+    const payloadResults = proofResultRef.current
+      ? [...resultsRef.current, proofResultRef.current]
+      : resultsRef.current
     onFinish({
-      results: resultsRef.current,
+      results: payloadResults,
       skipped: skippedRef.current,
       totalScore,
       // "performed" = the engine ran and produced a scored result, same bar
@@ -476,6 +514,29 @@ export default function SessionRunner({
             </div>
           )
         })()}
+
+        {stage.kind === 'proof' && (
+          <div className="min-h-full flex flex-col items-center justify-center px-4 py-6">
+            <div className="w-full max-w-md flex justify-end mb-1">
+              <button
+                onClick={handleProofSkip}
+                className="text-gray-400 hover:text-gray-300 text-sm font-semibold flex items-center gap-1.5 px-2 py-1"
+              >
+                <SkipForward className="w-4 h-4" />
+                Skip check
+              </button>
+            </div>
+            <p className="text-gray-500 text-xs text-center max-w-sm mb-3">
+              One quick self-check before your report — your own near-vision self-measured
+              reading. Optional, never required.
+            </p>
+            <SnellenQuickCheck
+              legs="near-only"
+              onComplete={handleProofComplete}
+              onExit={handleProofSkip}
+            />
+          </div>
+        )}
 
         {stage.kind === 'report' && (() => {
           // Identity first, then ONE meaningful signal, then the promise (consult 2 #5)
