@@ -203,7 +203,10 @@ export default function RetroBlasterII() {
     stateRef.current = result.state
     const canvas = canvasRef.current
     const ctx = canvas?.getContext('2d')
-    if (ctx) render(ctx, result.viewState)
+    if (ctx) {
+      ctx.imageSmoothingEnabled = false
+      render(ctx, result.viewState)
+    }
     setDisplayView(result.viewState)
     applyEvents(result.events, result.state)
     if (result.state.phase === 'playing') rafRef.current = requestAnimationFrame(gameLoop)

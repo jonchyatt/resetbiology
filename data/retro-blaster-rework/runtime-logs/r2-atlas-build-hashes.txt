@@ -1,0 +1,25 @@
+R2 sprite atlas deterministic build receipt
+source_sha256=f430e41a2076a484803ebab6037c8bad0ecf590a9e3ae3b144b905e51459109c
+atlas_png_sha256=af91e258f6250292bcbb95cf7c918e2af7a7a8d5b5277af1f0ea880fcd960206
+atlas_json_sha256=fc4cab691d47d4a20912e0642ffa5ae7d29fcab88c888d5dae7d9c8b74725101
+global_scale_factor=0.104046242775
+frame_size=48x36
+atlas_size=288x36
+idle-a_bbox=119,118,113,154
+idle-a_scaled=12x16
+idle-a_alpha_ratio=0.058449
+idle-b_bbox=118,118,114,200
+idle-b_scaled=12x21
+idle-b_alpha_ratio=0.071759
+dive-down_bbox=64,135,177,175
+dive-down_scaled=18x18
+dive-down_alpha_ratio=0.063657
+dive-bank_bbox=92,78,157,177
+dive-bank_scaled=16x18
+dive-bank_alpha_ratio=0.072338
+explode-a_bbox=23,71,264,253
+explode-a_scaled=27x26
+explode-a_alpha_ratio=0.167245
+explode-b_bbox=40,38,304,346
+explode-b_scaled=32x36
+explode-b_alpha_ratio=0.156829

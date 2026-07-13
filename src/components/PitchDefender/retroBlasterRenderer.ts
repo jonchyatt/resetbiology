@@ -2,6 +2,15 @@ import {
   ALIEN_H, ALIEN_W, CHARGE_FULL_MS, H, LASER_H, LASER_W,
   PLAYER_W, PLAYER_Y, STARTING_SHIELDS, W, type ViewState,
 } from './retroBlasterEngine'
+import { drawAtlasSprite, loadSpriteAtlas, type AtlasLoadResult } from './spriteAtlas'
+
+let enemyScoutAtlas: AtlasLoadResult | null = null
+if (typeof window !== 'undefined') {
+  void loadSpriteAtlas(
+    '/sprites/enemy-scout-atlas.json',
+    '/sprites/enemy-scout-atlas.png',
+  ).then(result => { enemyScoutAtlas = result })
+}
 
 // Pixel sprite data and canvas renderer extracted from RetroBlaster v1.
 
@@ -98,26 +107,39 @@ export function render(ctx: CanvasRenderingContext2D, viewState: ViewState): voi
     if (alien.hitTimer > 0) {
       const alpha = alien.hitTimer / 0.4
       ctx.globalAlpha = alpha
-      drawSprite(ctx, EXPLOSION_SPRITE, alien.x + 1, alien.y, `hsl(${alien.hue}, 80%, 60%)`, 2)
+      const explosionFrame = alien.hitTimer >= 0.2 ? 'explode-a' : 'explode-b'
+      const drewAtlas = enemyScoutAtlas?.status === 'ready'
+        && drawAtlasSprite(ctx, enemyScoutAtlas.atlas, explosionFrame, alien.x + 1, alien.y, 1)
+      if (!drewAtlas) {
+        drawSprite(ctx, EXPLOSION_SPRITE, alien.x + 1, alien.y, `hsl(${alien.hue}, 80%, 60%)`, 2)
+      }
       ctx.globalAlpha = 1
       continue
     }
 
     const isActive = i === viewState.spotlightIdx
     const sprite = alien.frame === 0 ? ALIEN_SPRITE_A : ALIEN_SPRITE_B
+    // ponytail: R2 has no dive state; R3 can route the validated dive frames once that state exists.
+    const bobPhase = Math.sin(now / 200)
+    const idleFrame = bobPhase >= 0 ? 'idle-a' : 'idle-b'
     const color = isActive
       ? `hsl(${alien.hue}, 95%, 70%)`
       : `hsl(${alien.hue}, 50%, 40%)`
 
     if (isActive) {
-      const bob = Math.sin(now / 200) * 3
+      const bob = bobPhase * 3
       const scale = 2.4
       const offsetX = (ALIEN_W * 0.2) / 2
       const offsetY = (ALIEN_H * 0.2) / 2
       const pulse = Math.sin(now / 150) * 0.3 + 0.6
       ctx.fillStyle = `hsla(${alien.hue}, 90%, 55%, ${pulse * 0.25})`
       ctx.fillRect(alien.x - 8, alien.y - 8 + bob, ALIEN_W + 16, ALIEN_H + 16)
-      drawSprite(ctx, sprite, alien.x - offsetX, alien.y - offsetY + bob, color, scale)
+      const drewAtlas = enemyScoutAtlas?.status === 'ready'
+        && drawAtlasSprite(
+          ctx, enemyScoutAtlas.atlas, idleFrame,
+          alien.x - offsetX - 12, alien.y - offsetY + bob - 9, 1.2,
+        )
+      if (!drewAtlas) drawSprite(ctx, sprite, alien.x - offsetX, alien.y - offsetY + bob, color, scale)
       ctx.fillStyle = '#ffe34c'
       ctx.font = 'bold 20px monospace'
       ctx.textAlign = 'center'
@@ -127,7 +149,9 @@ export function render(ctx: CanvasRenderingContext2D, viewState: ViewState): voi
       ctx.lineWidth = 2
       ctx.strokeRect(alien.x - 6, alien.y - 6 + bob, ALIEN_W + 12 + offsetX * 2, ALIEN_H + 12 + offsetY * 2)
     } else {
-      drawSprite(ctx, sprite, alien.x, alien.y, color, 2)
+      const drewAtlas = enemyScoutAtlas?.status === 'ready'
+        && drawAtlasSprite(ctx, enemyScoutAtlas.atlas, idleFrame, alien.x - 12, alien.y - 9, 1)
+      if (!drewAtlas) drawSprite(ctx, sprite, alien.x, alien.y, color, 2)
       ctx.fillStyle = `hsla(${alien.hue}, 50%, 55%, 0.6)`
       ctx.font = 'bold 9px monospace'
       ctx.textAlign = 'center'
