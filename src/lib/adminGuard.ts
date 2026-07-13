@@ -1,5 +1,4 @@
 import { auth0 } from '@/lib/auth0';
-import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 
@@ -10,8 +9,7 @@ import { prisma } from '@/lib/prisma';
  * - Admin if: Auth0 claim role === 'admin' OR Mongo user role/accessLevel === 'admin'
  */
 export async function requireAdmin(returnTo: string = '/portal') {
-  const cookieStore = await cookies();
-  const session = await auth0.getSession(cookieStore as any);
+  const session = await auth0.getSession();
 
   // Not signed in → go login and come back
   if (!session?.user) {
@@ -49,8 +47,7 @@ export async function requireAdmin(returnTo: string = '/portal') {
  */
 export async function isAdminRequest(): Promise<boolean> {
   try {
-    const cookieStore = await cookies();
-    const session = await auth0.getSession(cookieStore as any);
+    const session = await auth0.getSession();
     if (!session?.user) return false;
 
     const claimRole =
@@ -75,8 +72,7 @@ export async function isAdminRequest(): Promise<boolean> {
  */
 export async function requireSession(): Promise<boolean> {
   try {
-    const cookieStore = await cookies();
-    const session = await auth0.getSession(cookieStore as any);
+    const session = await auth0.getSession();
     return !!session?.user;
   } catch {
     return false;
