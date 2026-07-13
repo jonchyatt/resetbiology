@@ -220,6 +220,7 @@ interface Bolt {
   maxLife: number
   seed: number
   hue: number
+  note: string
   villagerId: number
   tineIndex: number
 }
@@ -812,6 +813,23 @@ function buildViewState(args: BuildViewStateArgs): ViewState {
     shake,
     fsrsMemory,
   } = args
+  const newestBolt = runtime.bolts[runtime.bolts.length - 1]
+  const visualActive = newestBolt
+    ? {
+        villagerId: newestBolt.villagerId,
+        tineIndex: newestBolt.tineIndex,
+        note: newestBolt.note,
+        key: `${newestBolt.villagerId}:${newestBolt.tineIndex}`,
+      }
+    : active
+      ? {
+          villagerId: active.villager.id,
+          tineIndex: active.tineIndex,
+          note: active.note,
+          key: active.key,
+        }
+      : null
+  const visualPrompt = newestBolt ? `Strike: ${newestBolt.note}` : prompt
   const chargeLevel = active
     ? Math.max(
         active.villager.burned,
@@ -830,7 +848,9 @@ function buildViewState(args: BuildViewStateArgs): ViewState {
     animClock: runtime.animClock,
     gameOver: runtime.gameOver,
     villagers: runtime.villagers.map(v => {
-      const isActive = activeVillagerId === v.id || activeKey.startsWith(`${v.id}:`)
+      const isActive = newestBolt
+        ? newestBolt.villagerId === v.id
+        : activeVillagerId === v.id || activeKey.startsWith(`${v.id}:`)
       const awaitingImpact = runtime.bolts.some(b => (
         b.villagerId === v.id && b.life / b.maxLife < STRIKE_IMPACT_START
       ))
@@ -870,14 +890,7 @@ function buildViewState(args: BuildViewStateArgs): ViewState {
         soulHue,
       }
     }),
-    active: active
-      ? {
-          villagerId: active.villager.id,
-          tineIndex: active.tineIndex,
-          note: active.note,
-          key: active.key,
-        }
-      : null,
+    active: visualActive,
     charge: {
       progress: chargeProgress,
       level: chargeLevel,
@@ -903,8 +916,8 @@ function buildViewState(args: BuildViewStateArgs): ViewState {
       noteStyles: receiptNoteStyles,
     },
     prompt: {
-      visible: !!prompt && !!active,
-      text: prompt,
+      visible: !!visualPrompt && !!visualActive,
+      text: visualPrompt,
     },
     noteNamesVisible,
     staffNotationVisible,
@@ -913,6 +926,12 @@ function buildViewState(args: BuildViewStateArgs): ViewState {
     timersPaused,
     tuner: {
       ...tuner,
+      targetNote: newestBolt?.note ?? tuner.targetNote,
+      sourceNote: newestBolt ? null : tuner.sourceNote,
+      canUseSource: newestBolt ? false : tuner.canUseSource,
+      dotDeviation: newestBolt ? null : tuner.dotDeviation,
+      renderDeviation: newestBolt ? null : tuner.renderDeviation,
+      onTarget: newestBolt ? false : tuner.onTarget,
       trail: tuner.trail.map(point => ({ ...point })),
     },
     ceremony: {
@@ -1871,8 +1890,8 @@ function drawStaffNotationView(ctx: CanvasRenderingContext2D, view: ViewState) {
     const note = staffNote(queue[index])
     if (!note) continue
     const x = queue.length === 1 ? (queueLeft + queueRight) / 2 : queueLeft + stepX * index
-    const spent = !!activeVillager && index < activeVillager.burned
-    const target = !!activeVillager && index === activeVillager.burned
+    const spent = !!activeVillager && index < activeVillager.visualBurn
+    const target = !!activeVillager && index === activeVillager.visualBurn
     drawStaffNoteHead(ctx, note, x, spent, target)
 
     if (view.noteNamesVisible) {
@@ -3603,7 +3622,7 @@ export default function PitchforksIII() {
     setHud({ wave, health: rt.health, score: rt.score, streak: rt.streak })
   }, [clearWaveReceipt, setPromptText])
 
-  const addBolt = useCallback((villager: Villager, tineIndex: number, hue: number) => {
+  const addBolt = useCallback((villager: Villager, tineIndex: number, hue: number, note: string) => {
     const a = assetsRef.current
     const frankMeta = a.frankMeta
     const vMeta = a.villagerMeta[villager.totalTines]
@@ -3626,6 +3645,7 @@ export default function PitchforksIII() {
       maxLife: BOLT_LIFE_S,
       seed: villager.id * 131 + tineIndex * 37 + Math.round(hue),
       hue,
+      note,
       villagerId: villager.id,
       tineIndex,
     })
@@ -3654,7 +3674,7 @@ export default function PitchforksIII() {
     reviewTargetNote(target, true)
     lastStrikeNoteRef.current = strikeNote ?? null
     lastStrikeHueRef.current = strikeHue
-    addBolt(villager, tineIndex, strikeHue)
+    addBolt(villager, tineIndex, strikeHue, strikeNote)
     addBurst(villager, strikeHue, 'strike')
     villager.burned += 1
     burnedTinesRef.current += 1
