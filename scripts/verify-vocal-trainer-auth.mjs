@@ -29,6 +29,21 @@ async function main() {
   const delRes = await DELETE(delReq);
   results.push(['DELETE /api/vocal-trainer/delete', delRes.status]);
 
+  // Tampered/invalid session cookie must also fail closed to 401, not leak a 500.
+  const tamperedHeaders = { cookie: 'appSession=not-a-real-encrypted-session-value' };
+  const postTamperedRes = await POST(new NextRequest('http://localhost/api/vocal-trainer/upload', {
+    method: 'POST',
+    headers: tamperedHeaders,
+    body: new FormData(),
+  }));
+  results.push(['POST (tampered cookie)', postTamperedRes.status]);
+
+  const delTamperedRes = await DELETE(new NextRequest('http://localhost/api/vocal-trainer/delete?id=test', {
+    method: 'DELETE',
+    headers: tamperedHeaders,
+  }));
+  results.push(['DELETE (tampered cookie)', delTamperedRes.status]);
+
   let allPass = true;
   for (const [label, status] of results) {
     const pass = status === 401;
