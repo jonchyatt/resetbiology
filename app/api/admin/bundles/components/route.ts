@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { calculateBundlePrice } from '@/lib/bundlePricing'
+import { isAdminRequest } from '@/lib/adminGuard';
 
 /**
  * Helper function to update bundle pricing
@@ -57,6 +58,9 @@ async function updateBundlePricing(bundleId: string) {
  * POST: Add a component to a bundle
  */
 export async function POST(req: NextRequest) {
+  if (!(await isAdminRequest())) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
   try {
     const { bundleId, componentId, quantity, isOptional, displayOrder } = await req.json()
 
@@ -121,6 +125,9 @@ export async function POST(req: NextRequest) {
  * PATCH: Update a bundle component (quantity, optional status)
  */
 export async function PATCH(req: NextRequest) {
+  if (!(await isAdminRequest())) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
   try {
     const { itemId, quantity, isOptional } = await req.json()
 
@@ -161,6 +168,9 @@ export async function PATCH(req: NextRequest) {
  * DELETE: Remove a component from bundle
  */
 export async function DELETE(req: NextRequest) {
+  if (!(await isAdminRequest())) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
   try {
     const { searchParams } = new URL(req.url)
     const itemId = searchParams.get('itemId')
