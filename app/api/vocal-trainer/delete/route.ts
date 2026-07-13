@@ -2,10 +2,14 @@
 // Removes a template's blobs (audio + template.json) from Vercel Blob.
 import { NextRequest, NextResponse } from 'next/server';
 import { list, del } from '@vercel/blob';
+import { requireSession } from '@/lib/adminGuard';
 
 export const runtime = 'nodejs';
 
 export async function DELETE(request: NextRequest) {
+  if (!(await requireSession())) {
+    return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
+  }
   try {
     const id = request.nextUrl.searchParams.get('id');
     if (!id || !/^[a-z0-9-]+$/i.test(id)) {

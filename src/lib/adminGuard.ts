@@ -68,3 +68,17 @@ export async function isAdminRequest(): Promise<boolean> {
     return false;
   }
 }
+
+/**
+ * API-route variant for any-authenticated-user gating (not admin-only):
+ * returns true if a valid session exists, so JSON handlers can respond 401.
+ */
+export async function requireSession(): Promise<boolean> {
+  try {
+    const cookieStore = await cookies();
+    const session = await auth0.getSession(cookieStore as any);
+    return !!session?.user;
+  } catch {
+    return false;
+  }
+}
