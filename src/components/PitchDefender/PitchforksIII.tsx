@@ -30,6 +30,7 @@ const W = 720
 const H = 405
 const MAX_CANVAS_DISPLAY_W = 1280
 const MAX_CANVAS_DISPLAY_H = 720
+const STAFF_BAND_RENDER_SCALE = 3
 const SPRITE_SCALE = 3
 // Frankenstein's native sprite resolution was bumped 3x (32x48 -> 96x144, C11
 // 2026-07-09) to hold more detail while rendering at the SAME on-screen size as
@@ -81,6 +82,12 @@ const DUNGEON_TORCHES = [
   { x: 358, y: 104, phase: 1.9 },
   { x: 594, y: 132, phase: 3.4 },
 ] as const
+
+type LayoutMode = 'portrait' | 'stage'
+
+function layoutModeForViewport(width: number, height: number): LayoutMode {
+  return height > width && width <= 768 ? 'portrait' : 'stage'
+}
 
 // C3: fork pose lean. Villagers face/advance toward Frankenstein (FRANK_X, left side),
 // so a negative angle here tips the tine end toward him — "gripped forward," not a
@@ -457,6 +464,7 @@ interface Pf3DebugState {
   fsrsDebug: boolean
   fsrsStoreKey: string
   newNoteUnlocked: string | null
+  layoutMode: LayoutMode
 }
 
 declare global {
@@ -2318,6 +2326,7 @@ function localSfx(kind: 'strike' | 'ash' | 'hurt' | 'roar', volumePct: number) {
 export default function PitchforksIII() {
   const canvasContainerRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const staffCanvasRef = useRef<HTMLCanvasElement>(null)
   const rafRef = useRef(0)
   const lastTimeRef = useRef(0)
   const runtimeRef = useRef<Runtime>(makeInitialRuntime(false))
@@ -2380,6 +2389,8 @@ export default function PitchforksIII() {
   const synesthesiaRef = useRef(false)
   const reducedMotionRef = useRef(false)
   const currentPromptRef = useRef('')
+  const promptMismatchWarnedRef = useRef('')
+  const layoutModeRef = useRef<LayoutMode>('stage')
   const cueTimeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([])
   const cuePlayingUntilRef = useRef(0)
   const matchingSuppressedUntilRef = useRef(0)
@@ -2411,6 +2422,7 @@ export default function PitchforksIII() {
   const [sfxVolume, setSfxVolume] = useState(100)
   const [demoMode, setDemoMode] = useState(false)
   const [fsrsDebugMode, setFsrsDebugMode] = useState(false)
+  const [geometryDebug, setGeometryDebug] = useState(false)
   const [unlockedNotes, setUnlockedNotes] = useState<string[]>([...STARTING_NOTES])
   const [newNoteUnlocked, setNewNoteUnlocked] = useState<string | null>(null)
   const [noteMastered, setNoteMastered] = useState<string | null>(null)
@@ -2419,6 +2431,16 @@ export default function PitchforksIII() {
   const [micHudState, setMicHudState] = useState<MicHudState>('waiting')
   const [heardYou, setHeardYou] = useState(false)
   const [canvasDisplaySize, setCanvasDisplaySize] = useState(() => ({ width: W, height: H }))
+  const [portraitStaffDisplaySize, setPortraitStaffDisplaySize] = useState(() => ({ width: STAFF_PANEL_W, height: STAFF_PANEL_H }))
+  const [layoutMode, setLayoutMode] = useState<LayoutMode>('stage')
+  const [viewportGeometry, setViewportGeometry] = useState(() => ({
+    width: 0,
+    height: 0,
+    dpr: 1,
+    visualScale: 1,
+    containerWidth: 0,
+    containerHeight: 0,
+  }))
 
   const { isListening, pitch, pitchRef, startListening, stopListening, error: micError } = usePitchDetection({ noiseGateDb: -45 })
 
@@ -2475,6 +2497,29 @@ export default function PitchforksIII() {
       const { width: containerWidth, height: containerHeight } = container.getBoundingClientRect()
       if (containerWidth <= 0 || containerHeight <= 0) return
 
+      const nextViewportGeometry = {
+        width: window.innerWidth,
+        height: window.innerHeight,
+        dpr: window.devicePixelRatio,
+        visualScale: window.visualViewport?.scale ?? 1,
+        containerWidth,
+        containerHeight,
+      }
+      setViewportGeometry((prev) => (
+        Math.abs(prev.width - nextViewportGeometry.width) < 0.01 &&
+        Math.abs(prev.height - nextViewportGeometry.height) < 0.01 &&
+        Math.abs(prev.dpr - nextViewportGeometry.dpr) < 0.01 &&
+        Math.abs(prev.visualScale - nextViewportGeometry.visualScale) < 0.01 &&
+        Math.abs(prev.containerWidth - nextViewportGeometry.containerWidth) < 0.01 &&
+        Math.abs(prev.containerHeight - nextViewportGeometry.containerHeight) < 0.01
+      ) ? prev : nextViewportGeometry)
+
+      const nextLayoutMode = layoutModeForViewport(window.innerWidth, window.innerHeight)
+      if (layoutModeRef.current !== nextLayoutMode) {
+        layoutModeRef.current = nextLayoutMode
+        setLayoutMode(nextLayoutMode)
+      }
+
       const availableWidth = Math.min(containerWidth, MAX_CANVAS_DISPLAY_W)
       const availableHeight = Math.min(containerHeight, MAX_CANVAS_DISPLAY_H)
       const containerAspect = availableWidth / availableHeight
@@ -2486,18 +2531,31 @@ export default function PitchforksIII() {
         if (Math.abs(prev.width - nextSize.width) < 0.5 && Math.abs(prev.height - nextSize.height) < 0.5) return prev
         return nextSize
       })
+
+      if (nextLayoutMode === 'portrait') {
+        const lowerLetterboxHeight = Math.max(0, (containerHeight - nextSize.height) / 2 - 12)
+        const nextStaffWidth = Math.max(0, Math.min(containerWidth - 24, lowerLetterboxHeight * (STAFF_PANEL_W / STAFF_PANEL_H)))
+        const nextStaffSize = { width: nextStaffWidth, height: nextStaffWidth * (STAFF_PANEL_H / STAFF_PANEL_W) }
+        setPortraitStaffDisplaySize((prev) => {
+          if (Math.abs(prev.width - nextStaffSize.width) < 0.5 && Math.abs(prev.height - nextStaffSize.height) < 0.5) return prev
+          return nextStaffSize
+        })
+      }
     }
 
     updateCanvasDisplaySize()
 
+    let observer: ResizeObserver | null = null
     if (typeof ResizeObserver !== 'undefined') {
-      const observer = new ResizeObserver(updateCanvasDisplaySize)
+      observer = new ResizeObserver(updateCanvasDisplaySize)
       observer.observe(container)
-      return () => observer.disconnect()
     }
 
     window.addEventListener('resize', updateCanvasDisplaySize)
-    return () => window.removeEventListener('resize', updateCanvasDisplaySize)
+    return () => {
+      observer?.disconnect()
+      window.removeEventListener('resize', updateCanvasDisplaySize)
+    }
   }, [phase])
 
   const fsrsStorageKey = useCallback(() => {
@@ -2542,6 +2600,7 @@ export default function PitchforksIII() {
     fsrsDebugRef.current = isFsrsDebug
     setDemoMode(isDemo)
     setFsrsDebugMode(isFsrsDebug)
+    setGeometryDebug(params.get('geom') === '1')
     getMasterySessionId()
 
     try {
@@ -2956,7 +3015,7 @@ export default function PitchforksIII() {
     liveNotes.forEach((note, i) => {
       const index = villager.burned + i
       const id = setTimeout(() => {
-        setPromptText(i === 0 ? `Sing: ${note}` : `Now: ${note}`)
+        setPromptText(`${mode === 'replay' ? 'Replay' : 'Listen'}: ${note}`)
         if (index === villager.burned) {
           activePromptKeyRef.current = `${villager.id}:${index}`
           promptStartedAtRef.current = performance.now()
@@ -3062,6 +3121,7 @@ export default function PitchforksIII() {
         fsrsDebug: demoRef.current || fsrsDebugRef.current,
         fsrsStoreKey: fsrsStorageKey(),
         newNoteUnlocked,
+        layoutMode: layoutModeRef.current,
       })
     }
     // fsrsDebug-gated test hook: drives the REAL grade/unlock path (autoGrade →
@@ -3651,7 +3711,7 @@ export default function PitchforksIII() {
       chargeProgress: lockProgressRef.current,
       tint: tintRef.current,
       noteNamesVisible: noteNamesRef.current,
-      staffNotationVisible: staffNotationRef.current,
+      staffNotationVisible: staffNotationRef.current && layoutModeRef.current !== 'portrait',
       synesthesiaOn: synesthesiaRef.current,
       reducedMotion: reducedMotionRef.current,
       timersPaused: timersPausedRef.current,
@@ -3676,6 +3736,37 @@ export default function PitchforksIII() {
     }), demoRef.current || fsrsDebugRef.current)
     viewStateRef.current = view
     renderView(ctx, view, assetsRef.current)
+
+    const staffCanvas = staffCanvasRef.current
+    if (staffCanvas) {
+      const staffCtx = staffCanvas.getContext('2d')
+      if (staffCtx) {
+        staffCtx.setTransform(1, 0, 0, 1, 0, 0)
+        staffCtx.clearRect(0, 0, staffCanvas.width, staffCanvas.height)
+        if (layoutModeRef.current === 'portrait' && staffNotationRef.current && view.tuner.visible) {
+          staffCtx.setTransform(
+            STAFF_BAND_RENDER_SCALE,
+            0,
+            0,
+            STAFF_BAND_RENDER_SCALE,
+            -STAFF_PANEL_X * STAFF_BAND_RENDER_SCALE,
+            -STAFF_PANEL_Y * STAFF_BAND_RENDER_SCALE,
+          )
+          drawStaffNotationView(staffCtx, view)
+        }
+      }
+    }
+
+    const actionPrompt = /^(?:Sing|Now):\s+(.+)$/.exec(currentPromptRef.current)
+    if ((demoRef.current || fsrsDebugRef.current) && actionPrompt && active && actionPrompt[1] !== active.note) {
+      const warningKey = `${actionPrompt[1]}:${active.note}:${active.key}`
+      if (promptMismatchWarnedRef.current !== warningKey) {
+        promptMismatchWarnedRef.current = warningKey
+        console.warn(`[PitchforksIII] action prompt ${actionPrompt[1]} does not match active target ${active.note}`)
+      }
+    } else {
+      promptMismatchWarnedRef.current = ''
+    }
     if (!runtimeRef.current.gameOver) rafRef.current = requestAnimationFrame(loop)
   }, [getActiveTarget, syncMicHudState, updateGame, updatePitchBarState])
 
@@ -4100,6 +4191,25 @@ export default function PitchforksIII() {
           style={{ width: canvasDisplaySize.width, height: canvasDisplaySize.height, imageRendering: 'pixelated' }}
         />
 
+        {layoutMode === 'portrait' && staffNotationOn && portraitStaffDisplaySize.height >= 64 && (
+          <div
+            data-testid="pf3-portrait-staff-band"
+            className="pointer-events-none absolute bottom-2 left-1/2 -translate-x-1/2 rounded-lg bg-[radial-gradient(ellipse_at_center,rgba(34,211,238,0.12),rgba(7,9,20,0)_72%)] shadow-[0_0_28px_rgba(34,211,238,0.10)]"
+            style={{ width: portraitStaffDisplaySize.width, height: portraitStaffDisplaySize.height }}
+          >
+            <canvas
+              ref={staffCanvasRef}
+              width={STAFF_PANEL_W * STAFF_BAND_RENDER_SCALE}
+              height={STAFF_PANEL_H * STAFF_BAND_RENDER_SCALE}
+              className="block h-full w-full"
+              role="img"
+              aria-label="Staff notation for the active pitch sequence"
+            >
+              Staff notation for the active pitch sequence.
+            </canvas>
+          </div>
+        )}
+
         <div className="absolute top-3 left-3 flex flex-wrap items-center gap-2 text-xs bg-black/60 border border-gray-800 px-3 py-2">
           <span>Score {hud.score}</span>
           <span>Wave {hud.wave}</span>
@@ -4158,6 +4268,18 @@ export default function PitchforksIII() {
           </button>
         </div>
       </div>
+      {geometryDebug && (
+        <div
+          data-testid="pf3-geometry-debug"
+          className="absolute bottom-2 right-2 z-50 border border-cyan-500/70 bg-black/90 px-2 py-1 text-[10px] leading-4 text-cyan-100"
+        >
+          <div>viewport {viewportGeometry.width}x{viewportGeometry.height}</div>
+          <div>dpr {viewportGeometry.dpr.toFixed(2)} · visual {viewportGeometry.visualScale.toFixed(2)}</div>
+          <div>container {viewportGeometry.containerWidth.toFixed(1)}x{viewportGeometry.containerHeight.toFixed(1)}</div>
+          <div>canvas {canvasDisplaySize.width.toFixed(1)}x{canvasDisplaySize.height.toFixed(1)}</div>
+          <div>mode {layoutMode}</div>
+        </div>
+      )}
     </div>
   )
 }
