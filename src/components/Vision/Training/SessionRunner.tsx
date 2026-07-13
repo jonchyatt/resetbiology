@@ -244,7 +244,13 @@ export default function SessionRunner({
       results: resultsRef.current,
       skipped: skippedRef.current,
       totalScore,
-      performedExerciseIds: resultsRef.current.filter(r => r.completed).map(r => r.exerciseId),
+      // "performed" = the engine ran and produced a scored result, same bar
+      // performanceBonusFor() uses server-side (score counts regardless of
+      // the `completed`/full-duration flag). Filtering on `completed` here
+      // meant an early-Finish on ANY exercise permanently blocked "Complete
+      // Today's Session" from appearing that day (completedExercises could
+      // never reach session.exercises.length), so completeSession() never fired.
+      performedExerciseIds: resultsRef.current.map(r => r.exerciseId),
     })
   }, [onFinish, totalScore])
 
