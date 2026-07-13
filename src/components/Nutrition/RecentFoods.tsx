@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { PlusCircle, Loader2 } from 'lucide-react';
+import { useToast } from '@/components/ui/Toast';
 
 type RecentItem = {
   id: string;
@@ -21,31 +22,47 @@ type RecentItem = {
   unit?: string;
 };
 
-export function RecentFoods({ refreshToken = 0, onQuickAddSuccess }: { refreshToken?: number; onQuickAddSuccess?: () => void }) {
-  const [items, setItems] = useState<RecentItem[] | null>(null);
+/**
+ * `items` is the parent-owned recent-logs list (single fetch on the page).
+ * When provided, this component does NOT fetch — it derives the latest 10 from the shared list.
+ * (Legacy self-fetch retained only for standalone use when no items are passed.)
+ */
+export function RecentFoods({
+  items: itemsProp,
+  refreshToken = 0,
+  onQuickAddSuccess,
+}: {
+  items?: RecentItem[];
+  refreshToken?: number;
+  onQuickAddSuccess?: () => void;
+}) {
+  const toast = useToast();
+  const [selfItems, setSelfItems] = useState<RecentItem[] | null>(itemsProp ? null : null);
   const [error, setError] = useState<string | null>(null);
   const [reloggingId, setReloggingId] = useState<string | null>(null);
 
+  const controlled = itemsProp !== undefined;
+
   useEffect(() => {
+    if (controlled) return; // parent owns the data
     (async () => {
       try {
         const res = await fetch('/api/foods/recent', { cache: 'no-store' });
         const data = await res.json();
         if (!data?.ok) throw new Error(data?.error || 'Failed to load');
-        setItems(Array.isArray(data.items) ? data.items : []);
+        setSelfItems(Array.isArray(data.items) ? data.items : []);
       } catch (err: any) {
         setError(err?.message || 'Unable to load recent foods');
       }
     })();
-  }, [refreshToken]);
+  }, [controlled, refreshToken]);
+
+  const items = controlled ? (itemsProp ?? []).slice(0, 10) : selfItems;
 
   const handleQuickAdd = async (item: RecentItem) => {
-    if (reloggingId) return; // Prevent double-click
-
+    if (reloggingId) return;
     try {
       setReloggingId(item.id);
-
-      // Get current timestamp
       const now = new Date();
       const year = now.getFullYear();
       const month = String(now.getMonth() + 1).padStart(2, '0');
@@ -74,33 +91,14 @@ export function RecentFoods({ refreshToken = 0, onQuickAddSuccess }: { refreshTo
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
-
       const data = await res.json();
+      if (!res.ok || !data?.ok) throw new Error(data?.error || 'Unable to log food');
 
-      if (!res.ok || !data?.ok) {
-        throw new Error(data?.error || 'Unable to log food');
-      }
-
-      // Notify parent to refresh
-      if (onQuickAddSuccess) {
-        onQuickAddSuccess();
-      }
-
-      // Dispatch event for gamification notification
-      if (typeof window !== 'undefined') {
-        window.dispatchEvent(
-          new CustomEvent('nutrition:log-success', {
-            detail: {
-              pointsAwarded: data.pointsAwarded ?? 0,
-              journalNote: data.journalNote,
-              dailyTaskCompleted: Boolean(data.dailyTaskCompleted),
-            },
-          })
-        );
-      }
+      onQuickAddSuccess?.();
+      toast.success(`Re-logged ${item.itemName}`);
     } catch (err: any) {
       console.error('Quick-add error:', err);
-      alert(err?.message || 'Failed to re-log food');
+      toast.error(err?.message || 'Failed to re-log food');
     } finally {
       setReloggingId(null);
     }
@@ -137,14 +135,13 @@ export function RecentFoods({ refreshToken = 0, onQuickAddSuccess }: { refreshTo
                 {item.brand ? <span className="text-slate-400"> — {item.brand}</span> : null}
               </div>
               <div className="text-[11px] uppercase tracking-wide text-slate-400">
-                {(item.mealType || 'meal').toUpperCase()} • {item.gramWeight ? Math.round(item.gramWeight) + ' g' : 'portion'} • {item.nutrients?.kcal ?? '--'} kcal
+                {(item.mealType || 'meal').toUpperCase()} • <span className="text-emerald-300">P {item.nutrients?.protein_g ?? '--'}g</span> • {item.nutrients?.kcal ?? '--'} kcal
               </div>
             </div>
             <div className="flex items-center gap-3">
               <div className="text-xs text-slate-400">
                 {new Date(item.loggedAt).toLocaleString()}
               </div>
-              {/* Quick-Add Button */}
               <button
                 onClick={() => handleQuickAdd(item)}
                 disabled={reloggingId === item.id}

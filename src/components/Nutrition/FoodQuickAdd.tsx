@@ -55,7 +55,15 @@ export type FoodQuickAddResult = {
   dailyTaskCompleted?: boolean;
 };
 
-export function FoodQuickAdd({ onLogged }: { onLogged?: (result: FoodQuickAddResult) => void }) {
+export function FoodQuickAdd({
+  onLogged,
+  favorites = [],
+  onFavoritesChange,
+}: {
+  onLogged?: (result: FoodQuickAddResult) => void;
+  favorites?: Result[];
+  onFavoritesChange?: (favorites: Result[]) => void;
+}) {
   const [term, setTerm] = useState("");
   const [results, setResults] = useState<Result[]>([]);
   const [loading, setLoading] = useState(false);
@@ -66,34 +74,14 @@ export function FoodQuickAdd({ onLogged }: { onLogged?: (result: FoodQuickAddRes
   const [servings, setServings] = useState<number>(1);
   const [mealType, setMealType] = useState<MealOption>("snack");
 
-  // Favorites state
   const [activeTab, setActiveTab] = useState<'search' | 'favorites'>('search');
-  const [favorites, setFavorites] = useState<Result[]>([]);
-  const [favoritesLoading, setFavoritesLoading] = useState(false);
 
   // Camera upload state
   const [showCameraModal, setShowCameraModal] = useState(false);
 
-  // Load favorites on mount
-  useEffect(() => {
-    const loadFavorites = async () => {
-      try {
-        setFavoritesLoading(true);
-        const res = await fetch('/api/nutrition/favorites');
-        if (res.ok) {
-          const data = await res.json();
-          setFavorites(data.favorites || []);
-        }
-      } catch (err) {
-        console.error('Failed to load favorites:', err);
-      } finally {
-        setFavoritesLoading(false);
-      }
-    };
-    loadFavorites();
-  }, []);
+  const favoritesLoading = false; // favorites are parent-owned; no local fetch state
 
-  // Check if food is favorited
+  // Check if food is favorited (favorites are owned by the parent — one source of truth)
   const isFavorited = (item: Result): boolean => {
     return favorites.some(
       (f) => f.source === item.source && f.sourceId === item.sourceId
@@ -127,7 +115,7 @@ export function FoodQuickAdd({ onLogged }: { onLogged?: (result: FoodQuickAddRes
 
       if (res.ok) {
         const data = await res.json();
-        setFavorites(data.favorites || []);
+        onFavoritesChange?.(data.favorites || []);
       }
     } catch (err) {
       console.error('Failed to toggle favorite:', err);
@@ -273,80 +261,27 @@ export function FoodQuickAdd({ onLogged }: { onLogged?: (result: FoodQuickAddRes
     }
   };
 
-  const handleCameraAnalysis = async (result: any) => {
-    // Auto-log the AI analyzed food
-    const { foodEntry, analysis } = result;
-
-    try {
-      setStatus("logging");
-      setError(null);
-
-      const now = new Date();
-      const year = now.getFullYear();
-      const month = String(now.getMonth() + 1).padStart(2, '0');
-      const day = String(now.getDate()).padStart(2, '0');
-      const hours = String(now.getHours()).padStart(2, '0');
-      const minutes = String(now.getMinutes()).padStart(2, '0');
-      const seconds = String(now.getSeconds()).padStart(2, '0');
-
-      const payload = {
-        source: 'ai_vision',
-        sourceId: null,
-        itemName: foodEntry.itemName,
-        brand: foodEntry.brand,
-        quantity: foodEntry.quantity,
-        unit: foodEntry.unit,
-        gramWeight: foodEntry.gramWeight,
-        nutrients: foodEntry.nutrients,
-        mealType: foodEntry.mealType,
-        aiMetadata: foodEntry.aiMetadata,
-        confidence: foodEntry.confidence,
-        aiSource: foodEntry.aiSource,
-        loggedAt: now.toISOString(),
-        localDate: `${year}-${month}-${day}`,
-        localTime: `${hours}:${minutes}:${seconds}`,
-      };
-
-      const res = await fetch("/api/foods/log", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok || !data?.ok) {
-        throw new Error(data?.error ?? "Unable to log food");
-      }
-
-      setStatus("success");
-
-      if (onLogged) {
-        onLogged({
-          pointsAwarded: data.pointsAwarded ?? 0,
-          journalNote: data.journalNote,
-          dailyTaskCompleted: Boolean(data.dailyTaskCompleted),
-        });
-      }
-
-      if (typeof window !== "undefined") {
-        window.dispatchEvent(
-          new CustomEvent("nutrition:log-success", {
-            detail: {
-              pointsAwarded: data.pointsAwarded ?? 0,
-              journalNote: data.journalNote,
-              dailyTaskCompleted: Boolean(data.dailyTaskCompleted),
-            },
-          })
-        );
-      }
-
-      setTimeout(() => setStatus("idle"), 2000);
-    } catch (err: any) {
-      console.error("Log AI food error", err);
-      setError(err?.message ?? "Unable to log AI analyzed food");
-      setStatus("error");
-    }
+  // Camera analysis is NOT auto-logged. It lands in the same confirm panel search uses,
+  // pre-filled with the AI estimate, so the member reviews/edits before tapping Log.
+  const handleCameraAnalysis = (result: any) => {
+    const { foodEntry } = result;
+    setActiveTab('search');
+    setResults([]);
+    setTerm("");
+    setStatus("idle");
+    setError(null);
+    if (foodEntry?.mealType) setMealType(foodEntry.mealType as MealOption);
+    // The AI nutrients are totals for the pictured portion → per-serving, 1 serving = the estimate.
+    setSelected({
+      source: 'ai_vision',
+      sourceId: `ai-${Date.now()}`,
+      description: foodEntry.itemName,
+      brand: foodEntry.brand ?? null,
+      servingGram: foodEntry.gramWeight ?? null,
+      nutrients: foodEntry.nutrients,
+      per: 'serving',
+    } as unknown as Result);
+    setServings(1);
   };
 
   return (
@@ -397,7 +332,7 @@ export function FoodQuickAdd({ onLogged }: { onLogged?: (result: FoodQuickAddRes
           <input
             value={term}
             onChange={(event) => setTerm(event.target.value)}
-            placeholder="Search foods, brands, or enter a UPC"
+            placeholder="Search foods or brands"
             className="w-full rounded-lg border border-slate-600/40 bg-slate-900/60 pl-10 pr-3 py-2 text-sm text-slate-100 placeholder:text-slate-400 focus:border-emerald-400 focus:outline-none"
           />
         </div>

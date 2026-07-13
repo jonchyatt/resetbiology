@@ -1,11 +1,12 @@
 "use client"
 
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect, useMemo, useCallback } from "react"
 import Link from "next/link"
-import { Apple, Target, Plus, X, Calendar, TrendingUp, Utensils, Copy, Edit, Trash2, Star, Check, Flame } from "lucide-react"
+import { Apple, Target, Plus, X, Calendar, TrendingUp, Utensils, Copy, Edit, Trash2, Star, Check } from "lucide-react"
 import { FoodQuickAdd, FoodQuickAddResult } from "./FoodQuickAdd"
 import { RecentFoods } from "./RecentFoods"
-import { MacroGoals } from "./MacroGoals"
+import { MacroGoals, type Goals } from "./MacroGoals"
+import { useToast } from "@/components/ui/Toast"
 
 interface FoodEntry {
   id: string
@@ -14,11 +15,33 @@ interface FoodEntry {
   protein: number
   carbs: number
   fats: number
+  fiber: number
+  sodium: number
   mealType: string
   loggedAt: string
   quantity?: number
   unit?: string
   gramWeight?: number | null
+}
+
+interface RawLog {
+  id: string
+  itemName: string
+  brand?: string | null
+  gramWeight?: number | null
+  quantity: number
+  unit: string
+  nutrients?: {
+    kcal?: number | null
+    protein_g?: number | null
+    carb_g?: number | null
+    fat_g?: number | null
+    fiber_g?: number | null
+    sodium_mg?: number | null
+  } | null
+  mealType?: string | null
+  loggedAt: string
+  localDate?: string | null
 }
 
 interface FoodHistoryEntry {
@@ -33,34 +56,47 @@ interface FoodHistoryEntry {
     protein_g?: number | null
     carb_g?: number | null
     fat_g?: number | null
+    fiber_g?: number | null
+    sodium_mg?: number | null
   } | null
   mealType?: string | null
   loggedAt: string
 }
 
+const num = (v: any): number => (typeof v === "number" && Number.isFinite(v) ? v : 0)
+const round1 = (v: number) => Math.round((v + Number.EPSILON) * 10) / 10
+
+// User's local calendar day as YYYY-MM-DD — the same string the logger stores.
+function localDayString(d = new Date()): string {
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, "0")
+  const day = String(d.getDate()).padStart(2, "0")
+  return `${y}-${m}-${day}`
+}
+
 export function NutritionTracker() {
+  const toast = useToast()
   const [activeTab, setActiveTab] = useState<'today' | 'history'>('today')
-  const [todaysFoods, setTodaysFoods] = useState<FoodEntry[]>([])
-  const [showAddFoodModal, setShowAddFoodModal] = useState(false)
-  const [showFoodSearchModal, setShowFoodSearchModal] = useState(false)
-  const [selectedMealType, setSelectedMealType] = useState<string>('breakfast')
-  const [foodLibrary, setFoodLibrary] = useState<any[]>([])
-  const [searchQuery, setSearchQuery] = useState('')
-  const [logSuccess, setLogSuccess] = useState<FoodQuickAddResult | null>(null)
+
+  // One source of recent logs (200-row window) — Today + History both derive from it.
+  const [recentLogs, setRecentLogs] = useState<RawLog[] | null>(null)
+  const [recentLoading, setRecentLoading] = useState(false)
+  const [recentError, setRecentError] = useState<string | null>(null)
   const [recentRefresh, setRecentRefresh] = useState(0)
-  const [historyRefresh, setHistoryRefresh] = useState(0)
-  const [historyItems, setHistoryItems] = useState<FoodHistoryEntry[] | null>(null)
-  const [historyLoading, setHistoryLoading] = useState(false)
-  const [historyError, setHistoryError] = useState<string | null>(null)
+
+  const [selectedMealType, setSelectedMealType] = useState<string>('breakfast')
+  const [logSuccess, setLogSuccess] = useState<FoodQuickAddResult | null>(null)
   const [copyingDay, setCopyingDay] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
   const [editingEntry, setEditingEntry] = useState<FoodHistoryEntry | null>(null)
 
-  // Favorites state
+  // Favorites — owned here, passed to FoodQuickAdd so there is ONE fetch and ONE identity scheme.
   const [favorites, setFavorites] = useState<any[]>([])
-  const [favoritesLoading, setFavoritesLoading] = useState(false)
 
-  // Meal Plans state
+  // Macro goals — owned here so the active meal plan can drive them (single target source).
+  const [personalGoals, setPersonalGoals] = useState<Goals | null>(null)
+
+  // Meal Plans
   const [mealPlans, setMealPlans] = useState<any[]>([])
   const [mealPlansLoading, setMealPlansLoading] = useState(false)
   const [showAddPlanModal, setShowAddPlanModal] = useState(false)
@@ -74,15 +110,14 @@ export function NutritionTracker() {
     description: ''
   })
 
-  // Form state for adding food
+  // Edit-form fields (reused by the edit modal only)
   const [foodName, setFoodName] = useState('')
   const [calories, setCalories] = useState('')
   const [protein, setProtein] = useState('')
   const [carbs, setCarbs] = useState('')
   const [fats, setFats] = useState('')
 
-  // Load meal plans
-  const loadMealPlans = async () => {
+  const loadMealPlans = useCallback(async () => {
     try {
       setMealPlansLoading(true)
       const res = await fetch('/api/nutrition/plans?activeOnly=true')
@@ -95,71 +130,10 @@ export function NutritionTracker() {
     } finally {
       setMealPlansLoading(false)
     }
-  }
-
-  // Create new meal plan
-  const createMealPlan = async () => {
-    if (!newPlan.name || !newPlan.dailyCalories) {
-      alert('Please enter at least name and daily calories')
-      return
-    }
-
-    try {
-      const res = await fetch('/api/nutrition/plans', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newPlan)
-      })
-
-      if (res.ok) {
-        await loadMealPlans()
-        setShowAddPlanModal(false)
-        setNewPlan({
-          name: '',
-          planType: 'maintenance',
-          dailyCalories: '',
-          proteinTarget: '',
-          carbsTarget: '',
-          fatsTarget: '',
-          description: ''
-        })
-      } else {
-        const data = await res.json()
-        alert(`Failed to create plan: ${data.error}`)
-      }
-    } catch (err) {
-      console.error('Failed to create meal plan:', err)
-      alert('Failed to create meal plan')
-    }
-  }
-
-  // Delete/deactivate meal plan
-  const removeMealPlan = async (planId: string) => {
-    if (!confirm('Remove this meal plan?')) return
-    try {
-      const res = await fetch(`/api/nutrition/plans?id=${planId}`, {
-        method: 'DELETE'
-      })
-      if (res.ok) {
-        await loadMealPlans()
-      }
-    } catch (err) {
-      console.error('Failed to remove meal plan:', err)
-    }
-  }
-
-  // Load food library and today's foods
-  useEffect(() => {
-    fetchTodaysFoods()
-    fetchFoodLibrary()
-    loadFavorites()
-    loadMealPlans()
   }, [])
 
-  // Load favorites from API
-  const loadFavorites = async () => {
+  const loadFavorites = useCallback(async () => {
     try {
-      setFavoritesLoading(true)
       const res = await fetch('/api/nutrition/favorites')
       if (res.ok) {
         const data = await res.json()
@@ -167,24 +141,116 @@ export function NutritionTracker() {
       }
     } catch (err) {
       console.error('Failed to load favorites:', err)
-    } finally {
-      setFavoritesLoading(false)
+    }
+  }, [])
+
+  const loadGoals = useCallback(async () => {
+    try {
+      const res = await fetch('/api/nutrition/goals')
+      if (res.ok) {
+        const data = await res.json()
+        if (data.goals) setPersonalGoals(data.goals)
+      }
+    } catch (err) {
+      console.error('Failed to load goals:', err)
+    }
+  }, [])
+
+  // Single recent-logs fetch (200 window covers Today + History). Re-runs on refresh token.
+  useEffect(() => {
+    const controller = new AbortController()
+    const load = async () => {
+      try {
+        setRecentLoading(true)
+        setRecentError(null)
+        const res = await fetch('/api/foods/recent?limit=200', {
+          cache: 'no-store',
+          signal: controller.signal,
+        })
+        const data = await res.json()
+        if (!res.ok || !data?.ok) throw new Error(data?.error || 'Failed to load nutrition logs')
+        setRecentLogs(Array.isArray(data.items) ? data.items : [])
+      } catch (error: any) {
+        if (error?.name === 'AbortError') return
+        console.error('Error loading nutrition logs:', error)
+        setRecentError(error?.message || 'Unable to load your nutrition logs')
+      } finally {
+        setRecentLoading(false)
+      }
+    }
+    load()
+    return () => controller.abort()
+  }, [recentRefresh])
+
+  useEffect(() => {
+    loadMealPlans()
+    loadFavorites()
+    loadGoals()
+  }, [loadMealPlans, loadFavorites, loadGoals])
+
+  useEffect(() => {
+    if (!logSuccess) return
+    const timer = setTimeout(() => setLogSuccess(null), 5000)
+    return () => clearTimeout(timer)
+  }, [logSuccess])
+
+  const refreshAll = useCallback(() => setRecentRefresh((p) => p + 1), [])
+
+  const createMealPlan = async () => {
+    if (!newPlan.name || !newPlan.dailyCalories) {
+      toast.error('Enter at least a name and daily calories')
+      return
+    }
+    try {
+      const res = await fetch('/api/nutrition/plans', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...newPlan,
+          dailyCalories: Number(newPlan.dailyCalories) || 0,
+          proteinTarget: Number(newPlan.proteinTarget) || 0,
+          carbsTarget: Number(newPlan.carbsTarget) || 0,
+          fatsTarget: Number(newPlan.fatsTarget) || 0,
+        })
+      })
+      if (res.ok) {
+        await loadMealPlans()
+        setShowAddPlanModal(false)
+        setNewPlan({ name: '', planType: 'maintenance', dailyCalories: '', proteinTarget: '', carbsTarget: '', fatsTarget: '', description: '' })
+        toast.success('Meal plan created')
+      } else {
+        const data = await res.json()
+        toast.error(`Couldn't create plan: ${data.error || 'try again'}`)
+      }
+    } catch (err) {
+      console.error('Failed to create meal plan:', err)
+      toast.error('Failed to create meal plan')
     }
   }
 
-  // Check if a history item is favorited
-  const isFavorited = (entry: FoodHistoryEntry): boolean => {
-    return favorites.some(
-      (f) => f.description === entry.itemName && (entry.brand ? f.brand === entry.brand : true)
-    )
+  const removeMealPlan = async (planId: string) => {
+    const ok = await toast.confirm({ title: 'Remove this meal plan?', destructive: true, confirmLabel: 'Remove' })
+    if (!ok) return
+    try {
+      const res = await fetch(`/api/nutrition/plans?id=${planId}`, { method: 'DELETE' })
+      if (res.ok) {
+        await loadMealPlans()
+        toast.success('Meal plan removed')
+      } else {
+        toast.error('Failed to remove plan')
+      }
+    } catch (err) {
+      console.error('Failed to remove meal plan:', err)
+      toast.error('Failed to remove plan')
+    }
   }
 
-  // Toggle favorite for a history item
+  const isFavorited = (entry: FoodHistoryEntry): boolean =>
+    favorites.some((f) => f.description === entry.itemName && (entry.brand ? f.brand === entry.brand : true))
+
   const toggleFavoriteFromHistory = async (entry: FoodHistoryEntry, e: React.MouseEvent) => {
     e.stopPropagation()
-
     const action = isFavorited(entry) ? 'remove' : 'add'
-
     try {
       const res = await fetch('/api/nutrition/favorites', {
         method: 'POST',
@@ -203,7 +269,6 @@ export function NutritionTracker() {
           action
         })
       })
-
       if (res.ok) {
         const data = await res.json()
         setFavorites(data.favorites || [])
@@ -213,358 +278,42 @@ export function NutritionTracker() {
     }
   }
 
-  useEffect(() => {
-    if (!logSuccess) return
-    const timer = setTimeout(() => setLogSuccess(null), 5000)
-    return () => clearTimeout(timer)
-  }, [logSuccess])
-
-  useEffect(() => {
-    if (activeTab !== 'history') return
-
-    const controller = new AbortController()
-
-    const loadHistory = async () => {
-      try {
-        setHistoryLoading(true)
-        setHistoryError(null)
-        const response = await fetch('/api/foods/recent?limit=200', {
-          cache: 'no-store',
-          signal: controller.signal,
-        })
-        const data = await response.json()
-        if (!response.ok || !data?.ok) {
-          throw new Error(data?.error || 'Failed to load nutrition history')
-        }
-        setHistoryItems(Array.isArray(data.items) ? data.items : [])
-      } catch (error: any) {
-        if (error?.name === 'AbortError') return
-        console.error('Error loading nutrition history:', error)
-        setHistoryError(error?.message || 'Unable to load nutrition history')
-      } finally {
-        setHistoryLoading(false)
-      }
-    }
-
-    loadHistory()
-    return () => {
-      controller.abort()
-    }
-  }, [activeTab, historyRefresh])
-
-  const groupedHistory = useMemo(() => {
-    if (!historyItems || historyItems.length === 0) return []
-
-    const groups = new Map<string, {
-      date: Date
-      label: string
-      entries: FoodHistoryEntry[]
-      totals: { calories: number; protein: number; carbs: number; fats: number }
-    }>()
-
-    historyItems.forEach((entry) => {
-      const date = new Date(entry.loggedAt)
-      const key = date.toISOString().split('T')[0]
-      if (!groups.has(key)) {
-        groups.set(key, {
-          date,
-          label: date.toLocaleDateString(undefined, {
-            weekday: 'short',
-            month: 'short',
-            day: 'numeric',
-          }),
-          entries: [],
-          totals: { calories: 0, protein: 0, carbs: 0, fats: 0 },
-        })
-      }
-      const group = groups.get(key)!
-      group.entries.push(entry)
-      const kcal = typeof entry.nutrients?.kcal === 'number' ? entry.nutrients.kcal : 0
-      const protein = typeof entry.nutrients?.protein_g === 'number' ? entry.nutrients.protein_g : 0
-      const carbs = typeof entry.nutrients?.carb_g === 'number' ? entry.nutrients.carb_g : 0
-      const fats = typeof entry.nutrients?.fat_g === 'number' ? entry.nutrients.fat_g : 0
-      group.totals.calories += kcal
-      group.totals.protein += protein
-      group.totals.carbs += carbs
-      group.totals.fats += fats
-    })
-
-    return Array.from(groups.entries())
-      .sort((a, b) => (a[0] < b[0] ? 1 : -1))
-      .map(([key, group]) => ({
-        key,
-        date: group.date,
-        label: group.label,
-        totals: group.totals,
-        entries: group.entries.sort(
-          (a, b) => new Date(b.loggedAt).getTime() - new Date(a.loggedAt).getTime(),
-        ),
+  // ---- Derived: today's foods (filtered by the stored local date, not browser toDateString) ----
+  const today = localDayString()
+  const todaysFoods: FoodEntry[] = useMemo(() => {
+    if (!recentLogs) return []
+    return recentLogs
+      .filter((e) => (e.localDate || localDayString(new Date(e.loggedAt))) === today)
+      .map((e) => ({
+        id: e.id,
+        name: e.itemName,
+        calories: Math.round(num(e.nutrients?.kcal)),
+        protein: round1(num(e.nutrients?.protein_g)),
+        carbs: round1(num(e.nutrients?.carb_g)),
+        fats: round1(num(e.nutrients?.fat_g)),
+        fiber: round1(num(e.nutrients?.fiber_g)),
+        sodium: Math.round(num(e.nutrients?.sodium_mg)),
+        mealType: (e.mealType ?? 'snack').toLowerCase(),
+        loggedAt: e.loggedAt,
+        quantity: e.quantity,
+        unit: e.unit,
+        gramWeight: e.gramWeight,
       }))
-  }, [historyItems])
+      .sort((a, b) => new Date(b.loggedAt).getTime() - new Date(a.loggedAt).getTime())
+  }, [recentLogs, today])
 
-  const fetchFoodLibrary = async () => {
-    try {
-      const response = await fetch('/api/nutrition/foods', {
-        credentials: 'include'
-      })
-      const data = await response.json()
-
-      if (data.success && data.foods) {
-        setFoodLibrary(data.foods)
-      }
-    } catch (error) {
-      console.error('Error loading food library:', error)
-    }
-  }
-
-  const selectFoodFromLibrary = (food: any) => {
-    setFoodName(food.name)
-    setCalories(food.calories.toString())
-    setProtein(food.protein.toString())
-    setCarbs(food.carbs.toString())
-    setFats(food.fats.toString())
-    setShowFoodSearchModal(false)
-    setShowAddFoodModal(true)
-  }
-
-  const filteredFoods = foodLibrary.filter(food =>
-    food.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    food.category.toLowerCase().includes(searchQuery.toLowerCase())
-  )
-
-  const fetchTodaysFoods = async () => {
-    try {
-      const response = await fetch('/api/foods/recent?limit=100', {
-        cache: 'no-store'
-      })
-      const data = await response.json()
-
-      if (data.ok && Array.isArray(data.items)) {
-        const today = new Date().toDateString()
-        const filtered = data.items
-          .filter((entry: any) => new Date(entry.loggedAt).toDateString() === today)
-
-        const mapped: FoodEntry[] = filtered
-          .map((entry: any) => ({
-            id: entry.id,
-            name: entry.itemName,
-            calories: Math.round(entry.nutrients?.kcal ?? 0),
-            protein: Math.round(((entry.nutrients?.protein_g ?? 0) + Number.EPSILON) * 10) / 10,
-            carbs: Math.round(((entry.nutrients?.carb_g ?? 0) + Number.EPSILON) * 10) / 10,
-            fats: Math.round(((entry.nutrients?.fat_g ?? 0) + Number.EPSILON) * 10) / 10,
-            mealType: (entry.mealType ?? 'snack').toLowerCase(),
-            loggedAt: entry.loggedAt,
-            quantity: entry.quantity,
-            unit: entry.unit,
-            gramWeight: entry.gramWeight,
-          }))
-
-        mapped.sort((a, b) => new Date(b.loggedAt).getTime() - new Date(a.loggedAt).getTime())
-
-        setTodaysFoods(mapped)
-      } else {
-        setTodaysFoods([])
-      }
-    } catch (error) {
-      console.error('Error loading food entries:', error)
-    }
-  }
-
-  const handleAddFood = async () => {
-    if (!foodName || !calories) {
-      alert('Please enter at least food name and calories')
-      return
-    }
-
-    try {
-      const response = await fetch('/api/foods/log', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          source: 'manual',
-          itemName: foodName,
-          brand: null,
-          quantity: 1,
-          unit: 'serving',
-          gramWeight: null,
-          mealType: selectedMealType,
-          nutrients: {
-            kcal: parseFloat(calories),
-            protein_g: protein ? parseFloat(protein) : 0,
-            carb_g: carbs ? parseFloat(carbs) : 0,
-            fat_g: fats ? parseFloat(fats) : 0,
-          }
-        })
-      })
-
-      const data = await response.json()
-
-      if (data.ok) {
-        console.log('✅ Food logged!')
-        fetchTodaysFoods()
-        // Reset form
-        setFoodName('')
-        setCalories('')
-        setProtein('')
-        setCarbs('')
-        setFats('')
-        setShowAddFoodModal(false)
-      } else {
-        alert(`Failed to log food: ${data.error}`)
-      }
-    } catch (error) {
-      console.error('Error logging food:', error)
-      alert('Failed to log food. Please try again.')
-    }
-  }
-
-  const deleteFood = async (entryId: string) => {
-    if (!confirm('Delete this food entry?')) return
-
-    try {
-      const response = await fetch(`/api/foods/log?id=${entryId}`, {
-        method: 'DELETE',
-      })
-
-      const data = await response.json()
-
-      if (data.ok) {
-        console.log('✅ Food entry deleted')
-        fetchTodaysFoods()
-        setRecentRefresh((prev) => prev + 1)
-        setHistoryRefresh((prev) => prev + 1)
-      } else {
-        alert('Failed to delete entry')
-      }
-    } catch (error) {
-      console.error('Error deleting food:', error)
-      alert('Failed to delete entry')
-    }
-  }
-
-  const copyPreviousDay = async () => {
-    if (!confirm('Copy all meals from yesterday to today?')) return
-
-    try {
-      setCopyingDay(true)
-
-      const response = await fetch('/api/nutrition/copy-day', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ daysAgo: 1 })
-      })
-
-      const data = await response.json()
-
-      if (data.ok) {
-        alert(`✅ Copied ${data.count} meals from yesterday!`)
-        fetchTodaysFoods()
-        setRecentRefresh((prev) => prev + 1)
-        setHistoryRefresh((prev) => prev + 1)
-      } else {
-        alert(`Failed: ${data.error || 'Unknown error'}`)
-      }
-    } catch (error) {
-      console.error('Error copying day:', error)
-      alert('Failed to copy meals')
-    } finally {
-      setCopyingDay(false)
-    }
-  }
-
-  const handleEditEntry = (entry: FoodHistoryEntry) => {
-    setEditingEntry(entry)
-    // Pre-fill form with entry data
-    setFoodName(entry.itemName)
-    setCalories((entry.nutrients?.kcal ?? 0).toString())
-    setProtein((entry.nutrients?.protein_g ?? 0).toString())
-    setCarbs((entry.nutrients?.carb_g ?? 0).toString())
-    setFats((entry.nutrients?.fat_g ?? 0).toString())
-    setSelectedMealType(entry.mealType || 'snack')
-    setShowEditModal(true)
-  }
-
-  const handleDeleteHistoryEntry = async (entryId: string) => {
-    if (!confirm('Delete this food entry?')) return
-
-    try {
-      const response = await fetch(`/api/foods/log?id=${entryId}`, {
-        method: 'DELETE',
-      })
-
-      const data = await response.json()
-
-      if (data.ok) {
-        console.log('✅ Food entry deleted')
-        fetchTodaysFoods()
-        setRecentRefresh((prev) => prev + 1)
-        setHistoryRefresh((prev) => prev + 1)
-      } else {
-        alert('Failed to delete entry')
-      }
-    } catch (error) {
-      console.error('Error deleting food:', error)
-      alert('Failed to delete entry')
-    }
-  }
-
-  const handleUpdateEntry = async () => {
-    if (!editingEntry || !foodName || !calories) {
-      alert('Please enter at least food name and calories')
-      return
-    }
-
-    try {
-      const response = await fetch('/api/nutrition/entries', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          entryId: editingEntry.id,
-          name: foodName,
-          calories: parseFloat(calories),
-          protein: protein ? parseFloat(protein) : 0,
-          carbs: carbs ? parseFloat(carbs) : 0,
-          fats: fats ? parseFloat(fats) : 0,
-          mealType: selectedMealType
-        })
-      })
-
-      const data = await response.json()
-
-      if (data.success) {
-        console.log('✅ Food entry updated!')
-        fetchTodaysFoods()
-        setRecentRefresh((prev) => prev + 1)
-        setHistoryRefresh((prev) => prev + 1)
-        // Reset form
-        setFoodName('')
-        setCalories('')
-        setProtein('')
-        setCarbs('')
-        setFats('')
-        setShowEditModal(false)
-        setEditingEntry(null)
-      } else {
-        alert(`Failed to update food: ${data.error}`)
-      }
-    } catch (error) {
-      console.error('Error updating food:', error)
-      alert('Failed to update food. Please try again.')
-    }
-  }
-
-  // Calculate today's totals
   const todaysTotals = todaysFoods.reduce(
-    (acc, food) => ({
-      calories: acc.calories + food.calories,
-      protein: acc.protein + food.protein,
-      carbs: acc.carbs + food.carbs,
-      fats: acc.fats + food.fats
+    (acc, f) => ({
+      calories: acc.calories + f.calories,
+      protein: acc.protein + f.protein,
+      carbs: acc.carbs + f.carbs,
+      fats: acc.fats + f.fats,
+      fiber: acc.fiber + f.fiber,
+      sodium: acc.sodium + f.sodium,
     }),
-    { calories: 0, protein: 0, carbs: 0, fats: 0 }
+    { calories: 0, protein: 0, carbs: 0, fats: 0, fiber: 0, sodium: 0 }
   )
 
-  // Group foods by meal type
   const foodsByMeal = {
     breakfast: todaysFoods.filter(f => f.mealType === 'breakfast'),
     lunch: todaysFoods.filter(f => f.mealType === 'lunch'),
@@ -576,12 +325,191 @@ export function NutritionTracker() {
     let latest: Date | null = null
     for (const food of todaysFoods) {
       const logged = new Date(food.loggedAt)
-      if (!latest || logged.getTime() > latest.getTime()) {
-        latest = logged
-      }
+      if (!latest || logged.getTime() > latest.getTime()) latest = logged
     }
     return latest
   }, [todaysFoods])
+
+  // The active meal plan is the goal source; fall back to personal goals, then sane defaults.
+  const activePlan = mealPlans[0]
+  const goals: Goals = useMemo(() => {
+    if (activePlan) {
+      return {
+        calories: Number(activePlan.dailyCalories) || 0,
+        protein: Number(activePlan.proteinTarget) || 0,
+        carbs: Number(activePlan.carbsTarget) || 0,
+        fats: Number(activePlan.fatsTarget) || 0,
+      }
+    }
+    return personalGoals ?? { calories: 2000, protein: 150, carbs: 200, fats: 65 }
+  }, [activePlan, personalGoals])
+
+  const historyItems: FoodHistoryEntry[] | null = useMemo(() => {
+    if (!recentLogs) return null
+    return recentLogs.map((e) => ({
+      id: e.id,
+      itemName: e.itemName,
+      brand: e.brand ?? null,
+      gramWeight: e.gramWeight ?? null,
+      quantity: e.quantity,
+      unit: e.unit,
+      nutrients: e.nutrients ?? null,
+      mealType: e.mealType ?? null,
+      loggedAt: e.loggedAt,
+    }))
+  }, [recentLogs])
+
+  const groupedHistory = useMemo(() => {
+    if (!historyItems || historyItems.length === 0) return []
+    const groups = new Map<string, {
+      date: Date; label: string; entries: FoodHistoryEntry[]
+      totals: { calories: number; protein: number; carbs: number; fats: number; fiber: number }
+    }>()
+    historyItems.forEach((entry) => {
+      const date = new Date(entry.loggedAt)
+      const key = date.toISOString().split('T')[0]
+      if (!groups.has(key)) {
+        groups.set(key, {
+          date,
+          label: date.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' }),
+          entries: [],
+          totals: { calories: 0, protein: 0, carbs: 0, fats: 0, fiber: 0 },
+        })
+      }
+      const group = groups.get(key)!
+      group.entries.push(entry)
+      group.totals.calories += num(entry.nutrients?.kcal)
+      group.totals.protein += num(entry.nutrients?.protein_g)
+      group.totals.carbs += num(entry.nutrients?.carb_g)
+      group.totals.fats += num(entry.nutrients?.fat_g)
+      group.totals.fiber += num(entry.nutrients?.fiber_g)
+    })
+    return Array.from(groups.entries())
+      .sort((a, b) => (a[0] < b[0] ? 1 : -1))
+      .map(([key, group]) => ({
+        key, date: group.date, label: group.label, totals: group.totals,
+        entries: group.entries.sort((a, b) => new Date(b.loggedAt).getTime() - new Date(a.loggedAt).getTime()),
+      }))
+  }, [historyItems])
+
+  const deleteFood = async (entryId: string) => {
+    const ok = await toast.confirm({ title: 'Delete this food entry?', destructive: true, confirmLabel: 'Delete' })
+    if (!ok) return
+    try {
+      const res = await fetch(`/api/foods/log?id=${entryId}`, { method: 'DELETE' })
+      const data = await res.json()
+      if (data.ok) {
+        refreshAll()
+        toast.success('Entry deleted')
+      } else {
+        toast.error('Failed to delete entry')
+      }
+    } catch (error) {
+      console.error('Error deleting food:', error)
+      toast.error('Failed to delete entry')
+    }
+  }
+
+  const copyPreviousDay = async () => {
+    const ok = await toast.confirm({ title: "Copy yesterday's meals to today?", confirmLabel: 'Copy' })
+    if (!ok) return
+    try {
+      setCopyingDay(true)
+      const res = await fetch('/api/nutrition/copy-day', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ daysAgo: 1 })
+      })
+      const data = await res.json()
+      if (data.ok) {
+        refreshAll()
+        toast.success(`Copied ${data.count} meal${data.count === 1 ? '' : 's'} from yesterday`)
+      } else {
+        toast.error(`Couldn't copy: ${data.error || 'try again'}`)
+      }
+    } catch (error) {
+      console.error('Error copying day:', error)
+      toast.error('Failed to copy meals')
+    } finally {
+      setCopyingDay(false)
+    }
+  }
+
+  const handleEditEntry = (entry: FoodHistoryEntry) => {
+    setEditingEntry(entry)
+    setFoodName(entry.itemName)
+    setCalories((entry.nutrients?.kcal ?? 0).toString())
+    setProtein((entry.nutrients?.protein_g ?? 0).toString())
+    setCarbs((entry.nutrients?.carb_g ?? 0).toString())
+    setFats((entry.nutrients?.fat_g ?? 0).toString())
+    setSelectedMealType(entry.mealType || 'snack')
+    setShowEditModal(true)
+  }
+
+  const closeEditModal = () => {
+    setShowEditModal(false)
+    setEditingEntry(null)
+    setFoodName(''); setCalories(''); setProtein(''); setCarbs(''); setFats('')
+  }
+
+  const handleDeleteHistoryEntry = async (entryId: string) => {
+    const ok = await toast.confirm({ title: 'Delete this food entry?', destructive: true, confirmLabel: 'Delete' })
+    if (!ok) return
+    try {
+      const res = await fetch(`/api/foods/log?id=${entryId}`, { method: 'DELETE' })
+      const data = await res.json()
+      if (data.ok) {
+        refreshAll()
+        toast.success('Entry deleted')
+      } else {
+        toast.error('Failed to delete entry')
+      }
+    } catch (error) {
+      console.error('Error deleting food:', error)
+      toast.error('Failed to delete entry')
+    }
+  }
+
+  // F3.1: use the FoodLog item route, with its real payload shape. Nutrients merge preserves fiber/sodium.
+  const handleUpdateEntry = async () => {
+    if (!editingEntry || !foodName || !calories) {
+      toast.error('Enter at least a food name and calories')
+      return
+    }
+    try {
+      const res = await fetch(`/api/nutrition/entries/${editingEntry.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          itemName: foodName,
+          mealType: selectedMealType,
+          nutrients: {
+            kcal: parseFloat(calories),
+            protein_g: protein ? parseFloat(protein) : 0,
+            carb_g: carbs ? parseFloat(carbs) : 0,
+            fat_g: fats ? parseFloat(fats) : 0,
+          }
+        })
+      })
+      const data = await res.json()
+      if (data.success) {
+        refreshAll()
+        closeEditModal()
+        toast.success('Entry updated')
+      } else {
+        toast.error(`Couldn't update: ${data.error || 'try again'}`)
+      }
+    } catch (error) {
+      console.error('Error updating food:', error)
+      toast.error('Failed to update food')
+    }
+  }
+
+  const planProgress = (current: number, target: number) => {
+    if (!target || target <= 0) return null
+    return Math.round((current / target) * 100)
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 relative pt-16"
          style={{
@@ -631,7 +559,7 @@ export function NutritionTracker() {
           <span className="text-secondary-400">Nutrition</span> Tracker
         </h2>
         <p className="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto">
-          Track macros, fuel your protocols, optimize for peptide effectiveness
+          Protein first. Fuel your protocols, hit your deficit, protect lean mass.
         </p>
       </div>
 
@@ -681,7 +609,7 @@ export function NutritionTracker() {
                 <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 text-center">
                   <Apple className="w-12 h-12 text-secondary-400 mx-auto mb-4" />
                   <h4 className="text-lg font-semibold text-white mb-2">No Active Meal Plans</h4>
-                  <p className="text-gray-300 text-sm mb-4">Create a meal plan to track your daily macro targets</p>
+                  <p className="text-gray-300 text-sm mb-4">Create a meal plan to set your daily targets — it becomes your goal everywhere on this page.</p>
                   <button
                     onClick={() => setShowAddPlanModal(true)}
                     className="bg-secondary-500 hover:bg-secondary-600 text-white font-semibold py-2 px-6 rounded-lg transition-colors"
@@ -691,65 +619,81 @@ export function NutritionTracker() {
                 </div>
               ) : (
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                  {mealPlans.map((plan) => (
-                    <div
-                      key={plan.id}
-                      className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-xl p-5 border border-secondary-400/20 hover:border-secondary-400/40 transition-all shadow-lg"
-                    >
-                      <div className="flex items-start justify-between mb-3">
-                        <div>
-                          <h4 className="text-lg font-bold text-white">{plan.name}</h4>
-                          <span className="text-xs px-2 py-1 rounded-full bg-secondary-600/30 text-secondary-300 capitalize">
-                            {plan.planType}
-                          </span>
+                  {mealPlans.map((plan) => {
+                    const calTarget = Number(plan.dailyCalories) || 0
+                    const proTarget = Number(plan.proteinTarget) || 0
+                    const calPct = planProgress(todaysTotals.calories, calTarget)
+                    const proPct = planProgress(todaysTotals.protein, proTarget)
+                    return (
+                      <div
+                        key={plan.id}
+                        className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-xl p-5 border border-secondary-400/20 hover:border-secondary-400/40 transition-all shadow-lg"
+                      >
+                        <div className="flex items-start justify-between mb-3">
+                          <div>
+                            <h4 className="text-lg font-bold text-white">{plan.name}</h4>
+                            <span className="text-xs px-2 py-1 rounded-full bg-secondary-600/30 text-secondary-300 capitalize">
+                              {plan.planType}
+                            </span>
+                          </div>
+                          <button
+                            onClick={() => removeMealPlan(plan.id)}
+                            className="p-2 text-gray-400 hover:text-red-400 transition-colors"
+                            title="Remove"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
                         </div>
-                        <button
-                          onClick={() => removeMealPlan(plan.id)}
-                          className="p-2 text-gray-400 hover:text-red-400 transition-colors"
-                          title="Remove"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
 
-                      {plan.description && (
-                        <p className="text-gray-300 text-sm mb-3 line-clamp-2">{plan.description}</p>
-                      )}
+                        {plan.description && (
+                          <p className="text-gray-300 text-sm mb-3 line-clamp-2">{plan.description}</p>
+                        )}
 
-                      <div className="grid grid-cols-2 gap-2 text-xs">
-                        <div className="bg-gray-700/50 rounded-lg p-2 text-center">
-                          <div className="text-secondary-300 font-semibold text-lg">{plan.dailyCalories}</div>
-                          <div className="text-gray-400">Daily Cal</div>
+                        <div className="grid grid-cols-2 gap-2 text-xs">
+                          <div className="bg-gray-700/50 rounded-lg p-2 text-center">
+                            <div className="text-secondary-300 font-semibold text-lg">{plan.proteinTarget}g</div>
+                            <div className="text-gray-400">Protein</div>
+                          </div>
+                          <div className="bg-gray-700/50 rounded-lg p-2 text-center">
+                            <div className="text-secondary-300 font-semibold text-lg">{plan.dailyCalories}</div>
+                            <div className="text-gray-400">Daily Cal</div>
+                          </div>
+                          <div className="bg-gray-700/50 rounded-lg p-2 text-center">
+                            <div className="text-secondary-300 font-semibold">{plan.carbsTarget}g</div>
+                            <div className="text-gray-400">Carbs</div>
+                          </div>
+                          <div className="bg-gray-700/50 rounded-lg p-2 text-center">
+                            <div className="text-secondary-300 font-semibold">{plan.fatsTarget}g</div>
+                            <div className="text-gray-400">Fats</div>
+                          </div>
                         </div>
-                        <div className="bg-gray-700/50 rounded-lg p-2 text-center">
-                          <div className="text-secondary-300 font-semibold text-lg">{plan.proteinTarget}g</div>
-                          <div className="text-gray-400">Protein</div>
-                        </div>
-                        <div className="bg-gray-700/50 rounded-lg p-2 text-center">
-                          <div className="text-secondary-300 font-semibold">{plan.carbsTarget}g</div>
-                          <div className="text-gray-400">Carbs</div>
-                        </div>
-                        <div className="bg-gray-700/50 rounded-lg p-2 text-center">
-                          <div className="text-secondary-300 font-semibold">{plan.fatsTarget}g</div>
-                          <div className="text-gray-400">Fats</div>
+
+                        {/* Progress — protein first, then calories */}
+                        <div className="mt-3 pt-3 border-t border-gray-700/50 space-y-2">
+                          <div>
+                            <div className="flex justify-between text-xs text-gray-400 mb-1">
+                              <span>Protein today</span>
+                              <span>{proPct === null ? 'set a target' : `${proPct}%`}</span>
+                            </div>
+                            <div className="w-full bg-gray-700 rounded-full h-2">
+                              <div className="bg-gradient-to-r from-emerald-500 to-secondary-500 h-2 rounded-full transition-all"
+                                   style={{ width: `${proPct === null ? 0 : Math.min(100, proPct)}%` }} />
+                            </div>
+                          </div>
+                          <div>
+                            <div className="flex justify-between text-xs text-gray-400 mb-1">
+                              <span>Calories today</span>
+                              <span>{calPct === null ? 'set a target' : `${calPct}%`}</span>
+                            </div>
+                            <div className="w-full bg-gray-700 rounded-full h-2">
+                              <div className="bg-gradient-to-r from-secondary-500 to-primary-500 h-2 rounded-full transition-all"
+                                   style={{ width: `${calPct === null ? 0 : Math.min(100, calPct)}%` }} />
+                            </div>
+                          </div>
                         </div>
                       </div>
-
-                      {/* Progress against plan */}
-                      <div className="mt-3 pt-3 border-t border-gray-700/50">
-                        <div className="flex justify-between text-xs text-gray-400 mb-1">
-                          <span>Today's Progress</span>
-                          <span>{Math.round((todaysTotals.calories / plan.dailyCalories) * 100)}%</span>
-                        </div>
-                        <div className="w-full bg-gray-700 rounded-full h-2">
-                          <div
-                            className="bg-gradient-to-r from-secondary-500 to-primary-500 h-2 rounded-full transition-all"
-                            style={{ width: `${Math.min(100, (todaysTotals.calories / plan.dailyCalories) * 100)}%` }}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               )}
             </div>
@@ -758,21 +702,17 @@ export function NutritionTracker() {
               {/* Column 1 - Add Nutrition */}
               <div className="space-y-6">
                 <FoodQuickAdd
+                  favorites={favorites}
+                  onFavoritesChange={setFavorites}
                   onLogged={(result) => {
-                    fetchTodaysFoods()
-                    setRecentRefresh((prev) => prev + 1)
-                    setHistoryRefresh((prev) => prev + 1)
+                    refreshAll()
                     setLogSuccess(result)
                   }}
                 />
 
                 <RecentFoods
-                  refreshToken={recentRefresh}
-                  onQuickAddSuccess={() => {
-                    fetchTodaysFoods()
-                    setRecentRefresh((prev) => prev + 1)
-                    setHistoryRefresh((prev) => prev + 1)
-                  }}
+                  items={recentLogs ?? undefined}
+                  onQuickAddSuccess={refreshAll}
                 />
 
                 <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl hover:shadow-secondary-400/20 transition-all duration-300">
@@ -809,6 +749,13 @@ export function NutritionTracker() {
                     </button>
                   </div>
 
+                  {recentError && (
+                    <div className="mb-4 flex items-center justify-between rounded-lg border border-rose-500/40 bg-rose-500/10 px-3 py-2 text-sm text-rose-200">
+                      <span>{recentError}</span>
+                      <button onClick={refreshAll} className="ml-3 rounded border border-rose-400/40 px-2 py-0.5 text-xs hover:bg-rose-500/20">Retry</button>
+                    </div>
+                  )}
+
                   {(['breakfast', 'lunch', 'dinner', 'snack'] as const).map((mealType) => (
                     <div key={mealType} className="mb-6 last:mb-0">
                       <h4 className="text-primary-300 font-semibold mb-2 capitalize">{mealType}</h4>
@@ -826,7 +773,9 @@ export function NutritionTracker() {
                                   )}
                                 </p>
                                 <p className="text-gray-400 text-xs">
-                                  {food.calories}cal • P:{food.protein}g C:{food.carbs}g F:{food.fats}g
+                                  <span className="text-emerald-300 font-semibold">P:{food.protein}g</span>
+                                  {' • '}{food.calories}cal • C:{food.carbs}g F:{food.fats}g
+                                  {food.fiber > 0 ? ` • Fiber:${food.fiber}g` : ''}
                                 </p>
                               </div>
                               <button
@@ -846,7 +795,13 @@ export function NutritionTracker() {
 
               {/* Column 3 - Macro Goals & Daily Snapshot */}
               <div className="space-y-6">
-                <MacroGoals todaysTotals={todaysTotals} />
+                <MacroGoals
+                  todaysTotals={todaysTotals}
+                  goals={goals}
+                  goalSource={activePlan ? 'plan' : 'personal'}
+                  planName={activePlan?.name}
+                  onPersonalGoalsSaved={setPersonalGoals}
+                />
 
                 <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl hover:shadow-secondary-400/20 transition-all duration-300">
                   <h4 className="text-white font-semibold mb-2 flex items-center">
@@ -854,16 +809,28 @@ export function NutritionTracker() {
                   </h4>
                   <ul className="space-y-2 text-sm text-gray-300">
                     <li className="flex items-center justify-between">
+                      <span className="text-emerald-300 font-semibold">Protein</span>
+                      <span className="font-semibold text-white">{Math.round(todaysTotals.protein)} g</span>
+                    </li>
+                    <li className="flex items-center justify-between">
+                      <span>Calories</span>
+                      <span className="font-semibold text-white">{Math.round(todaysTotals.calories)} kcal</span>
+                    </li>
+                    <li className="flex items-center justify-between">
+                      <span>Fiber</span>
+                      <span className="font-semibold text-white">{Math.round(todaysTotals.fiber)} g</span>
+                    </li>
+                    <li className="flex items-center justify-between">
+                      <span>Sodium</span>
+                      <span className="font-semibold text-white">{Math.round(todaysTotals.sodium)} mg</span>
+                    </li>
+                    <li className="flex items-center justify-between border-t border-gray-700/50 pt-2">
                       <span>Meals logged</span>
                       <span className="font-semibold text-white">{todaysFoods.length}</span>
                     </li>
                     <li className="flex items-center justify-between">
                       <span>Last entry</span>
                       <span className="font-semibold text-white">{lastLoggedAt ? lastLoggedAt.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) : '—'}</span>
-                    </li>
-                    <li className="flex items-center justify-between">
-                      <span>Total calories</span>
-                      <span className="font-semibold text-white">{Math.round(todaysTotals.calories)} kcal</span>
                     </li>
                   </ul>
                 </div>
@@ -881,21 +848,21 @@ export function NutritionTracker() {
                   <h3 className="text-xl font-bold text-white">Nutrition History</h3>
                 </div>
                 <button
-                  onClick={() => setHistoryRefresh((prev) => prev + 1)}
+                  onClick={refreshAll}
                   className="rounded-lg border border-secondary-400/40 bg-secondary-500/10 px-4 py-2 text-sm font-medium text-secondary-200 transition hover:border-secondary-400/60 hover:bg-secondary-500/20"
                 >
                   Refresh
                 </button>
               </div>
 
-              {historyLoading ? (
+              {recentLoading ? (
                 <div className="py-8 text-center text-sm text-gray-300">
                   <div className="mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-2 border-secondary-300 border-t-transparent" />
                   Loading nutrition history...
                 </div>
-              ) : historyError ? (
+              ) : recentError ? (
                 <div className="rounded-lg border border-rose-500/40 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
-                  {historyError}
+                  {recentError}
                 </div>
               ) : groupedHistory.length === 0 ? (
                 <div className="py-10 text-center text-gray-300">
@@ -914,19 +881,19 @@ export function NutritionTracker() {
                             <p className="text-xs text-gray-400">{group.date.toLocaleDateString()}</p>
                           </div>
                           <div className="text-right text-sm text-gray-300">
-                            <p className="text-white font-semibold">{Math.round(totals.calories)} kcal</p>
+                            <p className="text-emerald-300 font-semibold">P {Math.round(totals.protein)}g</p>
                             <p className="text-xs text-gray-400">
-                              P {Math.round(totals.protein)}g • C {Math.round(totals.carbs)}g • F {Math.round(totals.fats)}g
+                              {Math.round(totals.calories)} kcal • C {Math.round(totals.carbs)}g • F {Math.round(totals.fats)}g{totals.fiber > 0 ? ` • Fiber ${Math.round(totals.fiber)}g` : ''}
                             </p>
                           </div>
                         </div>
                         <ul className="mt-3 space-y-2">
                           {group.entries.map((entry) => {
                             const loggedDate = new Date(entry.loggedAt)
-                            const kcal = Math.round(typeof entry.nutrients?.kcal === 'number' ? entry.nutrients.kcal : 0)
-                            const protein = Math.round(typeof entry.nutrients?.protein_g === 'number' ? entry.nutrients.protein_g : 0)
-                            const carbs = Math.round(typeof entry.nutrients?.carb_g === 'number' ? entry.nutrients.carb_g : 0)
-                            const fats = Math.round(typeof entry.nutrients?.fat_g === 'number' ? entry.nutrients.fat_g : 0)
+                            const kcal = Math.round(num(entry.nutrients?.kcal))
+                            const protein = Math.round(num(entry.nutrients?.protein_g))
+                            const carbs = Math.round(num(entry.nutrients?.carb_g))
+                            const fats = Math.round(num(entry.nutrients?.fat_g))
                             return (
                               <li key={entry.id} className="flex items-start justify-between gap-4 rounded-lg border border-gray-700/40 bg-gray-800/40 px-3 py-2 text-sm text-gray-100">
                                 <div className="flex-1">
@@ -940,8 +907,8 @@ export function NutritionTracker() {
                                   </p>
                                 </div>
                                 <div className="text-right text-xs text-gray-400">
-                                  <p className="text-sm font-semibold text-white">{kcal} kcal</p>
-                                  <p>P {protein}g • C {carbs}g • F {fats}g</p>
+                                  <p className="text-sm font-semibold text-emerald-300">P {protein}g</p>
+                                  <p>{kcal} kcal • C {carbs}g • F {fats}g</p>
                                   <p>{loggedDate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</p>
                                 </div>
                                 <div className="flex gap-2 items-center">
@@ -950,24 +917,12 @@ export function NutritionTracker() {
                                     className="p-1 hover:scale-110 transition-transform"
                                     title={isFavorited(entry) ? "Remove from favorites" : "Add to favorites"}
                                   >
-                                    <Star
-                                      className="w-4 h-4"
-                                      fill={isFavorited(entry) ? '#eab308' : 'none'}
-                                      stroke={isFavorited(entry) ? '#eab308' : '#94a3b8'}
-                                    />
+                                    <Star className="w-4 h-4" fill={isFavorited(entry) ? '#eab308' : 'none'} stroke={isFavorited(entry) ? '#eab308' : '#94a3b8'} />
                                   </button>
-                                  <button
-                                    onClick={() => handleEditEntry(entry)}
-                                    className="text-blue-400 hover:text-blue-300 transition-colors"
-                                    title="Edit entry"
-                                  >
+                                  <button onClick={() => handleEditEntry(entry)} className="text-blue-400 hover:text-blue-300 transition-colors" title="Edit entry">
                                     <Edit className="w-4 h-4" />
                                   </button>
-                                  <button
-                                    onClick={() => handleDeleteHistoryEntry(entry.id)}
-                                    className="text-red-400 hover:text-red-300 transition-colors"
-                                    title="Delete entry"
-                                  >
+                                  <button onClick={() => handleDeleteHistoryEntry(entry.id)} className="text-red-400 hover:text-red-300 transition-colors" title="Delete entry">
                                     <Trash2 className="w-4 h-4" />
                                   </button>
                                 </div>
@@ -984,200 +939,6 @@ export function NutritionTracker() {
           </div>
         )}
       </div>
-      {/* Add Food Modal */}
-      {showAddFoodModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 max-w-md w-full border border-primary-400/30 shadow-2xl">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-bold text-white">Log Food</h3>
-              <button
-                onClick={() => setShowAddFoodModal(false)}
-                className="text-gray-400 hover:text-white transition-colors"
-              >
-                ✕
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Meal Type</label>
-                <select
-                  value={selectedMealType}
-                  onChange={(e) => setSelectedMealType(e.target.value)}
-                  className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
-                >
-                  <option value="breakfast">Breakfast</option>
-                  <option value="lunch">Lunch</option>
-                  <option value="dinner">Dinner</option>
-                  <option value="snack">Snack</option>
-                </select>
-              </div>
-
-              {/* Search Database Button */}
-              <div className="text-center">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowAddFoodModal(false)
-                    setShowFoodSearchModal(true)
-                  }}
-                  className="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center"
-                >
-                  <Apple className="w-4 h-4 mr-2" />
-                  Search Food Database
-                </button>
-                <p className="text-xs text-gray-400 mt-2">Or enter manually below:</p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Food Name *</label>
-                <input
-                  type="text"
-                  required
-                  value={foodName}
-                  onChange={(e) => setFoodName(e.target.value)}
-                  className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
-                  placeholder="e.g., Chicken Breast"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Calories *</label>
-                  <input
-                    type="number"
-                    required
-                    value={calories}
-                    onChange={(e) => setCalories(e.target.value)}
-                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
-                    placeholder="200"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Protein (g)</label>
-                  <input
-                    type="number"
-                    value={protein}
-                    onChange={(e) => setProtein(e.target.value)}
-                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
-                    placeholder="Optional"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Carbs (g)</label>
-                  <input
-                    type="number"
-                    value={carbs}
-                    onChange={(e) => setCarbs(e.target.value)}
-                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
-                    placeholder="Optional"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Fats (g)</label>
-                  <input
-                    type="number"
-                    value={fats}
-                    onChange={(e) => setFats(e.target.value)}
-                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
-                    placeholder="Optional"
-                  />
-                </div>
-              </div>
-
-              <div className="flex gap-3 pt-4">
-                <button
-                  onClick={() => setShowAddFoodModal(false)}
-                  className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleAddFood}
-                  className="flex-1 bg-secondary-600 hover:bg-secondary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
-                >
-                  Log Food
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Food Search Modal */}
-      {showFoodSearchModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 max-w-2xl w-full border border-primary-400/30 shadow-2xl max-h-[80vh] flex flex-col">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-bold text-white">Food Database</h3>
-              <button
-                onClick={() => setShowFoodSearchModal(false)}
-                className="text-gray-400 hover:text-white transition-colors"
-              >
-                ✕
-              </button>
-            </div>
-
-            {/* Search Bar */}
-            <div className="mb-4">
-              <input
-                type="text"
-                placeholder="Search foods (e.g., chicken, rice, protein)..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-primary-400 focus:outline-none"
-                autoFocus
-              />
-              <p className="text-xs text-gray-400 mt-2">
-                Found {filteredFoods.length} foods • Click to auto-fill
-              </p>
-            </div>
-
-            {/* Food List */}
-            <div className="overflow-y-auto flex-1">
-              <div className="grid gap-3">
-                {filteredFoods.map((food) => (
-                  <button
-                    key={food.id}
-                    onClick={() => selectFoodFromLibrary(food)}
-                    className="bg-gradient-to-br from-primary-600/10 to-secondary-600/10 hover:from-primary-600/20 hover:to-secondary-600/20 rounded-lg p-4 border border-primary-400/20 hover:border-primary-400/40 transition-all duration-200 text-left"
-                  >
-                    <div className="flex justify-between items-start">
-                      <div className="flex-1">
-                        <h4 className="font-bold text-white mb-1">{food.name}</h4>
-                        <div className="flex gap-4 text-sm text-gray-300">
-                          <span>{food.calories} cal</span>
-                          <span>P: {food.protein}g</span>
-                          <span>C: {food.carbs}g</span>
-                          <span>F: {food.fats}g</span>
-                        </div>
-                      </div>
-                      <span className="text-xs text-secondary-300 bg-secondary-500/20 px-2 py-1 rounded-full">
-                        {food.category}
-                      </span>
-                    </div>
-                  </button>
-                ))}
-              </div>
-
-              {filteredFoods.length === 0 && (
-                <div className="text-center py-12">
-                  <p className="text-gray-400">No foods found matching "{searchQuery}"</p>
-                  <button
-                    onClick={() => {
-                      setShowFoodSearchModal(false)
-                      setShowAddFoodModal(true)
-                    }}
-                    className="mt-4 text-primary-300 hover:text-primary-200 underline"
-                  >
-                    Add manually instead
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Edit Food Modal */}
       {showEditModal && editingEntry && (
@@ -1185,20 +946,7 @@ export function NutritionTracker() {
           <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 max-w-md w-full border border-primary-400/30 shadow-2xl">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-xl font-bold text-white">Edit Food Entry</h3>
-              <button
-                onClick={() => {
-                  setShowEditModal(false)
-                  setEditingEntry(null)
-                  setFoodName('')
-                  setCalories('')
-                  setProtein('')
-                  setCarbs('')
-                  setFats('')
-                }}
-                className="text-gray-400 hover:text-white transition-colors"
-              >
-                ✕
-              </button>
+              <button onClick={closeEditModal} className="text-gray-400 hover:text-white transition-colors">✕</button>
             </div>
 
             <div className="space-y-4">
@@ -1219,9 +967,7 @@ export function NutritionTracker() {
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">Food Name *</label>
                 <input
-                  type="text"
-                  required
-                  value={foodName}
+                  type="text" required value={foodName}
                   onChange={(e) => setFoodName(e.target.value)}
                   className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
                   placeholder="e.g., Chicken Breast"
@@ -1231,68 +977,29 @@ export function NutritionTracker() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">Calories *</label>
-                  <input
-                    type="number"
-                    required
-                    value={calories}
-                    onChange={(e) => setCalories(e.target.value)}
-                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
-                    placeholder="200"
-                  />
+                  <input type="number" required value={calories} onChange={(e) => setCalories(e.target.value)}
+                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none" placeholder="200" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">Protein (g)</label>
-                  <input
-                    type="number"
-                    value={protein}
-                    onChange={(e) => setProtein(e.target.value)}
-                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
-                    placeholder="Optional"
-                  />
+                  <input type="number" value={protein} onChange={(e) => setProtein(e.target.value)}
+                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none" placeholder="Optional" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">Carbs (g)</label>
-                  <input
-                    type="number"
-                    value={carbs}
-                    onChange={(e) => setCarbs(e.target.value)}
-                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
-                    placeholder="Optional"
-                  />
+                  <input type="number" value={carbs} onChange={(e) => setCarbs(e.target.value)}
+                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none" placeholder="Optional" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">Fats (g)</label>
-                  <input
-                    type="number"
-                    value={fats}
-                    onChange={(e) => setFats(e.target.value)}
-                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
-                    placeholder="Optional"
-                  />
+                  <input type="number" value={fats} onChange={(e) => setFats(e.target.value)}
+                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none" placeholder="Optional" />
                 </div>
               </div>
 
               <div className="flex gap-3 pt-4">
-                <button
-                  onClick={() => {
-                    setShowEditModal(false)
-                    setEditingEntry(null)
-                    setFoodName('')
-                    setCalories('')
-                    setProtein('')
-                    setCarbs('')
-                    setFats('')
-                  }}
-                  className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleUpdateEntry}
-                  className="flex-1 bg-secondary-600 hover:bg-secondary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
-                >
-                  Update Entry
-                </button>
+                <button onClick={closeEditModal} className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">Cancel</button>
+                <button onClick={handleUpdateEntry} className="flex-1 bg-secondary-600 hover:bg-secondary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">Update Entry</button>
               </div>
             </div>
           </div>
@@ -1305,10 +1012,7 @@ export function NutritionTracker() {
           <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 max-w-lg w-full border border-secondary-400/30 shadow-2xl">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-xl font-bold text-white">Create Meal Plan</h3>
-              <button
-                onClick={() => setShowAddPlanModal(false)}
-                className="text-gray-400 hover:text-white transition-colors"
-              >
+              <button onClick={() => setShowAddPlanModal(false)} className="text-gray-400 hover:text-white transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -1316,22 +1020,15 @@ export function NutritionTracker() {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">Plan Name *</label>
-                <input
-                  type="text"
-                  value={newPlan.name}
-                  onChange={(e) => setNewPlan({ ...newPlan, name: e.target.value })}
+                <input type="text" value={newPlan.name} onChange={(e) => setNewPlan({ ...newPlan, name: e.target.value })}
                   className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-secondary-400 focus:outline-none"
-                  placeholder="e.g., Cut Phase, Maintenance, Bulk"
-                />
+                  placeholder="e.g., Cut Phase, Maintenance, Bulk" />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">Plan Type</label>
-                <select
-                  value={newPlan.planType}
-                  onChange={(e) => setNewPlan({ ...newPlan, planType: e.target.value })}
-                  className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-secondary-400 focus:outline-none"
-                >
+                <select value={newPlan.planType} onChange={(e) => setNewPlan({ ...newPlan, planType: e.target.value })}
+                  className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-secondary-400 focus:outline-none">
                   <option value="maintenance">Maintenance</option>
                   <option value="cut">Cut / Fat Loss</option>
                   <option value="bulk">Bulk / Muscle Gain</option>
@@ -1344,72 +1041,40 @@ export function NutritionTracker() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Daily Calories *</label>
-                  <input
-                    type="number"
-                    value={newPlan.dailyCalories}
-                    onChange={(e) => setNewPlan({ ...newPlan, dailyCalories: e.target.value })}
-                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-secondary-400 focus:outline-none"
-                    placeholder="2000"
-                  />
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Protein (g)</label>
+                  <input type="number" value={newPlan.proteinTarget} onChange={(e) => setNewPlan({ ...newPlan, proteinTarget: e.target.value })}
+                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-secondary-400 focus:outline-none" placeholder="150" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Protein (g)</label>
-                  <input
-                    type="number"
-                    value={newPlan.proteinTarget}
-                    onChange={(e) => setNewPlan({ ...newPlan, proteinTarget: e.target.value })}
-                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-secondary-400 focus:outline-none"
-                    placeholder="150"
-                  />
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Daily Calories *</label>
+                  <input type="number" value={newPlan.dailyCalories} onChange={(e) => setNewPlan({ ...newPlan, dailyCalories: e.target.value })}
+                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-secondary-400 focus:outline-none" placeholder="2000" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">Carbs (g)</label>
-                  <input
-                    type="number"
-                    value={newPlan.carbsTarget}
-                    onChange={(e) => setNewPlan({ ...newPlan, carbsTarget: e.target.value })}
-                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-secondary-400 focus:outline-none"
-                    placeholder="200"
-                  />
+                  <input type="number" value={newPlan.carbsTarget} onChange={(e) => setNewPlan({ ...newPlan, carbsTarget: e.target.value })}
+                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-secondary-400 focus:outline-none" placeholder="200" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">Fats (g)</label>
-                  <input
-                    type="number"
-                    value={newPlan.fatsTarget}
-                    onChange={(e) => setNewPlan({ ...newPlan, fatsTarget: e.target.value })}
-                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-secondary-400 focus:outline-none"
-                    placeholder="65"
-                  />
+                  <input type="number" value={newPlan.fatsTarget} onChange={(e) => setNewPlan({ ...newPlan, fatsTarget: e.target.value })}
+                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-secondary-400 focus:outline-none" placeholder="65" />
                 </div>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">Description (optional)</label>
-                <textarea
-                  value={newPlan.description}
-                  onChange={(e) => setNewPlan({ ...newPlan, description: e.target.value })}
+                <textarea value={newPlan.description} onChange={(e) => setNewPlan({ ...newPlan, description: e.target.value })}
                   className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-secondary-400 focus:outline-none"
-                  placeholder="Notes about this plan..."
-                  rows={2}
-                />
+                  placeholder="Notes about this plan..." rows={2} />
               </div>
 
               <div className="flex gap-3 mt-6">
-                <button
-                  onClick={createMealPlan}
-                  className="flex-1 bg-secondary-500 hover:bg-secondary-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center"
-                >
+                <button onClick={createMealPlan} className="flex-1 bg-secondary-500 hover:bg-secondary-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center">
                   <Check className="w-4 h-4 mr-2" />
                   Create Plan
                 </button>
-                <button
-                  onClick={() => setShowAddPlanModal(false)}
-                  className="px-4 py-3 text-gray-400 hover:text-white transition-colors"
-                >
-                  Cancel
-                </button>
+                <button onClick={() => setShowAddPlanModal(false)} className="px-4 py-3 text-gray-400 hover:text-white transition-colors">Cancel</button>
               </div>
             </div>
           </div>

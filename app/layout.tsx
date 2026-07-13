@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import Script from 'next/script';
 import { Header } from '@/components/Navigation/Header';
 import { ClientAuth0Provider } from '@/components/Auth/ClientAuth0Provider';
+import { ToastProvider } from '@/components/ui/Toast';
 import './globals.css';
 
 export const metadata = { title: 'ResetBiology' };
@@ -26,8 +27,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           aria-hidden="true"
         />
         <ClientAuth0Provider>
-          <Header />
-          {children}
+          <ToastProvider>
+            <Header />
+            {children}
+          </ToastProvider>
         </ClientAuth0Provider>
 
         <Script id="register-sw" strategy="afterInteractive">
