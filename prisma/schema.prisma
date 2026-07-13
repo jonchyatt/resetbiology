@@ -1157,6 +1157,7 @@ model VisionDailySession {
   // Session metrics
   baselineMinutes   Int
   exerciseMinutes   Int
+  breathWarmupMinutes Int?
   totalMinutes      Int
   exercisesCompleted String[] // Array of exercise IDs completed
 

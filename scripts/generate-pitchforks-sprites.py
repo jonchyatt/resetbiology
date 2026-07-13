@@ -455,10 +455,13 @@ def draw_pitchfork(tines=3, burned=0, glow=False):
     The fork hangs vertically. Handle at bottom (attaches to fork_base).
     Tines fan out at the top.
     burned: how many tines have been snapped off (from rightmost first)
-    glow: brighten the metal (used as a "target" highlight)
+    glow: burning-ember tip + brightened shaft (the "target" highlight)
+
+    C3 Q2 (procedural ladder, no AI-sourcing — forks are a small geometric
+    object, and burn-ladder frame-to-frame consistency is exactly what
+    procedural guarantees and AI generation doesn't; see CW consult-27).
     """
     c = Canvas(8, 16)
-    metal = F3 if glow else FM
 
     # Handle (vertical wood pole)
     c.vline(3, 6, 10, FW)
@@ -483,14 +486,31 @@ def draw_pitchfork(tines=3, burned=0, glow=False):
     for i, tx in enumerate(xs):
         is_burned = i >= (tines - burned)  # rightmost burns first
         if is_burned:
-            # stub: 1 px charred remnant
+            # charred stub: soot cap + dark remnant — 2px, reads as "snapped off"
+            # distinctly from a live tine at any burn stage (sharper falloff than
+            # the prior single flat pixel)
+            c.set(tx, 3, BK)
             c.set(tx, 4, A2)
         else:
-            # full tine: 4 pixels tall, with point at top
-            c.vline(tx, 1, 4, metal)
-            c.set(tx, 0, BK)            # tip outline
+            # full tine: 4px shaft with a real highlight->shadow gradient
+            # (metal-tine shading) instead of a flat single-color line
+            hi = F3 if glow else FM
+            lo = FM if glow else F2
+            c.set(tx, 1, hi)
+            c.set(tx, 2, hi)
+            c.set(tx, 3, lo)
+            c.set(tx, 4, lo)
+            # tip: dedicated fork-ember color when glowing (not the frank
+            # eye-glow color — palette-correct per CW's cohesion ask),
+            # plain outline otherwise
+            c.set(tx, 0, FB if glow else BK)
             if glow:
-                c.set(tx, 0, EG)        # glowing tip
+                # soft ember halo flanking the tip — reads as glowing,
+                # not just a brighter solid color
+                if tx - 1 >= 0:
+                    c.set(tx - 1, 0, EM)
+                if tx + 1 <= 7:
+                    c.set(tx + 1, 0, EM)
     return c
 
 def gen_pitchforks():
@@ -725,8 +745,507 @@ def write_atlas_index():
     (OUT/"atlas.json").write_text(json.dumps(idx, indent=2))
 
 # ──────────────────────────────────────────────────────────────────────────
+#  ASSEMBLER MODE (C2, Karpathy row 22) — ingest an externally-generated
+#  4-frame walk-cycle source image (AI-generated, chroma-keyed magenta bg)
+#  and deterministically assemble it into the villager_2tine_walk.png slot,
+#  replacing the procedural draw_villager_side() output for THIS variant only.
+#
+#  Why deterministic, not another model call: a model asked to hit the exact
+#  16x24 pixel grid reintroduces the fringe/blur defect from the row-6
+#  gpt-image-2 test. Here the MODEL emits a larger, readable source image;
+#  this function (the SCRIPT) emits the sprite — chroma-key -> per-frame
+#  alpha bbox crop -> LANCZOS downscale into the frozen 16x24 contract ->
+#  re-strip. Scope: 2-tine walk-cycle ONLY (VANGUARD-SPEC-C2-villager-batch1.md)
+#  — burned/ash states + 3/4-tine variants are untouched (still procedural).
+#  fork_base/fork_tip/tines anchors in villager_2tine.json are left UNCHANGED;
+#  visually verify the fork still lands near the grip after assembling.
+# ──────────────────────────────────────────────────────────────────────────
+def assemble_villager_2tine_from_source(source_path, out_dir=None):
+    # CW review (cw-consult-16) caught: LANCZOS violates the rail's own "pixel art =
+    # nearest-neighbor ONLY" hard blocker AND produces a very high opaque-color count
+    # (measured 160 unique colors / 1536px + 428px of partial alpha on the first pass —
+    # the definition of the anti-aliased "blur" the row-6 gpt-image-2 test already
+    # failed on). Switched to NEAREST + a two-stage chroma-key (pre-crop generous key,
+    # POST-resize magenta-ish cleanup) so resampling never reintroduces fringe that a
+    # single pre-resize key pass would miss once pixels get resampled together.
+    if not HAS_PIL:
+        raise RuntimeError("assembler mode requires Pillow (PIL) — not available in this environment")
+    import colorsys
+    src = Image.open(source_path).convert("RGBA")
+    w, h = src.size
+    n_frames = 4
+    frame_w_src = w // n_frames
+    FRAME_W, FRAME_H = 16, 24
+    MAGENTA = (255, 0, 255)
+    THRESH = 60
+
+    def chroma_key(im, thresh):
+        # RGB-distance pass — catches pixels close to pure magenta.
+        p = im.load()
+        iw, ih = im.size
+        for y in range(ih):
+            for x in range(iw):
+                r, g, b, a = p[x, y]
+                if abs(r - MAGENTA[0]) < thresh and abs(g - MAGENTA[1]) < thresh and abs(b - MAGENTA[2]) < thresh:
+                    p[x, y] = (r, g, b, 0)
+
+    def chroma_key_hue(im, hue_lo=0.80, hue_hi=0.92, min_sat=0.35):
+        # Hue-band pass — catches magenta-FAMILY fringe (anti-aliased blends toward
+        # magenta) that RGB-distance can miss once resampling shifts exact values.
+        # Magenta hue ~0.833 (300deg/360deg) in colorsys's 0-1 space.
+        p = im.load()
+        iw, ih = im.size
+        for y in range(ih):
+            for x in range(iw):
+                r, g, b, a = p[x, y]
+                if a == 0:
+                    continue
+                hh, ss, vv = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
+                if hue_lo <= hh <= hue_hi and ss >= min_sat:
+                    p[x, y] = (r, g, b, 0)
+
+    chroma_key(src, THRESH)
+
+    out_frames = []
+    for i in range(n_frames):
+        frame = src.crop((i * frame_w_src, 0, (i + 1) * frame_w_src, h))
+        bbox = frame.getbbox()
+        if bbox is None:
+            raise RuntimeError(f"assembler: frame {i} fully transparent after chroma-key — aborting, source unusable")
+        cropped = frame.crop(bbox)
+        cw, ch = cropped.size
+        # Fit height to 22px (2px floor+headroom margin), cap width at frame width — preserve aspect.
+        scale = min(22 / ch, FRAME_W / cw)
+        new_w = max(1, round(cw * scale))
+        new_h = max(1, round(ch * scale))
+        resized = cropped.resize((new_w, new_h), Image.NEAREST)
+        # Second cleanup pass AFTER resize, by HUE not RGB-distance: NEAREST can still
+        # select a source pixel that was semi-magenta-tinted near an edge (didn't cross
+        # the RGB THRESH pre-resize but reads as visible fringe post-resize at native
+        # sprite scale). Hue-band catches the whole magenta FAMILY regardless of exact
+        # brightness/saturation, which a fixed RGB threshold missed (measured: 4 residual
+        # magenta-ish opaque pixels visible at native scale before this pass was added).
+        chroma_key(resized, 90)
+        chroma_key_hue(resized)
+        canvas = Image.new("RGBA", (FRAME_W, FRAME_H), (0, 0, 0, 0))
+        # Bias +2px right of dead-center: villager_2tine.json's fork_base (grip anchor,
+        # where the separately-composited fork attaches) sits at x=14, near the right
+        # edge of the 16-wide frame — nudging the character right tightens the gap
+        # between the drawn fist and that anchor without touching the frozen JSON.
+        paste_x = min(FRAME_W - new_w, (FRAME_W - new_w) // 2 + 2)
+        paste_y = FRAME_H - new_h - 1  # 1px floor margin, matches procedural sprites' ground contact
+        canvas.paste(resized, (paste_x, paste_y), resized)
+        out_frames.append(canvas)
+
+    strip = Image.new("RGBA", (FRAME_W * n_frames, FRAME_H), (0, 0, 0, 0))
+    for i, f in enumerate(out_frames):
+        strip.paste(f, (i * FRAME_W, 0), f)
+
+    target_dir = Path(out_dir) if out_dir else OUT
+    right_path = target_dir / "villager_2tine_walk.png"
+    left_path = target_dir / "villager_2tine_walk_left.png"
+    strip.save(right_path, "PNG", optimize=True)
+    strip.transpose(Image.FLIP_LEFT_RIGHT).save(left_path, "PNG", optimize=True)
+    print(f"assembled {right_path.name} + {left_path.name} from {source_path} ({n_frames} frames, {FRAME_W}x{FRAME_H} each)")
+    return right_path
+
+def assemble_villager_2tine_damage_from_source(source_path, state, out_dir=None):
+    """Assemble one AI-sourced static 2-tine damage pose into both directions."""
+    if not HAS_PIL:
+        raise RuntimeError("assembler mode requires Pillow (PIL) — not available in this environment")
+    import colorsys
+    state_names = {
+        "burned_1": "villager_2tine_burned_1",
+        "burned_2": "villager_2tine_burned_2",
+        "ash": "villager_2tine_ash",
+    }
+    if state not in state_names:
+        raise ValueError(f"unknown 2-tine damage state: {state!r}")
+
+    src = Image.open(source_path).convert("RGBA")
+    FRAME_W, FRAME_H = 16, 24
+    MAGENTA = (255, 0, 255)
+    THRESH = 60
+
+    def chroma_key(im, thresh):
+        p = im.load()
+        iw, ih = im.size
+        for y in range(ih):
+            for x in range(iw):
+                r, g, b, a = p[x, y]
+                if abs(r - MAGENTA[0]) < thresh and abs(g - MAGENTA[1]) < thresh and abs(b - MAGENTA[2]) < thresh:
+                    p[x, y] = (r, g, b, 0)
+
+    def chroma_key_hue(im, hue_lo=0.80, hue_hi=0.92, min_sat=0.35):
+        p = im.load()
+        iw, ih = im.size
+        for y in range(ih):
+            for x in range(iw):
+                r, g, b, a = p[x, y]
+                if a == 0:
+                    continue
+                hh, ss, vv = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
+                if hue_lo <= hh <= hue_hi and ss >= min_sat:
+                    p[x, y] = (r, g, b, 0)
+
+    # Match the proven single-pose Frankenstein assembler exactly: key first,
+    # crop to the alpha bbox, NEAREST-resize, then clean RGB + hue fringe again.
+    chroma_key(src, THRESH)
+    bbox = src.getbbox()
+    if bbox is None:
+        raise RuntimeError("assembler: source fully transparent after chroma-key — aborting, source unusable")
+    cropped = src.crop(bbox)
+    cw, ch = cropped.size
+    scale = min((FRAME_H - 2) / ch, FRAME_W / cw)
+    new_w = max(1, round(cw * scale))
+    new_h = max(1, round(ch * scale))
+    resized = cropped.resize((new_w, new_h), Image.NEAREST)
+    chroma_key(resized, 90)
+    chroma_key_hue(resized)
+
+    frame = Image.new("RGBA", (FRAME_W, FRAME_H), (0, 0, 0, 0))
+    paste_x = (FRAME_W - new_w) // 2
+    paste_y = FRAME_H - new_h - 1
+    frame.paste(resized, (paste_x, paste_y), resized)
+
+    target_dir = Path(out_dir) if out_dir else OUT
+    stem = state_names[state]
+    right_path = target_dir / f"{stem}.png"
+    left_path = target_dir / f"{stem}_left.png"
+    frame.save(right_path, "PNG", optimize=True)
+    frame.transpose(Image.FLIP_LEFT_RIGHT).save(left_path, "PNG", optimize=True)
+    print(f"assembled {right_path.name} + {left_path.name} from {source_path} ({FRAME_W}x{FRAME_H})")
+    return right_path
+
+def assemble_frankenstein_idle_from_source(source_path, out_dir=None):
+    # C5 proof-of-contract (single AI-sourced idle pose, matching the C2 villager
+    # discipline: one asset proves the contract before any bulk commitment).
+    # Unlike the villager, this is ONE static pose, not 4 independently-generated
+    # walk frames — CW's "procedural guarantees frame-to-frame consistency, AI
+    # doesn't" principle applies here too: the 4-frame strip's subtle breathing
+    # motion is synthesized procedurally (a few px of vertical bob), not AI-drawn,
+    # so there is zero risk of the character drifting between frames.
+    # `frankenstein_charging.png` is intentionally left untouched this pass —
+    # idle-only, same scope discipline as C2's "walk-cycle ONLY, burned/ash later."
+    if not HAS_PIL:
+        raise RuntimeError("assembler mode requires Pillow (PIL) — not available in this environment")
+    import colorsys
+    src = Image.open(source_path).convert("RGBA")
+    FRAME_W, FRAME_H = 32, 48
+    N_FRAMES = 4
+    MAGENTA = (255, 0, 255)
+    THRESH = 60
+
+    def chroma_key(im, thresh):
+        p = im.load()
+        iw, ih = im.size
+        for y in range(ih):
+            for x in range(iw):
+                r, g, b, a = p[x, y]
+                if abs(r - MAGENTA[0]) < thresh and abs(g - MAGENTA[1]) < thresh and abs(b - MAGENTA[2]) < thresh:
+                    p[x, y] = (r, g, b, 0)
+
+    def chroma_key_hue(im, hue_lo=0.80, hue_hi=0.92, min_sat=0.35):
+        p = im.load()
+        iw, ih = im.size
+        for y in range(ih):
+            for x in range(iw):
+                r, g, b, a = p[x, y]
+                if a == 0:
+                    continue
+                hh, ss, vv = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
+                if hue_lo <= hh <= hue_hi and ss >= min_sat:
+                    p[x, y] = (r, g, b, 0)
+
+    chroma_key(src, THRESH)
+    bbox = src.getbbox()
+    if bbox is None:
+        raise RuntimeError("assembler: source fully transparent after chroma-key — aborting, source unusable")
+    cropped = src.crop(bbox)
+    cw, ch = cropped.size
+    # Fit to frame with a 1px floor margin + slight headroom, preserve aspect.
+    scale = min((FRAME_H - 2) / ch, FRAME_W / cw)
+    new_w = max(1, round(cw * scale))
+    new_h = max(1, round(ch * scale))
+    resized = cropped.resize((new_w, new_h), Image.NEAREST)
+    chroma_key(resized, 90)
+    chroma_key_hue(resized)
+
+    base_x = (FRAME_W - new_w) // 2
+    base_y = FRAME_H - new_h - 1  # 1px floor margin, matches villager ground contact
+
+    # Procedural breathing bob (0, -1, 0, +1px) — the ONLY thing that varies
+    # frame-to-frame; the character pixels themselves are identical every frame.
+    bob = [0, -1, 0, 1]
+    strip = Image.new("RGBA", (FRAME_W * N_FRAMES, FRAME_H), (0, 0, 0, 0))
+    for i, dy in enumerate(bob):
+        frame = Image.new("RGBA", (FRAME_W, FRAME_H), (0, 0, 0, 0))
+        y = max(0, min(FRAME_H - new_h, base_y + dy))
+        frame.paste(resized, (base_x, y), resized)
+        strip.paste(frame, (i * FRAME_W, 0), frame)
+
+    target_dir = Path(out_dir) if out_dir else OUT
+    idle_path = target_dir / "frankenstein_idle.png"
+    strip.save(idle_path, "PNG", optimize=True)
+    print(f"assembled {idle_path.name} from {source_path} ({N_FRAMES} frames, {FRAME_W}x{FRAME_H} each, procedural breathing bob)")
+    return idle_path
+
+# ──────────────────────────────────────────────────────────────────────────
 #  MAIN
 # ──────────────────────────────────────────────────────────────────────────
+def _is_magenta_family(rgb):
+    """C11c flat-key rejection predicate; shared by keying and final validation."""
+    import colorsys
+    r, g, b = rgb
+    near_key = (r - 255) ** 2 + g ** 2 + (b - 255) ** 2 < 90 ** 2
+    hue, saturation, _ = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
+    return near_key or (0.78 <= hue <= 0.95 and saturation >= 0.50)
+
+
+def _extract_opaque_palette(paths):
+    palette = set()
+    for path in paths:
+        image = Image.open(path).convert("RGBA")
+        for r, g, b, a in image.getdata():
+            if a and not _is_magenta_family((r, g, b)):
+                palette.add((r, g, b))
+    if not palette:
+        raise RuntimeError("palette lock has no opaque colors")
+    return tuple(sorted(palette))
+
+
+def _dominant_opaque_bbox(image):
+    """Return the largest connected opaque subject, ignoring neighboring-cell bleed."""
+    width, height = image.size
+    opaque = image.getchannel("A").load()
+    visited = bytearray(width * height)
+    components = []
+
+    for start_y in range(height):
+        for start_x in range(width):
+            start_index = start_y * width + start_x
+            if visited[start_index] or opaque[start_x, start_y] == 0:
+                continue
+            visited[start_index] = 1
+            stack = [(start_x, start_y)]
+            area = 0
+            min_x = max_x = start_x
+            min_y = max_y = start_y
+            while stack:
+                x, y = stack.pop()
+                area += 1
+                min_x = min(min_x, x)
+                max_x = max(max_x, x)
+                min_y = min(min_y, y)
+                max_y = max(max_y, y)
+                for nx, ny in ((x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)):
+                    if nx < 0 or nx >= width or ny < 0 or ny >= height:
+                        continue
+                    index = ny * width + nx
+                    if visited[index] or opaque[nx, ny] == 0:
+                        continue
+                    visited[index] = 1
+                    stack.append((nx, ny))
+            components.append((area, (min_x, min_y, max_x + 1, max_y + 1)))
+
+    return max(components, key=lambda component: component[0])[1] if components else None
+
+
+def _key_fit_palette_lock(cell, frame_size, palette, right_bias=0):
+    """Key one generated cell, NEAREST-fit it, then optionally lock its opaque RGB palette."""
+    frame_w, frame_h = frame_size
+    cell = cell.convert("RGBA")
+    # Verification fixtures are already-native transparent atlas cells. Returning
+    # them unchanged proves the sheet split/strip/mirror path cannot drift shipped pixels.
+    if cell.size == frame_size and any(a == 0 for _, _, _, a in cell.getdata()):
+        return cell
+    pixels = cell.load()
+    for y in range(cell.height):
+        for x in range(cell.width):
+            r, g, b, a = pixels[x, y]
+            if a == 0:
+                continue
+            pixels[x, y] = (r, g, b, 0 if _is_magenta_family((r, g, b)) else 255)
+
+    bbox = _dominant_opaque_bbox(cell)
+    if bbox is None:
+        raise RuntimeError("roster assembler cell is empty after chroma-key")
+    cropped = cell.crop(bbox)
+    scale = min((frame_h - 2) / cropped.height, frame_w / cropped.width)
+    new_w = max(1, round(cropped.width * scale))
+    new_h = max(1, round(cropped.height * scale))
+    resized = cropped.resize((new_w, new_h), Image.NEAREST)
+    frame = Image.new("RGBA", frame_size, (0, 0, 0, 0))
+    paste_x = min(frame_w - new_w, max(0, (frame_w - new_w) // 2 + right_bias))
+    paste_y = frame_h - new_h - 1
+    frame.paste(resized, (paste_x, paste_y), resized)
+
+    if palette is None:
+        return frame
+
+    locked = frame.load()
+    for y in range(frame_h):
+        for x in range(frame_w):
+            r, g, b, a = locked[x, y]
+            if a == 0:
+                locked[x, y] = (0, 0, 0, 0)
+                continue
+            nearest = min(
+                palette,
+                key=lambda color: (
+                    (color[0] - r) ** 2 + (color[1] - g) ** 2 + (color[2] - b) ** 2
+                ),
+            )
+            locked[x, y] = (*nearest, 255)
+    return frame
+
+
+def assemble_villager_lifecycle_sheet(source_path, tines, out_dir=None):
+    """Assemble a C11c 5x2 sheet into frozen 16x24 walk/burn/ash atlas slots."""
+    if not HAS_PIL:
+        raise RuntimeError("assembler mode requires Pillow (PIL) - not available in this environment")
+    if tines not in (2, 3, 4):
+        raise ValueError("roster lifecycle assembler supports 2, 3, or 4 tines")
+
+    src = Image.open(source_path).convert("RGBA")
+    target_dir = Path(out_dir) if out_dir else OUT
+    target_dir.mkdir(parents=True, exist_ok=True)
+    palette = _extract_opaque_palette([
+        OUT / "villager_2tine_walk.png",
+        OUT / "villager_2tine_burned_1.png",
+        OUT / "villager_2tine_ash.png",
+    ])
+
+    def source_cell(column, row):
+        # Built-in image generation may return odd dimensions; rounded proportional
+        # boundaries retain the strict 5x2 layout without resampling the source sheet.
+        left = round(column * src.width / 5)
+        right = round((column + 1) * src.width / 5)
+        top = round(row * src.height / 2)
+        bottom = round((row + 1) * src.height / 2)
+        return src.crop((left, top, right, bottom))
+
+    walk_frames = [
+        _key_fit_palette_lock(source_cell(i, 0), (16, 24), palette, right_bias=2)
+        for i in range(4)
+    ]
+    walk_strip = Image.new("RGBA", (64, 24), (0, 0, 0, 0))
+    for i, frame in enumerate(walk_frames):
+        walk_strip.paste(frame, (i * 16, 0), frame)
+
+    walk_path = target_dir / f"villager_{tines}tine_walk.png"
+    walk_left_path = target_dir / f"villager_{tines}tine_walk_left.png"
+    walk_strip.save(walk_path, "PNG", optimize=True)
+    walk_strip.transpose(Image.FLIP_LEFT_RIGHT).save(walk_left_path, "PNG", optimize=True)
+
+    # Runtime loads k < totalTines and transitions the final strike straight to ash.
+    for burn_index in range(1, tines):
+        frame = _key_fit_palette_lock(source_cell(burn_index - 1, 1), (16, 24), palette)
+        right_path = target_dir / f"villager_{tines}tine_burned_{burn_index}.png"
+        left_path = target_dir / f"villager_{tines}tine_burned_{burn_index}_left.png"
+        frame.save(right_path, "PNG", optimize=True)
+        frame.transpose(Image.FLIP_LEFT_RIGHT).save(left_path, "PNG", optimize=True)
+
+    ash = _key_fit_palette_lock(source_cell(tines, 1), (16, 24), palette)
+    ash_path = target_dir / f"villager_{tines}tine_ash.png"
+    ash_left_path = target_dir / f"villager_{tines}tine_ash_left.png"
+    ash.save(ash_path, "PNG", optimize=True)
+    ash.transpose(Image.FLIP_LEFT_RIGHT).save(ash_left_path, "PNG", optimize=True)
+    print(f"assembled complete {tines}-tine lifecycle from {source_path} into {target_dir}")
+    return walk_path
+
+
+def verify_roster_assembler():
+    """Round-trip the shipped 2-tine lifecycle through the generic C11c contract."""
+    import tempfile
+    source_paths = {
+        "walk": OUT / "villager_2tine_walk.png",
+        "walk_left": OUT / "villager_2tine_walk_left.png",
+        "burned_1": OUT / "villager_2tine_burned_1.png",
+        "burned_1_left": OUT / "villager_2tine_burned_1_left.png",
+        "ash": OUT / "villager_2tine_ash.png",
+        "ash_left": OUT / "villager_2tine_ash_left.png",
+    }
+    sheet = Image.new("RGBA", (80, 48), (0, 0, 0, 0))
+    walk = Image.open(source_paths["walk"]).convert("RGBA")
+    for i in range(4):
+        frame = walk.crop((i * 16, 0, (i + 1) * 16, 24))
+        sheet.paste(frame, (i * 16, 0), frame)
+    for i, state in ((0, "burned_1"), (2, "ash")):
+        frame = Image.open(source_paths[state]).convert("RGBA")
+        sheet.paste(frame, (i * 16, 24), frame)
+
+    with tempfile.TemporaryDirectory(prefix="pitchforks-roster-") as tmp:
+        tmp_dir = Path(tmp)
+        fixture = tmp_dir / "2tine-fixture.png"
+        sheet.save(fixture, "PNG")
+        assemble_villager_lifecycle_sheet(fixture, 2, tmp_dir)
+        emitted = {
+            "walk": tmp_dir / "villager_2tine_walk.png",
+            "walk_left": tmp_dir / "villager_2tine_walk_left.png",
+            "burned_1": tmp_dir / "villager_2tine_burned_1.png",
+            "burned_1_left": tmp_dir / "villager_2tine_burned_1_left.png",
+            "ash": tmp_dir / "villager_2tine_ash.png",
+            "ash_left": tmp_dir / "villager_2tine_ash_left.png",
+        }
+        mismatches = []
+        for key, expected_path in source_paths.items():
+            expected = Image.open(expected_path).convert("RGBA")
+            actual = Image.open(emitted[key]).convert("RGBA")
+            if expected.size != actual.size or expected.tobytes() != actual.tobytes():
+                mismatches.append(key)
+        if mismatches:
+            raise RuntimeError(f"roster assembler round-trip drift: {', '.join(mismatches)}")
+    print("roster assembler fixture PASS: 6/6 runtime-used 2-tine outputs pixel-identical")
+
+    bleed_fixture = Image.new("RGBA", (100, 100), (255, 0, 255, 255))
+    bleed_pixels = bleed_fixture.load()
+    for y in range(20, 80):
+        for x in range(20, 40):
+            bleed_pixels[x, y] = (90, 70, 50, 255)
+    for y in range(45, 50):
+        for x in range(92, 97):
+            bleed_pixels[x, y] = (90, 70, 50, 255)
+    fitted = _key_fit_palette_lock(bleed_fixture, (16, 24), None)
+    if fitted.getbbox()[3] - fitted.getbbox()[1] != 22:
+        raise RuntimeError("dominant-subject fixture shrank because neighboring-cell bleed entered the fit")
+    print("roster assembler bleed fixture PASS: dominant subject retains 22px fitted height")
+
+
+def verify_roster_outputs():
+    """Validate every runtime-used C11c output against the frozen native contract."""
+    palette = set(_extract_opaque_palette([
+        OUT / "villager_2tine_walk.png",
+        OUT / "villager_2tine_burned_1.png",
+        OUT / "villager_2tine_ash.png",
+    ]))
+    checked = 0
+    for tines in (2, 3, 4):
+        stems = [f"villager_{tines}tine_walk"]
+        stems += [f"villager_{tines}tine_burned_{index}" for index in range(1, tines)]
+        stems += [f"villager_{tines}tine_ash"]
+        for stem in stems:
+            right = Image.open(OUT / f"{stem}.png").convert("RGBA")
+            left = Image.open(OUT / f"{stem}_left.png").convert("RGBA")
+            expected_size = (64, 24) if stem.endswith("_walk") else (16, 24)
+            if right.size != expected_size or left.size != expected_size:
+                raise RuntimeError(f"{stem}: expected {expected_size}, got {right.size}/{left.size}")
+            if left.tobytes() != right.transpose(Image.FLIP_LEFT_RIGHT).tobytes():
+                raise RuntimeError(f"{stem}: left output is not an exact mirror")
+            for image in (right, left):
+                for r, g, b, a in image.getdata():
+                    if a not in (0, 255):
+                        raise RuntimeError(f"{stem}: partial alpha survived")
+                    if a and (_is_magenta_family((r, g, b)) or (r, g, b) not in palette):
+                        raise RuntimeError(f"{stem}: opaque pixel escaped key/palette lock")
+            if "_ash" not in stem:
+                bbox = right.getbbox()
+                if bbox is None or bbox[3] - bbox[1] < 18:
+                    raise RuntimeError(f"{stem}: subject collapsed below 18px native height")
+            checked += 2
+    print(f"roster output verification PASS: {checked}/24 runtime assets")
+
+
 def main():
     print(f"Generating into {OUT}")
     gen_frankenstein()
@@ -740,4 +1259,16 @@ def main():
     for f in files: print(f"    {f.name}")
 
 if __name__ == "__main__":
-    main()
+    import sys
+    if len(sys.argv) == 2 and sys.argv[1] == "--verify-roster-assembler":
+        verify_roster_assembler()
+    elif len(sys.argv) == 2 and sys.argv[1] == "--verify-roster-outputs":
+        verify_roster_outputs()
+    elif len(sys.argv) >= 3 and sys.argv[1] == "--assemble-2tine":
+        assemble_villager_2tine_from_source(sys.argv[2])
+    elif len(sys.argv) >= 4 and sys.argv[1] == "--assemble-2tine-damage":
+        assemble_villager_2tine_damage_from_source(sys.argv[3], sys.argv[2])
+    elif len(sys.argv) >= 4 and sys.argv[1] == "--assemble-roster-lifecycle":
+        assemble_villager_lifecycle_sheet(sys.argv[3], int(sys.argv[2]))
+    else:
+        main()

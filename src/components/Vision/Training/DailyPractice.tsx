@@ -11,9 +11,24 @@ import {
   Eye,
   Zap,
   Coffee,
-  BookOpen
+  BookOpen,
+  Wind
 } from 'lucide-react'
+import MiniBreathExercise from '@/components/Breath/MiniBreathExercise'
 import TrainingSession from './TrainingSession'
+import SessionRunner, { type SessionRunnerFinishPayload } from './SessionRunner'
+import WeeklyAssessment, { type WeeklyAssessmentResult } from './WeeklyAssessment'
+import ProgressDashboard from './ProgressDashboard'
+import type { EngineResult } from '@/components/Vision/Engines/types'
+
+const BREATH_WARMUP_ENABLED_KEY = 'visionTraining.breathWarmupEnabled'
+const BREATH_WARMUP_MINUTES_KEY = 'visionTraining.breathWarmupMinutes'
+
+type BreathWarmupStatus = 'pending' | 'complete' | 'skipped'
+
+interface DailyPracticeProps {
+  nightMode?: boolean
+}
 
 interface DailySession {
   day: number
@@ -37,6 +52,7 @@ interface Enrollment {
   totalPracticeMinutes: number
   streakDays: number
   longestStreak: number
+  lastSessionDate?: string | null
   currentReaderStage: number
   initialNearSnellen: string | null
   initialFarSnellen: string | null
@@ -72,7 +88,7 @@ interface ProgramInfo {
   phases: { name: string; weeks: string; focus: string }[]
 }
 
-export default function DailyPractice() {
+export default function DailyPractice({ nightMode = false }: DailyPracticeProps) {
   const [loading, setLoading] = useState(true)
   const [enrolled, setEnrolled] = useState(false)
   const [enrollment, setEnrollment] = useState<Enrollment | null>(null)
@@ -87,9 +103,63 @@ export default function DailyPractice() {
   const [nearSnellenResult, setNearSnellenResult] = useState('')
   const [farSnellenResult, setFarSnellenResult] = useState('')
   const [enrolling, setEnrolling] = useState(false)
+  const [breathWarmupEnabled, setBreathWarmupEnabled] = useState(true)
+  const [breathWarmupMinutes, setBreathWarmupMinutes] = useState(1)
+  const [breathWarmupStatus, setBreathWarmupStatus] = useState<BreathWarmupStatus>('pending')
+  const [showBreathWarmup, setShowBreathWarmup] = useState(false)
+  const [showGuidedRunner, setShowGuidedRunner] = useState(false)
+  const [engineResults, setEngineResults] = useState<EngineResult[]>([])
+  const [showWeeklyAssessment, setShowWeeklyAssessment] = useState(false)
+  const [assessmentDoneWeek, setAssessmentDoneWeek] = useState<number | null>(null)
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const stored = window.localStorage.getItem('vision-assessment-done-week')
+      if (stored) setAssessmentDoneWeek(Number(stored))
+    }
+  }, [])
+
+  const completeWeeklyAssessment = async (results: WeeklyAssessmentResult) => {
+    try {
+      await fetch('/api/vision/program', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'update_baselines',
+          data: {
+            nearSnellen: results.nearSnellen,
+            farSnellen: results.farSnellen,
+            nearPointCm: results.npcCm
+          }
+        })
+      })
+    } catch (error) {
+      console.error('Failed to save assessment baselines:', error)
+    }
+    if (todaySession && typeof window !== 'undefined') {
+      window.localStorage.setItem('vision-assessment-done-week', String(todaySession.week))
+      setAssessmentDoneWeek(todaySession.week)
+    }
+    setShowWeeklyAssessment(false)
+    loadProgram()
+  }
 
   useEffect(() => {
     loadProgram()
+  }, [])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    const storedEnabled = window.localStorage.getItem(BREATH_WARMUP_ENABLED_KEY)
+    if (storedEnabled !== null) {
+      setBreathWarmupEnabled(storedEnabled === 'true')
+    }
+
+    const storedMinutes = Number(window.localStorage.getItem(BREATH_WARMUP_MINUTES_KEY))
+    if ([1, 2, 3].includes(storedMinutes)) {
+      setBreathWarmupMinutes(storedMinutes)
+    }
   }, [])
 
   const loadProgram = async () => {
@@ -149,6 +219,52 @@ export default function DailyPractice() {
     }
   }
 
+  const updateBreathWarmupEnabled = (enabled: boolean) => {
+    setBreathWarmupEnabled(enabled)
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem(BREATH_WARMUP_ENABLED_KEY, String(enabled))
+    }
+  }
+
+  const updateBreathWarmupMinutes = (minutes: number) => {
+    setBreathWarmupMinutes(minutes)
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem(BREATH_WARMUP_MINUTES_KEY, String(minutes))
+    }
+  }
+
+  const startSessionWithOptionalWarmup = () => {
+    if (breathWarmupEnabled) {
+      setBreathWarmupStatus('pending')
+      setShowBreathWarmup(true)
+      return
+    }
+
+    setBreathWarmupStatus('skipped')
+    setSessionStarted(true)
+  }
+
+  const completeBreathWarmup = () => {
+    setBreathWarmupStatus('complete')
+    setShowBreathWarmup(false)
+    setSessionStarted(true)
+  }
+
+  const skipBreathWarmup = () => {
+    setBreathWarmupStatus('skipped')
+    setShowBreathWarmup(false)
+    setSessionStarted(true)
+  }
+
+  const handleRunnerFinish = (payload: SessionRunnerFinishPayload) => {
+    setEngineResults(payload.results)
+    setCompletedExercises(prev => {
+      const merged = new Set([...prev, ...payload.performedExerciseIds])
+      return Array.from(merged)
+    })
+    setShowGuidedRunner(false)
+  }
+
   const completeSession = async () => {
     if (!todaySession?.session || !enrollment) return
 
@@ -163,10 +279,12 @@ export default function DailyPractice() {
             day: todaySession.day,
             baselineMinutes: todaySession.session.baselineMinutes,
             exerciseMinutes: todaySession.session.exerciseMinutes,
+            breathWarmupMinutes: breathWarmupStatus === 'complete' ? breathWarmupMinutes : 0,
             exercisesCompleted: completedExercises,
             nearSnellenResult: nearSnellenResult || null,
             farSnellenResult: farSnellenResult || null,
-            notes: sessionNotes || null
+            notes: sessionNotes || null,
+            engineResults: engineResults.length > 0 ? engineResults : undefined
           }
         })
       })
@@ -345,8 +463,43 @@ export default function DailyPractice() {
 
   // Session already completed today
   if (todaySession.completed) {
+    const isPhaseEnd = todaySession.day === 5 && todaySession.week % 2 === 0
+    const assessmentPending = isPhaseEnd && assessmentDoneWeek !== todaySession.week
+
+    if (showWeeklyAssessment) {
+      return (
+        <WeeklyAssessment
+          enrollment={{
+            initialNearSnellen: enrollment.initialNearSnellen,
+            initialFarSnellen: enrollment.initialFarSnellen,
+            currentNearSnellen: enrollment.currentNearSnellen,
+            currentFarSnellen: enrollment.currentFarSnellen,
+            currentWeek: todaySession.week
+          }}
+          onComplete={completeWeeklyAssessment}
+          onSkip={() => setShowWeeklyAssessment(false)}
+          onOpenTrainer={() => { setShowWeeklyAssessment(false); setShowSnellenTrainer(true) }}
+        />
+      )
+    }
+
     return (
       <div className="space-y-6">
+        {assessmentPending && (
+          <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm border border-secondary-400/40 rounded-xl p-6 text-center shadow-lg">
+            <Target className="w-10 h-10 text-secondary-400 mx-auto mb-2" />
+            <h3 className="text-xl font-bold text-white mb-1">Phase {Math.ceil(todaySession.week / 2)} check-in</h3>
+            <p className="text-gray-300 text-sm mb-4">
+              Two weeks banked. Let&apos;s look at what changed since you started.
+            </p>
+            <button
+              onClick={() => setShowWeeklyAssessment(true)}
+              className="px-8 py-3 bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 text-white font-bold rounded-xl transition-all"
+            >
+              See my progress
+            </button>
+          </div>
+        )}
         <div className="bg-gradient-to-br from-secondary-600/20 to-primary-600/20 backdrop-blur-sm border border-secondary-400/30 rounded-xl p-8 text-center shadow-lg">
           <Trophy className="w-16 h-16 text-secondary-400 mx-auto mb-4" />
           <h3 className="text-2xl font-bold text-white mb-2">Session Complete!</h3>
@@ -367,6 +520,9 @@ export default function DailyPractice() {
             Come back tomorrow for Day {todaySession.day < 5 ? todaySession.day + 1 : 1} of Week {todaySession.day < 5 ? todaySession.week : todaySession.week + 1}
           </p>
         </div>
+
+        {/* Measured progress — natural review moment after today's work is banked */}
+        <ProgressDashboard />
       </div>
     )
   }
@@ -400,7 +556,67 @@ export default function DailyPractice() {
           visionType="near"
           exerciseType="letters"
           initialLevel={1}
+          nightMode={nightMode}
         />
+      </div>
+    )
+  }
+
+  const plannedWarmupMinutes = breathWarmupEnabled ? breathWarmupMinutes : 0
+  const plannedTotalMinutes = session.totalMinutes + plannedWarmupMinutes
+  const warmupExercise = {
+    name: `${breathWarmupMinutes}-Minute Vision Warm-Up`,
+    inhaleMs: 4000,
+    exhaleMs: 6000,
+    inhaleHoldMs: 0,
+    exhaleHoldMs: 0,
+    breathsPerCycle: breathWarmupMinutes * 6,
+    cyclesTarget: 1,
+    backgroundMusic: null,
+    musicVolume: 0
+  }
+  const warmChromeClass = nightMode
+    ? 'bg-gradient-to-br from-[#17100a]/90 to-[#0c0906]/90 backdrop-blur-sm border border-amber-900/40'
+    : 'bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm border border-primary-400/20'
+  const warmSubtleTextClass = nightMode ? 'text-amber-100/70' : 'text-gray-400'
+
+  if (showBreathWarmup) {
+    return (
+      <div className="space-y-6">
+        <button
+          onClick={skipBreathWarmup}
+          className="text-primary-400 hover:text-primary-300 flex items-center gap-2"
+        >
+          <ChevronRight className="w-4 h-4 rotate-180" />
+          Skip warm-up
+        </button>
+
+        <div className={`${warmChromeClass} rounded-xl p-6 shadow-lg`}>
+          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-5">
+            <div>
+              <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                <Wind className="w-5 h-5 text-primary-400" />
+                Breathing Warm-Up
+              </h3>
+              <p className={`${warmSubtleTextClass} text-sm mt-1`}>
+                {breathWarmupMinutes} minute{breathWarmupMinutes === 1 ? '' : 's'} before today's vision work
+              </p>
+            </div>
+            <button
+              onClick={skipBreathWarmup}
+              className="px-4 py-2 rounded-lg bg-gray-700/70 hover:bg-gray-600 text-gray-200 text-sm font-semibold transition-colors"
+            >
+              Skip warm-up
+            </button>
+          </div>
+
+          <MiniBreathExercise
+            compact
+            showCloseButton={false}
+            exercise={warmupExercise}
+            onClose={completeBreathWarmup}
+          />
+        </div>
       </div>
     )
   }
@@ -428,7 +644,7 @@ export default function DailyPractice() {
             <div className="text-right">
               <div className="flex items-center gap-1 text-gray-400">
                 <Clock className="w-4 h-4" />
-                <span className="text-sm">{session.totalMinutes} min</span>
+                <span className="text-sm">{plannedTotalMinutes} min</span>
               </div>
             </div>
           </div>
@@ -498,6 +714,56 @@ export default function DailyPractice() {
                 </div>
               </div>
 
+              {/* Breath warm-up preference */}
+              <div className={`${warmChromeClass} rounded-xl p-4`}>
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-primary-500/20 rounded-lg">
+                      <Wind className="w-5 h-5 text-primary-400" />
+                    </div>
+                    <div>
+                      <div className="text-white font-semibold">Breathing Warm-Up</div>
+                      <div className={`${warmSubtleTextClass} text-sm`}>
+                        {breathWarmupEnabled ? `${breathWarmupMinutes} minute${breathWarmupMinutes === 1 ? '' : 's'}` : 'Skipped by default'}
+                      </div>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    aria-pressed={breathWarmupEnabled}
+                    onClick={() => updateBreathWarmupEnabled(!breathWarmupEnabled)}
+                    className={`relative h-7 w-12 rounded-full transition-colors ${
+                      breathWarmupEnabled ? 'bg-secondary-500' : 'bg-gray-600'
+                    }`}
+                  >
+                    <span
+                      className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow transition-all ${
+                        breathWarmupEnabled ? 'left-6' : 'left-1'
+                      }`}
+                    />
+                  </button>
+                </div>
+
+                {breathWarmupEnabled && (
+                  <div className="grid grid-cols-3 gap-2 mt-4">
+                    {[1, 2, 3].map(minutes => (
+                      <button
+                        key={minutes}
+                        type="button"
+                        onClick={() => updateBreathWarmupMinutes(minutes)}
+                        className={`py-2 rounded-lg text-sm font-semibold transition-all ${
+                          breathWarmupMinutes === minutes
+                            ? 'bg-primary-600 text-white shadow-md shadow-primary-500/20'
+                            : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/50'
+                        }`}
+                      >
+                        {minutes} min
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               {/* Coaching cues */}
               <div className="bg-yellow-500/10 backdrop-blur-sm border border-yellow-500/30 rounded-xl p-4">
                 <h4 className="text-yellow-300 font-semibold mb-2 flex items-center gap-2">
@@ -513,7 +779,7 @@ export default function DailyPractice() {
 
               {/* Start button */}
               <button
-                onClick={() => setSessionStarted(true)}
+                onClick={startSessionWithOptionalWarmup}
                 className="w-full py-4 bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 text-white font-bold text-lg rounded-xl transition-all flex items-center justify-center gap-2"
               >
                 <Play className="w-5 h-5" />
@@ -608,6 +874,43 @@ export default function DailyPractice() {
                       {completedExercises.length}/{session.exercises.length} complete
                     </span>
                   </div>
+
+                  {/* Guided session — the primary path */}
+                  {completedExercises.length < session.exercises.length && (
+                    <button
+                      onClick={() => setShowGuidedRunner(true)}
+                      className="w-full py-5 bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 text-white rounded-xl transition-all shadow-lg shadow-primary-500/30 hover:scale-[1.01] active:scale-[0.99]"
+                    >
+                      <span className="font-bold text-lg flex items-center justify-center gap-2">
+                        <Play className="w-5 h-5" />
+                        Start Guided Session
+                      </span>
+                      <span className="block text-sm text-white/80 mt-1">
+                        Your coach walks you through all {session.exercises.length} exercises — animated, timed, scored
+                      </span>
+                    </button>
+                  )}
+
+                  {showGuidedRunner && (
+                    <SessionRunner
+                      exerciseIds={session.exerciseIds?.length ? session.exerciseIds : session.exercises.map((e: any) => e.id)}
+                      week={todaySession.week}
+                      day={todaySession.day}
+                      phase={todaySession.phase}
+                      sessionTitle={session.title}
+                      sessionFocus={session.focus}
+                      coachingCues={session.coachingCues}
+                      streakDays={enrollment.streakDays}
+                      sessionsCompleted={enrollment.sessionsCompleted}
+                      lastSessionDate={enrollment.lastSessionDate ?? null}
+                      onFinish={handleRunnerFinish}
+                      onExit={() => setShowGuidedRunner(false)}
+                    />
+                  )}
+
+                  <p className="text-gray-500 text-xs text-center">
+                    Prefer to pace yourself? Mark exercises done manually below.
+                  </p>
 
                   {/* Exercise list */}
                   <div className="space-y-3">

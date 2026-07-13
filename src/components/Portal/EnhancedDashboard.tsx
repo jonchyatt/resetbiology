@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useState, useEffect } from "react"
-import { Trophy, Calendar, ChevronRight, Target, Dumbbell, Apple, Brain, Wind, BookOpen, ShoppingBag, Check, Flame, Sparkles, X, Eye, Zap, Music, type LucideIcon } from "lucide-react"
+import { Trophy, Calendar, ChevronRight, Target, Dumbbell, Apple, Brain, Wind, BookOpen, ShoppingBag, Check, Flame, Sparkles, X, Eye, Zap, Music, HeartPulse, type LucideIcon } from "lucide-react"
 import { PortalHeader } from "@/components/Navigation/PortalHeader"
 import { useUser } from "@auth0/nextjs-auth0"
 import { useRouter } from "next/navigation"
@@ -10,7 +10,7 @@ import TrialSubscription from "@/components/Subscriptions/TrialSubscription"
 import { VaultBanner } from "@/components/Vault/VaultBanner"
 
 const iconMap: Record<string, LucideIcon> = {
-  Target, Dumbbell, Apple, Brain, Wind, BookOpen, Eye, Zap, Music,
+  Target, Dumbbell, Apple, Brain, Wind, BookOpen, Eye, Zap, Music, Sparkles, HeartPulse,
 }
 
 interface PortalModuleData {
@@ -33,11 +33,41 @@ const fallbackModules: PortalModuleData[] = [
   { slug: 'nutrition', label: 'Nutrition', href: '/nutrition', icon: 'Apple', colorFrom: 'from-amber-600/30', colorTo: 'to-amber-700/30', borderColor: 'border-amber-400/30', iconColor: 'text-amber-300', enabled: true, order: 3 },
   { slug: 'modules', label: 'Modules', href: '/modules', icon: 'Brain', colorFrom: 'from-purple-600/30', colorTo: 'to-purple-700/30', borderColor: 'border-purple-400/30', iconColor: 'text-purple-300', enabled: true, order: 4 },
   { slug: 'breath', label: 'Breathe', href: '/breath', icon: 'Wind', colorFrom: 'from-blue-600/30', colorTo: 'to-blue-700/30', borderColor: 'border-blue-400/30', iconColor: 'text-blue-300', enabled: true, order: 5 },
-  { slug: 'journal', label: 'Journal', href: '#journal', icon: 'BookOpen', colorFrom: 'from-secondary-600/30', colorTo: 'to-secondary-700/30', borderColor: 'border-secondary-400/30', iconColor: 'text-secondary-300', enabled: true, order: 6 },
-  { slug: 'vision-training', label: 'Vision', href: '/vision-training', icon: 'Eye', colorFrom: 'from-cyan-600/30', colorTo: 'to-cyan-700/30', borderColor: 'border-cyan-400/30', iconColor: 'text-cyan-300', enabled: true, order: 7 },
-  { slug: 'ear-training', label: 'Ear Training', href: '/ear-training', icon: 'Music', colorFrom: 'from-rose-600/30', colorTo: 'to-pink-700/30', borderColor: 'border-rose-400/30', iconColor: 'text-rose-300', enabled: true, order: 8 },
-  { slug: 'education', label: 'Education', href: '/education', icon: 'BookOpen', colorFrom: 'from-indigo-600/30', colorTo: 'to-indigo-700/30', borderColor: 'border-indigo-400/30', iconColor: 'text-indigo-300', enabled: true, order: 9 },
+  { slug: 'meditation-visuals', label: 'Meditation Visuals', href: '/visuals/breathing', icon: 'Sparkles', colorFrom: 'from-violet-600/30', colorTo: 'to-sky-700/30', borderColor: 'border-violet-400/30', iconColor: 'text-violet-200', enabled: true, order: 6 },
+  { slug: 'journal', label: 'Journal', href: '#journal', icon: 'BookOpen', colorFrom: 'from-secondary-600/30', colorTo: 'to-secondary-700/30', borderColor: 'border-secondary-400/30', iconColor: 'text-secondary-300', enabled: true, order: 7 },
+  { slug: 'vision-training', label: 'Vision', href: '/vision-training', icon: 'Eye', colorFrom: 'from-cyan-600/30', colorTo: 'to-cyan-700/30', borderColor: 'border-cyan-400/30', iconColor: 'text-cyan-300', enabled: true, order: 8 },
+  { slug: 'mental-training', label: 'Mental Training', href: '/mental-training', icon: 'Zap', colorFrom: 'from-pink-600/30', colorTo: 'to-pink-700/30', borderColor: 'border-pink-400/30', iconColor: 'text-pink-300', enabled: true, order: 9 },
+  { slug: 'ear-training', label: 'Ear Training', href: '/ear-training', icon: 'Music', colorFrom: 'from-rose-600/30', colorTo: 'to-pink-700/30', borderColor: 'border-rose-400/30', iconColor: 'text-rose-300', enabled: true, order: 10 },
+  { slug: 'voice-training', label: 'Voice Training', href: '/pitch-defender', icon: 'Music', colorFrom: 'from-fuchsia-600/30', colorTo: 'to-cyan-700/30', borderColor: 'border-fuchsia-400/30', iconColor: 'text-fuchsia-200', enabled: true, order: 11 },
+  { slug: 'emotional-health', label: 'Emotional Health', href: 'https://woden.whatamiappreciatingnow.com/woden/change', icon: 'HeartPulse', colorFrom: 'from-amber-600/30', colorTo: 'to-rose-700/30', borderColor: 'border-amber-400/30', iconColor: 'text-amber-200', enabled: true, order: 12 },
+  { slug: 'education', label: 'Education', href: '/education', icon: 'BookOpen', colorFrom: 'from-indigo-600/30', colorTo: 'to-indigo-700/30', borderColor: 'border-indigo-400/30', iconColor: 'text-indigo-300', enabled: true, order: 13 },
 ]
+
+const fallbackModulesBySlug = new Map(fallbackModules.map((mod) => [mod.slug, mod]))
+
+function mergePortalModules(remoteModules: PortalModuleData[]) {
+  const remoteModulesBySlug = new Map(remoteModules.map((mod) => [mod.slug, mod]))
+
+  const knownModules = fallbackModules.map((fallback) => {
+    const remote = remoteModulesBySlug.get(fallback.slug)
+
+    if (!remote) {
+      return fallback
+    }
+
+    return {
+      ...fallback,
+      ...remote,
+      order: fallback.order,
+    }
+  })
+
+  const remoteOnlyModules = remoteModules.filter((mod) => !fallbackModulesBySlug.has(mod.slug))
+
+  return [...knownModules, ...remoteOnlyModules]
+    .filter((mod) => mod.enabled)
+    .sort((left, right) => left.order - right.order)
+}
 
 interface DailyJournalData {
   weight: number | null
@@ -89,24 +119,21 @@ export function EnhancedDashboard() {
     moduleNotes: "",
   })
 
-  // Portal modules from DB. Initialised to `null` (loading) instead of the
-  // fallback list so we don't render a stale tile set on first paint that
-  // then gets replaced by the DB list — that swap is what made it look like
-  // "Education shows up then gets erased by another tab" (the fallback had
-  // Education; the DB list has Mental Training instead).
+  // Portal modules come from DB when available, with code fallbacks merged in
+  // so newly surfaced areas are not hidden by stale portal_module rows.
   const [portalModules, setPortalModules] = useState<PortalModuleData[] | null>(null)
 
   useEffect(() => {
-    fetch('/api/admin/portal-modules?enabled=true')
+    fetch('/api/admin/portal-modules')
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data) && data.length > 0) {
-          setPortalModules(data)
+          setPortalModules(mergePortalModules(data))
         } else {
-          setPortalModules(fallbackModules)
+          setPortalModules(fallbackModules.filter((mod) => mod.enabled))
         }
       })
-      .catch(() => setPortalModules(fallbackModules))
+      .catch(() => setPortalModules(fallbackModules.filter((mod) => mod.enabled)))
   }, [])
 
   // Mood options

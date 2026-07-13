@@ -60,6 +60,16 @@ Each engine is ONE new file in `src/components/Vision/Engines/`. Registry `Engin
 - **W2.5 Progress charts** — trend lines per metric (NPC cm ↓, saccade bpm ↑, peripheral ms ↓, Snellen line) in ProgressDashboard from the new metrics JSON; phase gates drawn as milestones.
 - **W2.6 Weekly assessment ritual** — end of each 2-week phase: guided re-baseline (near/far Snellen + NPC) with before/after reveal. This is the retention hook — visible proof it's working.
 
+### Tier 2b — Ritual layer (FLW/5.6 consult 2, 2026-07-12 — full list: jarvis rail `runtime-logs/flw-consult-2-*-verdict.log`)
+Shipped same-day: comeback mode (W2b-a, lapse >48h → "Welcome back — today counts", lifetime-sessions identity framing, streak hidden not shamed) · momentum arc interludes (arrival→build→peak→landing copy + spoken) · arrival/victory audio motifs · pride-first report (identity line → session score → strongest-exercise signal w/ personal-best detection → tomorrow's promise) · "last time: N — edge it" continuity callbacks (localStorage; durable server-side version deferred).
+- **W2b.1 First-session proof-before-commitment** (HIGH): first-run runner variant — shortest valid coached win BEFORE enrollment ask; enrollment reframed as "claiming the journey." Touches CurriculumOverview.
+- **W2b.2 Audio director** (HIGH): one module above SpeechQueue/Metronome/tones owning the session's sound identity — arrival signature, rising midpoint texture, completion motif, reduced-stimulation mode. Motifs shipped; the director abstraction is the remaining work.
+- **W2b.3 Coach personalities** (MED): Calm Guide / Focused Trainer / Playful Partner / Minimal Cues — script cadence + verbosity + sound palette; prescriptions and safety copy invariant.
+- **W2b.4 60-session journey map** (MED): every completion = a visible tile/constellation point/path segment; phase landmarks visible just far enough ahead to pull. Renders from completion count + phase gates.
+- **W2b.5 Milestone reveals** (MED): phase-gate transitions unlock a new sound layer / coach acknowledgment / visual environment — hooked to EXISTING phase gates, never a second progression system.
+- **W2b.6 Daily agency** (MED): intro mood pick Quiet/Steady/Energized → voice density + sound + animation intensity ONLY (never exercise selection, difficulty, or safety).
+- **W2b.7 Durable last-time callbacks** (MED): replace localStorage with per-exercise history from persisted engineResults (read path lands with WP6 metricTrends).
+
 ### Tier 3 — Intelligence layer
 - **W3.1 AI Vision Coach** — post-session feedback + Q&A + plan adjustment suggestions. MUST run CF Workers AI free tier (hard doctrine: `feedback_no_paid_burn_for_free_users.md`) — never a paid key for anonymous users.
 - **W3.2 Breath integration** — Breathe app protocols embedded as the downshift engine's backend; session data cross-posts to breath history.
@@ -74,10 +84,12 @@ Each engine is ONE new file in `src/components/Vision/Engines/`. Registry `Engin
 1. **Never strip**: 3-tab layout, 6 binocular modes, phase gating, streaks/points, untimed mode, enrollment flow. New engines are ADDITIVE (`feedback_never_strip_features_silently.md`, `feedback_v2_alongside_v1.md`).
 2. **Deploy = `git push origin master` ONLY.** NEVER run `vercel` CLI in this repo (duplicate-project trap; cost money twice). Live Vercel project is `app`.
 3. **Layout trap**: routes live in `/app/`, components in `/src/components/` — search both before declaring anything missing.
-4. **Verify on the LIVE site** (resetbiology.com) at phone viewport — localhost proof is not proof; HH Chromium ≠ iOS Safari proof, so keep all interactions touch-first, no hover-dependent UI.
+4. **Verify on the LIVE site** (resetbiology.com) at phone viewport — localhost proof is not proof; HH Chromium ≠ iOS Safari proof, so keep all interactions touch-first, no hover-dependent UI. **The ship gate additionally requires one real WebKit pass** (Jon's iPhone Safari or a WebKit runner): touch targets, TTS/audio unlock, fullscreen portal behavior, orientation change, canvas frame rate.
 5. **Free-tier AI only** for anonymous-user features.
 6. **Mobile-first**: most users train on a phone held at arm's length. Big targets, landscape support for binocular, TTS because eyes are busy.
 7. **DB additive-only**: new metrics ride in existing JSON fields or new nullable columns; no destructive Prisma migrations.
+8. **Safety is part of the engine contract** (FLW HIGH, 2026-07-12): every engine pausable/abortable at any instant (X always visible), runner intro states the stop rule (pain / dizziness / double vision / persistent blur = stop now), interludes are mandatory rest, palming dimming user-escapable, `prefers-reduced-motion` gets a low-motion fallback (canvasKit exposes `prefersReducedMotion()`; engines not yet honoring it carry a ledger TODO). Safety copy sourced from ScreenFit PDFs when mining scripts (§8).
+9. **Metrics are training-performance proxies, not clinical measurements** (FLW HIGH, 2026-07-12): central-probe accuracy proxies fixation compliance, pointer tracing proxies pursuit smoothness, letter confirmation proxies clarity. UI copy and API naming must never imply measured acuity improvement beyond the user's own logged Snellen self-tests. No medical-outcome claims anywhere.
 
 ## 5. Work packages + delegation map
 
@@ -95,12 +107,14 @@ Disjoint file ownership so parallel builders never collide. Registry wiring (`En
 | WP7 | W3.1 AI coach (CF Worker + UI card) | new worker + `Training/CoachCard.tsx` | Codex High | WP5 |
 | WP8 | W2.1 intro / W2.4 report polish / W3.4 night mode | inside SessionRunner files | any | WP4 |
 
-**Acceptance per engine (definition of done):** full-screen on phone viewport · driven by prescription (week 1 vs week 9 observably different) · at least one REAL user interaction that produces a metric · TTS + visual cues · pause/resume/mute · returns `EngineResult` · completion feeds existing session API · zero TypeScript errors (`npx tsc --noEmit`) · zero console errors in a live run.
+**Acceptance per engine (definition of done):** full-screen on phone viewport · driven by prescription (week 1 vs week 9 observably different) · at least one REAL user interaction that produces a metric · TTS + visual cues · pause/resume/mute · abortable at any instant · returns `EngineResult` to the runner (persistence is WP5's job — Gate 1 validates engines NON-persistently; FLW consistency fix 2026-07-12) · zero TypeScript errors (`npx tsc --noEmit`) · zero console errors in a live run.
 
-**Gate:** after WP1–4 land → deploy → verify each engine on live resetbiology.com at 390×844 viewport (screenshots into `jarvis/data/rb-vision-interactive/runtime-logs/`) → dual-eye pass on the animated engines → then WP5–8.
+**Gate 1 (engine validation, non-persistent):** after WP1–4 land → deploy → verify each engine on live resetbiology.com at 390×844 viewport (screenshots into `jarvis/data/rb-vision-interactive/runtime-logs/`) → dual-eye pass on the animated engines. **Gate 2 (ship):** WP5 persistence verified end-to-end + one real WebKit/iPhone pass (§4.4) → then WP6–8.
 
-## 6. Build order (if you only have N hours)
-1. WP0 (2h) → 2. WP4 runner skeleton with v1 GuidedExercise as engine shim (2h — DEMO-ABLE HERE: full guided session flow exists even before new engines) → 3. WP1–WP3 in parallel (engines swap in one by one) → 4. WP5 → 5. WP6 → 6. WP7/WP8.
+**Progression data rule (FLW MED, 2026-07-12):** engines never parse free-form progression prose at runtime; dosing rules live as structured fields (see `TEMPO_TABLE` in `src/lib/vision/prescription.ts` — extend that table, never regex exercise strings).
+
+## 6. Build order (dependency sequence — durations intentionally unstated)
+1. WP0 → 2. WP4 runner skeleton with v1 GuidedExercise as engine shim (DEMO-ABLE HERE: full guided session flow exists even before new engines) → 3. WP1–WP3 in parallel (engines swap in one by one) → 4. WP5 → 5. WP6 → 6. WP7/WP8.
 
 ## 7. What "inspiring" means, concretely (for whoever builds T2)
 The user should feel: *briefed* (intro tells them today's mission and why), *carried* (never wonders "what now?" — the runner always moves), *seen* (voice reacts to their actual performance numbers), *proven* (weekly before/after reveals), *rewarded* (points reflect real gains, streak fire, personal bests). Copy tone: coach-warm, zero clinical dryness.
@@ -112,3 +126,20 @@ The 51 PDFs in `screenfit/` hold the original coaching language, rep schemes, an
 | Date | WP | What landed | Commit | Verified? |
 |---|---|---|---|---|
 | 2026-07-12 | — | This plan written; rail claimed (jarvis `data/rb-vision-interactive/`) | — | n/a |
+| 2026-07-12 | WP0 | VisionEngine contract + prescription resolver + canvasKit (cached Gabor, parametric paths) + audioKit (SpeechQueue, lookahead Metronome) | 61481062 | tsc clean |
+| 2026-07-12 | — | FLW consult 1 verdict applied: §4.8 safety contract, §4.9 proxy-metrics rule, Gate 1/2 split, structured-progression rule, WebKit ship-gate; rail MASTER-GOAL-SPEC bound in jarvis `data/rb-vision-interactive/` | (this) | n/a |
+| 2026-07-12 | WP1 | DownshiftEngine (orb-paced, palming auto-dim) + FocusRhythmEngine (depth-target letter-confirm game, NPC logging) — Sonnet builder A | (this) | tsc clean |
+| 2026-07-12 | WP2 | PursuitEngine (3-stage paths, trace-mode smoothness scoring, watch-only fallback) + SaccadeEngine (metronome jumps, letter probes, adaptive ±5 bpm ratchet) — Sonnet builder B | (this) | tsc clean |
+| 2026-07-12 | WP3 | PeripheralEngine (3 modes: ring-detection w/ fixation probes + decoys, mirror-scan quadrants, crossed-laterality w/ rule flips) — Sonnet builder C | (this) | tsc clean |
+| 2026-07-12 | WP4 | SessionRunner v2 (intro→engine→interlude→report full-screen flow, exit-confirm, safety copy) + engine registry + DailyPractice guided-path wiring (manual list kept) + QuickPractice engine wiring | (this) | tsc clean |
+| 2026-07-12 | WP5 | SnellenWalksEngine (Codex High) + engineResults persistence on BOTH `/api/vision/sessions` and `/api/vision/program` complete_session (shared validator `src/lib/vision/engineResultsPayload.ts`, Mongo raw $set, additive) + performanceBonus stacking | (this) | tsc clean |
+| 2026-07-12 | Gate1+ | Sampled remaining engines on live: FocusRhythm (letter game + bpm HUD), SnellenWalks (Clear/Blurry adaptive), Laterality (crossed L/R) — shots 11-13, zero page errors. TUNING TODO: FocusRhythm rep pacing reads fast at week 1 (4 reps in 5s) | — | Eye-1 static PASS |
+| 2026-07-12 | W2b | Ritual layer v1 (consult 2): comeback mode, momentum interludes, arrival/victory motifs, pride-first report w/ PB detection + tomorrow promise, last-time callbacks (localStorage), reduced-motion speed cap at both launch sites, API exposes lastSessionDate | (this) | tsc clean |
+| TODO | WP1-3 | engine-internal reduced-motion handling beyond the runner-level speed cap (§4.8) | | |
+| 2026-07-12 | W1.2 | FocusRhythm pacing fix: bpm reinterpreted as per-beat rate (60/bpm = one movement), not full-cycle rate — was running reps 2x too fast (measured 4 reps/5s at 50bpm vs. intended ~25/min). Matches SaccadeEngine's existing beat semantics + doctrine text ("metronome at 50 bpm", "one respiratory cycle per switch") | bc40b533 | tsc clean; live re-verify pending |
+| 2026-07-12 | Gate1 | SHIPPED to master + live verify at 390×844 on resetbiology.com: pursuit/saccade/downshift/peripheral render + run, zero page errors (receipt: jarvis `data/rb-vision-interactive/runtime-logs/gate1-receipt-2026-07-12.md`, shots 01-10) | 4bf42898 | Eye-1 static PASS; dual-eye video pass still open |
+| TODO | — | Gate 1 completion: dual-eye video pass; sample FocusRhythm/SnellenWalks/laterality | | |
+| 2026-07-12 | Gate2 | Code-read verify: `complete_session` performanceBonus is NOT gated on `completed` (early-Finish still earns full score-based bonus) — resolves CW's open question, confirms plan's Gate2 acceptance line is satisfiable via the guided runner. Live authenticated E2E run BLOCKED: Auth0 passwordless rate-limited repeat OTP sends to the drmccrna test identity after 1 attempt (confirmed via Gmail API, not UI cache, across 3 tries/~15 min) — Auth0-tenant-side, not an RB repo bug. Receipt: jarvis `data/rb-vision-interactive/runtime-logs/gate2-partial-receipt-2026-07-12.md` | — | code-read PASS; live persistence run still TODO (retry in ~30-60min or have Jon log in once) |
+| TODO | — | Gate 2 remaining: authed E2E persistence run (retry drmccrna after Auth0 rate-limit window clears) + WebKit/iPhone pass (Jon's phone) | | |
+| 2026-07-12 | WP6 | Measured Progress charts (hand-rolled SVG sparklines, direction-aware coloring, phase-gate ticks; `metricTrends` via raw Mongo read w/ graceful degrade) + WeeklyAssessment ritual (intro→snellen→npc→reveal, before/after) — Sonnet builder D. Orchestrator wired: phase check-in card on completed day-5 even weeks, PATCH update_baselines on complete, ProgressDashboard now also on Today tab post-completion | 7c3b0bbf + (this) | tsc clean; live verify pending |
+| TODO | WP7-8 | AI coach (CF free tier) · W2b ritual items · night mode | | |

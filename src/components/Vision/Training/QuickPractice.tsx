@@ -16,6 +16,9 @@ import {
 import { visionExercises, VisionExercise } from '@/data/visionExercises'
 import GuidedExercise from './GuidedExercise'
 import GaborTraining from './GaborTraining'
+import { getEngine } from '@/components/Vision/Engines'
+import { resolvePrescription } from '@/lib/vision/prescription'
+import { prefersReducedMotion } from '@/lib/vision/canvasKit'
 
 const CATEGORY_CONFIG = {
   downshift: { icon: Eye, color: 'blue', label: 'Relaxation' },
@@ -51,8 +54,26 @@ export default function QuickPractice() {
     setSelectedExercise(null)
   }
 
-  // Show guided exercise if one is selected
+  // Show interactive engine (v2) or guided exercise (v1 fallback) if one is selected
   if (selectedExercise) {
+    const Engine = getEngine(selectedExercise.id)
+    if (Engine) {
+      const prescription = resolvePrescription(selectedExercise.id, 0)
+      // Safety (plan §4.8): honor OS reduced-motion by slowing all engine animation
+      if (prefersReducedMotion()) {
+        prescription.speedMultiplier = Math.min(prescription.speedMultiplier, 0.6)
+      }
+      return (
+        <div className="min-h-[70vh] flex flex-col">
+          <Engine
+            exercise={selectedExercise}
+            prescription={prescription}
+            onComplete={handleExerciseComplete}
+            onExit={() => setSelectedExercise(null)}
+          />
+        </div>
+      )
+    }
     return (
       <GuidedExercise
         exercise={selectedExercise}

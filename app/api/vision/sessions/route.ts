@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { auth0 } from '@/lib/auth0'
 import { prisma } from '@/lib/prisma'
 import { enqueueDriveSync } from '@/lib/driveSyncQueue'
+import { parseEngineResults, performanceBonusFor } from '@/lib/vision/engineResultsPayload'
 
 // GET: Load user's vision training history
 export async function GET(request: Request) {
@@ -129,6 +130,18 @@ export async function POST(request: Request) {
       success
     } = body
 
+    const engineResults = body.engineResults === undefined
+      ? undefined
+      : parseEngineResults(body.engineResults)
+
+    if (engineResults === null) {
+      return NextResponse.json({
+        error: 'engineResults must be an array of valid engine result objects'
+      }, { status: 400 })
+    }
+
+    const performanceBonus = performanceBonusFor(engineResults)
+
     // Validate required fields
     if (!visionType || !exerciseType || distanceCm === undefined || accuracy === undefined) {
       return NextResponse.json({
@@ -149,6 +162,19 @@ export async function POST(request: Request) {
         success: success || false
       }
     })
+
+    // MongoDB is schemaless, but this work package owns only this route and cannot
+    // add a Prisma column. Persist the additive payload on the created document;
+    // typed legacy fields and callers remain untouched.
+    if (engineResults !== undefined) {
+      await prisma.$runCommandRaw({
+        update: 'vision_sessions',
+        updates: [{
+          q: { _id: { $oid: visionSession.id } },
+          u: { $set: { engineResults } }
+        }]
+      })
+    }
 
     // Update or create progress record
     const existingProgress = await prisma.visionProgress.findUnique({
@@ -190,11 +216,13 @@ export async function POST(request: Request) {
       })
     }
 
-    // Award gamification points for vision training
+    const completionPoints = success ? 30 : 15
+
+    // Completion points remain the floor; measured performance is additive.
     await prisma.gamificationPoint.create({
       data: {
         userId: user.id,
-        amount: success ? 30 : 15, // 30 points for success, 15 for attempt
+        amount: completionPoints + performanceBonus,
         pointType: 'vision_training',
         activitySource: `Vision training session: ${visionType}`,
         earnedAt: new Date()
@@ -206,8 +234,9 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       success: true,
-      session: visionSession,
-      pointsAwarded: success ? 30 : 15
+      session: engineResults === undefined ? visionSession : { ...visionSession, engineResults },
+      pointsAwarded: completionPoints + performanceBonus,
+      performanceBonus
     })
 
   } catch (error) {

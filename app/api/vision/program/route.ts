@@ -4,6 +4,7 @@ import { getUserFromSession } from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma'
 import { visionMasterProgram, getTodaySession } from '@/data/visionProtocols'
 import { visionExerciseMap } from '@/data/visionExercises'
+import { parseEngineResults, performanceBonusFor } from '@/lib/vision/engineResultsPayload'
 
 // GET: Get user's program enrollment and today's session
 export async function GET(req: NextRequest) {
@@ -76,6 +77,7 @@ export async function GET(req: NextRequest) {
         totalPracticeMinutes: enrollment.totalPracticeMinutes,
         streakDays: enrollment.streakDays,
         longestStreak: enrollment.longestStreak,
+        lastSessionDate: enrollment.lastSessionDate,
         currentReaderStage: enrollment.currentReaderStage,
         initialNearSnellen: enrollment.initialNearSnellen,
         initialFarSnellen: enrollment.initialFarSnellen,
@@ -213,6 +215,7 @@ export async function POST(req: NextRequest) {
           sessionTitle: sessionData.title,
           baselineMinutes: sessionData.baselineMinutes,
           exerciseMinutes: sessionData.exerciseMinutes,
+          breathWarmupMinutes: 0,
           totalMinutes: sessionData.baselineMinutes + sessionData.exerciseMinutes,
           exercisesCompleted: sessionData.exerciseIds,
           localDate: localDate || new Date().toISOString().split('T')[0],
@@ -257,7 +260,21 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'Not enrolled in program' }, { status: 400 })
       }
 
-      const { week, day, baselineMinutes, exerciseMinutes, exercisesCompleted, nearSnellenResult, farSnellenResult, notes } = data
+      const { week, day, baselineMinutes, exerciseMinutes, breathWarmupMinutes, exercisesCompleted, nearSnellenResult, farSnellenResult, notes } = data
+      const completedBaselineMinutes = baselineMinutes || 0
+      const completedExerciseMinutes = exerciseMinutes || 0
+      const completedBreathWarmupMinutes = Math.max(0, Math.min(3, Number(breathWarmupMinutes) || 0))
+
+      // Optional guided-runner engine results (additive; training-performance proxies)
+      const engineResults = data.engineResults === undefined
+        ? undefined
+        : parseEngineResults(data.engineResults)
+      if (engineResults === null) {
+        return NextResponse.json({
+          error: 'engineResults must be an array of valid engine result objects'
+        }, { status: 400 })
+      }
+      const performanceBonus = performanceBonusFor(engineResults)
 
       // Check if session already completed today
       const todayLocalDate = new Date().toISOString().split('T')[0]
@@ -286,9 +303,10 @@ export async function POST(req: NextRequest) {
           week,
           day,
           sessionTitle: sessionData?.title || `Week ${week} Day ${day}`,
-          baselineMinutes: baselineMinutes || 0,
-          exerciseMinutes: exerciseMinutes || 0,
-          totalMinutes: (baselineMinutes || 0) + (exerciseMinutes || 0),
+          baselineMinutes: completedBaselineMinutes,
+          exerciseMinutes: completedExerciseMinutes,
+          breathWarmupMinutes: completedBreathWarmupMinutes,
+          totalMinutes: completedBaselineMinutes + completedExerciseMinutes + completedBreathWarmupMinutes,
           exercisesCompleted: exercisesCompleted || [],
           nearSnellenResult,
           farSnellenResult,
@@ -296,6 +314,19 @@ export async function POST(req: NextRequest) {
           localDate: todayLocalDate
         }
       })
+
+      // MongoDB is schemaless; persist the additive engine-results payload on the
+      // created document without touching typed legacy fields (same pattern as
+      // /api/vision/sessions).
+      if (engineResults !== undefined) {
+        await prisma.$runCommandRaw({
+          update: 'vision_daily_sessions',
+          updates: [{
+            q: { _id: { $oid: dailySession.id } },
+            u: { $set: { engineResults } }
+          }]
+        })
+      }
 
       // Calculate streak
       let newStreakDays = enrollment.streakDays
@@ -330,7 +361,7 @@ export async function POST(req: NextRequest) {
         where: { id: enrollment.id },
         data: {
           sessionsCompleted: enrollment.sessionsCompleted + 1,
-          totalPracticeMinutes: enrollment.totalPracticeMinutes + (baselineMinutes || 0) + (exerciseMinutes || 0),
+          totalPracticeMinutes: enrollment.totalPracticeMinutes + completedBaselineMinutes + completedExerciseMinutes + completedBreathWarmupMinutes,
           streakDays: newStreakDays,
           longestStreak: Math.max(enrollment.longestStreak, newStreakDays),
           lastSessionDate: new Date(),
@@ -342,7 +373,8 @@ export async function POST(req: NextRequest) {
         }
       })
 
-      // Award gamification points
+      // Award gamification points (completion points are the floor;
+      // measured performance from the guided runner stacks on top)
       let pointsAwarded = 25 // Base points for completing session
       if (week === 2 && day === 5) pointsAwarded += 50 // Phase 1 bonus
       if (week === 4 && day === 5) pointsAwarded += 75 // Phase 2 bonus
@@ -350,6 +382,7 @@ export async function POST(req: NextRequest) {
       if (week === 8 && day === 5) pointsAwarded += 125 // Phase 4 bonus
       if (week === 10 && day === 5) pointsAwarded += 150 // Phase 5 bonus
       if (week === 12 && day === 5) pointsAwarded += 500 // Graduation bonus!
+      pointsAwarded += performanceBonus
 
       await prisma.gamificationPoint.create({
         data: {
@@ -365,6 +398,7 @@ export async function POST(req: NextRequest) {
         message: 'Session completed!',
         dailySession,
         pointsAwarded,
+        performanceBonus,
         newStreak: newStreakDays,
         phaseCompleted: Object.keys(phaseUpdates).length > 0 ? phaseUpdates : null
       })

@@ -16,7 +16,7 @@ async function main() {
       borderColor: 'border-indigo-400/30',
       iconColor: 'text-indigo-300',
       enabled: true,
-      order: 9,
+      order: 13,
     },
     create: {
       slug: 'education',
@@ -28,7 +28,7 @@ async function main() {
       borderColor: 'border-indigo-400/30',
       iconColor: 'text-indigo-300',
       enabled: true,
-      order: 9,
+      order: 13,
     },
   })
   console.log('Education tile upserted:', { id: result.id, slug: result.slug, order: result.order, enabled: result.enabled })
