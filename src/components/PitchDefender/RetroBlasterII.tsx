@@ -235,7 +235,7 @@ export default function RetroBlasterII() {
     stateRef.current = result.state
     const canvas = canvasRef.current
     const ctx = canvas?.getContext('2d')
-    if (ctx) {
+    if (canvas && ctx) {
       ctx.imageSmoothingEnabled = false
       render(ctx, result.viewState, {
         reducedMotion: reducedMotionRef.current,
