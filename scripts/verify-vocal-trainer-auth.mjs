@@ -1,4 +1,19 @@
-// One-shot verification: anon (no session) request to vocal-trainer upload/delete routes → 401.
+// One-shot verification: anon (no session, no cookie at all) request to
+// vocal-trainer upload/delete routes → 401. This is finding #7's actual
+// attack vector (anonymous internet user, zero cookie sent).
+//
+// Does NOT cover the tampered/malformed-cookie case: calling exported Route
+// Handlers directly (no real Next.js request pipeline) makes next/headers
+// cookies() throw "outside request scope" regardless of what cookie value
+// is set, so a tampered-cookie assertion here would pass for the wrong
+// reason (caught by the same generic exception path, not by real cookie
+// parsing). Real tampered-cookie behavior needs a running dev/preview
+// server hit with actual HTTP requests — see
+// data/rb-site-security/runtime-logs/ (jarvis repo) for that receipt,
+// which also surfaced an unrelated middleware.ts bug (finding #5, HIGH,
+// appended to FINDINGS-2026-07-12-site-wide.md) — not fixed here, out of
+// this route's scope.
+//
 // Run: npx tsx scripts/verify-vocal-trainer-auth.mjs
 import { NextRequest } from 'next/server';
 
@@ -28,21 +43,6 @@ async function main() {
   });
   const delRes = await DELETE(delReq);
   results.push(['DELETE /api/vocal-trainer/delete', delRes.status]);
-
-  // Tampered/invalid session cookie must also fail closed to 401, not leak a 500.
-  const tamperedHeaders = { cookie: 'appSession=not-a-real-encrypted-session-value' };
-  const postTamperedRes = await POST(new NextRequest('http://localhost/api/vocal-trainer/upload', {
-    method: 'POST',
-    headers: tamperedHeaders,
-    body: new FormData(),
-  }));
-  results.push(['POST (tampered cookie)', postTamperedRes.status]);
-
-  const delTamperedRes = await DELETE(new NextRequest('http://localhost/api/vocal-trainer/delete?id=test', {
-    method: 'DELETE',
-    headers: tamperedHeaders,
-  }));
-  results.push(['DELETE (tampered cookie)', delTamperedRes.status]);
 
   let allPass = true;
   for (const [label, status] of results) {
