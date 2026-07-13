@@ -24,6 +24,51 @@ export const MIC_HOLD_MS = 300
 export const MIC_TOLERANCE_CENTS = 70
 export const MIC_CONFIDENCE_FLOOR = 0.75
 export const CHARGE_FULL_MS = MIC_HOLD_MS
+export const MAX_SIM_STEP_MS = 50
+
+export const FORMATION_COLUMNS = 5
+export const FORMATION_ROWS = 3
+export const FORMATION_SLOT_COUNT = FORMATION_COLUMNS * FORMATION_ROWS
+export const FORMATION_CENTER_X = W / 2 - ALIEN_W / 2
+export const FORMATION_TOP_Y = 68 * SPACE_SCALE
+export const FORMATION_PITCH_X = 80 * SPACE_SCALE
+export const FORMATION_PITCH_Y = 60 * SPACE_SCALE
+export const FORMATION_BREATH_PERIOD_MS = 2400
+export const FORMATION_BREATH_X = 2 * SPACE_SCALE
+export const FORMATION_BREATH_Y = 3 * SPACE_SCALE
+export const FORMATION_SLOT_ORDER = [
+  [2, 0], [1, 0], [3, 0], [0, 0], [4, 0],
+  [2, 1], [1, 1], [3, 1], [0, 1], [4, 1],
+  [2, 2], [1, 2], [3, 2], [0, 2], [4, 2],
+] as const
+
+export function formationAnchor(slot: number): { x: number; y: number } {
+  const cell = FORMATION_SLOT_ORDER[slot]
+  // ponytail: Act I is deliberately capped at 15 authored slots; Act-II roster
+  // growth must replace this table through a re-consulted geometry contract.
+  if (!cell) throw new RangeError(`Retro Blaster formation slot ${slot} exceeds ${FORMATION_SLOT_COUNT}`)
+  const [column, row] = cell
+  return {
+    x: FORMATION_CENTER_X + (column - 2) * FORMATION_PITCH_X,
+    y: FORMATION_TOP_Y + row * FORMATION_PITCH_Y,
+  }
+}
+
+export function formationPose(
+  formationX: number,
+  formationY: number,
+  directorClockMs: number,
+  reducedMotion: boolean,
+): { x: number; y: number } {
+  if (reducedMotion) return { x: formationX, y: formationY }
+  const phase = (directorClockMs % FORMATION_BREATH_PERIOD_MS) /
+    FORMATION_BREATH_PERIOD_MS * Math.PI * 2
+  const offset = Math.sin(phase)
+  return {
+    x: formationX + offset * FORMATION_BREATH_X,
+    y: formationY + offset * FORMATION_BREATH_Y,
+  }
+}
 
 export interface NoteButtonRect {
   x: number
@@ -68,6 +113,9 @@ export interface Alien {
   entering: boolean
   entryT: number
   entryTargetX: number
+  formationSlot: number
+  formationX: number
+  formationY: number
   note: string
   hue: number
   alive: boolean
@@ -119,6 +167,7 @@ export interface EngineInput {
   answeredNote?: string | null
   latencyMs?: number
   fsrs?: Record<string, NoteMemory>
+  isActive?: boolean
 }
 
 export type EngineEvent =
@@ -158,6 +207,7 @@ export interface GameState {
   hintCount: number
   phase: Phase
   clockMs: number
+  directorClockMs: number
   matchStartAt: number
   matchTargetIdx: number
   micCooldownMs: number
@@ -199,13 +249,17 @@ export function noteClass(name: string): string {
   return name.replace(/\d+$/, '')
 }
 
+export function isTargetableAlien(alien: Alien | null | undefined): alien is Alien {
+  return Boolean(alien?.alive && !alien.entering)
+}
+
 export function pickTargetForNote(aliens: Alien[], answeredNote: string, playerX: number): { alien: Alien; index: number } | null {
   const targetClass = noteClass(answeredNote)
   let best: Alien | null = null
   let bestIdx = -1
   for (let i = 0; i < aliens.length; i++) {
     const a = aliens[i]
-    if (!a.alive || a.entering || noteClass(a.note) !== targetClass) continue
+    if (!isTargetableAlien(a) || noteClass(a.note) !== targetClass) continue
     if (!best) { best = a; bestIdx = i; continue }
     // Y delta > 4px → use urgency. Otherwise → use x proximity.
     const dy = a.y - best.y
@@ -224,7 +278,7 @@ export function pickSpotlightIdx(aliens: Alien[], playerX: number): number {
   let bestDx = Infinity
   for (let i = 0; i < aliens.length; i++) {
     const a = aliens[i]
-    if (!a.alive || a.entering) continue
+    if (!isTargetableAlien(a)) continue
     const dy = a.y - bestY
     if (dy > 4 * SPACE_SCALE) {
       bestIdx = i; bestY = a.y; bestDx = Math.abs(a.x - playerX)
@@ -332,7 +386,7 @@ export function buildWaveQueue(gs: GameState, fsrs: Record<string, NoteMemory>):
   gs.spawnQueue = combined
   gs.spawnedThisWave = 0
   gs.alienCountThisWave = combined.length
-  gs.nextSpawnAt = gs.clockMs + (gs.waveIntroTimer * 1000) + 600
+  gs.nextSpawnAt = gs.directorClockMs + (gs.waveIntroTimer * 1000) + 600
 }
 
 export function createInitialState(
@@ -349,7 +403,7 @@ export function createInitialState(
     wrongMessage: '', wrongTimer: 0, chargeProgress: 0, difficulty,
     spawnQueue: [], spawnedThisWave: 0, alienCountThisWave: 0,
     nextSpawnAt: 0, lastProgressAt: 0, hintCount: 0,
-    phase: 'playing', clockMs, matchStartAt: 0, matchTargetIdx: -1,
+    phase: 'playing', clockMs, directorClockMs: clockMs, matchStartAt: 0, matchTargetIdx: -1,
     micCooldownMs: 0, answerCooldownMs: 0,
   }
 }
@@ -361,7 +415,7 @@ export function beginWave(gs: GameState, fsrs: Record<string, NoteMemory>): void
   gs.matchStartAt = 0
   gs.matchTargetIdx = -1
   gs.micCooldownMs = 0
-  gs.lastProgressAt = gs.clockMs
+  gs.lastProgressAt = gs.directorClockMs
   gs.hintCount = 0
   buildWaveQueue(gs, fsrs)
 }
@@ -386,7 +440,7 @@ export function toViewState(gs: GameState, inputMode: InputMode): ViewState {
     playerX: gs.playerX,
     charge: {
       fraction: Math.min(1, gs.chargeProgress / CHARGE_FULL_MS),
-      targetNote: target?.alive ? target.note : null,
+      targetNote: isTargetableAlien(target) ? target.note : null,
     },
     hud: {
       score: gs.score, combo: gs.combo, wave: gs.wave,
@@ -400,11 +454,11 @@ export function toViewState(gs: GameState, inputMode: InputMode): ViewState {
     wrongMessage: gs.wrongMessage,
     wrongTimer: gs.wrongTimer,
     spotlightIdx: gs.activeIdx,
-    nowMs: gs.clockMs,
+    nowMs: gs.directorClockMs,
     noteButtons: gs.unlockedNotes.map((note, i) => ({
       note,
       hue: NOTE_COLORS[note]?.hue ?? 0,
-      active: gs.aliens[gs.activeIdx]?.note === note && Boolean(gs.aliens[gs.activeIdx]?.alive),
+      active: gs.aliens[gs.activeIdx]?.note === note && isTargetableAlien(gs.aliens[gs.activeIdx]),
       keyNum: i + 1,
     })),
   }
@@ -412,7 +466,7 @@ export function toViewState(gs: GameState, inputMode: InputMode): ViewState {
 
 function processHit(gs: GameState, answeredNote: string, latencyMs: number, events: EngineEvent[]): void {
   if (gs.answerCooldownMs > 0 || gs.phase !== 'playing') return
-  gs.lastProgressAt = gs.clockMs
+  gs.lastProgressAt = gs.directorClockMs
 
   const pick = pickTargetForNote(gs.aliens, answeredNote, gs.playerX)
   if (pick) {
@@ -447,7 +501,7 @@ function processHit(gs: GameState, answeredNote: string, latencyMs: number, even
     gs.cityHealth = Math.max(0, gs.cityHealth - 1)
     gs.flashTimer = 0.4
     const spotlight = gs.aliens[gs.activeIdx]
-    if (spotlight?.alive) {
+    if (isTargetableAlien(spotlight)) {
       const correctName = NOTE_COLORS[spotlight.note]?.name ?? spotlight.note
       gs.wrongMessage = `WRONG! Try ${spotlight.note.replace(/\d/, '')} (${correctName})`
       gs.wrongTimer = 1.8
@@ -473,13 +527,18 @@ export function tick(state: GameState, input: EngineInput, dtMs: number, rng: ()
   const gs = cloneState(state)
   const events: EngineEvent[] = []
   const elapsedMs = Math.max(0, dtMs)
-  const dt = Math.min(elapsedMs / 1000, 0.05)
-  gs.clockMs += elapsedMs
-  gs.answerCooldownMs = Math.max(0, gs.answerCooldownMs - elapsedMs)
-  gs.micCooldownMs = Math.max(0, gs.micCooldownMs - elapsedMs)
+  const isActive = input.isActive !== false
+  const stepMs = isActive ? Math.min(elapsedMs, MAX_SIM_STEP_MS) : 0
+  const dt = stepMs / 1000
+  gs.clockMs += isActive ? elapsedMs : 0
+  gs.directorClockMs += stepMs
+  gs.answerCooldownMs = Math.max(0, gs.answerCooldownMs - stepMs)
+  gs.micCooldownMs = Math.max(0, gs.micCooldownMs - (isActive ? elapsedMs : 0))
   if (gs.micCooldownMs === 0 && gs.matchStartAt === -1) gs.matchStartAt = 0
 
-  if (gs.phase !== 'playing') return { state: gs, viewState: toViewState(gs, input.inputMode), events }
+  if (gs.phase !== 'playing' || !isActive) {
+    return { state: gs, viewState: toViewState(gs, input.inputMode), events }
+  }
 
   if (gs.waveIntroTimer > 0) gs.waveIntroTimer -= dt
   if (gs.flashTimer > 0) gs.flashTimer -= dt
@@ -489,79 +548,94 @@ export function tick(state: GameState, input: EngineInput, dtMs: number, rng: ()
   }
 
   const params = waveParams(gs.wave, gs.difficulty)
-  if (gs.spawnQueue.length > 0 && gs.waveIntroTimer <= 0 && gs.clockMs >= gs.nextSpawnAt) {
+  if (gs.spawnQueue.length > 0 && gs.waveIntroTimer <= 0 && gs.directorClockMs >= gs.nextSpawnAt) {
     const aliveCount = gs.aliens.filter(a => a.alive).length
     if (aliveCount < params.maxConcurrent) {
-      const x = pickSpawnX(gs.aliens, gs.wave * 31 + gs.spawnedThisWave)
-      if (x !== null) {
-        const note = gs.spawnQueue.shift()!
-        const colorInfo = NOTE_COLORS[note]
-        const entering = !input.reducedMotion
-        const visualKind = (gs.spawnedThisWave % VISUAL_KIND_COUNT) as VisualKind
-        gs.aliens.push({
-          visualId: `${gs.wave}:${gs.spawnedThisWave}`,
-          visualKind,
-          x: entering ? ENTRY_ORIGIN.x : x,
-          y: entering ? ENTRY_ORIGIN.y : SPAWN_Y,
-          entering,
-          entryT: entering ? 0 : 1,
-          entryTargetX: x,
-          note, hue: colorInfo?.hue ?? 0, alive: true,
-          frame: gs.spawnedThisWave % 2, hitTimer: 0,
-        })
-        gs.spawnedThisWave++
-        gs.nextSpawnAt = gs.clockMs + params.spawnInterval
-        events.push({ kind: 'spawn', note, x })
-      }
+      const formationSlot = gs.spawnedThisWave
+      const anchor = formationAnchor(formationSlot)
+      const pose = formationPose(anchor.x, anchor.y, gs.directorClockMs, input.reducedMotion)
+      const note = gs.spawnQueue.shift()!
+      const colorInfo = NOTE_COLORS[note]
+      const entering = !input.reducedMotion
+      const visualKind = (formationSlot % VISUAL_KIND_COUNT) as VisualKind
+      gs.aliens.push({
+        visualId: `${gs.wave}:${formationSlot}`,
+        visualKind,
+        x: entering ? ENTRY_ORIGIN.x : pose.x,
+        y: entering ? ENTRY_ORIGIN.y : pose.y,
+        entering,
+        entryT: entering ? 0 : 1,
+        entryTargetX: anchor.x,
+        formationSlot,
+        formationX: anchor.x,
+        formationY: anchor.y,
+        note, hue: colorInfo?.hue ?? 0, alive: true,
+        frame: formationSlot % 2, hitTimer: 0,
+      })
+      gs.spawnedThisWave++
+      gs.nextSpawnAt = gs.directorClockMs + params.spawnInterval
+      events.push({ kind: 'spawn', note, x: anchor.x })
     }
   }
 
-  if (gs.difficulty === 'easy' && gs.clockMs - gs.lastProgressAt > 60000) {
+  if (gs.difficulty === 'easy' && gs.directorClockMs - gs.lastProgressAt > 60000) {
     const spotlight = gs.aliens[gs.activeIdx]
-    if (spotlight?.alive) {
+    if (isTargetableAlien(spotlight)) {
       events.push({ kind: 'playNote', note: spotlight.note, delayMs: 0, guard: 'alive', targetIdx: gs.activeIdx })
       gs.wrongMessage = `Hint: try ${spotlight.note.replace(/\d/, '')}`
       gs.wrongTimer = 2.5
       gs.hintCount++
     }
-    gs.lastProgressAt = gs.clockMs
+    gs.lastProgressAt = gs.directorClockMs
   }
 
-  const speed = params.descentSpeed
   for (const alien of gs.aliens) {
     if (!alien.alive && alien.hitTimer <= 0) continue
     if (alien.hitTimer > 0) {
       alien.hitTimer -= dt
       continue
     }
+    const pose = formationPose(
+      alien.formationX,
+      alien.formationY,
+      gs.directorClockMs,
+      input.reducedMotion,
+    )
     if (alien.entering) {
       if (input.reducedMotion) {
         alien.entryT = 1
       } else {
         const remainingMs = (1 - alien.entryT) * ENTRY_DURATION_MS
-        alien.entryT = elapsedMs + Number.EPSILON * ENTRY_DURATION_MS >= remainingMs
+        alien.entryT = stepMs + Number.EPSILON * ENTRY_DURATION_MS >= remainingMs
           ? 1
-          : alien.entryT + elapsedMs / ENTRY_DURATION_MS
+          : alien.entryT + stepMs / ENTRY_DURATION_MS
       }
 
       if (alien.entryT >= 1) {
-        alien.x = alien.entryTargetX
-        alien.y = SPAWN_Y
+        alien.x = pose.x
+        alien.y = pose.y
         alien.entering = false
       } else {
         const t = 1 - (1 - alien.entryT) ** 2
         const u = 1 - t
-        const controlX = ENTRY_ORIGIN.x + (alien.entryTargetX - ENTRY_ORIGIN.x) * 1.4
-        const controlY = ENTRY_ORIGIN.y + (SPAWN_Y - ENTRY_ORIGIN.y) * 0.5
-        alien.x = u * u * ENTRY_ORIGIN.x + 2 * u * t * controlX + t * t * alien.entryTargetX
-        alien.y = u * u * ENTRY_ORIGIN.y + 2 * u * t * controlY + t * t * SPAWN_Y
+        const controlX = ENTRY_ORIGIN.x + (pose.x - ENTRY_ORIGIN.x) * 1.4
+        const controlY = ENTRY_ORIGIN.y + (pose.y - ENTRY_ORIGIN.y) * 0.5
+        alien.x = u * u * ENTRY_ORIGIN.x + 2 * u * t * controlX + t * t * pose.x
+        alien.y = u * u * ENTRY_ORIGIN.y + 2 * u * t * controlY + t * t * pose.y
       }
       continue
     }
-    if (gs.waveIntroTimer <= 0) alien.y += speed * SPACE_SCALE * dt
+    alien.x = pose.x
+    alien.y = pose.y
   }
 
-  if (gs.activeIdx < 0 || !gs.aliens[gs.activeIdx]?.alive || gs.aliens[gs.activeIdx]?.entering) {
+  if (gs.matchTargetIdx >= 0 && !isTargetableAlien(gs.aliens[gs.matchTargetIdx])) {
+    gs.matchStartAt = 0
+    gs.matchTargetIdx = -1
+    gs.chargeProgress = 0
+  }
+
+  if (!isTargetableAlien(gs.aliens[gs.activeIdx])) {
     const next = pickSpotlightIdx(gs.aliens, gs.playerX)
     if (next >= 0 && next !== gs.activeIdx) {
       gs.activeIdx = next
@@ -570,7 +644,7 @@ export function tick(state: GameState, input: EngineInput, dtMs: number, rng: ()
   }
 
   for (const alien of gs.aliens) {
-    if (alien.alive) alien.frame = Math.floor(gs.clockMs / 500) % 2
+    if (alien.alive) alien.frame = Math.floor(gs.directorClockMs / 500) % 2
   }
 
   for (const laser of gs.lasers) {
@@ -615,20 +689,6 @@ export function tick(state: GameState, input: EngineInput, dtMs: number, rng: ()
     return p.life > 0
   })
 
-  for (const alien of gs.aliens) {
-    if (alien.alive && alien.y >= PLAYER_Y - 10 * SPACE_SCALE) {
-      alien.alive = false
-      gs.cityHealth = Math.max(0, gs.cityHealth - 1)
-      gs.combo = 0
-      events.push({ kind: 'sfx', name: 'wrong' })
-      if (gs.cityHealth <= 0) {
-        gs.phase = 'game_over'
-        events.push({ kind: 'gameOver' })
-        break
-      }
-    }
-  }
-
   if (gs.phase === 'playing' && gs.spawnQueue.length === 0 && gs.aliens.length > 0 &&
       gs.aliens.every(a => !a.alive && a.hitTimer <= 0)) {
     gs.wave++
@@ -646,7 +706,7 @@ export function tick(state: GameState, input: EngineInput, dtMs: number, rng: ()
       let bestCentsOff = Infinity
       for (let i = 0; i < gs.aliens.length; i++) {
         const a = gs.aliens[i]
-        if (!a.alive) continue
+        if (!isTargetableAlien(a)) continue
         const cents = octaveFoldedCents(p.frequency, noteToFreq(a.note))
         if (Math.abs(cents) < Math.abs(bestCentsOff)) {
           bestCentsOff = cents

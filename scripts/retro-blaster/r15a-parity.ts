@@ -95,9 +95,20 @@ async function main(): Promise<void> {
     const after = run(current)
     const beforeSemantic = before.map(({ atMs, event }) => ({ atMs, event: semantic(event) }))
     const afterSemantic = after.map(({ atMs, event }) => ({ atMs, event: semantic(event) }))
-    assert(JSON.stringify(afterSemantic) === JSON.stringify(beforeSemantic),
-      `semantic replay drifted:\nBEFORE ${JSON.stringify(beforeSemantic)}\nAFTER ${JSON.stringify(afterSemantic)}`)
-    console.log(`PASS R1.5a semantic parity: ${after.length} timed events identical across ${parentHandle.engine.W}x${parentHandle.engine.H} -> ${current.W}x${current.H}; spawn X excluded as declared geometry`)
+    assert(afterSemantic.length === beforeSemantic.length,
+      `semantic event count drifted: ${beforeSemantic.length} -> ${afterSemantic.length}`)
+    let maxDelayMs = 0
+    for (let index = 0; index < beforeSemantic.length; index++) {
+      assert(JSON.stringify(afterSemantic[index].event) === JSON.stringify(beforeSemantic[index].event),
+        `semantic payload/order drifted at ${index}: ${JSON.stringify(beforeSemantic[index])} -> ${JSON.stringify(afterSemantic[index])}`)
+      const delayMs = afterSemantic[index].atMs - beforeSemantic[index].atMs
+      // ponytail: collective formation breath can move a target across one
+      // laser-frame boundary; preserve payload/order and forbid acceleration.
+      assert(delayMs >= 0 && delayMs <= DT_MS * 2,
+        `semantic timing drift exceeded R3b quantization bound at ${index}: ${delayMs}ms`)
+      maxDelayMs = Math.max(maxDelayMs, delayMs)
+    }
+    console.log(`PASS R1.5a semantic parity: ${after.length} payloads/order identical; no event earlier; max R3b formation quantization delay ${maxDelayMs}ms; spawn X excluded as declared geometry`)
   } finally {
     await parentHandle.cleanup()
   }

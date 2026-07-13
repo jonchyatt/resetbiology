@@ -17,7 +17,7 @@ import { usePitchDetection } from './usePitchDetection'
 import { initAudio, loadPianoSamples, playPianoNote } from './audioEngine'
 import {
   H, INITIAL_UNLOCK, STARTING_SHIELDS, W,
-  beginWave, createInitialState, noteButtonRects, tick, toViewState,
+  beginWave, createInitialState, isTargetableAlien, noteButtonRects, tick, toViewState,
   type Difficulty, type EngineEvent, type GameState, type InputMode, type Phase, type ViewState,
 } from './retroBlasterEngine'
 import { enemyRenderSourceSnapshot, render, resetEnemyRenderLatches } from './retroBlasterRenderer'
@@ -140,6 +140,7 @@ export default function RetroBlasterII() {
   const inputModeRef = useRef<InputMode>('click')
   const listeningRef = useRef(false)
   const colorHintsRef = useRef(true)
+  const visibilityActiveRef = useRef(true)
 
   const [reducedMotion, setReducedMotion] = useState(() =>
     typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -168,6 +169,17 @@ export default function RetroBlasterII() {
     syncReducedMotion(mediaQuery.matches)
     mediaQuery.addEventListener('change', onChange)
     return () => mediaQuery.removeEventListener('change', onChange)
+  }, [])
+
+  useEffect(() => {
+    const onVisibilityChange = () => {
+      const active = document.visibilityState === 'visible'
+      visibilityActiveRef.current = active
+      if (active) lastTimeRef.current = performance.now()
+    }
+    onVisibilityChange()
+    document.addEventListener('visibilitychange', onVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', onVisibilityChange)
   }, [])
 
   useEffect(() => {
@@ -200,9 +212,9 @@ export default function RetroBlasterII() {
         setTimeout(() => {
           const cur = stateRef.current
           if (!cur) return
-          if (event.guard === 'alive' && !cur.aliens[event.targetIdx]?.alive) return
+          if (event.guard === 'alive' && !isTargetableAlien(cur.aliens[event.targetIdx])) return
           if (event.guard === 'spotlight' &&
-              (!cur.aliens[event.targetIdx]?.alive || cur.activeIdx !== event.targetIdx)) return
+              (!isTargetableAlien(cur.aliens[event.targetIdx]) || cur.activeIdx !== event.targetIdx)) return
           playPianoNote(event.note)
           if (event.delayMs === 200 || event.guard === 'spotlight') notePlayTimeRef.current = Date.now()
         }, event.delayMs)
@@ -231,6 +243,7 @@ export default function RetroBlasterII() {
       answeredNote,
       latencyMs,
       fsrs: laneStore,
+      isActive: visibilityActiveRef.current,
     }, dtMs, Math.random)
     stateRef.current = result.state
     const canvas = canvasRef.current
@@ -242,6 +255,19 @@ export default function RetroBlasterII() {
         colorHints: colorHintsRef.current,
       })
       canvas.dataset.retroRenderSources = JSON.stringify(enemyRenderSourceSnapshot())
+      canvas.dataset.retroFormationState = JSON.stringify({
+        directorClockMs: result.state.directorClockMs,
+        ships: result.state.aliens.map(alien => ({
+          visualId: alien.visualId,
+          slot: alien.formationSlot,
+          x: alien.x,
+          y: alien.y,
+          formationX: alien.formationX,
+          formationY: alien.formationY,
+          entering: alien.entering,
+          alive: alien.alive,
+        })),
+      })
     }
     setDisplayView(result.viewState)
     applyEvents(result.events, result.state)
@@ -283,7 +309,7 @@ export default function RetroBlasterII() {
     const gs = stateRef.current
     if (!gs) return
     const alien = gs.aliens[gs.activeIdx]
-    if (!alien?.alive) return
+    if (!isTargetableAlien(alien)) return
     playPianoNote(alien.note)
     notePlayTimeRef.current = Date.now()
   }, [])

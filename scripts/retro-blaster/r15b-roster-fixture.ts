@@ -74,9 +74,15 @@ function validateIdentity(): void {
   state.waveIntroTimer = 0
   state.spawnQueue = ['C4', 'D4', 'E4', 'F4']
   state.alienCountThisWave = 4
-  state.nextSpawnAt = state.clockMs
+  state.nextSpawnAt = state.directorClockMs
   for (let index = 0; index < 4; index++) {
-    state = tick(state, input(), index === 0 ? 0 : 800, () => 0.5).state
+    if (index === 0) {
+      state = tick(state, input(), 0, () => 0.5).state
+    } else {
+      for (let elapsed = 0; elapsed < 800; elapsed += 50) {
+        state = tick(state, input(), 50, () => 0.5).state
+      }
+    }
   }
   assert.deepEqual(state.aliens.map(alien => alien.visualId), ['3:0', '3:1', '3:2', '3:3'])
   assert.deepEqual(state.aliens.map(alien => alien.visualKind), [0, 1, 2, 3])
