@@ -4,7 +4,6 @@ import { auth0Edge } from '@/lib/auth0-edge';
 
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
-  console.log('Middleware running for:', pathname);
 
   // Log domain check for auth routes (helps debug "state parameter invalid" errors)
   if (pathname.startsWith('/auth/') || pathname.startsWith('/admin/')) {
