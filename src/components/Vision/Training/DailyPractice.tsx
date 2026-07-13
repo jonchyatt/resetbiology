@@ -644,9 +644,11 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
         </button>
         <TrainingSession
           visionType="near"
-          exerciseType="letters"
+          exerciseType="e-directional"
           initialLevel={1}
           nightMode={nightMode}
+          autoStart={false}
+          onExit={() => setShowSnellenTrainer(false)}
         />
       </div>
     )

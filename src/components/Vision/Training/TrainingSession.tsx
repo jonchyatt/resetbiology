@@ -15,6 +15,8 @@ interface TrainingSessionProps {
   binocularMode?: BinocularMode
   untimed?: boolean
   nightMode?: boolean
+  /** false = mount on the intro/settings screen with explicit Start (default true preserves Focus Training tab auto-start). */
+  autoStart?: boolean
   onActiveChange?: (isActive: boolean) => void
   onExit?: () => void
 }
@@ -51,13 +53,14 @@ export default function TrainingSession({
   binocularMode = 'off',
   untimed = false,
   nightMode = false,
+  autoStart = true,
   onActiveChange,
   onExit
 }: TrainingSessionProps) {
   const isBinocular = binocularMode && binocularMode !== 'off'
   const [currentLevel, setCurrentLevel] = useState(initialLevel)
-  // Auto-start when component mounts (parent controls when to show us)
-  const [isActive, setIsActive] = useState(true)
+  // Auto-start when component mounts unless caller wants an intro/settings screen first (autoStart=false)
+  const [isActive, setIsActive] = useState(autoStart)
   const [attempts, setAttempts] = useState(0)
   const [correct, setCorrect] = useState(0)
   const [sessionDuration, setSessionDuration] = useState(0)
