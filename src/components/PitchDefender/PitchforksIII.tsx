@@ -68,6 +68,18 @@ const NOTE_MASTERED_CEREMONY_MS = 2400
 const WAVE_RECEIPT_MS = 1900
 const SHAKE_PEAK_PX = 4
 const SHAKE_MS = 200
+const BOLT_LIFE_S = 0.72
+const STRIKE_LEADER_END = 0.24
+const STRIKE_RECEIPT_END = 0.48
+const STRIKE_IMPACT_START = 0.74
+const CHARGE_LEADER_START = 0.18
+const CHARGE_DISCHARGE_START = 0.42
+const CHARGE_PRELOCK_REVEAL_MAX = 0.86
+const CIRCUIT_RELAY_X = 18
+const CIRCUIT_RELAY_Y = 2
+const CIRCUIT_BUCKET_S = 0.05
+const FRANK_CLOUD_X_OFFSET = 26
+const FRANK_CLOUD_Y = 88
 const FRANK_REACTION_MS = 260
 const MASTERY_STABILITY_DAYS = 21
 const MASTERY_SESSION_COUNT = 3
@@ -122,7 +134,8 @@ const chargeArcBranchPoints: { x: number; y: number }[][] = Array.from(
 )
 let chargeArcBranchCount = 0
 let chargeArcBranchSegments = 0
-let chargeArcJitterFrame = 0
+let chargeArcJitterBucket = -1
+let chargeArcSegmentCount = -1
 // Structural degrade hook per CW's ask — no auto-detection wired yet (nothing to
 // measure from; iPhone is the real gate at C13). Set to 'lite' manually if a device
 // needs the cheaper path before C13 lands real detection.
@@ -136,9 +149,10 @@ const FRANK_SPARK_SEGMENTS = 5
 const frankSparkPoints: { x: number; y: number }[][] = [0, 1].map(() =>
   Array.from({ length: FRANK_SPARK_SEGMENTS + 1 }, () => ({ x: 0, y: 0 })),
 )
-let frankSparkJitterFrame = 0
+let frankSparkJitterBucket = -1
 
 type Phase = 'menu' | 'tutorial' | 'calibrating' | 'playing' | 'game_over'
+type LightningPhase = 'idle' | 'charge-cloud' | 'charge-leader' | 'charge-discharge' | 'strike-leader' | 'strike-receipt' | 'strike-discharge' | 'strike-impact'
 type TineCount = 1 | 2 | 3 | 4
 type VillagerState = 'waiting' | 'walking' | 'ash'
 
@@ -204,6 +218,16 @@ interface Bolt {
   toY: number
   life: number
   maxLife: number
+  seed: number
+  hue: number
+  villagerId: number
+  tineIndex: number
+}
+
+interface LightningPhaseTransition {
+  phase: LightningPhase
+  logicalMs: number
+  chargeProgress: number
 }
 
 type BurstKind = 'strike' | 'kill'
@@ -324,6 +348,8 @@ type VillagerView = Readonly<{
   notes: ReadonlyArray<string>
   burned: number
   state: VillagerState
+  visualBurn: number
+  visualState: VillagerState
   spawnIndex: number
   attackTimer: number
   attackTimerMax: number
@@ -465,6 +491,10 @@ interface Pf3DebugState {
   fsrsStoreKey: string
   newNoteUnlocked: string | null
   layoutMode: LayoutMode
+  lightningPhase: LightningPhase
+  boltCount: number
+  lightningBendDeg: number | null
+  lightningPhaseTrace: LightningPhaseTransition[]
 }
 
 declare global {
@@ -801,9 +831,14 @@ function buildViewState(args: BuildViewStateArgs): ViewState {
     gameOver: runtime.gameOver,
     villagers: runtime.villagers.map(v => {
       const isActive = activeVillagerId === v.id || activeKey.startsWith(`${v.id}:`)
+      const awaitingImpact = runtime.bolts.some(b => (
+        b.villagerId === v.id && b.life / b.maxLife < STRIKE_IMPACT_START
+      ))
+      const visualBurn = awaitingImpact ? Math.max(0, v.burned - 1) : v.burned
+      const visualState = awaitingImpact && v.state === 'ash' ? 'walking' : v.state
       const displayBurn = isActive
-        ? Math.max(v.burned, Math.min(v.totalTines, Math.round(chargeProgress * v.totalTines)))
-        : v.burned
+        ? Math.max(visualBurn, Math.min(v.totalTines, Math.round(chargeProgress * v.totalTines)))
+        : visualBurn
       const activeNote = v.notes[Math.min(v.burned, v.notes.length - 1)]
       const mem = fsrsMemory[activeNote] ?? createNote(activeNote)
       const soulR = currentR(mem)
@@ -819,6 +854,8 @@ function buildViewState(args: BuildViewStateArgs): ViewState {
         notes: [...v.notes],
         burned: v.burned,
         state: v.state,
+        visualBurn,
+        visualState,
         spawnIndex: v.spawnIndex,
         attackTimer: v.attackTimer,
         attackTimerMax: v.attackTimerMax,
@@ -894,28 +931,244 @@ function freezeViewStateForDebug(view: ViewState, debug: boolean): ViewState {
   return view
 }
 
-function drawBoltView(ctx: CanvasRenderingContext2D, b: BoltView) {
-  const t = 1 - b.life / b.maxLife
+function lightningPhaseFor(chargeProgress: number, bolt?: BoltView): LightningPhase {
+  if (bolt) {
+    const age = clamp(bolt.life / bolt.maxLife, 0, 1)
+    if (age < STRIKE_LEADER_END) return 'strike-leader'
+    if (age < STRIKE_RECEIPT_END) return 'strike-receipt'
+    if (age < STRIKE_IMPACT_START) return 'strike-discharge'
+    return 'strike-impact'
+  }
+  if (chargeProgress <= 0) return 'idle'
+  if (chargeProgress < CHARGE_LEADER_START) return 'charge-cloud'
+  if (chargeProgress < CHARGE_DISCHARGE_START) return 'charge-leader'
+  return 'charge-discharge'
+}
+
+function circuitNoise(seed: number, index: number, bucket: number) {
+  const wave = Math.sin(seed * 12.9898 + index * 78.233 + bucket * 37.719) * 43758.5453
+  return wave - Math.floor(wave)
+}
+
+function lightningBendDeg(bolt?: BoltView): number | null {
+  if (!bolt) return null
+  const inX = bolt.pivotX - bolt.fromX
+  const inY = bolt.pivotY - bolt.fromY
+  const outX = CIRCUIT_RELAY_X
+  const outY = CIRCUIT_RELAY_Y
+  const lengths = Math.hypot(inX, inY) * Math.hypot(outX, outY)
+  if (lengths <= 0) return null
+  const cos = clamp((inX * outX + inY * outY) / lengths, -1, 1)
+  return Math.acos(cos) * (180 / Math.PI)
+}
+
+function drawCircuitLeg(
+  ctx: CanvasRenderingContext2D,
+  fromX: number,
+  fromY: number,
+  toX: number,
+  toY: number,
+  reveal: number,
+  seed: number,
+  bucket: number,
+  alpha: number,
+  hot: boolean,
+  branched: boolean,
+  reducedMotion: boolean,
+) {
+  const shown = clamp(reveal, 0, 1)
+  if (shown <= 0 || alpha <= 0) return
+  const dx = toX - fromX
+  const dy = toY - fromY
+  const distance = Math.max(1, Math.hypot(dx, dy))
+  const nx = -dy / distance
+  const ny = dx / distance
+  const segments = Math.max(5, Math.min(14, Math.round(distance / 24)))
+  const visibleSegments = Math.max(1, Math.ceil(segments * shown))
+  const jitter = reducedMotion
+    ? 0
+    : hot
+      ? Math.min(38, Math.max(19, distance * 0.068))
+      : Math.min(16, Math.max(7, distance * 0.08))
+
   ctx.save()
-  ctx.globalAlpha = Math.max(0, t)
   ctx.lineCap = 'round'
   ctx.lineJoin = 'round'
-  const jitter = () => (Math.random() - 0.5) * 10
-  for (const width of [10, 5, 2]) {
-    ctx.strokeStyle = width === 2 ? '#ffffff' : width === 5 ? '#9fe7ff' : 'rgba(80, 190, 255, 0.32)'
-    ctx.lineWidth = width
+  for (let pass = 0; pass < 3; pass++) {
+    let wander = (circuitNoise(seed + 73, 0, bucket) - 0.5) * 0.8
+    let priorT = 0
+    let priorOffset = 0
     ctx.beginPath()
-    ctx.moveTo(b.fromX, b.fromY)
-    ctx.lineTo((b.fromX + b.pivotX) / 2 + jitter(), (b.fromY + b.pivotY) / 2 + jitter())
-    ctx.lineTo(b.pivotX, b.pivotY)
-    ctx.lineTo((b.pivotX + b.toX) / 2 + jitter(), (b.pivotY + b.toY) / 2 + jitter())
-    ctx.lineTo(b.toX, b.toY)
+    ctx.moveTo(fromX, fromY)
+    for (let i = 1; i <= visibleSegments; i++) {
+      const spacing = (circuitNoise(seed + 29, i, bucket) - 0.5) * 0.7
+      const naturalT = clamp((i + spacing) / segments, 0, 1)
+      const minT = priorT + 0.24 / segments
+      const maxT = shown - ((visibleSegments - i) * 0.44) / segments
+      const t = i === visibleSegments ? shown : clamp(naturalT, minT, Math.max(minT, maxT))
+      const envelope = Math.sin(Math.PI * t)
+      wander = clamp(wander * 0.22 + (circuitNoise(seed + 41, i, bucket) - 0.5) * 1.58, -1, 1)
+      const drift = (circuitNoise(seed + 19, i, bucket) - 0.5) * 0.24
+      const harmonic = Math.sin(i * 1.47 + seed * 0.07 + bucket * 0.31) * 0.3
+      const candidateOffset = (wander * 0.95 + harmonic + drift) * jitter * envelope
+      const maxOffsetDelta = Math.max(4, (t - priorT) * distance * (hot ? 1.1 : 0.9))
+      const offset = t >= 0.999
+        ? 0
+        : clamp(candidateOffset, priorOffset - maxOffsetDelta, priorOffset + maxOffsetDelta)
+      ctx.lineTo(fromX + dx * t + nx * offset, fromY + dy * t + ny * offset)
+      priorT = t
+      priorOffset = offset
+    }
+    if (pass === 0) {
+      ctx.strokeStyle = hot ? `rgba(14,165,233,${alpha * 0.46})` : `rgba(59,130,246,${alpha * 0.28})`
+      ctx.lineWidth = hot ? 11 : 7
+    } else if (pass === 1) {
+      ctx.strokeStyle = hot ? `rgba(125,211,252,${alpha * 0.88})` : `rgba(147,197,253,${alpha * 0.62})`
+      ctx.lineWidth = hot ? 4.5 : 3
+    } else {
+      ctx.strokeStyle = `rgba(255,255,255,${alpha * (hot ? 0.94 : 0.72)})`
+      ctx.lineWidth = hot ? 1.6 : 1
+    }
     ctx.stroke()
   }
-  ctx.fillStyle = 'rgba(255,255,255,0.9)'
+
+  if (hot && branched && !reducedMotion && shown > 0.58) {
+    for (let branch = 0; branch < 4; branch++) {
+      const t = Math.min(shown, 0.48 + branch * 0.12)
+      if (t >= shown) continue
+      const envelope = Math.sin(Math.PI * t)
+      const offset = (circuitNoise(seed, 30 + branch, bucket) - 0.5) * jitter * envelope
+      const ax = fromX + dx * t + nx * offset
+      const ay = fromY + dy * t + ny * offset
+      const direction = circuitNoise(seed, 40 + branch, bucket) < 0.5 ? -1 : 1
+      const length = 20 + circuitNoise(seed, 50 + branch, bucket) * 18
+      const along = 4 + circuitNoise(seed, 60 + branch, bucket) * 8
+      const midX = ax + nx * length * 0.58 * direction + (dx / distance) * along
+      const midY = ay + ny * length * 0.58 * direction + (dy / distance) * along
+      const bend = (circuitNoise(seed, 70 + branch, bucket) - 0.5) * 0.8
+      const bx = midX + nx * length * 0.42 * (direction + bend) + (dx / distance) * along * 0.7
+      const by = midY + ny * length * 0.42 * (direction + bend) + (dy / distance) * along * 0.7
+      ctx.beginPath()
+      ctx.moveTo(ax, ay)
+      ctx.lineTo(midX, midY)
+      ctx.lineTo(bx, by)
+      ctx.strokeStyle = `rgba(125,211,252,${alpha * 0.62})`
+      ctx.lineWidth = 3
+      ctx.stroke()
+      ctx.strokeStyle = `rgba(255,255,255,${alpha * 0.76})`
+      ctx.lineWidth = 1
+      ctx.stroke()
+    }
+  }
+  ctx.restore()
+}
+
+function drawStormCloudView(ctx: CanvasRenderingContext2D, view: ViewState, assets: Assets) {
+  const bolt = view.bolts[view.bolts.length - 1]
+  const charge = view.charge.progress
+  if (charge <= 0 && !bolt) return
+  const pivotX = FRANK_X + assets.frankMeta.rod_tip.x * FRANK_SPRITE_SCALE
+  const pivotY = FRANK_Y + assets.frankMeta.rod_tip.y * FRANK_SPRITE_SCALE
+  const cloudX = bolt?.fromX ?? pivotX + FRANK_CLOUD_X_OFFSET
+  const cloudY = bolt?.fromY ?? FRANK_CLOUD_Y
+  const boltAge = bolt ? clamp(bolt.life / bolt.maxLife, 0, 1) : 0
+  const spent = bolt ? clamp((boltAge - STRIKE_RECEIPT_END) / (1 - STRIKE_RECEIPT_END), 0, 1) : 0
+  const power = Math.max(charge, bolt ? 1 - boltAge * 0.45 : 0)
+  const cloudAlpha = (0.24 + power * 0.58) * (1 - spent * 0.62)
+  const bucket = bolt ? Math.floor(bolt.life / CIRCUIT_BUCKET_S) : Math.floor(charge * 20)
+
+  ctx.save()
+  const glow = ctx.createRadialGradient(cloudX, cloudY - 8, 2, cloudX, cloudY - 8, 54)
+  glow.addColorStop(0, `rgba(125,211,252,${cloudAlpha * 0.34})`)
+  glow.addColorStop(1, 'rgba(30,64,175,0)')
+  ctx.fillStyle = glow
+  ctx.fillRect(cloudX - 56, cloudY - 58, 112, 92)
+  for (let i = 0; i < 5; i++) {
+    const x = cloudX + (i - 2) * 12
+    const y = cloudY - 11 - (i % 2) * 5
+    const radiusX = 17 - Math.abs(i - 2) * 1.5
+    const radiusY = 10 + (i % 2) * 2
+    ctx.fillStyle = `rgba(${30 + i * 4},${38 + i * 4},${61 + i * 6},${cloudAlpha})`
+    ctx.beginPath()
+    ctx.ellipse(x, y, radiusX, radiusY, 0, 0, Math.PI * 2)
+    ctx.fill()
+  }
+  ctx.fillStyle = `rgba(8,15,30,${cloudAlpha * 0.94})`
   ctx.beginPath()
-  ctx.arc(b.toX, b.toY, 5 + 10 * t, 0, Math.PI * 2)
+  ctx.ellipse(cloudX, cloudY - 4, 37, 11, 0, 0, Math.PI * 2)
   ctx.fill()
+
+  if (charge >= CHARGE_LEADER_START) {
+    const reveal = clamp((charge - CHARGE_LEADER_START) / (CHARGE_DISCHARGE_START - CHARGE_LEADER_START), 0, 1)
+    drawCircuitLeg(ctx, cloudX, cloudY, pivotX, pivotY, reveal, 71, bucket, 0.2 + charge * 0.48, false, false, view.reducedMotion)
+  }
+  ctx.restore()
+}
+
+function drawBoltView(ctx: CanvasRenderingContext2D, b: BoltView, reducedMotion: boolean) {
+  const age = clamp(b.life / b.maxLife, 0, 1)
+  const bucket = Math.floor(b.life / CIRCUIT_BUCKET_S)
+  const relayX = b.pivotX + CIRCUIT_RELAY_X
+  const relayY = b.pivotY + CIRCUIT_RELAY_Y
+  const phase = lightningPhaseFor(0, b)
+  const fade = 1 - Math.pow(age, 2.2)
+  const leaderReveal = reducedMotion ? 1 : clamp(age / STRIKE_LEADER_END, 0, 1)
+  const receiptProgress = clamp((age - STRIKE_LEADER_END) / (STRIKE_RECEIPT_END - STRIKE_LEADER_END), 0, 1)
+  const dischargeReveal = reducedMotion ? 1 : clamp((age - STRIKE_RECEIPT_END) / (STRIKE_IMPACT_START - STRIKE_RECEIPT_END), 0, 1)
+  const impactProgress = clamp((age - STRIKE_IMPACT_START) / (1 - STRIKE_IMPACT_START), 0, 1)
+  const incomingAlpha = phase === 'strike-leader' ? 0.95 : phase === 'strike-receipt' ? 0.62 : 0.2 * fade
+  const outgoingAlpha = phase === 'strike-impact' ? 0.42 * fade : 0.98
+
+  ctx.save()
+  drawCircuitLeg(ctx, b.fromX, b.fromY, b.pivotX, b.pivotY, leaderReveal, b.seed, bucket, incomingAlpha, false, false, reducedMotion)
+
+  if (phase !== 'strike-leader' || reducedMotion) {
+    const relayAlpha = reducedMotion ? 0.9 : phase === 'strike-receipt' ? Math.sin(receiptProgress * Math.PI) * 0.95 : 0.5 * fade
+    if (relayAlpha > 0.02) {
+      const relayGlow = ctx.createRadialGradient(b.pivotX, b.pivotY, 1, b.pivotX, b.pivotY, 24)
+      relayGlow.addColorStop(0, `hsla(${b.hue},100%,88%,${relayAlpha * 0.72})`)
+      relayGlow.addColorStop(0.35, `hsla(${b.hue},100%,62%,${relayAlpha * 0.38})`)
+      relayGlow.addColorStop(1, `hsla(${b.hue},100%,50%,0)`)
+      ctx.fillStyle = relayGlow
+      ctx.beginPath()
+      ctx.arc(b.pivotX, b.pivotY, 24, 0, Math.PI * 2)
+      ctx.fill()
+    }
+    ctx.strokeStyle = `rgba(255,255,255,${relayAlpha})`
+    ctx.lineWidth = 3.4
+    ctx.beginPath()
+    ctx.moveTo(b.pivotX, b.pivotY)
+    ctx.lineTo(relayX, relayY)
+    ctx.stroke()
+    ctx.strokeStyle = `hsla(${b.hue},100%,72%,${relayAlpha * 0.92})`
+    ctx.lineWidth = 2.8
+    ctx.beginPath()
+    ctx.arc(b.pivotX, b.pivotY, 7 + receiptProgress * 5, 0, Math.PI * 2)
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.moveTo(b.pivotX - 8, b.pivotY)
+    ctx.lineTo(b.pivotX + 8, b.pivotY)
+    ctx.moveTo(b.pivotX, b.pivotY - 8)
+    ctx.lineTo(b.pivotX, b.pivotY + 8)
+    ctx.stroke()
+  }
+
+  if (phase === 'strike-discharge' || phase === 'strike-impact' || reducedMotion) {
+    drawCircuitLeg(ctx, relayX, relayY, b.toX, b.toY, dischargeReveal, b.seed + 97, bucket, outgoingAlpha, true, true, reducedMotion)
+  }
+
+  if (phase === 'strike-impact' || reducedMotion) {
+    const impactAlpha = reducedMotion ? 0.9 : Math.max(0, (1 - impactProgress) * 0.92)
+    const impactRadius = reducedMotion ? 10 : 6 + impactProgress * 22
+    const impact = ctx.createRadialGradient(b.toX, b.toY, 0, b.toX, b.toY, impactRadius)
+    impact.addColorStop(0, `hsla(${b.hue},100%,92%,${impactAlpha})`)
+    impact.addColorStop(0.35, `hsla(${b.hue},100%,65%,${impactAlpha * 0.72})`)
+    impact.addColorStop(1, `hsla(${b.hue},100%,50%,0)`)
+    ctx.fillStyle = impact
+    ctx.beginPath()
+    ctx.arc(b.toX, b.toY, impactRadius, 0, Math.PI * 2)
+    ctx.fill()
+  }
   ctx.restore()
 }
 
@@ -929,7 +1182,7 @@ function drawBoltView(ctx: CanvasRenderingContext2D, b: BoltView) {
 // would touch code the ring-render path already ships verified.
 function drawChargeArcView(ctx: CanvasRenderingContext2D, view: ViewState, assets: Assets) {
   const progress = view.charge.progress
-  if (!view.active || progress <= 0) return
+  if (!view.active || progress < CHARGE_DISCHARGE_START) return
   const villager = view.villagers.find(v => v.id === view.active?.villagerId)
   if (!villager) return
   const meta = assets.villagerMeta[villager.totalTines]
@@ -940,30 +1193,48 @@ function drawChargeArcView(ctx: CanvasRenderingContext2D, view: ViewState, asset
   const rawY = villager.y + tine.y * SPRITE_SCALE
   const target = rotateAroundPivot(rawX, rawY, forkPivotX, forkPivotY, FORK_LEAN_DEG)
 
-  const originX = FRANK_X + assets.frankMeta.rod_tip.x * FRANK_SPRITE_SCALE
-  const originY = FRANK_Y + assets.frankMeta.rod_tip.y * FRANK_SPRITE_SCALE
+  const pivotX = FRANK_X + assets.frankMeta.rod_tip.x * FRANK_SPRITE_SCALE
+  const pivotY = FRANK_Y + assets.frankMeta.rod_tip.y * FRANK_SPRITE_SCALE
+  const originX = pivotX + CIRCUIT_RELAY_X
+  const originY = pivotY + CIRCUIT_RELAY_Y
+  const dischargeProgress = clamp((progress - CHARGE_DISCHARGE_START) / (1 - CHARGE_DISCHARGE_START), 0, 1)
+  const reveal = dischargeProgress * CHARGE_PRELOCK_REVEAL_MAX
+  const shownTargetX = originX + (target.x - originX) * reveal
+  const shownTargetY = originY + (target.y - originY) * reveal
 
   const lite = chargeArcQuality === 'lite'
   const maxSegments = lite ? 8 : CHARGE_ARC_MAX_SEGMENTS
   const minSegments = lite ? 3 : 4
-  const segments = Math.max(minSegments, Math.min(maxSegments, Math.round(minSegments + progress * (maxSegments - minSegments))))
-  const jitterMag = 3 + progress * 9
+  const segments = Math.max(minSegments, Math.min(maxSegments, Math.round(minSegments + dischargeProgress * (maxSegments - minSegments))))
+  const jitterMag = 7 + dischargeProgress * 20
+  const jitterBucket = Math.floor(progress * 20)
+  const activeDx = shownTargetX - originX
+  const activeDy = shownTargetY - originY
+  const activeDistance = Math.max(1, Math.hypot(activeDx, activeDy))
+  const activeNx = -activeDy / activeDistance
+  const activeNy = activeDx / activeDistance
 
-  // Jitter refresh throttled to ~20Hz at 60fps (every 3rd frame) — CW: cheaper AND
-  // avoids strobe. Buffer is pre-allocated (module scope) and mutated in place, never
-  // reallocated per frame.
-  chargeArcJitterFrame++
+  // Jitter refresh is quantized to 20 logical charge buckets. The bucket derives
+  // from real charge progress rather than rAF time, so identical
+  // held states reproduce across devices. The pre-allocated buffer remains hot-path safe.
   const stale = chargeArcPoints[0].x === 0 && chargeArcPoints[0].y === 0
-  if (stale || chargeArcJitterFrame % 3 === 0) {
+  if (stale || chargeArcJitterBucket !== jitterBucket || chargeArcSegmentCount !== segments) {
+    chargeArcJitterBucket = jitterBucket
+    chargeArcSegmentCount = segments
     chargeArcPoints[0].x = originX
     chargeArcPoints[0].y = originY
+    let wander = (circuitNoise(433, 0, jitterBucket) - 0.5) * 0.8
     for (let i = 1; i < segments; i++) {
-      const t = i / segments
-      chargeArcPoints[i].x = originX + (target.x - originX) * t + (Math.random() - 0.5) * jitterMag
-      chargeArcPoints[i].y = originY + (target.y - originY) * t + (Math.random() - 0.5) * jitterMag
+      const spacing = (circuitNoise(271, i, jitterBucket) - 0.5) * 0.7
+      const t = clamp((i + spacing) / segments, 0, 1)
+      wander = clamp(wander * 0.2 + (circuitNoise(419, i, jitterBucket) - 0.5) * 1.58, -1, 1)
+      const harmonic = Math.sin(i * 1.53 + jitterBucket * 0.37) * 0.3
+      const offset = (wander * 0.96 + harmonic) * jitterMag * Math.sin(Math.PI * t)
+      chargeArcPoints[i].x = originX + activeDx * t + activeNx * offset
+      chargeArcPoints[i].y = originY + activeDy * t + activeNy * offset
     }
-    chargeArcPoints[segments].x = target.x
-    chargeArcPoints[segments].y = target.y
+    chargeArcPoints[segments].x = shownTargetX
+    chargeArcPoints[segments].y = shownTargetY
 
     // Branch density, length, and detail all ride the existing segment scale so the
     // forks build with the real charge. Lite/reduced-motion paths pay no branch draw.
@@ -973,7 +1244,7 @@ function drawChargeArcView(ctx: CanvasRenderingContext2D, view: ViewState, asset
       const segmentScale = (segments - minSegments) / (maxSegments - minSegments)
       chargeArcBranchCount = 2 + Math.round(segmentScale * (CHARGE_ARC_MAX_BRANCHES - 2))
       chargeArcBranchSegments = 2 + Math.round(segmentScale * (CHARGE_ARC_MAX_BRANCH_SEGMENTS - 2))
-      const branchLengthScale = 0.15 + segmentScale * 0.15
+      const branchLengthScale = 0.55 + segmentScale * 0.4
 
       for (let branch = 0; branch < chargeArcBranchCount; branch++) {
         const anchorIndex = Math.max(
@@ -986,16 +1257,16 @@ function drawChargeArcView(ctx: CanvasRenderingContext2D, view: ViewState, asset
         const localDx = after.x - before.x
         const localDy = after.y - before.y
         const localSegmentLength = Math.hypot(localDx, localDy) / 2
-        const forkDirection = Math.random() < 0.5 ? -1 : 1
+        const forkDirection = circuitNoise(401, branch, jitterBucket) < 0.5 ? -1 : 1
         const forkAngle =
           Math.atan2(localDy, localDx) +
-          forkDirection * (20 + Math.random() * 25) * (Math.PI / 180)
+          forkDirection * (20 + circuitNoise(503, branch, jitterBucket) * 25) * (Math.PI / 180)
         const branchSegmentLength = localSegmentLength * branchLengthScale
         const points = chargeArcBranchPoints[branch]
         points[0].x = anchor.x
         points[0].y = anchor.y
         for (let point = 1; point <= chargeArcBranchSegments; point++) {
-          const stepAngle = forkAngle + (Math.random() - 0.5) * 0.32
+          const stepAngle = forkAngle + (circuitNoise(601 + branch, point, jitterBucket) - 0.5) * 0.32
           points[point].x = points[point - 1].x + Math.cos(stepAngle) * branchSegmentLength
           points[point].y = points[point - 1].y + Math.sin(stepAngle) * branchSegmentLength
         }
@@ -1005,28 +1276,43 @@ function drawChargeArcView(ctx: CanvasRenderingContext2D, view: ViewState, asset
 
   // Peak alpha kept below the strike-flash's (drawBoltView) so the release still
   // reads as the event, not lost in the buildup (CW: strike-swallow risk).
-  const alpha = 0.16 + progress * 0.4
+  const alpha = 0.18 + dischargeProgress * 0.52
   ctx.save()
   ctx.lineCap = 'round'
   ctx.lineJoin = 'round'
+  const relayAlpha = 0.34 + dischargeProgress * 0.5
+  ctx.strokeStyle = `rgba(255,255,255,${relayAlpha})`
+  ctx.lineWidth = 2
+  ctx.beginPath()
+  ctx.moveTo(pivotX, pivotY)
+  ctx.lineTo(originX, originY)
+  ctx.stroke()
+  ctx.strokeStyle = `rgba(125,211,252,${relayAlpha * 0.8})`
+  ctx.beginPath()
+  ctx.arc(pivotX, pivotY, 5 + dischargeProgress * 3, 0, Math.PI * 2)
+  ctx.stroke()
   ctx.beginPath()
   ctx.moveTo(chargeArcPoints[0].x, chargeArcPoints[0].y)
   for (let i = 1; i <= segments; i++) ctx.lineTo(chargeArcPoints[i].x, chargeArcPoints[i].y)
 
   ctx.globalCompositeOperation = 'source-over'
+  ctx.shadowColor = `rgba(80,190,255,${alpha * 0.72})`
+  ctx.shadowBlur = lite ? 4 : 9
   ctx.strokeStyle = `rgba(80,190,255,${alpha * 0.5})`
-  ctx.lineWidth = lite ? 3 : 4
+  ctx.lineWidth = lite ? 5 : 11
   ctx.stroke()
 
+  ctx.shadowBlur = lite ? 2 : 5
   ctx.strokeStyle = `rgba(159,231,255,${alpha * 0.82})`
-  ctx.lineWidth = lite ? 1.5 : 2
+  ctx.lineWidth = lite ? 2.5 : 4.5
   ctx.stroke()
 
   if (!lite) {
     // additive-blend white core, limited to this one layer only (CW: cost control)
     ctx.globalCompositeOperation = 'lighter'
+    ctx.shadowBlur = 0
     ctx.strokeStyle = `rgba(255,255,255,${alpha})`
-    ctx.lineWidth = 1
+    ctx.lineWidth = 1.6
     ctx.stroke()
   }
 
@@ -1040,15 +1326,15 @@ function drawChargeArcView(ctx: CanvasRenderingContext2D, view: ViewState, asset
       }
     }
     ctx.globalCompositeOperation = 'source-over'
-    ctx.strokeStyle = `rgba(80,190,255,${alpha * 0.28})`
+    ctx.strokeStyle = `rgba(80,190,255,${alpha * 0.42})`
+    ctx.lineWidth = 4
+    ctx.stroke()
+    ctx.strokeStyle = `rgba(159,231,255,${alpha * 0.68})`
     ctx.lineWidth = 2
     ctx.stroke()
-    ctx.strokeStyle = `rgba(159,231,255,${alpha * 0.5})`
-    ctx.lineWidth = 1
-    ctx.stroke()
     ctx.globalCompositeOperation = 'lighter'
-    ctx.strokeStyle = `rgba(255,255,255,${alpha * 0.55})`
-    ctx.lineWidth = 0.5
+    ctx.strokeStyle = `rgba(255,255,255,${alpha * 0.7})`
+    ctx.lineWidth = 0.85
     ctx.stroke()
   }
   ctx.restore()
@@ -1103,12 +1389,10 @@ function drawFrankChargeView(ctx: CanvasRenderingContext2D, view: ViewState, ass
   const pixelUnit = SPRITE_SCALE
   const snap = (v: number) => Math.round(v / pixelUnit) * pixelUnit
 
-  // Argus video-review consult: crackle rate now accelerates with charge — every
-  // 4th frame near-empty (a faint early tell), down to every frame near-full (a
-  // rapid crackle), instead of a flat every-3rd-frame flicker throughout the hold.
-  frankSparkJitterFrame++
-  const refreshInterval = Math.max(1, Math.round(4 - progress * 3))
-  const refresh = frankSparkJitterFrame % refreshInterval === 0 || frankSparkPoints[0][0].x === 0
+  // R3: logical charge buckets keep the relay crackle reproducible across devices.
+  const sparkBucket = Math.floor(progress * 20)
+  const refresh = frankSparkJitterBucket !== sparkBucket || frankSparkPoints[0][0].x === 0
+  if (refresh) frankSparkJitterBucket = sparkBucket
 
   ctx.save()
   ctx.globalCompositeOperation = 'lighter'
@@ -1118,15 +1402,15 @@ function drawFrankChargeView(ctx: CanvasRenderingContext2D, view: ViewState, ass
     if (refresh) {
       // mostly-upward direction (-90deg) with per-refresh random lean, not a fixed
       // near-horizontal shape — reads as actively arcing, not a static wing/pin.
-      const angle = -Math.PI / 2 + anchor.outDir * (0.35 + Math.random() * 0.5)
+      const angle = -Math.PI / 2 + anchor.outDir * (0.35 + circuitNoise(701 + a, 0, sparkBucket) * 0.5)
       const dx = Math.cos(angle)
       const dy = Math.sin(angle)
       points[0].x = anchor.x
       points[0].y = anchor.y
       for (let i = 1; i <= FRANK_SPARK_SEGMENTS; i++) {
         const t = i / FRANK_SPARK_SEGMENTS
-        points[i].x = anchor.x + dx * t * sparkReach + (Math.random() - 0.5) * pixelUnit * 1.5
-        points[i].y = anchor.y + dy * t * sparkReach + (Math.random() - 0.5) * pixelUnit * 1.5
+        points[i].x = anchor.x + dx * t * sparkReach + (circuitNoise(809 + a, i, sparkBucket) - 0.5) * pixelUnit * 1.5
+        points[i].y = anchor.y + dy * t * sparkReach + (circuitNoise(907 + a, i, sparkBucket) - 0.5) * pixelUnit * 1.5
       }
     }
     ctx.fillStyle = `rgba(159,231,255,${sparkAlpha})`
@@ -1140,6 +1424,7 @@ function drawFrankChargeView(ctx: CanvasRenderingContext2D, view: ViewState, ass
 }
 
 function drawBurstView(ctx: CanvasRenderingContext2D, b: BurstView) {
+  if (b.life < 0) return
   const progress = clamp(b.life / b.maxLife, 0, 1)
   const fade = Math.max(0, 1 - progress)
   const ease = 1 - Math.pow(1 - progress, 3)
@@ -1188,10 +1473,10 @@ function drawVillagerView(ctx: CanvasRenderingContext2D, v: VillagerView, view: 
   const sh = meta.frame_h * SPRITE_SCALE
   let img: HTMLImageElement | undefined
   let strip = false
-  if (v.state === 'ash' || v.burned >= v.totalTines) {
+  if (v.visualState === 'ash' || v.visualBurn >= v.totalTines) {
     img = assets.ashLeft[v.totalTines]
-  } else if (v.burned > 0) {
-    img = assets.burnedLeft[`${v.totalTines}_${v.burned}`]
+  } else if (v.visualBurn > 0) {
+    img = assets.burnedLeft[`${v.totalTines}_${v.visualBurn}`]
   } else {
     img = assets.walkLeft[v.totalTines]
     strip = true
@@ -1217,11 +1502,11 @@ function drawVillagerView(ctx: CanvasRenderingContext2D, v: VillagerView, view: 
     ctx.drawImage(img, spriteX, spriteY, sw, sh)
   }
 
-  if (v.state !== 'walking') return
+  if (v.visualState !== 'walking') return
   const progress = v.active ? view.charge.progress : 0
   const forkKey = `${v.totalTines}_${v.displayBurn}`
-  const baseImg = assets.fork[forkKey] ?? assets.fork[`${v.totalTines}_${v.burned}`]
-  const glowImg = assets.forkGlow[forkKey] ?? assets.forkGlow[`${v.totalTines}_${v.burned}`]
+  const baseImg = assets.fork[forkKey] ?? assets.fork[`${v.totalTines}_${v.visualBurn}`]
+  const glowImg = assets.forkGlow[forkKey] ?? assets.forkGlow[`${v.totalTines}_${v.visualBurn}`]
   const forkMeta = assets.forkMeta[v.totalTines]
   const forkW = forkMeta.frame_w * SPRITE_SCALE
   const forkH = forkMeta.frame_h * SPRITE_SCALE
@@ -1276,7 +1561,7 @@ function drawVillagerView(ctx: CanvasRenderingContext2D, v: VillagerView, view: 
   }
 
   if (v.active && view.noteNamesVisible) {
-    const note = v.notes[v.burned]
+    const note = v.notes[Math.min(v.visualBurn, v.notes.length - 1)]
     ctx.font = 'bold 14px monospace'
     ctx.textAlign = 'center'
     const lx = noteLabelAnchor.x
@@ -2076,6 +2361,7 @@ function renderView(ctx: CanvasRenderingContext2D, view: ViewState, assets: Asse
   ctx.save()
   ctx.translate(view.shake.x, view.shake.y)
   drawDungeonBackground(ctx, view.animClock)
+  drawStormCloudView(ctx, view, assets)
 
   // C5: always the real AI-sourced idle art. The prior charging?frankCharge:frankIdle
   // swap pointed at a stale session-1 placeholder (frankenstein_charging.png never got
@@ -2162,7 +2448,7 @@ function renderView(ctx: CanvasRenderingContext2D, view: ViewState, assets: Asse
   for (const v of ordered) drawVillagerView(ctx, v, view, assets)
   drawChargeArcView(ctx, view, assets)
   for (const burst of view.bursts) drawBurstView(ctx, burst)
-  for (const bolt of view.bolts) drawBoltView(ctx, bolt)
+  for (const bolt of view.bolts) drawBoltView(ctx, bolt, view.reducedMotion)
   ctx.restore()
 
   if (view.noteMastered) {
@@ -2408,6 +2694,7 @@ export default function PitchforksIII() {
   const lockWhileSuppressedRef = useRef(false)
   const micHudStateRef = useRef<MicHudState>('waiting')
   const viewStateRef = useRef<ViewState | null>(null)
+  const lightningPhaseTraceRef = useRef<LightningPhaseTransition[]>([])
 
   const [phase, setPhase] = useState<Phase>('menu')
   const [assetsReady, setAssetsReady] = useState(false)
@@ -3069,6 +3356,7 @@ export default function PitchforksIII() {
             Math.min(active.villager.totalTines, Math.round(lockProgressRef.current * active.villager.totalTines)),
           )
         : 0
+      const newestBolt = rt.bolts[rt.bolts.length - 1]
 
       return Object.freeze({
         demoStep: demoStepRef.current,
@@ -3122,6 +3410,10 @@ export default function PitchforksIII() {
         fsrsStoreKey: fsrsStorageKey(),
         newNoteUnlocked,
         layoutMode: layoutModeRef.current,
+        lightningPhase: lightningPhaseFor(lockProgressRef.current, newestBolt),
+        boltCount: rt.bolts.length,
+        lightningBendDeg: lightningBendDeg(newestBolt),
+        lightningPhaseTrace: lightningPhaseTraceRef.current.map(entry => ({ ...entry })),
       })
     }
     // fsrsDebug-gated test hook: drives the REAL grade/unlock path (autoGrade →
@@ -3268,7 +3560,7 @@ export default function PitchforksIII() {
     const v: Villager = {
       id: ++nextIdRef.current,
       totalTines,
-      x: rt.wave === 1 ? W + 60 + spawnIndex * 70 : W + 42 + lane * 18,
+      x: demoRef.current ? W - 150 : rt.wave === 1 ? W + 60 + spawnIndex * 70 : W + 42 + lane * 18,
       y: GROUND_Y - defaultVillagerMeta.frame_h * SPRITE_SCALE - lane * 6,
       speed: rt.plan.speed + lane * 1.8,
       notes,
@@ -3311,7 +3603,7 @@ export default function PitchforksIII() {
     setHud({ wave, health: rt.health, score: rt.score, streak: rt.streak })
   }, [clearWaveReceipt, setPromptText])
 
-  const addBolt = useCallback((villager: Villager, tineIndex: number) => {
+  const addBolt = useCallback((villager: Villager, tineIndex: number, hue: number) => {
     const a = assetsRef.current
     const frankMeta = a.frankMeta
     const vMeta = a.villagerMeta[villager.totalTines]
@@ -3324,14 +3616,18 @@ export default function PitchforksIII() {
     const rawToY = villager.y + tine.y * SPRITE_SCALE
     const { x: toX, y: toY } = rotateAroundPivot(rawToX, rawToY, forkPivotX, forkPivotY, FORK_LEAN_DEG)
     runtimeRef.current.bolts.push({
-      fromX: pivotX + 26,
-      fromY: 18,
+      fromX: pivotX + FRANK_CLOUD_X_OFFSET,
+      fromY: FRANK_CLOUD_Y,
       pivotX,
       pivotY,
       toX,
       toY,
       life: 0,
-      maxLife: 0.34,
+      maxLife: BOLT_LIFE_S,
+      seed: villager.id * 131 + tineIndex * 37 + Math.round(hue),
+      hue,
+      villagerId: villager.id,
+      tineIndex,
     })
   }, [])
 
@@ -3345,7 +3641,7 @@ export default function PitchforksIII() {
       hue,
       kind,
       seed: (villager.id * 37 + villager.burned * 19 + hue * 3 + (kind === 'kill' ? 137 : 0)) % 997,
-      life: 0,
+      life: -(BOLT_LIFE_S * STRIKE_IMPACT_START),
       maxLife: kind === 'kill' ? 0.58 : 0.26,
     })
   }, [])
@@ -3358,7 +3654,7 @@ export default function PitchforksIII() {
     reviewTargetNote(target, true)
     lastStrikeNoteRef.current = strikeNote ?? null
     lastStrikeHueRef.current = strikeHue
-    addBolt(villager, tineIndex)
+    addBolt(villager, tineIndex, strikeHue)
     addBurst(villager, strikeHue, 'strike')
     villager.burned += 1
     burnedTinesRef.current += 1
@@ -3581,6 +3877,17 @@ export default function PitchforksIII() {
     }
 
     processLock(dt)
+    const newestBolt = rt.bolts[rt.bolts.length - 1]
+    const lightningPhase = lightningPhaseFor(lockProgressRef.current, newestBolt)
+    const priorLightningPhase = lightningPhaseTraceRef.current[lightningPhaseTraceRef.current.length - 1]?.phase
+    if (priorLightningPhase !== lightningPhase) {
+      lightningPhaseTraceRef.current.push({
+        phase: lightningPhase,
+        logicalMs: Math.round(newestBolt ? newestBolt.life * 1000 : lockProgressRef.current * HOLD_MS),
+        chargeProgress: lockProgressRef.current,
+      })
+      if (lightningPhaseTraceRef.current.length > 80) lightningPhaseTraceRef.current.shift()
+    }
     const timersPaused = timersPausedNow()
     const active = getActiveTarget()
     if (active?.villager.state === 'walking' && !timersPaused) {
@@ -3613,7 +3920,7 @@ export default function PitchforksIII() {
 
     rt.villagers = rt.villagers.filter(v => v.state !== 'ash' || v.ashTimer > 0)
 
-    const waveClear = rt.spawned >= rt.plan.count && rt.villagers.every(v => v.state !== 'walking')
+    const waveClear = rt.spawned >= rt.plan.count && rt.villagers.every(v => v.state !== 'walking') && rt.bolts.length === 0
     if (waveClear && !rt.nextWavePending) {
       showWaveReceipt(snapshotWaveReceipt())
       rt.nextWavePending = true
@@ -3778,6 +4085,7 @@ export default function PitchforksIII() {
     clearWaveReceipt()
     runtimeRef.current = makeInitialRuntime(demoRef.current)
     viewStateRef.current = null
+    lightningPhaseTraceRef.current = []
     nextIdRef.current = 0
     waveNotesHeardRef.current = new Set()
     waveNotesSungRef.current = new Set()

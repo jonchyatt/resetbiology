@@ -19,6 +19,7 @@ import {
 } from 'lucide-react'
 import { visionMasterProgram } from '@/data/visionProtocols'
 import { visionExercises } from '@/data/visionExercises'
+import FirstSessionPreview from './FirstSessionPreview'
 
 interface CurriculumOverviewProps {
   onEnroll: () => void
@@ -38,8 +39,23 @@ const PHASE_CONFIG = {
 export default function CurriculumOverview({ onEnroll, enrolling }: CurriculumOverviewProps) {
   const [expandedWeek, setExpandedWeek] = useState<number | null>(1)
   const [showAllExercises, setShowAllExercises] = useState(false)
+  const [showPreview, setShowPreview] = useState(false)
+  const [previewDone, setPreviewDone] = useState(false)
 
   const program = visionMasterProgram
+
+  if (showPreview) {
+    return (
+      <FirstSessionPreview
+        onEnroll={onEnroll}
+        enrolling={enrolling}
+        onExit={() => {
+          setShowPreview(false)
+          setPreviewDone(true)
+        }}
+      />
+    )
+  }
 
   // Group weeks by phase
   const phases = program.weeklyPlans.reduce((acc, week) => {
@@ -94,6 +110,17 @@ export default function CurriculumOverview({ onEnroll, enrolling }: CurriculumOv
             <StatCard icon={Clock} label="Per Session" value="15-25 min" />
             <StatCard icon={Target} label="Exercises" value={`${usedExercises.length} Types`} />
           </div>
+
+          {/* W2b.1: proof-before-commitment — try one coached move before being asked to enroll */}
+          {!previewDone && (
+            <button
+              onClick={() => setShowPreview(true)}
+              className="mt-6 w-full sm:w-auto px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold rounded-xl transition-all duration-300 flex items-center justify-center gap-2"
+            >
+              <Play className="w-4 h-4" />
+              Try one move free — 90 seconds, no signup
+            </button>
+          )}
         </div>
       </div>
 
@@ -311,9 +338,13 @@ export default function CurriculumOverview({ onEnroll, enrolling }: CurriculumOv
 
       {/* CTA Section */}
       <div className="bg-gradient-to-r from-primary-600/30 to-secondary-600/30 backdrop-blur-sm rounded-xl p-8 border border-primary-400/30 shadow-2xl text-center">
-        <h2 className="text-2xl font-bold text-white mb-3">Ready to Transform Your Vision?</h2>
+        <h2 className="text-2xl font-bold text-white mb-3">
+          {previewDone ? 'Ready to Claim the Rest?' : 'Ready to Transform Your Vision?'}
+        </h2>
         <p className="text-gray-300 mb-6 max-w-xl mx-auto">
-          Join the 12-week program and follow a proven methodology for improving your eyesight naturally.
+          {previewDone
+            ? 'You already felt the first move. 59 more sessions, same coached format, real progress.'
+            : 'Join the 12-week program and follow a proven methodology for improving your eyesight naturally.'}
         </p>
         <button
           onClick={onEnroll}
@@ -323,12 +354,12 @@ export default function CurriculumOverview({ onEnroll, enrolling }: CurriculumOv
           {enrolling ? (
             <>
               <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              Starting Program...
+              Claiming...
             </>
           ) : (
             <>
               <Play className="w-5 h-5" />
-              Start 12-Week Program
+              {previewDone ? 'Claim Your Journey' : 'Start 12-Week Program'}
             </>
           )}
         </button>

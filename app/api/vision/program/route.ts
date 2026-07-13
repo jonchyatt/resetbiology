@@ -464,6 +464,20 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ success: true, message: 'Program resumed' })
     }
 
+    if (action === 'reset_program') {
+      // Full reset: delete all daily-session history for this enrollment, then the
+      // enrollment itself, returning the user to the pre-enrollment state so they
+      // can enroll again and start Week 1 Day 1 fresh. Additive-only doctrine (§4.7)
+      // covers new fields/tables, not a user-requested reset of their own data.
+      await prisma.visionDailySession.deleteMany({
+        where: { enrollmentId: enrollment.id }
+      })
+      await prisma.visionProgramEnrollment.delete({
+        where: { id: enrollment.id }
+      })
+      return NextResponse.json({ success: true, message: 'Program reset — ready to start over' })
+    }
+
     if (action === 'update_baselines') {
       await prisma.visionProgramEnrollment.update({
         where: { id: enrollment.id },
