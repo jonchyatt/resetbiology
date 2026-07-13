@@ -5,9 +5,13 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react'
 import {
-  NOTE_COLORS, createNote, reviewNote, autoGrade,
+  NOTE_COLORS, createNote,
   type NoteMemory,
 } from '@/lib/fsrs'
+import {
+  FSRS_EAR_KEY, FSRS_VOICE_KEY,
+  gradeEar, gradeVoice, loadStore, saveStore,
+} from '@/lib/fsrsFamily'
 import { INTRO_ORDER } from './types'
 import { usePitchDetection } from './usePitchDetection'
 import { initAudio, loadPianoSamples, playPianoNote } from './audioEngine'
@@ -18,9 +22,75 @@ import {
 } from './retroBlasterEngine'
 import { render } from './retroBlasterRenderer'
 
-const FSRS_KEY = 'pitch_fsrs_memory'
 const TUTORIAL_KEY = 'retro_tutorial_seen'
 const RETRO_DIFFICULTY_KEY = 'retro_difficulty'
+
+export interface RetroBlasterFamilyStores {
+  voice: Record<string, NoteMemory>
+  ear: Record<string, NoteMemory>
+}
+
+export function loadRetroBlasterFamilyStores(): RetroBlasterFamilyStores {
+  return {
+    voice: loadStore(FSRS_VOICE_KEY),
+    ear: loadStore(FSRS_EAR_KEY),
+  }
+}
+
+export function activeLaneStore(
+  stores: RetroBlasterFamilyStores,
+  inputMode: InputMode,
+): Record<string, NoteMemory> {
+  return inputMode === 'mic' ? stores.voice : stores.ear
+}
+
+/** Apply the persistence-bearing part of the real engine-event shell seam. */
+export function applyRetroBlasterFamilyEvent(
+  event: EngineEvent,
+  inputMode: InputMode,
+  stores: RetroBlasterFamilyStores,
+): boolean {
+  const store = activeLaneStore(stores, inputMode)
+  const key = inputMode === 'mic' ? FSRS_VOICE_KEY : FSRS_EAR_KEY
+
+  if (event.kind === 'grade') {
+    if (inputMode === 'mic') gradeVoice(store, event.note, event.correct, event.latencyMs)
+    else gradeEar(store, event.note, event.correct, event.latencyMs)
+    saveStore(key, store)
+    return true
+  }
+  if (event.kind === 'unlock') {
+    if (!store[event.note]) store[event.note] = createNote(event.note)
+    return true
+  }
+  return false
+}
+
+export function buildRetroBlasterState(
+  difficulty: Difficulty,
+  inputMode: InputMode,
+  stores: RetroBlasterFamilyStores,
+  clockMs: number,
+): GameState {
+  const store = activeLaneStore(stores, inputMode)
+  const reviewed = new Set(
+    Object.entries(store).filter(([, memory]) => memory.lastReview > 0).map(([note]) => note)
+  )
+  const restored: string[] = []
+  for (const note of INTRO_ORDER) {
+    if (reviewed.has(note)) restored.push(note)
+    else break
+  }
+  const unlocked = restored.length >= INITIAL_UNLOCK
+    ? restored
+    : INTRO_ORDER.slice(0, INITIAL_UNLOCK) as unknown as string[]
+  for (const note of unlocked) {
+    if (!store[note]) store[note] = createNote(note)
+  }
+  const state = createInitialState(difficulty, unlocked, clockMs)
+  beginWave(state, store)
+  return state
+}
 
 let _sfxCtx: AudioContext | null = null
 function sfxCtx(): AudioContext {
@@ -60,7 +130,7 @@ function sfxExplosion() {
 export default function RetroBlasterII() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const stateRef = useRef<GameState | null>(null)
-  const fsrsRef = useRef<Record<string, NoteMemory>>({})
+  const familyStoresRef = useRef<RetroBlasterFamilyStores>({ voice: {}, ear: {} })
   const rafRef = useRef(0)
   const lastTimeRef = useRef(0)
   const notePlayTimeRef = useRef(0)
@@ -80,10 +150,7 @@ export default function RetroBlasterII() {
   useEffect(() => { listeningRef.current = isListening }, [isListening])
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(FSRS_KEY)
-      if (raw) fsrsRef.current = JSON.parse(raw)
-    } catch {}
+    familyStoresRef.current = loadRetroBlasterFamilyStores()
     try {
       const d = localStorage.getItem(RETRO_DIFFICULTY_KEY)
       if (d === 'easy' || d === 'true') setDifficulty(d)
@@ -93,14 +160,8 @@ export default function RetroBlasterII() {
 
   const applyEvents = useCallback((events: EngineEvent[], gs: GameState) => {
     for (const event of events) {
-      if (event.kind === 'grade') {
-        if (!fsrsRef.current[event.note]) fsrsRef.current[event.note] = createNote(event.note)
-        const grade = autoGrade(event.correct, event.latencyMs)
-        fsrsRef.current[event.note] = reviewNote(fsrsRef.current[event.note], grade)
-        try { localStorage.setItem(FSRS_KEY, JSON.stringify(fsrsRef.current)) } catch {}
-      } else if (event.kind === 'unlock') {
-        if (!fsrsRef.current[event.note]) fsrsRef.current[event.note] = createNote(event.note)
-      } else if (event.kind === 'sfx') {
+      if (applyRetroBlasterFamilyEvent(event, inputModeRef.current, familyStoresRef.current)) continue
+      if (event.kind === 'sfx') {
         if (event.name === 'shoot') sfxShoot()
         else if (event.name === 'wrong') sfxWrong()
         else sfxExplosion()
@@ -130,13 +191,14 @@ export default function RetroBlasterII() {
     const answeredNote = pendingAnswerRef.current
     pendingAnswerRef.current = null
     const latencyMs = notePlayTimeRef.current > 0 ? Date.now() - notePlayTimeRef.current : 2000
+    const laneStore = activeLaneStore(familyStoresRef.current, inputModeRef.current)
     const result = tick(gs, {
       inputMode: inputModeRef.current,
       isListening: listeningRef.current,
       pitch: livePitchRef.current,
       answeredNote,
       latencyMs,
-      fsrs: fsrsRef.current,
+      fsrs: laneStore,
     }, dtMs, Math.random)
     stateRef.current = result.state
     const canvas = canvasRef.current
@@ -149,24 +211,8 @@ export default function RetroBlasterII() {
   }, [applyEvents, livePitchRef])
 
   const buildState = useCallback((): GameState => {
-    const reviewed = new Set(
-      Object.entries(fsrsRef.current).filter(([, m]) => m.lastReview > 0).map(([k]) => k)
-    )
-    const restored: string[] = []
-    for (const note of INTRO_ORDER) {
-      if (reviewed.has(note)) restored.push(note)
-      else break
-    }
-    const unlocked = restored.length >= INITIAL_UNLOCK
-      ? restored
-      : INTRO_ORDER.slice(0, INITIAL_UNLOCK) as unknown as string[]
-    for (const n of unlocked) {
-      if (!fsrsRef.current[n]) fsrsRef.current[n] = createNote(n)
-    }
-    const gs = createInitialState(difficulty, unlocked, performance.now())
-    beginWave(gs, fsrsRef.current)
-    return gs
-  }, [difficulty])
+    return buildRetroBlasterState(difficulty, inputMode, familyStoresRef.current, performance.now())
+  }, [difficulty, inputMode])
 
   const startGame = useCallback(() => {
     if (rafRef.current) { cancelAnimationFrame(rafRef.current); rafRef.current = 0 }
