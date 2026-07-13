@@ -105,21 +105,24 @@ async function claimNextDriveSyncRow(): Promise<ClaimedDriveSyncRow | null> {
   const now = new Date()
   const leaseUntil = new Date(now.getTime() + CLAIM_LEASE_MS)
 
+  // $runCommandRaw JSON-serializes JS Dates into plain ISO strings (NOT BSON dates),
+  // which breaks $lt against real date fields and corrupts leaseUntil/updatedAt for
+  // Prisma reads — measured live 2026-07-13. EJSON {$date} is required here.
   const result = await prisma.$runCommandRaw({
     findAndModify: 'DriveSyncOutbox',
     query: {
       status: 'pending',
       $or: [
         { leaseUntil: null },
-        { leaseUntil: { $lt: now } },
+        { leaseUntil: { $lt: { $date: now.toISOString() } } },
       ],
     },
     sort: { createdAt: 1 },
     update: {
       $set: {
         status: 'inflight',
-        leaseUntil,
-        updatedAt: now,
+        leaseUntil: { $date: leaseUntil.toISOString() },
+        updatedAt: { $date: now.toISOString() },
       },
       $inc: { attempts: 1 },
     },

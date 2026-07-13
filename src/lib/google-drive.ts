@@ -787,8 +787,7 @@ async function syncDomainForDateWithResult(
 
       if (dailyTasks.length === 0) return null
 
-      const progressFolderId = await getSubfolderId(drive, driveFolder, 'Progress Reports')
-      if (!progressFolderId) return null
+      const progressFolderId = await requireSubfolderId(drive, driveFolder, 'Progress Reports')
 
       const content = formatDailyTasks(
         dailyTasks.map(task => ({
@@ -798,7 +797,7 @@ async function syncDomainForDateWithResult(
         dateStr
       )
       const fileName = `daily-tasks-${dateStr}.md`
-      await uploadTextFile(drive, progressFolderId, fileName, content, 'text/markdown')
+      await uploadRequiredTextFile(drive, progressFolderId, fileName, content, 'text/markdown')
 
       return DRIVE_SYNC_LABELS.dailyTasks.synced
     }
@@ -817,8 +816,7 @@ async function syncDomainForDateWithResult(
 
       if (checkins.length === 0) return null
 
-      const progressFolderId = await getSubfolderId(drive, driveFolder, 'Progress Reports')
-      if (!progressFolderId) return null
+      const progressFolderId = await requireSubfolderId(drive, driveFolder, 'Progress Reports')
 
       const content = formatCheckins(
         checkins.map(checkin => ({
@@ -837,7 +835,7 @@ async function syncDomainForDateWithResult(
         dateStr
       )
       const fileName = `checkins-${dateStr}.md`
-      await uploadTextFile(drive, progressFolderId, fileName, content, 'text/markdown')
+      await uploadRequiredTextFile(drive, progressFolderId, fileName, content, 'text/markdown')
 
       return DRIVE_SYNC_LABELS.checkins.synced
     }
@@ -856,8 +854,7 @@ async function syncDomainForDateWithResult(
 
       if (moduleCompletions.length === 0) return null
 
-      const progressFolderId = await getSubfolderId(drive, driveFolder, 'Progress Reports')
-      if (!progressFolderId) return null
+      const progressFolderId = await requireSubfolderId(drive, driveFolder, 'Progress Reports')
 
       const content = formatModuleCompletions(
         moduleCompletions.map(mod => ({
@@ -870,7 +867,7 @@ async function syncDomainForDateWithResult(
         dateStr
       )
       const fileName = `modules-${dateStr}.md`
-      await uploadTextFile(drive, progressFolderId, fileName, content, 'text/markdown')
+      await uploadRequiredTextFile(drive, progressFolderId, fileName, content, 'text/markdown')
 
       return DRIVE_SYNC_LABELS.modules.synced
     }
