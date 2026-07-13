@@ -160,10 +160,13 @@ function Leg({
       </p>
       <div className="flex justify-center">
         <div className={`bg-white rounded-lg p-4 ${feedbackRingClass}`}>
+          {/* Acuity staircase comes from SIZE ONLY (SnellenChart's baseSize × line.scale
+              formula, base 55 ≈ phone single-E display) — constant stroke so line
+              difficulty isn't double-penalized (FLW H2 measurement validity). */}
           <TumblingE
             direction={currentLine.directions[letterIdx]}
-            size={110}
-            strokeWeight={lineIdx <= 3 ? 'normal' : 'thin'}
+            size={Math.round(55 * currentLine.scale)}
+            strokeWeight="normal"
           />
         </div>
       </div>
