@@ -182,9 +182,9 @@ export async function enqueueDriveSync(
       }
     }
     if (lastError) {
-      // Exhausted retries. The source data is already persisted in Mongo, so the
-      // backfill sweep (TODO Phase 1.1: scan recent domain rows lacking a done
-      // outbox entry) is the safety net — this log is the signal for it.
+      // Exhausted retries. The source data is already persisted in Mongo, so
+      // backfillDriveSyncOutbox (runs on the drain cron) recreates the missing
+      // intent from the source rows — this log is the signal for it.
       console.error('Drive sync enqueue failed (backfill will reconcile):', {
         userId,
         domain,
@@ -285,8 +285,83 @@ export async function drainDriveSyncOutbox(
   return { claimed, done, failed }
 }
 
+// The FLW-flagged front-door gap: if every enqueue upsert fails during a save,
+// no outbox row exists and nothing would ever sync that day's data. This sweep
+// re-derives sync intent from the SOURCE rows (the data that must not be lost)
+// and creates any outbox row that is missing. Any existing row — done, pending,
+// failed — counts as recorded intent and is left untouched.
+const BACKFILL_CREATE_CAP = 500 // ponytail: per-run cap; the next scheduled run picks up the rest
+
+export async function backfillDriveSyncOutbox(
+  options: { windowHours?: number; userId?: string } = {}
+): Promise<{ scanned: number; created: number }> {
+  const windowHours = options.windowHours ?? 48
+  const since = new Date(Date.now() - windowHours * 3600 * 1000)
+  const userFilter = options.userId ? { userId: options.userId } : {}
+
+  const sources: Array<[string, Array<{ userId: string; when: Date }>]> = [
+    ['journal', (await prisma.journalEntry.findMany({ where: { ...userFilter, createdAt: { gte: since } }, select: { userId: true, createdAt: true } })).map(r => ({ userId: r.userId, when: r.createdAt }))],
+    ['workouts', (await prisma.workoutSession.findMany({ where: { ...userFilter, completedAt: { gte: since } }, select: { userId: true, completedAt: true } })).map(r => ({ userId: r.userId, when: r.completedAt }))],
+    ['nutrition', (await prisma.foodEntry.findMany({ where: { ...userFilter, loggedAt: { gte: since } }, select: { userId: true, loggedAt: true } })).map(r => ({ userId: r.userId, when: r.loggedAt }))],
+    ['breath', (await prisma.breathSession.findMany({ where: { ...userFilter, createdAt: { gte: since } }, select: { userId: true, createdAt: true } })).map(r => ({ userId: r.userId, when: r.createdAt }))],
+    ['vision', (await prisma.visionSession.findMany({ where: { ...userFilter, createdAt: { gte: since } }, select: { userId: true, createdAt: true } })).map(r => ({ userId: r.userId, when: r.createdAt }))],
+    ['nback', (await prisma.nBackSession.findMany({ where: { ...userFilter, createdAt: { gte: since } }, select: { userId: true, createdAt: true } })).map(r => ({ userId: r.userId, when: r.createdAt }))],
+    ['dailyTasks', (await prisma.dailyTask.findMany({ where: { ...userFilter, date: { gte: since } }, select: { userId: true, date: true } })).map(r => ({ userId: r.userId, when: r.date }))],
+    ['checkins', (await prisma.workoutCheckIn.findMany({ where: { ...userFilter, createdAt: { gte: since } }, select: { userId: true, createdAt: true } })).map(r => ({ userId: r.userId, when: r.createdAt }))],
+    ['modules', (await prisma.moduleCompletion.findMany({ where: { ...userFilter, completedAt: { gte: since } }, select: { userId: true, completedAt: true } })).map(r => ({ userId: r.userId, when: r.completedAt }))],
+  ]
+
+  // peptide doses hang off protocols, not users
+  const protocols = await prisma.user_peptide_protocols.findMany({
+    where: options.userId ? { userId: options.userId } : {},
+    select: { id: true, userId: true },
+  })
+  if (protocols.length > 0) {
+    const protocolOwner = new Map(protocols.map(p => [p.id, p.userId]))
+    const doses = await prisma.peptide_doses.findMany({
+      where: { protocolId: { in: protocols.map(p => p.id) }, doseDate: { gte: since } },
+      select: { protocolId: true, doseDate: true },
+    })
+    sources.push(['peptides', doses.map(d => ({ userId: protocolOwner.get(d.protocolId)!, when: d.doseDate }))])
+  }
+
+  const wanted = new Map<string, { userId: string; domain: string; dateStr: string }>()
+  for (const [domain, rows] of sources) {
+    for (const r of rows) {
+      const dateStr = toDateStr(r.when)
+      wanted.set(`${r.userId}|${domain}|${dateStr}`, { userId: r.userId, domain, dateStr })
+    }
+  }
+  if (wanted.size === 0) return { scanned: 0, created: 0 }
+
+  const userIds = [...new Set([...wanted.values()].map(t => t.userId))]
+  const syncUsers = new Set(
+    (await prisma.user.findMany({
+      where: { id: { in: userIds }, googleDriveSyncEnabled: true },
+      select: { id: true },
+    })).map(u => u.id)
+  )
+  const existing = await prisma.driveSyncOutbox.findMany({
+    where: { userId: { in: userIds } },
+    select: { userId: true, domain: true, dateStr: true },
+  })
+  const recorded = new Set(existing.map(r => `${r.userId}|${r.domain}|${r.dateStr}`))
+
+  let created = 0
+  for (const [key, t] of wanted) {
+    if (!syncUsers.has(t.userId) || recorded.has(key)) continue
+    if (created >= BACKFILL_CREATE_CAP) break
+    try {
+      await prisma.driveSyncOutbox.create({ data: t })
+      created += 1
+    } catch {
+      // unique-key race with a live enqueue — intent already recorded, exactly what we want
+    }
+  }
+  return { scanned: wanted.size, created }
+}
+
 export async function reconcileDriveSyncOutbox(): Promise<void> {
-  // TODO Phase 1.1: verify done rows against Drive files and re-queue missing outputs.
   await prisma.driveSyncOutbox.updateMany({
     where: {
       status: 'inflight',
