@@ -21,6 +21,8 @@ const MIN_ALPHA_RATIO = 0.05
 const MAX_ALPHA_RATIO = 0.95
 const KEY_LOW = 40
 const KEY_HIGH = 70
+const SOCKET_LUMA_CEILING = 110
+const SOCKET_SATURATION_CEILING = 0.45
 
 const FRAME_SPECS = [
   { name: 'idle-a', col: 0, row: 0 },
@@ -38,20 +40,41 @@ function parseArgs(argv) {
     source: resolve(root, 'src/components/PitchDefender/sprite-sources/enemy-scout-sheet-v3.png'),
     outDir: resolve(root, 'public/sprites'),
     receipt: resolve(root, 'data/retro-blaster-rework/runtime-logs/r2-atlas-build-hashes.txt'),
+    name: 'enemy-scout',
+    displayName: 'Signal Scout',
+    currentCapacity: 1,
+    futureCapacity: 1,
+    chipAnchors: [[0.5, 0.5]],
     proveGuard: false,
   }
 
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i]
     if (arg === '--prove-guard') options.proveGuard = true
-    else if (arg === '--source' || arg === '--out-dir' || arg === '--receipt') {
+    else if (['--source', '--out-dir', '--receipt', '--name', '--display-name', '--future-capacity', '--chip-anchors'].includes(arg)) {
       const value = argv[++i]
       if (!value) throw new Error(`${arg} requires a path`)
-      const key = arg === '--source' ? 'source' : arg === '--out-dir' ? 'outDir' : 'receipt'
-      options[key] = resolve(root, value)
+      if (arg === '--source') options.source = resolve(root, value)
+      else if (arg === '--out-dir') options.outDir = resolve(root, value)
+      else if (arg === '--receipt') options.receipt = resolve(root, value)
+      else if (arg === '--name') options.name = value
+      else if (arg === '--display-name') options.displayName = value
+      else if (arg === '--future-capacity') options.futureCapacity = Number(value)
+      else if (arg === '--chip-anchors') {
+        options.chipAnchors = value.split(';').map(pair => pair.split(',').map(Number))
+      }
     } else {
       throw new Error(`Unknown argument: ${arg}`)
     }
+  }
+  if (!/^[a-z0-9-]+$/.test(options.name)) throw new Error('--name must use lowercase letters, numbers, and hyphens')
+  if (!Number.isInteger(options.futureCapacity) || options.futureCapacity < 1 || options.futureCapacity > 4) {
+    throw new Error('--future-capacity must be an integer from 1 to 4')
+  }
+  if (options.chipAnchors.length !== options.futureCapacity || options.chipAnchors.some(anchor => (
+    anchor.length !== 2 || anchor.some(value => !Number.isFinite(value) || value < 0 || value > 1)
+  ))) {
+    throw new Error('--chip-anchors must provide one normalized x,y pair per future-capacity slot')
   }
   return options
 }
@@ -157,6 +180,37 @@ async function makePaddedFrame(frame, globalScale) {
   }
 }
 
+async function sampleSocket(frame, anchor, slot) {
+  const { data, info } = await sharp(frame.png).ensureAlpha().raw().toBuffer({ resolveWithObject: true })
+  const centerX = Math.round(anchor[0] * (info.width - 1))
+  const centerY = Math.round(anchor[1] * (info.height - 1))
+  let count = 0
+  let luma = 0
+  let saturation = 0
+  for (let y = Math.max(0, centerY - 2); y <= Math.min(info.height - 1, centerY + 2); y++) {
+    for (let x = Math.max(0, centerX - 2); x <= Math.min(info.width - 1, centerX + 2); x++) {
+      const offset = (y * info.width + x) * info.channels
+      if (data[offset + 3] < ALPHA_CUTOFF) continue
+      const r = data[offset]
+      const g = data[offset + 1]
+      const b = data[offset + 2]
+      const max = Math.max(r, g, b)
+      const min = Math.min(r, g, b)
+      luma += 0.2126 * r + 0.7152 * g + 0.0722 * b
+      saturation += max === 0 ? 0 : (max - min) / max
+      count++
+    }
+  }
+  if (count === 0) throw new Error(`${frame.name} future socket ${slot} is transparent or outside the hull`)
+  const sample = { frame: frame.name, slot, x: centerX, y: centerY, avgLuma: luma / count, avgSaturation: saturation / count }
+  if (sample.avgLuma > SOCKET_LUMA_CEILING || sample.avgSaturation > SOCKET_SATURATION_CEILING) {
+    throw new Error(
+      `${frame.name} future socket ${slot} is visibly lit: luma=${sample.avgLuma.toFixed(2)}, saturation=${sample.avgSaturation.toFixed(4)}`,
+    )
+  }
+  return sample
+}
+
 function validatePackedFrames(frames) {
   for (let i = 0; i < frames.length; i++) {
     const rect = { x: i * FRAME_W, y: 0, w: FRAME_W, h: FRAME_H }
@@ -167,7 +221,8 @@ function validatePackedFrames(frames) {
   }
 }
 
-async function assembleAtlas(source, keyLow, keyHigh) {
+async function assembleAtlas(options, keyLow, keyHigh) {
+  const { source } = options
   const sourceBuffer = await readFile(source)
   const metadata = await sharp(sourceBuffer).metadata()
   if (metadata.width !== CELL_W * 4 || metadata.height !== CELL_H * 2) {
@@ -209,8 +264,23 @@ async function assembleAtlas(source, keyLow, keyHigh) {
     frameW: FRAME_W,
     frameH: FRAME_H,
   }
+  const socketSamples = []
+  if (options.name !== 'enemy-scout') {
+    contract.meta = {
+      id: options.name,
+      displayName: options.displayName,
+      currentCapacity: options.currentCapacity,
+      futureCapacity: options.futureCapacity,
+      chipAnchors: options.chipAnchors,
+    }
+    for (const frame of frames.filter(value => value.name === 'idle-a' || value.name === 'idle-b')) {
+      for (let slot = 1; slot < options.chipAnchors.length; slot++) {
+        socketSamples.push(await sampleSocket(frame, options.chipAnchors[slot], slot))
+      }
+    }
+  }
   const atlasJson = Buffer.from(`${JSON.stringify(contract, null, 2)}\n`)
-  return { sourceBuffer, frames, globalScale, atlasPng, atlasJson }
+  return { sourceBuffer, frames, globalScale, atlasPng, atlasJson, socketSamples }
 }
 
 function formatReceipt(result) {
@@ -230,12 +300,17 @@ function formatReceipt(result) {
       `${frame.name}_alpha_ratio=${frame.alphaRatio.toFixed(6)}`,
     )
   }
+  for (const sample of result.socketSamples) {
+    lines.push(
+      `${sample.frame}_future_socket_${sample.slot}=x${sample.x},y${sample.y},avg_luma${sample.avgLuma.toFixed(3)},avg_saturation${sample.avgSaturation.toFixed(5)},ceilings${SOCKET_LUMA_CEILING}/${SOCKET_SATURATION_CEILING}`,
+    )
+  }
   return `${lines.join('\n')}\n`
 }
 
 async function writeAtlas(options, result) {
-  const atlasPath = join(options.outDir, 'enemy-scout-atlas.png')
-  const jsonPath = join(options.outDir, 'enemy-scout-atlas.json')
+  const atlasPath = join(options.outDir, `${options.name}-atlas.png`)
+  const jsonPath = join(options.outDir, `${options.name}-atlas.json`)
   const receipt = formatReceipt(result)
   await mkdir(options.outDir, { recursive: true })
   await mkdir(dirname(options.receipt), { recursive: true })
@@ -260,7 +335,7 @@ async function pathExists(path) {
 }
 
 async function proveGuard(options) {
-  const deployedAtlas = resolve(root, 'public/sprites/enemy-scout-atlas.png')
+  const deployedAtlas = resolve(root, `public/sprites/${options.name}-atlas.png`)
   if (!(await pathExists(deployedAtlas))) throw new Error('Run the real atlas build before --prove-guard')
   const beforeHash = await sha256File(deployedAtlas)
   const scratchDir = join(tmpdir(), `r2-atlas-reject-test-${process.pid}-${Date.now()}`)
@@ -269,7 +344,7 @@ async function proveGuard(options) {
   const scratchReceipt = join(scratchDir, 'r2-atlas-build-hashes.txt')
 
   try {
-    const result = await assembleAtlas(options.source, 200, 230)
+    const result = await assembleAtlas(options, 200, 230)
     await writeAtlas({ ...options, outDir: scratchDir, receipt: scratchReceipt }, result)
     throw new Error('Guard proof unexpectedly passed with the absurd 200-230 chroma-key tolerance')
   } catch (error) {
@@ -289,7 +364,7 @@ async function proveGuard(options) {
 try {
   const options = parseArgs(process.argv.slice(2))
   if (options.proveGuard) await proveGuard(options)
-  else await writeAtlas(options, await assembleAtlas(options.source, KEY_LOW, KEY_HIGH))
+  else await writeAtlas(options, await assembleAtlas(options, KEY_LOW, KEY_HIGH))
 } catch (error) {
   console.error(error instanceof Error ? error.message : error)
   process.exitCode = 1

@@ -20,11 +20,12 @@ import {
   beginWave, createInitialState, noteButtonRects, tick, toViewState,
   type Difficulty, type EngineEvent, type GameState, type InputMode, type Phase, type ViewState,
 } from './retroBlasterEngine'
-import { render } from './retroBlasterRenderer'
+import { enemyRenderSourceSnapshot, render, resetEnemyRenderLatches } from './retroBlasterRenderer'
 
 const TUTORIAL_KEY = 'retro_tutorial_seen'
 const RETRO_DIFFICULTY_KEY = 'retro_difficulty'
 const CRT_KEY = 'retro_blaster_crt'
+const COLOR_HINTS_KEY = 'retro_blaster_color_hints'
 
 export interface RetroBlasterFamilyStores {
   voice: Record<string, NoteMemory>
@@ -138,6 +139,7 @@ export default function RetroBlasterII() {
   const pendingAnswerRef = useRef<string | null>(null)
   const inputModeRef = useRef<InputMode>('click')
   const listeningRef = useRef(false)
+  const colorHintsRef = useRef(true)
 
   const [reducedMotion, setReducedMotion] = useState(() =>
     typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -147,6 +149,7 @@ export default function RetroBlasterII() {
   const [inputMode, setInputMode] = useState<InputMode>('click')
   const [difficulty, setDifficulty] = useState<Difficulty>('easy')
   const [crtEnabled, setCrtEnabled] = useState(false)
+  const [colorHints, setColorHints] = useState(true)
   const [displayView, setDisplayView] = useState<ViewState | null>(null)
   const [finalStats, setFinalStats] = useState({ score: 0, wave: 0, maxCombo: 0 })
 
@@ -175,6 +178,12 @@ export default function RetroBlasterII() {
       if (d === 'easy' || d === 'true') setDifficulty(d)
       const savedCrt = localStorage.getItem(CRT_KEY)
       if (savedCrt !== null) initialCrt = savedCrt === '1'
+      const savedColorHints = localStorage.getItem(COLOR_HINTS_KEY)
+      if (savedColorHints !== null) {
+        const enabled = savedColorHints === '1'
+        colorHintsRef.current = enabled
+        setColorHints(enabled)
+      }
     } catch {}
     setCrtEnabled(initialCrt)
     loadPianoSamples()
@@ -228,7 +237,11 @@ export default function RetroBlasterII() {
     const ctx = canvas?.getContext('2d')
     if (ctx) {
       ctx.imageSmoothingEnabled = false
-      render(ctx, result.viewState, reducedMotionRef.current)
+      render(ctx, result.viewState, {
+        reducedMotion: reducedMotionRef.current,
+        colorHints: colorHintsRef.current,
+      })
+      canvas.dataset.retroRenderSources = JSON.stringify(enemyRenderSourceSnapshot())
     }
     setDisplayView(result.viewState)
     applyEvents(result.events, result.state)
@@ -242,6 +255,7 @@ export default function RetroBlasterII() {
 
   const startGame = useCallback(() => {
     if (rafRef.current) { cancelAnimationFrame(rafRef.current); rafRef.current = 0 }
+    resetEnemyRenderLatches()
     initAudio()
     if (inputMode === 'mic') startListening()
     const gs = buildState()
@@ -282,6 +296,15 @@ export default function RetroBlasterII() {
     setCrtEnabled(enabled => {
       const next = !enabled
       try { localStorage.setItem(CRT_KEY, next ? '1' : '0') } catch {}
+      return next
+    })
+  }, [])
+
+  const toggleColorHints = useCallback(() => {
+    setColorHints(enabled => {
+      const next = !enabled
+      colorHintsRef.current = next
+      try { localStorage.setItem(COLOR_HINTS_KEY, next ? '1' : '0') } catch {}
       return next
     })
   }, [])
@@ -532,9 +555,11 @@ export default function RetroBlasterII() {
             return (
               <span key={note} className="px-2 py-0.5 rounded border"
                 style={{
-                  borderColor: `hsl(${hue}, 70%, 55%)`,
-                  background: isActiveNote ? `hsla(${hue}, 70%, 35%, 0.6)` : 'transparent',
-                  color: `hsl(${hue}, 90%, 75%)`,
+                  borderColor: colorHints ? `hsl(${hue}, 70%, 55%)` : isActiveNote ? '#c8f5ff' : '#607080',
+                  background: isActiveNote
+                    ? colorHints ? `hsla(${hue}, 70%, 35%, 0.6)` : 'rgba(39,78,94,0.72)'
+                    : 'transparent',
+                  color: colorHints ? `hsl(${hue}, 90%, 75%)` : '#dce9ef',
                   fontWeight: isActiveNote ? 700 : 400,
                 }}>
                 {note.replace(/\d/, '')}={i + 1}
@@ -622,8 +647,19 @@ export default function RetroBlasterII() {
           }}>
           CRT {crtEnabled ? 'ON' : 'OFF'}
         </button>
+        <button onClick={toggleColorHints} aria-pressed={colorHints} data-retro-color-hints
+          className="px-4 py-2 text-xs tracking-wider active:scale-95 transition-all"
+          style={{
+            color: colorHints ? '#7dd3fc' : '#d8e5ef',
+            border: `1px solid ${colorHints ? '#38bdf8' : '#64748b'}`,
+            background: colorHints ? 'rgba(14,165,233,0.12)' : 'rgba(30,41,59,0.64)',
+          }}>
+          COLOR HINTS {colorHints ? 'ON' : 'OFF'}
+        </button>
       </div>
-      <div className="hidden">
+      <div className="hidden" data-retro-roster-state
+        data-visual-kinds={displayView?.aliens.filter(alien => alien.alive).map(alien => alien.visualKind).join(',') ?? ''}
+        data-visual-ids={displayView?.aliens.filter(alien => alien.alive).map(alien => alien.visualId).join(',') ?? ''}>
         {displayView?.hud.score}{displayView?.hud.wave}{displayView?.hud.combo}{displayView?.hud.shields}{STARTING_SHIELDS}
       </div>
     </div>

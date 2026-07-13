@@ -365,7 +365,10 @@ function runSpawnTrace() {
     }, dt, seededRng(12345))
     state = result.state
     for (const event of result.events) {
-      if (event.kind === 'spawn') engineSpawns.push({ note: event.note, x: event.x })
+      if (event.kind === 'spawn') {
+        const legacyCenterX = (event.x + engine.ALIEN_W / 2) * (480 / engine.W)
+        engineSpawns.push({ note: event.note, x: Math.round(legacyCenterX - 12) })
+      }
     }
   }
   return {
@@ -381,7 +384,7 @@ const traces = [
   ['t4 600ms post-fire cooldown', () => runMicTrace([[0, onPitch], [100, onPitch], [100, onPitch], [100, onPitch], [599, onPitch], [1, onPitch], [100, onPitch], [100, onPitch], [100, onPitch]])],
   ['t5 click hit/wrong transitions', runHitTrace],
   ['t6 alien escape shield loss', runEscapeTrace],
-  ['t7 seeded full-wave spawn order', runSpawnTrace],
+  ['t7 seeded full-wave spawn order (normalized geometry)', runSpawnTrace],
 ]
 
 const rows = []

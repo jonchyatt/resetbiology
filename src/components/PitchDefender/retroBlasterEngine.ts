@@ -56,8 +56,13 @@ export function noteButtonRects(noteCount: number, width = W, height = H): NoteB
 
 export type InputMode = 'click' | 'mic'
 export type Phase = 'menu' | 'tutorial' | 'playing' | 'game_over'
+export type VisualKind = 0 | 1 | 2 | 3
+export const VISUAL_KIND_COUNT = 4
 
 export interface Alien {
+  /** Cosmetic-only identity. It never participates in grading, targeting, or pacing. */
+  visualId: string
+  visualKind: VisualKind
   x: number
   y: number
   entering: boolean
@@ -492,7 +497,10 @@ export function tick(state: GameState, input: EngineInput, dtMs: number, rng: ()
         const note = gs.spawnQueue.shift()!
         const colorInfo = NOTE_COLORS[note]
         const entering = !input.reducedMotion
+        const visualKind = (gs.spawnedThisWave % VISUAL_KIND_COUNT) as VisualKind
         gs.aliens.push({
+          visualId: `${gs.wave}:${gs.spawnedThisWave}`,
+          visualKind,
           x: entering ? ENTRY_ORIGIN.x : x,
           y: entering ? ENTRY_ORIGIN.y : SPAWN_Y,
           entering,

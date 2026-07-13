@@ -1,0 +1,62 @@
+{
+  "frames": {
+    "idle-a": {
+      "x": 0,
+      "y": 0,
+      "w": 48,
+      "h": 36
+    },
+    "idle-b": {
+      "x": 48,
+      "y": 0,
+      "w": 48,
+      "h": 36
+    },
+    "dive-down": {
+      "x": 96,
+      "y": 0,
+      "w": 48,
+      "h": 36
+    },
+    "dive-bank": {
+      "x": 144,
+      "y": 0,
+      "w": 48,
+      "h": 36
+    },
+    "explode-a": {
+      "x": 192,
+      "y": 0,
+      "w": 48,
+      "h": 36
+    },
+    "explode-b": {
+      "x": 240,
+      "y": 0,
+      "w": 48,
+      "h": 36
+    }
+  },
+  "frameW": 48,
+  "frameH": 36,
+  "meta": {
+    "id": "enemy-chord-carrier",
+    "displayName": "Chord Carrier",
+    "currentCapacity": 1,
+    "futureCapacity": 3,
+    "chipAnchors": [
+      [
+        0.5,
+        0.58
+      ],
+      [
+        0.362,
+        0.457
+      ],
+      [
+        0.638,
+        0.514
+      ]
+    ]
+  }
+}
