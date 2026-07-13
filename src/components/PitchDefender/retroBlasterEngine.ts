@@ -4,23 +4,55 @@ import { noteToFreq, octaveFoldedCents } from './pitchMath'
 
 // Pure engine extraction from RetroBlaster v1. R0 changes only the view seam.
 
-export const W = 480
-export const H = 320
-export const ALIEN_W = 24
-export const ALIEN_H = 18
-export const PLAYER_W = 28
-export const PLAYER_H = 14
-export const LASER_W = 3
-export const LASER_H = 12
-export const LASER_SPEED = 480
-export const NOTE_BUTTONS_Y = 290
-export const PLAYER_Y = 270
+export const BASE_W = 480
+export const BASE_H = 320
+export const W = 640
+export const H = 360
+export const SPACE_SCALE = H / BASE_H
+export const ALIEN_W = 24 * SPACE_SCALE
+export const ALIEN_H = 18 * SPACE_SCALE
+export const PLAYER_W = 28 * SPACE_SCALE
+export const PLAYER_H = 14 * SPACE_SCALE
+export const LASER_W = 3 * SPACE_SCALE
+export const LASER_H = 12 * SPACE_SCALE
+export const LASER_SPEED = 480 * SPACE_SCALE
+export const NOTE_BUTTONS_Y = 290 * SPACE_SCALE
+export const PLAYER_Y = 270 * SPACE_SCALE
 export const INITIAL_UNLOCK = 4
 export const STARTING_SHIELDS = 5
 export const MIC_HOLD_MS = 300
 export const MIC_TOLERANCE_CENTS = 70
 export const MIC_CONFIDENCE_FLOOR = 0.75
 export const CHARGE_FULL_MS = MIC_HOLD_MS
+
+export interface NoteButtonRect {
+  x: number
+  y: number
+  width: number
+  height: number
+}
+
+export function noteButtonRects(noteCount: number, width = W, height = H): NoteButtonRect[] {
+  if (noteCount <= 0) return []
+  const scale = height / BASE_H
+  const gap = 4 * scale
+  const maxWidth = 50 * scale
+  const availableWidth = width - 16 * scale
+  const buttonWidth = Math.min(
+    maxWidth,
+    Math.floor((availableWidth - (noteCount - 1) * gap) / noteCount),
+  )
+  const buttonHeight = 22 * scale
+  const totalWidth = noteCount * buttonWidth + (noteCount - 1) * gap
+  const startX = (width - totalWidth) / 2
+  const y = 290 * scale
+  return Array.from({ length: noteCount }, (_, index) => ({
+    x: startX + index * (buttonWidth + gap),
+    y,
+    width: buttonWidth,
+    height: buttonHeight,
+  }))
+}
 
 export type InputMode = 'click' | 'mic'
 export type Phase = 'menu' | 'tutorial' | 'playing' | 'game_over'
@@ -172,7 +204,7 @@ export function pickTargetForNote(aliens: Alien[], answeredNote: string, playerX
     if (!best) { best = a; bestIdx = i; continue }
     // Y delta > 4px → use urgency. Otherwise → use x proximity.
     const dy = a.y - best.y
-    if (Math.abs(dy) > 4) {
+    if (Math.abs(dy) > 4 * SPACE_SCALE) {
       if (dy > 0) { best = a; bestIdx = i }
     } else if (Math.abs(a.x - playerX) < Math.abs(best.x - playerX)) {
       best = a; bestIdx = i
@@ -189,9 +221,9 @@ export function pickSpotlightIdx(aliens: Alien[], playerX: number): number {
     const a = aliens[i]
     if (!a.alive || a.entering) continue
     const dy = a.y - bestY
-    if (dy > 4) {
+    if (dy > 4 * SPACE_SCALE) {
       bestIdx = i; bestY = a.y; bestDx = Math.abs(a.x - playerX)
-    } else if (Math.abs(dy) <= 4) {
+    } else if (Math.abs(dy) <= 4 * SPACE_SCALE) {
       const dx = Math.abs(a.x - playerX)
       if (dx < bestDx) { bestIdx = i; bestY = a.y; bestDx = dx }
     }
@@ -228,9 +260,9 @@ export function waveParams(wave: number, difficulty: Difficulty): WaveParams {
 }
 
 export const SPAWN_LANES_X = [W * 0.14, W * 0.30, W * 0.46, W * 0.62, W * 0.86]
-export const SPAWN_Y = 70
-export const SPAWN_LANE_GAP = 16
-export const ENTRY_ORIGIN = { x: W / 2, y: SPAWN_Y - 140 }
+export const SPAWN_Y = 70 * SPACE_SCALE
+export const SPAWN_LANE_GAP = 16 * SPACE_SCALE
+export const ENTRY_ORIGIN = { x: W / 2, y: SPAWN_Y - 140 * SPACE_SCALE }
 export const ENTRY_DURATION_MS = 500
 
 export function pickSpawnX(aliens: Alien[], laneOrderSeed: number): number | null {
@@ -418,7 +450,7 @@ function processHit(gs: GameState, answeredNote: string, latencyMs: number, even
       gs.playerX = aimX
       gs.lasers.push({
         x: aimX, y: PLAYER_Y, hue: 0, active: true,
-        hits: false, targetY: spotlight.y + ALIEN_H + 30, targetIdx: -1,
+        hits: false, targetY: spotlight.y + ALIEN_H + 30 * SPACE_SCALE, targetIdx: -1,
       })
       events.push({ kind: 'playNote', note: spotlight.note, delayMs: 350, guard: 'alive', targetIdx: gs.activeIdx })
     } else {
@@ -518,7 +550,7 @@ export function tick(state: GameState, input: EngineInput, dtMs: number, rng: ()
       }
       continue
     }
-    if (gs.waveIntroTimer <= 0) alien.y += speed * dt
+    if (gs.waveIntroTimer <= 0) alien.y += speed * SPACE_SCALE * dt
   }
 
   if (gs.activeIdx < 0 || !gs.aliens[gs.activeIdx]?.alive || gs.aliens[gs.activeIdx]?.entering) {
@@ -539,7 +571,7 @@ export function tick(state: GameState, input: EngineInput, dtMs: number, rng: ()
     if (laser.hits) {
       const target = gs.aliens[laser.targetIdx]
       if (target?.alive && laser.y <= target.y + ALIEN_H &&
-          laser.x >= target.x - 4 && laser.x <= target.x + ALIEN_W + 4) {
+          laser.x >= target.x - 4 * SPACE_SCALE && laser.x <= target.x + ALIEN_W + 4 * SPACE_SCALE) {
         events.push({ kind: 'sfx', name: 'explosion' })
         target.alive = false
         target.hitTimer = 0.4
@@ -549,8 +581,8 @@ export function tick(state: GameState, input: EngineInput, dtMs: number, rng: ()
           gs.particles.push({
             x: target.x + ALIEN_W / 2,
             y: target.y + ALIEN_H / 2,
-            vx: Math.cos(angle) * (40 + rng() * 60),
-            vy: Math.sin(angle) * (40 + rng() * 60),
+            vx: Math.cos(angle) * (40 + rng() * 60) * SPACE_SCALE,
+            vy: Math.sin(angle) * (40 + rng() * 60) * SPACE_SCALE,
             life: 0.5 + rng() * 0.4,
             hue: target.hue,
           })
@@ -576,7 +608,7 @@ export function tick(state: GameState, input: EngineInput, dtMs: number, rng: ()
   })
 
   for (const alien of gs.aliens) {
-    if (alien.alive && alien.y >= PLAYER_Y - 10) {
+    if (alien.alive && alien.y >= PLAYER_Y - 10 * SPACE_SCALE) {
       alien.alive = false
       gs.cityHealth = Math.max(0, gs.cityHealth - 1)
       gs.combo = 0

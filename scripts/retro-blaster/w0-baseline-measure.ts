@@ -19,7 +19,8 @@ const root = resolve(here, '../..')
 
 type EngineModule = Pick<typeof current,
   'beginWave' | 'createInitialState' | 'pickSpotlightIdx' |
-  'pickTargetForNote' | 'tick' | 'waveParams'>
+  'pickTargetForNote' | 'tick' | 'waveParams' | 'W' | 'H' |
+  'ALIEN_W' | 'ALIEN_H' | 'SPAWN_Y'>
 
 interface TimedPlayNote {
   atMs: number
@@ -219,7 +220,7 @@ function trajectoryFixture(parent: EngineModule): string {
   const currentPost = current.tick(arrived, input(), 50, mulberry32(9)).state
   const parentState = parent.createInitialState('true', NOTES, arrived.clockMs) as GameState
   parentState.aliens = [{
-    x: arrived.aliens[0].entryTargetX, y: current.SPAWN_Y,
+    x: arrived.aliens[0].entryTargetX, y: parent.SPAWN_Y,
     note: 'C4', hue: 0, alive: true, frame: 0, hitTimer: 0,
   } as Alien]
   parentState.waveIntroTimer = 0
@@ -228,17 +229,20 @@ function trajectoryFixture(parent: EngineModule): string {
   parentState.lastProgressAt = parentState.clockMs
   const parentPost = parent.tick(parentState, input(), 50, mulberry32(9)).state as GameState
   near(currentPost.aliens[0].x, parentPost.aliens[0].x, 'post-arrival x parity')
-  near(currentPost.aliens[0].y, parentPost.aliens[0].y, 'post-arrival descent parity')
+  near(currentPost.aliens[0].y, parentPost.aliens[0].y * (current.H / parent.H), 'post-arrival normalized descent parity')
 
-  const laneX = 413
+  const laneX = Math.floor(current.SPAWN_LANES_X[4] - current.ALIEN_W / 2)
   const midpoint = entryOracle(laneX, 1 - Math.sqrt(0.5))
   const straightMidpointX = (current.ENTRY_ORIGIN.x + laneX) / 2
-  assert(midpoint.x - straightMidpointX >= 77, 'outer-lane curve lacks the ratified lateral bow')
+  // The shipped v3 fixture used the lane center (413); entryTargetX is the sprite's left edge.
+  // Preserve at least the equivalent 70px baseline bow after the height-space scale.
+  assert(midpoint.x - straightMidpointX >= 70 * (current.H / 320), 'outer-lane curve lacks the ratified lateral bow')
   let peakX = -Infinity
   for (let i = 0; i <= 1000; i++) peakX = Math.max(peakX, entryOracle(laneX, i / 1000).x)
-  assert(peakX + 36 < current.W, `outer-right atlas edge clips: ${peakX + 36}px`)
+  const atlasRightExtent = 36 * (current.H / 320)
+  assert(peakX + atlasRightExtent < current.W, `outer-right atlas edge clips: ${peakX + atlasRightExtent}px`)
 
-  return `oracle matched at every step; arrivals ${JSON.stringify(arrivals)}ms; outer-right edge ${(peakX + 36).toFixed(2)}px < ${current.W}px`
+  return `oracle matched at every step; arrivals ${JSON.stringify(arrivals)}ms; outer-right edge ${(peakX + atlasRightExtent).toFixed(2)}px < ${current.W}px`
 }
 
 function pauseAndSoftlockFixture(): string {
@@ -325,8 +329,9 @@ async function reducedMotionFixture(): Promise<string> {
 
 function killState(engine: EngineModule): GameState {
   const state = engine.createInitialState('true', NOTES, 1000) as GameState
+  const alienX = engine.W * (200 / 480)
   state.aliens = [{
-    x: 200, y: current.SPAWN_Y, entering: false, entryT: 1, entryTargetX: 200,
+    x: alienX, y: engine.SPAWN_Y, entering: false, entryT: 1, entryTargetX: alienX,
     note: 'C4', hue: 0, alive: true, frame: 0, hitTimer: 0,
   }]
   state.activeIdx = 0
@@ -337,9 +342,9 @@ function killState(engine: EngineModule): GameState {
   state.nextSpawnAt = state.clockMs + 800
   state.lastProgressAt = state.clockMs
   state.lasers = [{
-    x: 212, y: current.SPAWN_Y + current.ALIEN_H,
+    x: alienX + engine.ALIEN_W / 2, y: engine.SPAWN_Y + engine.ALIEN_H,
     hue: 0, active: true, hits: true,
-    targetY: current.SPAWN_Y, targetIdx: 0,
+    targetY: engine.SPAWN_Y, targetIdx: 0,
   }]
   return state
 }
