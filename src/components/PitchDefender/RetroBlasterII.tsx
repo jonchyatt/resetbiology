@@ -138,6 +138,10 @@ export default function RetroBlasterII() {
   const inputModeRef = useRef<InputMode>('click')
   const listeningRef = useRef(false)
 
+  const [reducedMotion, setReducedMotion] = useState(() =>
+    typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  )
+  const reducedMotionRef = useRef(reducedMotion)
   const [phase, setPhase] = useState<Phase>('menu')
   const [inputMode, setInputMode] = useState<InputMode>('click')
   const [difficulty, setDifficulty] = useState<Difficulty>('easy')
@@ -148,6 +152,18 @@ export default function RetroBlasterII() {
 
   useEffect(() => { inputModeRef.current = inputMode }, [inputMode])
   useEffect(() => { listeningRef.current = isListening }, [isListening])
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const syncReducedMotion = (matches: boolean) => {
+      reducedMotionRef.current = matches
+      setReducedMotion(matches)
+    }
+    const onChange = (event: MediaQueryListEvent) => syncReducedMotion(event.matches)
+    syncReducedMotion(mediaQuery.matches)
+    mediaQuery.addEventListener('change', onChange)
+    return () => mediaQuery.removeEventListener('change', onChange)
+  }, [])
 
   useEffect(() => {
     familyStoresRef.current = loadRetroBlasterFamilyStores()
@@ -195,6 +211,7 @@ export default function RetroBlasterII() {
     const result = tick(gs, {
       inputMode: inputModeRef.current,
       isListening: listeningRef.current,
+      reducedMotion: reducedMotionRef.current,
       pitch: livePitchRef.current,
       answeredNote,
       latencyMs,

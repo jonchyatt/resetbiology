@@ -28,6 +28,9 @@ export type Phase = 'menu' | 'tutorial' | 'playing' | 'game_over'
 export interface Alien {
   x: number
   y: number
+  entering: boolean
+  entryT: number
+  entryTargetX: number
   note: string
   hue: number
   alive: boolean
@@ -74,6 +77,7 @@ export interface EnginePitch {
 export interface EngineInput {
   inputMode: InputMode
   isListening: boolean
+  reducedMotion: boolean
   pitch: EnginePitch | null
   answeredNote?: string | null
   latencyMs?: number
@@ -164,7 +168,7 @@ export function pickTargetForNote(aliens: Alien[], answeredNote: string, playerX
   let bestIdx = -1
   for (let i = 0; i < aliens.length; i++) {
     const a = aliens[i]
-    if (!a.alive || noteClass(a.note) !== targetClass) continue
+    if (!a.alive || a.entering || noteClass(a.note) !== targetClass) continue
     if (!best) { best = a; bestIdx = i; continue }
     // Y delta > 4px → use urgency. Otherwise → use x proximity.
     const dy = a.y - best.y
@@ -183,7 +187,7 @@ export function pickSpotlightIdx(aliens: Alien[], playerX: number): number {
   let bestDx = Infinity
   for (let i = 0; i < aliens.length; i++) {
     const a = aliens[i]
-    if (!a.alive) continue
+    if (!a.alive || a.entering) continue
     const dy = a.y - bestY
     if (dy > 4) {
       bestIdx = i; bestY = a.y; bestDx = Math.abs(a.x - playerX)
@@ -226,6 +230,8 @@ export function waveParams(wave: number, difficulty: Difficulty): WaveParams {
 export const SPAWN_LANES_X = [W * 0.14, W * 0.30, W * 0.46, W * 0.62, W * 0.86]
 export const SPAWN_Y = 70
 export const SPAWN_LANE_GAP = 16
+export const ENTRY_ORIGIN = { x: W / 2, y: SPAWN_Y - 140 }
+export const ENTRY_DURATION_MS = 500
 
 export function pickSpawnX(aliens: Alien[], laneOrderSeed: number): number | null {
   // Score each lane by topmost alien y (or H if empty). Higher score = more room.
@@ -453,17 +459,19 @@ export function tick(state: GameState, input: EngineInput, dtMs: number, rng: ()
       if (x !== null) {
         const note = gs.spawnQueue.shift()!
         const colorInfo = NOTE_COLORS[note]
+        const entering = !input.reducedMotion
         gs.aliens.push({
-          x, y: SPAWN_Y, note, hue: colorInfo?.hue ?? 0, alive: true,
+          x: entering ? ENTRY_ORIGIN.x : x,
+          y: entering ? ENTRY_ORIGIN.y : SPAWN_Y,
+          entering,
+          entryT: entering ? 0 : 1,
+          entryTargetX: x,
+          note, hue: colorInfo?.hue ?? 0, alive: true,
           frame: gs.spawnedThisWave % 2, hitTimer: 0,
         })
         gs.spawnedThisWave++
         gs.nextSpawnAt = gs.clockMs + params.spawnInterval
         events.push({ kind: 'spawn', note, x })
-        if (gs.spawnedThisWave === 1) {
-          gs.activeIdx = gs.aliens.length - 1
-          events.push({ kind: 'playNote', note, delayMs: 200, guard: 'alive', targetIdx: gs.activeIdx })
-        }
       }
     }
   }
@@ -486,7 +494,39 @@ export function tick(state: GameState, input: EngineInput, dtMs: number, rng: ()
       alien.hitTimer -= dt
       continue
     }
+    if (alien.entering) {
+      if (input.reducedMotion) {
+        alien.entryT = 1
+      } else {
+        const remainingMs = (1 - alien.entryT) * ENTRY_DURATION_MS
+        alien.entryT = elapsedMs + Number.EPSILON * ENTRY_DURATION_MS >= remainingMs
+          ? 1
+          : alien.entryT + elapsedMs / ENTRY_DURATION_MS
+      }
+
+      if (alien.entryT >= 1) {
+        alien.x = alien.entryTargetX
+        alien.y = SPAWN_Y
+        alien.entering = false
+      } else {
+        const t = 1 - (1 - alien.entryT) ** 2
+        const u = 1 - t
+        const controlX = ENTRY_ORIGIN.x + (alien.entryTargetX - ENTRY_ORIGIN.x) * 1.4
+        const controlY = ENTRY_ORIGIN.y + (SPAWN_Y - ENTRY_ORIGIN.y) * 0.5
+        alien.x = u * u * ENTRY_ORIGIN.x + 2 * u * t * controlX + t * t * alien.entryTargetX
+        alien.y = u * u * ENTRY_ORIGIN.y + 2 * u * t * controlY + t * t * SPAWN_Y
+      }
+      continue
+    }
     if (gs.waveIntroTimer <= 0) alien.y += speed * dt
+  }
+
+  if (gs.activeIdx < 0 || !gs.aliens[gs.activeIdx]?.alive || gs.aliens[gs.activeIdx]?.entering) {
+    const next = pickSpotlightIdx(gs.aliens, gs.playerX)
+    if (next >= 0 && next !== gs.activeIdx) {
+      gs.activeIdx = next
+      events.push({ kind: 'playNote', note: gs.aliens[next].note, delayMs: 200, guard: 'alive', targetIdx: next })
+    }
   }
 
   for (const alien of gs.aliens) {
