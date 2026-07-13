@@ -200,8 +200,8 @@ export async function POST(request: NextRequest) {
       durationSeconds: totalDuration / 1000,
     })
 
-    // Queue Google Drive sync (non-blocking)
-    enqueueDriveSync(user.id, new Date(), ['breath']).catch(err => console.error('Drive enqueue failed:', err))
+    // Queue Google Drive sync (awaited — Vercel freezes the lambda after the response, killing un-awaited work)
+    await enqueueDriveSync(user.id, new Date(), ['breath']).catch(err => console.error('Drive enqueue failed:', err))
 
     return NextResponse.json({
       success: true,
