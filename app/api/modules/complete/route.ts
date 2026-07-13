@@ -193,8 +193,9 @@ export async function POST(request: NextRequest) {
 
     const journalNote = await appendModuleToJournal(user.id, new Date(), moduleId)
 
-    // Queue Google Drive sync (non-blocking)
-    enqueueDriveSync(user.id, new Date(), ['modules']).catch(err => console.error('Drive enqueue failed:', err))
+    // Queue Google Drive sync (non-blocking) — this route also appends a note to
+    // today's journal entry, so sync that too
+    enqueueDriveSync(user.id, new Date(), ['modules', 'journal']).catch(err => console.error('Drive enqueue failed:', err))
 
     return NextResponse.json({
       success: true,

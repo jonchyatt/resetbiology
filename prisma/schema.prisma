@@ -421,14 +421,15 @@ model WorkoutSession {
 }
 
 model JournalEntry {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String   @db.ObjectId
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String    @db.ObjectId
   entry     String // JSON string containing all journal data
   mood      String?
   weight    Float?
   date      DateTime
-  createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt // optional: pre-existing rows lack it; lets the Drive backfill sweep see historical edits
+  user      User      @relation(fields: [userId], references: [id])
 
   @@map("journal_entries")
 }

@@ -181,8 +181,9 @@ export async function POST(request: NextRequest) {
       pointsAwarded,
     }
 
-    // Queue Google Drive sync (non-blocking)
-    enqueueDriveSync(user.id, new Date(), ['journal']).catch(err => console.error('Drive enqueue failed:', err))
+    // Queue Google Drive sync for the entry's OWN day — historical saves/edits
+    // must sync their own date, not today (non-blocking)
+    enqueueDriveSync(user.id, journalEntry.date, ['journal']).catch(err => console.error('Drive enqueue failed:', err))
 
     return NextResponse.json(responsePayload)
 

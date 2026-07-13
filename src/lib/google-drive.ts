@@ -706,10 +706,13 @@ async function syncDomainForDateWithResult(
 
   switch (domain) {
     case 'journal': {
+      // Query by the entry's authoritative `date` (user-suppliable, supports
+      // historical saves/edits) — NOT createdAt, which pins an edit to the day
+      // the row happened to be created (FLW consult-7 HIGH).
       const journalEntries = await prisma.journalEntry.findMany({
         where: {
           userId,
-          createdAt: {
+          date: {
             gte: startOfDay,
             lte: endOfDay,
           },

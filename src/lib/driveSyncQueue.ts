@@ -300,7 +300,9 @@ export async function backfillDriveSyncOutbox(
   const userFilter = options.userId ? { userId: options.userId } : {}
 
   const sources: Array<[string, Array<{ userId: string; when: Date }>]> = [
-    ['journal', (await prisma.journalEntry.findMany({ where: { ...userFilter, createdAt: { gte: since } }, select: { userId: true, createdAt: true } })).map(r => ({ userId: r.userId, when: r.createdAt }))],
+    // journal: scan by touch-time (createdAt OR updatedAt — historical edits bump
+    // updatedAt) but key the sync day by the entry's authoritative `date`.
+    ['journal', (await prisma.journalEntry.findMany({ where: { ...userFilter, OR: [{ createdAt: { gte: since } }, { updatedAt: { gte: since } }] }, select: { userId: true, date: true } })).map(r => ({ userId: r.userId, when: r.date }))],
     ['workouts', (await prisma.workoutSession.findMany({ where: { ...userFilter, completedAt: { gte: since } }, select: { userId: true, completedAt: true } })).map(r => ({ userId: r.userId, when: r.completedAt }))],
     ['nutrition', (await prisma.foodEntry.findMany({ where: { ...userFilter, loggedAt: { gte: since } }, select: { userId: true, loggedAt: true } })).map(r => ({ userId: r.userId, when: r.loggedAt }))],
     ['breath', (await prisma.breathSession.findMany({ where: { ...userFilter, createdAt: { gte: since } }, select: { userId: true, createdAt: true } })).map(r => ({ userId: r.userId, when: r.createdAt }))],
