@@ -3,6 +3,7 @@
 // Saves both to Vercel Blob under vocal-trainer/<id>/
 import { NextRequest, NextResponse } from 'next/server';
 import { put } from '@vercel/blob';
+import { requireSession } from '@/lib/adminGuard';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
@@ -12,6 +13,9 @@ function slugify(s: string): string {
 }
 
 export async function POST(request: NextRequest) {
+  if (!(await requireSession())) {
+    return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
+  }
   try {
     const form = await request.formData();
     const audio = form.get('audio') as File | null;
@@ -72,6 +76,9 @@ export async function POST(request: NextRequest) {
 
 // PUT /api/vocal-trainer/upload — overwrite an existing template (no audio re-upload)
 export async function PUT(request: NextRequest) {
+  if (!(await requireSession())) {
+    return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
+  }
   try {
     const body = await request.json();
     if (!body?.id) return NextResponse.json({ error: 'id required' }, { status: 400 });

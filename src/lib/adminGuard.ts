@@ -1,5 +1,4 @@
 import { auth0 } from '@/lib/auth0';
-import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 
@@ -10,8 +9,7 @@ import { prisma } from '@/lib/prisma';
  * - Admin if: Auth0 claim role === 'admin' OR Mongo user role/accessLevel === 'admin'
  */
 export async function requireAdmin(returnTo: string = '/portal') {
-  const cookieStore = await cookies();
-  const session = await auth0.getSession(cookieStore as any);
+  const session = await auth0.getSession();
 
   // Not signed in → go login and come back
   if (!session?.user) {
@@ -41,4 +39,42 @@ export async function requireAdmin(returnTo: string = '/portal') {
   }
 
   return { session, dbUser };
+}
+
+/**
+ * API-route variant: returns true/false instead of redirecting,
+ * so JSON handlers can respond 401 rather than 307-to-login.
+ */
+export async function isAdminRequest(): Promise<boolean> {
+  try {
+    const session = await auth0.getSession();
+    if (!session?.user) return false;
+
+    const claimRole =
+      (session.user as any)?.['https://resetbiology.com/claims/role'] ||
+      (session.user as any)?.role ||
+      null;
+    if (claimRole === 'admin') return true;
+
+    const email = (session.user.email || '').toLowerCase();
+    const dbUser = email
+      ? await prisma.user.findUnique({ where: { email } })
+      : null;
+    return dbUser?.role === 'admin' || dbUser?.accessLevel === 'admin';
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * API-route variant for any-authenticated-user gating (not admin-only):
+ * returns true if a valid session exists, so JSON handlers can respond 401.
+ */
+export async function requireSession(): Promise<boolean> {
+  try {
+    const session = await auth0.getSession();
+    return !!session?.user;
+  } catch {
+    return false;
+  }
 }

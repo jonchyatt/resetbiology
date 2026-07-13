@@ -9,7 +9,7 @@ import { ensureStripeSync } from '@/lib/stripeSync';
 import peptidesData from '../../../src/data/peptides-merged.json';
 
 export async function listProducts() {
-  // Admin check already done in page component
+  await requireAdmin();
   const products = await prisma.product.findMany({
     orderBy: [
       { active: 'desc' },  // Active products first
@@ -26,7 +26,7 @@ export async function createProduct(data: {
   description?: string | null;
   imageUrl?: string | null;
 }) {
-  // await requireAdmin(); // Admin check already done in page component
+  await requireAdmin();
 
   if (!data?.name || !data?.slug) {
     throw new Error('name and slug are required');
@@ -74,7 +74,7 @@ export async function updateProduct(id: string, patch: Partial<{
   reconstitutionInstructions: string | null;
   syringeUnits: number | null;
 }>) {
-  // await requireAdmin(); // Admin check already done in page component
+  await requireAdmin();
   if (!id || !patch) throw new Error('Missing id or patch data');
 
   const product = await prisma.product.update({
@@ -86,7 +86,7 @@ export async function updateProduct(id: string, patch: Partial<{
 }
 
 export async function archiveProduct(productId: string) {
-  // await requireAdmin(); // Admin check already done in page component
+  await requireAdmin();
   if (!productId) throw new Error('Missing productId');
 
   const product = await prisma.product.update({
@@ -108,7 +108,7 @@ export async function upsertPrice(productId: string, payload: {
   isPrimary?: boolean;
   active?: boolean;
 }) {
-  // await requireAdmin(); // Admin check already done in page component
+  await requireAdmin();
   if (!productId || !payload?.unitAmount) {
     throw new Error('Missing productId or unitAmount');
   }
@@ -142,7 +142,7 @@ export async function upsertPrice(productId: string, payload: {
 }
 
 export async function deletePrice(priceId: string) {
-  // await requireAdmin(); // Admin check already done in page component
+  await requireAdmin();
   if (!priceId) throw new Error('Missing priceId');
 
   await prisma.price.delete({ where: { id: priceId } });
@@ -151,7 +151,7 @@ export async function deletePrice(priceId: string) {
 }
 
 export async function syncProductToStripe(productId: string) {
-  // await requireAdmin(); // Admin check already done in page component
+  await requireAdmin();
   if (!productId) throw new Error('Missing productId');
 
   const result = await ensureStripeSync(productId);
@@ -160,7 +160,7 @@ export async function syncProductToStripe(productId: string) {
 }
 
 export async function syncAllProductsToStripe() {
-  // Admin check already done in page component
+  await requireAdmin();
   const products = await prisma.product.findMany({
     where: { active: true, storefront: true },
   });
@@ -180,8 +180,8 @@ export async function syncAllProductsToStripe() {
 }
 
 export async function importPeptides() {
-  // Admin check already done in page component
-  
+  await requireAdmin();
+
   try {
     // Use imported JSON data directly - no file system access in production!
     const peptides = (peptidesData as any).peptides || [];
@@ -341,6 +341,7 @@ export async function importPeptides() {
 }
 
 export async function fixProductImages() {
+  await requireAdmin();
   // Copy imageUrl from allImages array if imageUrl is missing
   try {
     console.log('🔍 Checking product images...')
