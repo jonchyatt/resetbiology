@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "1.0.0",
+  "status": "STAGING_ONLY_NOT_INTEGRATED",
+  "tines": 5,
+  "frame_w": 12,
+  "frame_h": 16,
+  "handle_base": {
+    "x": 5,
+    "y": 15
+  },
+  "tine_tips": [
+    {
+      "x": 1,
+      "y": 0
+    },
+    {
+      "x": 3,
+      "y": 0
+    },
+    {
+      "x": 5,
+      "y": 0
+    },
+    {
+      "x": 7,
+      "y": 0
+    },
+    {
+      "x": 9,
+      "y": 0
+    }
+  ],
+  "burnFrameCount": 4,
+  "burnLadder": [
+    "b0",
+    "b1",
+    "b2",
+    "b3",
+    "b4",
+    "b5"
+  ]
+}

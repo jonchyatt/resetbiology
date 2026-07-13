@@ -12,7 +12,8 @@ import {
   Zap,
   Coffee,
   BookOpen,
-  Wind
+  Wind,
+  RotateCcw
 } from 'lucide-react'
 import MiniBreathExercise from '@/components/Breath/MiniBreathExercise'
 import TrainingSession from './TrainingSession'
@@ -111,6 +112,8 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
   const [engineResults, setEngineResults] = useState<EngineResult[]>([])
   const [showWeeklyAssessment, setShowWeeklyAssessment] = useState(false)
   const [assessmentDoneWeek, setAssessmentDoneWeek] = useState<number | null>(null)
+  const [resetting, setResetting] = useState(false)
+  const [resetConfirming, setResetConfirming] = useState(false)
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -181,6 +184,22 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleResetProgram = async () => {
+    setResetting(true)
+    try {
+      await fetch('/api/vision/program', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'reset_program' })
+      })
+    } catch (error) {
+      console.error('Failed to reset program:', error)
+    }
+    setResetConfirming(false)
+    setResetting(false)
+    loadProgram()
   }
 
   const handleEnroll = async () => {
@@ -530,6 +549,77 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
   // Active session view
   const session = todaySession.session
   if (!session) {
+    // 12 weeks elapsed with no session scheduled = graduated, not an error.
+    const graduated = todaySession.week >= 12 && !todaySession.isRestDay
+
+    if (graduated) {
+      return (
+        <div className="space-y-6">
+          <div className="bg-gradient-to-br from-secondary-600/20 to-primary-600/20 backdrop-blur-sm border border-secondary-400/30 rounded-xl p-8 text-center shadow-lg">
+            <Trophy className="w-16 h-16 text-secondary-400 mx-auto mb-4" />
+            <h3 className="text-2xl font-bold text-white mb-2">Program Complete!</h3>
+            <p className="text-gray-300 mb-4">
+              You've finished all 12 weeks of the Vision Recovery Program.
+            </p>
+            <div className="flex justify-center gap-4 text-sm mb-6">
+              <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-lg px-4 py-2 border border-primary-400/20">
+                <span className="text-gray-400">Longest streak:</span>
+                <span className="text-secondary-400 font-bold ml-2">{enrollment.longestStreak} days</span>
+              </div>
+              <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-lg px-4 py-2 border border-primary-400/20">
+                <span className="text-gray-400">Total:</span>
+                <span className="text-primary-400 font-bold ml-2">{enrollment.sessionsCompleted} sessions</span>
+              </div>
+            </div>
+
+            {!resetConfirming ? (
+              <button
+                onClick={() => setResetConfirming(true)}
+                className="px-6 py-3 bg-gray-700/60 hover:bg-gray-700 text-white font-semibold rounded-xl transition-all duration-300 flex items-center gap-2 mx-auto"
+              >
+                <RotateCcw className="w-4 h-4" />
+                Reset & Start Over
+              </button>
+            ) : (
+              <div className="space-y-3">
+                <p className="text-gray-300 text-sm">
+                  This clears your 12-week progress, streak, and daily session history so you can run the program again from Week 1 Day 1. This can&apos;t be undone.
+                </p>
+                <div className="flex justify-center gap-3">
+                  <button
+                    onClick={handleResetProgram}
+                    disabled={resetting}
+                    className="px-6 py-3 bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white font-semibold rounded-xl transition-all duration-300 flex items-center gap-2"
+                  >
+                    {resetting ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        Resetting...
+                      </>
+                    ) : (
+                      <>
+                        <RotateCcw className="w-4 h-4" />
+                        Yes, reset my progress
+                      </>
+                    )}
+                  </button>
+                  <button
+                    onClick={() => setResetConfirming(false)}
+                    disabled={resetting}
+                    className="px-6 py-3 bg-gray-700/60 hover:bg-gray-700 disabled:opacity-50 text-white font-semibold rounded-xl transition-all duration-300"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <ProgressDashboard />
+        </div>
+      )
+    }
+
     return (
       <div className="space-y-6">
         <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm border border-gray-600/30 rounded-xl p-8 text-center shadow-lg">

@@ -14,7 +14,7 @@ Native pixel size — Pitchforks.tsx will scale 3x in canvas.
 
 Frankenstein     : 32x48 (front) , idle + charging strips, 4 frames each
 Villager         : 16x24 (side)  , 4-frame walk + burned variants + ash
-Pitchforks       : separate layer, 8x16 native, 2/3/4 tine + burned states
+Pitchforks       : separate layer, 8x16 native for 1-4; staged 5-tine proof is 12x16
 FPS villager     : 16x24 (small/far), 24x32 (mid), 32x48 (close)
 FPS Frankenstein : 64x96 (centered, big)
 """
@@ -450,6 +450,23 @@ def gen_villagers_side(direction="r"):
 # ──────────────────────────────────────────────────────────────────────────
 #  PITCHFORKS — separate layer, 8x16 native, drawn over villager
 # ──────────────────────────────────────────────────────────────────────────
+def _fork_geometry(tines):
+    """Return the smallest countable native fork geometry for a tine count."""
+    geometries = {
+        1: {"width": 8, "handle_x": 3, "crossbar": (2, 3), "tine_xs": [3]},
+        2: {"width": 8, "handle_x": 3, "crossbar": (1, 6), "tine_xs": [1, 6]},
+        3: {"width": 8, "handle_x": 3, "crossbar": (1, 6), "tine_xs": [1, 3, 6]},
+        4: {"width": 8, "handle_x": 3, "crossbar": (1, 6), "tine_xs": [0, 2, 5, 7]},
+        # ponytail: 12px is the smallest honest frame with five 1px tines,
+        # four 1px gaps, and room for the existing one-pixel glow language.
+        # A future integration can widen further only if real-phone proof fails.
+        5: {"width": 12, "handle_x": 5, "crossbar": (1, 10), "tine_xs": [1, 3, 5, 7, 9]},
+    }
+    if tines not in geometries:
+        raise ValueError("pitchfork renderer supports 1 through 5 tines")
+    return geometries[tines]
+
+
 def draw_pitchfork(tines=3, burned=0, glow=False):
     """
     The fork hangs vertically. Handle at bottom (attaches to fork_base).
@@ -461,28 +478,28 @@ def draw_pitchfork(tines=3, burned=0, glow=False):
     object, and burn-ladder frame-to-frame consistency is exactly what
     procedural guarantees and AI generation doesn't; see CW consult-27).
     """
-    c = Canvas(8, 16)
+    if burned < 0 or burned > tines:
+        raise ValueError("burned tine count must be between zero and total tines")
+    geometry = _fork_geometry(tines)
+    c = Canvas(geometry["width"], 16)
+    handle_x = geometry["handle_x"]
 
     # Handle (vertical wood pole)
-    c.vline(3, 6, 10, FW)
-    c.vline(4, 6, 10, FW)
-    c.set(2, 7, F2); c.set(5, 7, F2)        # handle outline shadow
-    c.vline(2, 8, 7, BK)
-    c.vline(5, 8, 7, BK)
-    c.hline(2, 15, 4, BK)
+    c.vline(handle_x, 6, 10, FW)
+    c.vline(handle_x + 1, 6, 10, FW)
+    c.set(handle_x - 1, 7, F2); c.set(handle_x + 2, 7, F2)  # handle outline shadow
+    c.vline(handle_x - 1, 8, 7, BK)
+    c.vline(handle_x + 2, 8, 7, BK)
+    c.hline(handle_x - 1, 15, 4, BK)
 
     # Crossbar where tines mount
-    c.hline(1, 5, 6, BK)
-    c.hline(1, 6, 6, F2)
+    crossbar_x, crossbar_width = geometry["crossbar"]
+    c.hline(crossbar_x, 5, crossbar_width, BK)
+    c.hline(crossbar_x, 6, crossbar_width, F2)
 
     # Tines — drawn from leftmost to rightmost
     # tine x positions for each tine count
-    layouts = {
-        2: [1, 6],
-        3: [1, 3, 6],
-        4: [0, 2, 5, 7],
-    }
-    xs = layouts[tines]
+    xs = geometry["tine_xs"]
     for i, tx in enumerate(xs):
         is_burned = i >= (tines - burned)  # rightmost burns first
         if is_burned:
@@ -509,7 +526,7 @@ def draw_pitchfork(tines=3, burned=0, glow=False):
                 # not just a brighter solid color
                 if tx - 1 >= 0:
                     c.set(tx - 1, 0, EM)
-                if tx + 1 <= 7:
+                if tx + 1 < c.w:
                     c.set(tx + 1, 0, EM)
     return c
 
@@ -531,6 +548,33 @@ def gen_pitchforks():
             }[tines],
         }
     (OUT/"forks.json").write_text(json.dumps(forks_meta, indent=2))
+
+
+def generate_staged_fork_proof(tines, out_dir):
+    """Emit a non-production 1/5-tine burn ladder plus future anchor metadata."""
+    if tines not in (1, 5):
+        raise ValueError("staged fork proof is limited to the missing 1- and 5-tine tiers")
+    target_dir = Path(out_dir)
+    target_dir.mkdir(parents=True, exist_ok=True)
+    geometry = _fork_geometry(tines)
+    for burned in range(tines + 1):
+        draw_pitchfork(tines, burned, False).save(target_dir / f"fork_{tines}tine_b{burned}.png")
+        draw_pitchfork(tines, burned, True).save(target_dir / f"fork_{tines}tine_b{burned}_glow.png")
+    metadata = {
+        "schemaVersion": "1.0.0",
+        "status": "STAGING_ONLY_NOT_INTEGRATED",
+        "tines": tines,
+        "frame_w": geometry["width"],
+        "frame_h": 16,
+        "handle_base": {"x": geometry["handle_x"], "y": 15},
+        "tine_tips": [{"x": x, "y": 0} for x in geometry["tine_xs"]],
+        "burnFrameCount": tines - 1,
+        "burnLadder": [f"b{burned}" for burned in range(tines + 1)],
+    }
+    meta_path = target_dir / f"fork_{tines}tine.json"
+    meta_path.write_text(json.dumps(metadata, indent=2) + "\n")
+    print(f"generated staged {tines}-tine fork proof in {target_dir}")
+    return meta_path
 
 # ──────────────────────────────────────────────────────────────────────────
 #  FPS VIEW — front-facing villagers + bigger Frankenstein
@@ -1014,8 +1058,8 @@ def _extract_opaque_palette(paths):
     return tuple(sorted(palette))
 
 
-def _dominant_opaque_bbox(image):
-    """Return the largest connected opaque subject, ignoring neighboring-cell bleed."""
+def _opaque_components(image):
+    """Return opaque connected components as (area, bbox), largest first."""
     width, height = image.size
     opaque = image.getchannel("A").load()
     visited = bytearray(width * height)
@@ -1048,7 +1092,13 @@ def _dominant_opaque_bbox(image):
                     stack.append((nx, ny))
             components.append((area, (min_x, min_y, max_x + 1, max_y + 1)))
 
-    return max(components, key=lambda component: component[0])[1] if components else None
+    return sorted(components, key=lambda component: component[0], reverse=True)
+
+
+def _dominant_opaque_bbox(image):
+    """Return the largest connected opaque subject, ignoring neighboring-cell bleed."""
+    components = _opaque_components(image)
+    return components[0][1] if components else None
 
 
 def _key_fit_palette_lock(cell, frame_size, palette, right_bias=0):
@@ -1100,16 +1150,89 @@ def _key_fit_palette_lock(cell, frame_size, palette, right_bias=0):
     return frame
 
 
+def normalize_lifecycle_source_sheet(source_path, tines, output_path):
+    """Re-grid model output without redrawing it; fail if the expected actors are absent."""
+    if not HAS_PIL:
+        raise RuntimeError("source normalization requires Pillow (PIL)")
+    if tines not in (1, 5):
+        raise ValueError("source normalization is limited to staged 1/5-tine proofs")
+    columns = 6 if tines == 5 else 5
+    target_columns_by_row = (
+        [0, 1, 2, 3],
+        [0, 1, 2, 3, 5] if tines == 5 else [0, 1],
+    )
+    source = Image.open(source_path).convert("RGBA")
+    keyed = source.copy()
+    pixels = keyed.load()
+    for y in range(keyed.height):
+        for x in range(keyed.width):
+            r, g, b, a = pixels[x, y]
+            pixels[x, y] = (r, g, b, 0 if a == 0 or _is_magenta_family((r, g, b)) else 255)
+
+    components = _opaque_components(keyed)
+    if not components:
+        raise RuntimeError("source normalizer found no opaque actors")
+    largest = components[0][0]
+    body_components = [
+        component for component in components
+        if component[0] >= largest * 0.08
+        and component[1][3] - component[1][1] >= keyed.height * 0.12
+    ]
+    actors_by_row = [[], []]
+    for area, bbox in body_components:
+        center_x = (bbox[0] + bbox[2]) / 2
+        center_y = (bbox[1] + bbox[3]) / 2
+        actors_by_row[0 if center_y < keyed.height / 2 else 1].append((area, bbox, center_x))
+
+    normalized = Image.new("RGBA", keyed.size, (255, 0, 255, 255))
+    for row, target_columns in enumerate(target_columns_by_row):
+        expected = len(target_columns)
+        actors = actors_by_row[row]
+        if len(actors) < expected:
+            raise RuntimeError(f"source normalizer found {len(actors)} actors in row {row + 1}, expected {expected}")
+        actors = sorted(sorted(actors, reverse=True)[:expected], key=lambda actor: actor[2])
+        centers = [actor[2] for actor in actors]
+        row_top = round(row * keyed.height / 2)
+        row_bottom = round((row + 1) * keyed.height / 2)
+        for index, (_, _, center_x) in enumerate(actors):
+            left = 0 if index == 0 else round((centers[index - 1] + center_x) / 2)
+            right = keyed.width if index == expected - 1 else round((center_x + centers[index + 1]) / 2)
+            region = keyed.crop((left, row_top, right, row_bottom))
+            bbox = region.getbbox()
+            if bbox is None:
+                raise RuntimeError(f"source normalizer actor {index + 1} in row {row + 1} is empty")
+            actor = region.crop(bbox)
+            target_column = target_columns[index]
+            cell_left = round(target_column * keyed.width / columns)
+            cell_right = round((target_column + 1) * keyed.width / columns)
+            cell_width = cell_right - cell_left
+            if actor.width > cell_width * 0.9 or actor.height > (row_bottom - row_top) * 0.94:
+                scale = min(cell_width * 0.9 / actor.width, (row_bottom - row_top) * 0.94 / actor.height)
+                actor = actor.resize((max(1, round(actor.width * scale)), max(1, round(actor.height * scale))), Image.NEAREST)
+            paste_x = cell_left + (cell_width - actor.width) // 2
+            paste_y = row_bottom - actor.height - max(2, round(keyed.height * 0.01))
+            normalized.paste(actor, (paste_x, paste_y), actor)
+
+    target = Path(output_path)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    normalized.save(target, "PNG", optimize=True)
+    print(f"normalized {tines}-tine source sheet into strict {columns}x2 grid: {target}")
+    return target
+
+
 def assemble_villager_lifecycle_sheet(source_path, tines, out_dir=None):
-    """Assemble a C11c 5x2 sheet into frozen 16x24 walk/burn/ash atlas slots."""
+    """Assemble a 5x2 (1-4 tine) or 6x2 (5 tine) lifecycle source sheet."""
     if not HAS_PIL:
         raise RuntimeError("assembler mode requires Pillow (PIL) - not available in this environment")
-    if tines not in (2, 3, 4):
-        raise ValueError("roster lifecycle assembler supports 2, 3, or 4 tines")
+    if tines not in (1, 2, 3, 4, 5):
+        raise ValueError("roster lifecycle assembler supports 1 through 5 tines")
+    if tines in (1, 5) and out_dir is None:
+        raise ValueError("1/5-tine proofs require an explicit staging directory")
 
     src = Image.open(source_path).convert("RGBA")
     target_dir = Path(out_dir) if out_dir else OUT
     target_dir.mkdir(parents=True, exist_ok=True)
+    grid_columns = 6 if tines == 5 else 5
     palette = _extract_opaque_palette([
         OUT / "villager_2tine_walk.png",
         OUT / "villager_2tine_burned_1.png",
@@ -1118,9 +1241,9 @@ def assemble_villager_lifecycle_sheet(source_path, tines, out_dir=None):
 
     def source_cell(column, row):
         # Built-in image generation may return odd dimensions; rounded proportional
-        # boundaries retain the strict 5x2 layout without resampling the source sheet.
-        left = round(column * src.width / 5)
-        right = round((column + 1) * src.width / 5)
+        # boundaries retain the strict layout without resampling the source sheet.
+        left = round(column * src.width / grid_columns)
+        right = round((column + 1) * src.width / grid_columns)
         top = round(row * src.height / 2)
         bottom = round((row + 1) * src.height / 2)
         return src.crop((left, top, right, bottom))
@@ -1151,6 +1274,21 @@ def assemble_villager_lifecycle_sheet(source_path, tines, out_dir=None):
     ash_left_path = target_dir / f"villager_{tines}tine_ash_left.png"
     ash.save(ash_path, "PNG", optimize=True)
     ash.transpose(Image.FLIP_LEFT_RIGHT).save(ash_left_path, "PNG", optimize=True)
+    if tines in (1, 5):
+        staging_meta = {
+            "schemaVersion": "1.0.0",
+            "status": "STAGING_ONLY_NOT_INTEGRATED",
+            "tines": tines,
+            "frame_w": 16,
+            "frame_h": 24,
+            "walk_frames": 4,
+            "facing": "right",
+            "sourceGridColumns": grid_columns,
+            "burnFrameCount": tines - 1,
+            "ashOnStrike": tines,
+            "fork_base": {"x": 14, "y": 11},
+        }
+        (target_dir / f"villager_{tines}tine.json").write_text(json.dumps(staging_meta, indent=2) + "\n")
     print(f"assembled complete {tines}-tine lifecycle from {source_path} into {target_dir}")
     return walk_path
 
@@ -1246,6 +1384,126 @@ def verify_roster_outputs():
     print(f"roster output verification PASS: {checked}/24 runtime assets")
 
 
+def verify_staged_roster_outputs(out_dir, tines):
+    """Validate staged 1/5-tine outputs without touching the production atlas."""
+    if tines not in (1, 5):
+        raise ValueError("staged roster verification is limited to 1 and 5 tines")
+    target_dir = Path(out_dir)
+    palette = set(_extract_opaque_palette([
+        OUT / "villager_2tine_walk.png",
+        OUT / "villager_2tine_burned_1.png",
+        OUT / "villager_2tine_ash.png",
+    ]))
+    stems = [f"villager_{tines}tine_walk"]
+    stems += [f"villager_{tines}tine_burned_{index}" for index in range(1, tines)]
+    stems += [f"villager_{tines}tine_ash"]
+    for stem in stems:
+        right = Image.open(target_dir / f"{stem}.png").convert("RGBA")
+        left = Image.open(target_dir / f"{stem}_left.png").convert("RGBA")
+        expected_size = (64, 24) if stem.endswith("_walk") else (16, 24)
+        if right.size != expected_size or left.size != expected_size:
+            raise RuntimeError(f"{stem}: expected {expected_size}, got {right.size}/{left.size}")
+        if left.tobytes() != right.transpose(Image.FLIP_LEFT_RIGHT).tobytes():
+            raise RuntimeError(f"{stem}: left output is not an exact mirror")
+        for image in (right, left):
+            for r, g, b, a in image.getdata():
+                if a not in (0, 255):
+                    raise RuntimeError(f"{stem}: partial alpha survived")
+                if a and (_is_magenta_family((r, g, b)) or (r, g, b) not in palette):
+                    raise RuntimeError(f"{stem}: opaque pixel escaped key/palette lock")
+        if "_ash" not in stem:
+            bbox = right.getbbox()
+            if bbox is None or bbox[3] - bbox[1] < 18:
+                raise RuntimeError(f"{stem}: subject collapsed below 18px native height")
+
+    meta = json.loads((target_dir / f"villager_{tines}tine.json").read_text())
+    if meta.get("burnFrameCount") != tines - 1 or meta.get("ashOnStrike") != tines:
+        raise RuntimeError(f"villager_{tines}tine metadata violates burned=N-1 lifecycle law")
+    print(f"staged {tines}-tine roster verification PASS: {len(stems) * 2} assets")
+
+
+def verify_p4_1_5_proof_tooling():
+    """Prove the new staging-only extremes while preserving every shipped pixel."""
+    import hashlib
+    import tempfile
+
+    def production_digest():
+        digest = hashlib.sha256()
+        for path in sorted(OUT.glob("*")):
+            if path.is_file():
+                digest.update(path.name.encode("utf-8"))
+                digest.update(path.read_bytes())
+        return digest.hexdigest()
+
+    before = production_digest()
+    verify_roster_assembler()
+
+    # The generalized renderer must remain pixel-identical for the shipped fork tiers.
+    for tines in (2, 3, 4):
+        for burned in range(tines + 1):
+            for glow in (False, True):
+                suffix = "_glow" if glow else ""
+                expected = Image.open(OUT / f"fork_{tines}tine_b{burned}{suffix}.png").convert("RGBA")
+                actual = draw_pitchfork(tines, burned, glow).to_pil()
+                if expected.size != actual.size or expected.tobytes() != actual.tobytes():
+                    raise RuntimeError(f"shipped fork drift: {tines}tine b{burned}{suffix}")
+
+    def make_source(path, tines):
+        columns = 6 if tines == 5 else 5
+        cell_w, cell_h = 80, 128
+        sheet = Image.new("RGBA", (columns * cell_w, 2 * cell_h), (255, 0, 255, 255))
+
+        def subject(column, row, width=30, height=92, color=(90, 70, 50, 255)):
+            block = Image.new("RGBA", (width, height), color)
+            x = column * cell_w + (cell_w - width) // 2
+            y = row * cell_h + cell_h - height - 8
+            sheet.paste(block, (x, y), block)
+
+        for column in range(4):
+            subject(column, 0, width=28 + column % 2, color=(90 + column * 4, 70, 50, 255))
+        if tines == 1:
+            subject(0, 1, width=30, height=82, color=(65, 60, 48, 255))  # unused strike-flash reference
+            subject(1, 1, width=34, height=44, color=(50, 50, 50, 255))  # ash
+        else:
+            for column in range(4):
+                subject(column, 1, width=30, height=86 - column * 5, color=(72 - column * 4, 58, 44, 255))
+            subject(5, 1, width=38, height=42, color=(50, 50, 50, 255))  # ash
+        sheet.save(path, "PNG")
+
+    with tempfile.TemporaryDirectory(prefix="pitchforks-p4-extremes-") as tmp:
+        tmp_dir = Path(tmp)
+        for tines in (1, 5):
+            source = tmp_dir / f"source-{tines}.png"
+            normalized = tmp_dir / f"source-{tines}-normalized.png"
+            output = tmp_dir / f"out-{tines}"
+            make_source(source, tines)
+            normalize_lifecycle_source_sheet(source, tines, normalized)
+            assemble_villager_lifecycle_sheet(normalized, tines, output)
+            verify_staged_roster_outputs(output, tines)
+            fork_dir = output / "forks"
+            meta_path = generate_staged_fork_proof(tines, fork_dir)
+            meta = json.loads(meta_path.read_text())
+            if meta["burnFrameCount"] != tines - 1 or len(meta["tine_tips"]) != tines:
+                raise RuntimeError(f"staged {tines}-tine fork metadata violates lifecycle/anchor contract")
+            expected_size = (12, 16) if tines == 5 else (8, 16)
+            fork = Image.open(fork_dir / f"fork_{tines}tine_b0.png").convert("RGBA")
+            if fork.size != expected_size:
+                raise RuntimeError(f"staged {tines}-tine fork has wrong native size: {fork.size}")
+            if tines == 5:
+                row = [fork.getpixel((x, 1))[3] > 0 for x in range(fork.width)]
+                runs = sum(opaque and (index == 0 or not row[index - 1]) for index, opaque in enumerate(row))
+                if runs != 5:
+                    raise RuntimeError(f"5-tine fork row has {runs} countable tines, expected 5")
+                glow = Image.open(fork_dir / "fork_5tine_b0_glow.png").convert("RGBA")
+                if not any(glow.getpixel((x, 0))[3] for x in range(glow.width)):
+                    raise RuntimeError("5-tine glow proof has no visible tip halo")
+
+    after = production_digest()
+    if before != after:
+        raise RuntimeError("staging-only proof mutated public/images/pitchforks")
+    print("P4 1/5-tine proof tooling PASS: staged extremes valid; shipped atlas byte-identical")
+
+
 def main():
     print(f"Generating into {OUT}")
     gen_frankenstein()
@@ -1264,11 +1522,19 @@ if __name__ == "__main__":
         verify_roster_assembler()
     elif len(sys.argv) == 2 and sys.argv[1] == "--verify-roster-outputs":
         verify_roster_outputs()
+    elif len(sys.argv) == 2 and sys.argv[1] == "--verify-p4-1-5-proof-tooling":
+        verify_p4_1_5_proof_tooling()
+    elif len(sys.argv) == 4 and sys.argv[1] == "--verify-staged-roster":
+        verify_staged_roster_outputs(sys.argv[3], int(sys.argv[2]))
+    elif len(sys.argv) == 5 and sys.argv[1] == "--normalize-lifecycle-source":
+        normalize_lifecycle_source_sheet(sys.argv[3], int(sys.argv[2]), sys.argv[4])
     elif len(sys.argv) >= 3 and sys.argv[1] == "--assemble-2tine":
         assemble_villager_2tine_from_source(sys.argv[2])
     elif len(sys.argv) >= 4 and sys.argv[1] == "--assemble-2tine-damage":
         assemble_villager_2tine_damage_from_source(sys.argv[3], sys.argv[2])
     elif len(sys.argv) >= 4 and sys.argv[1] == "--assemble-roster-lifecycle":
-        assemble_villager_lifecycle_sheet(sys.argv[3], int(sys.argv[2]))
+        assemble_villager_lifecycle_sheet(sys.argv[3], int(sys.argv[2]), sys.argv[4] if len(sys.argv) >= 5 else None)
+    elif len(sys.argv) == 4 and sys.argv[1] == "--generate-staged-fork-proof":
+        generate_staged_fork_proof(int(sys.argv[2]), sys.argv[3])
     else:
         main()

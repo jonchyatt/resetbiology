@@ -17,13 +17,15 @@ import { usePitchDetection } from './usePitchDetection'
 import { initAudio, loadPianoSamples, playPianoNote } from './audioEngine'
 import {
   H, INITIAL_UNLOCK, STARTING_SHIELDS, W,
-  beginWave, createInitialState, tick, toViewState,
+  beginWave, createInitialState, noteButtonRects, tick, toViewState,
   type Difficulty, type EngineEvent, type GameState, type InputMode, type Phase, type ViewState,
 } from './retroBlasterEngine'
-import { render } from './retroBlasterRenderer'
+import { enemyRenderSourceSnapshot, render, resetEnemyRenderLatches } from './retroBlasterRenderer'
 
 const TUTORIAL_KEY = 'retro_tutorial_seen'
 const RETRO_DIFFICULTY_KEY = 'retro_difficulty'
+const CRT_KEY = 'retro_blaster_crt'
+const COLOR_HINTS_KEY = 'retro_blaster_color_hints'
 
 export interface RetroBlasterFamilyStores {
   voice: Record<string, NoteMemory>
@@ -137,10 +139,17 @@ export default function RetroBlasterII() {
   const pendingAnswerRef = useRef<string | null>(null)
   const inputModeRef = useRef<InputMode>('click')
   const listeningRef = useRef(false)
+  const colorHintsRef = useRef(true)
 
+  const [reducedMotion, setReducedMotion] = useState(() =>
+    typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  )
+  const reducedMotionRef = useRef(reducedMotion)
   const [phase, setPhase] = useState<Phase>('menu')
   const [inputMode, setInputMode] = useState<InputMode>('click')
   const [difficulty, setDifficulty] = useState<Difficulty>('easy')
+  const [crtEnabled, setCrtEnabled] = useState(false)
+  const [colorHints, setColorHints] = useState(true)
   const [displayView, setDisplayView] = useState<ViewState | null>(null)
   const [finalStats, setFinalStats] = useState({ score: 0, wave: 0, maxCombo: 0 })
 
@@ -150,11 +159,33 @@ export default function RetroBlasterII() {
   useEffect(() => { listeningRef.current = isListening }, [isListening])
 
   useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const syncReducedMotion = (matches: boolean) => {
+      reducedMotionRef.current = matches
+      setReducedMotion(matches)
+    }
+    const onChange = (event: MediaQueryListEvent) => syncReducedMotion(event.matches)
+    syncReducedMotion(mediaQuery.matches)
+    mediaQuery.addEventListener('change', onChange)
+    return () => mediaQuery.removeEventListener('change', onChange)
+  }, [])
+
+  useEffect(() => {
     familyStoresRef.current = loadRetroBlasterFamilyStores()
+    let initialCrt = window.innerWidth >= 768
     try {
       const d = localStorage.getItem(RETRO_DIFFICULTY_KEY)
       if (d === 'easy' || d === 'true') setDifficulty(d)
+      const savedCrt = localStorage.getItem(CRT_KEY)
+      if (savedCrt !== null) initialCrt = savedCrt === '1'
+      const savedColorHints = localStorage.getItem(COLOR_HINTS_KEY)
+      if (savedColorHints !== null) {
+        const enabled = savedColorHints === '1'
+        colorHintsRef.current = enabled
+        setColorHints(enabled)
+      }
     } catch {}
+    setCrtEnabled(initialCrt)
     loadPianoSamples()
   }, [])
 
@@ -195,6 +226,7 @@ export default function RetroBlasterII() {
     const result = tick(gs, {
       inputMode: inputModeRef.current,
       isListening: listeningRef.current,
+      reducedMotion: reducedMotionRef.current,
       pitch: livePitchRef.current,
       answeredNote,
       latencyMs,
@@ -203,7 +235,14 @@ export default function RetroBlasterII() {
     stateRef.current = result.state
     const canvas = canvasRef.current
     const ctx = canvas?.getContext('2d')
-    if (ctx) render(ctx, result.viewState)
+    if (canvas && ctx) {
+      ctx.imageSmoothingEnabled = false
+      render(ctx, result.viewState, {
+        reducedMotion: reducedMotionRef.current,
+        colorHints: colorHintsRef.current,
+      })
+      canvas.dataset.retroRenderSources = JSON.stringify(enemyRenderSourceSnapshot())
+    }
     setDisplayView(result.viewState)
     applyEvents(result.events, result.state)
     if (result.state.phase === 'playing') rafRef.current = requestAnimationFrame(gameLoop)
@@ -216,6 +255,7 @@ export default function RetroBlasterII() {
 
   const startGame = useCallback(() => {
     if (rafRef.current) { cancelAnimationFrame(rafRef.current); rafRef.current = 0 }
+    resetEnemyRenderLatches()
     initAudio()
     if (inputMode === 'mic') startListening()
     const gs = buildState()
@@ -252,6 +292,23 @@ export default function RetroBlasterII() {
     if (!pendingAnswerRef.current) pendingAnswerRef.current = answeredNote
   }, [])
 
+  const toggleCrt = useCallback(() => {
+    setCrtEnabled(enabled => {
+      const next = !enabled
+      try { localStorage.setItem(CRT_KEY, next ? '1' : '0') } catch {}
+      return next
+    })
+  }, [])
+
+  const toggleColorHints = useCallback(() => {
+    setColorHints(enabled => {
+      const next = !enabled
+      colorHintsRef.current = next
+      try { localStorage.setItem(COLOR_HINTS_KEY, next ? '1' : '0') } catch {}
+      return next
+    })
+  }, [])
+
   const handleCanvasClick = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
     const gs = stateRef.current
     if (!gs || !canvasRef.current) return
@@ -261,21 +318,12 @@ export default function RetroBlasterII() {
     const cx = (e.clientX - rect.left) * scaleX
     const cy = (e.clientY - rect.top) * scaleY
     const unlocked = gs.unlockedNotes
-    const btnGap = 4
-    const maxBtnW = 50
-    const availW = W - 16
-    const btnW = Math.min(maxBtnW, Math.floor((availW - (unlocked.length - 1) * btnGap) / unlocked.length))
-    const btnH = 22
-    const totalBtnW = unlocked.length * btnW + (unlocked.length - 1) * btnGap
-    const btnStartX = Math.floor((W - totalBtnW) / 2)
-    const btnY = H - 30
-    if (cy >= btnY && cy <= btnY + btnH) {
-      for (let i = 0; i < unlocked.length; i++) {
-        const bx = btnStartX + i * (btnW + btnGap)
-        if (cx >= bx && cx <= bx + btnW) {
+    const buttonRects = noteButtonRects(unlocked.length)
+    for (let i = 0; i < buttonRects.length; i++) {
+      const rect = buttonRects[i]
+      if (cx >= rect.x && cx <= rect.x + rect.width && cy >= rect.y && cy <= rect.y + rect.height) {
           processHit(unlocked[i])
           return
-        }
       }
     }
   }, [processHit])
@@ -491,8 +539,11 @@ export default function RetroBlasterII() {
   const displayUnlocked = displayView?.hud.unlockedNotes ?? []
 
   return (
-    <div className="fixed inset-0 bg-black flex flex-col items-center justify-start pt-3 px-3"
-      style={{ fontFamily: 'monospace' }}>
+    <div className="fixed inset-0 flex flex-col items-center justify-start pt-3 px-3 overflow-y-auto"
+      style={{
+        fontFamily: 'monospace',
+        background: 'radial-gradient(circle at 50% 0%, #1b0b34 0%, #05010d 42%, #000 82%)',
+      }}>
       <div className="w-full max-w-[960px] mb-2 text-center">
         <div className="text-[11px] text-cyan-300 tracking-wider mb-1">
           LISTEN FOR THE NOTE → PRESS THE MATCHING KEY (or click its button)
@@ -504,9 +555,11 @@ export default function RetroBlasterII() {
             return (
               <span key={note} className="px-2 py-0.5 rounded border"
                 style={{
-                  borderColor: `hsl(${hue}, 70%, 55%)`,
-                  background: isActiveNote ? `hsla(${hue}, 70%, 35%, 0.6)` : 'transparent',
-                  color: `hsl(${hue}, 90%, 75%)`,
+                  borderColor: colorHints ? `hsl(${hue}, 70%, 55%)` : isActiveNote ? '#c8f5ff' : '#607080',
+                  background: isActiveNote
+                    ? colorHints ? `hsla(${hue}, 70%, 35%, 0.6)` : 'rgba(39,78,94,0.72)'
+                    : 'transparent',
+                  color: colorHints ? `hsl(${hue}, 90%, 75%)` : '#dce9ef',
                   fontWeight: isActiveNote ? 700 : 400,
                 }}>
                 {note.replace(/\d/, '')}={i + 1}
@@ -518,11 +571,34 @@ export default function RetroBlasterII() {
           Active alien is highlighted with <span className="text-yellow-300 font-bold">?</span> · SPACE to replay note
         </div>
       </div>
-      <canvas ref={canvasRef} width={W} height={H} onClick={handleCanvasClick}
-        className="w-full max-w-[960px]"
-        style={{ imageRendering: 'pixelated', cursor: 'pointer', aspectRatio: `${W} / ${H}`, maxHeight: 'calc(100vh - 180px)' }} />
+      <div className="relative w-full max-w-[960px] md:border-2 md:p-3"
+        data-retro-cabinet
+        style={{
+          borderColor: 'rgba(90,236,255,0.72)',
+          background: 'linear-gradient(145deg, rgba(27,12,48,0.96), rgba(4,5,18,0.98))',
+          boxShadow: '0 0 0 1px rgba(255,67,219,0.45), 0 0 28px rgba(62,214,255,0.18), inset 0 0 28px rgba(0,0,0,0.85)',
+        }}>
+        <div className="hidden md:flex items-center justify-between px-1 pb-2 text-[9px] tracking-[0.24em]">
+          <span className="text-fuchsia-300">RETRO BLASTER</span>
+          <span className="text-cyan-300">EAR DEFENSE UNIT</span>
+        </div>
+        <div className="relative overflow-hidden border border-cyan-300/30 bg-black"
+          style={{ boxShadow: 'inset 0 0 32px rgba(0,0,0,0.82)' }}>
+          <canvas ref={canvasRef} width={W} height={H} onClick={handleCanvasClick}
+            className="block w-full"
+            style={{ imageRendering: 'pixelated', cursor: 'pointer', aspectRatio: `${W} / ${H}`, maxHeight: 'calc(100vh - 210px)' }} />
+          {crtEnabled && (
+            <div className="absolute inset-0 pointer-events-none" data-retro-crt-overlay aria-hidden="true"
+              style={{
+                backgroundImage: 'repeating-linear-gradient(0deg, rgba(0,0,0,0.18) 0, rgba(0,0,0,0.18) 1px, transparent 1px, transparent 3px), radial-gradient(ellipse at center, transparent 58%, rgba(0,0,0,0.34) 100%)',
+                boxShadow: 'inset 0 0 20px rgba(70,231,255,0.08)',
+              }} />
+          )}
+        </div>
+      </div>
       {inputMode === 'mic' && matchProgress > 0 && (
         <div className="mt-2 w-full max-w-[960px] flex items-center justify-center gap-3"
+          data-retro-vocal-meter
           style={{ fontFamily: 'monospace' }}>
           {matchTargetNote && (
             <span className="text-[12px] font-bold tracking-widest"
@@ -549,7 +625,7 @@ export default function RetroBlasterII() {
           </div>
         </div>
       )}
-      <div className="mt-3 flex gap-3">
+      <div className="mt-3 flex gap-3 flex-wrap justify-center pb-3">
         <button onClick={replayActiveNote}
           className="px-4 py-2 text-xs font-bold tracking-widest active:scale-95 transition-all"
           style={{ background: 'rgba(255,227,76,0.15)', color: '#ffe34c', border: '1px solid #ffe34c' }}>
@@ -562,8 +638,28 @@ export default function RetroBlasterII() {
         }} className="px-4 py-2 text-xs text-gray-500 border border-gray-700 tracking-wider active:scale-95">
           QUIT
         </button>
+        <button onClick={toggleCrt} aria-pressed={crtEnabled}
+          className="px-4 py-2 text-xs tracking-wider active:scale-95 transition-all"
+          style={{
+            color: crtEnabled ? '#f0abfc' : '#6b7280',
+            border: `1px solid ${crtEnabled ? '#e879f9' : '#374151'}`,
+            background: crtEnabled ? 'rgba(217,70,239,0.12)' : 'rgba(17,24,39,0.55)',
+          }}>
+          CRT {crtEnabled ? 'ON' : 'OFF'}
+        </button>
+        <button onClick={toggleColorHints} aria-pressed={colorHints} data-retro-color-hints
+          className="px-4 py-2 text-xs tracking-wider active:scale-95 transition-all"
+          style={{
+            color: colorHints ? '#7dd3fc' : '#d8e5ef',
+            border: `1px solid ${colorHints ? '#38bdf8' : '#64748b'}`,
+            background: colorHints ? 'rgba(14,165,233,0.12)' : 'rgba(30,41,59,0.64)',
+          }}>
+          COLOR HINTS {colorHints ? 'ON' : 'OFF'}
+        </button>
       </div>
-      <div className="hidden">
+      <div className="hidden" data-retro-roster-state
+        data-visual-kinds={displayView?.aliens.filter(alien => alien.alive).map(alien => alien.visualKind).join(',') ?? ''}
+        data-visual-ids={displayView?.aliens.filter(alien => alien.alive).map(alien => alien.visualId).join(',') ?? ''}>
         {displayView?.hud.score}{displayView?.hud.wave}{displayView?.hud.combo}{displayView?.hud.shields}{STARTING_SHIELDS}
       </div>
     </div>
