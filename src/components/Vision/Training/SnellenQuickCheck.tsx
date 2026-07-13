@@ -167,6 +167,7 @@ function Leg({
             direction={currentLine.directions[letterIdx]}
             size={Math.round(55 * currentLine.scale)}
             strokeWeight="normal"
+            animate={false}
           />
         </div>
       </div>

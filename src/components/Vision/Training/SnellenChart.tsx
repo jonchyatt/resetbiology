@@ -59,7 +59,9 @@ export type EDirection = typeof E_DIRECTIONS[number]
 // SVG Tumbling E with proper Snellen proportions (5x5 grid with extended horizontal bars)
 // The horizontal bars (legs) are longer than standard font E
 // strokeWeight: 'bold' (default) or 'thin' for finer lines = better focus workout
-export const TumblingE = ({ direction, size, strokeWeight = 'normal' }: { direction: EDirection; size: number; strokeWeight?: 'bold' | 'normal' | 'thin' }) => {
+// animate=false for measurement contexts (SnellenQuickCheck): the 200ms rotation
+// tween briefly shows ambiguous diagonal orientations and ignores reduced-motion.
+export const TumblingE = ({ direction, size, strokeWeight = 'normal', animate = true }: { direction: EDirection; size: number; strokeWeight?: 'bold' | 'normal' | 'thin'; animate?: boolean }) => {
   const rotationMap: Record<EDirection, number> = {
     right: 0,
     down: 90,
@@ -79,7 +81,7 @@ export const TumblingE = ({ direction, size, strokeWeight = 'normal' }: { direct
       height={size}
       viewBox="0 0 50 50"
       style={{ transform: `rotate(${rotationMap[direction]}deg)` }}
-      className="transition-transform duration-200"
+      className={animate ? 'transition-transform duration-200' : undefined}
     >
       {/* E shape - thickness varies by strokeWeight */}
       <g fill="black">
