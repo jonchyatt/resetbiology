@@ -20,7 +20,7 @@ interface SnellenChartProps {
 // Starting at Moderate level, progressing to finer lines
 // NO medical notation - this is training, not diagnosis
 // Extra-small lines (Elite, Ultra) for high-resolution phone screens
-const CHART_LINES = [
+export const CHART_LINES = [
   { level: 1, label: 'Moderate', scale: 2.0, letterCount: 3 },
   { level: 2, label: 'Building', scale: 1.6, letterCount: 4 },
   { level: 3, label: 'Challenge', scale: 1.3, letterCount: 5 },
@@ -29,6 +29,13 @@ const CHART_LINES = [
   { level: 6, label: 'Elite', scale: 0.6, letterCount: 7 },
   { level: 7, label: 'Ultra', scale: 0.45, letterCount: 8 },
 ]
+
+// Line→20/xx vocabulary mapping (SnellenQuickCheck, Chunk B). CHART_LINES already
+// starts at "Moderate" — the top two rows (would-be 20/200, 20/100) were removed
+// as "too big to be useful" (see comment above), so index 0 maps to the next
+// value down. Uses the SAME 9-value 20/xx vocabulary as WeeklyAssessment.tsx's
+// SNELLEN_OPTIONS and DailyPractice.tsx's baseline dropdowns — no new notation.
+export const CHART_LINE_TO_SNELLEN = ['20/70', '20/50', '20/40', '20/30', '20/25', '20/20', '20/15']
 
 // Confusable letters for letter chart mode - letters that look similar and challenge focus
 // Groups: O/Q/C/D, H/M/N, K/X, R/B, S/Z, V/W
@@ -46,13 +53,13 @@ const getLetterChoices = (correctLetter: string): string[] => {
   return [correctLetter, ...distractors].sort(() => Math.random() - 0.5)
 }
 
-const E_DIRECTIONS = ['up', 'down', 'left', 'right'] as const
-type EDirection = typeof E_DIRECTIONS[number]
+export const E_DIRECTIONS = ['up', 'down', 'left', 'right'] as const
+export type EDirection = typeof E_DIRECTIONS[number]
 
 // SVG Tumbling E with proper Snellen proportions (5x5 grid with extended horizontal bars)
 // The horizontal bars (legs) are longer than standard font E
 // strokeWeight: 'bold' (default) or 'thin' for finer lines = better focus workout
-const TumblingE = ({ direction, size, strokeWeight = 'normal' }: { direction: EDirection; size: number; strokeWeight?: 'bold' | 'normal' | 'thin' }) => {
+export const TumblingE = ({ direction, size, strokeWeight = 'normal' }: { direction: EDirection; size: number; strokeWeight?: 'bold' | 'normal' | 'thin' }) => {
   const rotationMap: Record<EDirection, number> = {
     right: 0,
     down: 90,
@@ -111,7 +118,7 @@ const SnellenLetter = ({ letter, size, strokeWeight = 'normal' }: { letter: stri
 }
 
 // Generate random E directions for a chart line
-const generateLineDirections = (count: number): EDirection[] => {
+export const generateLineDirections = (count: number): EDirection[] => {
   return Array.from({ length: count }, () =>
     E_DIRECTIONS[Math.floor(Math.random() * E_DIRECTIONS.length)]
   )
@@ -670,7 +677,10 @@ export default function SnellenChart({
 }
 
 // Direction buttons component - LARGE buttons for easy tapping
-function DirectionButtons({
+// Exported (Chunk B): SnellenQuickCheck reuses this exact fixed arrow-diamond
+// pad — positions/labels never move, structurally killing the accidental-saccade
+// bug (letters AND buttons reshuffling together in the old "letters" trainer mode).
+export function DirectionButtons({
   onSelect,
   compact = false
 }: {

@@ -479,13 +479,18 @@ export async function PATCH(req: NextRequest) {
     }
 
     if (action === 'update_baselines') {
+      // Additive: a user's FIRST measurement (e.g. Day-1 guided quick-check) also
+      // becomes the baseline if one was never recorded — initial*Snellen otherwise
+      // stays null forever for anyone who skipped the optional enroll-time baseline.
       await prisma.visionProgramEnrollment.update({
         where: { id: enrollment.id },
         data: {
           currentNearSnellen: data?.nearSnellen || enrollment.currentNearSnellen,
           currentFarSnellen: data?.farSnellen || enrollment.currentFarSnellen,
           currentNearPointCm: data?.nearPointCm || enrollment.currentNearPointCm,
-          currentReaderStage: data?.readerStage ?? enrollment.currentReaderStage
+          currentReaderStage: data?.readerStage ?? enrollment.currentReaderStage,
+          initialNearSnellen: enrollment.initialNearSnellen ?? (data?.nearSnellen || null),
+          initialFarSnellen: enrollment.initialFarSnellen ?? (data?.farSnellen || null)
         }
       })
       return NextResponse.json({ success: true, message: 'Baselines updated' })

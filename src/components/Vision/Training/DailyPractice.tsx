@@ -17,6 +17,7 @@ import {
 } from 'lucide-react'
 import MiniBreathExercise from '@/components/Breath/MiniBreathExercise'
 import TrainingSession from './TrainingSession'
+import SnellenQuickCheck, { type SnellenQuickCheckResult } from './SnellenQuickCheck'
 import SessionRunner, { type SessionRunnerFinishPayload } from './SessionRunner'
 import WeeklyAssessment, { type WeeklyAssessmentResult } from './WeeklyAssessment'
 import ProgressDashboard from './ProgressDashboard'
@@ -100,6 +101,8 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
   const [baselineComplete, setBaselineComplete] = useState(false)
   const [completedExercises, setCompletedExercises] = useState<string[]>([])
   const [showSnellenTrainer, setShowSnellenTrainer] = useState(false)
+  const [showQuickCheck, setShowQuickCheck] = useState(false)
+  const [savingBaselines, setSavingBaselines] = useState(false)
   const [sessionNotes, setSessionNotes] = useState('')
   const [nearSnellenResult, setNearSnellenResult] = useState('')
   const [farSnellenResult, setFarSnellenResult] = useState('')
@@ -144,6 +147,33 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
       setAssessmentDoneWeek(todaySession.week)
     }
     setShowWeeklyAssessment(false)
+    loadProgram()
+  }
+
+  // Day-1 baseline (amendment 5): guided measure lands on a result-confirm state
+  // inside SnellenQuickCheck; onComplete only fires from "Use these" there, so
+  // persistence + dropdown prefill only happen on explicit confirm, never on abort.
+  const handleQuickCheckComplete = async (result: SnellenQuickCheckResult) => {
+    setSavingBaselines(true)
+    try {
+      await fetch('/api/vision/program', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'update_baselines',
+          data: {
+            nearSnellen: result.nearSnellen,
+            farSnellen: result.farSnellen
+          }
+        })
+      })
+    } catch (error) {
+      console.error('Failed to save quick-check baselines:', error)
+    }
+    if (result.nearSnellen) setNearSnellenResult(result.nearSnellen)
+    if (result.farSnellen) setFarSnellenResult(result.farSnellen)
+    setSavingBaselines(false)
+    setShowQuickCheck(false)
     loadProgram()
   }
 
@@ -644,9 +674,11 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
         </button>
         <TrainingSession
           visionType="near"
-          exerciseType="letters"
+          exerciseType="e-directional"
           initialLevel={1}
           nightMode={nightMode}
+          autoStart={false}
+          onExit={() => setShowSnellenTrainer(false)}
         />
       </div>
     )
@@ -885,6 +917,15 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
               {!baselineComplete && (
                 <div className="space-y-4">
                   <div className="bg-blue-500/20 backdrop-blur-sm border border-blue-400/30 rounded-xl p-6">
+                    {showQuickCheck ? (
+                      <SnellenQuickCheck
+                        legs="both"
+                        nightMode={nightMode}
+                        onComplete={handleQuickCheckComplete}
+                        onExit={() => setShowQuickCheck(false)}
+                      />
+                    ) : (
+                    <>
                     <h4 className="text-white font-bold text-lg mb-2 flex items-center gap-2">
                       <Eye className="w-5 h-5 text-blue-400" />
                       Step 1: Snellen Baseline ({session.baselineMinutes} min)
@@ -936,10 +977,11 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
 
                     <div className="flex gap-3">
                       <button
-                        onClick={() => setShowSnellenTrainer(true)}
-                        className="flex-1 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm"
+                        onClick={() => setShowQuickCheck(true)}
+                        disabled={savingBaselines}
+                        className="flex-1 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm disabled:opacity-50"
                       >
-                        Open Snellen Trainer
+                        Measure now (guided, ~3 min)
                       </button>
                       <button
                         onClick={() => setBaselineComplete(true)}
@@ -948,6 +990,8 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
                         Continue to Exercises
                       </button>
                     </div>
+                    </>
+                    )}
                   </div>
                 </div>
               )}
