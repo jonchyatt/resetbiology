@@ -250,8 +250,10 @@ export default function SnellenQuickCheck({ legs, nightMode = false, onComplete,
     ? 'bg-gradient-to-br from-[#17100a]/90 to-[#0c0906]/90 border border-amber-900/40'
     : 'bg-gradient-to-br from-gray-800/90 to-gray-900/90 border border-primary-400/30'
 
+  // scroll-mt must clear the fixed Header+breadcrumb stack (~126px) or the
+  // mount-scroll buries the abort X under it (FLW declare-complete HIGH).
   return (
-    <div ref={cardRef} className="max-w-md mx-auto w-full scroll-mt-4">
+    <div ref={cardRef} className="max-w-md mx-auto w-full scroll-mt-36">
       <div className={`${cardClass} backdrop-blur-sm rounded-xl p-6 shadow-2xl`}>
         {/* X/Exit — visible on every screen, zero persistence (amendment 1) */}
         <div className="flex justify-end mb-2">
