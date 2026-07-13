@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import { isAdminRequest } from '@/lib/adminGuard';
 
 const prisma = new PrismaClient();
 
@@ -92,6 +93,9 @@ export async function GET(request: NextRequest) {
 
 // POST /api/peptides - Create new peptide
 export async function POST(request: NextRequest) {
+  if (!(await isAdminRequest())) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
   try {
     const peptideData = await request.json();
 
@@ -138,6 +142,9 @@ export async function POST(request: NextRequest) {
 
 // PATCH /api/peptides?id=<id> - Update existing peptide
 export async function PATCH(request: NextRequest) {
+  if (!(await isAdminRequest())) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
   try {
     const { searchParams } = new URL(request.url);
     const peptideId = searchParams.get('id');
@@ -170,6 +177,9 @@ export async function PATCH(request: NextRequest) {
 
 // DELETE /api/peptides?id=<id> - Delete peptide
 export async function DELETE(request: NextRequest) {
+  if (!(await isAdminRequest())) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
   try {
     const { searchParams } = new URL(request.url);
     const peptideId = searchParams.get('id');

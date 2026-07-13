@@ -72,7 +72,6 @@ export function isEnemySourceVisible(
   const s = SPACE_SCALE
   const offsetX = isActive ? (ALIEN_W * 0.2) / 2 : 0
   const offsetY = isActive ? (ALIEN_H * 0.2) / 2 : 0
-  const bob = isActive ? Math.sin(now / 200) * 3 * s : 0
   let left: number
   let top: number
   let width: number
@@ -80,7 +79,7 @@ export function isEnemySourceVisible(
   if (source === 'procedural') {
     const scale = (isActive ? 2.4 : 2) * s
     left = x - offsetX + scale
-    top = y - offsetY + bob
+    top = y - offsetY
     width = 10 * scale
     height = 9 * scale
   } else {
@@ -89,7 +88,7 @@ export function isEnemySourceVisible(
     const frameIndex = Math.sin(now / 200) >= 0 ? 0 : 1
     const [boundX, boundY, boundW, boundH] = ENEMY_ROSTER[rosterKind].idleBounds[frameIndex]
     const atlasX = x - offsetX - 12 * s
-    const atlasY = y - offsetY + bob - 9 * s
+    const atlasY = y - offsetY - 9 * s
     left = atlasX + boundX * scale
     top = atlasY + boundY * scale
     width = boundW * scale
@@ -316,18 +315,17 @@ export function render(
     const anchor = resolvedAtlas?.anchor ?? ENEMY_ROSTER[alien.visualKind].chipAnchor
 
     if (isActive) {
-      const bob = bobPhase * 3 * s
       const scale = 2.4 * s
       const offsetX = (ALIEN_W * 0.2) / 2
       const offsetY = (ALIEN_H * 0.2) / 2
       const pulse = Math.sin(now / 150) * 0.3 + 0.6
       const atlasX = alien.x - offsetX - 12 * s
-      const atlasY = alien.y - offsetY + bob - 9 * s
+      const atlasY = alien.y - offsetY - 9 * s
       const atlasScale = 1.2 * s
       const atlasFocusW = resolvedAtlas?.focusSize[0] ?? 0
       const atlasFocusH = resolvedAtlas?.focusSize[1] ?? 0
       const focusX = atlas ? atlasX + ((48 - atlasFocusW) / 2) * atlasScale : alien.x - offsetX
-      const focusY = atlas ? atlasY + (36 - atlasFocusH) * atlasScale : alien.y - offsetY + bob
+      const focusY = atlas ? atlasY + (36 - atlasFocusH) * atlasScale : alien.y - offsetY
       const focusW = atlas ? atlasFocusW * atlasScale : ALIEN_W * 1.2
       const focusH = atlas ? atlasFocusH * atlasScale : ALIEN_H * 1.2
       ctx.fillStyle = colorHints
@@ -335,14 +333,14 @@ export function render(
         : `rgba(121,224,255,${pulse * 0.2})`
       ctx.fillRect(focusX - 4 * s, focusY - 4 * s, focusW + 8 * s, focusH + 8 * s)
       const drewAtlas = atlas && drawAtlasSprite(ctx, atlas, idleFrame, atlasX, atlasY, atlasScale)
-      if (!drewAtlas) drawSprite(ctx, sprite, alien.x - offsetX, alien.y - offsetY + bob, color, scale)
+      if (!drewAtlas) drawSprite(ctx, sprite, alien.x - offsetX, alien.y - offsetY, color, scale)
       const chipX = drewAtlas ? atlasX + 48 * atlasScale * anchor[0] : alien.x + ALIEN_W / 2
-      const chipY = drewAtlas ? atlasY + 36 * atlasScale * anchor[1] : alien.y + ALIEN_H * 0.55 + bob
+      const chipY = drewAtlas ? atlasY + 36 * atlasScale * anchor[1] : alien.y + ALIEN_H * 0.55
       drawNoteChip(ctx, chipX, chipY, alien.hue, colorHints, 1.15 * s)
       ctx.fillStyle = '#ffe34c'
       ctx.font = `bold ${Math.round(20 * s)}px monospace`
       ctx.textAlign = 'center'
-      const qBob = Math.sin(now / 180) * 2 * s
+      const qBob = reducedMotion ? 0 : Math.sin(now / 180) * 2 * s
       ctx.fillText('?', focusX + focusW / 2, focusY - 5 * s + qBob)
       ctx.strokeStyle = colorHints ? `hsla(${alien.hue}, 90%, 65%, ${pulse})` : `rgba(165,235,255,${pulse})`
       ctx.lineWidth = 2 * s

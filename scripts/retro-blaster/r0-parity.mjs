@@ -41,7 +41,12 @@ function seededRng(seed) {
 }
 
 function alien(note = 'C4', x = 120, y = 120) {
-  return { x, y, note, hue: NOTE_HUES[note] ?? 0, alive: true, frame: 0, hitTimer: 0 }
+  return {
+    visualId: `fixture:${x}:${y}`, visualKind: 0,
+    x, y, entering: false, entryT: 1, entryTargetX: x,
+    formationSlot: 0, formationX: x, formationY: y,
+    note, hue: NOTE_HUES[note] ?? 0, alive: true, frame: 0, hitTimer: 0,
+  }
 }
 
 function engineFixture(aliens = [alien()]) {
@@ -52,7 +57,7 @@ function engineFixture(aliens = [alien()]) {
   state.spawnQueue = []
   state.alienCountThisWave = state.aliens.length
   state.nextSpawnAt = Number.POSITIVE_INFINITY
-  state.lastProgressAt = state.clockMs
+  state.lastProgressAt = state.directorClockMs
   return state
 }
 
@@ -261,14 +266,9 @@ function runHitTrace() {
 }
 
 function runEscapeTrace() {
+  // ponytail: R3b intentionally replaces passive descent with a stable
+  // formation; timed attack failure belongs to R3c's terminal resolver.
   const reference = { shields: 5, combo: 4, sfx: [] }
-  const escaping = alien('C4', 120, engine.PLAYER_Y - 10)
-  if (escaping.alive && escaping.y >= engine.PLAYER_Y - 10) {
-    escaping.alive = false
-    reference.shields = Math.max(0, reference.shields - 1)
-    reference.combo = 0
-    reference.sfx.push('wrong')
-  }
 
   const state = engineFixture([alien('C4', 120, engine.PLAYER_Y - 10)])
   state.combo = 4
@@ -325,50 +325,23 @@ function referenceQueue(wave, pool, count) {
   return combined
 }
 
-function referencePickSpawnX(aliens, laneOrderSeed) {
-  const lanes = [480 * 0.14, 480 * 0.30, 480 * 0.46, 480 * 0.62, 480 * 0.86]
-  const order = shuffle([0, 1, 2, 3, 4], laneOrderSeed)
-  let bestLane = -1
-  let bestY = -Infinity
-  for (const i of order) {
-    const lx = lanes[i]
-    let topY = 320
-    for (const a of aliens) {
-      if (!a.alive) continue
-      if (Math.abs(a.x + 12 - lx) < 24 && a.y < topY) topY = a.y
-    }
-    if (topY < 70 + 18 + 16) continue
-    if (topY > bestY) { bestY = topY; bestLane = i }
-  }
-  return bestLane < 0 ? null : Math.floor(lanes[bestLane] - 12)
-}
-
 function runSpawnTrace() {
   const pool = ['C4', 'D4', 'E4', 'F4']
   const queue = referenceQueue(1, pool, 2)
-  const refAliens = []
-  const refSpawns = []
-  for (let i = 0; i < queue.length; i++) {
-    const x = referencePickSpawnX(refAliens, 31 + i)
-    refAliens.push(alien(queue[i], x, 70))
-    refSpawns.push({ note: queue[i], x })
-  }
+  const refSpawns = queue.map(note => ({ note }))
 
   let state = engine.createInitialState('easy', pool, 1000)
   state.waveIntroTimer = 0
   engine.buildWaveQueue(state, {})
   const engineQueue = [...state.spawnQueue]
   const engineSpawns = []
-  for (const dt of [600, 1100]) {
+  for (let elapsed = 0; elapsed < 4000 && engineSpawns.length < queue.length; elapsed += 50) {
     const result = engine.tick(state, {
       inputMode: 'click', isListening: false, pitch: null, fsrs: {},
-    }, dt, seededRng(12345))
+    }, 50, seededRng(12345))
     state = result.state
     for (const event of result.events) {
-      if (event.kind === 'spawn') {
-        const legacyCenterX = (event.x + engine.ALIEN_W / 2) * (480 / engine.W)
-        engineSpawns.push({ note: event.note, x: Math.round(legacyCenterX - 12) })
-      }
+      if (event.kind === 'spawn') engineSpawns.push({ note: event.note })
     }
   }
   return {
@@ -383,8 +356,8 @@ const traces = [
   ['t3 confident wrong resets', () => runMicTrace([[0, onPitch], [150, onPitch], [0, wrongPitch], [0, onPitch], [100, onPitch], [100, onPitch], [100, onPitch]])],
   ['t4 600ms post-fire cooldown', () => runMicTrace([[0, onPitch], [100, onPitch], [100, onPitch], [100, onPitch], [599, onPitch], [1, onPitch], [100, onPitch], [100, onPitch], [100, onPitch]])],
   ['t5 click hit/wrong transitions', runHitTrace],
-  ['t6 alien escape shield loss', runEscapeTrace],
-  ['t7 seeded full-wave spawn order (normalized geometry)', runSpawnTrace],
+  ['t6 R3b stable formation has no passive shield loss', runEscapeTrace],
+  ['t7 seeded full-wave note order (formation geometry excluded)', runSpawnTrace],
 ]
 
 const rows = []

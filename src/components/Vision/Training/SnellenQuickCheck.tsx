@@ -167,6 +167,7 @@ function Leg({
             direction={currentLine.directions[letterIdx]}
             size={Math.round(55 * currentLine.scale)}
             strokeWeight="normal"
+            animate={false}
           />
         </div>
       </div>
@@ -180,6 +181,7 @@ function Leg({
 // ---------------------------------------------------------------------------
 export default function SnellenQuickCheck({ legs, nightMode = false, onComplete, onExit }: SnellenQuickCheckProps) {
   const [stage, setStage] = useState<Stage>('intro')
+  const cardRef = useRef<HTMLDivElement | null>(null)
   const [nearResult, setNearResult] = useState<string | undefined>(undefined)
   const [farResult, setFarResult] = useState<string | undefined>(undefined)
   const [flowKey, setFlowKey] = useState(0)
@@ -191,6 +193,16 @@ export default function SnellenQuickCheck({ legs, nightMode = false, onComplete,
   useEffect(() => {
     speechRef.current = new SpeechQueue()
     return () => speechRef.current?.stop()
+  }, [])
+
+  // Bring the card fully into view on mount — at 390×844 the Day-1 mount opens
+  // mid-page with the Start button below the fold (dual-eye Argus finding,
+  // 2026-07-13). Instant, not smooth: reduced-motion safe.
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => {
+      cardRef.current?.scrollIntoView({ block: 'start' })
+    })
+    return () => cancelAnimationFrame(raf)
   }, [])
 
   useEffect(() => {
@@ -239,7 +251,7 @@ export default function SnellenQuickCheck({ legs, nightMode = false, onComplete,
     : 'bg-gradient-to-br from-gray-800/90 to-gray-900/90 border border-primary-400/30'
 
   return (
-    <div className="max-w-md mx-auto w-full">
+    <div ref={cardRef} className="max-w-md mx-auto w-full scroll-mt-4">
       <div className={`${cardClass} backdrop-blur-sm rounded-xl p-6 shadow-2xl`}>
         {/* X/Exit — visible on every screen, zero persistence (amendment 1) */}
         <div className="flex justify-end mb-2">
