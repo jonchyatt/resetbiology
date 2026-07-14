@@ -666,6 +666,11 @@ function drawIntroductionCeremony(
   const pulse = reducedMotion ? 1 : 0.88 + Math.sin(ceremony.elapsedMs / 180) * 0.12
   const centerX = W / 2
   const compact = ctx.canvas.clientHeight > 0 && ctx.canvas.clientHeight <= 220
+  const panelInset = (compact ? 32 : 76) * s
+  const panelHeight = compact ? H - 44 * s : H - 84 * s
+  const preflightFontPx = compact
+    ? Math.ceil(9 * H / ctx.canvas.clientHeight)
+    : Math.round(9 * s)
 
   ctx.save()
   ctx.fillStyle = 'rgba(1,4,12,0.92)'
@@ -674,34 +679,34 @@ function drawIntroductionCeremony(
   ctx.fillStyle = 'rgba(3,12,25,0.96)'
   ctx.strokeStyle = 'rgba(116,238,255,0.72)'
   ctx.lineWidth = 1.5 * s
-  ctx.fillRect(76 * s, 42 * s, W - 152 * s, H - 84 * s)
-  ctx.strokeRect(76 * s, 42 * s, W - 152 * s, H - 84 * s)
+  ctx.fillRect(panelInset, 42 * s, W - panelInset * 2, panelHeight)
+  ctx.strokeRect(panelInset, 42 * s, W - panelInset * 2, panelHeight)
 
   ctx.fillStyle = '#79f2cf'
-  ctx.font = `bold ${Math.round(9 * s)}px monospace`
+  ctx.font = `bold ${preflightFontPx}px monospace`
   ctx.textAlign = 'center'
-  ctx.fillText('PRE-FLIGHT', centerX, 72 * s)
+  ctx.fillText('PRE-FLIGHT', centerX, (compact ? 68 : 72) * s)
 
   ctx.fillStyle = '#f3fbff'
   ctx.font = `bold ${Math.round(24 * s)}px monospace`
-  ctx.fillText('NEW SIGNAL', centerX, 101 * s)
+  ctx.fillText('NEW SIGNAL', centerX, (compact ? 94 : 101) * s)
 
   ctx.globalAlpha = pulse
   ctx.fillStyle = accentSoft
-  ctx.fillRect(centerX - 48 * s, 116 * s, 96 * s, 62 * s)
+  ctx.fillRect(centerX - 48 * s, (compact ? 104 : 116) * s, 96 * s, (compact ? 52 : 62) * s)
   ctx.strokeStyle = accent
   ctx.lineWidth = 2 * s
-  ctx.strokeRect(centerX - 48 * s, 116 * s, 96 * s, 62 * s)
+  ctx.strokeRect(centerX - 48 * s, (compact ? 104 : 116) * s, 96 * s, (compact ? 52 : 62) * s)
   ctx.fillStyle = accent
   ctx.font = `bold ${Math.round(34 * s)}px monospace`
-  ctx.fillText(ceremony.note.replace(/\d/, ''), centerX, 158 * s)
+  ctx.fillText(ceremony.note.replace(/\d/, ''), centerX, (compact ? 144 : 158) * s)
   ctx.globalAlpha = 1
 
   ctx.strokeStyle = accent
   ctx.lineWidth = 1.5 * s
   ctx.beginPath()
   const barCount = 21
-  const waveformY = compact ? 188 : 207
+  const waveformY = compact ? 166 : 207
   for (let i = 0; i < barCount; i++) {
     const x = centerX - 116 * s + i * 11.6 * s
     const distance = Math.abs(i - (barCount - 1) / 2)
@@ -722,18 +727,18 @@ function drawIntroductionCeremony(
         ? 'SIGNAL PATH NOT READY'
         : 'REFERENCE SIGNAL PENDING',
     centerX,
-    (compact ? 215 : 245) * s,
+    (compact ? 185 : 245) * s,
   )
   ctx.fillStyle = '#8fa8b8'
   ctx.font = `bold ${Math.round(8 * s)}px monospace`
-  ctx.fillText('SIGNAL INTRODUCED - NOT SCORED', centerX, (compact ? 228 : 261) * s)
+  ctx.fillText('SIGNAL INTRODUCED - NOT SCORED', centerX, (compact ? 196 : 261) * s)
 
   const railWidth = 190 * s
   const progress = Math.max(0, Math.min(1, ceremony.elapsedMs / ceremony.durationMs))
   ctx.fillStyle = 'rgba(130,160,178,0.2)'
-  ctx.fillRect(centerX - railWidth / 2, (compact ? 240 : 281) * s, railWidth, 2 * s)
+  ctx.fillRect(centerX - railWidth / 2, (compact ? 199 : 281) * s, railWidth, 2 * s)
   ctx.fillStyle = accent
-  ctx.fillRect(centerX - railWidth / 2, (compact ? 240 : 281) * s, railWidth * progress, 2 * s)
+  ctx.fillRect(centerX - railWidth / 2, (compact ? 199 : 281) * s, railWidth * progress, 2 * s)
   ctx.restore()
 }
 

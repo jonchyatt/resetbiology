@@ -83,6 +83,42 @@ const initHarness = () => {
     subtree: true,
   })
 
+  window.__r8CeremonyDraw = { panel: null, text: {} }
+  const nativeFillText = CanvasRenderingContext2D.prototype.fillText
+  CanvasRenderingContext2D.prototype.fillText = function(text, x, y, maxWidth) {
+    const label = String(text)
+    const key = label === 'PRE-FLIGHT'
+      ? 'preflight'
+      : label === 'SIGNAL INTRODUCED - NOT SCORED'
+        ? 'nonScored'
+        : ['REFERENCE TONE DISPATCHED', 'SIGNAL PATH NOT READY', 'REFERENCE SIGNAL PENDING'].includes(label)
+          ? 'status'
+          : null
+    if (key) {
+      const metrics = this.measureText(label)
+      window.__r8CeremonyDraw.text[key] = {
+        text: label,
+        x,
+        y,
+        font: this.font,
+        fontPx: Number(this.font.match(/([\d.]+)px/)?.[1]),
+        ascent: metrics.actualBoundingBoxAscent,
+        descent: metrics.actualBoundingBoxDescent,
+      }
+    }
+    return maxWidth === undefined
+      ? nativeFillText.call(this, text, x, y)
+      : nativeFillText.call(this, text, x, y, maxWidth)
+  }
+
+  const nativeStrokeRect = CanvasRenderingContext2D.prototype.strokeRect
+  CanvasRenderingContext2D.prototype.strokeRect = function(x, y, width, height) {
+    if (x > 0 && y > 0 && width >= this.canvas.width * 0.7 && height >= this.canvas.height * 0.7) {
+      window.__r8CeremonyDraw.panel = { x, y, width, height, lineWidth: this.lineWidth }
+    }
+    return nativeStrokeRect.call(this, x, y, width, height)
+  }
+
   const NativeAudioContext = window.AudioContext || window.webkitAudioContext
   let stateOwner = NativeAudioContext.prototype
   let stateDescriptor = Object.getOwnPropertyDescriptor(stateOwner, 'state')
@@ -148,6 +184,8 @@ const page = await context.newPage()
 await page.addInitScript(initHarness)
 const pageErrors = []
 const behaviorManifest = []
+const responsive = []
+const responsiveFailures = []
 let temporalConsistency = null
 page.on('pageerror', error => pageErrors.push(error.message))
 
@@ -180,6 +218,25 @@ async function state() {
     const canvas = document.querySelector('canvas')
     const ceremony = document.querySelector('[data-retro-ceremony]')
     const rect = ceremony?.getBoundingClientRect()
+    const canvasRect = canvas?.getBoundingClientRect()
+    const toastRect = ceremony?.querySelector('[role="status"]')?.getBoundingClientRect()
+    const draw = window.__r8CeremonyDraw
+    const scaleX = canvasRect && canvas ? canvasRect.width / canvas.width : 0
+    const scaleY = canvasRect && canvas ? canvasRect.height / canvas.height : 0
+    const textCssRect = entry => entry && canvasRect ? {
+      top: canvasRect.top + (entry.y - entry.ascent) * scaleY,
+      bottom: canvasRect.top + (entry.y + entry.descent) * scaleY,
+    } : null
+    const statusCss = textCssRect(draw?.text.status)
+    const nonScoredCss = textCssRect(draw?.text.nonScored)
+    const preflightCss = textCssRect(draw?.text.preflight)
+    const panelCss = draw?.panel && canvasRect ? {
+      left: canvasRect.left + draw.panel.x * scaleX,
+      top: canvasRect.top + draw.panel.y * scaleY,
+      right: canvasRect.left + (draw.panel.x + draw.panel.width) * scaleX,
+      bottom: canvasRect.top + (draw.panel.y + draw.panel.height) * scaleY,
+    } : null
+    const copyBottom = Math.max(statusCss?.bottom ?? -Infinity, nonScoredCss?.bottom ?? -Infinity)
     const actions = ceremony ? [...ceremony.querySelectorAll('button')].map(button => {
       const box = button.getBoundingClientRect()
       return {
@@ -190,6 +247,7 @@ async function state() {
         height: box.height,
         insideRegion: Boolean(rect && box.left >= rect.left - 1 && box.right <= rect.right + 1 && box.top >= rect.top - 1 && box.bottom <= rect.bottom + 1),
         insideViewport: box.left >= -1 && box.right <= innerWidth + 1 && box.top >= -1 && box.bottom <= innerHeight + 1,
+        insidePanel: Boolean(panelCss && box.left >= panelCss.left && box.right <= panelCss.right && box.top >= panelCss.top && box.bottom <= panelCss.bottom),
       }
     }) : []
     let formation = {}
@@ -206,6 +264,17 @@ async function state() {
         text: ceremony.textContent?.replace(/\s+/g, ' ').trim(),
         rect: rect ? [rect.x, rect.y, rect.width, rect.height] : null,
         actions,
+        geometry: {
+          canvasRect: canvasRect ? [canvasRect.x, canvasRect.y, canvasRect.width, canvasRect.height] : null,
+          canvasScale: [scaleX, scaleY],
+          toastRect: toastRect ? [toastRect.x, toastRect.y, toastRect.width, toastRect.height] : null,
+          canvasCopyBottom: Number.isFinite(copyBottom) ? copyBottom : null,
+          toastClearance: toastRect && Number.isFinite(copyBottom) ? toastRect.top - copyBottom : null,
+          panelRect: panelCss ? [panelCss.left, panelCss.top, panelCss.right - panelCss.left, panelCss.bottom - panelCss.top] : null,
+          panelBorderClearance: panelCss && actions.length ? panelCss.bottom - Math.max(...actions.map(action => action.y + action.height)) : null,
+          preflightEffectiveFontPx: draw?.text.preflight ? draw.text.preflight.fontPx * scaleY : null,
+          preflightInkHeight: preflightCss ? preflightCss.bottom - preflightCss.top : null,
+        },
       } : null,
       bufferStarts: window.__r8BufferStarts,
       viewport: [innerWidth, innerHeight],
@@ -310,21 +379,40 @@ try {
   assert(await storageSnapshot() === ceremonyStorage, 'ceremony gameplay keys wrote family storage')
 
   const blockedSegment = await startSegment('blocked-output-freeze-and-responsive-actions')
-  const responsive = []
-  for (const [name, width, height] of [
-    ['portrait-390x844', 390, 844],
-    ['landscape-844x390', 844, 390],
-    ['desktop-1280x800', 1280, 800],
-    ['zoom-200-equivalent-640x400', 640, 400],
+  for (const [name, width, height, compactContract] of [
+    ['portrait-390x844', 390, 844, true],
+    ['landscape-844x390', 844, 390, true],
+    ['desktop-1280x800', 1280, 800, false],
+    ['zoom-200-equivalent-640x400', 640, 400, true],
   ]) {
     await page.setViewportSize({ width, height })
     await page.waitForTimeout(180)
     const layout = await state()
     assert(layout.horizontalOverflow <= 1, `${name} horizontal overflow ${layout.horizontalOverflow}px`)
     assert(layout.ceremony?.actions.every(action => action.insideRegion && action.insideViewport), `${name} clips a ceremony action`)
-    responsive.push({ name, viewport: layout.viewport, rect: layout.ceremony?.rect, actions: layout.ceremony?.actions })
+    assert(layout.ceremony?.actions.every(action => action.height >= 44), `${name} has a sub-44px ceremony action`)
+    const geometry = layout.ceremony?.geometry
+    assert(geometry && Number.isFinite(geometry.toastClearance), `${name} did not expose rendered toast/canvas-copy geometry`)
+    assert(geometry && Number.isFinite(geometry.panelBorderClearance), `${name} did not expose rendered panel/action geometry`)
+    assert(geometry && Number.isFinite(geometry.preflightEffectiveFontPx), `${name} did not expose rendered PRE-FLIGHT size`)
+    if (compactContract) {
+      if (geometry.toastClearance < 2) responsiveFailures.push(
+        `${name} toastClearance=${geometry.toastClearance.toFixed(2)}px (minimum 2px)`,
+      )
+      if (geometry.panelBorderClearance < 1) responsiveFailures.push(
+        `${name} panelBorderClearance=${geometry.panelBorderClearance.toFixed(2)}px (minimum 1px)`,
+      )
+      if (geometry.preflightEffectiveFontPx < 9) responsiveFailures.push(
+        `${name} PRE-FLIGHT=${geometry.preflightEffectiveFontPx.toFixed(2)}px (minimum 9px)`,
+      )
+      if (!layout.ceremony.actions.every(action => action.insidePanel)) responsiveFailures.push(
+        `${name} places an action outside the rendered ceremony panel`,
+      )
+    }
+    responsive.push({ name, viewport: layout.viewport, rect: layout.ceremony?.rect, actions: layout.ceremony?.actions, geometry })
     await capture(`responsive-${name}.png`, { fullPage: true })
   }
+  assert(responsiveFailures.length === 0, `responsive ceremony geometry failed: ${responsiveFailures.join('; ')}`)
   await page.setViewportSize({ width: 1280, height: 800 })
   await finishSegment(blockedSegment)
   await capture('01-new-signal-blocked.png')
@@ -414,7 +502,7 @@ try {
   complete = true
   console.log(`PASS R8b browser proof: ${lane}/${mode}; ${behaviorManifest.length} sustained behaviors; 0 page errors`)
 } catch (error) {
-  const result = { verdict: 'FAIL', lane, transport, mode, url, deployedSha, pageErrors, temporalConsistency, behaviorManifest, error: String(error?.stack || error) }
+  const result = { verdict: 'FAIL', lane, transport, mode, url, deployedSha, pageErrors, responsive, responsiveFailures, temporalConsistency, behaviorManifest, error: String(error?.stack || error) }
   writeFileSync(resolve(output, 'result.json'), `${JSON.stringify(result, null, 2)}\n`)
   console.error(result.error)
   process.exitCode = 1
