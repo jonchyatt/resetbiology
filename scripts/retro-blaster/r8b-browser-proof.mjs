@@ -41,6 +41,48 @@ const initHarness = () => {
     window.__setR8Activity('hidden', false)
   }).observe(document, { childList: true, subtree: true })
 
+  window.__r8TemporalConsistency = {
+    active: false,
+    sampleCount: 0,
+    mutationSampleCount: 0,
+    mutationRecordCount: 0,
+    mismatches: [],
+  }
+  window.__r8SampleTemporalConsistency = (source, mutationRecordCount = 0) => {
+    const proof = window.__r8TemporalConsistency
+    if (!proof.active) return
+    const canvas = document.querySelector('canvas')
+    let formation = {}
+    try { formation = JSON.parse(canvas?.dataset.retroFormationState || '{}') } catch {}
+    const ceremony = document.querySelector('[data-retro-ceremony]')
+    const ceremonyHeader = document.getElementById('new-signal-title')
+    proof.sampleCount += 1
+    if (source === 'mutation') {
+      proof.mutationSampleCount += 1
+      proof.mutationRecordCount += mutationRecordCount
+    }
+    if (formation.phase === 'playing' && formation.wave >= 5 && (ceremony || ceremonyHeader)) {
+      proof.mismatches.push({
+        source,
+        atMs: performance.now(),
+        frame: window.__r8FrameCount,
+        phase: formation.phase,
+        wave: formation.wave,
+        ceremonyPresent: Boolean(ceremony),
+        ceremonyHeader: ceremonyHeader?.textContent?.trim() || null,
+      })
+    }
+  }
+  new MutationObserver(mutations => {
+    window.__r8SampleTemporalConsistency('mutation', mutations.length)
+  }).observe(document, {
+    attributes: true,
+    attributeFilter: ['data-retro-formation-state'],
+    characterData: true,
+    childList: true,
+    subtree: true,
+  })
+
   const NativeAudioContext = window.AudioContext || window.webkitAudioContext
   let stateOwner = NativeAudioContext.prototype
   let stateDescriptor = Object.getOwnPropertyDescriptor(stateOwner, 'state')
@@ -106,6 +148,7 @@ const page = await context.newPage()
 await page.addInitScript(initHarness)
 const pageErrors = []
 const behaviorManifest = []
+let temporalConsistency = null
 page.on('pageerror', error => pageErrors.push(error.message))
 
 function storageSnapshot() {
@@ -318,7 +361,16 @@ try {
     assert((await state()).formationRaw === frozenAcknowledged, 'post-ack hidden ceremony did not freeze exactly')
     await capture('02-new-signal-acknowledged-hidden.png')
 
-    await page.evaluate(() => window.__setR8Activity('visible', true))
+    await page.evaluate(() => {
+      const proof = window.__r8TemporalConsistency
+      proof.active = true
+      proof.sampleCount = 0
+      proof.mutationSampleCount = 0
+      proof.mutationRecordCount = 0
+      proof.mismatches = []
+      window.__r8SampleTemporalConsistency('armed')
+      window.__setR8Activity('visible', true)
+    })
     const resumeSegment = await startSegment('acknowledged-resume-to-one-next-wave')
     await page.waitForFunction(() => {
       try {
@@ -326,6 +378,15 @@ try {
         return formation.phase === 'playing' && formation.wave >= 5 && !formation.introductionCeremony
       } catch { return false }
     }, null, { timeout: 10_000 })
+    temporalConsistency = await page.evaluate(() => {
+      window.__r8SampleTemporalConsistency('playing-observed')
+      window.__r8TemporalConsistency.active = false
+      return { ...window.__r8TemporalConsistency }
+    })
+    temporalConsistency.status = temporalConsistency.mismatches.length === 0 ? 'PASS' : 'FAIL'
+    assert(temporalConsistency.mutationSampleCount > 0, 'ceremony-to-playing mutation watcher observed no transition mutations')
+    assert(temporalConsistency.mismatches.length === 0,
+      `ceremony-to-playing temporal contradiction: ${JSON.stringify(temporalConsistency.mismatches[0])}`)
     assert(await storageSnapshot() === ceremonyStorage, 'NEW SIGNAL ceremony changed family storage')
     await finishSegment(resumeSegment)
     await capture('03-next-wave-resumed.png')
@@ -335,13 +396,16 @@ try {
   const videoPath = await page.video().path()
   const result = {
     verdict: 'PASS', lane, transport, mode, url, deployedSha, pageErrors,
-    correctAnswers, beforeGameplayStorage, ceremonyStorage, responsive, behaviorManifest, videoPath,
+    correctAnswers, beforeGameplayStorage, ceremonyStorage, responsive, temporalConsistency, behaviorManifest, videoPath,
     contract: {
       firstSignal: 'D4 after >=10 real correct attacks',
       blockedOutput: 'PASS - forced suspended observer produced blocked elapsed-zero ceremony',
       keyInertness: 'PASS - whole exposed engine snapshot and family storage exact',
       hiddenFreeze: mode === 'standard' ? 'PASS - acknowledged ceremony whole snapshot exact for >=6s' : 'not-run-in-quit-mode',
       toneDispatch: mode === 'standard' ? 'PASS - exactly one AudioBufferSource start on retry' : 'not-run-in-quit-mode',
+      ceremonyToPlayingAtomicity: mode === 'standard'
+        ? `PASS - ${temporalConsistency.mismatches.length} mismatches across ${temporalConsistency.mutationSampleCount} mutation samples`
+        : 'not-run-in-quit-mode',
       quitCleanup: mode === 'quit' ? 'PASS - menu stable for >=6s, no state resurrection or storage write' : 'covered by native quit lane',
       r8c: 'CLOSED - no SIGNAL CHECK behavior exercised',
     },
@@ -350,7 +414,7 @@ try {
   complete = true
   console.log(`PASS R8b browser proof: ${lane}/${mode}; ${behaviorManifest.length} sustained behaviors; 0 page errors`)
 } catch (error) {
-  const result = { verdict: 'FAIL', lane, transport, mode, url, deployedSha, pageErrors, behaviorManifest, error: String(error?.stack || error) }
+  const result = { verdict: 'FAIL', lane, transport, mode, url, deployedSha, pageErrors, temporalConsistency, behaviorManifest, error: String(error?.stack || error) }
   writeFileSync(resolve(output, 'result.json'), `${JSON.stringify(result, null, 2)}\n`)
   console.error(result.error)
   process.exitCode = 1

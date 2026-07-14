@@ -4,6 +4,7 @@
 // Rail: data/retro-blaster-rework/VANGUARD-SPEC-R0-view-seam.md
 
 import { useState, useRef, useCallback, useEffect } from 'react'
+import { flushSync } from 'react-dom'
 import {
   NOTE_COLORS, createNote,
   type NoteMemory,
@@ -338,6 +339,7 @@ export default function RetroBlasterII() {
   const gameLoop = useCallback((now: number) => {
     const gs = stateRef.current
     if (!gs) return
+    const wasCeremony = gs.phase === 'ceremony'
     const dtMs = Math.max(0, now - lastTimeRef.current)
     lastTimeRef.current = now
     const pendingAnswer = pendingAnswerRef.current
@@ -462,7 +464,11 @@ export default function RetroBlasterII() {
         lastSoulDatasetRef.current = soulDataset
       }
     }
-    setDisplayView(result.viewState)
+    if (wasCeremony && result.state.phase === 'playing') {
+      flushSync(() => setDisplayView(result.viewState))
+    } else {
+      setDisplayView(result.viewState)
+    }
     applyEvents(result.events, result.state)
     if (result.state.phase === 'playing' || result.state.phase === 'ceremony') {
       rafRef.current = requestAnimationFrame(gameLoop)
