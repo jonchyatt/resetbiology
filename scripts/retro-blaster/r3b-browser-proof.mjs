@@ -199,6 +199,8 @@ async function proveDesktop(browser) {
   await page.waitForTimeout(250)
   const resized = await formationState(page)
   assert(resized.logical?.width === 640 && resized.logical?.height === 360, 'resize changed logical geometry')
+  assert(Math.abs(resized.css.width / resized.css.height - 16 / 9) < 0.01,
+    `resize distorted canvas aspect: ${resized.css.width}x${resized.css.height}`)
   assert(resized.overflow <= 1, `resize overflow ${resized.overflow}`)
   await page.screenshot({ path: resolve(dir, '05-landscape-resize.png') })
 

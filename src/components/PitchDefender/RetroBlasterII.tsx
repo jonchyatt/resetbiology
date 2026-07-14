@@ -600,6 +600,7 @@ export default function RetroBlasterII() {
       <div className="relative w-full max-w-[960px] md:border-2 md:p-3"
         data-retro-cabinet
         style={{
+          width: 'min(100%, calc((100dvh - 210px) * 16 / 9 + 28px))',
           borderColor: 'rgba(90,236,255,0.72)',
           background: 'linear-gradient(145deg, rgba(27,12,48,0.96), rgba(4,5,18,0.98))',
           boxShadow: '0 0 0 1px rgba(255,67,219,0.45), 0 0 28px rgba(62,214,255,0.18), inset 0 0 28px rgba(0,0,0,0.85)',
