@@ -4,6 +4,7 @@ import { resolve } from 'node:path'
 
 const URL = process.argv[2] ?? 'http://127.0.0.1:3333/pitch-defender/retro-2'
 const OUT = resolve(process.argv[3] ?? 'data/retro-blaster-rework/runtime-logs/r3b-browser-proof')
+const PROOF_DWELL_MS = 6200
 mkdirSync(OUT, { recursive: true })
 
 function assert(condition, message) {
@@ -135,6 +136,7 @@ async function proveDesktop(browser) {
   assert(samples[0].logical?.width === 640 && samples[0].logical?.height === 360, 'desktop logical canvas drifted')
   assert(samples[0].overflow <= 1, `desktop overflow ${samples[0].overflow}`)
   await page.screenshot({ path: resolve(dir, '01-formation-breath.png') })
+  await page.waitForTimeout(PROOF_DWELL_MS)
 
   const key = await activeKey(page)
   assert(key, 'desktop active key missing')
@@ -148,11 +150,12 @@ async function proveDesktop(browser) {
   assert(hole.crt.enabled === samples[0].crt.enabled && hole.crt.button === samples[0].crt.button,
     `keyboard answer changed CRT state: ${JSON.stringify(samples[0].crt)} -> ${JSON.stringify(hole.crt)}`)
   await page.screenshot({ path: resolve(dir, '02-stable-hole-captain.png') })
+  await page.waitForTimeout(PROOF_DWELL_MS)
 
   const prePause = await formationState(page)
   await page.evaluate(() => window.__setRetroVisibility('hidden'))
   assert((await formationState(page)).visibility === 'hidden', 'visibility harness did not enter hidden state')
-  await page.waitForTimeout(1600)
+  await page.waitForTimeout(PROOF_DWELL_MS)
   const hiddenPause = await formationState(page)
   await page.evaluate(() => window.__setRetroVisibility('visible'))
   await page.waitForTimeout(200)
@@ -163,6 +166,7 @@ async function proveDesktop(browser) {
   assert(directorDelta >= 0 && directorDelta <= 350, `director caught up ${directorDelta}ms after hidden freeze`)
   assert(JSON.stringify(postPause.formation.ships.map(ship => [ship.visualId, ship.slot, ship.alive])) ===
     JSON.stringify(prePause.formation.ships.map(ship => [ship.visualId, ship.slot, ship.alive])), 'pause changed formation identity')
+  await page.waitForTimeout(PROOF_DWELL_MS)
 
   const audioBefore = await page.evaluate(async () => {
     const receipt = window.__retroAudioReceipt
@@ -170,7 +174,7 @@ async function proveDesktop(browser) {
     return { resumeCalls: receipt.resumeCalls, startCalls: receipt.startCalls, states: receipt.contexts.map(context => context.state) }
   })
   await page.getByRole('button', { name: /PLAY NOTE/ }).click()
-  await page.waitForTimeout(400)
+  await page.waitForTimeout(PROOF_DWELL_MS)
   const audioAfter = await page.evaluate(() => {
     const receipt = window.__retroAudioReceipt
     return { resumeCalls: receipt.resumeCalls, startCalls: receipt.startCalls, states: receipt.contexts.map(context => context.state) }
@@ -194,6 +198,7 @@ async function proveDesktop(browser) {
   assert(JSON.stringify(reducedA.formation.ships.map(ship => [ship.visualId, ship.slot, ship.alive])) ===
     JSON.stringify(reducedB.formation.ships.map(ship => [ship.visualId, ship.slot, ship.alive])), 'reduced motion changed semantics')
   await page.screenshot({ path: resolve(dir, '04-reduced-motion-anchors.png') })
+  await page.waitForTimeout(PROOF_DWELL_MS)
 
   await page.setViewportSize({ width: 844, height: 390 })
   await page.waitForTimeout(250)
@@ -203,6 +208,7 @@ async function proveDesktop(browser) {
     `resize distorted canvas aspect: ${resized.css.width}x${resized.css.height}`)
   assert(resized.overflow <= 1, `resize overflow ${resized.overflow}`)
   await page.screenshot({ path: resolve(dir, '05-landscape-resize.png') })
+  await page.waitForTimeout(PROOF_DWELL_MS)
 
   const video = page.video()
   await context.close()
@@ -247,6 +253,7 @@ try {
   const result = {
     url: URL,
     capturedAt: new Date().toISOString(),
+    proofDwellMs: PROOF_DWELL_MS,
     desktop: await proveDesktop(browser),
     phone: await provePhone(browser),
   }
