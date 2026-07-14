@@ -814,12 +814,15 @@ function buildViewState(args: BuildViewStateArgs): ViewState {
     fsrsMemory,
   } = args
   const newestBolt = runtime.bolts[runtime.bolts.length - 1]
-  const visualActive = newestBolt
+  const ownershipBolt = newestBolt && newestBolt.life / newestBolt.maxLife < STRIKE_IMPACT_START
+    ? newestBolt
+    : null
+  const visualActive = ownershipBolt
     ? {
-        villagerId: newestBolt.villagerId,
-        tineIndex: newestBolt.tineIndex,
-        note: newestBolt.note,
-        key: `${newestBolt.villagerId}:${newestBolt.tineIndex}`,
+        villagerId: ownershipBolt.villagerId,
+        tineIndex: ownershipBolt.tineIndex,
+        note: ownershipBolt.note,
+        key: `${ownershipBolt.villagerId}:${ownershipBolt.tineIndex}`,
       }
     : active
       ? {
@@ -829,7 +832,12 @@ function buildViewState(args: BuildViewStateArgs): ViewState {
           key: active.key,
         }
       : null
-  const visualPrompt = newestBolt ? `Strike: ${newestBolt.note}` : prompt
+  const promptMatch = /^(Listen|Replay|Sing|Now|Strike):\s+(.+)$/.exec(prompt)
+  const visualPrompt = ownershipBolt
+    ? `Strike: ${ownershipBolt.note}`
+    : visualActive && promptMatch
+      ? `${promptMatch[1]}: ${visualActive.note}`
+      : prompt
   const chargeLevel = active
     ? Math.max(
         active.villager.burned,
@@ -848,8 +856,8 @@ function buildViewState(args: BuildViewStateArgs): ViewState {
     animClock: runtime.animClock,
     gameOver: runtime.gameOver,
     villagers: runtime.villagers.map(v => {
-      const isActive = newestBolt
-        ? newestBolt.villagerId === v.id
+      const isActive = ownershipBolt
+        ? ownershipBolt.villagerId === v.id
         : activeVillagerId === v.id || activeKey.startsWith(`${v.id}:`)
       const awaitingImpact = runtime.bolts.some(b => (
         b.villagerId === v.id && b.life / b.maxLife < STRIKE_IMPACT_START
@@ -926,12 +934,12 @@ function buildViewState(args: BuildViewStateArgs): ViewState {
     timersPaused,
     tuner: {
       ...tuner,
-      targetNote: newestBolt?.note ?? tuner.targetNote,
-      sourceNote: newestBolt ? null : tuner.sourceNote,
-      canUseSource: newestBolt ? false : tuner.canUseSource,
-      dotDeviation: newestBolt ? null : tuner.dotDeviation,
-      renderDeviation: newestBolt ? null : tuner.renderDeviation,
-      onTarget: newestBolt ? false : tuner.onTarget,
+      targetNote: ownershipBolt?.note ?? visualActive?.note ?? null,
+      sourceNote: ownershipBolt ? null : tuner.sourceNote,
+      canUseSource: ownershipBolt ? false : tuner.canUseSource,
+      dotDeviation: ownershipBolt ? null : tuner.dotDeviation,
+      renderDeviation: ownershipBolt ? null : tuner.renderDeviation,
+      onTarget: ownershipBolt ? false : tuner.onTarget,
       trail: tuner.trail.map(point => ({ ...point })),
     },
     ceremony: {
@@ -3321,8 +3329,9 @@ export default function PitchforksIII() {
     liveNotes.forEach((note, i) => {
       const index = villager.burned + i
       const id = setTimeout(() => {
-        setPromptText(`${mode === 'replay' ? 'Replay' : 'Listen'}: ${note}`)
-        if (index === villager.burned) {
+        const promptOwnerKey = `${villager.id}:${index}`
+        if (phaseRef.current === 'playing' && getActiveTarget()?.key === promptOwnerKey) {
+          setPromptText(`${mode === 'replay' ? 'Replay' : 'Listen'}: ${note}`)
           activePromptKeyRef.current = `${villager.id}:${index}`
           promptStartedAtRef.current = performance.now()
         }
@@ -3357,7 +3366,7 @@ export default function PitchforksIII() {
       }
     }, suppressMs)
     cueTimeoutsRef.current.push(doneId)
-  }, [clearCueTimers, setPromptText])
+  }, [clearCueTimers, getActiveTarget, setPromptText])
 
   useEffect(() => {
     if (typeof window === 'undefined') return
