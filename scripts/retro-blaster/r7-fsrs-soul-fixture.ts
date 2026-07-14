@@ -509,7 +509,9 @@ try {
       return source.slice(start, end)
     }
     const shellPath = 'src/components/PitchDefender/RetroBlasterII.tsx'
-    assert.equal(hookConsumerBlock(current(shellPath)), hookConsumerBlock(base(shellPath)))
+    const currentHookBlock = hookConsumerBlock(current(shellPath))
+    const r8ObserverOnlyHookBlock = currentHookBlock.replace('    pitch,\n    error: micError,\n', '')
+    assert.equal(r8ObserverOnlyHookBlock, hookConsumerBlock(base(shellPath)))
   })
 
   console.log(JSON.stringify({

@@ -14,7 +14,7 @@ import {
 } from '@/lib/fsrsFamily'
 import { INTRO_ORDER } from './types'
 import { usePitchDetection } from './usePitchDetection'
-import { initAudio, loadPianoSamples, playPianoNote } from './audioEngine'
+import { getPianoReadiness, initAudio, loadPianoSamples, playPianoNote } from './audioEngine'
 import {
   H, INITIAL_UNLOCK, MIC_CONFIDENCE_FLOOR, STARTING_SHIELDS, W,
   beginWave, createInitialState, isTargetableAlien, noteButtonRects, noteForKeyboardInput, tick, toViewState,
@@ -34,6 +34,18 @@ const TUTORIAL_KEY = 'retro_tutorial_seen'
 const RETRO_DIFFICULTY_KEY = 'retro_difficulty'
 const CRT_KEY = 'retro_blaster_crt'
 const COLOR_HINTS_KEY = 'retro_blaster_color_hints'
+const RADIO_CHECK_NOTE = INTRO_ORDER[0]
+const RADIO_CHECK_ROSTER = INTRO_ORDER.slice(0, INITIAL_UNLOCK)
+
+type ShellPhase = Phase | 'readiness'
+type ReadinessStatus =
+  | 'idle'
+  | 'loading-audio'
+  | 'awaiting-ear'
+  | 'audio-error'
+  | 'starting-mic'
+  | 'awaiting-voice'
+  | 'voice-error'
 
 export interface RetroBlasterFamilyStores {
   voice: Record<string, NoteMemory>
@@ -163,21 +175,31 @@ export default function RetroBlasterII() {
   const lastWeaponVfxDatasetRef = useRef('')
   const lastMicAuthorityDatasetRef = useRef('')
   const lastSoulDatasetRef = useRef('')
+  const phaseRef = useRef<ShellPhase>('menu')
+  const readinessIdRef = useRef(0)
+  const readinessBusyRef = useRef(false)
+  const readinessToneArmedRef = useRef(false)
+  const readinessGenerationBaselineRef = useRef(0)
 
   const [reducedMotion, setReducedMotion] = useState(() =>
     typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
   )
   const reducedMotionRef = useRef(reducedMotion)
-  const [phase, setPhase] = useState<Phase>('menu')
+  const [phase, setPhase] = useState<ShellPhase>('menu')
   const [inputMode, setInputMode] = useState<InputMode>('click')
   const [difficulty, setDifficulty] = useState<Difficulty>('easy')
   const [crtEnabled, setCrtEnabled] = useState(false)
   const [colorHints, setColorHints] = useState(true)
   const [displayView, setDisplayView] = useState<ViewState | null>(null)
   const [finalStats, setFinalStats] = useState({ score: 0, wave: 0, maxCombo: 0 })
+  const [readinessStatus, setReadinessStatus] = useState<ReadinessStatus>('idle')
+  const [readinessMessage, setReadinessMessage] = useState('')
+  const [readinessToneArmed, setReadinessToneArmed] = useState(false)
 
   const {
     isListening,
+    pitch,
+    error: micError,
     startListening,
     stopListening,
     pitchRef: livePitchRef,
@@ -187,6 +209,12 @@ export default function RetroBlasterII() {
 
   useEffect(() => { inputModeRef.current = inputMode }, [inputMode])
   useEffect(() => { listeningRef.current = isListening }, [isListening])
+  useEffect(() => { phaseRef.current = phase }, [phase])
+  useEffect(() => () => {
+    ++readinessIdRef.current
+    readinessBusyRef.current = false
+    readinessToneArmedRef.current = false
+  }, [])
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
@@ -206,6 +234,10 @@ export default function RetroBlasterII() {
       focusActiveRef.current = document.hasFocus()
       if (visibilityActiveRef.current && focusActiveRef.current) {
         lastTimeRef.current = performance.now()
+      } else if (phaseRef.current === 'readiness' && inputModeRef.current === 'click') {
+        readinessToneArmedRef.current = false
+        setReadinessToneArmed(false)
+        setReadinessMessage('SIGNAL PAUSED - return here, then replay C.')
       }
     }
     syncActivity()
@@ -403,6 +435,120 @@ export default function RetroBlasterII() {
     )
   }, [difficulty, inputMode])
 
+  const prepareEarReadiness = useCallback(async (readinessId = readinessIdRef.current) => {
+    if (readinessBusyRef.current || readinessId !== readinessIdRef.current) return
+    readinessBusyRef.current = true
+    readinessToneArmedRef.current = false
+    setReadinessToneArmed(false)
+    setReadinessStatus('loading-audio')
+    setReadinessMessage('TUNING THE C CHANNEL...')
+    try {
+      initAudio()
+      await loadPianoSamples()
+      if (readinessId !== readinessIdRef.current || phaseRef.current !== 'readiness') return
+      const ready = getPianoReadiness(RADIO_CHECK_NOTE)
+      const active = document.visibilityState === 'visible' && document.hasFocus()
+      if (!active || !ready.sampleReady || ready.contextState !== 'running') {
+        setReadinessStatus('audio-error')
+        setReadinessMessage(!active
+          ? 'SIGNAL PAUSED - focus this window and retry audio.'
+          : 'SIGNAL PATH NOT READY - retry audio.')
+        return
+      }
+      playPianoNote(RADIO_CHECK_NOTE)
+      readinessToneArmedRef.current = true
+      setReadinessToneArmed(true)
+      setReadinessStatus('awaiting-ear')
+      setReadinessMessage('SIGNAL C SENT - press C [1].')
+    } catch {
+      if (readinessId === readinessIdRef.current) {
+        setReadinessStatus('audio-error')
+        setReadinessMessage('SIGNAL PATH NOT READY - retry audio.')
+      }
+    } finally {
+      if (readinessId === readinessIdRef.current) readinessBusyRef.current = false
+    }
+  }, [])
+
+  const replayEarReadiness = useCallback(() => {
+    if (phaseRef.current !== 'readiness' || inputModeRef.current !== 'click') return
+    if (readinessBusyRef.current) return
+    const ready = getPianoReadiness(RADIO_CHECK_NOTE)
+    const active = document.visibilityState === 'visible' && document.hasFocus()
+    if (!active || !ready.sampleReady || ready.contextState !== 'running') {
+      void prepareEarReadiness()
+      return
+    }
+    playPianoNote(RADIO_CHECK_NOTE)
+    readinessToneArmedRef.current = true
+    setReadinessToneArmed(true)
+    setReadinessStatus('awaiting-ear')
+    setReadinessMessage('SIGNAL C SENT - press C [1].')
+  }, [prepareEarReadiness])
+
+  const prepareVoiceReadiness = useCallback(async (readinessId = readinessIdRef.current) => {
+    if (readinessBusyRef.current || readinessId !== readinessIdRef.current) return
+    readinessBusyRef.current = true
+    readinessGenerationBaselineRef.current = pitchGenerationRef.current
+    setReadinessStatus('starting-mic')
+    setReadinessMessage('OPENING VOICE CHANNEL...')
+    try {
+      if (listeningRef.current) stopListening()
+      await startListening()
+      if (readinessId !== readinessIdRef.current || phaseRef.current !== 'readiness') {
+        stopListening()
+        return
+      }
+      setReadinessStatus('awaiting-voice')
+      setReadinessMessage('VOICE CHANNEL OPEN - hum or sing anything.')
+    } catch {
+      stopListening()
+      if (readinessId === readinessIdRef.current) {
+        setReadinessStatus('voice-error')
+        setReadinessMessage('VOICE CHANNEL CLOSED - retry microphone.')
+      }
+    } finally {
+      if (readinessId === readinessIdRef.current) readinessBusyRef.current = false
+    }
+  }, [pitchGenerationRef, startListening, stopListening])
+
+  const enterReadiness = useCallback(() => {
+    if (rafRef.current) { cancelAnimationFrame(rafRef.current); rafRef.current = 0 }
+    if (listeningRef.current) stopListening()
+    stateRef.current = null
+    pendingAnswerRef.current = null
+    readinessBusyRef.current = false
+    readinessToneArmedRef.current = false
+    setReadinessToneArmed(false)
+    const readinessId = ++readinessIdRef.current
+    phaseRef.current = 'readiness'
+    setPhase('readiness')
+    if (inputMode === 'mic') void prepareVoiceReadiness(readinessId)
+    else void prepareEarReadiness(readinessId)
+  }, [inputMode, prepareEarReadiness, prepareVoiceReadiness, stopListening])
+
+  const retryVoiceReadiness = useCallback(() => {
+    if (phaseRef.current !== 'readiness' || inputModeRef.current !== 'mic') return
+    readinessBusyRef.current = false
+    const readinessId = ++readinessIdRef.current
+    void prepareVoiceReadiness(readinessId)
+  }, [prepareVoiceReadiness])
+
+  const exitReadiness = useCallback(() => {
+    ++readinessIdRef.current
+    readinessBusyRef.current = false
+    readinessToneArmedRef.current = false
+    setReadinessToneArmed(false)
+    setReadinessStatus('idle')
+    setReadinessMessage('')
+    pendingAnswerRef.current = null
+    stateRef.current = null
+    if (rafRef.current) { cancelAnimationFrame(rafRef.current); rafRef.current = 0 }
+    if (listeningRef.current || inputModeRef.current === 'mic') stopListening()
+    phaseRef.current = 'menu'
+    setPhase('menu')
+  }, [stopListening])
+
   const startGame = useCallback(() => {
     if (rafRef.current) { cancelAnimationFrame(rafRef.current); rafRef.current = 0 }
     resetEnemyRenderLatches()
@@ -414,28 +560,81 @@ export default function RetroBlasterII() {
     lastWeaponVfxDatasetRef.current = ''
     lastMicAuthorityDatasetRef.current = ''
     lastSoulDatasetRef.current = ''
+    ++readinessIdRef.current
+    readinessBusyRef.current = false
+    readinessToneArmedRef.current = false
+    setReadinessToneArmed(false)
     initAudio()
-    if (inputMode === 'mic') startListening()
+    if (inputMode === 'mic' && !listeningRef.current) startListening()
     const gs = buildState()
     stateRef.current = gs
     const view = toViewState(gs, inputMode)
     setDisplayView(view)
+    phaseRef.current = 'playing'
     setPhase('playing')
     lastTimeRef.current = performance.now()
     rafRef.current = requestAnimationFrame(gameLoop)
   }, [inputMode, startListening, buildState, gameLoop, pitchGenerationRef])
 
+  const answerEarReadiness = useCallback((note: string) => {
+    if (phaseRef.current !== 'readiness' || inputModeRef.current !== 'click') return
+    if (!visibilityActiveRef.current || !focusActiveRef.current) {
+      readinessToneArmedRef.current = false
+      setReadinessToneArmed(false)
+      setReadinessMessage('SIGNAL PAUSED - return here, then replay C.')
+      return
+    }
+    if (!readinessToneArmedRef.current) {
+      setReadinessMessage('PLAY SIGNAL C FIRST.')
+      return
+    }
+    if (note !== RADIO_CHECK_NOTE) {
+      setReadinessMessage('USE THE NAMED C [1] CONTROL - no score, just a radio check.')
+      return
+    }
+    readinessToneArmedRef.current = false
+    setReadinessToneArmed(false)
+    startGame()
+  }, [startGame])
+
+  useEffect(() => {
+    if (phase !== 'readiness' || inputMode !== 'mic') return
+    if (micError) {
+      setReadinessStatus('voice-error')
+      setReadinessMessage(`VOICE CHANNEL CLOSED - ${micError}`)
+      return
+    }
+    const health = micSourceHealthRef.current
+    const fresh = pitchGenerationRef.current > readinessGenerationBaselineRef.current
+    const healthy = isListening && visibilityActiveRef.current && focusActiveRef.current &&
+      health.audioContextState === 'running' && health.trackReadyState === 'live' &&
+      health.trackMuted === false
+    const heard = pitch?.isActive === true && pitch.confidence >= MIC_CONFIDENCE_FLOOR && pitch.frequency > 0
+    if (healthy && fresh && heard) startGame()
+  }, [phase, inputMode, isListening, micError, pitch, micSourceHealthRef, pitchGenerationRef, startGame])
+
+  useEffect(() => {
+    if (phase !== 'readiness' || inputMode !== 'click') return
+    const onReadinessKey = (event: KeyboardEvent) => {
+      if (!/^[1-4]$/.test(event.key)) return
+      event.preventDefault()
+      answerEarReadiness(RADIO_CHECK_ROSTER[Number(event.key) - 1])
+    }
+    window.addEventListener('keydown', onReadinessKey)
+    return () => window.removeEventListener('keydown', onReadinessKey)
+  }, [phase, inputMode, answerEarReadiness])
+
   const handleInsertCoin = useCallback(() => {
     let seen = false
     try { seen = localStorage.getItem(TUTORIAL_KEY) === '1' } catch {}
-    if (seen) startGame()
+    if (seen) enterReadiness()
     else setPhase('tutorial')
-  }, [startGame])
+  }, [enterReadiness])
 
   const finishTutorial = useCallback(() => {
     try { localStorage.setItem(TUTORIAL_KEY, '1') } catch {}
-    startGame()
-  }, [startGame])
+    enterReadiness()
+  }, [enterReadiness])
 
   const replayActiveNote = useCallback(() => {
     const gs = stateRef.current
@@ -656,6 +855,13 @@ export default function RetroBlasterII() {
               <div className="text-xs text-gray-400">Sing or click ANY alien&apos;s note — the cannon swings to the most-urgent matching alien and fires. The glowing alien is the one to beat.</div>
             </div>
           </div>
+          <div className="flex items-start gap-3">
+            <div className="text-2xl" aria-hidden="true">RADIO</div>
+            <div>
+              <div className="text-sm text-emerald-300 font-bold">First: a quick radio check</div>
+              <div className="text-xs text-gray-400">Keyboard mode sends a visibly named C signal, then asks for C [1]. Microphone mode asks you to hum or sing anything. It is untimed, unscored, and never measures ability.</div>
+            </div>
+          </div>
         </div>
         <button onClick={finishTutorial}
           className="px-12 py-4 text-lg font-bold tracking-widest transition-all active:scale-95"
@@ -666,6 +872,137 @@ export default function RetroBlasterII() {
           className="mt-3 text-xs text-gray-600 hover:text-gray-400 transition-colors">
           ← BACK TO MENU
         </button>
+      </div>
+    )
+  }
+
+  if (phase === 'readiness') {
+    const isEar = inputMode === 'click'
+    const radioHue = NOTE_COLORS[RADIO_CHECK_NOTE]?.hue ?? 174
+    const voiceSignalActive = pitch?.isActive === true &&
+      pitch.confidence >= MIC_CONFIDENCE_FLOOR && pitch.frequency > 0
+    return (
+      <div className="retro-readiness-shell fixed inset-0 overflow-y-auto bg-black px-4 py-6 sm:px-6"
+        data-retro-readiness
+        data-readiness-lane={isEar ? 'ear' : 'voice'}
+        data-readiness-status={readinessStatus}
+        data-readiness-tone-armed={readinessToneArmed ? 'true' : 'false'}
+        style={{ fontFamily: 'monospace' }}>
+        <div className="retro-readiness-frame mx-auto flex min-h-full w-full max-w-2xl items-center justify-center">
+          <section className="retro-readiness-card relative w-full overflow-hidden border-2 border-cyan-300/70 bg-[#050812] p-5 sm:p-8"
+            aria-labelledby="radio-check-title"
+            style={{ boxShadow: '0 0 0 1px rgba(255,67,219,0.38), 0 0 36px rgba(62,214,255,0.18), inset 0 0 42px rgba(0,0,0,0.9)' }}>
+            <div className="pointer-events-none absolute inset-0 opacity-30" aria-hidden="true"
+              style={{ backgroundImage: 'linear-gradient(rgba(88,232,255,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(88,232,255,0.06) 1px, transparent 1px)', backgroundSize: '18px 18px' }} />
+            <div className="relative">
+              <div className="retro-readiness-meta mb-5 flex items-center justify-between gap-3 text-[10px] tracking-[0.24em]">
+                <span className="text-fuchsia-300">EAR DEFENSE UNIT</span>
+                <span className={isEar ? 'text-cyan-300' : 'text-violet-300'}>
+                  {isEar ? 'EAR CHANNEL' : 'VOICE CHANNEL'}
+                </span>
+              </div>
+              <div className="retro-readiness-preflight mb-2 text-center text-[11px] font-bold tracking-[0.35em] text-emerald-300">PRE-FLIGHT</div>
+              <h2 id="radio-check-title" className="retro-readiness-title mb-3 text-center text-3xl font-black tracking-[0.18em] text-white sm:text-4xl"
+                style={{ textShadow: '0 0 18px rgba(94,234,212,0.42)' }}>
+                RADIO CHECK
+              </h2>
+              <p className="retro-readiness-copy mx-auto mb-7 max-w-lg text-center text-xs leading-5 text-gray-400">
+                {isEar
+                  ? 'Signal C is visibly named. Hear the ping, then operate C [1]. This is a systems check, not a score.'
+                  : 'Hum or sing anything. We only need a fresh live signal - no target note, range judgment, or score.'}
+              </p>
+
+              {isEar ? (
+                <>
+                  <div className="retro-readiness-signal mx-auto mb-6 flex h-28 w-28 items-center justify-center border-2 bg-black/70"
+                    aria-label="Named radio-check signal C"
+                    style={{ borderColor: `hsl(${radioHue}, 80%, 62%)`, boxShadow: `0 0 28px hsla(${radioHue}, 80%, 55%, 0.22)` }}>
+                    <span className="text-6xl font-black" style={{ color: `hsl(${radioHue}, 92%, 74%)` }}>C</span>
+                  </div>
+                  <div className="retro-readiness-grid mb-5 grid grid-cols-2 gap-2 sm:grid-cols-4" aria-label="Radio check response controls">
+                    {RADIO_CHECK_ROSTER.map((note, index) => {
+                      const hue = NOTE_COLORS[note]?.hue ?? 0
+                      return (
+                        <button key={note} onClick={() => answerEarReadiness(note)}
+                          className="min-h-14 border px-3 py-2 text-sm font-bold tracking-wider outline-none transition-transform focus-visible:ring-2 focus-visible:ring-white active:scale-95"
+                          style={{
+                            color: colorHints ? `hsl(${hue}, 90%, 78%)` : '#e7f5fa',
+                            borderColor: colorHints ? `hsl(${hue}, 72%, 55%)` : '#718694',
+                            background: colorHints ? `hsla(${hue}, 70%, 30%, 0.18)` : '#111923',
+                          }}
+                          aria-label={`${note.replace(/\d/, '')}, key ${index + 1}`}>
+                          {note.replace(/\d/, '')} <span className="text-[10px] opacity-60">[{index + 1}]</span>
+                        </button>
+                      )
+                    })}
+                  </div>
+                  <div className="retro-readiness-replay flex flex-wrap justify-center gap-3">
+                    <button onClick={replayEarReadiness}
+                      className="min-h-11 border border-yellow-300 px-5 py-2 text-xs font-bold tracking-widest text-yellow-200 outline-none focus-visible:ring-2 focus-visible:ring-white active:scale-95">
+                      {readinessStatus === 'audio-error' ? 'RETRY AUDIO' : 'PLAY C SIGNAL'}
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <div className="retro-readiness-voice mb-6">
+                  <div className="retro-readiness-voice-meter mx-auto mb-5 flex h-28 max-w-sm items-end justify-center gap-2 border border-violet-400/50 bg-black/70 px-5 py-5"
+                    data-retro-readiness-voice-signal={voiceSignalActive ? 'active' : 'waiting'}
+                    aria-label={voiceSignalActive ? 'Live voice signal heard' : 'Waiting for a live voice signal'}>
+                    {Array.from({ length: 9 }, (_, index) => (
+                      <span key={index} className="w-3"
+                        style={{
+                          height: voiceSignalActive ? `${18 + ((index * 13) % 42)}px` : '8px',
+                          background: voiceSignalActive ? '#a78bfa' : '#242033',
+                          boxShadow: voiceSignalActive ? '0 0 8px rgba(167,139,250,0.65)' : 'none',
+                          transition: reducedMotion ? 'none' : 'height 100ms ease-out',
+                        }} />
+                    ))}
+                  </div>
+                  <div className="text-center text-sm font-bold tracking-[0.18em] text-violet-200">
+                    {voiceSignalActive ? 'SIGNAL HEARD' : 'HUM OR SING ANYTHING'}
+                  </div>
+                  {(readinessStatus === 'voice-error' || readinessStatus === 'awaiting-voice') && (
+                    <div className="mt-5 flex justify-center">
+                      <button onClick={retryVoiceReadiness}
+                        className="min-h-11 border border-violet-300 px-5 py-2 text-xs font-bold tracking-widest text-violet-200 outline-none focus-visible:ring-2 focus-visible:ring-white active:scale-95">
+                        RETRY MIC
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <div className="retro-readiness-message mt-6 min-h-10 border border-white/10 bg-black/60 px-3 py-2 text-center text-[11px] leading-5 tracking-wider text-cyan-100"
+                role="status" aria-live="polite">
+                {readinessMessage || (isEar ? 'PREPARING SIGNAL C...' : 'PREPARING VOICE CHANNEL...')}
+              </div>
+              <div className="retro-readiness-back mt-5 text-center">
+                <button onClick={exitReadiness}
+                  className="min-h-11 px-4 text-xs tracking-widest text-gray-500 outline-none hover:text-gray-300 focus-visible:ring-2 focus-visible:ring-white">
+                  BACK TO MENU
+                </button>
+              </div>
+            </div>
+          </section>
+        </div>
+        <style jsx>{`
+          @media (orientation: landscape) and (max-height: 500px) {
+            .retro-readiness-shell { padding: 4px 12px; }
+            .retro-readiness-card { padding: 8px 18px; }
+            .retro-readiness-meta { margin-bottom: 2px; }
+            .retro-readiness-preflight { margin-bottom: 0; }
+            .retro-readiness-title { margin-bottom: 2px; font-size: 22px; line-height: 26px; }
+            .retro-readiness-copy { margin-bottom: 6px; line-height: 16px; }
+            .retro-readiness-signal { width: 52px; height: 52px; margin-bottom: 6px; }
+            .retro-readiness-signal span { font-size: 34px; }
+            .retro-readiness-grid { margin-bottom: 6px; }
+            .retro-readiness-grid button { min-height: 44px; padding-top: 4px; padding-bottom: 4px; }
+            .retro-readiness-voice { margin-bottom: 6px; }
+            .retro-readiness-voice-meter { height: 58px; margin-bottom: 4px; padding-top: 8px; padding-bottom: 8px; }
+            .retro-readiness-message { min-height: 32px; margin-top: 6px; padding-top: 4px; padding-bottom: 4px; }
+            .retro-readiness-back { margin-top: 0; }
+          }
+        `}</style>
       </div>
     )
   }
@@ -684,7 +1021,7 @@ export default function RetroBlasterII() {
           <div className="text-center"><div className="text-xs text-gray-600">MAX COMBO</div><div className="text-2xl text-purple-400 font-bold">{finalStats.maxCombo}</div></div>
         </div>
         <div className="flex gap-4">
-          <button onClick={startGame}
+          <button onClick={enterReadiness}
             className="px-6 py-2 text-sm font-bold tracking-widest active:scale-95 transition-all"
             style={{ background: '#3FBFB5', color: '#000', border: '2px solid #5dddd3' }}>
             CONTINUE?

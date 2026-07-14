@@ -17,6 +17,7 @@ const cases = [
   ['R3c authored dives', [tsx, 'scripts/retro-blaster/r3c-dive-fixture.ts']],
   ['R4 causal weapon VFX', [tsx, 'scripts/retro-blaster/r4-weapon-vfx-fixture.ts']],
   ['R7 FSRS soul-binding', [tsx, 'scripts/retro-blaster/r7-fsrs-soul-fixture.ts']],
+  ['R8a radio check', [tsx, 'scripts/retro-blaster/r8a-readiness-fixture.ts']],
 ]
 
 const rows = []
