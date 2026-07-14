@@ -35,6 +35,7 @@ import {
   finalizeHitLockedDeath,
   flightStateOf,
   formationAnchor,
+  noteForKeyboardInput,
   resolveAttack,
   tick,
   type Alien,
@@ -548,6 +549,25 @@ function validateStructuralOrderAndReducedMotion(): void {
   assert.equal(reducedTarget.y, reducedTarget.formationY)
 }
 
+function validateUnlockedOrderKeyboardMapping(): void {
+  const reordered = ['A4', 'C4', 'G4', 'E4']
+  assert.equal(noteForKeyboardInput('1', reordered), 'A4')
+  assert.equal(noteForKeyboardInput('2', reordered), 'C4')
+  assert.equal(noteForKeyboardInput('a', reordered), 'A4')
+
+  const state = openDemand(preparedState('true', [0])).state
+  state.unlockedNotes = reordered
+  state.activeAttack!.note = 'A4'
+  const target = state.aliens.find(candidate => candidate.alienId === state.activeAttack!.alienId)!
+  target.note = 'A4'
+  const mapped = noteForKeyboardInput('1', state.unlockedNotes)
+  const result = tick(state, input({ pendingAnswer: pending(state, mapped!) }), 16, () => 0.5)
+  const grades = gradeEvents(result.events)
+  assert.equal(grades.length, 1)
+  assert.equal(grades[0].note, 'A4')
+  assert.equal(result.state.activeAttack?.outcome, 'correct')
+}
+
 function validateRecoveryCadenceWaveWaitAndReducedParity(): void {
   let state = openDemand(preparedState('true', [0, 1])).state
   const attackedId = state.activeAttack!.alienId
@@ -773,6 +793,7 @@ validateDeadlineDuplicateAndFinalizerRaces()
 validateClickBeforeMicAndMicSemantics()
 validatePauseBufferAndMicBoundaries()
 validateStructuralOrderAndReducedMotion()
+validateUnlockedOrderKeyboardMapping()
 validateRecoveryCadenceWaveWaitAndReducedParity()
 validatePacing('easy')
 validatePacing('true')

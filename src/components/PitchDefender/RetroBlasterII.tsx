@@ -17,7 +17,7 @@ import { usePitchDetection } from './usePitchDetection'
 import { initAudio, loadPianoSamples, playPianoNote } from './audioEngine'
 import {
   H, INITIAL_UNLOCK, STARTING_SHIELDS, W,
-  beginWave, createInitialState, isTargetableAlien, noteButtonRects, tick, toViewState,
+  beginWave, createInitialState, isTargetableAlien, noteButtonRects, noteForKeyboardInput, tick, toViewState,
   type Difficulty, type EngineEvent, type GameState, type InputMode,
   type PendingAttackAnswer, type Phase, type ViewState,
 } from './retroBlasterEngine'
@@ -390,10 +390,6 @@ export default function RetroBlasterII() {
   }, [processHit])
 
   useEffect(() => {
-    const letterMap: Record<string, string> = {
-      'c': 'C4', 'd': 'D4', 'e': 'E4', 'f': 'F4',
-      'g': 'G4', 'a': 'A4', 'b': 'B4',
-    }
     function onKey(ev: KeyboardEvent) {
       const gs = stateRef.current
       if (!gs) return
@@ -402,10 +398,7 @@ export default function RetroBlasterII() {
         replayActiveNote()
         return
       }
-      const digitIndex = /^[1-8]$/.test(ev.key) ? Number(ev.key) - 1 : -1
-      const note = digitIndex >= 0
-        ? gs.unlockedNotes[digitIndex]
-        : letterMap[ev.key.toLowerCase()]
+      const note = noteForKeyboardInput(ev.key, gs.unlockedNotes)
       if (note && gs.unlockedNotes.includes(note)) processHit(note)
     }
     window.addEventListener('keydown', onKey)

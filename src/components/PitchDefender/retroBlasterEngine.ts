@@ -55,6 +55,15 @@ export const FORMATION_SLOT_ORDER = [
   [2, 2], [1, 2], [3, 2], [0, 2], [4, 2],
 ] as const
 
+const LETTER_KEY_NOTES: Record<string, string> = {
+  c: 'C4', d: 'D4', e: 'E4', f: 'F4', g: 'G4', a: 'A4', b: 'B4',
+}
+
+export function noteForKeyboardInput(key: string, unlockedNotes: readonly string[]): string | undefined {
+  const digitIndex = /^[1-8]$/.test(key) ? Number(key) - 1 : -1
+  return digitIndex >= 0 ? unlockedNotes[digitIndex] : LETTER_KEY_NOTES[key.toLowerCase()]
+}
+
 export function formationAnchor(slot: number): { x: number; y: number } {
   const cell = FORMATION_SLOT_ORDER[slot]
   // ponytail: Act I is deliberately capped at 15 authored slots; Act-II roster
