@@ -21,7 +21,14 @@ import {
   type Difficulty, type EngineEvent, type GameState, type InputMode,
   type PendingAttackAnswer, type Phase, type ViewState,
 } from './retroBlasterEngine'
-import { enemyRenderSourceSnapshot, render, resetEnemyRenderLatches } from './retroBlasterRenderer'
+import {
+  advanceMicVfxFreshness,
+  deriveMicLockSignalActive,
+  enemyRenderSourceSnapshot,
+  render,
+  resetEnemyRenderLatches,
+  type MicVfxFreshnessState,
+} from './retroBlasterRenderer'
 
 const TUTORIAL_KEY = 'retro_tutorial_seen'
 const RETRO_DIFFICULTY_KEY = 'retro_difficulty'
@@ -146,6 +153,13 @@ export default function RetroBlasterII() {
   const listeningRef = useRef(false)
   const colorHintsRef = useRef(true)
   const visibilityActiveRef = useRef(true)
+  const micVfxFreshnessRef = useRef<MicVfxFreshnessState>({
+    lastGeneration: 0,
+    hasObservedMicGeneration: false,
+    staleGameFrames: 0,
+  })
+  const lastWeaponVfxDatasetRef = useRef('')
+  const lastMicAuthorityDatasetRef = useRef('')
 
   const [reducedMotion, setReducedMotion] = useState(() =>
     typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -159,7 +173,14 @@ export default function RetroBlasterII() {
   const [displayView, setDisplayView] = useState<ViewState | null>(null)
   const [finalStats, setFinalStats] = useState({ score: 0, wave: 0, maxCombo: 0 })
 
-  const { isListening, startListening, stopListening, pitchRef: livePitchRef } = usePitchDetection({ noiseGateDb: -45 })
+  const {
+    isListening,
+    startListening,
+    stopListening,
+    pitchRef: livePitchRef,
+    micSourceHealthRef,
+    pitchGenerationRef,
+  } = usePitchDetection({ noiseGateDb: -45 })
 
   useEffect(() => { inputModeRef.current = inputMode }, [inputMode])
   useEffect(() => { listeningRef.current = isListening }, [isListening])
@@ -243,25 +264,70 @@ export default function RetroBlasterII() {
     pendingAnswerRef.current = null
     const latencyMs = notePlayTimeRef.current > 0 ? Date.now() - notePlayTimeRef.current : 2000
     const laneStore = activeLaneStore(familyStoresRef.current, inputModeRef.current)
+    const capturedPitch = livePitchRef.current
+    const capturedMicSourceHealth = micSourceHealthRef.current
+    const capturedPitchGeneration = pitchGenerationRef.current
+    const micSourceEligible = inputModeRef.current === 'mic' &&
+      listeningRef.current &&
+      visibilityActiveRef.current &&
+      capturedMicSourceHealth.audioContextState === 'running' &&
+      capturedMicSourceHealth.trackReadyState === 'live' &&
+      capturedMicSourceHealth.trackMuted === false
+    const freshness = advanceMicVfxFreshness(
+      micVfxFreshnessRef.current,
+      capturedPitchGeneration,
+      micSourceEligible,
+    )
+    micVfxFreshnessRef.current = freshness.state
     const result = tick(gs, {
       inputMode: inputModeRef.current,
       isListening: listeningRef.current,
       reducedMotion: reducedMotionRef.current,
-      pitch: livePitchRef.current,
+      pitch: capturedPitch,
       pendingAnswer,
       latencyMs,
       fsrs: laneStore,
       isActive: visibilityActiveRef.current,
     }, dtMs, Math.random)
     stateRef.current = result.state
+    const micLockSignalActive = deriveMicLockSignalActive({
+      inputMode: inputModeRef.current,
+      isListening: listeningRef.current,
+      isVisible: visibilityActiveRef.current,
+      targetNote: result.viewState.charge.targetNote,
+      micSourceHealth: capturedMicSourceHealth,
+      hasFreshGeneration: freshness.hasFreshGeneration,
+      pitch: capturedPitch,
+    })
     const canvas = canvasRef.current
     const ctx = canvas?.getContext('2d')
     if (canvas && ctx) {
       ctx.imageSmoothingEnabled = false
-      render(ctx, result.viewState, {
+      const weaponVfx = render(ctx, result.viewState, {
         reducedMotion: reducedMotionRef.current,
         colorHints: colorHintsRef.current,
+        micLockSignalActive,
       })
+      const weaponVfxDataset = JSON.stringify(weaponVfx)
+      if (weaponVfxDataset !== lastWeaponVfxDatasetRef.current) {
+        canvas.dataset.retroWeaponVfx = weaponVfxDataset
+        lastWeaponVfxDatasetRef.current = weaponVfxDataset
+      }
+      const micAuthorityDataset = JSON.stringify({
+        isListening: listeningRef.current,
+        isVisible: visibilityActiveRef.current,
+        audioContextState: capturedMicSourceHealth.audioContextState,
+        trackReadyState: capturedMicSourceHealth.trackReadyState,
+        trackMuted: capturedMicSourceHealth.trackMuted,
+        generation: capturedPitchGeneration,
+        staleGameFrames: freshness.state.staleGameFrames,
+        hasFreshGeneration: freshness.hasFreshGeneration,
+        signalActive: micLockSignalActive,
+      })
+      if (micAuthorityDataset !== lastMicAuthorityDatasetRef.current) {
+        canvas.dataset.retroMicAuthority = micAuthorityDataset
+        lastMicAuthorityDatasetRef.current = micAuthorityDataset
+      }
       canvas.dataset.retroRenderSources = JSON.stringify(enemyRenderSourceSnapshot())
       canvas.dataset.retroFormationState = JSON.stringify({
         directorClockMs: result.state.directorClockMs,
@@ -289,7 +355,7 @@ export default function RetroBlasterII() {
     applyEvents(result.events, result.state)
     if (result.state.phase === 'playing') rafRef.current = requestAnimationFrame(gameLoop)
     else rafRef.current = 0
-  }, [applyEvents, livePitchRef])
+  }, [applyEvents, livePitchRef, micSourceHealthRef, pitchGenerationRef])
 
   const buildState = useCallback((): GameState => {
     return buildRetroBlasterState(
@@ -304,6 +370,13 @@ export default function RetroBlasterII() {
   const startGame = useCallback(() => {
     if (rafRef.current) { cancelAnimationFrame(rafRef.current); rafRef.current = 0 }
     resetEnemyRenderLatches()
+    micVfxFreshnessRef.current = {
+      lastGeneration: pitchGenerationRef.current,
+      hasObservedMicGeneration: false,
+      staleGameFrames: 0,
+    }
+    lastWeaponVfxDatasetRef.current = ''
+    lastMicAuthorityDatasetRef.current = ''
     initAudio()
     if (inputMode === 'mic') startListening()
     const gs = buildState()
@@ -313,7 +386,7 @@ export default function RetroBlasterII() {
     setPhase('playing')
     lastTimeRef.current = performance.now()
     rafRef.current = requestAnimationFrame(gameLoop)
-  }, [inputMode, startListening, buildState, gameLoop])
+  }, [inputMode, startListening, buildState, gameLoop, pitchGenerationRef])
 
   const handleInsertCoin = useCallback(() => {
     let seen = false
