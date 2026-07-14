@@ -650,6 +650,93 @@ function drawSoulSignal(
   ctx.restore()
 }
 
+function drawIntroductionCeremony(
+  ctx: CanvasRenderingContext2D,
+  viewState: ViewState,
+  reducedMotion: boolean,
+  colorHints: boolean,
+): void {
+  const ceremony = viewState.introductionCeremony
+  if (!ceremony) return
+
+  const s = SPACE_SCALE
+  const noteHue = viewState.noteButtons.find(button => button.note === ceremony.note)?.hue ?? 180
+  const accent = colorHints ? `hsl(${noteHue}, 88%, 70%)` : '#d9f7ff'
+  const accentSoft = colorHints ? `hsla(${noteHue}, 88%, 66%, 0.22)` : 'rgba(217,247,255,0.18)'
+  const pulse = reducedMotion ? 1 : 0.88 + Math.sin(ceremony.elapsedMs / 180) * 0.12
+  const centerX = W / 2
+  const compact = ctx.canvas.clientHeight > 0 && ctx.canvas.clientHeight <= 220
+
+  ctx.save()
+  ctx.fillStyle = 'rgba(1,4,12,0.92)'
+  ctx.fillRect(0, 0, W, H)
+
+  ctx.fillStyle = 'rgba(3,12,25,0.96)'
+  ctx.strokeStyle = 'rgba(116,238,255,0.72)'
+  ctx.lineWidth = 1.5 * s
+  ctx.fillRect(76 * s, 42 * s, W - 152 * s, H - 84 * s)
+  ctx.strokeRect(76 * s, 42 * s, W - 152 * s, H - 84 * s)
+
+  ctx.fillStyle = '#79f2cf'
+  ctx.font = `bold ${Math.round(9 * s)}px monospace`
+  ctx.textAlign = 'center'
+  ctx.fillText('PRE-FLIGHT', centerX, 72 * s)
+
+  ctx.fillStyle = '#f3fbff'
+  ctx.font = `bold ${Math.round(24 * s)}px monospace`
+  ctx.fillText('NEW SIGNAL', centerX, 101 * s)
+
+  ctx.globalAlpha = pulse
+  ctx.fillStyle = accentSoft
+  ctx.fillRect(centerX - 48 * s, 116 * s, 96 * s, 62 * s)
+  ctx.strokeStyle = accent
+  ctx.lineWidth = 2 * s
+  ctx.strokeRect(centerX - 48 * s, 116 * s, 96 * s, 62 * s)
+  ctx.fillStyle = accent
+  ctx.font = `bold ${Math.round(34 * s)}px monospace`
+  ctx.fillText(ceremony.note.replace(/\d/, ''), centerX, 158 * s)
+  ctx.globalAlpha = 1
+
+  ctx.strokeStyle = accent
+  ctx.lineWidth = 1.5 * s
+  ctx.beginPath()
+  const barCount = 21
+  const waveformY = compact ? 188 : 207
+  for (let i = 0; i < barCount; i++) {
+    const x = centerX - 116 * s + i * 11.6 * s
+    const distance = Math.abs(i - (barCount - 1) / 2)
+    const height = (compact
+      ? 4 + Math.max(0, 18 - distance * 2)
+      : 6 + Math.max(0, 30 - distance * 3.2)) * s
+    ctx.moveTo(x, waveformY * s - height / 2)
+    ctx.lineTo(x, waveformY * s + height / 2)
+  }
+  ctx.stroke()
+
+  ctx.fillStyle = '#c8d8e2'
+  ctx.font = `bold ${Math.round(9 * s)}px monospace`
+  ctx.fillText(
+    ceremony.toneStatus === 'acknowledged'
+      ? 'REFERENCE TONE DISPATCHED'
+      : ceremony.toneStatus === 'blocked'
+        ? 'SIGNAL PATH NOT READY'
+        : 'REFERENCE SIGNAL PENDING',
+    centerX,
+    (compact ? 215 : 245) * s,
+  )
+  ctx.fillStyle = '#8fa8b8'
+  ctx.font = `bold ${Math.round(8 * s)}px monospace`
+  ctx.fillText('SIGNAL INTRODUCED - NOT SCORED', centerX, (compact ? 228 : 261) * s)
+
+  const railWidth = 190 * s
+  const progress = Math.max(0, Math.min(1, ceremony.elapsedMs / ceremony.durationMs))
+  ctx.fillStyle = 'rgba(130,160,178,0.2)'
+  ctx.fillRect(centerX - railWidth / 2, (compact ? 240 : 281) * s, railWidth, 2 * s)
+  ctx.fillStyle = accent
+  ctx.fillRect(centerX - railWidth / 2, (compact ? 240 : 281) * s, railWidth * progress, 2 * s)
+  ctx.restore()
+}
+
 export interface RetroRenderOptions {
   reducedMotion?: boolean
   colorHints?: boolean
@@ -938,5 +1025,6 @@ export function render(
     ctx.font = `bold ${Math.round(7 * s)}px monospace`
     ctx.fillText(`[${keyNum}]`, rect.x + rect.width / 2, rect.y + 20 * s)
   }
+  drawIntroductionCeremony(ctx, viewState, reducedMotion, colorHints)
   return weaponVfx
 }

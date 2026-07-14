@@ -25,6 +25,7 @@ export const MIC_TOLERANCE_CENTS = 70
 export const MIC_CONFIDENCE_FLOOR = 0.75
 export const CHARGE_FULL_MS = MIC_HOLD_MS
 export const MAX_SIM_STEP_MS = 50
+export const INTRODUCTION_DURATION_MS = 2400
 
 export const FORMATION_COLUMNS = 5
 export const FORMATION_ROWS = 3
@@ -164,7 +165,7 @@ export function noteButtonRects(noteCount: number, width = W, height = H): NoteB
 }
 
 export type InputMode = 'click' | 'mic'
-export type Phase = 'menu' | 'tutorial' | 'playing' | 'game_over'
+export type Phase = 'menu' | 'tutorial' | 'playing' | 'ceremony' | 'game_over'
 export type VisualKind = 0 | 1 | 2 | 3
 export const VISUAL_KIND_COUNT = 4
 
@@ -291,6 +292,22 @@ export interface WavePacingReceipt {
   requiredAnswerEventsMs: number[]
 }
 
+export type CeremonyToneStatus = 'pending' | 'acknowledged' | 'blocked'
+
+export interface IntroductionCeremony {
+  readonly ceremonyId: string
+  readonly note: string
+  elapsedMs: number
+  readonly durationMs: typeof INTRODUCTION_DURATION_MS
+  toneStatus: CeremonyToneStatus
+}
+
+export interface CeremonyToneAck {
+  readonly ceremonyId: string
+  readonly note: string
+  readonly dispatched: boolean
+}
+
 export interface WaveParams {
   alienCount: number
   maxConcurrent: number
@@ -317,6 +334,7 @@ export interface EngineInput {
   isActive?: boolean
   memoryEpochMs?: number
   voiceTimeoutObservation?: Readonly<{ healthy: boolean; heard: boolean }>
+  ceremonyToneAck?: CeremonyToneAck | null
 }
 
 export type EngineEvent =
@@ -326,6 +344,7 @@ export type EngineEvent =
   | { kind: 'unlock'; note: string; inputMode: InputMode }
   | { kind: 'spawn'; note: string; x: number }
   | { kind: 'waveComplete' }
+  | { kind: 'ceremonyToneRequest'; ceremonyId: string; note: string }
   | { kind: 'gameOver' }
 
 export interface GameState {
@@ -371,6 +390,9 @@ export interface GameState {
   lastCompletedWavePacing: WavePacingReceipt | null
   waveSoulByNote: Record<string, NoteSoulSnapshot>
   rosterServiceCount: Record<string, number>
+  pendingIntroductions: string[]
+  introductionCeremony: IntroductionCeremony | null
+  nextCeremonySerial: number
 }
 
 export interface ViewState {
@@ -398,6 +420,7 @@ export interface ViewState {
   activeAttack: ActiveAttack | null
   requiredAnswerEventsMs: number[]
   lastCompletedWavePacing: WavePacingReceipt | null
+  introductionCeremony: IntroductionCeremony | null
   noteButtons: Array<{ note: string; hue: number; active: boolean; keyNum: number }>
 }
 
@@ -602,6 +625,7 @@ export function createInitialState(
     requiredAnswerEventsMs: [], waveStartedAtMs: clockMs,
     lastCompletedWavePacing: null,
     waveSoulByNote: {}, rosterServiceCount: {},
+    pendingIntroductions: [], introductionCeremony: null, nextCeremonySerial: 0,
   }
 }
 
@@ -641,6 +665,8 @@ function cloneState(state: GameState): GameState {
     ),
     rosterServiceCount: { ...state.rosterServiceCount },
     requiredAnswerEventsMs: [...state.requiredAnswerEventsMs],
+    pendingIntroductions: [...state.pendingIntroductions],
+    introductionCeremony: state.introductionCeremony ? { ...state.introductionCeremony } : null,
     lastCompletedWavePacing: state.lastCompletedWavePacing
       ? { ...state.lastCompletedWavePacing, requiredAnswerEventsMs: [...state.lastCompletedWavePacing.requiredAnswerEventsMs] }
       : null,
@@ -680,6 +706,7 @@ export function toViewState(gs: GameState, inputMode: InputMode): ViewState {
     lastCompletedWavePacing: gs.lastCompletedWavePacing
       ? { ...gs.lastCompletedWavePacing, requiredAnswerEventsMs: [...gs.lastCompletedWavePacing.requiredAnswerEventsMs] }
       : null,
+    introductionCeremony: gs.introductionCeremony ? { ...gs.introductionCeremony } : null,
     noteButtons: gs.unlockedNotes.map((note, i) => ({
       note,
       hue: NOTE_COLORS[note]?.hue ?? 0,
@@ -851,6 +878,9 @@ export function resolveAttack(
       const newNote = INTRO_ORDER[poolSize]
       gs.unlockedNotes = [...gs.unlockedNotes, newNote]
       gs.consecutiveCorrect = 0
+      if (gs.introductionCeremony?.note !== newNote && !gs.pendingIntroductions.includes(newNote)) {
+        gs.pendingIntroductions.push(newNote)
+      }
       events.push({ kind: 'unlock', note: newNote, inputMode })
     }
     gs.answerCooldownMs = 150
@@ -941,12 +971,56 @@ export function finalizeHitLockedDeath(
   return true
 }
 
+function beginNextIntroduction(gs: GameState, events: EngineEvent[]): boolean {
+  const note = gs.pendingIntroductions.shift()
+  if (!note) return false
+  const ceremonyId = `${gs.gameId}:ceremony:${gs.nextCeremonySerial}`
+  gs.nextCeremonySerial++
+  gs.phase = 'ceremony'
+  gs.introductionCeremony = {
+    ceremonyId,
+    note,
+    elapsedMs: 0,
+    durationMs: INTRODUCTION_DURATION_MS,
+    toneStatus: 'pending',
+  }
+  events.push({ kind: 'ceremonyToneRequest', ceremonyId, note })
+  return true
+}
+
 export function tick(state: GameState, input: EngineInput, dtMs: number, rng: () => number): TickResult {
   const gs = cloneState(state)
   const events: EngineEvent[] = []
   const elapsedMs = Math.max(0, dtMs)
   const isActive = input.isActive !== false
   const stepMs = isActive ? Math.min(elapsedMs, MAX_SIM_STEP_MS) : 0
+
+  if (gs.phase === 'ceremony') {
+    const activeCeremony = gs.introductionCeremony
+    if (!isActive || !activeCeremony) {
+      return { state: gs, viewState: toViewState(gs, input.inputMode), events }
+    }
+    const toneAck = input.ceremonyToneAck
+    if (toneAck && toneAck.ceremonyId === activeCeremony.ceremonyId && toneAck.note === activeCeremony.note) {
+      if (toneAck.dispatched) activeCeremony.toneStatus = 'acknowledged'
+      else if (activeCeremony.toneStatus !== 'acknowledged') activeCeremony.toneStatus = 'blocked'
+    }
+    if (activeCeremony.toneStatus === 'acknowledged') {
+      activeCeremony.elapsedMs = Math.min(activeCeremony.durationMs, activeCeremony.elapsedMs + stepMs)
+    }
+    if (activeCeremony.elapsedMs >= activeCeremony.durationMs) {
+      if (beginNextIntroduction(gs, events)) {
+        return { state: gs, viewState: toViewState(gs, input.inputMode), events }
+      }
+      gs.introductionCeremony = null
+      gs.phase = 'playing'
+      gs.wave++
+      gs.waveIntroTimer = 1.6
+      beginWave(gs, input.fsrs ?? {}, input.memoryEpochMs ?? 0)
+    }
+    return { state: gs, viewState: toViewState(gs, input.inputMode), events }
+  }
+
   const dt = stepMs / 1000
   gs.clockMs += isActive ? elapsedMs : 0
   gs.directorClockMs += stepMs
@@ -1220,10 +1294,15 @@ export function tick(state: GameState, input: EngineInput, dtMs: number, rng: ()
       waveDurationMs: waveEndedAtMs - gs.waveStartedAtMs,
       requiredAnswerEventsMs: [...gs.requiredAnswerEventsMs],
     }
-    gs.wave++
-    gs.waveIntroTimer = 1.6
-    beginWave(gs, input.fsrs ?? {}, input.memoryEpochMs ?? 0)
-    events.push({ kind: 'waveComplete' })
+    if (gs.pendingIntroductions.length > 0) {
+      events.push({ kind: 'waveComplete' })
+      beginNextIntroduction(gs, events)
+    } else {
+      gs.wave++
+      gs.waveIntroTimer = 1.6
+      beginWave(gs, input.fsrs ?? {}, input.memoryEpochMs ?? 0)
+      events.push({ kind: 'waveComplete' })
+    }
   }
 
   return { state: gs, viewState: toViewState(gs, input.inputMode), events }
