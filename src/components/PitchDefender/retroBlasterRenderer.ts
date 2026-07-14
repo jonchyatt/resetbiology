@@ -250,6 +250,51 @@ function drawNoteChip(
   ctx.fillRect(Math.floor(x - 1), Math.floor(y - 1), 2, 2)
 }
 
+function drawAtlasFacing(
+  ctx: CanvasRenderingContext2D,
+  atlas: SpriteAtlas,
+  frameName: string,
+  x: number,
+  y: number,
+  scale: number,
+  side: -1 | 1,
+): boolean {
+  if (side === 1) return drawAtlasSprite(ctx, atlas, frameName, x, y, scale)
+  const frame = atlas.frames[frameName as keyof typeof atlas.frames]
+  if (!frame) return false
+  ctx.save()
+  ctx.translate(x + frame.w * scale, 0)
+  ctx.scale(-1, 1)
+  const drew = drawAtlasSprite(ctx, atlas, frameName, 0, y, scale)
+  ctx.restore()
+  return drew
+}
+
+function drawInsideBracket(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  color: string,
+  scale: number,
+): void {
+  const inset = 2 * scale
+  const leg = 5 * scale
+  const left = x + inset
+  const right = x + width - inset
+  const top = y + inset
+  const bottom = y + height - inset
+  ctx.strokeStyle = color
+  ctx.lineWidth = Math.max(1, scale)
+  ctx.beginPath()
+  ctx.moveTo(left, top + leg); ctx.lineTo(left, top); ctx.lineTo(left + leg, top)
+  ctx.moveTo(right - leg, top); ctx.lineTo(right, top); ctx.lineTo(right, top + leg)
+  ctx.moveTo(right, bottom - leg); ctx.lineTo(right, bottom); ctx.lineTo(right - leg, bottom)
+  ctx.moveTo(left + leg, bottom); ctx.lineTo(left, bottom); ctx.lineTo(left, bottom - leg)
+  ctx.stroke()
+}
+
 export interface RetroRenderOptions {
   reducedMotion?: boolean
   colorHints?: boolean
@@ -277,10 +322,20 @@ export function render(
     ctx.fillText(`${count} ${count === 1 ? 'ALIEN' : 'ALIENS'}`, W / 2, H / 2 + 10)
   }
 
-  for (let i = 0; i < viewState.aliens.length; i++) {
-    const alien = viewState.aliens[i]
+  const activeAlienId = viewState.activeAttack?.alienId ?? null
+  const orderedAliens = [...viewState.aliens]
+    .sort((left, right) =>
+      Number(left.alienId === activeAlienId) - Number(right.alienId === activeAlienId))
+
+  for (const alien of orderedAliens) {
     if (!alien.alive && alien.hitTimer <= 0) continue
-    const isActive = i === viewState.spotlightIdx
+    const attack = viewState.activeAttack?.alienId === alien.alienId
+      ? viewState.activeAttack
+      : null
+    const isActive = attack !== null
+    const isTelegraph = attack?.phase === 'telegraph'
+    const isFlightPose = Boolean(attack && (attack.phase !== 'telegraph' || reducedMotion))
+    const usesFocusScale = Boolean(isTelegraph && !reducedMotion)
     const existingSource = enemyRenderSources.get(alien.visualId)
     const proposedSource = existingSource ?? chooseEnemyRenderSource(
       alien.visualKind,
@@ -288,7 +343,7 @@ export function render(
       enemyAtlases[0],
     )
     if (!existingSource && !isEnemySourceVisible(
-      alien.x, alien.y, alien.visualKind, isActive, now, proposedSource,
+      alien.x, alien.y, alien.visualKind, usesFocusScale, now, proposedSource,
     )) continue
     const resolvedAtlas = atlasForAlien(alien.visualId, alien.visualKind)
     const atlas = resolvedAtlas?.atlas ?? null
@@ -306,15 +361,45 @@ export function render(
     }
 
     const sprite = alien.frame === 0 ? ALIEN_SPRITE_A : ALIEN_SPRITE_B
-    // ponytail: R2 has no dive state; R3 can route the validated dive frames once that state exists.
-    const bobPhase = Math.sin(now / 200)
+    const bobPhase = reducedMotion ? 1 : Math.sin(now / 200)
     const idleFrame = bobPhase >= 0 ? 'idle-a' : 'idle-b'
     const color = colorHints
       ? isActive ? `hsl(${alien.hue}, 95%, 70%)` : `hsl(${alien.hue}, 50%, 40%)`
       : isActive ? '#c7f5ff' : '#61758b'
     const anchor = resolvedAtlas?.anchor ?? ENEMY_ROSTER[alien.visualKind].chipAnchor
 
-    if (isActive) {
+    if (isFlightPose && attack) {
+      const frameName = attack.phase === 'returning' ? 'dive-bank' : 'dive-down'
+      const atlasX = alien.x - 12 * s
+      const atlasY = alien.y - 9 * s
+      const drewAtlas = atlas && drawAtlasFacing(
+        ctx, atlas, frameName, atlasX, atlasY, s, attack.side,
+      )
+      if (!drewAtlas) drawSprite(ctx, sprite, alien.x, alien.y, color, 2 * s)
+      const chipAnchorX = attack.side === -1 ? 1 - anchor[0] : anchor[0]
+      const chipX = drewAtlas ? atlasX + 48 * s * chipAnchorX : alien.x + ALIEN_W / 2
+      const chipY = drewAtlas ? atlasY + 36 * s * anchor[1] : alien.y + ALIEN_H * 0.55
+      drawNoteChip(ctx, chipX, chipY, alien.hue, colorHints, s)
+      const footprintX = drewAtlas ? atlasX : alien.x
+      const footprintY = drewAtlas ? atlasY : alien.y
+      const footprintW = drewAtlas ? 48 * s : ALIEN_W
+      const footprintH = drewAtlas ? 36 * s : ALIEN_H
+      drawInsideBracket(
+        ctx,
+        footprintX,
+        footprintY,
+        footprintW,
+        footprintH,
+        colorHints ? `hsla(${alien.hue}, 95%, 72%, 0.92)` : 'rgba(207,244,255,0.94)',
+        s,
+      )
+      if (isTelegraph) {
+        ctx.fillStyle = '#ffe34c'
+        ctx.font = `bold ${Math.round(16 * s)}px monospace`
+        ctx.textAlign = 'center'
+        ctx.fillText('?', footprintX + footprintW / 2, footprintY + 14 * s)
+      }
+    } else if (isActive) {
       const scale = 2.4 * s
       const offsetX = (ALIEN_W * 0.2) / 2
       const offsetY = (ALIEN_H * 0.2) / 2
@@ -382,7 +467,7 @@ export function render(
     const glowAlpha = (chargePct - 0.7) / 0.3
     ctx.fillStyle = `rgba(74,222,128,${glowAlpha * 0.35})`
     ctx.fillRect(viewState.playerX - 6 * s, PLAYER_Y - 6 * s, 12 * s, 6 * s)
-    const pulse = 0.5 + Math.sin(now / 80) * 0.3
+    const pulse = reducedMotion ? 0.8 : 0.5 + Math.sin(now / 80) * 0.3
     ctx.fillStyle = `rgba(74,222,128,${glowAlpha * pulse})`
     ctx.fillRect(viewState.playerX - 3 * s, PLAYER_Y - 4 * s, 6 * s, 4 * s)
   }

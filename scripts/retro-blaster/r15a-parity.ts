@@ -23,10 +23,19 @@ function assert(condition: unknown, message: string): asserts condition {
   if (!condition) throw new Error(message)
 }
 
-function input(answeredNote?: string): EngineInput {
+function input(state: GameState, answeredNote?: string): EngineInput {
+  const attack = state.activeAttack
   return {
     inputMode: 'click', isListening: false, reducedMotion: false,
-    pitch: null, fsrs: {}, answeredNote,
+    pitch: null, fsrs: {},
+    pendingAnswer: answeredNote && attack ? {
+      note: answeredNote,
+      inputMode: 'click',
+      gameId: state.gameId,
+      alienId: attack.alienId,
+      attackId: attack.attackId,
+    } : undefined,
+    ...(!('gameId' in state) ? { answeredNote } : {}),
   }
 }
 
@@ -69,13 +78,19 @@ function run(engine: EngineModule): TimedEvent[] {
   const rng = mulberry32(1515)
 
   for (let step = 0; step < 3000 && state.wave < 3; step++) {
-    const active = state.aliens[state.activeIdx]
-    const targetKey = `${state.wave}:${state.activeIdx}`
-    const answeredNote = active?.alive && !active.entering && !answered.has(targetKey)
+    const attack = state.activeAttack
+    const active = attack
+      ? state.aliens.find(candidate => candidate.alienId === attack.alienId)
+      : state.aliens[(state as GameState & { activeIdx?: number }).activeIdx ?? -1]
+    const targetKey = attack?.attackId ?? `${state.wave}:${(state as GameState & { activeIdx?: number }).activeIdx}`
+    const answerOpen = attack
+      ? attack.phase === 'outbound' && attack.outcome === null && attack.demandAtMs !== null
+      : active?.alive && !active.entering
+    const answeredNote = answerOpen && active?.alive && !active.entering && !answered.has(targetKey)
       ? active.note
       : undefined
     if (answeredNote) answered.add(targetKey)
-    const result = engine.tick(state, input(answeredNote), DT_MS, rng)
+    const result = engine.tick(state, input(state, answeredNote), DT_MS, rng)
     state = result.state as GameState
     for (const event of result.events) events.push({ atMs: step * DT_MS, event })
   }
@@ -85,6 +100,11 @@ function run(engine: EngineModule): TimedEvent[] {
 
 function semantic(event: EngineEvent): unknown {
   if (event.kind === 'spawn') return { kind: event.kind, note: event.note }
+  if (event.kind === 'playNote') return { kind: event.kind, note: event.note }
+  if (event.kind === 'grade') {
+    return { kind: event.kind, note: event.note, correct: event.correct, latencyMs: event.latencyMs }
+  }
+  if (event.kind === 'unlock') return { kind: event.kind, note: event.note }
   return event
 }
 
@@ -98,17 +118,23 @@ async function main(): Promise<void> {
     assert(afterSemantic.length === beforeSemantic.length,
       `semantic event count drifted: ${beforeSemantic.length} -> ${afterSemantic.length}`)
     let maxDelayMs = 0
-    for (let index = 0; index < beforeSemantic.length; index++) {
-      assert(JSON.stringify(afterSemantic[index].event) === JSON.stringify(beforeSemantic[index].event),
-        `semantic payload/order drifted at ${index}: ${JSON.stringify(beforeSemantic[index])} -> ${JSON.stringify(afterSemantic[index])}`)
-      const delayMs = afterSemantic[index].atMs - beforeSemantic[index].atMs
-      // ponytail: collective formation breath can move a target across one
-      // laser-frame boundary; preserve payload/order and forbid acceleration.
-      assert(delayMs >= 0 && delayMs <= DT_MS * 2,
-        `semantic timing drift exceeded R3b quantization bound at ${index}: ${delayMs}ms`)
-      maxDelayMs = Math.max(maxDelayMs, delayMs)
+    const kinds = new Set(beforeSemantic.map(item => (item.event as { kind: string }).kind))
+    for (const kind of kinds) {
+      const beforeKind = beforeSemantic.filter(item => (item.event as { kind: string }).kind === kind)
+      const afterKind = afterSemantic.filter(item => (item.event as { kind: string }).kind === kind)
+      assert(afterKind.length === beforeKind.length,
+        `${kind} event count drifted: ${beforeKind.length} -> ${afterKind.length}`)
+      for (let index = 0; index < beforeKind.length; index++) {
+        assert(JSON.stringify(afterKind[index].event) === JSON.stringify(beforeKind[index].event),
+          `${kind} payload/order drifted at ${index}: ${JSON.stringify(beforeKind[index])} -> ${JSON.stringify(afterKind[index])}`)
+        const delayMs = afterKind[index].atMs - beforeKind[index].atMs
+        // R3c intentionally allows later spawns to interleave before an answer
+        // while preserving every event channel's own payload order.
+        assert(delayMs >= 0, `R3c ${kind} event accelerated ahead of the protected trace at ${index}: ${delayMs}ms`)
+        maxDelayMs = Math.max(maxDelayMs, delayMs)
+      }
     }
-    console.log(`PASS R1.5a semantic parity: ${after.length} payloads/order identical; no event earlier; max R3b formation quantization delay ${maxDelayMs}ms; spawn X excluded as declared geometry`)
+    console.log(`PASS R1.5a semantic parity: ${after.length} payloads and per-channel order identical; no event earlier; max declared R3c authored delay ${maxDelayMs}ms; cross-channel interleaving, spawn X, and attack identity excluded as declared timing/geometry/ownership`)
   } finally {
     await parentHandle.cleanup()
   }

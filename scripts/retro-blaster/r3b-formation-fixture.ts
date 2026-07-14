@@ -5,6 +5,8 @@ import sharp from 'sharp'
 
 import {
   ALIEN_H,
+  DIVE_RESPONSE_DEADLINE_MS,
+  DIVE_TELEGRAPH_MS,
   ENTRY_DURATION_MS,
   FORMATION_BREATH_PERIOD_MS,
   FORMATION_BREATH_X,
@@ -52,6 +54,7 @@ function engineInput(overrides: Partial<EngineInput> = {}): EngineInput {
 function alien(slot = 0, overrides: Partial<Alien> = {}): Alien {
   const anchor = formationAnchor(slot)
   return {
+    alienId: `fixture-game:alien:1:${slot}`,
     visualId: `fixture:${slot}`,
     visualKind: (slot % 4) as 0 | 1 | 2 | 3,
     x: anchor.x,
@@ -68,6 +71,25 @@ function alien(slot = 0, overrides: Partial<Alien> = {}): Alien {
     frame: 0,
     hitTimer: 0,
     ...overrides,
+  }
+}
+
+function bindOpenDemand(state: GameState, targetIndex = 0): void {
+  const target = state.aliens[targetIndex]
+  state.activeAttack = {
+    attackId: `${state.gameId}:attack:${state.nextAttackSerial++}`,
+    alienId: target.alienId,
+    note: target.note,
+    side: 1,
+    phase: 'outbound',
+    telegraphStartedAtMs: state.directorClockMs - DIVE_TELEGRAPH_MS,
+    demandAtMs: state.directorClockMs,
+    deadlineAtMs: state.directorClockMs + DIVE_RESPONSE_DEADLINE_MS,
+    outboundT: 0,
+    returnFromT: 0,
+    returnStartedAtMs: null,
+    outcome: null,
+    resolvedAtMs: null,
   }
 }
 
@@ -262,7 +284,6 @@ function validateClocksAndReducedMotion(): void {
   base.spawnQueue = []
   base.alienCountThisWave = 2
   base.aliens = [alien(0), alien(1)]
-  base.activeIdx = 0
   const normal = tick(base, engineInput(), 40, () => 0.5)
   const reduced = tick(base, engineInput({ reducedMotion: true }), 40, () => 0.5)
   assert.deepEqual(normal.events, reduced.events)
@@ -280,28 +301,12 @@ function validateTargetabilityAndMicClock(): void {
   assert.equal(pickTargetForNote([entering], 'C4', 320), null)
   assert.equal(pickSpotlightIdx([entering], 320), -1)
 
-  let state = createInitialState('true', ['C4', 'D4', 'E4', 'F4'], 1000)
-  state.waveIntroTimer = 0
-  state.spawnQueue = []
-  state.alienCountThisWave = 2
-  state.aliens = [alien(0), alien(1, { entering: true, entryT: 0.5 })]
-  state.activeIdx = 0
-  state.matchTargetIdx = 0
-  state.matchStartAt = 900
-  state.chargeProgress = 100
-  state.aliens[0].entering = true
-  state.aliens[0].entryT = 0.5
-  state = tick(state, engineInput(), 0, () => 0.5).state
-  assert.equal(state.matchTargetIdx, -1)
-  assert.equal(state.matchStartAt, 0)
-  assert.equal(state.chargeProgress, 0)
-
-  state = createInitialState('true', ['C4', 'D4', 'E4', 'F4'], 1000)
+  let state = createInitialState('true', ['C4', 'D4', 'E4', 'F4'], 1000, 'fixture-game')
   state.waveIntroTimer = 0
   state.spawnQueue = []
   state.alienCountThisWave = 2
   state.aliens = [alien(0), alien(1)]
-  state.activeIdx = 0
+  bindOpenDemand(state)
   const pitch = {
     note: 'C4', frequency: noteToFreq('C4'), cents: 0, confidence: 1, isActive: true,
   }
@@ -366,7 +371,7 @@ function validateStateMachineAndPacing(): void {
   stable.spawnQueue = []
   stable.alienCountThisWave = 2
   stable.aliens = [alien(0), alien(1)]
-  stable.activeIdx = 0
+  stable.nextAttackAtMs = Number.POSITIVE_INFINITY
   for (const item of stable.aliens) {
     const pose = formationPose(item.formationX, item.formationY, stable.directorClockMs, false)
     item.x = pose.x

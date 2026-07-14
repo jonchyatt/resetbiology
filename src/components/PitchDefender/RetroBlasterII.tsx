@@ -18,7 +18,8 @@ import { initAudio, loadPianoSamples, playPianoNote } from './audioEngine'
 import {
   H, INITIAL_UNLOCK, STARTING_SHIELDS, W,
   beginWave, createInitialState, isTargetableAlien, noteButtonRects, tick, toViewState,
-  type Difficulty, type EngineEvent, type GameState, type InputMode, type Phase, type ViewState,
+  type Difficulty, type EngineEvent, type GameState, type InputMode,
+  type PendingAttackAnswer, type Phase, type ViewState,
 } from './retroBlasterEngine'
 import { enemyRenderSourceSnapshot, render, resetEnemyRenderLatches } from './retroBlasterRenderer'
 
@@ -52,11 +53,14 @@ export function applyRetroBlasterFamilyEvent(
   inputMode: InputMode,
   stores: RetroBlasterFamilyStores,
 ): boolean {
-  const store = activeLaneStore(stores, inputMode)
-  const key = inputMode === 'mic' ? FSRS_VOICE_KEY : FSRS_EAR_KEY
+  const eventInputMode = event.kind === 'grade' || event.kind === 'unlock'
+    ? event.inputMode
+    : inputMode
+  const store = activeLaneStore(stores, eventInputMode)
+  const key = eventInputMode === 'mic' ? FSRS_VOICE_KEY : FSRS_EAR_KEY
 
   if (event.kind === 'grade') {
-    if (inputMode === 'mic') gradeVoice(store, event.note, event.correct, event.latencyMs)
+    if (eventInputMode === 'mic') gradeVoice(store, event.note, event.correct, event.latencyMs)
     else gradeEar(store, event.note, event.correct, event.latencyMs)
     saveStore(key, store)
     return true
@@ -73,6 +77,7 @@ export function buildRetroBlasterState(
   inputMode: InputMode,
   stores: RetroBlasterFamilyStores,
   clockMs: number,
+  gameId = `fixture:${clockMs}`,
 ): GameState {
   const store = activeLaneStore(stores, inputMode)
   const reviewed = new Set(
@@ -89,7 +94,7 @@ export function buildRetroBlasterState(
   for (const note of unlocked) {
     if (!store[note]) store[note] = createNote(note)
   }
-  const state = createInitialState(difficulty, unlocked, clockMs)
+  const state = createInitialState(difficulty, unlocked, clockMs, gameId)
   beginWave(state, store)
   return state
 }
@@ -136,7 +141,7 @@ export default function RetroBlasterII() {
   const rafRef = useRef(0)
   const lastTimeRef = useRef(0)
   const notePlayTimeRef = useRef(0)
-  const pendingAnswerRef = useRef<string | null>(null)
+  const pendingAnswerRef = useRef<PendingAttackAnswer | null>(null)
   const inputModeRef = useRef<InputMode>('click')
   const listeningRef = useRef(false)
   const colorHintsRef = useRef(true)
@@ -212,11 +217,14 @@ export default function RetroBlasterII() {
         setTimeout(() => {
           const cur = stateRef.current
           if (!cur) return
-          if (event.guard === 'alive' && !isTargetableAlien(cur.aliens[event.targetIdx])) return
-          if (event.guard === 'spotlight' &&
-              (!isTargetableAlien(cur.aliens[event.targetIdx]) || cur.activeIdx !== event.targetIdx)) return
+          if (event.guard === 'attack') {
+            const attack = cur.activeAttack
+            const alien = cur.aliens.find(item => item.alienId === event.targetAlienId)
+            if (!attack || attack.attackId !== event.attackId ||
+                attack.alienId !== event.targetAlienId || !isTargetableAlien(alien)) return
+          }
           playPianoNote(event.note)
-          if (event.delayMs === 200 || event.guard === 'spotlight') notePlayTimeRef.current = Date.now()
+          if (event.guard === 'attack') notePlayTimeRef.current = Date.now()
         }, event.delayMs)
       } else if (event.kind === 'gameOver') {
         setFinalStats({ score: gs.score, wave: gs.wave, maxCombo: gs.maxCombo })
@@ -231,7 +239,7 @@ export default function RetroBlasterII() {
     if (!gs) return
     const dtMs = Math.max(0, now - lastTimeRef.current)
     lastTimeRef.current = now
-    const answeredNote = pendingAnswerRef.current
+    const pendingAnswer = pendingAnswerRef.current
     pendingAnswerRef.current = null
     const latencyMs = notePlayTimeRef.current > 0 ? Date.now() - notePlayTimeRef.current : 2000
     const laneStore = activeLaneStore(familyStoresRef.current, inputModeRef.current)
@@ -240,7 +248,7 @@ export default function RetroBlasterII() {
       isListening: listeningRef.current,
       reducedMotion: reducedMotionRef.current,
       pitch: livePitchRef.current,
-      answeredNote,
+      pendingAnswer,
       latencyMs,
       fsrs: laneStore,
       isActive: visibilityActiveRef.current,
@@ -257,7 +265,12 @@ export default function RetroBlasterII() {
       canvas.dataset.retroRenderSources = JSON.stringify(enemyRenderSourceSnapshot())
       canvas.dataset.retroFormationState = JSON.stringify({
         directorClockMs: result.state.directorClockMs,
+        gameId: result.state.gameId,
+        activeAttack: result.state.activeAttack,
+        requiredAnswerEventsMs: result.state.requiredAnswerEventsMs,
+        lastCompletedWavePacing: result.state.lastCompletedWavePacing,
         ships: result.state.aliens.map(alien => ({
+          alienId: alien.alienId,
           visualId: alien.visualId,
           slot: alien.formationSlot,
           x: alien.x,
@@ -266,6 +279,9 @@ export default function RetroBlasterII() {
           formationY: alien.formationY,
           entering: alien.entering,
           alive: alien.alive,
+          flightState: result.state.activeAttack?.alienId === alien.alienId
+            ? result.state.activeAttack.phase
+            : 'formation',
         })),
       })
     }
@@ -276,7 +292,13 @@ export default function RetroBlasterII() {
   }, [applyEvents, livePitchRef])
 
   const buildState = useCallback((): GameState => {
-    return buildRetroBlasterState(difficulty, inputMode, familyStoresRef.current, performance.now())
+    return buildRetroBlasterState(
+      difficulty,
+      inputMode,
+      familyStoresRef.current,
+      performance.now(),
+      crypto.randomUUID(),
+    )
   }, [difficulty, inputMode])
 
   const startGame = useCallback(() => {
@@ -308,14 +330,27 @@ export default function RetroBlasterII() {
   const replayActiveNote = useCallback(() => {
     const gs = stateRef.current
     if (!gs) return
-    const alien = gs.aliens[gs.activeIdx]
+    const attack = gs.activeAttack
+    if (!visibilityActiveRef.current || attack?.phase !== 'outbound' || attack.outcome !== null ||
+        attack.demandAtMs === null) return
+    const alien = gs.aliens.find(candidate => candidate.alienId === attack.alienId)
     if (!isTargetableAlien(alien)) return
     playPianoNote(alien.note)
     notePlayTimeRef.current = Date.now()
   }, [])
 
   const processHit = useCallback((answeredNote: string) => {
-    if (!pendingAnswerRef.current) pendingAnswerRef.current = answeredNote
+    const gs = stateRef.current
+    const attack = gs?.activeAttack
+    if (!gs || pendingAnswerRef.current || !visibilityActiveRef.current ||
+        attack?.phase !== 'outbound' || attack.outcome !== null || attack.demandAtMs === null) return
+    pendingAnswerRef.current = {
+      note: answeredNote,
+      inputMode: 'click',
+      gameId: gs.gameId,
+      alienId: attack.alienId,
+      attackId: attack.attackId,
+    }
   }, [])
 
   const toggleCrt = useCallback(() => {

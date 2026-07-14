@@ -42,6 +42,7 @@ function seededRng(seed) {
 
 function alien(note = 'C4', x = 120, y = 120) {
   return {
+    alienId: `fixture-game:alien:${x}:${y}`,
     visualId: `fixture:${x}:${y}`, visualKind: 0,
     x, y, entering: false, entryT: 1, entryTargetX: x,
     formationSlot: 0, formationX: x, formationY: y,
@@ -50,15 +51,46 @@ function alien(note = 'C4', x = 120, y = 120) {
 }
 
 function engineFixture(aliens = [alien()]) {
-  const state = engine.createInitialState('easy', ['C4', 'D4', 'E4', 'F4'], 1000)
+  const state = engine.createInitialState('easy', ['C4', 'D4', 'E4', 'F4'], 1000, 'fixture-game')
   state.aliens = aliens.map(a => ({ ...a }))
-  state.activeIdx = state.aliens.length ? 0 : -1
   state.waveIntroTimer = 0
   state.spawnQueue = []
   state.alienCountThisWave = state.aliens.length
   state.nextSpawnAt = Number.POSITIVE_INFINITY
   state.lastProgressAt = state.directorClockMs
+  if (state.aliens.length) bindDemand(state, 0)
   return state
+}
+
+function bindDemand(state, targetIndex) {
+  const target = state.aliens[targetIndex]
+  const serial = state.nextAttackSerial++
+  state.activeAttack = {
+    attackId: `${state.gameId}:attack:${serial}`,
+    alienId: target.alienId,
+    note: target.note,
+    side: 1,
+    phase: 'outbound',
+    telegraphStartedAtMs: state.directorClockMs - engine.DIVE_TELEGRAPH_MS,
+    demandAtMs: state.directorClockMs,
+    deadlineAtMs: state.directorClockMs + engine.DIVE_RESPONSE_DEADLINE_MS,
+    outboundT: 0,
+    returnFromT: 0,
+    returnStartedAtMs: null,
+    outcome: null,
+    resolvedAtMs: null,
+  }
+  return state.activeAttack
+}
+
+function pendingAnswer(state, note) {
+  return {
+    note,
+    inputMode: 'click',
+    gameId: state.gameId,
+    alienId: state.activeAttack.alienId,
+    attackId: state.activeAttack.attackId,
+  }
 }
 
 function engineStep(state, pitch, dtMs, extra = {}) {
@@ -236,7 +268,7 @@ function runHitTrace() {
 
     const result = engine.tick(actual, {
       inputMode: 'click', isListening: false, pitch: null,
-      answeredNote: 'C4', latencyMs: 2000, fsrs: {},
+      pendingAnswer: pendingAnswer(actual, 'C4'), latencyMs: 2000, fsrs: {},
     }, 0, seededRng(7))
     actual = result.state
     const grade = result.events.find(e => e.kind === 'grade')
@@ -244,17 +276,19 @@ function runHitTrace() {
     const unlocked = result.events.find(e => e.kind === 'unlock')
     if (unlocked) engineUnlocks.push(unlocked.note)
     engineTransitions.push([actual.score, actual.combo, actual.cityHealth])
-    const idx = actual.lasers.at(-1).targetIdx
-    actual.aliens[idx].alive = false
+    const resolvedAttackId = actual.activeAttack.attackId
+    engine.finalizeHitLockedDeath(actual, resolvedAttackId, [], seededRng(7))
     actual.lasers = []
     actual.answerCooldownMs = 0
+    if (i < 9) bindDemand(actual, actual.aliens.findIndex(candidate => candidate.alive && candidate.note === 'C4'))
   }
 
   referenceHit(ref, 'B4')
   referenceTransitions.push([ref.score, ref.combo, ref.cityHealth])
+  bindDemand(actual, actual.aliens.findIndex(candidate => candidate.alive))
   const wrong = engine.tick(actual, {
     inputMode: 'click', isListening: false, pitch: null,
-    answeredNote: 'B4', latencyMs: 2000, fsrs: {},
+    pendingAnswer: pendingAnswer(actual, 'B4'), latencyMs: 2000, fsrs: {},
   }, 0, seededRng(7))
   actual = wrong.state
   engineTransitions.push([actual.score, actual.combo, actual.cityHealth])
@@ -354,7 +388,11 @@ const traces = [
   ['t1 clean hold @300ms', () => runMicTrace([[0, onPitch], [100, onPitch], [100, onPitch], [100, onPitch]])],
   ['t2 silence flicker preserved', () => runMicTrace([[0, onPitch], [100, onPitch], [100, silence], [100, onPitch]])],
   ['t3 confident wrong resets', () => runMicTrace([[0, onPitch], [150, onPitch], [0, wrongPitch], [0, onPitch], [100, onPitch], [100, onPitch], [100, onPitch]])],
-  ['t4 600ms post-fire cooldown', () => runMicTrace([[0, onPitch], [100, onPitch], [100, onPitch], [100, onPitch], [599, onPitch], [1, onPitch], [100, onPitch], [100, onPitch], [100, onPitch]])],
+  ['t4 post-resolution input cannot re-grade the same attack', () => {
+    const value = runMicTrace([[0, onPitch], [100, onPitch], [100, onPitch], [100, onPitch], [599, onPitch], [1, onPitch], [100, onPitch], [100, onPitch], [100, onPitch]])
+    value.reference = { fires: value.reference.fires.slice(0, 1), grades: value.reference.grades.slice(0, 1) }
+    return value
+  }],
   ['t5 click hit/wrong transitions', runHitTrace],
   ['t6 R3b stable formation has no passive shield loss', runEscapeTrace],
   ['t7 seeded full-wave note order (formation geometry excluded)', runSpawnTrace],
