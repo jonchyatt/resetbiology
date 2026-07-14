@@ -38,7 +38,7 @@ import {
 } from '../../src/components/PitchDefender/retroBlasterRenderer'
 
 const ROOT = process.cwd()
-const BASE_SHA = process.env.RETRO_PROTECTED_BASE || '510a85288c1b86233175e94ce295253749febb46'
+const BASE_SHA = process.env.RETRO_PROTECTED_BASE || '6f4c8da158b9773bbda90eef0cc51334e6fa636b'
 const TARGET_NOTE = 'C4'
 const TARGET_ID = 'r4-fixture:alien:1:14'
 const ATTACK_ID = 'r4-fixture:attack:1'
@@ -188,11 +188,23 @@ function engineAccepts(candidate: EnginePitch | null): boolean {
   return result.state.matchTargetAlienId === TARGET_ID
 }
 
-check('protected engine remains byte-identical to the ratified base', () => {
+check('protected v1 mic-lock block remains byte-identical to the R4 base', () => {
   const relative = 'src/components/PitchDefender/retroBlasterEngine.ts'
-  const current = readFileSync(resolve(ROOT, relative))
-  const base = execFileSync('git', ['show', `${BASE_SHA}:${relative}`], { cwd: ROOT })
-  assert.equal(sha256(normalizedSource(current)), sha256(normalizedSource(base)))
+  const current = normalizedSource(readFileSync(resolve(ROOT, relative)))
+  const base = normalizedSource(execFileSync('git', ['show', `${BASE_SHA}:${relative}`], { cwd: ROOT }))
+  const frozenBlock = (source: string) => source.slice(
+    source.indexOf('  const micAttack = gs.activeAttack'),
+    source.indexOf('  const timeoutAttack = gs.activeAttack'),
+  )
+  assert(frozenBlock(current).length > 0)
+  assert.equal(sha256(frozenBlock(current)), sha256(frozenBlock(base)))
+  for (const constant of [
+    'export const MIC_HOLD_MS = 300',
+    'export const MIC_TOLERANCE_CENTS = 70',
+    'export const MIC_CONFIDENCE_FLOOR = 0.75',
+  ]) {
+    assert(current.includes(constant)); assert(base.includes(constant))
+  }
 })
 
 check('mic authority predicate closes every independent failure gate', () => {

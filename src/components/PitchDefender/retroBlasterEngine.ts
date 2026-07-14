@@ -1,4 +1,4 @@
-import { NOTE_COLORS, currentR, type NoteMemory } from '../../lib/fsrs'
+import { NOTE_COLORS, retrievability, type NoteMemory } from '../../lib/fsrs'
 import { INTRO_ORDER, UNLOCK_THRESHOLDS } from './types'
 import { noteToFreq, octaveFoldedCents } from './pitchMath'
 
@@ -168,6 +168,47 @@ export type Phase = 'menu' | 'tutorial' | 'playing' | 'game_over'
 export type VisualKind = 0 | 1 | 2 | 3
 export const VISUAL_KIND_COUNT = 4
 
+export interface NoteSoulSnapshot {
+  note: string
+  r: number
+  calm: number
+  due: boolean
+  agitation: number
+  divePressure: number
+}
+
+export interface WaveMemoryObservation {
+  epochMs: number
+  store: Readonly<Record<string, NoteMemory>>
+}
+
+function clamp01(value: number): number {
+  return Math.max(0, Math.min(1, value))
+}
+
+export function snapshotNoteSoul(
+  note: string,
+  memory: NoteMemory | undefined,
+  epochMs: number,
+): NoteSoulSnapshot {
+  const unreviewed = !memory || memory.phase === 'new' || memory.lastReview === 0
+  const elapsedDays = memory
+    ? Math.max(0, epochMs - memory.lastReview) / 86_400_000
+    : 0
+  const r = unreviewed ? 0.95 : clamp01(retrievability(elapsedDays, memory.S))
+  const calm = memory && memory.S > 0 ? clamp01(retrievability(1, memory.S)) : 0
+  const due = !memory || memory.due <= epochMs
+  const agitation = 1 - r
+  return {
+    note,
+    r,
+    calm,
+    due,
+    agitation,
+    divePressure: Number(due) + agitation + (1 - calm),
+  }
+}
+
 export interface Alien {
   /** Functional identity for attack ownership. */
   alienId: string
@@ -184,6 +225,8 @@ export interface Alien {
   formationY: number
   note: string
   hue: number
+  soul: NoteSoulSnapshot
+  diveServiceCount: number
   alive: boolean
   frame: number
   hitTimer: number
@@ -227,6 +270,8 @@ export interface ActiveAttack {
   returnStartedAtMs: number | null
   outcome: AttackOutcome | null
   resolvedAtMs: number | null
+  voiceWindowEligible: boolean | null
+  voiceHeardPhonation: boolean
 }
 
 export interface PendingAttackAnswer {
@@ -270,6 +315,8 @@ export interface EngineInput {
   latencyMs?: number
   fsrs?: Record<string, NoteMemory>
   isActive?: boolean
+  memoryEpochMs?: number
+  voiceTimeoutObservation?: Readonly<{ healthy: boolean; heard: boolean }>
 }
 
 export type EngineEvent =
@@ -322,6 +369,8 @@ export interface GameState {
   requiredAnswerEventsMs: number[]
   waveStartedAtMs: number
   lastCompletedWavePacing: WavePacingReceipt | null
+  waveSoulByNote: Record<string, NoteSoulSnapshot>
+  rosterServiceCount: Record<string, number>
 }
 
 export interface ViewState {
@@ -459,18 +508,42 @@ export function pickSpawnX(aliens: Alien[], laneOrderSeed: number): number | nul
   return Math.floor(SPAWN_LANES_X[bestLane] - ALIEN_W / 2)
 }
 
-export function buildWaveQueue(gs: GameState, fsrs: Record<string, NoteMemory>): void {
+export function buildWaveQueue(
+  gs: GameState,
+  fsrs: Record<string, NoteMemory>,
+  memoryEpochMs = 0,
+): void {
   const params = waveParams(gs.wave, gs.difficulty)
   const pool = gs.unlockedNotes
   const count = params.alienCount
 
-  const must: string[] = count >= pool.length ? [...pool] : []
+  const observation: WaveMemoryObservation = { epochMs: memoryEpochMs, store: fsrs }
+  const profiles = Object.fromEntries(pool.map(note => [
+    note,
+    snapshotNoteSoul(note, observation.store[note], observation.epochMs),
+  ]))
+  gs.waveSoulByNote = profiles
+
+  const introIndex = new Map<string, number>(
+    INTRO_ORDER.map((note, index) => [note, index] as [string, number]),
+  )
+  const due = pool
+    .filter(note => profiles[note].due)
+    .sort((left, right) =>
+      (gs.rosterServiceCount[left] ?? 0) - (gs.rosterServiceCount[right] ?? 0) ||
+      profiles[left].r - profiles[right].r ||
+      (introIndex.get(left) ?? Number.MAX_SAFE_INTEGER) -
+        (introIndex.get(right) ?? Number.MAX_SAFE_INTEGER))
+  const must = due.slice(0, count)
+  if (count >= pool.length) {
+    for (const note of pool) {
+      if (!must.includes(note)) must.push(note)
+    }
+  }
   const remaining = Math.max(0, count - must.length)
 
   const weights = pool.map(n => {
-    const m = fsrs[n]
-    const r = m ? currentR(m) : 0
-    return Math.max(0.2, 1.2 - r)
+    return Math.max(0.2, 1.2 - profiles[n].r)
   })
   const totalWeight = weights.reduce((a, b) => a + b, 0)
 
@@ -497,6 +570,9 @@ export function buildWaveQueue(gs: GameState, fsrs: Record<string, NoteMemory>):
   }
 
   gs.spawnQueue = combined
+  for (const note of combined) {
+    gs.rosterServiceCount[note] = (gs.rosterServiceCount[note] ?? 0) + 1
+  }
   gs.spawnedThisWave = 0
   gs.alienCountThisWave = combined.length
   gs.nextSpawnAt = gs.directorClockMs + (gs.waveIntroTimer * 1000) + 600
@@ -525,10 +601,15 @@ export function createInitialState(
     directorCursorSlot: 0, lastDemandAtMs: null,
     requiredAnswerEventsMs: [], waveStartedAtMs: clockMs,
     lastCompletedWavePacing: null,
+    waveSoulByNote: {}, rosterServiceCount: {},
   }
 }
 
-export function beginWave(gs: GameState, fsrs: Record<string, NoteMemory>): void {
+export function beginWave(
+  gs: GameState,
+  fsrs: Record<string, NoteMemory>,
+  memoryEpochMs = 0,
+): void {
   gs.aliens = []
   gs.activeAttack = null
   gs.lasers = []
@@ -543,18 +624,22 @@ export function beginWave(gs: GameState, fsrs: Record<string, NoteMemory>): void
   gs.requiredAnswerEventsMs = []
   gs.waveStartedAtMs = gs.directorClockMs
   gs.nextAttackAtMs = gs.waveStartedAtMs + ENGINE_DEMAND_FLOOR_MS[gs.difficulty] - DIVE_TELEGRAPH_MS
-  buildWaveQueue(gs, fsrs)
+  buildWaveQueue(gs, fsrs, memoryEpochMs)
 }
 
 function cloneState(state: GameState): GameState {
   return {
     ...state,
-    aliens: state.aliens.map(a => ({ ...a })),
+    aliens: state.aliens.map(a => ({ ...a, soul: { ...a.soul } })),
     lasers: state.lasers.map(l => ({ ...l })),
     particles: state.particles.map(p => ({ ...p })),
     activeAttack: state.activeAttack ? { ...state.activeAttack } : null,
     unlockedNotes: [...state.unlockedNotes],
     spawnQueue: [...state.spawnQueue],
+    waveSoulByNote: Object.fromEntries(
+      Object.entries(state.waveSoulByNote).map(([note, soul]) => [note, { ...soul }]),
+    ),
+    rosterServiceCount: { ...state.rosterServiceCount },
     requiredAnswerEventsMs: [...state.requiredAnswerEventsMs],
     lastCompletedWavePacing: state.lastCompletedWavePacing
       ? { ...state.lastCompletedWavePacing, requiredAnswerEventsMs: [...state.lastCompletedWavePacing.requiredAnswerEventsMs] }
@@ -569,7 +654,7 @@ export function toViewState(gs: GameState, inputMode: InputMode): ViewState {
     : -1
   const answerOpen = gs.activeAttack?.phase === 'outbound' && gs.activeAttack.outcome === null
   return {
-    aliens: gs.aliens.map(a => ({ ...a })),
+    aliens: gs.aliens.map(a => ({ ...a, soul: { ...a.soul } })),
     lasers: gs.lasers.map(l => ({ ...l })),
     particles: gs.particles.map(p => ({ ...p })),
     playerX: gs.playerX,
@@ -638,14 +723,26 @@ function diveSideForSlot(slot: number, attackSerial: number): -1 | 1 {
 }
 
 export function chooseNextDiver(gs: GameState): Alien | null {
+  let best: Alien | null = null
+  let bestScore = -Infinity
   for (let offset = 0; offset < FORMATION_SLOT_COUNT; offset++) {
     const slot = (gs.directorCursorSlot + offset) % FORMATION_SLOT_COUNT
     const alien = gs.aliens.find(item => item.formationSlot === slot)
     if (!isTargetableAlien(alien)) continue
-    gs.directorCursorSlot = (slot + 1) % FORMATION_SLOT_COUNT
-    return alien
+    // ponytail: tolerate pre-R7 in-memory fixture/hot-reload entities as neutral;
+    // the next spawned wave always carries the canonical immutable snapshot.
+    const pressure = alien.soul?.divePressure ?? 0
+    const serviceCount = alien.diveServiceCount ?? 0
+    const score = (1 + pressure) / (1 + serviceCount)
+    if (score > bestScore) {
+      best = alien
+      bestScore = score
+    }
   }
-  return null
+  if (!best) return null
+  best.diveServiceCount = (best.diveServiceCount ?? 0) + 1
+  gs.directorCursorSlot = (best.formationSlot + 1) % FORMATION_SLOT_COUNT
+  return best
 }
 
 function startAttack(gs: GameState): boolean {
@@ -672,6 +769,8 @@ function startAttack(gs: GameState): boolean {
     returnStartedAtMs: null,
     outcome: null,
     resolvedAtMs: null,
+    voiceWindowEligible: null,
+    voiceHeardPhonation: false,
   }
   clearMicTarget(gs)
   return true
@@ -759,6 +858,15 @@ export function resolveAttack(
     return true
   }
 
+  const gradesFailure = outcome === 'wrong'
+    ? inputMode === 'click'
+    : outcome === 'timeout' && (
+      inputMode === 'click' ||
+      (inputMode === 'mic' && attack.voiceWindowEligible === true && attack.voiceHeardPhonation)
+    )
+  if (gradesFailure) {
+    events.push({ kind: 'grade', note: target.note, correct: false, latencyMs, inputMode })
+  }
   events.push({ kind: 'sfx', name: 'wrong' })
   gs.combo = 0
   gs.consecutiveCorrect = 0
@@ -866,6 +974,11 @@ export function tick(state: GameState, input: EngineInput, dtMs: number, rng: ()
       const pose = formationPose(anchor.x, anchor.y, gs.directorClockMs, input.reducedMotion)
       const note = gs.spawnQueue.shift()!
       const colorInfo = NOTE_COLORS[note]
+      const soul = gs.waveSoulByNote[note] ?? snapshotNoteSoul(
+        note,
+        input.fsrs?.[note],
+        input.memoryEpochMs ?? 0,
+      )
       const entering = !input.reducedMotion
       const visualKind = (formationSlot % VISUAL_KIND_COUNT) as VisualKind
       gs.aliens.push({
@@ -880,7 +993,7 @@ export function tick(state: GameState, input: EngineInput, dtMs: number, rng: ()
         formationSlot,
         formationX: anchor.x,
         formationY: anchor.y,
-        note, hue: colorInfo?.hue ?? 0, alive: true,
+        note, hue: colorInfo?.hue ?? 0, soul: { ...soul }, diveServiceCount: 0, alive: true,
         frame: formationSlot % 2, hitTimer: 0,
       })
       gs.spawnedThisWave++
@@ -963,6 +1076,15 @@ export function tick(state: GameState, input: EngineInput, dtMs: number, rng: ()
           targetAlienId: attack.alienId, attackId: attack.attackId,
         })
       }
+    }
+    if (attack.phase === 'outbound' && input.inputMode === 'mic' && attack.outcome === null) {
+      const observation = input.voiceTimeoutObservation
+      const healthy = observation?.healthy === true
+      const heard = observation?.heard === true
+      attack.voiceWindowEligible = attack.voiceWindowEligible === null
+        ? healthy
+        : attack.voiceWindowEligible && healthy
+      attack.voiceHeardPhonation = attack.voiceHeardPhonation || heard
     }
     if (attack.phase === 'outbound' && attack.demandAtMs !== null) {
       attack.outboundT = Math.min(1, (gs.directorClockMs - attack.demandAtMs) / DIVE_OUTBOUND_MS)
@@ -1100,7 +1222,7 @@ export function tick(state: GameState, input: EngineInput, dtMs: number, rng: ()
     }
     gs.wave++
     gs.waveIntroTimer = 1.6
-    beginWave(gs, input.fsrs ?? {})
+    beginWave(gs, input.fsrs ?? {}, input.memoryEpochMs ?? 0)
     events.push({ kind: 'waveComplete' })
   }
 

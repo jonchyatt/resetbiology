@@ -16,7 +16,7 @@ import { INTRO_ORDER } from './types'
 import { usePitchDetection } from './usePitchDetection'
 import { initAudio, loadPianoSamples, playPianoNote } from './audioEngine'
 import {
-  H, INITIAL_UNLOCK, STARTING_SHIELDS, W,
+  H, INITIAL_UNLOCK, MIC_CONFIDENCE_FLOOR, STARTING_SHIELDS, W,
   beginWave, createInitialState, isTargetableAlien, noteButtonRects, noteForKeyboardInput, tick, toViewState,
   type Difficulty, type EngineEvent, type GameState, type InputMode,
   type PendingAttackAnswer, type Phase, type ViewState,
@@ -85,6 +85,7 @@ export function buildRetroBlasterState(
   stores: RetroBlasterFamilyStores,
   clockMs: number,
   gameId = `fixture:${clockMs}`,
+  memoryEpochMs = 0,
 ): GameState {
   const store = activeLaneStore(stores, inputMode)
   const reviewed = new Set(
@@ -102,7 +103,7 @@ export function buildRetroBlasterState(
     if (!store[note]) store[note] = createNote(note)
   }
   const state = createInitialState(difficulty, unlocked, clockMs, gameId)
-  beginWave(state, store)
+  beginWave(state, store, memoryEpochMs)
   return state
 }
 
@@ -152,7 +153,8 @@ export default function RetroBlasterII() {
   const inputModeRef = useRef<InputMode>('click')
   const listeningRef = useRef(false)
   const colorHintsRef = useRef(true)
-  const visibilityActiveRef = useRef(true)
+  const visibilityActiveRef = useRef(false)
+  const focusActiveRef = useRef(false)
   const micVfxFreshnessRef = useRef<MicVfxFreshnessState>({
     lastGeneration: 0,
     hasObservedMicGeneration: false,
@@ -160,6 +162,7 @@ export default function RetroBlasterII() {
   })
   const lastWeaponVfxDatasetRef = useRef('')
   const lastMicAuthorityDatasetRef = useRef('')
+  const lastSoulDatasetRef = useRef('')
 
   const [reducedMotion, setReducedMotion] = useState(() =>
     typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -198,14 +201,22 @@ export default function RetroBlasterII() {
   }, [])
 
   useEffect(() => {
-    const onVisibilityChange = () => {
-      const active = document.visibilityState === 'visible'
-      visibilityActiveRef.current = active
-      if (active) lastTimeRef.current = performance.now()
+    const syncActivity = () => {
+      visibilityActiveRef.current = document.visibilityState === 'visible'
+      focusActiveRef.current = document.hasFocus()
+      if (visibilityActiveRef.current && focusActiveRef.current) {
+        lastTimeRef.current = performance.now()
+      }
     }
-    onVisibilityChange()
-    document.addEventListener('visibilitychange', onVisibilityChange)
-    return () => document.removeEventListener('visibilitychange', onVisibilityChange)
+    syncActivity()
+    document.addEventListener('visibilitychange', syncActivity)
+    window.addEventListener('focus', syncActivity)
+    window.addEventListener('blur', syncActivity)
+    return () => {
+      document.removeEventListener('visibilitychange', syncActivity)
+      window.removeEventListener('focus', syncActivity)
+      window.removeEventListener('blur', syncActivity)
+    }
   }, [])
 
   useEffect(() => {
@@ -262,7 +273,8 @@ export default function RetroBlasterII() {
     lastTimeRef.current = now
     const pendingAnswer = pendingAnswerRef.current
     pendingAnswerRef.current = null
-    const latencyMs = notePlayTimeRef.current > 0 ? Date.now() - notePlayTimeRef.current : 2000
+    const memoryEpochMs = Date.now()
+    const latencyMs = notePlayTimeRef.current > 0 ? memoryEpochMs - notePlayTimeRef.current : 2000
     const laneStore = activeLaneStore(familyStoresRef.current, inputModeRef.current)
     const capturedPitch = livePitchRef.current
     const capturedMicSourceHealth = micSourceHealthRef.current
@@ -279,6 +291,17 @@ export default function RetroBlasterII() {
       micSourceEligible,
     )
     micVfxFreshnessRef.current = freshness.state
+    const gameplayActive = visibilityActiveRef.current && focusActiveRef.current
+    const voiceHealthy = inputModeRef.current === 'mic' &&
+      listeningRef.current &&
+      gameplayActive &&
+      capturedMicSourceHealth.audioContextState === 'running' &&
+      capturedMicSourceHealth.trackReadyState === 'live' &&
+      capturedMicSourceHealth.trackMuted === false &&
+      freshness.hasFreshGeneration
+    const voiceHeard = capturedPitch?.isActive === true &&
+      capturedPitch.confidence >= MIC_CONFIDENCE_FLOOR &&
+      capturedPitch.frequency > 0
     const result = tick(gs, {
       inputMode: inputModeRef.current,
       isListening: listeningRef.current,
@@ -287,7 +310,9 @@ export default function RetroBlasterII() {
       pendingAnswer,
       latencyMs,
       fsrs: laneStore,
-      isActive: visibilityActiveRef.current,
+      isActive: gameplayActive,
+      memoryEpochMs,
+      voiceTimeoutObservation: { healthy: voiceHealthy, heard: voiceHeard },
     }, dtMs, Math.random)
     stateRef.current = result.state
     const micLockSignalActive = deriveMicLockSignalActive({
@@ -350,6 +375,16 @@ export default function RetroBlasterII() {
             : 'formation',
         })),
       })
+      const soulDataset = JSON.stringify(result.state.aliens.map(alien => ({
+        alienId: alien.alienId,
+        formationSlot: alien.formationSlot,
+        soul: alien.soul,
+        diveServiceCount: alien.diveServiceCount,
+      })))
+      if (soulDataset !== lastSoulDatasetRef.current) {
+        canvas.dataset.retroSoulState = soulDataset
+        lastSoulDatasetRef.current = soulDataset
+      }
     }
     setDisplayView(result.viewState)
     applyEvents(result.events, result.state)
@@ -364,6 +399,7 @@ export default function RetroBlasterII() {
       familyStoresRef.current,
       performance.now(),
       crypto.randomUUID(),
+      Date.now(),
     )
   }, [difficulty, inputMode])
 
@@ -377,6 +413,7 @@ export default function RetroBlasterII() {
     }
     lastWeaponVfxDatasetRef.current = ''
     lastMicAuthorityDatasetRef.current = ''
+    lastSoulDatasetRef.current = ''
     initAudio()
     if (inputMode === 'mic') startListening()
     const gs = buildState()
@@ -404,7 +441,8 @@ export default function RetroBlasterII() {
     const gs = stateRef.current
     if (!gs) return
     const attack = gs.activeAttack
-    if (!visibilityActiveRef.current || attack?.phase !== 'outbound' || attack.outcome !== null ||
+    if (!visibilityActiveRef.current || !focusActiveRef.current ||
+        attack?.phase !== 'outbound' || attack.outcome !== null ||
         attack.demandAtMs === null) return
     const alien = gs.aliens.find(candidate => candidate.alienId === attack.alienId)
     if (!isTargetableAlien(alien)) return
@@ -415,7 +453,7 @@ export default function RetroBlasterII() {
   const processHit = useCallback((answeredNote: string) => {
     const gs = stateRef.current
     const attack = gs?.activeAttack
-    if (!gs || pendingAnswerRef.current || !visibilityActiveRef.current ||
+    if (!gs || pendingAnswerRef.current || !visibilityActiveRef.current || !focusActiveRef.current ||
         attack?.phase !== 'outbound' || attack.outcome !== null || attack.demandAtMs === null) return
     pendingAnswerRef.current = {
       note: answeredNote,

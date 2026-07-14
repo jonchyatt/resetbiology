@@ -335,8 +335,8 @@ function validateStateMachineAndPacing(): void {
     expectedQueues[key] = waveState.spawnQueue
   }
   assert.deepEqual(expectedQueues, {
-    'easy-1': ['F4', 'F4'],
-    'true-7': ['D4', 'E4', 'C4', 'C4', 'E4', 'E4', 'C4', 'E4', 'C4', 'F4'],
+    'easy-1': ['C4', 'E4'],
+    'true-7': ['E4', 'D4', 'C4', 'C4', 'E4', 'E4', 'C4', 'E4', 'C4', 'F4'],
   })
 
   const capacity = prepareSpawningState(1)

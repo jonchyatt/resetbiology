@@ -1,12 +1,32 @@
 import {
   ALIEN_H, ALIEN_W, H, LASER_H, LASER_W, MIC_CONFIDENCE_FLOOR, MIC_TOLERANCE_CENTS,
   noteButtonRects, noteClass, PLAYER_W, PLAYER_Y, SPACE_SCALE, STARTING_SHIELDS, W,
-  type EnginePitch, type InputMode, type ViewState, type VisualKind,
+  type Alien, type EnginePitch, type InputMode, type ViewState, type VisualKind,
 } from './retroBlasterEngine'
 import { noteToFreq, octaveFoldedCents } from './pitchMath'
 import { drawAtlasSprite, loadSpriteAtlas, type AtlasLoadResult, type SpriteAtlas } from './spriteAtlas'
 
 export const MIC_VFX_STALE_FRAME_GRACE = 3
+export const SOUL_WOBBLE_PX = 1
+export const SOUL_WOBBLE_RADIANS_PER_SECOND = 1.35
+export const SOUL_SLOT_PHASE_RADIANS = 0.73
+export const SOUL_CALM_DAMPING = 0.7
+export const SOUL_VERTICAL_RATIO = 0.35
+
+export function deriveSoulRenderOffset(
+  alien: Pick<Alien, 'formationSlot' | 'soul' | 'entering' | 'alive'>,
+  nowMs: number,
+  reducedMotion: boolean,
+  isActive: boolean,
+): { x: number; y: number } {
+  if (reducedMotion || isActive || alien.entering || !alien.alive || !alien.soul) return { x: 0, y: 0 }
+  const raw = alien.soul.agitation * SOUL_WOBBLE_PX * Math.sin(
+    (nowMs / 1000) * SOUL_WOBBLE_RADIANS_PER_SECOND +
+      alien.formationSlot * SOUL_SLOT_PHASE_RADIANS,
+  )
+  const x = raw * (1 - alien.soul.calm * SOUL_CALM_DAMPING)
+  return { x, y: x * SOUL_VERTICAL_RATIO }
+}
 
 export interface MicLockSignalInput {
   inputMode: InputMode
@@ -603,6 +623,33 @@ function drawImpactBloom(
   )
 }
 
+function drawSoulSignal(
+  ctx: CanvasRenderingContext2D,
+  centerX: number,
+  y: number,
+  footprintWidth: number,
+  alien: Alien,
+  colorHints: boolean,
+  scale: number,
+): void {
+  const litWidth = footprintWidth * (0.25 + alien.soul.agitation * 0.5)
+  const alpha = Math.max(
+    0.35,
+    0.35 + 0.45 * alien.soul.agitation * (1 - alien.soul.calm * SOUL_CALM_DAMPING),
+  )
+  const left = Math.round(centerX - litWidth / 2)
+  const width = Math.max(scale, Math.round(litWidth))
+  ctx.save()
+  ctx.globalAlpha = alpha
+  ctx.fillStyle = colorHints ? `hsl(${alien.hue}, 92%, 82%)` : '#d9f7ff'
+  ctx.fillRect(left, Math.round(y), width, Math.max(1, Math.round(scale)))
+  if (alien.soul.due) {
+    ctx.globalAlpha = Math.max(0.55, alpha)
+    ctx.fillRect(left, Math.round(y + 2 * scale), width, Math.max(1, Math.round(scale)))
+  }
+  ctx.restore()
+}
+
 export interface RetroRenderOptions {
   reducedMotion?: boolean
   colorHints?: boolean
@@ -673,12 +720,16 @@ export function render(
     ctx.fillRect(Math.floor(particle.x), Math.floor(particle.y), 3 * s, 3 * s)
   }
 
-  for (const alien of orderedAliens) {
-    if (!alien.alive) continue
-    const attack = viewState.activeAttack?.alienId === alien.alienId
+  for (const sourceAlien of orderedAliens) {
+    if (!sourceAlien.alive) continue
+    const attack = viewState.activeAttack?.alienId === sourceAlien.alienId
       ? viewState.activeAttack
       : null
     const isActive = attack !== null
+    const soulOffset = deriveSoulRenderOffset(sourceAlien, now, reducedMotion, isActive)
+    const alien = soulOffset.x === 0 && soulOffset.y === 0
+      ? sourceAlien
+      : { ...sourceAlien, x: sourceAlien.x + soulOffset.x, y: sourceAlien.y + soulOffset.y }
     const isTelegraph = attack?.phase === 'telegraph'
     const isFlightPose = Boolean(attack && (attack.phase !== 'telegraph' || reducedMotion))
     const usesFocusScale = Boolean(isTelegraph && !reducedMotion)
@@ -789,6 +840,17 @@ export function render(
       ctx.font = `bold ${Math.round(9 * s)}px monospace`
       ctx.textAlign = 'center'
       ctx.fillText(alien.note.replace(/\d/, ''), alien.x + ALIEN_W / 2, alien.y - 3 * s)
+      if (!alien.entering && alien.soul) {
+        drawSoulSignal(
+          ctx,
+          chipX,
+          alien.y + ALIEN_H - 2 * s,
+          ALIEN_W,
+          alien,
+          colorHints,
+          s,
+        )
+      }
     }
   }
 

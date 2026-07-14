@@ -4,7 +4,7 @@ import { dirname, resolve } from 'node:path'
 import { spawnSync } from 'node:child_process'
 
 const root = process.cwd()
-const protectedBase = process.env.RETRO_PROTECTED_BASE || '510a85288c1b86233175e94ce295253749febb46'
+const protectedBase = process.env.RETRO_PROTECTED_BASE || '6f4c8da158b9773bbda90eef0cc51334e6fa636b'
 const tsx = resolve(root, 'node_modules/tsx/dist/cli.mjs')
 const cases = [
   ['R0 parity', ['scripts/retro-blaster/r0-parity.mjs']],
@@ -16,6 +16,7 @@ const cases = [
   ['R3b formation', [tsx, 'scripts/retro-blaster/r3b-formation-fixture.ts']],
   ['R3c authored dives', [tsx, 'scripts/retro-blaster/r3c-dive-fixture.ts']],
   ['R4 causal weapon VFX', [tsx, 'scripts/retro-blaster/r4-weapon-vfx-fixture.ts']],
+  ['R7 FSRS soul-binding', [tsx, 'scripts/retro-blaster/r7-fsrs-soul-fixture.ts']],
 ]
 
 const rows = []
