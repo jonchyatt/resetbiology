@@ -390,9 +390,7 @@ export default function RetroBlasterII() {
   }, [processHit])
 
   useEffect(() => {
-    const keyMap: Record<string, string> = {
-      '1': 'C4', '2': 'D4', '3': 'E4', '4': 'F4',
-      '5': 'G4', '6': 'A4', '7': 'B4', '8': 'C5',
+    const letterMap: Record<string, string> = {
       'c': 'C4', 'd': 'D4', 'e': 'E4', 'f': 'F4',
       'g': 'G4', 'a': 'A4', 'b': 'B4',
     }
@@ -404,7 +402,10 @@ export default function RetroBlasterII() {
         replayActiveNote()
         return
       }
-      const note = keyMap[ev.key.toLowerCase()]
+      const digitIndex = /^[1-8]$/.test(ev.key) ? Number(ev.key) - 1 : -1
+      const note = digitIndex >= 0
+        ? gs.unlockedNotes[digitIndex]
+        : letterMap[ev.key.toLowerCase()]
       if (note && gs.unlockedNotes.includes(note)) processHit(note)
     }
     window.addEventListener('keydown', onKey)

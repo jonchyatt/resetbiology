@@ -118,6 +118,50 @@ function assertFlightSamples(samples, label, expectedMilestones) {
     `${label}: attacked alien identity disappeared`)
 }
 
+async function advanceToBottomRowDive(page, excludedAttackId, directory) {
+  let answeredAttackCount = 0
+  const deadline = Date.now() + 180_000
+
+  while (Date.now() < deadline) {
+    const state = await snapshot(page)
+    assert(!state.gameOver, `game ended before a bottom-row dive could be captured after ${answeredAttackCount} acknowledged answers`)
+    const attack = state.formation.activeAttack
+    if (!attack || attack.attackId === excludedAttackId || attack.phase !== 'outbound') {
+      await page.waitForTimeout(25)
+      continue
+    }
+
+    const target = state.formation.ships.find(ship => ship.alienId === attack.alienId)
+    assert(target, `active attack ${attack.attackId} lost its target`)
+    if (target.slot >= 10) {
+      const samples = await captureFlight(page, attack.attackId, 0.94, directory, [0, 0.28, 0.40, 0.90])
+      assertFlightSamples(samples, 'bottom-row shallow dive', [0, 0.28, 0.40, 0.90])
+      const keys = await answerKeys(page)
+      assert(keys.correct, 'bottom-row correct answer key missing')
+      await page.keyboard.press(keys.correct)
+      await page.waitForFunction(attackId => {
+        const canvas = document.querySelector('canvas')
+        const formation = JSON.parse(canvas?.dataset.retroFormationState ?? '{}')
+        return formation.activeAttack?.attackId !== attackId || formation.activeAttack.phase === 'hit-locked'
+      }, attack.attackId, { timeout: 1500 })
+      await page.screenshot({ path: resolve(directory, '11-bottom-row-impact.png') })
+      return { attackId: attack.attackId, target, samples, answeredAttackCount }
+    }
+
+    const keys = await answerKeys(page)
+    assert(keys.correct, `correct answer key missing for ${attack.attackId}`)
+    await page.keyboard.press(keys.correct)
+    await page.waitForFunction(attackId => {
+      const canvas = document.querySelector('canvas')
+      const formation = JSON.parse(canvas?.dataset.retroFormationState ?? '{}')
+      return formation.activeAttack?.attackId !== attackId || formation.activeAttack.phase !== 'outbound'
+    }, attack.attackId, { timeout: 1500 })
+    answeredAttackCount += 1
+  }
+
+  throw new Error('timed out before the first bottom-row authored dive')
+}
+
 async function proveDesktop(browser) {
   const dir = resolve(OUT, 'desktop-1280x800')
   mkdirSync(dir, { recursive: true })
@@ -222,6 +266,7 @@ async function proveDesktop(browser) {
   const pauseKeys = await answerKeys(page)
   if (pauseKeys.correct) await page.keyboard.press(pauseKeys.correct)
   await page.screenshot({ path: resolve(dir, '10-post-pause.png') })
+  const bottomRow = await advanceToBottomRowDive(page, pauseAttack.formation.activeAttack.attackId, dir)
   await page.waitForTimeout(6200)
 
   const final = await snapshot(page)
@@ -239,6 +284,7 @@ async function proveDesktop(browser) {
     wrong: { attackId: secondAttackId, outboundSamples: wrongFlight, returnSamples: returning },
     reduced: { attackId: reducedAttackId, first: reducedA, second: reducedB },
     pause: { beforeHidden, hidden, resumed, hiddenDelta },
+    bottomRow,
     final,
     pageErrors,
     videoPath,
