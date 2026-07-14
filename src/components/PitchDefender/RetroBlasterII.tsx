@@ -241,6 +241,7 @@ export default function RetroBlasterII() {
       focusActiveRef.current = document.hasFocus()
       if (visibilityActiveRef.current && focusActiveRef.current) {
         lastTimeRef.current = performance.now()
+        if (stateRef.current?.phase === 'ceremony') setCeremonyMessage('')
       } else if (phaseRef.current === 'readiness' && inputModeRef.current === 'click') {
         readinessToneArmedRef.current = false
         setReadinessToneArmed(false)

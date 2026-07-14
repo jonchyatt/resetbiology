@@ -251,6 +251,7 @@ try {
   assert(blocked.ceremony?.heading === 'NEW SIGNAL', 'accessible NEW SIGNAL heading missing')
   assert(blocked.ceremony?.live === 'polite', 'ceremony status is not aria-live polite')
   assert(blocked.ceremony?.note === 'D4', `first introduced signal was ${blocked.ceremony?.note}, expected D4`)
+  assert(blocked.ceremony?.text.includes('SIGNAL PATH NOT READY'), 'returned blocked ceremony retained stale paused copy')
   assert(blocked.ceremony?.actions.length === 3, 'ceremony does not expose exactly three actions')
   assert(blocked.ceremony.actions.every(action => action.height >= 44), 'ceremony has a sub-44px action')
   await finishSegment(approach)
