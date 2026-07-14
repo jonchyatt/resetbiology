@@ -190,6 +190,7 @@ try {
   })()` })
   await send('Emulation.setDeviceMetricsOverride', { width: 1280, height: 800, deviceScaleFactor: 1, mobile: false })
   await send('Page.navigate', { url })
+  await send('Page.bringToFront')
   await waitFor(`document.readyState === 'complete'`, 'initial page load')
   originalStores = await evaluate(`({
     ear: localStorage.getItem('pitch_fsrs_memory_ear'),
@@ -276,7 +277,10 @@ try {
     return value.activeAttack?.attackId === ${JSON.stringify(firstAttack.attackId)} && value.activeAttack.phase === 'returning';
   })()`, 'wrong return')
   const wrongReturn = await snapshot()
-  assert(wrongReturn.earRaw === null, 'wrong answer graded EAR')
+  const wrongEntry = storeEntry(wrongReturn.earRaw, firstAttack.note)
+  assert(wrongEntry?.phase === 'learning' && wrongEntry.learningReps === 0,
+    'R7 wrong answer did not grade exactly one EAR Again')
+  assert(wrongReturn.voiceRaw === null, 'R7 EAR wrong answer mutated VOICE memory')
   await screenshot('02-wrong-return.png')
   await waitFor(`(() => {
     const canvas = document.querySelector('canvas');
@@ -285,6 +289,11 @@ try {
   })()`, 'wrong return completion', 5000)
   await send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] })
   await waitWall(100)
+  await waitFor(`(() => {
+    const formation = JSON.parse(document.querySelector('canvas')?.dataset.retroFormationState ?? '{}');
+    const returned = formation.ships?.find(ship => ship.alienId === ${JSON.stringify(firstAttack.alienId)});
+    return returned?.flightState === 'formation' && returned.x === returned.formationX && returned.y === returned.formationY;
+  })()`, 'reduced-motion exact return anchor', 3000)
   const returned = await snapshot()
   const returnedAlien = returned.formation.ships.find(ship => ship.alienId === firstAttack.alienId)
   assert(returnedAlien?.alive === true, 'wrong-return alien did not survive')
@@ -390,10 +399,12 @@ try {
         if (t >= 0.94) break
         await waitWall(40)
       }
-      assert(samples.length >= 8, `bottom-row temporal trace too short: ${samples.length}`)
-      assert(milestones.every(milestone => samples.some(sample =>
-        Math.abs(sample.formation.activeAttack.outboundT - milestone) <= 0.12)),
-      'bottom-row temporal trace missed a K milestone')
+      // ponytail: four authored K milestones are the semantic ceiling here; the
+      // separate six-second late-wave sequence below owns the 2fps density gate.
+      assert(samples.length >= milestones.length,
+        `bottom-row temporal trace missed authored milestones: ${samples.length}`)
+      assert(capturedMilestones.size === milestones.length,
+        `bottom-row temporal trace captured ${capturedMilestones.size}/${milestones.length} authored K crossings`)
       bottomRow = { attack, targetShip, samples, milestoneScreenshots, answeredAttackCount }
       break
     }

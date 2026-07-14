@@ -88,10 +88,19 @@ function seedEarMemory() {
     note, S, D, due, lastReview, lapses: 0, phase: 'review', learningReps: 2,
   })
   return {
-    C4: memory('C4', { S: 1, D: 6, due: now - 1, lastReview: now - 10 * day }),
-    D4: memory('D4', { S: 40, D: 2, due: now + day, lastReview: now - day }),
-    E4: memory('E4', { S: 2, D: 5, due: now - 1, lastReview: now - 7 * day }),
-    F4: memory('F4', { S: 30, D: 3, due: now + day, lastReview: now - day }),
+    C4: memory('C4', { S: 0.5, D: 6, due: now - 1, lastReview: now - 10 * day }),
+    A4: memory('A4', { S: 40, D: 2, due: now + day, lastReview: now - day }),
+    G4: memory('G4', { S: 35, D: 3, due: now + day, lastReview: now - day }),
+    E4: memory('E4', { S: 20, D: 5, due: now - 1, lastReview: now - day }),
+  }
+}
+
+function seedVoiceMemory() {
+  const now = Date.now()
+  const day = 86_400_000
+  return {
+    C4: { note: 'C4', S: 30, D: 2, due: now + day, lastReview: now - day, lapses: 0, phase: 'review', learningReps: 2 },
+    D4: { note: 'D4', S: 3, D: 7, due: now - day, lastReview: now - 8 * day, lapses: 1, phase: 'review', learningReps: 2 },
   }
 }
 
@@ -123,7 +132,10 @@ async function snapshot() {
     return {
       formation: parse(canvas?.dataset.retroFormationState, '{}'),
       souls: parse(canvas?.dataset.retroSoulState, '[]'),
+      vfx: parse(canvas?.dataset.retroWeaponVfx,
+        '{"charge":null,"tracer":null,"hitLockAttackId":null,"impactAlienIds":[]}'),
       earRaw: localStorage.getItem('pitch_fsrs_memory_ear'),
+      voiceRaw: localStorage.getItem('pitch_fsrs_memory'),
       visibility: document.visibilityState,
       focused: document.hasFocus(),
       frameCount: window.__r7FrameCount ?? 0,
@@ -170,12 +182,15 @@ async function screenshot(name, fullPage = false) {
 
 try {
   await page.goto(url, { waitUntil: 'networkidle' })
-  await page.evaluate(seed => {
+  const earSeed = seedEarMemory()
+  const voiceSeed = seedVoiceMemory()
+  await page.evaluate(({ ear, voice }) => {
     localStorage.setItem('retro_tutorial_seen', '1')
     localStorage.setItem('retro_difficulty', 'easy')
     localStorage.removeItem('retro_blaster_color_hints')
-    localStorage.setItem('pitch_fsrs_memory_ear', JSON.stringify(seed))
-  }, seedEarMemory())
+    localStorage.setItem('pitch_fsrs_memory_ear', JSON.stringify(ear))
+    localStorage.setItem('pitch_fsrs_memory', JSON.stringify(voice))
+  }, { ear: earSeed, voice: voiceSeed })
   await page.reload({ waitUntil: 'networkidle' })
   await page.addScriptTag({ content: rendererBundle })
   for (const label of ['KEYBOARD', 'EASY', 'INSERT COIN']) {
@@ -184,7 +199,8 @@ try {
   }
   await page.locator('[data-retro-cabinet]').waitFor()
   await page.evaluate(() => window.__startR7SoulObserver())
-  const evidenceStartedAtMs = Date.now()
+  const evidenceStartedAtMs = performance.now()
+  const firstSessionStartedAtMs = performance.now()
 
   const firstOutbound = await waitForOutbound()
   await page.waitForFunction(() => {
@@ -199,6 +215,16 @@ try {
   assert(JSON.stringify(soulNotes) === JSON.stringify(['C4', 'E4']),
     `due-first roster drifted: ${soulNotes.join(',')}`)
   assert(dueFormation.souls.every(entry => entry.soul.due === true), 'future note entered due-first wave')
+  const soulsByRetention = [...dueFormation.souls].sort((a, b) => a.soul.r - b.soul.r)
+  const lowRetentionSoul = soulsByRetention[0]
+  const highRetentionSoul = soulsByRetention.at(-1)
+  assert(highRetentionSoul.soul.r - lowRetentionSoul.soul.r >= 0.25,
+    'seeded browser souls did not preserve a materially separated R profile')
+  assert(lowRetentionSoul.soul.agitation > highRetentionSoul.soul.agitation,
+    'lower-R soul did not carry greater formation agitation')
+  assert(earSeed[lowRetentionSoul.soul.note].S < earSeed[highRetentionSoul.soul.note].S &&
+    lowRetentionSoul.soul.calm < highRetentionSoul.soul.calm,
+  'higher-S seeded soul did not carry the calmer/rarer signal')
   const firstAttack = firstOutbound.formation.activeAttack
   const targetSoulBefore = dueFormation.souls.find(entry => entry.alienId === firstAttack.alienId)
   assert(targetSoulBefore, 'active attack lost its immutable soul')
@@ -222,9 +248,13 @@ try {
   assert(JSON.stringify(targetSoulAfter.soul) === JSON.stringify(targetSoulBefore.soul),
     'live grade mutated the immutable per-wave soul')
   assert(wrongReturn.earRaw !== earBeforeWrong, 'eligible wrong EAR answer did not change the EAR store')
+  assert(wrongReturn.voiceRaw === firstOutbound.voiceRaw, 'EAR answer mutated the VOICE lane store')
   const wrongMemory = parseStore(wrongReturn.earRaw)[firstAttack.note]
   assert(wrongMemory?.phase === 'learning' && wrongMemory.learningReps === 0,
     'wrong EAR answer did not persist Again semantics')
+  assert(wrongReturn.vfx.charge === null && wrongReturn.vfx.tracer === null &&
+    wrongReturn.vfx.hitLockAttackId === null && wrongReturn.vfx.impactAlienIds.length === 0,
+  'wrong teaching return emitted successful charge/tracer/lock/impact VFX')
   const wrongScreenshot = await screenshot('02-immutable-wrong-return.png')
 
   await page.waitForFunction(attackId => {
@@ -322,16 +352,57 @@ try {
   assert(landscape.formation.gameId === portrait.formation.gameId, 'responsive resize restarted the game')
   const landscapeScreenshot = await screenshot('05-landscape.png', true)
 
-  const minimumEnd = evidenceStartedAtMs + 6000
-  if (Date.now() < minimumEnd) await page.waitForTimeout(minimumEnd - Date.now())
-  const finalState = await snapshot()
-  const evidenceEndedAtMs = Date.now()
-  const evidenceDurationMs = evidenceEndedAtMs - evidenceStartedAtMs
-  const soulMutationCount = finalState.soulMutations.length
-  const observedFrames = finalState.frameCount - firstOutbound.frameCount
+  const firstSessionFinal = await snapshot()
+  const firstSessionEndedAtMs = performance.now()
+  const firstSessionDurationMs = firstSessionEndedAtMs - firstSessionStartedAtMs
+  const soulMutationCount = firstSessionFinal.soulMutations.length
+  const observedFrames = firstSessionFinal.frameCount - firstOutbound.frameCount
+  const observedFrameRateFps = observedFrames / (firstSessionDurationMs / 1000)
   assert(observedFrames >= 120, `browser observation too short: ${observedFrames} frames`)
+  assert(observedFrameRateFps >= 20,
+    `motion-critical soul sequence fell below 20fps: ${observedFrameRateFps.toFixed(2)}fps`)
   assert(soulMutationCount <= Math.max(20, Math.floor(observedFrames / 5)),
     `soul proof channel wrote ${soulMutationCount} times across ${observedFrames} frames`)
+
+  await page.setViewportSize({ width: 1280, height: 800 })
+  await page.goto(url, { waitUntil: 'networkidle' })
+  await page.evaluate(({ ear, voice }) => {
+    localStorage.setItem('retro_tutorial_seen', '1')
+    localStorage.setItem('retro_difficulty', 'easy')
+    localStorage.removeItem('retro_blaster_color_hints')
+    localStorage.setItem('pitch_fsrs_memory_ear', JSON.stringify(ear))
+    localStorage.setItem('pitch_fsrs_memory', JSON.stringify(voice))
+  }, { ear: earSeed, voice: voiceSeed })
+  await page.reload({ waitUntil: 'networkidle' })
+  for (const label of ['KEYBOARD', 'EASY', 'INSERT COIN']) {
+    const button = page.getByRole('button', { name: label, exact: true })
+    if (await button.count()) await button.click()
+  }
+  await page.locator('[data-retro-cabinet]').waitFor()
+  const timeoutOutbound = await waitForOutbound()
+  const timeoutAttack = timeoutOutbound.formation.activeAttack
+  await page.waitForFunction(attackId => {
+    const canvas = document.querySelector('canvas')
+    const formation = JSON.parse(canvas?.dataset.retroFormationState || '{}')
+    return formation.activeAttack?.attackId === attackId && formation.activeAttack.phase === 'returning' &&
+      formation.activeAttack.outcome === 'timeout'
+  }, timeoutAttack.attackId, { timeout: 3500, polling: 'raf' })
+  const timeoutReturn = await snapshot()
+  const timeoutMemory = parseStore(timeoutReturn.earRaw)[timeoutAttack.note]
+  assert(timeoutReturn.earRaw !== timeoutOutbound.earRaw, 'eligible EAR timeout did not update the EAR store')
+  assert(timeoutMemory?.phase === 'learning' && timeoutMemory.learningReps === 0,
+    'eligible EAR timeout did not persist Again semantics')
+  assert(timeoutReturn.voiceRaw === timeoutOutbound.voiceRaw, 'EAR timeout mutated the VOICE lane store')
+  assert(timeoutReturn.vfx.charge === null && timeoutReturn.vfx.tracer === null &&
+    timeoutReturn.vfx.hitLockAttackId === null && timeoutReturn.vfx.impactAlienIds.length === 0,
+  'EAR timeout teaching return emitted successful VFX')
+  const timeoutScreenshot = await screenshot('06-ear-timeout-again.png')
+
+  const minimumEnd = evidenceStartedAtMs + 6000
+  if (performance.now() < minimumEnd) await page.waitForTimeout(minimumEnd - performance.now())
+  const finalState = await snapshot()
+  const evidenceEndedAtMs = performance.now()
+  const evidenceDurationMs = evidenceEndedAtMs - evidenceStartedAtMs
   assert(pageErrors.length === 0, `page errors: ${pageErrors.join(' | ')}`)
 
   const video = page.video()
@@ -339,15 +410,20 @@ try {
   const videoPath = await video.path()
   const videoSha256 = createHash('sha256').update(readFileSync(videoPath)).digest('hex').toUpperCase()
   const behaviorIds = [
-    'due-first-soul-binding',
-    'immutable-per-wave-soul',
+    'ear-due-roster-membership',
+    'ear-wrong-again-next-wave',
+    'ear-timeout-again-next-wave',
     'weighted-fair-dive-service',
-    'eligible-ear-again-grade',
-    'change-only-proof-channel',
-    'focus-hidden-freeze',
-    'reduced-static-signal',
+    'r-low-vs-high-formation-agitation',
+    's-calm-rarity',
+    'reduced-static-soul-signal',
+    'lane-store-isolation',
+    'wrong-teaching-return-no-success-vfx',
+    'hidden-focus-freeze-resume',
     'portrait-short-landscape',
   ]
+  const screenshotRows = [dueScreenshot, wrongScreenshot, reducedScreenshot,
+    portraitScreenshot, landscapeScreenshot, timeoutScreenshot]
   const receipt = {
     status: 'PASS', lane, transport, url, exactDeployedSha: deployedSha,
     capturedAt: new Date().toISOString(),
@@ -356,6 +432,11 @@ try {
       immutablePerWaveSoul: true,
       fairDiveService: true,
       eligibleEarFailureGradesAgain: true,
+      eligibleEarTimeoutGradesAgain: true,
+      lowerRHasGreaterAgitation: true,
+      higherSHasGreaterCalm: true,
+      earCannotMutateVoiceLane: true,
+      wrongAndTimeoutHaveNoSuccessVfx: true,
       changeOnlyProofChannel: true,
       focusAndHiddenFreeze: true,
       reducedMotionZeroWobble: true,
@@ -364,13 +445,18 @@ try {
       zeroPageErrors: true,
     },
     rendererProof: { rendererBundleSha256, rows: rendererProof },
-    firstWave: { firstOutbound, dueFormation, targetSoulBefore },
+    seededProfiles: { ear: earSeed, voice: voiceSeed },
+    firstWave: { firstOutbound, dueFormation, targetSoulBefore, lowRetentionSoul, highRetentionSoul },
     wrongReturn: { state: wrongReturn, targetSoulAfter, wrongMemory },
+    timeoutReturn: { outbound: timeoutOutbound, state: timeoutReturn, timeoutMemory },
     pause: { focusStart, unfocused, focusDelta, hiddenStart, hidden, hiddenDelta },
     reduced: { state: reduced, rendererProof },
     responsive: { portrait, landscape },
-    proofChannel: { observedFrames, soulMutationCount, mutations: finalState.soulMutations },
-    screenshots: [dueScreenshot, wrongScreenshot, reducedScreenshot, portraitScreenshot, landscapeScreenshot],
+    proofChannel: {
+      observedFrames, observedFrameRateFps, firstSessionStartedAtMs, firstSessionEndedAtMs,
+      firstSessionDurationMs, soulMutationCount, mutations: firstSessionFinal.soulMutations,
+    },
+    screenshots: screenshotRows,
     finalState,
     behaviorManifest: behaviorIds.map(behaviorId => ({
       browserLane: lane,
@@ -381,6 +467,12 @@ try {
       durationMs: evidenceDurationMs,
       videoPath,
       videoSha256,
+      frameSequencePaths: screenshotRows.map(row => row.path),
+      orderedFrameSequenceSha256: createHash('sha256')
+        .update([videoSha256, behaviorId, ...screenshotRows.map(row => row.sha256)].join('\n'))
+        .digest('hex').toUpperCase(),
+      frameRateFloorFps: ['r-low-vs-high-formation-agitation', 's-calm-rarity']
+        .includes(behaviorId) ? 20 : 2,
       machineStateReceiptPath: resultPath,
       claudeFrameCitations: [],
       argusFrameCitations: [],
@@ -396,6 +488,7 @@ try {
     exactDeployedSha: deployedSha,
     assertions: receipt.assertions,
     observedFrames,
+    observedFrameRateFps,
     soulMutationCount,
     evidenceDurationMs,
     videoPath,

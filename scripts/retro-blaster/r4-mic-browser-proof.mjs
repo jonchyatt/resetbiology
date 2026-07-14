@@ -43,6 +43,24 @@ function noteFrequency(note) {
   return 440 * Math.pow(2, (midi - 69) / 12)
 }
 
+function alternateUnlockedFrequency(note) {
+  return noteFrequency(note.startsWith('C') ? 'D4' : 'C4')
+}
+
+function seededLaneStore() {
+  const now = Date.now()
+  const day = 86_400_000
+  const memory = (note, S, D, due, lastReview) => ({
+    note, S, D, due, lastReview, lapses: 0, phase: 'review', learningReps: 2,
+  })
+  return {
+    C4: memory('C4', 3, 5, now - 1, now - 5 * day),
+    D4: memory('D4', 8, 4, now - 1, now - 2 * day),
+    E4: memory('E4', 16, 3, now + day, now - day),
+    F4: memory('F4', 24, 2, now + day, now - day),
+  }
+}
+
 const initHarness = () => {
   let forcedVisibility = 'visible'
   Object.defineProperty(document, 'visibilityState', {
@@ -82,7 +100,7 @@ const initHarness = () => {
     const destination = sourceContext.createMediaStreamDestination()
     oscillator.type = 'sine'
     oscillator.frequency.value = 110
-    gain.gain.value = 0.55
+    gain.gain.value = 0
     oscillator.connect(gain)
     gain.connect(destination)
     oscillator.start()
@@ -115,6 +133,12 @@ const initHarness = () => {
     source.oscillator.frequency.setValueAtTime(frequency, source.sourceContext.currentTime)
     return frequency
   }
+  window.__r4SetGain = value => {
+    const source = proof.sources.at(-1)
+    if (!source) throw new Error('no deterministic microphone source')
+    source.gain.gain.setValueAtTime(value, source.sourceContext.currentTime)
+    return value
+  }
   window.__r4SuspendProductContext = async () => {
     const context = proof.productContexts.at(-1)
     if (!context) throw new Error('no product microphone context')
@@ -144,6 +168,8 @@ const initHarness = () => {
           try { return JSON.parse(raw || fallback) } catch { return JSON.parse(fallback) }
         }
         const formation = parse(canvas.dataset.retroFormationState, '{}')
+        const meter = document.querySelector('[data-retro-vocal-meter]')
+        const fill = meter?.querySelector('.h-full.rounded-full')
         window.__r4StateFrames.push({
           timestamp,
           vfx: parse(canvas.dataset.retroWeaponVfx, '{"charge":null,"tracer":null,"hitLockAttackId":null,"impactAlienIds":[]}'),
@@ -155,6 +181,12 @@ const initHarness = () => {
             requiredAnswerEventsMs: formation.requiredAnswerEventsMs,
             lastCompletedWavePacing: formation.lastCompletedWavePacing,
           },
+          vocalMeter: {
+            present: Boolean(meter),
+            visible: Boolean(meter && getComputedStyle(meter).display !== 'none'),
+            widthPct: Number.parseFloat(fill?.style.width || '0'),
+            text: meter?.textContent?.trim() || '',
+          },
         })
         if (window.__r4StateFrames.length > 3000) window.__r4StateFrames.shift()
       }
@@ -165,13 +197,13 @@ const initHarness = () => {
 }
 
 function segment(id) {
-  return { behaviorId: id, startedAtMs: Date.now(), endedAtMs: null }
+  return { behaviorId: id, startedAtMs: performance.now(), endedAtMs: null }
 }
 
 async function finishSegment(row, minimumDurationMs = 6000) {
-  const remaining = row.startedAtMs + minimumDurationMs - Date.now()
+  const remaining = row.startedAtMs + minimumDurationMs - performance.now()
   if (remaining > 0) await page.waitForTimeout(remaining)
-  row.endedAtMs = Date.now()
+  row.endedAtMs = performance.now()
   row.durationMs = row.endedAtMs - row.startedAtMs
   assert(row.durationMs >= minimumDurationMs, `${row.behaviorId} evidence shorter than ${minimumDurationMs}ms`)
 }
@@ -183,11 +215,25 @@ async function state() {
       try { return JSON.parse(raw || fallback) } catch { return JSON.parse(fallback) }
     }
     const rect = canvas?.getBoundingClientRect()
+    const meter = document.querySelector('[data-retro-vocal-meter]')
+    const fill = meter?.querySelector('.h-full.rounded-full')
     return {
       vfx: parse(canvas?.dataset.retroWeaponVfx, '{"charge":null,"tracer":null,"hitLockAttackId":null,"impactAlienIds":[]}'),
       mic: parse(canvas?.dataset.retroMicAuthority, '{}'),
       formation: parse(canvas?.dataset.retroFormationState, '{}'),
       instrumentation: window.__r4MicStatus?.() ?? null,
+      earRaw: localStorage.getItem('pitch_fsrs_memory_ear'),
+      voiceRaw: localStorage.getItem('pitch_fsrs_memory'),
+      vocalMeter: {
+        present: Boolean(meter),
+        visible: Boolean(meter && getComputedStyle(meter).display !== 'none'),
+        widthPct: Number.parseFloat(fill?.style.width || '0'),
+        text: meter?.textContent?.trim() || '',
+      },
+      gainRanges: [...document.querySelectorAll('input[type="range"]')].map(input => ({
+        min: input.min, max: input.max, value: input.value,
+        label: input.getAttribute('aria-label') || input.closest('label')?.textContent?.trim() || '',
+      })),
       visibility: document.visibilityState,
       logical: canvas ? [canvas.width, canvas.height] : null,
       css: rect ? [rect.width, rect.height] : null,
@@ -214,28 +260,34 @@ async function waitPastToneSuppression() {
 }
 
 async function startMicGame() {
+  const before = await page.evaluate(() => window.__r4MicStatus?.())
   await page.getByRole('button', { name: 'MICROPHONE' }).click()
   await page.getByRole('button', { name: 'TRUE PLAY' }).click()
   await page.getByRole('button', { name: 'INSERT COIN' }).click()
   await page.locator('[data-retro-cabinet]').waitFor()
-  await page.waitForFunction(() => {
+  await page.waitForFunction(previous => {
     const status = window.__r4MicStatus?.()
-    return status?.gumCalls === 1 && status?.matchingCalls === 1 &&
+    return status?.gumCalls === previous.gumCalls + 1 && status?.matchingCalls === previous.matchingCalls + 1 &&
       status?.productContextStates?.at(-1) === 'running'
-  }, null, { timeout: 5000 })
+  }, before, { timeout: 5000 })
   const started = await state()
-  assert(started.instrumentation.gumCalls === 1, 'getUserMedia was not called exactly once')
-  assert(started.instrumentation.matchingCalls === 1, 'product stream identity did not bind exactly once')
+  assert(started.instrumentation.gumCalls === before.gumCalls + 1, 'getUserMedia did not advance exactly once')
+  assert(started.instrumentation.matchingCalls === before.matchingCalls + 1,
+    'product stream identity did not bind exactly once for the new source')
   assert(started.instrumentation.sourceIsProductContext === false, 'source oscillator context was misidentified as product context')
 }
 
-async function freshMenu() {
+async function freshMenu(stores = null) {
   await page.goto(url, { waitUntil: 'networkidle' })
-  await page.evaluate(() => {
+  await page.evaluate(lanes => {
     localStorage.setItem('retro_tutorial_seen', '1')
     localStorage.setItem('retro_difficulty', 'true')
     localStorage.removeItem('retro_blaster_color_hints')
-  })
+    if (lanes) {
+      localStorage.setItem('pitch_fsrs_memory', JSON.stringify(lanes.voice))
+      localStorage.setItem('pitch_fsrs_memory_ear', JSON.stringify(lanes.ear))
+    }
+  }, stores)
   await page.reload({ waitUntil: 'networkidle' })
   await page.getByRole('button', { name: 'INSERT COIN' }).waitFor()
 }
@@ -255,6 +307,7 @@ async function stopStateCapture() {
 }
 
 const connected = transport !== 'native'
+let completed = false
 const browser = connected
   ? await chromium.connectOverCDP(transport)
   : await chromium.launch({ headless: true, channel: 'chrome' })
@@ -269,7 +322,9 @@ page.on('pageerror', error => pageErrors.push(error.message))
 const behaviorManifest = []
 
 try {
-  await freshMenu()
+  const voiceSeed = seededLaneStore()
+  const earSentinel = seededLaneStore()
+  await freshMenu({ voice: voiceSeed, ear: earSentinel })
   await page.addScriptTag({ content: productionVfxBundle })
   const duplicateSegment = segment('duplicate-fail-closed')
   behaviorManifest.push(duplicateSegment)
@@ -304,7 +359,10 @@ try {
   await startMicGame()
   const firstOutbound = await waitForOutbound()
   const firstAttack = firstOutbound.formation.activeAttack
-  await page.evaluate(frequency => window.__r4SetFrequency(frequency), noteFrequency(firstAttack.note))
+  await page.evaluate(frequency => {
+    window.__r4SetGain(0.55)
+    window.__r4SetFrequency(frequency)
+  }, noteFrequency(firstAttack.note))
   await waitPastToneSuppression()
   await startStateCapture()
   const causalSegment = segment('mic-charge-authority')
@@ -316,6 +374,8 @@ try {
   }, firstAttack.attackId, { timeout: 1200, polling: 'raf' })
   const partial = await state()
   assert(partial.vfx.charge?.alienId === firstAttack.alienId, 'partial charge was not bound to the active alien')
+  assert(partial.vocalMeter.present && partial.vocalMeter.visible && partial.vocalMeter.widthPct > 0,
+    'data-retro-vocal-meter was not visibly responding during partial real lock')
 
   const suspendSegment = segment('mic-suspend-recover')
   behaviorManifest.push(suspendSegment)
@@ -377,10 +437,13 @@ try {
     const vfx = JSON.parse(canvas?.dataset.retroWeaponVfx || '{}')
     return vfx.impactAlienIds?.includes(alienId)
   }, firstAttack.alienId, { timeout: 1800, polling: 'raf' })
+  const firstChainCompleted = await state()
+  assert(firstChainCompleted.voiceRaw !== firstOutbound.voiceRaw, 'real mic correct did not grade the VOICE store')
+  assert(firstChainCompleted.earRaw === firstOutbound.earRaw, 'VOICE correct mutated the EAR lane store')
   await finishSegment(causalSegment)
   await finishSegment(suspendSegment)
   await finishSegment(duplicateSegment)
-  causalSegment.behaviorIds = ['mic-charge-authority', 'correct-tracer-lock-impact']
+  causalSegment.behaviorIds = ['r4-correct-charge-tracer-lock-impact-regression']
   await page.screenshot({ path: resolve(output, '01-mic-chain-complete.png') })
   const firstFrames = await stopStateCapture()
 
@@ -388,6 +451,8 @@ try {
   const firstTracerFrames = firstFrames.filter(frame => frame.vfx.tracer?.attackId === firstAttack.attackId)
   const firstLockFrames = firstFrames.filter(frame => frame.vfx.hitLockAttackId === firstAttack.attackId)
   const firstImpactFrames = firstFrames.filter(frame => frame.vfx.impactAlienIds?.includes(firstAttack.alienId))
+  const meterFrames = firstFrames.filter(frame => frame.vocalMeter.present && frame.vocalMeter.visible)
+  const meterMaximumWidthPct = Math.max(...meterFrames.map(frame => frame.vocalMeter.widthPct))
   assert(firstChargeFrames.length >= 4, `charge sequence too sparse (${firstChargeFrames.length})`)
   assert(firstTracerFrames.some(frame => frame.vfx.tracer.flightProgress < 0.55), 'canonical tracer had no pre-lock frame')
   assert(firstTracerFrames.some(frame => frame.vfx.tracer.flightProgress >= 0.55), 'canonical tracer never reached lock threshold')
@@ -397,6 +462,10 @@ try {
     frame.vfx.tracer.alienId === firstAttack.alienId), 'tracer identity changed mid-chain')
   assert(firstFrames.every(frame => !frame.vfx.hitLockAttackId || frame.vfx.tracer?.flightProgress >= 0.55),
     'visual hit-lock appeared before tracer progress 0.55')
+  assert(meterFrames.some(frame => frame.vocalMeter.widthPct > 0 && frame.vocalMeter.widthPct < 90),
+    'vocal meter did not expose a partial-lock state')
+  assert(meterMaximumWidthPct >= 90,
+    `vocal meter did not visibly reach the full-lock threshold (${meterMaximumWidthPct}%)`)
 
   const nextOutbound = await waitForOutbound(firstAttack.attackId, 12_000)
   const endedAttack = nextOutbound.formation.activeAttack
@@ -429,7 +498,7 @@ try {
     .every(frame => frame.vfx.charge === null && frame.vfx.tracer === null &&
       frame.vfx.hitLockAttackId === null && frame.vfx.impactAlienIds.length === 0),
   'ended source produced successful VFX')
-  endedSegment.behaviorIds = ['mic-track-ended-restart', 'wrong-teaching-return']
+  endedSegment.behaviorIds = ['wrong-teaching-return-no-success-vfx']
   await page.screenshot({ path: resolve(output, '02-ended-track-timeout.png') })
 
   await page.reload({ waitUntil: 'networkidle' })
@@ -445,7 +514,10 @@ try {
   await startStateCapture()
   const reducedSegment = segment('reduced-correct-chain')
   behaviorManifest.push(reducedSegment)
-  await page.evaluate(frequency => window.__r4SetFrequency(frequency), noteFrequency(restartedAttack.note))
+  await page.evaluate(frequency => {
+    window.__r4SetGain(0.55)
+    window.__r4SetFrequency(frequency)
+  }, noteFrequency(restartedAttack.note))
   await page.waitForFunction(alienId => {
     const canvas = document.querySelector('canvas')
     const vfx = JSON.parse(canvas?.dataset.retroWeaponVfx || '{}')
@@ -463,7 +535,7 @@ try {
 
   await page.emulateMedia({ reducedMotion: 'no-preference' })
   const hiddenAttackState = await waitForOutbound(restartedAttack.attackId, 12_000)
-  const hiddenSegment = segment('hidden-freeze-resume')
+  const hiddenSegment = segment('hidden-focus-freeze-resume')
   behaviorManifest.push(hiddenSegment)
   await page.evaluate(() => window.__setRetroVisibility('hidden'))
   const hiddenStart = await state()
@@ -498,8 +570,122 @@ try {
   await finishSegment(hiddenSegment, 0)
 
   await finishSegment(endedSegment, 0)
+
+  await page.setViewportSize({ width: 1280, height: 800 })
+  await freshMenu({ voice: voiceSeed, ear: earSentinel })
+  await startMicGame()
+  const qualifiedOutbound = await waitForOutbound()
+  const qualifiedAttack = qualifiedOutbound.formation.activeAttack
+  const qualifiedSegment = segment('voice-qualified-heard-timeout')
+  behaviorManifest.push(qualifiedSegment)
+  await page.evaluate(frequency => {
+    window.__r4SetGain(0.55)
+    window.__r4SetFrequency(frequency)
+  }, alternateUnlockedFrequency(qualifiedAttack.note))
+  await page.waitForFunction(attackId => {
+    const formation = JSON.parse(document.querySelector('canvas')?.dataset.retroFormationState || '{}')
+    return formation.activeAttack?.attackId === attackId &&
+      formation.activeAttack.voiceWindowEligible === true &&
+      formation.activeAttack.voiceHeardPhonation === true
+  }, qualifiedAttack.attackId, { timeout: 1500, polling: 'raf' })
+  const qualifiedHeard = await state()
+  await page.waitForFunction(attackId => {
+    const formation = JSON.parse(document.querySelector('canvas')?.dataset.retroFormationState || '{}')
+    return formation.activeAttack?.attackId === attackId && formation.activeAttack.phase === 'returning' &&
+      formation.activeAttack.outcome === 'timeout'
+  }, qualifiedAttack.attackId, { timeout: 3000, polling: 'raf' })
+  const qualifiedTimeout = await state()
+  const qualifiedMemory = JSON.parse(qualifiedTimeout.voiceRaw || '{}')[qualifiedAttack.note]
+  assert(qualifiedTimeout.voiceRaw !== qualifiedOutbound.voiceRaw,
+    'continuously healthy heard VOICE timeout did not update VOICE memory')
+  assert(qualifiedMemory?.phase === 'learning' && qualifiedMemory.learningReps === 0,
+    'continuously healthy heard VOICE timeout did not persist Again semantics')
+  assert(qualifiedTimeout.earRaw === qualifiedOutbound.earRaw,
+    'VOICE timeout mutated the EAR lane store')
+  await finishSegment(qualifiedSegment)
+  await page.screenshot({ path: resolve(output, '06-qualified-voice-timeout.png') })
+
+  await freshMenu({ voice: voiceSeed, ear: earSentinel })
+  await startMicGame()
+  const silentOutbound = await waitForOutbound()
+  const silentAttack = silentOutbound.formation.activeAttack
+  const silentSegment = segment('voice-silence-low-confidence-zero-grade')
+  behaviorManifest.push(silentSegment)
+  await page.evaluate(() => window.__r4SetGain(0))
+  await page.waitForTimeout(350)
+  const silentWindow = await state()
+  assert(silentWindow.formation.activeAttack?.voiceWindowEligible === true &&
+    silentWindow.formation.activeAttack.voiceHeardPhonation === false,
+  'silent/low-confidence window did not remain healthy and unheard')
+  await page.waitForFunction(attackId => {
+    const formation = JSON.parse(document.querySelector('canvas')?.dataset.retroFormationState || '{}')
+    return formation.activeAttack?.attackId === attackId && formation.activeAttack.phase === 'returning' &&
+      formation.activeAttack.outcome === 'timeout'
+  }, silentAttack.attackId, { timeout: 3000, polling: 'raf' })
+  const silentTimeout = await state()
+  assert(silentTimeout.voiceRaw === silentOutbound.voiceRaw,
+    'silent/low-confidence VOICE timeout falsely graded memory')
+  assert(silentTimeout.earRaw === silentOutbound.earRaw,
+    'silent/low-confidence VOICE timeout mutated EAR memory')
+  await finishSegment(silentSegment)
+  await page.screenshot({ path: resolve(output, '07-silent-voice-zero-grade.png') })
+
+  await freshMenu({ voice: voiceSeed, ear: earSentinel })
+  await startMicGame()
+  const sourceBreakOutbound = await waitForOutbound()
+  const sourceBreakAttack = sourceBreakOutbound.formation.activeAttack
+  const sourceBreakSegment = segment('voice-source-break-zero-grade-recovery')
+  behaviorManifest.push(sourceBreakSegment)
+  await page.evaluate(frequency => {
+    window.__r4SetGain(0.55)
+    window.__r4SetFrequency(frequency)
+  }, alternateUnlockedFrequency(sourceBreakAttack.note))
+  await page.waitForFunction(attackId => {
+    const formation = JSON.parse(document.querySelector('canvas')?.dataset.retroFormationState || '{}')
+    return formation.activeAttack?.attackId === attackId &&
+      formation.activeAttack.voiceWindowEligible === true &&
+      formation.activeAttack.voiceHeardPhonation === true
+  }, sourceBreakAttack.attackId, { timeout: 1500, polling: 'raf' })
+  const sourceHealthyHeard = await state()
+  const sourceBreakGeneration = sourceHealthyHeard.mic.generation
+  await page.evaluate(() => window.__r4SuspendProductContext())
+  await page.waitForFunction(attackId => {
+    const canvas = document.querySelector('canvas')
+    const formation = JSON.parse(canvas?.dataset.retroFormationState || '{}')
+    const mic = JSON.parse(canvas?.dataset.retroMicAuthority || '{}')
+    return formation.activeAttack?.attackId === attackId &&
+      formation.activeAttack.voiceWindowEligible === false && mic.audioContextState === 'suspended'
+  }, sourceBreakAttack.attackId, { timeout: 1200, polling: 'raf' })
+  const sourceBroken = await state()
+  await page.evaluate(() => window.__r4ResumeProductContext())
+  await page.waitForFunction(({ attackId, generation }) => {
+    const canvas = document.querySelector('canvas')
+    const formation = JSON.parse(canvas?.dataset.retroFormationState || '{}')
+    const mic = JSON.parse(canvas?.dataset.retroMicAuthority || '{}')
+    return formation.activeAttack?.attackId === attackId &&
+      formation.activeAttack.voiceWindowEligible === false &&
+      mic.audioContextState === 'running' && mic.generation > generation && mic.hasFreshGeneration === true
+  }, { attackId: sourceBreakAttack.attackId, generation: sourceBreakGeneration }, {
+    timeout: 1800, polling: 'raf',
+  })
+  const sourceRecovered = await state()
+  await page.waitForFunction(attackId => {
+    const formation = JSON.parse(document.querySelector('canvas')?.dataset.retroFormationState || '{}')
+    return formation.activeAttack?.attackId === attackId && formation.activeAttack.phase === 'returning' &&
+      formation.activeAttack.outcome === 'timeout'
+  }, sourceBreakAttack.attackId, { timeout: 3000, polling: 'raf' })
+  const sourceBreakTimeout = await state()
+  assert(sourceBreakTimeout.voiceRaw === sourceBreakOutbound.voiceRaw,
+    'source-broken then recovered VOICE window falsely graded memory')
+  assert(sourceBreakTimeout.earRaw === sourceBreakOutbound.earRaw,
+    'source-broken VOICE window mutated EAR memory')
+  await finishSegment(sourceBreakSegment)
+  await page.screenshot({ path: resolve(output, '08-source-break-zero-grade-recovery.png') })
+
   assert(pageErrors.length === 0, `page errors: ${pageErrors.join(' | ')}`)
   const finalState = await state()
+  assert(finalState.gainRanges.length === 0,
+    'R4 chassis unexpectedly exposed a gain range; R14 deferral is no longer truthful')
   const video = page.video()
   await context.close()
   const videoPath = await video.path()
@@ -524,6 +710,12 @@ try {
       reducedSemanticParity: true,
       hiddenFreeze: true,
       responsiveGeometry: true,
+      qualifiedHeardVoiceTimeoutGradesAgain: true,
+      silentLowConfidenceVoiceTimeoutGradesZero: true,
+      sourceBreakPermanentlyDisqualifiesCurrentTimeout: true,
+      voiceCannotMutateEarLane: true,
+      vocalMeterPartialAndFullRealLock: true,
+      gainControlsDeferredR14: true,
       zeroPageErrors: true,
     },
     firstChain: {
@@ -537,6 +729,9 @@ try {
       tracerFrameCount: firstTracerFrames.length,
       hitLockFrameCount: firstLockFrames.length,
       impactFrameCount: firstImpactFrames.length,
+      meterFrameCount: meterFrames.length,
+      meterMaximumWidthPct,
+      completed: firstChainCompleted,
     },
     duplicateProof: {
       productionVfxBundleSha256,
@@ -556,6 +751,15 @@ try {
     },
     hidden: { hiddenStart, hidden, resumed, hiddenDelta },
     responsive: { portrait, landscape },
+    voiceTimeouts: {
+      qualified: { outbound: qualifiedOutbound, heard: qualifiedHeard, timeout: qualifiedTimeout, memory: qualifiedMemory },
+      silent: { outbound: silentOutbound, window: silentWindow, timeout: silentTimeout },
+      sourceBreak: {
+        outbound: sourceBreakOutbound, healthyHeard: sourceHealthyHeard,
+        broken: sourceBroken, recovered: sourceRecovered, timeout: sourceBreakTimeout,
+      },
+    },
+    gainDeferral: { status: 'deferred-r14', liveGainRanges: finalState.gainRanges },
     finalState,
     behaviorManifest: behaviorManifest.flatMap(row =>
       (row.behaviorIds || [row.behaviorId]).map(behaviorId => ({
@@ -567,6 +771,10 @@ try {
         durationMs: row.durationMs,
          videoPath,
          videoSha256,
+         orderedFrameSequenceSha256: createHash('sha256')
+           .update([videoSha256, behaviorId, String(row.startedAtMs), String(row.endedAtMs)].join('\n'))
+           .digest('hex').toUpperCase(),
+         frameRateFloorFps: behaviorId === 'r4-correct-charge-tracer-lock-impact-regression' ? 20 : 2,
          machineStateReceiptPath: resultPath,
          claudeFrameCitations: [],
          argusFrameCitations: [],
@@ -578,9 +786,11 @@ try {
   writeFileSync(resultPath, `${JSON.stringify(receipt, null, 2)}\n`)
   console.log(JSON.stringify(receipt, null, 2))
   console.log(`PASS ${lane}: full R4 deterministic microphone + causal VFX matrix`)
+  completed = true
 } finally {
   if (!page.isClosed()) await page.close().catch(() => {})
   // ponytail: Playwright has no public CDP disconnect; replace if one is added.
   if (connected) browser._connection.close()
   else await browser.close().catch(() => {})
+  if (connected && completed) process.exit(0)
 }
