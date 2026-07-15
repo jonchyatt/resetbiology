@@ -236,6 +236,25 @@ export const visionExercises: VisionExercise[] = [
     ],
     progression: 'Add light head nods on the vertical midline after week 2.',
   },
+  {
+    id: 'gabor-contrast',
+    title: 'Gabor Contrast Trainer',
+    category: 'mechanics',
+    duration: '3 min',
+    intensity: 'moderate',
+    summary: 'Forced-choice orientation calls on a faint striped patch, adapting to find your contrast-sensitivity edge.',
+    focus: ['contrast sensitivity', 'orientation discrimination'],
+    checkpoints: [
+      'A single striped patch flashes at the center — call its direction before it fades from view.',
+      'Tap the matching arrow: up, left, right, or down on the fixed pad.',
+      'The patch gets fainter as you get calls right, and clearer after a miss.',
+    ],
+    guidance: [
+      { heading: 'Vision cue', detail: 'Let your eyes stay soft — don’t squint to force clarity, guess your best read.' },
+      { heading: 'Pacing cue', detail: 'No rush, but answer before the 10-second window closes.' },
+    ],
+    progression: 'Texture tier steps up with your program week (weeks 1-4 coarse, 5-8 medium, 9-12 fine).',
+  },
 ];
 
 export const visionExerciseMap = visionExercises.reduce<Record<string, VisionExercise>>((acc, exercise) => {
