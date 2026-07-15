@@ -159,12 +159,16 @@ export async function GET(req: NextRequest) {
     }
 
     const folderId = resolution.folderId
-    console.log(
-      resolution.status === 'reused'
-        ? 'Reusing existing Reset Biology folder:'
-        : 'Created new Reset Biology folder:',
-      folderId
-    )
+    // Structured resolution log (Argus catch, coexec 2026-07-15): which
+    // strategy won — 'pointer' | 'appProperties' | 'created' — so Phase-3
+    // post-deploy verification of appProperties discovery is provable from
+    // Vercel runtime logs without manual Drive inspection.
+    console.log('[oauth-callback] vault root resolved:', {
+      userId: state,
+      status: resolution.status,
+      method: resolution.method,
+      folderId,
+    })
 
     // Update user with Drive credentials. Refresh token is encrypted at rest
     // via VAULT_TOKEN_KEY (AES-256-GCM); falls through to plaintext if the env

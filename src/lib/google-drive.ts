@@ -56,8 +56,8 @@ export const VAULT_SUBFOLDERS = [
 ]
 
 export type VaultRootResolution =
-  | { status: 'reused'; folderId: string }
-  | { status: 'created'; folderId: string }
+  | { status: 'reused'; folderId: string; method: 'pointer' | 'appProperties' }
+  | { status: 'created'; folderId: string; method: 'created' }
   | { status: 'ambiguous'; candidateFolderIds: string[] }
 
 export async function resolveVaultRootFolder(
@@ -85,7 +85,7 @@ export async function resolveVaultRootFolder(
         fields: 'id, trashed',
       })
       if (probe.data.id && !probe.data.trashed) {
-        return { status: 'reused', folderId: probe.data.id }
+        return { status: 'reused', folderId: probe.data.id, method: 'pointer' }
       }
     } catch {
       // stale / deleted / inaccessible / wrong-account token — fall through
@@ -110,7 +110,7 @@ export async function resolveVaultRootFolder(
   })
   const exactMatches = (exact.data.files ?? []).filter((f) => f.id)
   if (exactMatches.length === 1) {
-    return { status: 'reused', folderId: exactMatches[0].id! }
+    return { status: 'reused', folderId: exactMatches[0].id!, method: 'appProperties' }
   }
   if (exactMatches.length > 1) {
     return {
@@ -145,7 +145,7 @@ export async function resolveVaultRootFolder(
   // Case 5: nothing found anywhere — genuinely first connect for this
   // Drive account. Create fresh and stamp it for future discovery.
   const folderId = await createVaultRootFolder(drive, userId)
-  return { status: 'created', folderId }
+  return { status: 'created', folderId, method: 'created' }
 }
 
 async function createVaultRootFolder(
