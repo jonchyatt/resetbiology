@@ -21,11 +21,15 @@ import { SpeechQueue, unlockAudio } from '@/lib/vision/audioKit'
 // ---------------------------------------------------------------------------
 // Orientations — 4 fixed choices, diamond answer pad (never reshuffled).
 // ---------------------------------------------------------------------------
+// Glyph derivation (canvasKit.ts:84, y-down canvas): stripes run along the
+// direction perpendicular to (cosT, sinT), i.e. (-sinT, cosT) in (xc,yc).
+// theta=45 -> dir (-0.71,0.71) -> screen line lower-left..upper-right = "/".
+// theta=135 -> dir (-0.71,-0.71) -> screen line upper-left..lower-right = "\".
 const ORIENTATIONS = {
-  vertical: { angle: 0, label: 'Vertical', glyph: '|' },
-  'diagonal-left': { angle: 45, label: 'Diagonal', glyph: '\\' },
-  'diagonal-right': { angle: 135, label: 'Diagonal', glyph: '/' },
-  horizontal: { angle: 90, label: 'Horizontal', glyph: '—' },
+  vertical: { angle: 0, label: 'Vertical', glyph: '|', ariaLabel: 'Vertical' },
+  'diagonal-left': { angle: 45, label: 'Diagonal', glyph: '/', ariaLabel: 'Diagonal rising /' },
+  'diagonal-right': { angle: 135, label: 'Diagonal', glyph: '\\', ariaLabel: 'Diagonal falling \\' },
+  horizontal: { angle: 90, label: 'Horizontal', glyph: '—', ariaLabel: 'Horizontal' },
 } as const
 type OrientationKey = keyof typeof ORIENTATIONS
 
@@ -335,15 +339,8 @@ export default function GaborAcuityEngine({ exercise, prescription, muted, onPro
     setFeedback(null)
     setPhase('trial')
     drawPatch()
-    clearTrialTimer()
-    timeoutRef.current = setTimeout(() => {
-      trialsRef.current += 1
-      lapseStreakRef.current += 1
-      setFeedback('timeout')
-      setPhase('feedback')
-      advanceTimeoutRef.current = setTimeout(() => startTrial(), FEEDBACK_MS)
-    }, TRIAL_TIMEOUT_MS)
-  }, [clearTrialTimer, drawPatch, startTrial])
+    armTrialTimeout()
+  }, [armTrialTimeout, drawPatch])
 
   const handleAbort = useCallback(() => {
     clearTrialTimer()
@@ -521,7 +518,7 @@ function GaborAnswerPad({
   const buttonBase = `flex min-h-11 min-w-[110px] flex-col items-center justify-center gap-1 rounded-xl bg-gray-900 px-6 py-3 font-bold text-white shadow-lg ${transitionClass} ${disabled ? 'opacity-50' : 'hover:bg-primary-500'}`
 
   const Btn = ({ k }: { k: OrientationKey }) => (
-    <button onClick={() => onSelect(k)} disabled={disabled} className={buttonBase} aria-label={ORIENTATIONS[k].label}>
+    <button onClick={() => onSelect(k)} disabled={disabled} className={buttonBase} aria-label={ORIENTATIONS[k].ariaLabel}>
       <span className="text-2xl leading-none">{ORIENTATIONS[k].glyph}</span>
       <span className="text-xs font-semibold">{ORIENTATIONS[k].label}</span>
     </button>
