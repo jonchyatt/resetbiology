@@ -117,6 +117,8 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
   const [assessmentDoneWeek, setAssessmentDoneWeek] = useState<number | null>(null)
   const [resetting, setResetting] = useState(false)
   const [resetConfirming, setResetConfirming] = useState(false)
+  const [isTester, setIsTester] = useState(false)
+  const [advancingDay, setAdvancingDay] = useState(false)
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -202,6 +204,7 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
 
       if (data.success) {
         setEnrolled(data.enrolled)
+        setIsTester(Boolean(data.isTester))
         if (data.enrolled) {
           setEnrollment(data.enrollment)
           setTodaySession(data.todaySession)
@@ -229,6 +232,23 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
     }
     setResetConfirming(false)
     setResetting(false)
+    loadProgram()
+  }
+
+  // Tester-only "rip through the program" bypass — advances the traversal
+  // cursor one trainable day forward (skipping rest days server-side).
+  const handleAdvanceDay = async () => {
+    setAdvancingDay(true)
+    try {
+      await fetch('/api/vision/program', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'advance_day' })
+      })
+    } catch (error) {
+      console.error('Failed to advance test day:', error)
+    }
+    setAdvancingDay(false)
     loadProgram()
   }
 
@@ -505,6 +525,16 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
               </ul>
             </div>
           )}
+
+          {isTester && (
+            <button
+              onClick={handleAdvanceDay}
+              disabled={advancingDay}
+              className="mt-6 min-h-11 px-6 py-3 bg-amber-500/90 hover:bg-amber-500 disabled:opacity-50 text-black font-bold rounded-xl transition-all border-2 border-amber-300"
+            >
+              TESTER · Jump to next session →
+            </button>
+          )}
         </div>
       </div>
     )
@@ -568,6 +598,16 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
           <p className="text-gray-500 text-sm mt-6">
             Come back tomorrow for Day {todaySession.day < 5 ? todaySession.day + 1 : 1} of Week {todaySession.day < 5 ? todaySession.week : todaySession.week + 1}
           </p>
+
+          {isTester && (
+            <button
+              onClick={handleAdvanceDay}
+              disabled={advancingDay}
+              className="mt-6 min-h-11 px-6 py-3 bg-amber-500/90 hover:bg-amber-500 disabled:opacity-50 text-black font-bold rounded-xl transition-all border-2 border-amber-300"
+            >
+              TESTER · Jump to next session →
+            </button>
+          )}
         </div>
 
         {/* Measured progress — natural review moment after today's work is banked */}
