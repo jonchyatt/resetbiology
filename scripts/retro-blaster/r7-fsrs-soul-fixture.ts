@@ -504,7 +504,9 @@ try {
 
     const hookConsumerBlock = (source: string) => {
       const start = source.indexOf('  const {\n    isListening,')
-      const end = source.indexOf('\n\n  useEffect', start)
+      const endMarker = '  } = usePitchDetection({ noiseGateDb: -45 })'
+      const markerStart = source.indexOf(endMarker, start)
+      const end = markerStart < 0 ? -1 : markerStart + endMarker.length
       assert(start >= 0 && end > start)
       return source.slice(start, end)
     }

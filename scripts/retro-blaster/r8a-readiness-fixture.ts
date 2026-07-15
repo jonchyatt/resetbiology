@@ -162,6 +162,28 @@ assert.match(shell, /Keyboard mode sends a visibly named C signal/)
 assert.match(shell, /never measures ability/)
 assert.match(shell, /@media \(orientation: landscape\) and \(max-height: 500px\)/)
 
+const enterReadinessStart = shell.indexOf('  const enterReadiness')
+const readinessPhaseCommit = shell.indexOf("phaseRef.current = 'readiness'", enterReadinessStart)
+const policyResolution = shell.indexOf('resolveRetroCurriculumSession(rawPolicy, activeLaneStore(stores, inputMode))', enterReadinessStart)
+assert.ok(enterReadinessStart >= 0 && policyResolution > enterReadinessStart && policyResolution < readinessPhaseCommit,
+  'symbolic curriculum policy must resolve before readiness begins')
+assert.match(shell, /const radioCheckRoster = useMemo\([\s\S]*?sessionRoster\.slice\(0, Math\.min\(4, sessionRoster\.length\)\)/,
+  'RADIO CHECK must bind its controls to the bounded session roster')
+assert.match(shell, /\{radioCheckRoster\.map\(\(note, index\) => \{/,
+  'EAR readiness controls must render from the bounded roster')
+const readinessKeyStart = shell.indexOf('const onReadinessKey =')
+const readinessKeyEnd = shell.indexOf("window.addEventListener('keydown', onReadinessKey)", readinessKeyStart)
+const readinessKey = shell.slice(readinessKeyStart, readinessKeyEnd)
+const lookupIndex = readinessKey.indexOf('const note = radioCheckRoster[Number(event.key) - 1]')
+const missingIndex = readinessKey.indexOf('if (!note) return', lookupIndex)
+const preventIndex = readinessKey.indexOf('event.preventDefault()', missingIndex)
+const answerIndex = readinessKey.indexOf('answerEarReadiness(note)', preventIndex)
+assert.ok(lookupIndex >= 0 && missingIndex > lookupIndex && preventIndex > missingIndex && answerIndex > preventIndex,
+  'missing readiness keys must return before preventDefault and answer dispatch')
+const readinessRender = shell.slice(shell.indexOf("if (phase === 'readiness')"), shell.indexOf("if (phase === 'game_over')"))
+assert.match(readinessRender, /\{isEar \? \([\s\S]*?radioCheckRoster\.map[\s\S]*?\) : \([\s\S]*?retro-readiness-voice/,
+  'VOICE readiness must own no EAR response-control branch')
+
 const readinessStart = shell.indexOf('  const prepareEarReadiness')
 const gameplayReplayStart = shell.indexOf('  const replayActiveNote', readinessStart)
 assert.ok(readinessStart >= 0 && gameplayReplayStart > readinessStart)

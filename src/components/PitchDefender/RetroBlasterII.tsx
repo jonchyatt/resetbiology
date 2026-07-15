@@ -3,7 +3,7 @@
 // Sibling of RetroBlaster v1. R0 view-seam build.
 // Rail: data/retro-blaster-rework/VANGUARD-SPEC-R0-view-seam.md
 
-import { useState, useRef, useCallback, useEffect } from 'react'
+import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
 import { flushSync } from 'react-dom'
 import {
   NOTE_COLORS, createNote,
@@ -14,12 +14,18 @@ import {
   gradeEar, gradeVoice, loadStore, saveStore,
 } from '@/lib/fsrsFamily'
 import { INTRO_ORDER } from './types'
+import {
+  RETRO_CURRICULUM_KEY,
+  commitRetroCurriculum,
+  resolveRetroCurriculumSession,
+  type RetroCurriculumExtensionFields,
+} from './retroBlasterCurriculum'
 import { usePitchDetection } from './usePitchDetection'
 import { getPianoReadiness, initAudio, loadPianoSamples, playPianoNote } from './audioEngine'
 import {
-  H, INITIAL_UNLOCK, MIC_CONFIDENCE_FLOOR, STARTING_SHIELDS, W,
+  H, MIC_CONFIDENCE_FLOOR, STARTING_SHIELDS, W,
   beginWave, createInitialState, isTargetableAlien, noteButtonRects, noteForKeyboardInput, tick, toViewState,
-  type BlindStimulusAck, type CeremonyToneAck, type Difficulty, type EngineEvent, type GameState, type InputMode,
+  type BlindStimulusAck, type CeremonyToneAck, type CurriculumUnlockAck, type Difficulty, type EngineEvent, type GameState, type InputMode,
   type PendingAttackAnswer, type Phase, type PianoReadinessObservation, type ViewState,
 } from './retroBlasterEngine'
 import {
@@ -36,7 +42,6 @@ const RETRO_DIFFICULTY_KEY = 'retro_difficulty'
 const CRT_KEY = 'retro_blaster_crt'
 const COLOR_HINTS_KEY = 'retro_blaster_color_hints'
 const RADIO_CHECK_NOTE = INTRO_ORDER[0]
-const RADIO_CHECK_ROSTER = INTRO_ORDER.slice(0, INITIAL_UNLOCK)
 
 type ShellPhase = Phase | 'readiness'
 type ReadinessStatus =
@@ -113,22 +118,13 @@ export function buildRetroBlasterState(
   difficulty: Difficulty,
   inputMode: InputMode,
   stores: RetroBlasterFamilyStores,
+  sessionRoster: readonly string[],
   clockMs: number,
   gameId = `fixture:${clockMs}`,
   memoryEpochMs = 0,
 ): GameState {
   const store = activeLaneStore(stores, inputMode)
-  const reviewed = new Set(
-    Object.entries(store).filter(([, memory]) => memory.lastReview > 0).map(([note]) => note)
-  )
-  const restored: string[] = []
-  for (const note of INTRO_ORDER) {
-    if (reviewed.has(note)) restored.push(note)
-    else break
-  }
-  const unlocked = restored.length >= INITIAL_UNLOCK
-    ? restored
-    : INTRO_ORDER.slice(0, INITIAL_UNLOCK) as unknown as string[]
+  const unlocked = [...sessionRoster]
   for (const note of unlocked) {
     if (!store[note]) store[note] = createNote(note)
   }
@@ -201,6 +197,12 @@ export default function RetroBlasterII() {
   const readinessGenerationBaselineRef = useRef(0)
   const pendingCeremonyToneAckRef = useRef<CeremonyToneAck | null>(null)
   const pendingBlindStimulusAckRef = useRef<BlindStimulusAck | null>(null)
+  const pendingCurriculumUnlockAckRef = useRef<CurriculumUnlockAck | null>(null)
+  const sessionRosterRef = useRef<string[]>(INTRO_ORDER.slice(0, 2))
+  const curriculumSessionIdRef = useRef(0)
+  const curriculumControllersRef = useRef(new Set<AbortController>())
+  const lastDurableRosterRef = useRef<string[]>([])
+  const lastCurriculumExtensionsRef = useRef<RetroCurriculumExtensionFields>({})
   const pianoObservationIdRef = useRef(0)
   const audioReceiptSequenceRef = useRef(0)
   const ceremonyAttemptIdRef = useRef(0)
@@ -225,6 +227,12 @@ export default function RetroBlasterII() {
   const [readinessMessage, setReadinessMessage] = useState('')
   const [readinessToneArmed, setReadinessToneArmed] = useState(false)
   const [ceremonyMessage, setCeremonyMessage] = useState('')
+  const [sessionRoster, setSessionRoster] = useState<string[]>(() => INTRO_ORDER.slice(0, 2))
+  const [curriculumSavePaused, setCurriculumSavePaused] = useState(false)
+  const radioCheckRoster = useMemo(
+    () => sessionRoster.slice(0, Math.min(4, sessionRoster.length)),
+    [sessionRoster],
+  )
 
   const {
     isListening,
@@ -237,6 +245,66 @@ export default function RetroBlasterII() {
     pitchGenerationRef,
   } = usePitchDetection({ noiseGateDb: -45 })
 
+  const abortCurriculumSession = useCallback(() => {
+    curriculumSessionIdRef.current++
+    for (const controller of curriculumControllersRef.current) controller.abort()
+    curriculumControllersRef.current.clear()
+    pendingCurriculumUnlockAckRef.current = null
+  }, [])
+
+  const runCurriculumCommit = useCallback((
+    sessionCandidateRoster: readonly string[],
+    purpose: 'initial' | 'unlock',
+    request: Extract<EngineEvent, { kind: 'curriculumUnlockRequest' }> | null,
+    sessionId: number,
+  ) => {
+    const controller = new AbortController()
+    curriculumControllersRef.current.add(controller)
+    const locks = typeof navigator !== 'undefined' && 'locks' in navigator
+      ? navigator.locks
+      : undefined
+    const exactLiveRequest = () => {
+      if (!request || curriculumSessionIdRef.current !== sessionId) return false
+      const pending = stateRef.current?.pendingCurriculumUnlock
+      return Boolean(pending && pending.requestId === request.requestId && pending.gameId === request.gameId &&
+        pending.note === request.note &&
+        pending.sessionCandidateRoster.length === request.sessionCandidateRoster.length &&
+        pending.sessionCandidateRoster.every((note, index) => note === request.sessionCandidateRoster[index]))
+    }
+    const queueAck = (committed: boolean) => {
+      if (!request || !exactLiveRequest()) return
+      pendingCurriculumUnlockAckRef.current = {
+        requestId: request.requestId,
+        gameId: request.gameId,
+        note: request.note,
+        sessionCandidateRoster: [...request.sessionCandidateRoster],
+        committed,
+      }
+    }
+
+    void commitRetroCurriculum({
+      storage: localStorage,
+      locks,
+      signal: controller.signal,
+      sessionCandidateRoster,
+      getLastDurableRoster: () => lastDurableRosterRef.current,
+      getLastExtensionFields: () => lastCurriculumExtensionsRef.current,
+    }).then(result => {
+      if (curriculumSessionIdRef.current !== sessionId) return
+      if (result.ok) {
+        lastDurableRosterRef.current = [...result.durableRoster]
+        lastCurriculumExtensionsRef.current = { ...result.extensionFields }
+        if (purpose === 'unlock') setCurriculumSavePaused(false)
+      }
+      if (purpose === 'unlock') queueAck(result.ok)
+    }).catch(error => {
+      if ((error as { name?: unknown } | null)?.name === 'AbortError') return
+      if (purpose === 'unlock') queueAck(false)
+    }).finally(() => {
+      curriculumControllersRef.current.delete(controller)
+    })
+  }, [])
+
   useEffect(() => { inputModeRef.current = inputMode }, [inputMode])
   useEffect(() => { listeningRef.current = isListening }, [isListening])
   useEffect(() => { phaseRef.current = phase }, [phase])
@@ -248,9 +316,10 @@ export default function RetroBlasterII() {
     ceremonyBusyRef.current = false
     pendingCeremonyToneAckRef.current = null
     pendingBlindStimulusAckRef.current = null
+    abortCurriculumSession()
     clearRetroAudioReceipt(lastCanvasRef.current)
     lastCanvasRef.current = null
-  }, [])
+  }, [abortCurriculumSession])
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
@@ -352,7 +421,16 @@ export default function RetroBlasterII() {
   const applyEvents = useCallback((events: EngineEvent[], gs: GameState) => {
     for (const event of events) {
       if (applyRetroBlasterFamilyEvent(event, inputModeRef.current, familyStoresRef.current)) continue
-      if (event.kind === 'sfx') {
+      if (event.kind === 'curriculumUnlockRequest') {
+        runCurriculumCommit(
+          event.sessionCandidateRoster,
+          'unlock',
+          event,
+          curriculumSessionIdRef.current,
+        )
+      } else if (event.kind === 'curriculumSaveBlocked') {
+        setCurriculumSavePaused(true)
+      } else if (event.kind === 'sfx') {
         writeAudioReceipt({
           kind: 'sfx', note: null, guard: event.name, requestId: null,
           gameId: gs.gameId, attackId: gs.activeAttack?.attackId ?? null, ceremonyId: null,
@@ -418,13 +496,14 @@ export default function RetroBlasterII() {
         setCeremonyMessage('REFERENCE SIGNAL PENDING...')
         dispatchCeremonyTone(event.ceremonyId, event.note)
       } else if (event.kind === 'gameOver') {
+        abortCurriculumSession()
         setFinalStats({ score: gs.score, wave: gs.wave, maxCombo: gs.maxCombo })
         if (inputModeRef.current === 'mic') stopListening()
         clearRetroAudioReceipt(canvasRef.current)
         setPhase('game_over')
       }
     }
-  }, [dispatchCeremonyTone, stopListening, writeAudioReceipt])
+  }, [abortCurriculumSession, dispatchCeremonyTone, runCurriculumCommit, stopListening, writeAudioReceipt])
 
   const gameLoop = useCallback((now: number) => {
     const gs = stateRef.current
@@ -468,6 +547,8 @@ export default function RetroBlasterII() {
     if (gameplayActive) pendingCeremonyToneAckRef.current = null
     const blindStimulusAck = gameplayActive ? pendingBlindStimulusAckRef.current : null
     if (gameplayActive) pendingBlindStimulusAckRef.current = null
+    const curriculumUnlockAck = gameplayActive ? pendingCurriculumUnlockAckRef.current : null
+    if (gameplayActive) pendingCurriculumUnlockAckRef.current = null
     const voiceHealthy = inputModeRef.current === 'mic' &&
       listeningRef.current &&
       gameplayActive &&
@@ -492,6 +573,7 @@ export default function RetroBlasterII() {
       ceremonyToneAck,
       pianoReadiness,
       blindStimulusAck,
+      curriculumUnlockAck,
     }, dtMs, Math.random)
     stateRef.current = result.state
     const micLockSignalActive = deriveMicLockSignalActive({
@@ -588,6 +670,7 @@ export default function RetroBlasterII() {
       difficulty,
       inputMode,
       familyStoresRef.current,
+      sessionRosterRef.current,
       performance.now(),
       crypto.randomUUID(),
       Date.now(),
@@ -680,6 +763,7 @@ export default function RetroBlasterII() {
   }, [pitchGenerationRef, startListening, stopListening])
 
   const enterReadiness = useCallback(() => {
+    abortCurriculumSession()
     if (rafRef.current) { cancelAnimationFrame(rafRef.current); rafRef.current = 0 }
     if (listeningRef.current) stopListening()
     stateRef.current = null
@@ -693,12 +777,26 @@ export default function RetroBlasterII() {
     readinessBusyRef.current = false
     readinessToneArmedRef.current = false
     setReadinessToneArmed(false)
+    setCurriculumSavePaused(false)
+    const stores = loadRetroBlasterFamilyStores()
+    familyStoresRef.current = stores
+    let rawPolicy: string | null = null
+    try { rawPolicy = localStorage.getItem(RETRO_CURRICULUM_KEY) } catch {}
+    const resolution = resolveRetroCurriculumSession(rawPolicy, activeLaneStore(stores, inputMode))
+    sessionRosterRef.current = [...resolution.sessionRoster]
+    setSessionRoster([...resolution.sessionRoster])
+    lastDurableRosterRef.current = [...resolution.durableRoster]
+    lastCurriculumExtensionsRef.current = { ...resolution.extensionFields }
+    const curriculumSessionId = curriculumSessionIdRef.current
+    if (resolution.needsWrite) {
+      runCurriculumCommit(resolution.sessionRoster, 'initial', null, curriculumSessionId)
+    }
     const readinessId = ++readinessIdRef.current
     phaseRef.current = 'readiness'
     setPhase('readiness')
     if (inputMode === 'mic') void prepareVoiceReadiness(readinessId)
     else void prepareEarReadiness(readinessId)
-  }, [inputMode, prepareEarReadiness, prepareVoiceReadiness, stopListening])
+  }, [abortCurriculumSession, inputMode, prepareEarReadiness, prepareVoiceReadiness, runCurriculumCommit, stopListening])
 
   const retryVoiceReadiness = useCallback(() => {
     if (phaseRef.current !== 'readiness' || inputModeRef.current !== 'mic') return
@@ -708,6 +806,7 @@ export default function RetroBlasterII() {
   }, [prepareVoiceReadiness])
 
   const exitReadiness = useCallback(() => {
+    abortCurriculumSession()
     ++readinessIdRef.current
     readinessBusyRef.current = false
     readinessToneArmedRef.current = false
@@ -726,7 +825,7 @@ export default function RetroBlasterII() {
     if (listeningRef.current || inputModeRef.current === 'mic') stopListening()
     phaseRef.current = 'menu'
     setPhase('menu')
-  }, [stopListening])
+  }, [abortCurriculumSession, stopListening])
 
   const startGame = useCallback(() => {
     if (rafRef.current) { cancelAnimationFrame(rafRef.current); rafRef.current = 0 }
@@ -796,6 +895,7 @@ export default function RetroBlasterII() {
   const quitCeremony = useCallback(() => {
     const state = stateRef.current
     if (state?.phase !== 'ceremony') return
+    abortCurriculumSession()
     ++ceremonyAttemptIdRef.current
     ceremonyBusyRef.current = false
     pendingCeremonyToneAckRef.current = null
@@ -809,7 +909,7 @@ export default function RetroBlasterII() {
     setCeremonyMessage('')
     phaseRef.current = 'menu'
     setPhase('menu')
-  }, [stopListening])
+  }, [abortCurriculumSession, stopListening])
 
   const answerEarReadiness = useCallback((note: string) => {
     if (phaseRef.current !== 'readiness' || inputModeRef.current !== 'click') return
@@ -852,12 +952,14 @@ export default function RetroBlasterII() {
     if (phase !== 'readiness' || inputMode !== 'click') return
     const onReadinessKey = (event: KeyboardEvent) => {
       if (!/^[1-4]$/.test(event.key)) return
+      const note = radioCheckRoster[Number(event.key) - 1]
+      if (!note) return
       event.preventDefault()
-      answerEarReadiness(RADIO_CHECK_ROSTER[Number(event.key) - 1])
+      answerEarReadiness(note)
     }
     window.addEventListener('keydown', onReadinessKey)
     return () => window.removeEventListener('keydown', onReadinessKey)
-  }, [phase, inputMode, answerEarReadiness])
+  }, [phase, inputMode, answerEarReadiness, radioCheckRoster])
 
   const handleInsertCoin = useCallback(() => {
     let seen = false
@@ -1110,6 +1212,7 @@ export default function RetroBlasterII() {
           START GAME
         </button>
         <button onClick={() => {
+          abortCurriculumSession()
           pendingBlindStimulusAckRef.current = null
           clearRetroAudioReceipt(canvasRef.current)
           stateRef.current = null
@@ -1168,7 +1271,7 @@ export default function RetroBlasterII() {
                     <span className="text-6xl font-black" style={{ color: `hsl(${radioHue}, 92%, 74%)` }}>C</span>
                   </div>
                   <div className="retro-readiness-grid mb-5 grid grid-cols-2 gap-2 sm:grid-cols-4" aria-label="Radio check response controls">
-                    {RADIO_CHECK_ROSTER.map((note, index) => {
+                    {radioCheckRoster.map((note, index) => {
                       const hue = NOTE_COLORS[note]?.hue ?? 0
                       return (
                         <button key={note} onClick={() => answerEarReadiness(note)}
@@ -1275,6 +1378,7 @@ export default function RetroBlasterII() {
             CONTINUE?
           </button>
           <button onClick={() => {
+            abortCurriculumSession()
             pendingBlindStimulusAckRef.current = null
             clearRetroAudioReceipt(canvasRef.current)
             stateRef.current = null
@@ -1343,6 +1447,12 @@ export default function RetroBlasterII() {
         fontFamily: 'monospace',
         background: 'radial-gradient(circle at 50% 0%, #1b0b34 0%, #05010d 42%, #000 82%)',
       }}>
+      {curriculumSavePaused && (
+        <div className="fixed bottom-2 left-1/2 z-50 max-w-[calc(100vw-24px)] -translate-x-1/2 border border-amber-300 bg-black/95 px-3 py-2 text-center text-[11px] font-bold tracking-wide text-amber-200"
+          role="status" aria-live="polite" data-retro-curriculum-status="save-paused">
+          LOCAL SAVE PAUSED - KEEP PLAYING; THE NEXT UNLOCK WILL RETRY.
+        </div>
+      )}
       <div className="w-full min-w-0 max-w-[960px] mb-2 px-2 py-1 text-center"
         data-retro-instruction-rail
         style={{ background: '#02050d', borderBlock: '1px solid rgba(103,232,249,0.22)' }}>
@@ -1491,6 +1601,7 @@ export default function RetroBlasterII() {
           {replayLocked ? 'SIGNAL CHECK - REPLAY LOCKED' : 'PLAY NOTE [SPACE]'}
         </button>
         <button onClick={() => {
+          abortCurriculumSession()
           if (rafRef.current) { cancelAnimationFrame(rafRef.current); rafRef.current = 0 }
           if (inputMode === 'mic') stopListening()
           pendingBlindStimulusAckRef.current = null

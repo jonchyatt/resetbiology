@@ -18,7 +18,6 @@ export const LASER_H = 12 * SPACE_SCALE
 export const LASER_SPEED = 480 * SPACE_SCALE
 export const NOTE_BUTTONS_Y = 290 * SPACE_SCALE
 export const PLAYER_Y = 270 * SPACE_SCALE
-export const INITIAL_UNLOCK = 4
 export const STARTING_SHIELDS = 5
 export const MIC_HOLD_MS = 300
 export const MIC_TOLERANCE_CENTS = 70
@@ -348,6 +347,17 @@ export interface CeremonyToneAck {
   readonly dispatched: boolean
 }
 
+export interface PendingCurriculumUnlock {
+  readonly requestId: string
+  readonly gameId: string
+  readonly note: string
+  readonly sessionCandidateRoster: string[]
+}
+
+export interface CurriculumUnlockAck extends PendingCurriculumUnlock {
+  readonly committed: boolean
+}
+
 export interface WaveParams {
   alienCount: number
   maxConcurrent: number
@@ -377,6 +387,7 @@ export interface EngineInput {
   ceremonyToneAck?: CeremonyToneAck | null
   pianoReadiness?: PianoReadinessObservation | null
   blindStimulusAck?: BlindStimulusAck | null
+  curriculumUnlockAck?: CurriculumUnlockAck | null
 }
 
 export type EngineEvent =
@@ -384,6 +395,8 @@ export type EngineEvent =
   | { kind: 'sfx'; name: 'shoot' | 'wrong' | 'explosion' }
   | { kind: 'playNote'; note: string; delayMs: number; guard: 'attack' | 'none'; targetAlienId: string; attackId: string | null; terminalAlreadyRecorded: boolean }
   | ({ kind: 'blindStimulusRequest' } & BlindStimulusRequest)
+  | ({ kind: 'curriculumUnlockRequest' } & PendingCurriculumUnlock)
+  | { kind: 'curriculumSaveBlocked' }
   | { kind: 'unlock'; note: string; inputMode: InputMode }
   | { kind: 'spawn'; note: string; x: number }
   | { kind: 'waveComplete' }
@@ -438,6 +451,8 @@ export interface GameState {
   pendingIntroductions: string[]
   introductionCeremony: IntroductionCeremony | null
   nextCeremonySerial: number
+  pendingCurriculumUnlock: PendingCurriculumUnlock | null
+  nextCurriculumUnlockSerial: number
 }
 
 export interface ViewState {
@@ -682,6 +697,7 @@ export function createInitialState(
     lastCompletedWavePacing: null,
     waveSoulByNote: {}, rosterServiceCount: {},
     pendingIntroductions: [], introductionCeremony: null, nextCeremonySerial: 0,
+    pendingCurriculumUnlock: null, nextCurriculumUnlockSerial: 0,
   }
 }
 
@@ -732,6 +748,12 @@ function cloneState(state: GameState): GameState {
     requiredAnswerEventsMs: [...state.requiredAnswerEventsMs],
     pendingIntroductions: [...state.pendingIntroductions],
     introductionCeremony: state.introductionCeremony ? { ...state.introductionCeremony } : null,
+    pendingCurriculumUnlock: state.pendingCurriculumUnlock
+      ? {
+          ...state.pendingCurriculumUnlock,
+          sessionCandidateRoster: [...state.pendingCurriculumUnlock.sessionCandidateRoster],
+        }
+      : null,
     lastCompletedWavePacing: state.lastCompletedWavePacing
       ? { ...state.lastCompletedWavePacing, requiredAnswerEventsMs: [...state.lastCompletedWavePacing.requiredAnswerEventsMs] }
       : null,
@@ -997,16 +1019,23 @@ export function resolveAttack(
     const mult = gs.combo >= 10 ? 3 : gs.combo >= 5 ? 2 : 1
     gs.score += 100 * mult
     gs.consecutiveCorrect++
-    const poolSize = gs.unlockedNotes.length
+    const poolSize = new Set(gs.unlockedNotes).size
     const threshold = UNLOCK_THRESHOLDS[poolSize]
-    if (threshold && gs.consecutiveCorrect >= threshold && poolSize < INTRO_ORDER.length) {
-      const newNote = INTRO_ORDER[poolSize]
-      gs.unlockedNotes = [...gs.unlockedNotes, newNote]
-      gs.consecutiveCorrect = 0
-      if (gs.introductionCeremony?.note !== newNote && !gs.pendingIntroductions.includes(newNote)) {
-        gs.pendingIntroductions.push(newNote)
+    if (threshold && gs.consecutiveCorrect >= threshold && !gs.pendingCurriculumUnlock) {
+      const current = new Set(gs.unlockedNotes)
+      const newNote = INTRO_ORDER.find(note => !current.has(note))
+      if (newNote) {
+        const candidate = INTRO_ORDER.filter(note => current.has(note) || note === newNote)
+        const request: PendingCurriculumUnlock = {
+          requestId: `${gs.gameId}:curriculum:${gs.nextCurriculumUnlockSerial}`,
+          gameId: gs.gameId,
+          note: newNote,
+          sessionCandidateRoster: candidate,
+        }
+        gs.nextCurriculumUnlockSerial++
+        gs.pendingCurriculumUnlock = request
+        events.push({ kind: 'curriculumUnlockRequest', ...request })
       }
-      events.push({ kind: 'unlock', note: newNote, inputMode })
     }
     gs.answerCooldownMs = 150
     attack.phase = 'hit-locked'
@@ -1113,12 +1142,38 @@ function beginNextIntroduction(gs: GameState, events: EngineEvent[]): boolean {
   return true
 }
 
+function sameRoster(left: readonly string[], right: readonly string[]): boolean {
+  return left.length === right.length && left.every((note, index) => note === right[index])
+}
+
+function applyCurriculumUnlockAck(gs: GameState, input: EngineInput, events: EngineEvent[]): void {
+  const pending = gs.pendingCurriculumUnlock
+  const ack = input.curriculumUnlockAck
+  if (!pending || !ack || pending.gameId !== gs.gameId || ack.requestId !== pending.requestId || ack.gameId !== pending.gameId ||
+      ack.note !== pending.note || !sameRoster(ack.sessionCandidateRoster, pending.sessionCandidateRoster)) return
+
+  gs.pendingCurriculumUnlock = null
+  if (!ack.committed) {
+    events.push({ kind: 'curriculumSaveBlocked' })
+    return
+  }
+
+  gs.unlockedNotes = [...pending.sessionCandidateRoster]
+  gs.consecutiveCorrect = 0
+  if (gs.introductionCeremony?.note !== pending.note && !gs.pendingIntroductions.includes(pending.note)) {
+    gs.pendingIntroductions.push(pending.note)
+  }
+  events.push({ kind: 'unlock', note: pending.note, inputMode: input.inputMode })
+}
+
 export function tick(state: GameState, input: EngineInput, dtMs: number, rng: () => number): TickResult {
   const gs = cloneState(state)
   const events: EngineEvent[] = []
   const elapsedMs = Math.max(0, dtMs)
   const isActive = input.isActive !== false
   const stepMs = isActive ? Math.min(elapsedMs, MAX_SIM_STEP_MS) : 0
+
+  if (isActive) applyCurriculumUnlockAck(gs, input, events)
 
   if (gs.phase === 'ceremony') {
     const activeCeremony = gs.introductionCeremony

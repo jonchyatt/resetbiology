@@ -652,20 +652,27 @@ check('R8C-31', 'VOICE source meter and timeout eligibility remain unchanged', (
   return { cuePolicy: 'guided', audioHash: hashes.audio, detectorHash: hashes.detector }
 })
 
-check('R8C-32', 'four-note opening remains exact with no R9 curriculum state', () => {
-  assert.equal(engine.INITIAL_UNLOCK, 4)
-  assert.equal(source.shell.includes('INTRO_ORDER.slice(0, INITIAL_UNLOCK)'), true)
+check('R8C-32', 'fresh two-note curriculum contract replaces the four-note policy constant', () => {
+  const curriculumSource = readFileSync('src/components/PitchDefender/retroBlasterCurriculum.ts', 'utf8')
+  assert.equal('INITIAL_UNLOCK' in engine, false)
+  assert.equal(source.engine.includes('INITIAL_UNLOCK'), false)
+  assert.equal(curriculumSource.includes('INTRO_ORDER.slice(0, 2)'), true)
   assert.equal(`${source.engine}\n${source.shell}`.includes('retro_blaster_curriculum_v1'), false)
-  return { initialUnlock: engine.INITIAL_UNLOCK, notes: NOTES }
+  return { freshRoster: ['C4', 'A4'], policyModuleOnlyKey: true }
 })
 
-check('R8C-33', 'protected audio detector family routes assets dependencies and lockfiles are byte-identical', () => {
+check('R8C-33', 'protected Retro source audio detector family dependencies and lockfiles remain exact across sibling commits', () => {
   assert.equal(hashes.audio, PROTECTED_HASHES.audio)
   assert.equal(hashes.family, PROTECTED_HASHES.family)
   assert.equal(hashes.detector, PROTECTED_HASHES.detector)
-  const changedSource = git('diff', '--name-only', BASE, '--', 'src').split(/\r?\n/).filter(Boolean).sort()
+  const trackedSource = git('diff', '--name-only', BASE, '--', 'src/components/PitchDefender')
+    .split(/\r?\n/).filter(Boolean)
+  const untrackedSource = git('ls-files', '--others', '--exclude-standard', '--', 'src/components/PitchDefender')
+    .split(/\r?\n/).filter(Boolean)
+  const changedSource = [...new Set([...trackedSource, ...untrackedSource])].sort()
   assert.deepEqual(changedSource, [
     'src/components/PitchDefender/RetroBlasterII.tsx',
+    'src/components/PitchDefender/retroBlasterCurriculum.ts',
     'src/components/PitchDefender/retroBlasterEngine.ts',
     'src/components/PitchDefender/retroBlasterRenderer.ts',
   ])

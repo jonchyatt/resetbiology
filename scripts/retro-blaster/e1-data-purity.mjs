@@ -56,6 +56,7 @@ globalThis.localStorage = localStorage
 const fsrs = await import(new URL('../../src/lib/fsrs.ts', import.meta.url))
 const family = await import(new URL('../../src/lib/fsrsFamily.ts', import.meta.url))
 const engine = await import(new URL('../../src/components/PitchDefender/retroBlasterEngine.ts', import.meta.url))
+const curriculum = await import(new URL('../../src/components/PitchDefender/retroBlasterCurriculum.ts', import.meta.url))
 const gameTypes = await import(new URL('../../src/components/PitchDefender/types.ts', import.meta.url))
 
 function loadRealShell() {
@@ -79,6 +80,7 @@ function loadRealShell() {
     ['@/lib/fsrsFamily', family],
     ['./types', gameTypes],
     ['./retroBlasterEngine', engine],
+    ['./retroBlasterCurriculum', curriculum],
     ['./usePitchDetection', { usePitchDetection() { throw new Error('Component mount is outside this fixture') } }],
     ['./audioEngine', { initAudio() {}, loadPianoSamples() {}, playPianoNote() {} }],
     ['./retroBlasterRenderer', { render() {} }],
@@ -264,7 +266,7 @@ const fixtures = [
     }
     return `git diff clean for siblings against ${protectedBase}; 4 legacy literals intact`
   }],
-  ['6', 'active-lane roster source', () => {
+  ['6', 'active-lane store selector with explicit session rosters', () => {
     const earNotes = gameTypes.INTRO_ORDER.slice(0, 7)
     const voiceNotes = gameTypes.INTRO_ORDER.slice(0, 6)
     const earStore = Object.fromEntries(earNotes.map((note, index) => [note, memory(note, { weak: index === 0 })]))
@@ -274,8 +276,8 @@ const fixtures = [
       [family.FSRS_VOICE_KEY]: JSON.stringify(voiceStore),
     })
     const stores = shell.loadRetroBlasterFamilyStores()
-    const clickState = shell.buildRetroBlasterState('easy', 'click', stores, 1000)
-    const micState = shell.buildRetroBlasterState('easy', 'mic', stores, 1000)
+    const clickState = shell.buildRetroBlasterState('easy', 'click', stores, earNotes, 1000)
+    const micState = shell.buildRetroBlasterState('easy', 'mic', stores, voiceNotes, 1000)
     assert(clickState.unlockedNotes.length === 7, `click roster used ${clickState.unlockedNotes.length} notes instead of EAR's 7`)
     assert(micState.unlockedNotes.length === 6, `mic roster used ${micState.unlockedNotes.length} notes instead of VOICE's 6`)
     assert(shell.activeLaneStore(stores, 'click') === stores.ear, 'click selector did not return EAR store')
@@ -292,7 +294,7 @@ const fixtures = [
     assert(Object.keys(stores.voice).length === 0, 'gameplay did not receive the corruption fallback')
     assert(localStorage.getItem(family.FSRS_VOICE_KEY) === corruptRaw, 'load overwrote corrupt source bytes')
     assert(localStorage.getItem(`${family.FSRS_VOICE_KEY}.bak`) === corruptRaw, 'corrupt bytes were not backed up')
-    shell.buildRetroBlasterState('easy', 'mic', stores, 1000)
+    shell.buildRetroBlasterState('easy', 'mic', stores, gameTypes.INTRO_ORDER.slice(0, 2), 1000)
     const saved = family.saveStore(family.FSRS_VOICE_KEY, stores.voice)
     assert(saved === false, 'dirty-load latch allowed fallback persistence without a grade')
     assert(localStorage.getItem(family.FSRS_VOICE_KEY) === corruptRaw, 'gameplay overwrote corrupt source bytes')
