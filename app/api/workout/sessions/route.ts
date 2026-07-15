@@ -13,23 +13,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Find user by Auth0 sub OR email
-    let user = await prisma.user.findUnique({
-      where: { auth0Sub: session.user.sub }
-    })
-
-    if (!user && session.user.email) {
-      user = await prisma.user.findUnique({
-        where: { email: session.user.email }
-      })
-
-      if (user) {
-        user = await prisma.user.update({
-          where: { id: user.id },
-          data: { auth0Sub: session.user.sub }
-        })
-      }
-    }
+    const user = await getUserFromSession(session)
 
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
@@ -82,23 +66,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Find user by Auth0 sub OR email
-    let user = await prisma.user.findUnique({
-      where: { auth0Sub: session.user.sub }
-    })
-
-    if (!user && session.user.email) {
-      user = await prisma.user.findUnique({
-        where: { email: session.user.email }
-      })
-
-      if (user) {
-        user = await prisma.user.update({
-          where: { id: user.id },
-          data: { auth0Sub: session.user.sub }
-        })
-      }
-    }
+    const user = await getUserFromSession(session)
 
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
@@ -186,16 +154,7 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Find user by Auth0 sub OR email
-    let user = await prisma.user.findUnique({
-      where: { auth0Sub: session.user.sub }
-    })
-
-    if (!user && session.user.email) {
-      user = await prisma.user.findUnique({
-        where: { email: session.user.email }
-      })
-    }
+    const user = await getUserFromSession(session)
 
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })

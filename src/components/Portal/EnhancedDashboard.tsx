@@ -519,13 +519,29 @@ export function EnhancedDashboard() {
           {/* Welcome Header */}
           <div className="text-center mb-8">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 text-shadow-lg animate-fade-in">
-              Welcome back, <span className="text-primary-400">{
+              {/* "Welcome back" is wrong on a brand-new account's very first
+                  landing (no way here to tell first-time from returning), so
+                  this drops the claim rather than guess — "Welcome" reads
+                  correctly either way. */}
+              Welcome, <span
+                className="text-primary-400 inline-block max-w-[60vw] sm:max-w-md align-bottom truncate"
+                title={
+                  (user as any)?.given_name
+                    || user?.nickname
+                    || (user?.email ? user.email.split('@')[0] : null)
+                    || (user?.name && !user.name.includes('@') ? user.name : null)
+                    || "Wellness Warrior"
+                }
+              >{
                 // Auth0 default for email/password signups is name === email,
                 // which makes this headline read as the user's full email
                 // address — not what we want plastered across /portal in 6xl.
                 // Prefer real first name, then nickname, then email-prefix
                 // (jonchyatt@gmail.com → "jonchyatt"), and only fall back to
                 // the generic label if nothing identifying is available.
+                // The email-prefix fallback can still be long (test aliases,
+                // "+tag" addresses) so the span above also truncates with an
+                // ellipsis rather than overflowing the viewport.
                 (user as any)?.given_name
                   || user?.nickname
                   || (user?.email ? user.email.split('@')[0] : null)

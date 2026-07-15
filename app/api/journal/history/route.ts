@@ -9,24 +9,6 @@ function startOfDay(date: Date) {
   return d
 }
 
-async function resolveUser(sessionUser: any) {
-  if (!sessionUser?.sub) return null
-
-  let user = await prisma.user.findUnique({ where: { auth0Sub: sessionUser.sub } })
-
-  if (!user && sessionUser.email) {
-    user = await prisma.user.findUnique({ where: { email: sessionUser.email } })
-    if (user) {
-      user = await prisma.user.update({
-        where: { id: user.id },
-        data: { auth0Sub: sessionUser.sub },
-      })
-    }
-  }
-
-  return user
-}
-
 function getMonthRange(param?: string | null) {
   const now = new Date()
   let year = now.getFullYear()
@@ -55,7 +37,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const user = await resolveUser(session.user)
+    const user = await getUserFromSession(session)
 
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })

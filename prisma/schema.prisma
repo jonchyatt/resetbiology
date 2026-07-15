@@ -41,6 +41,8 @@ model User {
   googleDriveRefreshToken String?                  // Encrypted OAuth refresh token
   googleDriveConnectedAt  DateTime?                // When Drive was connected
   googleDriveSyncEnabled  Boolean                  @default(false)
+  driveVaultState         Json?                    // { needsFolderReconciliation, candidateFolderIds, flaggedAt } — set when connect finds ambiguous vault-root candidates and refuses to guess (see resolveVaultRootFolder in google-drive.ts)
+  driveAccountEmail       String?                  // Google account email the current driveFolder pointer belongs to — lets connect detect a Google-account swap vs. a genuinely new one
   vaultMigrationStartedAt DateTime?                // P2.5 advisory lock — claimed for the duration of a peptide migration. Stale locks (>5min) are reclaimable.
   profileData             Json?
   irbApprovalStatus       String?

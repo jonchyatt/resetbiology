@@ -5,6 +5,7 @@ import { auth0 } from '@/lib/auth0'
 import { getUserFromSession } from '@/lib/getUserFromSession'
 import { encryptToken } from '@/lib/vault-encryption'
 import { migratePeptidesToVault } from '@/lib/migratePeptidesToVault'
+import { resolveVaultRootFolder } from '@/lib/google-drive'
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET
@@ -105,58 +106,69 @@ export async function GET(req: NextRequest) {
     // Create a folder in user's Google Drive
     const drive = google.drive({ version: 'v3', auth: oauth2Client })
 
-    // The drive.file scope only grants access to files THIS app has created
-    // — `drive.files.list({ q: "name=..." })` against the whole Drive throws
-    // insufficient_scope. So we can't search-by-name to reuse a folder a
-    // previous session created. Instead: look up the user's stored folderId
-    // in Mongo (set on a prior connect), validate it still exists with a
-    // scoped `files.get`, and fall back to creating a fresh folder + the
-    // subfolder tree if the stored id is missing/deleted.
+    // Best-effort: which Google account is connecting right now. Used only
+    // to detect an account-swap against the stored pointer's owning account
+    // (case 0 of resolveVaultRootFolder) — a failure here just means we
+    // skip that specific check, not that the connect fails.
+    let currentAccountEmail: string | null = null
+    try {
+      const userinfo = await google.oauth2({ version: 'v2', auth: oauth2Client }).userinfo.get()
+      currentAccountEmail = userinfo.data.email ?? null
+    } catch (err: any) {
+      console.warn('[oauth-callback] could not fetch account email:', err?.message)
+    }
+
+    // Folder identity: look up the user's stored pointer, validate it, and
+    // fall back to appProperties-based discovery before ever creating a new
+    // tree. See resolveVaultRootFolder() in google-drive.ts for the full
+    // contract — this is the shared path every caller routes through.
     const existingUser = await prisma.user.findUnique({
       where: { id: state },
-      select: { driveFolder: true },
+      select: { driveFolder: true, driveAccountEmail: true },
     })
 
-    let folderId: string | null = null
-    if (existingUser?.driveFolder) {
-      try {
-        const probe = await drive.files.get({
-          fileId: existingUser.driveFolder,
-          fields: 'id, trashed',
-        })
-        if (probe.data.id && !probe.data.trashed) {
-          folderId = probe.data.id
-          console.log('Reusing existing Reset Biology folder:', folderId)
-        }
-      } catch (err: any) {
-        // 404 / 403 / token-mismatch: fall through to fresh create
-        console.log('Stored driveFolder no longer reachable, will create fresh:', err?.code || err?.message)
-      }
-    }
+    const resolution = await resolveVaultRootFolder(drive, state, existingUser?.driveFolder, {
+      stored: existingUser?.driveAccountEmail,
+      current: currentAccountEmail,
+    })
 
-    if (!folderId) {
-      const folderResponse = await drive.files.create({
-        requestBody: {
-          name: 'Reset Biology Data',
-          mimeType: 'application/vnd.google-apps.folder',
-          description: 'Your Reset Biology journal entries, workout logs, and nutrition data',
-        },
-        fields: 'id',
+    if (resolution.status === 'ambiguous') {
+      // Zero unambiguous candidates to reuse and refuse to guess or create
+      // another tree — flag for a human-visible reconciliation step instead.
+      console.warn('[oauth-callback] ambiguous vault root, flagging for reconciliation:', {
+        userId: state,
+        candidateFolderIds: resolution.candidateFolderIds,
       })
-      folderId = folderResponse.data.id!
-      console.log('Created new Reset Biology folder:', folderId)
-
-      const subfolders = ['Journal', 'Nutrition', 'Workouts', 'Breath Sessions', 'Peptides', 'Vision Training', 'Memory Training', 'Profile', 'Progress Reports']
-      for (const subfolder of subfolders) {
-        await drive.files.create({
-          requestBody: {
-            name: subfolder,
-            mimeType: 'application/vnd.google-apps.folder',
-            parents: [folderId],
+      await prisma.user.update({
+        where: { id: state },
+        data: {
+          googleDriveRefreshToken: encryptToken(tokens.refresh_token),
+          googleDriveConnectedAt: new Date(),
+          googleDriveSyncEnabled: false,
+          driveVaultState: {
+            needsFolderReconciliation: true,
+            candidateFolderIds: resolution.candidateFolderIds,
+            flaggedAt: new Date().toISOString(),
           },
-        })
-      }
+          // NOT touching driveFolder or driveAccountEmail here — the old
+          // pointer (and whichever account it belongs to) stays exactly as
+          // it was until a human reconciles it.
+        },
+      })
+      return redirectToReturn(returnTo, 'drive=needs_reconciliation')
     }
+
+    const folderId = resolution.folderId
+    // Structured resolution log (Argus catch, coexec 2026-07-15): which
+    // strategy won — 'pointer' | 'appProperties' | 'created' — so Phase-3
+    // post-deploy verification of appProperties discovery is provable from
+    // Vercel runtime logs without manual Drive inspection.
+    console.log('[oauth-callback] vault root resolved:', {
+      userId: state,
+      status: resolution.status,
+      method: resolution.method,
+      folderId,
+    })
 
     // Update user with Drive credentials. Refresh token is encrypted at rest
     // via VAULT_TOKEN_KEY (AES-256-GCM); falls through to plaintext if the env
@@ -166,8 +178,10 @@ export async function GET(req: NextRequest) {
       data: {
         googleDriveRefreshToken: encryptToken(tokens.refresh_token),
         driveFolder: folderId,
+        driveAccountEmail: currentAccountEmail,
         googleDriveConnectedAt: new Date(),
         googleDriveSyncEnabled: true,
+        driveVaultState: null, // clear any stale reconciliation flag from a prior attempt
       },
     })
 

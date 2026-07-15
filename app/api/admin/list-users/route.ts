@@ -6,8 +6,13 @@ export async function GET() {
   try {
     const session = await auth0.getSession()
 
-    // Only allow admin user
-    if (!session?.user || session.user.email !== 'jonchyatt@gmail.com') {
+    // Only allow admin user — email match alone is spoofable via an
+    // unverified Auth0 signup; require the verified claim too (T8 class).
+    if (
+      !session?.user ||
+      session.user.email !== 'jonchyatt@gmail.com' ||
+      session.user.email_verified !== true
+    ) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
