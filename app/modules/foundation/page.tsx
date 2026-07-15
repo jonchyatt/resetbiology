@@ -9,8 +9,15 @@ export default function FoundationModulesPage() {
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
-  const [completedModules, setCompletedModules] = useState(new Set([1, 2]))
+  const [completedModules, setCompletedModules] = useState(new Set<number>())
+  const [completionError, setCompletionError] = useState<string | null>(null)
   const audioRef = useRef<HTMLAudioElement>(null)
+
+  // ponytail: foundation modules live in their own id namespace ("foundation-N")
+  // so they never collide with the unrelated "module-N" catalog that
+  // src/components/Audio/ModuleLibrary.tsx (a different curriculum, /audio route)
+  // writes to the same free-form ModuleCompletion.moduleId column.
+  const toApiModuleId = (id: number) => `foundation-${id}`
 
   const modules = [
     { id: 1, title: "Appetite Reset Foundation", description: "Master your hunger signals and metabolic awareness", audioFile: "/1mmm1.mp3" },
@@ -22,6 +29,34 @@ export default function FoundationModulesPage() {
 
   const currentModuleData = modules.find(m => m.id === currentModule)
 
+  // Hydrate completions from the DB once on mount so reloads show DB-truth,
+  // matching src/components/Audio/ModuleLibrary.tsx's GET-on-mount pattern.
+  useEffect(() => {
+    let active = true
+
+    const loadCompletions = async () => {
+      try {
+        const response = await fetch('/api/modules/complete?limit=200', { cache: 'no-store' })
+        const data = await response.json().catch(() => null)
+        if (!active || !response.ok || !data?.success) return
+
+        const done = new Set<number>()
+        for (const item of Array.isArray(data.completions) ? data.completions : []) {
+          const match = typeof item?.moduleId === 'string' ? item.moduleId.match(/^foundation-(\d+)$/) : null
+          if (match) done.add(Number(match[1]))
+        }
+        if (done.size) {
+          setCompletedModules(prev => new Set([...prev, ...done]))
+        }
+      } catch (error) {
+        console.error('Failed to load foundation module completions:', error)
+      }
+    }
+
+    loadCompletions()
+    return () => { active = false }
+  }, [])
+
   useEffect(() => {
     const audio = audioRef.current
     if (!audio) return
@@ -30,7 +65,40 @@ export default function FoundationModulesPage() {
     const updateDuration = () => setDuration(audio.duration)
     const handleEnded = () => {
       setIsPlaying(false)
-      setCompletedModules(prev => new Set([...prev, currentModule]))
+
+      const moduleId = currentModule
+      const audioDuration = audio.duration ? Math.round(audio.duration) : undefined
+
+      setCompletedModules(prev => new Set([...prev, moduleId]))
+      setCompletionError(null)
+
+      fetch('/api/modules/complete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          moduleId: toApiModuleId(moduleId),
+          audioDuration,
+          fullCompletion: true,
+        }),
+      })
+        .then(async (response) => {
+          const data = await response.json().catch(() => null)
+          if (!response.ok || !data?.success) {
+            const message = data?.error === 'verify_email'
+              ? 'Please verify your email to save progress.'
+              : (data?.error || 'Failed to save module completion.')
+            throw new Error(message)
+          }
+        })
+        .catch((error) => {
+          console.error('Failed to record foundation module completion:', error)
+          setCompletedModules(prev => {
+            const next = new Set(prev)
+            next.delete(moduleId)
+            return next
+          })
+          setCompletionError(error?.message || 'Failed to save module completion. Please try again.')
+        })
     }
 
     audio.addEventListener('timeupdate', updateTime)
@@ -149,6 +217,12 @@ export default function FoundationModulesPage() {
                 </button>
               </div>
             </div>
+
+            {completionError && (
+              <div className="mt-4 rounded-lg border border-red-400/40 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+                {completionError}
+              </div>
+            )}
           </div>
 
           {/* Module List */}
