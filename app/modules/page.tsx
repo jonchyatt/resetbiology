@@ -1,6 +1,34 @@
 import { PortalHeader } from '@/components/Navigation/PortalHeader'
+import { auth0 } from '@/lib/auth0'
+import { prisma } from '@/lib/prisma'
 
-export default function ModulesPage() {
+export const dynamic = 'force-dynamic'
+
+// ponytail: read-only findUnique (no session->user auto-create side effect)
+// mirrors app/admin/store/page.tsx's server-component session pattern.
+async function getFoundationCompletedCount(): Promise<number> {
+  try {
+    const session = await auth0.getSession()
+    const email = session?.user?.email?.toLowerCase()
+    if (!email) return 0
+
+    const user = await prisma.user.findUnique({ where: { email } })
+    if (!user) return 0
+
+    const completed = await prisma.moduleCompletion.findMany({
+      where: { userId: user.id, moduleId: { startsWith: 'foundation-' } },
+      select: { moduleId: true },
+      distinct: ['moduleId'],
+    })
+    return completed.length
+  } catch (error) {
+    console.error('Failed to load foundation module count:', error)
+    return 0
+  }
+}
+
+export default async function ModulesPage() {
+  const foundationCompleted = await getFoundationCompletedCount()
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 relative"
          style={{
