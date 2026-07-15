@@ -101,7 +101,15 @@ function backoffMinutes(attempts: number, rateLimited: boolean): number {
   return Math.min(base * 2, MAX_BACKOFF_MINUTES)
 }
 
-async function claimNextDriveSyncRow(): Promise<ClaimedDriveSyncRow | null> {
+type DriveClientFactory = (userId: string) => ReturnType<typeof getDriveClient>
+
+// Optional row filter — used by drainDriveSyncRowsNow to claim ONLY the specific
+// rows a request just enqueued, instead of the FIFO-next-pending row the cron
+// drain uses. Same atomic findAndModify machinery either way (no separate claim
+// path to drift out of sync).
+type ClaimFilter = { userId: string; domain: string; dateStr: string }
+
+async function claimNextDriveSyncRow(filter?: ClaimFilter): Promise<ClaimedDriveSyncRow | null> {
   const now = new Date()
   const leaseUntil = new Date(now.getTime() + CLAIM_LEASE_MS)
 
@@ -116,6 +124,13 @@ async function claimNextDriveSyncRow(): Promise<ClaimedDriveSyncRow | null> {
         { leaseUntil: null },
         { leaseUntil: { $lt: { $date: now.toISOString() } } },
       ],
+      ...(filter
+        ? {
+            userId: { $oid: filter.userId },
+            domain: filter.domain,
+            dateStr: filter.dateStr,
+          }
+        : {}),
     },
     sort: { createdAt: 1 },
     update: {
@@ -138,6 +153,87 @@ async function claimNextDriveSyncRow(): Promise<ClaimedDriveSyncRow | null> {
   }
 
   return claimed
+}
+
+// Shared claimed-row processor — the ONE place that turns a claimed outbox row
+// into a Drive write + terminal/retry status update. Both the FIFO cron drain
+// and the targeted immediate drain route through this so retry/backoff/crash-
+// recovery semantics can't drift between the two call sites.
+async function processClaimedRow(
+  row: ClaimedDriveSyncRow,
+  getDrive: DriveClientFactory
+): Promise<'done' | 'failed'> {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: row.userId },
+      select: { driveFolder: true },
+    })
+
+    if (!user) {
+      await prisma.driveSyncOutbox.update({
+        where: { id: row.id },
+        data: {
+          status: 'user_removed',
+          leaseUntil: null,
+          lastError: 'User not found',
+        },
+      })
+      return 'failed'
+    }
+
+    const drive = await getDrive(row.userId)
+    if (!drive) {
+      throw new Error('Google Drive not connected')
+    }
+
+    if (!user.driveFolder) {
+      throw new Error('No Drive folder configured')
+    }
+
+    await syncDomainForDate(
+      drive,
+      user.driveFolder,
+      row.userId,
+      row.domain,
+      dateFromDateStr(row.dateStr)
+    )
+
+    await prisma.driveSyncOutbox.update({
+      where: { id: row.id },
+      data: {
+        status: 'done',
+        leaseUntil: null,
+        lastError: null,
+      },
+    })
+    return 'done'
+  } catch (error) {
+    const lastError = errorMessage(error)
+    const terminal = row.attempts >= MAX_ATTEMPTS
+
+    if (terminal) {
+      await prisma.driveSyncOutbox.update({
+        where: { id: row.id },
+        data: {
+          status: 'failed',
+          leaseUntil: null,
+          lastError,
+        },
+      })
+    } else {
+      const delayMinutes = backoffMinutes(row.attempts, isRateLimitError(error))
+      await prisma.driveSyncOutbox.update({
+        where: { id: row.id },
+        data: {
+          status: 'pending',
+          leaseUntil: new Date(Date.now() + delayMinutes * 60 * 1000),
+          lastError,
+        },
+      })
+    }
+
+    return 'failed'
+  }
 }
 
 export async function enqueueDriveSync(
@@ -196,8 +292,10 @@ export async function enqueueDriveSync(
 }
 
 export async function drainDriveSyncOutbox(
-  max = 25
+  max = 25,
+  options: { getDrive?: DriveClientFactory } = {}
 ): Promise<{ claimed: number; done: number; failed: number }> {
+  const getDrive = options.getDrive ?? getDriveClient
   let claimed = 0
   let done = 0
   let failed = 0
@@ -207,82 +305,47 @@ export async function drainDriveSyncOutbox(
     if (!row) break
 
     claimed += 1
-
-    try {
-      const user = await prisma.user.findUnique({
-        where: { id: row.userId },
-        select: { driveFolder: true },
-      })
-
-      if (!user) {
-        await prisma.driveSyncOutbox.update({
-          where: { id: row.id },
-          data: {
-            status: 'user_removed',
-            leaseUntil: null,
-            lastError: 'User not found',
-          },
-        })
-        failed += 1
-        continue
-      }
-
-      const drive = await getDriveClient(row.userId)
-      if (!drive) {
-        throw new Error('Google Drive not connected')
-      }
-
-      if (!user.driveFolder) {
-        throw new Error('No Drive folder configured')
-      }
-
-      await syncDomainForDate(
-        drive,
-        user.driveFolder,
-        row.userId,
-        row.domain,
-        dateFromDateStr(row.dateStr)
-      )
-
-      await prisma.driveSyncOutbox.update({
-        where: { id: row.id },
-        data: {
-          status: 'done',
-          leaseUntil: null,
-          lastError: null,
-        },
-      })
-      done += 1
-    } catch (error) {
-      const lastError = errorMessage(error)
-      const terminal = row.attempts >= MAX_ATTEMPTS
-
-      if (terminal) {
-        await prisma.driveSyncOutbox.update({
-          where: { id: row.id },
-          data: {
-            status: 'failed',
-            leaseUntil: null,
-            lastError,
-          },
-        })
-      } else {
-        const delayMinutes = backoffMinutes(row.attempts, isRateLimitError(error))
-        await prisma.driveSyncOutbox.update({
-          where: { id: row.id },
-          data: {
-            status: 'pending',
-            leaseUntil: new Date(Date.now() + delayMinutes * 60 * 1000),
-            lastError,
-          },
-        })
-      }
-
-      failed += 1
-    }
+    const result = await processClaimedRow(row, getDrive)
+    if (result === 'done') done += 1
+    else failed += 1
   }
 
   return { claimed, done, failed }
+}
+
+// Immediate, targeted drain of the exact rows a request just enqueued — awaited
+// by the caller, NOT fire-and-forget (S+1 lesson from 3e047b19: Vercel freezes
+// the lambda after the response, so anything un-awaited here would never run in
+// prod, same as the enqueue-side bug that commit fixed one day before this one).
+// Claims ONLY (userId, domain, dateStr) rows via the same atomic claim path as
+// the cron drain, so a concurrent cron tick can never double-process the same
+// row (findAndModify is atomic; whichever caller claims it first wins, the
+// other gets null and moves on). If this attempt fails or the row is already
+// claimed elsewhere, the row is left exactly as the shared retry/backoff logic
+// would leave it — the cron drain remains the crash-recovery backstop.
+export async function drainDriveSyncRowsNow(
+  userId: string,
+  date: Date,
+  domains: string[],
+  options: { getDrive?: DriveClientFactory } = {}
+): Promise<{ attempted: number; done: number; failed: number }> {
+  const getDrive = options.getDrive ?? getDriveClient
+  const dateStr = toDateStr(date)
+  let attempted = 0
+  let done = 0
+  let failed = 0
+
+  for (const domain of domains) {
+    const row = await claimNextDriveSyncRow({ userId, domain, dateStr })
+    if (!row) continue // already claimed/processed elsewhere, or not enqueued — nothing to do
+
+    attempted += 1
+    const result = await processClaimedRow(row, getDrive)
+    if (result === 'done') done += 1
+    else failed += 1
+  }
+
+  return { attempted, done, failed }
 }
 
 // The FLW-flagged front-door gap: if every enqueue upsert fails during a save,
