@@ -17,6 +17,7 @@ const PursuitEngine = dynamic(() => import('./PursuitEngine'), { ssr: false }) a
 const SaccadeEngine = dynamic(() => import('./SaccadeEngine'), { ssr: false }) as VisionEngineComponent
 const PeripheralEngine = dynamic(() => import('./PeripheralEngine'), { ssr: false }) as VisionEngineComponent
 const SnellenWalksEngine = dynamic(() => import('./SnellenWalksEngine'), { ssr: false }) as VisionEngineComponent
+const GaborAcuityEngine = dynamic(() => import('./GaborAcuityEngine'), { ssr: false }) as VisionEngineComponent
 
 export const engineRegistry: Record<string, VisionEngineComponent> = {
   'palming-reset': DownshiftEngine,
@@ -30,6 +31,7 @@ export const engineRegistry: Record<string, VisionEngineComponent> = {
   'mirror-scan': PeripheralEngine,
   'laterality-ladder': PeripheralEngine,
   'snellen-layering-walks': SnellenWalksEngine,
+  'gabor-contrast': GaborAcuityEngine,
 }
 
 export function getEngine(exerciseId: string): VisionEngineComponent | null {
