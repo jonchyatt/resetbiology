@@ -35,6 +35,9 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       connected,
       folderId: connected ? userData.driveFolder : null,
+      // Stored root id is sufficient to build the canonical Drive folder URL —
+      // no extra Drive API call needed.
+      folderUrl: connected ? `https://drive.google.com/drive/folders/${userData.driveFolder}` : null,
       connectedAt: userData.googleDriveConnectedAt,
       syncEnabled: userData.googleDriveSyncEnabled,
       needsFolderReconciliation,
