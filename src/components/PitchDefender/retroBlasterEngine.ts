@@ -25,6 +25,8 @@ export const MIC_TOLERANCE_CENTS = 70
 export const MIC_CONFIDENCE_FLOOR = 0.75
 export const CHARGE_FULL_MS = MIC_HOLD_MS
 export const MAX_SIM_STEP_MS = 50
+export const STIMULUS_ACK_TIMEOUT_MS = 1000
+export const STIMULUS_ACK_ACCEPT_MAX_MS = MAX_SIM_STEP_MS
 export const INTRODUCTION_DURATION_MS = 2400
 
 export const FORMATION_COLUMNS = 5
@@ -171,6 +173,7 @@ export const VISUAL_KIND_COUNT = 4
 
 export interface NoteSoulSnapshot {
   note: string
+  reviewed: boolean
   r: number
   calm: number
   due: boolean
@@ -202,6 +205,7 @@ export function snapshotNoteSoul(
   const agitation = 1 - r
   return {
     note,
+    reviewed: Boolean(memory && memory.phase !== 'new' && memory.lastReview > 0),
     r,
     calm,
     due,
@@ -254,14 +258,50 @@ export interface Particle {
 }
 
 export type Difficulty = 'easy' | 'true'
-export type AttackPhase = 'telegraph' | 'outbound' | 'hit-locked' | 'returning'
+export type AttackPhase = 'telegraph' | 'awaiting-stimulus' | 'outbound' | 'hit-locked' | 'returning'
 export type AttackOutcome = 'correct' | 'wrong' | 'timeout' | 'death' | 'cancelled'
+export type CuePolicy = 'guided' | 'blind'
+export type SignalCheckDisposition =
+  | 'wave-1'
+  | 'pending'
+  | 'blind'
+  | 'guided-voice'
+  | 'guided-unreviewed'
+  | 'guided-output-not-ready'
+  | 'cancelled-negative-ack'
+  | 'cancelled-ack-skew'
+  | 'cancelled-ack-timeout'
+  | 'cancelled-mode-change'
+  | 'terminal'
+
+export interface PianoReadinessObservation {
+  readonly observationId: number
+  readonly contextState: AudioContextState | 'uninitialized'
+  readonly sampleReadyByNote: Readonly<Record<string, boolean>>
+}
+
+export interface BlindStimulusRequest {
+  readonly requestId: string
+  readonly gameId: string
+  readonly attackId: string
+  readonly alienId: string
+  readonly note: string
+  readonly requestedAtDirectorClockMs: number
+}
+
+export interface BlindStimulusAck extends BlindStimulusRequest {
+  readonly dispatched: boolean
+  readonly dispatchedAtDirectorClockMs: number
+}
 
 export interface ActiveAttack {
   readonly attackId: string
   readonly alienId: string
   readonly note: string
   readonly side: -1 | 1
+  readonly cuePolicy: CuePolicy
+  readonly readinessObservationId: number | null
+  stimulusRequest: BlindStimulusRequest | null
   phase: AttackPhase
   telegraphStartedAtMs: number
   demandAtMs: number | null
@@ -335,12 +375,15 @@ export interface EngineInput {
   memoryEpochMs?: number
   voiceTimeoutObservation?: Readonly<{ healthy: boolean; heard: boolean }>
   ceremonyToneAck?: CeremonyToneAck | null
+  pianoReadiness?: PianoReadinessObservation | null
+  blindStimulusAck?: BlindStimulusAck | null
 }
 
 export type EngineEvent =
   | { kind: 'grade'; note: string; correct: boolean; latencyMs: number; inputMode: InputMode }
   | { kind: 'sfx'; name: 'shoot' | 'wrong' | 'explosion' }
-  | { kind: 'playNote'; note: string; delayMs: number; guard: 'attack' | 'none'; targetAlienId: string; attackId: string | null }
+  | { kind: 'playNote'; note: string; delayMs: number; guard: 'attack' | 'none'; targetAlienId: string; attackId: string | null; terminalAlreadyRecorded: boolean }
+  | ({ kind: 'blindStimulusRequest' } & BlindStimulusRequest)
   | { kind: 'unlock'; note: string; inputMode: InputMode }
   | { kind: 'spawn'; note: string; x: number }
   | { kind: 'waveComplete' }
@@ -382,6 +425,8 @@ export interface GameState {
   answerCooldownMs: number
   nextAttackSerial: number
   activeAttack: ActiveAttack | null
+  blindProbePending: boolean
+  signalCheckDisposition: SignalCheckDisposition
   nextAttackAtMs: number
   directorCursorSlot: number
   lastDemandAtMs: number | null
@@ -418,6 +463,16 @@ export interface ViewState {
   spotlightIdx: number
   nowMs: number
   activeAttack: ActiveAttack | null
+  identityMaskActive: boolean
+  signalCheck: {
+    wave: number
+    pending: boolean
+    cuePolicy: CuePolicy | null
+    phase: AttackPhase | null
+    disposition: SignalCheckDisposition
+    requestId: string | null
+    maskActive: boolean
+  }
   requiredAnswerEventsMs: number[]
   lastCompletedWavePacing: WavePacingReceipt | null
   introductionCeremony: IntroductionCeremony | null
@@ -620,6 +675,7 @@ export function createInitialState(
     phase: 'playing', clockMs, directorClockMs: clockMs, matchStartAt: 0, matchTargetAlienId: null,
     micCooldownMs: 0, answerCooldownMs: 0,
     nextAttackSerial: 1, activeAttack: null,
+    blindProbePending: false, signalCheckDisposition: 'wave-1',
     nextAttackAtMs: clockMs + ENGINE_DEMAND_FLOOR_MS[difficulty] - DIVE_TELEGRAPH_MS,
     directorCursorSlot: 0, lastDemandAtMs: null,
     requiredAnswerEventsMs: [], waveStartedAtMs: clockMs,
@@ -647,6 +703,8 @@ export function beginWave(
   gs.lastDemandAtMs = null
   gs.requiredAnswerEventsMs = []
   gs.waveStartedAtMs = gs.directorClockMs
+  gs.blindProbePending = gs.wave >= 2
+  gs.signalCheckDisposition = gs.blindProbePending ? 'pending' : 'wave-1'
   gs.nextAttackAtMs = gs.waveStartedAtMs + ENGINE_DEMAND_FLOOR_MS[gs.difficulty] - DIVE_TELEGRAPH_MS
   buildWaveQueue(gs, fsrs, memoryEpochMs)
 }
@@ -657,7 +715,14 @@ function cloneState(state: GameState): GameState {
     aliens: state.aliens.map(a => ({ ...a, soul: { ...a.soul } })),
     lasers: state.lasers.map(l => ({ ...l })),
     particles: state.particles.map(p => ({ ...p })),
-    activeAttack: state.activeAttack ? { ...state.activeAttack } : null,
+    activeAttack: state.activeAttack
+      ? {
+          ...state.activeAttack,
+          stimulusRequest: state.activeAttack.stimulusRequest
+            ? { ...state.activeAttack.stimulusRequest }
+            : null,
+        }
+      : null,
     unlockedNotes: [...state.unlockedNotes],
     spawnQueue: [...state.spawnQueue],
     waveSoulByNote: Object.fromEntries(
@@ -679,14 +744,35 @@ export function toViewState(gs: GameState, inputMode: InputMode): ViewState {
     ? gs.aliens.findIndex(item => item.alienId === gs.activeAttack?.alienId)
     : -1
   const answerOpen = gs.activeAttack?.phase === 'outbound' && gs.activeAttack.outcome === null
+  const identityMaskActive = gs.phase === 'playing' && inputMode === 'click' && (
+    gs.blindProbePending ||
+    (gs.activeAttack?.cuePolicy === 'blind' && gs.activeAttack.outcome === null)
+  )
+  const neutralSoul: NoteSoulSnapshot = {
+    note: '?', reviewed: false, r: 0.5, calm: 0.5, due: false,
+    agitation: 0.5, divePressure: 0,
+  }
+  const viewAttack = gs.activeAttack
+    ? {
+        ...gs.activeAttack,
+        note: identityMaskActive ? '?' : gs.activeAttack.note,
+        stimulusRequest: identityMaskActive
+          ? null
+          : gs.activeAttack.stimulusRequest
+          ? { ...gs.activeAttack.stimulusRequest }
+          : null,
+      }
+    : null
   return {
-    aliens: gs.aliens.map(a => ({ ...a, soul: { ...a.soul } })),
+    aliens: gs.aliens.map(a => identityMaskActive
+      ? { ...a, note: '?', hue: 190, soul: { ...neutralSoul } }
+      : { ...a, soul: { ...a.soul } }),
     lasers: gs.lasers.map(l => ({ ...l })),
     particles: gs.particles.map(p => ({ ...p })),
     playerX: gs.playerX,
     charge: {
       fraction: Math.min(1, gs.chargeProgress / CHARGE_FULL_MS),
-      targetNote: isTargetableAlien(target) ? target.note : null,
+      targetNote: identityMaskActive ? null : isTargetableAlien(target) ? target.note : null,
     },
     hud: {
       score: gs.score, combo: gs.combo, wave: gs.wave,
@@ -701,7 +787,17 @@ export function toViewState(gs: GameState, inputMode: InputMode): ViewState {
     wrongTimer: gs.wrongTimer,
     spotlightIdx,
     nowMs: gs.directorClockMs,
-    activeAttack: gs.activeAttack ? { ...gs.activeAttack } : null,
+    activeAttack: viewAttack,
+    identityMaskActive,
+    signalCheck: {
+      wave: gs.wave,
+      pending: gs.blindProbePending,
+      cuePolicy: gs.activeAttack?.cuePolicy ?? null,
+      phase: gs.activeAttack?.phase ?? null,
+      disposition: gs.signalCheckDisposition,
+      requestId: gs.activeAttack?.stimulusRequest?.requestId ?? null,
+      maskActive: identityMaskActive,
+    },
     requiredAnswerEventsMs: [...gs.requiredAnswerEventsMs],
     lastCompletedWavePacing: gs.lastCompletedWavePacing
       ? { ...gs.lastCompletedWavePacing, requiredAnswerEventsMs: [...gs.lastCompletedWavePacing.requiredAnswerEventsMs] }
@@ -710,7 +806,7 @@ export function toViewState(gs: GameState, inputMode: InputMode): ViewState {
     noteButtons: gs.unlockedNotes.map((note, i) => ({
       note,
       hue: NOTE_COLORS[note]?.hue ?? 0,
-      active: Boolean(answerOpen && gs.activeAttack && noteClass(gs.activeAttack.note) === noteClass(note)),
+      active: Boolean(!identityMaskActive && answerOpen && gs.activeAttack && noteClass(gs.activeAttack.note) === noteClass(note)),
       keyNum: i + 1,
     })),
   }
@@ -740,6 +836,15 @@ function armAfterResolution(gs: GameState): void {
     gs.directorClockMs + POST_RESOLUTION_FLOOR_MS,
     cadenceTelegraphFloorMs(gs),
   )
+}
+
+function blindAckMatches(request: BlindStimulusRequest, ack: BlindStimulusAck): boolean {
+  return ack.requestId === request.requestId &&
+    ack.gameId === request.gameId &&
+    ack.attackId === request.attackId &&
+    ack.alienId === request.alienId &&
+    ack.note === request.note &&
+    ack.requestedAtDirectorClockMs === request.requestedAtDirectorClockMs
 }
 
 function diveSideForSlot(slot: number, attackSerial: number): -1 | 1 {
@@ -772,7 +877,7 @@ export function chooseNextDiver(gs: GameState): Alien | null {
   return best
 }
 
-function startAttack(gs: GameState): boolean {
+function startAttack(gs: GameState, input: EngineInput): boolean {
   if (gs.activeAttack || gs.directorClockMs < gs.nextAttackAtMs) return false
   const alien = chooseNextDiver(gs)
   if (!alien) {
@@ -780,6 +885,22 @@ function startAttack(gs: GameState): boolean {
     return false
   }
   const serial = gs.nextAttackSerial++
+  const consumesProbe = gs.blindProbePending
+  if (consumesProbe) gs.blindProbePending = false
+  const readiness = input.pianoReadiness
+  const outputReady = readiness?.contextState === 'running' && readiness.sampleReadyByNote[alien.note] === true
+  const cuePolicy: CuePolicy = consumesProbe && input.inputMode === 'click' && alien.soul.reviewed && outputReady
+    ? 'blind'
+    : 'guided'
+  if (consumesProbe) {
+    gs.signalCheckDisposition = cuePolicy === 'blind'
+      ? 'blind'
+      : input.inputMode === 'mic'
+        ? 'guided-voice'
+        : !alien.soul.reviewed
+          ? 'guided-unreviewed'
+          : 'guided-output-not-ready'
+  }
   alien.x = alien.formationX
   alien.y = alien.formationY
   gs.activeAttack = {
@@ -787,6 +908,9 @@ function startAttack(gs: GameState): boolean {
     alienId: alien.alienId,
     note: alien.note,
     side: diveSideForSlot(alien.formationSlot, serial),
+    cuePolicy,
+    readinessObservationId: readiness?.observationId ?? null,
+    stimulusRequest: null,
     phase: 'telegraph',
     telegraphStartedAtMs: gs.directorClockMs,
     demandAtMs: null,
@@ -837,6 +961,7 @@ export function resolveAttack(
   const target = findAlienById(gs, attack.alienId)
   attack.outcome = outcome
   attack.resolvedAtMs = gs.directorClockMs
+  if (attack.cuePolicy === 'blind' && outcome !== 'cancelled') gs.signalCheckDisposition = 'terminal'
   gs.lastProgressAt = gs.directorClockMs
   armAfterResolution(gs)
   clearMicTarget(gs)
@@ -916,7 +1041,7 @@ export function resolveAttack(
   })
   events.push({
     kind: 'playNote', note: target.note, delayMs: 350, guard: 'attack',
-    targetAlienId: target.alienId, attackId,
+    targetAlienId: target.alienId, attackId, terminalAlreadyRecorded: true,
   })
   attack.phase = 'returning'
   attack.returnFromT = attack.outboundT
@@ -1048,11 +1173,7 @@ export function tick(state: GameState, input: EngineInput, dtMs: number, rng: ()
       const pose = formationPose(anchor.x, anchor.y, gs.directorClockMs, input.reducedMotion)
       const note = gs.spawnQueue.shift()!
       const colorInfo = NOTE_COLORS[note]
-      const soul = gs.waveSoulByNote[note] ?? snapshotNoteSoul(
-        note,
-        input.fsrs?.[note],
-        input.memoryEpochMs ?? 0,
-      )
+      const soul = gs.waveSoulByNote[note] ?? snapshotNoteSoul(note, undefined, input.memoryEpochMs ?? 0)
       const entering = !input.reducedMotion
       const visualKind = (formationSlot % VISUAL_KIND_COUNT) as VisualKind
       gs.aliens.push({
@@ -1131,24 +1252,88 @@ export function tick(state: GameState, input: EngineInput, dtMs: number, rng: ()
     }
   }
 
-  if (!gs.activeAttack) startAttack(gs)
-  const attack = gs.activeAttack
-  const attackTarget = attack ? findAlienById(gs, attack.alienId) : null
+  if (!gs.activeAttack) startAttack(gs, input)
+  let attack = gs.activeAttack
+  let attackTarget = attack ? findAlienById(gs, attack.alienId) : null
+  if (attack?.cuePolicy === 'blind' && attack.outcome === null && input.inputMode !== 'click' &&
+      (attack.phase === 'awaiting-stimulus' || attack.phase === 'outbound')) {
+    gs.signalCheckDisposition = 'cancelled-mode-change'
+    resolveAttack(gs, attack.attackId, 'cancelled', 0, events, input.inputMode)
+    attack = gs.activeAttack
+    attackTarget = attack ? findAlienById(gs, attack.alienId) : null
+  }
+  if (attack?.phase === 'awaiting-stimulus' && attack.cuePolicy === 'blind' && !attackTarget?.alive) {
+    resolveAttack(gs, attack.attackId, 'cancelled', 0, events, input.inputMode)
+    attack = gs.activeAttack
+    attackTarget = attack ? findAlienById(gs, attack.alienId) : null
+  }
+  if (attack?.phase === 'awaiting-stimulus' && attack.cuePolicy === 'blind' && attackTarget?.alive) {
+    attackTarget.x = attackTarget.formationX
+    attackTarget.y = attackTarget.formationY
+    const request = attack.stimulusRequest
+    const ack = input.blindStimulusAck
+    if (request && ack && blindAckMatches(request, ack)) {
+      const acceptanceDelta = gs.directorClockMs - request.requestedAtDirectorClockMs
+      if (!ack.dispatched) {
+        gs.signalCheckDisposition = 'cancelled-negative-ack'
+        resolveAttack(gs, attack.attackId, 'cancelled', 0, events, input.inputMode)
+      } else if (ack.dispatchedAtDirectorClockMs !== request.requestedAtDirectorClockMs ||
+          acceptanceDelta < 0 || acceptanceDelta > STIMULUS_ACK_ACCEPT_MAX_MS) {
+        gs.signalCheckDisposition = 'cancelled-ack-skew'
+        resolveAttack(gs, attack.attackId, 'cancelled', 0, events, input.inputMode)
+      } else {
+        attack.phase = 'outbound'
+        attack.demandAtMs = gs.directorClockMs
+        attack.deadlineAtMs = attack.demandAtMs + DIVE_RESPONSE_DEADLINE_MS
+        attack.outboundT = 0
+        gs.lastDemandAtMs = request.requestedAtDirectorClockMs
+        gs.requiredAnswerEventsMs.push(request.requestedAtDirectorClockMs)
+        gs.signalCheckDisposition = 'blind'
+      }
+    } else if (request && gs.directorClockMs - request.requestedAtDirectorClockMs >= STIMULUS_ACK_TIMEOUT_MS) {
+      gs.signalCheckDisposition = 'cancelled-ack-timeout'
+      resolveAttack(gs, attack.attackId, 'cancelled', 0, events, input.inputMode)
+    }
+    attack = gs.activeAttack
+    attackTarget = attack ? findAlienById(gs, attack.alienId) : null
+  }
   if (attack && attackTarget?.alive) {
     if (attack.phase === 'telegraph') {
       attackTarget.x = attackTarget.formationX
       attackTarget.y = attackTarget.formationY
       if (gs.directorClockMs - attack.telegraphStartedAtMs >= DIVE_TELEGRAPH_MS) {
-        attack.phase = 'outbound'
-        attack.demandAtMs = gs.directorClockMs
-        attack.deadlineAtMs = gs.directorClockMs + DIVE_RESPONSE_DEADLINE_MS
-        attack.outboundT = 0
-        gs.lastDemandAtMs = gs.directorClockMs
-        gs.requiredAnswerEventsMs.push(gs.directorClockMs)
-        events.push({
-          kind: 'playNote', note: attack.note, delayMs: 0, guard: 'attack',
-          targetAlienId: attack.alienId, attackId: attack.attackId,
-        })
+        if (attack.cuePolicy === 'blind') {
+          const readiness = input.pianoReadiness
+          const outputReady = readiness?.contextState === 'running' && readiness.sampleReadyByNote[attack.note] === true
+          if (!outputReady) {
+            gs.signalCheckDisposition = 'guided-output-not-ready'
+            resolveAttack(gs, attack.attackId, 'cancelled', 0, events, input.inputMode)
+          } else {
+            const request: BlindStimulusRequest = {
+              requestId: `${attack.attackId}:stimulus`,
+              gameId: gs.gameId,
+              attackId: attack.attackId,
+              alienId: attack.alienId,
+              note: attack.note,
+              requestedAtDirectorClockMs: gs.directorClockMs,
+            }
+            attack.phase = 'awaiting-stimulus'
+            attack.stimulusRequest = request
+            events.push({ kind: 'blindStimulusRequest', ...request })
+          }
+        } else {
+          attack.phase = 'outbound'
+          attack.demandAtMs = gs.directorClockMs
+          attack.deadlineAtMs = gs.directorClockMs + DIVE_RESPONSE_DEADLINE_MS
+          attack.outboundT = 0
+          gs.lastDemandAtMs = gs.directorClockMs
+          gs.requiredAnswerEventsMs.push(gs.directorClockMs)
+          events.push({
+            kind: 'playNote', note: attack.note, delayMs: 0, guard: 'attack',
+            targetAlienId: attack.alienId, attackId: attack.attackId,
+            terminalAlreadyRecorded: false,
+          })
+        }
       }
     }
     if (attack.phase === 'outbound' && input.inputMode === 'mic' && attack.outcome === null) {
@@ -1193,10 +1378,12 @@ export function tick(state: GameState, input: EngineInput, dtMs: number, rng: ()
   if (gs.difficulty === 'easy' && gs.directorClockMs - gs.lastProgressAt > 60000) {
     const hintAttack = gs.activeAttack
     const hintTarget = hintAttack ? findAlienById(gs, hintAttack.alienId) : null
-    if (hintAttack?.phase === 'outbound' && hintAttack.outcome === null && hintTarget?.alive) {
+    if (hintAttack?.phase === 'outbound' && hintAttack.outcome === null &&
+        hintAttack.cuePolicy !== 'blind' && hintTarget?.alive) {
       events.push({
         kind: 'playNote', note: hintAttack.note, delayMs: 0, guard: 'attack',
         targetAlienId: hintAttack.alienId, attackId: hintAttack.attackId,
+        terminalAlreadyRecorded: false,
       })
       gs.wrongMessage = `Hint: try ${hintAttack.note.replace(/\d/, '')}`
       gs.wrongTimer = 2.5

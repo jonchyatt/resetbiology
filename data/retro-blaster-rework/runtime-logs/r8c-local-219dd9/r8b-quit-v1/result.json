@@ -1,0 +1,368 @@
+{
+  "verdict": "PASS",
+  "lane": "helium-hawkeye",
+  "transport": "http://127.0.0.1:9224",
+  "mode": "quit",
+  "url": "http://127.0.0.1:3336/pitch-defender/retro-2?v=r8c-local-219dd9-quit",
+  "deployedSha": "d34edf4090eacd8fd051361d27bec754033aac9c",
+  "pageErrors": [],
+  "correctAnswers": 10,
+  "beforeGameplayStorage": "{\"retro_blaster_color_hints\":\"0\",\"retro_difficulty\":\"easy\",\"retro_tutorial_seen\":\"1\"}",
+  "ceremonyStorage": "{\"pitch_fsrs_memory_ear\":\"{\\\"C4\\\":{\\\"note\\\":\\\"C4\\\",\\\"S\\\":15.4722,\\\"D\\\":1.1845685942301354,\\\"due\\\":1784110229473,\\\"lastReview\\\":1784109629473,\\\"lapses\\\":0,\\\"phase\\\":\\\"learning\\\",\\\"learningReps\\\":1},\\\"A4\\\":{\\\"note\\\":\\\"A4\\\",\\\"S\\\":15.4722,\\\"D\\\":1.4340497056708525,\\\"due\\\":1785405639631,\\\"lastReview\\\":1784109639631,\\\"lapses\\\":0,\\\"phase\\\":\\\"review\\\",\\\"learningReps\\\":2},\\\"G4\\\":{\\\"note\\\":\\\"G4\\\",\\\"S\\\":15.4722,\\\"D\\\":2.237042550896802,\\\"due\\\":1784110235895,\\\"lastReview\\\":1784109635895,\\\"lapses\\\":0,\\\"phase\\\":\\\"learning\\\",\\\"learningReps\\\":1},\\\"E4\\\":{\\\"note\\\":\\\"E4\\\",\\\"S\\\":15.474089769470746,\\\"D\\\":1,\\\"due\\\":1785405641880,\\\"lastReview\\\":1784109641880,\\\"lapses\\\":0,\\\"phase\\\":\\\"review\\\",\\\"learningReps\\\":2}}\",\"retro_blaster_color_hints\":\"0\",\"retro_difficulty\":\"easy\",\"retro_tutorial_seen\":\"1\"}",
+  "responsive": [
+    {
+      "name": "portrait-390x844",
+      "viewport": [
+        390,
+        844
+      ],
+      "rect": [
+        13,
+        115,
+        364,
+        204.75
+      ],
+      "actions": [
+        {
+          "text": "RETRY SIGNAL",
+          "x": 63.96875,
+          "y": 271.75,
+          "width": 100.78125,
+          "height": 44,
+          "insideRegion": true,
+          "insideViewport": true,
+          "insidePanel": true
+        },
+        {
+          "text": "REPLAY SIGNAL",
+          "x": 168.75,
+          "y": 271.75,
+          "width": 107.671875,
+          "height": 44,
+          "insideRegion": true,
+          "insideViewport": true,
+          "insidePanel": true
+        },
+        {
+          "text": "QUIT",
+          "x": 280.421875,
+          "y": 271.75,
+          "width": 45.59375,
+          "height": 44,
+          "insideRegion": true,
+          "insideViewport": true,
+          "insidePanel": true
+        }
+      ],
+      "geometry": {
+        "canvasRect": [
+          13,
+          115,
+          364,
+          204.75
+        ],
+        "canvasScale": [
+          0.56875,
+          0.56875
+        ],
+        "toastRect": [
+          17,
+          251.75,
+          356,
+          16
+        ],
+        "canvasCopyBottom": 217.375,
+        "toastClearance": 34.375,
+        "panelRect": [
+          33.474999999999994,
+          141.8734375,
+          323.04999999999995,
+          176.59687499999998
+        ],
+        "panelBorderClearance": 2.7203124999999773,
+        "preflightEffectiveFontPx": 9.1,
+        "preflightInkHeight": 5.6875
+      }
+    },
+    {
+      "name": "landscape-844x390",
+      "viewport": [
+        844,
+        390
+      ],
+      "rect": [
+        263,
+        132.5,
+        318,
+        178.875
+      ],
+      "actions": [
+        {
+          "text": "RETRY SIGNAL",
+          "x": 290.96875,
+          "y": 263.375,
+          "width": 100.78125,
+          "height": 44,
+          "insideRegion": true,
+          "insideViewport": true,
+          "insidePanel": true
+        },
+        {
+          "text": "REPLAY SIGNAL",
+          "x": 395.75,
+          "y": 263.375,
+          "width": 107.671875,
+          "height": 44,
+          "insideRegion": true,
+          "insideViewport": true,
+          "insidePanel": true
+        },
+        {
+          "text": "QUIT",
+          "x": 507.421875,
+          "y": 263.375,
+          "width": 45.59375,
+          "height": 44,
+          "insideRegion": true,
+          "insideViewport": true,
+          "insidePanel": true
+        }
+      ],
+      "geometry": {
+        "canvasRect": [
+          263,
+          132.5,
+          318,
+          178.875
+        ],
+        "canvasScale": [
+          0.496875,
+          0.496875
+        ],
+        "toastRect": [
+          267,
+          243.375,
+          310,
+          16
+        ],
+        "canvasCopyBottom": 221.9375,
+        "toastClearance": 21.4375,
+        "panelRect": [
+          280.8875,
+          155.97734375,
+          282.22499999999997,
+          154.27968750000002
+        ],
+        "panelBorderClearance": 2.8820312500000114,
+        "preflightEffectiveFontPx": 9.440625,
+        "preflightInkHeight": 5.962500000000006
+      }
+    },
+    {
+      "name": "desktop-1280x800",
+      "viewport": [
+        1280,
+        800
+      ],
+      "rect": [
+        175,
+        132.5,
+        930,
+        523.125
+      ],
+      "actions": [
+        {
+          "text": "RETRY SIGNAL",
+          "x": 508.96875,
+          "y": 607.625,
+          "width": 100.78125,
+          "height": 44,
+          "insideRegion": true,
+          "insideViewport": true,
+          "insidePanel": false
+        },
+        {
+          "text": "REPLAY SIGNAL",
+          "x": 613.75,
+          "y": 607.625,
+          "width": 107.671875,
+          "height": 44,
+          "insideRegion": true,
+          "insideViewport": true,
+          "insidePanel": false
+        },
+        {
+          "text": "QUIT",
+          "x": 725.421875,
+          "y": 607.625,
+          "width": 45.59375,
+          "height": 44,
+          "insideRegion": true,
+          "insideViewport": true,
+          "insidePanel": false
+        }
+      ],
+      "geometry": {
+        "canvasRect": [
+          175,
+          132.5,
+          930,
+          523.125
+        ],
+        "canvasScale": [
+          1.453125,
+          1.453125
+        ],
+        "toastRect": [
+          179,
+          587.625,
+          922,
+          16
+        ],
+        "canvasCopyBottom": 531.3828125,
+        "toastClearance": 56.2421875,
+        "panelRect": [
+          299.2421875,
+          201.16015625,
+          681.515625,
+          385.8046875
+        ],
+        "panelBorderClearance": -64.66015625,
+        "preflightEffectiveFontPx": 14.53125,
+        "preflightInkHeight": 11.625
+      }
+    },
+    {
+      "name": "zoom-200-equivalent-640x400",
+      "viewport": [
+        640,
+        400
+      ],
+      "rect": [
+        138.109375,
+        97,
+        363.765625,
+        190
+      ],
+      "actions": [
+        {
+          "text": "RETRY SIGNAL",
+          "x": 188.96875,
+          "y": 239,
+          "width": 100.78125,
+          "height": 44,
+          "insideRegion": true,
+          "insideViewport": true,
+          "insidePanel": true
+        },
+        {
+          "text": "REPLAY SIGNAL",
+          "x": 293.75,
+          "y": 239,
+          "width": 107.671875,
+          "height": 44,
+          "insideRegion": true,
+          "insideViewport": true,
+          "insidePanel": true
+        },
+        {
+          "text": "QUIT",
+          "x": 405.421875,
+          "y": 239,
+          "width": 45.59375,
+          "height": 44,
+          "insideRegion": true,
+          "insideViewport": true,
+          "insidePanel": true
+        }
+      ],
+      "geometry": {
+        "canvasRect": [
+          138.109375,
+          97,
+          363.765625,
+          190
+        ],
+        "canvasScale": [
+          0.5683837890625,
+          0.5277777777777778
+        ],
+        "toastRect": [
+          142.109375,
+          219,
+          355.765625,
+          16
+        ],
+        "canvasCopyBottom": 192,
+        "toastClearance": 27,
+        "panelRect": [
+          158.57119140625,
+          121.9375,
+          322.84199218749995,
+          163.875
+        ],
+        "panelBorderClearance": 2.8125,
+        "preflightEffectiveFontPx": 9.5,
+        "preflightInkHeight": 5.805555555555557
+      }
+    },
+    {
+      "name": "ceremony-quit-receipt-cleanup",
+      "cleanup": {
+        "rootPresent": false,
+        "priorCanvasPresent": false,
+        "priorCanvasConnected": false
+      }
+    }
+  ],
+  "temporalConsistency": null,
+  "behaviorManifest": [
+    {
+      "behaviorId": "pre-ack-hidden-freeze",
+      "startedAtMs": 23594,
+      "startFrame": 917,
+      "endedAtMs": 29621.30000001192,
+      "endFrame": 1137,
+      "durationMs": 6027.300000011921,
+      "frameDelta": 220
+    },
+    {
+      "behaviorId": "real-unlock-to-new-signal",
+      "startedAtMs": 1283.300000011921,
+      "startFrame": 71,
+      "endedAtMs": 29666.600000023842,
+      "endFrame": 1139,
+      "durationMs": 28383.30000001192,
+      "frameDelta": 1068
+    },
+    {
+      "behaviorId": "blocked-output-freeze-and-responsive-actions",
+      "startedAtMs": 30216.100000023842,
+      "startFrame": 1161,
+      "endedAtMs": 36251.30000001192,
+      "endFrame": 1374,
+      "durationMs": 6035.199999988079,
+      "frameDelta": 213
+    },
+    {
+      "behaviorId": "ceremony-quit-no-resurrection",
+      "startedAtMs": 36880,
+      "startFrame": 1399,
+      "endedAtMs": 42922.70000001788,
+      "endFrame": 1762,
+      "durationMs": 6042.700000017881,
+      "frameDelta": 363
+    }
+  ],
+  "videoPath": "C:\\Users\\jonch\\rbw-retro-blaster\\data\\retro-blaster-rework\\runtime-logs\\r8c-local-219dd9\\r8b-quit-v1\\video\\403cc836bdab6458dcdd9c774a230413.webm",
+  "contract": {
+    "firstSignal": "D4 after >=10 real correct attacks",
+    "blockedOutput": "PASS - forced suspended observer produced blocked elapsed-zero ceremony",
+    "keyInertness": "PASS - whole exposed engine snapshot and family storage exact",
+    "hiddenFreeze": "not-run-in-quit-mode",
+    "toneDispatch": "not-run-in-quit-mode",
+    "ceremonyToPlayingAtomicity": "not-run-in-quit-mode",
+    "quitCleanup": "PASS - menu stable for >=6s, no state resurrection or storage write",
+    "r8c": "CLOSED - no SIGNAL CHECK behavior exercised"
+  }
+}

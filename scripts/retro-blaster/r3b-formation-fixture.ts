@@ -388,8 +388,8 @@ function validateStateMachineAndPacing(): void {
 
 async function validateShellAudioContract(): Promise<void> {
   const shell = await readFile(resolve(root, 'src/components/PitchDefender/RetroBlasterII.tsx'), 'utf8')
-  assert.equal((shell.match(/playPianoNote\(/g) ?? []).length, 5,
-    'pitched playback must remain limited to demand, explicit replay, the two R8a radio-check sites, and R8b NEW SIGNAL')
+  assert.equal((shell.match(/playPianoNote\(/g) ?? []).length, 6,
+    'pitched playback must remain limited to demand, explicit replay, the two R8a radio-check sites, R8b NEW SIGNAL, and one guarded R8c stimulus site')
   assert.match(shell, /getPianoReadiness\(RADIO_CHECK_NOTE\)/,
     'R8a output dispatch must be guarded by the ratified readiness observer')
   assert.match(shell, /This is a systems check, not a score/,

@@ -415,6 +415,7 @@ async function voiceState() {
     const fill = meter?.querySelector('.h-full.rounded-full')
     return {
       formation: parse(canvas?.dataset.retroFormationState),
+      signalCheck: parse(canvas?.dataset.retroSignalCheck),
       micAuthority: parse(canvas?.dataset.retroMicAuthority),
       mic: window.__r8MicStatus?.() ?? null,
       vocalMeter: {
@@ -477,9 +478,13 @@ async function answerVoiceUntilCeremony() {
   const answers = []
   let suppressionReceipt = null
   let octaveReceipt = null
+  let firstWave2SignalCheck = null
   while (Date.now() < deadline) {
     const snapshot = await voiceState()
-    if (snapshot.formation.phase === 'ceremony') return { answers, suppressionReceipt, octaveReceipt }
+    if (!firstWave2SignalCheck && snapshot.formation.wave >= 2 && snapshot.signalCheck?.cuePolicy) {
+      firstWave2SignalCheck = snapshot.signalCheck
+    }
+    if (snapshot.formation.phase === 'ceremony') return { answers, suppressionReceipt, octaveReceipt, firstWave2SignalCheck }
     const attack = snapshot.formation.activeAttack
     if (attack?.phase !== 'outbound' || answers.some(answer => answer.attackId === attack.attackId)) {
       await page.waitForTimeout(25)
@@ -550,6 +555,9 @@ async function runVoiceProof() {
   assert(earned.answers.length >= 10, `NEW SIGNAL arrived after only ${earned.answers.length} VOICE answers`)
   assert(earned.octaveReceipt?.live.micAuthority.signalActive === true,
     'octave-folded +60-cent live probe never acquired mic authority')
+  assert(earned.firstWave2SignalCheck?.cuePolicy === 'guided' &&
+    earned.firstWave2SignalCheck?.disposition === 'guided-voice' && earned.firstWave2SignalCheck?.maskActive === false,
+  `R8c VOICE opportunity was not guided-voice: ${JSON.stringify(earned.firstWave2SignalCheck)}`)
   await page.waitForFunction(() => {
     const formation = JSON.parse(document.querySelector('canvas')?.dataset.retroFormationState || '{}')
     return formation.phase === 'ceremony' && formation.introductionCeremony?.toneStatus === 'acknowledged'
@@ -639,7 +647,8 @@ async function runVoiceProof() {
       accessibilityParity: 'PASS - prefers-reduced-motion active and COLOR HINTS OFF before and after ceremony',
       gains: 'deferred-r14 - zero cabinet range controls',
       jonEar: 'pending-act-boundary',
-      r8c: 'CLOSED - no SIGNAL CHECK behavior exercised',
+      r8c: 'PASS - VOICE remains guided and mask-inactive; no blind SIGNAL CHECK is exercised',
+      r8cVoiceOpportunity: 'PASS - first observed wave-2+ opportunity was guided-voice with mask inactive',
     },
   }
   writeFileSync(resolve(output, 'result.json'), `${JSON.stringify(result, null, 2)}\n`)
@@ -728,6 +737,13 @@ try {
     await page.evaluate(() => { window.__r8HoldPianoReload = true })
     await page.getByRole('button', { name: 'RETRY SIGNAL' }).click()
     await page.waitForFunction(() => window.__r8HeldPianoFetchCount > 0)
+    await page.evaluate(() => {
+      const canvas = document.querySelector('canvas')
+      const sentinel = JSON.stringify({ sequence: 999999, guard: 'cleanup-sentinel' })
+      document.documentElement.dataset.retroAudioReceipt = sentinel
+      if (canvas) canvas.dataset.retroAudioReceipt = sentinel
+      window.__r8QuitCanvas = canvas
+    })
     await page.getByRole('button', { name: 'QUIT' }).click()
     await page.getByRole('button', { name: 'INSERT COIN' }).waitFor()
     await page.evaluate(() => window.__r8ReleasePianoReload())
@@ -736,8 +752,16 @@ try {
     const afterQuit = await state()
     assert(afterQuit.menu && !afterQuit.ceremony, 'ceremony resurrected after QUIT')
     assert(afterQuit.bufferStarts === startsBeforeQuitRetry, 'in-flight retry played a stale tone after QUIT')
+    const cleanup = await page.evaluate(() => ({
+      rootPresent: Object.prototype.hasOwnProperty.call(document.documentElement.dataset, 'retroAudioReceipt'),
+      priorCanvasPresent: Object.prototype.hasOwnProperty.call(window.__r8QuitCanvas?.dataset || {}, 'retroAudioReceipt'),
+      priorCanvasConnected: window.__r8QuitCanvas?.isConnected ?? null,
+    }))
+    assert(!cleanup.rootPresent && !cleanup.priorCanvasPresent,
+      `ceremony QUIT retained the audio receipt: ${JSON.stringify(cleanup)}`)
     assert(await storageSnapshot() === ceremonyStorage, 'ceremony QUIT wrote family storage')
     await capture('02-ceremony-quit-clean.png')
+    responsive.push({ name: 'ceremony-quit-receipt-cleanup', cleanup })
   } else {
     const startsBeforeRetry = (await state()).bufferStarts
     await page.evaluate(() => { window.__r8ForceSuspended = false })

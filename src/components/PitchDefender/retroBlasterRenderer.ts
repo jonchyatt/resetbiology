@@ -758,6 +758,7 @@ export function render(
   const weaponVfx = deriveWeaponVfx(viewState, options.micLockSignalActive ?? false)
   const now = viewState.nowMs
   const s = SPACE_SCALE
+  const identityMaskActive = viewState.identityMaskActive
   drawSpace(ctx, now, reducedMotion)
 
   if (viewState.waveIntroTimer > 0) {
@@ -818,12 +819,14 @@ export function render(
       ? viewState.activeAttack
       : null
     const isActive = attack !== null
-    const soulOffset = deriveSoulRenderOffset(sourceAlien, now, reducedMotion, isActive)
+    const soulOffset = identityMaskActive
+      ? { x: 0, y: 0 }
+      : deriveSoulRenderOffset(sourceAlien, now, reducedMotion, isActive)
     const alien = soulOffset.x === 0 && soulOffset.y === 0
       ? sourceAlien
       : { ...sourceAlien, x: sourceAlien.x + soulOffset.x, y: sourceAlien.y + soulOffset.y }
-    const isTelegraph = attack?.phase === 'telegraph'
-    const isFlightPose = Boolean(attack && (attack.phase !== 'telegraph' || reducedMotion))
+    const isTelegraph = attack?.phase === 'telegraph' || attack?.phase === 'awaiting-stimulus'
+    const isFlightPose = Boolean(attack && (!isTelegraph || reducedMotion))
     const usesFocusScale = Boolean(isTelegraph && !reducedMotion)
     const existingSource = enemyRenderSources.get(alien.visualId)
     const proposedSource = existingSource ?? chooseEnemyRenderSource(
@@ -840,7 +843,9 @@ export function render(
     const sprite = alien.frame === 0 ? ALIEN_SPRITE_A : ALIEN_SPRITE_B
     const bobPhase = reducedMotion ? 1 : Math.sin(now / 200)
     const idleFrame = bobPhase >= 0 ? 'idle-a' : 'idle-b'
-    const color = colorHints
+    const color = identityMaskActive
+      ? isActive ? '#d7f3f7' : '#71838d'
+      : colorHints
       ? isActive ? `hsl(${alien.hue}, 95%, 70%)` : `hsl(${alien.hue}, 50%, 40%)`
       : isActive ? '#c7f5ff' : '#61758b'
     const anchor = resolvedAtlas?.anchor ?? ENEMY_ROSTER[alien.visualKind].chipAnchor
@@ -856,7 +861,7 @@ export function render(
       const chipAnchorX = attack.side === -1 ? 1 - anchor[0] : anchor[0]
       const chipX = drewAtlas ? atlasX + 48 * s * chipAnchorX : alien.x + ALIEN_W / 2
       const chipY = drewAtlas ? atlasY + 36 * s * anchor[1] : alien.y + ALIEN_H * 0.55
-      drawNoteChip(ctx, chipX, chipY, alien.hue, colorHints, s)
+      if (!identityMaskActive) drawNoteChip(ctx, chipX, chipY, alien.hue, colorHints, s)
       const footprintX = drewAtlas ? atlasX : alien.x
       const footprintY = drewAtlas ? atlasY : alien.y
       const footprintW = drewAtlas ? 48 * s : ALIEN_W
@@ -867,7 +872,9 @@ export function render(
         footprintY,
         footprintW,
         footprintH,
-        colorHints ? `hsla(${alien.hue}, 95%, 72%, 0.92)` : 'rgba(207,244,255,0.94)',
+        identityMaskActive
+          ? 'rgba(207,244,255,0.94)'
+          : colorHints ? `hsla(${alien.hue}, 95%, 72%, 0.92)` : 'rgba(207,244,255,0.94)',
         s,
       )
       if (weaponVfx.hitLockAttackId === attack.attackId) {
@@ -884,7 +891,7 @@ export function render(
         )
       }
       if (isTelegraph) {
-        ctx.fillStyle = '#ffe34c'
+        ctx.fillStyle = identityMaskActive ? '#d7f3f7' : '#ffe34c'
         ctx.font = `bold ${Math.round(16 * s)}px monospace`
         ctx.textAlign = 'center'
         ctx.fillText('?', footprintX + footprintW / 2, footprintY + 14 * s)
@@ -903,7 +910,9 @@ export function render(
       const focusY = atlas ? atlasY + (36 - atlasFocusH) * atlasScale : alien.y - offsetY
       const focusW = atlas ? atlasFocusW * atlasScale : ALIEN_W * 1.2
       const focusH = atlas ? atlasFocusH * atlasScale : ALIEN_H * 1.2
-      ctx.fillStyle = colorHints
+      ctx.fillStyle = identityMaskActive
+        ? `rgba(121,224,255,${pulse * 0.2})`
+        : colorHints
         ? `hsla(${alien.hue}, 90%, 55%, ${pulse * 0.25})`
         : `rgba(121,224,255,${pulse * 0.2})`
       ctx.fillRect(focusX - 4 * s, focusY - 4 * s, focusW + 8 * s, focusH + 8 * s)
@@ -911,13 +920,15 @@ export function render(
       if (!drewAtlas) drawSprite(ctx, sprite, alien.x - offsetX, alien.y - offsetY, color, scale)
       const chipX = drewAtlas ? atlasX + 48 * atlasScale * anchor[0] : alien.x + ALIEN_W / 2
       const chipY = drewAtlas ? atlasY + 36 * atlasScale * anchor[1] : alien.y + ALIEN_H * 0.55
-      drawNoteChip(ctx, chipX, chipY, alien.hue, colorHints, 1.15 * s)
-      ctx.fillStyle = '#ffe34c'
+      if (!identityMaskActive) drawNoteChip(ctx, chipX, chipY, alien.hue, colorHints, 1.15 * s)
+      ctx.fillStyle = identityMaskActive ? '#d7f3f7' : '#ffe34c'
       ctx.font = `bold ${Math.round(20 * s)}px monospace`
       ctx.textAlign = 'center'
       const qBob = reducedMotion ? 0 : Math.sin(now / 180) * 2 * s
       ctx.fillText('?', focusX + focusW / 2, focusY - 5 * s + qBob)
-      ctx.strokeStyle = colorHints ? `hsla(${alien.hue}, 90%, 65%, ${pulse})` : `rgba(165,235,255,${pulse})`
+      ctx.strokeStyle = identityMaskActive
+        ? `rgba(165,235,255,${pulse})`
+        : colorHints ? `hsla(${alien.hue}, 90%, 65%, ${pulse})` : `rgba(165,235,255,${pulse})`
       ctx.lineWidth = 2 * s
       ctx.strokeRect(focusX - 2 * s, focusY - 2 * s, focusW + 4 * s, focusH + 4 * s)
     } else {
@@ -927,12 +938,14 @@ export function render(
       if (!drewAtlas) drawSprite(ctx, sprite, alien.x, alien.y, color, 2 * s)
       const chipX = drewAtlas ? atlasX + 48 * s * anchor[0] : alien.x + ALIEN_W / 2
       const chipY = drewAtlas ? atlasY + 36 * s * anchor[1] : alien.y + ALIEN_H * 0.55
-      drawNoteChip(ctx, chipX, chipY, alien.hue, colorHints, s)
-      ctx.fillStyle = colorHints ? `hsla(${alien.hue}, 60%, 70%, 0.9)` : 'rgba(221,236,245,0.88)'
-      ctx.font = `bold ${Math.round(9 * s)}px monospace`
-      ctx.textAlign = 'center'
-      ctx.fillText(alien.note.replace(/\d/, ''), alien.x + ALIEN_W / 2, alien.y - 3 * s)
-      if (!alien.entering && alien.soul) {
+      if (!identityMaskActive) {
+        drawNoteChip(ctx, chipX, chipY, alien.hue, colorHints, s)
+        ctx.fillStyle = colorHints ? `hsla(${alien.hue}, 60%, 70%, 0.9)` : 'rgba(221,236,245,0.88)'
+        ctx.font = `bold ${Math.round(9 * s)}px monospace`
+        ctx.textAlign = 'center'
+        ctx.fillText(alien.note.replace(/\d/, ''), alien.x + ALIEN_W / 2, alien.y - 3 * s)
+      }
+      if (!identityMaskActive && !alien.entering && alien.soul) {
         drawSoulSignal(
           ctx,
           chipX,
