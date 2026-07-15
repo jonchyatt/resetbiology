@@ -6,6 +6,17 @@ import { visionMasterProgram, getTodaySession } from '@/data/visionProtocols'
 import { visionExerciseMap } from '@/data/visionExercises'
 import { parseEngineResults, performanceBonusFor } from '@/lib/vision/engineResultsPayload'
 
+// Tester allowlist for the "rip through the program" traversal bypass.
+// Gates isTester payload flag + the advance_day/reset_test_cursor PATCH actions.
+const TESTER_EMAILS = ['jonchyatt@gmail.com', 'drmccrna@gmail.com']
+
+// Effective "today" for getTodaySession(): real startDate shifted back by the
+// tester's traversal cursor (testDayOffset days), never mutating startDate itself.
+function effectiveStartDate(enrollment: { startDate: Date | string; testDayOffset?: number | null }): Date {
+  const offsetDays = enrollment.testDayOffset ?? 0
+  return new Date(new Date(enrollment.startDate).getTime() - offsetDays * 86400000)
+}
+
 // GET: Get user's program enrollment and today's session
 export async function GET(req: NextRequest) {
   try {
@@ -48,8 +59,11 @@ export async function GET(req: NextRequest) {
       })
     }
 
-    // Calculate today's session based on enrollment start date
-    const today = getTodaySession(new Date(enrollment.startDate))
+    const isTester = TESTER_EMAILS.includes(user.email ?? '')
+
+    // Calculate today's session based on enrollment start date (shifted by the
+    // tester traversal cursor, if any).
+    const today = getTodaySession(effectiveStartDate(enrollment))
     const weekPlan = visionMasterProgram.weeklyPlans[today.week - 1]
 
     // Get exercise details for today's session
@@ -67,6 +81,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       success: true,
       enrolled: true,
+      isTester,
       enrollment: {
         id: enrollment.id,
         startDate: enrollment.startDate,
@@ -429,7 +444,8 @@ export async function PATCH(req: NextRequest) {
     const { action, data } = body
 
     const enrollment = await prisma.visionProgramEnrollment.findUnique({
-      where: { userId: user.id }
+      where: { userId: user.id },
+      include: { dailySessions: true }
     })
 
     if (!enrollment) {
@@ -494,6 +510,58 @@ export async function PATCH(req: NextRequest) {
         }
       })
       return NextResponse.json({ success: true, message: 'Baselines updated' })
+    }
+
+    if (action === 'advance_day' || action === 'reset_test_cursor') {
+      // Tester-only traversal bypass so an allowlisted tester can rip through
+      // the 12-week program day-by-day without waiting on the real calendar.
+      if (!TESTER_EMAILS.includes(user.email ?? '')) {
+        return NextResponse.json({ error: 'Tester access required' }, { status: 403 })
+      }
+
+      if (action === 'reset_test_cursor') {
+        // Exact restore of real-calendar state — non-destructive, unlike reset_program.
+        await prisma.visionProgramEnrollment.update({
+          where: { id: enrollment.id },
+          data: { testDayOffset: null }
+        })
+        return NextResponse.json({ success: true, message: 'Test cursor reset' })
+      }
+
+      // advance_day: double-tap/serialization guard — only advance once the
+      // CURRENT effective day is finished (a completed session or a rest day).
+      const today = getTodaySession(effectiveStartDate(enrollment))
+      const todayDone = today.isRestDay || enrollment.dailySessions.some(
+        s => s.week === today.week && s.day === today.day
+      )
+      if (!todayDone) {
+        return NextResponse.json({ error: 'finish today first' }, { status: 409 })
+      }
+
+      // Advance the cursor one day at a time, skipping rest days (max 3 total
+      // increments per Sol H1) so the tester always lands on a trainable
+      // session or the program-complete terminal state.
+      let offset = (enrollment.testDayOffset ?? 0) + 1
+      let next = getTodaySession(effectiveStartDate({ startDate: enrollment.startDate, testDayOffset: offset }))
+      let advances = 1
+      while (next.isRestDay && advances < 3) {
+        offset += 1
+        next = getTodaySession(effectiveStartDate({ startDate: enrollment.startDate, testDayOffset: offset }))
+        advances += 1
+      }
+
+      await prisma.visionProgramEnrollment.update({
+        where: { id: enrollment.id },
+        data: { testDayOffset: offset }
+      })
+
+      return NextResponse.json({
+        success: true,
+        week: next.week,
+        day: next.day,
+        isRestDay: next.isRestDay,
+        testDayOffset: offset
+      })
     }
 
     return NextResponse.json({ error: 'Invalid action' }, { status: 400 })

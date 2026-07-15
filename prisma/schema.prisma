@@ -1138,6 +1138,10 @@ model VisionProgramEnrollment {
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
 
+  // Tester-only traversal cursor (allowlist-gated). Additive, nullable, never
+  // mutates startDate — days-to-subtract when computing the effective "today".
+  testDayOffset         Int?
+
   user                  User     @relation(fields: [userId], references: [id])
   dailySessions         VisionDailySession[]
 
