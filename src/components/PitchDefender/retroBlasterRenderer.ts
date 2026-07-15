@@ -1,9 +1,182 @@
 import {
-  ALIEN_H, ALIEN_W, CHARGE_FULL_MS, H, LASER_H, LASER_W,
-  noteButtonRects, PLAYER_W, PLAYER_Y, SPACE_SCALE, STARTING_SHIELDS, W,
-  type ViewState, type VisualKind,
+  ALIEN_H, ALIEN_W, H, LASER_H, LASER_W, MIC_CONFIDENCE_FLOOR, MIC_TOLERANCE_CENTS,
+  noteButtonRects, noteClass, PLAYER_W, PLAYER_Y, SPACE_SCALE, STARTING_SHIELDS, W,
+  type Alien, type EnginePitch, type InputMode, type ViewState, type VisualKind,
 } from './retroBlasterEngine'
+import { noteToFreq, octaveFoldedCents } from './pitchMath'
 import { drawAtlasSprite, loadSpriteAtlas, type AtlasLoadResult, type SpriteAtlas } from './spriteAtlas'
+
+export const MIC_VFX_STALE_FRAME_GRACE = 3
+export const SOUL_WOBBLE_PX = 1
+export const SOUL_WOBBLE_RADIANS_PER_SECOND = 1.35
+export const SOUL_SLOT_PHASE_RADIANS = 0.73
+export const SOUL_CALM_DAMPING = 0.7
+export const SOUL_VERTICAL_RATIO = 0.35
+
+export function deriveSoulRenderOffset(
+  alien: Pick<Alien, 'formationSlot' | 'soul' | 'entering' | 'alive'>,
+  nowMs: number,
+  reducedMotion: boolean,
+  isActive: boolean,
+): { x: number; y: number } {
+  if (reducedMotion || isActive || alien.entering || !alien.alive || !alien.soul) return { x: 0, y: 0 }
+  const raw = alien.soul.agitation * SOUL_WOBBLE_PX * Math.sin(
+    (nowMs / 1000) * SOUL_WOBBLE_RADIANS_PER_SECOND +
+      alien.formationSlot * SOUL_SLOT_PHASE_RADIANS,
+  )
+  const x = raw * (1 - alien.soul.calm * SOUL_CALM_DAMPING)
+  return { x, y: x * SOUL_VERTICAL_RATIO }
+}
+
+export interface MicLockSignalInput {
+  inputMode: InputMode
+  isListening: boolean
+  isVisible: boolean
+  targetNote: string | null
+  micSourceHealth: {
+    audioContextState: string
+    trackReadyState: MediaStreamTrackState | 'unavailable'
+    trackMuted: boolean
+  }
+  hasFreshGeneration: boolean
+  pitch: EnginePitch | null
+}
+
+export interface WeaponVfxSnapshot {
+  charge: null | { attackId: string; alienId: string; fraction: number; hue: number }
+  tracer: null | {
+    attackId: string
+    alienId: string
+    laserIndex: number
+    flightProgress: number
+  }
+  hitLockAttackId: string | null
+  impactAlienIds: string[]
+}
+
+export interface MicVfxFreshnessState {
+  lastGeneration: number
+  hasObservedMicGeneration: boolean
+  staleGameFrames: number
+}
+
+export function advanceMicVfxFreshness(
+  previous: MicVfxFreshnessState,
+  generation: number,
+  sourceEligible: boolean,
+): { state: MicVfxFreshnessState; hasFreshGeneration: boolean } {
+  if (!sourceEligible) {
+    return {
+      state: {
+        lastGeneration: generation,
+        hasObservedMicGeneration: false,
+        staleGameFrames: 0,
+      },
+      hasFreshGeneration: false,
+    }
+  }
+
+  const generationChanged = generation > 0 && generation !== previous.lastGeneration
+  const state: MicVfxFreshnessState = generationChanged
+    ? {
+        lastGeneration: generation,
+        hasObservedMicGeneration: true,
+        staleGameFrames: 0,
+      }
+    : {
+        lastGeneration: previous.lastGeneration,
+        hasObservedMicGeneration: previous.hasObservedMicGeneration,
+        staleGameFrames: previous.hasObservedMicGeneration
+          ? previous.staleGameFrames + 1
+          : previous.staleGameFrames,
+      }
+  return {
+    state,
+    hasFreshGeneration: state.hasObservedMicGeneration &&
+      state.staleGameFrames <= MIC_VFX_STALE_FRAME_GRACE,
+  }
+}
+
+export function deriveMicLockSignalActive(input: MicLockSignalInput): boolean {
+  const { micSourceHealth, pitch, targetNote } = input
+  return input.inputMode === 'mic' &&
+    input.isListening &&
+    input.isVisible &&
+    targetNote !== null &&
+    micSourceHealth.audioContextState === 'running' &&
+    micSourceHealth.trackReadyState === 'live' &&
+    micSourceHealth.trackMuted === false &&
+    input.hasFreshGeneration &&
+    pitch?.isActive === true &&
+    pitch.confidence >= MIC_CONFIDENCE_FLOOR &&
+    pitch.frequency > 0 &&
+    Math.abs(octaveFoldedCents(pitch.frequency, noteToFreq(targetNote))) <= MIC_TOLERANCE_CENTS
+}
+
+export function deriveWeaponVfx(
+  viewState: ViewState,
+  micLockSignalActive: boolean,
+): WeaponVfxSnapshot {
+  const attack = viewState.activeAttack
+  const activeAlien = attack
+    ? viewState.aliens.find(alien => alien.alienId === attack.alienId)
+    : undefined
+  const chargeTarget = viewState.charge.targetNote
+  const charge = micLockSignalActive &&
+    viewState.inputMode === 'mic' &&
+    viewState.charge.fraction > 0 &&
+    chargeTarget !== null &&
+    attack?.phase === 'outbound' &&
+    attack.outcome === null &&
+    activeAlien?.alive === true &&
+    activeAlien.alienId === attack.alienId &&
+    noteClass(activeAlien.note) === noteClass(chargeTarget)
+    ? {
+        attackId: attack.attackId,
+        alienId: attack.alienId,
+        fraction: Math.max(0, Math.min(1, viewState.charge.fraction)),
+        hue: activeAlien.hue,
+      }
+    : null
+
+  const canonicalTracers = viewState.lasers
+    .map((laser, laserIndex) => ({ laser, laserIndex }))
+    .filter(({ laser }) =>
+      laser.active &&
+      laser.hits === true &&
+      laser.attackId !== null &&
+      laser.targetAlienId !== null &&
+      attack?.attackId === laser.attackId &&
+      attack.alienId === laser.targetAlienId &&
+      attack.phase === 'hit-locked' &&
+      attack.outcome === 'correct')
+
+  let tracer: WeaponVfxSnapshot['tracer'] = null
+  let hitLockAttackId: string | null = null
+  if (canonicalTracers.length === 1 && attack) {
+    const { laser, laserIndex } = canonicalTracers[0]
+    const flightProgress = Math.max(0, Math.min(
+      1,
+      (PLAYER_Y - laser.y) / Math.max(1, PLAYER_Y - laser.targetY),
+    ))
+    tracer = {
+      attackId: attack.attackId,
+      alienId: attack.alienId,
+      laserIndex,
+      flightProgress,
+    }
+    if (flightProgress >= 0.55) hitLockAttackId = attack.attackId
+  }
+
+  return {
+    charge,
+    tracer,
+    hitLockAttackId,
+    impactAlienIds: viewState.aliens
+      .filter(alien => !alien.alive && alien.hitTimer > 0)
+      .map(alien => alien.alienId),
+  }
+}
 
 export const ENEMY_ROSTER = [
   {
@@ -295,20 +468,297 @@ function drawInsideBracket(
   ctx.stroke()
 }
 
+function vfxExtent(value: number): number {
+  return Math.max(1, Math.round(value))
+}
+
+function fillVfxRect(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+): void {
+  ctx.fillRect(Math.floor(x), Math.floor(y), vfxExtent(width), vfxExtent(height))
+}
+
+function drawMicCharge(
+  ctx: CanvasRenderingContext2D,
+  viewState: ViewState,
+  charge: NonNullable<WeaponVfxSnapshot['charge']>,
+  reducedMotion: boolean,
+  colorHints: boolean,
+): void {
+  const s = SPACE_SCALE
+  const c = Math.max(0, Math.min(1, charge.fraction))
+  const motionAlpha = reducedMotion ? 1 : 0.82 + 0.18 * Math.sin(viewState.nowMs / 80)
+  const layerColor = (alpha: number) => colorHints
+    ? `hsla(${charge.hue}, 92%, 72%, ${alpha})`
+    : `rgba(200,245,255,${alpha})`
+
+  const outerWidth = (12 + 18 * c) * s
+  ctx.fillStyle = layerColor((0.06 + 0.18 * c) * motionAlpha)
+  fillVfxRect(
+    ctx,
+    viewState.playerX - outerWidth / 2,
+    PLAYER_Y - (7 + 2 * c) * s,
+    outerWidth,
+    (7 + 4 * c) * s,
+  )
+
+  const innerWidth = (6 + 10 * c) * s
+  ctx.fillStyle = layerColor((0.14 + 0.30 * c) * motionAlpha)
+  fillVfxRect(
+    ctx,
+    viewState.playerX - innerWidth / 2,
+    PLAYER_Y - (5 + c) * s,
+    innerWidth,
+    (4 + 2 * c) * s,
+  )
+
+  const railOffset = (3 + 4 * c) * s
+  const railLength = (3 + 3 * c) * s
+  ctx.fillStyle = layerColor((0.28 + 0.42 * c) * motionAlpha)
+  fillVfxRect(ctx, viewState.playerX - railOffset, PLAYER_Y - railLength, s, railLength)
+  fillVfxRect(ctx, viewState.playerX + railOffset, PLAYER_Y - railLength, s, railLength)
+}
+
+function drawCorrectTracer(
+  ctx: CanvasRenderingContext2D,
+  viewState: ViewState,
+  tracer: NonNullable<WeaponVfxSnapshot['tracer']>,
+  reducedMotion: boolean,
+  colorHints: boolean,
+): void {
+  const laser = viewState.lasers[tracer.laserIndex]
+  if (!laser?.active) return
+  const s = SPACE_SCALE
+  const tail = Math.min(24 * s, Math.max(LASER_H, PLAYER_Y - laser.y))
+  const tailBottom = Math.min(PLAYER_Y, laser.y + tail)
+  const middleAlpha = reducedMotion ? 0.42 : 0.42 + 0.08 * Math.sin(viewState.nowMs / 64)
+
+  ctx.fillStyle = colorHints
+    ? `hsla(${laser.hue},95%,78%,0.16)`
+    : 'rgba(200,245,255,0.16)'
+  fillVfxRect(ctx, laser.x - 3.5 * s, laser.y, 7 * s, tailBottom - laser.y)
+
+  ctx.fillStyle = colorHints
+    ? `hsla(${laser.hue},95%,82%,${middleAlpha})`
+    : `rgba(200,245,255,${middleAlpha})`
+  fillVfxRect(ctx, laser.x - 2 * s, laser.y, 4 * s, 0.72 * tail)
+
+  ctx.fillStyle = colorHints ? `hsl(${laser.hue},95%,70%)` : '#c8f5ff'
+  fillVfxRect(ctx, laser.x - s, laser.y, LASER_W, LASER_H)
+
+  ctx.fillStyle = colorHints
+    ? `hsla(${laser.hue},98%,86%,0.72)`
+    : 'rgba(220,250,255,0.72)'
+  fillVfxRect(ctx, laser.x - 2.5 * s, laser.y - 2.5 * s, 5 * s, 5 * s)
+}
+
+function drawTightHitLock(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  hue: number,
+  nowMs: number,
+  reducedMotion: boolean,
+  colorHints: boolean,
+): void {
+  const s = SPACE_SCALE
+  const inset = 2 * s
+  const leg = vfxExtent(5 * s)
+  const left = Math.floor(x + inset)
+  const top = Math.floor(y + inset)
+  const right = Math.floor(x + width - inset)
+  const bottom = Math.floor(y + height - inset)
+  const alpha = reducedMotion ? 0.84 : 0.76 + 0.16 * Math.sin(nowMs / 70)
+  ctx.strokeStyle = colorHints
+    ? `hsla(${hue},96%,82%,${alpha})`
+    : `rgba(207,244,255,${alpha})`
+  ctx.lineWidth = vfxExtent(s)
+  ctx.beginPath()
+  ctx.moveTo(left, top + leg); ctx.lineTo(left, top); ctx.lineTo(left + leg, top)
+  ctx.moveTo(right - leg, bottom); ctx.lineTo(right, bottom); ctx.lineTo(right, bottom - leg)
+  ctx.stroke()
+}
+
+function drawImpactBloom(
+  ctx: CanvasRenderingContext2D,
+  alien: ViewState['aliens'][number],
+  reducedMotion: boolean,
+  colorHints: boolean,
+): void {
+  const s = SPACE_SCALE
+  const progress = Math.max(0, Math.min(1, 1 - alien.hitTimer / 0.4))
+  const innerRadius = (reducedMotion ? 11 : 5 + 10 * progress) * s
+  const outerRadius = (reducedMotion ? 18 : 9 + 18 * progress) * s
+  const innerAlpha = (1 - progress) * 0.68
+  const outerAlpha = (1 - progress) * 0.34
+  const centerX = alien.x + ALIEN_W / 2
+  const centerY = alien.y + ALIEN_H / 2
+
+  ctx.strokeStyle = colorHints
+    ? `hsla(${alien.hue},92%,68%,${outerAlpha})`
+    : `rgba(174,220,237,${outerAlpha})`
+  ctx.lineWidth = vfxExtent(s)
+  ctx.strokeRect(
+    Math.floor(centerX - outerRadius),
+    Math.floor(centerY - outerRadius),
+    vfxExtent(2 * outerRadius),
+    vfxExtent(2 * outerRadius),
+  )
+
+  ctx.strokeStyle = colorHints
+    ? `hsla(${alien.hue},96%,82%,${innerAlpha})`
+    : `rgba(220,250,255,${innerAlpha})`
+  ctx.lineWidth = vfxExtent(2 * s)
+  ctx.strokeRect(
+    Math.floor(centerX - innerRadius),
+    Math.floor(centerY - innerRadius),
+    vfxExtent(2 * innerRadius),
+    vfxExtent(2 * innerRadius),
+  )
+}
+
+function drawSoulSignal(
+  ctx: CanvasRenderingContext2D,
+  centerX: number,
+  y: number,
+  footprintWidth: number,
+  alien: Alien,
+  colorHints: boolean,
+  scale: number,
+): void {
+  const litWidth = footprintWidth * (0.25 + alien.soul.agitation * 0.5)
+  const alpha = Math.max(
+    0.35,
+    0.35 + 0.45 * alien.soul.agitation * (1 - alien.soul.calm * SOUL_CALM_DAMPING),
+  )
+  const left = Math.round(centerX - litWidth / 2)
+  const width = Math.max(scale, Math.round(litWidth))
+  ctx.save()
+  ctx.globalAlpha = alpha
+  ctx.fillStyle = colorHints ? `hsl(${alien.hue}, 92%, 82%)` : '#d9f7ff'
+  ctx.fillRect(left, Math.round(y), width, Math.max(1, Math.round(scale)))
+  if (alien.soul.due) {
+    ctx.globalAlpha = Math.max(0.55, alpha)
+    ctx.fillRect(left, Math.round(y + 2 * scale), width, Math.max(1, Math.round(scale)))
+  }
+  ctx.restore()
+}
+
+function drawIntroductionCeremony(
+  ctx: CanvasRenderingContext2D,
+  viewState: ViewState,
+  reducedMotion: boolean,
+  colorHints: boolean,
+): void {
+  const ceremony = viewState.introductionCeremony
+  if (!ceremony) return
+
+  const s = SPACE_SCALE
+  const noteHue = viewState.noteButtons.find(button => button.note === ceremony.note)?.hue ?? 180
+  const accent = colorHints ? `hsl(${noteHue}, 88%, 70%)` : '#d9f7ff'
+  const accentSoft = colorHints ? `hsla(${noteHue}, 88%, 66%, 0.22)` : 'rgba(217,247,255,0.18)'
+  const pulse = reducedMotion ? 1 : 0.88 + Math.sin(ceremony.elapsedMs / 180) * 0.12
+  const centerX = W / 2
+  const renderedHeight = ctx.canvas.getBoundingClientRect().height || ctx.canvas.clientHeight
+  const compact = renderedHeight > 0 && renderedHeight <= 220
+  const panelInset = (compact ? 32 : 76) * s
+  const panelHeight = compact ? H - 44 * s : H - 84 * s
+  const preflightFontPx = compact
+    ? Math.ceil(9 * H / renderedHeight)
+    : Math.round(9 * s)
+  const sourceToCssY = renderedHeight > 0 ? renderedHeight / H : 1
+  const notScoredFontPx = Math.max(Math.round(11 * s), Math.ceil(18 / sourceToCssY))
+
+  ctx.save()
+  ctx.fillStyle = 'rgba(1,4,12,0.92)'
+  ctx.fillRect(0, 0, W, H)
+
+  ctx.fillStyle = 'rgba(3,12,25,0.96)'
+  ctx.strokeStyle = 'rgba(116,238,255,0.72)'
+  ctx.lineWidth = 1.5 * s
+  ctx.fillRect(panelInset, 42 * s, W - panelInset * 2, panelHeight)
+  ctx.strokeRect(panelInset, 42 * s, W - panelInset * 2, panelHeight)
+
+  ctx.fillStyle = '#79f2cf'
+  ctx.font = `bold ${preflightFontPx}px monospace`
+  ctx.textAlign = 'center'
+  ctx.fillText('PRE-FLIGHT', centerX, (compact ? 45 : 72) * s)
+
+  ctx.fillStyle = '#f3fbff'
+  ctx.font = `bold ${Math.round(24 * s)}px monospace`
+  ctx.fillText('NEW SIGNAL', centerX, (compact ? 65 : 101) * s)
+
+  ctx.globalAlpha = pulse
+  ctx.fillStyle = accentSoft
+  ctx.fillRect(centerX - 48 * s, (compact ? 74 : 116) * s, 96 * s, (compact ? 34 : 62) * s)
+  ctx.strokeStyle = accent
+  ctx.lineWidth = 2 * s
+  ctx.strokeRect(centerX - 48 * s, (compact ? 74 : 116) * s, 96 * s, (compact ? 34 : 62) * s)
+  ctx.fillStyle = accent
+  ctx.font = `bold ${Math.round(34 * s)}px monospace`
+  ctx.fillText(ceremony.note.replace(/\d/, ''), centerX, (compact ? 101 : 158) * s)
+  ctx.globalAlpha = 1
+
+  ctx.strokeStyle = accent
+  ctx.lineWidth = 1.5 * s
+  ctx.beginPath()
+  const barCount = 21
+  const waveformY = compact ? 116 : 207
+  for (let i = 0; i < barCount; i++) {
+    const x = centerX - 116 * s + i * 11.6 * s
+    const distance = Math.abs(i - (barCount - 1) / 2)
+    const height = (compact
+      ? 4 + Math.max(0, 18 - distance * 2)
+      : 6 + Math.max(0, 30 - distance * 3.2)) * s
+    ctx.moveTo(x, waveformY * s - height / 2)
+    ctx.lineTo(x, waveformY * s + height / 2)
+  }
+  ctx.stroke()
+
+  ctx.fillStyle = '#c8d8e2'
+  ctx.font = `bold ${Math.round(10 * s)}px monospace`
+  ctx.fillText('REFERENCE INTRODUCTION', centerX, (compact ? 129 : 226) * s)
+  ctx.fillStyle = '#d9f7ff'
+  ctx.font = `bold ${notScoredFontPx}px "Arial Narrow", Arial, sans-serif`
+  ctx.fillText(
+    'INTRODUCTION ONLY - NOT SCORED',
+    centerX,
+    (compact ? 160 : 244) * s,
+    W - 60 * s,
+  )
+
+  const railWidth = 190 * s
+  const progress = Math.max(0, Math.min(1, ceremony.elapsedMs / ceremony.durationMs))
+  ctx.fillStyle = 'rgba(130,160,178,0.2)'
+  ctx.fillRect(centerX - railWidth / 2, (compact ? 173 : 260) * s, railWidth, 2 * s)
+  ctx.fillStyle = accent
+  ctx.fillRect(centerX - railWidth / 2, (compact ? 173 : 260) * s, railWidth * progress, 2 * s)
+  ctx.restore()
+}
+
 export interface RetroRenderOptions {
   reducedMotion?: boolean
   colorHints?: boolean
+  micLockSignalActive?: boolean
 }
 
 export function render(
   ctx: CanvasRenderingContext2D,
   viewState: ViewState,
   options: RetroRenderOptions = {},
-): void {
+): WeaponVfxSnapshot {
   const reducedMotion = options.reducedMotion ?? false
   const colorHints = options.colorHints ?? true
+  const weaponVfx = deriveWeaponVfx(viewState, options.micLockSignalActive ?? false)
   const now = viewState.nowMs
   const s = SPACE_SCALE
+  const identityMaskActive = viewState.identityMaskActive
   drawSpace(ctx, now, reducedMotion)
 
   if (viewState.waveIntroTimer > 0) {
@@ -327,14 +777,56 @@ export function render(
     .sort((left, right) =>
       Number(left.alienId === activeAlienId) - Number(right.alienId === activeAlienId))
 
+  const impactAlienIds = new Set(weaponVfx.impactAlienIds)
   for (const alien of orderedAliens) {
-    if (!alien.alive && alien.hitTimer <= 0) continue
-    const attack = viewState.activeAttack?.alienId === alien.alienId
+    if (!impactAlienIds.has(alien.alienId)) continue
+    const existingSource = enemyRenderSources.get(alien.visualId)
+    const proposedSource = existingSource ?? chooseEnemyRenderSource(
+      alien.visualKind,
+      enemyAtlases[alien.visualKind],
+      enemyAtlases[0],
+    )
+    if (!existingSource && !isEnemySourceVisible(
+      alien.x, alien.y, alien.visualKind, false, now, proposedSource,
+    )) continue
+    const resolvedAtlas = atlasForAlien(alien.visualId, alien.visualKind)
+    const atlas = resolvedAtlas?.atlas ?? null
+    drawImpactBloom(ctx, alien, reducedMotion, colorHints)
+    const alpha = alien.hitTimer / 0.4
+    ctx.globalAlpha = alpha
+    const explosionFrame = alien.hitTimer >= 0.2 ? 'explode-a' : 'explode-b'
+    const drewAtlas = atlas && drawAtlasSprite(
+      ctx, atlas, explosionFrame, alien.x - 12 * s, alien.y - 9 * s, s,
+    )
+    if (!drewAtlas) {
+      const explosionColor = colorHints ? `hsl(${alien.hue}, 80%, 60%)` : '#b8d9e8'
+      drawSprite(ctx, EXPLOSION_SPRITE, alien.x + s, alien.y, explosionColor, 2 * s)
+    }
+    ctx.globalAlpha = 1
+  }
+
+  for (const particle of viewState.particles) {
+    const alpha = Math.max(0, particle.life * 2)
+    ctx.fillStyle = colorHints
+      ? `hsla(${particle.hue}, 80%, 60%, ${alpha})`
+      : `rgba(174,220,237,${alpha})`
+    ctx.fillRect(Math.floor(particle.x), Math.floor(particle.y), 3 * s, 3 * s)
+  }
+
+  for (const sourceAlien of orderedAliens) {
+    if (!sourceAlien.alive) continue
+    const attack = viewState.activeAttack?.alienId === sourceAlien.alienId
       ? viewState.activeAttack
       : null
     const isActive = attack !== null
-    const isTelegraph = attack?.phase === 'telegraph'
-    const isFlightPose = Boolean(attack && (attack.phase !== 'telegraph' || reducedMotion))
+    const soulOffset = identityMaskActive
+      ? { x: 0, y: 0 }
+      : deriveSoulRenderOffset(sourceAlien, now, reducedMotion, isActive)
+    const alien = soulOffset.x === 0 && soulOffset.y === 0
+      ? sourceAlien
+      : { ...sourceAlien, x: sourceAlien.x + soulOffset.x, y: sourceAlien.y + soulOffset.y }
+    const isTelegraph = attack?.phase === 'telegraph' || attack?.phase === 'awaiting-stimulus'
+    const isFlightPose = Boolean(attack && (!isTelegraph || reducedMotion))
     const usesFocusScale = Boolean(isTelegraph && !reducedMotion)
     const existingSource = enemyRenderSources.get(alien.visualId)
     const proposedSource = existingSource ?? chooseEnemyRenderSource(
@@ -347,23 +839,13 @@ export function render(
     )) continue
     const resolvedAtlas = atlasForAlien(alien.visualId, alien.visualKind)
     const atlas = resolvedAtlas?.atlas ?? null
-    if (alien.hitTimer > 0) {
-      const alpha = alien.hitTimer / 0.4
-      ctx.globalAlpha = alpha
-      const explosionFrame = alien.hitTimer >= 0.2 ? 'explode-a' : 'explode-b'
-      const drewAtlas = atlas && drawAtlasSprite(ctx, atlas, explosionFrame, alien.x - 12 * s, alien.y - 9 * s, s)
-      if (!drewAtlas) {
-        const explosionColor = colorHints ? `hsl(${alien.hue}, 80%, 60%)` : '#b8d9e8'
-        drawSprite(ctx, EXPLOSION_SPRITE, alien.x + s, alien.y, explosionColor, 2 * s)
-      }
-      ctx.globalAlpha = 1
-      continue
-    }
 
     const sprite = alien.frame === 0 ? ALIEN_SPRITE_A : ALIEN_SPRITE_B
     const bobPhase = reducedMotion ? 1 : Math.sin(now / 200)
     const idleFrame = bobPhase >= 0 ? 'idle-a' : 'idle-b'
-    const color = colorHints
+    const color = identityMaskActive
+      ? isActive ? '#d7f3f7' : '#71838d'
+      : colorHints
       ? isActive ? `hsl(${alien.hue}, 95%, 70%)` : `hsl(${alien.hue}, 50%, 40%)`
       : isActive ? '#c7f5ff' : '#61758b'
     const anchor = resolvedAtlas?.anchor ?? ENEMY_ROSTER[alien.visualKind].chipAnchor
@@ -379,7 +861,7 @@ export function render(
       const chipAnchorX = attack.side === -1 ? 1 - anchor[0] : anchor[0]
       const chipX = drewAtlas ? atlasX + 48 * s * chipAnchorX : alien.x + ALIEN_W / 2
       const chipY = drewAtlas ? atlasY + 36 * s * anchor[1] : alien.y + ALIEN_H * 0.55
-      drawNoteChip(ctx, chipX, chipY, alien.hue, colorHints, s)
+      if (!identityMaskActive) drawNoteChip(ctx, chipX, chipY, alien.hue, colorHints, s)
       const footprintX = drewAtlas ? atlasX : alien.x
       const footprintY = drewAtlas ? atlasY : alien.y
       const footprintW = drewAtlas ? 48 * s : ALIEN_W
@@ -390,11 +872,26 @@ export function render(
         footprintY,
         footprintW,
         footprintH,
-        colorHints ? `hsla(${alien.hue}, 95%, 72%, 0.92)` : 'rgba(207,244,255,0.94)',
+        identityMaskActive
+          ? 'rgba(207,244,255,0.94)'
+          : colorHints ? `hsla(${alien.hue}, 95%, 72%, 0.92)` : 'rgba(207,244,255,0.94)',
         s,
       )
+      if (weaponVfx.hitLockAttackId === attack.attackId) {
+        drawTightHitLock(
+          ctx,
+          footprintX,
+          footprintY,
+          footprintW,
+          footprintH,
+          alien.hue,
+          now,
+          reducedMotion,
+          colorHints,
+        )
+      }
       if (isTelegraph) {
-        ctx.fillStyle = '#ffe34c'
+        ctx.fillStyle = identityMaskActive ? '#d7f3f7' : '#ffe34c'
         ctx.font = `bold ${Math.round(16 * s)}px monospace`
         ctx.textAlign = 'center'
         ctx.fillText('?', footprintX + footprintW / 2, footprintY + 14 * s)
@@ -413,7 +910,9 @@ export function render(
       const focusY = atlas ? atlasY + (36 - atlasFocusH) * atlasScale : alien.y - offsetY
       const focusW = atlas ? atlasFocusW * atlasScale : ALIEN_W * 1.2
       const focusH = atlas ? atlasFocusH * atlasScale : ALIEN_H * 1.2
-      ctx.fillStyle = colorHints
+      ctx.fillStyle = identityMaskActive
+        ? `rgba(121,224,255,${pulse * 0.2})`
+        : colorHints
         ? `hsla(${alien.hue}, 90%, 55%, ${pulse * 0.25})`
         : `rgba(121,224,255,${pulse * 0.2})`
       ctx.fillRect(focusX - 4 * s, focusY - 4 * s, focusW + 8 * s, focusH + 8 * s)
@@ -421,13 +920,15 @@ export function render(
       if (!drewAtlas) drawSprite(ctx, sprite, alien.x - offsetX, alien.y - offsetY, color, scale)
       const chipX = drewAtlas ? atlasX + 48 * atlasScale * anchor[0] : alien.x + ALIEN_W / 2
       const chipY = drewAtlas ? atlasY + 36 * atlasScale * anchor[1] : alien.y + ALIEN_H * 0.55
-      drawNoteChip(ctx, chipX, chipY, alien.hue, colorHints, 1.15 * s)
-      ctx.fillStyle = '#ffe34c'
+      if (!identityMaskActive) drawNoteChip(ctx, chipX, chipY, alien.hue, colorHints, 1.15 * s)
+      ctx.fillStyle = identityMaskActive ? '#d7f3f7' : '#ffe34c'
       ctx.font = `bold ${Math.round(20 * s)}px monospace`
       ctx.textAlign = 'center'
       const qBob = reducedMotion ? 0 : Math.sin(now / 180) * 2 * s
       ctx.fillText('?', focusX + focusW / 2, focusY - 5 * s + qBob)
-      ctx.strokeStyle = colorHints ? `hsla(${alien.hue}, 90%, 65%, ${pulse})` : `rgba(165,235,255,${pulse})`
+      ctx.strokeStyle = identityMaskActive
+        ? `rgba(165,235,255,${pulse})`
+        : colorHints ? `hsla(${alien.hue}, 90%, 65%, ${pulse})` : `rgba(165,235,255,${pulse})`
       ctx.lineWidth = 2 * s
       ctx.strokeRect(focusX - 2 * s, focusY - 2 * s, focusW + 4 * s, focusH + 4 * s)
     } else {
@@ -437,39 +938,44 @@ export function render(
       if (!drewAtlas) drawSprite(ctx, sprite, alien.x, alien.y, color, 2 * s)
       const chipX = drewAtlas ? atlasX + 48 * s * anchor[0] : alien.x + ALIEN_W / 2
       const chipY = drewAtlas ? atlasY + 36 * s * anchor[1] : alien.y + ALIEN_H * 0.55
-      drawNoteChip(ctx, chipX, chipY, alien.hue, colorHints, s)
-      ctx.fillStyle = colorHints ? `hsla(${alien.hue}, 60%, 70%, 0.9)` : 'rgba(221,236,245,0.88)'
-      ctx.font = `bold ${Math.round(9 * s)}px monospace`
-      ctx.textAlign = 'center'
-      ctx.fillText(alien.note.replace(/\d/, ''), alien.x + ALIEN_W / 2, alien.y - 3 * s)
+      if (!identityMaskActive) {
+        drawNoteChip(ctx, chipX, chipY, alien.hue, colorHints, s)
+        ctx.fillStyle = colorHints ? `hsla(${alien.hue}, 60%, 70%, 0.9)` : 'rgba(221,236,245,0.88)'
+        ctx.font = `bold ${Math.round(9 * s)}px monospace`
+        ctx.textAlign = 'center'
+        ctx.fillText(alien.note.replace(/\d/, ''), alien.x + ALIEN_W / 2, alien.y - 3 * s)
+      }
+      if (!identityMaskActive && !alien.entering && alien.soul) {
+        drawSoulSignal(
+          ctx,
+          chipX,
+          alien.y + ALIEN_H - 2 * s,
+          ALIEN_W,
+          alien,
+          colorHints,
+          s,
+        )
+      }
     }
   }
 
-  for (const laser of viewState.lasers) {
+  for (let laserIndex = 0; laserIndex < viewState.lasers.length; laserIndex++) {
+    const laser = viewState.lasers[laserIndex]
     if (!laser.active) continue
-    const col = laser.hits ? colorHints ? `hsl(${laser.hue}, 95%, 70%)` : '#c8f5ff' : '#ff5555'
-    const glow = laser.hits ? colorHints ? `hsla(${laser.hue}, 95%, 80%, 0.4)` : 'rgba(171,235,255,0.4)' : 'rgba(255,80,80,0.4)'
-    ctx.fillStyle = col
+    if (laser.hits) {
+      if (weaponVfx.tracer?.laserIndex === laserIndex) {
+        drawCorrectTracer(ctx, viewState, weaponVfx.tracer, reducedMotion, colorHints)
+      }
+      continue
+    }
+    ctx.fillStyle = '#ff5555'
     ctx.fillRect(laser.x - s, laser.y, LASER_W, LASER_H)
-    ctx.fillStyle = glow
+    ctx.fillStyle = 'rgba(255,80,80,0.4)'
     ctx.fillRect(laser.x - 2 * s, laser.y - s, LASER_W + 2 * s, LASER_H + 2 * s)
   }
 
-  for (const p of viewState.particles) {
-    const alpha = Math.max(0, p.life * 2)
-    ctx.fillStyle = colorHints ? `hsla(${p.hue}, 80%, 60%, ${alpha})` : `rgba(174,220,237,${alpha})`
-    ctx.fillRect(Math.floor(p.x), Math.floor(p.y), 3 * s, 3 * s)
-  }
-
-  const chargeProgress = viewState.charge.fraction * CHARGE_FULL_MS
-  if (viewState.inputMode === 'mic' && chargeProgress > CHARGE_FULL_MS * 0.7) {
-    const chargePct = chargeProgress / CHARGE_FULL_MS
-    const glowAlpha = (chargePct - 0.7) / 0.3
-    ctx.fillStyle = `rgba(74,222,128,${glowAlpha * 0.35})`
-    ctx.fillRect(viewState.playerX - 6 * s, PLAYER_Y - 6 * s, 12 * s, 6 * s)
-    const pulse = reducedMotion ? 0.8 : 0.5 + Math.sin(now / 80) * 0.3
-    ctx.fillStyle = `rgba(74,222,128,${glowAlpha * pulse})`
-    ctx.fillRect(viewState.playerX - 3 * s, PLAYER_Y - 4 * s, 6 * s, 4 * s)
+  if (weaponVfx.charge) {
+    drawMicCharge(ctx, viewState, weaponVfx.charge, reducedMotion, colorHints)
   }
   drawSprite(ctx, PLAYER_SPRITE, viewState.playerX - PLAYER_W / 2, PLAYER_Y, '#3FBFB5', 2 * s)
 
@@ -537,4 +1043,6 @@ export function render(
     ctx.font = `bold ${Math.round(7 * s)}px monospace`
     ctx.fillText(`[${keyNum}]`, rect.x + rect.width / 2, rect.y + 20 * s)
   }
+  drawIntroductionCeremony(ctx, viewState, reducedMotion, colorHints)
+  return weaponVfx
 }

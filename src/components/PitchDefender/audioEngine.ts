@@ -55,6 +55,19 @@ export function initAudio() {
   ctx()
 }
 
+export interface PianoReadiness {
+  sampleReady: boolean
+  contextState: AudioContextState | 'uninitialized'
+}
+
+/** Read the existing output path without initializing or mutating it. */
+export function getPianoReadiness(note: string): PianoReadiness {
+  return {
+    sampleReady: _pianoCache.has(note),
+    contextState: _ctx?.state ?? 'uninitialized',
+  }
+}
+
 export type SfxType =
   | 'correct' | 'wrong' | 'levelup' | 'damage' | 'explosion'
   | 'comboTick' | 'waveStart' | 'waveClear' | 'bossAppear'

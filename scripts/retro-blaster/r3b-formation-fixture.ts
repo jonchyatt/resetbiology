@@ -335,8 +335,8 @@ function validateStateMachineAndPacing(): void {
     expectedQueues[key] = waveState.spawnQueue
   }
   assert.deepEqual(expectedQueues, {
-    'easy-1': ['F4', 'F4'],
-    'true-7': ['D4', 'E4', 'C4', 'C4', 'E4', 'E4', 'C4', 'E4', 'C4', 'F4'],
+    'easy-1': ['C4', 'E4'],
+    'true-7': ['E4', 'D4', 'C4', 'C4', 'E4', 'E4', 'C4', 'E4', 'C4', 'F4'],
   })
 
   const capacity = prepareSpawningState(1)
@@ -388,8 +388,12 @@ function validateStateMachineAndPacing(): void {
 
 async function validateShellAudioContract(): Promise<void> {
   const shell = await readFile(resolve(root, 'src/components/PitchDefender/RetroBlasterII.tsx'), 'utf8')
-  assert.equal((shell.match(/playPianoNote\(/g) ?? []).length, 2,
-    'pitched playback must remain limited to emitted demand cue + explicit replay')
+  assert.equal((shell.match(/playPianoNote\(/g) ?? []).length, 6,
+    'pitched playback must remain limited to demand, explicit replay, the two R8a radio-check sites, R8b NEW SIGNAL, and one guarded R8c stimulus site')
+  assert.match(shell, /getPianoReadiness\(RADIO_CHECK_NOTE\)/,
+    'R8a output dispatch must be guarded by the ratified readiness observer')
+  assert.match(shell, /This is a systems check, not a score/,
+    'R8a must not represent the named radio check as a skill test')
   assert.equal(/startMusic\s*\(/.test(shell), false, 'Retro Blaster must not start ambient pitched music')
   assert.match(shell, /visibilitychange/)
   assert.match(shell, /isTargetableAlien/)

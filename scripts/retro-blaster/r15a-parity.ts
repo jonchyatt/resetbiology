@@ -99,10 +99,12 @@ function run(engine: EngineModule): TimedEvent[] {
 }
 
 function semantic(event: EngineEvent): unknown {
-  if (event.kind === 'spawn') return { kind: event.kind, note: event.note }
-  if (event.kind === 'playNote') return { kind: event.kind, note: event.note }
+  // R7 intentionally changes note identity/order through the active-lane FSRS
+  // roster while preserving every inherited event channel and timing law.
+  if (event.kind === 'spawn') return { kind: event.kind }
+  if (event.kind === 'playNote') return { kind: event.kind }
   if (event.kind === 'grade') {
-    return { kind: event.kind, note: event.note, correct: event.correct, latencyMs: event.latencyMs }
+    return { kind: event.kind, correct: event.correct, latencyMs: event.latencyMs }
   }
   if (event.kind === 'unlock') return { kind: event.kind, note: event.note }
   return event
@@ -134,7 +136,7 @@ async function main(): Promise<void> {
         maxDelayMs = Math.max(maxDelayMs, delayMs)
       }
     }
-    console.log(`PASS R1.5a semantic parity: ${after.length} payloads and per-channel order identical; no event earlier; max declared R3c authored delay ${maxDelayMs}ms; cross-channel interleaving, spawn X, and attack identity excluded as declared timing/geometry/ownership`)
+    console.log(`PASS R1.5a semantic parity: ${after.length} event payloads/channels preserve inherited timing; no event earlier; max declared R3c authored delay ${maxDelayMs}ms; R7 note identity/order plus cross-channel interleaving, spawn X, and attack identity excluded as declared FSRS/timing/geometry/ownership`)
   } finally {
     await parentHandle.cleanup()
   }

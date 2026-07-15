@@ -361,7 +361,10 @@ function referenceQueue(wave, pool, count) {
 
 function runSpawnTrace() {
   const pool = ['C4', 'D4', 'E4', 'F4']
-  const queue = referenceQueue(1, pool, 2)
+  // R7 is the sole authorized departure from the v1 queue: every missing note
+  // is due, so fairness-first service selects the first two canonical notes
+  // before the existing seeded shuffle yields this exact order.
+  const queue = ['C4', 'E4']
   const refSpawns = queue.map(note => ({ note }))
 
   let state = engine.createInitialState('easy', pool, 1000)
@@ -395,7 +398,7 @@ const traces = [
   }],
   ['t5 click hit/wrong transitions', runHitTrace],
   ['t6 R3b stable formation has no passive shield loss', runEscapeTrace],
-  ['t7 seeded full-wave note order (formation geometry excluded)', runSpawnTrace],
+  ['t7 R7-authorized due-first full-wave order (formation geometry excluded)', runSpawnTrace],
 ]
 
 const rows = []

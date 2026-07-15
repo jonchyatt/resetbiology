@@ -243,6 +243,7 @@ const fixtures = [
     return 'independent {}; EAR created without VOICE seed'
   }],
   ['5', 'sibling regression sweep', () => {
+    const protectedBase = process.env.RETRO_PROTECTED_BASE || 'origin/master'
     const siblingPaths = [
       'src/components/PitchDefender/RetroBlaster.tsx',
       'src/components/PitchDefender/DrillMode.tsx',
@@ -250,18 +251,18 @@ const fixtures = [
       'src/components/PitchDefender/PitchDefender.tsx',
       'src/components/NBack/PitchRecognition.tsx',
     ]
-    const diff = execFileSync('git', ['diff', '--name-only', 'origin/master'], { cwd: root, encoding: 'utf8' })
+    const diff = execFileSync('git', ['diff', '--name-only', protectedBase], { cwd: root, encoding: 'utf8' })
       .split(/\r?\n/).filter(Boolean).map(path => path.replaceAll('\\', '/'))
     const changedSibling = siblingPaths.filter(path => diff.includes(path))
     assert(changedSibling.length === 0, `sibling diff detected: ${changedSibling.join(', ')}`)
     for (const path of siblingPaths.slice(1)) {
       const current = readFileSync(resolve(root, path), 'utf8').replaceAll('\r\n', '\n')
-      const baseline = execFileSync('git', ['show', `origin/master:${path}`], { cwd: root, encoding: 'utf8' })
+      const baseline = execFileSync('git', ['show', `${protectedBase}:${path}`], { cwd: root, encoding: 'utf8' })
         .replaceAll('\r\n', '\n')
       assert(current === baseline, `${path} differs from origin/master`)
       assert(current.includes("'pitch_fsrs_memory'"), `${path} lost its VOICE key literal`)
     }
-    return 'git diff clean for siblings; 4 legacy literals intact'
+    return `git diff clean for siblings against ${protectedBase}; 4 legacy literals intact`
   }],
   ['6', 'active-lane roster source', () => {
     const earNotes = gameTypes.INTRO_ORDER.slice(0, 7)

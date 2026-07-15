@@ -45,6 +45,18 @@ export interface PitchDetectionState {
   error: string | null
 }
 
+export interface MicSourceHealthSnapshot {
+  audioContextState: string
+  trackReadyState: MediaStreamTrackState | 'unavailable'
+  trackMuted: boolean
+}
+
+const FAIL_CLOSED_MIC_SOURCE_HEALTH: MicSourceHealthSnapshot = {
+  audioContextState: 'closed',
+  trackReadyState: 'unavailable',
+  trackMuted: true,
+}
+
 // ─── Hook ───────────────────────────────────────────────────────────────────
 
 export interface PitchDetectionOptions {
@@ -68,11 +80,28 @@ export function usePitchDetection(options?: PitchDetectionOptions) {
   const rafRef = useRef<number>(0)
   const detectorRef = useRef<PitchDetector<Float32Array> | null>(null)
   const pitchRef = useRef<PitchInfo | null>(null)
+  const micSourceHealthRef = useRef<MicSourceHealthSnapshot>({ ...FAIL_CLOSED_MIC_SOURCE_HEALTH })
+  const pitchGenerationRef = useRef(0)
+  const sourceObserverCleanupRef = useRef<(() => void) | null>(null)
 
   // Smoothing & hysteresis state
   const smoothedFreqRef = useRef(0)
   const consecutiveRef = useRef({ note: '', count: 0 })
   const lastStableNoteRef = useRef('')
+
+  const clearSourceObservers = useCallback(() => {
+    sourceObserverCleanupRef.current?.()
+    sourceObserverCleanupRef.current = null
+  }, [])
+
+  const syncMicSourceHealth = useCallback(() => {
+    const track = streamRef.current?.getAudioTracks()[0]
+    micSourceHealthRef.current = {
+      audioContextState: audioCtxRef.current?.state ?? 'closed',
+      trackReadyState: track?.readyState ?? 'unavailable',
+      trackMuted: track?.muted ?? true,
+    }
+  }, [])
 
   const startListening = useCallback(async () => {
     try {
@@ -96,6 +125,21 @@ export function usePitchDetection(options?: PitchDetectionOptions) {
       streamRef.current = stream
       detectorRef.current = PitchDetector.forFloat32Array(analyser.fftSize)
 
+      clearSourceObservers()
+      const track = stream.getAudioTracks()[0]
+      const refreshSourceHealth = () => syncMicSourceHealth()
+      ctx.addEventListener('statechange', refreshSourceHealth)
+      track?.addEventListener('mute', refreshSourceHealth)
+      track?.addEventListener('unmute', refreshSourceHealth)
+      track?.addEventListener('ended', refreshSourceHealth)
+      sourceObserverCleanupRef.current = () => {
+        ctx.removeEventListener('statechange', refreshSourceHealth)
+        track?.removeEventListener('mute', refreshSourceHealth)
+        track?.removeEventListener('unmute', refreshSourceHealth)
+        track?.removeEventListener('ended', refreshSourceHealth)
+      }
+      syncMicSourceHealth()
+
       // Reset smoothing state
       smoothedFreqRef.current = 0
       consecutiveRef.current = { note: '', count: 0 }
@@ -107,6 +151,9 @@ export function usePitchDetection(options?: PitchDetectionOptions) {
 
       function analyze() {
         if (!analyserRef.current || !detectorRef.current) return
+
+        syncMicSourceHealth()
+        pitchGenerationRef.current += 1
 
         analyserRef.current.getFloatTimeDomainData(buffer)
 
@@ -218,15 +265,18 @@ export function usePitchDetection(options?: PitchDetectionOptions) {
 
       rafRef.current = requestAnimationFrame(analyze)
     } catch (err) {
+      clearSourceObservers()
+      micSourceHealthRef.current = { ...FAIL_CLOSED_MIC_SOURCE_HEALTH }
       setState({
         isListening: false,
         pitch: null,
         error: err instanceof Error ? err.message : 'Microphone access denied',
       })
     }
-  }, [])
+  }, [clearSourceObservers, syncMicSourceHealth])
 
   const stopListening = useCallback(() => {
+    clearSourceObservers()
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
     if (streamRef.current) {
       streamRef.current.getTracks().forEach(t => t.stop())
@@ -242,21 +292,26 @@ export function usePitchDetection(options?: PitchDetectionOptions) {
     smoothedFreqRef.current = 0
     consecutiveRef.current = { note: '', count: 0 }
     lastStableNoteRef.current = ''
+    micSourceHealthRef.current = { ...FAIL_CLOSED_MIC_SOURCE_HEALTH }
     setState({ isListening: false, pitch: null, error: null })
-  }, [])
+  }, [clearSourceObservers])
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
+      clearSourceObservers()
       if (rafRef.current) cancelAnimationFrame(rafRef.current)
       if (streamRef.current) streamRef.current.getTracks().forEach(t => t.stop())
       if (audioCtxRef.current) audioCtxRef.current.close()
+      micSourceHealthRef.current = { ...FAIL_CLOSED_MIC_SOURCE_HEALTH }
     }
-  }, [])
+  }, [clearSourceObservers])
 
   return {
     ...state,
     pitchRef,
+    micSourceHealthRef,
+    pitchGenerationRef,
     startListening,
     stopListening,
   }

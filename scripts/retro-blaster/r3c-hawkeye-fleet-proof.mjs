@@ -1,10 +1,19 @@
-import { mkdirSync, writeFileSync } from 'node:fs'
+import { createHash } from 'node:crypto'
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 
-const [name, endpoint, url = 'https://resetbiology.com/pitch-defender/retro-2', outputRoot = 'data/retro-blaster-rework/runtime-logs/r3c-hawkeye-fleet'] = process.argv.slice(2)
+const [
+  name,
+  endpoint,
+  url = 'https://resetbiology.com/pitch-defender/retro-2',
+  outputRoot = 'data/retro-blaster-rework/runtime-logs/r3c-hawkeye-fleet',
+  rawDeployedSha,
+] = process.argv.slice(2)
 if (!name || !endpoint) throw new Error('usage: node r3c-hawkeye-fleet-proof.mjs NAME CDP_ENDPOINT [URL] [OUTPUT_ROOT]')
 
 const output = resolve(outputRoot, name)
+const resultPath = resolve(output, 'result.json')
+const deployedSha = rawDeployedSha || 'local-uncommitted'
 mkdirSync(output, { recursive: true })
 
 function assert(condition, message) {
@@ -122,6 +131,12 @@ async function screenshot(fileName) {
   writeFileSync(resolve(output, fileName), Buffer.from(result.data, 'base64'))
 }
 
+async function capturePng(path) {
+  const result = await send('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false })
+  writeFileSync(path, Buffer.from(result.data, 'base64'))
+  return createHash('sha256').update(readFileSync(path)).digest('hex').toUpperCase()
+}
+
 function storeEntry(raw, note) {
   try { return JSON.parse(raw ?? '{}')[note] ?? null } catch { return null }
 }
@@ -175,6 +190,7 @@ try {
   })()` })
   await send('Emulation.setDeviceMetricsOverride', { width: 1280, height: 800, deviceScaleFactor: 1, mobile: false })
   await send('Page.navigate', { url })
+  await send('Page.bringToFront')
   await waitFor(`document.readyState === 'complete'`, 'initial page load')
   originalStores = await evaluate(`({
     ear: localStorage.getItem('pitch_fsrs_memory_ear'),
@@ -261,7 +277,10 @@ try {
     return value.activeAttack?.attackId === ${JSON.stringify(firstAttack.attackId)} && value.activeAttack.phase === 'returning';
   })()`, 'wrong return')
   const wrongReturn = await snapshot()
-  assert(wrongReturn.earRaw === null, 'wrong answer graded EAR')
+  const wrongEntry = storeEntry(wrongReturn.earRaw, firstAttack.note)
+  assert(wrongEntry?.phase === 'learning' && wrongEntry.learningReps === 0,
+    'R7 wrong answer did not grade exactly one EAR Again')
+  assert(wrongReturn.voiceRaw === null, 'R7 EAR wrong answer mutated VOICE memory')
   await screenshot('02-wrong-return.png')
   await waitFor(`(() => {
     const canvas = document.querySelector('canvas');
@@ -270,6 +289,11 @@ try {
   })()`, 'wrong return completion', 5000)
   await send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] })
   await waitWall(100)
+  await waitFor(`(() => {
+    const formation = JSON.parse(document.querySelector('canvas')?.dataset.retroFormationState ?? '{}');
+    const returned = formation.ships?.find(ship => ship.alienId === ${JSON.stringify(firstAttack.alienId)});
+    return returned?.flightState === 'formation' && returned.x === returned.formationX && returned.y === returned.formationY;
+  })()`, 'reduced-motion exact return anchor', 3000)
   const returned = await snapshot()
   const returnedAlien = returned.formation.ships.find(ship => ship.alienId === firstAttack.alienId)
   assert(returnedAlien?.alive === true, 'wrong-return alien did not survive')
@@ -338,9 +362,108 @@ try {
   assert(pageErrors.length === 0, `page errors: ${pageErrors.join(' | ')}`)
   await screenshot('05-landscape-844x390.png')
 
+  await send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'no-preference' }] })
+  await send('Emulation.setDeviceMetricsOverride', { width: 1280, height: 800, deviceScaleFactor: 1, mobile: false })
+  let bottomRow = null
+  let answeredAttackCount = 0
+  let lastAnsweredAttackId = secondAttack.attackId
+  const bottomRowDeadline = Date.now() + 180_000
+  while (!bottomRow && Date.now() < bottomRowDeadline) {
+    const current = await snapshot()
+    assert(current.cabinet, 'cabinet disappeared during sustained late-wave proof')
+    const attack = current.formation.activeAttack
+    if (!attack || attack.phase !== 'outbound' || attack.attackId === lastAnsweredAttackId) {
+      await waitWall(25)
+      continue
+    }
+    const targetShip = current.formation.ships.find(ship => ship.alienId === attack.alienId)
+    assert(targetShip, `late-wave attack ${attack.attackId} lost its bound target`)
+    if (targetShip.slot >= 10) {
+      const samples = []
+      const milestoneScreenshots = []
+      const milestones = [0, 0.28, 0.40, 0.90]
+      const capturedMilestones = new Set()
+      while (Date.now() < bottomRowDeadline) {
+        const sample = await snapshot()
+        if (sample.formation.activeAttack?.attackId !== attack.attackId ||
+          sample.formation.activeAttack.phase !== 'outbound') break
+        samples.push(sample)
+        const t = sample.formation.activeAttack.outboundT
+        for (const milestone of milestones) {
+          if (capturedMilestones.has(milestone) || t + 0.06 < milestone) continue
+          const fileName = `06-bottom-row-k${String(milestone).replace('.', '-')}.png`
+          await screenshot(fileName)
+          capturedMilestones.add(milestone)
+          milestoneScreenshots.push(fileName)
+        }
+        if (t >= 0.94) break
+        await waitWall(40)
+      }
+      // ponytail: four authored K milestones are the semantic ceiling here; the
+      // separate six-second late-wave sequence below owns the 2fps density gate.
+      assert(samples.length >= milestones.length,
+        `bottom-row temporal trace missed authored milestones: ${samples.length}`)
+      assert(capturedMilestones.size === milestones.length,
+        `bottom-row temporal trace captured ${capturedMilestones.size}/${milestones.length} authored K crossings`)
+      bottomRow = { attack, targetShip, samples, milestoneScreenshots, answeredAttackCount }
+      break
+    }
+    const keys = await evaluate(answerKeysExpression)
+    assert(keys.correct, `late-wave correct answer missing for ${attack.attackId}`)
+    await pressKey(keys.correct)
+    lastAnsweredAttackId = attack.attackId
+    answeredAttackCount += 1
+  }
+  assert(bottomRow, `timed out before bottom-row late-wave dive after ${answeredAttackCount} answers`)
+
+  const bottomKeys = await evaluate(answerKeysExpression)
+  assert(bottomKeys.correct, 'bottom-row correct answer missing')
+  await pressKey(bottomKeys.correct)
+  const lateWaveDir = resolve(output, 'late-wave-frames')
+  mkdirSync(lateWaveDir, { recursive: true })
+  const lateWaveStartedAtMs = Date.now()
+  const lateWaveFrames = []
+  let sequenceAnswerId = bottomRow.attack.attackId
+  while (Date.now() - lateWaveStartedAtMs < 6000) {
+    const frameIndex = lateWaveFrames.length
+    const framePath = resolve(lateWaveDir, `${String(frameIndex).padStart(3, '0')}.png`)
+    const frameState = await snapshot()
+    const frameSha256 = await capturePng(framePath)
+    lateWaveFrames.push({ frameIndex, capturedAtMs: Date.now(), framePath, frameSha256, state: frameState })
+    const attack = frameState.formation.activeAttack
+    if (attack?.phase === 'outbound' && attack.attackId !== sequenceAnswerId) {
+      const keys = await evaluate(answerKeysExpression)
+      if (keys.correct) {
+        await pressKey(keys.correct)
+        sequenceAnswerId = attack.attackId
+      }
+    }
+    const nextFrameAtMs = lateWaveStartedAtMs + lateWaveFrames.length * 300
+    const waitForNextFrameMs = nextFrameAtMs - Date.now()
+    if (waitForNextFrameMs > 0) await waitWall(waitForNextFrameMs)
+  }
+  const lateWaveEndedAtMs = Date.now()
+  assert(lateWaveFrames.length >= 12, `late-wave sequence too sparse: ${lateWaveFrames.length}`)
+  const lateWaveFrameGapsMs = lateWaveFrames.slice(1)
+    .map((frame, index) => frame.capturedAtMs - lateWaveFrames[index].capturedAtMs)
+  assert(Math.max(...lateWaveFrameGapsMs) <= 500,
+    `late-wave sequence fell below 2fps: ${Math.max(...lateWaveFrameGapsMs)}ms max gap`)
+  const pacingReceipts = lateWaveFrames
+    .map(frame => frame.state.formation.lastCompletedWavePacing)
+    .filter(Boolean)
+  assert(pacingReceipts.length > 0, 'late-wave sequence has no completed-wave pacing receipt')
+  const requiredAnswerFrames = lateWaveFrames
+    .filter(frame => frame.state.formation.requiredAnswerEventsMs?.length > 0)
+  assert(requiredAnswerFrames.length > 0, 'late-wave sequence has no required-answer timestamps')
+  const lateWaveSequenceSha256 = createHash('sha256')
+    .update(lateWaveFrames.map(frame => frame.frameSha256).join('\n'))
+    .digest('hex')
+    .toUpperCase()
+
   const version = await (await fetch(`${endpoint}/json/version`)).json()
   const receipt = {
     name, endpoint, browser: version.Browser, transport: 'raw-target-cdp', url,
+    exactDeployedSha: deployedSha,
     capturedAt: new Date().toISOString(),
     assertions: {
       routeAndGeometry: true,
@@ -362,9 +485,34 @@ try {
     reduced: { attackId: secondAttack.attackId, alienId: secondAttack.alienId, first: reducedA, second: reducedB },
     terminal: { note: gradeNote, gradedEntry, state: terminal, duplicateState: duplicateTerminal },
     responsive: { phone, landscape },
+    bottomRow,
+    lateWave: {
+      startedAtMs: lateWaveStartedAtMs,
+      endedAtMs: lateWaveEndedAtMs,
+      durationMs: lateWaveEndedAtMs - lateWaveStartedAtMs,
+      frameRateFloorFps: 2,
+      frameGapsMs: lateWaveFrameGapsMs,
+      frames: lateWaveFrames,
+      orderedFrameSequenceSha256: lateWaveSequenceSha256,
+      pacingReceipts,
+    },
+    behaviorManifest: [{
+      browserLane: name,
+      exactDeployedSha: deployedSha,
+      behaviorId: 'late-wave-pacing',
+      startMonotonicMs: lateWaveStartedAtMs,
+      endMonotonicMs: lateWaveEndedAtMs,
+      durationMs: lateWaveEndedAtMs - lateWaveStartedAtMs,
+      frameSequencePath: lateWaveDir,
+      frameSequenceSha256: lateWaveSequenceSha256,
+      frameCount: lateWaveFrames.length,
+      machineStateReceiptPath: resultPath,
+      claudeFrameCitations: [],
+      argusFrameCitations: [],
+    }],
     pageErrors,
   }
-  writeFileSync(resolve(output, 'result.json'), JSON.stringify(receipt, null, 2))
+  writeFileSync(resultPath, JSON.stringify(receipt, null, 2))
   console.log(JSON.stringify(receipt, null, 2))
   console.log(`PASS ${name}: full hosted R3c Hawkeye matrix`)
 } finally {

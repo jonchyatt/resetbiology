@@ -1,0 +1,67 @@
+{
+  "verdict": "PASS",
+  "schema": "retro-blaster-r8c-helium/v1",
+  "mode": "cleanup",
+  "browserLane": "existing-helium-hawkeye-only",
+  "transport": "http://127.0.0.1:9224",
+  "url": "http://127.0.0.1:3336/pitch-defender/retro-2?v=r8c-local-219dd9",
+  "productBase": "d34edf4090eacd8fd051361d27bec754033aac9c",
+  "sourceHashes": {
+    "engine": "219DD9F312349281B3555B3DC78D4BC47D34C9F0C1E145EFD41ACF65408E0405",
+    "shell": "18B663ABE84D4B8B750212F9B86FF17407143F16CE6A9389DBCE65087F8A7654",
+    "renderer": "109BD3EDC642B17CD30E5C5B804BE60BC673604EB69793D7F95764AB51D8D1D3"
+  },
+  "pageErrors": [],
+  "videoPath": "C:\\Users\\jonch\\rbw-retro-blaster\\data\\retro-blaster-rework\\runtime-logs\\r8c-local-219dd9\\cleanup-v1\\video\\bfceae6dba8b2f6419a82801a57b6244.webm",
+  "payload": {
+    "rows": [
+      {
+        "label": "tutorial-back",
+        "rootPresent": false,
+        "priorCanvasPresent": false,
+        "priorCanvasConnected": null
+      },
+      {
+        "label": "exit-readiness",
+        "rootPresent": false,
+        "priorCanvasPresent": false,
+        "priorCanvasConnected": null
+      },
+      {
+        "label": "new-game",
+        "rootPresent": false,
+        "priorCanvasPresent": false,
+        "priorCanvasConnected": null
+      },
+      {
+        "label": "gameplay-quit",
+        "rootPresent": false,
+        "liveCanvasPresent": false,
+        "priorCanvasPresent": false,
+        "priorCanvasConnected": false
+      },
+      {
+        "label": "game-over-menu",
+        "rootPresent": false,
+        "liveCanvasPresent": false,
+        "priorCanvasPresent": false,
+        "priorCanvasConnected": false
+      },
+      {
+        "label": "enter-readiness",
+        "rootPresent": false,
+        "liveCanvasPresent": false,
+        "priorCanvasPresent": false,
+        "priorCanvasConnected": false,
+        "successorReceipt": null
+      },
+      {
+        "label": "component-unmount",
+        "rootPresent": false,
+        "liveCanvasPresent": false,
+        "priorCanvasPresent": false,
+        "priorCanvasConnected": false
+      }
+    ]
+  }
+}

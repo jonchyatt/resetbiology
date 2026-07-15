@@ -327,7 +327,9 @@ function validateWrongTimeoutAndGameOver(): void {
   let result = tick(state, input({ pendingAnswer: pending(state, 'D4') }), 16, () => 0.5)
   assert.equal(result.state.cityHealth, STARTING_SHIELDS - 1)
   assert.equal(result.state.activeAttack?.phase, 'returning')
-  assert.equal(gradeEvents(result.events).length, 0)
+  assert.deepEqual(gradeEvents(result.events).map(event => ({ correct: event.correct, inputMode: event.inputMode })), [
+    { correct: false, inputMode: 'click' },
+  ])
   assert.equal(result.state.lasers.filter(laser => laser.attackId === attack.attackId).length, 1)
   state = advance(result.state, DIVE_RETURN_MS).state
   assert.equal(state.activeAttack, null)
@@ -338,7 +340,9 @@ function validateWrongTimeoutAndGameOver(): void {
   result = advance(state, DIVE_RESPONSE_DEADLINE_MS)
   assert.equal(result.state.cityHealth, STARTING_SHIELDS - 1)
   assert.equal(result.state.activeAttack?.outcome, 'timeout')
-  assert.equal(gradeEvents(result.events).length, 0)
+  assert.deepEqual(gradeEvents(result.events).map(event => ({ correct: event.correct, inputMode: event.inputMode })), [
+    { correct: false, inputMode: 'click' },
+  ])
 
   state = openDemand().state
   state.cityHealth = 1
@@ -486,7 +490,9 @@ function validateClickBeforeMicAndMicSemantics(): void {
   }), 16, () => 0.5)
   assert.equal(result.state.cityHealth, STARTING_SHIELDS - 1)
   assert.equal(result.state.activeAttack?.outcome, 'wrong')
-  assert.equal(gradeEvents(result.events).length, 0, 'wrong click must win before correct mic completion in the same tick')
+  assert.deepEqual(gradeEvents(result.events).map(event => ({ correct: event.correct, inputMode: event.inputMode })), [
+    { correct: false, inputMode: 'click' },
+  ], 'wrong click must grade EAR and win before correct mic completion in the same tick')
 
   state = openDemand(preparedState(), input({ inputMode: 'mic', isListening: true })).state
   const micTarget = state.aliens.find(candidate => candidate.alienId === state.activeAttack!.alienId)!
@@ -755,18 +761,19 @@ function validateFinalizerIdempotence(): void {
 function validateRosterShellAndProtectedSourceContracts(): void {
   const easy = createInitialState('easy', NOTES, 1000, 'queue-easy')
   buildWaveQueue(easy, {})
-  assert.deepEqual(easy.spawnQueue, ['F4', 'F4'])
+  assert.deepEqual(easy.spawnQueue, ['C4', 'E4'])
   const trueTier = createInitialState('true', NOTES, 1000, 'queue-true')
   trueTier.wave = 7
   beginWave(trueTier, {})
-  assert.deepEqual(trueTier.spawnQueue, ['D4', 'E4', 'C4', 'C4', 'E4', 'E4', 'C4', 'E4', 'C4', 'F4'])
+  assert.deepEqual(trueTier.spawnQueue, ['E4', 'D4', 'C4', 'C4', 'E4', 'E4', 'C4', 'E4', 'C4', 'F4'])
 
   const engineSource = readFileSync('src/components/PitchDefender/retroBlasterEngine.ts', 'utf8')
   const selectorStart = engineSource.indexOf('export function chooseNextDiver')
   const selectorEnd = engineSource.indexOf('\nfunction startAttack', selectorStart)
   const selectorSource = engineSource.slice(selectorStart, selectorEnd)
   assert.ok(selectorStart >= 0 && selectorEnd > selectorStart)
-  assert.doesNotMatch(selectorSource, /currentR|\.R\b|\.S\b|due|lastReview/)
+  assert.match(selectorSource, /alien\.soul\?\.divePressure/)
+  assert.doesNotMatch(selectorSource, /currentR|retrievability|lastReview|Date\./)
   assert.doesNotMatch(engineSource, /Date\.|performance\./, 'receipt/director engine must not read wall time')
 
   const shell = readFileSync('src/components/PitchDefender/RetroBlasterII.tsx', 'utf8')

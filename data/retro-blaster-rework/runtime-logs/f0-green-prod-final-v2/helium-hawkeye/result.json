@@ -1,0 +1,2976 @@
+{
+  "fixture": "F0 Cabinet Truth",
+  "status": "GREEN",
+  "expectedBase": "local-uncommitted-f0-final",
+  "url": "http://127.0.0.1:3336/pitch-defender/retro-2?v=f0-green-prod-final-v2",
+  "browserLane": "helium-hawkeye-only",
+  "transport": "http://127.0.0.1:9224",
+  "geometrySubstrateFirst": [
+    {
+      "name": "portrait-390x844",
+      "innerWidth": 390,
+      "innerHeight": 844,
+      "devicePixelRatio": 1,
+      "visualViewport": {
+        "width": 390,
+        "height": 844,
+        "scale": 1,
+        "offsetLeft": 0,
+        "offsetTop": 0
+      },
+      "zoom": 1,
+      "canvasRect": {
+        "x": 13,
+        "y": 74,
+        "width": 364,
+        "height": 204.75,
+        "right": 377,
+        "bottom": 278.75
+      },
+      "canvasSource": {
+        "width": 640,
+        "height": 360
+      },
+      "sourceToCssY": 0.56875
+    },
+    {
+      "name": "landscape-844x390",
+      "innerWidth": 844,
+      "innerHeight": 390,
+      "devicePixelRatio": 1,
+      "visualViewport": {
+        "width": 844,
+        "height": 390,
+        "scale": 1,
+        "offsetLeft": 0,
+        "offsetTop": 0
+      },
+      "zoom": 1,
+      "canvasRect": {
+        "x": 263,
+        "y": 109.5,
+        "width": 318,
+        "height": 178.875,
+        "right": 581,
+        "bottom": 288.375
+      },
+      "canvasSource": {
+        "width": 640,
+        "height": 360
+      },
+      "sourceToCssY": 0.496875
+    },
+    {
+      "name": "desktop-1280x800",
+      "innerWidth": 1280,
+      "innerHeight": 800,
+      "devicePixelRatio": 1,
+      "visualViewport": {
+        "width": 1280,
+        "height": 800,
+        "scale": 1,
+        "offsetLeft": 0,
+        "offsetTop": 0
+      },
+      "zoom": 1,
+      "canvasRect": {
+        "x": 175,
+        "y": 109.5,
+        "width": 930,
+        "height": 523.125,
+        "right": 1105,
+        "bottom": 632.625
+      },
+      "canvasSource": {
+        "width": 640,
+        "height": 360
+      },
+      "sourceToCssY": 1.453125
+    },
+    {
+      "name": "compact-640x400",
+      "innerWidth": 640,
+      "innerHeight": 400,
+      "devicePixelRatio": 1,
+      "visualViewport": {
+        "width": 640,
+        "height": 400,
+        "scale": 1,
+        "offsetLeft": 0,
+        "offsetTop": 0
+      },
+      "zoom": 1,
+      "canvasRect": {
+        "x": 138.109375,
+        "y": 74,
+        "width": 363.765625,
+        "height": 190,
+        "right": 501.875,
+        "bottom": 264
+      },
+      "canvasSource": {
+        "width": 640,
+        "height": 360
+      },
+      "sourceToCssY": 0.5277777777777778
+    }
+  ],
+  "genuineBrowserZoom": {
+    "status": "PASS",
+    "browserLane": "helium-hawkeye-only",
+    "browser": "Chrome/148.0.7778.178",
+    "transport": "dedicated Helium UI on CDP port 9224",
+    "method": "Activated the dedicated Helium window and used the real browser chrome shortcuts Control+0 and Control+Plus x5; no device-scale-factor, Page.setPageScaleFactor, Emulation.setDeviceMetricsOverride, screenshot scaling, Chrome Hawkeye, Edge, Brave, or Native Chrome.",
+    "url": "http://127.0.0.1:3336/pitch-defender/retro-2?v=f0-genuine-zoom",
+    "before": {
+      "innerWidth": 1072,
+      "innerHeight": 962,
+      "devicePixelRatio": 1,
+      "visualViewport": {
+        "width": 1072,
+        "height": 962,
+        "scale": 1
+      },
+      "lane": "ear",
+      "instruction": "LISTEN FOR THE NOTE -> PRESS THE MATCHING KEY (OR TAP ITS BUTTON)",
+      "canvasRect": {
+        "x": 71,
+        "y": 131.5,
+        "width": 930,
+        "height": 523.125,
+        "right": 1001,
+        "bottom": 654.625
+      }
+    },
+    "during": {
+      "innerWidth": 536,
+      "innerHeight": 481,
+      "devicePixelRatio": 2,
+      "visualViewport": {
+        "width": 536,
+        "height": 481,
+        "scale": 1
+      },
+      "lane": "ear",
+      "instruction": "LISTEN FOR THE NOTE -> PRESS THE MATCHING KEY (OR TAP ITS BUTTON)",
+      "canvasRect": {
+        "x": 14.109375,
+        "y": 96,
+        "width": 507.7734375,
+        "height": 271,
+        "right": 521.8828125,
+        "bottom": 367
+      },
+      "horizontalOverflow": 0
+    },
+    "layoutAuditAt200Percent": {
+      "document": {
+        "clientWidth": 536,
+        "scrollWidth": 536
+      },
+      "root": {
+        "clientWidth": 536,
+        "scrollWidth": 536,
+        "clientHeight": 481,
+        "scrollHeight": 481
+      },
+      "instructionRail": {
+        "x": 12,
+        "width": 512,
+        "clientWidth": 512,
+        "scrollWidth": 512
+      },
+      "instruction": {
+        "x": 20,
+        "width": 496,
+        "clientWidth": 496,
+        "scrollWidth": 496,
+        "fontSize": 12
+      },
+      "cabinet": {
+        "x": 13.109375,
+        "width": 509.7734375,
+        "clientWidth": 510,
+        "scrollWidth": 510
+      },
+      "canvas": {
+        "x": 14.109375,
+        "width": 507.7734375,
+        "clientWidth": 508,
+        "scrollWidth": 508
+      }
+    },
+    "after": {
+      "innerWidth": 1072,
+      "innerHeight": 962,
+      "devicePixelRatio": 1,
+      "visualViewport": {
+        "width": 1072,
+        "height": 962,
+        "scale": 1
+      },
+      "canvasRect": {
+        "x": 71,
+        "y": 131.5,
+        "width": 930,
+        "height": 523.125
+      }
+    },
+    "computedZoom": 2,
+    "resetExact": true,
+    "sourcePixel": "data/retro-blaster-rework/runtime-logs/f0-green-local-v3/helium-hawkeye/00-genuine-helium-browser-zoom-200-gameplay.png",
+    "screenshotCaveat": "The CDP page screenshot is cropped by the DPR-2 browser-zoom capture surface. Acceptance is based on genuine UI shortcut telemetry plus zero-overflow DOM geometry, not the cropped screenshot alone.",
+    "embeddedZoomProbe": {
+      "method": "Helium browser keyboard accelerator Control+Equal x5; no DSF or page-scale emulation",
+      "before": {
+        "name": "zoom-before-100-percent",
+        "innerWidth": 1280,
+        "innerHeight": 800,
+        "devicePixelRatio": 1,
+        "visualViewport": {
+          "width": 1280,
+          "height": 800,
+          "scale": 1,
+          "offsetLeft": 0,
+          "offsetTop": 0
+        },
+        "zoom": 1,
+        "canvasRect": {
+          "x": 175,
+          "y": 109.5,
+          "width": 930,
+          "height": 523.125,
+          "right": 1105,
+          "bottom": 632.625
+        },
+        "canvasSource": {
+          "width": 640,
+          "height": 360
+        },
+        "sourceToCssY": 1.453125
+      },
+      "during": {
+        "name": "zoom-during-200-percent",
+        "innerWidth": 1280,
+        "innerHeight": 800,
+        "devicePixelRatio": 1,
+        "visualViewport": {
+          "width": 1280,
+          "height": 800,
+          "scale": 1,
+          "offsetLeft": 0,
+          "offsetTop": 0
+        },
+        "zoom": 1,
+        "canvasRect": {
+          "x": 175,
+          "y": 131.5,
+          "width": 930,
+          "height": 523.125,
+          "right": 1105,
+          "bottom": 654.625
+        },
+        "canvasSource": {
+          "width": 640,
+          "height": 360
+        },
+        "sourceToCssY": 1.453125
+      },
+      "after": {
+        "name": "zoom-after-reset-100-percent",
+        "innerWidth": 1280,
+        "innerHeight": 800,
+        "devicePixelRatio": 1,
+        "visualViewport": {
+          "width": 1280,
+          "height": 800,
+          "scale": 1,
+          "offsetLeft": 0,
+          "offsetTop": 0
+        },
+        "zoom": 1,
+        "canvasRect": {
+          "x": 175,
+          "y": 131.5,
+          "width": 930,
+          "height": 523.125,
+          "right": 1105,
+          "bottom": 654.625
+        },
+        "canvasSource": {
+          "width": 640,
+          "height": 360
+        },
+        "sourceToCssY": 1.453125
+      },
+      "computedZoom": 1
+    }
+  },
+  "evidence": {
+    "earStandby": {
+      "label": "ear-standby",
+      "laneHook": "ear",
+      "formation": {
+        "phase": "playing",
+        "wave": 1,
+        "attack": {
+          "attackId": "659aa8c6-3cb0-4173-bf31-c6436742ccdf:attack:1",
+          "note": "C4",
+          "phase": "returning",
+          "outcome": "timeout",
+          "demandAtMs": 3784.09999998808
+        },
+        "responseOpen": false
+      },
+      "instruction": "STAND BY → LISTEN FOR THE NEXT TARGET SIGNAL",
+      "helper": null,
+      "unit": "EAR DEFENSE UNIT",
+      "instructionHook": true,
+      "helperHook": false,
+      "unitHook": true,
+      "instructionRailHook": true,
+      "instructionMetric": {
+        "fontSize": 12,
+        "lineHeight": "18px",
+        "color": "oklch(0.917 0.08 205.041)",
+        "backgroundColor": "rgb(2, 5, 13)",
+        "backgroundAlpha": 1,
+        "contrast": 16.401224201767185,
+        "display": "block",
+        "visibility": "visible"
+      },
+      "helperMetric": null,
+      "vocalMeter": false
+    },
+    "earResponse": {
+      "label": "ear-response-open",
+      "laneHook": "ear",
+      "formation": {
+        "phase": "playing",
+        "wave": 1,
+        "attack": {
+          "attackId": "659aa8c6-3cb0-4173-bf31-c6436742ccdf:attack:2",
+          "note": "E4",
+          "phase": "outbound",
+          "outcome": null,
+          "demandAtMs": 7247.599999988082
+        },
+        "responseOpen": true
+      },
+      "instruction": "LISTEN FOR THE NOTE → PRESS THE MATCHING KEY (OR TAP ITS BUTTON)",
+      "helper": "ACTIVE ALIEN SHOWS ? · SPACE REPLAYS THE NOTE",
+      "unit": "EAR DEFENSE UNIT",
+      "instructionHook": true,
+      "helperHook": true,
+      "unitHook": true,
+      "instructionRailHook": true,
+      "instructionMetric": {
+        "fontSize": 12,
+        "lineHeight": "18px",
+        "color": "oklch(0.917 0.08 205.041)",
+        "backgroundColor": "rgb(2, 5, 13)",
+        "backgroundAlpha": 1,
+        "contrast": 16.401224201767185,
+        "display": "block",
+        "visibility": "visible"
+      },
+      "helperMetric": {
+        "fontSize": 12,
+        "lineHeight": "18px",
+        "color": "oklch(0.869 0.022 252.894)",
+        "backgroundColor": "rgb(2, 5, 13)",
+        "backgroundAlpha": 1,
+        "contrast": 13.7143899127912,
+        "display": "block",
+        "visibility": "visible"
+      },
+      "vocalMeter": false
+    },
+    "voiceReadiness": {
+      "lane": "voice",
+      "status": "awaiting-voice",
+      "unit": "VOICE DEFENSE UNIT",
+      "fullText": "VOICE DEFENSE UNITVOICE CHANNELPRE-FLIGHTRADIO CHECKHum or sing anything. We only need a fresh live signal - no target note, range judgment, or score.HUM OR SING ANYTHINGRETRY MICVOICE CHANNEL OPEN - hum or sing anything.BACK TO MENU"
+    },
+    "voiceStandby": {
+      "label": "voice-standby",
+      "laneHook": "voice",
+      "formation": {
+        "phase": "playing",
+        "wave": 1,
+        "attack": null,
+        "responseOpen": false
+      },
+      "instruction": "VOICE CANNON ARMED → WAIT FOR THE TARGET SIGNAL",
+      "helper": null,
+      "unit": "VOICE DEFENSE UNIT",
+      "instructionHook": true,
+      "helperHook": false,
+      "unitHook": true,
+      "instructionRailHook": true,
+      "instructionMetric": {
+        "fontSize": 12,
+        "lineHeight": "18px",
+        "color": "oklch(0.917 0.08 205.041)",
+        "backgroundColor": "rgb(2, 5, 13)",
+        "backgroundAlpha": 1,
+        "contrast": 16.401224201767185,
+        "display": "block",
+        "visibility": "visible"
+      },
+      "helperMetric": null,
+      "vocalMeter": false
+    },
+    "voiceResponse": {
+      "label": "voice-response-open-live-meter",
+      "laneHook": "voice",
+      "formation": {
+        "phase": "playing",
+        "wave": 1,
+        "attack": {
+          "attackId": "570ca185-e3b6-4d7a-94ee-6cee76085fcd:attack:1",
+          "note": "C4",
+          "phase": "outbound",
+          "outcome": null,
+          "demandAtMs": 3944.5000000000014
+        },
+        "responseOpen": true
+      },
+      "instruction": "SING OR HUM THE TARGET NOTE → HOLD IT STEADY TO FIRE",
+      "helper": "ACTIVE ALIEN SHOWS ? · SPACE REPLAYS THE REFERENCE",
+      "unit": "VOICE DEFENSE UNIT",
+      "instructionHook": true,
+      "helperHook": true,
+      "unitHook": true,
+      "instructionRailHook": true,
+      "instructionMetric": {
+        "fontSize": 12,
+        "lineHeight": "18px",
+        "color": "oklch(0.917 0.08 205.041)",
+        "backgroundColor": "rgb(2, 5, 13)",
+        "backgroundAlpha": 1,
+        "contrast": 16.401224201767185,
+        "display": "block",
+        "visibility": "visible"
+      },
+      "helperMetric": {
+        "fontSize": 12,
+        "lineHeight": "18px",
+        "color": "oklch(0.869 0.022 252.894)",
+        "backgroundColor": "rgb(2, 5, 13)",
+        "backgroundAlpha": 1,
+        "contrast": 13.7143899127912,
+        "display": "block",
+        "visibility": "visible"
+      },
+      "vocalMeter": true
+    },
+    "correctAnswersToCeremony": 10,
+    "ceremony": [
+      {
+        "name": "portrait-390x844",
+        "viewport": {
+          "innerWidth": 390,
+          "innerHeight": 844,
+          "devicePixelRatio": 1,
+          "visualViewport": {
+            "width": 390,
+            "height": 844,
+            "scale": 1
+          }
+        },
+        "canvasRect": {
+          "x": 13,
+          "y": 92,
+          "width": 364,
+          "height": 204.75,
+          "top": 92,
+          "right": 377,
+          "bottom": 296.75,
+          "left": 13
+        },
+        "sourceToCssY": 0.56875,
+        "regionRect": {
+          "x": 13,
+          "y": 92,
+          "width": 364,
+          "height": 204.75,
+          "top": 92,
+          "right": 377,
+          "bottom": 296.75,
+          "left": 13
+        },
+        "shelf": {
+          "present": true,
+          "rect": {
+            "x": 13,
+            "y": 227.75,
+            "width": 364,
+            "height": 69,
+            "top": 227.75,
+            "right": 377,
+            "bottom": 296.75,
+            "left": 13
+          },
+          "backgroundColor": "rgb(2, 5, 13)",
+          "backgroundAlpha": 1,
+          "heightPercentOfCanvas": 33.6996336996337
+        },
+        "status": {
+          "text": "SIGNAL PATH NOT READY - RETRY SIGNAL.",
+          "rect": {
+            "x": 17,
+            "y": 228.75,
+            "width": 356,
+            "height": 16,
+            "top": 228.75,
+            "right": 373,
+            "bottom": 244.75,
+            "left": 17
+          },
+          "metric": {
+            "fontSize": 12,
+            "lineHeight": "16px",
+            "color": "oklch(0.956 0.045 203.388)",
+            "backgroundColor": "rgb(2, 5, 13)",
+            "backgroundAlpha": 1,
+            "contrast": 18.182444369270733,
+            "position": "static"
+          }
+        },
+        "actions": [
+          {
+            "text": "RETRY SIGNAL",
+            "rect": {
+              "x": 63.96875,
+              "y": 248.75,
+              "width": 100.78125,
+              "height": 44,
+              "top": 248.75,
+              "right": 164.75,
+              "bottom": 292.75,
+              "left": 63.96875
+            },
+            "metric": {
+              "fontSize": 12,
+              "lineHeight": "18px",
+              "color": "oklch(0.945 0.129 101.54)",
+              "backgroundColor": "rgb(2, 5, 13)",
+              "backgroundAlpha": 1,
+              "contrast": 17.641772437137273,
+              "position": "static"
+            }
+          },
+          {
+            "text": "REPLAY SIGNAL",
+            "rect": {
+              "x": 168.75,
+              "y": 248.75,
+              "width": 107.671875,
+              "height": 44,
+              "top": 248.75,
+              "right": 276.421875,
+              "bottom": 292.75,
+              "left": 168.75
+            },
+            "metric": {
+              "fontSize": 12,
+              "lineHeight": "18px",
+              "color": "oklch(0.917 0.08 205.041)",
+              "backgroundColor": "rgb(2, 5, 13)",
+              "backgroundAlpha": 1,
+              "contrast": 16.401224201767185,
+              "position": "static"
+            }
+          },
+          {
+            "text": "QUIT",
+            "rect": {
+              "x": 280.421875,
+              "y": 248.75,
+              "width": 45.59375,
+              "height": 44,
+              "top": 248.75,
+              "right": 326.015625,
+              "bottom": 292.75,
+              "left": 280.421875
+            },
+            "metric": {
+              "fontSize": 12,
+              "lineHeight": "18px",
+              "color": "oklch(0.869 0.022 252.894)",
+              "backgroundColor": "rgb(2, 5, 13)",
+              "backgroundAlpha": 1,
+              "contrast": 13.7143899127912,
+              "position": "static"
+            }
+          }
+        ],
+        "actionsFlexWrap": "nowrap",
+        "actionRows": 1,
+        "liveRegionCount": 1,
+        "readinessStatusCount": 0,
+        "srCopy": "REFERENCE INTRODUCTION. NOT SCORED.",
+        "canvas": {
+          "draws": [
+            {
+              "text": "PRE-FLIGHT",
+              "x": 320,
+              "y": 50.625,
+              "font": "bold 16px monospace",
+              "fontPx": 16,
+              "ascent": 10,
+              "descent": 0,
+              "fillStyle": "#79f2cf"
+            },
+            {
+              "text": "NEW SIGNAL",
+              "x": 320,
+              "y": 73.125,
+              "font": "bold 27px monospace",
+              "fontPx": 27,
+              "ascent": 17,
+              "descent": 0,
+              "fillStyle": "#f3fbff"
+            },
+            {
+              "text": "REFERENCE INTRODUCTION",
+              "x": 320,
+              "y": 145.125,
+              "font": "bold 11px monospace",
+              "fontPx": 11,
+              "ascent": 7,
+              "descent": 0,
+              "fillStyle": "#c8d8e2"
+            },
+            {
+              "text": "INTRODUCTION ONLY - NOT SCORED",
+              "x": 320,
+              "y": 180,
+              "font": "bold 32px \"Arial Narrow\", Arial, sans-serif",
+              "fontPx": 32,
+              "ascent": 23,
+              "descent": 0,
+              "fillStyle": "#d9f7ff"
+            }
+          ],
+          "dynamicCanvas": [],
+          "staticCanvas": {
+            "text": "REFERENCE INTRODUCTION",
+            "x": 320,
+            "y": 145.125,
+            "font": "bold 11px monospace",
+            "fontPx": 11,
+            "ascent": 7,
+            "descent": 0,
+            "fillStyle": "#c8d8e2"
+          },
+          "notScored": {
+            "text": "INTRODUCTION ONLY - NOT SCORED",
+            "x": 320,
+            "y": 180,
+            "font": "bold 32px \"Arial Narrow\", Arial, sans-serif",
+            "fontPx": 32,
+            "ascent": 23,
+            "descent": 0,
+            "fillStyle": "#d9f7ff"
+          },
+          "notScoredRect": {
+            "top": 181.29375,
+            "bottom": 194.375,
+            "effectiveGlyphHeight": 13.081249999999999
+          },
+          "notScoredContrast": 17.446209728312777,
+          "rail": {
+            "x": 213.125,
+            "y": 194.625,
+            "width": 213.75,
+            "height": 2.25,
+            "fillStyle": "rgba(130, 160, 178, 0.2)"
+          },
+          "railRect": {
+            "top": 202.69296874999998,
+            "bottom": 203.97265625
+          }
+        },
+        "clearance": {
+          "statusToActions": 4,
+          "notScoredToShelf": 33.375,
+          "railToShelf": 23.77734375
+        }
+      },
+      {
+        "name": "landscape-844x390",
+        "viewport": {
+          "innerWidth": 844,
+          "innerHeight": 390,
+          "devicePixelRatio": 1,
+          "visualViewport": {
+            "width": 844,
+            "height": 390,
+            "scale": 1
+          }
+        },
+        "canvasRect": {
+          "x": 263,
+          "y": 109.5,
+          "width": 318,
+          "height": 178.875,
+          "top": 109.5,
+          "right": 581,
+          "bottom": 288.375,
+          "left": 263
+        },
+        "sourceToCssY": 0.496875,
+        "regionRect": {
+          "x": 263,
+          "y": 109.5,
+          "width": 318,
+          "height": 178.875,
+          "top": 109.5,
+          "right": 581,
+          "bottom": 288.375,
+          "left": 263
+        },
+        "shelf": {
+          "present": true,
+          "rect": {
+            "x": 263,
+            "y": 219.375,
+            "width": 318,
+            "height": 69,
+            "top": 219.375,
+            "right": 581,
+            "bottom": 288.375,
+            "left": 263
+          },
+          "backgroundColor": "rgb(2, 5, 13)",
+          "backgroundAlpha": 1,
+          "heightPercentOfCanvas": 38.57442348008386
+        },
+        "status": {
+          "text": "SIGNAL PATH NOT READY - RETRY SIGNAL.",
+          "rect": {
+            "x": 267,
+            "y": 220.375,
+            "width": 310,
+            "height": 16,
+            "top": 220.375,
+            "right": 577,
+            "bottom": 236.375,
+            "left": 267
+          },
+          "metric": {
+            "fontSize": 12,
+            "lineHeight": "16px",
+            "color": "oklch(0.956 0.045 203.388)",
+            "backgroundColor": "rgb(2, 5, 13)",
+            "backgroundAlpha": 1,
+            "contrast": 18.182444369270733,
+            "position": "static"
+          }
+        },
+        "actions": [
+          {
+            "text": "RETRY SIGNAL",
+            "rect": {
+              "x": 290.96875,
+              "y": 240.375,
+              "width": 100.78125,
+              "height": 44,
+              "top": 240.375,
+              "right": 391.75,
+              "bottom": 284.375,
+              "left": 290.96875
+            },
+            "metric": {
+              "fontSize": 12,
+              "lineHeight": "18px",
+              "color": "oklch(0.945 0.129 101.54)",
+              "backgroundColor": "rgb(2, 5, 13)",
+              "backgroundAlpha": 1,
+              "contrast": 17.641772437137273,
+              "position": "static"
+            }
+          },
+          {
+            "text": "REPLAY SIGNAL",
+            "rect": {
+              "x": 395.75,
+              "y": 240.375,
+              "width": 107.671875,
+              "height": 44,
+              "top": 240.375,
+              "right": 503.421875,
+              "bottom": 284.375,
+              "left": 395.75
+            },
+            "metric": {
+              "fontSize": 12,
+              "lineHeight": "18px",
+              "color": "oklch(0.917 0.08 205.041)",
+              "backgroundColor": "rgb(2, 5, 13)",
+              "backgroundAlpha": 1,
+              "contrast": 16.401224201767185,
+              "position": "static"
+            }
+          },
+          {
+            "text": "QUIT",
+            "rect": {
+              "x": 507.421875,
+              "y": 240.375,
+              "width": 45.59375,
+              "height": 44,
+              "top": 240.375,
+              "right": 553.015625,
+              "bottom": 284.375,
+              "left": 507.421875
+            },
+            "metric": {
+              "fontSize": 12,
+              "lineHeight": "18px",
+              "color": "oklch(0.869 0.022 252.894)",
+              "backgroundColor": "rgb(2, 5, 13)",
+              "backgroundAlpha": 1,
+              "contrast": 13.7143899127912,
+              "position": "static"
+            }
+          }
+        ],
+        "actionsFlexWrap": "nowrap",
+        "actionRows": 1,
+        "liveRegionCount": 1,
+        "readinessStatusCount": 0,
+        "srCopy": "REFERENCE INTRODUCTION. NOT SCORED.",
+        "canvas": {
+          "draws": [
+            {
+              "text": "PRE-FLIGHT",
+              "x": 320,
+              "y": 50.625,
+              "font": "bold 19px monospace",
+              "fontPx": 19,
+              "ascent": 12,
+              "descent": 0,
+              "fillStyle": "#79f2cf"
+            },
+            {
+              "text": "NEW SIGNAL",
+              "x": 320,
+              "y": 73.125,
+              "font": "bold 27px monospace",
+              "fontPx": 27,
+              "ascent": 17,
+              "descent": 0,
+              "fillStyle": "#f3fbff"
+            },
+            {
+              "text": "REFERENCE INTRODUCTION",
+              "x": 320,
+              "y": 145.125,
+              "font": "bold 11px monospace",
+              "fontPx": 11,
+              "ascent": 7,
+              "descent": 0,
+              "fillStyle": "#c8d8e2"
+            },
+            {
+              "text": "INTRODUCTION ONLY - NOT SCORED",
+              "x": 320,
+              "y": 180,
+              "font": "bold 37px \"Arial Narrow\", Arial, sans-serif",
+              "fontPx": 37,
+              "ascent": 26,
+              "descent": 0,
+              "fillStyle": "#d9f7ff"
+            }
+          ],
+          "dynamicCanvas": [],
+          "staticCanvas": {
+            "text": "REFERENCE INTRODUCTION",
+            "x": 320,
+            "y": 145.125,
+            "font": "bold 11px monospace",
+            "fontPx": 11,
+            "ascent": 7,
+            "descent": 0,
+            "fillStyle": "#c8d8e2"
+          },
+          "notScored": {
+            "text": "INTRODUCTION ONLY - NOT SCORED",
+            "x": 320,
+            "y": 180,
+            "font": "bold 37px \"Arial Narrow\", Arial, sans-serif",
+            "fontPx": 37,
+            "ascent": 26,
+            "descent": 0,
+            "fillStyle": "#d9f7ff"
+          },
+          "notScoredRect": {
+            "top": 186.01875,
+            "bottom": 198.9375,
+            "effectiveGlyphHeight": 12.918750000000001
+          },
+          "notScoredContrast": 17.446209728312777,
+          "rail": {
+            "x": 213.125,
+            "y": 194.625,
+            "width": 213.75,
+            "height": 2.25,
+            "fillStyle": "rgba(130, 160, 178, 0.2)"
+          },
+          "railRect": {
+            "top": 206.204296875,
+            "bottom": 207.322265625
+          }
+        },
+        "clearance": {
+          "statusToActions": 4,
+          "notScoredToShelf": 20.4375,
+          "railToShelf": 12.052734375
+        }
+      },
+      {
+        "name": "desktop-1280x800",
+        "viewport": {
+          "innerWidth": 1280,
+          "innerHeight": 800,
+          "devicePixelRatio": 1,
+          "visualViewport": {
+            "width": 1280,
+            "height": 800,
+            "scale": 1
+          }
+        },
+        "canvasRect": {
+          "x": 175,
+          "y": 109.5,
+          "width": 930,
+          "height": 523.125,
+          "top": 109.5,
+          "right": 1105,
+          "bottom": 632.625,
+          "left": 175
+        },
+        "sourceToCssY": 1.453125,
+        "regionRect": {
+          "x": 175,
+          "y": 109.5,
+          "width": 930,
+          "height": 523.125,
+          "top": 109.5,
+          "right": 1105,
+          "bottom": 632.625,
+          "left": 175
+        },
+        "shelf": {
+          "present": true,
+          "rect": {
+            "x": 175,
+            "y": 563.625,
+            "width": 930,
+            "height": 69,
+            "top": 563.625,
+            "right": 1105,
+            "bottom": 632.625,
+            "left": 175
+          },
+          "backgroundColor": "rgb(2, 5, 13)",
+          "backgroundAlpha": 1,
+          "heightPercentOfCanvas": 13.189964157706093
+        },
+        "status": {
+          "text": "SIGNAL PATH NOT READY - RETRY SIGNAL.",
+          "rect": {
+            "x": 179,
+            "y": 564.625,
+            "width": 922,
+            "height": 16,
+            "top": 564.625,
+            "right": 1101,
+            "bottom": 580.625,
+            "left": 179
+          },
+          "metric": {
+            "fontSize": 12,
+            "lineHeight": "16px",
+            "color": "oklch(0.956 0.045 203.388)",
+            "backgroundColor": "rgb(2, 5, 13)",
+            "backgroundAlpha": 1,
+            "contrast": 18.182444369270733,
+            "position": "static"
+          }
+        },
+        "actions": [
+          {
+            "text": "RETRY SIGNAL",
+            "rect": {
+              "x": 508.96875,
+              "y": 584.625,
+              "width": 100.78125,
+              "height": 44,
+              "top": 584.625,
+              "right": 609.75,
+              "bottom": 628.625,
+              "left": 508.96875
+            },
+            "metric": {
+              "fontSize": 12,
+              "lineHeight": "18px",
+              "color": "oklch(0.945 0.129 101.54)",
+              "backgroundColor": "rgb(2, 5, 13)",
+              "backgroundAlpha": 1,
+              "contrast": 17.641772437137273,
+              "position": "static"
+            }
+          },
+          {
+            "text": "REPLAY SIGNAL",
+            "rect": {
+              "x": 613.75,
+              "y": 584.625,
+              "width": 107.671875,
+              "height": 44,
+              "top": 584.625,
+              "right": 721.421875,
+              "bottom": 628.625,
+              "left": 613.75
+            },
+            "metric": {
+              "fontSize": 12,
+              "lineHeight": "18px",
+              "color": "oklch(0.917 0.08 205.041)",
+              "backgroundColor": "rgb(2, 5, 13)",
+              "backgroundAlpha": 1,
+              "contrast": 16.401224201767185,
+              "position": "static"
+            }
+          },
+          {
+            "text": "QUIT",
+            "rect": {
+              "x": 725.421875,
+              "y": 584.625,
+              "width": 45.59375,
+              "height": 44,
+              "top": 584.625,
+              "right": 771.015625,
+              "bottom": 628.625,
+              "left": 725.421875
+            },
+            "metric": {
+              "fontSize": 12,
+              "lineHeight": "18px",
+              "color": "oklch(0.869 0.022 252.894)",
+              "backgroundColor": "rgb(2, 5, 13)",
+              "backgroundAlpha": 1,
+              "contrast": 13.7143899127912,
+              "position": "static"
+            }
+          }
+        ],
+        "actionsFlexWrap": "nowrap",
+        "actionRows": 1,
+        "liveRegionCount": 1,
+        "readinessStatusCount": 0,
+        "srCopy": "REFERENCE INTRODUCTION. NOT SCORED.",
+        "canvas": {
+          "draws": [
+            {
+              "text": "PRE-FLIGHT",
+              "x": 320,
+              "y": 81,
+              "font": "bold 10px monospace",
+              "fontPx": 10,
+              "ascent": 7,
+              "descent": 1,
+              "fillStyle": "#79f2cf"
+            },
+            {
+              "text": "NEW SIGNAL",
+              "x": 320,
+              "y": 113.625,
+              "font": "bold 27px monospace",
+              "fontPx": 27,
+              "ascent": 17,
+              "descent": 0,
+              "fillStyle": "#f3fbff"
+            },
+            {
+              "text": "REFERENCE INTRODUCTION",
+              "x": 320,
+              "y": 254.25,
+              "font": "bold 11px monospace",
+              "fontPx": 11,
+              "ascent": 7,
+              "descent": 0,
+              "fillStyle": "#c8d8e2"
+            },
+            {
+              "text": "INTRODUCTION ONLY - NOT SCORED",
+              "x": 320,
+              "y": 274.5,
+              "font": "bold 13px \"Arial Narrow\", Arial, sans-serif",
+              "fontPx": 13,
+              "ascent": 9,
+              "descent": 0,
+              "fillStyle": "#d9f7ff"
+            }
+          ],
+          "dynamicCanvas": [],
+          "staticCanvas": {
+            "text": "REFERENCE INTRODUCTION",
+            "x": 320,
+            "y": 254.25,
+            "font": "bold 11px monospace",
+            "fontPx": 11,
+            "ascent": 7,
+            "descent": 0,
+            "fillStyle": "#c8d8e2"
+          },
+          "notScored": {
+            "text": "INTRODUCTION ONLY - NOT SCORED",
+            "x": 320,
+            "y": 274.5,
+            "font": "bold 13px \"Arial Narrow\", Arial, sans-serif",
+            "fontPx": 13,
+            "ascent": 9,
+            "descent": 0,
+            "fillStyle": "#d9f7ff"
+          },
+          "notScoredRect": {
+            "top": 495.3046875,
+            "bottom": 508.3828125,
+            "effectiveGlyphHeight": 13.078125
+          },
+          "notScoredContrast": 17.446209728312777,
+          "rail": {
+            "x": 213.125,
+            "y": 292.5,
+            "width": 213.75,
+            "height": 2.25,
+            "fillStyle": "rgba(130, 160, 178, 0.2)"
+          },
+          "railRect": {
+            "top": 534.5390625,
+            "bottom": 537.80859375
+          }
+        },
+        "clearance": {
+          "statusToActions": 4,
+          "notScoredToShelf": 55.2421875,
+          "railToShelf": 25.81640625
+        }
+      },
+      {
+        "name": "compact-640x400",
+        "viewport": {
+          "innerWidth": 640,
+          "innerHeight": 400,
+          "devicePixelRatio": 1,
+          "visualViewport": {
+            "width": 640,
+            "height": 400,
+            "scale": 1
+          }
+        },
+        "canvasRect": {
+          "x": 138.109375,
+          "y": 74,
+          "width": 363.765625,
+          "height": 190,
+          "top": 74,
+          "right": 501.875,
+          "bottom": 264,
+          "left": 138.109375
+        },
+        "sourceToCssY": 0.5277777777777778,
+        "regionRect": {
+          "x": 138.109375,
+          "y": 74,
+          "width": 363.765625,
+          "height": 190,
+          "top": 74,
+          "right": 501.875,
+          "bottom": 264,
+          "left": 138.109375
+        },
+        "shelf": {
+          "present": true,
+          "rect": {
+            "x": 138.109375,
+            "y": 195,
+            "width": 363.765625,
+            "height": 69,
+            "top": 195,
+            "right": 501.875,
+            "bottom": 264,
+            "left": 138.109375
+          },
+          "backgroundColor": "rgb(2, 5, 13)",
+          "backgroundAlpha": 1,
+          "heightPercentOfCanvas": 36.31578947368421
+        },
+        "status": {
+          "text": "SIGNAL PATH NOT READY - RETRY SIGNAL.",
+          "rect": {
+            "x": 142.109375,
+            "y": 196,
+            "width": 355.765625,
+            "height": 16,
+            "top": 196,
+            "right": 497.875,
+            "bottom": 212,
+            "left": 142.109375
+          },
+          "metric": {
+            "fontSize": 12,
+            "lineHeight": "16px",
+            "color": "oklch(0.956 0.045 203.388)",
+            "backgroundColor": "rgb(2, 5, 13)",
+            "backgroundAlpha": 1,
+            "contrast": 18.182444369270733,
+            "position": "static"
+          }
+        },
+        "actions": [
+          {
+            "text": "RETRY SIGNAL",
+            "rect": {
+              "x": 188.96875,
+              "y": 216,
+              "width": 100.78125,
+              "height": 44,
+              "top": 216,
+              "right": 289.75,
+              "bottom": 260,
+              "left": 188.96875
+            },
+            "metric": {
+              "fontSize": 12,
+              "lineHeight": "18px",
+              "color": "oklch(0.945 0.129 101.54)",
+              "backgroundColor": "rgb(2, 5, 13)",
+              "backgroundAlpha": 1,
+              "contrast": 17.641772437137273,
+              "position": "static"
+            }
+          },
+          {
+            "text": "REPLAY SIGNAL",
+            "rect": {
+              "x": 293.75,
+              "y": 216,
+              "width": 107.671875,
+              "height": 44,
+              "top": 216,
+              "right": 401.421875,
+              "bottom": 260,
+              "left": 293.75
+            },
+            "metric": {
+              "fontSize": 12,
+              "lineHeight": "18px",
+              "color": "oklch(0.917 0.08 205.041)",
+              "backgroundColor": "rgb(2, 5, 13)",
+              "backgroundAlpha": 1,
+              "contrast": 16.401224201767185,
+              "position": "static"
+            }
+          },
+          {
+            "text": "QUIT",
+            "rect": {
+              "x": 405.421875,
+              "y": 216,
+              "width": 45.59375,
+              "height": 44,
+              "top": 216,
+              "right": 451.015625,
+              "bottom": 260,
+              "left": 405.421875
+            },
+            "metric": {
+              "fontSize": 12,
+              "lineHeight": "18px",
+              "color": "oklch(0.869 0.022 252.894)",
+              "backgroundColor": "rgb(2, 5, 13)",
+              "backgroundAlpha": 1,
+              "contrast": 13.7143899127912,
+              "position": "static"
+            }
+          }
+        ],
+        "actionsFlexWrap": "nowrap",
+        "actionRows": 1,
+        "liveRegionCount": 1,
+        "readinessStatusCount": 0,
+        "srCopy": "REFERENCE INTRODUCTION. NOT SCORED.",
+        "canvas": {
+          "draws": [
+            {
+              "text": "PRE-FLIGHT",
+              "x": 320,
+              "y": 50.625,
+              "font": "bold 18px monospace",
+              "fontPx": 18,
+              "ascent": 11,
+              "descent": 0,
+              "fillStyle": "#79f2cf"
+            },
+            {
+              "text": "NEW SIGNAL",
+              "x": 320,
+              "y": 73.125,
+              "font": "bold 27px monospace",
+              "fontPx": 27,
+              "ascent": 17,
+              "descent": 0,
+              "fillStyle": "#f3fbff"
+            },
+            {
+              "text": "REFERENCE INTRODUCTION",
+              "x": 320,
+              "y": 145.125,
+              "font": "bold 11px monospace",
+              "fontPx": 11,
+              "ascent": 7,
+              "descent": 0,
+              "fillStyle": "#c8d8e2"
+            },
+            {
+              "text": "INTRODUCTION ONLY - NOT SCORED",
+              "x": 320,
+              "y": 180,
+              "font": "bold 35px \"Arial Narrow\", Arial, sans-serif",
+              "fontPx": 35,
+              "ascent": 25,
+              "descent": 0,
+              "fillStyle": "#d9f7ff"
+            }
+          ],
+          "dynamicCanvas": [],
+          "staticCanvas": {
+            "text": "REFERENCE INTRODUCTION",
+            "x": 320,
+            "y": 145.125,
+            "font": "bold 11px monospace",
+            "fontPx": 11,
+            "ascent": 7,
+            "descent": 0,
+            "fillStyle": "#c8d8e2"
+          },
+          "notScored": {
+            "text": "INTRODUCTION ONLY - NOT SCORED",
+            "x": 320,
+            "y": 180,
+            "font": "bold 35px \"Arial Narrow\", Arial, sans-serif",
+            "fontPx": 35,
+            "ascent": 25,
+            "descent": 0,
+            "fillStyle": "#d9f7ff"
+          },
+          "notScoredRect": {
+            "top": 155.80555555555554,
+            "bottom": 169,
+            "effectiveGlyphHeight": 13.194444444444445
+          },
+          "notScoredContrast": 17.446209728312777,
+          "rail": {
+            "x": 213.125,
+            "y": 194.625,
+            "width": 213.75,
+            "height": 2.25,
+            "fillStyle": "rgba(130, 160, 178, 0.2)"
+          },
+          "railRect": {
+            "top": 176.71875,
+            "bottom": 177.90625
+          }
+        },
+        "clearance": {
+          "statusToActions": 4,
+          "notScoredToShelf": 26,
+          "railToShelf": 17.09375
+        }
+      }
+    ]
+  },
+  "checks": [
+    {
+      "id": "substrate-four-live-canvas-rects",
+      "pass": true,
+      "actual": [
+        {
+          "name": "portrait-390x844",
+          "innerWidth": 390,
+          "innerHeight": 844,
+          "devicePixelRatio": 1,
+          "visualViewport": {
+            "width": 390,
+            "height": 844,
+            "scale": 1,
+            "offsetLeft": 0,
+            "offsetTop": 0
+          },
+          "zoom": 1,
+          "canvasRect": {
+            "x": 13,
+            "y": 74,
+            "width": 364,
+            "height": 204.75,
+            "right": 377,
+            "bottom": 278.75
+          },
+          "canvasSource": {
+            "width": 640,
+            "height": 360
+          },
+          "sourceToCssY": 0.56875
+        },
+        {
+          "name": "landscape-844x390",
+          "innerWidth": 844,
+          "innerHeight": 390,
+          "devicePixelRatio": 1,
+          "visualViewport": {
+            "width": 844,
+            "height": 390,
+            "scale": 1,
+            "offsetLeft": 0,
+            "offsetTop": 0
+          },
+          "zoom": 1,
+          "canvasRect": {
+            "x": 263,
+            "y": 109.5,
+            "width": 318,
+            "height": 178.875,
+            "right": 581,
+            "bottom": 288.375
+          },
+          "canvasSource": {
+            "width": 640,
+            "height": 360
+          },
+          "sourceToCssY": 0.496875
+        },
+        {
+          "name": "desktop-1280x800",
+          "innerWidth": 1280,
+          "innerHeight": 800,
+          "devicePixelRatio": 1,
+          "visualViewport": {
+            "width": 1280,
+            "height": 800,
+            "scale": 1,
+            "offsetLeft": 0,
+            "offsetTop": 0
+          },
+          "zoom": 1,
+          "canvasRect": {
+            "x": 175,
+            "y": 109.5,
+            "width": 930,
+            "height": 523.125,
+            "right": 1105,
+            "bottom": 632.625
+          },
+          "canvasSource": {
+            "width": 640,
+            "height": 360
+          },
+          "sourceToCssY": 1.453125
+        },
+        {
+          "name": "compact-640x400",
+          "innerWidth": 640,
+          "innerHeight": 400,
+          "devicePixelRatio": 1,
+          "visualViewport": {
+            "width": 640,
+            "height": 400,
+            "scale": 1,
+            "offsetLeft": 0,
+            "offsetTop": 0
+          },
+          "zoom": 1,
+          "canvasRect": {
+            "x": 138.109375,
+            "y": 74,
+            "width": 363.765625,
+            "height": 190,
+            "right": 501.875,
+            "bottom": 264
+          },
+          "canvasSource": {
+            "width": 640,
+            "height": 360
+          },
+          "sourceToCssY": 0.5277777777777778
+        }
+      ],
+      "expected": "four live viewport/canvas rows"
+    },
+    {
+      "id": "genuine-browser-zoom-200",
+      "pass": true,
+      "actual": {
+        "status": "PASS",
+        "browserLane": "helium-hawkeye-only",
+        "browser": "Chrome/148.0.7778.178",
+        "transport": "dedicated Helium UI on CDP port 9224",
+        "method": "Activated the dedicated Helium window and used the real browser chrome shortcuts Control+0 and Control+Plus x5; no device-scale-factor, Page.setPageScaleFactor, Emulation.setDeviceMetricsOverride, screenshot scaling, Chrome Hawkeye, Edge, Brave, or Native Chrome.",
+        "url": "http://127.0.0.1:3336/pitch-defender/retro-2?v=f0-genuine-zoom",
+        "before": {
+          "innerWidth": 1072,
+          "innerHeight": 962,
+          "devicePixelRatio": 1,
+          "visualViewport": {
+            "width": 1072,
+            "height": 962,
+            "scale": 1
+          },
+          "lane": "ear",
+          "instruction": "LISTEN FOR THE NOTE -> PRESS THE MATCHING KEY (OR TAP ITS BUTTON)",
+          "canvasRect": {
+            "x": 71,
+            "y": 131.5,
+            "width": 930,
+            "height": 523.125,
+            "right": 1001,
+            "bottom": 654.625
+          }
+        },
+        "during": {
+          "innerWidth": 536,
+          "innerHeight": 481,
+          "devicePixelRatio": 2,
+          "visualViewport": {
+            "width": 536,
+            "height": 481,
+            "scale": 1
+          },
+          "lane": "ear",
+          "instruction": "LISTEN FOR THE NOTE -> PRESS THE MATCHING KEY (OR TAP ITS BUTTON)",
+          "canvasRect": {
+            "x": 14.109375,
+            "y": 96,
+            "width": 507.7734375,
+            "height": 271,
+            "right": 521.8828125,
+            "bottom": 367
+          },
+          "horizontalOverflow": 0
+        },
+        "layoutAuditAt200Percent": {
+          "document": {
+            "clientWidth": 536,
+            "scrollWidth": 536
+          },
+          "root": {
+            "clientWidth": 536,
+            "scrollWidth": 536,
+            "clientHeight": 481,
+            "scrollHeight": 481
+          },
+          "instructionRail": {
+            "x": 12,
+            "width": 512,
+            "clientWidth": 512,
+            "scrollWidth": 512
+          },
+          "instruction": {
+            "x": 20,
+            "width": 496,
+            "clientWidth": 496,
+            "scrollWidth": 496,
+            "fontSize": 12
+          },
+          "cabinet": {
+            "x": 13.109375,
+            "width": 509.7734375,
+            "clientWidth": 510,
+            "scrollWidth": 510
+          },
+          "canvas": {
+            "x": 14.109375,
+            "width": 507.7734375,
+            "clientWidth": 508,
+            "scrollWidth": 508
+          }
+        },
+        "after": {
+          "innerWidth": 1072,
+          "innerHeight": 962,
+          "devicePixelRatio": 1,
+          "visualViewport": {
+            "width": 1072,
+            "height": 962,
+            "scale": 1
+          },
+          "canvasRect": {
+            "x": 71,
+            "y": 131.5,
+            "width": 930,
+            "height": 523.125
+          }
+        },
+        "computedZoom": 2,
+        "resetExact": true,
+        "sourcePixel": "data/retro-blaster-rework/runtime-logs/f0-green-local-v3/helium-hawkeye/00-genuine-helium-browser-zoom-200-gameplay.png",
+        "screenshotCaveat": "The CDP page screenshot is cropped by the DPR-2 browser-zoom capture surface. Acceptance is based on genuine UI shortcut telemetry plus zero-overflow DOM geometry, not the cropped screenshot alone.",
+        "embeddedZoomProbe": {
+          "method": "Helium browser keyboard accelerator Control+Equal x5; no DSF or page-scale emulation",
+          "before": {
+            "name": "zoom-before-100-percent",
+            "innerWidth": 1280,
+            "innerHeight": 800,
+            "devicePixelRatio": 1,
+            "visualViewport": {
+              "width": 1280,
+              "height": 800,
+              "scale": 1,
+              "offsetLeft": 0,
+              "offsetTop": 0
+            },
+            "zoom": 1,
+            "canvasRect": {
+              "x": 175,
+              "y": 109.5,
+              "width": 930,
+              "height": 523.125,
+              "right": 1105,
+              "bottom": 632.625
+            },
+            "canvasSource": {
+              "width": 640,
+              "height": 360
+            },
+            "sourceToCssY": 1.453125
+          },
+          "during": {
+            "name": "zoom-during-200-percent",
+            "innerWidth": 1280,
+            "innerHeight": 800,
+            "devicePixelRatio": 1,
+            "visualViewport": {
+              "width": 1280,
+              "height": 800,
+              "scale": 1,
+              "offsetLeft": 0,
+              "offsetTop": 0
+            },
+            "zoom": 1,
+            "canvasRect": {
+              "x": 175,
+              "y": 131.5,
+              "width": 930,
+              "height": 523.125,
+              "right": 1105,
+              "bottom": 654.625
+            },
+            "canvasSource": {
+              "width": 640,
+              "height": 360
+            },
+            "sourceToCssY": 1.453125
+          },
+          "after": {
+            "name": "zoom-after-reset-100-percent",
+            "innerWidth": 1280,
+            "innerHeight": 800,
+            "devicePixelRatio": 1,
+            "visualViewport": {
+              "width": 1280,
+              "height": 800,
+              "scale": 1,
+              "offsetLeft": 0,
+              "offsetTop": 0
+            },
+            "zoom": 1,
+            "canvasRect": {
+              "x": 175,
+              "y": 131.5,
+              "width": 930,
+              "height": 523.125,
+              "right": 1105,
+              "bottom": 654.625
+            },
+            "canvasSource": {
+              "width": 640,
+              "height": 360
+            },
+            "sourceToCssY": 1.453125
+          },
+          "computedZoom": 1
+        }
+      },
+      "expected": "real browser zoom 200% and reset to 100%"
+    },
+    {
+      "id": "voice-readiness-unit",
+      "pass": true,
+      "actual": "VOICE DEFENSE UNIT",
+      "expected": "VOICE DEFENSE UNIT"
+    },
+    {
+      "id": "ear-standby-copy",
+      "pass": true,
+      "actual": "STAND BY → LISTEN FOR THE NEXT TARGET SIGNAL",
+      "expected": "STAND BY -> LISTEN FOR THE NEXT TARGET SIGNAL"
+    },
+    {
+      "id": "ear-standby-helper-absent",
+      "pass": true,
+      "actual": null,
+      "expected": null
+    },
+    {
+      "id": "ear-response-copy",
+      "pass": true,
+      "actual": "LISTEN FOR THE NOTE → PRESS THE MATCHING KEY (OR TAP ITS BUTTON)",
+      "expected": "LISTEN FOR THE NOTE -> PRESS THE MATCHING KEY (OR TAP ITS BUTTON)"
+    },
+    {
+      "id": "ear-response-helper",
+      "pass": true,
+      "actual": "ACTIVE ALIEN SHOWS ? · SPACE REPLAYS THE NOTE",
+      "expected": "ACTIVE ALIEN SHOWS ? · SPACE REPLAYS THE NOTE"
+    },
+    {
+      "id": "voice-standby-copy",
+      "pass": true,
+      "actual": "VOICE CANNON ARMED → WAIT FOR THE TARGET SIGNAL",
+      "expected": "VOICE CANNON ARMED -> WAIT FOR THE TARGET SIGNAL"
+    },
+    {
+      "id": "voice-standby-helper-absent",
+      "pass": true,
+      "actual": null,
+      "expected": null
+    },
+    {
+      "id": "voice-response-copy",
+      "pass": true,
+      "actual": "SING OR HUM THE TARGET NOTE → HOLD IT STEADY TO FIRE",
+      "expected": "SING OR HUM THE TARGET NOTE -> HOLD IT STEADY TO FIRE"
+    },
+    {
+      "id": "voice-response-helper",
+      "pass": true,
+      "actual": "ACTIVE ALIEN SHOWS ? · SPACE REPLAYS THE REFERENCE",
+      "expected": "ACTIVE ALIEN SHOWS ? · SPACE REPLAYS THE REFERENCE"
+    },
+    {
+      "id": "voice-cabinet-unit",
+      "pass": true,
+      "actual": "VOICE DEFENSE UNIT",
+      "expected": "VOICE DEFENSE UNIT"
+    },
+    {
+      "id": "voice-meter-protected",
+      "pass": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "id": "stable-gameplay-hooks",
+      "pass": true,
+      "actual": {
+        "earStandby": {
+          "label": "ear-standby",
+          "laneHook": "ear",
+          "formation": {
+            "phase": "playing",
+            "wave": 1,
+            "attack": {
+              "attackId": "659aa8c6-3cb0-4173-bf31-c6436742ccdf:attack:1",
+              "note": "C4",
+              "phase": "returning",
+              "outcome": "timeout",
+              "demandAtMs": 3784.09999998808
+            },
+            "responseOpen": false
+          },
+          "instruction": "STAND BY → LISTEN FOR THE NEXT TARGET SIGNAL",
+          "helper": null,
+          "unit": "EAR DEFENSE UNIT",
+          "instructionHook": true,
+          "helperHook": false,
+          "unitHook": true,
+          "instructionRailHook": true,
+          "instructionMetric": {
+            "fontSize": 12,
+            "lineHeight": "18px",
+            "color": "oklch(0.917 0.08 205.041)",
+            "backgroundColor": "rgb(2, 5, 13)",
+            "backgroundAlpha": 1,
+            "contrast": 16.401224201767185,
+            "display": "block",
+            "visibility": "visible"
+          },
+          "helperMetric": null,
+          "vocalMeter": false
+        },
+        "earResponse": {
+          "label": "ear-response-open",
+          "laneHook": "ear",
+          "formation": {
+            "phase": "playing",
+            "wave": 1,
+            "attack": {
+              "attackId": "659aa8c6-3cb0-4173-bf31-c6436742ccdf:attack:2",
+              "note": "E4",
+              "phase": "outbound",
+              "outcome": null,
+              "demandAtMs": 7247.599999988082
+            },
+            "responseOpen": true
+          },
+          "instruction": "LISTEN FOR THE NOTE → PRESS THE MATCHING KEY (OR TAP ITS BUTTON)",
+          "helper": "ACTIVE ALIEN SHOWS ? · SPACE REPLAYS THE NOTE",
+          "unit": "EAR DEFENSE UNIT",
+          "instructionHook": true,
+          "helperHook": true,
+          "unitHook": true,
+          "instructionRailHook": true,
+          "instructionMetric": {
+            "fontSize": 12,
+            "lineHeight": "18px",
+            "color": "oklch(0.917 0.08 205.041)",
+            "backgroundColor": "rgb(2, 5, 13)",
+            "backgroundAlpha": 1,
+            "contrast": 16.401224201767185,
+            "display": "block",
+            "visibility": "visible"
+          },
+          "helperMetric": {
+            "fontSize": 12,
+            "lineHeight": "18px",
+            "color": "oklch(0.869 0.022 252.894)",
+            "backgroundColor": "rgb(2, 5, 13)",
+            "backgroundAlpha": 1,
+            "contrast": 13.7143899127912,
+            "display": "block",
+            "visibility": "visible"
+          },
+          "vocalMeter": false
+        },
+        "voiceStandby": {
+          "label": "voice-standby",
+          "laneHook": "voice",
+          "formation": {
+            "phase": "playing",
+            "wave": 1,
+            "attack": null,
+            "responseOpen": false
+          },
+          "instruction": "VOICE CANNON ARMED → WAIT FOR THE TARGET SIGNAL",
+          "helper": null,
+          "unit": "VOICE DEFENSE UNIT",
+          "instructionHook": true,
+          "helperHook": false,
+          "unitHook": true,
+          "instructionRailHook": true,
+          "instructionMetric": {
+            "fontSize": 12,
+            "lineHeight": "18px",
+            "color": "oklch(0.917 0.08 205.041)",
+            "backgroundColor": "rgb(2, 5, 13)",
+            "backgroundAlpha": 1,
+            "contrast": 16.401224201767185,
+            "display": "block",
+            "visibility": "visible"
+          },
+          "helperMetric": null,
+          "vocalMeter": false
+        },
+        "voiceResponse": {
+          "label": "voice-response-open-live-meter",
+          "laneHook": "voice",
+          "formation": {
+            "phase": "playing",
+            "wave": 1,
+            "attack": {
+              "attackId": "570ca185-e3b6-4d7a-94ee-6cee76085fcd:attack:1",
+              "note": "C4",
+              "phase": "outbound",
+              "outcome": null,
+              "demandAtMs": 3944.5000000000014
+            },
+            "responseOpen": true
+          },
+          "instruction": "SING OR HUM THE TARGET NOTE → HOLD IT STEADY TO FIRE",
+          "helper": "ACTIVE ALIEN SHOWS ? · SPACE REPLAYS THE REFERENCE",
+          "unit": "VOICE DEFENSE UNIT",
+          "instructionHook": true,
+          "helperHook": true,
+          "unitHook": true,
+          "instructionRailHook": true,
+          "instructionMetric": {
+            "fontSize": 12,
+            "lineHeight": "18px",
+            "color": "oklch(0.917 0.08 205.041)",
+            "backgroundColor": "rgb(2, 5, 13)",
+            "backgroundAlpha": 1,
+            "contrast": 16.401224201767185,
+            "display": "block",
+            "visibility": "visible"
+          },
+          "helperMetric": {
+            "fontSize": 12,
+            "lineHeight": "18px",
+            "color": "oklch(0.869 0.022 252.894)",
+            "backgroundColor": "rgb(2, 5, 13)",
+            "backgroundAlpha": 1,
+            "contrast": 13.7143899127912,
+            "display": "block",
+            "visibility": "visible"
+          },
+          "vocalMeter": true
+        }
+      },
+      "expected": "lane/instruction/unit hooks in all states"
+    },
+    {
+      "id": "opaque-instruction-rail",
+      "pass": true,
+      "actual": {
+        "earStandby": {
+          "fontSize": 12,
+          "lineHeight": "18px",
+          "color": "oklch(0.917 0.08 205.041)",
+          "backgroundColor": "rgb(2, 5, 13)",
+          "backgroundAlpha": 1,
+          "contrast": 16.401224201767185,
+          "display": "block",
+          "visibility": "visible"
+        },
+        "earResponse": {
+          "fontSize": 12,
+          "lineHeight": "18px",
+          "color": "oklch(0.917 0.08 205.041)",
+          "backgroundColor": "rgb(2, 5, 13)",
+          "backgroundAlpha": 1,
+          "contrast": 16.401224201767185,
+          "display": "block",
+          "visibility": "visible"
+        },
+        "voiceStandby": {
+          "fontSize": 12,
+          "lineHeight": "18px",
+          "color": "oklch(0.917 0.08 205.041)",
+          "backgroundColor": "rgb(2, 5, 13)",
+          "backgroundAlpha": 1,
+          "contrast": 16.401224201767185,
+          "display": "block",
+          "visibility": "visible"
+        },
+        "voiceResponse": {
+          "fontSize": 12,
+          "lineHeight": "18px",
+          "color": "oklch(0.917 0.08 205.041)",
+          "backgroundColor": "rgb(2, 5, 13)",
+          "backgroundAlpha": 1,
+          "contrast": 16.401224201767185,
+          "display": "block",
+          "visibility": "visible"
+        }
+      },
+      "expected": "opaque rail alpha 1"
+    },
+    {
+      "id": "load-bearing-dom-size",
+      "pass": true,
+      "actual": {
+        "earStandby": {
+          "fontSize": 12,
+          "lineHeight": "18px",
+          "color": "oklch(0.917 0.08 205.041)",
+          "backgroundColor": "rgb(2, 5, 13)",
+          "backgroundAlpha": 1,
+          "contrast": 16.401224201767185,
+          "display": "block",
+          "visibility": "visible"
+        },
+        "earResponse": {
+          "fontSize": 12,
+          "lineHeight": "18px",
+          "color": "oklch(0.917 0.08 205.041)",
+          "backgroundColor": "rgb(2, 5, 13)",
+          "backgroundAlpha": 1,
+          "contrast": 16.401224201767185,
+          "display": "block",
+          "visibility": "visible"
+        },
+        "earHelper": {
+          "fontSize": 12,
+          "lineHeight": "18px",
+          "color": "oklch(0.869 0.022 252.894)",
+          "backgroundColor": "rgb(2, 5, 13)",
+          "backgroundAlpha": 1,
+          "contrast": 13.7143899127912,
+          "display": "block",
+          "visibility": "visible"
+        },
+        "voiceStandby": {
+          "fontSize": 12,
+          "lineHeight": "18px",
+          "color": "oklch(0.917 0.08 205.041)",
+          "backgroundColor": "rgb(2, 5, 13)",
+          "backgroundAlpha": 1,
+          "contrast": 16.401224201767185,
+          "display": "block",
+          "visibility": "visible"
+        },
+        "voiceResponse": {
+          "fontSize": 12,
+          "lineHeight": "18px",
+          "color": "oklch(0.917 0.08 205.041)",
+          "backgroundColor": "rgb(2, 5, 13)",
+          "backgroundAlpha": 1,
+          "contrast": 16.401224201767185,
+          "display": "block",
+          "visibility": "visible"
+        },
+        "voiceHelper": {
+          "fontSize": 12,
+          "lineHeight": "18px",
+          "color": "oklch(0.869 0.022 252.894)",
+          "backgroundColor": "rgb(2, 5, 13)",
+          "backgroundAlpha": 1,
+          "contrast": 13.7143899127912,
+          "display": "block",
+          "visibility": "visible"
+        }
+      },
+      "expected": "all present load-bearing DOM text >=12px"
+    },
+    {
+      "id": "load-bearing-dom-contrast",
+      "pass": true,
+      "actual": {
+        "earStandby": 16.401224201767185,
+        "earResponse": 16.401224201767185,
+        "earHelper": 13.7143899127912,
+        "voiceStandby": 16.401224201767185,
+        "voiceResponse": 16.401224201767185,
+        "voiceHelper": 13.7143899127912
+      },
+      "expected": "all load-bearing DOM text >=4.5:1"
+    },
+    {
+      "id": "ceremony-portrait-390x844-opaque-shelf",
+      "pass": true,
+      "actual": {
+        "present": true,
+        "rect": {
+          "x": 13,
+          "y": 227.75,
+          "width": 364,
+          "height": 69,
+          "top": 227.75,
+          "right": 377,
+          "bottom": 296.75,
+          "left": 13
+        },
+        "backgroundColor": "rgb(2, 5, 13)",
+        "backgroundAlpha": 1,
+        "heightPercentOfCanvas": 33.6996336996337
+      },
+      "expected": "present, alpha 1"
+    },
+    {
+      "id": "ceremony-portrait-390x844-single-live-region",
+      "pass": true,
+      "actual": {
+        "liveRegionCount": 1,
+        "readinessStatusCount": 0
+      },
+      "expected": "one ceremony live region; readiness status absent"
+    },
+    {
+      "id": "ceremony-portrait-390x844-truthful-static-sr",
+      "pass": true,
+      "actual": "REFERENCE INTRODUCTION. NOT SCORED.",
+      "expected": "REFERENCE INTRODUCTION. NOT SCORED."
+    },
+    {
+      "id": "ceremony-portrait-390x844-status-copy",
+      "pass": true,
+      "actual": "SIGNAL PATH NOT READY - RETRY SIGNAL.",
+      "expected": "SIGNAL PATH NOT READY - RETRY SIGNAL."
+    },
+    {
+      "id": "ceremony-portrait-390x844-no-dynamic-canvas-status",
+      "pass": true,
+      "actual": [],
+      "expected": "no dynamic canvas status"
+    },
+    {
+      "id": "ceremony-portrait-390x844-static-canvas-identity",
+      "pass": true,
+      "actual": {
+        "text": "REFERENCE INTRODUCTION",
+        "x": 320,
+        "y": 145.125,
+        "font": "bold 11px monospace",
+        "fontPx": 11,
+        "ascent": 7,
+        "descent": 0,
+        "fillStyle": "#c8d8e2"
+      },
+      "expected": "REFERENCE INTRODUCTION"
+    },
+    {
+      "id": "ceremony-portrait-390x844-not-scored-copy",
+      "pass": true,
+      "actual": "INTRODUCTION ONLY - NOT SCORED",
+      "expected": "INTRODUCTION ONLY - NOT SCORED"
+    },
+    {
+      "id": "ceremony-portrait-390x844-not-scored-glyph-floor",
+      "pass": true,
+      "actual": 13.081249999999999,
+      "expected": ">=12 CSS px"
+    },
+    {
+      "id": "ceremony-portrait-390x844-not-scored-contrast",
+      "pass": true,
+      "actual": 17.446209728312777,
+      "expected": ">=4.5:1"
+    },
+    {
+      "id": "ceremony-portrait-390x844-status-size",
+      "pass": true,
+      "actual": {
+        "fontSize": 12,
+        "lineHeight": "16px",
+        "color": "oklch(0.956 0.045 203.388)",
+        "backgroundColor": "rgb(2, 5, 13)",
+        "backgroundAlpha": 1,
+        "contrast": 18.182444369270733,
+        "position": "static"
+      },
+      "expected": ">=12 CSS px"
+    },
+    {
+      "id": "ceremony-portrait-390x844-status-contrast",
+      "pass": true,
+      "actual": 18.182444369270733,
+      "expected": ">=4.5:1"
+    },
+    {
+      "id": "ceremony-portrait-390x844-status-action-clearance",
+      "pass": true,
+      "actual": 4,
+      "expected": ">=4 CSS px"
+    },
+    {
+      "id": "ceremony-portrait-390x844-actions-44-and-12",
+      "pass": true,
+      "actual": [
+        {
+          "text": "RETRY SIGNAL",
+          "rect": {
+            "x": 63.96875,
+            "y": 248.75,
+            "width": 100.78125,
+            "height": 44,
+            "top": 248.75,
+            "right": 164.75,
+            "bottom": 292.75,
+            "left": 63.96875
+          },
+          "metric": {
+            "fontSize": 12,
+            "lineHeight": "18px",
+            "color": "oklch(0.945 0.129 101.54)",
+            "backgroundColor": "rgb(2, 5, 13)",
+            "backgroundAlpha": 1,
+            "contrast": 17.641772437137273,
+            "position": "static"
+          }
+        },
+        {
+          "text": "REPLAY SIGNAL",
+          "rect": {
+            "x": 168.75,
+            "y": 248.75,
+            "width": 107.671875,
+            "height": 44,
+            "top": 248.75,
+            "right": 276.421875,
+            "bottom": 292.75,
+            "left": 168.75
+          },
+          "metric": {
+            "fontSize": 12,
+            "lineHeight": "18px",
+            "color": "oklch(0.917 0.08 205.041)",
+            "backgroundColor": "rgb(2, 5, 13)",
+            "backgroundAlpha": 1,
+            "contrast": 16.401224201767185,
+            "position": "static"
+          }
+        },
+        {
+          "text": "QUIT",
+          "rect": {
+            "x": 280.421875,
+            "y": 248.75,
+            "width": 45.59375,
+            "height": 44,
+            "top": 248.75,
+            "right": 326.015625,
+            "bottom": 292.75,
+            "left": 280.421875
+          },
+          "metric": {
+            "fontSize": 12,
+            "lineHeight": "18px",
+            "color": "oklch(0.869 0.022 252.894)",
+            "backgroundColor": "rgb(2, 5, 13)",
+            "backgroundAlpha": 1,
+            "contrast": 13.7143899127912,
+            "position": "static"
+          }
+        }
+      ],
+      "expected": "three actions, each >=44x44 with >=12px text"
+    },
+    {
+      "id": "ceremony-portrait-390x844-actions-contrast",
+      "pass": true,
+      "actual": [
+        {
+          "text": "RETRY SIGNAL",
+          "contrast": 17.641772437137273
+        },
+        {
+          "text": "REPLAY SIGNAL",
+          "contrast": 16.401224201767185
+        },
+        {
+          "text": "QUIT",
+          "contrast": 13.7143899127912
+        }
+      ],
+      "expected": "all action text >=4.5:1"
+    },
+    {
+      "id": "ceremony-portrait-390x844-actions-single-row",
+      "pass": true,
+      "actual": {
+        "actionRows": 1,
+        "flexWrap": "nowrap"
+      },
+      "expected": "one row, nowrap"
+    },
+    {
+      "id": "ceremony-portrait-390x844-rail-above-shelf",
+      "pass": true,
+      "actual": 23.77734375,
+      "expected": ">= one 12px effective line"
+    },
+    {
+      "id": "ceremony-portrait-390x844-not-scored-above-shelf",
+      "pass": true,
+      "actual": 33.375,
+      "expected": ">= one 12px effective line"
+    },
+    {
+      "id": "ceremony-portrait-390x844-shelf-height-recorded",
+      "pass": true,
+      "actual": 33.6996336996337,
+      "expected": "<=42% HOLD metric"
+    },
+    {
+      "id": "ceremony-landscape-844x390-opaque-shelf",
+      "pass": true,
+      "actual": {
+        "present": true,
+        "rect": {
+          "x": 263,
+          "y": 219.375,
+          "width": 318,
+          "height": 69,
+          "top": 219.375,
+          "right": 581,
+          "bottom": 288.375,
+          "left": 263
+        },
+        "backgroundColor": "rgb(2, 5, 13)",
+        "backgroundAlpha": 1,
+        "heightPercentOfCanvas": 38.57442348008386
+      },
+      "expected": "present, alpha 1"
+    },
+    {
+      "id": "ceremony-landscape-844x390-single-live-region",
+      "pass": true,
+      "actual": {
+        "liveRegionCount": 1,
+        "readinessStatusCount": 0
+      },
+      "expected": "one ceremony live region; readiness status absent"
+    },
+    {
+      "id": "ceremony-landscape-844x390-truthful-static-sr",
+      "pass": true,
+      "actual": "REFERENCE INTRODUCTION. NOT SCORED.",
+      "expected": "REFERENCE INTRODUCTION. NOT SCORED."
+    },
+    {
+      "id": "ceremony-landscape-844x390-status-copy",
+      "pass": true,
+      "actual": "SIGNAL PATH NOT READY - RETRY SIGNAL.",
+      "expected": "SIGNAL PATH NOT READY - RETRY SIGNAL."
+    },
+    {
+      "id": "ceremony-landscape-844x390-no-dynamic-canvas-status",
+      "pass": true,
+      "actual": [],
+      "expected": "no dynamic canvas status"
+    },
+    {
+      "id": "ceremony-landscape-844x390-static-canvas-identity",
+      "pass": true,
+      "actual": {
+        "text": "REFERENCE INTRODUCTION",
+        "x": 320,
+        "y": 145.125,
+        "font": "bold 11px monospace",
+        "fontPx": 11,
+        "ascent": 7,
+        "descent": 0,
+        "fillStyle": "#c8d8e2"
+      },
+      "expected": "REFERENCE INTRODUCTION"
+    },
+    {
+      "id": "ceremony-landscape-844x390-not-scored-copy",
+      "pass": true,
+      "actual": "INTRODUCTION ONLY - NOT SCORED",
+      "expected": "INTRODUCTION ONLY - NOT SCORED"
+    },
+    {
+      "id": "ceremony-landscape-844x390-not-scored-glyph-floor",
+      "pass": true,
+      "actual": 12.918750000000001,
+      "expected": ">=12 CSS px"
+    },
+    {
+      "id": "ceremony-landscape-844x390-not-scored-contrast",
+      "pass": true,
+      "actual": 17.446209728312777,
+      "expected": ">=4.5:1"
+    },
+    {
+      "id": "ceremony-landscape-844x390-status-size",
+      "pass": true,
+      "actual": {
+        "fontSize": 12,
+        "lineHeight": "16px",
+        "color": "oklch(0.956 0.045 203.388)",
+        "backgroundColor": "rgb(2, 5, 13)",
+        "backgroundAlpha": 1,
+        "contrast": 18.182444369270733,
+        "position": "static"
+      },
+      "expected": ">=12 CSS px"
+    },
+    {
+      "id": "ceremony-landscape-844x390-status-contrast",
+      "pass": true,
+      "actual": 18.182444369270733,
+      "expected": ">=4.5:1"
+    },
+    {
+      "id": "ceremony-landscape-844x390-status-action-clearance",
+      "pass": true,
+      "actual": 4,
+      "expected": ">=4 CSS px"
+    },
+    {
+      "id": "ceremony-landscape-844x390-actions-44-and-12",
+      "pass": true,
+      "actual": [
+        {
+          "text": "RETRY SIGNAL",
+          "rect": {
+            "x": 290.96875,
+            "y": 240.375,
+            "width": 100.78125,
+            "height": 44,
+            "top": 240.375,
+            "right": 391.75,
+            "bottom": 284.375,
+            "left": 290.96875
+          },
+          "metric": {
+            "fontSize": 12,
+            "lineHeight": "18px",
+            "color": "oklch(0.945 0.129 101.54)",
+            "backgroundColor": "rgb(2, 5, 13)",
+            "backgroundAlpha": 1,
+            "contrast": 17.641772437137273,
+            "position": "static"
+          }
+        },
+        {
+          "text": "REPLAY SIGNAL",
+          "rect": {
+            "x": 395.75,
+            "y": 240.375,
+            "width": 107.671875,
+            "height": 44,
+            "top": 240.375,
+            "right": 503.421875,
+            "bottom": 284.375,
+            "left": 395.75
+          },
+          "metric": {
+            "fontSize": 12,
+            "lineHeight": "18px",
+            "color": "oklch(0.917 0.08 205.041)",
+            "backgroundColor": "rgb(2, 5, 13)",
+            "backgroundAlpha": 1,
+            "contrast": 16.401224201767185,
+            "position": "static"
+          }
+        },
+        {
+          "text": "QUIT",
+          "rect": {
+            "x": 507.421875,
+            "y": 240.375,
+            "width": 45.59375,
+            "height": 44,
+            "top": 240.375,
+            "right": 553.015625,
+            "bottom": 284.375,
+            "left": 507.421875
+          },
+          "metric": {
+            "fontSize": 12,
+            "lineHeight": "18px",
+            "color": "oklch(0.869 0.022 252.894)",
+            "backgroundColor": "rgb(2, 5, 13)",
+            "backgroundAlpha": 1,
+            "contrast": 13.7143899127912,
+            "position": "static"
+          }
+        }
+      ],
+      "expected": "three actions, each >=44x44 with >=12px text"
+    },
+    {
+      "id": "ceremony-landscape-844x390-actions-contrast",
+      "pass": true,
+      "actual": [
+        {
+          "text": "RETRY SIGNAL",
+          "contrast": 17.641772437137273
+        },
+        {
+          "text": "REPLAY SIGNAL",
+          "contrast": 16.401224201767185
+        },
+        {
+          "text": "QUIT",
+          "contrast": 13.7143899127912
+        }
+      ],
+      "expected": "all action text >=4.5:1"
+    },
+    {
+      "id": "ceremony-landscape-844x390-actions-single-row",
+      "pass": true,
+      "actual": {
+        "actionRows": 1,
+        "flexWrap": "nowrap"
+      },
+      "expected": "one row, nowrap"
+    },
+    {
+      "id": "ceremony-landscape-844x390-rail-above-shelf",
+      "pass": true,
+      "actual": 12.052734375,
+      "expected": ">= one 12px effective line"
+    },
+    {
+      "id": "ceremony-landscape-844x390-not-scored-above-shelf",
+      "pass": true,
+      "actual": 20.4375,
+      "expected": ">= one 12px effective line"
+    },
+    {
+      "id": "ceremony-landscape-844x390-shelf-height-recorded",
+      "pass": true,
+      "actual": 38.57442348008386,
+      "expected": "<=42% HOLD metric"
+    },
+    {
+      "id": "ceremony-desktop-1280x800-opaque-shelf",
+      "pass": true,
+      "actual": {
+        "present": true,
+        "rect": {
+          "x": 175,
+          "y": 563.625,
+          "width": 930,
+          "height": 69,
+          "top": 563.625,
+          "right": 1105,
+          "bottom": 632.625,
+          "left": 175
+        },
+        "backgroundColor": "rgb(2, 5, 13)",
+        "backgroundAlpha": 1,
+        "heightPercentOfCanvas": 13.189964157706093
+      },
+      "expected": "present, alpha 1"
+    },
+    {
+      "id": "ceremony-desktop-1280x800-single-live-region",
+      "pass": true,
+      "actual": {
+        "liveRegionCount": 1,
+        "readinessStatusCount": 0
+      },
+      "expected": "one ceremony live region; readiness status absent"
+    },
+    {
+      "id": "ceremony-desktop-1280x800-truthful-static-sr",
+      "pass": true,
+      "actual": "REFERENCE INTRODUCTION. NOT SCORED.",
+      "expected": "REFERENCE INTRODUCTION. NOT SCORED."
+    },
+    {
+      "id": "ceremony-desktop-1280x800-status-copy",
+      "pass": true,
+      "actual": "SIGNAL PATH NOT READY - RETRY SIGNAL.",
+      "expected": "SIGNAL PATH NOT READY - RETRY SIGNAL."
+    },
+    {
+      "id": "ceremony-desktop-1280x800-no-dynamic-canvas-status",
+      "pass": true,
+      "actual": [],
+      "expected": "no dynamic canvas status"
+    },
+    {
+      "id": "ceremony-desktop-1280x800-static-canvas-identity",
+      "pass": true,
+      "actual": {
+        "text": "REFERENCE INTRODUCTION",
+        "x": 320,
+        "y": 254.25,
+        "font": "bold 11px monospace",
+        "fontPx": 11,
+        "ascent": 7,
+        "descent": 0,
+        "fillStyle": "#c8d8e2"
+      },
+      "expected": "REFERENCE INTRODUCTION"
+    },
+    {
+      "id": "ceremony-desktop-1280x800-not-scored-copy",
+      "pass": true,
+      "actual": "INTRODUCTION ONLY - NOT SCORED",
+      "expected": "INTRODUCTION ONLY - NOT SCORED"
+    },
+    {
+      "id": "ceremony-desktop-1280x800-not-scored-glyph-floor",
+      "pass": true,
+      "actual": 13.078125,
+      "expected": ">=12 CSS px"
+    },
+    {
+      "id": "ceremony-desktop-1280x800-not-scored-contrast",
+      "pass": true,
+      "actual": 17.446209728312777,
+      "expected": ">=4.5:1"
+    },
+    {
+      "id": "ceremony-desktop-1280x800-status-size",
+      "pass": true,
+      "actual": {
+        "fontSize": 12,
+        "lineHeight": "16px",
+        "color": "oklch(0.956 0.045 203.388)",
+        "backgroundColor": "rgb(2, 5, 13)",
+        "backgroundAlpha": 1,
+        "contrast": 18.182444369270733,
+        "position": "static"
+      },
+      "expected": ">=12 CSS px"
+    },
+    {
+      "id": "ceremony-desktop-1280x800-status-contrast",
+      "pass": true,
+      "actual": 18.182444369270733,
+      "expected": ">=4.5:1"
+    },
+    {
+      "id": "ceremony-desktop-1280x800-status-action-clearance",
+      "pass": true,
+      "actual": 4,
+      "expected": ">=4 CSS px"
+    },
+    {
+      "id": "ceremony-desktop-1280x800-actions-44-and-12",
+      "pass": true,
+      "actual": [
+        {
+          "text": "RETRY SIGNAL",
+          "rect": {
+            "x": 508.96875,
+            "y": 584.625,
+            "width": 100.78125,
+            "height": 44,
+            "top": 584.625,
+            "right": 609.75,
+            "bottom": 628.625,
+            "left": 508.96875
+          },
+          "metric": {
+            "fontSize": 12,
+            "lineHeight": "18px",
+            "color": "oklch(0.945 0.129 101.54)",
+            "backgroundColor": "rgb(2, 5, 13)",
+            "backgroundAlpha": 1,
+            "contrast": 17.641772437137273,
+            "position": "static"
+          }
+        },
+        {
+          "text": "REPLAY SIGNAL",
+          "rect": {
+            "x": 613.75,
+            "y": 584.625,
+            "width": 107.671875,
+            "height": 44,
+            "top": 584.625,
+            "right": 721.421875,
+            "bottom": 628.625,
+            "left": 613.75
+          },
+          "metric": {
+            "fontSize": 12,
+            "lineHeight": "18px",
+            "color": "oklch(0.917 0.08 205.041)",
+            "backgroundColor": "rgb(2, 5, 13)",
+            "backgroundAlpha": 1,
+            "contrast": 16.401224201767185,
+            "position": "static"
+          }
+        },
+        {
+          "text": "QUIT",
+          "rect": {
+            "x": 725.421875,
+            "y": 584.625,
+            "width": 45.59375,
+            "height": 44,
+            "top": 584.625,
+            "right": 771.015625,
+            "bottom": 628.625,
+            "left": 725.421875
+          },
+          "metric": {
+            "fontSize": 12,
+            "lineHeight": "18px",
+            "color": "oklch(0.869 0.022 252.894)",
+            "backgroundColor": "rgb(2, 5, 13)",
+            "backgroundAlpha": 1,
+            "contrast": 13.7143899127912,
+            "position": "static"
+          }
+        }
+      ],
+      "expected": "three actions, each >=44x44 with >=12px text"
+    },
+    {
+      "id": "ceremony-desktop-1280x800-actions-contrast",
+      "pass": true,
+      "actual": [
+        {
+          "text": "RETRY SIGNAL",
+          "contrast": 17.641772437137273
+        },
+        {
+          "text": "REPLAY SIGNAL",
+          "contrast": 16.401224201767185
+        },
+        {
+          "text": "QUIT",
+          "contrast": 13.7143899127912
+        }
+      ],
+      "expected": "all action text >=4.5:1"
+    },
+    {
+      "id": "ceremony-desktop-1280x800-actions-single-row",
+      "pass": true,
+      "actual": {
+        "actionRows": 1,
+        "flexWrap": "nowrap"
+      },
+      "expected": "one row, nowrap"
+    },
+    {
+      "id": "ceremony-desktop-1280x800-rail-above-shelf",
+      "pass": true,
+      "actual": 25.81640625,
+      "expected": ">= one 12px effective line"
+    },
+    {
+      "id": "ceremony-desktop-1280x800-not-scored-above-shelf",
+      "pass": true,
+      "actual": 55.2421875,
+      "expected": ">= one 12px effective line"
+    },
+    {
+      "id": "ceremony-desktop-1280x800-shelf-height-recorded",
+      "pass": true,
+      "actual": 13.189964157706093,
+      "expected": "<=42% HOLD metric"
+    },
+    {
+      "id": "ceremony-compact-640x400-opaque-shelf",
+      "pass": true,
+      "actual": {
+        "present": true,
+        "rect": {
+          "x": 138.109375,
+          "y": 195,
+          "width": 363.765625,
+          "height": 69,
+          "top": 195,
+          "right": 501.875,
+          "bottom": 264,
+          "left": 138.109375
+        },
+        "backgroundColor": "rgb(2, 5, 13)",
+        "backgroundAlpha": 1,
+        "heightPercentOfCanvas": 36.31578947368421
+      },
+      "expected": "present, alpha 1"
+    },
+    {
+      "id": "ceremony-compact-640x400-single-live-region",
+      "pass": true,
+      "actual": {
+        "liveRegionCount": 1,
+        "readinessStatusCount": 0
+      },
+      "expected": "one ceremony live region; readiness status absent"
+    },
+    {
+      "id": "ceremony-compact-640x400-truthful-static-sr",
+      "pass": true,
+      "actual": "REFERENCE INTRODUCTION. NOT SCORED.",
+      "expected": "REFERENCE INTRODUCTION. NOT SCORED."
+    },
+    {
+      "id": "ceremony-compact-640x400-status-copy",
+      "pass": true,
+      "actual": "SIGNAL PATH NOT READY - RETRY SIGNAL.",
+      "expected": "SIGNAL PATH NOT READY - RETRY SIGNAL."
+    },
+    {
+      "id": "ceremony-compact-640x400-no-dynamic-canvas-status",
+      "pass": true,
+      "actual": [],
+      "expected": "no dynamic canvas status"
+    },
+    {
+      "id": "ceremony-compact-640x400-static-canvas-identity",
+      "pass": true,
+      "actual": {
+        "text": "REFERENCE INTRODUCTION",
+        "x": 320,
+        "y": 145.125,
+        "font": "bold 11px monospace",
+        "fontPx": 11,
+        "ascent": 7,
+        "descent": 0,
+        "fillStyle": "#c8d8e2"
+      },
+      "expected": "REFERENCE INTRODUCTION"
+    },
+    {
+      "id": "ceremony-compact-640x400-not-scored-copy",
+      "pass": true,
+      "actual": "INTRODUCTION ONLY - NOT SCORED",
+      "expected": "INTRODUCTION ONLY - NOT SCORED"
+    },
+    {
+      "id": "ceremony-compact-640x400-not-scored-glyph-floor",
+      "pass": true,
+      "actual": 13.194444444444445,
+      "expected": ">=12 CSS px"
+    },
+    {
+      "id": "ceremony-compact-640x400-not-scored-contrast",
+      "pass": true,
+      "actual": 17.446209728312777,
+      "expected": ">=4.5:1"
+    },
+    {
+      "id": "ceremony-compact-640x400-status-size",
+      "pass": true,
+      "actual": {
+        "fontSize": 12,
+        "lineHeight": "16px",
+        "color": "oklch(0.956 0.045 203.388)",
+        "backgroundColor": "rgb(2, 5, 13)",
+        "backgroundAlpha": 1,
+        "contrast": 18.182444369270733,
+        "position": "static"
+      },
+      "expected": ">=12 CSS px"
+    },
+    {
+      "id": "ceremony-compact-640x400-status-contrast",
+      "pass": true,
+      "actual": 18.182444369270733,
+      "expected": ">=4.5:1"
+    },
+    {
+      "id": "ceremony-compact-640x400-status-action-clearance",
+      "pass": true,
+      "actual": 4,
+      "expected": ">=4 CSS px"
+    },
+    {
+      "id": "ceremony-compact-640x400-actions-44-and-12",
+      "pass": true,
+      "actual": [
+        {
+          "text": "RETRY SIGNAL",
+          "rect": {
+            "x": 188.96875,
+            "y": 216,
+            "width": 100.78125,
+            "height": 44,
+            "top": 216,
+            "right": 289.75,
+            "bottom": 260,
+            "left": 188.96875
+          },
+          "metric": {
+            "fontSize": 12,
+            "lineHeight": "18px",
+            "color": "oklch(0.945 0.129 101.54)",
+            "backgroundColor": "rgb(2, 5, 13)",
+            "backgroundAlpha": 1,
+            "contrast": 17.641772437137273,
+            "position": "static"
+          }
+        },
+        {
+          "text": "REPLAY SIGNAL",
+          "rect": {
+            "x": 293.75,
+            "y": 216,
+            "width": 107.671875,
+            "height": 44,
+            "top": 216,
+            "right": 401.421875,
+            "bottom": 260,
+            "left": 293.75
+          },
+          "metric": {
+            "fontSize": 12,
+            "lineHeight": "18px",
+            "color": "oklch(0.917 0.08 205.041)",
+            "backgroundColor": "rgb(2, 5, 13)",
+            "backgroundAlpha": 1,
+            "contrast": 16.401224201767185,
+            "position": "static"
+          }
+        },
+        {
+          "text": "QUIT",
+          "rect": {
+            "x": 405.421875,
+            "y": 216,
+            "width": 45.59375,
+            "height": 44,
+            "top": 216,
+            "right": 451.015625,
+            "bottom": 260,
+            "left": 405.421875
+          },
+          "metric": {
+            "fontSize": 12,
+            "lineHeight": "18px",
+            "color": "oklch(0.869 0.022 252.894)",
+            "backgroundColor": "rgb(2, 5, 13)",
+            "backgroundAlpha": 1,
+            "contrast": 13.7143899127912,
+            "position": "static"
+          }
+        }
+      ],
+      "expected": "three actions, each >=44x44 with >=12px text"
+    },
+    {
+      "id": "ceremony-compact-640x400-actions-contrast",
+      "pass": true,
+      "actual": [
+        {
+          "text": "RETRY SIGNAL",
+          "contrast": 17.641772437137273
+        },
+        {
+          "text": "REPLAY SIGNAL",
+          "contrast": 16.401224201767185
+        },
+        {
+          "text": "QUIT",
+          "contrast": 13.7143899127912
+        }
+      ],
+      "expected": "all action text >=4.5:1"
+    },
+    {
+      "id": "ceremony-compact-640x400-actions-single-row",
+      "pass": true,
+      "actual": {
+        "actionRows": 1,
+        "flexWrap": "nowrap"
+      },
+      "expected": "one row, nowrap"
+    },
+    {
+      "id": "ceremony-compact-640x400-rail-above-shelf",
+      "pass": true,
+      "actual": 17.09375,
+      "expected": ">= one 12px effective line"
+    },
+    {
+      "id": "ceremony-compact-640x400-not-scored-above-shelf",
+      "pass": true,
+      "actual": 26,
+      "expected": ">= one 12px effective line"
+    },
+    {
+      "id": "ceremony-compact-640x400-shelf-height-recorded",
+      "pass": true,
+      "actual": 36.31578947368421,
+      "expected": "<=42% HOLD metric"
+    }
+  ],
+  "summary": {
+    "total": 89,
+    "passed": 89,
+    "failed": 0,
+    "failureIds": [],
+    "pageErrors": []
+  }
+}

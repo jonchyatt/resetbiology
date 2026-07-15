@@ -17,11 +17,25 @@ const protectedPatterns = [
   /^app\/pitch-defender\/retro\/page\.tsx$/,
   /^src\/components\/PitchDefender\/Pitchforks.*\.tsx$/,
   /^src\/components\/PitchDefender\/(DrillMode|PitchDefender|VocalTrainerIII|NoteRunner).*\.tsx$/,
-  /^src\/components\/PitchDefender\/(audioEngine|pitchMath|types)\.ts$/,
+  /^src\/components\/PitchDefender\/(pitchMath|types)\.ts$/,
   /^src\/lib\/(fsrs|usePitchDetection)\.ts$/,
 ]
 const protectedChanges = changed.filter(path => protectedPatterns.some(pattern => pattern.test(path)))
 assert(protectedChanges.length === 0, `protected files changed: ${protectedChanges.join(', ')}`)
+
+const audioPath = 'src/components/PitchDefender/audioEngine.ts'
+if (changed.includes(audioPath)) {
+  const currentAudio = await readFile(resolve(root, audioPath), 'utf8')
+  const observerBlock = /\nexport interface PianoReadiness \{[\s\S]*?\nexport function getPianoReadiness\(note: string\): PianoReadiness \{[\s\S]*?\n\}\n/
+  assert(observerBlock.test(currentAudio), 'ratified R8 piano-readiness observer missing')
+  const diff = execFileSync('git', ['diff', '--unified=0', 'HEAD', '--', audioPath], { cwd: root, encoding: 'utf8' })
+  const removed = diff.split(/\r?\n/).filter(line => line.startsWith('-') && !line.startsWith('---'))
+  const added = diff.split(/\r?\n/).filter(line => line.startsWith('+') && !line.startsWith('+++')).map(line => line.slice(1))
+  while (added.at(-1) === '') added.pop()
+  const allowed = observerBlock.exec(currentAudio)[0].trim().split(/\r?\n/)
+  assert(removed.length === 0 && added.join('\n') === allowed.join('\n'),
+    'audioEngine diff exceeds the ratified read-only R8 observer')
+}
 
 const assetPath = resolve(root, 'public/sprites/retro-blaster-space-backdrop-r15a.png')
 const asset = await readFile(assetPath)

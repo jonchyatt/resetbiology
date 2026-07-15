@@ -1,0 +1,46 @@
+{
+  "status": "PASS",
+  "browserLane": "helium-hawkeye-only",
+  "browser": "Chrome/148.0.7778.178",
+  "transport": "dedicated Helium UI on CDP port 9224",
+  "method": "Activated the dedicated Helium window and used the real browser chrome shortcuts Control+0 and Control+Plus x5; no device-scale-factor, Page.setPageScaleFactor, Emulation.setDeviceMetricsOverride, screenshot scaling, Chrome Hawkeye, Edge, Brave, or Native Chrome.",
+  "url": "http://127.0.0.1:3336/pitch-defender/retro-2?v=f0-genuine-zoom",
+  "before": {
+    "innerWidth": 1072,
+    "innerHeight": 962,
+    "devicePixelRatio": 1,
+    "visualViewport": { "width": 1072, "height": 962, "scale": 1 },
+    "lane": "ear",
+    "instruction": "LISTEN FOR THE NOTE -> PRESS THE MATCHING KEY (OR TAP ITS BUTTON)",
+    "canvasRect": { "x": 71, "y": 131.5, "width": 930, "height": 523.125, "right": 1001, "bottom": 654.625 }
+  },
+  "during": {
+    "innerWidth": 536,
+    "innerHeight": 481,
+    "devicePixelRatio": 2,
+    "visualViewport": { "width": 536, "height": 481, "scale": 1 },
+    "lane": "ear",
+    "instruction": "LISTEN FOR THE NOTE -> PRESS THE MATCHING KEY (OR TAP ITS BUTTON)",
+    "canvasRect": { "x": 14.109375, "y": 96, "width": 507.7734375, "height": 271, "right": 521.8828125, "bottom": 367 },
+    "horizontalOverflow": 0
+  },
+  "layoutAuditAt200Percent": {
+    "document": { "clientWidth": 536, "scrollWidth": 536 },
+    "root": { "clientWidth": 536, "scrollWidth": 536, "clientHeight": 481, "scrollHeight": 481 },
+    "instructionRail": { "x": 12, "width": 512, "clientWidth": 512, "scrollWidth": 512 },
+    "instruction": { "x": 20, "width": 496, "clientWidth": 496, "scrollWidth": 496, "fontSize": 12 },
+    "cabinet": { "x": 13.109375, "width": 509.7734375, "clientWidth": 510, "scrollWidth": 510 },
+    "canvas": { "x": 14.109375, "width": 507.7734375, "clientWidth": 508, "scrollWidth": 508 }
+  },
+  "after": {
+    "innerWidth": 1072,
+    "innerHeight": 962,
+    "devicePixelRatio": 1,
+    "visualViewport": { "width": 1072, "height": 962, "scale": 1 },
+    "canvasRect": { "x": 71, "y": 131.5, "width": 930, "height": 523.125 }
+  },
+  "computedZoom": 2,
+  "resetExact": true,
+  "sourcePixel": "data/retro-blaster-rework/runtime-logs/f0-green-local-v3/helium-hawkeye/00-genuine-helium-browser-zoom-200-gameplay.png",
+  "screenshotCaveat": "The CDP page screenshot is cropped by the DPR-2 browser-zoom capture surface. Acceptance is based on genuine UI shortcut telemetry plus zero-overflow DOM geometry, not the cropped screenshot alone."
+}
