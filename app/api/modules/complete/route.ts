@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth0 } from '@/lib/auth0'
 import { getUserFromSession } from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma'
-import { enqueueDriveSync } from '@/lib/driveSyncQueue'
+import { enqueueDriveSync, drainDriveSyncRowsNow } from '@/lib/driveSyncQueue'
 
 function startOfDay(date: Date) {
   const d = new Date(date)
@@ -195,7 +195,20 @@ export async function POST(request: NextRequest) {
 
     // Queue Google Drive sync (awaited — Vercel freezes the lambda after the response, killing un-awaited work) — this route also appends a note to
     // today's journal entry, so sync that too
-    await enqueueDriveSync(user.id, new Date(), ['modules', 'journal']).catch(err => console.error('Drive enqueue failed:', err))
+    const syncNow = new Date()
+    await enqueueDriveSync(user.id, syncNow, ['modules', 'journal']).catch(err => console.error('Drive enqueue failed:', err))
+
+    // Immediate targeted drain of the rows just enqueued (also awaited — same
+    // reason as above). The durable outbox row is already persisted regardless
+    // of what happens here, so this is a best-effort accelerator, not the source
+    // of truth: on failure the row is left exactly where the shared retry/backoff
+    // logic would leave it and the cron drain (/api/cron/drive-sync-drain) picks
+    // it up on its next tick. Root-cause: enqueue-only was awaited (3e047b19) but
+    // nothing ever awaited the drain half in-request, so delivery depended
+    // entirely on the cron actually firing — unverified until this ticket.
+    await drainDriveSyncRowsNow(user.id, syncNow, ['modules', 'journal']).catch(err =>
+      console.error('Drive immediate drain failed (cron will retry):', err)
+    )
 
     return NextResponse.json({
       success: true,
