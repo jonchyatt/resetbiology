@@ -665,11 +665,12 @@ function drawIntroductionCeremony(
   const accentSoft = colorHints ? `hsla(${noteHue}, 88%, 66%, 0.22)` : 'rgba(217,247,255,0.18)'
   const pulse = reducedMotion ? 1 : 0.88 + Math.sin(ceremony.elapsedMs / 180) * 0.12
   const centerX = W / 2
-  const compact = ctx.canvas.clientHeight > 0 && ctx.canvas.clientHeight <= 220
+  const renderedHeight = ctx.canvas.getBoundingClientRect().height || ctx.canvas.clientHeight
+  const compact = renderedHeight > 0 && renderedHeight <= 220
   const panelInset = (compact ? 32 : 76) * s
   const panelHeight = compact ? H - 44 * s : H - 84 * s
   const preflightFontPx = compact
-    ? Math.ceil(9 * H / ctx.canvas.clientHeight)
+    ? Math.ceil(9 * H / renderedHeight)
     : Math.round(9 * s)
 
   ctx.save()
