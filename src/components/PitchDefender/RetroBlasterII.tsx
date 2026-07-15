@@ -1311,9 +1311,11 @@ export default function RetroBlasterII() {
         ? 'SING OR HUM THE TARGET NOTE → HOLD IT STEADY TO FIRE'
         : 'VOICE CANNON ARMED → WAIT FOR THE TARGET SIGNAL'
       : identityMaskActive
-        ? blindResponseOpen
+        ? responseOpen
           ? 'SIGNAL CHECK → LISTEN ONCE → PRESS THE MATCHING KEY (OR TAP ITS BUTTON)'
-          : 'SIGNAL CHECK ARMED → FORMATION IDENTITIES HIDDEN'
+          : blindResponseOpen
+            ? 'SIGNAL CHECK → LISTEN ONCE → BUTTONS ARM AFTER THE TONE'
+            : 'SIGNAL CHECK ARMED → FORMATION IDENTITIES HIDDEN'
         : responseOpen
           ? 'LISTEN FOR THE NOTE → PRESS THE MATCHING KEY (OR TAP ITS BUTTON)'
           : 'STAND BY → LISTEN FOR THE NEXT TARGET SIGNAL'
@@ -1374,7 +1376,7 @@ export default function RetroBlasterII() {
                 aria-keyshortcuts={String(i + 1)}
                 disabled={!responseOpen}
                 onClick={() => processHit(note)}
-                className="min-h-11 min-w-11 touch-manipulation rounded border px-3 py-2 active:scale-95 disabled:cursor-not-allowed focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                className="min-h-11 min-w-11 touch-manipulation rounded border px-3 py-2 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                 style={responseStyle}>
                 {noteLabel}
               </button>

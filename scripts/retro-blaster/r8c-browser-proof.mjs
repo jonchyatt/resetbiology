@@ -13,7 +13,7 @@ const transport = 'http://127.0.0.1:9224'
 const NOTES = ['C4', 'A4', 'G4', 'E4']
 const EXPECTED_HASHES = {
   engine: '219DD9F312349281B3555B3DC78D4BC47D34C9F0C1E145EFD41ACF65408E0405',
-  shell: '18B663ABE84D4B8B750212F9B86FF17407143F16CE6A9389DBCE65087F8A7654',
+  shell: '8F7BF26EAD3FA57ACDA75A2DD557F08CED30F50E871B682D461317C1D7AC5C0F',
   renderer: '109BD3EDC642B17CD30E5C5B804BE60BC673604EB69793D7F95764AB51D8D1D3',
 }
 const SOURCE_PATHS = {
@@ -435,8 +435,10 @@ function verifyBlindOutbound(state) {
     'blind response window is not the full 2000ms')
   const delta = attack.demandAtMs - attack.stimulusRequest.requestedAtDirectorClockMs
   assert(delta >= 0 && delta <= 50, `dispatch-to-demand delta ${delta}ms is outside 0..50ms`)
-  assert(state.instruction?.includes('SIGNAL CHECK') && state.helper?.includes('REPLAY LOCKED'),
+  assert(state.instruction?.includes('PRESS THE MATCHING KEY') && state.helper?.includes('REPLAY LOCKED'),
     'SIGNAL CHECK copy is not truthful during blind response')
+  assert(state.responseButtons.length === 4 && state.responseButtons.every(button => button.disabled === false),
+    'blind response controls were not visibly armed with the answer invitation')
   assert(state.replay?.disabled === true && state.replay?.text?.includes('REPLAY LOCKED'),
     'blind replay is not native-disabled with truthful copy')
   const blindStarts = state.trace.sourceStarts.filter(row => row.type === 'buffer' && row.receipt?.guard === 'blind-stimulus')
@@ -640,7 +642,7 @@ async function runBlindOutcome(outcome, { hold = false, responsive = false, colo
     || (row.receipt?.kind === 'sfx' && row.receipt?.terminalAlreadyRecorded === true)),
   `${outcome}: non-terminal teaching source escaped (${JSON.stringify(preTerminalStarts)})`)
   assert(final.trace.sourceStarts.filter(row => row.receipt?.guard === 'manual-replay').length === 0,
-    `${outcome}: manual replay source leaked`) 
+    `${outcome}: manual replay source leaked`)
   receiptSequence(final.trace)
   if (outcome === 'correct') assert(final.score > scoreBefore, 'correct blind terminal did not increase score')
   else assert(final.score === scoreBefore, `${outcome}: score changed across non-correct terminal`)
@@ -678,6 +680,10 @@ async function runCancellation() {
   const unresolved = await snapshot()
   assert(unresolved.mask === 'active' && unresolved.formation.activeAttack?.phase === 'awaiting-stimulus',
     'cancel: mask/awaiting state missing after dispatched ack was dropped')
+  assert(unresolved.instruction?.includes('BUTTONS ARM AFTER THE TONE'),
+    `cancel: pre-ack instruction invited an unavailable answer: ${unresolved.instruction}`)
+  assert(unresolved.responseButtons.length === 4 && unresolved.responseButtons.every(button => button.disabled === true),
+    'cancel: response controls armed before the stimulus acknowledgment')
   await capture('blind-cancel-before-boundary.png')
   const scoreBefore = unresolved.score
   await page.waitForFunction(() => {
