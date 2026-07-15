@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { auth0 } from '@/lib/auth0'
+import { getUserFromSession } from '@/lib/getUserFromSession'
 
 async function checkAdminAccess(): Promise<{ isAdmin: boolean; error?: string }> {
   try {
@@ -8,14 +9,7 @@ async function checkAdminAccess(): Promise<{ isAdmin: boolean; error?: string }>
     if (!session?.user?.email) {
       return { isAdmin: false, error: 'Not authenticated' }
     }
-    const user = await prisma.user.findFirst({
-      where: {
-        OR: [
-          { auth0Sub: session.user.sub },
-          { email: session.user.email }
-        ]
-      }
-    })
+    const user = await getUserFromSession(session)
     if (!user || (user.role !== 'admin' && user.accessLevel !== 'admin')) {
       return { isAdmin: false, error: 'Not authorized' }
     }

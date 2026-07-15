@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { auth0 } from '@/lib/auth0';
+import { getUserFromSession } from '@/lib/getUserFromSession';
 import { prisma } from '@/lib/prisma';
 import { enqueueDriveSync } from '@/lib/driveSyncQueue';
 
@@ -8,15 +9,7 @@ export const dynamic = 'force-dynamic';
 
 const resolveUser = async () => {
   const session = await auth0.getSession();
-  const authUser = session?.user;
-  if (!authUser) return null;
-
-  let user = authUser.sub ? await prisma.user.findUnique({ where: { auth0Sub: authUser.sub } }) : null;
-  if (!user && authUser.email) {
-    user = await prisma.user.findUnique({ where: { email: authUser.email } });
-  }
-
-  return user;
+  return getUserFromSession(session);
 };
 
 export async function GET() {

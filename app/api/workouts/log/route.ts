@@ -12,10 +12,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 });
     }
 
-    let user = authUser.sub ? await prisma.user.findUnique({ where: { auth0Sub: authUser.sub } }) : null;
-    if (!user && authUser.email) {
-      user = await prisma.user.findUnique({ where: { email: authUser.email } });
-    }
+    const user = await getUserFromSession(session);
 
     if (!user) {
       return NextResponse.json({ ok: false, error: 'User not found' }, { status: 404 });

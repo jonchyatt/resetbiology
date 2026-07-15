@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth0 } from '@/lib/auth0';
+import { getUserFromSession } from '@/lib/getUserFromSession';
 import { prisma } from '@/lib/prisma';
 
 // GET - Load training for an agent
@@ -18,14 +19,7 @@ export async function GET(req: NextRequest) {
         }
 
         // Find user
-        const user = await prisma.user.findFirst({
-            where: {
-                OR: [
-                    { auth0Sub: session.user.sub },
-                    { email: session.user.email as string }
-                ]
-            }
-        });
+        const user = await getUserFromSession(session);
 
         if (!user) {
             return NextResponse.json({ error: 'User not found' }, { status: 404 });
@@ -67,14 +61,7 @@ export async function POST(req: NextRequest) {
         }
 
         // Find user
-        const user = await prisma.user.findFirst({
-            where: {
-                OR: [
-                    { auth0Sub: session.user.sub },
-                    { email: session.user.email as string }
-                ]
-            }
-        });
+        const user = await getUserFromSession(session);
 
         if (!user) {
             return NextResponse.json({ error: 'User not found' }, { status: 404 });
