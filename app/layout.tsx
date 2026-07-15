@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import Script from 'next/script';
 import { Header } from '@/components/Navigation/Header';
+import { Footer } from '@/components/Navigation/Footer';
 import { ClientAuth0Provider } from '@/components/Auth/ClientAuth0Provider';
 import './globals.css';
 
@@ -28,6 +29,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <ClientAuth0Provider>
           <Header />
           {children}
+          <Footer />
         </ClientAuth0Provider>
 
         <Script id="register-sw" strategy="afterInteractive">
