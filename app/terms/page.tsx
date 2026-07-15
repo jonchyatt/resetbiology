@@ -79,7 +79,7 @@ export default function TermsOfServicePage() {
                 account or otherwise using the Service, you agree to these
                 Terms. If you do not agree, do not use the Service.
               </p>
-              {/* JON-CONFIRM: confirm "Reset Biology" is the correct legal entity name to use throughout these Terms, or provide the registered legal entity name if different. */}
+              {/* entity form deliberately unstated — no RB legal entity documented; Satori Enterprises d/b/a link unverified (entity-specialist 2026-07-15) */}
             </section>
 
             <section id="the-service">
@@ -167,7 +167,6 @@ export default function TermsOfServicePage() {
                 required by law or explicitly stated at time of purchase,
                 fees are non-refundable.
               </p>
-              {/* JON-CONFIRM: confirm the specific refund/cancellation policy (e.g. subscription cancellation window, refund eligibility) so this section can state exact terms rather than a general non-refundable default. */}
             </section>
 
             <section id="intellectual-property">
@@ -225,14 +224,17 @@ export default function TermsOfServicePage() {
                 Terms or the Service will not exceed the amount you paid to
                 Reset Biology in the twelve months preceding the claim.
               </p>
-              {/* JON-CONFIRM: confirm whether this liability cap matches what's already stated in any signed program/consent agreement clients sign for the IRB-approved protocol, and reconcile if different. */}
+              {/* attorney review required before paid or clinically-relied-upon use — board condition flw-consult-14, 2026-07-15 */}
             </section>
 
             <section id="governing-law">
               <h2 className="text-2xl font-bold text-white mb-3">Governing Law</h2>
               <p>
-                {/* JON-CONFIRM: fill in the state/jurisdiction whose law governs these Terms and the venue for disputes (e.g. "the laws of the State of ___, without regard to its conflict of laws principles, and you agree to the exclusive jurisdiction of the state and federal courts located in ___"). */}
-                These Terms are governed by the laws of [JON-CONFIRM: governing state/jurisdiction], without regard to its conflict of laws principles.
+                These Terms are governed by the laws of the State of Utah,
+                USA, without regard to its conflict of laws principles, and
+                you agree to the exclusive jurisdiction of the state and
+                federal courts located in Utah for any disputes arising from
+                these Terms.
               </p>
             </section>
 

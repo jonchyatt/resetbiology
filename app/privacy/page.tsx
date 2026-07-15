@@ -81,7 +81,7 @@ export default function PrivacyPolicyPage() {
                 Drive integration, since that integration is reviewed directly
                 by Google as part of our OAuth verification.
               </p>
-              {/* JON-CONFIRM: confirm "Reset Biology" is the correct legal entity name to use throughout this policy, or provide the registered legal entity name if different. */}
+              {/* entity form deliberately unstated — no RB legal entity documented; Satori Enterprises d/b/a link unverified (entity-specialist 2026-07-15) */}
             </section>
 
             <section id="information-we-collect">
@@ -288,12 +288,15 @@ export default function PrivacyPolicyPage() {
               <h2 className="text-2xl font-bold text-white mb-3">Data Retention</h2>
               <p>
                 We retain your information for as long as your account is
-                active or as needed to provide the Service, comply with our
-                legal and regulatory obligations under our IRB-approved
-                research protocol, resolve disputes, and enforce our
-                agreements.
+                active. If you request deletion of your account (contact{" "}
+                <a href="mailto:support@resetbiology.com" className="text-primary-300 hover:text-primary-200 underline">
+                  support@resetbiology.com
+                </a>
+                ), we delete the copies of your data held on our servers.
+                Files already written to your own Google Drive Vault are
+                yours — we never delete them, whether or not you request
+                account deletion or disconnect the Vault.
               </p>
-              {/* JON-CONFIRM: confirm exact record-retention period required under the IRB protocol / applicable medical-recordkeeping regulations, if a specific number of years should be stated here. */}
             </section>
 
             <section id="children">
