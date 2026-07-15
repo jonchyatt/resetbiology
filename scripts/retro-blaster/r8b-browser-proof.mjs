@@ -11,6 +11,14 @@ const mode = rawMode || 'standard'
 const INTRO_ORDER = ['C4', 'A4', 'G4', 'E4', 'D4', 'F4', 'B4', 'C5', 'A3', 'G3', 'E3', 'C3', 'D3', 'F3', 'B3']
 mkdirSync(videoDir, { recursive: true })
 
+function noteFrequency(note) {
+  const match = /^([A-G])(#?)(-?\d+)$/.exec(note)
+  if (!match) throw new Error(`invalid note ${note}`)
+  const semitones = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 }
+  const midi = (Number(match[3]) + 1) * 12 + semitones[match[1]] + (match[2] ? 1 : 0)
+  return 440 * (2 ** ((midi - 69) / 12))
+}
+
 function assert(condition, message) {
   if (!condition) throw new Error(`${lane}: ${message}`)
 }
@@ -89,9 +97,9 @@ const initHarness = () => {
     const label = String(text)
     const key = label === 'PRE-FLIGHT'
       ? 'preflight'
-      : label === 'SIGNAL INTRODUCED - NOT SCORED'
+      : ['SIGNAL INTRODUCED - NOT SCORED', 'INTRODUCTION ONLY - NOT SCORED'].includes(label)
         ? 'nonScored'
-        : ['REFERENCE TONE DISPATCHED', 'SIGNAL PATH NOT READY', 'REFERENCE SIGNAL PENDING'].includes(label)
+        : ['REFERENCE TONE DISPATCHED', 'SIGNAL PATH NOT READY', 'REFERENCE SIGNAL PENDING', 'REFERENCE INTRODUCTION'].includes(label)
           ? 'status'
           : null
     if (key) {
@@ -134,6 +142,59 @@ const initHarness = () => {
         return window.__r8ForceSuspended ? 'suspended' : stateDescriptor.get.call(this)
       },
     })
+  }
+
+  const nativeCreateMediaStreamSource = NativeAudioContext.prototype.createMediaStreamSource
+  const micProof = window.__r8MicProof = {
+    sources: [],
+    productContexts: [],
+    matchingCalls: 0,
+    gumCalls: 0,
+  }
+  NativeAudioContext.prototype.createMediaStreamSource = function(stream) {
+    const matchingSourceIndex = micProof.sources.findIndex(source => source.stream === stream)
+    if (matchingSourceIndex >= 0) {
+      micProof.matchingCalls += 1
+      micProof.productContexts.push(this)
+      micProof.sources[matchingSourceIndex].productContext = this
+    }
+    return nativeCreateMediaStreamSource.call(this, stream)
+  }
+  navigator.mediaDevices.getUserMedia = async () => {
+    micProof.gumCalls += 1
+    const sourceContext = new NativeAudioContext()
+    const oscillator = sourceContext.createOscillator()
+    const gain = sourceContext.createGain()
+    const destination = sourceContext.createMediaStreamDestination()
+    oscillator.type = 'sine'
+    oscillator.frequency.value = 110
+    gain.gain.value = 0
+    oscillator.connect(gain)
+    gain.connect(destination)
+    oscillator.start()
+    await sourceContext.resume()
+    const source = { sourceContext, oscillator, gain, destination, stream: destination.stream, productContext: null }
+    micProof.sources.push(source)
+    return source.stream
+  }
+  window.__r8MicStatus = () => ({
+    gumCalls: micProof.gumCalls,
+    matchingCalls: micProof.matchingCalls,
+    sourceCount: micProof.sources.length,
+    sourceContextStates: micProof.sources.map(source => source.sourceContext.state),
+    sourceTrackStates: micProof.sources.map(source => source.stream.getAudioTracks()[0]?.readyState ?? 'missing'),
+    productContextStates: micProof.productContexts.map(context => context.state),
+    sourceIsProductContext: micProof.sources.some(source => source.sourceContext === source.productContext),
+  })
+  window.__r8SetFrequency = frequency => {
+    const source = micProof.sources.at(-1)
+    if (!source) throw new Error('no deterministic microphone source')
+    source.oscillator.frequency.setValueAtTime(frequency, source.sourceContext.currentTime)
+  }
+  window.__r8SetGain = value => {
+    const source = micProof.sources.at(-1)
+    if (!source) throw new Error('no deterministic microphone source')
+    source.gain.gain.setValueAtTime(value, source.sourceContext.currentTime)
   }
 
   window.__r8BufferStarts = 0
@@ -344,7 +405,252 @@ async function answerUntilCeremony() {
   throw new Error(`${lane}: timed out earning the first NEW SIGNAL`)
 }
 
+async function voiceState() {
+  return page.evaluate(() => {
+    const parse = (raw, fallback = '{}') => {
+      try { return JSON.parse(raw || fallback) } catch { return JSON.parse(fallback) }
+    }
+    const canvas = document.querySelector('canvas')
+    const meter = document.querySelector('[data-retro-vocal-meter]')
+    const fill = meter?.querySelector('.h-full.rounded-full')
+    return {
+      formation: parse(canvas?.dataset.retroFormationState),
+      micAuthority: parse(canvas?.dataset.retroMicAuthority),
+      mic: window.__r8MicStatus?.() ?? null,
+      vocalMeter: {
+        present: Boolean(meter),
+        visible: Boolean(meter && getComputedStyle(meter).display !== 'none'),
+        widthPct: Number.parseFloat(fill?.style.width || '0'),
+      },
+      toneAgeMs: typeof window.__pdLastToneAt === 'number' ? performance.now() - window.__pdLastToneAt : null,
+      reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+      colorHintsLabel: [...document.querySelectorAll('button')]
+        .map(button => button.textContent?.trim())
+        .find(label => label?.startsWith('COLOR HINTS')) ?? null,
+      gainRanges: [...document.querySelectorAll('[data-retro-cabinet] input[type="range"]')].map(input => ({
+        min: input.min,
+        max: input.max,
+        value: input.value,
+      })),
+    }
+  })
+}
+
+async function freshVoiceGame() {
+  await page.goto(url, { waitUntil: 'networkidle' })
+  await page.evaluate(() => {
+    localStorage.clear()
+    localStorage.setItem('retro_tutorial_seen', '1')
+    localStorage.setItem('retro_blaster_color_hints', '0')
+    localStorage.setItem('retro_difficulty', 'easy')
+  })
+  await page.reload({ waitUntil: 'networkidle' })
+  await page.getByRole('button', { name: 'MICROPHONE' }).click()
+  await page.getByRole('button', { name: 'EASY' }).click()
+  await page.getByRole('button', { name: 'INSERT COIN' }).click()
+  await page.locator('[data-retro-readiness][data-readiness-lane="voice"]').waitFor()
+  await page.waitForFunction(() => (
+    document.querySelector('[data-retro-readiness]')?.getAttribute('data-readiness-status') === 'awaiting-voice' &&
+    window.__r8MicStatus?.().gumCalls === 1 &&
+    window.__r8MicStatus?.().matchingCalls === 1
+  ), null, { timeout: 15_000 })
+  await page.evaluate(() => {
+    window.__r8SetFrequency(110)
+    window.__r8SetGain(0.55)
+  })
+  await page.locator('[data-retro-cabinet]').waitFor({ timeout: 15_000 })
+  await page.evaluate(() => window.__r8SetGain(0))
+  const started = await voiceState()
+  assert(started.mic.gumCalls === 1 && started.mic.matchingCalls === 1 && started.mic.sourceCount === 1,
+    'VOICE readiness did not create exactly one matched source')
+  assert(started.mic.sourceTrackStates[0] === 'live' && started.mic.productContextStates[0] === 'running',
+    'VOICE source was not live/running at gameplay transfer')
+  assert(started.mic.sourceIsProductContext === false, 'source oscillator context was mistaken for product context')
+  assert(started.reducedMotion === true, 'reduced-motion parity was not active')
+  assert(started.colorHintsLabel === 'COLOR HINTS OFF', `color-hints-off parity drifted (${started.colorHintsLabel})`)
+  assert(started.gainRanges.length === 0, 'R14 gain deferral is no longer truthful')
+  return started
+}
+
+async function answerVoiceUntilCeremony() {
+  const deadline = Date.now() + 240_000
+  const answers = []
+  let suppressionReceipt = null
+  let octaveReceipt = null
+  while (Date.now() < deadline) {
+    const snapshot = await voiceState()
+    if (snapshot.formation.phase === 'ceremony') return { answers, suppressionReceipt, octaveReceipt }
+    const attack = snapshot.formation.activeAttack
+    if (attack?.phase !== 'outbound' || answers.some(answer => answer.attackId === attack.attackId)) {
+      await page.waitForTimeout(25)
+      continue
+    }
+
+    const octaveProbe = answers.length === 1
+    const frequency = noteFrequency(attack.note) * (octaveProbe ? 2 * (2 ** (60 / 1200)) : 1)
+    await page.evaluate(value => {
+      window.__r8SetFrequency(value)
+      window.__r8SetGain(0.55)
+    }, frequency)
+
+    if (!suppressionReceipt) {
+      await page.waitForFunction(() => {
+        const canvas = document.querySelector('canvas')
+        const mic = JSON.parse(canvas?.dataset.retroMicAuthority || '{}')
+        const age = typeof window.__pdLastToneAt === 'number' ? performance.now() - window.__pdLastToneAt : Infinity
+        return age >= 0 && age < 350 && mic.signalActive === false
+      }, null, { timeout: 1000, polling: 'raf' })
+      suppressionReceipt = await voiceState()
+      assert(suppressionReceipt.toneAgeMs < 350 && suppressionReceipt.micAuthority.signalActive === false,
+        '350ms post-tone suppression did not hold signal authority inactive')
+    }
+
+    await page.waitForFunction(attackId => {
+      const canvas = document.querySelector('canvas')
+      const formation = JSON.parse(canvas?.dataset.retroFormationState || '{}')
+      const mic = JSON.parse(canvas?.dataset.retroMicAuthority || '{}')
+      const meter = document.querySelector('[data-retro-vocal-meter]')
+      const fill = meter?.querySelector('.h-full.rounded-full')
+      return formation.activeAttack?.attackId === attackId && mic.signalActive === true &&
+        Boolean(meter && getComputedStyle(meter).display !== 'none') && Number.parseFloat(fill?.style.width || '0') > 0
+    }, attack.attackId, { timeout: 2500, polling: 'raf' })
+    const live = await voiceState()
+    assert(live.micAuthority.signalActive === true && live.vocalMeter.present && live.vocalMeter.visible && live.vocalMeter.widthPct > 0,
+      `VOICE proof-of-hearing was not visible for ${attack.attackId}`)
+    if (octaveProbe) octaveReceipt = { attack, injectedFrequency: frequency, live }
+
+    await page.waitForFunction(attackId => {
+      const active = JSON.parse(document.querySelector('canvas')?.dataset.retroFormationState || '{}').activeAttack
+      return active?.attackId === attackId && active.outcome === 'correct'
+    }, attack.attackId, { timeout: 3000, polling: 'raf' })
+    const resolved = await voiceState()
+    answers.push({ attackId: attack.attackId, note: attack.note, octaveProbe, injectedFrequency: frequency, resolved: resolved.formation.activeAttack })
+    await page.evaluate(() => window.__r8SetGain(0))
+  }
+  throw new Error(`${lane}: timed out earning NEW SIGNAL through VOICE`)
+}
+
+function pacingReceipt(formation) {
+  const completed = formation.lastCompletedWavePacing
+  assert(completed && completed.requiredAnswerEventsMs.length > 0, 'completed wave pacing receipt is missing')
+  const gaps = completed.requiredAnswerEventsMs.slice(1)
+    .map((value, index) => value - completed.requiredAnswerEventsMs[index])
+  const minimumGapMs = gaps.length ? Math.min(...gaps) : null
+  const measuredApm = completed.requiredAnswerEventsMs.length / (completed.waveDurationMs / 60_000)
+  assert(gaps.every(gap => gap >= 1100), `easy cadence gap fell below 1100ms (${minimumGapMs})`)
+  assert(measuredApm <= 54.55, `easy cadence exceeded 54.55 APM (${measuredApm})`)
+  return { ...completed, demandCount: completed.requiredAnswerEventsMs.length, measuredApm, minimumGapMs }
+}
+
+async function runVoiceProof() {
+  const startState = await freshVoiceGame()
+  const beforeGameplayStorage = await storageSnapshot()
+  const approach = await startSegment('voice-live-to-new-signal')
+  const earned = await answerVoiceUntilCeremony()
+  assert(earned.answers.length >= 10, `NEW SIGNAL arrived after only ${earned.answers.length} VOICE answers`)
+  assert(earned.octaveReceipt?.live.micAuthority.signalActive === true,
+    'octave-folded +60-cent live probe never acquired mic authority')
+  await page.waitForFunction(() => {
+    const formation = JSON.parse(document.querySelector('canvas')?.dataset.retroFormationState || '{}')
+    return formation.phase === 'ceremony' && formation.introductionCeremony?.toneStatus === 'acknowledged'
+  }, null, { timeout: 10_000 })
+  await finishSegment(approach)
+
+  const ceremonyEntry = await voiceState()
+  const ceremonyStorage = await storageSnapshot()
+  const pacing = pacingReceipt(ceremonyEntry.formation)
+  const completedPacingBytes = JSON.stringify(ceremonyEntry.formation.lastCompletedWavePacing)
+  const currentDemandBytes = JSON.stringify(ceremonyEntry.formation.requiredAnswerEventsMs)
+  assert(ceremonyEntry.mic.sourceCount === 1 && ceremonyEntry.mic.gumCalls === 1 && ceremonyEntry.mic.matchingCalls === 1,
+    'ceremony reopened or duplicated the VOICE source')
+  assert(ceremonyEntry.vocalMeter.present === false, 'protected gameplay vocal meter rendered inside ceremony')
+  await capture('01-voice-new-signal.png')
+
+  const ceremonySegment = await startSegment('voice-ceremony-to-live-meter-resume')
+  await page.waitForTimeout(800)
+  const ceremonyHeld = await voiceState()
+  assert(JSON.stringify(ceremonyHeld.formation.lastCompletedWavePacing) === completedPacingBytes,
+    'ceremony altered the completed-wave pacing receipt')
+  assert(JSON.stringify(ceremonyHeld.formation.requiredAnswerEventsMs) === currentDemandBytes,
+    'ceremony emitted a required demand timestamp')
+  assert(await storageSnapshot() === ceremonyStorage, 'VOICE ceremony wrote family storage')
+  assert(ceremonyHeld.mic.sourceCount === 1 && ceremonyHeld.mic.gumCalls === 1 && ceremonyHeld.mic.matchingCalls === 1,
+    'VOICE source count changed during ceremony')
+
+  await page.waitForFunction(() => {
+    const formation = JSON.parse(document.querySelector('canvas')?.dataset.retroFormationState || '{}')
+    return formation.phase === 'playing' && formation.wave >= 5 && !formation.introductionCeremony
+  }, null, { timeout: 10_000 })
+  const resumed = await voiceState()
+  assert(resumed.formation.requiredAnswerEventsMs.length === 0, 'next wave did not reset its demand array after ceremony')
+  assert(JSON.stringify(resumed.formation.lastCompletedWavePacing) === completedPacingBytes,
+    'ceremony resume altered the completed-wave pacing receipt')
+  assert(await storageSnapshot() === ceremonyStorage, 'ceremony resume wrote family storage')
+  assert(resumed.mic.sourceCount === 1 && resumed.mic.gumCalls === 1 && resumed.mic.matchingCalls === 1,
+    'VOICE resume did not preserve exactly one inherited source')
+
+  await page.waitForFunction(() => {
+    const formation = JSON.parse(document.querySelector('canvas')?.dataset.retroFormationState || '{}')
+    return formation.activeAttack?.phase === 'outbound'
+  }, null, { timeout: 20_000, polling: 'raf' })
+  const resumeAttack = (await voiceState()).formation.activeAttack
+  await page.evaluate(frequency => {
+    window.__r8SetFrequency(frequency)
+    window.__r8SetGain(0.55)
+  }, noteFrequency(resumeAttack.note))
+  await page.waitForFunction(attackId => {
+    const canvas = document.querySelector('canvas')
+    const formation = JSON.parse(canvas?.dataset.retroFormationState || '{}')
+    const mic = JSON.parse(canvas?.dataset.retroMicAuthority || '{}')
+    const meter = document.querySelector('[data-retro-vocal-meter]')
+    const fill = meter?.querySelector('.h-full.rounded-full')
+    return formation.activeAttack?.attackId === attackId && mic.signalActive === true &&
+      Boolean(meter && getComputedStyle(meter).display !== 'none') && Number.parseFloat(fill?.style.width || '0') > 0
+  }, resumeAttack.attackId, { timeout: 2500, polling: 'raf' })
+  const resumedLiveMeter = await voiceState()
+  await page.evaluate(() => window.__r8SetGain(0))
+  assert(resumedLiveMeter.vocalMeter.present && resumedLiveMeter.vocalMeter.visible && resumedLiveMeter.vocalMeter.widthPct > 0,
+    'protected live meter did not function immediately after ceremony resume')
+  assert(resumedLiveMeter.mic.sourceCount === 1 && resumedLiveMeter.mic.matchingCalls === 1,
+    'VOICE meter resume used a duplicate source')
+  assert(resumedLiveMeter.reducedMotion === true && resumedLiveMeter.colorHintsLabel === 'COLOR HINTS OFF',
+    'reduced-motion/color-hints-off parity regressed after resume')
+  assert(resumedLiveMeter.gainRanges.length === 0, 'R14 gain controls appeared after ceremony resume')
+  await capture('02-voice-resumed-live-meter.png')
+  await finishSegment(ceremonySegment)
+
+  assert(pageErrors.length === 0, `page errors: ${pageErrors.join('; ')}`)
+  const videoPath = await page.video().path()
+  const result = {
+    verdict: 'PASS', lane, transport, mode, url, deployedSha, pageErrors, beforeGameplayStorage, ceremonyStorage,
+    behaviorManifest, videoPath, startState, earned, ceremonyEntry, ceremonyHeld, resumed, resumedLiveMeter,
+    contract: {
+      voiceResume: 'PASS - exactly one inherited live source before, during, and after NEW SIGNAL; protected meter resumed on the next real demand',
+      micBaselines: {
+        oneStartListeningTransition: 'PASS - one getUserMedia, one matched MediaStreamSource, one live source',
+        isActiveAuthority: 'PASS - runtime mic authority and visible meter require signalActive=true; no settled-state proxy',
+        octaveFoldedTolerance: 'PASS - one-octave +60-cent injected frequency acquired authority and resolved correct inside inherited +/-70-cent law',
+        postToneSuppression: `PASS - signal authority remained false at ${earned.suppressionReceipt.toneAgeMs.toFixed(2)}ms after the inherited tone`,
+        visibleProofOfHearing: `PASS - protected meter reached ${resumedLiveMeter.vocalMeter.widthPct}% immediately after ceremony resume`,
+      },
+      pacing,
+      ceremonyDemandTimestamps: 'PASS - byte-identical during ceremony; next wave reset to zero',
+      ceremonyPersistence: 'PASS - storage byte-identical from ceremony entry through next-wave resume',
+      accessibilityParity: 'PASS - prefers-reduced-motion active and COLOR HINTS OFF before and after ceremony',
+      gains: 'deferred-r14 - zero cabinet range controls',
+      jonEar: 'pending-act-boundary',
+      r8c: 'CLOSED - no SIGNAL CHECK behavior exercised',
+    },
+  }
+  writeFileSync(resolve(output, 'result.json'), `${JSON.stringify(result, null, 2)}\n`)
+}
+
 try {
+  if (mode === 'voice') {
+    await runVoiceProof()
+    complete = true
+    console.log(`PASS R8b VOICE resume proof: ${lane}/${mode}; ${behaviorManifest.length} sustained behaviors; 0 page errors`)
+  } else {
   await freshGame()
   const beforeGameplayStorage = await storageSnapshot()
   const approach = await startSegment('real-unlock-to-new-signal')
@@ -501,6 +807,7 @@ try {
   writeFileSync(resolve(output, 'result.json'), `${JSON.stringify(result, null, 2)}\n`)
   complete = true
   console.log(`PASS R8b browser proof: ${lane}/${mode}; ${behaviorManifest.length} sustained behaviors; 0 page errors`)
+  }
 } catch (error) {
   const result = { verdict: 'FAIL', lane, transport, mode, url, deployedSha, pageErrors, responsive, responsiveFailures, temporalConsistency, behaviorManifest, error: String(error?.stack || error) }
   writeFileSync(resolve(output, 'result.json'), `${JSON.stringify(result, null, 2)}\n`)

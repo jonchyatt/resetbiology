@@ -255,7 +255,7 @@ export default function RetroBlasterII() {
             note: activeCeremony.note,
             dispatched: false,
           }
-          setCeremonyMessage('SIGNAL PAUSED - return here, then retry or replay.')
+          setCeremonyMessage('SIGNAL PAUSED - RETURN HERE, THEN RETRY OR REPLAY.')
         }
       }
     }
@@ -297,9 +297,9 @@ export default function RetroBlasterII() {
     const dispatched = active && readiness.sampleReady && readiness.contextState === 'running'
     if (dispatched) {
       playPianoNote(note)
-      setCeremonyMessage('REFERENCE TONE DISPATCHED - next wave standing by.')
+      setCeremonyMessage('REFERENCE SENT - NEXT WAVE READY.')
     } else {
-      setCeremonyMessage('SIGNAL PATH NOT READY - retry signal.')
+      setCeremonyMessage('SIGNAL PATH NOT READY - RETRY SIGNAL.')
     }
     pendingCeremonyToneAckRef.current = { ceremonyId, note, dispatched }
     return dispatched
@@ -658,7 +658,7 @@ export default function RetroBlasterII() {
       const current = stateRef.current?.introductionCeremony
       if (attemptId === ceremonyAttemptIdRef.current && current?.ceremonyId === ceremonyId) {
         pendingCeremonyToneAckRef.current = { ceremonyId, note, dispatched: false }
-        setCeremonyMessage('SIGNAL PATH NOT READY - retry signal.')
+        setCeremonyMessage('SIGNAL PATH NOT READY - RETRY SIGNAL.')
       }
     } finally {
       if (attemptId === ceremonyAttemptIdRef.current) ceremonyBusyRef.current = false
@@ -1008,7 +1008,9 @@ export default function RetroBlasterII() {
               style={{ backgroundImage: 'linear-gradient(rgba(88,232,255,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(88,232,255,0.06) 1px, transparent 1px)', backgroundSize: '18px 18px' }} />
             <div className="relative">
               <div className="retro-readiness-meta mb-5 flex items-center justify-between gap-3 text-[10px] tracking-[0.24em]">
-                <span className="text-fuchsia-300">EAR DEFENSE UNIT</span>
+                <span className="text-fuchsia-300" data-retro-cabinet-unit>
+                  {isEar ? 'EAR DEFENSE UNIT' : 'VOICE DEFENSE UNIT'}
+                </span>
                 <span className={isEar ? 'text-cyan-300' : 'text-violet-300'}>
                   {isEar ? 'EAR CHANNEL' : 'VOICE CHANNEL'}
                 </span>
@@ -1154,25 +1156,46 @@ export default function RetroBlasterII() {
   const displayUnlocked = displayView?.hud.unlockedNotes ?? []
   const activeCeremony = displayView?.introductionCeremony ?? null
   const isCeremony = displayView?.phase === 'ceremony' && activeCeremony !== null
+  const activeLane = inputMode === 'mic' ? 'voice' : 'ear'
+  const activeAttack = displayView?.activeAttack
+  const responseOpen = activeAttack?.phase === 'outbound' &&
+    activeAttack.outcome === null && activeAttack.demandAtMs !== null
+  const cabinetUnit = activeLane === 'voice' ? 'VOICE DEFENSE UNIT' : 'EAR DEFENSE UNIT'
+  const instructionCopy = isCeremony
+    ? 'NEW SIGNAL → REFERENCE INTRODUCTION ONLY → NOT SCORED'
+    : activeLane === 'voice'
+      ? responseOpen
+        ? 'SING OR HUM THE TARGET NOTE → HOLD IT STEADY TO FIRE'
+        : 'VOICE CANNON ARMED → WAIT FOR THE TARGET SIGNAL'
+      : responseOpen
+        ? 'LISTEN FOR THE NOTE → PRESS THE MATCHING KEY (OR TAP ITS BUTTON)'
+        : 'STAND BY → LISTEN FOR THE NEXT TARGET SIGNAL'
+  const helperCopy = !isCeremony && responseOpen
+    ? activeLane === 'voice'
+      ? 'ACTIVE ALIEN SHOWS ? · SPACE REPLAYS THE REFERENCE'
+      : 'ACTIVE ALIEN SHOWS ? · SPACE REPLAYS THE NOTE'
+    : null
   const ceremonyStatus = ceremonyMessage || (
     activeCeremony?.toneStatus === 'acknowledged'
-      ? 'REFERENCE TONE DISPATCHED - next wave standing by.'
+      ? 'REFERENCE SENT - NEXT WAVE READY.'
       : activeCeremony?.toneStatus === 'blocked'
-        ? 'SIGNAL PATH NOT READY - retry signal.'
+        ? 'SIGNAL PATH NOT READY - RETRY SIGNAL.'
         : 'REFERENCE SIGNAL PENDING...'
   )
 
   return (
     <div className="fixed inset-0 flex flex-col items-center justify-start pt-3 px-3 overflow-y-auto"
+      data-retro-active-lane={activeLane}
       style={{
         fontFamily: 'monospace',
         background: 'radial-gradient(circle at 50% 0%, #1b0b34 0%, #05010d 42%, #000 82%)',
       }}>
-      <div className="w-full max-w-[960px] mb-2 text-center">
-        <div className="text-[11px] text-cyan-300 tracking-wider mb-1">
-          {isCeremony
-            ? 'NEW SIGNAL → reference introduction only → not scored'
-            : 'LISTEN FOR THE NOTE → PRESS THE MATCHING KEY (or click its button)'}
+      <div className="w-full max-w-[960px] mb-2 px-2 py-1 text-center"
+        data-retro-instruction-rail
+        style={{ background: '#02050d', borderBlock: '1px solid rgba(103,232,249,0.22)' }}>
+        <div className="mb-1 text-[12px] font-bold tracking-wide text-cyan-200"
+          data-retro-instruction>
+          {instructionCopy}
         </div>
         <div className="flex justify-center gap-2 flex-wrap text-[10px]">
           {displayUnlocked.map((note, i) => {
@@ -1193,9 +1216,11 @@ export default function RetroBlasterII() {
             )
           })}
         </div>
-        <div className="text-[10px] text-gray-500 mt-1">
-          Active alien is highlighted with <span className="text-yellow-300 font-bold">?</span> · SPACE to replay note
-        </div>
+        {helperCopy && (
+          <div className="mt-1 text-[12px] font-bold text-slate-300" data-retro-helper>
+            {helperCopy}
+          </div>
+        )}
       </div>
       <div className="relative w-full max-w-[960px] md:border-2 md:p-3"
         data-retro-cabinet
@@ -1207,7 +1232,7 @@ export default function RetroBlasterII() {
         }}>
         <div className="hidden md:flex items-center justify-between px-1 pb-2 text-[9px] tracking-[0.24em]">
           <span className="text-fuchsia-300">RETRO BLASTER</span>
-          <span className="text-cyan-300">EAR DEFENSE UNIT</span>
+          <span className="text-cyan-300" data-retro-cabinet-unit>{cabinetUnit}</span>
         </div>
         <div className="relative overflow-hidden border border-cyan-300/30 bg-black"
           style={{ boxShadow: 'inset 0 0 32px rgba(0,0,0,0.82)' }}>
@@ -1222,7 +1247,7 @@ export default function RetroBlasterII() {
               }} />
           )}
           {isCeremony && activeCeremony && (
-            <section className="retro-new-signal pointer-events-none absolute inset-0 z-20 flex flex-col items-center justify-end overflow-hidden px-3 pb-2 text-center"
+            <section className="retro-new-signal pointer-events-none absolute inset-0 z-20 flex flex-col items-center justify-end overflow-hidden text-center"
               data-retro-ceremony
               data-ceremony-id={activeCeremony.ceremonyId}
               data-ceremony-note={activeCeremony.note}
@@ -1233,25 +1258,29 @@ export default function RetroBlasterII() {
                 NEW SIGNAL
               </h2>
               <p id="new-signal-copy" className="sr-only">
-                Reference tone dispatched. Signal introduced - not scored.
+                REFERENCE INTRODUCTION. NOT SCORED.
               </p>
-              <div id="new-signal-status" role="status" aria-live="polite"
-                className="retro-new-signal-status mb-1 min-h-4 bg-black/75 px-2 text-[10px] font-bold tracking-wide text-cyan-100">
-                {ceremonyStatus}
-              </div>
-              <div className="retro-new-signal-actions pointer-events-auto flex flex-wrap justify-center gap-2">
-                <button onClick={() => void retryCeremonySignal()}
-                  className="min-h-11 border border-yellow-300 bg-black/85 px-3 py-2 text-[10px] font-bold tracking-widest text-yellow-200 active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
-                  RETRY SIGNAL
-                </button>
-                <button onClick={replayCeremonySignal}
-                  className="min-h-11 border border-cyan-300 bg-black/85 px-3 py-2 text-[10px] font-bold tracking-widest text-cyan-200 active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
-                  REPLAY SIGNAL
-                </button>
-                <button onClick={quitCeremony}
-                  className="min-h-11 border border-slate-500 bg-black/85 px-3 py-2 text-[10px] font-bold tracking-widest text-slate-300 active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
-                  QUIT
-                </button>
+              <div className="pointer-events-none w-full border-t border-cyan-300/70 bg-[#02050d] px-1 pb-1"
+                data-retro-ceremony-shelf>
+                <div id="new-signal-status" role="status" aria-live="polite"
+                  className="retro-new-signal-status mb-1 h-4 whitespace-nowrap text-[12px] font-bold leading-4 tracking-normal text-cyan-100"
+                  style={{ fontFamily: 'Arial Narrow, Arial, sans-serif' }}>
+                  {ceremonyStatus}
+                </div>
+                <div className="retro-new-signal-actions pointer-events-auto flex flex-nowrap justify-center gap-1">
+                  <button onClick={() => void retryCeremonySignal()}
+                    className="min-h-11 border border-yellow-300 bg-[#02050d] px-2 py-2 text-[12px] font-bold tracking-wide text-yellow-200 active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
+                    RETRY SIGNAL
+                  </button>
+                  <button onClick={replayCeremonySignal}
+                    className="min-h-11 border border-cyan-300 bg-[#02050d] px-2 py-2 text-[12px] font-bold tracking-wide text-cyan-200 active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
+                    REPLAY SIGNAL
+                  </button>
+                  <button onClick={quitCeremony}
+                    className="min-h-11 border border-slate-500 bg-[#02050d] px-2 py-2 text-[12px] font-bold tracking-wide text-slate-300 active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
+                    QUIT
+                  </button>
+                </div>
               </div>
             </section>
           )}
@@ -1325,13 +1354,6 @@ export default function RetroBlasterII() {
         data-visual-ids={displayView?.aliens.filter(alien => alien.alive).map(alien => alien.visualId).join(',') ?? ''}>
         {displayView?.hud.score}{displayView?.hud.wave}{displayView?.hud.combo}{displayView?.hud.shields}{STARTING_SHIELDS}
       </div>
-      <style>{`
-        @media (orientation: landscape) and (max-height: 500px) {
-          .retro-new-signal { padding-bottom: 4px; }
-          .retro-new-signal-status { position: absolute; bottom: 50px; margin-bottom: 0; font-size: 9px; }
-          .retro-new-signal-actions { gap: 4px; }
-        }
-      `}</style>
     </div>
   )
 }
