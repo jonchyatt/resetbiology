@@ -20,6 +20,7 @@ export async function GET(req: NextRequest) {
         driveFolder: true,
         googleDriveConnectedAt: true,
         googleDriveSyncEnabled: true,
+        driveVaultState: true,
       },
     })
 
@@ -28,12 +29,15 @@ export async function GET(req: NextRequest) {
     }
 
     const connected = !!(userData.googleDriveRefreshToken && userData.driveFolder)
+    const vaultState = userData.driveVaultState as { needsFolderReconciliation?: boolean } | null
+    const needsFolderReconciliation = !!vaultState?.needsFolderReconciliation
 
     return NextResponse.json({
       connected,
       folderId: connected ? userData.driveFolder : null,
       connectedAt: userData.googleDriveConnectedAt,
       syncEnabled: userData.googleDriveSyncEnabled,
+      needsFolderReconciliation,
     })
 
   } catch (error) {
