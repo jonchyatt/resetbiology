@@ -5,6 +5,184 @@ import { decryptToken, encryptToken } from '@/lib/vault-encryption'
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET
 
+// ---------------------------------------------------------------------------
+// Vault root folder identity contract
+//
+// Root cause of the duplicate-folder defect (FRICTION-REGISTER.md,
+// connect-walkthrough-2026-07-14-5541): the OAuth callback blindly created a
+// fresh "Reset Biology Data" tree whenever the Mongo `driveFolder` pointer
+// was empty — which is EVERY time, for a brand-new Auth0 user AND every time
+// after a disconnect (disconnect/route.ts nulls the pointer). This function
+// is the single place that decides reuse vs. create vs. fail-closed; every
+// caller that creates or resolves the vault root MUST go through it.
+//
+// Case -> behavior:
+//   0. Known account mismatch: caller supplies the Google account email that
+//      owns the stored pointer and the email of the account now connecting;
+//      if both are known and differ, this is someone reconnecting with a
+//      DIFFERENT Google account than the one their vault lives on. Drive's
+//      API can't tell this apart from "folder deleted" (both 404 the same
+//      way) or from "genuinely first connect" (both list zero results) once
+//      you're inside the new account's visibility — so we short-circuit on
+//      the out-of-band email signal BEFORE touching Drive at all -> AMBIGUOUS,
+//      never silently spin up a second vault that strands the old one.
+//   1. Valid stored pointer (resolves via files.get, not trashed)
+//        -> REUSE. Create nothing.
+//   2. Pointer stale / deleted / 403-inaccessible
+//        -> fall through to discovery (case 3+).
+//   3. Discovery, exact match: search by the appProperties stamped at
+//      creation time (rbVaultRoot=true, rbUserId=<auth0 sub>). Exactly one
+//      hit -> REUSE (repairs the pointer). More than one -> AMBIGUOUS.
+//   4. Discovery, broad match: zero exact hits, but at least one folder is
+//      visible to this Drive account that is either stamped rbVaultRoot=true
+//      for a DIFFERENT user, or matches the legacy name with no
+//      appProperties at all (pre-contract tree) -> AMBIGUOUS. Never guess,
+//      never auto-adopt a name-only candidate, never create another tree on
+//      top of it. Caller persists needsFolderReconciliation and surfaces it.
+//   5. Zero candidates anywhere -> CREATE fresh tree, stamped with
+//      appProperties so a future pointer loss can rediscover it without
+//      creating a duplicate.
+export const VAULT_ROOT_FOLDER_NAME = 'Reset Biology Data'
+export const VAULT_SUBFOLDERS = [
+  'Journal',
+  'Nutrition',
+  'Workouts',
+  'Breath Sessions',
+  'Peptides',
+  'Vision Training',
+  'Memory Training',
+  'Profile',
+  'Progress Reports',
+]
+
+export type VaultRootResolution =
+  | { status: 'reused'; folderId: string }
+  | { status: 'created'; folderId: string }
+  | { status: 'ambiguous'; candidateFolderIds: string[] }
+
+export async function resolveVaultRootFolder(
+  drive: drive_v3.Drive,
+  userId: string,
+  storedFolderId: string | null | undefined,
+  accountIdentity?: { stored: string | null | undefined; current: string | null | undefined }
+): Promise<VaultRootResolution> {
+  // Case 0: known account mismatch — fail closed before touching Drive.
+  if (
+    storedFolderId &&
+    accountIdentity?.stored &&
+    accountIdentity?.current &&
+    accountIdentity.stored.toLowerCase() !== accountIdentity.current.toLowerCase()
+  ) {
+    return { status: 'ambiguous', candidateFolderIds: [storedFolderId] }
+  }
+
+  // Case 1/2: pointer-first. Any failure here (stale, deleted, or 403)
+  // falls through to discovery rather than erroring out.
+  if (storedFolderId) {
+    try {
+      const probe = await drive.files.get({
+        fileId: storedFolderId,
+        fields: 'id, trashed',
+      })
+      if (probe.data.id && !probe.data.trashed) {
+        return { status: 'reused', folderId: probe.data.id }
+      }
+    } catch {
+      // stale / deleted / inaccessible / wrong-account token — fall through
+    }
+  }
+
+  // Case 3: exact discovery — this app's own stamp, for this exact user.
+  // drive.file scope: files.list only ever returns files the app created
+  // and this account has authorized, so this query cannot leak another
+  // app's or another user's unrelated Drive contents.
+  const exactQuery = [
+    "mimeType='application/vnd.google-apps.folder'",
+    'trashed=false',
+    "appProperties has { key='rbVaultRoot' and value='true' }",
+    `appProperties has { key='rbUserId' and value='${userId}' }`,
+  ].join(' and ')
+
+  const exact = await drive.files.list({
+    q: exactQuery,
+    fields: 'files(id)',
+    spaces: 'drive',
+  })
+  const exactMatches = (exact.data.files ?? []).filter((f) => f.id)
+  if (exactMatches.length === 1) {
+    return { status: 'reused', folderId: exactMatches[0].id! }
+  }
+  if (exactMatches.length > 1) {
+    return {
+      status: 'ambiguous',
+      candidateFolderIds: exactMatches.map((f) => f.id!),
+    }
+  }
+
+  // Case 4: broad discovery — anything app-visible that could plausibly be
+  // a vault root but isn't unambiguously THIS user's: another user's
+  // stamped root visible on the same Drive account, or a legacy pre-contract
+  // folder matched by name only (no appProperties). Never auto-adopt.
+  const broadQuery = [
+    "mimeType='application/vnd.google-apps.folder'",
+    'trashed=false',
+    `(appProperties has { key='rbVaultRoot' and value='true' } or name='${VAULT_ROOT_FOLDER_NAME}')`,
+  ].join(' and ')
+
+  const broad = await drive.files.list({
+    q: broadQuery,
+    fields: 'files(id)',
+    spaces: 'drive',
+  })
+  const broadMatches = (broad.data.files ?? []).filter((f) => f.id)
+  if (broadMatches.length > 0) {
+    return {
+      status: 'ambiguous',
+      candidateFolderIds: broadMatches.map((f) => f.id!),
+    }
+  }
+
+  // Case 5: nothing found anywhere — genuinely first connect for this
+  // Drive account. Create fresh and stamp it for future discovery.
+  const folderId = await createVaultRootFolder(drive, userId)
+  return { status: 'created', folderId }
+}
+
+async function createVaultRootFolder(
+  drive: drive_v3.Drive,
+  userId: string
+): Promise<string> {
+  const folderResponse = await drive.files.create({
+    requestBody: {
+      name: VAULT_ROOT_FOLDER_NAME,
+      mimeType: 'application/vnd.google-apps.folder',
+      description:
+        'Your Reset Biology journal entries, workout logs, and nutrition data',
+      appProperties: {
+        rbVaultRoot: 'true',
+        rbUserId: userId,
+      },
+    },
+    fields: 'id',
+  })
+  const folderId = folderResponse.data.id
+  if (!folderId) {
+    throw new Error('Drive did not return an id for the created vault root folder')
+  }
+
+  for (const subfolder of VAULT_SUBFOLDERS) {
+    await drive.files.create({
+      requestBody: {
+        name: subfolder,
+        mimeType: 'application/vnd.google-apps.folder',
+        parents: [folderId],
+      },
+    })
+  }
+
+  return folderId
+}
+
 // Get authenticated Drive client for a user.
 // Decrypts the stored refresh token; lazily re-encrypts if it was stored
 // in the legacy plaintext format AND the encryption key is now provisioned.
