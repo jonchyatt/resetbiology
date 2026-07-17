@@ -4,49 +4,62 @@
   "aliases": [
     "ATX-304",
     "ATX304",
-    "ATX 304"
+    "ATX 304",
+    "ATx304"
   ],
-  "category": "Uncategorized",
+  "category": "Fat Loss",
   "experts": {
     "hunter-williams": {
       "baseline_protocol": null,
       "summary": {
-        "mention_count": 30,
+        "mention_count": 89,
         "top_doses": [
           {
             "dose": "1000 mg",
-            "count": 5
+            "count": 9
           },
           {
             "dose": "300 mg",
-            "count": 4
+            "count": 6
+          },
+          {
+            "dose": "100 mg",
+            "count": 6
           },
           {
             "dose": "400 mg",
-            "count": 4
+            "count": 5
           },
           {
             "dose": "500 mcg",
-            "count": 3
+            "count": 5
           },
           {
-            "dose": "200 mg",
-            "count": 2
+            "dose": "1000 milligrams",
+            "count": 5
           },
           {
-            "dose": "1000 mcg",
-            "count": 2
+            "dose": "500 milligrams",
+            "count": 4
           },
           {
-            "dose": "11 mg",
-            "count": 1
-          },
-          {
-            "dose": "212 mg",
-            "count": 1
+            "dose": "40 milligrams",
+            "count": 4
           }
         ],
         "top_sources": [
+          {
+            "source_id": "atx-304-the-ampk-activator-that-mimics-exercise--457ef2f4",
+            "source_type": "library-video",
+            "source_title": "ATX-304 | The AMPK Activator That Mimics Exercise",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/atx-304-the-ampk-activator-that-mimics-exercise--457ef2f4/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/atx-304-the-ampk-activator-that-mimics-exercise--457ef2f4.json",
+            "mention_count": 24,
+            "top_snippet": "Hey everybody, this is Hunter Williams. I hope you're doing amazing wherever you are at in the world. Today's video is going to be about a small molecule compound known as ATX304. And I guess I'll go ahead and clear up the confusion because you may see this sold as a compound that is OS01 or even in some cases OS03. So I believe what happened, and this was just based on what I've heard. I don't know if this is the 100% accurate story, but this compound was actually originally developed as ATX 304. And I think someone else also developed",
+            "top_context": "Hey everybody, this is Hunter Williams. I hope you're doing amazing wherever you are at in the world. Today's video is going to be about a small molecule compound known as ATX304. And I guess I'll go ahead and clear up the confusion because you may see this sold as a compound that is OS01 or even in some cases OS03. So I believe what happened, and this was just based on what I've heard. I don't know if this is the 100% accurate story, but this compound was actually originally developed as ATX 304. And I think someone else also developed it as OS 01. and there's a skincare company that is called OS01. To be honest, I Don't Know if the skincare Company uses this molecule in it. But anyway, the people that sell it either is ATx or OS-01 had some sort of trademark on it. So you're going to see it as both names out there, but just know that we're talking about the same compound. For the purposes of this video, I'm just going call it ATX304, so as not to confuse it with the skincare product OS01, which again, it might, i don't know if that contains this compound that were talking, about but either way we are talking a capsule product that is basically an AMPK activator.",
+            "first_timestamp": "0:10"
+          },
           {
             "source_id": "199789ab3211cefa",
             "source_type": "email",
@@ -55,8 +68,8 @@
             "source_url": "https://open.spotify.com/episode/5gEkZWDy8vqNy05JeElmQv",
             "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-09-23-is-this-better-than-metformin.md",
             "mention_count": 21,
-            "top_snippet": "upports healthy aging. This is why it’s being called an “exercise pill” by many researchers. ——————————————————————————— **Clinical Results** The most compelling evidence so far comes from the Phase I",
-            "top_context": "upports healthy aging. This is why it’s being called an “exercise pill” by many researchers. ——————————————————————————— **Clinical Results** The most compelling evidence so far comes from the Phase IIa study in 65 patients with type 2 diabetes on metformin. After 28 days of 1000mg/day ATX-304: * **Fasting plasma glucose dropped by –0.60 mM vs –0.10 mM with placebo** (~11 mg/dL greater reduction, p=0.01). * **Insulin resistance (HOMA-IR) improved by a statistically significant margin** in the treatment group (p=0.0097). * **Diastolic blood pressure decreased significantly**, wit",
+            "top_snippet": "s, and supports healthy aging. This is why it’s being called an “exercise pill” by many researchers. ——————————————————————————— **Clinical Results** The most compelling evidence so far comes from the",
+            "top_context": "s, and supports healthy aging. This is why it’s being called an “exercise pill” by many researchers. ——————————————————————————— **Clinical Results** The most compelling evidence so far comes from the Phase IIa study in 65 patients with type 2 diabetes on metformin. After 28 days of 1000mg/day ATX-304: * **Fasting plasma glucose dropped by –0.60 mM vs –0.10 mM with placebo** (~11 mg/dL greater reduction, p=0.01). * **Insulin resistance (HOMA-IR) improved by a statistically significant margin** in the treatment group (p=0.0097). * **Diastolic blood pressure decreased significantly**, with a do",
             "first_timestamp": null
           },
           {
@@ -70,34 +83,122 @@
             "top_snippet": "mpound** (not aggressively cycled) ### Summary - **SLU = powerful but cyclical** - **ATX = sustainable + longevity-focused** ## ⭐ DOSING — Hunter's Stack Protocol ### Standalone ranges - **SLU-PP-332:",
             "top_context": "mpound** (not aggressively cycled) ### Summary - **SLU = powerful but cyclical** - **ATX = sustainable + longevity-focused** ## ⭐ DOSING — Hunter's Stack Protocol ### Standalone ranges - **SLU-PP-332:** 250-1000 mcg/day (research range). **Start LOW + go SLOW** — too high builds up ROS fast. - **ATX-304:** 50-300 mg/day orally typical. One trial used 1000 mg/day with no adverse effects. Hunter likes **200-400 mg/day**. ### ⭐ Stacking Recommendation - **SLU-PP-332: 250–500 mcg/day** - **ATX-304: 200–400 mg/day** Keeps you on \"exercise mimetic\" side of curve, NOT \"too much metabolic stress\" side.",
             "first_timestamp": null
+          },
+          {
+            "source_id": "peptide-qa-october-2025--6eb875d9",
+            "source_type": "library-video",
+            "source_title": "Peptide Q&A · October 2025",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-october-2025--6eb875d9/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-qa-october-2025--6eb875d9.json",
+            "mention_count": 6,
+            "top_snippet": "Here's a great one. Can GLP-1s like trisapatite and retitrutide be okay to take with thymosanophil-I? Recommendations or cautions for stacking other peptides that can influence other major systems and pathways. So obviously I can't go into a thousand different peptide, but thimosalpha-one is completely okay. To take what the GLp- one and I would say even for people with autoimmune disease or a lot of inflammation would probably be advantageous and good to do so. Here's a good question. ATX 304, a company sent out a notification of availability of that. And I started to dig a little and it sounds very similar to Metformin, but possibly better.",
+            "top_context": "And then also too, I would just say be smart about how you do it. So I realized like buying a bigger vyle probably saves you some money, but to the question of the effectiveness of a peptide, it doesn't really change. It's kind of one of those things like you're just, you know, its calories in calories out in terms of how we're mixing it and you are getting the same thing. Moving along, sorry, just scanning through these to make sure I get a good question. Here's a great one. Can GLP-1s like trisapatite and retitrutide be okay to take with thymosanophil-I? Recommendations or cautions for stacking other peptides that can influence other major systems and pathways. So obviously I can't go into a thousand different peptide, but thimosalpha-one is completely okay. To take what the GLp- one and I would say even for people with autoimmune disease or a lot of inflammation would probably be advantageous and good to do so. Here's a good question. ATX 304, a company sent out a notification of availability of that. And I started to dig a little and it sounds very similar to Metformin, but possibly better. What do you think? Yes, it is very much similar MetFormin. Yes. I think it's even better than MetFormin because it seems to help people lose more fat. Now a big question I'm getting is ATX 304 versus SLU PP332. The answer is fundamentally they're different, but fundamentally, they also kind of help get the same results that we're trying to get, which is fat loss. But SL U works on mitochondrial biogenesis. ATX304, well, SLU is an estrogen receptor, estrogen-related receptor agonist, which then helps with mitochondrial biogenesis,",
+            "first_timestamp": "34:30"
+          },
+          {
+            "source_id": "saturday-morning-coffee-talk-102525--d6c5a922",
+            "source_type": "library-video",
+            "source_title": "Saturday Morning Coffee Talk · 10/25/25",
+            "source_date": "2026-04-08",
+            "source_url": "https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-102525--d6c5a922/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/saturday-morning-coffee-talk-102525--d6c5a922.json",
+            "mention_count": 4,
+            "top_snippet": "Funny enough, I was researching that this week because I want to do another video on it with some of that data. Really good question, and I can actually speak to this. ATX 304, any side effects to watch out for like increased heart rate or overstimulation, you know the peptide could be compared to. Well, in light of the high-dose loop conversation, I think ATX 304 at the right dose is actually what people are going after with high dose loop. We actually have human data in 1000 milligrams of ATx per day in people with no adverse effects, no increase in heart rate,",
+            "top_context": "Like I take 40 milligrams a day and that's probably even a little high. So if your blood meaning that like if someone has normal blood, pressure it might drop them down. For me, it usually puts me like I took my pressure earlier this week. It was like 112 over 75 or 80 or something. And I usually take 40 milligrams at night. Most people take 80 milligrams, but you could even do 20 milligrams. So if you get 40 milligram tabs, split them in half. But I think it's a great longevity compound for what we see. There's lot of ancillary data around men that use it and all cause mortality. Funny enough, I was researching that this week because I want to do another video on it with some of that data. Really good question, and I can actually speak to this. ATX 304, any side effects to watch out for like increased heart rate or overstimulation, you know the peptide could be compared to. Well, in light of the high-dose loop conversation, I think ATX 304 at the right dose is actually what people are going after with high dose loop. We actually have human data in 1000 milligrams of ATx per day in people with no adverse effects, no increase in heart rate, and only good effects because it's an AMPK activator. most companies sell 100 milligram capsules and most people are doing two to 300 milligrams, which works. Like I feel an effect from that, but I've played with like five or 600 milligrams and I like that way better than high dose sleep way. Better. And you don't have the side effects. You don' have to increase in heart rate or anything like. Again, I. Feel leaner on it. Well, of course. Yeah. It's, ATX is like metformin without any of the purported downsides of met formin because it's an AMPK activator.",
+            "first_timestamp": "1:26:24"
+          },
+          {
+            "source_id": "saturday-morning-coffee-talk-5226--3cf808ca",
+            "source_type": "library-video",
+            "source_title": "Saturday Morning Coffee Talk 5/2/26",
+            "source_date": "2026-05-25",
+            "source_url": "https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-5226--3cf808ca/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/saturday-morning-coffee-talk-5226--3cf808ca.json",
+            "mention_count": 4,
+            "top_snippet": "I think if you wanted to do like six milligrams once a week of rapamycin, I don't have an issue with that. I would probably say that would be someone in their fifties and sixties. Also too, we have a lot of other agents out there right now that kind of give us this suppression of mTOR benefit without some of the drawbacks of rapamycin, one being ATX 304, another being the gold standard metformin. And so if you give me met formin, rapamysin ATx, I would pick that form in AT X over rapomycin because I'm not going to have rapamycin is so much stronger",
+            "top_context": "What's up, Kelly? She says, please, give your thoughts on rapamycin for resetting hyperactive mTOR and activating autophagy. Any thoughts in general? Here's what I think, I, think rapamycin does what it does really well. Taylor's looking at me like what? No, you're fine. No. Are you good? Yeah. Rapamycin does, what does does well, which is suppress mTOR, or which can be good for longevity. However, that is not necessarily always the best thing. If you suppress MTOR too much, You will begin to lose muscle, Which then becomes counterproductive for Longevity. I think if you wanted to do like six milligrams once a week of rapamycin, I don't have an issue with that. I would probably say that would be someone in their fifties and sixties. Also too, we have a lot of other agents out there right now that kind of give us this suppression of mTOR benefit without some of the drawbacks of rapamycin, one being ATX 304, another being the gold standard metformin. And so if you give me met formin, rapamysin ATx, I would pick that form in AT X over rapomycin because I'm not going to have rapamycin is so much stronger than them. Now there is a lot of data around around rapamysin being used in clinical trials for anti-aging and it's pretty good. However, just know that that is, a consequence of it. And so I think given the tools that we have right now, and this is variable to change it, this like could very well change in the future as far as like where I stand on it I, think there's so, much out there that Between GLPs and MPK activators and SGLT2s, like, I just don't think we need it to get the",
+            "first_timestamp": "40:26"
+          },
+          {
+            "source_id": "peptide-qa-december-2025--f7613f71",
+            "source_type": "library-video",
+            "source_title": "Peptide Q&A · December 2025",
+            "source_date": "2026-03-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-december-2025--f7613f71/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-qa-december-2025--f7613f71.json",
+            "mention_count": 3,
+            "top_snippet": "I definitely think you can do that. What's the difference between ATX 304 and BAM 15 plus SLU? ATx 30 4 is I would say more of a longevity. It is it is a quote unquote fat burner because it activates AMPK. So it indirectly can help with fat burning. I think ATX is more of a longevity type molecule that you could use all the time. And maybe ATx, because of what it does, could even be better to replace metformin than BAM or SLU. Bam is obviously a mitochondrial coupler.",
+            "top_context": "But a lot of people don't get the appetite suppression they want on Reta. which I think a lot of times comes from the increase in metabolism because they're burning more calories because of the glucagon agonism. So that would be my answer. Play around with it and see what you like best, obviously. But there are some research companies that do make those as a blend now. Just moving along. Benefits of creatine for women starting in 20s? Absolutely. If you're a woman in your 20's, you should take creatinine. I definitely think you can do that. What's the difference between ATX 304 and BAM 15 plus SLU? ATx 30 4 is I would say more of a longevity. It is it is a quote unquote fat burner because it activates AMPK. So it indirectly can help with fat burning. I think ATX is more of a longevity type molecule that you could use all the time. And maybe ATx, because of what it does, could even be better to replace metformin than BAM or SLU. Bam is obviously a mitochondrial coupler. SLu is a small molecule that is an estrogen receptor agonist that basically works on PGC one alpha and all these other things to help improve mitochondrial biogenesis. And so obviously all those have a use place and I've used them all. I would say ATX would be more one that I think you can use more of the time. Whereas BAM and SLU, I'd like to cycle off those more or less every eight to 12 weeks.",
+            "first_timestamp": "32:10"
+          },
+          {
+            "source_id": "peptide-qa-february-2026--cba19117",
+            "source_type": "library-video",
+            "source_title": "Peptide Q&A · February 2026",
+            "source_date": "2026-03-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-february-2026--cba19117/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-qa-february-2026--cba19117.json",
+            "mention_count": 3,
+            "top_snippet": "It's an amazing cream I use it basically every day and I'll put that, you know, around my testosterone injections or around belly where I do my Peptide injections and that seems to work really, really well. So not shilling for a product, but I do love that product. All right, let's talk about some more ancillary peptides. Os01, what is it and how you use it. This is also known as ATX304. I really like this. It's basically an AMPK activator and what it does activates AMP and the process of doing so kind of improves everything in the body.",
+            "top_context": "And so if you are experiencing lumps like if doing them in your belly, try going in the thigh, Try going into the arm, other areas that you can do a subcutaneous injection. and typically that tends to go away. There's also some really good cream products. So you could get like a KPV cream. You could a glutathione cream, there's people that have those now. And I think that does help get rid of some of those bumps. Um, There is also a product called Bioregenics that I really, really like. It's an amazing cream I use it basically every day and I'll put that, you know, around my testosterone injections or around belly where I do my Peptide injections and that seems to work really, really well. So not shilling for a product, but I do love that product. All right, let's talk about some more ancillary peptides. Os01, what is it and how you use it. This is also known as ATX304. I really like this. It's basically an AMPK activator and what it does activates AMP and the process of doing so kind of improves everything in the body. When you think about AMP activation, it kindof exists more on this autophagy spectrum. So it's working to basically extend longevity, create autofagie, created almost like a fasting like state in a body and in doing, so helps us lose weight. it improves blood work. So I really like it. It's just that I've noticed to see the effects, you really want to go up to like 500 milligrams or so on it, the human trials that they used ATX 304, I think they were doing 1000 milligrams a day. And the good thing about that is they had no downside whatsoever. They only saw benefit, fat loss, better blood work, and better cholesterol and everything.",
+            "first_timestamp": "30:15"
           }
         ],
         "acute_signals": [
           {
-            "snippet": "ainst fatty liver (MASLD/NASH) by decreasing steatosis and fibrosis. * **Kidney protection**: Reduces serum creatinine and renal injury markers in cisplatin-induced AKI models. * **Aging and longevity",
+            "snippet": "cts against fatty liver (MASLD/NASH) by decreasing steatosis and fibrosis. * **Kidney protection**: Reduces serum creatinine and renal injury markers in cisplatin-induced AKI models. * **Aging and lon",
             "source_title": "Is This Better Than Metformin?",
             "source_date": "2025-09-23",
             "timestamp": null,
             "source_url": "https://open.spotify.com/episode/5gEkZWDy8vqNy05JeElmQv"
           },
           {
-            "snippet": "ficantly**, with a downward trend in systolic. * **Peripheral muscle blood flow increased significantly** on MRI perfusion scans. * Importantly, **no serious adverse events or safety issues were repor",
+            "snippet": "ed significantly**, with a downward trend in systolic. * **Peripheral muscle blood flow increased significantly** on MRI perfusion scans. * Importantly, **no serious adverse events or safety issues we",
             "source_title": "Is This Better Than Metformin?",
             "source_date": "2025-09-23",
             "timestamp": null,
             "source_url": "https://open.spotify.com/episode/5gEkZWDy8vqNy05JeElmQv"
+          },
+          {
+            "snippet": "creased end-diastolic volume, and reduced resting heart rate. Classic endurance exercise adaptations without the exercise. Importantly, no cardiac hypertrophy. Some prior AMPK activators caused heart ",
+            "source_title": "ATX-304 | The AMPK Activator That Mimics Exercise",
+            "source_date": "2026-03-29",
+            "timestamp": null,
+            "source_url": "https://library.hunterwilliamshealth.com/p/atx-304-the-ampk-activator-that-mimics-exercise--457ef2f4/"
+          },
+          {
+            "snippet": "d heart enlargement. This one doesn't. Liver, Kidney, and Brain Benefits In a fatty liver disease model, ATX-304 shifted the liver toward fat burning. Treated mice had markedly lower liver triglycerid",
+            "source_title": "ATX-304 | The AMPK Activator That Mimics Exercise",
+            "source_date": "2026-03-29",
+            "timestamp": null,
+            "source_url": "https://library.hunterwilliamshealth.com/p/atx-304-the-ampk-activator-that-mimics-exercise--457ef2f4/"
+          },
+          {
+            "snippet": "iglycerides and reduced markers of oxidative stress. In acute kidney injury models, mice pre-treated with ATX-304 before getting a nephrotoxic dose of cisplatin had a 60% reduction in kidney damage ma",
+            "source_title": "ATX-304 | The AMPK Activator That Mimics Exercise",
+            "source_date": "2026-03-29",
+            "timestamp": null,
+            "source_url": "https://library.hunterwilliamshealth.com/p/atx-304-the-ampk-activator-that-mimics-exercise--457ef2f4/"
           }
         ],
         "chronic_signals": [
           {
-            "snippet": "ainst fatty liver (MASLD/NASH) by decreasing steatosis and fibrosis. * **Kidney protection**: Reduces serum creatinine and renal injury markers in cisplatin-induced AKI models. * **Aging and longevity",
+            "snippet": "cts against fatty liver (MASLD/NASH) by decreasing steatosis and fibrosis. * **Kidney protection**: Reduces serum creatinine and renal injury markers in cisplatin-induced AKI models. * **Aging and lon",
             "source_title": "Is This Better Than Metformin?",
             "source_date": "2025-09-23",
             "timestamp": null,
             "source_url": "https://open.spotify.com/episode/5gEkZWDy8vqNy05JeElmQv"
           },
           {
-            "snippet": "ds. * In aging mice, it **reversed hyperinsulinemia** and preserved exercise capacity equivalent to young controls. These numbers show both **statistical and clinically meaningful effects** across mul",
+            "snippet": "y two-thirds. * In aging mice, it **reversed hyperinsulinemia** and preserved exercise capacity equivalent to young controls. These numbers show both **statistical and clinically meaningful effects** ",
+            "source_title": "Is This Better Than Metformin?",
+            "source_date": "2025-09-23",
+            "timestamp": null,
+            "source_url": "https://open.spotify.com/episode/5gEkZWDy8vqNy05JeElmQv"
+          },
+          {
+            "snippet": "longevity compound**. What can you expect? Over time, improved blood sugar control, lower blood pressure, reduced fat mass, better endurance, and protection against metabolic stress. In other words, m",
             "source_title": "Is This Better Than Metformin?",
             "source_date": "2025-09-23",
             "timestamp": null,
@@ -163,25 +264,26 @@
   },
   "reset_biology_synthesis": {
     "status": "distilled",
-    "recommendation": "Reset Biology suggests asking the practitioner to consider ATX-304 as a sustainable AMPK activator framed by Hunter as an oral exercise mimetic, with the operative ceiling anchored to the published trial — Hunter email threadId 199789ab3211cefa (2025-09-23): \"In clinical trials, ATX-304 was given as a 1000mg oral suspension once daily,\" while Hunter's stack guidance is lower: Hunter email threadId 19a9e63d0239bb68 (2025-11-19): \"ATX-304: 50-300 mg/day orally typical. One trial used 1000 mg/day with no adverse effects. Hunter likes 200-400 mg/day.\" We'd ask the prescribing physician to weigh dose-responsiveness because Taylor (G27dIPBJUSs 00:57:51.640): \"I noticed outsized benefits at like 5 to 700 mg per day. That's where it really starts to hit,\" and to weigh patient candidacy because Hunter email threadId 199789ab3211cefa (2025-09-23) frames the fit as \"People struggling with type 2 diabetes or prediabetes\" and \"Individuals with fatty liver or early signs of metabolic dysfunction.\"",
-    "caveats": "- No Trevor Bachmeyer signal on ATX-304 in current corpus — synthesis is Hunter (emails) + Taylor (podcast) only.\n- Dose-response is real and asymmetric. Hunter email threadId 199789ab3211cefa (2025-09-23): \"For most people, the sweet spot will be around 200mg/day, but dosing may depend on body weight and clinical goals.\" Co-host on Taylor's show (G27dIPBJUSs 00:35:04.960): \"But you take 200 milligrams, 300 milligrams, you're probably not even going to feel anything at all.\" Two practitioners voicing opposite views of the same dose band — practitioner should resolve before dispensing.\n- Cost / access caveat from Taylor's show (JccJTHbWF84 00:34:42.320): \"is it worth 1,200 bucks a month to have for most people? No.\" — therapeutic threshold (5–700 mg/day) puts the cost burden high.\n- AMPK-activator class caution: Hunter email threadId 19a9e63d0239bb68 (2025-11-19): \"ATX-304 is dose-responsive. Do NOT mega-dose AMPK activators (like you wouldn't mega-dose metformin).\"\n- Mitochondrial-overspin caution: Hunter email threadId 19a9e63d0239bb68 (2025-11-19): \"Too aggressive ERR activation → mitochondrial stress, excessive fatty-acid oxidation, unintended muscle remodeling.\" Note: this caveat is framed in the SLU-PP-332 column of the table; ATX is positioned as the more sustainable side of the stack.\n- Empty-stomach timing only stated in Hunter email threadId 199789ab3211cefa (2025-09-23): \"Best taken first thing in the morning on an empty stomach, to mimic the natural fasting-induced AMPK activation.\"\n- Phase IIa human trial was 28 days only — Hunter email threadId 199789ab3211cefa (2025-09-23): \"the Phase IIa study in 65 patients with type 2 diabetes on metformin. After 28 days of 1000mg/day ATX-304\" — long-duration human data not yet established.\n- No baseline_protocol from the 2023 Hunter/Jay Campbell cheat sheet (peptide post-dates that document).",
-    "cross_expert_consensus": "Two-expert agreement (Hunter + Taylor); Trevor is silent. Both agree ATX-304 is the dosed-up exercise-mimetic of choice over SLU-PP-332 ('Sloop'). Taylor (JccJTHbWF84 00:33:30.559): \"I love it. I love that molecule so much,\" and (JccJTHbWF84 00:33:47.679): \"I would pick the ATX. Like I feel the best when I'm on that.\" Taylor (G27dIPBJUSs 00:57:30.080): \"ATX 304 is more effective than Sloop. Sloop activates a little quicker and lasts a little longer, but ATX definitely allows me to push myself harder without fatigue.\" Hunter email threadId 19a9e63d0239bb68 (2025-11-19): \"SLU = powerful but cyclical\" and \"ATX = sustainable + longevity-focused.\" Both agree the trial dose was 1,000 mg/day with clean safety: Taylor co-host (JccJTHbWF84 00:34:51.679): \"In the the human studies that were used on it, they used 1,000 milligrams a day and they had only positive health benefits. So no adverse effects, no increase in resting heart rate, only benefit in cholesterol profile, only benefit in reduction in inflammation, benefit in body composition.\" Hunter email threadId 199789ab3211cefa (2025-09-23): \"After 28 days of 1000mg/day ATX-304\" with \"no serious adverse events or safety issues were reported.\" Both also agree that consumer 100 mg capsules force users into dose stacks: Hunter email threadId 199789ab3211cefa (2025-09-23): \"Capsules are typically standardized to 100mg each\" and Taylor's co-host (G27dIPBJUSs 00:57:48.520): \"Most of the dosing you're going to see from people is 100 mg capsules.\"",
-    "cross_expert_disagreement": "Effective dose floor differs. Hunter email threadId 199789ab3211cefa (2025-09-23): \"For most people, the sweet spot will be around 200mg/day,\" and Hunter email threadId 19a9e63d0239bb68 (2025-11-19): \"Hunter likes 200-400 mg/day.\" Taylor (G27dIPBJUSs 00:57:51.640): \"I noticed outsized benefits at like 5 to 700 mg per day. That's where it really starts to hit,\" and Taylor's co-host (JccJTHbWF84 00:35:04.960): \"But you take 200 milligrams, 300 milligrams, you're probably not even going to feel anything at all.\" Net: Hunter writes 200 mg as a sweet spot; Taylor's table reports the felt threshold at 500–700 mg. NO AVERAGING — surface both. Newer Hunter content also widens his own range: 2025-09-23 Hunter writes \"100–300mg per day range\" as the effective band, then 2025-11-19 (newer) Hunter writes \"50-300 mg/day orally typical\" with personal preference \"200-400 mg/day.\" The 2025-11-19 standalone-range guidance is the operative recommendation per newer-overrides-older; both dates carry. Manufacturing-vs-trial gap: Taylor (G27dIPBJUSs 00:58:09.359): \"ATX. Yeah, probably like 250 or 500 mg\" — argues vendors should have built higher-dose capsules, while Hunter holds 100 mg standard.",
+    "recommendation": "Reset Biology suggests asking the practitioner to weigh Hunter Williams — atx-304-the-ampk-activator-that-mimics-exercise--457ef2f4 (2026-03-29; 22:49; https://library.hunterwilliamshealth.com/p/atx-304-the-ampk-activator-that-mimics-exercise--457ef2f4/): \"I've gotten great results at 300 to 400 milligrams per day.\" The newer dated personal-experience statement is listed first; Hunter Williams — email threadId 19a9e63d0239bb68 (2025-11-19): \"ATX-304: 50-300 mg/day orally typical. One trial used 1000 mg/day with no adverse effects. Hunter likes 200-400 mg/day.\"",
+    "caveats": "- Hunter Williams — saturday-morning-coffee-talk-6626--4fc8b831 (2026-06-17; 34:38; https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-6626--4fc8b831/): \"Just be ready because if you struggle with heart rate issues, like if your unready to die, that will spike your heartrate and potentially depend on your insulin sensitivity. So make sure you're good because a lot of people can go hypoglycemic with all three of those things together. Even the 5 amine and the MATC can do that I would do that.\"\n- Hunter Williams — saturday-morning-coffee-talk-6626--4fc8b831 (2026-06-17; 35:08; https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-6626--4fc8b831/): \"I personally would not do before I'm going to resistance train, but doing that and waiting like at least 30 minutes after you take the ATX to then do cardio makes a huge difference.\"\n- Hunter Williams — atx-304-the-ampk-activator-that-mimics-exercise--457ef2f4 (2026-03-29; 27:06; https://library.hunterwilliamshealth.com/p/atx-304-the-ampk-activator-that-mimics-exercise--457ef2f4/): \"So what I would do is if you are taking this, just monitor your blood pressure, metabolic panels, and things related to those metabolic panel, but there was no harm in anything that we've seen in humans or animals so far.\"\n- Hunter Williams — email threadId 19a9e63d0239bb68 (2025-11-19): \"ATX-304 is dose-responsive. Do NOT mega-dose AMPK activators (like you wouldn't mega-dose metformin).\"\n- Hunter Williams — atx-304-the-ampk-activator-that-mimics-exercise--457ef2f4 (2026-03-29; 20:04; https://library.hunterwilliamshealth.com/p/atx-304-the-ampk-activator-that-mimics-exercise--457ef2f4/): \"The first clinical trial was a 28-day randomized placebo control of phase 2A in patients with type 2 diabetes on metformin as well. They received 1,000 milligrams of ATX once daily as an oral suspension.\"",
+    "cross_expert_consensus": "Taylor Williams co-host — JccJTHbWF84 (2026-02-08; 00:34:51.679; https://youtu.be/JccJTHbWF84): \"In the the human studies that were used on it, they used 1,000 milligrams a day and they had only positive health benefits. So no adverse effects, no increase in resting heart rate, only benefit in cholesterol profile, only benefit in reduction in inflammation, benefit in body composition.\" Hunter Williams — saturday-morning-coffee-talk-102525--d6c5a922 (2026-04-08; 1:26:24; https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-102525--d6c5a922/): \"We actually have human data in 1000 milligrams of ATx per day in people with no adverse effects, no increase in heart rate.\"",
+    "cross_expert_disagreement": "Hunter Williams — email threadId 199789ab3211cefa (2025-09-23): \"For most people, the sweet spot will be around 200mg/day, but dosing may depend on body weight and clinical goals.\" Hunter Williams — email threadId 19a9e63d0239bb68 (2025-11-19): \"ATX-304: 50-300 mg/day orally typical. One trial used 1000 mg/day with no adverse effects. Hunter likes 200-400 mg/day.\" Hunter Williams — atx-304-the-ampk-activator-that-mimics-exercise--457ef2f4 (2026-03-29; 22:49; https://library.hunterwilliamshealth.com/p/atx-304-the-ampk-activator-that-mimics-exercise--457ef2f4/): \"I've gotten great results at 300 to 400 milligrams per day.\" Hunter Williams — atx-304-the-ampk-activator-that-mimics-exercise--457ef2f4 (2026-03-29; 22:49; https://library.hunterwilliamshealth.com/p/atx-304-the-ampk-activator-that-mimics-exercise--457ef2f4/): \"I have heard people would experience great result at 100 to 200 milligrams.\" Hunter Williams — saturday-morning-coffee-talk-102525--d6c5a922 (2026-04-08; 1:26:58; https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-102525--d6c5a922/): \"most people are doing two to 300 milligrams, which works.\" Hunter Williams — saturday-morning-coffee-talk-102525--d6c5a922 (2026-04-08; 1:26:58; https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-102525--d6c5a922/): \"I've played with like five or 600 milligrams and I like that way better than high dose sleep way. Better.\" Taylor Williams — G27dIPBJUSs (2026-03-28; 00:57:51.640; https://youtu.be/G27dIPBJUSs): \"I noticed outsized benefits at like 5 to 700 mg per day. That's where it really starts to hit.\"",
     "acute_chronic_split": {
       "acute": null,
       "chronic": {
-        "dose": "Hunter email threadId 19a9e63d0239bb68 (2025-11-19): \"ATX-304: 50-300 mg/day orally typical. One trial used 1000 mg/day with no adverse effects. Hunter likes 200-400 mg/day.\" Hunter email threadId 199789ab3211cefa (2025-09-23): \"For most people, the sweet spot will be around 200mg/day, but dosing may depend on body weight and clinical goals.\" Taylor (G27dIPBJUSs 00:57:51.640): \"I noticed outsized benefits at like 5 to 700 mg per day. That's where it really starts to hit.\"",
-        "route": "Hunter email threadId 199789ab3211cefa (2025-09-23): \"In clinical trials, ATX-304 was given as a 1000mg oral suspension once daily. However, new capsule formulations are being developed for easier use.\" Hunter email threadId 19a9e63d0239bb68 (2025-11-19): \"50-300 mg/day orally typical.\"",
-        "frequency": "Hunter email threadId 199789ab3211cefa (2025-09-23): \"Take 1–3 capsules daily (100–300mg). Best taken first thing in the morning on an empty stomach, to mimic the natural fasting-induced AMPK activation.\"",
-        "duration": "Hunter email threadId 19a9e63d0239bb68 (2025-11-19): \"AMPK activation = one of most consistently validated longevity pathways across species. Can be a long-term metabolic + healthspan compound (not aggressively cycled).\" Phase IIa human trial duration was 28 days per Hunter email threadId 199789ab3211cefa (2025-09-23): \"After 28 days of 1000mg/day ATX-304.\"",
-        "verbatim_citation": "Hunter email threadId 199789ab3211cefa (2025-09-23): \"the effective (and affordable) dose for humans is expected to be in the 100–300mg per day range.\" Hunter email threadId 19a9e63d0239bb68 (2025-11-19): \"Hunter likes 200-400 mg/day.\"",
-        "episode_url": "https://open.spotify.com/episode/5gEkZWDy8vqNy05JeElmQv",
-        "timestamp": "Hunter email threadId 199789ab3211cefa (2025-09-23); Hunter email threadId 19a9e63d0239bb68 (2025-11-19); Taylor G27dIPBJUSs 00:57:51.640"
+        "dose": "Hunter Williams — atx-304-the-ampk-activator-that-mimics-exercise--457ef2f4 (2026-03-29; 22:49; https://library.hunterwilliamshealth.com/p/atx-304-the-ampk-activator-that-mimics-exercise--457ef2f4/): \"I've gotten great results at 300 to 400 milligrams per day.\" Hunter Williams — saturday-morning-coffee-talk-102525--d6c5a922 (2026-04-08; 1:26:58; https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-102525--d6c5a922/): \"most people are doing two to 300 milligrams, which works.\" Hunter Williams — saturday-morning-coffee-talk-102525--d6c5a922 (2026-04-08; 1:26:58; https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-102525--d6c5a922/): \"I've played with like five or 600 milligrams and I like that way better than high dose sleep way. Better.\" Taylor Williams — G27dIPBJUSs (2026-03-28; 00:57:51.640; https://youtu.be/G27dIPBJUSs): \"I noticed outsized benefits at like 5 to 700 mg per day. That's where it really starts to hit.\"",
+        "route": "Hunter Williams — atx-304-the-ampk-activator-that-mimics-exercise--457ef2f4 (2026-03-29; 20:04; https://library.hunterwilliamshealth.com/p/atx-304-the-ampk-activator-that-mimics-exercise--457ef2f4/): \"They received 1,000 milligrams of ATX once daily as an oral suspension.\" Hunter Williams — email threadId 19a9e63d0239bb68 (2025-11-19): \"ATX-304: 50-300 mg/day orally typical.\"",
+        "frequency": "Hunter Williams — atx-304-the-ampk-activator-that-mimics-exercise--457ef2f4 (2026-03-29; 20:04; https://library.hunterwilliamshealth.com/p/atx-304-the-ampk-activator-that-mimics-exercise--457ef2f4/): \"They received 1,000 milligrams of ATX once daily as an oral suspension.\" Hunter Williams — email threadId 199789ab3211cefa (2025-09-23): \"Take 1–3 capsules daily (100–300mg). Best taken first thing in the morning on an empty stomach, to mimic the natural fasting-induced AMPK activation.\"",
+        "duration": "Hunter Williams — email threadId 19a9e63d0239bb68 (2025-11-19): \"AMPK activation = one of most consistently validated longevity pathways across species. Can be a long-term metabolic + healthspan compound (not aggressively cycled).\" Hunter Williams — atx-304-the-ampk-activator-that-mimics-exercise--457ef2f4 (2026-03-29; 20:04; https://library.hunterwilliamshealth.com/p/atx-304-the-ampk-activator-that-mimics-exercise--457ef2f4/): \"The first clinical trial was a 28-day randomized placebo control of phase 2A in patients with type 2 diabetes on metformin as well.\"",
+        "verbatim_citation": "Hunter Williams — atx-304-the-ampk-activator-that-mimics-exercise--457ef2f4 (2026-03-29; 22:49; https://library.hunterwilliamshealth.com/p/atx-304-the-ampk-activator-that-mimics-exercise--457ef2f4/): \"I've gotten great results at 300 to 400 milligrams per day.\"",
+        "episode_url": "https://library.hunterwilliamshealth.com/p/atx-304-the-ampk-activator-that-mimics-exercise--457ef2f4/",
+        "timestamp": "22:49"
       }
     },
     "female_specific_notes": null,
-    "distilled_at": "2026-04-27T05:34:43.440Z",
-    "distilled_by": "claude"
+    "distilled_at": "2026-07-17T03:34:45.732-06:00",
+    "distilled_by": "codex"
   },
-  "generated_at": "2026-04-27T02:02:35.010Z"
+  "generated_at": "2026-07-17T10:59:09.874Z",
+  "mentions_fingerprint": "2e846db66339"
 }

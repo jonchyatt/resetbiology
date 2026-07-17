@@ -28,42 +28,78 @@
         "duration": "8 weeks on, 8 weeks off"
       },
       "summary": {
-        "mention_count": 113,
+        "mention_count": 424,
         "top_doses": [
           {
-            "dose": "2.5 mg",
-            "count": 16
-          },
-          {
             "dose": "1 mg",
-            "count": 14
+            "count": 24
           },
           {
-            "dose": "10 milligrams",
-            "count": 7
-          },
-          {
-            "dose": "10 mg",
-            "count": 3
+            "dose": "2.5 mg",
+            "count": 17
           },
           {
             "dose": "12 mg",
-            "count": 3
+            "count": 16
+          },
+          {
+            "dose": "10 milligrams",
+            "count": 13
           },
           {
             "dose": "2.4 mg",
-            "count": 3
+            "count": 12
           },
           {
-            "dose": "6 mg",
-            "count": 2
+            "dose": "250 micrograms",
+            "count": 10
           },
           {
-            "dose": "9 mg",
-            "count": 2
+            "dose": "2.5 milligrams",
+            "count": 8
+          },
+          {
+            "dose": "12 milligrams",
+            "count": 7
           }
         ],
         "top_sources": [
+          {
+            "source_id": "retatrutide-vs-alcohol-the-secret-brain-hack-to-beat-addiction--701597fe",
+            "source_type": "library-video",
+            "source_title": "Retatrutide vs Alcohol: The Secret Brain Hack to Beat Addiction",
+            "source_date": "2026-03-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/retatrutide-vs-alcohol-the-secret-brain-hack-to-beat-addiction--701597fe/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/retatrutide-vs-alcohol-the-secret-brain-hack-to-beat-addiction--701597fe.json",
+            "mention_count": 28,
+            "top_snippet": "Hey everybody, this is Andrew Williams. I hope you're doing amazing wherever you are out in the world. Today's video is going to be about retitrutide versus alcohol. So there was recently a groundbreaking new study from UNC Chapel Hill about the effects of GLP-1 peptides. They looked at semaglutide, trisapatite, and retritrutite in rodents, not humans, but they did look at it in Rodents on the affects of alcohol and how it actually changes the brain around alcohol so This is something, if you are tapped in, you kind of know what's going on here. GLP One's completely rewired neural networks to help you not crave as bad foods or crave alcohol or craved things, even like smoking.",
+            "top_context": "Hey everybody, this is Andrew Williams. I hope you're doing amazing wherever you are out in the world. Today's video is going to be about retitrutide versus alcohol. So there was recently a groundbreaking new study from UNC Chapel Hill about the effects of GLP-1 peptides. They looked at semaglutide, trisapatite, and retritrutite in rodents, not humans, but they did look at it in Rodents on the affects of alcohol and how it actually changes the brain around alcohol so This is something, if you are tapped in, you kind of know what's going on here. GLP One's completely rewired neural networks to help you not crave as bad foods or crave alcohol or craved things, even like smoking. But they actually weren't able to put it on paper this time. So what I'm going to do in this video is walk through this new study, kind what it found, and then also just look at the mechanisms behind what is going here so we can kind understand when we use GLPs. And I am obviously a fan of RetroTide because it's the newest kid on the block. But when we use GLP-1s, what is going on in the brain? And why is that a good thing that it is rewiring our brain to not crave some of these more compulsive, deleterious behaviors that cause us damage over time? So that's what today is gonna be about.",
+            "first_timestamp": "0:09"
+          },
+          {
+            "source_id": "semaglutide-vs-tirzepatide-vs-reta-a-critical-data-analysis--cbdc9b2a",
+            "source_type": "library-video",
+            "source_title": "Semaglutide Vs Tirzepatide Vs Reta A Critical Data Analysis",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/semaglutide-vs-tirzepatide-vs-reta-a-critical-data-analysis--cbdc9b2a/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/semaglutide-vs-tirzepatide-vs-reta-a-critical-data-analysis--cbdc9b2a.json",
+            "mention_count": 24,
+            "top_snippet": "Hey everybody, this is Hunter Williams. I hope you were doing amazing wherever you are at in the world. Today's video is going to be a critical analysis and comparison of SEMA versus Terz versus Retta. Now to the watchful observer or the, uh, well listening observer, you may notice that I didn't say specific names there. And the reason is because one of those specific. Got me a, warning on my video or excuse me, my channel previously before I even published the video.",
+            "top_context": "Hey everybody, this is Hunter Williams. I hope you were doing amazing wherever you are at in the world. Today's video is going to be a critical analysis and comparison of SEMA versus Terz versus Retta. Now to the watchful observer or the, uh, well listening observer, you may notice that I didn't say specific names there. And the reason is because one of those specific. Got me a, warning on my video or excuse me, my channel previously before I even published the video. So I had to upload the and publish it. Anyway, uh, throughout this slide presentation and video, I will do my best to not say those names. Do not trigger anything because I firmly know this will be a helpful and informative video to you guys out there. What I wanted to do was a critical analysis. Now that we have a lot of data in on GLP one peptides, And as more and more of these peptides are coming to the forefront and advanced ones are being developed, I wanted to kind of take a look back at the three that we have access to via research companies and really compare them together.",
+            "first_timestamp": "0:09"
+          },
+          {
+            "source_id": "ozempic-is-snake-venom-top-8-glp-1-myths-debunked--940e1d99",
+            "source_type": "library-video",
+            "source_title": "Ozempic Is Snake Venom Top 8 GLP-1 Myths Debunked",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/ozempic-is-snake-venom-top-8-glp-1-myths-debunked--940e1d99/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/ozempic-is-snake-venom-top-8-glp-1-myths-debunked--940e1d99.json",
+            "mention_count": 22,
+            "top_snippet": "Hey everybody, my name is Hunter Williams. I hope you were doing amazing wherever you are out in the world. Today's video is going to be about how Ozempic is snake venom. Just kidding. today's Video is, uh, going talk about that a little bit, but what I'm actually going do is debunk the eight most common myths around GOP one peptide use. And, if there is any credence to these, how we can actually combat them and, end up, you know, not having any of the issues that are so widely reported in the media. So this kind of came to me this week. Someone sent a video to be of some doctor talking about how there's literally venom in GLB1 peptides that it's harvested from the venom of snakes.",
+            "top_context": "Hey everybody, my name is Hunter Williams. I hope you were doing amazing wherever you are out in the world. Today's video is going to be about how Ozempic is snake venom. Just kidding. today's Video is, uh, going talk about that a little bit, but what I'm actually going do is debunk the eight most common myths around GOP one peptide use. And, if there is any credence to these, how we can actually combat them and, end up, you know, not having any of the issues that are so widely reported in the media. So this kind of came to me this week. Someone sent a video to be of some doctor talking about how there's literally venom in GLB1 peptides that it's harvested from the venom of snakes. And then all of these people are injecting themselves with it. What I wanted to do is just kind in my style and fashion, systematically break down if that's true and then along with some of the other myths out there, about GLP-1 peptides. And in celebration of the course that Jay and I have just launched, which is the ultimate GLp-one user's manual, how to use GLPs ones to maximize fat loss, maintain muscle, and improve longevity. I firmly believe that GL1-peptides are going to be the cornerstone of anti-aging and longevity medicine over the next 10 to 20 years.",
+            "first_timestamp": "0:09"
+          },
           {
             "source_id": "0TyW-wlJMxo",
             "source_type": "podcast",
@@ -84,114 +120,78 @@
             "source_url": null,
             "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-04-28-retatrutide-vs-alcohol.md",
             "mention_count": 15,
-            "top_snippet": "xin and poison - physically and metaphysically. Ironically enough, GLP-1 peptides seem to reduce interest and cravings for alcohol dramatically. And today, I’m sharing with you my insights on a ground",
-            "top_context": "xin and poison - physically and metaphysically. Ironically enough, GLP-1 peptides seem to reduce interest and cravings for alcohol dramatically. And today, I’m sharing with you my insights on a groundbreaking new study that puts this concept to the test. If you thought GLP-1 peptides like semaglutide, tirzepatide, and retatrutide were just about shredding body fat, buckle up—because we’re about to see just how powerful these compounds can be for the brain, addiction, and specifically alcohol cravings! ——————————————————————————— **GLP-1s and Alcohol** You’ve probably seen the headl",
+            "top_snippet": "ell toxin and poison - physically and metaphysically. Ironically enough, GLP-1 peptides seem to reduce interest and cravings for alcohol dramatically. And today, I’m sharing with you my insights on a ",
+            "top_context": "ell toxin and poison - physically and metaphysically. Ironically enough, GLP-1 peptides seem to reduce interest and cravings for alcohol dramatically. And today, I’m sharing with you my insights on a groundbreaking new study that puts this concept to the test. If you thought GLP-1 peptides like semaglutide, tirzepatide, and retatrutide were just about shredding body fat, buckle up—because we’re about to see just how powerful these compounds can be for the brain, addiction, and specifically alcohol cravings! ——————————————————————————— **GLP-1s and Alcohol** You’ve probably seen the headlines—GLP",
             "first_timestamp": null
           },
           {
-            "source_id": "196177296bf4b2dd",
-            "source_type": "email",
-            "source_title": "Do GLP-1s Drop Your Blood Sugar TOO Low?",
-            "source_date": "2025-04-08",
-            "source_url": null,
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-04-08-do-glp-1s-drop-your-blood-sugar-too-low.md",
-            "mention_count": 9,
-            "top_snippet": "ithout the risk of blood sugar crashes. Let’s dive in! ——————————————————————————— **How GLP-1 Peptides Actually Work (And Why That Matters)** First things first: to understand why hypoglycemia is rar",
-            "top_context": "ithout the risk of blood sugar crashes. Let’s dive in! ——————————————————————————— **How GLP-1 Peptides Actually Work (And Why That Matters)** First things first: to understand why hypoglycemia is rare with GLP-1 peptides, you need to know how they work. **GLP-1 peptides** (including Semaglutide, Tirzepatide, and Retatrutide) mimic a hormone naturally produced in your gut when you eat, called **GLP-1 (Glucagon-like peptide-1)**. Your body naturally releases GLP-1 after meals, signaling your pancreas to produce insulin—but **only when your blood sugar is already elevated.** This is c",
-            "first_timestamp": null
+            "source_id": "glp-1-diet-disasters-why-your-gut-is-suffering-and-how-to-fix-it--a49b95bb",
+            "source_type": "library-video",
+            "source_title": "GLP-1 Diet Disasters Why Your Gut is Suffering And How to Fix It",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/glp-1-diet-disasters-why-your-gut-is-suffering-and-how-to-fix-it--a49b95bb/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/glp-1-diet-disasters-why-your-gut-is-suffering-and-how-to-fix-it--a49b95bb.json",
+            "mention_count": 14,
+            "top_snippet": "And we're going to learn why so many people seem to have problems with their stomach when they're on a GLp-one. So GL p- one receptor agonists, such as semaglutide, turzapotide and retitrutide have obviously revolutionized treatments for obesity. I think that is even an understatement and also type two diabetes by curbing appetite and slowing gastric emptying. Now people usually hear gastrik empting and they think, that's the worst thing in the world, right? Not so much. And again, like I said, it's kind of taking things out of context. I think people associate that with a negative.",
+            "top_context": "out there doing all this bio-hacking stuff. I love the people inside there. That's our community. And I just can't speak highly enough of the People. It's great that Jay and I are there, but really once people come in, they realize that the community is the power and the high vibration nature of The community and high-vibration people we have really make it special. So without further ado, I'm going to share my screen and today we're going To learn why you are the problem. I am the Problem, right? Take responsibility. All right, today's video is all about GLP-1 peptides, gut dysregulation, and the diet. And we're going to learn why so many people seem to have problems with their stomach when they're on a GLp-one. So GL p- one receptor agonists, such as semaglutide, turzapotide and retitrutide have obviously revolutionized treatments for obesity. I think that is even an understatement and also type two diabetes by curbing appetite and slowing gastric emptying. Now people usually hear gastrik empting and they think, that's the worst thing in the world, right? Not so much. And again, like I said, it's kind of taking things out of context. I think people associate that with a negative. So by keeping food in the stomach longer, these peptides promote satiety, which is a feeling of fullness and weight loss. However, the delayed gastric emptying, a form of quote unquote induced gastroparesis, can create a fertile environment for gastrointestinal dysregulation. So when compounded by a high fat diet like keto or carnivore known to alter gut motility and microbiome balance and pre-existing dysbiosis such as candida or SIBO, otherwise known as small intestinal bacterial overgrowth, the result may be exacerbated GI symptoms, suboptimal outcomes,",
+            "first_timestamp": "5:13"
           },
           {
-            "source_id": "1962c0bf552bce90",
-            "source_type": "email",
-            "source_title": "Big Pharma’s War on Your Peptide Supply",
-            "source_date": "2025-04-12",
-            "source_url": null,
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-04-12-big-pharma-s-war-on-your-peptide-supply.md",
-            "mention_count": 7,
-            "top_snippet": "There’s a storm brewing in the world of therapeutic peptides and GLP-1 agonists. If you’re plugged into biohacking circles or therapeutic peptides, you already know the amazing benefits that compounds",
-            "top_context": "There’s a storm brewing in the world of therapeutic peptides and GLP-1 agonists. If you’re plugged into biohacking circles or therapeutic peptides, you already know the amazing benefits that compounds like semaglutide, tirzepatide, and retatrutide bring to the table. For millions of people, they’re life-changing, essential compounds. Yet despite their profound benefits, there’s a battle going on behind the scenes. Big Pharma companies—who once relied heavily on compounding pharmacies and research chemical",
-            "first_timestamp": null
+            "source_id": "glp-1s-and-anhedonia-why-some-people-lose-motivation-and-pleasure--6500beb6",
+            "source_type": "library-video",
+            "source_title": "GLP-1s and Anhedonia: Why Some People Lose Motivation and Pleasure",
+            "source_date": "2026-03-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/glp-1s-and-anhedonia-why-some-people-lose-motivation-and-pleasure--6500beb6/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/glp-1s-and-anhedonia-why-some-people-lose-motivation-and-pleasure--6500beb6.json",
+            "mention_count": 13,
+            "top_snippet": "And we're going to really look at semaglutide, terzapotide and retitrutide. I'm also going talk about coagulantide in this. Now, obviously coaguilentide is not a GLp-one peptide it's actually an amylin analog, but there are lots of cases that I've seen people have this same effect from coagiulentides. We'll talk that too, even though it is a not GL p- one. But just to give a little background, you may have never heard of this word. really just because this isn't the area of mental health that I have studied through my life, but this concept of anhedonia.",
+            "top_context": "So we'll go into a little bit of that as well. But thank you guys so much. Before I jump into the slides, as always, make sure you're on email list down below. Check out my private group, the Axion Collective that's growing. A lot of really cool people in there. We're doing some good things. we do teaching calls every Thursday night. or we have a structured curriculum and we go over everything. And then also to just make sure you're on the email list in case any of my channels get banned off platforms, whatever, you know where to be. So without further ado, we're going to jump into the slides and today talk about GLP-1 peptides and anhedonia. All right, let's get into it, anhedonia and motivational blunting from GLP-1 agonist. And we're going to really look at semaglutide, terzapotide and retitrutide. I'm also going talk about coagulantide in this. Now, obviously coaguilentide is not a GLp-one peptide it's actually an amylin analog, but there are lots of cases that I've seen people have this same effect from coagiulentides. We'll talk that too, even though it is a not GL p- one. But just to give a little background, you may have never heard of this word. really just because this isn't the area of mental health that I have studied through my life, but this concept of anhedonia. So if you've never heard of it, basically it's the reduced ability to experience pleasure or interest in activities that were once enjoyable. It's a core symptom of clinical depression but can occur independently of depression. so it doesn't necessarily mean someone's depressed, Take whatever activity that you enjoy doing that, you get the most fun out of doing. Maybe that's playing golf for you. If you, get supreme joy out, of playing, golf, and then all of a sudden, one day you have no interest in playing. Golf, You don't get, the same enjoyment.",
+            "first_timestamp": "2:51"
           },
           {
-            "source_id": "1985855730c4a97f",
-            "source_type": "email",
-            "source_title": "New Cagrilintide Studies Out",
-            "source_date": "2025-07-29",
-            "source_url": null,
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-07-29-new-cagrilintide-studies-out.md",
-            "mention_count": 7,
-            "top_snippet": "n’s primary role? Satiety and blood sugar regulation. In other words, cagrilintide works by **amplifying your body’s natural “I’m full, stop eating” signals** and tightening up post-meal blood sugar s",
-            "top_context": "n’s primary role? Satiety and blood sugar regulation. In other words, cagrilintide works by **amplifying your body’s natural “I’m full, stop eating” signals** and tightening up post-meal blood sugar swings. But the real magic happens when you combine cagrilintide with GLP-1 agonists like semaglutide or retatrutide. ——————————————————————————— **The Newest Studies** The most recent studies, published just weeks ago in [_The New England Journal of Medicine_](https://www.nejm.org/doi/full/10.1056/NEJMoa2502081), have put cagrilintide to the test in over **4,500 real-world humans**.",
-            "first_timestamp": null
-          },
-          {
-            "source_id": "19ab8288a9f895cd",
-            "source_type": "email",
-            "source_title": "GLP-1s Cause Blindness?!",
-            "source_date": "2025-11-24",
-            "source_url": null,
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-11-24-glp-1s-cause-blindness.md",
-            "mention_count": 6,
-            "top_snippet": "ttps://biolongevitylabs.com/product/glp-3-10mg/) on sale for 30% off. You can get an additonal 15% off when you use code HUNTERW at checkout!“ — ——————————————————————————— **The Rumors** The panic st",
-            "top_context": "ttps://biolongevitylabs.com/product/glp-3-10mg/) on sale for 30% off. You can get an additonal 15% off when you use code HUNTERW at checkout!“ — ——————————————————————————— **The Rumors** The panic started with a few observational studies showing an association between GLP-1 drugs (mostly Semaglutide and occasionally Tirzepatide) and NAION, a rare condition known as non-arteritic anterior ischemic optic neuropathy. This condition is often described as an “optic nerve stroke.” Notice that word. **Stroke.** Not “drug-induced retinal destruction.” Not “drug melting your optic nerve.",
-            "first_timestamp": null
-          },
-          {
-            "source_id": "198e3425b7ae3da6",
-            "source_type": "email",
-            "source_title": "Oral GLP-1s are HERE",
-            "source_date": "2025-08-25",
-            "source_url": null,
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-08-25-oral-glp-1s-are-here.md",
-            "mention_count": 5,
-            "top_snippet": "Happy Monday! I hope that after reading today’s email, you are as excited as I am about the future of metabolic medicine. For years, people have been chasing the “holy grail” of weight loss and glucos",
-            "top_context": "Happy Monday! I hope that after reading today’s email, you are as excited as I am about the future of metabolic medicine. For years, people have been chasing the “holy grail” of weight loss and glucose control without injections. We’ve witnessed the meteoric rise of semaglutide, tirzepatide, and retatrutide. But behind the scenes, researchers have been working on a **small-molecule pill that acts like a GLP-1 receptor agonist**. That drug is **orforglipron**, and it represents a completely new era. Unlike peptide-based GLP-1s that require refrigeration and inje",
-            "first_timestamp": null
-          },
-          {
-            "source_id": "196a11deace2e80d",
-            "source_type": "email",
-            "source_title": "GLP-1s For Dementia?",
-            "source_date": "2025-05-05",
-            "source_url": null,
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-05-05-glp-1s-for-dementia.md",
-            "mention_count": 4,
-            "top_snippet": "grace mankind thus far. When used properly, they can massively enhance well-being in unhealthy AND healthy people. A groundbreaking meta-analysis published recently in the _Journal of Neurology, Neuro",
-            "top_context": "grace mankind thus far. When used properly, they can massively enhance well-being in unhealthy AND healthy people. A groundbreaking meta-analysis published recently in the _Journal of Neurology, Neurosurgery & Psychiatry_ revealed some truly exciting cognitive benefits of GLP-1 peptides like semaglutide, tirzepatide, and especially the powerful new kid on the block—**retatrutide**. If you want to dive deep into the science yourself (and I highly recommend you do), here’s a link to the original study: 👉 [Read the study here](https://jnnp.bmj.com/content/early/2025/04/10/jnnp-2024-335593?utm_",
-            "first_timestamp": null
+            "source_id": "oral-glp-1s-are-here-deep-dive-on-orforglipron--8d50089f",
+            "source_type": "library-video",
+            "source_title": "Oral GLP-1s Are Here Deep Dive on Orforglipron",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/oral-glp-1s-are-here-deep-dive-on-orforglipron--8d50089f/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/oral-glp-1s-are-here-deep-dive-on-orforglipron--8d50089f.json",
+            "mention_count": 13,
+            "top_snippet": "So it also binds to a unique pocket deep in the receptors transmembrane domain rather than at the native peptide binding site, yet it still activates the receptor effectively. It produces the same key metabolic actions as injectable GLP-1s, which are enhanced glucose-dependent insulin secretion, suppressed glucagon release, slowed gastric emptying, and reduced appetite. So, now let's look at some of the advantages of this. Unlike oral semaglutide, you may have heard of that, it's called Ribelsis.",
+            "top_context": "And we're gonna see in the data that people at higher doses obviously lost higher weight. But what will be interesting to see is if that effect will carry through to where they have it long-term with this appetite suppression, whereas with triseptide or trutide, people will go on long term and really the effects completely diminish. So even if you're taking 12 milligrams of Reddit per week, if have been doing that for a year, you are not gonna really feel that much different over time in a long run. We'll see how that ends up happening, but based on the mechanism, it would lead us to believe that that would be the case. So it also binds to a unique pocket deep in the receptors transmembrane domain rather than at the native peptide binding site, yet it still activates the receptor effectively. It produces the same key metabolic actions as injectable GLP-1s, which are enhanced glucose-dependent insulin secretion, suppressed glucagon release, slowed gastric emptying, and reduced appetite. So, now let's look at some of the advantages of this. Unlike oral semaglutide, you may have heard of that, it's called Ribelsis. was not a good drug when they looked at it, but Orfolipon requires no absorption enhancer, like an oral peptide would, and can be taken without regard to meals, so you don't have to be fasting. So to walk that back a little bit, Ribelsis had these weird requirements, which are not weird if you think about it. But it was an oil version of peptides. And so, you had to take it with a bit of water, You had take with an absorption of enhancers, And you could not take fasted. Whereas this has no requirement. You can take a fast, or you can it take food. It doesn't matter, it has the same effect.",
+            "first_timestamp": "5:29"
           }
         ],
         "acute_signals": [
           {
-            "snippet": "rs trained rats to recognize the subjective feeling of alcohol intoxication using a method called operant drug discrimination. Basically, they taught the rats to push a specific lever after feeling al",
+            "snippet": "rchers trained rats to recognize the subjective feeling of alcohol intoxication using a method called operant drug discrimination. Basically, they taught the rats to push a specific lever after feelin",
             "source_title": "Retatrutide Vs. Alcohol",
             "source_date": "2025-04-28",
             "timestamp": null,
             "source_url": null
           },
           {
-            "snippet": "od called operant drug discrimination. Basically, they taught the rats to push a specific lever after feeling alcohol’s effects, distinguishing clearly from a lever pushed when sober. Then they introd",
+            "snippet": "g a method called operant drug discrimination. Basically, they taught the rats to push a specific lever after feeling alcohol’s effects, distinguishing clearly from a lever pushed when sober. Then the",
             "source_title": "Retatrutide Vs. Alcohol",
             "source_date": "2025-04-28",
             "timestamp": null,
             "source_url": null
           },
           {
-            "snippet": "rant drug discrimination. Basically, they taught the rats to push a specific lever after feeling alcohol’s effects, distinguishing clearly from a lever pushed when sober. Then they introduced semaglut",
+            "snippet": "lled operant drug discrimination. Basically, they taught the rats to push a specific lever after feeling alcohol’s effects, distinguishing clearly from a lever pushed when sober. Then they introduced ",
             "source_title": "Retatrutide Vs. Alcohol",
             "source_date": "2025-04-28",
             "timestamp": null,
             "source_url": null
           },
           {
-            "snippet": "discrimination. Basically, they taught the rats to push a specific lever after feeling alcohol’s effects, distinguishing clearly from a lever pushed when sober. Then they introduced semaglutide, tirze",
+            "snippet": "ant drug discrimination. Basically, they taught the rats to push a specific lever after feeling alcohol’s effects, distinguishing clearly from a lever pushed when sober. Then they introduced semagluti",
             "source_title": "Retatrutide Vs. Alcohol",
             "source_date": "2025-04-28",
             "timestamp": null,
             "source_url": null
           },
           {
-            "snippet": "ght the rats to push a specific lever after feeling alcohol’s effects, distinguishing clearly from a lever pushed when sober. Then they introduced semaglutide, tirzepatide, and retatrutide. Here’s the",
+            "snippet": "they taught the rats to push a specific lever after feeling alcohol’s effects, distinguishing clearly from a lever pushed when sober. Then they introduced semaglutide, tirzepatide, and retatrutide. He",
             "source_title": "Retatrutide Vs. Alcohol",
             "source_date": "2025-04-28",
             "timestamp": null,
@@ -221,14 +221,14 @@
             "source_url": "https://youtu.be/tcaX0xrCMR4"
           },
           {
-            "snippet": "re turning to GLP-1 peptides: * **Fat Loss and Improved Body Composition: **GLP-1 peptides significantly reduce body fat—especially visceral (belly) fat, one of the worst markers for healthspan and lo",
+            "snippet": "rs are turning to GLP-1 peptides: * **Fat Loss and Improved Body Composition: **GLP-1 peptides significantly reduce body fat—especially visceral (belly) fat, one of the worst markers for healthspan an",
             "source_title": "Do GLP-1s Drop Your Blood Sugar TOO Low?",
             "source_date": "2025-04-08",
             "timestamp": null,
             "source_url": null
           },
           {
-            "snippet": "in sensitivity, lower inflammation, reduce liver fat, lower cholesterol, and support overall metabolic health. * **Brain and Energy Benefits: **Improved metabolism, vascular health, and lower inflamma",
+            "snippet": "nsulin sensitivity, lower inflammation, reduce liver fat, lower cholesterol, and support overall metabolic health. * **Brain and Energy Benefits: **Improved metabolism, vascular health, and lower infl",
             "source_title": "Do GLP-1s Drop Your Blood Sugar TOO Low?",
             "source_date": "2025-04-08",
             "timestamp": null,
@@ -642,25 +642,26 @@
   },
   "reset_biology_synthesis": {
     "status": "distilled",
-    "recommendation": "Reset Biology suggests asking the practitioner to weigh a sharply divided expert picture: Hunter and Taylor still endorse semaglutide as a working GLP-1 protocol when retatrutide is unavailable (Hunter 2023 baseline_protocol \"Dose\" \"250 mcg,\" \"Frequency\" \"Once per week,\" \"Duration\" \"8 weeks on, 8 weeks off\"; Taylor (S4hfIPWRKZ0 00:06:13.160): \"I typically take 250 microgram once a week and I do an 8we on 8 we off rotation\"), while Trevor (Fj9_wLXso1c 00:10:08.360): \"semaglutide and your tirzepatides, both of those are muscle wasting 100%\" and (8g4I9x22VNk 00:19:12.960): \"It is a single pathway, GLP-1. It's garbage.\" We'd ask the prescribing physician to weigh body-composition risk via DEXA, the heightened nausea/GI burden Taylor flags, and whether the patient can access retatrutide before opening a semaglutide course.",
-    "caveats": "- Muscle wasting / sarcopenia signal: Trevor (Fj9_wLXso1c 00:10:08.360, 2025-10-30): \"semaglutide and your tirzepatides, both of those are muscle wasting 100%\"; Trevor (QrACVICgbyk 00:19:58.640, 2025-07-25): \"Semaglutide and tzepide, 30% at most of your tissue lost is fat. That leaves 70% of stuff that you needed that your body got rid of\"; Trevor (tPS7ZPhiOGI 00:08:14.800, 2025-08-25): \"semaglutide or tzepide which are both garbage. garbage. 100% rebound effect and muscle wasting.\"\n- GI / nausea burden: Taylor (S4hfIPWRKZ0 00:05:38.440, 2024-10-29): \"especially semi glutide you're going to notice some um really harsh side effects\"; Taylor (j9pTgtor55A 00:04:53.759, 2024-04-01): \"have found with seml glutide is that they do get more side effects with it so a lot of people experience nausea a lot of people experience like irritable bowels.\"\n- Optic-nerve (NAION) association: Hunter email threadId 19ab8288a9f895cd (2025-11-24): \"observational studies showing an association between GLP-1 drugs (mostly Semaglutide and occasionally Tirzepatide) and NAION, a rare condition known as non-arteritic anterior ischemic optic neuropathy\" and \"the EMA warning that made headlines applied specifically to Semaglutide, not Tirzepatide, and even that was classified as a 'very rare' event.\"\n- Hypoglycemia risk hedge: Hunter email threadId 196177296bf4b2dd (2025-04-08): \"Clinical studies repeatedly show minimal risk of hypoglycemia unless combined with other insulin-stimulating drugs (like sulfonylureas).\"\n- Cycling discipline: Hunter 2023 baseline_protocol lists \"Duration\" \"8 weeks on, 8 weeks off\"; Taylor (S4hfIPWRKZ0 00:06:13.160): \"my dosing is only 8 weeks with semaglutide is because for me I just I don't feel well when I use this peptide so I don't like to be on it for longer periods of time.\"\n- Trevor's blanket non-recommendation: Trevor (8g4I9x22VNk 00:19:12.960, 2025-10-03): \"'Can I use semaglutide?' No. It is a single pathway, GLP-1. It's garbage.\"",
-    "cross_expert_consensus": "Mechanism — all three frame semaglutide as a GLP-1 receptor agonist that slows gastric emptying, increases satiety, and triggers glucose-dependent insulin release. Hunter email threadId 196177296bf4b2dd (2025-04-08): \"GLP-1 peptides (including Semaglutide, Tirzepatide, and Retatrutide) mimic a hormone naturally produced in your gut when you eat, called GLP-1 (Glucagon-like peptide-1). Your body naturally releases GLP-1 after meals, signaling your pancreas to produce insulin—but only when your blood sugar is already elevated.\" Taylor (S4hfIPWRKZ0 00:06:13.160, 2024-10-29): \"semaglutide does do a really good job with helping with blood sugar control.\" Trevor (D5766FmqUzk 00:06:43.280, 2025-07-03): \"Semaglutide is a what's called a GLP1 receptor agonist… It is a gut hormone. GLP-1 is a gut hormone. Glucagon like peptide 1 is what it stands for. Your intestines release it when you eat. And its job is to tell your brain you're full. It's to slow down your stomach. It's to boost insulin and it's to drop glucagon.\" Side effects — Hunter and Taylor both surface a heavier nausea/GI profile compared with tirzepatide and retatrutide: Taylor (j9pTgtor55A 00:04:53.759): \"have found with seml glutide is that they do get more side effects with it so a lot of people experience nausea a lot of people experience like irritable bowels.\" Hunter email threadId 198e3425b7ae3da6 (2025-08-25): \"Unlike semaglutide or tirzepatide, the appetite suppression didn't cause nausea\" (contrasting BioZapetite favorably).",
-    "cross_expert_disagreement": "Whether semaglutide should be used at all. Hunter still treats semaglutide as a legitimate GLP-1 therapy and even cites cardiovascular and oncology upside — Hunter email threadId 196177296bf4b2dd (2025-04-08): \"Recent landmark trials (like SELECT) show Semaglutide reduces cardiovascular events even in non-diabetics, leading to fewer heart attacks, strokes, and overall better longevity prospects\" and Hunter (tcaX0xrCMR4 00:43:09.920, 2026-04-24): \"I know semaglutide should reduce cancer risk.\" Taylor uses semaglutide herself in a structured 250 mcg / weekly / 8-on-8-off frame (S4hfIPWRKZ0 00:06:13.160, 2024-10-29) but ranks it last of the three GLP-1s — Taylor (j9pTgtor55A 00:04:53.759, 2024-04-01): \"semaglutide is definitely going to do that but what I have found and what some of my clients have found with seml glutide is that they do get more side effects with it.\" Trevor rejects semaglutide outright on body-composition grounds — Trevor (8g4I9x22VNk 00:19:12.960, 2025-10-03): \"'Can I use semaglutide?' No. It is a single pathway, GLP-1. It's garbage. Just garbage.\" Trevor (QrACVICgbyk 00:19:58.640, 2025-07-25): \"Semaglutide and tzepide, 30% at most of your tissue lost is fat. That leaves 70% of stuff that you needed that your body got rid of.\" Trevor (Fj9_wLXso1c 00:10:08.360, 2025-10-30): \"semaglutide and your tirzepatides, both of those are muscle wasting 100%.\" Newer Trevor content (2025-2026) is operative on his side; Hunter's GLP-1-positive framing comes from emails dated 2025-04-08 and 2025-04-12 and confirmed in podcast 2026-04-24 — both sides are current, no temporal override.",
+    "recommendation": "Reset Biology suggests asking the prescribing physician to weigh Hunter's newer library-site position against the 2023-frozen baseline. Hunter (2026-03-29, semaglutide-vs-tirzepatide-vs-reta-a-critical-data-analysis--cbdc9b2a 00:03:38, https://library.hunterwilliamshealth.com/p/semaglutide-vs-tirzepatide-vs-reta-a-critical-data-analysis--cbdc9b2a/): \"I think if you're still using semi-glutide, you are behind the times. for sure\"; Hunter (2026-03-29, stop-doing-weekly-glp-1-injections-microdose-instead-heres-why--7969d5ef 00:22:41, https://library.hunterwilliamshealth.com/p/stop-doing-weekly-glp-1-injections-microdose-instead-heres-why--7969d5ef/): \"don't inject once per week. Inject three to four times per weeks.\" Hunter's 2023 baseline remains the dated historical record: \"Dose\" \"250 mcg\"; \"Frequency\" \"Once per week\"; \"Duration\" \"8 weeks on, 8 weeks off.\"",
+    "caveats": "- Hunter (2026-03-29, semaglutide-vs-tirzepatide-vs-reta-a-critical-data-analysis--cbdc9b2a 00:09:30, https://library.hunterwilliamshealth.com/p/semaglutide-vs-tirzepatide-vs-reta-a-critical-data-analysis--cbdc9b2a/): \"with SEMA, we have around 25 to 30% of it being muscle\"; Hunter (00:11:17): \"muscle loss can be mitigated with resistance training and adequate protein intake during this.\"\n- Hunter (2026-03-29, ozempic-is-snake-venom-top-8-glp-1-myths-debunked--940e1d99 00:15:51, https://library.hunterwilliamshealth.com/p/ozempic-is-snake-venom-top-8-glp-1-myths-debunked--940e1d99/): \"the Boxed Warning advises against using GOp1 medication to individuals with a personal or family history of MTC or MEN2.\"\n- Hunter (2026-03-29, ozempic-is-snake-venom-top-8-glp-1-myths-debunked--940e1d99 00:19:34, https://library.hunterwilliamshealth.com/p/ozempic-is-snake-venom-top-8-glp-1-myths-debunked--940e1d99/): \"nausea, diarrhea, decreased appetite, vomiting, constipation and digestion.\"\n- Taylor (2024-10-29, S4hfIPWRKZ0 00:05:38.440, https://youtu.be/S4hfIPWRKZ0): \"especially semi glutide you're going to notice some um really harsh side effects.\"\n- Trevor (2025-10-03, 8g4I9x22VNk 00:19:12.960, https://youtu.be/8g4I9x22VNk): \"Can I use semaglutide? No. It is a single pathway, GLP-1. It's garbage. Just garbage.\"",
+    "cross_expert_consensus": "Hunter (2026-03-29, ozempic-is-snake-venom-top-8-glp-1-myths-debunked--940e1d99 00:05:36, https://library.hunterwilliamshealth.com/p/ozempic-is-snake-venom-top-8-glp-1-myths-debunked--940e1d99/): \"It is a once weekly GLP-1 agonist that has shown significant efficacy in lowering blood glucose and in doing so, providing weight loss.\" Taylor (2024-10-29, S4hfIPWRKZ0 00:06:13.160, https://youtu.be/S4hfIPWRKZ0): \"semaglutide does do a really good job with helping with blood sugar control.\" Trevor (2025-07-03, D5766FmqUzk 00:06:43.280, https://youtu.be/D5766FmqUzk): \"Semaglutide is a what's called a GLP1 receptor agonist. It is a gut hormone. GLP-1 is a gut hormone.\"",
+    "cross_expert_disagreement": "Hunter's newer library evidence (2026-03-29, semaglutide-vs-tirzepatide-vs-reta-a-critical-data-analysis--cbdc9b2a 00:03:38, https://library.hunterwilliamshealth.com/p/semaglutide-vs-tirzepatide-vs-reta-a-critical-data-analysis--cbdc9b2a/): \"I think if you're still using semi-glutide, you are behind the times. for sure\" and Hunter (2026-03-29, ozempic-is-snake-venom-top-8-glp-1-myths-debunked--940e1d99 00:32:06, https://library.hunterwilliamshealth.com/p/ozempic-is-snake-venom-top-8-glp-1-myths-debunked--940e1d99/): \"Participants experience fat loss with preservation of lean body mass.\" Taylor (2024-10-29, S4hfIPWRKZ0 00:06:13.160, https://youtu.be/S4hfIPWRKZ0): \"I typically take 250 microgram once a week and I do an 8we on 8 we off rotation with this peptide.\" Trevor (2025-10-03, 8g4I9x22VNk 00:19:12.960, https://youtu.be/8g4I9x22VNk): \"Can I use semaglutide? No. It is a single pathway, GLP-1. It's garbage. Just garbage.\"",
     "acute_chronic_split": {
       "acute": null,
       "chronic": {
-        "dose": "Hunter 2023 baseline_protocol lists \"Dose\" \"250 mcg\"; Taylor (S4hfIPWRKZ0 00:06:13.160, 2024-10-29): \"I typically take 250 microgram once a week.\" Trevor offers no semaglutide-specific chronic dose — Trevor (8g4I9x22VNk 00:19:12.960, 2025-10-03): \"'Can I use semaglutide?' No.\"",
-        "route": "Subcutaneous injection per Hunter 2023 baseline_protocol \"vial_mg\" \"3 mg\" / \"bac_mL\" \"2 mL\" / \"units_on_1mL_insulin\" \"17.\" Trevor (D5766FmqUzk, 2025-07-03): \"when you inject semaglutide in the atapost tissue, the belly fat.\"",
-        "frequency": "Hunter 2023 baseline_protocol lists \"Frequency\" \"Once per week\"; Taylor (S4hfIPWRKZ0 00:06:13.160): \"once a week.\"",
-        "duration": "Hunter 2023 baseline_protocol lists \"Duration\" \"8 weeks on, 8 weeks off\"; Taylor (S4hfIPWRKZ0 00:06:13.160): \"I do an 8we on 8 we off rotation\" and \"the reason why my dosing is only 8 weeks with semaglutide is because for me I just I don't feel well when I use this peptide so I don't like to be on it for longer periods of time.\"",
-        "verbatim_citation": "Taylor (S4hfIPWRKZ0 00:06:13.160, 2024-10-29): \"I typically take 250 microgram once a week and I do an 8we on 8 we off rotation with this peptide.\" Hunter 2023 baseline_protocol: \"Dose\" \"250 mcg,\" \"Timing\" \"AM,\" \"Frequency\" \"Once per week,\" \"Duration\" \"8 weeks on, 8 weeks off.\"",
-        "episode_url": "https://youtu.be/S4hfIPWRKZ0",
-        "timestamp": "00:06:13.160 (Taylor); Hunter 2023 baseline_protocol cheat-sheet"
+        "dose": "Hunter (2026-03-29, semaglutide-vs-tirzepatide-vs-reta-a-critical-data-analysis--cbdc9b2a 00:03:00, https://library.hunterwilliamshealth.com/p/semaglutide-vs-tirzepatide-vs-reta-a-critical-data-analysis--cbdc9b2a/): \"starting at 0.25 milligrams, or 250 micrograms. It goes up to 500 micro grams, then one milligram, and then ultimately 2.4 milligram\"; Taylor (2024-10-29, S4hfIPWRKZ0 00:06:13.160, https://youtu.be/S4hfIPWRKZ0): \"I typically take 250 microgram once a week\"; Hunter 2023 baseline: \"Dose\" \"250 mcg\".",
+        "route": "Hunter (2026-03-29, ozempic-is-snake-venom-top-8-glp-1-myths-debunked--940e1d99 00:05:36, https://library.hunterwilliamshealth.com/p/ozempic-is-snake-venom-top-8-glp-1-myths-debunked--940e1d99/): \"It is a once weekly GLP-1 agonist\"; Hunter (2026-03-29, stop-doing-weekly-glp-1-injections-microdose-instead-heres-why--7969d5ef 00:04:08, https://library.hunterwilliamshealth.com/p/stop-doing-weekly-glp-1-injections-microdose-instead-heres-why--7969d5ef/): \"you would do a once-week injection.\"",
+        "frequency": "Hunter's 2023 baseline: \"Frequency\" \"Once per week\"; Taylor (2024-10-29, S4hfIPWRKZ0 00:06:13.160, https://youtu.be/S4hfIPWRKZ0): \"once a week\"; Hunter's newer library video (2026-03-29, stop-doing-weekly-glp-1-injections-microdose-instead-heres-why--7969d5ef 00:22:41, https://library.hunterwilliamshealth.com/p/stop-doing-weekly-glp-1-injections-microdose-instead-heres-why--7969d5ef/): \"don't inject once per week. Inject three to four times per weeks.\"",
+        "duration": "Hunter's 2023 baseline: \"Duration\" \"8 weeks on, 8 weeks off\"; Taylor (2024-10-29, S4hfIPWRKZ0 00:06:13.160, https://youtu.be/S4hfIPWRKZ0): \"I do an 8we on 8 we off rotation\"; Hunter (2026-03-29, ozempic-is-snake-venom-top-8-glp-1-myths-debunked--940e1d99 00:35:20, https://library.hunterwilliamshealth.com/p/ozempic-is-snake-venom-top-8-glp-1-myths-debunked--940e1d99/): \"for every eight to 12 weeks of use, take four to eight weeks to maintain sensitivity to GOP one\".",
+        "verbatim_citation": "Hunter (2026-03-29, semaglutide-vs-tirzepatide-vs-reta-a-critical-data-analysis--cbdc9b2a 00:03:00, https://library.hunterwilliamshealth.com/p/semaglutide-vs-tirzepatide-vs-reta-a-critical-data-analysis--cbdc9b2a/): \"starting at 0.25 milligrams, or 250 micrograms. It goes up to 500 micro grams, then one milligram, and then ultimately 2.4 milligram\"; Hunter (2026-03-29, stop-doing-weekly-glp-1-injections-microdose-instead-heres-why--7969d5ef 00:22:41, https://library.hunterwilliamshealth.com/p/stop-doing-weekly-glp-1-injections-microdose-instead-heres-why--7969d5ef/): \"don't inject once per week. Inject three to four times per weeks.\"",
+        "episode_url": "https://library.hunterwilliamshealth.com/p/semaglutide-vs-tirzepatide-vs-reta-a-critical-data-analysis--cbdc9b2a/; https://library.hunterwilliamshealth.com/p/stop-doing-weekly-glp-1-injections-microdose-instead-heres-why--7969d5ef/",
+        "timestamp": "00:03:00; 00:22:41"
       }
     },
-    "female_specific_notes": "Taylor's two semaglutide-anchor episodes are framed for women (Taylor episode S4hfIPWRKZ0 \"Semaglutide vs Tirzepatide vs Retatutide: Which Peptide Is Best for Weight Loss?\" 2024-10-29; Taylor episode j9pTgtor55A \"Semaglutide Vs. Tirzepatide | Which One Is Better For Women?\" 2024-04-01) and her dosing template — Taylor (S4hfIPWRKZ0 00:06:13.160): \"I typically take 250 microgram once a week and I do an 8we on 8 we off rotation\" — is the explicit female-coach recommendation. Taylor flags a heavier nausea/GI burden in her female-client cohort: Taylor (j9pTgtor55A 00:04:53.759, 2024-04-01): \"a lot of people experience nausea a lot of people experience like irritable bowels like and food moving through them faster or I've had a client experience nausea\" and (j9pTgtor55A 00:04:24.710): \"semi glutide has more negative side effects so with seml I feel like you're going to get more negative n side effects of feeling nauseous.\" Taylor counsels meal-fragmentation discipline for women on semaglutide — Taylor (j9pTgtor55A 00:04:53.759): \"it's really important when you're taking seig glutide that you are really being mindful of how quickly and how much you're eating a lot of times what will happen is that it might be easier for you to break your meals up into smaller portions and eat multiple times a day.\" No explicit fertility / pregnancy / menstrual-cycle / hormone-interaction signal surfaced in the available Taylor transcripts for semaglutide.",
-    "distilled_at": "2026-04-27T05:18:14.765Z",
-    "distilled_by": "claude"
+    "female_specific_notes": "Taylor (2024-10-29, S4hfIPWRKZ0 00:06:13.160, https://youtu.be/S4hfIPWRKZ0): \"I typically take 250 microgram once a week and I do an 8we on 8 we off rotation with this peptide.\" Taylor (2024-04-01, j9pTgtor55A 00:04:53.759, https://youtu.be/j9pTgtor55A): \"a lot of people experience nausea a lot of people experience like irritable bowels like and food moving through them faster or I've had a client experience nausea.\" Taylor (2024-04-01, j9pTgtor55A 00:04:24.710, https://youtu.be/j9pTgtor55A): \"semi glutide has more negative side effects so with seml I feel like you're going to get more negative n side effects of feeling nauseous.\"",
+    "distilled_at": "2026-07-17T08:06:59.5129044Z",
+    "distilled_by": "codex"
   },
-  "generated_at": "2026-04-27T02:02:34.572Z"
+  "generated_at": "2026-07-17T10:59:04.954Z",
+  "mentions_fingerprint": "ac5054fb6438"
 }

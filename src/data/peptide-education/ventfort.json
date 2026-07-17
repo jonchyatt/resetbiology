@@ -1,0 +1,249 @@
+{
+  "peptide": "Ventfort",
+  "slug": "ventfort",
+  "aliases": [
+    "Ventfort",
+    "ventfort",
+    "Ventford",
+    "VentFort"
+  ],
+  "category": "Bioregulators",
+  "experts": {
+    "hunter-williams": {
+      "baseline_protocol": null,
+      "summary": {
+        "mention_count": 68,
+        "top_doses": [
+          {
+            "dose": "332 mg",
+            "count": 6
+          },
+          {
+            "dose": "232 mg",
+            "count": 5
+          },
+          {
+            "dose": "51 mg",
+            "count": 4
+          },
+          {
+            "dose": "44 mg",
+            "count": 4
+          },
+          {
+            "dose": "278 mg",
+            "count": 3
+          },
+          {
+            "dose": "35 mg",
+            "count": 2
+          },
+          {
+            "dose": "416 mg",
+            "count": 2
+          },
+          {
+            "dose": "381 mg",
+            "count": 2
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "1954ecec0bbedbad",
+            "source_type": "email",
+            "source_title": "An Alternative To Statins?",
+            "source_date": "2025-02-28",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-02-28-an-alternative-to-statins.md",
+            "mention_count": 20,
+            "top_snippet": "In today’s world, cardiovascular disease is the #1 cause of death—but what if you could take a proactive approach to supporting your heart and blood vessels naturally? Even worse, statins are widely p",
+            "top_context": "In today’s world, cardiovascular disease is the #1 cause of death—but what if you could take a proactive approach to supporting your heart and blood vessels naturally? Even worse, statins are widely prescribed to address heart disease, and they end up causing more harm than good. Enter Ventfort, the vascular bioregulator that has been clinically shown to help repair blood vessels, improve circulation, and optimize lipid levels. I just dropped a new YouTube video breaking down exactly how Ventfort works, what studies show about its effectiveness, and how you can use it in your own health",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "ventfort-the-bioregulator-everyone-can-benefit-from--7d2546f8",
+            "source_type": "library-video",
+            "source_title": "Ventfort The Bioregulator Everyone Can Benefit From",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/ventfort-the-bioregulator-everyone-can-benefit-from--7d2546f8/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/ventfort-the-bioregulator-everyone-can-benefit-from--7d2546f8.json",
+            "mention_count": 16,
+            "top_snippet": "And what I want to do is just provide the educational piece around these bioregulators and kind of inform you on like, Hey, this is what they're doing. This is really been shown to in humans. that we have data on and help bring that info out in the world. So that's what we're going to be doing in coming weeks with all the bioregulators that have out there. And hopefully as things go, we continue to proliferate these out into the World. Today we are talking about Ventfort. It is the blood vessel bi-regulator. Its allowing the body to naturally heal the Blood vessels and some of the inflammation and issues that may have with our blood vessels,",
+            "top_context": "Hey everybody. This is Hunter Williams. I hope you were doing amazing wherever you're at in the world. Today's video is going to be all about the bioregulator event for it. So in these spirit of the proliferation of bi oregulators out there, what I plan to do, at least over the coming weeks, obviously interspersed with some other content that I'm making is just do some quick deep dives on bi regulators. Um, I think this will be cool. It'll be informative. Obviously we have an incentive, um, to help get these out in world cause I am affiliated with bio longevity labs. And we are selling these now, but I do think they are amazing products and they do amazing things. And what I want to do is just provide the educational piece around these bioregulators and kind of inform you on like, Hey, this is what they're doing. This is really been shown to in humans. that we have data on and help bring that info out in the world. So that's what we're going to be doing in coming weeks with all the bioregulators that have out there. And hopefully as things go, we continue to proliferate these out into the World. Today we are talking about Ventfort. It is the blood vessel bi-regulator. Its allowing the body to naturally heal the Blood vessels and some of the inflammation and issues that may have with our blood vessels, which is In the world today, very many, if you go out, obviously obesity is a large problem and one of the leading indicators or leading causes of cardiovascular disease is poor endothelial function, which is basically just your blood vessels suck because you're not healthy. And it doesn't mean you have to be obese, but a lot of times that goes hand in hand. So that's what we're going to do today. I think this would be cool. Just kind of walk through what VentFort is, what results we've seen in clinical data around it, and then also to what it pairs well with and how to use it.",
+            "first_timestamp": "0:41"
+          },
+          {
+            "source_id": "1965a5fd3c4a66a4",
+            "source_type": "email",
+            "source_title": "The Gut Repair Crew",
+            "source_date": "2025-04-21",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-04-21-the-gut-repair-crew.md",
+            "mention_count": 5,
+            "top_snippet": "l fluid for digesting fats and absorbing nutrients. Clinically, Svetinorm has shown remarkable results in reducing inflammation markers, improving liver function tests, and enhancing overall digestion",
+            "top_context": "l fluid for digesting fats and absorbing nutrients. Clinically, Svetinorm has shown remarkable results in reducing inflammation markers, improving liver function tests, and enhancing overall digestion. It also alleviates common digestive symptoms, improving appetite, energy, and wellbeing. **4. Ventfort (The Blood Vessel Bioregulator)** Last but certainly not least, Ventfort targets your vascular system—the highways and roads delivering essential nutrients and oxygen to every part of your gut. Think about traffic congestion: blocked roads slow down deliveries and create chaos. View image: (ht",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "my-experience-with-vesugen-blood-flow-performance-anti-aging--a0115ab7",
+            "source_type": "library-video",
+            "source_title": "My Experience with Vesugen Blood Flow Performance Anti-Aging",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/my-experience-with-vesugen-blood-flow-performance-anti-aging--a0115ab7/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/my-experience-with-vesugen-blood-flow-performance-anti-aging--a0115ab7.json",
+            "mention_count": 5,
+            "top_snippet": "So this originally came from another product called Ventfort, which we, again, an extract from Bovine material and Ventford, what you can also buy is the oral version and it pairs really well with Vessagen. But I would just say Vestagen is going to be stronger. To me, I've used both Vesagen and Ventfort. I definitely noticed more of a performance enhancement benefit from Vsagen, but. Anyway, it's non-immunogenic due to its short length and composition of natural amino acids, and it was among six peptide-based preparations approved for",
+            "top_context": "All right, I'm Hunter Williams, and today we're going to be learning all about Vessagen, which is the blood vessel bioregular peptide. Very, very cool and interesting peptides. So Vesagen is a small tripeptide with a molecular formula C15H26N4O8 and a molecule weight of around 390.4 daltons. Basically, what's cool about these bioregulators is because of their amino acid structure and size, we can actually use them orally and have efficacy there as well. However, vestigen, in my opinion, is best used as an injectable. So this originally came from another product called Ventfort, which we, again, an extract from Bovine material and Ventford, what you can also buy is the oral version and it pairs really well with Vessagen. But I would just say Vestagen is going to be stronger. To me, I've used both Vesagen and Ventfort. I definitely noticed more of a performance enhancement benefit from Vsagen, but. Anyway, it's non-immunogenic due to its short length and composition of natural amino acids, and it was among six peptide-based preparations approved for medical use in the Soviet Union back in 80s and 90s, so we do have a lot of data going back a while on those. Let's look at the mechanisms here. So basically, as with most of these peptide bioregulators, it penetrates cell membranes and localizes to the nucleus. Basically, when you inject it, travels into the blood vessel tissue and then goes in the cell membrane of those to get into nucleus to where it's going to interact with the DNA and actually modulate some of the dna in a good way. It binds to specific DNA sequences influencing which genes are activated or silenced without altering the sequence.",
+            "first_timestamp": "3:21"
+          },
+          {
+            "source_id": "stop-aging-now-bioregulatorsthe-future-of-longevity-in-a-capsule--84fe77e0",
+            "source_type": "library-video",
+            "source_title": "Stop Aging Now BioregulatorsThe Future of Longevity in a Capsule",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/stop-aging-now-bioregulatorsthe-future-of-longevity-in-a-capsule--84fe77e0/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/stop-aging-now-bioregulatorsthe-future-of-longevity-in-a-capsule--84fe77e0.json",
+            "mention_count": 5,
+            "top_snippet": "Like I was saying, I wanted to go a little bit deeper on longevity. They're really big in longevity community. That's kind like one of the things everyone's talking about right now because of what they do, right? Um, so this is how they do it. So it's largely driven. Aging is largely by cellular senescence, mitochondrial dysfunction, and epigenetic changes and bioregulars like indolutin, serolutin and Ventfort help mitigate these effects by enhancing DNA repair, um, particularly in high energy demand organs like the brain and the heart, uh, by regulating protein synthesis by maintaining tissue integrity and reducing chronic inflammation, which obviously is the main reason we age is inflammation.",
+            "top_context": "And then lastly, we, have Xenolutin which, is the ovary bi-regulator, so it just helps with female hormonal support. I think too, For women, you know, perimenopause, postmenopausus can be good as, well, just to, kind of help restore and regenerate some of that hormonal function from that end. Will it replace hormone therapy? I don't think so, but you know, we'll see. And at the very least it can be something that someone does in the meantime while they are waiting or in wings of getting hormone, therapy ready for themselves. So let's look at it from a longevity context. Like I was saying, I wanted to go a little bit deeper on longevity. They're really big in longevity community. That's kind like one of the things everyone's talking about right now because of what they do, right? Um, so this is how they do it. So it's largely driven. Aging is largely by cellular senescence, mitochondrial dysfunction, and epigenetic changes and bioregulars like indolutin, serolutin and Ventfort help mitigate these effects by enhancing DNA repair, um, particularly in high energy demand organs like the brain and the heart, uh, by regulating protein synthesis by maintaining tissue integrity and reducing chronic inflammation, which obviously is the main reason we age is inflammation. Or even now, as people are saying, Um, you know, inflammation and aging go hand in hand and oftentimes, uh, can, yeah, it can cause a pretty negative cascade of issues. The more inflammation we have in the body as it relates to aging. So, um, like we talked about with telomerase, so, certain ones, I'm sure there's others too, Uh, in dilutin has been shown to activate telomeres, which is responsible for maintaining telamere length. Telomere is naturally shortened over time, Which leads to ageing. And by activating teloma race, It may contribute to longevity by extending the lifespan of our cells.",
+            "first_timestamp": "12:04"
+          },
+          {
+            "source_id": "peptide-qa-february-2026--cba19117",
+            "source_type": "library-video",
+            "source_title": "Peptide Q&A · February 2026",
+            "source_date": "2026-03-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-february-2026--cba19117/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-qa-february-2026--cba19117.json",
+            "mention_count": 4,
+            "top_snippet": "Vestigen versus Ventfort, which for vascular health, and should you wait months between them? No, I think you could actually use them together. I Think depending on what your goal is. And so with vestigen and Ventford, those work on the blood vessels, Which is just going to kind of make you healthier overall. You definitely use both together to enhance the response you would get. So when we do look at these, if you are using the injectable and the oral ones that are analogous to each other, you just can use it for the cycle that you're using them and get a really good response.",
+            "top_context": "Bioregulators, oral versus injectable. What's different? When is oral enough and can they be stacked with peptides? They definitely can be stack with peptides. Absolutely. I would say that oral are going to be much more mild and kind of have a systemic long-term, probably positive effect, but you might not feel them. Whereas to me, the injectible bioregunators seem to go really far in terms of how they feel. Some of them you won't feel if you don't necessarily have an issue. But I think a lot of then can used really well, you know, cartilax, Vessagen, Velon, Prostomax, some of these work really well. Vestigen versus Ventfort, which for vascular health, and should you wait months between them? No, I think you could actually use them together. I Think depending on what your goal is. And so with vestigen and Ventford, those work on the blood vessels, Which is just going to kind of make you healthier overall. You definitely use both together to enhance the response you would get. So when we do look at these, if you are using the injectable and the oral ones that are analogous to each other, you just can use it for the cycle that you're using them and get a really good response. Alright, let's talk about some hormone questions. The first one is a really popular one probably doesn't get enough attention is high SHBG. One of the causes why it matters and what interventions you like so. I think highest HBG it, well, it can come from a ton of different things. I would say most often people with highest BG is because they have high amounts of body fat or high amount of visceral body, fat. And so losing weight is obviously the first intervention.",
+            "first_timestamp": "38:03"
+          },
+          {
+            "source_id": "19525aba029b112a",
+            "source_type": "email",
+            "source_title": "Bioregulators: The Next Frontier",
+            "source_date": "2025-02-20",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-02-20-bioregulators-the-next-frontier.md",
+            "mention_count": 3,
+            "top_snippet": "ctions and heal from illness. * **CD4+/CD8+ immune balance was restored**, a key factor in **defense against viruses, bacteria, and chronic disease**. If you’re recovering from illness, stressed, or w",
+            "top_context": "ctions and heal from illness. * **CD4+/CD8+ immune balance was restored**, a key factor in **defense against viruses, bacteria, and chronic disease**. If you’re recovering from illness, stressed, or want to **stay healthy year-round**, **Vladonix® is a must-have.** ——————————————————————————— **Ventfort® – Vascular Repair & Heart Health** Your blood vessels work 24/7 to transport **oxygen, nutrients, and hormones**, but **age-related stiffening** increases your risk of heart disease, stroke, and circulation issues. **Ventfort® helps keep arteries flexible and resilient** by restoring vascular h",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "peptide-qa-may-2025--673c48ea",
+            "source_type": "library-video",
+            "source_title": "Peptide Q&A · May 2025",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-may-2025--673c48ea/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-qa-may-2025--673c48ea.json",
+            "mention_count": 3,
+            "top_snippet": "I'm sorry to hear that. That's a bummer. There definitely is. So you could use ARE290 for sure. that was developed for neuropathy and nerve pain. It does help with pain and it does also to with blood flow. So ARE-290 at one milligram per day. You could also look into some of the blood vessel bioregulators like Vessagen or Ventfort. Vesagen is the injectable form, Ventford's the oral form that you could get. you can also try BPC and TB 500. That's just something that could potentially help there with the post surgery, just helping heal and getting blood flow",
+            "top_context": "So I would say you're okay. And it kind of comes with the territory and you have to just rate, weigh the cost benefit analysis of those things. Then also too, I will look at testosterone because having testosterone optimize is going to do more for improving HRV and lowering your heart rate at the therapeutic dose that you would need to basically get you where we want to go. Hopefully that helps. Is there a peptide that will help nerves after surgery? I had breast lift and implants and now only have about 5% feeling my breasts. I'm sorry to hear that. That's a bummer. There definitely is. So you could use ARE290 for sure. that was developed for neuropathy and nerve pain. It does help with pain and it does also to with blood flow. So ARE-290 at one milligram per day. You could also look into some of the blood vessel bioregulators like Vessagen or Ventfort. Vesagen is the injectable form, Ventford's the oral form that you could get. you can also try BPC and TB 500. That's just something that could potentially help there with the post surgery, just helping heal and getting blood flow and blood vessels there that are going to help with nerves. So that's where I would start. And then you also could throw in cartilax too. And although that's cartilage, it could help potentially just with the repair that then would also enable the nerves to regrow and then maybe even GHK too. So I would throw in all those things and see where you are. I think that is it for this one. We are right at 37 minutes and I'm going to have to run, but I do have plenty more questions that we can get to, so I'll make sure I can do another one there. But just to close out today, again, thank you guys so much for the questions.",
+            "first_timestamp": "36:33"
+          }
+        ],
+        "acute_signals": [
+          {
+            "snippet": "I'm sorry to hear that. That's a bummer. There definitely is. So you could use ARE290 for sure. that was developed for neuropathy and nerve pain. It does help with pain and it does also to with blood flow. So ARE-290 at one milligram per day. You could also look into some of the blood vessel bioregulators like Vessagen or Ventfort. Vesagen is the injectable form, Ventford's the oral form that you could get. you can also try BPC and TB 500. That's just something that could potentially help there with the post surgery, just helping heal and getting blood flow",
+            "source_title": "Peptide Q&A · May 2025",
+            "source_date": "2026-03-29",
+            "timestamp": "36:33",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-may-2025--673c48ea/"
+          },
+          {
+            "snippet": "I'm sorry to hear that. That's a bummer. There definitely is. So you could use ARE290 for sure. that was developed for neuropathy and nerve pain. It does help with pain and it does also to with blood flow. So ARE-290 at one milligram per day. You could also look into some of the blood vessel bioregulators like Vessagen or Ventfort. Vesagen is the injectable form, Ventford's the oral form that you could get. you can also try BPC and TB 500. That's just something that could potentially help there with the post surgery, just helping heal and getting blood flow",
+            "source_title": "Peptide Q&A · May 2025",
+            "source_date": "2026-03-29",
+            "timestamp": "36:33",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-may-2025--673c48ea/"
+          },
+          {
+            "snippet": "analysis. Also, having testosterone optimized does more for HRV and resting heart rate than almost anything else. Nerve Damage After Surgery For nerve regeneration after a breast lift with implants, h",
+            "source_title": "Peptide Q&A · May 2025",
+            "source_date": "2026-03-29",
+            "timestamp": null,
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-may-2025--673c48ea/"
+          },
+          {
+            "snippet": "And then we have cognition and neuroprotection. So Sir Luton has been tested for its effects and human trials indicated improvements in memory attention span and cognitive processing and patients with early stage Alzheimer's. So again, pretty cool, especially relative to all the other options that are out there for those type of issues. Cardiovascular health. So Kelo Heart and Ventfort, there was a clinical study with 120 patients with cardiovascular disease and found that after a cycle of these, that there were reduced arterial stiffness, improved heart function, and lowered oxidative stress markers, which is pretty cool.",
+            "source_title": "Stop Aging Now BioregulatorsThe Future of Longevity in a Capsule",
+            "source_date": "2026-03-29",
+            "timestamp": "21:37",
+            "source_url": "https://library.hunterwilliamshealth.com/p/stop-aging-now-bioregulatorsthe-future-of-longevity-in-a-capsule--84fe77e0/"
+          },
+          {
+            "snippet": "y patients showed improved immune markers and reduced infection rates after a 30-day cycle. Cerluten human trials showed improvements in memory, attention span, and cognitive processing in early-stage",
+            "source_title": "Stop Aging Now BioregulatorsThe Future of Longevity in a Capsule",
+            "source_date": "2026-03-29",
+            "timestamp": null,
+            "source_url": "https://library.hunterwilliamshealth.com/p/stop-aging-now-bioregulatorsthe-future-of-longevity-in-a-capsule--84fe77e0/"
+          }
+        ],
+        "chronic_signals": [
+          {
+            "snippet": "ctions and heal from illness. * **CD4+/CD8+ immune balance was restored**, a key factor in **defense against viruses, bacteria, and chronic disease**. If you’re recovering from illness, stressed, or w",
+            "source_title": "Bioregulators: The Next Frontier",
+            "source_date": "2025-02-20",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "alth, heart function, hormone optimization, or immune support**, there is a **bioregulator designed for you**. ### **Key Bioregulators You Should Know About** Here are some of the top bioregulators I ",
+            "source_title": "Oral Peptides (AKA Bioregulators)",
+            "source_date": "2025-02-25",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "accelerated healing. **Bioregulators for Lung Regeneration & Immune Support** These four bioregulators work synergistically to heal lung tissue, optimize oxygen exchange, and regulate immune function:",
+            "source_title": "Peptides for Long C*VID",
+            "source_date": "2025-02-27",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "regulator)** – Modulates immune function to prevent chronic inflammation. * **Endoluten (Pineal Gland Bioregulator)** – Reduces systemic inflammation and supports circadian rhythms, crucial for healin",
+            "source_title": "Peptides for Long C*VID",
+            "source_date": "2025-02-27",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "ly prescribed to address heart disease, and they end up causing more harm than good. Enter Ventfort, the vascular bioregulator that has been clinically shown to help repair blood vessels, improve circ",
+            "source_title": "An Alternative To Statins?",
+            "source_date": "2025-02-28",
+            "timestamp": null,
+            "source_url": null
+          }
+        ]
+      }
+    }
+  },
+  "reset_biology_synthesis": {
+    "status": "distilled",
+    "recommendation": "Reset Biology suggests asking the prescribing practitioner to consider Hunter Williams' dated library guidance: \"If you're just doing this for longevity purposes, I would say one capsule, you know, once per day, for 30 days, or one or two times per days for ten to twenty days will be enough.\" — Hunter Williams, 2026-03-29, ventfort-the-bioregulator-everyone-can-benefit-from--7d2546f8 @ 08:23, https://library.hunterwilliamshealth.com/p/ventfort-the-bioregulator-everyone-can-benefit-from--7d2546f8/\n\nNewer library evidence (2026-04-08) adds: \"You can use like two times per year for 30 days and get benefit from it.\" — Hunter Williams, 2026-04-08, saturday-morning-coffee-talk-72625--1e352582 @ 39:11, https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-72625--1e352582/",
+    "caveats": "- \"Not recommended for individuals with allergies, women that are pregnant or breastfeeding.\" — Hunter Williams, 2026-03-29, ventfort-the-bioregulator-everyone-can-benefit-from--7d2546f8 @ 08:57, https://library.hunterwilliamshealth.com/p/ventfort-the-bioregulator-everyone-can-benefit-from--7d2546f8/\n- \"you usually don't want to use more than five at time to achieve any certain goal\" — Hunter Williams, 2026-03-29, ventfort-the-bioregulator-everyone-can-benefit-from--7d2546f8 @ 08:57, https://library.hunterwilliamshealth.com/p/ventfort-the-bioregulator-everyone-can-benefit-from--7d2546f8/\n- \"oral are going to be much more mild and kind of have a systemic long-term, probably positive effect, but you might not feel them.\" — Hunter Williams, 2026-03-30, peptide-qa-february-2026--cba19117 @ 37:29, https://library.hunterwilliamshealth.com/p/peptide-qa-february-2026--cba19117/",
+    "cross_expert_consensus": null,
+    "cross_expert_disagreement": null,
+    "acute_chronic_split": {
+      "acute": null,
+      "chronic": {
+        "dose": "\"for heart disease, one to three capsules, two to times a day for 10 to 20 days.\" — Hunter Williams, 2026-03-29, ventfort-the-bioregulator-everyone-can-benefit-from--7d2546f8 @ 07:51, https://library.hunterwilliamshealth.com/p/ventfort-the-bioregulator-everyone-can-benefit-from--7d2546f8/\n\"If you're just doing this for longevity purposes, I would say one capsule, you know, once per day, for 30 days, or one or two times per days for ten to twenty days will be enough.\" — Hunter Williams, 2026-03-29, ventfort-the-bioregulator-everyone-can-benefit-from--7d2546f8 @ 08:23, https://library.hunterwilliamshealth.com/p/ventfort-the-bioregulator-everyone-can-benefit-from--7d2546f8/\n\"For senile purpura, 1 to 3 capsules, 2 to 3 times daily.\" — Hunter Williams, 2026-03-29, ventfort-the-bioregulator-everyone-can-benefit-from--7d2546f8 (library article; corresponding dosage cue @ 08:23), https://library.hunterwilliamshealth.com/p/ventfort-the-bioregulator-everyone-can-benefit-from--7d2546f8/",
+        "route": "\"It's available in a tablet or capsule form\" — Hunter Williams, 2026-03-29, ventfort-the-bioregulator-everyone-can-benefit-from--7d2546f8 @ 02:56, https://library.hunterwilliamshealth.com/p/ventfort-the-bioregulator-everyone-can-benefit-from--7d2546f8/",
+        "frequency": "\"the maintenance therapy courses should be repeated every three to six months.\" — Hunter Williams, 2026-03-29, ventfort-the-bioregulator-everyone-can-benefit-from--7d2546f8 @ 08:23, https://library.hunterwilliamshealth.com/p/ventfort-the-bioregulator-everyone-can-benefit-from--7d2546f8/\n\"You can use like two times per year for 30 days and get benefit from it.\" — Hunter Williams, 2026-04-08, saturday-morning-coffee-talk-72625--1e352582 @ 39:11, https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-72625--1e352582/",
+        "duration": "\"for 10 to 20 days\" — Hunter Williams, 2026-03-29, ventfort-the-bioregulator-everyone-can-benefit-from--7d2546f8 @ 07:51, https://library.hunterwilliamshealth.com/p/ventfort-the-bioregulator-everyone-can-benefit-from--7d2546f8/\n\"for 30 days\" — Hunter Williams, 2026-03-29, ventfort-the-bioregulator-everyone-can-benefit-from--7d2546f8 @ 08:23, https://library.hunterwilliamshealth.com/p/ventfort-the-bioregulator-everyone-can-benefit-from--7d2546f8/",
+        "verbatim_citation": "\"You can use like two times per year for 30 days and get benefit from it.\" — Hunter Williams, 2026-04-08, saturday-morning-coffee-talk-72625--1e352582 @ 39:11, https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-72625--1e352582/",
+        "episode_url": "https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-72625--1e352582/",
+        "timestamp": "39:11"
+      }
+    },
+    "female_specific_notes": null,
+    "distilled_at": "2026-07-17T09:37:23.0801479Z",
+    "distilled_by": "codex"
+  },
+  "generated_at": "2026-07-17T10:59:08.882Z",
+  "mentions_fingerprint": "094d955065e9"
+}

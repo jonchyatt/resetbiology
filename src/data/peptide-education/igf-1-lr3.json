@@ -4,18 +4,76 @@
   "aliases": [
     "IGF-1 LR3",
     "LR3",
+    "IGF-1LR3",
     "igf1 lr3",
     "igf-1 lr3",
     "lr3"
   ],
-  "category": "Uncategorized",
+  "category": "Growth Hormone",
   "experts": {
     "hunter-williams": {
       "baseline_protocol": null,
       "summary": {
-        "mention_count": 12,
-        "top_doses": [],
+        "mention_count": 85,
+        "top_doses": [
+          {
+            "dose": "100 mg",
+            "count": 5
+          },
+          {
+            "dose": "100 mcg",
+            "count": 4
+          },
+          {
+            "dose": "1 mg",
+            "count": 2
+          },
+          {
+            "dose": "2 iu",
+            "count": 2
+          },
+          {
+            "dose": "1 iu",
+            "count": 2
+          },
+          {
+            "dose": "100 milligrams",
+            "count": 2
+          },
+          {
+            "dose": "6 mg",
+            "count": 2
+          },
+          {
+            "dose": "100 micrograms",
+            "count": 2
+          }
+        ],
         "top_sources": [
+          {
+            "source_id": "igf-1-lr3-for-body-recomposition-and-longevity--435267af",
+            "source_type": "library-video",
+            "source_title": "IGF-1 LR3 for Body Recomposition and Longevity",
+            "source_date": "2026-03-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/igf-1-lr3-for-body-recomposition-and-longevity--435267af/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/igf-1-lr3-for-body-recomposition-and-longevity--435267af.json",
+            "mention_count": 22,
+            "top_snippet": "Hey everybody, this is Hunter Williams. I hope you're doing amazing wherever you might be in the world. Today's video is going to be all about IGF-1LR3. However, I figured it was time to do an update on this because it's really a peptide that I love to use.",
+            "top_context": "Hey everybody, this is Hunter Williams. I hope you're doing amazing wherever you might be in the world. Today's video is going to be all about IGF-1LR3. However, I figured it was time to do an update on this because it's really a peptide that I love to use. And just not a lot of people know about it. Not a lotta people understand it, and I think there is some misunderstandings around it because this was a peptide, that came from the bodybuilding world, as far as I know. It came from the bodybuilding world and that's where it was popularized, at least in the research community. And there was this lure or mythos around IGF-LR3. It was like the holy grail of body building. and it's separate from another product called Incralax, which is like bio-identical IG-F1.",
+            "first_timestamp": "0:09"
+          },
+          {
+            "source_id": "igf-1-lr3-a-use-guide-for-practical-research-purposes--d337bad5",
+            "source_type": "library-video",
+            "source_title": "IGF-1 LR3 A Use Guide For Practical Research Purposes",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/igf-1-lr3-a-use-guide-for-practical-research-purposes--d337bad5/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/igf-1-lr3-a-use-guide-for-practical-research-purposes--d337bad5.json",
+            "mention_count": 13,
+            "top_snippet": "So that's all I will say. And without further ado, let's jump-in and talk about IGF-1, LR-3, and how you can use it. All right, this is going to be the comprehensive guide and overview to IGF-1-LR3. So IG-F1 LR3 is basically a synthetic variant of natural insulin-like growth factor one, also known as IG F1, and henceforth, what I will refer to it as, just because that's a mouthful. It's designed to be a little bit more potent, so it's engineered for enhanced biological activity with a longer half-life compared to the normal half life",
+            "top_context": "But anyway, if the comments are off on this video, just know that that was not me. I try to turn the comment on on every video and I want open discussion, questions, concerns, anything like that in there. So just to know if comments were off, that there's a reason for that because YouTube does that manually. And I will try it to go back and turn them on. so just note that if this, video or any of the other videos of mine that you see, of comments or off trying to get them back on YouTube, Just for whatever reason, periodically, we'll go turn those off. And then lastly, before I jump in, don't forget to check out the peptide cheat sheet. The best way to keep up with me and to avoid any of the shadow banning and keep-up-on-my-stuff is to sign up for the email list. So that's all I will say. And without further ado, let's jump-in and talk about IGF-1, LR-3, and how you can use it. All right, this is going to be the comprehensive guide and overview to IGF-1-LR3. So IG-F1 LR3 is basically a synthetic variant of natural insulin-like growth factor one, also known as IG F1, and henceforth, what I will refer to it as, just because that's a mouthful. It's designed to be a little bit more potent, so it's engineered for enhanced biological activity with a longer half-life compared to the normal half life of just IGF-1, or if you are familiar or have seen IG-F1-DES for sale, that's a very short-acting version that you can supplement with the synthetic version supplement with, but primarily it simulates protein synthesis, facilitating cellular growth, differentiation and survival. And it's modified to bind less effectively to IGF binding proteins, increasing its availability and activity in the body. So what does it do? Where does that come from? So it basically, the long word for it is insulin-like growth factor one long ARG three.",
+            "first_timestamp": "2:25"
+          },
           {
             "source_id": "19b80f57eb2ad328",
             "source_type": "email",
@@ -27,6 +85,42 @@
             "top_snippet": "# IGF-1 LR3 for Longevity — The Sweet Spot, Not the Mythology > \"IGF-1 LR3 was positioned as the holy grail of bodybuilding. The thing that was supposed to turn you into a 300-pound stage-winning muta",
             "top_context": "# IGF-1 LR3 for Longevity — The Sweet Spot, Not the Mythology > \"IGF-1 LR3 was positioned as the holy grail of bodybuilding. The thing that was supposed to turn you into a 300-pound stage-winning mutant overnight.\" > \"Used correctly, sparingly, and with intention, it has a real place in longevity-focused hea",
             "first_timestamp": null
+          },
+          {
+            "source_id": "peptide-qa-listener-questions-and-youtube-comments--b4b38f22",
+            "source_type": "library-video",
+            "source_title": "Peptide Q&A · Listener Questions and YouTube Comments",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-listener-questions-and-youtube-comments--b4b38f22/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-qa-listener-questions-and-youtube-comments--b4b38f22.json",
+            "mention_count": 8,
+            "top_snippet": "I know there's like a bunch of fragments of thymus and beta four, so great question but I dunno. Next questions, thymosin alpha one, where can I order this? Sorry for the email list, but can tell you that. Next question, this is in regards to IGF-1LR3, what about MGF? You can definitely use MG F in conjunction with IG F- 1LR-3. They work great together. MG-F just stands for Mechanical Growth Factor. I've used PEG-MGF together and those work really well, especially in terms of healing with muscle repair.",
+            "top_context": "It can be use with GH secretagogue cycle, or you can use it in-between. So that's something that would be smart, especially if you're on a break from like hippomerelin or testomerelin that you are using. Next questions, someone says, if I'm on 100 milligrams of Zoloft, can I take testosterone? I would say no, don't do that. Bad idea. Point blank, period. Next question, and this one is about TB500. So what's the difference between TB Fragment 43, TB fragment 115, blah, all I see is info on regular TB 500. Honestly, I don't know. I know there's like a bunch of fragments of thymus and beta four, so great question but I dunno. Next questions, thymosin alpha one, where can I order this? Sorry for the email list, but can tell you that. Next question, this is in regards to IGF-1LR3, what about MGF? You can definitely use MG F in conjunction with IG F- 1LR-3. They work great together. MG-F just stands for Mechanical Growth Factor. I've used PEG-MGF together and those work really well, especially in terms of healing with muscle repair. Next question, IGF-1-LR-3, go sub-Q. Yes, I like to, you could do it sub Q. Some people would say like, well that's gonna make your stomach bigger. I don't know, and I've done it in subQ and don' think it made my stomach big. But I liked to inject it into the body part that I'm training for the day. So that just my own two cents. Next question, does IGF-1 LR-3 increase organ size and if it does, is it reversible?",
+            "first_timestamp": "35:48"
+          },
+          {
+            "source_id": "the-ultimate-growth-hormone-peptide-tier-list--7995f360",
+            "source_type": "library-video",
+            "source_title": "The Ultimate Growth Hormone Peptide Tier List",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/the-ultimate-growth-hormone-peptide-tier-list--7995f360/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/the-ultimate-growth-hormone-peptide-tier-list--7995f360.json",
+            "mention_count": 7,
+            "top_snippet": "If you were one of those people to had bad side-effects, it could still be good. But as you are going to see, we're going pair it with it. And I'll talk about that and rate it higher when it's in the presence of it from Roland than just by itself. Coming in at number seven is IGF-1-LR3, and I debated whether I should put this in here, but it is like technically IG-F, so it's, you know, kind of lumped in. Again, all these are about use cases. I love IGf-LR3 or IG1LR-3.",
+            "top_context": "risk of desensitization compared to the DAC version. It works synergistically with other secretagogues like Ipamerelin. It has minimal side effects, making it user friendly. And it's ideal for sustained, but not natural GH support. And also too, um, people tend to have like maybe 10 to 25% of people that I've heard of, they have, like bad reactions to CJC, even CJ C no deck. They'll get like flushing increased heart rate. Um, and I would say like, if you're using it in isolation, there's a higher chance you will have worse side effects. If you were one of those people to had bad side-effects, it could still be good. But as you are going to see, we're going pair it with it. And I'll talk about that and rate it higher when it's in the presence of it from Roland than just by itself. Coming in at number seven is IGF-1-LR3, and I debated whether I should put this in here, but it is like technically IG-F, so it's, you know, kind of lumped in. Again, all these are about use cases. I love IGf-LR3 or IG1LR-3. but it does have some limitations. So it directly promotes muscle growth by extending IGF-1's anabolic effects, improved recovery time after intense workouts. IG-F1-LR3, that's where the LR3 comes from. It basically like extends the half-life. Um, so it raises IGf for over a longer period of time, which provides the same benefits. And it synergizes with human growth hormone to amplify muscle building and fat loss. I actually like using IG f alongside of growth hormonal. It does have moderate side effects and potential for insulin sensitivity issues.",
+            "first_timestamp": "13:44"
+          },
+          {
+            "source_id": "peptide-qa-your-most-pressing-questions--925b9c90",
+            "source_type": "library-video",
+            "source_title": "Peptide Q&A · Your Most Pressing Questions",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-your-most-pressing-questions--925b9c90/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-qa-your-most-pressing-questions--925b9c90.json",
+            "mention_count": 5,
+            "top_snippet": "Um, I think, you know, those two together, they work both well in isolation. Uh you're probably going to notice much, much more, endurance and more of a cognitive benefit if you were combining those together. So, um, good one there. I probably should do a video on carnisine. Someone says, so I'm considering this for visceral fat reduction. They're talking about IGF-1-LR3. Um, they said, uh, my subject recently had blood work done and IG-F1 levels were slightly high. I don't know what that means. The subject seems to be suffering from insulin resistance during fat loss.",
+            "top_context": "Could I possibly be using a vial every two or three days? And yeah, sometimes a Vial, depending on how much is in there, just depends on the peptide, it can last for a month or maybe even two months, The last part of that question was trying to treat my wife's nerve pain and help wean her off the opioid if possible. Definitely that would be a useful use case for ARA290. Uh, next question was said, uh, what about L carnitine coupled with L carnosine work well together? Uh yeah, definitely. Um, I think, you know, those two together, they work both well in isolation. Uh you're probably going to notice much, much more, endurance and more of a cognitive benefit if you were combining those together. So, um, good one there. I probably should do a video on carnisine. Someone says, so I'm considering this for visceral fat reduction. They're talking about IGF-1-LR3. Um, they said, uh, my subject recently had blood work done and IG-F1 levels were slightly high. I don't know what that means. The subject seems to be suffering from insulin resistance during fat loss. And I understand that GF and IGF are not exactly the same thing. Would this peptide be a good thing to research for helping reduce visceral fat? The scale is reporting 11 pounds of viseral fat. Um, you could, I would definitely go with like Tessameral and Intrazapetide before I go to IGF-1-LR3 for visceral fat reduction. Not saying that IG-F1 LR3 couldn't help if done in the right dose, but I'd just use Tessemeral. Testosterone is going to be, you know, potentially the strongest for visceral fat reduction coupled with turzapotide for insulin resistance.",
+            "first_timestamp": "4:15"
           },
           {
             "source_id": "4igc2UpFr7Q",
@@ -41,19 +135,48 @@
             "first_timestamp": "00:10:52.000"
           },
           {
-            "source_id": "19d6f215781c8054",
-            "source_type": "email",
-            "source_title": "How To Build Peptide Protocols (5 Buckets)",
-            "source_date": "2026-04-08",
-            "source_url": null,
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2026-04-08-build-peptide-protocols-5-buckets.md",
-            "mention_count": 1,
-            "top_snippet": "client - **SS-31 + MOTS-c sequencing** for mitochondrial support - **SLU-PP-332 dosing debate** - Why **ATX deserves way more love** than it gets - **Jardiance, Metformin** — why SGLT2 inhibitors migh",
-            "top_context": "client - **SS-31 + MOTS-c sequencing** for mitochondrial support - **SLU-PP-332 dosing debate** - Why **ATX deserves way more love** than it gets - **Jardiance, Metformin** — why SGLT2 inhibitors might make Metformin obsolete - **ACE-167** — oral compound that could change the TRT conversation - **IGF-1 LR3** — why people are still sleeping on it ## Hunter's Frame on Drew > \"Drew is one of the few people in this space doing long-form content the right way. He goes deep. He asks the questions that actually matter.\" ## Cross-Reference If you want the **5 buckets framework** for protocol building, th",
-            "first_timestamp": null
+            "source_id": "peptide-qa-april-2024--24f0cd10",
+            "source_type": "library-video",
+            "source_title": "Peptide Q&A · April 2024",
+            "source_date": "2026-03-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-april-2024--24f0cd10/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-qa-april-2024--24f0cd10.json",
+            "mention_count": 3,
+            "top_snippet": "I know there's like a bunch of fragments of thymus and beta four, so great question but I dunno. Next questions, thymosin alpha one, where can I order this? Sorry for the email list, but can tell you that. Next question, this is in regards to IGF-1LR3, what about MGF? You can definitely use MG F in conjunction with IG F- 1LR-3. They work great together. MG-F just stands for Mechanical Growth Factor. I've used PEG-MGF together and those work really well, especially in terms of healing with muscle repair.",
+            "top_context": "It can be use with GH secretagogue cycle, or you can use it in-between. So that's something that would be smart, especially if you're on a break from like hippomerelin or testomerelin that you are using. Next questions, someone says, if I'm on 100 milligrams of Zoloft, can I take testosterone? I would say no, don't do that. Bad idea. Point blank, period. Next question, and this one is about TB500. So what's the difference between TB Fragment 43, TB fragment 115, blah, all I see is info on regular TB 500. Honestly, I don't know. I know there's like a bunch of fragments of thymus and beta four, so great question but I dunno. Next questions, thymosin alpha one, where can I order this? Sorry for the email list, but can tell you that. Next question, this is in regards to IGF-1LR3, what about MGF? You can definitely use MG F in conjunction with IG F- 1LR-3. They work great together. MG-F just stands for Mechanical Growth Factor. I've used PEG-MGF together and those work really well, especially in terms of healing with muscle repair. Next question, IGF-1-LR-3, go sub-Q. Yes, I like to, you could do it sub Q. Some people would say like, well that's gonna make your stomach bigger. I don't know, and I've done it in subQ and don' think it made my stomach big. But I liked to inject it into the body part that I'm training for the day. So that just my own two cents. Next question, does IGF-1 LR-3 increase organ size and if it does, is it reversible?",
+            "first_timestamp": "35:48"
           }
         ],
-        "acute_signals": [],
+        "acute_signals": [
+          {
+            "snippet": "eam signal. It gets converted into IGF-1, which gives you most of the benefits we associate with HGH. The LR3 variant is engineered to bind less to IGF binding proteins, so more of it stays active in ",
+            "source_title": "IGF-1 LR3 A Use Guide For Practical Research Purposes",
+            "source_date": "2026-03-29",
+            "timestamp": null,
+            "source_url": "https://library.hunterwilliamshealth.com/p/igf-1-lr3-a-use-guide-for-practical-research-purposes--d337bad5/"
+          },
+          {
+            "snippet": "And I understand that GF and IGF are not exactly the same thing. Would this peptide be a good thing to research for helping reduce visceral fat? The scale is reporting 11 pounds of viseral fat. Um, you could, I would definitely go with like Tessameral and Intrazapetide before I go to IGF-1-LR3 for visceral fat reduction. Not saying that IG-F1 LR3 couldn't help if done in the right dose, but I'd just use Tessemeral. Testosterone is going to be, you know, potentially the strongest for visceral fat reduction coupled with turzapotide for insulin resistance.",
+            "source_title": "Peptide Q&A · Your Most Pressing Questions",
+            "source_date": "2026-03-29",
+            "timestamp": "4:46",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-your-most-pressing-questions--925b9c90/"
+          },
+          {
+            "snippet": "And I understand that GF and IGF are not exactly the same thing. Would this peptide be a good thing to research for helping reduce visceral fat? The scale is reporting 11 pounds of viseral fat. Um, you could, I would definitely go with like Tessameral and Intrazapetide before I go to IGF-1-LR3 for visceral fat reduction. Not saying that IG-F1 LR3 couldn't help if done in the right dose, but I'd just use Tessemeral. Testosterone is going to be, you know, potentially the strongest for visceral fat reduction coupled with turzapotide for insulin resistance.",
+            "source_title": "Peptide Q&A · Your Most Pressing Questions",
+            "source_date": "2026-03-29",
+            "timestamp": "4:46",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-your-most-pressing-questions--925b9c90/"
+          },
+          {
+            "snippet": "in a separate shot, but the recovery time will be dramatically faster than peptides alone or no peptides at all. It also pairs well with growth hormone or GH peptides like Ipamorelin and Tesamorelin s",
+            "source_title": "The Most Underrated Peptide For Injury Recovery PEG-MGF",
+            "source_date": "2026-03-29",
+            "timestamp": null,
+            "source_url": "https://library.hunterwilliamshealth.com/p/the-most-underrated-peptide-for-injury-recovery-peg-mgf--6391779f/"
+          }
+        ],
         "chronic_signals": [
           {
             "snippet": "# IGF-1 LR3 for Longevity — The Sweet Spot, Not the Mythology > \"IGF-1 LR3 was positioned as the holy grail of bodybuilding. The thing that was supposed to turn you into a 300-pound stage-winning muta",
@@ -82,6 +205,13 @@
             "source_date": "2026-04-08",
             "timestamp": null,
             "source_url": null
+          },
+          {
+            "snippet": "But I, I wouldn't cap it at a B-tier just because, uh, Another one on beats here is IGF-1-LR3. I don't really view this as a fat loss tool, but I do view it as body recomp tool. So again, this is going to be one of those ones that is more of like a muscle building peptide. However, I will say it does help with recomposition. And so you're trying to put on muscle and burn fat at the same time. You can use this alongside of HGH or your HGH peptides to enhance results to potentially make you more lean.",
+            "source_title": "20 Fat Loss Compounds Ranked Worst to Best (No GLP-1s)",
+            "source_date": "2026-05-25",
+            "timestamp": "20:08",
+            "source_url": "https://library.hunterwilliamshealth.com/p/20-fat-loss-compounds-ranked-worst-to-best-no-glp-1s--55fd586f/"
           }
         ]
       }
@@ -296,25 +426,26 @@
   },
   "reset_biology_synthesis": {
     "status": "distilled",
-    "recommendation": "Reset Biology suggests asking the practitioner to consider IGF-1 LR3 as a longevity-windowed muscle-and-mitochondria peptide rather than a bodybuilding tool, and to reserve it for clients who already understand blood-sugar regulation. We'd ask the prescribing physician to weigh the carbohydrate-pairing protocol Hunter spells out for hypoglycemia control, the female-specific tolerance window Taylor reports, and Trevor's open hedge that he treats LR3 dosing as research-amount territory he 'd have to look up before recommending. Use as short, intentional cycles, not a daily forever protocol.",
-    "caveats": "- Hypoglycemia is the dominant acute risk: Hunter email threadId 19b80f57eb2ad328 (2026-01-02): \"Rule of thumb: at least 0.5-1g carbohydrate per mcg IGF-1\" and \"Do NOT use fasted unless you really know what you're doing.\"\n- Not a beginner peptide: Hunter email threadId 19b80f57eb2ad328 (2026-01-02): \"If someone is brand new to peptides, doesn't understand blood sugar regulation, or isn't disciplined with nutrition, this isn't where I'd start them.\"\n- Female receptor desensitization is faster: Taylor (nkOr0jCzn18 00:15:18.399): \"our bodies are more sensitive to um igf-1 because\" (00:15:26.959) \"our bodies can build up a quicker tolerance to it so that is why your cycling is going to be shorter\"; Taylor (U3Yqjb3bK6A 00:11:36.959): \"this peptide for about four weeks cuz our bodies just build up like antibody against it so quickly.\"\n- Cycle, don't run forever: Hunter email threadId 19b80f57eb2ad328 (2026-01-02): \"4-8 weeks ON → 4-8 weeks OFF\" and \"Max 2-3 cycles per year.\"\n- Over-suppression / over-stimulation paradox: Hunter email threadId 19b80f57eb2ad328 (2026-01-02): \"Suppressing IGF-1 may, on paper, extend lifespan, but over-suppressing it accelerates frailty and cognitive decline.\"\n- Trevor explicitly does not give a research dose: Trevor (LCHv_rSnLlI 00:36:13.359): \"It is IGF-13. Massive muscle recovery. So, I've heard hypothetically\"; Trevor (LCHv_rSnLlI 00:36:25.040): \"If you're wondering what the research amount would be, I'd have to look. I don't remember offhand.\"\n- Mythology trap: Hunter email threadId 19b80f57eb2ad328 (2026-01-02): \"IGF-1 LR3 was positioned as the holy grail of bodybuilding. The thing that was supposed to turn you into a 300-pound stage-winning mutant overnight.\" Reset Biology does not teach LR3 in that frame.",
-    "cross_expert_consensus": "Muscle-building / recovery is the agreed-upon use case. Hunter email threadId 19b80f57eb2ad328 (2026-01-02): \"Stimulates satellite cell activation + muscle fiber repair\" and \"Hypertrophy + potentially limited hyperplasia.\" Taylor (nkOr0jCzn18 00:05:42.080): \"igf-1 lr3 is a great power peptide for the potential for building muscle.\" Trevor (LCHv_rSnLlI 00:36:13.359): \"It is IGF-13. Massive muscle recovery. So, I've heard hypothetically.\" All three also agree it is a growth-factor class peptide that layers under the GH-secretagogue class. Hunter (4igc2UpFr7Q 00:10:51.999): \"We have growth factors, so we have things like IGF-1 LR3, PEG-MGF that we can layer in on top of those growth hormone peptides.\" Taylor (SUZmM0nTPyw 00:06:13.439): \"if you were wanting to focus on building muscle that's where the igf1 lr3 is going to be beneficial.\" All three also flag rapid receptor / antibody build-up as a reason to cycle: Hunter email threadId 19b80f57eb2ad328 (2026-01-02): \"Diminishing returns after first few weeks = receptor desensitization → STOP cue\"; Taylor (U3Yqjb3bK6A 00:11:39.560): \"our bodies just build up like antibody against it so quickly.\"",
-    "cross_expert_disagreement": "Dose magnitude differs sharply. Hunter email threadId 19b80f57eb2ad328 (2026-01-02): \"50-100 mcg per day post-workout, with carbs\" and \"Newbie: 20-30 mcg working up slowly.\" Taylor (nkOr0jCzn18 00:13:20.399): \"my dosing with this peptide is um 50 micrograms.\" Trevor declines: Trevor (LCHv_rSnLlI 00:36:25.040): \"If you're wondering what the research amount would be, I'd have to look. I don't remember offhand.\" Carb-pairing vs fasted is the sharpest split. Hunter email threadId 19b80f57eb2ad328 (2026-01-02): \"Post-workout preferred (carbs already present, muscle uptake maximized)\" and \"Do NOT use fasted unless you really know what you're doing.\" Taylor (nkOr0jCzn18 00:13:25.159): \"50 micrograms and I take that um fasted in the morning if I'm doing my facet cardio I take that in the morning before I perform my um fasting cardio\" — Taylor explicitly takes it fasted, Hunter explicitly warns against it. Cycle length also differs. Hunter email threadId 19b80f57eb2ad328 (2026-01-02): \"4-8 weeks ON → 4-8 weeks OFF\" and \"Max 2-3 cycles per year.\" Taylor (nkOr0jCzn18 00:14:09.599): \"I did 10 days on with it and then four weeks off\"; Taylor (nkOr0jCzn18 00:14:23.719): \"four weeks on eight weeks off\"; Taylor (nkOr0jCzn18 00:15:01.919): \"I like taking it for 10 days on 4 weeks off\" and (nkOr0jCzn18 00:15:10.719): \"for me I feel like the four weeks on 8 weeks on was just too long.\" Route differs: Hunter email threadId 19b80f57eb2ad328 (2026-01-02): \"shallow IM into trained muscle group.\" Taylor's dedicated episode does not specify a route beyond injection. Trevor in his June-2025 episode is talking about LR3 only as a category mention inside a 'skin/hair/recovery' tier and does not prescribe a route.",
+    "recommendation": "Reset Biology suggests practitioners consider Hunter Williams's newer library framing (2026-03-30): \"This is a peptide 200 or 300 level tool. Not for newbies.\" (igf-1-lr3-for-body-recomposition-and-longevity--435267af, 22:16, https://library.hunterwilliamshealth.com/p/igf-1-lr3-for-body-recomposition-and-longevity--435267af/). We'd ask the prescribing physician to weigh Hunter's \"I prefer to do it post workout\" (igf-1-lr3-for-body-recomposition-and-longevity--435267af, 19:08, https://library.hunterwilliamshealth.com/p/igf-1-lr3-for-body-recomposition-and-longevity--435267af/) against Taylor Williams's personal report: \"my dosing with this peptide is um 50 micrograms and I take that um fasted in the morning\" (nkOr0jCzn18, 00:13:20.399, https://youtu.be/nkOr0jCzn18).",
+    "caveats": "- Hunter Williams (2026-03-30): \"Hypoglycemia. This is the most immediate risk of blood sugar can drop dangerously low without adequate carbohydrate intake.\" (igf-1-lr3-for-body-recomposition-and-longevity--435267af, 15:55, https://library.hunterwilliamshealth.com/p/igf-1-lr3-for-body-recomposition-and-longevity--435267af/)\n- Hunter Williams (2026-03-30): \"for every microgram, you would at least want half to one gram of carbohydrates.\" (igf-1-lr3-for-body-recomposition-and-longevity--435267af, 16:27, https://library.hunterwilliamshealth.com/p/igf-1-lr3-for-body-recomposition-and-longevity--435267af/)\n- Hunter Williams (2026-03-30): \"if there are tumors that already exist, it could potentially feed those tumors\" and \"constant stimulation causes IGF-1 receptor downregulate, which leads to diminishing returns over time.\" (igf-1-lr3-for-body-recomposition-and-longevity--435267af, 16:58, https://library.hunterwilliamshealth.com/p/igf-1-lr3-for-body-recomposition-and-longevity--435267af/)\n- Hunter Williams (2026-03-30): \"excessive tissue growth in unwanted areas like the heart, jaws, hands, feet, and facial features.\" (igf-1-lr3-for-body-recomposition-and-longevity--435267af, 17:28, https://library.hunterwilliamshealth.com/p/igf-1-lr3-for-body-recomposition-and-longevity--435267af/)\n- Dr Trevor Bachmeyer (2025-06-18): \"If you're wondering what the research amount would be, I'd have to look. I don't remember offhand.\" (LCHv_rSnLlI, 00:36:25.040, https://youtu.be/LCHv_rSnLlI)",
+    "cross_expert_consensus": "Hunter Williams (2026-03-30): \"it can be very helpful for putting on muscle for someone that is focused on just being healthy and focus on longevity and focusing on optimization.\" (igf-1-lr3-for-body-recomposition-and-longevity--435267af, 1:44, https://library.hunterwilliamshealth.com/p/igf-1-lr3-for-body-recomposition-and-longevity--435267af/). Taylor Williams (2024-08-16): \"igf-1 lr3 is a great power peptide for the potential for building muscle.\" (nkOr0jCzn18, 00:05:42.080, https://youtu.be/nkOr0jCzn18). Dr Trevor Bachmeyer (2025-06-18): \"It is IGF-13. Massive muscle recovery. So, I've heard hypothetically.\" (LCHv_rSnLlI, 00:36:13.359, https://youtu.be/LCHv_rSnLlI).",
+    "cross_expert_disagreement": "Hunter Williams's newer 2026-03-30 library source is the operative Hunter entry: \"I prefer to do it post workout.\" (igf-1-lr3-for-body-recomposition-and-longevity--435267af, 19:08, https://library.hunterwilliamshealth.com/p/igf-1-lr3-for-body-recomposition-and-longevity--435267af/). His older 2026-03-29 use guide also records: \"I like to take it before the workout.\" (igf-1-lr3-a-use-guide-for-practical-research-purposes--d337bad5, 14:15, https://library.hunterwilliamshealth.com/p/igf-1-lr3-a-use-guide-for-practical-research-purposes--d337bad5/). Taylor Williams (2024-08-16): \"my dosing with this peptide is um 50 micrograms and I take that um fasted in the morning\" (nkOr0jCzn18, 00:13:20.399, https://youtu.be/nkOr0jCzn18). Hunter Williams (2026-03-30): \"Four to eight weeks on, equal or longer off. Maximum two or three cycles per year.\" (igf-1-lr3-for-body-recomposition-and-longevity--435267af, 19:40, https://library.hunterwilliamshealth.com/p/igf-1-lr3-for-body-recomposition-and-longevity--435267af/); Taylor Williams (2024-08-16): \"I like taking it for 10 days on 4 weeks off.\" (nkOr0jCzn18, 00:15:01.919, https://youtu.be/nkOr0jCzn18).",
     "acute_chronic_split": {
       "acute": null,
       "chronic": {
-        "dose": "Hunter email threadId 19b80f57eb2ad328 (2026-01-02): \"50-100 mcg per day post-workout, with carbs\" and \"Newbie: 20-30 mcg working up slowly.\" Taylor (nkOr0jCzn18 00:13:20.399): \"my dosing with this peptide is um 50 micrograms.\"",
-        "route": "Hunter email threadId 19b80f57eb2ad328 (2026-01-02): \"shallow IM into trained muscle group.\"",
-        "frequency": "Hunter email threadId 19b80f57eb2ad328 (2026-01-02): \"50-100 mcg per day post-workout, with carbs.\" Taylor (nkOr0jCzn18 00:13:25.159): \"50 micrograms and I take that um fasted in the morning … before I go in and perform my um strength training um lifting at the gym.\"",
-        "duration": "Hunter email threadId 19b80f57eb2ad328 (2026-01-02): \"4-8 weeks ON → 4-8 weeks OFF\" and \"Max 2-3 cycles per year.\" Taylor (nkOr0jCzn18 00:15:01.919): \"I like taking it for 10 days on 4 weeks off.\"",
-        "verbatim_citation": "Hunter email threadId 19b80f57eb2ad328 (2026-01-02): \"50-100 mcg per day post-workout, with carbs\" and \"Rule of thumb: at least 0.5-1g carbohydrate per mcg IGF-1.\" Taylor (nkOr0jCzn18 00:13:20.399): \"my dosing with this peptide is um 50 micrograms.\"",
-        "episode_url": "https://open.spotify.com/episode/1ZTsl2FS2Oy7ZHXLQq7ejn",
-        "timestamp": "Hunter threadId 19b80f57eb2ad328 (2026-01-02); Taylor nkOr0jCzn18 00:13:20.399; cycle quote nkOr0jCzn18 00:15:01.919"
+        "dose": "Hunter Williams (2026-03-30): \"a lot of clinical protocols suggest only 10 to 20 micrograms. I think that's too low.\"; \"start very low, which is like 20 to 30 micrograms per day\"; \"more experienced with this, would start at 50 micro grams per-day\"; \"you could go up to 100 micro grams\"; and \"some bodybuilders will go to like 250 or 500 micro-gram.\" (igf-1-lr3-for-body-recomposition-and-longevity--435267af, 18:00, https://library.hunterwilliamshealth.com/p/igf-1-lr3-for-body-recomposition-and-longevity--435267af/). Hunter Williams (2026-03-29): \"I've heard people taking like three or 400 micro-gram\" (igf-1-lr3-a-use-guide-for-practical-research-purposes--d337bad5, 12:01, https://library.hunterwilliamshealth.com/p/igf-1-lr3-a-use-guide-for-practical-research-purposes--d337bad5/).",
+        "route": "Hunter Williams (2026-03-30): \"you can do it subcutaneously, get a systemic effect. I like injecting it, I am into the muscle that I just trained.\" (igf-1-lr3-for-body-recomposition-and-longevity--435267af, 20:13, https://library.hunterwilliamshealth.com/p/igf-1-lr3-for-body-recomposition-and-longevity--435267af/). Hunter Williams (2026-03-29): \"You could do it sub-Q though, I know people do sub Q and do just fine.\" (peptide-qa-listener-questions-and-youtube-comments--b4b38f22, 36:22, https://library.hunterwilliamshealth.com/p/peptide-qa-listener-questions-and-youtube-comments--b4b38f22/).",
+        "frequency": "Hunter Williams (2026-03-30): \"I like injecting once daily.\" (igf-1-lr3-for-body-recomposition-and-longevity--435267af, 19:08, https://library.hunterwilliamshealth.com/p/igf-1-lr3-for-body-recomposition-and-longevity--435267af/).",
+        "duration": "Hunter Williams (2026-03-30): \"Four to eight weeks on, equal or longer off. Maximum two or three cycles per year.\" (igf-1-lr3-for-body-recomposition-and-longevity--435267af, 19:40, https://library.hunterwilliamshealth.com/p/igf-1-lr3-for-body-recomposition-and-longevity--435267af/). Hunter Williams (2026-03-29): \"So I use 100 micrograms a day for ten days\" and \"the efficacy kind of went down.\" (igf-1-lr3-a-use-guide-for-practical-research-purposes--d337bad5, 12:32, https://library.hunterwilliamshealth.com/p/igf-1-lr3-a-use-guide-for-practical-research-purposes--d337bad5/).",
+        "verbatim_citation": "Hunter Williams (2026-03-30): \"Post-workout with your carbs is the safest play.\" (igf-1-lr3-for-body-recomposition-and-longevity--435267af, 19:08, https://library.hunterwilliamshealth.com/p/igf-1-lr3-for-body-recomposition-and-longevity--435267af/).",
+        "episode_url": "https://library.hunterwilliamshealth.com/p/igf-1-lr3-for-body-recomposition-and-longevity--435267af/",
+        "timestamp": "igf-1-lr3-for-body-recomposition-and-longevity--435267af 18:00, 19:08, 19:40, 20:13; igf-1-lr3-a-use-guide-for-practical-research-purposes--d337bad5 12:01, 12:32; peptide-qa-listener-questions-and-youtube-comments--b4b38f22 36:22"
       }
     },
-    "female_specific_notes": "Taylor (nkOr0jCzn18 00:01:04.319): \"woman's perspective and I want women to\" — episode is dedicated to the female frame. Taylor (nkOr0jCzn18 00:01:20.439): \"Sometimes women can get scared of having\" and (nkOr0jCzn18 00:01:33.799): \"so there is no fear for women to be\" — Taylor's stance is that women should not be scared off by the bodybuilding mythology. Female-specific tolerance: Taylor (nkOr0jCzn18 00:15:18.399): \"our bodies are more sensitive to um igf-1 because\" and (nkOr0jCzn18 00:15:26.959): \"our bodies can build up a quicker tolerance to it so that is why your cycling is going to be shorter um with saying on this petti your cycling is going to be shorter with it because our bodies just build a tolerance up to this peptide very quickly.\" Female-specific cycle preference: Taylor (nkOr0jCzn18 00:15:01.919): \"I like taking it for 10 days on 4 weeks off\" and (nkOr0jCzn18 00:15:10.719): \"for me I feel like the four weeks on 8 weeks on was just too long.\" Female-specific dose Taylor uses on herself: Taylor (nkOr0jCzn18 00:13:20.399): \"my dosing with this peptide is um 50 micrograms\" and (nkOr0jCzn18 00:13:25.159): \"I take that um fasted in the morning … before I perform my um fasting cardio.\" Female-specific stacking note: Taylor (SUZmM0nTPyw 00:06:13.439): \"if you were wanting to focus on building muscle that's where the igf1 lr3 is going to be beneficial\" and (SUZmM0nTPyw 00:06:48.599): \"taken igf igf1 lr3 while taking epam marelin.\" Use case for women coming off a lean-out cycle: Taylor (U3Yqjb3bK6A 00:12:03.560): \"let's say that you're somebody you're coming off of a heavy lean out … and now you want to get back into building muscle\" — IGF-1 LR3 is her transition-to-muscle-building peptide for female clients.",
-    "distilled_at": "2026-04-27T05:32:38.952Z",
-    "distilled_by": "claude"
+    "female_specific_notes": "Taylor Williams (2024-08-16): \"my dosing with this peptide is um 50 micrograms and I take that um fasted in the morning\" (nkOr0jCzn18, 00:13:20.399, https://youtu.be/nkOr0jCzn18). Taylor Williams (2024-08-16): \"I like taking it for 10 days on 4 weeks off\" (nkOr0jCzn18, 00:15:01.919, https://youtu.be/nkOr0jCzn18). Taylor Williams (2024-08-16): \"our bodies are more sensitive to um igf-1 because um our bodies can build up a quicker tolerance to it so that is why your cycling is going to be shorter\" (nkOr0jCzn18, 00:15:18.399-00:15:33.360, https://youtu.be/nkOr0jCzn18).",
+    "distilled_at": "2026-07-17T09:09:02.124Z",
+    "distilled_by": "codex"
   },
-  "generated_at": "2026-04-27T02:02:34.942Z"
+  "generated_at": "2026-07-17T10:59:07.527Z",
+  "mentions_fingerprint": "c569e4a5ba71"
 }

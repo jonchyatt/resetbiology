@@ -1,0 +1,382 @@
+{
+  "peptide": "Tesofensine",
+  "slug": "tesofensine",
+  "aliases": [
+    "Tesofensine",
+    "tesofensine"
+  ],
+  "category": "Cognitive Enhancement",
+  "experts": {
+    "hunter-williams": {
+      "baseline_protocol": null,
+      "summary": {
+        "mention_count": 158,
+        "top_doses": [
+          {
+            "dose": "250 mcg",
+            "count": 26
+          },
+          {
+            "dose": "250 micrograms",
+            "count": 16
+          },
+          {
+            "dose": "10 mg",
+            "count": 14
+          },
+          {
+            "dose": "125 mcg",
+            "count": 6
+          },
+          {
+            "dose": "500 mcg",
+            "count": 4
+          },
+          {
+            "dose": "500 mg",
+            "count": 4
+          },
+          {
+            "dose": "15 mg",
+            "count": 4
+          },
+          {
+            "dose": "4 mg",
+            "count": 4
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "how-to-use-tesofensine-for-maximum-focus-and-fat-loss--7884029b",
+            "source_type": "library-video",
+            "source_title": "How To Use Tesofensine For Maximum Focus And Fat Loss",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/how-to-use-tesofensine-for-maximum-focus-and-fat-loss--7884029b/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/how-to-use-tesofensine-for-maximum-focus-and-fat-loss--7884029b.json",
+            "mention_count": 36,
+            "top_snippet": "people as we have around Tesla fencing so I do believe I have the largest sample size of not only personal experience but experience with directly working with clients who have taken tesofensine and giving me their feedback on it. So today is going to be a comprehensive overview of teso-fensin, how it works, if there are any concerns you should have around it, especially as it relates to it being a triple reuptake inhibitor. and especially as it relates to possibly forming any sort of addiction qualities or anything like that. So today we're going to be talking about test of fencing, everything about it.",
+            "top_context": "Hey everybody, this is Hunter Williams. I hope you are doing amazing wherever you're at in the world. Today's video is gonna be all about Tesso fencing. So this should be everything you ever need to know about tesso-fencing. And I can't guarantee whether this video will get traction in algorithms or not, but what I guarantee is this will be the best and most informative video on tisso-fencing, and I am probably a little overconfident and arrogant about that, But it's because I have been one of the original users of Tisso Fencing at least as it comes is talking about it. in the biohacking space and online and I myself and Jay Campbell have most likely I don't know of anyone else on the internet that have coached as many people as we have around Tesla fencing so I do believe I have the largest sample size of not only personal experience but experience with directly working with clients who have taken tesofensine and giving me their feedback on it. So today is going to be a comprehensive overview of teso-fensin, how it works, if there are any concerns you should have around it, especially as it relates to it being a triple reuptake inhibitor. and especially as it relates to possibly forming any sort of addiction qualities or anything like that. So today we're going to be talking about test of fencing, everything about it. If you would like to sign up for my email list, check out the peptide cheat sheet down below. You can get that and download it, and it's very informative, teach you everything you need to know about peptides on one sheet. A lot of people enjoy being on the email lists because it sends informative videos and information out like this all the time. People will look forward to getting that email. Without further ado, all of the other links will be down in the description. one last thing youtube is doing something to me right now where they are throttling all the comments so apparently they don't want people commenting on my videos so if the Comments are off on this video just know that i'm doing my best to get them turned back on youtube consistently it seems like every",
+            "first_timestamp": "0:48"
+          },
+          {
+            "source_id": "1980afbb6ab263cf",
+            "source_type": "email",
+            "source_title": "Tesofensine Is A Wild Card",
+            "source_date": "2025-07-14",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-07-14-tesofensine-is-a-wild-card.md",
+            "mention_count": 28,
+            "top_snippet": "ty, mania, or untreated psychiatric conditions. * Pregnant or breastfeeding women (obviously). * People on other serotonergic drugs or strong stimulants (risk of serotonin syndrome). * People using me",
+            "top_context": "ty, mania, or untreated psychiatric conditions. * Pregnant or breastfeeding women (obviously). * People on other serotonergic drugs or strong stimulants (risk of serotonin syndrome). * People using methylene blue (risk of serotonin syndrome). Always check with a qualified provider before adding Tesofensine or any neuroactive compound to your regimen. ——————————————————————————— **Dosing Recommendations** Okay, let’s get to the nuts and bolts. My standard protocol for Tesofensine is: * **250 mcg (0.25 mg) daily** * **Take first thing in the morning, at least one hour before food** (to maximize ab",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "the-best-peptides-for-learning-become-a-supercomputer--9797c575",
+            "source_type": "library-video",
+            "source_title": "The Best Peptides For Learning Become A Supercomputer",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/the-best-peptides-for-learning-become-a-supercomputer--9797c575/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/the-best-peptides-for-learning-become-a-supercomputer--9797c575.json",
+            "mention_count": 8,
+            "top_snippet": "whereas a lot of nootropics are very left brain, meaning that they make you analytical. does a good job of balancing both of those sides. So the last one probably out of this One of the more potent, if not the most potent one, just in terms of like the effects that you feel from it, is tesofensine. So I'm a huge fan of tesoffensin. I typically, you know, like go on and off of it multiple times throughout the year. And, at first, the dosing was a little weird when this first came on the scene and all of us biohackers trying to figure it out.",
+            "top_context": "I love it for that. And typically I'm going to use 200 milligrams per day orally. You can do 100 milligrams, you could do a little bit more. I've taken as high as like four or 500 milligrams and I don't really see any benefit at that level compared to 200 milligram. So I think 200 It's probably the sweet spot, but I love it. You can pair it with caffeine. And you can definitely take it within caffeine to kind of enhance its effects. you could even pair with theanine to enhance a calm focus, if you like. But I think in terms of learning, it works really, really well, especially to give you more of a left-right brain hemisphere learning mode, whereas a lot of nootropics are very left brain, meaning that they make you analytical. does a good job of balancing both of those sides. So the last one probably out of this One of the more potent, if not the most potent one, just in terms of like the effects that you feel from it, is tesofensine. So I'm a huge fan of tesoffensin. I typically, you know, like go on and off of it multiple times throughout the year. And, at first, the dosing was a little weird when this first came on the scene and all of us biohackers trying to figure it out. But basically, to give you a background, it is a triple monamine re-uptake inhibitor that increases dopamine, norepinephrine, and serotonin, levels, enhancing mood, motivation, and cognitive function. So it was actually originally thought what does help with fat loss and thermogenesis within the body, but the effects are not that pronounced. It's also kind of an appetite suppressant roundabout because of what it does to dopamine. Um, but basically by boosting neurotransmitter levels like dopamine, norepinephrine and serotonin, uh, test fencing can improve motivation,",
+            "first_timestamp": "17:03"
+          },
+          {
+            "source_id": "may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352",
+            "source_type": "library-video",
+            "source_title": "May 2026 Q&A | Retatrutide, Testosterone, Autoimmune, and Beyond",
+            "source_date": "2026-06-17",
+            "source_url": "https://library.hunterwilliamshealth.com/p/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352.json",
+            "mention_count": 7,
+            "top_snippet": "I talk about this a lot. When it comes to hunger increasing on Reddit, it's probably because you're in an energy deficit. The easiest answer for me is if you want to, you can go up on the dose. Now that doesn't mean it is going to fix the hunger in all cases, but in a lotta cases it seems like the two to four milligram dose in lot of people makes them hungrier. Once they get over the four-milligram dose, that does not have the same effect. But some people does. And I always say you can always add in a little bit of trisapatite with your red atriotide. You can also add a bit coagulantide, you always can add some tesofensine. We forget about teso-fensinine and how good that is.",
+            "top_context": "Again, that's going to be uncomfortable, but I would rather be comfortable and not constepated than constapated and uncomfortable. So that would be my recommendation. But honestly, those things right there usually help speed things along. Also too, for people that do have sort of like gastric imping issues, apple cider vinegar, aloe juice, glutamine and lemon juice. If you just make a little concoction of those together, they work really well. And I do that myself sometimes. All right. Hunger increased on reddit with no loss. I talk about this a lot. When it comes to hunger increasing on Reddit, it's probably because you're in an energy deficit. The easiest answer for me is if you want to, you can go up on the dose. Now that doesn't mean it is going to fix the hunger in all cases, but in a lotta cases it seems like the two to four milligram dose in lot of people makes them hungrier. Once they get over the four-milligram dose, that does not have the same effect. But some people does. And I always say you can always add in a little bit of trisapatite with your red atriotide. You can also add a bit coagulantide, you always can add some tesofensine. We forget about teso-fensinine and how good that is. So that would be my recommendation there. This is a good question from Dan. He says, when we look at dopamine and reward pathway effects across red aterus and sema, are there differences? In my opinion, what it seems like is that the GLP-1 pathway seems to be modulating the dopamine the most. And so higher doses of semaglutide, because obviously that's just GLp-one, seem like they are going to cause more of the issues with dopamine. Thus higher doses of turzapetide seem like it would cause less than semaglutide milligram for milligram and retrutide, same thing,",
+            "first_timestamp": "4:52"
+          },
+          {
+            "source_id": "peptide-qa-peptides-hormones-and-fat-loss--12075a2e",
+            "source_type": "library-video",
+            "source_title": "Peptide Q&A · Peptides, Hormones, and Fat Loss",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-peptides-hormones-and-fat-loss--12075a2e/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-qa-peptides-hormones-and-fat-loss--12075a2e.json",
+            "mention_count": 6,
+            "top_snippet": "That's not something that you would necessarily want to take off. I'm just thinking of everything on there. Most of that's all stuff that you could use around. Maybe you would take tesofensine off, because I know that it's on here. But what you can do, I don't know if this person is using HDH. So if I were doing that and you weren't using HGH, maybe you're using ipamrelin or tesamrelin, then I would come off of it. You could also use another fat loss peptide. I mean, there's lots of different peptides you could use out there, but the purpose of the Godstack, and Jay uses that, I use that.",
+            "top_context": "but it is not one of those ones. You know I would like to have my research buttoned up a little bit more before I go into it. before I do a new video that's comprehensive on it. So, next question. Somebody says, let's say I just finished an eight week course of Jay's Godstack. What different peptides? He's referring to Jay Campbell's god stack. You can check that out on his website. Uh, you can opt in and get that via email or just check out God's, just Google God stack, Jay, Campbell, and it'll come up. Um, he says what different peptides could I start next and how long should I wait? Well, here's the thing. The God Stack, You Can Use Year Round. That's not something that you would necessarily want to take off. I'm just thinking of everything on there. Most of that's all stuff that you could use around. Maybe you would take tesofensine off, because I know that it's on here. But what you can do, I don't know if this person is using HDH. So if I were doing that and you weren't using HGH, maybe you're using ipamrelin or tesamrelin, then I would come off of it. You could also use another fat loss peptide. I mean, there's lots of different peptides you could use out there, but the purpose of the Godstack, and Jay uses that, I use that. Is this something you can use year round? So I wouldn't say you have to come off the godstacks, if that makes sense. I would say, you would use peptide in conjunction with the godsack and then you cycle on and off peptid. So it really just depends on goals. The other question, I think it's part of the same question. The question I hear and see all the time is can I stack different peptides in my syringe? Obviously you can, are there any guidelines? So this is a complex question but rule of thumb, if a peptide addresses the pathway as another, i.e. BPC-157, TB-500, you're probably injecting those because you want the benefits of healing to heal an injury or just reduce inflammation in the body.",
+            "first_timestamp": "11:52"
+          },
+          {
+            "source_id": "peptide-qa-your-most-pressing-questions--925b9c90",
+            "source_type": "library-video",
+            "source_title": "Peptide Q&A · Your Most Pressing Questions",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-your-most-pressing-questions--925b9c90/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-qa-your-most-pressing-questions--925b9c90.json",
+            "mention_count": 6,
+            "top_snippet": "Pretty sure Aderall gave me anhedonia and I just don't want to take any more. Yeah, I mean, first of all, testosterone, that helps a lot. Tesofensine helps, CMAX helps. Tiacrine helps so there absolutely is. I should do like a tier list of noootropics and Aderal would be like one of the worst ones because it's an amphetamine. Um, so yeah, there's so much out there that's better on Adderall, namely testosterone, like testosterone and having higher levels of testosterone in your body,",
+            "top_context": "I've done the TB and the belly fat and beeping disorder. Uh, if you have a hurt shoulder, you can do both of them. You can actually combine them in the same syringe. Um, one milligram AM and PM of BPC. That's fine if have an injury. Someone said TB 500. Can I give this to my dog? Absolutely. uh, I haven't given it my dogs, uh but definitely can give TB, 500 BTC to your dogs. If they have joint pain or anything like that. Someone says, was wondering, is there anything comparable to Adderall in the nootropic space or peptides without the come down? Pretty sure Aderall gave me anhedonia and I just don't want to take any more. Yeah, I mean, first of all, testosterone, that helps a lot. Tesofensine helps, CMAX helps. Tiacrine helps so there absolutely is. I should do like a tier list of noootropics and Aderal would be like one of the worst ones because it's an amphetamine. Um, so yeah, there's so much out there that's better on Adderall, namely testosterone, like testosterone and having higher levels of testosterone in your body, whether you're a man or woman will make you smarter and more focused than a lot of nootropics were in almost all of them. So, um, someone says, how long does. There's appetite last in the fridge once mixed with bath water. I usually order the five milligram, but, uh, ordered the 10 milligram if it lasts. Yeah, yeah. There is appetite lasts, you know, eight, 12 weeks in a fridge. No problem. So, um, next question. Someone says I've I'm 77 years old. And I have joined a gym. Um, dieting and walking and doing some regular gym workouts.",
+            "first_timestamp": "21:12"
+          },
+          {
+            "source_id": "ipamorelin---the-gateway-peptide-everything-you-need-to-get-started--f95e2f60",
+            "source_type": "library-video",
+            "source_title": "Ipamorelin - The Gateway Peptide Everything You Need To Get Started",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/ipamorelin---the-gateway-peptide-everything-you-need-to-get-started--f95e2f60/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/ipamorelin---the-gateway-peptide-everything-you-need-to-get-started--f95e2f60.json",
+            "mention_count": 5,
+            "top_snippet": "and then also make sure you don't eat for like 90 minutes after that. So next one is going to be tesofensine. I love teso-fensin. It is basically a triple reuptake inhibitor, meaning that it helps with the reuptake of serotonin, dopamine, and noradrenaline It's been primarily studied as a treatment for obesity and Parkinson's disease, but it helped reduce the appetite and increase metabolism. Basically what that means is that when you increase those neurotransmitters in the body, it's going make you less hungry, And thereby, you're not going to want to eat as much.",
+            "top_context": "If I, if I used 15 kilograms per a week, I probably like only be able to get down like 200 calories per day. That's exaggerating a little bit, but that's just how strong that would be. But two and a half milligrams for a week is a great starting point. And you're only going to do this one time per week. So when we inject this is just once per we per-week. I prefer it in a fasted state. You can take it, you know, with food though. Some people do, But with all peptides, I'm going say, take, it on a facet stomach. and then also make sure you don't eat for like 90 minutes after that. So next one is going to be tesofensine. I love teso-fensin. It is basically a triple reuptake inhibitor, meaning that it helps with the reuptake of serotonin, dopamine, and noradrenaline It's been primarily studied as a treatment for obesity and Parkinson's disease, but it helped reduce the appetite and increase metabolism. Basically what that means is that when you increase those neurotransmitters in the body, it's going make you less hungry, And thereby, you're not going to want to eat as much. And over time, it also increases metabolism. Now, It's not really going do that, in the first 60 days, but it's one of those things like after six months, after 12 months when you are taking it that you'll start to notice a real increase in your base metabolic rate. You know, most doses are going to start at 500 micrograms. I recommend 250 micro grams per day. The reason being is that I personally get the best benefit, you know 250 mcg. If I take 500 mg, it does maybe impair my sleep a little bit, but I know to people that take five hundred micro-gram or half a milligram and they just",
+            "first_timestamp": "7:29"
+          },
+          {
+            "source_id": "peptide-qa-july-2025--936e4b81",
+            "source_type": "library-video",
+            "source_title": "Peptide Q&A · July 2025",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-july-2025--936e4b81/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-qa-july-2025--936e4b81.json",
+            "mention_count": 5,
+            "top_snippet": "So if you feel like you get water attention from that, sometimes Aod, i've heard other people, say helps with that. i don' really noticed it myself, but i think Aody, Tesofensine, Retatrutide is great. And obviously retatutide, is really just going to be king at the end of the day. Next one is actually about tesofencing. So someone says, I love tesoffencing, and I also take desiccated thyroid. Since I usually take those two, one hour apart with no food, do you cycle tesofensine, or do cycle oral peptides in general? Yes, I do. I'm actually using it right now because we have a new teso-fensin blend that has magnesium threonate and taurine with it.",
+            "top_context": "I want to get my gut health in order like you suggest, avoid heart start effects before I proceed with Rite of True Tide. Like to do the stack I mentioned, I am not sure days, times and amounts should I do, if I have to space them out. So yeah, it is a good question, i would say AOD plus testosterone plus RITE of TRUE TIDE are all fine to take together. The AOD in my experience, I really only get a benefit if I take it right before fasted cardio. Otherwise I don't really notice any sort of like enhanced fat loss. I have heard people say that it seems to reduce water retention from growth hormone or a growth hormonal peptide. So if you feel like you get water attention from that, sometimes Aod, i've heard other people, say helps with that. i don' really noticed it myself, but i think Aody, Tesofensine, Retatrutide is great. And obviously retatutide, is really just going to be king at the end of the day. Next one is actually about tesofencing. So someone says, I love tesoffencing, and I also take desiccated thyroid. Since I usually take those two, one hour apart with no food, do you cycle tesofensine, or do cycle oral peptides in general? Yes, I do. I'm actually using it right now because we have a new teso-fensin blend that has magnesium threonate and taurine with it. So it kind of acts as a buffer to like the excitonature of tesophenzine to the neurotransmitters. It's like neurotransmitter, so the magnesium and the tauring can help buffer that to give you like a nice feeling with that. Flow but yes, I cycle test with fencing. I don't cycle desiccated thyroid But I do cycle tests with Fencing usually like eight weeks on eight week off, but it's really cool I just say like start really low with the one that we have you can start with one 125 micrograms I Don't feel anything of that.",
+            "first_timestamp": "8:11"
+          }
+        ],
+        "acute_signals": [
+          {
+            "snippet": "a significant portion of the weight off, likely due to “resetting” appetite circuits. That’s about as good as it gets in the world of weight management, without resorting to amphetamines, surgery, or ",
+            "source_title": "Tesofensine Is A Wild Card",
+            "source_date": "2025-07-14",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "ff, likely due to “resetting” appetite circuits. That’s about as good as it gets in the world of weight management, without resorting to amphetamines, surgery, or unsustainable crash diets. ——————————",
+            "source_title": "Tesofensine Is A Wild Card",
+            "source_date": "2025-07-14",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "That's not something that you would necessarily want to take off. I'm just thinking of everything on there. Most of that's all stuff that you could use around. Maybe you would take tesofensine off, because I know that it's on here. But what you can do, I don't know if this person is using HDH. So if I were doing that and you weren't using HGH, maybe you're using ipamrelin or tesamrelin, then I would come off of it. You could also use another fat loss peptide. I mean, there's lots of different peptides you could use out there, but the purpose of the Godstack, and Jay uses that, I use that.",
+            "source_title": "Peptide Q&A · Peptides, Hormones, and Fat Loss",
+            "source_date": "2026-03-29",
+            "timestamp": "11:52",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-peptides-hormones-and-fat-loss--12075a2e/"
+          },
+          {
+            "snippet": "Pretty sure Aderall gave me anhedonia and I just don't want to take any more. Yeah, I mean, first of all, testosterone, that helps a lot. Tesofensine helps, CMAX helps. Tiacrine helps so there absolutely is. I should do like a tier list of noootropics and Aderal would be like one of the worst ones because it's an amphetamine. Um, so yeah, there's so much out there that's better on Adderall, namely testosterone, like testosterone and having higher levels of testosterone in your body,",
+            "source_title": "Peptide Q&A · Your Most Pressing Questions",
+            "source_date": "2026-03-29",
+            "timestamp": "21:12",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-your-most-pressing-questions--925b9c90/"
+          },
+          {
+            "snippet": "alf and half if you want. AOD-9604 after CJC-1295 plus Ipamorelin? Yes, layer AOD in to keep the fat loss going. Nootropics and focus Anything like Adderall without the crash? Plenty. Testosterone fir",
+            "source_title": "Peptide Q&A · Your Most Pressing Questions",
+            "source_date": "2026-03-29",
+            "timestamp": null,
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-your-most-pressing-questions--925b9c90/"
+          }
+        ],
+        "chronic_signals": [
+          {
+            "snippet": "idnight PST)** * **AND DON'T FORGET: The ongoing supplement sale at BioLongevity Labs **_**expires tonight at Midnight PST**_**.** * 20% OFF supplements when you [visit the store](https://biolongevity",
+            "source_title": "Cagrilintide",
+            "source_date": "2025-02-11",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "idnight PST)** * **AND DON'T FORGET: The ongoing supplement sale at BioLongevity Labs **_**expires tonight at Midnight PST**_**.** * 20% OFF supplements when you [visit the store](https://biolongevity",
+            "source_title": "Pain vs. Discomfort",
+            "source_date": "2025-02-12",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "s. ✅ **Best peptides for soft tissue healing (e.g., hernias)?** BPC-157, TB-500, **PEG-MGF, and GHK-Cu**. ——————————————————————————— **GLP-1 Peptides & Fat Loss—How to Optimize** ✅ **Can I take a bre",
+            "source_title": "Happy Valentine's Day❤️",
+            "source_date": "2025-02-14",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "y! Tesofensine. Some people love it. Some people hate it. I personally love it and keep it in my arsenal for appetite suppression and cognitive enhancement. I recently received this question in my [qu",
+            "source_title": "Tesofensine Is A Wild Card",
+            "source_date": "2025-07-14",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "I personally love it and keep it in my arsenal for appetite suppression and cognitive enhancement. I recently received this question in my [question box](https://hunterwilliamsvideotopic.carrd.co/) an",
+            "source_title": "Tesofensine Is A Wild Card",
+            "source_date": "2025-07-14",
+            "timestamp": null,
+            "source_url": null
+          }
+        ]
+      }
+    },
+    "taylor-williams": {
+      "summary": {
+        "mention_count": 24,
+        "top_doses": [
+          {
+            "dose": "200 mg",
+            "count": 6
+          },
+          {
+            "dose": "12 mg",
+            "count": 5
+          },
+          {
+            "dose": "1.5 mg",
+            "count": 2
+          },
+          {
+            "dose": "10 mg",
+            "count": 2
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "aYuXqSfhPYE",
+            "source_type": "podcast",
+            "source_title": "5-Amino-1MQ: The Peptide That KILLS Appetite & Boosts Fat Loss!",
+            "source_date": "2025-03-14",
+            "source_url": "https://youtu.be/aYuXqSfhPYE",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2025-03-14-5-amino-1mq-the-peptide-that-kills-appetite-boosts-fat-loss-aYuXqSfhPYE.en.vtt",
+            "mention_count": 9,
+            "top_snippet": "together it also pairs really well with tesofensine tesofensine is a capsule um",
+            "top_context": "gp1 such as riter tide or chappati um so gp1 such as riter tide or chappati um so the other peptide that is going to pair the other peptide that is going to pair the other peptide that is going to pair really well with and which I think this really well with and which I think this really well with and which I think this is going to be a perfect combo is that is going to be a perfect combo is that is going to be a perfect combo is that is really great to use along with NAD is really great to use along with NAD is really great to use along with NAD plus because the five Amino is going to plus because the five Amino is going to plus because the five Amino is going to naturally increase your NAD levels but naturally increase your NAD levels but naturally increase your NAD levels but by also adding nad+ in with this by also adding nad+ in with this by also adding nad+ in with this essentially as a stack is going to be so essentially as a stack is going to be so essentially as a stack is going to be so beneficial to amplify your energy beneficial to amplify your energy beneficial to amplify your energy production and it's also going to help production and it's also going to help production and it's also going to help with reducing the appetite signaling so with reducing the appetite signaling so with reducing the appetite signaling so that is going to be super that is going to be super that is going to be super beneficial comparing combining these beneficial comparing combining these beneficial comparing combining these together it also pairs really well with together it also pairs really well with together it also pairs really well with tesofensine tesofensine is a capsule um tesofensine tesofensine is a capsule um tesofensine tesofensine is a capsule um peptide that I've talked a little bit peptide that I've talked a little bit peptide that I've talked a little bit about um tesofensine is one where you about um tesofensine is one where you about um tesofensine is one where you know it's a great peptide for um it's a know it's a great peptide for um it's a know it's a great peptide for um it's a great neut Tropic peptide so it's really great neut Tropic peptide so it's really great neut Tropic peptide so it's really going to help with your cognitive going to help with your cognitive going to help with your cognitive function and five Amino I have noticed a function and five Amino I have noticed a function and five Amino I have noticed a huge increase in my cognition when I use huge increase in my cognition when I use huge increase in my cognition when I use it and it just it sharpens it sharpens it and it just it sharpens it sharpens it and it just it sharpens it sharpens the mind and it makes it just like so the mind and it makes it just like so the mind and it makes it just like so much easier for me to be able to much easier for me to be able to much easier for me to be able to concentrate and really focus and it's concentrate and really focus and it's concentrate and really focus and it's really beneficial especially if you are really beneficial especially if you are really beneficial especially if you are you know you know on a computer all day you know you know on a computer all day you know you know on a computer all day you're researching behind a screen but you're researching behind a screen but you're researching behind a screen but honestly even if you are just like",
+            "first_timestamp": "00:12:16.079"
+          },
+          {
+            "source_id": "rc66QuY9Drs",
+            "source_type": "podcast",
+            "source_title": "I Stacked Retatrutide with THESE Peptides for Insane Fat Loss!",
+            "source_date": "2025-01-31",
+            "source_url": "https://youtu.be/rc66QuY9Drs",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2025-01-31-i-stacked-retatrutide-with-these-peptides-for-insane-fat-loss-rc66QuY9Drs.en.vtt",
+            "mention_count": 6,
+            "top_snippet": "true tide is I really like to use tesofensine now teso fenine is um a neut",
+            "top_context": "on redit TR Tai because I am starting my on redit TR Tai because I am starting my prep cycle of my um leaning out phas and prep cycle of my um leaning out phas and prep cycle of my um leaning out phas and what I have found being the most what I have found being the most what I have found being the most beneficial to par with it because I have beneficial to par with it because I have beneficial to par with it because I have noticed an appetite increase I'm also in noticed an appetite increase I'm also in noticed an appetite increase I'm also in a calorie deficit because I'm coming off a calorie deficit because I'm coming off a calorie deficit because I'm coming off of um a bulking phase of putting a lot of um a bulking phase of putting a lot of um a bulking phase of putting a lot more muscle mass on and now I'm in the more muscle mass on and now I'm in the more muscle mass on and now I'm in the transition phase of um leaning out and transition phase of um leaning out and transition phase of um leaning out and still putting muscle on at the same time still putting muscle on at the same time still putting muscle on at the same time so for me I noticed that like the so for me I noticed that like the so for me I noticed that like the appetite increase while taking this has appetite increase while taking this has appetite increase while taking this has gone back I also know that I'm also in a gone back I also know that I'm also in a gone back I also know that I'm also in a calorie deficit right now and I'm still calorie deficit right now and I'm still calorie deficit right now and I'm still training um 5 days a week resistance training um 5 days a week resistance training um 5 days a week resistance weightlifting training in the gym so weightlifting training in the gym so weightlifting training in the gym so what I like to take um along with redit what I like to take um along with redit what I like to take um along with redit true tide is I really like to use true tide is I really like to use true tide is I really like to use tesofensine now teso fenine is um a neut tesofensine now teso fenine is um a neut tesofensine now teso fenine is um a neut Tropic and it's in the neut Tropic Tropic and it's in the neut Tropic Tropic and it's in the neut Tropic family and is a capsule teso fening is family and is a capsule teso fening is family and is a capsule teso fening is really going to help with um improving really going to help with um improving really going to help with um improving Cate ings so teso fening is really going Cate ings so teso fening is really going Cate ings so teso fening is really going to help with improving your mood and it to help with improving your mood and it to help with improving your mood and it really helps with that food noise really helps with that food noise really helps with that food noise Connection in the mind and I've talked Connection in the mind and I've talked Connection in the mind and I've talked about this a little bit on the channel about this a little bit on the channel about this a little bit on the channel like I do have food noise a lot I'm just like I do have food noise a lot I'm just like I do have food noise a lot I'm just someone that I just I'm a foodie I someone that I just I'm a foodie I someone that I just I'm a foodie I constantly think about food I have food constantly think about food I have food constantly think about food I have food noise and for me teso fening really does noise and for me teso fening really does noise and for me teso fening really does help cut out the food noise but what's help cut out the food noise but what's help cut out the food noise but what's really great too is that it helps really great too is that it helps really great too is that it helps improve the mood so like when you're in improve the mood so like when you're in improve the mood so like when you're in a calorie def which if you're taking a",
+            "first_timestamp": "00:08:15.639"
+          },
+          {
+            "source_id": "Cg7JtpnfRY4",
+            "source_type": "podcast",
+            "source_title": "Saturday Morning Coffee Talk 4/18/26",
+            "source_date": "2026-04-18",
+            "source_url": "https://youtu.be/Cg7JtpnfRY4",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2026-04-18-saturday-morning-coffee-talk-4-18-26-Cg7JtpnfRY4.en.vtt",
+            "mention_count": 6,
+            "top_snippet": "If I want to take a break from Retatide, can I use Tesofensine as a bridge? Will",
+            "top_context": "Ipamorelin? Currently 1.5 mg of Reddit. Ipamorelin? Currently 1.5 mg of Reddit. 200 mg of test. Yes, 12 mg is fine. I I 200 mg of test. Yes, 12 mg is fine. I I 200 mg of test. Yes, 12 mg is fine. I I do 10 mg. So I have 10 mg capsules and I do 10 mg. So I have 10 mg capsules and I do 10 mg. So I have 10 mg capsules and I do 10 mg. Some people do 20 mg and they do 10 mg. Some people do 20 mg and they do 10 mg. Some people do 20 mg and they like that and that's good. And good for like that and that's good. And good for like that and that's good. And good for them. You could do two you could try two them. You could do two you could try two them. You could do two you could try two pills, which would be like 24 mg. See pills, which would be like 24 mg. See pills, which would be like 24 mg. See how you like it. But to me 10 mg is how you like it. But to me 10 mg is how you like it. But to me 10 mg is perfect. Ideally yes, you would take it perfect. Ideally yes, you would take it perfect. Ideally yes, you would take it fasted like Tesamorelin and Ipamorelin. fasted like Tesamorelin and Ipamorelin. fasted like Tesamorelin and Ipamorelin. I think because that's a small molecule, I think because that's a small molecule, I think because that's a small molecule, probably less important. But I would probably less important. But I would probably less important. But I would still say important. So yes, I would do still say important. So yes, I would do still say important. So yes, I would do it fasted if at all possible. Although I it fasted if at all possible. Although I it fasted if at all possible. Although I don't think it would be again to go back don't think it would be again to go back don't think it would be again to go back to like to like to like Is it better to take it Is it better to take it Is it better to take it with food or to not take it at all? with food or to not take it at all? with food or to not take it at all? Probably better to take it with food and Probably better to take it with food and Probably better to take it with food and just in terms of the end result. If I want to take a break from Retatide, If I want to take a break from Retatide, can I use Tesofensine as a bridge? Will can I use Tesofensine as a bridge? Will can I use Tesofensine as a bridge? Will that still reset receptors for future that still reset receptors for future that still reset receptors for future Retatide use or do I need to completely Retatide use or do I need to completely Retatide use or do I need to completely come off all GLP's to reset? come off all GLP's to reset? come off all GLP's to reset? What do you think? I would I would I would come off of all GLP's for 4 I would come off of all GLP's for 4 I would come off of all GLP's for 4 weeks. weeks. weeks. Yeah. And then Yeah. And then Yeah. And then either add Tesofensine or Retatide back either add Tesofensine or Retatide back either add Tesofensine or Retatide back in. Yeah. in. Yeah. in. Yeah. I do think you can I do think you can I do think you can potentially like So, they're different compounds. They're So, they're different compounds. They're hitting the same receptors, but they are hitting the same receptors, but they are hitting the same receptors, but they are different compounds. And so, I do think different compounds. And so, I do think different compounds. And so, I do think like rotating back and forth between like rotating back and forth between like rotating back and forth between them, you do probably get some effect, them, you do probably get some effect, them, you do probably get some effect, but it's not like the same as like but it's not like the same as like but it's not like the same as like cleaning out your receptors, which cleaning out your receptors, which cleaning out your receptors, which usually take a month based on the",
+            "first_timestamp": "00:49:42.080"
+          },
+          {
+            "source_id": "G27dIPBJUSs",
+            "source_type": "podcast",
+            "source_title": "Saturday Morning Coffee Talk 3/28/26",
+            "source_date": "2026-03-28",
+            "source_url": "https://youtu.be/G27dIPBJUSs",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2026-03-28-saturday-morning-coffee-talk-3-28-26-G27dIPBJUSs.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "Yeah, Susan does combo of Tesofensine and Retatrutide",
+            "top_context": "you're not talking apples to apples. you're not talking apples to apples. And so, for like instance, a man And so, for like instance, a man And so, for like instance, a man they'll see a a free testosterone range they'll see a a free testosterone range they'll see a a free testosterone range of like 35 to 170 of like 35 to 170 of like 35 to 170 for free testosterone. for free testosterone. for free testosterone. &gt;&gt; Mhm. &gt;&gt; Mhm. &gt;&gt; Mhm. And they're like, \"Oh, my free And they're like, \"Oh, my free And they're like, \"Oh, my free testosterone was 80. testosterone was 80. testosterone was 80. That's high. Oh my goodness.\" That's high. Oh my goodness.\" That's high. Oh my goodness.\" And it's picograms per milliliter and And it's picograms per milliliter and And it's picograms per milliliter and then you realize that that's actually then you realize that that's actually then you realize that that's actually when we're talking about therapeutic for when we're talking about therapeutic for when we're talking about therapeutic for a man, his it's really eight cuz it's a man, his it's really eight cuz it's a man, his it's really eight cuz it's one decimal place over. So, it it one decimal place over. So, it it one decimal place over. So, it it differs there. It I know it's confusing, differs there. It I know it's confusing, differs there. It I know it's confusing, but but but It is. Um It is. Um It is. Um Yeah, high free T picograms per Yeah, high free T picograms per Yeah, high free T picograms per milliliter is a measurement and the milliliter is a measurement and the milliliter is a measurement and the reference range is zero to 4.2. reference range is zero to 4.2. reference range is zero to 4.2. Which that was Katie. Which that was Katie. Which that was Katie. Which is a different measurement. Which is a different measurement. Which is a different measurement. &gt;&gt; Yeah. Yeah, Susan does Yeah, Susan does combo of Tesofensine and Retatrutide combo of Tesofensine and Retatrutide combo of Tesofensine and Retatrutide microdoses. microdoses. microdoses. I think it works great. I think people I think it works great. I think people I think it works great. I think people makes good clickbait if you say it's makes good clickbait if you say it's makes good clickbait if you say it's bad, but bad, but bad, but Yeah, and then Orforglipron. Yeah, and then Orforglipron. Yeah, and then Orforglipron. Yeah, I think that's the other thing too Yeah, I think that's the other thing too Yeah, I think that's the other thing too for people that don't want to cycle off for people that don't want to cycle off for people that don't want to cycle off GLP-1s Orforglipron is a small molecule, GLP-1s Orforglipron is a small molecule, GLP-1s Orforglipron is a small molecule, meaning it's not actually a peptide, but meaning it's not actually a peptide, but meaning it's not actually a peptide, but it's a small molecule GLP-1 agonist. And it's a small molecule GLP-1 agonist. And it's a small molecule GLP-1 agonist. And so, if you wanted to, you just take if so, if you wanted to, you just take if so, if you wanted to, you just take if you wanted to get the appetite you wanted to get the appetite you wanted to get the appetite suppression and then some of the suppression and then some of the suppression and then some of the benefits cuz there's still pretty good benefits cuz there's still pretty good benefits cuz there's still pretty good fat loss benefits in the data from fat loss benefits in the data from fat loss benefits in the data from Orforglipron, Orforglipron, Orforglipron, you just take eight to 12 weeks off of you just take eight to 12 weeks off of you just take eight to 12 weeks off of that, use some Orforglipron, then go that, use some Orforglipron, then go that, use some Orforglipron, then go back on and you're going to be back on and you're going to be back on and you're going to be resensitized to the Retatrutide cuz it's resensitized to the Retatrutide cuz it's resensitized to the Retatrutide cuz it's a completely different compound. a completely different compound. a completely different compound. &gt;&gt; Yeah. Okay, Michael. I'm going to rely on my Okay, Michael. I'm going to rely on my wife for this one. Can you ease my wife for this one. Can you ease my wife for this one. Can you ease my wife's mind and let her know she can do",
+            "first_timestamp": "01:06:28.359"
+          }
+        ],
+        "acute_signals": [],
+        "chronic_signals": [
+          {
+            "snippet": "true tide is I really like to use tesofensine now teso fenine is um a neut",
+            "source_title": "I Stacked Retatrutide with THESE Peptides for Insane Fat Loss!",
+            "source_date": "2025-01-31",
+            "timestamp": "00:08:15.639",
+            "source_url": "https://youtu.be/rc66QuY9Drs"
+          },
+          {
+            "snippet": "tesofensine now teso fenine is um a neut",
+            "source_title": "I Stacked Retatrutide with THESE Peptides for Insane Fat Loss!",
+            "source_date": "2025-01-31",
+            "timestamp": "00:08:19.869",
+            "source_url": "https://youtu.be/rc66QuY9Drs"
+          },
+          {
+            "snippet": "tesofensine now teso fenine is um a neut Tropic and it's in the neut Tropic",
+            "source_title": "I Stacked Retatrutide with THESE Peptides for Insane Fat Loss!",
+            "source_date": "2025-01-31",
+            "timestamp": "00:08:19.879",
+            "source_url": "https://youtu.be/rc66QuY9Drs"
+          },
+          {
+            "snippet": "Yeah, Susan does combo of Tesofensine and Retatrutide",
+            "source_title": "Saturday Morning Coffee Talk 3/28/26",
+            "source_date": "2026-03-28",
+            "timestamp": "01:06:28.359",
+            "source_url": "https://youtu.be/G27dIPBJUSs"
+          },
+          {
+            "snippet": "combo of Tesofensine and Retatrutide",
+            "source_title": "Saturday Morning Coffee Talk 3/28/26",
+            "source_date": "2026-03-28",
+            "timestamp": "01:06:29.230",
+            "source_url": "https://youtu.be/G27dIPBJUSs"
+          }
+        ]
+      },
+      "female_specific_note": "Taylor Williams Coaching focuses on female-specific HRT/peptide guidance. Per-peptide notes here often emphasize female dosing, fertility, hormone interactions."
+    },
+    "trevor-bachmeyer": {
+      "summary": {
+        "mention_count": 3,
+        "top_doses": [],
+        "top_sources": [
+          {
+            "source_id": "PZtKV9DjRxQ",
+            "source_type": "podcast",
+            "source_title": "Never Microdose Retatrutide - Unbreakable Podcast 283",
+            "source_date": "2025-10-15",
+            "source_url": "https://youtu.be/PZtKV9DjRxQ",
+            "source_file": "data/peptide-libraries/by-expert/trevor-bachmeyer/podcast-transcripts/raw/2025-10-15-never-microdose-retatrutide-unbreakable-podcast-283-PZtKV9DjRxQ.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "addictive This is the problem. This is which is what tesofensine mitigates.",
+            "top_context": "Ferrari, and you're pushing it around Ferrari, and you're pushing it around wondering why it doesn't work. That's wondering why it doesn't work. That's wondering why it doesn't work. That's what's going on. That's the first part. what's going on. That's the first part. what's going on. That's the first part. How about this? The neurological How about this? The neurological How about this? The neurological problem. You're the rewiring of the problem. You're the rewiring of the problem. You're the rewiring of the hypothalamic set point. It requires this hypothalamic set point. It requires this hypothalamic set point. It requires this very strong sustained signal. Very. Your very strong sustained signal. Very. Your very strong sustained signal. Very. Your brain is tough, and it doesn't like to brain is tough, and it doesn't like to brain is tough, and it doesn't like to change unless you demand that it change unless you demand that it change unless you demand that it changes. Synaptic plasticity demands changes. Synaptic plasticity demands changes. Synaptic plasticity demands intensity and duration. A weekly dose intensity and duration. A weekly dose intensity and duration. A weekly dose provides days-long signals that that provides days-long signals that that provides days-long signals that that carves new fullness pathways into your carves new fullness pathways into your carves new fullness pathways into your brain's neural architecture. A microdose brain's neural architecture. A microdose brain's neural architecture. A microdose is this weak fleeting signal. It's like is this weak fleeting signal. It's like is this weak fleeting signal. It's like a It's like a whisper in a hurricane of a It's like a whisper in a hurricane of a It's like a whisper in a hurricane of ghrelin. ghrelin. ghrelin. If you remember MK-677, the ghrelin If you remember MK-677, the ghrelin If you remember MK-677, the ghrelin mimetic. All of this, your brain doesn't mimetic. All of this, your brain doesn't mimetic. All of this, your brain doesn't even register what you're doing with even register what you're doing with even register what you're doing with retatrutide when you microdose. The retatrutide when you microdose. The retatrutide when you microdose. The addictive This is the problem. This is addictive This is the problem. This is addictive This is the problem. This is which is what tesofensine mitigates. which is what tesofensine mitigates. which is what tesofensine mitigates. But, the addictive dopaminergic But, the addictive dopaminergic But, the addictive dopaminergic food-seeking circuits in your ventral food-seeking circuits in your ventral food-seeking circuits in your ventral tegmental area, the VTA, and the nucleus tegmental area, the VTA, and the nucleus tegmental area, the VTA, and the nucleus accumbens laugh at retatrutide. They accumbens laugh at retatrutide. They accumbens laugh at retatrutide. They just go, \"This isn't going to work.\" You just go, \"This isn't going to work.\" You just go, \"This isn't going to work.\" You get zero long-lasting neurological get zero long-lasting neurological get zero long-lasting neurological effects. Zero. It's impossible cuz it's effects. Zero. It's impossible cuz it's effects. Zero. It's impossible cuz it's not loud enough. It's like right now, my not loud enough. It's like right now, my not loud enough. It's like right now, my wife is in the house, which is way over wife is in the house, which is way over wife is in the house, which is way over there, whispering. I'm out in a studio there, whispering. I'm out in a studio there, whispering. I'm out in a studio insulated far away. I'm never going to insulated far away. I'm never going to insulated far away. I'm never going to hear her. That's the equivalent. It hear her. That's the equivalent. It hear her. That's the equivalent. It doesn't even touch glucagon. That's like doesn't even touch glucagon. That's like doesn't even touch glucagon. That's like What do we have? The third thing? To What do we have? The third thing? To What do we have? The third thing? To activate the hepatic glucagon receptors activate the hepatic glucagon receptors activate the hepatic glucagon receptors sufficiently to upregulate the cyclic sufficiently to upregulate the cyclic sufficiently to upregulate the cyclic AMP PK PKA hormone-sensitive lipase AMP PK PKA hormone-sensitive lipase AMP PK PKA hormone-sensitive lipase cascade, right? That's It requires a cascade, right? That's It requires a cascade, right? That's It requires a very potent signal. A specific receptor very potent signal. A specific receptor very potent signal. A specific receptor occupancy threshold has to be crossed.",
+            "first_timestamp": "00:20:53.200"
+          }
+        ],
+        "acute_signals": [],
+        "chronic_signals": []
+      },
+      "acute_vs_chronic_note": "Dr Bachmeyer often distinguishes acute (injury/infection) vs chronic (longevity/maintenance) dosing. Acute_signals + chronic_signals fields surface candidate contexts; full distillation pending Codex pass."
+    }
+  },
+  "reset_biology_synthesis": {
+    "status": "distilled",
+    "recommendation": "Reset Biology suggests asking the practitioner to weigh Hunter Williams' 2026-03-29 library framing: \"I use tesoffencing as more of a nootropic.\" [how-to-use-tesofensine-for-maximum-focus-and-fat-loss--7884029b @ 8:34, https://library.hunterwilliamshealth.com/p/how-to-use-tesofensine-for-maximum-focus-and-fat-loss--7884029b/] Hunter Williams' later library Q&A (2026-06-17) separately says: \"you always can add some tesofensine. We forget about teso-fensinine and how good that is.\" [may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352 @ 4:52, https://library.hunterwilliamshealth.com/p/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352/]",
+    "caveats": "- Hunter Williams (2026-03-29): \"Common side effects people will report are dry mouth, nausea, headache, insomnia, increased heart rate.\" [how-to-use-tesofensine-for-maximum-focus-and-fat-loss--7884029b @ 8:02, https://library.hunterwilliamshealth.com/p/how-to-use-tesofensine-for-maximum-focus-and-fat-loss--7884029b/]\n- Hunter Williams (2026-03-29): \"You're using tesofensine to try to cure depression or alleviate depression. Do not do that.\" [how-to-use-tesofensine-for-maximum-focus-and-fat-loss--7884029b @ 11:45, https://library.hunterwilliamshealth.com/p/how-to-use-tesofensine-for-maximum-focus-and-fat-loss--7884029b/]\n- Hunter Williams (2026-03-29): \"Now, that is complete speculation. I am saying that as a correlation thing that I have noticed, it's not causation.\" [how-to-use-tesofensine-for-maximum-focus-and-fat-loss--7884029b @ 20:46, https://library.hunterwilliamshealth.com/p/how-to-use-tesofensine-for-maximum-focus-and-fat-loss--7884029b/] \"if you have been on an SSRI recently, currently, or for an extended period of time at some point in your history, probably just go ahead and avoid tesofencing altogether.\" [how-to-use-tesofensine-for-maximum-focus-and-fat-loss--7884029b @ 21:18, https://library.hunterwilliamshealth.com/p/how-to-use-tesofensine-for-maximum-focus-and-fat-loss--7884029b/]\n- Hunter Williams (2026-03-29): \"you're running the risk of potentially damaging sleep more at 500 micrograms, whereas 250 micro grams you might get those sleep benefits that I was talking about.\" [how-to-use-tesofensine-for-maximum-focus-and-fat-loss--7884029b @ 10:42, https://library.hunterwilliamshealth.com/p/how-to-use-tesofensine-for-maximum-focus-and-fat-loss--7884029b/]",
+    "cross_expert_consensus": "Hunter Williams (2026-03-29): \"this ability to reduce our appetite, and enhance the feeling of fullness.\" [how-to-use-tesofensine-for-maximum-focus-and-fat-loss--7884029b @ 4:37, https://library.hunterwilliamshealth.com/p/how-to-use-tesofensine-for-maximum-focus-and-fat-loss--7884029b/] Taylor Williams (2025-01-31): \"teso fening really does help cut out the food noise\" [rc66QuY9Drs @ 00:08:52.120, https://youtu.be/rc66QuY9Drs] Dr Trevor Bachmeyer (2025-10-15): \"which is what tesofensine mitigates.\" [PZtKV9DjRxQ @ 00:20:53.200, https://youtu.be/PZtKV9DjRxQ]",
+    "cross_expert_disagreement": null,
+    "acute_chronic_split": {
+      "acute": null,
+      "chronic": {
+        "dose": "Hunter Williams (2026-03-29): \"Typically, I am always going to recommend people start with 250 micrograms or 0.25 milligrams. Now in studies, they have had people take up to one milligrams a day with no problems whatsoever and only benefits.\" [how-to-use-tesofensine-for-maximum-focus-and-fat-loss--7884029b @ 9:08, https://library.hunterwilliamshealth.com/p/how-to-use-tesofensine-for-maximum-focus-and-fat-loss--7884029b/] Hunter Williams (2026-03-29): \"The sweet spot for most people is going be 500 micro grams, but to be honest, get as good a benefit at 250 grams as I do 500 grams.\" [how-to-use-tesofensine-for-maximum-focus-and-fat-loss--7884029b @ 9:41, https://library.hunterwilliamshealth.com/p/how-to-use-tesofensine-for-maximum-focus-and-fat-loss--7884029b/] Hunter Williams (2026-03-29): \"Some people go as high as 500 micro grams. studies, they even go up to like one milligram or 1.5 milligrams, but I like 250 micrograms.\" [the-best-peptides-for-learning-become-a-supercomputer--9797c575 @ 18:09, https://library.hunterwilliamshealth.com/p/the-best-peptides-for-learning-become-a-supercomputer--9797c575/] Hunter Williams (2026-03-29): \"start really low with the one that we have you can start with one 125 micrograms I Don't feel anything of that.\" [peptide-qa-july-2025--936e4b81 @ 8:44, https://library.hunterwilliamshealth.com/p/peptide-qa-july-2025--936e4b81/]",
+        "route": "Hunter Williams (2026-03-29): \"And I like 250 micrograms per day taken orally.\" [the-best-peptides-for-learning-become-a-supercomputer--9797c575 @ 18:09, https://library.hunterwilliamshealth.com/p/the-best-peptides-for-learning-become-a-supercomputer--9797c575/]",
+        "frequency": "Hunter Williams (2026-03-29): \"I like 250 micrograms per day taken orally.\" [the-best-peptides-for-learning-become-a-supercomputer--9797c575 @ 18:09, https://library.hunterwilliamshealth.com/p/the-best-peptides-for-learning-become-a-supercomputer--9797c575/] Hunter Williams (2026-03-29): \"Like 250 micro grams every other day for me That's a sweet spot because it has a long half-life.\" [peptide-qa-july-2025--936e4b81 @ 9:16, https://library.hunterwilliamshealth.com/p/peptide-qa-july-2025--936e4b81/]",
+        "duration": "Hunter Williams (2026-03-29): \"I do cycle tests with Fencing usually like eight weeks on eight week off.\" [peptide-qa-july-2025--936e4b81 @ 8:44, https://library.hunterwilliamshealth.com/p/peptide-qa-july-2025--936e4b81/]",
+        "verbatim_citation": "Hunter Williams - peptide-qa-july-2025--936e4b81 (2026-03-29, 9:16): \"Like 250 micro grams every other day for me That's a sweet spot because it has a long half-life.\" https://library.hunterwilliamshealth.com/p/peptide-qa-july-2025--936e4b81/",
+        "episode_url": "https://library.hunterwilliamshealth.com/p/how-to-use-tesofensine-for-maximum-focus-and-fat-loss--7884029b/; https://library.hunterwilliamshealth.com/p/the-best-peptides-for-learning-become-a-supercomputer--9797c575/; https://library.hunterwilliamshealth.com/p/peptide-qa-july-2025--936e4b81/",
+        "timestamp": "Hunter library: 9:08; 9:41; 18:09; 8:44; 9:16."
+      }
+    },
+    "female_specific_notes": null,
+    "distilled_at": "2026-07-17T03:07:44.2416316-06:00",
+    "distilled_by": "codex"
+  },
+  "generated_at": "2026-07-17T10:59:08.769Z",
+  "mentions_fingerprint": "0ad83d2e521e"
+}

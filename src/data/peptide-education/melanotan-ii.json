@@ -5,20 +5,24 @@
     "Melanotan II",
     "Melanotan 2",
     "MT-2",
+    "MT2",
     "melanotan 2",
-    "mt2",
-    "MT2"
+    "mt2"
   ],
-  "category": "Uncategorized",
+  "category": "Healing",
   "experts": {
     "hunter-williams": {
       "baseline_protocol": null,
       "summary": {
-        "mention_count": 26,
+        "mention_count": 37,
         "top_doses": [
           {
             "dose": "1 mg",
-            "count": 21
+            "count": 24
+          },
+          {
+            "dose": "5 mg",
+            "count": 5
           },
           {
             "dose": "15 mg",
@@ -29,8 +33,8 @@
             "count": 3
           },
           {
-            "dose": "5 mg",
-            "count": 3
+            "dose": "250 mcg",
+            "count": 2
           }
         ],
         "top_sources": [
@@ -78,9 +82,21 @@
             "source_url": null,
             "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-06-22-use-this-peptide-at-the-beach.md",
             "mention_count": 3,
-            "top_snippet": "““Hunter, everyone’s talking about tanning peptides. Should I be using Melanotan 1 or 2 to get a tan for summer? What’s the difference, and is there more to these than just getting a tan for the beach",
-            "top_context": "““Hunter, everyone’s talking about tanning peptides. Should I be using Melanotan 1 or 2 to get a tan for summer? What’s the difference, and is there more to these than just getting a tan for the beach?”“ — If you’ve spent any time in the peptide world, you’ve probably heard of Melanotan 1 and Melanotan 2. I get this question every spring, but most people don’t know just how much more there is to Melanotan 1 than meets the eye. So, let’s dive in: what it is, where it came from, the benefits beyond tanning, what you can actually expect, and exactly how I dose it for best results. (BTW, you",
+            "top_snippet": "s. ““Hunter, everyone’s talking about tanning peptides. Should I be using Melanotan 1 or 2 to get a tan for summer? What’s the difference, and is there more to these than just getting a tan for the be",
+            "top_context": "s. ““Hunter, everyone’s talking about tanning peptides. Should I be using Melanotan 1 or 2 to get a tan for summer? What’s the difference, and is there more to these than just getting a tan for the beach?”“ — If you’ve spent any time in the peptide world, you’ve probably heard of Melanotan 1 and Melanotan 2. I get this question every spring, but most people don’t know just how much more there is to Melanotan 1 than meets the eye. So, let’s dive in: what it is, where it came from, the benefits beyond tanning, what you can actually expect, and exactly how I dose it for best results. (BTW, you can s",
             "first_timestamp": null
+          },
+          {
+            "source_id": "reader-mailbag-3-traveling-glutathione-sleep-more-hunter-taylor-williams--5863331e",
+            "source_type": "library-video",
+            "source_title": "Reader Mailbag 3 — Traveling, Glutathione, Sleep & More | Hunter & Taylor Williams",
+            "source_date": "2026-05-25",
+            "source_url": "https://library.hunterwilliamshealth.com/p/reader-mailbag-3-traveling-glutathione-sleep-more-hunter-taylor-williams--5863331e/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/reader-mailbag-3-traveling-glutathione-sleep-more-hunter-taylor-williams--5863331e.json",
+            "mention_count": 3,
+            "top_snippet": "I think for the purposes of just this discussion, We can kind of talk about the differences between melantane 1 and Melanatane 2. what the differences are, which one we prefer to use, and then how that could potentially affect like a melanoma. But we had a couple of people ask about history of skin cancer and using Melanotan 1, Melantan 2. Do they have to worry about that? And so ultimately, how do we think about the melanotam peptides, specifically MT1, MT2? when your son exposed and have skin changes and then with someone that has had skin cancer, maybe they have a family history of skin,",
+            "top_context": "I hope one day they do but work. Yeah, I have used a transdermal Glutathion, which works pretty good Yeah I would say it's maybe not as as good but I use that before I'd use like a lipozomol So but that it I think we kind of covered that one as much as we needed to. Moving on, this one is going to be, so last reader mailbag, we talked about peptides and cancer risk. We really went into more of like the GH peptide and HGH, but the one today has to do more with skin cancer and melanotan-1 and melanotane-2. I think for the purposes of just this discussion, We can kind of talk about the differences between melantane 1 and Melanatane 2. what the differences are, which one we prefer to use, and then how that could potentially affect like a melanoma. But we had a couple of people ask about history of skin cancer and using Melanotan 1, Melantan 2. Do they have to worry about that? And so ultimately, how do we think about the melanotam peptides, specifically MT1, MT2? when your son exposed and have skin changes and then with someone that has had skin cancer, maybe they have a family history of skin, cancer or those off the table for them. And then what about pigmentation and melasma issues with those? Is that something that did those make worse? Do they make it better? And so what would be your thoughts around that conversation? So a lot of questions there. I would say, so to break it down, I'd say as long as there's no active cancer, Melanotin-1, definitely yes.",
+            "first_timestamp": "18:30"
           },
           {
             "source_id": "E7GPNidicqY",
@@ -105,6 +121,18 @@
             "top_snippet": "ctors couldn't prescribe → research peptide market exploded ## ⭐ April 15, 2026 — FDA Removes 12 Peptides from Category 2 ### The 12 removed - **BPC-157** - **KPV** - **TB-500** - **MOTS-c** - **DSIP*",
             "top_context": "ctors couldn't prescribe → research peptide market exploded ## ⭐ April 15, 2026 — FDA Removes 12 Peptides from Category 2 ### The 12 removed - **BPC-157** - **KPV** - **TB-500** - **MOTS-c** - **DSIP** - **Semax** - **Epitalon** - **GHK-Cu** (injectable) - **LL-37** - **Dihexa** - **PEG-MGF** - **Melanotan II** ## ⭐ April 16, 2026 — PCAC Meeting Scheduled (July 23-24, 2026) Federal Register notice — Pharmacy Compounding Advisory Committee (PCAC) meeting at FDA's White Oak Campus, Silver Spring, MD. ### July 23 agenda — Round 1 (4 peptides) - **BPC-157** — for ulcerative colitis - **KPV** — for wound",
             "first_timestamp": null
+          },
+          {
+            "source_id": "peptide-qa-your-most-pressing-questions--925b9c90",
+            "source_type": "library-video",
+            "source_title": "Peptide Q&A · Your Most Pressing Questions",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-your-most-pressing-questions--925b9c90/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-qa-your-most-pressing-questions--925b9c90.json",
+            "mention_count": 2,
+            "top_snippet": "So do you think as a skin type 1 person, I don't know what that means. I'm guessing it means they're more pale. They said, do think that Melantan 1 will be able to get me tan? I tried MT2, Melatantin-2 about a year ago. And had very bad stomach cramps and abdominal pain. So I stopped out of fear. Uh, well, that was your first mistake. Melanin 10 two, uh, definitely will cause stomach, cramp, abdominal pains, even dry heaving. I would avoid my 10 to at all costs. Um, for a multitude of reasons that are outside the scope of this video, but, um, They said, I want to give Molantan-1 a shot because I've heard the side",
+            "top_context": "That's really going help. So next question is about ARA290. Someone said, I wonder how effective this would be for sciatica. I ruptured a disc. My back in the late nineties and never had surgery. Fast forward to today, I'm still lifting it once in a while, getting the sharp pain down my left leg and some numbness in that foot. And it's more aggravating than anything. So yes, that would definitely be effective of that. I can't promise it. It's going to help everything, but as far as nerve pain goes, it definitely should help with that Next question is around Melanotan-1. So do you think as a skin type 1 person, I don't know what that means. I'm guessing it means they're more pale. They said, do think that Melantan 1 will be able to get me tan? I tried MT2, Melatantin-2 about a year ago. And had very bad stomach cramps and abdominal pain. So I stopped out of fear. Uh, well, that was your first mistake. Melanin 10 two, uh, definitely will cause stomach, cramp, abdominal pains, even dry heaving. I would avoid my 10 to at all costs. Um, for a multitude of reasons that are outside the scope of this video, but, um, They said, I want to give Molantan-1 a shot because I've heard the side effects are less to none. I have seen on the internet different forms of people trying Molentan 1 and not seeing any results at all because they're a lot less potent than Molntan 2. Um, i guess, but it kind of depends. And so we're now getting to the question. So basically just wondering if you think Molantean one will be able to get me fairly dark. Also, if there's any way that you could head towards a supplier. Nope, nope, so thanks for the response. So if you need to supply, you know, I have nothing, nothing to do with where to buy peptides from whatsoever.",
+            "first_timestamp": "5:46"
           }
         ],
         "acute_signals": [
@@ -114,6 +142,13 @@
             "source_date": "2026-04-16",
             "timestamp": null,
             "source_url": null
+          },
+          {
+            "snippet": "So do you think as a skin type 1 person, I don't know what that means. I'm guessing it means they're more pale. They said, do think that Melantan 1 will be able to get me tan? I tried MT2, Melatantin-2 about a year ago. And had very bad stomach cramps and abdominal pain. So I stopped out of fear. Uh, well, that was your first mistake. Melanin 10 two, uh, definitely will cause stomach, cramp, abdominal pains, even dry heaving. I would avoid my 10 to at all costs. Um, for a multitude of reasons that are outside the scope of this video, but, um, They said, I want to give Molantan-1 a shot because I've heard the side",
+            "source_title": "Peptide Q&A · Your Most Pressing Questions",
+            "source_date": "2026-03-29",
+            "timestamp": "5:46",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-your-most-pressing-questions--925b9c90/"
           }
         ],
         "chronic_signals": [
@@ -130,6 +165,27 @@
             "source_date": "2026-04-16",
             "timestamp": null,
             "source_url": null
+          },
+          {
+            "snippet": "So, but I remember like, I mean, you had hanging beds were definitely the thing. You put the stickers on you for the tan lines. Yeah. When it comes to melanomas and stuff, Melanotan 2, based on what I've read, would definitely be a no-go. I would not use Melantan. Even if I had family history, just stay away from it. if that's something you struggle with, or you know people in your family have struggled with. So I would stay away from Melanotan, too, if this is the case. Honestly, I think Melantan-1 is fine, but you have to be the one that uses that discretion.",
+            "source_title": "Reader Mailbag 3 — Traveling, Glutathione, Sleep & More | Hunter & Taylor Williams",
+            "source_date": "2026-05-25",
+            "timestamp": "23:38",
+            "source_url": "https://library.hunterwilliamshealth.com/p/reader-mailbag-3-traveling-glutathione-sleep-more-hunter-taylor-williams--5863331e/"
+          },
+          {
+            "snippet": "o argue about whether you can combine these. You can do whatever you want. First time using Melanotan-1. Start with 250mcg once a week. You can scale up to 2-3 times per week. If I'm going to the beac",
+            "source_title": "Saturday Morning Coffee Talk · 3/28/26",
+            "source_date": "2026-04-08",
+            "timestamp": null,
+            "source_url": "https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-32826--a0b19742/"
+          },
+          {
+            "snippet": "You don't really see it with Melantitan 1 though, so I'm not saying it's not, but I think if anything, Melatitan I think a lot of the skin cancer risk comes from the fact that people are burning. And so it's like the inflammatory response is created after the burn. If we prevent the, burn, I, think, a, lot, of, times, not all the time, but a , lot , of , times that can help with that. I'm not saying it, it s not, and I don't know that it is, , but it seems like Melanotan 2 would have more of an issue with,",
+            "source_title": "Saturday Morning Coffee Talk 5/2/26",
+            "source_date": "2026-05-25",
+            "timestamp": "1:30:19",
+            "source_url": "https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-5226--3cf808ca/"
           }
         ]
       }
@@ -324,9 +380,10 @@
         "timestamp": "00:38:43.359 (250mcg start) · 00:38:54.520 (1mg beach build-up) · 00:39:11.480 (2-3x/week) · 00:39:23.920 (MT-2 framing). Hunter caveat episode: https://youtu.be/E7GPNidicqY 01:53:09.520 (15mg/2mo + mole darkening)."
       }
     },
-    "female_specific_notes": "Taylor frames MT-2 as the inferior choice for women specifically due to side-effect profile and aesthetic mismatch — Taylor (GP0EG8UyvJo 00:05:23.520): \"melanotan 2 has some really awful negative side effects of people feeling nauseous sick um some men get some erectile issues with it um and melanotan 2 will also make people Orange um so yeah I don't want to look orange um so melanotan one is going to be the better peptide to use.\" Taylor (G27dIPBJUSs 00:39:38.760): \"I would personally start with Melanotan 1 if you've never done it before, cuz it's much more mild.\" Taylor mentions her own MT-1 use and links pigmentation peptides to broader hormonal-transition support (GP0EG8UyvJo 00:05:13 surrounding context): \"helped me so much when I was going through um anxiety and coming off birth control and dealing with a lot of hormonal changes\" — that benefit is attributed to MT-1, not MT-2. No Taylor content surfaced in the top sources speaks to MT-2 in pregnancy, fertility, or post-menopause directly; defer to MT-1 card for those contexts.",
-    "distilled_at": "2026-04-27T05:17:32.793Z",
-    "distilled_by": "claude"
+    "female_specific_notes": null,
+    "distilled_at": "2026-07-17T09:19:51.371Z",
+    "distilled_by": "codex"
   },
-  "generated_at": "2026-04-27T02:02:34.855Z"
+  "generated_at": "2026-07-17T10:59:06.664Z",
+  "mentions_fingerprint": "9bd324f36b96"
 }

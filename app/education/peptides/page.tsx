@@ -1,6 +1,6 @@
-import Link from 'next/link';
 import Image from 'next/image';
 import { peptideIndex } from '@/data/peptide-education/generated';
+import PeptideLibraryBrowser from './PeptideLibraryBrowser';
 
 export const metadata = {
   title: 'Peptide Library — Hunter, Taylor, Bachmeyer | Reset Biology',
@@ -9,16 +9,6 @@ export const metadata = {
 
 export default function PeptideLibraryHub() {
   const peptides = peptideIndex();
-
-  // Group by category for display
-  const byCategory: Record<string, typeof peptides> = {};
-  for (const p of peptides) {
-    const cat = p.category && p.category !== 'Uncategorized' ? p.category : 'Other';
-    if (!byCategory[cat]) byCategory[cat] = [];
-    byCategory[cat].push(p);
-  }
-  const orderedCats = ['Healing', 'Fat Loss', 'Longevity', 'Immunity', 'Cognitive Enhancement', 'Other']
-    .filter(c => byCategory[c]);
 
   // JSON-LD for LLM ingestion
   const jsonLd = {
@@ -85,48 +75,8 @@ export default function PeptideLibraryHub() {
           </div>
         </div>
 
-        {/* Per-category sections */}
-        <div className="container mx-auto px-4 py-8 space-y-12">
-          {orderedCats.map(cat => (
-            <section key={cat}>
-              <h2 className="text-3xl font-bold text-white mb-6 border-b border-[#3FBFB5]/30 pb-2">
-                {cat}
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {byCategory[cat]
-                  .sort((a, b) => b.total_mentions - a.total_mentions)
-                  .map(p => (
-                    <Link
-                      key={p.slug}
-                      href={`/education/peptides/${p.slug}`}
-                      className="group bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl hover:shadow-[#3FBFB5]/50 hover:shadow-2xl transition-all duration-300 overflow-hidden border border-white/20 hover:border-[#3FBFB5]/50 hover:scale-105"
-                    >
-                      <div className="p-6 bg-gradient-to-b from-white/5 to-white/10">
-                        <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-[#3FBFB5] transition-colors">
-                          {p.peptide}
-                        </h3>
-                        <div className="flex items-center justify-between mb-4 pb-4 border-b border-white/10">
-                          <span className="text-sm text-white/70">
-                            {p.total_mentions.toLocaleString()} mentions
-                          </span>
-                          {p.has_hunter_baseline && (
-                            <span className="text-xs bg-green-500/20 text-green-300 px-2 py-1 rounded">
-                              ✓ Cheat Sheet
-                            </span>
-                          )}
-                        </div>
-                        <div className="flex gap-2 flex-wrap">
-                          <ExpertChip label="Hunter" present={true} />
-                          <ExpertChip label="Taylor" present={p.has_taylor} />
-                          <ExpertChip label="Bachmeyer" present={p.has_bachmeyer} />
-                        </div>
-                      </div>
-                    </Link>
-                  ))}
-              </div>
-            </section>
-          ))}
-        </div>
+        {/* Search + category sections (client island) */}
+        <PeptideLibraryBrowser peptides={peptides} />
 
         {/* Disclaimer */}
         <div className="container mx-auto px-4 py-8 max-w-4xl">
@@ -151,17 +101,5 @@ function StatCard({ label, value }: { label: string; value: number }) {
       <div className="text-3xl font-bold text-[#3FBFB5]">{value}</div>
       <div className="text-sm text-white/80 mt-1">{label}</div>
     </div>
-  );
-}
-
-function ExpertChip({ label, present }: { label: string; present: boolean }) {
-  return (
-    <span
-      className={`text-xs px-2 py-1 rounded ${
-        present ? 'bg-[#3FBFB5]/20 text-[#3FBFB5] border border-[#3FBFB5]/40' : 'bg-white/5 text-white/30'
-      }`}
-    >
-      {present ? '✓' : '—'} {label}
-    </span>
   );
 }

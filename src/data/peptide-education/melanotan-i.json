@@ -5,9 +5,10 @@
     "MT-1",
     "Melanotan I",
     "Melanotan 1",
+    "MT1",
     "melanotan 1"
   ],
-  "category": "Cognitive Enhancement",
+  "category": "Healing",
   "experts": {
     "hunter-williams": {
       "baseline_protocol": {
@@ -23,15 +24,15 @@
         "duration": "8 weeks on, 8 weeks off"
       },
       "summary": {
-        "mention_count": 63,
+        "mention_count": 85,
         "top_doses": [
           {
             "dose": "250 micrograms",
-            "count": 27
+            "count": 36
           },
           {
             "dose": "1 mg",
-            "count": 27
+            "count": 32
           },
           {
             "dose": "300 mg",
@@ -39,22 +40,22 @@
           },
           {
             "dose": "10 mg",
-            "count": 6
+            "count": 7
+          },
+          {
+            "dose": "250 mcg",
+            "count": 7
           },
           {
             "dose": "500 mcg",
-            "count": 5
+            "count": 6
           },
           {
             "dose": "5 mg",
-            "count": 3
+            "count": 5
           },
           {
             "dose": "10 units",
-            "count": 3
-          },
-          {
-            "dose": "0.5 mg",
             "count": 3
           }
         ],
@@ -67,8 +68,8 @@
             "source_url": null,
             "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-06-22-use-this-peptide-at-the-beach.md",
             "mention_count": 27,
-            "top_snippet": "be.com/live/bn7cey40pIM) ——————————————————————————— I received a great question from a reader this week, and thought it would be appropriate to answer in an email as everyone heads to the beach over ",
-            "top_context": "be.com/live/bn7cey40pIM) ——————————————————————————— I received a great question from a reader this week, and thought it would be appropriate to answer in an email as everyone heads to the beach over the next few weeks. ““Hunter, everyone’s talking about tanning peptides. Should I be using Melanotan 1 or 2 to get a tan for summer? What’s the difference, and is there more to these than just getting a tan for the beach?”“ — If you’ve spent any time in the peptide world, you’ve probably heard of Melanotan 1 and Melanotan 2. I get this question every spring, but most people don’t know just h",
+            "top_snippet": ".youtube.com/live/bn7cey40pIM) ——————————————————————————— I received a great question from a reader this week, and thought it would be appropriate to answer in an email as everyone heads to the beach",
+            "top_context": ".youtube.com/live/bn7cey40pIM) ——————————————————————————— I received a great question from a reader this week, and thought it would be appropriate to answer in an email as everyone heads to the beach over the next few weeks. ““Hunter, everyone’s talking about tanning peptides. Should I be using Melanotan 1 or 2 to get a tan for summer? What’s the difference, and is there more to these than just getting a tan for the beach?”“ — If you’ve spent any time in the peptide world, you’ve probably heard of Melanotan 1 and Melanotan 2. I get this question every spring, but most people don’t know just how m",
             "first_timestamp": null
           },
           {
@@ -108,6 +109,30 @@
             "first_timestamp": null
           },
           {
+            "source_id": "peptide-qa-your-most-pressing-questions--925b9c90",
+            "source_type": "library-article",
+            "source_title": "Peptide Q&A · Your Most Pressing Questions",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-your-most-pressing-questions--925b9c90/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-qa-your-most-pressing-questions--925b9c90.json",
+            "mention_count": 4,
+            "top_snippet": "o they won't do much there. Melanotan-1 (avoid Melanotan-2) I'm asked about this constantly in the summer. Short version, throw out Melanotan-2 and use Melanotan-1. Will Melanotan-1 work if I'm pale (",
+            "top_context": "o they won't do much there. Melanotan-1 (avoid Melanotan-2) I'm asked about this constantly in the summer. Short version, throw out Melanotan-2 and use Melanotan-1. Will Melanotan-1 work if I'm pale (skin type 1)? Yes. Won't make you Mediterranean dark, but it will help. I titrate up safely with MT1. Melanotan-2 hits a threshold where you get dry heaving, stomach cramps, and nausea. MT1 is much better overall and the tan looks better. Will it make my freckles worse? Getting tan brings freckles out for some people. That's the tan doing it, not the Melanotan itself. My girlfriend gets more frec",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "saturday-morning-coffee-talk-32826-peptides-hormones-and-fitness--1e3acdd4",
+            "source_type": "library-video",
+            "source_title": "Saturday Morning Coffee Talk · 3/28/26 · Peptides, Hormones, and Fitness",
+            "source_date": "2026-04-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-32826-peptides-hormones-and-fitness--1e3acdd4/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/saturday-morning-coffee-talk-32826-peptides-hormones-and-fitness--1e3acdd4.json",
+            "mention_count": 4,
+            "top_snippet": "Let's see. I want to take MT-1 for the first time in summer. How often do you pin it and how much? I personally do because I'm starting back my MT1. I would start with 250 micrograms. That's a pretty low dose. This is also dependent on the amount of melanin you have in your skin. Darker skinned people need less. More pale people, lighter skin people usually need a little bit more depending on your sun exposure.",
+            "top_context": "But if I was having food noise with Redha, because I've done this before, I would just add in like a microdose of true peptide. And you can do it at the same time you take Redoh, you could do on the off days or whatever. You could even do, we've talked about in our group, You can even throw in some semaglutide, so if you wanted to do like, a tiny, tiny dose of semoglutaride alongside the Redda, I think you could do that too. But I've used Orphoglipron alongside rata. That will definitely turn off your appetite. And so we don't really know yet, but having personally experimented, I have seen to get good results from that to, to the effect of food. Let's see. I want to take MT-1 for the first time in summer. How often do you pin it and how much? I personally do because I'm starting back my MT1. I would start with 250 micrograms. That's a pretty low dose. This is also dependent on the amount of melanin you have in your skin. Darker skinned people need less. More pale people, lighter skin people usually need a little bit more depending on your sun exposure. I like to start with 250 micrograms. If it's your first time, just do it once a week. You can go up to two to three times per week, and then as you go from there, you can scale up the dose. Then for instance, like if I'm on the beach in the summer, I would do one milligram per day. But I'd build up with that. It will make you nauseous. And then more often, more frequently you use it, the less that nausea goes away. Its definitely more prominent in beginning when you first start injecting, then I'll say three time a weeks.",
+            "first_timestamp": "38:12"
+          },
+          {
             "source_id": "E7GPNidicqY",
             "source_type": "podcast",
             "source_title": "Saturday Morning Coffee Talk 4/18/26",
@@ -120,25 +145,39 @@
             "first_timestamp": "01:53:56.560"
           },
           {
-            "source_id": "194f205727e4de34",
-            "source_type": "email",
-            "source_title": "Should Peptides Be Taken While Fasted?",
-            "source_date": "2025-02-10",
-            "source_url": null,
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-02-10-should-peptides-be-taken-while-fasted.md",
-            "mention_count": 1,
-            "top_snippet": "aken with or without food—consistency in dosing is often more important than timing around meals. Do they work better if you take them when fasting? Probably. But it’s less imperative than GH peptides",
-            "top_context": "aken with or without food—consistency in dosing is often more important than timing around meals. Do they work better if you take them when fasting? Probably. But it’s less imperative than GH peptides. **Managing Nausea from MCR Peptides** Melanocortin receptor peptides (like PT-141 or Melanotan 1/2) target specific pathways related to libido, tanning, or appetite. While some folks find a fasted state enhances absorption, nausea can be a common side effect. And the nausea can be exacerbated by a fasted state. If you feel queasy: * **Try a Light Snack** * A small portion of prot",
-            "first_timestamp": null
+            "source_id": "saturday-morning-coffee-talk-32826--a0b19742",
+            "source_type": "library-video",
+            "source_title": "Saturday Morning Coffee Talk · 3/28/26",
+            "source_date": "2026-04-08",
+            "source_url": "https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-32826--a0b19742/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/saturday-morning-coffee-talk-32826--a0b19742.json",
+            "mention_count": 3,
+            "top_snippet": "Let's see. I want to take MT-1 for the first time in summer. How often do you pin it and how much? I personally do because I'm starting back my MT1. I would start with 250 micrograms. That's a pretty low dose. This is also dependent on the amount of melanin you have in your skin. Darker skinned people need less. More pale people or lighter skin people usually need a little bit more depending on your sun exposure.",
+            "top_context": "But if I was having food noise with Redha, cause I've done this before, I would just add in like a micro dose of true appetite. And you can do it at the same time you take Redoh, you could do on the off days or whatever. You could even do, we've talked about it in our group, You can even throw in some semaglutide. So if you wanted to do like, a tiny, tiny dose, of semoglutaride alongside the Redda, I think you could do that too. But I've used Orphoglipron alongside rata. That will definitely turn off your appetite. And so we don't really know yet, but having personally experimented, I seem to get good results from that to, to the effect of food. Let's see. I want to take MT-1 for the first time in summer. How often do you pin it and how much? I personally do because I'm starting back my MT1. I would start with 250 micrograms. That's a pretty low dose. This is also dependent on the amount of melanin you have in your skin. Darker skinned people need less. More pale people or lighter skin people usually need a little bit more depending on your sun exposure. I like to start with 250 micrograms. If it's your first time, just do it once a week. You can go up to two to three times per week, and then as you go from there, you can scale up the dose. Then for instance, like if I'm in the beach in summer, I would do one milligram per day. But that would build up. It will make you nauseous. And then more often, more frequently you use it, the less that nausea goes away. Its definitely more prominent in beginning when you first start injecting, then I'd say three time a Also, it's really beneficial to use it the days that",
+            "first_timestamp": "38:09"
           }
         ],
         "acute_signals": [
           {
-            "snippet": "cule, creating a 13-amino-acid peptide that was over 1,000 times more potent and had a much longer half-life in the body. This was a huge breakthrough: suddenly, it was possible to get the “protective",
+            "snippet": "H molecule, creating a 13-amino-acid peptide that was over 1,000 times more potent and had a much longer half-life in the body. This was a huge breakthrough: suddenly, it was possible to get the “prot",
             "source_title": "Use This Peptide At The Beach",
             "source_date": "2025-06-22",
             "timestamp": null,
             "source_url": null
+          },
+          {
+            "snippet": "with hair loss. Sherry says a six year old female on red has started glow, wants to have a loose skin from 20 pound weight loss. Is there a peptide for a lose skin? Unfortunately there's not. And to go back to the question earlier about the skin removal surgery, in a lot of cases you might just have to cosmetic surgery to get rid of the excess skin. Laura says I got a melasma started after Melanotan 1 spread after a tanning salon visit. Why? I don't know why specifically this does happen in some people.",
+            "source_title": "May 2026 Q&A | Retatrutide, Testosterone, Autoimmune, and Beyond",
+            "source_date": "2026-06-17",
+            "timestamp": "35:53",
+            "source_url": "https://library.hunterwilliamshealth.com/p/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352/"
+          },
+          {
+            "snippet": "Locally, that's where the PG comes in, but that is where I would go with those Recently completed a 50 milligram bottle of GHK. Prior to that, I completed 10 milligram of Melanotan 1 and a nasal spray of CMAX, all purchased from your sources. I haven't noticed any difference from any of the peptides other than mild flushing from the Melantan. Could there be a reason why I'm not seeing, feeling anything? I mean, that's one of those things that could be a whole host of reasons. And I would need to know more.",
+            "source_title": "Saturday Morning Coffee Talk · 3/14/26",
+            "source_date": "2026-04-08",
+            "timestamp": "51:39",
+            "source_url": "https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-31426--deb3667a/"
           }
         ],
         "chronic_signals": [
@@ -171,7 +210,7 @@
             "source_url": null
           },
           {
-            "snippet": "I get asked about this all the time, so let’s break it down. **Here’s my favorite way to dose a 10mg vial of Melanotan 1:** 1. **Reconstitution:** Add 2ml of bacteriostatic water to the vial. This mak",
+            "snippet": "** I get asked about this all the time, so let’s break it down. **Here’s my favorite way to dose a 10mg vial of Melanotan 1:** 1. **Reconstitution:** Add 2ml of bacteriostatic water to the vial. This ",
             "source_title": "Use This Peptide At The Beach",
             "source_date": "2025-06-22",
             "timestamp": null,
@@ -407,7 +446,15 @@
     },
     "female_specific_notes": "Taylor frames Melanotan-1 as a women's anxiety / PMS / spiritual-grounding peptide, not just cosmetic. Taylor (15uJlcypPSA 00:09:54.720): \"melanotan 1 is the peptide that absolutely changed my world and helped me so much with dealing with anxiety hormone imbalances so that is why it is in my stack\" — her dose: \"my dosing mouth that I like to do with this is 300 micrograms um subcutaneously um once a day.\" Taylor (p948IlTbY7c 00:14:41.279): \"I've had so many women reach out to me and tell me that they've used this peptide during their ludal phase of their cycle and it's helped so much. So using Melanotan 1 is one of the things that I discovered by using it during my lutier phase of my menstrual cycle\" with the hedge \"struggling really bad with PMS during my ludier phase of my menstrual cycle.\" Taylor (V87f6GRxZLM 00:16:47.399, ovulation phase): \"continue with our um 250 micrograms of melanotan 1\" — she keeps MT-1 cycle-long across follicular and ovulation phases. Taylor (7wdbHq4R33Y 00:18:18.320): \"melanotan one great benefits for beauty purposes for tanning your skin great for spiritual connection and it is great for anxiety and PMs so those are kind of like the main things that I have noticed the biggest difference in it um so again the dosing amount is 250 microgram.\" Taylor (p948IlTbY7c 00:08:00.319 ctx): \"melanotin 1 actually crosses blood brain barrier which binds to your MC4 receptor. This which binds to your MC4 receptor. This is what is going to help deepen your connection to emotional regulation and mental alertness.\" Reset Biology suggests asking the practitioner to consider whether the patient is in a luteal-phase PMS pattern, has come off hormonal birth control, or is anxiety-driven before deciding between Hunter's 250 mcg 1-2x/week non-tanning microdose and Taylor's 250-300 mcg daily PMS-relief cadence.",
     "distilled_at": "2026-04-27T05:36:14.253Z",
-    "distilled_by": "claude"
+    "distilled_by": "codex",
+    "library_refresh": {
+      "source": "Hunter Williams Library site",
+      "refreshed_at": "2026-07-17T09:40:26.362Z",
+      "first_timer": "saturday-morning-coffee-talk-32826-peptides-hormones-and-fitness--1e3acdd4 (2026-04-30, 38:12, https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-32826-peptides-hormones-and-fitness--1e3acdd4/): \"I would start with 250 micrograms. That's a pretty low dose.\" At 38:43: \"If it's your first time, just do it once a week. You can go up to two to three times per week\" and \"if I'm on the beach in the summer, I would do one milligram per day.\"",
+      "caveat": "may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352 (2026-06-17, 35:53, https://library.hunterwilliamshealth.com/p/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352/): \"I don't know why specifically this does happen in some people.\" At 36:24: \"So this is why I say start with a really low dose of Melantan. See what it does.\"",
+      "dose_variants": "peptide-qa-your-most-pressing-questions--925b9c90 (2026-03-29, article, https://library.hunterwilliamshealth.com/p/peptide-qa-your-most-pressing-questions--925b9c90/): \"Flushing and nausea for an hour at 200mcg twice a week?\" and \"Start at 250mcg and go from there. Two times a week is fine.\" reader-mailbag-3-traveling-glutathione-sleep-more-hunter-taylor-williams--5863331e (2026-05-25, 25:13, https://library.hunterwilliamshealth.com/p/reader-mailbag-3-traveling-glutathione-sleep-more-hunter-taylor-williams--5863331e/): \"250 micrograms to start out would be how much you would want to use for a dose, and then you can kind of build up from there.\""
+    }
   },
-  "generated_at": "2026-04-27T02:02:34.851Z"
+  "generated_at": "2026-07-17T10:59:06.609Z",
+  "mentions_fingerprint": "cd354b336031"
 }

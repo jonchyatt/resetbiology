@@ -5,16 +5,16 @@
     "pregnenolone",
     "Pregnenolone"
   ],
-  "category": "Uncategorized",
+  "category": "Hormones",
   "experts": {
     "hunter-williams": {
       "baseline_protocol": null,
       "summary": {
-        "mention_count": 33,
+        "mention_count": 102,
         "top_doses": [
           {
             "dose": "50 mg",
-            "count": 36
+            "count": 39
           },
           {
             "dose": "25 mg",
@@ -22,18 +22,42 @@
           },
           {
             "dose": "10 milligrams",
-            "count": 9
+            "count": 23
+          },
+          {
+            "dose": "10 mg",
+            "count": 7
           },
           {
             "dose": "160 milligrams",
             "count": 6
           },
           {
-            "dose": "10 mg",
-            "count": 4
+            "dose": "10 milligram",
+            "count": 3
+          },
+          {
+            "dose": "100 milligrams",
+            "count": 3
+          },
+          {
+            "dose": "50 milligrams",
+            "count": 3
           }
         ],
         "top_sources": [
+          {
+            "source_id": "pregnenolone-for-men-on-trt-do-you-actually-need-it--79690867",
+            "source_type": "library-video",
+            "source_title": "Pregnenolone for Men on TRT: Do You Actually Need It?",
+            "source_date": "2026-03-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/pregnenolone-for-men-on-trt-do-you-actually-need-it--79690867/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/pregnenolone-for-men-on-trt-do-you-actually-need-it--79690867.json",
+            "mention_count": 56,
+            "top_snippet": "obviously we have testosterone for women. We have estradiol and progesterone, But there's a of these ancillary compounds that we, some cases don't need, and some kids do need to supplement with to maximize the effectiveness of our hormone, replacement, therapy. And today I'm going to be talking about pregnenolone supplementation more so in men, although I The gist of the argument applies to women as well, but they usually will supplement with progesterone, which isn't the same as pregnenolone.",
+            "top_context": "Hey, everybody. This is Hunter Williams. I hope you were doing amazing wherever you are out in the world. Today's video is going to be a little bit more of a niche or niche topic. Probably say niche if you're from the South like me, but a niched topic on men's testosterone therapy. And I think most of this probably applies to women too. In fact, I know it does, topic that I get a lot of questions about, but I think it's important to cover because when we look at hormone replacement therapy, obviously we have testosterone for women. We have estradiol and progesterone, But there's a of these ancillary compounds that we, some cases don't need, and some kids do need to supplement with to maximize the effectiveness of our hormone, replacement, therapy. And today I'm going to be talking about pregnenolone supplementation more so in men, although I The gist of the argument applies to women as well, but they usually will supplement with progesterone, which isn't the same as pregnenolone. But a lot of times we'll have the, same effects for the intended purposes of, the outcome of what we want to do today. I want, to walk through why or why not a man that's on testosterone therapy would want. To supplement, with pregnelone and why that would be important and, why you actually might not need it. Spoiler alert, there's no definitive answer. So I'm not going to get to the end of this video and tell you, you have to have pregnenolone or you should never have Pregnenone. I think it's something that you to decide for yourself. And I would encourage every guy to experiment with if you feel called to after this.",
+            "first_timestamp": "0:39"
+          },
           {
             "source_id": "19a2b80bfe4b9856",
             "source_type": "email",
@@ -42,8 +66,8 @@
             "source_url": "https://open.spotify.com/episode/1ZMHUqgqDartM1kawWzCKD",
             "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-10-28-do-you-need-pregnenolone.md",
             "mention_count": 18,
-            "top_snippet": "ho Is a Good Candidate?** Good candidates share two features. 1. They have persistent symptoms despite well-run TRT. Think brain fog, word finding issues, poor stress tolerance, lighter sleep, or a ne",
-            "top_context": "ho Is a Good Candidate?** Good candidates share two features. 1. They have persistent symptoms despite well-run TRT. Think brain fog, word finding issues, poor stress tolerance, lighter sleep, or a new baseline of background anxiety. 2. Their labs support the story with low or low-normal pregnenolone and often low DHEA-S and modestly low male progesterone. **Older men and men with a history of head trauma often fit this pattern, as do some men who choose not to use hCG. **In these cases, a small trial in the 5-10mg range is reasonable while tracking sleep, mood, cognition, and daytime energy.",
+            "top_snippet": "— **Who Is a Good Candidate?** Good candidates share two features. 1. They have persistent symptoms despite well-run TRT. Think brain fog, word finding issues, poor stress tolerance, lighter sleep, or",
+            "top_context": "— **Who Is a Good Candidate?** Good candidates share two features. 1. They have persistent symptoms despite well-run TRT. Think brain fog, word finding issues, poor stress tolerance, lighter sleep, or a new baseline of background anxiety. 2. Their labs support the story with low or low-normal pregnenolone and often low DHEA-S and modestly low male progesterone. **Older men and men with a history of head trauma often fit this pattern, as do some men who choose not to use hCG. **In these cases, a small trial in the 5-10mg range is reasonable while tracking sleep, mood, cognition, and daytime energy.",
             "first_timestamp": null
           },
           {
@@ -59,6 +83,30 @@
             "first_timestamp": "01:21:26.120"
           },
           {
+            "source_id": "ep-4-why-the-49ers-cant-stay-healthy-peter-cowan-on-emf-substations-and-your-hor--1772032a",
+            "source_type": "library-video",
+            "source_title": "Ep. 4 | Why the 49ers Can't Stay Healthy | Peter Cowan on EMF, Substations, and Your Hormones",
+            "source_date": "2026-05-25",
+            "source_url": "https://library.hunterwilliamshealth.com/p/ep-4-why-the-49ers-cant-stay-healthy-peter-cowan-on-emf-substations-and-your-hor--1772032a/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/ep-4-why-the-49ers-cant-stay-healthy-peter-cowan-on-emf-substations-and-your-hor--1772032a.json",
+            "mention_count": 5,
+            "top_snippet": "So I think it's called pregnenolone-steel syndrome, and that's one of the precursors to hormones that you produce. And if your cortisone is elevated, it is getting used to create cortisol instead of other hormones, because that is more like, uh-oh, there's something wrong here. We need to elevate cortisol emergency situation. But your cortisol is chronically elevated. you have almost like a two-part problem is that not only are you not making those other hormones, but cortisol itself is catabolic.",
+            "top_context": "a lot of EMF, and then you have another person that's sleeping next to their smart meter at night. How that alone could impair this neuroendocrine cycle that is going on in Yeah, I'm going to have to dig back a little bit into my history on this one. I've measured the cortisol many times in my life because I had adrenal fatigue several times. And so I learned a lot about it through that way. Every time my cortisol was elevated, all my other hormones were low. So I think it's called pregnenolone-steel syndrome, and that's one of the precursors to hormones that you produce. And if your cortisone is elevated, it is getting used to create cortisol instead of other hormones, because that is more like, uh-oh, there's something wrong here. We need to elevate cortisol emergency situation. But your cortisol is chronically elevated. you have almost like a two-part problem is that not only are you not making those other hormones, but cortisol itself is catabolic. So you're not back to like, you are not growing, and you aren't building because your tissues are constantly under attack. I think about it that way. Just in general, everybody knows stress is bad, right? Cortisol is just an indicator of stress. think of EMF as just one more stressor. It's just like one, more layer on all these stressors that we do have to deal with in our lives and don't want to like make it sound too scary because there's things we can do about it, you know?",
+            "first_timestamp": "32:21"
+          },
+          {
+            "source_id": "saturday-morning-coffee-talk-51626--2ce3e83c",
+            "source_type": "library-video",
+            "source_title": "Saturday Morning Coffee Talk 5/16/26",
+            "source_date": "2026-05-25",
+            "source_url": "https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-51626--2ce3e83c/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/saturday-morning-coffee-talk-51626--2ce3e83c.json",
+            "mention_count": 5,
+            "top_snippet": "First thing I would do, a lot of guys don't realize on testosterone, especially if it's in the newer phases of using testosterone. You want to increase magnesium intake. And so like my magnesium intakes closer to like a gram to 1.5 grams total between like the electrolytes I drink and the magnesium supplementation I take at night. So that would be the first thing is because anytime you raise your testosterone you're going to deplete minerals at a faster rate. The next thing I would actually look at is pregnant alone. A lot of guys, some guys don't need pregnant, alone at all. And I've actually recently been injecting around, I'd say like 50 milligrams of pregnenolone per week.",
+            "top_context": "which is kind of a bummer. I would much rather have a child than get to do my son every day, or at least have to temporarily sacrifice it. Here's a good question. Let me fix that. Doc says, I'm on 120 milligrams of test enanthate per week. I inject every other day. Three days post injection, my numbers were at 1,500 total and 450 free. And having sleep issues, you think cutting the dose in half is good? I mean, that wouldn't be the first thing that I do. First thing I would do, a lot of guys don't realize on testosterone, especially if it's in the newer phases of using testosterone. You want to increase magnesium intake. And so like my magnesium intakes closer to like a gram to 1.5 grams total between like the electrolytes I drink and the magnesium supplementation I take at night. So that would be the first thing is because anytime you raise your testosterone you're going to deplete minerals at a faster rate. The next thing I would actually look at is pregnant alone. A lot of guys, some guys don't need pregnant, alone at all. And I've actually recently been injecting around, I'd say like 50 milligrams of pregnenolone per week. That has massively helped my sleep. Not that I slept bad before. So I'll say you can get some pregnanolones, quick dissolve tabs. Neutropix Depot has a good formulation. I will try that first because a lot You dampen pregnenol and signaling upstream with exogenous testosterone, and that can help with sleep. So that would be the first thing rather than changing the dose. Yeah. A lot of people get the increase in heart rate on Reta. I'm wondering, I've heard, this is just a rumor.",
+            "first_timestamp": "40:42"
+          },
+          {
             "source_id": "tYscWLLPkDE",
             "source_type": "podcast",
             "source_title": "The Next Big Things in Biohacking | EMF, Peptides, and Superhuman Performance with Alex Kikel",
@@ -69,6 +117,30 @@
             "top_snippet": "the tiger's milk, the DHEA, the micronized pregnenolone 10 milligrams.",
             "top_context": "like that's a lot, right? Um, if you're like that's a lot, right? Um, if you're using it as like a recovery tool from a using it as like a recovery tool from a using it as like a recovery tool from a hard work day, the day after, the night hard work day, the day after, the night hard work day, the day after, the night of depend on if you do or do not get of depend on if you do or do not get of depend on if you do or do not get stimulated, 1 to 5 milliliters stimulated, 1 to 5 milliliters stimulated, 1 to 5 milliliters &gt;&gt; tends to work pretty good. You know, you &gt;&gt; tends to work pretty good. You know, you &gt;&gt; tends to work pretty good. You know, you can also have like a big a podcast day can also have like a big a podcast day can also have like a big a podcast day or or or &gt;&gt; we could do a seminar or something like &gt;&gt; we could do a seminar or something like &gt;&gt; we could do a seminar or something like that in person where you can take a that in person where you can take a that in person where you can take a bigger bowl of like 10 milliliters that bigger bowl of like 10 milliliters that bigger bowl of like 10 milliliters that morning. But I think it's so versatile morning. But I think it's so versatile morning. But I think it's so versatile to me why I disagree personally is to me why I disagree personally is to me why I disagree personally is because like I think you can do it every because like I think you can do it every because like I think you can do it every way. Like I've micro dosed like 10 IUs way. Like I've micro dosed like 10 IUs way. Like I've micro dosed like 10 IUs before which no one really does. I'm before which no one really does. I'm before which no one really does. I'm more sensitive neurochemical because more sensitive neurochemical because more sensitive neurochemical because most people can't do that. Usually like most people can't do that. Usually like most people can't do that. Usually like the lowest is like a milliliter for the lowest is like a milliliter for the lowest is like a milliliter for people to get a real response. Um but people to get a real response. Um but people to get a real response. Um but you can clear glutamate pretty cool with you can clear glutamate pretty cool with you can clear glutamate pretty cool with that. So to me it's more another tool that. So to me it's more another tool that. So to me it's more another tool you can use. But I do agree with you in you can use. But I do agree with you in you can use. But I do agree with you in the sense like it shouldn't be the first the sense like it shouldn't be the first the sense like it shouldn't be the first thing you reach for. To me this is after thing you reach for. To me this is after thing you reach for. To me this is after the tiger's milk, the DHEA, the the tiger's milk, the DHEA, the the tiger's milk, the DHEA, the micronized pregnenolone 10 milligrams. micronized pregnenolone 10 milligrams. micronized pregnenolone 10 milligrams. like as those baselines are covered like as those baselines are covered like as those baselines are covered that's I do like if you're going to put that's I do like if you're going to put that's I do like if you're going to put in a lineup it is level two whereas in a lineup it is level two whereas in a lineup it is level two whereas level one is like the basic um actually level one is like the basic um actually level one is like the basic um actually no I should change that up level one no I should change that up level one no I should change that up level one should really be the neuroplastic work should really be the neuroplastic work should really be the neuroplastic work playing the elevate app doing uh cursive playing the elevate app doing uh cursive playing the elevate app doing uh cursive writing um being bilingual doing sudoku writing um being bilingual doing sudoku writing um being bilingual doing sudoku like like like &gt;&gt; just reading a book once or twice &gt;&gt; just reading a book once or twice &gt;&gt; just reading a book once or twice &gt;&gt; yeah read a book yeah [laughter] right &gt;&gt; yeah read a book yeah [laughter] right &gt;&gt; yeah read a book yeah [laughter] right like that's level one then it's the like that's level one then it's the like that's level one then it's the overthecounter neutropics and all the overthecounter neutropics and all the overthecounter neutropics and all the mushrooms and then the next level is mushrooms and then the next level is mushrooms and then the next level is everything like this but I do classify everything like this but I do classify everything like this but I do classify them basically them basically them basically &gt;&gt; in Yeah, I've actually I wanted to try &gt;&gt; in Yeah, I've actually I wanted to try &gt;&gt; in Yeah, I've actually I wanted to try this cuz I have some. There's uh So, you this cuz I have some. There's uh So, you this cuz I have some. There's uh So, you have the amples of cerebralin which is have the amples of cerebralin which is have the amples of cerebralin which is like 10 mls is like 2,160 milligrams. like 10 mls is like 2,160 milligrams. like 10 mls is like 2,160 milligrams. So, like 1 ml would be two. So, like 1 ml would be two. So, like 1 ml would be two. &gt;&gt; Yeah, that's actually a great way too.",
             "first_timestamp": "01:12:33.679"
+          },
+          {
+            "source_id": "saturday-morning-coffee-talk-6626--4fc8b831",
+            "source_type": "library-video",
+            "source_title": "Saturday Morning Coffee Talk 6/6/26",
+            "source_date": "2026-06-17",
+            "source_url": "https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-6626--4fc8b831/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/saturday-morning-coffee-talk-6626--4fc8b831.json",
+            "mention_count": 2,
+            "top_snippet": "And then I do think MK777 does help with deeper sleep when I cycle that in. If needed, I'd do about anywhere between 200 to 600 milligrams of L-theanine. The one thing I did mention, typically I take pregnenolone, but actually what I've been doing lately is injecting allopregnenone caperate. And so I do that on the same days I took my testosterone in the morning and that I think is even better than taking the oral pregnanolome.",
+            "top_context": "But that helps me supplement wise. I do the same as Hunter, except for if I need to, I will use I'll do a rotation of DSEP or I really like the dream catcher spray. Um, from a company I can't mention on here now, but it has, um, melatonin DCEP. What else is in that spray? GABA. GABBA and progesterone. Progestorone makes a big difference as well, too. And then I do think MK777 does help with deeper sleep when I cycle that in. If needed, I'd do about anywhere between 200 to 600 milligrams of L-theanine. The one thing I did mention, typically I take pregnenolone, but actually what I've been doing lately is injecting allopregnenone caperate. And so I do that on the same days I took my testosterone in the morning and that I think is even better than taking the oral pregnanolome. But if I didn't have that, I would probably be taking, that's typically what Best peptides or supplements for endurance? Carterine is going to be just the gold standard, I think, of endurance. Obviously, MOTC can be very beneficial too. Even just 10 milligrams of carterines and one milligram of MotC. I mean, man, your endurance would be through the roof. SLU could be beneficial, too, if you had SL U, cartering, and MotsC right there. That would like endurance to the room.",
+            "first_timestamp": "51:04"
+          },
+          {
+            "source_id": "saturday-morning-coffee-talk-41826--d0f249d7",
+            "source_type": "library-video",
+            "source_title": "Saturday Morning Coffee Talk · 4/18/26",
+            "source_date": "2026-04-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-41826--d0f249d7/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/saturday-morning-coffee-talk-41826--d0f249d7.json",
+            "mention_count": 1,
+            "top_snippet": "We'll get some apple. In addition to TRT suggested addition dosing of oral DHEA and pregnenolone for men morning or night. My preference, if you're going to do both, would be 25 to 50 milligrams of D HEA in the morning and then 10 to 25 milligrams. Of pregnanolones at night, but you don't always need that. Some men don' t need it. I don t take D H E A, although I did get some injectable D He A that I'm going experiment with and see if that has an effect. But the oral doesn't really do anything for me and my levels are always really good.",
+            "top_context": "To that, that I would say like what is right or wrong? Because if want a big swing then yes, yes I am wrong. If you want more stable levels, no I wouldn't be wrong and again that's just subjective. It's hard to say objectively. HEH dose for loose skin, unfortunately nothing. You will have to get surgery in those cases for the skin. So instead of water and sugar, use apple juice for fruit flies. We'll get some apple. In addition to TRT suggested addition dosing of oral DHEA and pregnenolone for men morning or night. My preference, if you're going to do both, would be 25 to 50 milligrams of D HEA in the morning and then 10 to 25 milligrams. Of pregnanolones at night, but you don't always need that. Some men don' t need it. I don t take D H E A, although I did get some injectable D He A that I'm going experiment with and see if that has an effect. But the oral doesn't really do anything for me and my levels are always really good. And so I don't, but I do love pregnant alone. Like I'd do really well with pregnant. So that would be my recommendation for those. I actually don't know the answer to this question. Before colonoscopy, how long should you stop taking GLP-1s and can you still take CAGRI? I don' know. I do not know enough about colonoscopies to tell you. You want to be flushed out. So I would say come off of GLPs for like probably like at least a good month because it's going to slow down gastric emptying. Also not pro-colonoscopies.",
+            "first_timestamp": "1:21:19"
           }
         ],
         "acute_signals": [
@@ -110,18 +182,39 @@
         ],
         "chronic_signals": [
           {
-            "snippet": "deeper sleep and fewer nighttime awakenings when the dose and timing align with their biology. 4. **Energy levels:** Classic data and modern experience suggest better stress tolerance under load and a",
+            "snippet": "otice deeper sleep and fewer nighttime awakenings when the dose and timing align with their biology. 4. **Energy levels:** Classic data and modern experience suggest better stress tolerance under load",
             "source_title": "Do You Need Pregnenolone?",
             "source_date": "2025-10-28",
             "timestamp": null,
             "source_url": "https://open.spotify.com/episode/1ZMHUqgqDartM1kawWzCKD"
           },
           {
-            "snippet": "ho Is a Good Candidate?** Good candidates share two features. 1. They have persistent symptoms despite well-run TRT. Think brain fog, word finding issues, poor stress tolerance, lighter sleep, or a ne",
+            "snippet": "— **Who Is a Good Candidate?** Good candidates share two features. 1. They have persistent symptoms despite well-run TRT. Think brain fog, word finding issues, poor stress tolerance, lighter sleep, or",
             "source_title": "Do You Need Pregnenolone?",
             "source_date": "2025-10-28",
             "timestamp": null,
             "source_url": "https://open.spotify.com/episode/1ZMHUqgqDartM1kawWzCKD"
+          },
+          {
+            "snippet": "So I think it's called pregnenolone-steel syndrome, and that's one of the precursors to hormones that you produce. And if your cortisone is elevated, it is getting used to create cortisol instead of other hormones, because that is more like, uh-oh, there's something wrong here. We need to elevate cortisol emergency situation. But your cortisol is chronically elevated. you have almost like a two-part problem is that not only are you not making those other hormones, but cortisol itself is catabolic.",
+            "source_title": "Ep. 4 | Why the 49ers Can't Stay Healthy | Peter Cowan on EMF, Substations, and Your Hormones",
+            "source_date": "2026-05-25",
+            "timestamp": "32:21",
+            "source_url": "https://library.hunterwilliamshealth.com/p/ep-4-why-the-49ers-cant-stay-healthy-peter-cowan-on-emf-substations-and-your-hor--1772032a/"
+          },
+          {
+            "snippet": "So we are just going go around the science of pregenol, what it does, why we may use it, and does it actually help? And then who would be a good candidate for it? and then Who would not? Because in a lot of cases, i don't think you necessarily need it. But just to give an overview, because you kind of understand and this is one of those things, it's a very, very niche subtopic. and a lotta times it is not really understood. But basically, pregnenolone is known as the mother hormone. It is the first steroid produced in the body's hormone cascade. Its basically synthesized from cholesterol in adrenal glands, gonads in brain, and also serves as essential precursor to virtually every major steroidal",
+            "source_title": "Pregnenolone for Men on TRT: Do You Actually Need It?",
+            "source_date": "2026-03-30",
+            "timestamp": "3:50",
+            "source_url": "https://library.hunterwilliamshealth.com/p/pregnenolone-for-men-on-trt-do-you-actually-need-it--79690867/"
+          },
+          {
+            "snippet": "hormone in body, which is pretty cool. Basically, we have the cycle where you have cholesterol, that's the building blocks. Another reason you should never use a statin because it inhibits a lot of this cholesterol which we then use to make our hormones. Basically cholesterol turns into pregnenolone, and then we had pregenolones turning into progesterone and DHEA. And then, the end products which are testosterone, cortisol and estrogen. And without pregnenolone, your body cannot produce all these subsequent hormones. And the enzyme P450SCC converts cholesterol into pregnanolones, which then branches into multiple pathways that produce androgen,",
+            "source_title": "Pregnenolone for Men on TRT: Do You Actually Need It?",
+            "source_date": "2026-03-30",
+            "timestamp": "4:26",
+            "source_url": "https://library.hunterwilliamshealth.com/p/pregnenolone-for-men-on-trt-do-you-actually-need-it--79690867/"
           }
         ]
       }
@@ -305,25 +398,26 @@
   },
   "reset_biology_synthesis": {
     "status": "distilled",
-    "recommendation": "Reset Biology suggests asking the practitioner to consider pregnenolone only as a small backfill for men on well-run TRT who have residual neurosteroid symptoms (sleep, mood, word-finding, background anxiety) and supportive labs, framed by Hunter email threadId 19a2b80bfe4b9856 (2025-10-28): \"In that case, a small pregnenolone dose can backfill toward neurosteroids without meaningfully changing testosterone, estradiol, or cortisol.\" We'd ask the prescribing physician to weigh starting dose, timing, and retest interval per Hunter (E7GPNidicqY 01:21:35.960): \"10 to 25 mg of pregnenolone at night,\" and Hunter email threadId 19a2b80bfe4b9856 (2025-10-28): \"start with 5-10mg, give it four to eight weeks, and retest pregnenolone, DHEA-S, and progesterone.\" For women, Taylor (IW0-bllx4dk 01:38:08.880) says, \"I don't think for a woman that taking pregnenolone would ever replace doing progesterone,\" so Reset Biology would frame it as adjunct, not substitute.",
+    "recommendation": "Reset Biology asks the prescribing physician to weigh Hunter Williams (2026-03-30, pregnenolone-for-men-on-trt-do-you-actually-need-it--79690867 @ 20:02, https://library.hunterwilliamshealth.com/p/pregnenolone-for-men-on-trt-do-you-actually-need-it--79690867/): \"Obviously get pregnenolone blood testing before starting. I always start with five to 10 milligrams a day. You can go up to 25 if you need.\" Hunter Williams (2026-05-25, saturday-morning-coffee-talk-51626--2ce3e83c @ 40:42, https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-51626--2ce3e83c/): \"I’ve actually recently been injecting around, I’d say like 50 milligrams of pregnenolone per week.\"",
     "caveats": "- Not a testosterone-raising tool: Hunter email threadId 19a2b80bfe4b9856 (2025-10-28): \"It will not raise testosterone, and it will not replace the fundamentals of training, protein intake, walking, sunlight, and sleep hygiene.\"\n- Poor candidates flagged: Hunter email threadId 19a2b80bfe4b9856 (2025-10-28): \"Poor candidates include men who already feel excellent on TRT, men whose pregnenolone is mid to high normal, and anyone who is hoping pregnenolone will raise testosterone or accelerate hypertrophy.\"\n- Headroom warning: Hunter email threadId 19a2b80bfe4b9856 (2025-10-28): \"If your baseline pregnenolone is healthy and you feel great, pushing it higher rarely does much and can even feel edgy.\"\n- Lab-confirmation expected before trial: Hunter email threadId 19a2b80bfe4b9856 (2025-10-28): \"Their labs support the story with low or low-normal pregnenolone and often low DHEA-S and modestly low male progesterone.\"\n- Female route caution — not a progesterone replacement: Taylor (IW0-bllx4dk 01:38:08.880): \"I don't think for a woman that taking pregnenolone would ever replace doing progesterone.\"\n- Upstream-substrate dependency: Trevor (4r3BLs6BZGk 00:45:54.640): \"The conversion of cholesterol to pregnenolone. Without zinc, the chain is broken. You can't do it.\" Trevor (4r3BLs6BZGk 00:45:51.280): \"Zinc, mcolinate, 50 milligrams every day.\"\n- Chronic-stress shunt mechanism: Trevor (hFrAZsG5D1s 00:34:51.520): \"endocrinologically it competes with progesterone synthesis. So it shunts pregnenolone.\"\n- Re-test cadence: Hunter email threadId 19a2b80bfe4b9856 (2025-10-28): \"Start low, watch sleep and mood, and retest after a few weeks.\"",
     "cross_expert_consensus": "Mechanism — pregnenolone is the upstream precursor in the steroidogenic cascade. Hunter email threadId 19a2b80bfe4b9856 (2025-10-28): \"Pregnenolone is the first steroid your body makes from cholesterol\" and \"It sits at the top of the steroid hormone cascade and serves as the starting point for progesterone, DHEA, cortisol, aldosterone, and eventually testosterone and estradiol.\" Trevor (R_9N66pU3-M 00:19:57.440): \"the steroggenic cascade that's required, which is a conversion of cholesterol to pregnenolone and then ultimately testosterone.\" Trevor (4r3BLs6BZGk 00:45:55.200): \"the very first step of hormone synthesis, right? The conversion of cholesterol to pregnenolone.\"\n\nLow-dose oral framing in the 5–25 mg range. Hunter email threadId 19a2b80bfe4b9856 (2025-10-28): \"start with 5-10mg, give it four to eight weeks.\" Hunter (E7GPNidicqY 01:21:35.960): \"10 to 25 mg of pregnenolone at night.\" Kikel (on Hunter podcast tYscWLLPkDE 01:12:33.679): \"the tiger's milk, the DHEA, the micronized pregnenolone 10 milligrams.\" Taylor (IW0-bllx4dk 01:38:18.000): \"if women that don't do well with progesterone if they took like 10 to 20 milligrams of pregnenolone.\"\n\nTiming/effect anchors at sleep and nervous-system calm. Hunter email threadId 19a2b80bfe4b9856 (2025-10-28): \"Many users, including me, notice deeper sleep and fewer nighttime awakenings when the dose and timing align with their biology.\" Hunter (E7GPNidicqY 01:21:35.960): \"10 to 25 mg of pregnenolone at night.\" Taylor (IW0-bllx4dk 01:39:02.400): \"I notice it helped more so at night with my sleep and kind of just calming the mind.\"",
     "cross_expert_disagreement": "Population framing differs by clinician. Hunter email threadId 19a2b80bfe4b9856 (2025-10-28) targets \"men on testosterone therapy\" and writes \"Older men and men with a history of head trauma often fit this pattern, as do some men who choose not to use hCG\" — i.e. a male-TRT-symptom population. Taylor (IW0-bllx4dk 01:37:59.840) frames it for women who don't tolerate progesterone: \"men on testosterone sometimes do better with pregnnenolone\" then (IW0-bllx4dk 01:38:13.360) \"for the women I would be interested to see if women that don't do well with progesterone if they took like 10 to 20 milligrams of pregnenolone\" — explicitly a hypothesis (\"I have no idea if this would work\" at 01:37:55.520) for women, not a settled protocol.\n\nUpper-dose ceiling: Hunter (E7GPNidicqY 01:21:35.960) lands at \"10 to 25 mg of pregnenolone at night\"; Taylor (IW0-bllx4dk 01:38:18.000) lands at \"10 to 20 milligrams of pregnenolone\" — do NOT split the difference; both are explicit ceilings in their respective populations. Hunter email threadId 19a2b80bfe4b9856 (2025-10-28) starting floor is lower: \"start with 5-10mg.\"\n\nTrevor does not endorse a pregnenolone supplement protocol at all. Trevor's pregnenolone references are mechanism-only — conversion (R_9N66pU3-M 00:19:57.440): \"a conversion of cholesterol to pregnenolone and then ultimately testosterone\" and stress-shunt (hFrAZsG5D1s 00:34:51.520): \"endocrinologically it competes with progesterone synthesis. So it shunts pregnenolone.\" His TRT off-ramp prescription instead surfaces upstream substrates: Trevor (4r3BLs6BZGk 00:45:51.280): \"Zinc, mcolinate, 50 milligrams every day. Zinc is required for the very first step of hormone synthesis, right? The conversion of cholesterol to pregnenolone.\" Reset Biology should NOT cite Trevor as a pregnenolone-dose source; he is a mechanism source only.",
     "acute_chronic_split": {
       "acute": null,
       "chronic": {
-        "dose": "Hunter email threadId 19a2b80bfe4b9856 (2025-10-28): \"start with 5-10mg, give it four to eight weeks, and retest pregnenolone, DHEA-S, and progesterone.\" Hunter (E7GPNidicqY 01:21:35.960): \"10 to 25 mg of pregnenolone at night.\" Taylor (IW0-bllx4dk 01:38:18.000): \"if women that don't do well with progesterone if they took like 10 to 20 milligrams of pregnenolone.\"",
-        "route": "Oral. Hunter email threadId 19a2b80bfe4b9856 (2025-10-28): \"you can snag some off Amazon for super cheap and give it a whirl.\" Kikel on Hunter podcast (tYscWLLPkDE 01:12:33.679): \"the micronized pregnenolone 10 milligrams.\"",
-        "frequency": "Daily, evening preferred. Hunter (E7GPNidicqY 01:21:35.960): \"10 to 25 mg of pregnenolone at night.\" Taylor (IW0-bllx4dk 01:39:02.400): \"I notice it helped more so at night with my sleep and kind of just calming the mind.\"",
-        "duration": "Hunter email threadId 19a2b80bfe4b9856 (2025-10-28): \"start with 5-10mg, give it four to eight weeks, and retest pregnenolone, DHEA-S, and progesterone.\" Hunter email threadId 19a2b80bfe4b9856 (2025-10-28): \"Keep what clearly helps and toss what does not.\"",
-        "verbatim_citation": "Hunter email threadId 19a2b80bfe4b9856 (2025-10-28): \"In that case, a small pregnenolone dose can backfill toward neurosteroids without meaningfully changing testosterone, estradiol, or cortisol.\"",
-        "episode_url": "https://huntershealthhacks.beehiiv.com/p/do-you-need-pregnenolone",
-        "timestamp": "email threadId 19a2b80bfe4b9856 (2025-10-28); evening-dose anchor youtu.be/E7GPNidicqY 01:21:35.960"
+        "dose": "Hunter Williams (2026-03-30, pregnenolone-for-men-on-trt-do-you-actually-need-it--79690867 @ 20:02, https://library.hunterwilliamshealth.com/p/pregnenolone-for-men-on-trt-do-you-actually-need-it--79690867/): \"I always start with five to 10 milligrams a day. You can go up to 25 if you need.\" Hunter Williams (2026-04-30, saturday-morning-coffee-talk-41826--d0f249d7 @ 1:21:19, https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-41826--d0f249d7/): \"My preference, if you’re going to do both, would be 25 to 50 milligrams of D HEA in the morning and then 10 to 25 milligrams. Of pregnanolones at night, but you don’t always need that. Some men don’ t need it.\" Hunter Williams (2026-05-25, saturday-morning-coffee-talk-51626--2ce3e83c @ 40:42, https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-51626--2ce3e83c/): \"I’ve actually recently been injecting around, I’d say like 50 milligrams of pregnenolone per week.\"",
+        "route": "Hunter Williams (2026-04-30, saturday-morning-coffee-talk-41826--d0f249d7 @ 1:21:19, https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-41826--d0f249d7/): \"In addition to TRT suggested addition dosing of oral DHEA and pregnenolone for men morning or night.\" Hunter Williams (2026-05-25, saturday-morning-coffee-talk-51626--2ce3e83c @ 40:42, https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-51626--2ce3e83c/): \"I’ve actually recently been injecting around, I’d say like 50 milligrams of pregnenolone per week.\"",
+        "frequency": "Hunter Williams (2026-03-30, pregnenolone-for-men-on-trt-do-you-actually-need-it--79690867 @ 20:02, https://library.hunterwilliamshealth.com/p/pregnenolone-for-men-on-trt-do-you-actually-need-it--79690867/): \"I always start with five to 10 milligrams a day.\" Hunter Williams (2026-04-30, saturday-morning-coffee-talk-41826--d0f249d7 @ 1:21:19, https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-41826--d0f249d7/): \"10 to 25 milligrams. Of pregnanolones at night.\" Hunter Williams (2026-05-25, saturday-morning-coffee-talk-51626--2ce3e83c @ 40:42, https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-51626--2ce3e83c/): \"50 milligrams of pregnenolone per week.\"",
+        "duration": "Hunter Williams (2026-03-30, pregnenolone-for-men-on-trt-do-you-actually-need-it--79690867 @ 23:56, https://library.hunterwilliamshealth.com/p/pregnenolone-for-men-on-trt-do-you-actually-need-it--79690867/): \"If you don’t notice anything in four to eight weeks, I’d say you probably trash it.\"",
+        "verbatim_citation": "Hunter Williams (2026-03-30, pregnenolone-for-men-on-trt-do-you-actually-need-it--79690867 @ 20:02, https://library.hunterwilliamshealth.com/p/pregnenolone-for-men-on-trt-do-you-actually-need-it--79690867/): \"Obviously get pregnenolone blood testing before starting. I always start with five to 10 milligrams a day. You can go up to 25 if you need.\"",
+        "episode_url": "https://library.hunterwilliamshealth.com/p/pregnenolone-for-men-on-trt-do-you-actually-need-it--79690867/",
+        "timestamp": "pregnenolone-for-men-on-trt-do-you-actually-need-it--79690867 @ 20:02; saturday-morning-coffee-talk-41826--d0f249d7 @ 1:21:19; saturday-morning-coffee-talk-51626--2ce3e83c @ 40:42"
       }
     },
     "female_specific_notes": "Taylor (IW0-bllx4dk 01:38:01.360): \"men on testosterone sometimes do better with pregnnenolone. Like I like taking pregnenolone.\" Taylor (IW0-bllx4dk 01:38:08.880): \"I don't think for a woman that taking pregnenolone would ever replace doing progesterone.\" Taylor hedges the female protocol explicitly — (IW0-bllx4dk 01:37:55.520): \"I have no idea if this would work but one of the theories I've had\" — then (IW0-bllx4dk 01:38:13.360): \"for the women I would be interested to see if women that don't do well with progesterone if they took like 10 to 20 milligrams of pregnenolone\" and (IW0-bllx4dk 01:38:23.360): \"if that gave them enough to like get some of the benefits that they want to get from progesterone but they don't get any of the side effects.\" Personal-experience note: Taylor (IW0-bllx4dk 01:38:46.400): \"padolone helped a lot. So, I would definitely suggest like try that and see if you respond better.\" Taylor (IW0-bllx4dk 01:39:02.400): \"I notice it helped more so at night with my sleep and kind of just calming the mind.\" Trevor (hFrAZsG5D1s 00:34:51.520) gives a chronic-stress / women-and-progesterone framing: \"endocrinologically it competes with progesterone synthesis. So it shunts pregnenolone\" — i.e. chronic stress steals pregnenolone from the progesterone branch.",
-    "distilled_at": "2026-04-27T05:35:25.845Z",
-    "distilled_by": "claude"
+    "distilled_at": "2026-07-17T09:12:09.3965484Z",
+    "distilled_by": "codex"
   },
-  "generated_at": "2026-04-27T02:02:34.726Z"
+  "generated_at": "2026-07-17T10:59:05.625Z",
+  "mentions_fingerprint": "c8d397cdcfa8"
 }

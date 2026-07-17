@@ -3,14 +3,16 @@
   "slug": "acetyl-l-carnitine",
   "aliases": [
     "ALCAR",
-    "acetyl-L-carnitine"
+    "acetyl-L-carnitine",
+    "Acetyl-L-Carnitine",
+    "Acetyl-L-carnitine"
   ],
-  "category": "Uncategorized",
+  "category": "Healing",
   "experts": {
     "hunter-williams": {
       "baseline_protocol": null,
       "summary": {
-        "mention_count": 4,
+        "mention_count": 9,
         "top_doses": [
           {
             "dose": "000 mg",
@@ -19,6 +21,30 @@
           {
             "dose": "500 mg",
             "count": 2
+          },
+          {
+            "dose": "50 milligrams",
+            "count": 1
+          },
+          {
+            "dose": "200 milligrams",
+            "count": 1
+          },
+          {
+            "dose": "50 mg",
+            "count": 1
+          },
+          {
+            "dose": "200 mg",
+            "count": 1
+          },
+          {
+            "dose": "500 milligram",
+            "count": 1
+          },
+          {
+            "dose": "1000 milligrams",
+            "count": 1
           }
         ],
         "top_sources": [
@@ -30,9 +56,33 @@
             "source_url": null,
             "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-03-02-injectable-vs-oral-l-carnitine.md",
             "mention_count": 3,
-            "top_snippet": "L-Carnitine?** Nearly 100% bioavailability. Your body gets the full dose, straight into your system, no bottlenecks, no wasted potential. ——————————————————————————— **Does Oral Acetyl L-Carnitine Hav",
-            "top_context": "L-Carnitine?** Nearly 100% bioavailability. Your body gets the full dose, straight into your system, no bottlenecks, no wasted potential. ——————————————————————————— **Does Oral Acetyl L-Carnitine Have Any Benefits?** Yes, but **not in the way most people think.** **Acetyl L-Carnitine (ALCAR)** crosses the **blood-brain barrier** more effectively than other forms, making it great for cognitive function, focus, and neuroprotection. If you’re looking to enhance mitochondrial function in the brain, ALCAR is a solid option. It’s also better tolerated in higher doses than regular ora",
+            "top_snippet": "jectable L-Carnitine?** Nearly 100% bioavailability. Your body gets the full dose, straight into your system, no bottlenecks, no wasted potential. ——————————————————————————— **Does Oral Acetyl L-Carn",
+            "top_context": "jectable L-Carnitine?** Nearly 100% bioavailability. Your body gets the full dose, straight into your system, no bottlenecks, no wasted potential. ——————————————————————————— **Does Oral Acetyl L-Carnitine Have Any Benefits?** Yes, but **not in the way most people think.** **Acetyl L-Carnitine (ALCAR)** crosses the **blood-brain barrier** more effectively than other forms, making it great for cognitive function, focus, and neuroprotection. If you’re looking to enhance mitochondrial function in the brain, ALCAR is a solid option. It’s also better tolerated in higher doses than regular oral L-",
             "first_timestamp": null
+          },
+          {
+            "source_id": "amino-asylum-gac-extreme-review-research-guide--d3e3953f",
+            "source_type": "library-video",
+            "source_title": "Amino Asylum GAC Extreme Review Research Guide",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/amino-asylum-gac-extreme-review-research-guide--d3e3953f/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/amino-asylum-gac-extreme-review-research-guide--d3e3953f.json",
+            "mention_count": 2,
+            "top_snippet": "like that. The next one is acetyl-L-carnitine. So I love L-Carnatine, obviously they talk about that. And then obviously this is the injected form. It's got 200 milligrams of aceto-l carnitene, which aids in fat metabolism, reduces muscle damage from training, enhances mood and cognitive function. The reason that aceton-ol carnotine works really well is because obviously you get the benefits of L carnatene. But in my experience, the acetol-o carnutine gives you that extra mental boost. That's really cool. When you're in the gym, you are really focused. You're not worried about checking your phone.",
+            "top_context": "It's at 50 milligrams per milliliter, but arganine increases nitric oxide production, which enhances blood flow and nutrient delivery, supports hormone function and may boost growth hormone levels. Again, when we help nitro oxide products, we're going to get this whole host of downstream benefits and also, you know, I'm not going to rely on arginine for my growth hormone, but it's pretty cool that it does that and helps support hormone function. Also to another benefit of argenine, it helps reduce blood pressure. If that's something you're struggling with, I always tell people to turn to arganine first before you get any on blood-pressure medication or anything like that. The next one is acetyl-L-carnitine. So I love L-Carnatine, obviously they talk about that. And then obviously this is the injected form. It's got 200 milligrams of aceto-l carnitene, which aids in fat metabolism, reduces muscle damage from training, enhances mood and cognitive function. The reason that aceton-ol carnotine works really well is because obviously you get the benefits of L carnatene. But in my experience, the acetol-o carnutine gives you that extra mental boost. That's really cool. When you're in the gym, you are really focused. You're not worried about checking your phone. talking to people or anything like that. You're just 100% in the zone. And that's like, you know, the few times three or four times I'm in The gym training per week, I want to be totally present and totally focused on what I've doing. in this injection, if we're doing one milliliter, but basically it, uh, transports fatty acids into mitochondria for industry production, supports endurance and performance and may benefit heart health. Um, and I'm going to talk a little bit about, just my own experience and how that, how these help, um, you know, when taking pre-work.",
+            "first_timestamp": "3:56"
+          },
+          {
+            "source_id": "injectable-l-carnitine-dosing-pain-management-and-clinical-data--e7d315c3",
+            "source_type": "library-video",
+            "source_title": "Injectable L-Carnitine: Dosing, Pain Management, and Clinical Data",
+            "source_date": "2026-03-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/injectable-l-carnitine-dosing-pain-management-and-clinical-data--e7d315c3/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/injectable-l-carnitine-dosing-pain-management-and-clinical-data--e7d315c3.json",
+            "mention_count": 2,
+            "top_snippet": "The days that I do that, I feel good. Feel good most days, but there is. However, if you wanted to maximize, there's a form called acetyl-l carnitine. This was what I was talking about. Usually will take two 500 milligram capsules of this, which is 1000 milligrams, one gram. of acetyl-L-carnitine first thing in the morning. And there's, there are benefits to show that that helps with cognitive health trials and mild cognitive impairment report, slower decline or improved memory meta-analysis of a acylo-l carnitin found it effective in reducing depressive symptoms,",
+            "top_context": "When we look at general well-being and metabolic health, we have this fatigue reduction that I think is important for everybody. It combats chronic fatigue by bolstering mitochondrial energy production. Studies in chronic fatigued syndrome cancer patients and healthier older adults showed improved symptoms and increased vitality. Like we talked about, the centenarians reported decreased physical and mental fatigue. enabling easier performance of data activities. Also cognitive function. I would say the injectable does produce, at least in my case, a slightly noticeable cognitive benefit. The days that I do that, I feel good. Feel good most days, but there is. However, if you wanted to maximize, there's a form called acetyl-l carnitine. This was what I was talking about. Usually will take two 500 milligram capsules of this, which is 1000 milligrams, one gram. of acetyl-L-carnitine first thing in the morning. And there's, there are benefits to show that that helps with cognitive health trials and mild cognitive impairment report, slower decline or improved memory meta-analysis of a acylo-l carnitin found it effective in reducing depressive symptoms, especially in older adults with efficacy comparable to some antidepressants, but fewer side effects. Again, this is one of those things we have the depression and anxiety conversation. How much of that is related to someone's health that could be improved with something as simple as supplementing with L-carnitine? I think it's one of those things, it for some people, depending on where they're at, can almost be like a wonder supplement, you know? But we look at metabolic health, L-carnitine aids insulin sensitivity and our lipid profiles.",
+            "first_timestamp": "18:50"
           },
           {
             "source_id": "19a993b895f1dcb2",
@@ -45,12 +95,24 @@
             "top_snippet": "too viscous ### Subcutaneous? - Hunter not a fan - Lumps in abdomen hurt more than glute lump ### Pain management - Go slow - Massage area after - Use massage gun if needed - Rotate sites ### Default ",
             "top_context": "too viscous ### Subcutaneous? - Hunter not a fan - Lumps in abdomen hurt more than glute lump ### Pain management - Go slow - Massage area after - Use massage gun if needed - Rotate sites ### Default protocol (Hunter's recommendation) - **400-500 mg IM before training, 3-4× per week** - **+ 1 g acetyl-L-carnitine oral AM** (cognitive + mood) - Plus good nutrition ## Why It's Hunter's \"Last Resort\" Pick > \"It is not the strongest thing in the world, but carnitine quietly supports almost everything else you do.\" - Fasted cardio more productive - Lifting sessions more efficient - Fat-loss phases easier - Mu",
             "first_timestamp": null
+          },
+          {
+            "source_id": "semax-how-to-use-it-for-maximum-focus--cf7bc9d7",
+            "source_type": "library-article",
+            "source_title": "Semax How To Use It For Maximum Focus",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/semax-how-to-use-it-for-maximum-focus--cf7bc9d7/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/semax-how-to-use-it-for-maximum-focus--cf7bc9d7.json",
+            "mention_count": 1,
+            "top_snippet": "ke this every day. Make sure you get 100% lion's mane extract, not the stuff grown on oats where you end up with 80% oat and 20% mushroom. I use Real Mushrooms (no affiliate). The difference is huge. ",
+            "top_context": "ke this every day. Make sure you get 100% lion's mane extract, not the stuff grown on oats where you end up with 80% oat and 20% mushroom. I use Real Mushrooms (no affiliate). The difference is huge. Omega-3s. Everyone should be taking these. Period. Bacopa monnieri. Memory and learning support. Acetyl-L-Carnitine. My favorite oral form of carnitine. Energy and cognitive function. Ginkgo biloba. Blood flow and cognitive health. Stack those alongside hormonal optimization and you'll feel amazing. Most can be taken orally. Only Semax and Noopept need injection or intranasal. My take Semax is one of the few",
+            "first_timestamp": null
           }
         ],
         "acute_signals": [],
         "chronic_signals": [
           {
-            "snippet": "——————————————— **How to Dose Injectable L-Carnitine for Maximum Results** * **Fat Loss & Performance:** 500-1,000mg **IM or SubQ pre-workout** (3-5x per week) * **Testosterone Optimization:** 500-1,0",
+            "snippet": "——————————————————————— **How to Dose Injectable L-Carnitine for Maximum Results** * **Fat Loss & Performance:** 500-1,000mg **IM or SubQ pre-workout** (3-5x per week) * **Testosterone Optimization:**",
             "source_title": "Injectable vs. Oral L-Carnitine",
             "source_date": "2025-03-02",
             "timestamp": null,
@@ -62,6 +124,20 @@
             "source_date": "2025-11-18",
             "timestamp": null,
             "source_url": "https://open.spotify.com/episode/4qaZzJQBYcMoXMkKq1LPef"
+          },
+          {
+            "snippet": "The days that I do that, I feel good. Feel good most days, but there is. However, if you wanted to maximize, there's a form called acetyl-l carnitine. This was what I was talking about. Usually will take two 500 milligram capsules of this, which is 1000 milligrams, one gram. of acetyl-L-carnitine first thing in the morning. And there's, there are benefits to show that that helps with cognitive health trials and mild cognitive impairment report, slower decline or improved memory meta-analysis of a acylo-l carnitin found it effective in reducing depressive symptoms,",
+            "source_title": "Injectable L-Carnitine: Dosing, Pain Management, and Clinical Data",
+            "source_date": "2026-03-30",
+            "timestamp": "18:50",
+            "source_url": "https://library.hunterwilliamshealth.com/p/injectable-l-carnitine-dosing-pain-management-and-clinical-data--e7d315c3/"
+          },
+          {
+            "snippet": "ke this every day. Make sure you get 100% lion's mane extract, not the stuff grown on oats where you end up with 80% oat and 20% mushroom. I use Real Mushrooms (no affiliate). The difference is huge. ",
+            "source_title": "Semax How To Use It For Maximum Focus",
+            "source_date": "2026-03-29",
+            "timestamp": null,
+            "source_url": "https://library.hunterwilliamshealth.com/p/semax-how-to-use-it-for-maximum-focus--cf7bc9d7/"
           }
         ]
       }
@@ -69,25 +145,34 @@
   },
   "reset_biology_synthesis": {
     "status": "distilled",
-    "recommendation": "Reset Biology suggests asking the practitioner to consider Acetyl-L-Carnitine (ALCAR) only as the oral, brain-targeted variant of the carnitine family — not as a substitute for injectable L-carnitine in fat-loss or hypertrophy contexts. Hunter email threadId 1955918cc4dbdc51 (2025-03-02) writes \"Acetyl L-Carnitine (ALCAR) crosses the blood-brain barrier more effectively than other forms, making it great for cognitive function, focus, and neuroprotection,\" and Hunter email threadId 19a993b895f1dcb2 (2025-11-18) frames it as a stack-companion: \"+ 1 g acetyl-L-carnitine oral AM (cognitive + mood).\" We'd ask the prescribing physician to weigh that ALCAR's oral bioavailability is bounded — Hunter email threadId 1955918cc4dbdc51 (2025-03-02): \"Oral L-Carnitine (Including Acetyl L-Carnitine) has a very low bioavailability—meaning your body only absorbs 10-18% of what you take\" — so it should not be sold to a patient as an alternate route to androgen-receptor or hypertrophy outcomes.",
-    "caveats": "- Indication-scope caveat: ALCAR is positioned as cognitive / neuroprotective only, NOT as a route-substitute for injectable L-carnitine. Hunter email threadId 1955918cc4dbdc51 (2025-03-02): \"But can oral L-carnitine upregulate androgen receptors, increase ligand binding affinity, and enhance hypertrophy? Not really.\"\n- Bioavailability ceiling: Hunter email threadId 1955918cc4dbdc51 (2025-03-02): \"Oral L-Carnitine (Including Acetyl L-Carnitine) has a very low bioavailability—meaning your body only absorbs 10-18% of what you take.\"\n- Tolerability advantage over plain oral L-carnitine: Hunter email threadId 1955918cc4dbdc51 (2025-03-02): \"It's also better tolerated in higher doses than regular oral L-carnitine and doesn't cause the same digestive issues that can come from high-dose oral carnitine.\"\n- Oral carnitine class TMAO concern (applies to oral L-carnitine; Hunter does not explicitly carve ALCAR out from this): Hunter email threadId 1955918cc4dbdc51 (2025-03-02): \"Some people experience GI distress with oral L-Carnitine—especially at higher doses. It can also increase TMAO (Trimethylamine-N-Oxide) levels, which has been linked to cardiovascular risks.\"\n- Stack context (not standalone fat-loss / hypertrophy): Hunter email threadId 1955918cc4dbdc51 (2025-03-02): \"Cognitive Enhancement (Stacking with ALCAR): 500mg Injectable L-Carnitine + 1g Acetyl L-Carnitine orally in the morning.\"\n- No Taylor (women-specific) or Trevor (SmashweRx) signal in the corpus for ALCAR specifically — recommendations rest on Hunter only.",
-    "cross_expert_consensus": "_(no consensus available — only Hunter Williams discusses Acetyl-L-Carnitine specifically in the corpus; Taylor Williams and Trevor Bachmeyer have no ALCAR-specific signal. Hunter's two emails internally agree on indication: oral ALCAR = brain / cognitive use, not body-composition use.)_ Hunter email threadId 1955918cc4dbdc51 (2025-03-02): \"Acetyl L-Carnitine (ALCAR) crosses the blood-brain barrier more effectively than other forms, making it great for cognitive function, focus, and neuroprotection.\" Hunter email threadId 19a993b895f1dcb2 (2025-11-18) reinforces same role in stack: \"+ 1 g acetyl-L-carnitine oral AM (cognitive + mood).\"",
-    "cross_expert_disagreement": "_(no inter-expert disagreement available — Taylor and Trevor do not address Acetyl-L-Carnitine specifically in the indexed corpus.)_ Internal Hunter-vs-Hunter framing tension worth surfacing: Hunter email threadId 1955918cc4dbdc51 (2025-03-02) describes ALCAR as a \"solid option\" for brain mitochondrial support — \"If you're looking to enhance mitochondrial function in the brain, ALCAR is a solid option\" — while flatly excluding it from body-composition outcomes — \"But can oral L-carnitine upregulate androgen receptors, increase ligand binding affinity, and enhance hypertrophy? Not really.\" Newer Hunter email threadId 19a993b895f1dcb2 (2025-11-18) keeps the same scope, listing ALCAR only as the oral cognitive add-on inside an injectable-IM \"Default protocol\": \"400-500 mg IM before training, 3-4× per week\" + \"1 g acetyl-L-carnitine oral AM (cognitive + mood).\" The newer email therefore confirms — does not contradict — the older.",
+    "recommendation": "Hunter Williams â€” 2026-03-30 â€” Injectable L-Carnitine: Dosing, Pain Management, and Clinical Data [injectable-l-carnitine-dosing-pain-management-and-clinical-data--e7d315c3 @ 18:50 â€” https://library.hunterwilliamshealth.com/p/injectable-l-carnitine-dosing-pain-management-and-clinical-data--e7d315c3/]: \"Usually will take two 500 milligram capsules of this, which is 1000 milligrams, one gram. of acetyl-L-carnitine first thing in the morning.\" Hunter Williams â€” 2026-03-29 â€” Semax How To Use It For Maximum Focus [semax-how-to-use-it-for-maximum-focus--cf7bc9d7 @ 15:19 â€” https://library.hunterwilliamshealth.com/p/semax-how-to-use-it-for-maximum-focus--cf7bc9d7/]: \"As always, my favorite, Acetyl L-Carnitine, that would be the oral form, so Acetyl L Carnitin, if you're gonna take L carnitene orally, I like the Aceto L carnetine version, supports energy and cognitive function.\"",
+    "caveats": "- Hunter Williams â€” 2025-03-02 [email threadId 1955918cc4dbdc51]: \"Oral L-Carnitine (Including Acetyl L-Carnitine) has a very low bioavailabilityâ€”meaning your body only absorbs 10-18% of what you take.\"\n- Hunter Williams â€” 2025-03-02 [email threadId 1955918cc4dbdc51]: \"But can oral L-carnitine upregulate androgen receptors, increase ligand binding affinity, and enhance hypertrophy? Not really.\"\n- Hunter Williams â€” 2025-03-02 [email threadId 1955918cc4dbdc51]: \"Some people experience GI distress with oral L-Carnitineâ€”especially at higher doses. It can also increase TMAO (Trimethylamine-N-Oxide) levels, which has been linked to cardiovascular risks.\"\n- Hunter Williams â€” 2026-03-29 â€” Amino Asylum GAC Extreme Review Research Guide [amino-asylum-gac-extreme-review-research-guide--d3e3953f @ 8:47 â€” https://library.hunterwilliamshealth.com/p/amino-asylum-gac-extreme-review-research-guide--d3e3953f/]: \"in my experience, you know, it's generally well tolerated as far as side-effects go. If anything, carnitine does cause some post-injection pain ... You may have a little bit of nausea, gas or headaches.\"",
+    "cross_expert_consensus": null,
+    "cross_expert_disagreement": null,
     "acute_chronic_split": {
-      "acute": null,
-      "chronic": {
-        "dose": "Hunter email threadId 1955918cc4dbdc51 (2025-03-02): \"1g Acetyl L-Carnitine orally in the morning\" (within the cognitive-stack protocol). Hunter email threadId 19a993b895f1dcb2 (2025-11-18): \"+ 1 g acetyl-L-carnitine oral AM (cognitive + mood).\"",
-        "route": "Hunter email threadId 1955918cc4dbdc51 (2025-03-02): \"Acetyl L-Carnitine (ALCAR) crosses the blood-brain barrier more effectively than other forms\" — oral. Hunter email threadId 19a993b895f1dcb2 (2025-11-18): \"oral AM.\"",
-        "frequency": "Hunter email threadId 1955918cc4dbdc51 (2025-03-02): \"orally in the morning\" (daily AM dose implied by stack instruction). Hunter email threadId 19a993b895f1dcb2 (2025-11-18): \"oral AM\" within \"Default protocol (Hunter's recommendation).\"",
+      "acute": {
+        "dose": "Hunter Williams â€” 2026-03-29 â€” Amino Asylum GAC Extreme Review Research Guide [amino-asylum-gac-extreme-review-research-guide--d3e3953f @ 03:56 â€” https://library.hunterwilliamshealth.com/p/amino-asylum-gac-extreme-review-research-guide--d3e3953f/]: \"It's got 200 milligrams of aceto-l carnitene.\"",
+        "route": "Hunter Williams â€” 2026-03-29 â€” Amino Asylum GAC Extreme Review Research Guide [amino-asylum-gac-extreme-review-research-guide--d3e3953f @ 03:56 â€” https://library.hunterwilliamshealth.com/p/amino-asylum-gac-extreme-review-research-guide--d3e3953f/]: \"obviously this is the injected form.\"",
+        "frequency": null,
         "duration": null,
-        "verbatim_citation": "Hunter email threadId 1955918cc4dbdc51 (2025-03-02): \"Cognitive Enhancement (Stacking with ALCAR): 500mg Injectable L-Carnitine + 1g Acetyl L-Carnitine orally in the morning.\" Hunter email threadId 19a993b895f1dcb2 (2025-11-18): \"+ 1 g acetyl-L-carnitine oral AM (cognitive + mood).\"",
-        "episode_url": "https://huntershealthhacks.beehiiv.com/p/injectable-vs-oral-l-carnitine",
-        "timestamp": "email 2025-03-02 threadId 1955918cc4dbdc51; email 2025-11-18 threadId 19a993b895f1dcb2"
+        "verbatim_citation": "Hunter Williams â€” 2026-03-29 â€” Amino Asylum GAC Extreme Review Research Guide [amino-asylum-gac-extreme-review-research-guide--d3e3953f @ 03:56 â€” https://library.hunterwilliamshealth.com/p/amino-asylum-gac-extreme-review-research-guide--d3e3953f/]: \"The next one is acetyl-L-carnitine. So I love L-Carnatine, obviously they talk about that. And then obviously this is the injected form. It's got 200 milligrams of aceto-l carnitene.\"",
+        "episode_url": "https://library.hunterwilliamshealth.com/p/amino-asylum-gac-extreme-review-research-guide--d3e3953f/",
+        "timestamp": "03:56"
+      },
+      "chronic": {
+        "dose": "Hunter Williams â€” 2025-03-02 [email threadId 1955918cc4dbdc51]: \"1g Acetyl L-Carnitine orally in the morning\"; Hunter Williams â€” 2025-11-18 [email threadId 19a993b895f1dcb2]: \"+ 1 g acetyl-L-carnitine oral AM\"; Hunter Williams â€” 2026-03-30 [injectable-l-carnitine-dosing-pain-management-and-clinical-data--e7d315c3 @ 18:50 â€” https://library.hunterwilliamshealth.com/p/injectable-l-carnitine-dosing-pain-management-and-clinical-data--e7d315c3/]: \"Usually will take two 500 milligram capsules of this, which is 1000 milligrams, one gram. of acetyl-L-carnitine first thing in the morning.\"",
+        "route": "Hunter Williams â€” 2025-03-02 [email threadId 1955918cc4dbdc51]: \"1g Acetyl L-Carnitine orally in the morning\"; Hunter Williams â€” 2025-11-18 [email threadId 19a993b895f1dcb2]: \"+ 1 g acetyl-L-carnitine oral AM\"; Hunter Williams â€” 2026-03-29 [semax-how-to-use-it-for-maximum-focus--cf7bc9d7 @ 15:19 â€” https://library.hunterwilliamshealth.com/p/semax-how-to-use-it-for-maximum-focus--cf7bc9d7/]: \"that would be the oral form\"",
+        "frequency": null,
+        "duration": null,
+        "verbatim_citation": "Hunter Williams â€” 2026-03-30 [injectable-l-carnitine-dosing-pain-management-and-clinical-data--e7d315c3 @ 18:50 â€” https://library.hunterwilliamshealth.com/p/injectable-l-carnitine-dosing-pain-management-and-clinical-data--e7d315c3/]: \"Usually will take two 500 milligram capsules of this, which is 1000 milligrams, one gram. of acetyl-L-carnitine first thing in the morning.\"",
+        "episode_url": "https://huntershealthhacks.beehiiv.com/p/injectable-vs-oral-l-carnitine; https://open.spotify.com/episode/4qaZzJQBYcMoXMkKq1LPef; https://library.hunterwilliamshealth.com/p/injectable-l-carnitine-dosing-pain-management-and-clinical-data--e7d315c3/",
+        "timestamp": "email 2025-03-02 threadId 1955918cc4dbdc51; email 2025-11-18 threadId 19a993b895f1dcb2; injectable-l-carnitine-dosing-pain-management-and-clinical-data--e7d315c3 @ 18:50"
       }
     },
     "female_specific_notes": null,
-    "distilled_at": "2026-04-27T05:39:38.611Z",
-    "distilled_by": "claude"
+    "distilled_at": "2026-07-17T10:24:35.168Z",
+    "distilled_by": "codex"
   },
-  "generated_at": "2026-04-27T02:02:34.991Z"
+  "generated_at": "2026-07-17T10:59:08.939Z",
+  "mentions_fingerprint": "8c563309d2aa"
 }

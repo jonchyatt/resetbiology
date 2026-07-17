@@ -1,0 +1,237 @@
+{
+  "peptide": "Prostamax",
+  "slug": "prostamax",
+  "aliases": [
+    "Prostamax",
+    "Prostomax",
+    "prostamax",
+    "ProstaMax",
+    "ProstoMax"
+  ],
+  "category": "Bioregulators",
+  "experts": {
+    "hunter-williams": {
+      "baseline_protocol": null,
+      "summary": {
+        "mention_count": 79,
+        "top_doses": [
+          {
+            "dose": "2 mg",
+            "count": 14
+          },
+          {
+            "dose": "20 mg",
+            "count": 4
+          },
+          {
+            "dose": "10 mg",
+            "count": 4
+          },
+          {
+            "dose": "5 mg",
+            "count": 4
+          },
+          {
+            "dose": "1 mg",
+            "count": 4
+          },
+          {
+            "dose": "200 milligrams",
+            "count": 3
+          },
+          {
+            "dose": "50 milligrams",
+            "count": 2
+          },
+          {
+            "dose": "10 milligrams",
+            "count": 2
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "prostamax-review-the-injectable-peptide-for-bph-prostate-health--09b3fda5",
+            "source_type": "library-video",
+            "source_title": "Prostamax Review | The Injectable Peptide for BPH & Prostate Health",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/prostamax-review-the-injectable-peptide-for-bph-prostate-health--09b3fda5/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/prostamax-review-the-injectable-peptide-for-bph-prostate-health--09b3fda5.json",
+            "mention_count": 26,
+            "top_snippet": "Hey everybody, this is Hunter Williams. I hope you're doing amazing wherever you are at in the world. Today's video is all about Prostomax. So Prostermax is the injectable bioregulator for the prostate and it does some really, really cool things that we're gonna dive into today. This is probably best for you if you an aging man, usually somewhere over 50 is where a lot of men really start to feel the effects of what we would call BPH or benign prostate hyperplasia, which is enlargement of the prostrate that pretty much every man deals with. Have I dealt with this yet?",
+            "top_context": "Hey everybody, this is Hunter Williams. I hope you're doing amazing wherever you are at in the world. Today's video is all about Prostomax. So Prostermax is the injectable bioregulator for the prostate and it does some really, really cool things that we're gonna dive into today. This is probably best for you if you an aging man, usually somewhere over 50 is where a lot of men really start to feel the effects of what we would call BPH or benign prostate hyperplasia, which is enlargement of the prostrate that pretty much every man deals with. Have I dealt with this yet? No, but I would assume, well, maybe if I didn't have peptides in my regulators. But when I reach that age, that would be something that I deal with. I think this will be very helpful today to examine Prostomax. There's some other things you could use in a prostate stack. Another one would call Bezalut. Another one would be called Limidon, which is the oral prostate bioregulator. So those are the things that I would add on to this, but I think this is something that every man over 50 should hear and know that there are things out there that can help with this. Obviously other things like Cialis can up with BPH as well.",
+            "first_timestamp": "0:09"
+          },
+          {
+            "source_id": "198afaecda534ac6",
+            "source_type": "email",
+            "source_title": "The Peptide For Prostate Health",
+            "source_date": "2025-08-15",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-08-15-the-peptide-for-prostate-health.md",
+            "mention_count": 17,
+            "top_snippet": "Happy Friday! Today we’re diving deep into something that affects nearly _every man_ as they get older…yet almost nobody talks about it until it’s already a problem. I’m talking about your prostate, a",
+            "top_context": "Happy Friday! Today we’re diving deep into something that affects nearly _every man_ as they get older…yet almost nobody talks about it until it’s already a problem. I’m talking about your prostate, and more specifically, a peptide called **Prostamax** that could be one of the most powerful tools for keeping it healthy as you age. In today’s new YouTube video, I cover where Prostamax came from, how it works at the cellular level, the research behind it, what real-world users are seeing, and who should be using it. If you’re a man over 50 (or",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "vesilute-a-bioregulator-peptide-for-bladder-health--afadea85",
+            "source_type": "library-video",
+            "source_title": "Vesilute: A Bioregulator Peptide for Bladder Health",
+            "source_date": "2026-03-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/vesilute-a-bioregulator-peptide-for-bladder-health--afadea85/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/vesilute-a-bioregulator-peptide-for-bladder-health--afadea85.json",
+            "mention_count": 11,
+            "top_snippet": "Hey everybody. This is Hunter Williams. I hope you're doing amazing wherever you might be in the world. Today's video slash podcast is going to be all about a peptide known as Vezelute. So this is actually one of the Russian bioregular peptides for the intents and purposes of this video. There is an oral version of this. The Russian name, I believe, is called Chitomyr, C-H-I-T-O-U-M-R. I don't believe that's how it's spelled, but today I'm going to be talking about the injectable version Now I've done a video pretty recently on Prostomax,",
+            "top_context": "Hey everybody. This is Hunter Williams. I hope you're doing amazing wherever you might be in the world. Today's video slash podcast is going to be all about a peptide known as Vezelute. So this is actually one of the Russian bioregular peptides for the intents and purposes of this video. There is an oral version of this. The Russian name, I believe, is called Chitomyr, C-H-I-T-O-U-M-R. I don't believe that's how it's spelled, but today I'm going to be talking about the injectable version Now I've done a video pretty recently on Prostomax, and that is the injectable bioregular peptide for the prostate. Obviously, if you're using that, you are probably a man because only men have prostates. However, Vezolute pairs really nicely with Prostermax, so I'll talk about that today. What's cool about Vesolut is that if your a woman and you suffer from overactive bladder, which is not uncommon as women get into perimenopause and postmenopausal, it's a peptid that you could use as well. So Vazolote would be a little bit more applicable for men and women, whereas Prostomax really is going to be a peptide for man. However, I think that people that don't get the results they want with ProstaMax could enhance those results with Vezolute.",
+            "first_timestamp": "0:09"
+          },
+          {
+            "source_id": "peptide-qa-july-2025--936e4b81",
+            "source_type": "library-video",
+            "source_title": "Peptide Q&A · July 2025",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-july-2025--936e4b81/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-qa-july-2025--936e4b81.json",
+            "mention_count": 7,
+            "top_snippet": "I can't thank you enough for the content. So Prostomax and Vesalut are great. Those would be the two injectable peptides if you want to work on your prostate as a man that you could use to accelerate prostate healing or stematide of BPH. So what I would just do is take two milligrams of Prosomix and two milligram of Vezalute every single day for 30 to 60 days, depending on the severity nature of like how much prostate inflammation you have and see where it goes.",
+            "top_context": "Well, I think Some people under eat protein, but then a lot of people think they have to eat too much protein. And this question was probably submitted before we started talking a lots about the sugar diet. But in my opinion, I think it's pretty easy. If you can use protein shakes and just strategic timing about your protein intake, you definitely can do it. It's just you have pay attention to it just like you pay to attention everything. Next question. I have lupus and peptides have changed my life. I can't thank you enough for the content. So Prostomax and Vesalut are great. Those would be the two injectable peptides if you want to work on your prostate as a man that you could use to accelerate prostate healing or stematide of BPH. So what I would just do is take two milligrams of Prosomix and two milligram of Vezalute every single day for 30 to 60 days, depending on the severity nature of like how much prostate inflammation you have and see where it goes. Right now I'm doing my best to collect some data and just field reports from people that are doing that. Obviously, if I could use that on myself, I don't have any prostate issues, so I can take those and, you know, for me, it's not necessarily going to do anything. I'm going feel good, but there's the main reason you would use those for prostate issue. So if anyone's out there, use Prostomax, Use Vesalut, and use them together. And you'd like to send me an email or just drop a link or drop just a comment below and let people know. That'd be awesome. So best course of action for a 70 year old woman treated for Hashimoto, had COVID last year, and since then keeps getting sick and having gut issues.",
+            "first_timestamp": "16:53"
+          },
+          {
+            "source_id": "19b484ebf234d2f0",
+            "source_type": "email",
+            "source_title": "The Bladder Peptide",
+            "source_date": "2025-12-22",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-12-22-the-bladder-peptide.md",
+            "mention_count": 6,
+            "top_snippet": "Happy Monday! I hope you and your family are gearing up for a warm, joy-filled holiday week! If you’ve dabbled in the peptide world, you’ve probably heard of Prostamax or other prostate-targeted biore",
+            "top_context": "Happy Monday! I hope you and your family are gearing up for a warm, joy-filled holiday week! If you’ve dabbled in the peptide world, you’ve probably heard of Prostamax or other prostate-targeted bioregulator peptides. Prostate health has become a mainstream conversation. And while I fully agree that prostate health should receive all the attention it deserves and more, few people recognize the importance of addressing bladder health. **The bladder and the pr",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352",
+            "source_type": "library-video",
+            "source_title": "May 2026 Q&A | Retatrutide, Testosterone, Autoimmune, and Beyond",
+            "source_date": "2026-06-17",
+            "source_url": "https://library.hunterwilliamshealth.com/p/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352.json",
+            "mention_count": 3,
+            "top_snippet": "and one to two milligrams per day of Prostomax. I've actually used those just myself, and I don't have any prostate issues, but I will say my bladder flow and just overall how you feel when you urinate as a man was very much improved from doing those. So fortunately for me, PSA is really low, prostate volume, all that's good for when I had it measured. But I would say there was improved bladder-flow enhancement for those, so I think for guys that do have BPH or things of that nature,",
+            "top_context": "and ACE083, which I've used them for, and those seem to work pretty well for myostatin inhibition. All right, just going through some of these miscellaneous ones. I always get asked about teens and peptides. We're actually going to talk about that on a Reader Mailbag episode, so stay tuned for that, that Taylor and I are going release very soon. Can you stack ters and reddit at microdoses? Yes, absolutely. Kelly says, peptide for prostate issues, I like one to two milligrams per day of Vesilute, V-E-S-I-L-U-T- E. and one to two milligrams per day of Prostomax. I've actually used those just myself, and I don't have any prostate issues, but I will say my bladder flow and just overall how you feel when you urinate as a man was very much improved from doing those. So fortunately for me, PSA is really low, prostate volume, all that's good for when I had it measured. But I would say there was improved bladder-flow enhancement for those, so I think for guys that do have BPH or things of that nature, Do two to three times per year that cycle of 30 days, one to two milligrams of Prostomax and Desolute, both per day. Works wonders. I love it. And I give it my thumbs up and plan on probably doing that at least once a year for me, even though I'm in my thirties. Jose asked if the NAD plus mod C5 amino blend is worth it for a 300 pound person on reddit or weight. Uh, yeah, I would say absolutely. In that case, you were probably going to vastly benefit from taking that. I will definitely add it onto the redditor. Just get normalized to the writer first, and then also understand that you probably are going have an increased heart rate from,",
+            "first_timestamp": "46:08"
+          },
+          {
+            "source_id": "19ba501471b219ea",
+            "source_type": "email",
+            "source_title": "The Bladder Peptide (Vesilute)",
+            "source_date": "2026-01-09",
+            "source_url": "https://open.spotify.com/episode/329Sf9YfFJKXh7v44dGshT",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2026-01-09-vesilute-bladder-peptide.md",
+            "mention_count": 2,
+            "top_snippet": "until it declines.\" ## Background - **Russian organ-specific peptide bioregulator** - St. Petersburg Institute of Bioregulation and Gerontology origin - **Synthetic dipeptide:** L-glutamic acid + L-as",
+            "top_context": "until it declines.\" ## Background - **Russian organ-specific peptide bioregulator** - St. Petersburg Institute of Bioregulation and Gerontology origin - **Synthetic dipeptide:** L-glutamic acid + L-aspartic acid - Target organ system: **urinary bladder** - Works for BOTH men and women - Compare: Prostamax = prostate-specific (men only) - Vesilute = bladder tissue → game-changer for women with overactive bladder + men with urinary symptoms overlapping BPH ## Mechanism Short peptides → enter cells via peptide transporters → reach intracellular targets including nucleus → influence gene expression →",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "peptide-qa-january-2025--85c33e47",
+            "source_type": "library-video",
+            "source_title": "Peptide Q&A · January 2025",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-january-2025--85c33e47/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-qa-january-2025--85c33e47.json",
+            "mention_count": 2,
+            "top_snippet": "you could do a little bit of Cagrillian Tide, which I haven't talked about that much. Or you can do like half and half Church Appetite and Retto True Tides. Peptides for prostate enlargement, definitely check out Bioregulator for that. The main one would be Libidon that you would want to use. There's also Prostomax, which is supposed to do really well, Which is like an injectable air regulator I've seen. I just haven't used it, so I can't really speak specifically to that one. Is Regina Shred the same as Ban15?",
+            "top_context": "should be? I definitely could actually just got my blood work done today. So maybe what I'll do, if this gets like enough likes or comments, or I just get like, enough feedback from people, I could pull up my own bloodwork and go over it. I wouldn't mind doing that. It's kind of hard to say though, cause like everyone's different. Like it's very nuanced, but I can definitely do it for myself. If that's something people would be interested in. Um, benefits of stacking GOB1s for optimal gains. Um yeah, if I were to stack any right now, it'd probably be like, If you don't have enough appetite suppression from Retta, you could do a little bit of Cagrillian Tide, which I haven't talked about that much. Or you can do like half and half Church Appetite and Retto True Tides. Peptides for prostate enlargement, definitely check out Bioregulator for that. The main one would be Libidon that you would want to use. There's also Prostomax, which is supposed to do really well, Which is like an injectable air regulator I've seen. I just haven't used it, so I can't really speak specifically to that one. Is Regina Shred the same as Ban15? No, but stay tuned for more info about Ban 15. And I'm kind of researching that in the background right now. I have clinical SLAP tears in both my shoulders. Recommendation, any peptide that might work. Um, I'd say check out the exosomes. Like I mentioned, PPC one 57 TB 500. Just see how it does. It's like, you can't promise anything. Someone says GW501516, which is carterine. I saw it on TreadX from BioLongevity and loved it.",
+            "first_timestamp": "25:07"
+          }
+        ],
+        "acute_signals": [],
+        "chronic_signals": [
+          {
+            "snippet": "just masking symptoms. This is why Prostamax is so different from pharmaceutical symptom managers. It’s modulating the underlying biology so the tissue can function as it did in your younger years. ——",
+            "source_title": "The Peptide For Prostate Health",
+            "source_date": "2025-08-15",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "ology so the tissue can function as it did in your younger years. ——————————————————————————— **What the Research Says** While published human clinical trials on Prostamax specifically are limited, we",
+            "source_title": "The Peptide For Prostate Health",
+            "source_date": "2025-08-15",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "interrupted urine stream * Experience pelvic discomfort or burning urination * Have a family history of prostate issues * Want to maintain youthful prostate function proactively It’s also worth consid",
+            "source_title": "The Peptide For Prostate Health",
+            "source_date": "2025-08-15",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "unction proactively It’s also worth considering if you’re building a longevity stack and want systemic anti-aging effects, because while Prostamax is targeted to the prostate, its DNA-modulating activ",
+            "source_title": "The Peptide For Prostate Health",
+            "source_date": "2025-08-15",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "tides Fit In** For BPH, daily tadalafil (5 mg) improves urinary flow and sexual function. Regarding peptides, here’s what I’ve seen work anecdotally as an adjunctive 8–12-week peptide protocol: * **KP",
+            "source_title": "TRT vs. Prostate Cancer",
+            "source_date": "2025-10-08",
+            "timestamp": null,
+            "source_url": null
+          }
+        ]
+      }
+    },
+    "taylor-williams": {
+      "summary": {
+        "mention_count": 3,
+        "top_doses": [],
+        "top_sources": [
+          {
+            "source_id": "IW0-bllx4dk",
+            "source_type": "podcast",
+            "source_title": "Saturday Morning Coffee Talk 1/3/2026",
+            "source_date": "2026-01-04",
+            "source_url": "https://youtu.be/IW0-bllx4dk",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2026-01-04-saturday-morning-coffee-talk-1-3-2026-IW0-bllx4dk.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "biular peptides like Vesigen, like Prostamax, like Vesolute,",
+            "top_context": "peptides that peptides that do really well for people and in the do really well for people and in the do really well for people and in the research space or in the peptide space research space or in the peptide space research space or in the peptide space everyone knows about them. BPC, TB500, everyone knows about them. BPC, TB500, everyone knows about them. BPC, TB500, GLPS, GHK, GLPS, GHK, GLPS, GHK, pretty much those and then maybe a pretty much those and then maybe a pretty much those and then maybe a couple others. But I would love to see couple others. But I would love to see couple others. But I would love to see some of these ancillary ones that no one some of these ancillary ones that no one some of these ancillary ones that no one really knows about be brought to the really knows about be brought to the really knows about be brought to the forefront and no one really talks about forefront and no one really talks about forefront and no one really talks about and a lot of other influencers don't and a lot of other influencers don't and a lot of other influencers don't even really know about them because they even really know about them because they even really know about them because they don't know how to dose them or they don't know how to dose them or they don't know how to dose them or they don't know anything about them. don't know anything about them. don't know anything about them. &gt;&gt; For instance, I wrote an email on VIP &gt;&gt; For instance, I wrote an email on VIP &gt;&gt; For instance, I wrote an email on VIP this week. VIP is such an amazing this week. VIP is such an amazing this week. VIP is such an amazing versatile peptide that does so many versatile peptide that does so many versatile peptide that does so many things for people. things for people. things for people. &gt;&gt; Thymogen is another one. Thyogen is such &gt;&gt; Thymogen is another one. Thyogen is such &gt;&gt; Thymogen is another one. Thyogen is such a good peptide. Some of the injectable a good peptide. Some of the injectable a good peptide. Some of the injectable biular peptides like Vesigen, like biular peptides like Vesigen, like biular peptides like Vesigen, like Prostamax, like Vesolute, Prostamax, like Vesolute, Prostamax, like Vesolute, &gt;&gt; like Von, I mean, geez, Von is one of &gt;&gt; like Von, I mean, geez, Von is one of &gt;&gt; like Von, I mean, geez, Von is one of the greatest peptides ever. There's just the greatest peptides ever. There's just the greatest peptides ever. There's just so much. We kind of so much. We kind of so much. We kind of &gt;&gt; Taylor and I exist in this space. So, we &gt;&gt; Taylor and I exist in this space. So, we &gt;&gt; Taylor and I exist in this space. So, we know these and we'll try stuff and we've know these and we'll try stuff and we've know these and we'll try stuff and we've tried stuff through the years like, man, tried stuff through the years like, man, tried stuff through the years like, man, this is amazing. we obviously only have this is amazing. we obviously only have this is amazing. we obviously only have like limited stuff we can talk about and like limited stuff we can talk about and like limited stuff we can talk about and so I would love to see one of course so I would love to see one of course so I would love to see one of course we'll talk about those things. I don't we'll talk about those things. I don't we'll talk about those things. I don't know how the funny thing is like when we know how the funny thing is like when we know how the funny thing is like when we talk about these new things they don't talk about these new things they don't talk about these new things they don't get as much traction because people get as much traction because people get as much traction because people don't understand them so it's not as don't understand them so it's not as don't understand them so it's not as much in like the common consciousness of much in like the common consciousness of much in like the common consciousness of people people people &gt;&gt; because like BPC is like a it's a meme &gt;&gt; because like BPC is like a it's a meme &gt;&gt; because like BPC is like a it's a meme of an idea that's like germinated in of an idea that's like germinated in of an idea that's like germinated in consciousness and consciousness and consciousness and &gt;&gt; so like if you make content about it &gt;&gt; so like if you make content about it &gt;&gt; so like if you make content about it tends to pick up and do better because tends to pick up and do better because tends to pick up and do better because people are familiar with it. If you talk people are familiar with it. If you talk people are familiar with it. If you talk about something that's completely",
+            "first_timestamp": "00:17:50.000"
+          }
+        ],
+        "acute_signals": [],
+        "chronic_signals": []
+      },
+      "female_specific_note": "Taylor Williams Coaching focuses on female-specific HRT/peptide guidance. Per-peptide notes here often emphasize female dosing, fertility, hormone interactions."
+    }
+  },
+  "reset_biology_synthesis": {
+    "status": "distilled",
+    "recommendation": "Hunter Williams (newer, 2026-06-17): \"Do two to three times per year that cycle of 30 days, one to two milligrams of Prostomax and Desolute, both per day.\" [may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352 @ 46:38, https://library.hunterwilliamshealth.com/p/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352/] Hunter Williams (older, 2026-03-29): \"In cases of more severe BPH, you're going to want to err on like the two milligrams a day and do that for 30 days. Some people will say like 10 to 30, I like 30 to 60 days.\" [prostamax-review-the-injectable-peptide-for-bph-prostate-health--09b3fda5 @ 9:17, https://library.hunterwilliamshealth.com/p/prostamax-review-the-injectable-peptide-for-bph-prostate-health--09b3fda5/]",
+    "caveats": "- Hunter Williams (2026-03-29): \"Again, there's not a lot of FDA backing or anything like that around Prostomax. It's mostly sold by research companies.\" [prostamax-review-the-injectable-peptide-for-bph-prostate-health--09b3fda5 @ 8:15, https://library.hunterwilliamshealth.com/p/prostamax-review-the-injectable-peptide-for-bph-prostate-health--09b3fda5/]\n- Hunter Williams (2026-03-29): \"there's not really like a standardized dosing on the Injectable Form.\" [prostamax-review-the-injectable-peptide-for-bph-prostate-health--09b3fda5 @ 9:17, https://library.hunterwilliamshealth.com/p/prostamax-review-the-injectable-peptide-for-bph-prostate-health--09b3fda5/]\n- Hunter Williams (2026-03-29): \"I have seen this help guys with their PSA and I've seen it not help with the PSAs.\" [prostamax-review-the-injectable-peptide-for-bph-prostate-health--09b3fda5 @ 11:57, https://library.hunterwilliamshealth.com/p/prostamax-review-the-injectable-peptide-for-bph-prostate-health--09b3fda5/]\n- Hunter Williams (2026-03-29): \"some of the injectable bioregulars do have a little bit of sting when you inject them.\" [prostamax-review-the-injectable-peptide-for-bph-prostate-health--09b3fda5 @ 10:19, https://library.hunterwilliamshealth.com/p/prostamax-review-the-injectable-peptide-for-bph-prostate-health--09b3fda5/]",
+    "cross_expert_consensus": null,
+    "cross_expert_disagreement": null,
+    "acute_chronic_split": {
+      "acute": null,
+      "chronic": {
+        "dose": "Hunter Williams (2026-03-29): \"I tell guys you can do anywhere from like 0.5 milligrams up to 2 milligrams per day.\" [prostamax-review-the-injectable-peptide-for-bph-prostate-health--09b3fda5 @ 9:17, https://library.hunterwilliamshealth.com/p/prostamax-review-the-injectable-peptide-for-bph-prostate-health--09b3fda5/] Hunter Williams (2026-03-29): \"In cases of more severe BPH, you're going to want to err on like the two milligrams a day.\" [prostamax-review-the-injectable-peptide-for-bph-prostate-health--09b3fda5 @ 9:17, https://library.hunterwilliamshealth.com/p/prostamax-review-the-injectable-peptide-for-bph-prostate-health--09b3fda5/] Hunter Williams (2026-03-29): \"someone was taking a three-week course of Prosimax at 750 micrograms per day, almost one milligram.\" [prostamax-review-the-injectable-peptide-for-bph-prostate-health--09b3fda5 @ 10:50, https://library.hunterwilliamshealth.com/p/prostamax-review-the-injectable-peptide-for-bph-prostate-health--09b3fda5/] Hunter Williams (2026-06-17): \"one to two milligrams per day of Prostomax.\" [may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352 @ 46:08, https://library.hunterwilliamshealth.com/p/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352/] Hunter Williams (2026-03-29): \"But you add two milliliters of actuarionic water to a 20 milligram vial, then that makes each milliliter 10 milligrams. And so if you wanted to do two milligrams, You would use 20 units on an insulin syringe.\" [prostamax-review-the-injectable-peptide-for-bph-prostate-health--09b3fda5 @ 9:49, https://library.hunterwilliamshealth.com/p/prostamax-review-the-injectable-peptide-for-bph-prostate-health--09b3fda5/]",
+        "route": "Hunter Williams (2026-03-29): \"So the injectable form is the best.\" [prostamax-review-the-injectable-peptide-for-bph-prostate-health--09b3fda5 @ 8:45, https://library.hunterwilliamshealth.com/p/prostamax-review-the-injectable-peptide-for-bph-prostate-health--09b3fda5/]",
+        "frequency": "Hunter Williams (2026-03-29): \"I tell guys you can do anywhere from like 0.5 milligrams up to 2 milligrams per day.\" [prostamax-review-the-injectable-peptide-for-bph-prostate-health--09b3fda5 @ 9:17, https://library.hunterwilliamshealth.com/p/prostamax-review-the-injectable-peptide-for-bph-prostate-health--09b3fda5/] Hunter Williams (2026-06-17): \"Do two to three times per year that cycle of 30 days, one to two milligrams of Prostomax and Desolute, both per day.\" [may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352 @ 46:38, https://library.hunterwilliamshealth.com/p/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352/]",
+        "duration": "Hunter Williams (2026-03-29): \"Some people will say like 10 to 30, I like 30 to 60 days.\" [prostamax-review-the-injectable-peptide-for-bph-prostate-health--09b3fda5 @ 9:17, https://library.hunterwilliamshealth.com/p/prostamax-review-the-injectable-peptide-for-bph-prostate-health--09b3fda5/] Hunter Williams (2026-03-29): \"someone was taking a three-week course of Prosimax at 750 micrograms per day.\" [prostamax-review-the-injectable-peptide-for-bph-prostate-health--09b3fda5 @ 10:50, https://library.hunterwilliamshealth.com/p/prostamax-review-the-injectable-peptide-for-bph-prostate-health--09b3fda5/] Hunter Williams (2026-06-17): \"Do two to three times per year that cycle of 30 days.\" [may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352 @ 46:38, https://library.hunterwilliamshealth.com/p/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352/]",
+        "verbatim_citation": "Hunter Williams (2026-06-17): \"one to two milligrams per day of Prostomax.\" [may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352 @ 46:08, https://library.hunterwilliamshealth.com/p/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352/]",
+        "episode_url": "https://library.hunterwilliamshealth.com/p/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352/",
+        "timestamp": "46:08"
+      }
+    },
+    "female_specific_notes": null,
+    "distilled_at": "2026-07-17T03:58:06.2397500-06:00",
+    "distilled_by": "codex"
+  },
+  "generated_at": "2026-07-17T10:59:09.771Z",
+  "mentions_fingerprint": "19be231dd2b6"
+}

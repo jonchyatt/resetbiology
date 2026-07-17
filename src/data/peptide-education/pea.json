@@ -4,25 +4,74 @@
   "aliases": [
     "PEA",
     "Palmitoylethanolamide",
+    "PEa",
     "pea"
   ],
-  "category": "Uncategorized",
+  "category": "Healing",
   "experts": {
     "hunter-williams": {
       "baseline_protocol": null,
       "summary": {
-        "mention_count": 5,
+        "mention_count": 30,
         "top_doses": [
+          {
+            "dose": "500 mg",
+            "count": 14
+          },
+          {
+            "dose": "600 milligrams",
+            "count": 9
+          },
+          {
+            "dose": "500 milligrams",
+            "count": 8
+          },
+          {
+            "dose": "500 milligram",
+            "count": 8
+          },
+          {
+            "dose": "600 mg",
+            "count": 7
+          },
           {
             "dose": "50 mcg",
             "count": 4
           },
           {
-            "dose": "600 mg",
+            "dose": "500 micrograms",
+            "count": 4
+          },
+          {
+            "dose": "500 mcg",
             "count": 4
           }
         ],
         "top_sources": [
+          {
+            "source_id": "the-best-gut-repair-peptide-stack-improve-your-gut-health-now--b4b5b7fa",
+            "source_type": "library-video",
+            "source_title": "The Best Gut Repair Peptide Stack Improve Your Gut Health Now",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/the-best-gut-repair-peptide-stack-improve-your-gut-health-now--b4b5b7fa/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/the-best-gut-repair-peptide-stack-improve-your-gut-health-now--b4b5b7fa.json",
+            "mention_count": 10,
+            "top_snippet": "You know, and even, well I'll talk about that later when we just sum everything up. So the next one is, I'm not even going to begin to try to pronounce this, but it's PEA for short. PEa is the abbreviation. But basically this is a naturally occurring fatty acid that helps modulate inflammation and pain in the body. So PEA interacts with endocannabinoid receptors and has anti-inflammatory and analgesic effects supporting gut health by reducing pain and inflammation. So this is obviously much more along the pain management side of things.",
+            "top_context": "Um, and what this one specifically is doing is gonna strengthen the Gut Barrier. which obviously supports a healthy gut microbiome and is particularly beneficial for individuals with leaky gut, which again, a lot of times when we have these stomach problems, that's, you know, the culprit or inflammatory bowel conditions. And what I like is 500 milligrams, not micrograms, milligrams typically available in capsules taken daily. So if I get that, usually when I'm taking 500mg in a capsule works really well. I love taking Tributrin. You know, and even, well I'll talk about that later when we just sum everything up. So the next one is, I'm not even going to begin to try to pronounce this, but it's PEA for short. PEa is the abbreviation. But basically this is a naturally occurring fatty acid that helps modulate inflammation and pain in the body. So PEA interacts with endocannabinoid receptors and has anti-inflammatory and analgesic effects supporting gut health by reducing pain and inflammation. So this is obviously much more along the pain management side of things. If you're experiencing stomach pain, which most of the times in stomach health issues, even if it's not like a overwhelming pain. It's like discomfort. And this really kind of helps like soothe the gut. I noticed that when I've used it, but it is useful for pain-management, helps modulate the immune system. and can assist in maintaining gut lining and integrity, which if we're doing all these other things is gonna help a lot. And what I recommend is 300 to 600 milligrams daily taken orally as a supplement. A lot of times you'll see like 500 milligram capsules that you can get of PEA, but I love it.",
+            "first_timestamp": "13:57"
+          },
+          {
+            "source_id": "the-life-changing-peptide-stack-that-fixes-the-gut--a909aff7",
+            "source_type": "library-video",
+            "source_title": "The Life-Changing Peptide Stack That Fixes The Gut",
+            "source_date": "2026-04-08",
+            "source_url": "https://library.hunterwilliamshealth.com/p/the-life-changing-peptide-stack-that-fixes-the-gut--a909aff7/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/the-life-changing-peptide-stack-that-fixes-the-gut--a909aff7.json",
+            "mention_count": 9,
+            "top_snippet": "You know, and even, well I'll talk about that later when we just sum everything up. So the next one is, I'm not even going to begin to try to pronounce this, but it's PEA for short. PEa is the abbreviation. But basically this is a naturally occurring fatty acid that helps modulate inflammation and pain in the body. So PEA interacts with endocannabinoid receptors and has anti-inflammatory and analgesic effects supporting gut health by reducing pain and inflammation. So this is obviously much more along the pain management side of things.",
+            "top_context": "Um, and what this one specifically is doing is gonna strengthen the Gut Barrier. which obviously supports a healthy gut microbiome and is particularly beneficial for individuals with leaky gut, which again, a lot of times when we have these stomach problems, that's, you know, the culprit or inflammatory bowel conditions. And what I like is 500 milligrams, not micrograms, milligrams typically available in capsules taken daily. So if I get that, usually when I'm taking 500mg in a capsule works really well. I love taking Tributrin. You know, and even, well I'll talk about that later when we just sum everything up. So the next one is, I'm not even going to begin to try to pronounce this, but it's PEA for short. PEa is the abbreviation. But basically this is a naturally occurring fatty acid that helps modulate inflammation and pain in the body. So PEA interacts with endocannabinoid receptors and has anti-inflammatory and analgesic effects supporting gut health by reducing pain and inflammation. So this is obviously much more along the pain management side of things. If you're experiencing stomach pain, which most of the times in stomach health issues, even if it's not like a overwhelming pain. It's like discomfort. And this really kind of helps like soothe the gut. I noticed that when I've used it, but it is useful for pain-management, helps modulate the immune system. and can assist in maintaining gut lining and integrity, which if we're doing all these other things is gonna help a lot. And what I recommend is 300 to 600 milligrams daily taken orally as a supplement. A lot of times you'll see like 500 milligram capsules that you can get of PEA, but I love it.",
+            "first_timestamp": "13:57"
+          },
           {
             "source_id": "19ca15c5dc80c2e0",
             "source_type": "email",
@@ -36,6 +85,42 @@
             "first_timestamp": null
           },
           {
+            "source_id": "peptide-qa-peptides-for-menopause-and-glp-1-side-effects--a8d1fbab",
+            "source_type": "library-video",
+            "source_title": "Peptide Q&A · Peptides for Menopause and GLP-1 Side Effects",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-peptides-for-menopause-and-glp-1-side-effects--a8d1fbab/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-qa-peptides-for-menopause-and-glp-1-side-effects--a8d1fbab.json",
+            "mention_count": 2,
+            "top_snippet": "And then I get tributrin, PEA, and lorazotide. Those are all actually orals that you could use. The others would be injectables. Glutamine, every single day, at least five grams of glutamine every day. and apple cider vinegar, lemon juice, and some inner filet aloe vera organic juice would be really good just for like gut health, IBS, soothing the gut. So those are where I would start. What are the best peptides for soft tissue healing, especially for someone needing multiple abdominal, abdominal hernia repairs?",
+            "top_context": "So BPC, TB 500, um, ARA 290 and GH K would be a good start. There's other stuff too, just off the top of my head. That's where I'd go. What's the best peptide sack for gut health, IVS and bladder overactivity. Bladder over activity. I'm blanking on the name of it because all the bioregulators have Kind of weird names. There is a bladder bioregulator. So that'd be the first one I'd go to for the bladder overactivity. For gut health, I would do metformin, PPC 157, TB 500, KPV. And then I get tributrin, PEA, and lorazotide. Those are all actually orals that you could use. The others would be injectables. Glutamine, every single day, at least five grams of glutamine every day. and apple cider vinegar, lemon juice, and some inner filet aloe vera organic juice would be really good just for like gut health, IBS, soothing the gut. So those are where I would start. What are the best peptides for soft tissue healing, especially for someone needing multiple abdominal, abdominal hernia repairs? Well, feel for whoever this person is because I struggled. It wasn't maybe necessarily a hernea, but when I played football, muscle tear or muscle strain, like in my lower abdomen region that I played with for a long time and like barely get out of bed some mornings. And, um, so I feel the pain. It like affects everything that you do. I would say, for someone like that, obviously BPC TB 500, uh, P E G M G F will be really good. Uh, I've been talking about that a lot because it works synergistically with BBC and TB five hundred.",
+            "first_timestamp": "15:26"
+          },
+          {
+            "source_id": "saturday-morning-coffee-talk-31426--deb3667a",
+            "source_type": "library-video",
+            "source_title": "Saturday Morning Coffee Talk · 3/14/26",
+            "source_date": "2026-04-08",
+            "source_url": "https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-31426--deb3667a/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/saturday-morning-coffee-talk-31426--deb3667a.json",
+            "mention_count": 2,
+            "top_snippet": "I would get lorazetide, which is an oral peptide that was actually developed specifically. For celiac, I will try that, but that's also in, and I'd try one of those peptides oral blends too, with razzatide but you have BPC, KPV, PEA, some of the other things in there too. My daughter is 16, has big stretch marks from both of her inner thighs without gaining weight. She's five foot, 113 pounds, been taking her skin doctor, doing microneedling, which has helped, but still there. Do you have any suggestions for that?",
+            "top_context": "And so I think anatomically for fat loss, it's a more cumulative thing. Not to say that people can't have results quicker, but I, think when you really look at the structural change of the body for the better is probably about three to six months, depending on the person. Thank you. So Fifi, we love you too. My two grandsons, 14 and 16, have celiac. I put them on IPA and sermorellin for stunted growth. Any suggestions for gut healing specifically for celia? I would get lorazetide, which is an oral peptide that was actually developed specifically. For celiac, I will try that, but that's also in, and I'd try one of those peptides oral blends too, with razzatide but you have BPC, KPV, PEA, some of the other things in there too. My daughter is 16, has big stretch marks from both of her inner thighs without gaining weight. She's five foot, 113 pounds, been taking her skin doctor, doing microneedling, which has helped, but still there. Do you have any suggestions for that? That's a tough one. I mean, the micreneedeling is probably going to help the most with that. Is that just from growing? Yeah, it's just growing. It's from. Growing fast. I mean, some people are just more prone, like especially like olive complexed skin tones are more. Prone to it. Vitamin E oils would be helpful, but probably doing the micro needling.",
+            "first_timestamp": "57:20"
+          },
+          {
+            "source_id": "the-kpv-masterclass-the-complete-users-guide--e6fde708",
+            "source_type": "library-video",
+            "source_title": "The KPV Masterclass | The Complete User's Guide",
+            "source_date": "2026-06-17",
+            "source_url": "https://library.hunterwilliamshealth.com/p/the-kpv-masterclass-the-complete-users-guide--e6fde708/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/the-kpv-masterclass-the-complete-users-guide--e6fde708.json",
+            "mention_count": 2,
+            "top_snippet": "We have PEA, which is a mast cell stabilizer. 300 to 600 milligrams per day of PEAs works really well. I love that one. We also have zinc and carnosine 75 to 150 milligrams a day for gastric mucosa support as well studied for upper GI barrier integrity. Then we have N-acetylglucosamine 500 to 1000 milligrams For gut barrier substrate, it also provides structural building blocks for the mucosal layer. And so I really love if someone has gut issues pairing these things with KPV.",
+            "top_context": "And I love using KPV to help some of those issues that people have just because it kind of reduces the flare up that some people in their gut. So you can use those definitely together and they work really well to suppress inflammation. Let's just talk about some supplement and nutraceutical support. I really love glutamine. That's something I don't talk enough about. We have PEA, which is a mast cell stabilizer. 300 to 600 milligrams per day of PEAs works really well. I love that one. We also have zinc and carnosine 75 to 150 milligrams a day for gastric mucosa support as well studied for upper GI barrier integrity. Then we have N-acetylglucosamine 500 to 1000 milligrams For gut barrier substrate, it also provides structural building blocks for the mucosal layer. And so I really love if someone has gut issues pairing these things with KPV. Let's get into some troubleshooting. So what if you say, I don't feel anything. One, the dose could be too low. Sometimes maybe that 250 microgram dose is too, low and you need to go up to the 500 micro grams to a thousand micro gram range. You can definitely do that again. Beyond a thousand, I just don't see that much more added benefit. The durations could be too short. I mentioned that earlier. You just want to make sure you have a cumulative exposure of at least six to eight weeks to really assess whether it's working or not. Could be the wrong route. Maybe you're just taking the oral version because you were scared of injections. That oral and the sub here are going to work synergistically together.",
+            "first_timestamp": "34:55"
+          },
+          {
             "source_id": "19506a8ec76bb2df",
             "source_type": "email",
             "source_title": "Happy Valentine's Day❤️",
@@ -43,8 +128,8 @@
             "source_url": null,
             "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-02-14-happy-valentine-s-day.md",
             "mention_count": 1,
-            "top_snippet": ")?** Thymosin Alpha-1, LL-37, KPV, VIP, BPC-157, TB-500, and **SS-31**. ✅ **Best peptides for nerve repair & blood vessel growth?** BPC-157, TB-500, **ARA-290 (nerve repair), and GHK-Cu (angiogenesis)",
-            "top_context": ")?** Thymosin Alpha-1, LL-37, KPV, VIP, BPC-157, TB-500, and **SS-31**. ✅ **Best peptides for nerve repair & blood vessel growth?** BPC-157, TB-500, **ARA-290 (nerve repair), and GHK-Cu (angiogenesis).** ✅ **Best peptides for gut health/IBS?** BPC-157, TB-500, KPV, **oral tributyrin, PEA, and larazotide**. Adding **glutamine and aloe vera juice** helps. ✅ **Best peptides for soft tissue healing (e.g., hernias)?** BPC-157, TB-500, **PEG-MGF, and GHK-Cu**. ——————————————————————————— **GLP-1 Peptides & Fat Loss—How to Optimize** ✅ **Can I take a break from tirzepatide?",
+            "top_snippet": "tion, POTS)?** Thymosin Alpha-1, LL-37, KPV, VIP, BPC-157, TB-500, and **SS-31**. ✅ **Best peptides for nerve repair & blood vessel growth?** BPC-157, TB-500, **ARA-290 (nerve repair), and GHK-Cu (ang",
+            "top_context": "tion, POTS)?** Thymosin Alpha-1, LL-37, KPV, VIP, BPC-157, TB-500, and **SS-31**. ✅ **Best peptides for nerve repair & blood vessel growth?** BPC-157, TB-500, **ARA-290 (nerve repair), and GHK-Cu (angiogenesis).** ✅ **Best peptides for gut health/IBS?** BPC-157, TB-500, KPV, **oral tributyrin, PEA, and larazotide**. Adding **glutamine and aloe vera juice** helps. ✅ **Best peptides for soft tissue healing (e.g., hernias)?** BPC-157, TB-500, **PEG-MGF, and GHK-Cu**. ——————————————————————————— **GLP-1 Peptides & Fat Loss—How to Optimize** ✅ **Can I take a break from tirzepatide? What to u",
             "first_timestamp": null
           },
           {
@@ -74,6 +159,20 @@
             "source_date": "2026-02-27",
             "timestamp": null,
             "source_url": "https://open.spotify.com/episode/4kMOv0WToaZ3KP0cMuvGHe"
+          },
+          {
+            "snippet": "And then I get tributrin, PEA, and lorazotide. Those are all actually orals that you could use. The others would be injectables. Glutamine, every single day, at least five grams of glutamine every day. and apple cider vinegar, lemon juice, and some inner filet aloe vera organic juice would be really good just for like gut health, IBS, soothing the gut. So those are where I would start. What are the best peptides for soft tissue healing, especially for someone needing multiple abdominal, abdominal hernia repairs?",
+            "source_title": "Peptide Q&A · Peptides for Menopause and GLP-1 Side Effects",
+            "source_date": "2026-03-29",
+            "timestamp": "15:26",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-peptides-for-menopause-and-glp-1-side-effects--a8d1fbab/"
+          },
+          {
+            "snippet": "We have PEA, which is a mast cell stabilizer. 300 to 600 milligrams per day of PEAs works really well. I love that one. We also have zinc and carnosine 75 to 150 milligrams a day for gastric mucosa support as well studied for upper GI barrier integrity. Then we have N-acetylglucosamine 500 to 1000 milligrams For gut barrier substrate, it also provides structural building blocks for the mucosal layer. And so I really love if someone has gut issues pairing these things with KPV.",
+            "source_title": "The KPV Masterclass | The Complete User's Guide",
+            "source_date": "2026-06-17",
+            "timestamp": "34:55",
+            "source_url": "https://library.hunterwilliamshealth.com/p/the-kpv-masterclass-the-complete-users-guide--e6fde708/"
           }
         ],
         "chronic_signals": [
@@ -97,6 +196,20 @@
             "source_date": "2026-02-27",
             "timestamp": null,
             "source_url": "https://open.spotify.com/episode/4kMOv0WToaZ3KP0cMuvGHe"
+          },
+          {
+            "snippet": "And then I get tributrin, PEA, and lorazotide. Those are all actually orals that you could use. The others would be injectables. Glutamine, every single day, at least five grams of glutamine every day. and apple cider vinegar, lemon juice, and some inner filet aloe vera organic juice would be really good just for like gut health, IBS, soothing the gut. So those are where I would start. What are the best peptides for soft tissue healing, especially for someone needing multiple abdominal, abdominal hernia repairs?",
+            "source_title": "Peptide Q&A · Peptides for Menopause and GLP-1 Side Effects",
+            "source_date": "2026-03-29",
+            "timestamp": "15:26",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-peptides-for-menopause-and-glp-1-side-effects--a8d1fbab/"
+          },
+          {
+            "snippet": "You know, and even, well I'll talk about that later when we just sum everything up. So the next one is, I'm not even going to begin to try to pronounce this, but it's PEA for short. PEa is the abbreviation. But basically this is a naturally occurring fatty acid that helps modulate inflammation and pain in the body. So PEA interacts with endocannabinoid receptors and has anti-inflammatory and analgesic effects supporting gut health by reducing pain and inflammation. So this is obviously much more along the pain management side of things.",
+            "source_title": "The Best Gut Repair Peptide Stack Improve Your Gut Health Now",
+            "source_date": "2026-03-29",
+            "timestamp": "13:57",
+            "source_url": "https://library.hunterwilliamshealth.com/p/the-best-gut-repair-peptide-stack-improve-your-gut-health-now--b4b5b7fa/"
           }
         ]
       }
@@ -215,33 +328,34 @@
   },
   "reset_biology_synthesis": {
     "status": "distilled",
-    "recommendation": "Reset Biology suggests asking the practitioner to consider Hunter's MCAS-stack framing as the operative voice on PEA: Hunter (email threadId 19ca15c5dc80c2e0, 2026-02-27): \"PEA (Palmitoylethanolamide) — CLEAN MAST CELL STABILIZER\" and \"Not a peptide — but extremely important\" with a loading-then-maintenance schedule. We'd ask the prescribing physician to weigh the gut-driven IBS use case Hunter (email threadId 19506a8ec76bb2df, 2025-02-14) lists — \"Best peptides for gut health/IBS? BPC-157, TB-500, KPV, oral tributyrin, PEA, and larazotide\" — and to confirm the ultra-micronized form, since Hunter (email threadId 19ca15c5dc80c2e0, 2026-02-27) explicitly says \"Use ultra-micronized form for absorption.\" Taylor mentions PEA only in passing as a component of oral gut-repair blends and gives no PEA-specific dose; Trevor's transcripts contain no Palmitoylethanolamide mentions (all keyword hits are 'pea protein' / 'pea smoothie' food references), so the librarian record is single-expert.",
-    "caveats": "- PEA is NOT a peptide — Hunter (email threadId 19ca15c5dc80c2e0, 2026-02-27): \"Not a peptide — but extremely important.\"\n- Form matters — Hunter (email threadId 19ca15c5dc80c2e0, 2026-02-27): \"Use ultra-micronized form for absorption.\"\n- Long-term continuation flagged — Hunter (email threadId 19ca15c5dc80c2e0, 2026-02-27): \"Long-term - LDN + PEA often continued long term.\"\n- Hunter's broader MCAS-stack honest caveat applies — Hunter (email threadId 19ca15c5dc80c2e0, 2026-02-27): \"NOT a cure-all\" and \"Genetic / mold-driven / trauma-driven nervous system / complex autoimmune cases — no stack fixes everything.\"\n- Single-expert evidence base — Trevor's transcript hits are all food-pea (e.g., Trevor (qd3wIAKuaME 00:00:30.240): \"every wannabe soy pea protein\"; Trevor (5O4vqJO61QU 00:26:43.679): \"Got to get this really great pea protein\"; Trevor (PEbu7E8QB_Y 00:27:45.120): \"Or whatever else like pea protein\"); no Trevor doses or claims about Palmitoylethanolamide are on record.\n- Taylor's PEA mentions are blend-level only — Taylor (hgI5Mpc-xDQ 00:15:40.160): \"and pea in them and those are also really good to help with inflammation\"; Taylor (JC1poI1OEog 00:57:35.040): \"you got BPC KPV PEA some of those other things in there\" — Taylor never gives a PEA-specific dose, so practitioner-level dosing must come from Hunter's verbatim or external authority.",
-    "cross_expert_consensus": "Where Hunter and Taylor overlap they both treat PEA as part of an oral gut/inflammation-modulating stack rather than a standalone protocol. Hunter (email threadId 19506a8ec76bb2df, 2025-02-14): \"Best peptides for gut health/IBS? BPC-157, TB-500, KPV, oral tributyrin, PEA, and larazotide.\" Taylor (hgI5Mpc-xDQ 00:15:37.600): \"most of those gut repair formulas have like tributinrin and pea in them and those are also really good to help with inflammation.\" Taylor (JC1poI1OEog 00:57:35.040): \"one of those peptide oral blends too with larazotide in it, but you got BPC KPV PEA some of those other things in there too.\" Trevor's transcripts contain no on-topic PEA quotes to confirm or refute.",
-    "cross_expert_disagreement": "There is no on-record disagreement, because only Hunter speaks to PEA dose, mechanism, and protocol. Taylor never gives a PEA-specific dose (only blend-level mentions), and Trevor's keyword hits are all food-pea protein references — for example Trevor (HbgvbVP8B-k 00:48:33.359): \"rice protein and your pea protein and your little vegan proteins, knock it off\" and Trevor (G6QnofqaYfM 00:14:22.480): \"unless you're eating guava and pea protein.\" Practitioners should note this asymmetry: any PEA-dose claim in this card is single-source Hunter; if Taylor or Trevor publish PEA-specific guidance later it should be added and reconciled.",
+    "recommendation": "Reset Biology suggests the prescribing practitioner consider Hunter, the-kpv-masterclass-the-complete-users-guide--e6fde708 (2026-06-17, 34:55, https://library.hunterwilliamshealth.com/p/the-kpv-masterclass-the-complete-users-guide--e6fde708/): \"We have PEA, which is a mast cell stabilizer. 300 to 600 milligrams per day of PEAs works really well. I love that one.\" Hunter, the-best-gut-repair-peptide-stack-improve-your-gut-health-now--b4b5b7fa (2026-03-29, 14:29, https://library.hunterwilliamshealth.com/p/the-best-gut-repair-peptide-stack-improve-your-gut-health-now--b4b5b7fa/): \"And what I recommend is 300 to 600 milligrams daily taken orally as a supplement. A lot of times you'll see like 500 milligram capsules that you can get of PEA, but I love it.\"",
+    "caveats": "- Hunter, the-best-gut-repair-peptide-stack-improve-your-gut-health-now--b4b5b7fa (2026-03-29, 1:12, https://library.hunterwilliamshealth.com/p/the-best-gut-repair-peptide-stack-improve-your-gut-health-now--b4b5b7fa/): \"you cannot treat yourself like a dumpster fire. You cannot not exercise.\"\n- Hunter, the-best-gut-repair-peptide-stack-improve-your-gut-health-now--b4b5b7fa (2026-03-29, 1:51, https://library.hunterwilliamshealth.com/p/the-best-gut-repair-peptide-stack-improve-your-gut-health-now--b4b5b7fa/): \"these are things that you can add on to everything else you would already be doing right.\"\n- Hunter, the-life-changing-peptide-stack-that-fixes-the-gut--a909aff7 (2026-04-08, 15:01, https://library.hunterwilliamshealth.com/p/the-life-changing-peptide-stack-that-fixes-the-gut--a909aff7/): \"that's like not such something that is going to have an overwhelming response for, it works really well.\"",
+    "cross_expert_consensus": "Hunter, peptide-qa-peptides-for-menopause-and-glp-1-side-effects--a8d1fbab (2026-03-29, 15:26, https://library.hunterwilliamshealth.com/p/peptide-qa-peptides-for-menopause-and-glp-1-side-effects--a8d1fbab/): \"And then I get tributrin, PEA, and lorazotide. Those are all actually orals that you could use.\" Taylor, hgI5Mpc-xDQ (2026-02-28, 00:15:40.160, https://youtu.be/hgI5Mpc-xDQ): \"and pea in them and those are also really good to help with inflammation.\" Taylor, JC1poI1OEog (2026-03-14, 00:57:35.040, https://youtu.be/JC1poI1OEog): \"you got BPC KPV PEA some of those other things in there too.\"",
+    "cross_expert_disagreement": null,
     "acute_chronic_split": {
       "acute": {
-        "dose": "Hunter (email threadId 19ca15c5dc80c2e0, 2026-02-27): \"Loading: 600 mg twice daily, 4-8 weeks.\"",
-        "route": "Hunter (email threadId 19ca15c5dc80c2e0, 2026-02-27) frames PEA in the MCAS stack as oral; he separately specifies \"Use ultra-micronized form for absorption,\" implying oral. No injectable PEA route is on record.",
-        "frequency": "Hunter (email threadId 19ca15c5dc80c2e0, 2026-02-27): \"600 mg twice daily.\"",
-        "duration": "Hunter (email threadId 19ca15c5dc80c2e0, 2026-02-27): \"4-8 weeks\" loading window.",
-        "verbatim_citation": "Hunter email threadId 19ca15c5dc80c2e0 (2026-02-27): \"Loading: 600 mg twice daily, 4-8 weeks\" and \"Use ultra-micronized form for absorption.\"",
+        "dose": "Hunter, 19ca15c5dc80c2e0 (2026-02-27, email threadId 19ca15c5dc80c2e0, https://open.spotify.com/episode/4kMOv0WToaZ3KP0cMuvGHe): \"Loading: 600 mg twice daily, 4-8 weeks.\"",
+        "route": "Hunter, the-best-gut-repair-peptide-stack-improve-your-gut-health-now--b4b5b7fa (2026-03-29, 14:29, https://library.hunterwilliamshealth.com/p/the-best-gut-repair-peptide-stack-improve-your-gut-health-now--b4b5b7fa/): \"300 to 600 milligrams daily taken orally as a supplement.\"",
+        "frequency": "Hunter, 19ca15c5dc80c2e0 (2026-02-27, email threadId 19ca15c5dc80c2e0, https://open.spotify.com/episode/4kMOv0WToaZ3KP0cMuvGHe): \"Loading: 600 mg twice daily, 4-8 weeks.\"",
+        "duration": "Hunter, 19ca15c5dc80c2e0 (2026-02-27, email threadId 19ca15c5dc80c2e0, https://open.spotify.com/episode/4kMOv0WToaZ3KP0cMuvGHe): \"Loading: 600 mg twice daily, 4-8 weeks.\"",
+        "verbatim_citation": "Hunter, 19ca15c5dc80c2e0 (2026-02-27, email threadId 19ca15c5dc80c2e0, https://open.spotify.com/episode/4kMOv0WToaZ3KP0cMuvGHe): \"Loading: 600 mg twice daily, 4-8 weeks.\"",
         "episode_url": "https://open.spotify.com/episode/4kMOv0WToaZ3KP0cMuvGHe",
-        "timestamp": "email threadId 19ca15c5dc80c2e0 — no VTT timestamp; The MCAS Peptide Stack newsletter, section #6 PEA"
+        "timestamp": "email threadId 19ca15c5dc80c2e0"
       },
       "chronic": {
-        "dose": "Hunter (email threadId 19ca15c5dc80c2e0, 2026-02-27): \"Maintenance: 300-600 mg twice daily.\"",
-        "route": "Oral (ultra-micronized) — Hunter (email threadId 19ca15c5dc80c2e0, 2026-02-27): \"Use ultra-micronized form for absorption.\"",
-        "frequency": "Hunter (email threadId 19ca15c5dc80c2e0, 2026-02-27): \"300-600 mg twice daily.\"",
-        "duration": "Hunter (email threadId 19ca15c5dc80c2e0, 2026-02-27): \"Long-term - LDN + PEA often continued long term.\"",
-        "verbatim_citation": "Hunter email threadId 19ca15c5dc80c2e0 (2026-02-27): \"Maintenance: 300-600 mg twice daily\" and \"Long-term - LDN + PEA often continued long term.\"",
-        "episode_url": "https://open.spotify.com/episode/4kMOv0WToaZ3KP0cMuvGHe",
-        "timestamp": "email threadId 19ca15c5dc80c2e0 — no VTT timestamp; The MCAS Peptide Stack newsletter, section #6 PEA + Expected Timeline"
+        "dose": "Hunter, 19ca15c5dc80c2e0 (2026-02-27, email threadId 19ca15c5dc80c2e0, https://open.spotify.com/episode/4kMOv0WToaZ3KP0cMuvGHe): \"Maintenance: 300-600 mg twice daily.\" Hunter, the-kpv-masterclass-the-complete-users-guide--e6fde708 (2026-06-17, 34:55, https://library.hunterwilliamshealth.com/p/the-kpv-masterclass-the-complete-users-guide--e6fde708/): \"300 to 600 milligrams per day of PEAs works really well.\"",
+        "route": "Hunter, the-best-gut-repair-peptide-stack-improve-your-gut-health-now--b4b5b7fa (2026-03-29, 14:29, https://library.hunterwilliamshealth.com/p/the-best-gut-repair-peptide-stack-improve-your-gut-health-now--b4b5b7fa/): \"300 to 600 milligrams daily taken orally as a supplement.\"",
+        "frequency": "Hunter, 19ca15c5dc80c2e0 (2026-02-27, email threadId 19ca15c5dc80c2e0, https://open.spotify.com/episode/4kMOv0WToaZ3KP0cMuvGHe): \"Maintenance: 300-600 mg twice daily.\" Hunter, the-kpv-masterclass-the-complete-users-guide--e6fde708 (2026-06-17, 34:55, https://library.hunterwilliamshealth.com/p/the-kpv-masterclass-the-complete-users-guide--e6fde708/): \"300 to 600 milligrams per day of PEAs works really well.\"",
+        "duration": "Hunter, 19ca15c5dc80c2e0 (2026-02-27, email threadId 19ca15c5dc80c2e0, https://open.spotify.com/episode/4kMOv0WToaZ3KP0cMuvGHe): \"Long-term - LDN + PEA often continued long term.\"",
+        "verbatim_citation": "Hunter, the-kpv-masterclass-the-complete-users-guide--e6fde708 (2026-06-17, 34:55, https://library.hunterwilliamshealth.com/p/the-kpv-masterclass-the-complete-users-guide--e6fde708/): \"We have PEA, which is a mast cell stabilizer. 300 to 600 milligrams per day of PEAs works really well. I love that one.\" Hunter, 19ca15c5dc80c2e0 (2026-02-27, email threadId 19ca15c5dc80c2e0, https://open.spotify.com/episode/4kMOv0WToaZ3KP0cMuvGHe): \"Maintenance: 300-600 mg twice daily.\"",
+        "episode_url": "https://library.hunterwilliamshealth.com/p/the-kpv-masterclass-the-complete-users-guide--e6fde708/",
+        "timestamp": "34:55"
       }
     },
     "female_specific_notes": null,
-    "distilled_at": "2026-04-27T05:31:14.062Z",
-    "distilled_by": "claude"
+    "distilled_at": "2026-07-17T09:55:11.6659274Z",
+    "distilled_by": "codex"
   },
-  "generated_at": "2026-04-27T02:02:34.987Z"
+  "generated_at": "2026-07-17T10:59:08.822Z",
+  "mentions_fingerprint": "9a6ca4f78324"
 }

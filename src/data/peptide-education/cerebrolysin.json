@@ -5,12 +5,12 @@
     "Cerebrolysin",
     "cerebrolysin"
   ],
-  "category": "Uncategorized",
+  "category": "Cognitive Enhancement",
   "experts": {
     "hunter-williams": {
       "baseline_protocol": null,
       "summary": {
-        "mention_count": 46,
+        "mention_count": 126,
         "top_doses": [
           {
             "dose": "8 mg",
@@ -21,24 +21,28 @@
             "count": 30
           },
           {
-            "dose": "10 units",
-            "count": 28
+            "dose": "20 mg",
+            "count": 30
           },
           {
-            "dose": "20 mg",
-            "count": 25
+            "dose": "10 units",
+            "count": 30
+          },
+          {
+            "dose": "10 mg",
+            "count": 10
           },
           {
             "dose": "200 mcg",
-            "count": 1
+            "count": 6
           },
           {
             "dose": "500 mcg",
-            "count": 1
+            "count": 6
           },
           {
-            "dose": "120 mg",
-            "count": 1
+            "dose": "60 mg",
+            "count": 6
           }
         ],
         "top_sources": [
@@ -55,87 +59,87 @@
             "first_timestamp": "00:47:40.160"
           },
           {
-            "source_id": "19829deefaf29db8",
-            "source_type": "email",
-            "source_title": "Read Like Your Life Depends On It",
-            "source_date": "2025-07-20",
-            "source_url": null,
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-07-20-read-like-your-life-depends-on-it.md",
-            "mention_count": 2,
-            "top_snippet": "ss levels’, University of Sussex](https://www.telegraph.co.uk/news/health/news/5070874/Reading-can-help-reduce-stress.html) ——————————————————————————— **Hormones, Peptides, and Neuroplasticity** Supp",
-            "top_context": "ss levels’, University of Sussex](https://www.telegraph.co.uk/news/health/news/5070874/Reading-can-help-reduce-stress.html) ——————————————————————————— **Hormones, Peptides, and Neuroplasticity** Suppose you’re optimizing your life with peptides. Whether it’s nootropics like Dihexa and Cerebrolysin, mitochondrial agents like SS-31, or a solid hormone replacement protocol, you’re investing in your brain and body’s ability to adapt, repair, and evolve. Everyone wants to know the next best hack to “stave off” dementia. Yet, what’s wild is that reading rarely is a component of a “brain heal",
+            "source_id": "a-comprehensive-guide-to-cerebrolysin-uses-benefits-and-dosages-cognitive-enhanc--c330076b",
+            "source_type": "library-article",
+            "source_title": "A Comprehensive Guide to Cerebrolysin: Uses, Benefits, and Dosages | Cognitive Enhancement",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/a-comprehensive-guide-to-cerebrolysin-uses-benefits-and-dosages-cognitive-enhanc--c330076b/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/a-comprehensive-guide-to-cerebrolysin-uses-benefits-and-dosages-cognitive-enhanc--c330076b.json",
+            "mention_count": 17,
+            "top_snippet": "Cerebrolysin is one of the more powerful nootropic peptides out there, and one I have to tread lightly around. Today I want to walk you through where it came from, how it works, dosing, side effects, ",
+            "top_context": "Cerebrolysin is one of the more powerful nootropic peptides out there, and one I have to tread lightly around. Today I want to walk you through where it came from, how it works, dosing, side effects, and what I'd stack it with. Everything here is anecdotal and for educational purposes only. This topic hits clo",
             "first_timestamp": null
           },
           {
-            "source_id": "19c01b888153d27d",
-            "source_type": "email",
-            "source_title": "The Brain Peptide You Don't Know About (P21)",
-            "source_date": "2026-01-27",
-            "source_url": "https://open.spotify.com/episode/0tGTzCBkb5ApSBWSYuG2rC",
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2026-01-27-p21-the-brain-peptide.md",
-            "mention_count": 2,
-            "top_snippet": "y) - Higher doses needed because intranasal delivery is variable - Start LOW, earn your way up SLOWLY ### Cycling - **5 days on, 2 days off** OR **3 days/week during heavy work periods** - For active ",
-            "top_context": "y) - Higher doses needed because intranasal delivery is variable - Start LOW, earn your way up SLOWLY ### Cycling - **5 days on, 2 days off** OR **3 days/week during heavy work periods** - For active brain fog / high inflammation / concussion history → daily use for a period makes sense ## P21 vs Cerebrolysin | Compound | Type | Hunter's view | |---|---|---| | **Cerebrolysin** | Complex biologic mixture | \"Gold standard for neural repair\" — but sourcing is harder (crypto / international friction) | | **P21** | Defined, engineered peptide | Lighter, more accessible alternative. More selective. Maintenan",
+            "source_id": "the-best-peptides-for-learning-become-a-supercomputer--9797c575",
+            "source_type": "library-article",
+            "source_title": "The Best Peptides For Learning Become A Supercomputer",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/the-best-peptides-for-learning-become-a-supercomputer--9797c575/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/the-best-peptides-for-learning-become-a-supercomputer--9797c575.json",
+            "mention_count": 5,
+            "top_snippet": "ing, writing. Your brain remembers it as fun and pulls you back toward it. Dosing: 50 mcg twice per day, with the option to go up to 200 mcg depending on response. The injection is more reliable than ",
+            "top_context": "ing, writing. Your brain remembers it as fun and pulls you back toward it. Dosing: 50 mcg twice per day, with the option to go up to 200 mcg depending on response. The injection is more reliable than the nasal spray pound for pound, but 100 to 200 mcg of nasal spray gets you in the same ballpark. Cerebrolysin This one is much more powerful than oxytocin. Cerebrolysin is a peptide derived from porcine brain proteins that mimics neurotrophic factors like BDNF and NGF. It supports neuronal survival and promotes neurogenesis and synaptic plasticity. In plain English, it helps your brain change and adapt.",
             "first_timestamp": null
           },
           {
-            "source_id": "19506a8ec76bb2df",
-            "source_type": "email",
-            "source_title": "Happy Valentine's Day❤️",
-            "source_date": "2025-02-14",
-            "source_url": null,
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-02-14-happy-valentine-s-day.md",
-            "mention_count": 1,
-            "top_snippet": "e injury?** Yes. **SubQ near the injury or IM injection** is ideal for localized healing. ✅ **Can peptides be taken orally?** Some peptides (**BPC-157, GHK-Cu**) have oral forms, but **injections are ",
-            "top_context": "e injury?** Yes. **SubQ near the injury or IM injection** is ideal for localized healing. ✅ **Can peptides be taken orally?** Some peptides (**BPC-157, GHK-Cu**) have oral forms, but **injections are more effective**. ✅ **Best peptide for concussion recovery?** BPC-157, TB-500, and **Cerebrolysin**. ——————————————————————————— **Timing & Stacking Peptides for Best Results** ✅ **Can I stack HCG, HGH, Tesamorelin, and Ipamorelin?** Yes. Adjust doses based on goals (**fat loss vs. muscle gain**). ✅ **How to schedule peptides over a year?** Tailor protocols to individual goals",
+            "source_id": "my-day-at-fountain-life-and-a-peptide-discussion-with-dr-bill-kapp--9c823f8b",
+            "source_type": "library-article",
+            "source_title": "My Day at Fountain Life and a Peptide Discussion with Dr. Bill Kapp",
+            "source_date": "2026-03-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/my-day-at-fountain-life-and-a-peptide-discussion-with-dr-bill-kapp--9c823f8b/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/my-day-at-fountain-life-and-a-peptide-discussion-with-dr-bill-kapp--9c823f8b.json",
+            "mention_count": 4,
+            "top_snippet": "r Khavinson ran the Khavinson Institute and developed many of the bioregulator peptides. Some are short enough to be orally bioavailable. A lot of the clinical data exists, it just sits in Russian and",
+            "top_context": "r Khavinson ran the Khavinson Institute and developed many of the bioregulator peptides. Some are short enough to be orally bioavailable. A lot of the clinical data exists, it just sits in Russian and never got translated. Thymosin alpha-1 is approved in 35 countries as an adjunct to chemotherapy. Cerebrolysin is kept on ambulances in parts of Eastern Europe so it can be given immediately after a stroke. None of that is FDA approved here. GLP-1s as a longevity drug In our longevity community GLP-1s have gotten some negative press, mostly because doctors escalate the dose way too fast to maximize insura",
             "first_timestamp": null
           },
           {
-            "source_id": "195b0718ac68bbb2",
-            "source_type": "email",
-            "source_title": "Stop Buying Peptides!",
-            "source_date": "2025-03-19",
-            "source_url": null,
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-03-19-stop-buying-peptides.md",
-            "mention_count": 1,
-            "top_snippet": "s by organizing your thoughts and reducing cognitive overload. Peptides can't give you clarity if your mind is cluttered and overwhelmed. Journaling provides the mental and emotional space peptides ne",
-            "top_context": "s by organizing your thoughts and reducing cognitive overload. Peptides can't give you clarity if your mind is cluttered and overwhelmed. Journaling provides the mental and emotional space peptides need to be truly effective. If you're neglecting journaling, no amount of selank, semax, or cerebrolysin will fully optimize your brain health. Start journaling consistently, THEN invest in peptides. ——————————————————————————— ### Here’s the Cold, Hard Truth: Peptides and hormones are incredibly powerful tools. I love them. But they're exactly that—tools. Tools are useless if you",
+            "source_id": "p21-the-brain-peptide--72289902",
+            "source_type": "library-article",
+            "source_title": "P21 The Brain Peptide",
+            "source_date": "2026-04-08",
+            "source_url": "https://library.hunterwilliamshealth.com/p/p21-the-brain-peptide--72289902/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/p21-the-brain-peptide--72289902.json",
+            "mention_count": 4,
+            "top_snippet": "to form new neurons. Protects against tau pathology. It inhibits GSK3-beta, which reduces the hyperphosphorylated tau proteins that show up in Alzheimer's brains. Supports synaptic plasticity. It incr",
+            "top_context": "to form new neurons. Protects against tau pathology. It inhibits GSK3-beta, which reduces the hyperphosphorylated tau proteins that show up in Alzheimer's brains. Supports synaptic plasticity. It increases markers like synaptophysin and synapsin-1, improving connectivity between neurons. P21 vs. Cerebrolysin Cerebrolysin is the gold standard for neural repair right now. Powerful stuff, but harder to source unless you're using crypto, and frankly stronger than most people need. I see P21 as a lighter version of cerebrolysin. Different molecule entirely, but I notice some of the same reduction in infla",
             "first_timestamp": null
           },
           {
-            "source_id": "19c112a2709941b7",
-            "source_type": "email",
-            "source_title": "January 2026 Q&A",
-            "source_date": "2026-01-30",
-            "source_url": "https://open.spotify.com/episode/2UpNk1gzskxFOy8y5hFjTY",
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2026-01-30-january-q-and-a.md",
-            "mention_count": 1,
-            "top_snippet": "Pain, Inflammation, Autoimmune - How VIP, KPV, thymic peptides, gut-focused compounds fit into a real strategy (not random stack) - Many people chase symptoms when underlying issue is: - Nervous syste",
-            "top_context": "Pain, Inflammation, Autoimmune - How VIP, KPV, thymic peptides, gut-focused compounds fit into a real strategy (not random stack) - Many people chase symptoms when underlying issue is: - Nervous system overload - Gut permeability - Mitochondrial dysfunction ### Brain + Cognitive Peptides - **Cerebrolysin alternatives:** P21, PE-22-28, Selank, Semax - How Hunter thinks about neuroprotection ### TRT + Hormones (Deep Coverage) - When it makes sense to start - When it doesn't - Fertility considerations - ⭐ **\"Peptides don't replace hormones (and never will)\"** - Why people get frustrated trying to sol",
+            "source_id": "peptide-qa-april-2026--9bc7fd8c",
+            "source_type": "library-article",
+            "source_title": "Peptide Q&A · April 2026",
+            "source_date": "2026-04-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-april-2026--9bc7fd8c/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-qa-april-2026--9bc7fd8c.json",
+            "mention_count": 4,
+            "top_snippet": "re's also BPC-737, an antifibrotic peptide that brings blood pressure down. I've used it. Dose 300 to 500 mcg per day. Vesugen for endothelial health is another good one. Low-dose Cialis at 2.5 to 5 m",
+            "top_context": "re's also BPC-737, an antifibrotic peptide that brings blood pressure down. I've used it. Dose 300 to 500 mcg per day. Vesugen for endothelial health is another good one. Low-dose Cialis at 2.5 to 5 mg daily can also help. Chad: Myelin regeneration for MS? Tough one. I'd go with ARA-290, possibly cerebrolysin, BPC-157, TB-500, and Vesugen. Cartalax could help with weakness and pain symptoms. Filippa: Post-vaccine ischemic stroke, what peptides might help? I've built a vaccine-related stack. SS-31, thymosin alpha-1, and KPV are the primary players. A GLP microdose helps reduce clotting risk. Vesugen at",
             "first_timestamp": null
           },
           {
-            "source_id": "19c49cac85fb70ef",
-            "source_type": "email",
-            "source_title": "Pinealon for Longevity",
-            "source_date": "2026-02-10",
-            "source_url": "https://open.spotify.com/episode/6r4jji1nEwaFYsF0GfJiaD",
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2026-02-10-pinealon-for-longevity.md",
-            "mention_count": 1,
-            "top_snippet": "*200 mcg/day** - Titrate up to: **500 mcg/day over 8-12 weeks** - ~20 mg per cycle total ### Annual cap - **DO NOT exceed 100-120 mg total per year** - Effects persist well after stopping → suggests l",
-            "top_context": "*200 mcg/day** - Titrate up to: **500 mcg/day over 8-12 weeks** - ~20 mg per cycle total ### Annual cap - **DO NOT exceed 100-120 mg total per year** - Effects persist well after stopping → suggests long-lasting regulatory changes, NOT transient stimulation ## Stacks Well With - **Epitalon** - **Cerebrolysin** - **Semax** - **Selank** ## Best Candidates - Concussion history - Disrupted sleep / circadian struggles - Chronic stress - Heavy travel - Long-term brain-aging proactive ## Source BioLongevity Labs — code HUNTERW (30% storewide + 15% off) ## Further Reading - pubmed: 21978084 - mdpi.com/14",
+            "source_id": "pinealon-updated-benefits-mechanisms-and-dosing--a729f708",
+            "source_type": "library-article",
+            "source_title": "Pinealon: Updated Benefits, Mechanisms, and Dosing",
+            "source_date": "2026-03-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/pinealon-updated-benefits-mechanisms-and-dosing--a729f708/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/pinealon-updated-benefits-mechanisms-and-dosing--a729f708.json",
+            "mention_count": 4,
+            "top_snippet": "brief fatigue, or lethargy. Long-term safety data is limited, but based on mechanism I think it's fine. Stacks That Work Epitalon. Classic anti-aging combo. Epitalon handles hormonal and circadian asp",
+            "top_context": "brief fatigue, or lethargy. Long-term safety data is limited, but based on mechanism I think it's fine. Stacks That Work Epitalon. Classic anti-aging combo. Epitalon handles hormonal and circadian aspects, Pinealon covers cellular and neural. Great for restorative sleep and brain rejuvenation. Cerebrolysin. If you're running Cerebrolysin, throwing Pinealon on top makes a lot of sense. Cerebrolysin provides growth factors for neuron repair, Pinealon reduces neuronal stress and apoptosis. Strong protocol for TBI recovery and neurodegenerative concerns. You can stagger the cycles, they don't need to run",
             "first_timestamp": null
           },
           {
-            "source_id": "19c7d4e88d824216",
-            "source_type": "email",
-            "source_title": "February 2026 Q&A",
-            "source_date": "2026-02-20",
-            "source_url": "https://open.spotify.com/episode/7cSXNT1MtFCPa7hA8u98kN",
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2026-02-20-february-q-and-a.md",
-            "mention_count": 1,
-            "top_snippet": "do when AST/ALT trends wrong way - Hunter's liver support hierarchy ### HGH Peptides + Secretagogues - HGH vs peptides for men over 40 - Cycling Tesamorelin + alternating pathways - Stacking HGH with ",
-            "top_context": "do when AST/ALT trends wrong way - Hunter's liver support hierarchy ### HGH Peptides + Secretagogues - HGH vs peptides for men over 40 - Cycling Tesamorelin + alternating pathways - Stacking HGH with Tesa/Ipa - Managing water retention + GH side effects ### Brain + Hormones + Misc - **PE-22-28 + Cerebrolysin** Hunter's take - 5-Amino dosing realities - High SHBG: testosterone cream vs injections - Managing E2 without an AI - Acne strategies that actually work ### Plus - Peptide storage + shelf life - Drug testing - Hair, psoriasis, Ehlers-Danlos, tinnitus - Insulin pens - Research vs compounded GLPs",
+            "source_id": "saturday-morning-coffee-talk-2726--4d465560",
+            "source_type": "library-article",
+            "source_title": "Saturday Morning Coffee Talk · 2/7/26",
+            "source_date": "2026-04-08",
+            "source_url": "https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-2726--4d465560/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/saturday-morning-coffee-talk-2726--4d465560.json",
+            "mention_count": 4,
+            "top_snippet": "mic, which is worse. For cholesterol on TRT, if everything else is dialed, it usually isn't an issue. If it is, look at GLPs, SGLT2 inhibitors like Jardiance, or citrus bergamot. I'm not a cholesterol",
+            "top_context": "mic, which is worse. For cholesterol on TRT, if everything else is dialed, it usually isn't an issue. If it is, look at GLPs, SGLT2 inhibitors like Jardiance, or citrus bergamot. I'm not a cholesterol expert, but I think the conversation matters less when body fat and inflammation are controlled. Cerebrolysin vs P21 vs Dihexa For memory and recall, I'd rank them. Dihexa for intro, P21 for intermediate, Cerebrolysin for advanced. Cerebrolysin should be reserved for actual trauma, stroke recovery, TBI, concussions, or early dementia. Or one short cycle a year if you've been mentally fried. For people w",
             "first_timestamp": null
           }
         ],
@@ -470,33 +474,34 @@
   },
   "reset_biology_synthesis": {
     "status": "distilled",
-    "recommendation": "Reset Biology suggests asking the practitioner to consider Cerebrolysin only after hormone optimization is in place: Taylor (JC1poI1OEog 00:48:20.880): \"cerebrolysin would be the gold standard for for nootropics. But, I don't think you'd have to go that far.\" Hunter's most recent in-protocol frame (E7GPNidicqY 01:49:51.560): \"Cerebrolysin, I would just do 10 to 20 mg per day, 5 days on, 2 days off for 8 weeks\" — and for ampules (E7GPNidicqY 01:49:58.000): \"like 1 ml to 5 ml three times per week.\" We'd ask the prescribing physician to weigh sourcing reality (Hunter email threadId 19c01b888153d27d (2026-01-27): \"Gold standard for neural repair — but sourcing is harder (crypto / international friction)\") and whether a lighter alternative (P21, Dihexa) is the right fit before committing to a Cerebrolysin cycle.",
-    "caveats": "- Sourcing/access friction: Hunter email threadId 19c01b888153d27d (2026-01-27): \"Gold standard for neural repair — but sourcing is harder (crypto / international friction).\" Hunter directs practitioners to manufacturer prescribing info — Hunter (E7GPNidicqY 01:50:04.720): \"you can go to this website called cerebrolysin.com\" and (E7GPNidicqY 01:50:08.960): \"That is the Ever Pharma who is the manufacturer of Cerebrolysin.\"\n- Hormones first, peptide second: Taylor (JC1poI1OEog 00:48:17.000): \"to be hormone optimization. Yeah. That'll be your the first line of defense.\" Hunter email threadId 19c01b888153d27d (2026-01-27): \"Peptides don't replace hormones (and never will)\" and \"Women over 60 need hormones FIRST + peptides SECOND.\"\n- Lifestyle floor must be in place: Hunter email threadId 195b0718ac68bbb2 (2025-03-19): \"no amount of selank, semax, or cerebrolysin will fully optimize your brain health\" without journaling/cognitive offload first.\n- Lighter alternatives explicitly offered: Taylor (JC1poI1OEog 00:48:24.520): \"I think P21 is great. I think Dihexa is great.\" Hunter email threadId 19c01b888153d27d (2026-01-27): P21 is a \"Lighter, more accessible alternative. More selective. Maintenance tool that becomes performance tool when stress rises.\"\n- Acute use case is concussion / TBI / dementia / Alzheimer's: Hunter email threadId 19506a8ec76bb2df (2025-02-14): \"Best peptide for concussion recovery? BPC-157, TB-500, and Cerebrolysin.\" Trevor (Fj9_wLXso1c 00:20:24.560): \"if they have ... dementia or Alzheimer's, even multiple sclerosis, all of this stuff, this should be first on your hit parade.\"\n- Trevor's chronic frame is platform-stack, not solo: Trevor (Fj9_wLXso1c 00:20:05.160): \"The platform is always based on Tesamorelin, Cerebrolysin, GHK-Cu.\"\n- Stacking note from Hunter: Hunter email threadId 19c49cac85fb70ef (2026-02-10) lists Cerebrolysin among Pinealon's \"Stacks Well With\" set (Epitalon, Cerebrolysin, Semax, Selank). Hunter's older Dihexa email (threadId 19c01b888153d27d 2026-01-27 referencing Dihexa deep-dive) advises \"TBI recovery — Stack with Cerebrolysin + BPC-157 + TB-500.\"",
-    "cross_expert_consensus": "All three converge on Cerebrolysin as the strongest neurotrophic option but reserve it as a heavy-hitter rather than first-line. Hunter email threadId 19c01b888153d27d (2026-01-27): \"Gold standard for neural repair.\" Taylor (JC1poI1OEog 00:48:20.880): \"cerebrolysin would be the gold standard for for nootropics.\" Trevor (Fj9_wLXso1c 00:20:11.480): \"It's a neurotrophic factor concentrate. It's the most powerful agent on the planet for promoting neurogenesis and synaptogenesis and repairing neuronal damage.\" Trevor (8g4I9x22VNk 00:29:33.960): \"this is like the ultimate neurotrophic factor. It repairs damaged neurons. It improves cognitive function. It erases that brain fog.\" Trevor (xxTZXHynh20 00:32:13.600): \"you want to fix the cognitive aspect? Cerebrolysin\" and (xxTZXHynh20 00:32:19.320): \"cerebrolysin is a better choice because it's not a synthetic peptide. It's a mixture of neurotrophic factors. It's like giving your brain this incredibly concentrated fertilizer for growth and repair.\" Same-protocol overlap on the 4/18/26 podcast: Hunter (E7GPNidicqY 01:49:51.560) and Taylor (Cg7JtpnfRY4 01:49:49.880) both deliver the identical ask-and-answer for a 55-or-younger no-major-trauma protocol — \"do 10 to 20 mg per day, 5 days on, 2 days off for 8 weeks\" with the ampule alternative \"1 ml to 5 ml three times per week.\"",
-    "cross_expert_disagreement": "Whether Cerebrolysin is needed at all in the absence of trauma. Taylor (JC1poI1OEog 00:48:24.510): \"But, I don't think you'd have to go that far\" and (JC1poI1OEog 00:48:24.520): \"I think P21 is great. I think Dihexa is great.\" Hunter (E7GPNidicqY 01:49:46.120): \"I don't think you need to\" stack Cerebrolysin with Cortexin in the same population — but Hunter still gives a full Cerebrolysin protocol when asked. Trevor's framing is more aggressive — chronic platform inclusion: Trevor (Fj9_wLXso1c 00:20:05.160): \"The platform is always based on Tesamorelin, Cerebrolysin, GHK-Cu\" and \"want to play hard? Cerebrolysin\" (m8FwL9Xsk78 00:28:44.000): \"Crank up the cognitive benefits of the Cerebrolysin. Like, this thing's a freight train of neurotrophic factors.\" Acute vs chronic emphasis differs by speaker: Trevor's strongest acute use is post-injury cognitive rescue (xxTZXHynh20 00:32:13.600): \"you want to fix the cognitive aspect? Cerebrolysin\"; Hunter's strongest acute use is concussion recovery (email threadId 19506a8ec76bb2df 2025-02-14): \"Best peptide for concussion recovery? BPC-157, TB-500, and Cerebrolysin\" while his chronic frame is the 8-week 5-on-2-off cycle (E7GPNidicqY 01:49:51.560).",
+    "recommendation": "Reset Biology suggests asking the prescribing practitioner to weigh the older dated protocol evidence against the newer library-site caution: Hunter (2026-04-18, E7GPNidicqY 01:49:46.120, https://youtu.be/E7GPNidicqY) says, \"I would just do 10 to 20 mg per day, 5 days on, 2 days off for 8 weeks,\" while the newer Hunter Williams library video (2026-04-30, the-next-big-things-in-biohacking-emf-peptides-and-superhuman-performance-with-a--7d747dd0 1:12:58, https://library.hunterwilliamshealth.com/p/the-next-big-things-in-biohacking-emf-peptides-and-superhuman-performance-with-a--7d747dd0/) says people \"probably could try the Lyopholized bottles and take 15 or 20 milligrams.\" The newer library video also says, \"guys, guys you don't need, 10 mLs of cerebrolysin every day for 30 days\" (2026-04-30, the-next-big-things-in-biohacking-emf-peptides-and-superhuman-performance-with-a--7d747dd0 1:14:36, https://library.hunterwilliamshealth.com/p/the-next-big-things-in-biohacking-emf-peptides-and-superhuman-performance-with-a--7d747dd0/).",
+    "caveats": "- Newer library-site handling warning: a speaker says, \"You don't want to put cerebral lysine using the fridge. We'll cause some denaturing\" and \"once it goes cloudy, you tend to get immune responses using the nature of the proteins\" (2026-04-30, the-next-big-things-in-biohacking-emf-peptides-and-superhuman-performance-with-a--7d747dd0 1:14:06, https://library.hunterwilliamshealth.com/p/the-next-big-things-in-biohacking-emf-peptides-and-superhuman-performance-with-a--7d747dd0/); the next cue says, \"that causes some kind a flare up immune wise\" (2026-04-30, the-next-big-things-in-biohacking-emf-peptides-and-superhuman-performance-with-a--7d747dd0 1:14:36, https://library.hunterwilliamshealth.com/p/the-next-big-things-in-biohacking-emf-peptides-and-superhuman-performance-with-a--7d747dd0/).\n- Newer library-site ceiling/caution: \"guys, guys you don't need, 10 mLs of cerebrolysin every day for 30 days\" (2026-04-30, the-next-big-things-in-biohacking-emf-peptides-and-superhuman-performance-with-a--7d747dd0 1:14:36, https://library.hunterwilliamshealth.com/p/the-next-big-things-in-biohacking-emf-peptides-and-superhuman-performance-with-a--7d747dd0/).\n- Hunter does not validate nebulization: \"There probably have been people that have nebulized Cerebrolysin. I just wouldn't know how to go about doing that. Nor do I know how effective it would actually be\" (2026-04-18, E7GPNidicqY 00:47:49.640, https://youtu.be/E7GPNidicqY).\n- Taylor's dated first-line frame: \"to be hormone optimization. Yeah. That'll be your the first line of defense\" (2026-03-14, JC1poI1OEog 00:48:15.240, https://youtu.be/JC1poI1OEog).",
+    "cross_expert_consensus": "Taylor: \"cerebrolysin would be the gold standard for for nootropics\" (2026-03-14, JC1poI1OEog 00:48:20.880, https://youtu.be/JC1poI1OEog). Trevor: \"It's a neurotrophic factor concentrate. It's the most powerful agent on the planet for promoting neurogenesis and synaptogenesis and repairing neuronal damage\" (2025-10-30, Fj9_wLXso1c 00:20:11.480, https://youtu.be/Fj9_wLXso1c). The newer Hunter Williams library video calls it \"like a that sledgehammer intervention\" and says, \"it's not bad. I love cerebral hyacinth. But I think there's so many steps along the way before someone really needs to run that\" (2026-04-30, the-next-big-things-in-biohacking-emf-peptides-and-superhuman-performance-with-a--7d747dd0 1:10:25, https://library.hunterwilliamshealth.com/p/the-next-big-things-in-biohacking-emf-peptides-and-superhuman-performance-with-a--7d747dd0/).",
+    "cross_expert_disagreement": "Taylor: \"But, I don't think you'd have to go that far\" and \"I think P21 is great. I think Dihexa is great\" (2026-03-14, JC1poI1OEog 00:48:24.510, https://youtu.be/JC1poI1OEog). Trevor: \"The platform is always based on Tesamorelin, Cerebrolysin, GHK-Cu\" (2025-10-30, Fj9_wLXso1c 00:20:05.160, https://youtu.be/Fj9_wLXso1c). Hunter's dated protocol remains on record: \"10 to 20 mg per day, 5 days on, 2 days off for 8 weeks\" (2026-04-18, E7GPNidicqY 01:49:46.120, https://youtu.be/E7GPNidicqY); the newer library video says, \"maybe it just one cycle a year\" (2026-04-30, the-next-big-things-in-biohacking-emf-peptides-and-superhuman-performance-with-a--7d747dd0 1:10:25, https://library.hunterwilliamshealth.com/p/the-next-big-things-in-biohacking-emf-peptides-and-superhuman-performance-with-a--7d747dd0/).",
     "acute_chronic_split": {
       "acute": {
-        "dose": "Hunter (E7GPNidicqY 01:49:51.560): \"Cerebrolysin, I would just do 10 to 20 mg per day, 5 days on, 2 days off for 8 weeks.\" Hunter (E7GPNidicqY 01:49:58.000) ampule alternative: \"like 1 ml to 5 ml three times per week.\"",
-        "route": "Hunter (E7GPNidicqY 01:49:48.360): \"if you're using lyophilized Cerebrolysin\" implies reconstitution + injection; ampule form is the pharma-supplied IM/SC liquid. No oral route claimed by any expert.",
-        "frequency": "Hunter (E7GPNidicqY 01:49:52.800): \"5 days on, 2 days off\" (lyophilized form). Hunter (E7GPNidicqY 01:50:00.840): \"three times per week\" (ampule form).",
-        "duration": "Hunter (E7GPNidicqY 01:49:53.920): \"for 8 weeks.\"",
-        "verbatim_citation": "Hunter (E7GPNidicqY 01:49:46.120): \"I don't think you need to, but if you're using lyophilized Cerebrolysin, I would just do 10 to 20 mg per day, 5 days on, 2 days off for 8 weeks. If you're getting the ampules of Cerebrolysin, you could do like 1 ml to 5 ml three times per week and get good results.\" Best-fit candidates per Hunter email threadId 19506a8ec76bb2df (2025-02-14): \"Best peptide for concussion recovery? BPC-157, TB-500, and Cerebrolysin.\" Trevor (xxTZXHynh20 00:32:13.600): \"you want to fix the cognitive aspect? Cerebrolysin.\"",
-        "episode_url": "https://youtu.be/E7GPNidicqY",
-        "timestamp": "01:49:46.120; ampule frequency 01:49:58.000; concussion frame email 19506a8ec76bb2df 2025-02-14"
+        "dose": null,
+        "route": null,
+        "frequency": null,
+        "duration": null,
+        "verbatim_citation": "Trevor: \"you want to fix the cognitive aspect? Cerebrolysin\" (2025-10-22, xxTZXHynh20 00:32:13.600, https://youtu.be/xxTZXHynh20).",
+        "episode_url": "https://youtu.be/xxTZXHynh20",
+        "timestamp": "00:32:13.600"
       },
       "chronic": {
-        "dose": "Trevor (Fj9_wLXso1c 00:20:05.160): \"The platform is always based on Tesamorelin, Cerebrolysin, GHK-Cu\" — Trevor does not give a numeric chronic dose for Cerebrolysin in transcript content; his only volunteered numeric reference in this episode is to a different compound (\"5 to 10 milligrams every day\" of SS-31). Hunter's chronic frame stays the same 10-20 mg / 5-on-2-off / 8 weeks (E7GPNidicqY 01:49:51.560).",
-        "route": "Hunter (E7GPNidicqY 01:50:08.960) directs practitioners to the manufacturer for prescribing info: \"That is the Ever Pharma who is the manufacturer of Cerebrolysin\" and (E7GPNidicqY 01:50:20.840): \"prescribing information for Cerebrolysin which a lot of times is not what the\" — Hunter signals the official label is the route-of-administration source.",
-        "frequency": "Hunter (E7GPNidicqY 01:49:52.800): \"5 days on, 2 days off\" (lyophilized) or (E7GPNidicqY 01:50:00.840): \"three times per week\" (ampule). Trevor's chronic platform frame is not cycled in his quoted content.",
-        "duration": "Hunter cap is the 8-week cycle (E7GPNidicqY 01:49:53.920): \"for 8 weeks.\" Trevor (Fj9_wLXso1c 00:20:29.040): \"this should be first on your hit parade. It is a complete systematic update for your CNS, your central nervous system\" — implies repeatable but not bounded numerically.",
-        "verbatim_citation": "Trevor (m8FwL9Xsk78 00:28:44.000): \"want to play hard? Cerebrolysin. Crank up the cognitive benefits of the Cerebrolysin. Like, this thing's a freight train of neurotrophic factors. It's like brain food on steroids.\" Trevor (Fj9_wLXso1c 00:20:05.160): \"The platform is always based on Tesamorelin, Cerebrolysin, GHK-Cu.\" Hunter (E7GPNidicqY 01:49:51.560): \"do 10 to 20 mg per day, 5 days on, 2 days off for 8 weeks.\"",
-        "episode_url": "https://youtu.be/Fj9_wLXso1c",
-        "timestamp": "Trevor 00:20:05.160; Trevor m8FwL9Xsk78 00:28:44.000; Hunter cycling E7GPNidicqY 01:49:51.560"
+        "dose": "Hunter (2026-04-18): \"10 to 20 mg per day\" (E7GPNidicqY 01:49:46.120, https://youtu.be/E7GPNidicqY). Newer Hunter Williams library video (2026-04-30): \"take 15 or 20 milligrams\" (the-next-big-things-in-biohacking-emf-peptides-and-superhuman-performance-with-a--7d747dd0 1:12:58, https://library.hunterwilliamshealth.com/p/the-next-big-things-in-biohacking-emf-peptides-and-superhuman-performance-with-a--7d747dd0/). Hunter (2026-04-18) ampoule alternative: \"1 ml to 5 ml\" (E7GPNidicqY 01:49:46.120, https://youtu.be/E7GPNidicqY).",
+        "route": "Hunter: \"I mean, you could do it subQ\" (2026-04-18, E7GPNidicqY 00:47:42.440, https://youtu.be/E7GPNidicqY).",
+        "frequency": "Hunter: \"5 days on, 2 days off\" and ampoule alternative \"three times per week\" (2026-04-18, E7GPNidicqY 01:49:46.120, https://youtu.be/E7GPNidicqY).",
+        "duration": "Hunter: \"for 8 weeks\" (2026-04-18, E7GPNidicqY 01:49:46.120, https://youtu.be/E7GPNidicqY).",
+        "verbatim_citation": "Hunter (2026-04-18): \"I would just do 10 to 20 mg per day, 5 days on, 2 days off for 8 weeks. If you're getting the ampules of Cerebrolysin, you could do like 1 ml to 5 ml three times per week and get good results\" (E7GPNidicqY 01:49:46.120, https://youtu.be/E7GPNidicqY). Newer library evidence (2026-04-30): \"probably could try the Lyopholized bottles and take 15 or 20 milligrams\" (the-next-big-things-in-biohacking-emf-peptides-and-superhuman-performance-with-a--7d747dd0 1:12:58, https://library.hunterwilliamshealth.com/p/the-next-big-things-in-biohacking-emf-peptides-and-superhuman-performance-with-a--7d747dd0/).",
+        "episode_url": "https://youtu.be/E7GPNidicqY; https://library.hunterwilliamshealth.com/p/the-next-big-things-in-biohacking-emf-peptides-and-superhuman-performance-with-a--7d747dd0/",
+        "timestamp": "E7GPNidicqY 01:49:46.120; the-next-big-things-in-biohacking-emf-peptides-and-superhuman-performance-with-a--7d747dd0 1:12:58"
       }
     },
-    "female_specific_notes": "Taylor (Cg7JtpnfRY4 01:49:40.640): \"Cerebrolysin in men and women 55 years young, no major brain trauma? Do you\" — Taylor receives the same protocol question framed for both sexes and answers with the same dosing as Hunter. Taylor (Cg7JtpnfRY4 01:49:49.880): \"lyophilized Cerebrolysin, I would just do 10 to 20 mg per day, 5 days on, 2\" (cut by VTT chunking; full sentence parallels Hunter's \"5 days on, 2 days off for 8 weeks\"). Taylor (Cg7JtpnfRY4 01:49:57.960): \"ampules of Cerebrolysin, you could do like 1 ml to 5 ml three times per week.\" Taylor's first-line framing for women is hormone-first, peptide-second — Taylor (JC1poI1OEog 00:48:17.000): \"to be hormone optimization. Yeah. That'll be your the first line of defense\" and (JC1poI1OEog 00:48:24.520): \"I don't think you'd have to go that far. I think P21 is great. I think Dihexa is great\" — implying Cerebrolysin is reserved for women with documented brain trauma, not as a routine female nootropic. Hunter email threadId 19c01b888153d27d (2026-01-27): \"Women over 60 need hormones FIRST + peptides SECOND\" reinforces this gate.",
-    "distilled_at": "2026-04-27T05:34:51.452Z",
-    "distilled_by": "claude"
+    "female_specific_notes": null,
+    "distilled_at": "2026-07-17T08:58:24.987Z",
+    "distilled_by": "codex"
   },
-  "generated_at": "2026-04-27T02:02:34.975Z"
+  "generated_at": "2026-07-17T10:59:08.439Z",
+  "mentions_fingerprint": "f9d9b0b902ba"
 }

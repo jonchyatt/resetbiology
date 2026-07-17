@@ -5,21 +5,32 @@
     "Cagrilintide",
     "cagrilintide",
     "Cagri",
-    "cagri"
+    "cagri",
+    "CAGRI",
+    "CAGRi",
+    "CAgri"
   ],
-  "category": "Uncategorized",
+  "category": "Fat Loss",
   "experts": {
     "hunter-williams": {
       "baseline_protocol": null,
       "summary": {
-        "mention_count": 112,
+        "mention_count": 225,
         "top_doses": [
           {
+            "dose": "0.25 mg",
+            "count": 14
+          },
+          {
             "dose": "2.5 mg",
-            "count": 9
+            "count": 11
           },
           {
             "dose": "50 mg",
+            "count": 9
+          },
+          {
+            "dose": "10 mg",
             "count": 9
           },
           {
@@ -27,27 +38,31 @@
             "count": 9
           },
           {
+            "dose": "2 mg",
+            "count": 8
+          },
+          {
+            "dose": "500 mcg",
+            "count": 7
+          },
+          {
             "dose": "100 micrograms",
             "count": 6
-          },
-          {
-            "dose": "25 mg",
-            "count": 6
-          },
-          {
-            "dose": "0.25 mg",
-            "count": 6
-          },
-          {
-            "dose": "1 mg",
-            "count": 5
-          },
-          {
-            "dose": "10 units",
-            "count": 4
           }
         ],
         "top_sources": [
+          {
+            "source_id": "cagrilintide-explained-the-next-big-peptide-for-fat-loss--9aacaef6",
+            "source_type": "library-video",
+            "source_title": "Cagrilintide Explained The Next BIG Peptide for Fat Loss",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/cagrilintide-explained-the-next-big-peptide-for-fat-loss--9aacaef6/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/cagrilintide-explained-the-next-big-peptide-for-fat-loss--9aacaef6.json",
+            "mention_count": 44,
+            "top_snippet": "Particularly in area post-rima and nucleus tractus solitarius of the brain stem. This leads to the reduced appetite and enhanced satiety. that we're getting. So unlike GLP-1, it's working on a completely different pathway. And I'll compare those on another slide in a second, but let's get going. It slows gastric emptying. Like natural amylin, Cagri slows gaseous empting, leading to prolonged digestion and absorption of food, which contributes to increased fullness and reduced caloric intake. Now, on paper, when people hear about these peptides slowing gastric emptying, they immediately think that's a bad thing.",
+            "top_context": "But it's currently undergoing clinical trials as both a monotherapy and in combination with GOP-1 receptor and agonists such as semaglutide for weight loss. You have probably heard of CAGR-SEMA. That is most commonly what is being combined with Kugrelentine right now, semoglutaride. But I'm going to talk about something that might be a little bit better than that. And you probably could guess what that is. So let's look at the mechanisms of what it's actually doing in the body. The first thing is this amylin receptor activation. What it does when we inject this peptide goes into the buddy and it binds to amylin receptors in brain. Particularly in area post-rima and nucleus tractus solitarius of the brain stem. This leads to the reduced appetite and enhanced satiety. that we're getting. So unlike GLP-1, it's working on a completely different pathway. And I'll compare those on another slide in a second, but let's get going. It slows gastric emptying. Like natural amylin, Cagri slows gaseous empting, leading to prolonged digestion and absorption of food, which contributes to increased fullness and reduced caloric intake. Now, on paper, when people hear about these peptides slowing gastric emptying, they immediately think that's a bad thing. Now, in some cases it can be, but not always. It's kind of just slowing the progression of our digestion. And in doing so it makes us less hungry and we eat less. So if everything else is being taken care of right, it's not necessarily a Um, I actually wrote an email about that a couple of days ago about why gastric ending being slowed is not necessarily a bad thing. It's kind of everything else around that that people are doing wrong from a lifestyle standpoint that ends up being bad for them. But, um, it also suppresses appetite via the hypothalamus.",
+            "first_timestamp": "3:23"
+          },
           {
             "source_id": "1985855730c4a97f",
             "source_type": "email",
@@ -57,7 +72,7 @@
             "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-07-29-new-cagrilintide-studies-out.md",
             "mention_count": 27,
             "top_snippet": "Happy Tuesday! If you’ve been following the cutting edge of peptide science, you know things are changing FAST. And nowhere is this more obvious than in the new data just released this month on the ne",
-            "top_context": "Happy Tuesday! If you’ve been following the cutting edge of peptide science, you know things are changing FAST. And nowhere is this more obvious than in the new data just released this month on the next generation of weight management and metabolic optimization peptides: **Cagrilintide.** Because the new clinical trial data, published in July 2025, are showing results that, frankly, blow the doors off everything that’s come before. Here’s the latest report: [https://www.nejm.org/doi/full/10.1056/NEJMoa2502081](https://www.nejm.org/doi/full/10.1056/NEJMoa2502081) We’re t",
+            "top_context": "Happy Tuesday! If you’ve been following the cutting edge of peptide science, you know things are changing FAST. And nowhere is this more obvious than in the new data just released this month on the next generation of weight management and metabolic optimization peptides: **Cagrilintide.** Because the new clinical trial data, published in July 2025, are showing results that, frankly, blow the doors off everything that’s come before. Here’s the latest report: [https://www.nejm.org/doi/full/10.1056/NEJMoa2502081](https://www.nejm.org/doi/full/10.1056/NEJMoa2502081) We’re talking",
             "first_timestamp": null
           },
           {
@@ -68,8 +83,8 @@
             "source_url": null,
             "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-02-11-cagrilintide.md",
             "mention_count": 23,
-            "top_snippet": "top, consider transitioning to cagrilintide at a LOW dose. Its unique mechanism can help maintain your progress while you give your GLP-1 receptors a break—especially beneficial if you’re optimizing y",
-            "top_context": "top, consider transitioning to cagrilintide at a LOW dose. Its unique mechanism can help maintain your progress while you give your GLP-1 receptors a break—especially beneficial if you’re optimizing your training and nutrition simultaneously. ——————————————————————————— **How to Implement Cagrilintide in Your Research** 1. **Start Low, Go Slow: **Begin at 0.25 mg per week for a mild appetite-suppression effect. Adjust gradually based on tolerance. 2. **Consider Microdosing: **If you want a steadier bloodstream concentration—particularly if you’re prone to GI issues—split your total weekly",
+            "top_snippet": "you stop, consider transitioning to cagrilintide at a LOW dose. Its unique mechanism can help maintain your progress while you give your GLP-1 receptors a break—especially beneficial if you’re optimiz",
+            "top_context": "you stop, consider transitioning to cagrilintide at a LOW dose. Its unique mechanism can help maintain your progress while you give your GLP-1 receptors a break—especially beneficial if you’re optimizing your training and nutrition simultaneously. ——————————————————————————— **How to Implement Cagrilintide in Your Research** 1. **Start Low, Go Slow: **Begin at 0.25 mg per week for a mild appetite-suppression effect. Adjust gradually based on tolerance. 2. **Consider Microdosing: **If you want a steadier bloodstream concentration—particularly if you’re prone to GI issues—split your total weekly dose",
             "first_timestamp": null
           },
           {
@@ -80,8 +95,8 @@
             "source_url": null,
             "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-04-15-retatruitde-cagrilintide.md",
             "mention_count": 16,
-            "top_snippet": "ings (think comfort eating, stress-induced snacking, or boredom) might still slip through. In fact, with your physical hunger minimized, emotional hunger can suddenly feel amplified because your brain",
-            "top_context": "ings (think comfort eating, stress-induced snacking, or boredom) might still slip through. In fact, with your physical hunger minimized, emotional hunger can suddenly feel amplified because your brain is seeking satisfaction through comfort foods or habitual snacking. This is exactly where **cagrilintide** comes into the equation and absolutely shines. ——————————————————————————— **Retatrutide vs. Cagrilintide: What’s the Difference?** Let’s break these two peptides down clearly: * **Retatrutide:** A powerful triple-action peptide targeting GLP-1, GIP, and glucagon pathways. * **",
+            "top_snippet": "cravings (think comfort eating, stress-induced snacking, or boredom) might still slip through. In fact, with your physical hunger minimized, emotional hunger can suddenly feel amplified because your b",
+            "top_context": "cravings (think comfort eating, stress-induced snacking, or boredom) might still slip through. In fact, with your physical hunger minimized, emotional hunger can suddenly feel amplified because your brain is seeking satisfaction through comfort foods or habitual snacking. This is exactly where **cagrilintide** comes into the equation and absolutely shines. ——————————————————————————— **Retatrutide vs. Cagrilintide: What’s the Difference?** Let’s break these two peptides down clearly: * **Retatrutide:** A powerful triple-action peptide targeting GLP-1, GIP, and glucagon pathways. * **Cagrilintide",
             "first_timestamp": null
           },
           {
@@ -105,77 +120,65 @@
             "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-05-14-the-cagrilinitde-ph-debate.md",
             "mention_count": 13,
             "top_snippet": "Happy Wednesday! I’ve gotten this question quite a bit lately, and I figured it’s finally time to tackle it head-on because there’s a _ton_ of confusion swirling around right now. A subscriber recentl",
-            "top_context": "Happy Wednesday! I’ve gotten this question quite a bit lately, and I figured it’s finally time to tackle it head-on because there’s a _ton_ of confusion swirling around right now. A subscriber recently sent me this: ““Hunter, could you clear the air on cagrilintide? I see conflicting information about its safety depending on the pH levels during reconstitution. Some say BAC water isn’t safe, mentioning protein folding issues and using scary words like ‘fibrillation.’ Forums and Reddit discussions are all over the place—can you give your input?”“ — Great q",
+            "top_context": "Happy Wednesday! I’ve gotten this question quite a bit lately, and I figured it’s finally time to tackle it head-on because there’s a _ton_ of confusion swirling around right now. A subscriber recently sent me this: ““Hunter, could you clear the air on cagrilintide? I see conflicting information about its safety depending on the pH levels during reconstitution. Some say BAC water isn’t safe, mentioning protein folding issues and using scary words like ‘fibrillation.’ Forums and Reddit discussions are all over the place—can you give your input?”“ — Great que",
             "first_timestamp": null
           },
           {
-            "source_id": "0TyW-wlJMxo",
-            "source_type": "podcast",
-            "source_title": "Saturday Morning Coffee Talk | Peptides, Hormones & Fitness for Couples 3/28/26",
-            "source_date": "2026-03-28",
-            "source_url": "https://youtu.be/0TyW-wlJMxo",
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-03-28-saturday-morning-coffee-talk-peptides-hormones-fitness-for-couples-3-2-0TyW-wlJMxo.en.vtt",
-            "mention_count": 3,
-            "top_snippet": "increase the Retatrutide. Add in Cagrilintide. Add in Orforglipron",
-            "top_context": "Not a fan? Not a fan? You could add in CAG. You could add in CAG. You could add in CAG. Personally, I don't like CAG. 50/50 Personally, I don't like CAG. 50/50 Personally, I don't like CAG. 50/50 people do. Um you could add in CAG if people do. Um you could add in CAG if people do. Um you could add in CAG if you really are suffering more so from you really are suffering more so from you really are suffering more so from that food noise. that food noise. that food noise. Um you could also Let's also look at Um you could also Let's also look at Um you could also Let's also look at like macro breakdown. macro breakdown. Like Like Like are you having food noise or you under are you having food noise or you under are you having food noise or you under eating? Because there is a time period eating? Because there is a time period eating? Because there is a time period like when you go from like like when you go from like like when you go from like that much of a weight loss. that much of a weight loss. that much of a weight loss. You know, we then like are are you at You know, we then like are are you at You know, we then like are are you at your weight loss goal? Do we now need to your weight loss goal? Do we now need to your weight loss goal? Do we now need to like focus on putting some more muscle like focus on putting some more muscle like focus on putting some more muscle on? Like there's a couple things I feel on? Like there's a couple things I feel on? Like there's a couple things I feel like could be done. like could be done. like could be done. Short short Short short Short short retort answer is retort answer is retort answer is increase the Retatrutide. increase the Retatrutide. increase the Retatrutide. Add in Cagrilintide. Add in Orforglipron Add in Cagrilintide. Add in Orforglipron Add in Cagrilintide. Add in Orforglipron if you wanted to. if you wanted to. if you wanted to. You could also, this seems to be a topic You could also, this seems to be a topic You could also, this seems to be a topic of contention these days, you could also of contention these days, you could also of contention these days, you could also add in Tirzepatide to the Retatrutide to add in Tirzepatide to the Retatrutide to add in Tirzepatide to the Retatrutide to which what you will be doing is skewing which what you will be doing is skewing which what you will be doing is skewing the balance to have more GLP-1 and GIP the balance to have more GLP-1 and GIP the balance to have more GLP-1 and GIP than glucagon. than glucagon. than glucagon. And so there's a big debate of, oh you And so there's a big debate of, oh you And so there's a big debate of, oh you can't take Tirzepatide with Retatrutide. can't take Tirzepatide with Retatrutide. can't take Tirzepatide with Retatrutide. At the end of the day we don't know. No At the end of the day we don't know. No At the end of the day we don't know. No one's studying right now whether you can one's studying right now whether you can one's studying right now whether you can take [snorts] Tirzepatide with take [snorts] Tirzepatide with take [snorts] Tirzepatide with Retatrutide. You really just have Retatrutide. You really just have Retatrutide. You really just have influencers that shout and say you can't influencers that shout and say you can't influencers that shout and say you can't do this, you can't do this, you can't do do this, you can't do this, you can't do do this, you can't do this, you can't do this. this. this. You can do whatever you want. I don't You can do whatever you want. I don't You can do whatever you want. I don't care what you do. I just want to help care what you do. I just want to help care what you do. I just want to help people figure out what the way is and if people figure out what the way is and if people figure out what the way is and if someone's on Retatrutide, there's a someone's on Retatrutide, there's a someone's on Retatrutide, there's a couple options and you're 2.5 mg, couple options and you're 2.5 mg, couple options and you're 2.5 mg, there's a couple options you can You can there's a couple options you can You can there's a couple options you can You can increase it to see if that helps with increase it to see if that helps with increase it to see if that helps with the food noise if you're if you're the food noise if you're if you're the food noise if you're if you're increasing the dose or you could throw increasing the dose or you could throw increasing the dose or you could throw in a two to one ratio of Tirzepatide",
-            "first_timestamp": "00:36:30.320"
+            "source_id": "peptide-qa-july-2025--936e4b81",
+            "source_type": "library-video",
+            "source_title": "Peptide Q&A · July 2025",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-july-2025--936e4b81/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-qa-july-2025--936e4b81.json",
+            "mention_count": 8,
+            "top_snippet": "So is there value in coming off completely? Absolutely. I think for me, probably what I will do is take two to three months off per year periodically at like four or six week intervals. Let me go on, but what's cool about that is By staying at a lower dose over a long period of time, you can harness and reap the benefits over that time without having to worry about receptor desensitization or having the scale up doses and spend a bunch of money on bigger doses. Not that bigger doses can't be valuable in some instances, but I just don't think you need to. So, and then obviously too, during that off time what you would do is if you needed more appetite suppression, You could use Cagri with the reticulotide,",
+            "top_context": "and you might not necessarily feel anything until you stop and then you realize how much it was doing. So what I mean by that is like, for instance, I've used like one milligram per week broken up into three shots. I read a true tide for like four to five months at a time without coming off. And then that third, fourth, fifth month, do I feel like anything is happening? No. But then I come off of it and I was like wow, there was an appetite suppression effect. Wow. There was inflammation suppression affect. while I was getting all these systemic benefits and I didn't really realize it. And then I take four to eight weeks off and then go back on. So is there value in coming off completely? Absolutely. I think for me, probably what I will do is take two to three months off per year periodically at like four or six week intervals. Let me go on, but what's cool about that is By staying at a lower dose over a long period of time, you can harness and reap the benefits over that time without having to worry about receptor desensitization or having the scale up doses and spend a bunch of money on bigger doses. Not that bigger doses can't be valuable in some instances, but I just don't think you need to. So, and then obviously too, during that off time what you would do is if you needed more appetite suppression, You could use Cagri with the reticulotide, But also too you could not use it with retitulotaide but use in the off cycle and you're good because it's hitting a completely different receptor. You know, interestingly enough, Cagri still seems to be one of those weird wild card ones where some people love it and some hate it. I love, but for instance my wife, she thinks it's the worst thing ever. A lot of people say it makes them feel weird and depressed, so who knows what's going on there. Next question. Can you take Metashred with five amino? I was stacking shred with 5 amino before I started taking MetaShred. Absolutely. So that would just be BAM15, SLU, PP332 and 5-amino-1-inc-pew.",
+            "first_timestamp": "21:49"
           },
           {
-            "source_id": "E7GPNidicqY",
-            "source_type": "podcast",
-            "source_title": "Saturday Morning Coffee Talk 4/18/26",
-            "source_date": "2026-04-18",
-            "source_url": "https://youtu.be/E7GPNidicqY",
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-04-18-saturday-morning-coffee-talk-4-18-26-E7GPNidicqY.en.vtt",
-            "mention_count": 3,
-            "top_snippet": "should you stop taking GLP-1s and can you still take Cagri?",
-            "top_context": "In addition to TRT, suggested addition In addition to TRT, suggested addition dosing of oral DHEA and pregnenolone for dosing of oral DHEA and pregnenolone for dosing of oral DHEA and pregnenolone for men, morning or night. My preference, if men, morning or night. My preference, if men, morning or night. My preference, if you're going to do both, would be 25 to you're going to do both, would be 25 to you're going to do both, would be 25 to 50 mg of DHEA in the morning and then 10 50 mg of DHEA in the morning and then 10 50 mg of DHEA in the morning and then 10 to 25 mg of pregnenolone at night. to 25 mg of pregnenolone at night. to 25 mg of pregnenolone at night. Uh but you don't always need that. Some Uh but you don't always need that. Some Uh but you don't always need that. Some men don't need that. I don't take DHEA, men don't need that. I don't take DHEA, men don't need that. I don't take DHEA, although I did get some injectable DHEA although I did get some injectable DHEA although I did get some injectable DHEA that I'm going to experiment with and that I'm going to experiment with and that I'm going to experiment with and see if that has an effect, but the oral see if that has an effect, but the oral see if that has an effect, but the oral doesn't really do anything for me and my doesn't really do anything for me and my doesn't really do anything for me and my levels are always usually really really levels are always usually really really levels are always usually really really good. And so I don't, but I do love good. And so I don't, but I do love good. And so I don't, but I do love pregnenolone. Like I do really well with pregnenolone. Like I do really well with pregnenolone. Like I do really well with pregnenolone. So, that would be my pregnenolone. So, that would be my pregnenolone. So, that would be my recommendation recommendation recommendation uh for those. I actually don't know the answer to this I actually don't know the answer to this question. Before a colonoscopy, how long question. Before a colonoscopy, how long question. Before a colonoscopy, how long should you stop taking GLP-1s and can should you stop taking GLP-1s and can should you stop taking GLP-1s and can you still take Cagri? you still take Cagri? you still take Cagri? I don't know. I don't know. I don't know. I do not know enough about colonoscopies I do not know enough about colonoscopies I do not know enough about colonoscopies to tell you what to do. to tell you what to do. to tell you what to do. &gt;&gt; would say I would say &gt;&gt; would say I would say &gt;&gt; would say I would say you want to be flushed out, so I would you want to be flushed out, so I would you want to be flushed out, so I would say come off of GLP-1s for like probably say come off of GLP-1s for like probably say come off of GLP-1s for like probably like at least a good month because it's like at least a good month because it's like at least a good month because it's going to slow down gastric emptying. going to slow down gastric emptying. going to slow down gastric emptying. Um Um Um also not approved for colonoscopies. Yeah, I don't I don't know enough. Yeah, I don't I don't know enough. There's still I think sometimes there's There's still I think sometimes there's There's still I think sometimes there's more damages that can come more damages that can come more damages that can come from that, but I would say stop it for from that, but I would say stop it for from that, but I would say stop it for at least 4 weeks. Because of the gastric emptying. Yeah. Because of the gastric emptying. Yeah. Got some good advice on fruit flies. If Got some good advice on fruit flies. If Got some good advice on fruit flies. If you leave fruit on counter, rinse with you leave fruit on counter, rinse with you leave fruit on counter, rinse with white vinegar, especially the top of the white vinegar, especially the top of the white vinegar, especially the top of the banana bunch and around apple stems.",
-            "first_timestamp": "01:22:06.720"
-          },
-          {
-            "source_id": "19d5563af433c548",
-            "source_type": "email",
-            "source_title": "March 2026 Q&A — Max Dose Tirz / Reta Horror / BPC Anhedonia",
-            "source_date": "2026-04-03",
-            "source_url": "https://open.spotify.com/episode/7Hp4gx4DNSSmXJAM8kliDO",
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2026-04-03-march-q-and-a-tirz-reta-bpc.md",
-            "mention_count": 3,
-            "top_snippet": "at LOWER GLP-1 dose** ### Reta Horror Stories — GI Side Effects - Brutal GI side effects: burping, dry heaving, food sitting in stomach - What actually helps ### GLP-1 Receptor Upregulation - Why **re",
-            "top_context": "at LOWER GLP-1 dose** ### Reta Horror Stories — GI Side Effects - Brutal GI side effects: burping, dry heaving, food sitting in stomach - What actually helps ### GLP-1 Receptor Upregulation - Why **restarting GLP-1 at same dose can hit harder the second time** - Receptor upregulation is real ### Cagrilintide Combos - **Tirzepatide + cagrilintide together** — Hunter has seen this combo work ### Glucagon Component of Reta - Why retatrutide can RAISE A1C in some people - The glucagon piece surprises a lot of folks ### Tirz + Reta Combo Safety - Why combining tirzepatide + retatrutide is **NOT dangerous*",
-            "first_timestamp": null
+            "source_id": "peptide-qa-may-2025--673c48ea",
+            "source_type": "library-video",
+            "source_title": "Peptide Q&A · May 2025",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-may-2025--673c48ea/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-qa-may-2025--673c48ea.json",
+            "mention_count": 8,
+            "top_snippet": "No doubt. Next question, using more than one GOP 101, stacking TURS and RETTA, is there any benefit? I think there can be. I Think people get more appetite suppression from Turs than Rettas pound for pound. But if you wanted to get More of the fat loss benefits from Retta because there are definitely more fat-loss benefits. by adding in the glucagon agonism, you could, but you can also use Cagri to help with appetite suppression. So it's really up to you and what you want to do. You can. I don't think it is the smartest thing to, and if I were to it, for instance myself, I would use cagry to get more appetite suppressant than TURS itself.",
+            "top_context": "So I'll lean on Testosterone therapy at the proper doses before I go to Anovar. But you can definitely throw it in. If more people thought like this, we would have less of the muscle loss from the GOP once. So if women were given 2.5 milligrams of Anivar while they were on a GOT one, guess what? Even if they weren't lifting, most of them also loss would probably stop. The answer is yes, you could definitely do it. You just have to be smart about how you do because most people aren't going to smart, but you definitely can do. And then the only thing I would throw in is HGH or Hippomerelin slash Testomerelin or CJC1295. No doubt. Next question, using more than one GOP 101, stacking TURS and RETTA, is there any benefit? I think there can be. I Think people get more appetite suppression from Turs than Rettas pound for pound. But if you wanted to get More of the fat loss benefits from Retta because there are definitely more fat-loss benefits. by adding in the glucagon agonism, you could, but you can also use Cagri to help with appetite suppression. So it's really up to you and what you want to do. You can. I don't think it is the smartest thing to, and if I were to it, for instance myself, I would use cagry to get more appetite suppressant than TURS itself. But you definitely could. And I have done it several times before. Next one, testosterone replacement strategies, options slash best practices for both men and women. Like GLP-1s, most doctors that prescribe testosterone injections follow the big pharma, endorsed one time a week IM injections. That is true. It's actually once every two weeks. I think it's still the recommended protocol. Is this the best approach? Or like you advocate for GLPs, with smaller injections, two to three times per week work better for some. Yes. So you should, if you didn't realize this, you definitely should not inject your testosterone once a week.",
+            "first_timestamp": "10:39"
           }
         ],
         "acute_signals": [
           {
-            "snippet": "benefits and extreme hunger control. ——————————————————————————— **Who Benefits Most From Combining Retatrutide + Cagrilintide?** This is where things get really exciting. Most peptides or medications",
+            "snippet": "tabolic benefits and extreme hunger control. ——————————————————————————— **Who Benefits Most From Combining Retatrutide + Cagrilintide?** This is where things get really exciting. Most peptides or med",
             "source_title": "Retatruitde + Cagrilintide",
             "source_date": "2025-04-15",
             "timestamp": null,
             "source_url": null
           },
           {
-            "snippet": "ht, which is on par with retatrutide.** And the side effect profile? Very tolerable. Mainly the mild GI effects you’d expect with any GLP-1 analog. This is a _sea change_ in what’s possible for weight",
+            "snippet": "al body weight, which is on par with retatrutide.** And the side effect profile? Very tolerable. Mainly the mild GI effects you’d expect with any GLP-1 analog. This is a _sea change_ in what’s possibl",
             "source_title": "New Cagrilintide Studies Out",
             "source_date": "2025-07-29",
             "timestamp": null,
             "source_url": null
           },
           {
-            "snippet": "ll of this jaw-dropping synergy is based on combining cagrilintide with _semaglutide_, a single-agonist GLP-1. But if you’ve followed my emails, you know the new king of the hill is **retatrutide** an",
+            "snippet": ". All of this jaw-dropping synergy is based on combining cagrilintide with _semaglutide_, a single-agonist GLP-1. But if you’ve followed my emails, you know the new king of the hill is **retatrutide**",
             "source_title": "New Cagrilintide Studies Out",
             "source_date": "2025-07-29",
             "timestamp": null,
             "source_url": null
           },
           {
-            "snippet": "at _even greater_ results with a triple agonist. Early data (from the research community of WE the people) are suggesting a next-level synergy, possibly the most powerful non-surgical intervention eve",
+            "snippet": "ing at _even greater_ results with a triple agonist. Early data (from the research community of WE the people) are suggesting a next-level synergy, possibly the most powerful non-surgical intervention",
             "source_title": "New Cagrilintide Studies Out",
             "source_date": "2025-07-29",
             "timestamp": null,
             "source_url": null
           },
           {
-            "snippet": "0.25mg increments). If you notice any flattening of mood or excessive suppression, back it down. ——————————————————————————— **Final Thoughts** If you’re ready to take advantage of what is _honestly t",
+            "snippet": "10 unit/0.25mg increments). If you notice any flattening of mood or excessive suppression, back it down. ——————————————————————————— **Final Thoughts** If you’re ready to take advantage of what is _ho",
             "source_title": "New Cagrilintide Studies Out",
             "source_date": "2025-07-29",
             "timestamp": null,
@@ -364,25 +367,26 @@
   },
   "reset_biology_synthesis": {
     "status": "distilled",
-    "recommendation": "Reset Biology suggests asking the practitioner to consider cagrilintide primarily as an amylin-pathway adjunct for appetite/'food noise' control rather than a stand-alone weight-loss agent, with Hunter (email threadId 194f7321ecf3fdae 2025-02-11): \"Begin at 0.25 mg per week for a mild appetite-suppression effect. Adjust gradually based on tolerance.\" Hunter (email threadId 1985855730c4a97f 2025-07-29) operationalizes that as \"Begin by injecting 0.25mg (10 units) subcutaneously, 2-3 times per week\" with \"any standard 1ml (100 unit) insulin syringe; just draw up to the '10 unit' mark for each dose.\" We'd ask the prescribing physician to weigh emotional-eating vs reward-flatness response on a per-patient basis because Hunter (email threadId 1985855730c4a97f 2025-07-29) flags that \"Some people report that cagrilintide can tip the scale too far, causing a kind of emotional flatness or mild anhedonia,\" and Taylor (G27dIPBJUSs 00:35:49.640): \"Personally, I don't like CAG. 50/50 people do.\"",
-    "caveats": "- Anhedonia / reward-flatness signal: Hunter (email threadId 1985855730c4a97f 2025-07-29): \"Some people report that cagrilintide can tip the scale too far, causing a kind of emotional flatness or mild anhedonia.\" Hunter (email threadId 1985855730c4a97f 2025-07-29): \"It's not clinical depression, but more of a muted sense of reward. Not just for food, but sometimes for other everyday pleasures.\" Hunter mitigation: \"If you notice any flattening of mood or excessive suppression, back it down.\"\n- Mixed personal tolerance: Taylor (G27dIPBJUSs 00:35:49.640): \"Personally, I don't like CAG. 50/50 people do.\"\n- Mild GI / dose-dependence: Hunter (email threadId 194f7321ecf3fdae 2025-02-11): \"Mild GI Discomfort: Nausea, bloating, or slower digestion in the first week or two\" and \"DOSE DEPENDENCE: The difference between bad side effects such as cramping, nausea, and constipation is the DOSE. START LOW AND GO SLOW!\"\n- pH / reconstitution debate (overhyped per Hunter): Hunter (email threadId 196d0d6bb2628ca9 2025-05-14): \"the main risk with using a less-than-ideal pH (like typical BAC water at ~5.7) isn't catastrophic fibrillation—it's just slightly faster degradation of the peptide.\" Hunter precision option: \"Take your 10 mg vial or 5mg vial of cagrilintide and mix with 2 ml of standard BAC water… Now, slowly add about 0.2 ml of 0.6% acetic acid solution… ideal is around pH 4.0–4.5.\"\n- A1C interaction in stacks: Hunter (4igc2UpFr7Q 00:05:16.920): \"my A1C started rising. Went back to tirz and added cagrilintide. Have you seen this combo used before? Yes, I have. I think tirz and cagrilintide is totally fine to use.\"\n- Pre-colonoscopy / GLP-1 hold question is open: Taylor (Cg7JtpnfRY4 01:22:06.720): \"Before colonoscopy, how long should you stop taking GLP-1s and can you still take Cagri? I don't know.\" Co-host suggestion in same clip: \"come off of GLP-1s for like probably like at least a good month because it's going to slow down gastric emptying.\"\n- Trevor (Bachmeyer) has no cagrilintide content in the indexed corpus — no SmashweRx quote available; absence noted, not silenced.",
-    "cross_expert_consensus": "Hunter and Taylor agree that cagrilintide's role is appetite/food-noise control, layered on top of a GLP-1 / triple-agonist when straight retatrutide leaves residual cravings. Hunter (0TyW-wlJMxo 00:36:30.320): \"increase the Retatrutide. Add in Cagrilintide. Add in Orforglipron if you wanted to.\" Taylor (G27dIPBJUSs 00:36:29.040): \"Short short retort answer is increase the Reta, add in Cagrilintide, add in Orforglipron, if you wanted to.\" Both also frame it as the lever specifically for residual cravings: Hunter (4igc2UpFr7Q 00:06:13.040 area): \"throwing cagrilintide if you need more appetite suppression.\" Taylor (G27dIPBJUSs 00:35:46.920): \"You could add in CAG\" and (G27dIPBJUSs 00:35:51.920): \"you could add in CAG if you really are suffering more so from that food noise.\" Bachmeyer is silent on cagrilintide in the indexed corpus.",
-    "cross_expert_disagreement": "Personal enthusiasm differs sharply. Hunter (email threadId 1985855730c4a97f 2025-07-29): \"This is why I'm personally using and recommending cagrilintide as a base for anyone serious about fat loss\" and Hunter (email threadId 1963b87657ac7e4a 2025-04-15): \"Right now, the 4:1 ratio is my ideal choice. It provides perfect hunger management… an absolute game changer.\" Taylor (G27dIPBJUSs 00:35:49.640): \"Personally, I don't like CAG. 50/50 people do.\" Dose framing also differs by source-date. Hunter's earlier 2025-02-11 newsletter (threadId 194f7321ecf3fdae) frames it as \"Begin at 0.25 mg per week,\" while Hunter's newer 2025-07-29 newsletter (threadId 1985855730c4a97f) operationalizes weekly into split dosing: \"Begin by injecting 0.25mg (10 units) subcutaneously, 2-3 times per week\" — newer email ALSO advises microdosing: Hunter (email threadId 194f7321ecf3fdae 2025-02-11): \"Consider Microdosing: If you want a steadier bloodstream concentration—particularly if you're prone to GI issues—split your total weekly dose into 2-3 smaller injections every other day.\" Stack-ratio disagreement is internal to Hunter rather than cross-expert: Hunter (email threadId 1963b87657ac7e4a 2025-04-15) lists 4:1 / 2:1 / 1:1 Reta:Cagri ratios with the 1:1 ratio described as \"your 'big gun' for extreme cases—serious hunger struggles, compulsive eating, or stubborn food addictions… can increase nausea or discomfort, so use responsibly,\" while keeping his own personal pick at 4:1. Bachmeyer-side disagreement: not capturable — no transcript content exists.",
+    "recommendation": "Hunter Williams — 2026-05-25 — 20-fat-loss-compounds-ranked-worst-to-best-no-glp-1s--55fd586f @ 19:06 — https://library.hunterwilliamshealth.com/p/20-fat-loss-compounds-ranked-worst-to-best-no-glp-1s--55fd586f/: \"I would say the dosing, everyone should start with 250 micrograms or less, and then titrate up there.\" Hunter Williams — 2026-03-29 — cagrilintide-explained-the-next-big-peptide-for-fat-loss--9aacaef6 @ 19:59 — https://library.hunterwilliamshealth.com/p/cagrilintide-explained-the-next-big-peptide-for-fat-loss--9aacaef6/: \"If you're in a plato with your GOP one, I think absolutely before upping the dose, go to something like Cagri and see if can keep progressing.\"",
+    "caveats": "- Hunter Williams — 2026-05-25 — 20-fat-loss-compounds-ranked-worst-to-best-no-glp-1s--55fd586f @ 17:59 — https://library.hunterwilliamshealth.com/p/20-fat-loss-compounds-ranked-worst-to-best-no-glp-1s--55fd586f/: \"I would say like almost half of people that take it get severe depression or emotional blunting or anhedonia. And so I would say that is the major risk.\"\n- Hunter Williams — 2026-05-25 — 20-fat-loss-compounds-ranked-worst-to-best-no-glp-1s--55fd586f @ 18:33 — https://library.hunterwilliamshealth.com/p/20-fat-loss-compounds-ranked-worst-to-best-no-glp-1s--55fd586f/: \"She feels depressed and sad and everything when she takes it, so she doesn't take it. And so I think it's just one of those things is kind of a coin flip, whether it is going to work for you or not.\"\n- Hunter Williams — 2026-03-29 — cagrilintide-explained-the-next-big-peptide-for-fat-loss--9aacaef6 @ 13:29 — https://library.hunterwilliamshealth.com/p/cagrilintide-explained-the-next-big-peptide-for-fat-loss--9aacaef6/: \"I think at higher doses, but at lower doses there really was no nause or anything with me.\"\n- Hunter Williams — 2026-03-29 — cagrilintide-explained-the-next-big-peptide-for-fat-loss--9aacaef6 @ 6:40 — https://library.hunterwilliamshealth.com/p/cagrilintide-explained-the-next-big-peptide-for-fat-loss--9aacaef6/: \"It does not cause hypoglycemia itself, but may enhance insulin action. when used in combination with other diabetic medications like insulin.\"",
+    "cross_expert_consensus": "Hunter Williams — 2026-03-29 — cagrilintide-explained-the-next-big-peptide-for-fat-loss--9aacaef6 @ 18:50 — https://library.hunterwilliamshealth.com/p/cagrilintide-explained-the-next-big-peptide-for-fat-loss--9aacaef6/: \"I would say you can use CAGR and RETTA together.\" Taylor Williams — 2026-03-28 — Saturday Morning Coffee Talk 3/28/26 (G27dIPBJUSs) @ 00:36:29.040 — https://youtu.be/G27dIPBJUSs: \"increase the Reta, add in Cagrilintide, add in Orforglipron, if you wanted to.\"",
+    "cross_expert_disagreement": "Hunter Williams — 2026-05-25 — 20-fat-loss-compounds-ranked-worst-to-best-no-glp-1s--55fd586f @ 17:59 — https://library.hunterwilliamshealth.com/p/20-fat-loss-compounds-ranked-worst-to-best-no-glp-1s--55fd586f/: \"Like I do very, very well on coagulantide. It is a perfect alternative to a GLP for appetite suppression for me. But my wife, Taylor, does terrible and she feels terrible.\" Taylor Williams — 2026-03-28 — Saturday Morning Coffee Talk 3/28/26 (G27dIPBJUSs) @ 00:35:49.640 — https://youtu.be/G27dIPBJUSs: \"Personally, I don't like CAG. 50/50 people do.\" Hunter Williams — 2026-03-29 — peptide-qa-july-2025--936e4b81 @ 22:26 — https://library.hunterwilliamshealth.com/p/peptide-qa-july-2025--936e4b81/: \"Cagri still seems to be one of those weird wild card ones where some people love it and some hate it.\"",
     "acute_chronic_split": {
       "acute": null,
       "chronic": {
-        "dose": "Hunter (email threadId 1985855730c4a97f 2025-07-29): \"Begin by injecting 0.25mg (10 units) subcutaneously, 2-3 times per week.\" Earlier Hunter framing (email threadId 194f7321ecf3fdae 2025-02-11): \"Begin at 0.25 mg per week for a mild appetite-suppression effect.\" Hunter personal usage range (email threadId 196d0d6bb2628ca9 2025-05-14): \"I've personally reconstituted and used cagrilintide at doses of 0.5–1 mg per week multiple times over many weeks.\" Titration: Hunter (email threadId 1985855730c4a97f 2025-07-29): \"Just add an extra 0.25mg dose per week or increase the dose slightly (always in 10 unit/0.25mg increments).\"",
-        "route": "Hunter (email threadId 1985855730c4a97f 2025-07-29): \"injecting 0.25mg (10 units) subcutaneously\" using \"any standard 1ml (100 unit) insulin syringe.\"",
-        "frequency": "Hunter (email threadId 1985855730c4a97f 2025-07-29): \"2-3 times per week\" (newer split-dose framing). Earlier Hunter (email threadId 194f7321ecf3fdae 2025-02-11): \"once-weekly administration. However, microdosing principles—splitting the weekly dose into smaller injections—can help maintain stable blood levels and mitigate side effects.\"",
-        "duration": "Hunter (email threadId 1985855730c4a97f 2025-07-29): \"After 2-3 weeks, listen to your body. If you want more appetite suppression, you can titrate up.\" No fixed cycle disclosed by either expert.",
-        "verbatim_citation": "Hunter (email threadId 1985855730c4a97f 2025-07-29): \"Begin by injecting 0.25mg (10 units) subcutaneously, 2-3 times per week\" and \"After 2-3 weeks, listen to your body.\"",
-        "episode_url": "https://huntershealthhacks.beehiiv.com/p/new-cagrilintide-studies-out-79070e625a312fd4",
-        "timestamp": "Hunter email threadId 1985855730c4a97f (2025-07-29); earlier dosing framing in email threadId 194f7321ecf3fdae (2025-02-11); personal range in email threadId 196d0d6bb2628ca9 (2025-05-14)"
+        "dose": "Hunter Williams — 2025-02-11 — Cagrilintide (threadId 194f7321ecf3fdae): \"Begin at 0.25 mg per week for a mild appetite-suppression effect. Adjust gradually based on tolerance.\" Hunter Williams — 2025-07-29 — New Cagrilintide Studies Out (threadId 1985855730c4a97f) — https://huntershealthhacks.beehiiv.com/p/new-cagrilintide-studies-out-79070e625a312fd4: \"Begin by injecting 0.25mg (10 units) subcutaneously, 2-3 times per week.\" Hunter Williams — 2026-03-29 — cagrilintide-explained-the-next-big-peptide-for-fat-loss--9aacaef6 @ 8:19 — https://library.hunterwilliamshealth.com/p/cagrilintide-explained-the-next-big-peptide-for-fat-loss--9aacaef6/: \"Nova Nordis trial suggests that 2.4 to 4.5 milligrams per week provides optimal weight loss effects while balancing the side effects.\" Hunter Williams — 2026-03-29 — cagrilintide-explained-the-next-big-peptide-for-fat-loss--9aacaef6 @ 17:16 — https://library.hunterwilliamshealth.com/p/cagrilintide-explained-the-next-big-peptide-for-fat-loss--9aacaef6/: \"I think category, I'm going say start at 0.25 milligrams per week, and then you can tighten it up to 2.5 to 4.50 milligrams.\" Hunter Williams — 2026-05-25 — 20-fat-loss-compounds-ranked-worst-to-best-no-glp-1s--55fd586f @ 19:06 — https://library.hunterwilliamshealth.com/p/20-fat-loss-compounds-ranked-worst-to-best-no-glp-1s--55fd586f/: \"Some people need to get up to three to four milligrams before they really notice the appetite suppression. But for me, if I take 250 to 500 micro grams per week, It is perfect.\"",
+        "route": "Hunter Williams — 2025-07-29 — New Cagrilintide Studies Out (threadId 1985855730c4a97f) — https://huntershealthhacks.beehiiv.com/p/new-cagrilintide-studies-out-79070e625a312fd4: \"subcutaneously.\"",
+        "frequency": "Hunter Williams — 2025-07-29 — New Cagrilintide Studies Out (threadId 1985855730c4a97f) — https://huntershealthhacks.beehiiv.com/p/new-cagrilintide-studies-out-79070e625a312fd4: \"2-3 times per week.\" Hunter Williams — 2026-03-29 — cagrilintide-explained-the-next-big-peptide-for-fat-loss--9aacaef6 @ 8:19 — https://library.hunterwilliamshealth.com/p/cagrilintide-explained-the-next-big-peptide-for-fat-loss--9aacaef6/: \"0.25 milligrams once a week.\"",
+        "duration": null,
+        "verbatim_citation": "Hunter Williams — 2026-05-25 — 20-fat-loss-compounds-ranked-worst-to-best-no-glp-1s--55fd586f @ 19:06 — https://library.hunterwilliamshealth.com/p/20-fat-loss-compounds-ranked-worst-to-best-no-glp-1s--55fd586f/: \"I would say the dosing, everyone should start with 250 micrograms or less, and then titrate up there.\"",
+        "episode_url": "https://library.hunterwilliamshealth.com/p/20-fat-loss-compounds-ranked-worst-to-best-no-glp-1s--55fd586f/",
+        "timestamp": "19:06"
       }
     },
-    "female_specific_notes": "Taylor's signal on cagrilintide is personal-tolerance and food-noise-rescue, not female-physiology-specific. Taylor (G27dIPBJUSs 00:35:46.920): \"You could add in CAG.\" Taylor (G27dIPBJUSs 00:35:49.640): \"Personally, I don't like CAG. 50/50 people do.\" Taylor (G27dIPBJUSs 00:35:51.920): \"you could add in CAG if you really are suffering more so from that food noise.\" Taylor (Cg7JtpnfRY4 01:22:06.720): \"Before colonoscopy, how long should you stop taking GLP-1s and can you still take Cagri? I don't know.\" Taylor (JC1poI1OEog 00:45:05.120 area): \"stacking Reda and Sema and Reda and Ters and Reda and Cagri and whatnot… if you mix Reda and Ters together, basically what you're doing is you're elevating the GLP and GIP signaling in relation to the glucagon signal.\" No female-physiology-specific contraindication, fertility note, or hormone-context call-out for cagrilintide surfaced in Taylor's indexed transcripts.",
-    "distilled_at": "2026-04-27T05:32:54.250Z",
-    "distilled_by": "claude"
+    "female_specific_notes": null,
+    "distilled_at": "2026-07-17T09:03:55.835Z",
+    "distilled_by": "codex"
   },
-  "generated_at": "2026-04-27T02:02:34.847Z"
+  "generated_at": "2026-07-17T10:59:06.561Z",
+  "mentions_fingerprint": "b7464a80fddc"
 }
