@@ -399,7 +399,7 @@ export default function PackageBuilderPage() {
                   />
                   <input
                     type="text"
-                    placeholder="Image URL (e.g., https://i.imgur.com/...)"
+                    placeholder="Image URL (e.g., https://example.com/image.jpg)"
                     value={newBundleImageUrl}
                     onChange={(e) => setNewBundleImageUrl(e.target.value)}
                     className="w-full px-3 py-2 bg-gray-700 text-white rounded border border-gray-600 focus:border-primary-400 focus:outline-none"

@@ -43,6 +43,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: false, error: 'Missing itemName or nutrients' }, { status: 400 });
     }
 
+    // Only our own vault-backed render path may land in photoUrl — an
+    // external-host photo URL can never enter FoodLog again.
+    const safePhotoUrl =
+      typeof photoUrl === 'string' && /^\/api\/images\/[A-Za-z0-9_-]+$/.test(photoUrl)
+        ? photoUrl
+        : null;
+
     const logTimestamp = loggedAt ? new Date(loggedAt) : new Date();
     const startOfDay = new Date(logTimestamp);
     startOfDay.setHours(0, 0, 0, 0);
@@ -70,7 +77,7 @@ export async function POST(req: Request) {
         unit,
         gramWeight: typeof gramWeight === 'number' ? gramWeight : gramWeight ? Number(gramWeight) : null,
         nutrients,
-        photoUrl,
+        photoUrl: safePhotoUrl,
         notes,
         localDate, // User's local date YYYY-MM-DD
         localTime, // User's local time HH:MM:SS

@@ -63,6 +63,7 @@ model User {
   foodEntries             FoodEntry[]
   mealPlans               MealPlan[]
   foodLogs                FoodLog[]
+  progressPhotos          ProgressPhoto[]
   workoutSessions         WorkoutSession[]
   workoutPrograms         WorkoutProgram[]
   workoutAssignments      WorkoutAssignment[]
@@ -726,6 +727,22 @@ model FoodLog {
   @@index([userId, loggedAt], map: "foodlog_user_loggedAt")
   @@index([userId, localDate], map: "foodlog_user_localDate")
   @@map("food_logs")
+}
+
+// A2 drive-vault: a pointer to a photo stored in the client's own Google
+// Drive vault (Photos subfolder). We never hold the bytes — driveFileId is
+// the only thing persisted here; rendering goes through /api/images/[id]
+// which re-verifies ownership against Drive's appProperties on every read.
+model ProgressPhoto {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @db.ObjectId
+  user        User     @relation(fields: [userId], references: [id])
+  driveFileId String
+  takenAt     DateTime @default(now())
+  note        String?
+
+  @@index([userId, takenAt])
+  @@map("progress_photos")
 }
 
 // --- PWA NOTIFICATION MODELS ---

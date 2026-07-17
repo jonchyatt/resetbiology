@@ -29,13 +29,7 @@ const nextConfig: NextConfig = {
   assetPrefix: '',
   trailingSlash: false,
   images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'i.imgur.com',
-        pathname: '/**',
-      },
-    ],
+    remotePatterns: [],
   },
   webpack: (config: any, { dev, isServer }: any) => {
     if (!isServer) {

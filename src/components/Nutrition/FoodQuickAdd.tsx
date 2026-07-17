@@ -275,7 +275,7 @@ export function FoodQuickAdd({ onLogged }: { onLogged?: (result: FoodQuickAddRes
 
   const handleCameraAnalysis = async (result: any) => {
     // Auto-log the AI analyzed food
-    const { foodEntry, analysis } = result;
+    const { foodEntry, analysis, photoUrl } = result;
 
     try {
       setStatus("logging");
@@ -302,6 +302,7 @@ export function FoodQuickAdd({ onLogged }: { onLogged?: (result: FoodQuickAddRes
         aiMetadata: foodEntry.aiMetadata,
         confidence: foodEntry.confidence,
         aiSource: foodEntry.aiSource,
+        photoUrl: photoUrl ?? null,
         loggedAt: now.toISOString(),
         localDate: `${year}-${month}-${day}`,
         localTime: `${hours}:${minutes}:${seconds}`,
