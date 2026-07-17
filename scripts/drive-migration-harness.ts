@@ -71,6 +71,10 @@ export interface ManifestRecord {
   driveFileName: string | null
   updatedAt: string
   error?: string
+  // Verifier finding 3: true when migrate found a pre-existing Drive file at
+  // this filename (uploadTextFile's update-path adopted it rather than
+  // creating it). Rollback must never trash a file migrate didn't create.
+  preExisted?: boolean
 }
 
 export interface ManifestHeader {
@@ -80,6 +84,96 @@ export interface ManifestHeader {
   completedAt: string | null
   sourceRecordCount: number
   status: 'incomplete' | 'verified' | 'failed'
+}
+
+// ---------------------------------------------------------------------------
+// Manifest JSON blob shape (verifier findings 1 + 2). The Prisma `records`
+// column is the only flexible (Json) field on MigrationManifest — no schema
+// change needed or allowed, so header-level metadata (duplicate-day hazard
+// count, in-progress rollback retry state) rides inside that same Json value
+// alongside the per-record array, instead of as new typed Prisma columns.
+// ---------------------------------------------------------------------------
+export interface RollbackAction {
+  fileId: string
+  action: 'trash' | 'unstamp'
+}
+
+export interface ManifestBlob {
+  items: ManifestRecord[]
+  duplicateDayGroups: number
+  cutoverHazards: string[]
+  // Present only while a rollback is mid-retry: the file actions a prior
+  // rollback attempt failed to complete. A resumed rollback retries only
+  // these (finding 2 — errored-path rollback must converge on re-run).
+  pendingRollbackActions?: RollbackAction[]
+}
+
+function readManifestBlob(raw: unknown): ManifestBlob {
+  if (Array.isArray(raw)) {
+    // Manifests written before this change stored a bare array.
+    return { items: raw as ManifestRecord[], duplicateDayGroups: 0, cutoverHazards: [] }
+  }
+  const obj = (raw ?? {}) as Partial<ManifestBlob>
+  return {
+    items: Array.isArray(obj.items) ? obj.items : [],
+    duplicateDayGroups: typeof obj.duplicateDayGroups === 'number' ? obj.duplicateDayGroups : 0,
+    cutoverHazards: Array.isArray(obj.cutoverHazards) ? obj.cutoverHazards : [],
+    pendingRollbackActions: Array.isArray(obj.pendingRollbackActions) ? obj.pendingRollbackActions : undefined,
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Duplicate-day grouping report (verifier finding 1) — pure function, same
+// grouping key the migrate loop uses (target Drive filename). Only the last
+// row per group lands in Drive (last-write-wins, matches live sync); every
+// other row in a group >1 is a "duplicate-day loser" whose content is
+// unrecoverable from Drive-side data alone. This function only *reports*
+// group sizes — it does not change the last-write-wins content semantics
+// (that redesign belongs to Phase C).
+// ---------------------------------------------------------------------------
+export interface DuplicateDayGroup {
+  fileName: string
+  count: number
+}
+
+export function computeDuplicateDayGroups<TRow>(
+  rows: TRow[],
+  fileNameOf: (row: TRow) => string
+): DuplicateDayGroup[] {
+  const counts = new Map<string, number>()
+  for (const row of rows) {
+    const fn = fileNameOf(row)
+    counts.set(fn, (counts.get(fn) ?? 0) + 1)
+  }
+  return Array.from(counts.entries())
+    .filter(([, count]) => count > 1)
+    .map(([fileName, count]) => ({ fileName, count }))
+}
+
+function duplicateDayCutoverHazards(groups: DuplicateDayGroup[]): string[] {
+  if (groups.length === 0) return []
+  return [
+    `duplicate-day-losers: ${groups.length} groups — Drive-side data cannot reconstruct non-final same-day records; resolve before Phase-C cutover`,
+  ]
+}
+
+// ---------------------------------------------------------------------------
+// Rollback convergence (verifier finding 2) — pure function. Given the set of
+// file actions a rollback run attempted and their outcomes, decides whether
+// rollback converged (nothing pending -> safe to delete the manifest) or
+// must persist a narrowed retry set instead.
+// ---------------------------------------------------------------------------
+export interface RollbackActionResult extends RollbackAction {
+  success: boolean
+}
+
+export function computeRollbackConvergence(
+  attempted: RollbackAction[],
+  results: RollbackActionResult[]
+): { converged: boolean; stillPending: RollbackAction[] } {
+  const failed = new Set(results.filter((r) => !r.success).map((r) => r.fileId))
+  const stillPending = attempted.filter((a) => failed.has(a.fileId))
+  return { converged: stillPending.length === 0, stillPending }
 }
 
 // ---------------------------------------------------------------------------
@@ -353,6 +447,60 @@ function runSelfTest(): boolean {
     assert.equal(outcome.ok, false)
   })
 
+  check('duplicate-day grouping: counts groups with >1 row correctly (finding 1)', () => {
+    const rows = [
+      { id: 'a', fn: 'journal-2026-01-01.md' },
+      { id: 'b', fn: 'journal-2026-01-01.md' }, // dup w/ a -> group of 2
+      { id: 'c', fn: 'journal-2026-01-02.md' }, // solo, not a group
+      { id: 'd', fn: 'journal-2026-01-03.md' },
+      { id: 'e', fn: 'journal-2026-01-03.md' },
+      { id: 'f', fn: 'journal-2026-01-03.md' }, // dup w/ d,e -> group of 3
+    ]
+    const groups = computeDuplicateDayGroups(rows, (r) => r.fn)
+    assert.equal(groups.length, 2)
+    const byName = new Map(groups.map((g) => [g.fileName, g.count]))
+    assert.equal(byName.get('journal-2026-01-01.md'), 2)
+    assert.equal(byName.get('journal-2026-01-03.md'), 3)
+    assert.equal(byName.has('journal-2026-01-02.md'), false)
+  })
+
+  check('rollback convergence: all actions succeed -> converged, nothing pending (finding 2)', () => {
+    const actions: RollbackAction[] = [
+      { fileId: 'f1', action: 'trash' },
+      { fileId: 'f2', action: 'unstamp' },
+    ]
+    const results: RollbackActionResult[] = [
+      { fileId: 'f1', action: 'trash', success: true },
+      { fileId: 'f2', action: 'unstamp', success: true },
+    ]
+    const outcome = computeRollbackConvergence(actions, results)
+    assert.equal(outcome.converged, true)
+    assert.equal(outcome.stillPending.length, 0)
+  })
+
+  check('rollback convergence: one failure -> rollback-incomplete state, only the failure retried (finding 2)', () => {
+    const actions: RollbackAction[] = [
+      { fileId: 'f1', action: 'trash' },
+      { fileId: 'f2', action: 'trash' },
+    ]
+    const results: RollbackActionResult[] = [
+      { fileId: 'f1', action: 'trash', success: true },
+      { fileId: 'f2', action: 'trash', success: false },
+    ]
+    const outcome = computeRollbackConvergence(actions, results)
+    assert.equal(outcome.converged, false)
+    assert.equal(outcome.stillPending.length, 1)
+    assert.equal(outcome.stillPending[0].fileId, 'f2')
+
+    // Manifest state transition a real rollback run would persist: manifest
+    // is NOT deleted, status flips to 'rollback-incomplete', the blob keeps
+    // only the still-pending action for the next run to retry.
+    const manifestStatus = outcome.converged ? 'deleted' : 'rollback-incomplete'
+    assert.equal(manifestStatus, 'rollback-incomplete')
+    const resumedActions = outcome.stillPending
+    assert.deepEqual(resumedActions, [{ fileId: 'f2', action: 'trash' }])
+  })
+
   console.log(results.join('\n'))
   console.log(pass ? '\nSELF-TEST: ALL PASS' : '\nSELF-TEST: FAILURES PRESENT')
   return pass
@@ -435,17 +583,28 @@ async function main() {
       const existing = await prisma.migrationManifest.findFirst({
         where: { userId: user.id, domain: adapter.domain },
       })
-      const existingRecords: ManifestRecord[] = existing ? (existing.records as any) : []
+      const existingRecords: ManifestRecord[] = existing ? readManifestBlob(existing.records).items : []
       const existingById = new Map(existingRecords.map((r) => [r.mongoId, r]))
       const wouldSkip = hashes.filter((h) => {
         const m = existingById.get(h.mongoId)
         return m && m.status === 'verified' && m.canonicalHash === h.canonicalHash
       }).length
 
+      // Verifier finding 1: surface duplicate-day groups BEFORE cutover —
+      // only the last row per group actually lands in Drive.
+      const dupGroups = computeDuplicateDayGroups(rows, adapter.driveFileNameOf)
+
       console.log(`DRY RUN — user=${userEmail} domain=${adapter.domain}`)
       console.log(`Source record count: ${rows.length}`)
       console.log(`Would skip (already verified, unchanged): ${wouldSkip}`)
       console.log(`Would migrate: ${rows.length - wouldSkip}`)
+      console.log(`Duplicate-day groups (same target filename, >1 source row): ${dupGroups.length}`)
+      if (dupGroups.length > 0) {
+        console.log('  CUTOVER HAZARD: only the last row per group lands in Drive; the rest are unrecoverable from Drive-side data.')
+        for (const g of dupGroups) {
+          console.log(`    ${g.fileName}: ${g.count} rows`)
+        }
+      }
       console.log(`Sample canonical hashes (up to 5):`)
       for (const h of hashes.slice(0, 5)) {
         console.log(`  ${h.mongoId} -> ${h.canonicalHash.slice(0, 16)}... (${h.driveFileName})`)
@@ -465,8 +624,20 @@ async function main() {
         where: { userId: user.id, domain: adapter.domain },
       })
       const byId = new Map<string, ManifestRecord>(
-        existing ? (existing.records as unknown as ManifestRecord[]).map((r) => [r.mongoId, r]) : []
+        existing ? readManifestBlob(existing.records).items.map((r) => [r.mongoId, r]) : []
       )
+
+      // Verifier finding 1: surface duplicate-day groups BEFORE cutover —
+      // only the last row per group actually lands in Drive; report it live
+      // and record it on the manifest header so verify can flag it too.
+      const dupGroups = computeDuplicateDayGroups(rows, adapter.driveFileNameOf)
+      console.log(`Duplicate-day groups (same target filename, >1 source row): ${dupGroups.length}`)
+      if (dupGroups.length > 0) {
+        console.log('  CUTOVER HAZARD: only the last row per group lands in Drive; the rest are unrecoverable from Drive-side data.')
+        for (const g of dupGroups) {
+          console.log(`    ${g.fileName}: ${g.count} rows`)
+        }
+      }
 
       // Group by target Drive filename. Live sync writes one file per
       // (user, day) and overwrites it if multiple entries land on the same
@@ -506,6 +677,23 @@ async function main() {
         let driveContentHash: string | null = null
         let byteLength: number | null = null
         let uploadErr: string | undefined
+
+        // Verifier finding 3: pre-check whether this filename already exists
+        // in the subfolder — uploadTextFile's own existence check happens
+        // again inside it (additive-only: we don't touch its return shape,
+        // the other live-sync call site is unaffected), but we need the
+        // boolean ourselves so rollback can skip trashing adopted files.
+        let preExisted = false
+        try {
+          const preCheck = await drive.files.list({
+            q: `name='${fileName}' and '${folderId}' in parents and trashed=false`,
+            fields: 'files(id)',
+          })
+          preExisted = (preCheck.data.files?.length ?? 0) > 0
+        } catch {
+          // best-effort — a failed pre-check just loses the preExisted flag
+          // for this record, it isn't fatal to the upload itself.
+        }
 
         try {
           driveFileId = await uploadTextFile(drive, folderId, fileName, content, 'text/markdown', {
@@ -548,15 +736,21 @@ async function main() {
             driveFileName: fileName,
             updatedAt: nowIso,
             error: uploadErr,
+            preExisted,
           })
         }
       }
 
       const records = Array.from(byId.values())
+      const blob: ManifestBlob = {
+        items: records,
+        duplicateDayGroups: dupGroups.length,
+        cutoverHazards: duplicateDayCutoverHazards(dupGroups),
+      }
       if (existing) {
         await prisma.migrationManifest.update({
           where: { id: existing.id },
-          data: { records: records as any, completedAt: null, status: 'incomplete' },
+          data: { records: blob as any, completedAt: null, status: 'incomplete' },
         })
       } else {
         await prisma.migrationManifest.create({
@@ -566,7 +760,7 @@ async function main() {
             status: 'incomplete',
             startedAt: new Date(),
             completedAt: null,
-            records: records as any,
+            records: blob as any,
           },
         })
       }
@@ -588,7 +782,14 @@ async function main() {
       if (flags['expect-rolled-back']) {
         // Rollback-proof mode: expect no manifest (or an empty one) AND no
         // migration-stamped Drive files remaining for this user+domain.
-        const noManifestRecords = !manifest || (manifest.records as unknown as ManifestRecord[]).length === 0
+        // Verifier finding 3 (appProperties implication): a preExisted file
+        // that migrate adopted also gets the migration appProperties stamp.
+        // Rather than teach this query to special-case preExisted files, the
+        // chosen fix lives on the rollback side — rollback UN-STAMPS (clears
+        // rbUserId/rbKind/rbDomain/rbMongoId) preExisted files instead of
+        // trashing them, so they stop matching this query on their own and
+        // this query needs no changes.
+        const noManifestRecords = !manifest || readManifestBlob(manifest.records).items.length === 0
         let noDriveFiles = true
         let checkedDrive = false
         if (user.driveFolder) {
@@ -625,7 +826,8 @@ async function main() {
         mongoId: adapter.mongoIdOf(r),
         canonicalHash: canonicalHashOf(adapter.canonicalRecordOf(r)),
       }))
-      const manifestRecords = manifest.records as unknown as ManifestRecord[]
+      const blob = readManifestBlob(manifest.records)
+      const manifestRecords = blob.items
 
       const uniqueFileIds = Array.from(
         new Set(manifestRecords.filter((r) => r.driveFileId).map((r) => r.driveFileId as string))
@@ -651,6 +853,16 @@ async function main() {
 
       const outcome = computeVerifyOutcome(sourceRecords, manifestRecords, actualHashes)
       const nowIso = new Date()
+
+      // Verifier finding 1: print the recorded cutover hazard loudly. This is
+      // informational, not a corruption — verify still exits 0 on a clean
+      // hash/completeness pass even when hazards are present.
+      if (blob.cutoverHazards.length > 0) {
+        console.log('='.repeat(70))
+        console.log(`CUTOVER HAZARD (recorded at migrate time): ${blob.duplicateDayGroups} duplicate-day group(s)`)
+        for (const h of blob.cutoverHazards) console.log(`  ${h}`)
+        console.log('='.repeat(70))
+      }
 
       if (outcome.ok) {
         await prisma.migrationManifest.update({
@@ -686,37 +898,92 @@ async function main() {
         break
       }
       const drive = await getDriveClient(user.id)
-      const manifestRecords = manifest.records as unknown as ManifestRecord[]
-      const uniqueFileIds = Array.from(
-        new Set(manifestRecords.filter((r) => r.driveFileId).map((r) => r.driveFileId as string))
-      )
+      const blob = readManifestBlob(manifest.records)
+      const manifestRecords = blob.items
+
+      // Verifier finding 3: preExisted files get 'unstamp' (leave the file
+      // in place, clear the migration appProperties), everything else gets
+      // 'trash' (migrate created it, rollback removes it).
+      const actionByFileId = new Map<string, RollbackAction['action']>()
+      for (const r of manifestRecords) {
+        if (!r.driveFileId) continue
+        actionByFileId.set(r.driveFileId, r.preExisted ? 'unstamp' : 'trash')
+      }
+      const fullActions: RollbackAction[] = Array.from(actionByFileId, ([fileId, action]) => ({ fileId, action }))
+      // Verifier finding 2: a resumed rollback (status === 'rollback-incomplete')
+      // retries only the actions a prior run failed to complete, not the full set.
+      const actions =
+        manifest.status === 'rollback-incomplete' && blob.pendingRollbackActions
+          ? blob.pendingRollbackActions
+          : fullActions
+
+      const results: RollbackActionResult[] = []
       let trashed = 0
+      let unstamped = 0
       const trashErrors: string[] = []
       if (drive) {
-        for (const fileId of uniqueFileIds) {
+        for (const { fileId, action } of actions) {
           try {
-            await drive.files.update({ fileId, requestBody: { trashed: true } })
-            trashed++
+            if (action === 'unstamp') {
+              await drive.files.update({
+                fileId,
+                requestBody: { appProperties: { rbUserId: null, rbKind: null, rbDomain: null, rbMongoId: null } } as any,
+              })
+              unstamped++
+            } else {
+              await drive.files.update({ fileId, requestBody: { trashed: true } })
+              trashed++
+            }
+            results.push({ fileId, action, success: true })
           } catch (err: any) {
-            trashErrors.push(`${fileId}: ${err?.message ?? err}`)
+            const code = err?.code ?? err?.response?.status
+            if (code === 404) {
+              // Already gone (or already unstamped) — counts as success on re-run.
+              if (action === 'trash') trashed++
+              else unstamped++
+              results.push({ fileId, action, success: true })
+              continue
+            }
+            trashErrors.push(`${fileId} (${action}): ${err?.message ?? err}`)
+            results.push({ fileId, action, success: false })
           }
         }
-      } else if (uniqueFileIds.length > 0) {
-        trashErrors.push('no Drive client available — could not trash any files')
+      } else if (actions.length > 0) {
+        trashErrors.push('no Drive client available — could not process any files')
+        for (const a of actions) results.push({ ...a, success: false })
       }
 
-      // Reset the manifest: back to pre-migration state = no manifest row.
-      // Phase B is copy-only, so Mongo was never touched — this is the
-      // entire rollback.
-      await prisma.migrationManifest.delete({ where: { id: manifest.id } })
+      const convergence = computeRollbackConvergence(actions, results)
 
       console.log(`ROLLBACK — user=${userEmail} domain=${adapter.domain}`)
-      console.log(`Drive files trashed: ${trashed}/${uniqueFileIds.length}`)
-      if (trashErrors.length) {
+      console.log(`Drive files trashed this run: ${trashed}`)
+      console.log(`Pre-existed files left in place (appProperties unstamped): ${unstamped}`)
+
+      if (!convergence.converged) {
+        // Verifier finding 2: do NOT delete the manifest — rollback hasn't
+        // converged. Persist only the not-yet-done actions so a re-run
+        // retries exactly those instead of reporting "Nothing to roll back"
+        // while stamped files remain.
+        await prisma.migrationManifest.update({
+          where: { id: manifest.id },
+          data: {
+            status: 'rollback-incomplete',
+            records: { ...blob, pendingRollbackActions: convergence.stillPending } as any,
+          },
+        })
         console.error('Errors:')
         trashErrors.forEach((e) => console.error(`  - ${e}`))
+        console.error(
+          `ROLLBACK INCOMPLETE: ${convergence.stillPending.length} file action(s) still pending. Re-run rollback to retry.`
+        )
         process.exitCode = 1
+        break
       }
+
+      // Converged: every action succeeded (this run or a prior one). Phase B
+      // is copy-only, so Mongo was never touched — deleting the manifest is
+      // the entire rollback.
+      await prisma.migrationManifest.delete({ where: { id: manifest.id } })
       console.log('Manifest reset (row deleted). Mongo was never touched (Phase B is copy-only).')
       break
     }
@@ -731,7 +998,8 @@ async function main() {
         where: { userId: user.id, domain: adapter.domain },
       })
       if (!manifest) throw new Error('BLOCKED: no manifest exists to corrupt — run migrate first.')
-      const records = manifest.records as unknown as ManifestRecord[]
+      const blob = readManifestBlob(manifest.records)
+      const records = blob.items
       const target = typeof flags.record === 'string' ? flags.record : null
       const idx =
         target === 'first' || !target ? 0 : records.findIndex((r) => r.mongoId === target)
@@ -742,7 +1010,7 @@ async function main() {
 
       await prisma.migrationManifest.update({
         where: { id: manifest.id },
-        data: { records: records as any },
+        data: { records: { ...blob, items: records } as any },
       })
       console.log(
         `CORRUPT-ONE (TEST-ONLY) — mongoId=${records[idx].mongoId} canonicalHash flipped. Next 'verify' MUST refuse.`
