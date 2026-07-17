@@ -53,6 +53,7 @@ export const VAULT_SUBFOLDERS = [
   'Memory Training',
   'Profile',
   'Progress Reports',
+  'Photos', // A2: client photos (food/progress) — vault-stored, never RB-side (D2 fail-closed)
 ]
 
 export type VaultRootResolution =
