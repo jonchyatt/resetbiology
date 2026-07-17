@@ -7,6 +7,9 @@ import { getDriveClient } from '@/lib/google-drive'
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
+const VAULT_REQUIRED_MESSAGE =
+  "Your photos aren't stored anywhere unless you connect your own Drive vault — you're in charge of what's yours. Connect your vault and every photo you take lands in YOUR Google Drive, under your control, not ours."
+
 export async function POST(req: NextRequest) {
   try {
     const session = await auth0.getSession()
@@ -24,7 +27,10 @@ export async function POST(req: NextRequest) {
 
     const drive = await getDriveClient(user.id)
     if (!drive) {
-      return NextResponse.json({ error: 'vault_required' }, { status: 409 })
+      return NextResponse.json(
+        { error: 'vault_required', message: VAULT_REQUIRED_MESSAGE },
+        { status: 409 }
+      )
     }
 
     // Verify the file exists and actually belongs to this user before

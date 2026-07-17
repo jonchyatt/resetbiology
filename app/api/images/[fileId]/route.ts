@@ -47,10 +47,17 @@ export async function GET(
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
 
-  const mediaRes = await drive.files.get(
-    { fileId, alt: 'media' },
-    { responseType: 'stream' }
-  )
+  let mediaRes
+  try {
+    mediaRes = await drive.files.get(
+      { fileId, alt: 'media' },
+      { responseType: 'stream' }
+    )
+  } catch {
+    // Deleted between the meta-check above and this fetch — same 404 as
+    // "not yours", never a 500 leak.
+    return NextResponse.json({ error: 'Not found' }, { status: 404 })
+  }
 
   const webStream = Readable.toWeb(
     mediaRes.data as unknown as Readable
