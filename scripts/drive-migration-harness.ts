@@ -83,7 +83,7 @@ export interface ManifestHeader {
   startedAt: string
   completedAt: string | null
   sourceRecordCount: number
-  status: 'incomplete' | 'verified' | 'failed'
+  status: 'incomplete' | 'verified' | 'failed' | 'rollback-incomplete'
 }
 
 // ---------------------------------------------------------------------------
@@ -155,6 +155,20 @@ function duplicateDayCutoverHazards(groups: DuplicateDayGroup[]): string[] {
   return [
     `duplicate-day-losers: ${groups.length} groups — Drive-side data cannot reconstruct non-final same-day records; resolve before Phase-C cutover`,
   ]
+}
+
+// ---------------------------------------------------------------------------
+// preExisted classification (verifier finding 3 residual) — pure function. A
+// pre-check-by-filename alone can't distinguish a live-synced file from a
+// file migrate itself created in an EARLIER run (e.g. run 1 uploads but the
+// round-trip fails, so the record stays 'failed' with driveFileId still set;
+// run 2 re-processes the same group and finds that same file). Only a
+// fileId with no matching prior manifest driveFileId in this group is
+// genuinely pre-existing — one we didn't create.
+// ---------------------------------------------------------------------------
+export function classifyPreExisted(foundFileId: string | null, priorDriveFileIdsInGroup: Array<string | null>): boolean {
+  if (!foundFileId) return false
+  return !priorDriveFileIdsInGroup.includes(foundFileId)
 }
 
 // ---------------------------------------------------------------------------
@@ -501,6 +515,26 @@ function runSelfTest(): boolean {
     assert.deepEqual(resumedActions, [{ fileId: 'f2', action: 'trash' }])
   })
 
+  check('preExisted classification: a file migrate created in a prior run is NOT preExisted (finding 3 residual)', () => {
+    // Run 1 uploaded fileId 'f-ours' for mongoId 'm1' (round-trip failed, or
+    // the source row later changed) — that driveFileId is still on the
+    // prior manifest record. Run 2 re-processes the group, the pre-check
+    // list call finds that same 'f-ours' file. It must NOT be flagged
+    // preExisted — rollback would otherwise unstamp-and-leave a file we
+    // created ourselves.
+    assert.equal(classifyPreExisted('f-ours', ['f-ours', null]), false)
+  })
+
+  check('preExisted classification: a file with no matching prior driveFileId IS preExisted (finding 3 residual)', () => {
+    // Genuinely a live-synced file we never touched before — no prior
+    // record in this group carries this fileId.
+    assert.equal(classifyPreExisted('f-live-sync', ['f-other-mongoid-file', null]), true)
+  })
+
+  check('preExisted classification: no file found at all -> not preExisted', () => {
+    assert.equal(classifyPreExisted(null, ['f-ours']), false)
+  })
+
   console.log(results.join('\n'))
   console.log(pass ? '\nSELF-TEST: ALL PASS' : '\nSELF-TEST: FAILURES PRESENT')
   return pass
@@ -683,13 +717,17 @@ async function main() {
         // again inside it (additive-only: we don't touch its return shape,
         // the other live-sync call site is unaffected), but we need the
         // boolean ourselves so rollback can skip trashing adopted files.
+        // classifyPreExisted (residual fix) rules out files migrate itself
+        // created in a prior run — those aren't pre-existing, they're ours.
         let preExisted = false
         try {
           const preCheck = await drive.files.list({
             q: `name='${fileName}' and '${folderId}' in parents and trashed=false`,
             fields: 'files(id)',
           })
-          preExisted = (preCheck.data.files?.length ?? 0) > 0
+          const foundFileId = preCheck.data.files?.[0]?.id ?? null
+          const priorDriveFileIdsInGroup = groupRows.map((row) => byId.get(adapter.mongoIdOf(row))?.driveFileId ?? null)
+          preExisted = classifyPreExisted(foundFileId, priorDriveFileIdsInGroup)
         } catch {
           // best-effort — a failed pre-check just loses the preExisted flag
           // for this record, it isn't fatal to the upload itself.
