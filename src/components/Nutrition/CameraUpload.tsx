@@ -9,12 +9,42 @@ interface CameraUploadProps {
   mealType?: string
 }
 
+const VAULT_REQUIRED_MESSAGE =
+  "Your photos aren't stored anywhere unless you connect your own Drive vault — you're in charge of what's yours. Connect your vault and every photo you take lands in YOUR Google Drive, under your control, not ours."
+
 export function CameraUpload({ onAnalysisComplete, onClose, mealType = 'snack' }: CameraUploadProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [analyzing, setAnalyzing] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  // Vault-required notice: analysis + logging still proceed without a photo
+  // (D2 fail-closed) — this just tells the user why the photo didn't attach,
+  // and holds the analyzed result until they choose to continue.
+  const [vaultNotice, setVaultNotice] = useState<string | null>(null)
+  const [pendingResult, setPendingResult] = useState<any>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // Best-effort: attach the photo to the vault if connected. Any failure
+  // (not connected, upload rejected) just means the log proceeds without a
+  // photo — analysis itself is transient and doesn't require the vault.
+  const attachPhoto = async (file: File): Promise<{ url: string | null; notice: string | null }> => {
+    try {
+      const uploadForm = new FormData()
+      uploadForm.append('image', file)
+      const res = await fetch('/api/upload/image', { method: 'POST', body: uploadForm })
+      const data = await res.json()
+
+      if (res.ok && data.success) {
+        return { url: data.url, notice: null }
+      }
+      if (res.status === 409 && data.error === 'vault_required') {
+        return { url: null, notice: data.message || VAULT_REQUIRED_MESSAGE }
+      }
+      return { url: null, notice: null }
+    } catch {
+      return { url: null, notice: null }
+    }
+  }
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -69,8 +99,21 @@ export function CameraUpload({ onAnalysisComplete, onClose, mealType = 'snack' }
         throw new Error(data.message || data.error || 'Analysis failed')
       }
 
+      // Attach the original photo to the client's vault (best-effort).
+      const { url: photoUrl, notice } = await attachPhoto(selectedFile)
+      const resultWithPhoto = { ...data, photoUrl }
+
+      if (notice) {
+        // Vault not connected: hold the analyzed result and show the
+        // notice instead of auto-closing — the log still proceeds fine
+        // without a photo once the user continues.
+        setPendingResult(resultWithPhoto)
+        setVaultNotice(notice)
+        return
+      }
+
       // Pass result to parent component
-      onAnalysisComplete(data)
+      onAnalysisComplete(resultWithPhoto)
       onClose()
 
     } catch (err: any) {
@@ -103,6 +146,31 @@ export function CameraUpload({ onAnalysisComplete, onClose, mealType = 'snack' }
         {error && (
           <div className="mb-4 p-3 bg-rose-500/20 border border-rose-400/30 rounded-lg text-rose-300 text-sm">
             {error}
+          </div>
+        )}
+
+        {/* Vault-required notice — photo wasn't stored, but the log still works */}
+        {vaultNotice && (
+          <div className="mb-4 p-3 bg-blue-500/10 border border-blue-400/20 rounded-lg text-blue-200 text-sm space-y-2">
+            <p>{vaultNotice}</p>
+            <div className="flex gap-3">
+              <a
+                href="/connect-drive"
+                className="text-primary-400 hover:text-primary-300 font-medium underline"
+              >
+                Connect your vault
+              </a>
+              <button
+                type="button"
+                onClick={() => {
+                  onAnalysisComplete(pendingResult)
+                  onClose()
+                }}
+                className="text-gray-300 hover:text-white font-medium underline"
+              >
+                Continue without photo
+              </button>
+            </div>
           </div>
         )}
 
