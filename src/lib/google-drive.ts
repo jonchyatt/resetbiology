@@ -320,13 +320,18 @@ export async function uploadJsonFile(
   }
 }
 
-// Upload a text/markdown file to Drive
+// Upload a text/markdown file to Drive.
+// appProperties (additive, optional — Phase B migration harness stamps
+// {rbUserId, rbKind:'migration', rbDomain, rbMongoId} so migrated files are
+// identifiable/queryable; live sync call sites simply omit it) is applied on
+// both the create and update path so a re-run always carries current stamps.
 export async function uploadTextFile(
   drive: drive_v3.Drive,
   folderId: string,
   fileName: string,
   content: string,
-  mimeType: string = 'text/plain'
+  mimeType: string = 'text/plain',
+  appProperties?: Record<string, string>
 ): Promise<string | null> {
   try {
     // Check if file already exists
@@ -340,6 +345,7 @@ export async function uploadTextFile(
       const fileId = existingFiles.data.files[0].id!
       await drive.files.update({
         fileId,
+        requestBody: appProperties ? { appProperties } : undefined,
         media: {
           mimeType,
           body: content,
@@ -354,6 +360,7 @@ export async function uploadTextFile(
         name: fileName,
         parents: [folderId],
         mimeType,
+        appProperties,
       },
       media: {
         mimeType,
