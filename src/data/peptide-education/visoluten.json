@@ -1,0 +1,245 @@
+{
+  "peptide": "Visoluten",
+  "slug": "visoluten",
+  "aliases": [
+    "Visoluten",
+    "visoluten",
+    "Visolutin",
+    "visolutin"
+  ],
+  "category": "Bioregulators",
+  "experts": {
+    "hunter-williams": {
+      "baseline_protocol": null,
+      "summary": {
+        "mention_count": 42,
+        "top_doses": [
+          {
+            "dose": "1 mg",
+            "count": 2
+          },
+          {
+            "dose": "500 mcg",
+            "count": 2
+          },
+          {
+            "dose": "10 mg",
+            "count": 2
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "1956211f038f2577",
+            "source_type": "email",
+            "source_title": "Restoring Eyesight With Visoluten",
+            "source_date": "2025-03-04",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-03-04-restoring-eyesight-with-visoluten.md",
+            "mention_count": 18,
+            "top_snippet": "ll text, or just a general decline in clarity. I get it. I’ve always had great vision—better than 20/20 when I was younger—but over time, I’ve noticed the toll of endless screen exposure. My eyesight ",
+            "top_context": "ll text, or just a general decline in clarity. I get it. I’ve always had great vision—better than 20/20 when I was younger—but over time, I’ve noticed the toll of endless screen exposure. My eyesight is still good, but it’s not quite what it once was. That’s why I was so excited to come across Visoluten—a retina-specific bioregulator that has shown real results in clinical studies for restoring and preserving vision. You can check out my new video on YouTube I just dropped today for the full video breakdown. Youtube: Reverse Vision Decline? Visoluten’s Eye-Opening Results (Backed by Science) (ht",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "reverse-vision-decline-visolutens-eye-opening-results-backed-by-science--9f0ce713",
+            "source_type": "library-video",
+            "source_title": "Reverse Vision Decline? Visoluten’s Eye-Opening Results (Backed by Science)",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/reverse-vision-decline-visolutens-eye-opening-results-backed-by-science--9f0ce713/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/reverse-vision-decline-visolutens-eye-opening-results-backed-by-science--9f0ce713.json",
+            "mention_count": 16,
+            "top_snippet": "Hey everybody, this is Hunter Williams. I hope you're doing amazing wherever you are in the world. Today I am bringing you my video on Visolutin, which is the retina bioregulator or the bi oregulator for your eyes. So I'd say probably one of the more common questions I've gotten through the years is like, what peptides can I use to enhance my eyesight? Obviously most people as they age suffer from macular degeneration, Which is just, you know, losing their eyesight, whether they're near sighted, far sight, whatever it is. I'd say for much of my life, I've been fortunate in terms of vision.",
+            "top_context": "Hey everybody, this is Hunter Williams. I hope you're doing amazing wherever you are in the world. Today I am bringing you my video on Visolutin, which is the retina bioregulator or the bi oregulator for your eyes. So I'd say probably one of the more common questions I've gotten through the years is like, what peptides can I use to enhance my eyesight? Obviously most people as they age suffer from macular degeneration, Which is just, you know, losing their eyesight, whether they're near sighted, far sight, whatever it is. I'd say for much of my life, I've been fortunate in terms of vision. When I was younger, had really good vision, you know, like when I would get physicals, usually have like 2015, 2012, 2010, whatever. I'm in my eyes and I notice as I got older and into my older years now, working on computers does not do well for the eyes. So even though I'd say my eyesight is still really good, I can see from decently far away. I ain't what I once was. Or ain' as good as I was to quote Toby Keith.",
+            "first_timestamp": "0:09"
+          },
+          {
+            "source_id": "peptides-for-eye-health-the-ultimate-vision-support-stack--cf6c7315",
+            "source_type": "library-video",
+            "source_title": "Peptides for Eye Health The Ultimate Vision Support Stack",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptides-for-eye-health-the-ultimate-vision-support-stack--cf6c7315/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptides-for-eye-health-the-ultimate-vision-support-stack--cf6c7315.json",
+            "mention_count": 7,
+            "top_snippet": "A lot of people get really good results with just this alone from what I've heard. So I would recommend you look into that and check it out. Next one. This is going to be a little bit more popular, probably a bit easier to find. It's another one called Visolutin. So it's specifically designed to restore and maintain the health of retinal cells, the ciliary muscle in the conjunctiva, and it works by promoting protein synthesis in our eyes, which aids in cellular repair and alleviates discomfort caused by environmental stressors like",
+            "top_context": "So this normalization is vital for restoring and maintaining retinal and corneal health. And, ah, there are currently clinical trials ongoing to substantiate its efficacy. Um, the cool thing about these bi oregulators is they're all capsules. You would just take one to two capsula daily, take them with meals and you do that for 30 to 60 days, depending on the severity of your, impairment and then repeat a few times throughout the year. Typically you're going to do 60 days on, six days off. And obviously we use this to support retinal and corneal regeneration, increased resistance to hypoxia and improve overall vision. A lot of people get really good results with just this alone from what I've heard. So I would recommend you look into that and check it out. Next one. This is going to be a little bit more popular, probably a bit easier to find. It's another one called Visolutin. So it's specifically designed to restore and maintain the health of retinal cells, the ciliary muscle in the conjunctiva, and it works by promoting protein synthesis in our eyes, which aids in cellular repair and alleviates discomfort caused by environmental stressors like prolonged screen time. Go figure. Studies on bisolutin and some of the bioregulars have shown potential improving protein metabolism, Which supports the repair of age-related or environmentally induced ocular damage. And much like Penalex, this one's going to be two capsules daily taken with meals, and then it's gonna be 10 to 30 days per cycle. Again, if it is on the lower end of severity, 10 days, higher end severity 30 day. The reason we use this is to nourish retinal ancillary cells, improve eye strain and restore overall ocular function.",
+            "first_timestamp": "8:13"
+          },
+          {
+            "source_id": "stop-aging-now-bioregulatorsthe-future-of-longevity-in-a-capsule--84fe77e0",
+            "source_type": "library-article",
+            "source_title": "Stop Aging Now BioregulatorsThe Future of Longevity in a Capsule",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/stop-aging-now-bioregulatorsthe-future-of-longevity-in-a-capsule--84fe77e0/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/stop-aging-now-bioregulatorsthe-future-of-longevity-in-a-capsule--84fe77e0.json",
+            "mention_count": 1,
+            "top_snippet": "Svetinorm for liver detox and regeneration. Good for people dealing with chronic Lyme, mold, that kind of thing. Taxorest for lungs. Could be helpful for long Covid. Testoluten for testes and testoste",
+            "top_context": "Svetinorm for liver detox and regeneration. Good for people dealing with chronic Lyme, mold, that kind of thing. Taxorest for lungs. Could be helpful for long Covid. Testoluten for testes and testosterone support. Thyreogen for thyroid function. Ventfort for blood vessels and vascular health. Visoluten for retinal and vision health. Vladonix for thymus and immune regulation. Supports T cell production. Zhenoluten for ovaries and female hormonal support. Will They Replace Hormone Therapy? Short answer, I don't think so. At least not yet. But here's where I think they shine. If you're walking",
+            "first_timestamp": null
+          }
+        ],
+        "acute_signals": [
+          {
+            "snippet": "arch on Visoluten** A 2011 study on Visoluten looked at 49 patients with retinal diseases and divided them into two groups: ✅ One group received standard treatments. ✅ The other group received Visolut",
+            "source_title": "Restoring Eyesight With Visoluten",
+            "source_date": "2025-03-04",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "ere vision impairment dropped from 35.7% to 16.5%. 💡 Retinal function improved, as measured by electrophysiological studies. 👁️ Faster corneal healing in post-surgery patients (2.4x faster than the ",
+            "source_title": "Restoring Eyesight With Visoluten",
+            "source_date": "2025-03-04",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "r corneal healing in post-surgery patients (2.4x faster than the control group). A larger study (1995-2010) on 1,500 patients found that **95% of people who used Visoluten improved their vision after ",
+            "source_title": "Restoring Eyesight With Visoluten",
+            "source_date": "2025-03-04",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "ing in post-surgery patients (2.4x faster than the control group). A larger study (1995-2010) on 1,500 patients found that **95% of people who used Visoluten improved their vision after 3 months**—wit",
+            "source_title": "Restoring Eyesight With Visoluten",
+            "source_date": "2025-03-04",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "een-induced eye strain – If you spend hours staring at screens, this can help. * Post-surgical eye recovery – Lasik, cataract surgery, retinal procedures—it can speed up healing. * People looking to o",
+            "source_title": "Restoring Eyesight With Visoluten",
+            "source_date": "2025-03-04",
+            "timestamp": null,
+            "source_url": null
+          }
+        ],
+        "chronic_signals": [
+          {
+            "snippet": "een-induced eye strain – If you spend hours staring at screens, this can help. * Post-surgical eye recovery – Lasik, cataract surgery, retinal procedures—it can speed up healing. * People looking to o",
+            "source_title": "Restoring Eyesight With Visoluten",
+            "source_date": "2025-03-04",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "research backs its effectiveness. It’s easy to take (no injections, just capsules). It’s one of the few compounds that directly targets the retina. If 95% of people in studies saw some level of improv",
+            "source_title": "Restoring Eyesight With Visoluten",
+            "source_date": "2025-03-04",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "capsules). It’s one of the few compounds that directly targets the retina. If 95% of people in studies saw some level of improvement, the odds are pretty good that you will too. ——————————————————————",
+            "source_title": "Restoring Eyesight With Visoluten",
+            "source_date": "2025-03-04",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "ng your vision, Visoluten is worth trying. I personally use it to counteract the damage from screen exposure—and if you’re someone who spends all day looking at a computer, it’s one of the best invest",
+            "source_title": "Restoring Eyesight With Visoluten",
+            "source_date": "2025-03-04",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "e damage from screen exposure—and if you’re someone who spends all day looking at a computer, it’s one of the best investments you can make for your long-term vision health. 👉 Get it here from BioLon",
+            "source_title": "Restoring Eyesight With Visoluten",
+            "source_date": "2025-03-04",
+            "timestamp": null,
+            "source_url": null
+          }
+        ]
+      }
+    },
+    "taylor-williams": {
+      "summary": {
+        "mention_count": 3,
+        "top_doses": [],
+        "top_sources": [
+          {
+            "source_id": "hgI5Mpc-xDQ",
+            "source_type": "podcast",
+            "source_title": "Saturday Morning Coffee Talk 2/28/26",
+            "source_date": "2026-02-28",
+            "source_url": "https://youtu.be/hgI5Mpc-xDQ",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2026-02-28-saturday-morning-coffee-talk-2-28-26-hgI5Mpc-xDQ.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "vision. Yeah. Um obviously you could use uh visolutin which is the eye bio",
+            "top_context": "when we annoy say it. when we annoy say it. &gt;&gt; But for women, especially in that age &gt;&gt; But for women, especially in that age &gt;&gt; But for women, especially in that age group, it will make such a huge group, it will make such a huge group, it will make such a huge difference in your fat loss goals and in difference in your fat loss goals and in difference in your fat loss goals and in your physique, especially having um your physique, especially having um your physique, especially having um therapeutic testosterone in there. Yeah, therapeutic testosterone in there. Yeah, therapeutic testosterone in there. Yeah, it just helps so much with metabolism. it just helps so much with metabolism. it just helps so much with metabolism. It makes everything work better. It makes everything work better. It makes everything work better. &gt;&gt; Yeah. &gt;&gt; Yeah. &gt;&gt; Yeah. &gt;&gt; See, Taylor talked about BPC and TV eye &gt;&gt; See, Taylor talked about BPC and TV eye &gt;&gt; See, Taylor talked about BPC and TV eye drops. Any bio regular peptide stack drops. Any bio regular peptide stack drops. Any bio regular peptide stack that can help with glaucoma. I think the that can help with glaucoma. I think the that can help with glaucoma. I think the eye drops can help. Glaucoma typically eye drops can help. Glaucoma typically eye drops can help. Glaucoma typically stems from metabolic health issues, stems from metabolic health issues, stems from metabolic health issues, diabetes, etc., etc. I think SS31 would diabetes, etc., etc. I think SS31 would diabetes, etc., etc. I think SS31 would be the first one that I would say is be the first one that I would say is be the first one that I would say is going to help with ocular health. going to help with ocular health. going to help with ocular health. &gt;&gt; Your eyes are very mitochondrially &gt;&gt; Your eyes are very mitochondrially &gt;&gt; Your eyes are very mitochondrially dense, which is why SS31 helps with dense, which is why SS31 helps with dense, which is why SS31 helps with vision. Yeah. Um obviously you could use vision. Yeah. Um obviously you could use vision. Yeah. Um obviously you could use uh visolutin which is the eye bio uh visolutin which is the eye bio uh visolutin which is the eye bio regulator that helps with that but I regulator that helps with that but I regulator that helps with that but I think probably you're noticed more from think probably you're noticed more from think probably you're noticed more from the eye drops and SS31 than you would the eye drops and SS31 than you would the eye drops and SS31 than you would from that if you are you know allocating from that if you are you know allocating from that if you are you know allocating your funds appropriately your funds appropriately your funds appropriately &gt;&gt; but the visin is still good. So that's &gt;&gt; but the visin is still good. So that's &gt;&gt; but the visin is still good. So that's what I would recommend for that. Also what I would recommend for that. Also what I would recommend for that. Also P21 seems to help with ocular function. P21 seems to help with ocular function. P21 seems to help with ocular function. &gt;&gt; Yeah I do feel like my vision's a little &gt;&gt; Yeah I do feel like my vision's a little &gt;&gt; Yeah I do feel like my vision's a little bit is sharper when I use P21. Yeah. And bit is sharper when I use P21. Yeah. And bit is sharper when I use P21. Yeah. And then also to glaucoma. Again, typically then also to glaucoma. Again, typically then also to glaucoma. Again, typically metabolically related. metabolically related. metabolically related. &gt;&gt; Yeah. &gt;&gt; Yeah. &gt;&gt; Yeah. &gt;&gt; There we have reetta. You know, a micro &gt;&gt; There we have reetta. You know, a micro &gt;&gt; There we have reetta. You know, a micro dose of reetta. Uh depending on how much dose of reetta. Uh depending on how much dose of reetta. Uh depending on how much weight you need to lose, but even if you weight you need to lose, but even if you weight you need to lose, but even if you didn't, I think a micro dose of red didn't, I think a micro dose of red didn't, I think a micro dose of red could still be good. could still be good. could still be good. &gt;&gt; Coworker recently passed from a brain &gt;&gt; Coworker recently passed from a brain &gt;&gt; Coworker recently passed from a brain aneurysm. I know these can come out of aneurysm. I know these can come out of aneurysm. I know these can come out of nowhere. Besides a healthy lifestyle, nowhere. Besides a healthy lifestyle, nowhere. Besides a healthy lifestyle, any peptides and cut down the risk of",
+            "first_timestamp": "00:49:45.760"
+          }
+        ],
+        "acute_signals": [],
+        "chronic_signals": []
+      },
+      "female_specific_note": "Taylor Williams Coaching focuses on female-specific HRT/peptide guidance. Per-peptide notes here often emphasize female dosing, fertility, hormone interactions."
+    }
+  },
+  "reset_biology_synthesis": {
+    "status": "distilled",
+    "recommendation": "Reset Biology suggests a practitioner weigh Hunter Williams' newer library evidence (2026-03-29, 8:47): \"this one's going to be two capsules daily taken with meals, and then it's gonna be 10 to 30 days per cycle. Again, if it is on the lower end of severity, 10 days, higher end severity 30 day.\" https://library.hunterwilliamshealth.com/p/peptides-for-eye-health-the-ultimate-vision-support-stack--cf6c7315/ Hunter Williams (2026-03-29, 9:17): \"for someone that has eye strain or eye impairment, especially due to, uh, overuse of screens, this one's probably going to work better.\" https://library.hunterwilliamshealth.com/p/peptides-for-eye-health-the-ultimate-vision-support-stack--cf6c7315/",
+    "caveats": "- Hunter Williams (2026-03-29, 8:17): \"what's cool about these side effects, virtually zero. You can't say all the way zero, but it's been well tolerated with no reported side-effects, complications or dependence. Individuals with known hypersensitivity to any components should stay away. And it is not recommended for women that are pregnant or breastfeeding.\" https://library.hunterwilliamshealth.com/p/reverse-vision-decline-visolutens-eye-opening-results-backed-by-science--9f0ce713/\n- Hunter Williams (2026-03-29, 18:20): \"Pregnant or breastfeeding women should consult a physician before, and then those with severe autoimmune diseases, just because they could be a little powerful, may want to start with lower doses before you create too dramatic of a change within the body.\" https://library.hunterwilliamshealth.com/p/stop-aging-now-bioregulatorsthe-future-of-longevity-in-a-capsule--84fe77e0/",
+    "cross_expert_consensus": "Hunter Williams (2026-03-29, 0:09): \"Visolutin, which is the retina bioregulator or the bi oregulator for your eyes.\" https://library.hunterwilliamshealth.com/p/reverse-vision-decline-visolutens-eye-opening-results-backed-by-science--9f0ce713/ Taylor Williams (2026-02-28, 00:49:45.760): \"uh visolutin which is the eye bio regulator that helps with that\" https://youtu.be/hgI5Mpc-xDQ",
+    "cross_expert_disagreement": "Hunter Williams (2026-03-29, 9:17): \"if someone that has eye strain or eye impairment, especially due to, uh, overuse of screens, this one's probably going to work better. I would recommend both of them if you're trying to heal. But, um, if he only could choose one.\" https://library.hunterwilliamshealth.com/p/peptides-for-eye-health-the-ultimate-vision-support-stack--cf6c7315/ Taylor Williams (2026-02-28, 00:49:45.760): \"uh visolutin which is the eye bio regulator that helps with that but I think probably you're noticed more from the eye drops and SS31 than you would from that if you are you know allocating your funds appropriately\" https://youtu.be/hgI5Mpc-xDQ",
+    "acute_chronic_split": {
+      "acute": {
+        "dose": "Hunter Williams (2026-03-29, 7:06): \"Post-traumatic corneal dystrophies, 2 to 3 capsulas per day, to 2-3 times daily for fifteen to thirty days\" https://library.hunterwilliamshealth.com/p/reverse-vision-decline-visolutens-eye-opening-results-backed-by-science--9f0ce713/",
+        "route": "Hunter Williams (2026-03-29, 4:23): \"Vesolutin was administered orally\" https://library.hunterwilliamshealth.com/p/reverse-vision-decline-visolutens-eye-opening-results-backed-by-science--9f0ce713/",
+        "frequency": "Hunter Williams (2026-03-29, 7:06): \"2-3 times daily\" https://library.hunterwilliamshealth.com/p/reverse-vision-decline-visolutens-eye-opening-results-backed-by-science--9f0ce713/",
+        "duration": "Hunter Williams (2026-03-29, 7:06): \"for fifteen to thirty days\" https://library.hunterwilliamshealth.com/p/reverse-vision-decline-visolutens-eye-opening-results-backed-by-science--9f0ce713/",
+        "verbatim_citation": "Hunter Williams — reverse-vision-decline-visolutens-eye-opening-results-backed-by-science--9f0ce713 (2026-03-29, 7:06): \"Post-traumatic corneal dystrophies, 2 to 3 capsulas per day, to 2-3 times daily for fifteen to thirty days\" https://library.hunterwilliamshealth.com/p/reverse-vision-decline-visolutens-eye-opening-results-backed-by-science--9f0ce713/",
+        "episode_url": "https://library.hunterwilliamshealth.com/p/reverse-vision-decline-visolutens-eye-opening-results-backed-by-science--9f0ce713/",
+        "timestamp": "7:06"
+      },
+      "chronic": {
+        "dose": "Hunter Williams (2026-03-29, 7:38): \"one capsule two times a day\" https://library.hunterwilliamshealth.com/p/reverse-vision-decline-visolutens-eye-opening-results-backed-by-science--9f0ce713/",
+        "route": "Hunter Williams (2026-03-29, 4:23): \"Vesolutin was administered orally\" https://library.hunterwilliamshealth.com/p/reverse-vision-decline-visolutens-eye-opening-results-backed-by-science--9f0ce713/",
+        "frequency": "Hunter Williams (2026-03-29, 7:38): \"one capsule two times a day\" https://library.hunterwilliamshealth.com/p/reverse-vision-decline-visolutens-eye-opening-results-backed-by-science--9f0ce713/",
+        "duration": "Hunter Williams (2026-03-29, 7:38): \"for 15 to 30 days\" https://library.hunterwilliamshealth.com/p/reverse-vision-decline-visolutens-eye-opening-results-backed-by-science--9f0ce713/",
+        "verbatim_citation": "Hunter Williams — reverse-vision-decline-visolutens-eye-opening-results-backed-by-science--9f0ce713 (2026-03-29, 7:38): \"For individuals exposed to eye strain, which would be prolonged screen exposure or nasty environments, one capsule two times a day for 15 to 30 days.\" https://library.hunterwilliamshealth.com/p/reverse-vision-decline-visolutens-eye-opening-results-backed-by-science--9f0ce713/",
+        "episode_url": "https://library.hunterwilliamshealth.com/p/reverse-vision-decline-visolutens-eye-opening-results-backed-by-science--9f0ce713/",
+        "timestamp": "7:38"
+      }
+    },
+    "dosing_variants": [
+      {
+        "evidence_date": "2026-03-29",
+        "source_type": "library-video",
+        "source_slug": "peptides-for-eye-health-the-ultimate-vision-support-stack--cf6c7315",
+        "dose": "Hunter Williams (2026-03-29, 8:47): \"this one's going to be two capsules daily taken with meals\" https://library.hunterwilliamshealth.com/p/peptides-for-eye-health-the-ultimate-vision-support-stack--cf6c7315/",
+        "duration": "Hunter Williams (2026-03-29, 8:47): \"it's gonna be 10 to 30 days per cycle. Again, if it is on the lower end of severity, 10 days, higher end severity 30 day.\" https://library.hunterwilliamshealth.com/p/peptides-for-eye-health-the-ultimate-vision-support-stack--cf6c7315/",
+        "timestamp": "8:47"
+      },
+      {
+        "evidence_date": "2026-03-29",
+        "source_type": "library-video",
+        "source_slug": "reverse-vision-decline-visolutens-eye-opening-results-backed-by-science--9f0ce713",
+        "dose": "Hunter Williams (2026-03-29, 4:23): \"Vesolutin was administered orally, 1 to 3 capsules, 2 to three times daily, just for 30 days.\" https://library.hunterwilliamshealth.com/p/reverse-vision-decline-visolutens-eye-opening-results-backed-by-science--9f0ce713/",
+        "duration": "Hunter Williams (2026-03-29, 4:23): \"just for 30 days\" https://library.hunterwilliamshealth.com/p/reverse-vision-decline-visolutens-eye-opening-results-backed-by-science--9f0ce713/",
+        "timestamp": "4:23"
+      },
+      {
+        "evidence_date": "2026-03-29",
+        "source_type": "library-video",
+        "source_slug": "reverse-vision-decline-visolutens-eye-opening-results-backed-by-science--9f0ce713",
+        "dose": "Hunter Williams (2026-03-29, 7:38): \"one capsule two times a day for 15 to 30 days\" https://library.hunterwilliamshealth.com/p/reverse-vision-decline-visolutens-eye-opening-results-backed-by-science--9f0ce713/",
+        "duration": "Hunter Williams (2026-03-29, 7:38): \"for 15 to 30 days\" https://library.hunterwilliamshealth.com/p/reverse-vision-decline-visolutens-eye-opening-results-backed-by-science--9f0ce713/",
+        "timestamp": "7:38"
+      },
+      {
+        "evidence_date": "2025-03-04",
+        "source_type": "email",
+        "source_id": "1956211f038f2577",
+        "dose": "Hunter Williams (2025-03-04, threadId 1956211f038f2577): \"For screen-related eye strain (prevention): 1 capsule, 2 times per day for 30 days.\"",
+        "duration": "Hunter Williams (2025-03-04, threadId 1956211f038f2577): \"for 30 days\""
+      }
+    ],
+    "female_specific_notes": null,
+    "distilled_at": "2026-07-17T04:24:45.9493734-06:00",
+    "distilled_by": "codex"
+  },
+  "generated_at": "2026-07-17T10:59:08.985Z",
+  "mentions_fingerprint": "5720b8223393"
+}

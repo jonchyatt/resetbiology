@@ -1,0 +1,238 @@
+{
+  "peptide": "Testagen",
+  "slug": "testagen",
+  "aliases": [
+    "Testagen",
+    "testagen"
+  ],
+  "category": "Hormones",
+  "experts": {
+    "hunter-williams": {
+      "baseline_protocol": null,
+      "summary": {
+        "mention_count": 49,
+        "top_doses": [
+          {
+            "dose": "20 mg",
+            "count": 10
+          },
+          {
+            "dose": "2 mg",
+            "count": 6
+          },
+          {
+            "dose": "10 mg",
+            "count": 4
+          },
+          {
+            "dose": "20 units",
+            "count": 2
+          },
+          {
+            "dose": "10 milligrams",
+            "count": 2
+          },
+          {
+            "dose": "2.5 mg",
+            "count": 1
+          },
+          {
+            "dose": "200 mg",
+            "count": 1
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "19964062f3a647df",
+            "source_type": "email",
+            "source_title": "The Future of Natural Testosterone?",
+            "source_date": "2025-09-19",
+            "source_url": "https://open.spotify.com/episode/7ImbXLFcgcfVOzzwXcnAls",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-09-19-the-future-of-natural-testosterone.md",
+            "mention_count": 18,
+            "top_snippet": "s with the oral version, in a controlled clinic trial using **10 mg oral Testoluten® twice daily for 30 days**, men saw testosterone rise from low-normal into mid-normal and **LH/FSH jump ~50–80%**. T",
+            "top_context": "s with the oral version, in a controlled clinic trial using **10 mg oral Testoluten® twice daily for 30 days**, men saw testosterone rise from low-normal into mid-normal and **LH/FSH jump ~50–80%**. They also noted improved libido, sperm parameters, and **no adverse effects**. For the injectable testagen, in a pilot using **2.5 mg IM daily for 10 days**, men logged a **~26% increase in total testosterone** vs baseline, plus better well-being and libido (placebo didn’t move). And in a 2022 program with **105 stressed men** (mild insulin resistance + ED), the **four-peptide combo** (adrenal + pancr",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "195f89105b90a45b",
+            "source_type": "email",
+            "source_title": "Oral vs. Injectable Bioregulators",
+            "source_date": "2025-04-02",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-04-02-oral-vs-injectable-bioregulators.md",
+            "mention_count": 12,
+            "top_snippet": "on questions I’ve seen from my audience lately—and one that deserves some real clarity—is: “**“What’s the difference between oral and injectable bioregulators?”**“ — Today, I want to break down exactl",
+            "top_context": "on questions I’ve seen from my audience lately—and one that deserves some real clarity—is: “**“What’s the difference between oral and injectable bioregulators?”**“ — Today, I want to break down exactly how these two types of peptide bioregulators compare, specifically using Testoluten (oral) and Testagen (injectable) as prime examples. This should give you a crystal-clear picture of how they each work, their effectiveness, convenience, safety, and when to consider using one or both. Let’s dive in! ——————————————————————————— **What Are Bioregulators, Anyway?** First off, peptide bioregulators",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "peptide-qa-october-2025--6eb875d9",
+            "source_type": "library-video",
+            "source_title": "Peptide Q&A · October 2025",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-october-2025--6eb875d9/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-qa-october-2025--6eb875d9.json",
+            "mention_count": 6,
+            "top_snippet": "So maybe that's a little bit redundant. But I think from an inflammation standpoint, I like to say BP, to me, vylon, is like taping from a feel standpoint. It's like taking BPC and themicin alpha one together. That's how it feels. And there's obviously like longevity benefits to it as well. I really like it from that standpoint What are your thoughts on testigen? I think testagen is great. I thing testogen might even be better than HCG at what it does. So I love testingen. And I thank every male. If you're not on testosterone therapy, you should try testegen.",
+            "top_context": "to look a lot better. So that would be my recommendation for that person. Just going through these, looking for some shorter questions. Views on Vilon's benefits. Is this a key peptide for longevity? Would you take it alongside epithelium and thymalin, or those who are already enough? I would take alongside it epitelian and thiolin. Now, Vylon is in thimalin. So maybe that's a little bit redundant. But I think from an inflammation standpoint, I like to say BP, to me, vylon, is like taping from a feel standpoint. It's like taking BPC and themicin alpha one together. That's how it feels. And there's obviously like longevity benefits to it as well. I really like it from that standpoint What are your thoughts on testigen? I think testagen is great. I thing testogen might even be better than HCG at what it does. So I love testingen. And I thank every male. If you're not on testosterone therapy, you should try testegen. and if you are on Testosterone therapy and you were concerned about fertility, I Think testigens is a great as well. Would testosterone to inject sub Q and dose for a six-year-old man that wants to switch from cream to injections? So I don't recommend injecting testosterone sub-Q. I know people will disagree with that. That's totally cool. If you like injectting testosterone, subQ, I think you should keep doing it. However, it's much better to do IM. And I also think that people shy away because they're scared of injections. and if that's the case, you get over having to injected intramuscularly because you stand to benefit a lot to gain.",
+            "first_timestamp": "27:58"
+          },
+          {
+            "source_id": "peptide-qa-december-2025--f7613f71",
+            "source_type": "library-article",
+            "source_title": "Peptide Q&A · December 2025",
+            "source_date": "2026-03-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-december-2025--f7613f71/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-qa-december-2025--f7613f71.json",
+            "mention_count": 3,
+            "top_snippet": "y life. ACE-167 is a peptide being studied that may help cholesterol synthesis in the testes, but we'll see. Kisspeptin and Gonadorelin do a little, but they won't replace testosterone. If the HPA axi",
+            "top_context": "y life. ACE-167 is a peptide being studied that may help cholesterol synthesis in the testes, but we'll see. Kisspeptin and Gonadorelin do a little, but they won't replace testosterone. If the HPA axis is struggling, you probably also need a growth hormone peptide and desiccated thyroid. TRT Plus Testagen I'm doing this right now as part of my fertility protocol. 2 mg of Testagen per day, 5 days on, 2 off, for about 6 weeks. I feel a bit of an HCG-like effect without the weird HCG side effects. It also seems to bump my thyroid function a little. For guys not on TRT and not on thyroid, Testagen alo",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "saturday-morning-coffee-talk-32826--a0b19742",
+            "source_type": "library-video",
+            "source_title": "Saturday Morning Coffee Talk · 3/28/26",
+            "source_date": "2026-04-08",
+            "source_url": "https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-32826--a0b19742/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/saturday-morning-coffee-talk-32826--a0b19742.json",
+            "mention_count": 3,
+            "top_snippet": "fertility purposes, but I did want to try that to see like, okay, what was it doing? And didn' really seem to do any thing for that. But I don't, that being said, I think testogen could probably be for like a guy in his twenties that doesn't want start TRT, it's too early. The guy that's 20, 21 can absolutely use testagen and probably get it. Testogen and l-carnitine could be like way to like help bridge the gap. for someone that is going to kind of get like do TRT one day, but maybe they don't want to do it right away. Will VIP help with Raynards or anything else?",
+            "top_context": "I've been playing around with testigen for a couple months, maybe taking it two times per week. I just had my labs ran for TRT in my total. The average is 1100, was 1500 just putting out there. Very helpful. And that makes sense because it's kind of, I think it is like working pretty similar to HCG maybe with a little bit more effect on the thyroid. So yeah, it, is good. For me, like I felt probably like a little bit of benefit, but I would say, you know, It wasn't anything that I noticed and didn't really do anything for fertility purposes, but I did want to try that to see like, okay, what was it doing? And didn' really seem to do any thing for that. But I don't, that being said, I think testogen could probably be for like a guy in his twenties that doesn't want start TRT, it's too early. The guy that's 20, 21 can absolutely use testagen and probably get it. Testogen and l-carnitine could be like way to like help bridge the gap. for someone that is going to kind of get like do TRT one day, but maybe they don't want to do it right away. Will VIP help with Raynards or anything else? I think it will. I with raynard you look at it as a blood flow issue. VIP could help BPC, TB 500, ARA 290 could Really, anything that's going to help with that. I would actually have, even if it's a woman, do a low-dose Cialis to with help that as well. What would I do if I couldn't get GH? I'd probably just use MK777. Yeah. Or Ipamerelin and Tessamerelin. And just cycle between those. Cycle those? Yeah What's up Issa, another member of the group.",
+            "first_timestamp": "1:43:53"
+          },
+          {
+            "source_id": "saturday-morning-coffee-talk-31426--deb3667a",
+            "source_type": "library-video",
+            "source_title": "Saturday Morning Coffee Talk · 3/14/26",
+            "source_date": "2026-04-08",
+            "source_url": "https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-31426--deb3667a/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/saturday-morning-coffee-talk-31426--deb3667a.json",
+            "mention_count": 2,
+            "top_snippet": "it's not going to have effects beyond that other than you just not having anything happen. And I think the bioregulators are much more like that. Obviously, this is me speaking from anecdotal user experience, much than the chemical side of things, but that's what I seem to notice. And when you look at a lot of the bio-regulators, I don't know specifically with livagen and ovagen, maybe ovogen, sometimes the dosing is 10 milligrams intramuscularly per day for 10 days in Russian literature. I know, specifically, testagen is that, I don't know which other ones.",
+            "top_context": "such as GLP that would have very different metabolization in the body versus livagen and ovagen, I don't think there would be. And also too, they work more. We have some peptides that exist on the spectrum of as signalers, and they can act as a sledgehammer, meaning that the higher the dose, stronger and stronger are stronger than stronger the signal gets. Whereas other peptide seem to act more like modulators, And they bring you in balance and almost regardless of the dose, it's not going to have effects beyond that other than you just not having anything happen. And I think the bioregulators are much more like that. Obviously, this is me speaking from anecdotal user experience, much than the chemical side of things, but that's what I seem to notice. And when you look at a lot of the bio-regulators, I don't know specifically with livagen and ovagen, maybe ovogen, sometimes the dosing is 10 milligrams intramuscularly per day for 10 days in Russian literature. I know, specifically, testagen is that, I don't know which other ones. I think thymalin would be similar. The dosing, a lot of times we'll go up to 10 milligrams per day injected. You gave me over. Did you give me a virgin? No, over gen is actually not for ovaries. Most people think that overgen is for the ovary. It's actually for. And it does have some GI, some stomach benefits. Same thing with libogen. Libogen is four the liver. Ovagen would be more of a crossover, had some liver benefits, has some stomach benefits and then livagen is for the liver. But if you were trying to heal your liver, you would use, could use both of them together.",
+            "first_timestamp": "30:46"
+          },
+          {
+            "source_id": "the-future-of-natural-t-why-im-bullish-on-testagen--e1b7ba3a",
+            "source_type": "library-video",
+            "source_title": "The Future of Natural T Why Im Bullish on Testagen",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/the-future-of-natural-t-why-im-bullish-on-testagen--e1b7ba3a/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/the-future-of-natural-t-why-im-bullish-on-testagen--e1b7ba3a.json",
+            "mention_count": 2,
+            "top_snippet": "So there is interest in using testagen for hypothalamic pituitary dysfunction or mild central hypothyroidism in aging or after traumatic brain injury, which affected my pituitary, to which I was not producing testosterone when I younger. So obviously all of this is going to lead into anti-aging effects. There is emerging preclinical evidence that peptides like testogen have anti aging benefits. So what is the benefit of using testogen? What's going to restore endocrine function in aged animals? And for example, in older hypo-phi-sectimized hens, testogens still increase thyroid hormones though to a lesser degree in younger ones.",
+            "top_context": "So when we look at the thyroid, so for individuals with secondary hypothyroidism due to pituitary insufficiency or age-related blunting of TSH release, T SH release testogen may help normalize thyroid levels. Also, there's avian studies that provide proof of concept that testogen can restore thyroid gland structure and function in the absence of normal TSH stimulation. And so by improving thyroid function, testigen could enhance basal metabolic rate, cognitive function and lipid profiles since thyroid hormones have broad systemic effects. So there is interest in using testagen for hypothalamic pituitary dysfunction or mild central hypothyroidism in aging or after traumatic brain injury, which affected my pituitary, to which I was not producing testosterone when I younger. So obviously all of this is going to lead into anti-aging effects. There is emerging preclinical evidence that peptides like testogen have anti aging benefits. So what is the benefit of using testogen? What's going to restore endocrine function in aged animals? And for example, in older hypo-phi-sectimized hens, testogens still increase thyroid hormones though to a lesser degree in younger ones. And again, this is where we see this with testigen. If you are perfectly healthy, are you going notice a benefit? Maybe, maybe not. I think So many men's testosterone is impaired at this point. Every man's probably going to notice a benefit from it. But we tend to see more of a pronounced benefit in less healthy individuals. Basically, when we look at some of those anti-aging benefits, we've got immune modulation, rejuvenation of the immune system in senescent cells. Subjects also can substitute for pituitary trophic signals, promote tissue pair and growth, and directly interact with the genome to regulate specific",
+            "first_timestamp": "8:44"
+          },
+          {
+            "source_id": "peptide-qa-april-2026--9bc7fd8c",
+            "source_type": "library-article",
+            "source_title": "Peptide Q&A · April 2026",
+            "source_date": "2026-04-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-april-2026--9bc7fd8c/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-qa-april-2026--9bc7fd8c.json",
+            "mention_count": 1,
+            "top_snippet": "d peptides before/after? Personally, I never plan to get one. Being on testosterone without HCG or HMG basically does the same thing, though not 100%. My recommendation is to skip the vasectomy if you",
+            "top_context": "d peptides before/after? Personally, I never plan to get one. Being on testosterone without HCG or HMG basically does the same thing, though not 100%. My recommendation is to skip the vasectomy if you can. If you do get one, stay on testosterone therapy after, and look at testes bioregulators like testagen (injectable) or testoluten (oral) to support natural function. Mike: I'm on testosterone and sermorelin and hit a plateau. What's next? Add a GLP. Stack a mitochondrial peptide like SS-31 or MOTS-c. And I'd move from sermorelin to actual HGH. Sam: Peptides for post-cycle therapy? Honestly, I'm",
+            "first_timestamp": null
+          }
+        ],
+        "acute_signals": [
+          {
+            "snippet": "So there is interest in using testagen for hypothalamic pituitary dysfunction or mild central hypothyroidism in aging or after traumatic brain injury, which affected my pituitary, to which I was not producing testosterone when I younger. So obviously all of this is going to lead into anti-aging effects. There is emerging preclinical evidence that peptides like testogen have anti aging benefits. So what is the benefit of using testogen? What's going to restore endocrine function in aged animals? And for example, in older hypo-phi-sectimized hens, testogens still increase thyroid hormones though to a lesser degree in younger ones.",
+            "source_title": "The Future of Natural T Why Im Bullish on Testagen",
+            "source_date": "2026-03-29",
+            "timestamp": "8:44",
+            "source_url": "https://library.hunterwilliamshealth.com/p/the-future-of-natural-t-why-im-bullish-on-testagen--e1b7ba3a/"
+          }
+        ],
+        "chronic_signals": [
+          {
+            "snippet": "itself. They’re not hormones or drugs—think of them as signals that “remind” your organs how to function like they did in your younger years. Now, within the bioregulator world, we have two main deliv",
+            "source_title": "Oral vs. Injectable Bioregulators",
+            "source_date": "2025-04-02",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "r-friendly. **Safety:** Another plus: Testoluten has a stellar safety record. It’s essentially a natural, food-grade supplement without reported adverse effects, making it safe for long-term use witho",
+            "source_title": "Oral vs. Injectable Bioregulators",
+            "source_date": "2025-04-02",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "d. It’s essentially a natural, food-grade supplement without reported adverse effects, making it safe for long-term use without complications or side effects. ——————————————————————————— **Injectable ",
+            "source_title": "Oral vs. Injectable Bioregulators",
+            "source_date": "2025-04-02",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "njections, which some users find inconvenient or intimidating. It involves mixing peptide powder with sterile water and injecting yourself multiple times per week for a cycle. It’s straightforward wit",
+            "source_title": "Oral vs. Injectable Bioregulators",
+            "source_date": "2025-04-02",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "se Oral (Testoluten) if you:** * Prefer the simplest and most convenient approach * Want gentle, long-term improvement and maintenance of testosterone and fertility * Dislike needles and injections * ",
+            "source_title": "Oral vs. Injectable Bioregulators",
+            "source_date": "2025-04-02",
+            "timestamp": null,
+            "source_url": null
+          }
+        ]
+      }
+    },
+    "taylor-williams": {
+      "summary": {
+        "mention_count": 15,
+        "top_doses": [],
+        "top_sources": [
+          {
+            "source_id": "G27dIPBJUSs",
+            "source_type": "podcast",
+            "source_title": "Saturday Morning Coffee Talk 3/28/26",
+            "source_date": "2026-03-28",
+            "source_url": "https://youtu.be/G27dIPBJUSs",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2026-03-28-saturday-morning-coffee-talk-3-28-26-G27dIPBJUSs.en.vtt",
+            "mention_count": 15,
+            "top_snippet": "Doing too. Been playing around with Testagen for a",
+            "top_context": "bad food? Is it a combo of both? And so bad food? Is it a combo of both? And so I think someone with a GLP and metformin I think someone with a GLP and metformin I think someone with a GLP and metformin and SGLT2 after 3 months of that, gout and SGLT2 after 3 months of that, gout and SGLT2 after 3 months of that, gout will go away. Yeah. After the hormones will go away. Yeah. After the hormones will go away. Yeah. After the hormones are going to be important, too, cuz that are going to be important, too, cuz that are going to be important, too, cuz that really starts really starts really starts &gt;&gt; SS-31, too. Yeah, SS-31. SS-31, &gt;&gt; SS-31, too. Yeah, SS-31. SS-31, &gt;&gt; SS-31, too. Yeah, SS-31. SS-31, Retatrutide, SGLT2, metformin within 4 Retatrutide, SGLT2, metformin within 4 Retatrutide, SGLT2, metformin within 4 months I think you would pretty much months I think you would pretty much months I think you would pretty much solve any gout problem. Assuming that solve any gout problem. Assuming that solve any gout problem. Assuming that they are trying, meaning that they're they are trying, meaning that they're they are trying, meaning that they're trying to eat healthy. Yeah. Yeah, trying to eat healthy. Yeah. Yeah, trying to eat healthy. Yeah. Yeah, you're not going to be drinking six you're not going to be drinking six you're not going to be drinking six glasses of wine a night. Um glasses of wine a night. Um glasses of wine a night. Um &gt;&gt; Wine will definitely trigger gout. Yeah. &gt;&gt; Wine will definitely trigger gout. Yeah. &gt;&gt; Wine will definitely trigger gout. Yeah. More so than any of the other Yeah. More so than any of the other Yeah. More so than any of the other Yeah. alcohols. Yeah. &gt;&gt; Stress also not being aligned. Yeah. &gt;&gt; Stress also not being aligned. Yeah. &gt;&gt; body. &gt;&gt; body. &gt;&gt; body. Doing too. Doing too. Doing too. Been playing around with Testagen for a Been playing around with Testagen for a Been playing around with Testagen for a couple months, maybe taking it two times couple months, maybe taking it two times couple months, maybe taking it two times per week. I just had my labs ran for TRT per week. I just had my labs ran for TRT per week. I just had my labs ran for TRT and my total and my total and my total The average is 1,100, was 1,500, just The average is 1,100, was 1,500, just The average is 1,100, was 1,500, just putting out there. Very helpful and that putting out there. Very helpful and that putting out there. Very helpful and that makes sense because it's kind of I think makes sense because it's kind of I think makes sense because it's kind of I think it's like working pretty similar to hCG, it's like working pretty similar to hCG, it's like working pretty similar to hCG, maybe with a little bit more effect on maybe with a little bit more effect on maybe with a little bit more effect on the thyroid. the thyroid. the thyroid. Um Um Um So yeah, it it is good. I've seen people So yeah, it it is good. I've seen people So yeah, it it is good. I've seen people that take Testagen it didn't really do that take Testagen it didn't really do that take Testagen it didn't really do anything. I've seen people that have anything. I've seen people that have anything. I've seen people that have taken it and it does something. taken it and it does something. taken it and it does something. For me, like I felt probably like a For me, like I felt probably like a For me, like I felt probably like a little bit of benefit, um little bit of benefit, um little bit of benefit, um but but but I would say, I would say, I would say, you know, you know, you know, it wasn't anything I noticed and it it wasn't anything I noticed and it it wasn't anything I noticed and it didn't really do anything for fertility didn't really do anything for fertility didn't really do anything for fertility purposes, but I did want to try that to purposes, but I did want to try that to purposes, but I did want to try that to see like, okay, what was it doing? see like, okay, what was it doing? see like, okay, what was it doing? It didn't really seem to do anything for",
+            "first_timestamp": "01:43:12.480"
+          }
+        ],
+        "acute_signals": [],
+        "chronic_signals": []
+      },
+      "female_specific_note": "Taylor Williams Coaching focuses on female-specific HRT/peptide guidance. Per-peptide notes here often emphasize female dosing, fertility, hormone interactions."
+    }
+  },
+  "reset_biology_synthesis": {
+    "status": "distilled",
+    "recommendation": "Hunter Williams — saturday-morning-coffee-talk-31426--deb3667a (2026-04-08, 30:46): \"And when you look at a lot of the bio-regulators, I don't know specifically with livagen and ovagen, maybe ovogen, sometimes the dosing is 10 milligrams intramuscularly per day for 10 days in Russian literature. I know, specifically, testagen is that, I don't know which other ones.\" https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-31426--deb3667a/",
+    "caveats": "- Hunter Williams — peptide-qa-december-2025--f7613f71 (2026-03-30, 20:23): \"It might not change at all, or it might be beneficial.\" https://library.hunterwilliamshealth.com/p/peptide-qa-december-2025--f7613f71/\n- Hunter Williams — saturday-morning-coffee-talk-31426--deb3667a (2026-04-08, 30:46): \"Obviously, this is me speaking from anecdotal user experience, much than the chemical side of things, but that's what I seem to notice.\" https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-31426--deb3667a/\n- Hunter Williams — 19964062f3a647df (2025-09-19): \"If there’s true primary testicular failure, you’ll likely need conventional therapy.\" https://open.spotify.com/episode/7ImbXLFcgcfVOzzwXcnAls",
+    "cross_expert_consensus": null,
+    "cross_expert_disagreement": "Hunter Williams — 19964062f3a647df (2025-09-19): \"Daily dose: 10–20 units on an insulin syringe (0.10–0.20 ml) = 1–2 mg.\" \"Cycle length: 30–60 days (minimum 10 days if you’re just testing).\" \"Frequency: Repeat 2–3× per year based on goals, labs, and feel.\" https://open.spotify.com/episode/7ImbXLFcgcfVOzzwXcnAls Hunter Williams — 19964062f3a647df (2025-09-19): \"For the injectable testagen, in a pilot using 2.5 mg IM daily for 10 days, men logged a ~26% increase in total testosterone vs baseline, plus better well-being and libido (placebo didn’t move).\" https://open.spotify.com/episode/7ImbXLFcgcfVOzzwXcnAls Hunter Williams — saturday-morning-coffee-talk-31426--deb3667a (2026-04-08, 30:46): \"And when you look at a lot of the bio-regulators, I don't know specifically with livagen and ovagen, maybe ovogen, sometimes the dosing is 10 milligrams intramuscularly per day for 10 days in Russian literature. I know, specifically, testagen is that, I don't know which other ones.\" https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-31426--deb3667a/",
+    "acute_chronic_split": {
+      "acute": null,
+      "chronic": {
+        "dose": "Hunter Williams — peptide-qa-december-2025--f7613f71 (2026-03-30, 20:23): \"So I add in two milligrams of testogen a day, five days on, two days off.\" https://library.hunterwilliamshealth.com/p/peptide-qa-december-2025--f7613f71/",
+        "route": null,
+        "frequency": "Hunter Williams — peptide-qa-december-2025--f7613f71 (2026-03-30, 20:23): \"So I add in two milligrams of testogen a day, five days on, two days off.\" https://library.hunterwilliamshealth.com/p/peptide-qa-december-2025--f7613f71/",
+        "duration": "Hunter Williams — peptide-qa-december-2025--f7613f71 (2026-03-30, 20:23): \"And what I want to do is use that for 30 days, six weeks and see where my fertility is.\" https://library.hunterwilliamshealth.com/p/peptide-qa-december-2025--f7613f71/",
+        "verbatim_citation": "Hunter Williams — peptide-qa-december-2025--f7613f71 (2026-03-30, 20:23): \"So I add in two milligrams of testogen a day, five days on, two days off. And what I want to do is use that for 30 days, six weeks and see where my fertility is.\" https://library.hunterwilliamshealth.com/p/peptide-qa-december-2025--f7613f71/",
+        "episode_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-december-2025--f7613f71/",
+        "timestamp": "20:23"
+      }
+    },
+    "female_specific_notes": null,
+    "distilled_at": "2026-07-17T10:17:12.606Z",
+    "distilled_by": "codex"
+  },
+  "generated_at": "2026-07-17T10:59:09.531Z",
+  "mentions_fingerprint": "b37cbd80b022"
+}

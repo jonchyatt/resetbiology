@@ -5,28 +5,28 @@
     "Pancragen",
     "pancragen"
   ],
-  "category": "Uncategorized",
+  "category": "Bioregulators",
   "experts": {
     "hunter-williams": {
       "baseline_protocol": null,
       "summary": {
-        "mention_count": 36,
+        "mention_count": 64,
         "top_doses": [
           {
             "dose": "20 mg",
-            "count": 15
-          },
-          {
-            "dose": "1 mg",
-            "count": 4
+            "count": 16
           },
           {
             "dose": "10 units",
-            "count": 3
+            "count": 5
+          },
+          {
+            "dose": "1 mg",
+            "count": 5
           },
           {
             "dose": "2 mg",
-            "count": 3
+            "count": 5
           },
           {
             "dose": "20 units",
@@ -42,9 +42,21 @@
             "source_url": null,
             "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-07-28-reverse-age-your-pancreas.md",
             "mention_count": 34,
-            "top_snippet": "re on your beta cells. They manage the problem, sure, but they don’t _fix_ the underlying issue. They don’t rejuvenate old pancreatic tissue, reverse cellular aging, or help your gland recover from ye",
-            "top_context": "re on your beta cells. They manage the problem, sure, but they don’t _fix_ the underlying issue. They don’t rejuvenate old pancreatic tissue, reverse cellular aging, or help your gland recover from years of metabolic stress. That’s where a tiny, little-known bioregulator peptide called **Pancragen** enters the conversation. A compound that Russian researchers have used for decades to literally _turn back the clock_ on pancreatic function. Today I want to shine a light on this unsung hero, share the data behind it, and tell you how you can use it to reclaim a younger, healthier pancreas",
+            "top_snippet": "pressure on your beta cells. They manage the problem, sure, but they don’t _fix_ the underlying issue. They don’t rejuvenate old pancreatic tissue, reverse cellular aging, or help your gland recover f",
+            "top_context": "pressure on your beta cells. They manage the problem, sure, but they don’t _fix_ the underlying issue. They don’t rejuvenate old pancreatic tissue, reverse cellular aging, or help your gland recover from years of metabolic stress. That’s where a tiny, little-known bioregulator peptide called **Pancragen** enters the conversation. A compound that Russian researchers have used for decades to literally _turn back the clock_ on pancreatic function. Today I want to shine a light on this unsung hero, share the data behind it, and tell you how you can use it to reclaim a younger, healthier pancreas. “",
             "first_timestamp": null
+          },
+          {
+            "source_id": "this-peptide-reverses-pancreatic-aging-pancragen-deep-dive--2d5ef543",
+            "source_type": "library-video",
+            "source_title": "This Peptide Reverses Pancreatic Aging (Pancragen Deep Dive)",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/this-peptide-reverses-pancreatic-aging-pancragen-deep-dive--2d5ef543/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/this-peptide-reverses-pancreatic-aging-pancragen-deep-dive--2d5ef543.json",
+            "mention_count": 28,
+            "top_snippet": "And I think when we look at certain things that we can do, obviously when, we improve every organ in the body, there is going to be a downstream effect. But what's really about pancogen is so much in body. When we looking at aging and longevity and stemming the tide of aging can be related to the insulin dynamics within the, body and when fix or address the root cause of where those insulin dynamic may go awry, pancragen stands out to me as one that could be really beneficial to use at least a couple times a year. So that's it for the slides. And that is pretty much everything you need to know about pancreagen in order to get started and potentially use this together.",
+            "top_context": "But I would do is add two milliliters of water to that. Now every 10 units equals one milligram. I recommend taking two milligrams per day for 30, 60 days, depending on the level or severity of the pancreatic inflammation or insufficiency that you may have. If you're really diabetic, you probably want to do 60 days. If You're just looking for anti-aging benefits, probably go for 30 days and then again, depending on how good or not good you are in terms of your health, that you can repeat this course two to three times per year for ongoing rejuvenation. So there's a lot of really, really cool things with pancreagen. And I think when we look at certain things that we can do, obviously when, we improve every organ in the body, there is going to be a downstream effect. But what's really about pancogen is so much in body. When we looking at aging and longevity and stemming the tide of aging can be related to the insulin dynamics within the, body and when fix or address the root cause of where those insulin dynamic may go awry, pancragen stands out to me as one that could be really beneficial to use at least a couple times a year. So that's it for the slides. And that is pretty much everything you need to know about pancreagen in order to get started and potentially use this together. I did want to comment just before the end of the video, someone probably will be thinking after watching this, well, can I use these instead of a GLP-1? I would say use them together, and at the very least, I think it would allow you to lower doses of GLPs and make them go a lot further. And again, the GOP-1 is doing a lot of amazing things. Obviously, if you follow me, you probably know that I'm one of the larger proponents of them on the planet. However, what we don't see in the GLP1s that we see am Pancrogen is the, again reversal of DNA transcription inside the cell,",
+            "first_timestamp": "24:12"
           },
           {
             "source_id": "1987c43303a71c1e",
@@ -55,42 +67,42 @@
             "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-08-05-are-peptides-for-life.md",
             "mention_count": 2,
             "top_snippet": "Happy Tuesday! FYI, I just dropped a new video on the bioregulator Pancragen today on YouTube. Check it out when you get the chance! Youtube: This Peptide Reverses Pancreatic Aging (Pancragen Deep Div",
-            "top_context": "Happy Tuesday! FYI, I just dropped a new video on the bioregulator Pancragen today on YouTube. Check it out when you get the chance! Youtube: This Peptide Reverses Pancreatic Aging (Pancragen Deep Dive) (https://youtu.be/hVmzJWa_Wko?si=bf6FTQD36iKoc88f) I want to dive deep into a question that landed in my inbox this week. It’s a question I get asked more often tha",
+            "top_context": "Happy Tuesday! FYI, I just dropped a new video on the bioregulator Pancragen today on YouTube. Check it out when you get the chance! Youtube: This Peptide Reverses Pancreatic Aging (Pancragen Deep Dive) (https://youtu.be/hVmzJWa_Wko?si=bf6FTQD36iKoc88f) I want to dive deep into a question that landed in my inbox this week. It’s a question I get asked more often than you",
             "first_timestamp": null
           }
         ],
         "acute_signals": [],
         "chronic_signals": [
           {
-            "snippet": "ythms * A general feeling of metabolic _youthfulness_, as your pancreas acts years (or decades) younger And because Pancragen works at the level of gene expression, these changes can _persist_ for wee",
+            "snippet": "sulin rhythms * A general feeling of metabolic _youthfulness_, as your pancreas acts years (or decades) younger And because Pancragen works at the level of gene expression, these changes can _persist_",
             "source_title": "Reverse Age Your Pancreas?",
             "source_date": "2025-07-28",
             "timestamp": null,
             "source_url": null
           },
           {
-            "snippet": "youthfulness_, as your pancreas acts years (or decades) younger And because Pancragen works at the level of gene expression, these changes can _persist_ for weeks or months after a course. ———————————",
+            "snippet": "abolic _youthfulness_, as your pancreas acts years (or decades) younger And because Pancragen works at the level of gene expression, these changes can _persist_ for weeks or months after a course. ———",
             "source_title": "Reverse Age Your Pancreas?",
             "source_date": "2025-07-28",
             "timestamp": null,
             "source_url": null
           },
           {
-            "snippet": "or wanting to prevent the so-called “GLP-1 plateau” by truly rejuvenating the pancreas If you’re just looking for an appetite suppressant or a quick fix, stick to the popular drugs. But if you want to",
+            "snippet": "-1s or wanting to prevent the so-called “GLP-1 plateau” by truly rejuvenating the pancreas If you’re just looking for an appetite suppressant or a quick fix, stick to the popular drugs. But if you wan",
             "source_title": "Reverse Age Your Pancreas?",
             "source_date": "2025-07-28",
             "timestamp": null,
             "source_url": null
           },
           {
-            "snippet": "he pancreas If you’re just looking for an appetite suppressant or a quick fix, stick to the popular drugs. But if you want to _actually_ reverse pancreatic aging and set yourself up for long-term meta",
+            "snippet": "nating the pancreas If you’re just looking for an appetite suppressant or a quick fix, stick to the popular drugs. But if you want to _actually_ reverse pancreatic aging and set yourself up for long-t",
             "source_title": "Reverse Age Your Pancreas?",
             "source_date": "2025-07-28",
             "timestamp": null,
             "source_url": null
           },
           {
-            "snippet": "t if you want to _actually_ reverse pancreatic aging and set yourself up for long-term metabolic resilience, Pancragen is your peptide. ——————————————————————————— **How to Dose Pancragen** Dosing is ",
+            "snippet": "rugs. But if you want to _actually_ reverse pancreatic aging and set yourself up for long-term metabolic resilience, Pancragen is your peptide. ——————————————————————————— **How to Dose Pancragen** Do",
             "source_title": "Reverse Age Your Pancreas?",
             "source_date": "2025-07-28",
             "timestamp": null,
@@ -102,25 +114,26 @@
   },
   "reset_biology_synthesis": {
     "status": "distilled",
-    "recommendation": "Reset Biology suggests asking the practitioner to consider Pancragen as a Khavinson-class bioregulator for restoring pancreatic function rather than as an acute glycemic agent — Hunter email threadId 198531334f561481 (2025-07-28): \"a tiny, little-known bioregulator peptide called **Pancragen**\" and \"A compound that Russian researchers have used for decades to literally _turn back the clock_ on pancreatic function.\" We'd ask the prescribing physician to weigh Hunter's protocol of a 30–60 day subcutaneous course at the published 2 mg/day dose against the patient's specific metabolic context — Hunter email threadId 198531334f561481 (2025-07-28): \"Take 2mg per day (0.2ml or 20 units on an insulin syringe), subcutaneously or intramuscularly, for 30–60 days\" and \"Repeat this course 2–3 times per year for ongoing rejuvenation.\" Taylor and Bachmeyer have not (in indexed sources) discussed pancragen, so this synthesis rests entirely on Hunter — independent corroboration is missing and should be acknowledged.",
-    "caveats": "- Single-expert sourcing: Only Hunter has discussed pancragen in indexed sources. Taylor (women-focused podcast) and Dr Trevor Bachmeyer (SmashweRx) have zero indexed mentions — there is no cross-expert validation for the protocol below.\n- Hunter has a financial relationship with the supplier on the same day the protocol was published. Hunter email threadId 198531334f561481 (2025-07-28): \"BioLongevity Labs is running a flash sale on Pancragen and BioAbsorb (metformin+dihydroberberine) until midnight PST tonight. They are discounted 20% off and you can get an additional 15% off when you use code HUNTERW.\" Practitioners should weight the recommendation accordingly.\n- Evidence base is largely Russian / Khavinson-school. Hunter email threadId 198531334f561481 (2025-07-28): \"The Russians tested it for decades in both animals and humans, publishing their work in journals Western medicine mostly ignores.\" Hunter cites PubMed entries and a Khavinson PDF as further reading; Western RCTs at scale are not asserted.\n- Mechanism claim — direct DNA/histone binding — is asserted, not hedged. Hunter email threadId 198531334f561481 (2025-07-28): \"it can actually enter your pancreatic cells, slip into the nucleus, and _bind directly to your DNA_ and histone proteins.\" This is a strong mechanistic claim from one expert and should be treated as hypothesis, not established Western pharmacology.\n- Safety statement comes from one source. Hunter email threadId 198531334f561481 (2025-07-28): \"After more than 10 years on the market in Eastern Europe, no reports of toxicity, allergic reactions, or adverse interactions have been recorded.\" No long-term Western safety data is asserted.\n- Patient selection — Hunter's candidate list is broad. Hunter email threadId 198531334f561481 (2025-07-28): \"Anyone with type 2 diabetes or prediabetes\" / \"People with chronic pancreatitis, digestive enzyme insufficiency, or a history of pancreatic 'burnout'\" / \"Older adults looking for anti-aging support\" / \"Athletes or high-performers\" / \"Anyone coming off GLP-1s or wanting to prevent the so-called 'GLP-1 plateau' by truly rejuvenating the pancreas.\" Practitioner discretion required for each indication.\n- Not for cosmetic appetite suppression. Hunter email threadId 198531334f561481 (2025-07-28): \"If you're just looking for an appetite suppressant or a quick fix, stick to the popular drugs.\"\n- Stacking — Hunter notes compatibility but does not detail interactions. Hunter email threadId 198531334f561481 (2025-07-28): \"Pancragen plays nicely with GLP-1s, mitochondrial, and anti-inflammatory peptides.\" No specific dose-stacking, no interactions with prescription glycemic agents, are documented.",
-    "cross_expert_consensus": "No cross-expert consensus available. Hunter email threadId 198531334f561481 (2025-07-28) is the sole indexed source teaching dose, mechanism, indications, or duration. Taylor's podcast (women-focused) and Bachmeyer's podcast (SmashweRx) have zero indexed mentions of pancragen; mention_count for both experts is 0 in the Phase-2 mentions extract. Until Taylor or Bachmeyer publish on pancragen, RB cannot offer a triangulated consensus statement.",
-    "cross_expert_disagreement": "No cross-expert disagreement is documentable because only Hunter has indexed content on pancragen. The 2025-07-28 newsletter and the 2025-08-05 follow-up (Hunter email threadId 1987c43303a71c1e (2025-08-05): \"FYI, I just dropped a new video on the bioregulator Pancragen today on YouTube\") are internally consistent — same speaker, same protocol, no divergence between them.",
+    "recommendation": "Reset Biology suggests a practitioner weigh Hunter Williams' newer library statement: \"I recommend taking two milligrams per day for 30, 60 days, depending on the level or severity of the pancreatic inflammation or insufficiency that you may have.\" — Hunter Williams, 2026-03-29, video slug this-peptide-reverses-pancreatic-aging-pancragen-deep-dive--2d5ef543 @ 00:23:40, https://library.hunterwilliamshealth.com/p/this-peptide-reverses-pancreatic-aging-pancragen-deep-dive--2d5ef543/ The older dated email remains for its route wording: \"Take 2mg per day (0.2ml or 20 units on an insulin syringe), subcutaneously or intramuscularly, for 30–60 days.\" — Hunter Williams, 2025-07-28, threadId 198531334f561481, https://huntershealthhacks.beehiiv.com/p/reverse-age-your-pancreas-59fe1f3c041908ed",
+    "caveats": "- \"most of these are not gonna be published in Western medical journals.\" — Hunter Williams, 2026-03-29, video slug this-peptide-reverses-pancreatic-aging-pancragen-deep-dive--2d5ef543 @ 00:23:07, https://library.hunterwilliamshealth.com/p/this-peptide-reverses-pancreatic-aging-pancragen-deep-dive--2d5ef543/\n- \"almost nothing that is going to be a negative to it.\" — Hunter Williams, 2026-03-29, video slug this-peptide-reverses-pancreatic-aging-pancragen-deep-dive--2d5ef543 @ 00:21:59, https://library.hunterwilliamshealth.com/p/this-peptide-reverses-pancreatic-aging-pancragen-deep-dive--2d5ef543/\n- \"If you're really diabetic, you probably want to do 60 days. If You're just looking for anti-aging benefits, probably go for 30 days.\" — Hunter Williams, 2026-03-29, video slug this-peptide-reverses-pancreatic-aging-pancragen-deep-dive--2d5ef543 @ 00:23:40, https://library.hunterwilliamshealth.com/p/this-peptide-reverses-pancreatic-aging-pancragen-deep-dive--2d5ef543/\n- \"I would say use them together, and at the very least, I think it would allow you to lower doses of GLPs and make them go a lot further.\" — Hunter Williams, 2026-03-29, video slug this-peptide-reverses-pancreatic-aging-pancragen-deep-dive--2d5ef543 @ 00:24:47, https://library.hunterwilliamshealth.com/p/this-peptide-reverses-pancreatic-aging-pancragen-deep-dive--2d5ef543/\n- \"BioLongevity Labs is running a flash sale on Pancragen and BioAbsorb (metformin+dihydroberberine) until midnight PST tonight. They are discounted 20% off and you can get an additional 15% off when you use code HUNTERW.\" — Hunter Williams, 2025-07-28, threadId 198531334f561481, https://huntershealthhacks.beehiiv.com/p/reverse-age-your-pancreas-59fe1f3c041908ed",
+    "cross_expert_consensus": null,
+    "cross_expert_disagreement": null,
     "acute_chronic_split": {
       "acute": null,
       "chronic": {
-        "dose": "Hunter email threadId 198531334f561481 (2025-07-28): \"Take 2mg per day (0.2ml or 20 units on an insulin syringe), subcutaneously or intramuscularly, for 30–60 days.\" Reconstitution: \"Get a 20mg vial of Pancragen from BioLongevity Labs.\" / \"Add 2ml of bacteriostatic water to the vial to reconstitute.\" / \"Each 0.1ml (10 units on an insulin syringe) equals 1mg of Pancragen.\"",
-        "route": "Hunter email threadId 198531334f561481 (2025-07-28): \"subcutaneously or intramuscularly\" and \"When you take Pancragen as a subcutaneous injection, it travels through your bloodstream and is absorbed into your pancreatic tissue.\"",
-        "frequency": "Hunter email threadId 198531334f561481 (2025-07-28): \"Take 2mg per day\" — daily during the course window.",
-        "duration": "Hunter email threadId 198531334f561481 (2025-07-28): \"for 30–60 days\" per course; \"Repeat this course 2–3 times per year for ongoing rejuvenation.\" Persistence claim: \"because Pancragen works at the level of gene expression, these changes can _persist_ for weeks or months after a course.\"",
-        "verbatim_citation": "Hunter email threadId 198531334f561481 (2025-07-28): \"Take 2mg per day (0.2ml or 20 units on an insulin syringe), subcutaneously or intramuscularly, for 30–60 days.\" / \"Repeat this course 2–3 times per year for ongoing rejuvenation.\" / \"No fancy cycling, no need for elaborate stacks (though Pancragen plays nicely with GLP-1s, mitochondrial, and anti-inflammatory peptides).\"",
-        "episode_url": "https://huntershealthhacks.beehiiv.com/p/reverse-age-your-pancreas-59fe1f3c041908ed",
-        "timestamp": "threadId 198531334f561481 (email, 2025-07-28)"
+        "dose": "\"Most pancreas comes in a 20 milligram vial.\" — Hunter Williams, 2026-03-29, video slug this-peptide-reverses-pancreatic-aging-pancragen-deep-dive--2d5ef543 @ 00:23:07, https://library.hunterwilliamshealth.com/p/this-peptide-reverses-pancreatic-aging-pancragen-deep-dive--2d5ef543/ \"add two milliliters of water to that. Now every 10 units equals one milligram. I recommend taking two milligrams per day\" — Hunter Williams, 2026-03-29, video slug this-peptide-reverses-pancreatic-aging-pancragen-deep-dive--2d5ef543 @ 00:23:40, https://library.hunterwilliamshealth.com/p/this-peptide-reverses-pancreatic-aging-pancragen-deep-dive--2d5ef543/ \"Take 2mg per day (0.2ml or 20 units on an insulin syringe)\" — Hunter Williams, 2025-07-28, threadId 198531334f561481, https://huntershealthhacks.beehiiv.com/p/reverse-age-your-pancreas-59fe1f3c041908ed",
+        "route": "\"sub-Q injections, you could do intramuscular if you wanted to or better\" — Hunter Williams, 2026-03-29, video slug this-peptide-reverses-pancreatic-aging-pancragen-deep-dive--2d5ef543 @ 00:22:37, https://library.hunterwilliamshealth.com/p/this-peptide-reverses-pancreatic-aging-pancragen-deep-dive--2d5ef543/ \"subcutaneously or intramuscularly\" — Hunter Williams, 2025-07-28, threadId 198531334f561481, https://huntershealthhacks.beehiiv.com/p/reverse-age-your-pancreas-59fe1f3c041908ed",
+        "frequency": "\"I recommend taking two milligrams per day\" — Hunter Williams, 2026-03-29, video slug this-peptide-reverses-pancreatic-aging-pancragen-deep-dive--2d5ef543 @ 00:23:40, https://library.hunterwilliamshealth.com/p/this-peptide-reverses-pancreatic-aging-pancragen-deep-dive--2d5ef543/ \"Take 2mg per day\" — Hunter Williams, 2025-07-28, threadId 198531334f561481, https://huntershealthhacks.beehiiv.com/p/reverse-age-your-pancreas-59fe1f3c041908ed",
+        "duration": "\"for 30, 60 days, depending on the level or severity of the pancreatic inflammation or insufficiency that you may have.\" — Hunter Williams, 2026-03-29, video slug this-peptide-reverses-pancreatic-aging-pancragen-deep-dive--2d5ef543 @ 00:23:40, https://library.hunterwilliamshealth.com/p/this-peptide-reverses-pancreatic-aging-pancragen-deep-dive--2d5ef543/ \"you can repeat this course two to three times per year for ongoing rejuvenation.\" — Hunter Williams, 2026-03-29, video slug this-peptide-reverses-pancreatic-aging-pancragen-deep-dive--2d5ef543 @ 00:23:40, https://library.hunterwilliamshealth.com/p/this-peptide-reverses-pancreatic-aging-pancragen-deep-dive--2d5ef543/ \"Repeat this course 2–3 times per year for ongoing rejuvenation.\" — Hunter Williams, 2025-07-28, threadId 198531334f561481, https://huntershealthhacks.beehiiv.com/p/reverse-age-your-pancreas-59fe1f3c041908ed",
+        "verbatim_citation": "\"I recommend taking two milligrams per day for 30, 60 days, depending on the level or severity of the pancreatic inflammation or insufficiency that you may have.\" — Hunter Williams, 2026-03-29, video slug this-peptide-reverses-pancreatic-aging-pancragen-deep-dive--2d5ef543 @ 00:23:40, https://library.hunterwilliamshealth.com/p/this-peptide-reverses-pancreatic-aging-pancragen-deep-dive--2d5ef543/ \"Take 2mg per day (0.2ml or 20 units on an insulin syringe), subcutaneously or intramuscularly, for 30–60 days.\" — Hunter Williams, 2025-07-28, threadId 198531334f561481, https://huntershealthhacks.beehiiv.com/p/reverse-age-your-pancreas-59fe1f3c041908ed",
+        "episode_url": "https://library.hunterwilliamshealth.com/p/this-peptide-reverses-pancreatic-aging-pancragen-deep-dive--2d5ef543/",
+        "timestamp": "video slug this-peptide-reverses-pancreatic-aging-pancragen-deep-dive--2d5ef543 @ 00:22:37; 00:23:07; 00:23:40 (2026-03-29); threadId 198531334f561481 (2025-07-28)"
       }
     },
     "female_specific_notes": null,
-    "distilled_at": "2026-04-27T05:39:07.103Z",
-    "distilled_by": "claude"
+    "distilled_at": "2026-07-17T10:00:35.4830530Z",
+    "distilled_by": "codex"
   },
-  "generated_at": "2026-04-27T02:02:35.006Z"
+  "generated_at": "2026-07-17T10:59:09.714Z",
+  "mentions_fingerprint": "53aee218f056"
 }

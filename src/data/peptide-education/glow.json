@@ -6,24 +6,32 @@
     "glow",
     "GLOW"
   ],
-  "category": "Uncategorized",
+  "category": "Healing",
   "experts": {
     "hunter-williams": {
       "baseline_protocol": null,
       "summary": {
-        "mention_count": 49,
+        "mention_count": 128,
         "top_doses": [
           {
             "dose": "10 mg",
-            "count": 29
+            "count": 31
+          },
+          {
+            "dose": "50 mg",
+            "count": 12
           },
           {
             "dose": "70 mg",
             "count": 11
           },
           {
-            "dose": "50 mg",
-            "count": 11
+            "dose": "500 micrograms",
+            "count": 4
+          },
+          {
+            "dose": "2 mg",
+            "count": 3
           },
           {
             "dose": "80 mg",
@@ -36,17 +44,21 @@
           {
             "dose": "1 mg",
             "count": 2
-          },
-          {
-            "dose": "120 mg",
-            "count": 2
-          },
-          {
-            "dose": "6 mg",
-            "count": 1
           }
         ],
         "top_sources": [
+          {
+            "source_id": "glow-and-klow-are-worthless--48e6206a",
+            "source_type": "library-video",
+            "source_title": "GLOW and KLOW are Worthless",
+            "source_date": "2026-04-08",
+            "source_url": "https://library.hunterwilliamshealth.com/p/glow-and-klow-are-worthless--48e6206a/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/glow-and-klow-are-worthless--48e6206a.json",
+            "mention_count": 25,
+            "top_snippet": "Hey everybody, this is Hunter Williams. I hope you're doing amazing wherever you might be in the world. Today's video, I won't call it a response video but it's addressing something that I've been getting a ton of questions about recently. And it really I think it is about the Glow Blend and the Clow blend, which obviously Glowe is BPC, TB 500 and GHKCU and then Clowe, is the glow blend plus KPV. So I don't know what goes on social media anymore, guys, because I've had every social-media account, with the exception of my Twitter or X account taken down.",
+            "top_context": "Hey everybody, this is Hunter Williams. I hope you're doing amazing wherever you might be in the world. Today's video, I won't call it a response video but it's addressing something that I've been getting a ton of questions about recently. And it really I think it is about the Glow Blend and the Clow blend, which obviously Glowe is BPC, TB 500 and GHKCU and then Clowe, is the glow blend plus KPV. So I don't know what goes on social media anymore, guys, because I've had every social-media account, with the exception of my Twitter or X account taken down. So people ask me if I see stuff on Social Media, and even if wanted to, I can't, Because I have every single social Media channel, at least the ones that most people talk about peptides on, taken-down. And so I do not have Social media on my phone. I spend much of the day either reading, researching, creating content, and interacting with clients and people inside of my group. So I don't go on social media. Again, even if I wanted to, I can't because when you get your social medias deleted, it's like when your YouTube channel deleted you can actually watch",
+            "first_timestamp": "0:09"
+          },
           {
             "source_id": "198489a54128a775",
             "source_type": "email",
@@ -55,9 +67,45 @@
             "source_url": null,
             "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-07-26-1-1-1-glow.md",
             "mention_count": 10,
-            "top_snippet": ", and GHK-Cu instead of just picking one?”), I know it’s time to break down the _real_ reasons you should consider using these _together_. Whether you’re an athlete coming back from an injury, a weeke",
-            "top_context": ", and GHK-Cu instead of just picking one?”), I know it’s time to break down the _real_ reasons you should consider using these _together_. Whether you’re an athlete coming back from an injury, a weekend warrior wanting to heal faster, or a high-achiever looking to bounce back from the grind, the GLOW blend can benefit you for very specific reasons. Today, we’ll talk science, synergy, and real-world results. And yes, I’ll show you exactly how to dose the GLOW blend so you get the best possible results. “FYI, BioLongevity Labs is running a flash sale on the GLOW blend and Thyreogen unt",
+            "top_snippet": "00, and GHK-Cu instead of just picking one?”), I know it’s time to break down the _real_ reasons you should consider using these _together_. Whether you’re an athlete coming back from an injury, a wee",
+            "top_context": "00, and GHK-Cu instead of just picking one?”), I know it’s time to break down the _real_ reasons you should consider using these _together_. Whether you’re an athlete coming back from an injury, a weekend warrior wanting to heal faster, or a high-achiever looking to bounce back from the grind, the GLOW blend can benefit you for very specific reasons. Today, we’ll talk science, synergy, and real-world results. And yes, I’ll show you exactly how to dose the GLOW blend so you get the best possible results. “FYI, BioLongevity Labs is running a flash sale on the GLOW blend and Thyreogen until mid",
             "first_timestamp": null
+          },
+          {
+            "source_id": "estrogen-is-critical-for-men-too---heres-why-your-peptides-fail-without-it-with---dbaa1c38",
+            "source_type": "library-video",
+            "source_title": "Estrogen is Critical for Men Too - Here's Why Your Peptides Fail Without It with Sarah Morgan",
+            "source_date": "2026-04-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/estrogen-is-critical-for-men-too---heres-why-your-peptides-fail-without-it-with---dbaa1c38/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/estrogen-is-critical-for-men-too---heres-why-your-peptides-fail-without-it-with---dbaa1c38.json",
+            "mention_count": 7,
+            "top_snippet": "I think confusion. Right now, like the big thing we've gotten asked a ton of questions. Can you have BPC and TB 500 stable together? Or can you BTC, TB500, GHK or even KPV? Cause that's like everyone's favorite thing to buy is glow and clow. Uh, can explain to people and whether it's not like you can't or you and then maybe just like a very lay explanation to like why that would be. Yeah, it's like twin daughters that like don't like each other and start fighting, punching each when they're in the same room too long.",
+            "top_context": "point of like if you have a fracture or you tore your Achilles or something, your body is making these peptides as signaling molecules to do repair, and it's going to it more and longer in an acute injury situation. That's the big context that you need to have. And yes, you're right. don't just use it forever. And this is where education is so important, and we're all kind of catching up on that. Yeah. Also, as we were talking about that, there's been a lot of How would I call it? I think confusion. Right now, like the big thing we've gotten asked a ton of questions. Can you have BPC and TB 500 stable together? Or can you BTC, TB500, GHK or even KPV? Cause that's like everyone's favorite thing to buy is glow and clow. Uh, can explain to people and whether it's not like you can't or you and then maybe just like a very lay explanation to like why that would be. Yeah, it's like twin daughters that like don't like each other and start fighting, punching each when they're in the same room too long. Yeah. So the idea here is for a while, you know, with peptides, their amino acid sequences, right, and they have different charges, they different Dalton size, different pHs that they like to be at in terms of their personalities, all of them like a little bit of an acidic pH. So it's, in general, that's the case. I think if you would talk to a chemist, which I'm not a chemistry, I will profess that, but could these amino acid sequences interact with each other in",
+            "first_timestamp": "34:24"
+          },
+          {
+            "source_id": "saturday-morning-coffee-talk-102525--d6c5a922",
+            "source_type": "library-video",
+            "source_title": "Saturday Morning Coffee Talk · 10/25/25",
+            "source_date": "2026-04-08",
+            "source_url": "https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-102525--d6c5a922/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/saturday-morning-coffee-talk-102525--d6c5a922.json",
+            "mention_count": 7,
+            "top_snippet": "Like you can take Mozi and SS31 together. I just, you know, I don't think you need to. Yeah. And if you're taking sloop, take the SS 31 along with the sloop instead of the Moxi. Okay. started glow, was taking four weeks, suddenly developing delayed onset inflammatory response to some filler I had three years ago, assuming it's a reaction to the glow thoughts. I don't know anything about filler, like lip filler. Well filler you can get filler in multiple places in the face.",
+            "top_context": "to stop any theories No, that's kind of weird. I don't know. i've heard of people say Yeah, I don't know really that much about tinnitus. I've heard people say they like BPC and TB 500 help, but I also too, sometimes it doesn't. So that's, unfortunately I just, that one of those ones I wouldn't now. Can I take your listening aid with MOTC or SS 31 or S S O U together? Will they cancel each other out? I mean, they wouldn' really like cancele each othe out. Like you can take Mozi and SS31 together. I just, you know, I don't think you need to. Yeah. And if you're taking sloop, take the SS 31 along with the sloop instead of the Moxi. Okay. started glow, was taking four weeks, suddenly developing delayed onset inflammatory response to some filler I had three years ago, assuming it's a reaction to the glow thoughts. I don't know anything about filler, like lip filler. Well filler you can get filler in multiple places in the face. Started glow. Like it is causing inflammation. Is it the peptides or like like they're having a detox response to the filler from the peptides or they like interacting? That's a tough one. I don't fully know because I mean, usually most cases depending on the type of filler it only lasts a year depending you've gotten.",
+            "first_timestamp": "1:49:49"
+          },
+          {
+            "source_id": "my-day-at-fountain-life-and-a-peptide-discussion-with-dr-bill-kapp--9c823f8b",
+            "source_type": "library-video",
+            "source_title": "My Day at Fountain Life and a Peptide Discussion with Dr. Bill Kapp",
+            "source_date": "2026-03-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/my-day-at-fountain-life-and-a-peptide-discussion-with-dr-bill-kapp--9c823f8b/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/my-day-at-fountain-life-and-a-peptide-discussion-with-dr-bill-kapp--9c823f8b.json",
+            "mention_count": 6,
+            "top_snippet": "It was one of the greatest like marketing in the peptide world, whoever coined it back in a day. But basically, that helps you heal much faster. What's taken off a lot is what you've probably heard of as the glow protocol, which is actually BPC, TB 500, and GHK, GH KCU, the copper peptide. And what's unique about those three things is when we look at inflammation, injury recovery, but then also, too, just kind of like an overall anti-aging",
+            "top_context": "What are these common ones that you're seeing in really the celebrity community? Because they're the first to try everything and then if they find it, they really glom onto it. And we have some, you know, actresses and actors that don't look like they're aging very much, and obviously, it's not all plastic surgery. So, I mean, what are your thoughts around those stacks that they are doing, like Wolverine, for instance? Yeah. Yeah, so Wolverin would be typically you hear BPC 157 and TB 500. And I don t know who coined that. It was one of the greatest like marketing in the peptide world, whoever coined it back in a day. But basically, that helps you heal much faster. What's taken off a lot is what you've probably heard of as the glow protocol, which is actually BPC, TB 500, and GHK, GH KCU, the copper peptide. And what's unique about those three things is when we look at inflammation, injury recovery, but then also, too, just kind of like an overall anti-aging effect to skin health and hair health, things of that nature from a very aesthetic perspective. They're helping with angiogenesis, which is helping blood flow around the body. TB 500, that's going to be your BPC. Tb 500 is something with stem cell migration. So if you have an injury site, it's gonna help get stem cells to that injury side. But if your injecting it subcutaneously, its also just going help improve the amount of stemcells circulating in the And then you have GHK, which is like the GH K is one of the, or GH case, you is of like, the most multifaceted peptides because it works like at a DNA signaling level to do a",
+            "first_timestamp": "1:08:02"
           },
           {
             "source_id": "PEU3ZE5axiQ",
@@ -80,7 +128,7 @@
             "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-08-19-the-klow-stack.md",
             "mention_count": 5,
             "top_snippet": "Happy Tuesday! I’m excited to announce that today I’ve released a brand new video on the **KLOW peptide stack**. This cutting-edge blend of **KPV, BPC-157, TB-500, and GHK-Cu** elevates the GLOW stack",
-            "top_context": "Happy Tuesday! I’m excited to announce that today I’ve released a brand new video on the **KLOW peptide stack**. This cutting-edge blend of **KPV, BPC-157, TB-500, and GHK-Cu** elevates the GLOW stack to a whole new level. View image: (https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,format=auto,onerror=redirect,quality=80/uploads/asset/file/2a3b8628-7e63-4471-ab05-458c02568783/klow.png?t=1755592686) Follow image link: (https://youtu.be/mX9Gim98OEw) Caption: [https://youtu.be/mX",
+            "top_context": "Happy Tuesday! I’m excited to announce that today I’ve released a brand new video on the **KLOW peptide stack**. This cutting-edge blend of **KPV, BPC-157, TB-500, and GHK-Cu** elevates the GLOW stack to a whole new level. View image: (https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,format=auto,onerror=redirect,quality=80/uploads/asset/file/2a3b8628-7e63-4471-ab05-458c02568783/klow.png?t=1755592686) Follow image link: (https://youtu.be/mX9Gim98OEw) Caption: [https://youtu.be/mX9Gim",
             "first_timestamp": null
           },
           {
@@ -93,54 +141,6 @@
             "mention_count": 5,
             "top_snippet": "# GLOW + KLOW Stability Defense — Why The \"Blends Are Dead On Arrival\" Argument Fails > \"I take the strongest arguments AGAINST these blends seriously and ask one question. Does it hold up when you ac",
             "top_context": "# GLOW + KLOW Stability Defense — Why The \"Blends Are Dead On Arrival\" Argument Fails > \"I take the strongest arguments AGAINST these blends seriously and ask one question. Does it hold up when you actually check the chemistry, the biology, and the data? Short answer. Yes, these blends are stable, and ye",
-            "first_timestamp": null
-          },
-          {
-            "source_id": "4igc2UpFr7Q",
-            "source_type": "podcast",
-            "source_title": "GLP-1 Stacks, HGH & Healing Protocols - Your Questions Answered | March 2026",
-            "source_date": "2026-04-03",
-            "source_url": "https://youtu.be/4igc2UpFr7Q",
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-04-03-glp-1-stacks-hgh-healing-protocols-your-questions-answered-march-2026-4igc2UpFr7Q.en.vtt",
-            "mention_count": 3,
-            "top_snippet": "Next question, I'm finishing a 12-week run of Tessa, AOD, Glow, and Retat.",
-            "top_context": "a pretty warm temperature. I want to say a pretty warm temperature. I want to say like 80 or 90° Fahrenheit. I don't like 80 or 90° Fahrenheit. I don't like 80 or 90° Fahrenheit. I don't remember. But uh the MOTS-c stayed remember. But uh the MOTS-c stayed remember. But uh the MOTS-c stayed stable for 30 days at a warm temperature stable for 30 days at a warm temperature stable for 30 days at a warm temperature and there was like virtually no and there was like virtually no and there was like virtually no degradation. So, that's MOTS-c, it's not degradation. So, that's MOTS-c, it's not degradation. So, that's MOTS-c, it's not Tesamorelin. But do I have to Tesamorelin. But do I have to Tesamorelin. But do I have to refrigerate Tesamorelin? I don't know. refrigerate Tesamorelin? I don't know. refrigerate Tesamorelin? I don't know. I'd say do what thou wilt. You probably I'd say do what thou wilt. You probably I'd say do what thou wilt. You probably are okay if you leave it out of the are okay if you leave it out of the are okay if you leave it out of the fridge if it's not too hot, but I put it fridge if it's not too hot, but I put it fridge if it's not too hot, but I put it in the fridge. Uh but I've never had in the fridge. Uh but I've never had in the fridge. Uh but I've never had mine gel in the fridge. And if you've mine gel in the fridge. And if you've mine gel in the fridge. And if you've had yours gel in the fridge, then maybe had yours gel in the fridge, then maybe had yours gel in the fridge, then maybe you want to leave it out at room you want to leave it out at room you want to leave it out at room temperature. So, I will, unlike a lot of temperature. So, I will, unlike a lot of temperature. So, I will, unlike a lot of other people out there, I will never other people out there, I will never other people out there, I will never claim to have the definitive answer on claim to have the definitive answer on claim to have the definitive answer on things that I can't definitively say yes things that I can't definitively say yes things that I can't definitively say yes or no. I will tell you me, Hunter, I put or no. I will tell you me, Hunter, I put or no. I will tell you me, Hunter, I put my Tesamorelin in the fridge and I have my Tesamorelin in the fridge and I have my Tesamorelin in the fridge and I have for years and never had any issues. for years and never had any issues. for years and never had any issues. Um and so I'm not a chemist, don't claim Um and so I'm not a chemist, don't claim Um and so I'm not a chemist, don't claim claim to be a chemist, but that's just claim to be a chemist, but that's just claim to be a chemist, but that's just kind of my thoughts on it. kind of my thoughts on it. kind of my thoughts on it. Next question, I'm finishing a 12-week Next question, I'm finishing a 12-week Next question, I'm finishing a 12-week run of Tessa, AOD, Glow, and Retat. run of Tessa, AOD, Glow, and Retat. run of Tessa, AOD, Glow, and Retat. Should I add Ipamorelin now or wait Should I add Ipamorelin now or wait Should I add Ipamorelin now or wait until my next Tessa cycle? Will the until my next Tessa cycle? Will the until my next Tessa cycle? Will the ghrelin bump mess with fat loss when I'm ghrelin bump mess with fat loss when I'm ghrelin bump mess with fat loss when I'm this close to my goal? I think you could this close to my goal? I think you could this close to my goal? I think you could go ahead and add in Ipamorelin now. And go ahead and add in Ipamorelin now. And go ahead and add in Ipamorelin now. And to the point of Ipamorelin with the to the point of Ipamorelin with the to the point of Ipamorelin with the ghrelin agonism because it is a GHRP ghrelin agonism because it is a GHRP ghrelin agonism because it is a GHRP which stimulates ghrelin. The good thing which stimulates ghrelin. The good thing which stimulates ghrelin. The good thing about Ipamorelin doing that is it seems about Ipamorelin doing that is it seems about Ipamorelin doing that is it seems to be selective, meaning that it it to be selective, meaning that it it to be selective, meaning that it it doesn't raise prolactin and it doesn't doesn't raise prolactin and it doesn't doesn't raise prolactin and it doesn't raise cortisol, and it doesn't increase raise cortisol, and it doesn't increase raise cortisol, and it doesn't increase appetite. I would say very few people appetite. I would say very few people appetite. I would say very few people that I have talked to, worked with, that I have talked to, worked with, that I have talked to, worked with, heard from ever really get an increase heard from ever really get an increase heard from ever really get an increase in appetite from in appetite from in appetite from uh Ipamorelin, whereas the other GHRPs uh Ipamorelin, whereas the other GHRPs uh Ipamorelin, whereas the other GHRPs you would have MK-677 as a GHRP, you would have GHRP-2, MK-677 as a GHRP, you would have GHRP-2, GHRP-6. Uh I do see those. Now, MK-777",
-            "first_timestamp": "00:15:41.520"
-          },
-          {
-            "source_id": "198f7e2e34be4381",
-            "source_type": "email",
-            "source_title": "The Easiest Way to Reconstitute Blended Peptides",
-            "source_date": "2025-08-29",
-            "source_url": null,
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-08-29-the-easiest-way-to-reconstitute-blended-peptides.md",
-            "mention_count": 3,
-            "top_snippet": "d the right amount of bacteriostatic water, swirl gently, and suddenly you can measure precise servings. **Peptides are the same.** Below is my simple “kitchen math” approach, followed by three worked",
-            "top_context": "d the right amount of bacteriostatic water, swirl gently, and suddenly you can measure precise servings. **Peptides are the same.** Below is my simple “kitchen math” approach, followed by three worked examples using blends that many of you have. * **Tesamorelin/Ipamorelin 6mg/2mg** * **GLOW Blend (GHK-Cu 50mg, BPC-157 10mg, TB-500 10mg)** * **Ipamorelin/CJC-1295 no DAC 5mg/5mg**. I’ll also show exactly how many **insulin syringe units** to pull for common doses. “[The Labor Day Sale is going strong at BioLongevity Labs. ](https://biolongevitylabs.com/) All products are di",
-            "first_timestamp": null
-          },
-          {
-            "source_id": "tcaX0xrCMR4",
-            "source_type": "podcast",
-            "source_title": "Reader Mailbag 2 � Autoimmune, Fertility, Cancer & More | Hunter & Taylor Williams",
-            "source_date": "2026-04-24",
-            "source_url": "https://youtu.be/tcaX0xrCMR4",
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-04-24-reader-mailbag-2-autoimmune-fertility-cancer-more-hunter-taylor-willia-tcaX0xrCMR4.en.vtt",
-            "mention_count": 2,
-            "top_snippet": "glow, those are all fine to mix in the",
-            "top_context": "receptive to it at a lower dose. It receptive to it at a lower dose. It helps you like manage. It helps you like helps you like manage. It helps you like helps you like manage. It helps you like not become dependent on it. And you not become dependent on it. And you not become dependent on it. And you know, it's funny is because I had been know, it's funny is because I had been know, it's funny is because I had been on Reddit for probably like four or five on Reddit for probably like four or five on Reddit for probably like four or five months consecutively, which is the months consecutively, which is the months consecutively, which is the longest I'd been on before that. And I'm longest I'd been on before that. And I'm longest I'd been on before that. And I'm like, man, that's not as bad as you like, man, that's not as bad as you like, man, that's not as bad as you think in your head. Yeah. You do it. think in your head. Yeah. You do it. think in your head. Yeah. You do it. Now, I realize like other people may Now, I realize like other people may Now, I realize like other people may feel that way, but if you manage it that feel that way, but if you manage it that feel that way, but if you manage it that way, I don't think it's as bad. way, I don't think it's as bad. way, I don't think it's as bad. &gt;&gt; Yeah. &gt;&gt; Yeah. &gt;&gt; Yeah. &gt;&gt; All right. I think we beat that one to &gt;&gt; All right. I think we beat that one to &gt;&gt; All right. I think we beat that one to death. Last one. This will be it. death. Last one. This will be it. death. Last one. This will be it. &gt;&gt; Let's talk about some reconstitution. &gt;&gt; Let's talk about some reconstitution. &gt;&gt; Let's talk about some reconstitution. All right. So, we have a lot of All right. So, we have a lot of All right. So, we have a lot of questions we always get around questions we always get around questions we always get around reconstitution. I'm not going to tell reconstitution. I'm not going to tell reconstitution. I'm not going to tell you how much water to mix in your you how much water to mix in your you how much water to mix in your peptide. That's what the peptide cheat peptide. That's what the peptide cheat peptide. That's what the peptide cheat sheet is for. sheet is for. sheet is for. calculator. glow, those are all fine to mix in the glow, those are all fine to mix in the same syringe? What I like to think of is same syringe? What I like to think of is same syringe? What I like to think of is like if it's relatively the same like if it's relatively the same like if it's relatively the same pathway, it's probably okay. Mhm. pathway, it's probably okay. Mhm. pathway, it's probably okay. Mhm. &gt;&gt; But when we start mixing healing &gt;&gt; But when we start mixing healing &gt;&gt; But when we start mixing healing peptides with a GLP or GLPS with a peptides with a GLP or GLPS with a peptides with a GLP or GLPS with a growth hormone peptide or GLPS with an growth hormone peptide or GLPS with an growth hormone peptide or GLPS with an immunity peptide, all of a sudden now immunity peptide, all of a sudden now immunity peptide, all of a sudden now we're just kind of throwing caution to we're just kind of throwing caution to we're just kind of throwing caution to the wind and hoping that it works. The the wind and hoping that it works. The the wind and hoping that it works. The rule of thumb that I would say is that rule of thumb that I would say is that rule of thumb that I would say is that if you mix it together and it's cloudy, if you mix it together and it's cloudy, if you mix it together and it's cloudy, most likely you denature the peptide to most likely you denature the peptide to most likely you denature the peptide to now where it's worthless when you inject now where it's worthless when you inject now where it's worthless when you inject it. But that doesn't mean that it can't it. But that doesn't mean that it can't it. But that doesn't mean that it can't be cloudy and it also can't be like be cloudy and it also can't be like be cloudy and it also can't be like that. that. that. &gt;&gt; Just because it's not cloudy doesn't &gt;&gt; Just because it's not cloudy doesn't &gt;&gt; Just because it's not cloudy doesn't mean it's not working. it could mean it's not working. it could mean it's not working. it could potentially still potentially still potentially still &gt;&gt; be worthless even if it's not cloudy. &gt;&gt; be worthless even if it's not cloudy. &gt;&gt; be worthless even if it's not cloudy. &gt;&gt; And so that's what I do. I don't really &gt;&gt; And so that's what I do. I don't really &gt;&gt; And so that's what I do. I don't really like outside of those things I just like outside of those things I just like outside of those things I just mentioned, which is like pathways mentioned, which is like pathways mentioned, which is like pathways together, I don't really mix peptides",
-            "first_timestamp": "01:03:30.789"
-          },
-          {
-            "source_id": "19799acedca21a49",
-            "source_type": "email",
-            "source_title": "Use This Peptide At The Beach",
-            "source_date": "2025-06-22",
-            "source_url": null,
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-06-22-use-this-peptide-at-the-beach.md",
-            "mention_count": 2,
-            "top_snippet": "sing code HUNTERW). “[BioLongevity Labs extended their flash sale on the following items until midnight Sunday PST:](https://biolongevitylabs.com/) [GLP-3](https://biolongevitylabs.com/product/glp-3-1",
-            "top_context": "sing code HUNTERW). “[BioLongevity Labs extended their flash sale on the following items until midnight Sunday PST:](https://biolongevitylabs.com/) [GLP-3](https://biolongevitylabs.com/product/glp-3-10mg/) (Retatrutide — must click the link here to buy) BPC-157/TB-500 Blend MOTS-C Glow Blend (BPC-157/TB-500/GHK-Cu) Thymosin Alpha-1 Melanotan-1 Tesamorelin MetaShred BioMind Tesofensine Metformin Get 35% off these items when you use code HUNTERW (20% off in the store and the code applies 15% at checkout) [Go here to purchase](https://biolongevitylab",
             "first_timestamp": null
           }
         ],
@@ -160,21 +160,21 @@
             "source_url": null
           },
           {
-            "snippet": ", and GHK-Cu instead of just picking one?”), I know it’s time to break down the _real_ reasons you should consider using these _together_. Whether you’re an athlete coming back from an injury, a weeke",
+            "snippet": "00, and GHK-Cu instead of just picking one?”), I know it’s time to break down the _real_ reasons you should consider using these _together_. Whether you’re an athlete coming back from an injury, a wee",
             "source_title": "1+1+1 = GLOW",
             "source_date": "2025-07-26",
             "timestamp": null,
             "source_url": null
           },
           {
-            "snippet": "oming back from an injury, a weekend warrior wanting to heal faster, or a high-achiever looking to bounce back from the grind, the GLOW blend can benefit you for very specific reasons. Today, we’ll ta",
+            "snippet": "te coming back from an injury, a weekend warrior wanting to heal faster, or a high-achiever looking to bounce back from the grind, the GLOW blend can benefit you for very specific reasons. Today, we’l",
             "source_title": "1+1+1 = GLOW",
             "source_date": "2025-07-26",
             "timestamp": null,
             "source_url": null
           },
           {
-            "snippet": "ing fine lines and making surgical or injury scars far less visible. * **General anti-aging and recovery:** Many users report feeling “younger” at the tissue level. More flexible, less stiff, quicker ",
+            "snippet": "ammatory effect** than using any single peptide alone. The result? People are healing in _weeks_ rather than _months_ after injuries or surgeries, bouncing back from chronic pain, and even noticing be",
             "source_title": "1+1+1 = GLOW",
             "source_date": "2025-07-26",
             "timestamp": null,
@@ -610,33 +610,34 @@
   },
   "reset_biology_synthesis": {
     "status": "distilled",
-    "recommendation": "Reset Biology suggests asking the practitioner to consider that GLOW (BPC-157 + TB-500 + GHK-Cu) is a contested blend: Hunter and Taylor frame it as a synergistic healing/anti-aging stack while Trevor calls combined-peptide vials biologically incoherent. We'd ask the prescribing physician to weigh whether the patient's goal is short-cycle injury/skin recovery (Hunter and Taylor's frame) or controlled-variable peptide research (Trevor's frame), and to surface Hunter's hard chemistry rule that vitamin C and glutathione must NEVER be co-mixed with GHK-Cu in the same vial. Newer Hunter content (2026-03-13) leans toward rotating the components rather than blending them, which the practitioner should weigh against the 2025-07-26 GLOW dosing protocol.",
-    "caveats": "- NEVER co-mix vitamin C or glutathione with GHK-Cu: Hunter (threadId 19bc90e12abefa74, 2026-01-16): \"DO NOT mix vitamin C OR glutathione into the same vial as GHK-Cu\" and \"Convenient? Yes — 'two of the worst shots in one shot.' NOT worth it. Will mess with copper chemistry.\"\n- GHK-Cu burns at injection site for some users: Taylor (LvqyX5QWQZc 00:16:41.110): \"I do this even if I'm just taking ghk by itself because for me it does burn\"; her workaround is dilution to 6 mL total in a larger vial.\n- Receptor saturation / overdose risk in stacks: Hunter (PEU3ZE5axiQ 00:38:21.040): \"I see so many people overdose where you don't need a really high amount\" and Hunter (PEU3ZE5axiQ 00:38:54.400): \"more isn't always better.\"\n- Trevor's blanket caveat against blends: Trevor (XUdc1evyaFg 00:43:15.119): \"They're not in the same vial. That's for idiots\"; Trevor (XUdc1evyaFg 00:43:31.040): \"receptor competition. They compete for the same binding site. Conflicting signals\"; Trevor (XUdc1evyaFg 00:44:09.040): \"specifically with GHKCU, it chilates copper, which will interact with any other metal binding peptide.\"\n- Marketing-frame skepticism even from Hunter: Hunter (PEU3ZE5axiQ 01:55:14.000): \"I think the the glow the word the glow is like the best has been the best marketing strategy because every woman hears the glow blend and it's really more the wolverine like a healing blend.\"\n- Cloudiness/precipitation = don't use: Hunter (threadId 19bc90e12abefa74, 2026-01-16): \"If you see cloudiness or particulates → don't use it (basic common sense).\"",
-    "cross_expert_consensus": "All three experts agree GLOW = BPC-157 + TB-500 + GHK-Cu as the component identity. Hunter (threadId 198489a54128a775, 2025-07-26): \"the GLOW blend (50mg GHK-Cu, 10mg BPC-157, 10mg TB-500 per vial)\"; Taylor (LvqyX5QWQZc 00:02:23.319): \"the glow stack is essentially bpc um 157 tb500 and ghk cuu the copper peptide\"; Trevor (XUdc1evyaFg 00:43:09.839): \"Don't you sell the Wolverine stack or the glow or the glow?\" — confirming the same three-peptide identity. Both Hunter (threadId 198489a54128a775, 2025-07-26) and Taylor (LvqyX5QWQZc 00:02:43.190) frame it as a healing/recovery stack: Hunter says \"Faster recovery from injuries: Tendons, ligaments, and muscle tears heal in record time\" and Taylor says \"the Wolverine stack so it's the ultimate like healing blend.\" Hunter and Taylor both teach the SAME reconstitution geometry: Hunter (threadId 198489a54128a775, 2025-07-26): \"Add 2ml of bacteriostatic water to your vial\"; Taylor (LvqyX5QWQZc 00:14:47.800): \"2 mL of water going into this\" — 2 mL bac water into a 10/10/50 mg blend vial.",
-    "cross_expert_disagreement": "Whole-blend vs separate-vial is the headline split. Trevor (XUdc1evyaFg 00:42:58.240): \"They sell peptides. They sell blends. Clo glow, all the stuff.\" Trevor (XUdc1evyaFg 00:43:11.520): \"All separate, baby. Bet your butt I do. But they're all separate. They're not in the same vial. That's for idiots.\" Trevor (XUdc1evyaFg 00:43:28.800): \"When you take multiple peptides simultaneously, receptor competition. They compete for the same binding site. Conflicting signals.\" Hunter explicitly defends blends in writing — Hunter (threadId 19bc90e12abefa74, 2026-01-16): \"these blends are stable, and yes, they work\" and \"BPC-157, TB-500, KPV are small water-soluble peptides → far less aggregation risk\" and \"21-day degradation test post-reconstitution: 2-3% degradation across components. Not zero. Not dead. Not worthless. Normal peptide behavior.\" Taylor sells/teaches the blend as a single workflow — Taylor (LvqyX5QWQZc 00:14:09.320): \"reconstitute my bpc dv500 blend and I'm going to be putting 2 m of water into\" it. Hunter himself shifts in newer content — Hunter (PEU3ZE5axiQ 00:36:21.760): \"I actually like keeping them separate. And I think in the short term they're probably okay\" and Hunter (PEU3ZE5axiQ 00:37:09.120): \"I would actually prefer if I'm using those for a certain effect to rotate through them almost like I'm going to do BPC maybe even if it's just like a weekly thing BPC for a week then TB the next week and then GHK the next week.\" Newer Hunter (2026-03-13) overrides older Hunter (2025-07-26) on his own preference, but the 2025-07-26 protocol remains operative for users who choose to blend. Dosing also differs: Hunter prescribes 10 units (0.1 mL) once daily — Hunter (threadId 198489a54128a775, 2025-07-26): \"Inject 10 units (0.1ml) once daily, morning or evening, your choice.\" Taylor uses a different reconstitution — Taylor (LvqyX5QWQZc 00:28:01.559): \"take um 60 units of it\" of the diluted GHK-Cu (her 6 mL dilution) for 5 days a week.",
+    "recommendation": "Reset Biology suggests asking the practitioner to weigh Hunter — May 2026 Q&A | Retatrutide, Testosterone, Autoimmune, and Beyond (2026-06-17, may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352 @ 48:53, https://library.hunterwilliamshealth.com/p/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352/): \"as it stands right now It does seem that Chloe and glow are fine together when you mix them in a vial And so i use those personally and have gotten great results.\" Against Hunter — Estrogen is Critical for Men Too - Here's Why Your Peptides Fail Without It with Sarah Morgan (2026-04-30, estrogen-is-critical-for-men-too---heres-why-your-peptides-fail-without-it-with---dbaa1c38 @ 36:08, https://library.hunterwilliamshealth.com/p/estrogen-is-critical-for-men-too---heres-why-your-peptides-fail-without-it-with---dbaa1c38/): \"I actually like keeping them separate. And I think in the short term they're probably okay.\"",
+    "caveats": "- Hunter — Estrogen is Critical for Men Too - Here's Why Your Peptides Fail Without It with Sarah Morgan (2026-04-30, estrogen-is-critical-for-men-too---heres-why-your-peptides-fail-without-it-with---dbaa1c38 @ 33:21, https://library.hunterwilliamshealth.com/p/estrogen-is-critical-for-men-too---heres-why-your-peptides-fail-without-it-with---dbaa1c38/): \"we don't fully know yet\" and \"You want a screen people before, you want use it in active cancer, long-term because of that.\"\n- Hunter — GLOW and KLOW are Worthless (2026-04-08, glow-and-klow-are-worthless--48e6206a @ 15:56, https://library.hunterwilliamshealth.com/p/glow-and-klow-are-worthless--48e6206a/): \"This is why you don't mix vitamin C with GH KCU because it can strip the copper.\" Hunter — GLOW and KLOW are Worthless (2026-04-08, glow-and-klow-are-worthless--48e6206a @ 16:28, https://library.hunterwilliamshealth.com/p/glow-and-klow-are-worthless--48e6206a/): \"I don' recommend people mix glutithione with GH K. It will go bad, it will not work.\"\n- Taylor — Glow Peptide Stack 101: Benefits, Mixing & Best Dosing! (2025-02-28, LvqyX5QWQZc @ 00:16:41.110, https://youtu.be/LvqyX5QWQZc): \"I do this even if I'm just taking ghk by itself because for me it does burn.\"\n- Trevor — GHK-Cu (Copper) Masterclass To Help You - Dr Trevor Bachmeyer (2026-01-15, XUdc1evyaFg @ 00:43:11.520, https://youtu.be/XUdc1evyaFg): \"But they're all separate. They're not in the same vial. That's for idiots.\"",
+    "cross_expert_consensus": "Hunter — GLOW and KLOW are Worthless (2026-04-08, glow-and-klow-are-worthless--48e6206a @ 0:09, https://library.hunterwilliamshealth.com/p/glow-and-klow-are-worthless--48e6206a/): \"Glow is BPC, TB 500 and GHKCU.\" Taylor — Glow Peptide Stack 101: Benefits, Mixing & Best Dosing! (2025-02-28, LvqyX5QWQZc @ 00:02:23.319, https://youtu.be/LvqyX5QWQZc): \"the glow stack is essentially bpc um 157 tb500 and ghk cuu the copper peptide.\"",
+    "cross_expert_disagreement": "Trevor — GHK-Cu (Copper) Masterclass To Help You - Dr Trevor Bachmeyer (2026-01-15, XUdc1evyaFg @ 00:43:11.520, https://youtu.be/XUdc1evyaFg): \"But they're all separate. They're not in the same vial. That's for idiots.\" Hunter — GLOW and KLOW are Worthless (2026-04-08, glow-and-klow-are-worthless--48e6206a @ 1:47, https://library.hunterwilliamshealth.com/p/glow-and-klow-are-worthless--48e6206a/): \"ultimately the short answer is, yes, those blends are stable.\" Hunter — Estrogen is Critical for Men Too - Here's Why Your Peptides Fail Without It with Sarah Morgan (2026-04-30, estrogen-is-critical-for-men-too---heres-why-your-peptides-fail-without-it-with---dbaa1c38 @ 36:08, https://library.hunterwilliamshealth.com/p/estrogen-is-critical-for-men-too---heres-why-your-peptides-fail-without-it-with---dbaa1c38/): \"I actually like keeping them separate. And I think in the short term they're probably okay.\" Hunter — May 2026 Q&A | Retatrutide, Testosterone, Autoimmune, and Beyond (2026-06-17, may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352 @ 48:53, https://library.hunterwilliamshealth.com/p/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352/): \"as it stands right now It does seem that Chloe and glow are fine together when you mix them in a vial And so i use those personally and have gotten great results.\"",
     "acute_chronic_split": {
       "acute": {
-        "dose": "Hunter (threadId 198489a54128a775, 2025-07-26): \"the GLOW blend (50mg GHK-Cu, 10mg BPC-157, 10mg TB-500 per vial)\" with \"Inject 10 units (0.1ml) once daily.\"",
-        "route": "Hunter (threadId 198489a54128a775, 2025-07-26): \"For systemic benefit (whole-body recovery, general anti-aging), inject subcutaneously in the belly fat. For targeted healing (painful knees, shoulder, surgery site), inject near the affected area (but not directly into the injury—always around, not in).\"",
-        "frequency": "Hunter (threadId 198489a54128a775, 2025-07-26): \"once daily, morning or evening, your choice.\"",
-        "duration": "Hunter (threadId 198489a54128a775, 2025-07-26): \"You can run this for 20 days (one vial per cycle), and repeat as needed, especially during injury recovery or periods of intense training or stress.\"",
-        "verbatim_citation": "Hunter (threadId 198489a54128a775, 2025-07-26): \"Reconstitution: Add 2ml of bacteriostatic water to your vial. Dosing: Each 10 units on an insulin syringe = 0.1ml. That gives you a perfect daily dose with 20 doses per vial. Administration: Inject 10 units (0.1ml) once daily.\"",
+        "dose": "Hunter — 1+1+1 = GLOW (2025-07-26, threadId 198489a54128a775, https://huntershealthhacks.beehiiv.com/p/1-1-1-glow-250617b29bd0346e): \"the GLOW blend (50mg GHK-Cu, 10mg BPC-157, 10mg TB-500 per vial)\" and \"Inject 10 units (0.1ml) once daily.\"",
+        "route": "Hunter — 1+1+1 = GLOW (2025-07-26, threadId 198489a54128a775, https://huntershealthhacks.beehiiv.com/p/1-1-1-glow-250617b29bd0346e): \"For systemic benefit (whole-body recovery, general anti-aging), inject subcutaneously in the belly fat. For targeted healing (painful knees, shoulder, surgery site), inject near the affected area (but not directly into the injury—always around, not in).\"",
+        "frequency": "Hunter — 1+1+1 = GLOW (2025-07-26, threadId 198489a54128a775, https://huntershealthhacks.beehiiv.com/p/1-1-1-glow-250617b29bd0346e): \"once daily, morning or evening, your choice.\"",
+        "duration": "Hunter — 1+1+1 = GLOW (2025-07-26, threadId 198489a54128a775, https://huntershealthhacks.beehiiv.com/p/1-1-1-glow-250617b29bd0346e): \"You can run this for 20 days (one vial per cycle), and repeat as needed, especially during injury recovery or periods of intense training or stress.\"",
+        "verbatim_citation": "Hunter — 1+1+1 = GLOW (2025-07-26, threadId 198489a54128a775, https://huntershealthhacks.beehiiv.com/p/1-1-1-glow-250617b29bd0346e): \"Reconstitution: Add 2ml of bacteriostatic water to your vial. Dosing: Each 10 units on an insulin syringe = 0.1ml. That gives you a perfect daily dose with 20 doses per vial. Administration: Inject 10 units (0.1ml) once daily.\"",
         "episode_url": "https://huntershealthhacks.beehiiv.com/p/1-1-1-glow-250617b29bd0346e",
         "timestamp": "threadId 198489a54128a775 (2025-07-26)"
       },
       "chronic": {
-        "dose": "Taylor (LvqyX5QWQZc 00:28:01.559): \"take um 60 units of it\" referring to her diluted GHK-Cu (50 mg in 6 mL) plus Taylor (LvqyX5QWQZc 00:28:15.279): \"I would take 20 units of the BBC tv500 and I would take um 15 units of the ghk\" when drawn from the original vial, equating to Taylor (LvqyX5QWQZc 00:15:23.040): \"need 2.5 milligrams\" of GHK-Cu and Taylor (LvqyX5QWQZc 00:16:14.600): \"500 microgr\" each of BPC-157 and TB-500 per dose.",
-        "route": "Taylor (LvqyX5QWQZc 00:04:52.199): \"a great peptide to use whether you're injecting it or using it topically\"; subcutaneous injection is the dominant taught route in both Hunter and Taylor's protocols.",
-        "frequency": "Taylor (LvqyX5QWQZc 00:27:30.200): \"a dose amount for 5 days a week of this blend.\"",
-        "duration": "Taylor (LvqyX5QWQZc 00:26:45.240): \"with this blend I would say a good 12 6 to 12 weeks on it is for you to see like the most maximum results.\"",
-        "verbatim_citation": "Taylor (LvqyX5QWQZc 00:25:06.480): \"what you're going to notice in about 3 to 6 weeks is you'll notice like a little bit more firmer skin\"; Taylor (LvqyX5QWQZc 00:26:21.560): \"week 6 to 12 on this blend you will notice um more collagen production going on.\"",
+        "dose": "Taylor — Glow Peptide Stack 101: Benefits, Mixing & Best Dosing! (2025-02-28, LvqyX5QWQZc @ 00:15:23.040, https://youtu.be/LvqyX5QWQZc): \"need 2.5 milligrams\"; Taylor (LvqyX5QWQZc @ 00:16:14.600, https://youtu.be/LvqyX5QWQZc): \"500 microgr\"; Taylor (LvqyX5QWQZc @ 00:28:01.559, https://youtu.be/LvqyX5QWQZc): \"take um 60 units of it\"; Taylor (LvqyX5QWQZc @ 00:28:15.279, https://youtu.be/LvqyX5QWQZc): \"I would take 20 units of the BBC tv500 and I would take um 15 units of the ghk.\"",
+        "route": "Taylor — Glow Peptide Stack 101: Benefits, Mixing & Best Dosing! (2025-02-28, LvqyX5QWQZc @ 00:04:52.199, https://youtu.be/LvqyX5QWQZc): \"a great peptide to use whether you're injecting it or using it topically.\"",
+        "frequency": "Taylor — Glow Peptide Stack 101: Benefits, Mixing & Best Dosing! (2025-02-28, LvqyX5QWQZc @ 00:27:30.200, https://youtu.be/LvqyX5QWQZc): \"a dose amount for 5 days a week of this blend.\"",
+        "duration": "Taylor — Glow Peptide Stack 101: Benefits, Mixing & Best Dosing! (2025-02-28, LvqyX5QWQZc @ 00:26:45.240, https://youtu.be/LvqyX5QWQZc): \"with this blend I would say a good 12 6 to 12 weeks on it is for you to see like the most maximum results.\"",
+        "verbatim_citation": "Taylor — Glow Peptide Stack 101: Benefits, Mixing & Best Dosing! (2025-02-28, LvqyX5QWQZc @ 00:25:06.480, https://youtu.be/LvqyX5QWQZc): \"what you're going to notice in about 3 to 6 weeks is you'll notice like a little bit more firmer skin\"; Taylor (LvqyX5QWQZc @ 00:26:21.560, https://youtu.be/LvqyX5QWQZc): \"week 6 to 12 on this blend you will notice um more collagen production going on.\"",
         "episode_url": "https://youtu.be/LvqyX5QWQZc",
-        "timestamp": "00:25:06.480; 00:26:45.240; 00:27:30.200; 00:28:15.279"
+        "timestamp": "00:04:52.199; 00:15:23.040; 00:16:14.600; 00:25:06.480; 00:26:21.560; 00:26:45.240; 00:27:30.200; 00:28:01.559; 00:28:15.279"
       }
     },
-    "female_specific_notes": "Taylor (LvqyX5QWQZc 00:03:45.670): \"I think the glow stack right now is just a very hot topic word with the ladies and because when we hear glow automatically we think of glowing skin\" — but Taylor (LvqyX5QWQZc 00:02:53.159): \"this is what I have used for healing like any major tears\" and (LvqyX5QWQZc 00:03:08.560): \"one of my girlfriends she used it when she had her implants removed she used it um during that healing time.\" Taylor (LvqyX5QWQZc 00:27:00.120): \"I noticed some really big improvements in my hair growth\" with the caveat (LvqyX5QWQZc 00:27:08.320): \"body hair growth definitely like will go up with this for me anyway.\" Hunter explicitly flags the women-marketing frame — Hunter (PEU3ZE5axiQ 01:55:14.000): \"I think the the glow the word the glow is like the best has been the best marketing strategy because every woman hears the glow blend\" and Hunter (PEU3ZE5axiQ 01:55:31.280): \"all go out and go crazy about it for making them have more glowy healthier skin.\" No fertility, pregnancy, or contraindication-specific signal surfaced in the indexed Taylor content for GLOW; Taylor's framing is cosmetic/healing in adult women, not female-physiology-specific.",
-    "distilled_at": "2026-04-27T05:16:25.460Z",
-    "distilled_by": "claude"
+    "female_specific_notes": "Taylor — Glow Peptide Stack 101: Benefits, Mixing & Best Dosing! (2025-02-28, LvqyX5QWQZc @ 00:03:45.670, https://youtu.be/LvqyX5QWQZc): \"I think the glow stack right now is just a very hot topic word with the ladies and because when we hear glow automatically we think of glowing skin.\" Taylor (LvqyX5QWQZc @ 00:03:08.560, https://youtu.be/LvqyX5QWQZc): \"one of my girlfriends she used it when she had her implants removed she used it um during that healing time.\" Taylor (LvqyX5QWQZc @ 00:27:08.320, https://youtu.be/LvqyX5QWQZc): \"body hair growth definitely like will go up with this for me anyway.\"",
+    "distilled_at": "2026-07-17T08:56:12.2507900Z",
+    "distilled_by": "codex"
   },
-  "generated_at": "2026-04-27T02:02:34.509Z"
+  "generated_at": "2026-07-17T10:59:04.684Z",
+  "mentions_fingerprint": "b0288cdc3914"
 }

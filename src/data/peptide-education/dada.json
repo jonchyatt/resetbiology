@@ -3,25 +3,62 @@
   "slug": "dada",
   "aliases": [
     "Dada",
-    "DADA"
+    "DADA",
+    "dada"
   ],
-  "category": "Uncategorized",
+  "category": "Mitochondrial & Energy",
   "experts": {
     "hunter-williams": {
       "baseline_protocol": null,
       "summary": {
-        "mention_count": 15,
+        "mention_count": 72,
         "top_doses": [
           {
             "dose": "500 milligrams",
-            "count": 27
+            "count": 30
           },
           {
-            "dose": "60 mg",
-            "count": 2
+            "dose": "10 milligrams",
+            "count": 8
+          },
+          {
+            "dose": "5 milligrams",
+            "count": 6
+          },
+          {
+            "dose": "200 mg",
+            "count": 5
+          },
+          {
+            "dose": "600 micrograms",
+            "count": 4
+          },
+          {
+            "dose": "100 milligrams",
+            "count": 4
+          },
+          {
+            "dose": "50 mg",
+            "count": 3
+          },
+          {
+            "dose": "2 milligrams",
+            "count": 3
           }
         ],
         "top_sources": [
+          {
+            "source_id": "how-dada-enhances-performance-my-comprehensive-breakdown--038a6feb",
+            "source_type": "library-video",
+            "source_title": "How DADA Enhances Performance My Comprehensive Breakdown",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/how-dada-enhances-performance-my-comprehensive-breakdown--038a6feb/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/how-dada-enhances-performance-my-comprehensive-breakdown--038a6feb.json",
+            "mention_count": 24,
+            "top_snippet": "Hey everybody. This is Hunter Williams. I hope you're doing amazing wherever you at in the world. Today's video is about Dada. So DADA is a supplement that I came across recently that you can find at AA and it has some pretty, pretty cool things it's doing, um, with the body for performance enhancement purposes. Uh, I've been using this for probably like two or three weeks now. for your own research, if this is something you are interested in. So I'll say, you know, sloop is what's really big right now.",
+            "top_context": "Hey everybody. This is Hunter Williams. I hope you're doing amazing wherever you at in the world. Today's video is about Dada. So DADA is a supplement that I came across recently that you can find at AA and it has some pretty, pretty cool things it's doing, um, with the body for performance enhancement purposes. Uh, I've been using this for probably like two or three weeks now. for your own research, if this is something you are interested in. So I'll say, you know, sloop is what's really big right now. And a lot of people are using sloop to great effect. and I think this a little bit different, but it's probably going to have some pretty cool effects that are similar to ssloop from a performance enhancement perspective. I don't know that directly it is going do anything for body composition the way that s s loop will, But I do really, really like this as a pre-workout agent and a precardio agent. Actually found it to be more effective as pre workout as in resistance training. agent. So that's where we're going to go in today. I don't know that there's any public videos that I've come across that give like a good framework for using this and operating with it inside the confines",
+            "first_timestamp": "0:09"
+          },
           {
             "source_id": "JgktB39WB_A",
             "source_type": "podcast",
@@ -35,6 +72,18 @@
             "first_timestamp": "00:32:40.799"
           },
           {
+            "source_id": "reader-mailbag-episode-1--31ea7a1b",
+            "source_type": "library-video",
+            "source_title": "Reader Mailbag · Episode 1",
+            "source_date": "2026-04-20",
+            "source_url": "https://library.hunterwilliamshealth.com/p/reader-mailbag-episode-1--31ea7a1b/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/reader-mailbag-episode-1--31ea7a1b.json",
+            "mention_count": 7,
+            "top_snippet": "Like I'm just like not. You could drink bum pre workout. Not sponsored. Shout out to bum come sponsors. Um, all right. Now I am not a fan of injecting. a ton of pre-workout into my glutes, just cause I know like we're going to be traveling. I'm going be, it's becoming like bathing suit season. So I don't like doing it as much because I will get lumps. But right now I would say I've been liking experimenting with Dada.",
+            "top_context": "That's kind of like the age-old like bro C-4 or pre-workout C four, as in like explosive C 4. Like Hydroxycut? I wonder if they're from the same, I think it's Cellucor is the company that makes C for, yeah. I feel like they may have been affiliated with Hydroc. It's like, the one you would see a lot at like Walmart and GNC and Costco. Yeah. I think pre-workouts, I mean, definitely go through my phases right now. Like I'm just like not. You could drink bum pre workout. Not sponsored. Shout out to bum come sponsors. Um, all right. Now I am not a fan of injecting. a ton of pre-workout into my glutes, just cause I know like we're going to be traveling. I'm going be, it's becoming like bathing suit season. So I don't like doing it as much because I will get lumps. But right now I would say I've been liking experimenting with Dada. That's been one of my favorites, but if I were to do a pre workout injection, I think like injectable Dado is good. Injectable O-Carnitine, injectible Choline, Injectable choline is probably one of my favorites. And when I say I'm not doing it, this has been a two week thing I haven't been injecting. I think, yeah, what else? My stack would be, this is kind of what I'll rotate back and forth.",
+            "first_timestamp": "32:08"
+          },
+          {
             "source_id": "19cc568b0b452c4f",
             "source_type": "email",
             "source_title": "DADA — The Underrated Performance Enhancer",
@@ -45,6 +94,54 @@
             "top_snippet": "think of it as a very interesting alternative to MOTS-c. When I use it, I feel extremely similar to how I feel on MOTS-c, and in some cases I actually feel a slightly stronger performance edge.\" > \"It",
             "top_context": "think of it as a very interesting alternative to MOTS-c. When I use it, I feel extremely similar to how I feel on MOTS-c, and in some cases I actually feel a slightly stronger performance edge.\" > \"It has quietly become one of the staples in my own pre-workout injection stack.\" ## What It Is - **DADA** = Diisopropylamine Dichloroacetate - Salt of: - **Dichloroacetate (DCA)** — the biologically active component - **Diisopropylamine** - Used clinically in **Japan** as liver-support medication (20-60 mg/day oral, chronic liver conditions) - Used in **China** as injectable regulated pharmaceuti",
             "first_timestamp": null
+          },
+          {
+            "source_id": "peptide-qa-july-2025--936e4b81",
+            "source_type": "library-video",
+            "source_title": "Peptide Q&A · July 2025",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-july-2025--936e4b81/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-qa-july-2025--936e4b81.json",
+            "mention_count": 6,
+            "top_snippet": "And what's interesting about Cardillax is it works to signal a more youthful state in your cartilage. We have cartilage in the face, and so it would make sense that that would help. So I don't know that it helped me look any prettier, but I think it'd be cool if someone wanted to try that. And if you're injecting your face I would just recommend using a pen because you can use a smaller MM syringe to do it. But make sure you know what you are doing before you inject anything into your So the next question is the peptide dada.",
+            "top_context": "And I don't know what that is, But I guess it's some sort of aesthetic injection. This month I mixed Cardalax that night for a 500 microgram dose. Later I mix my facial products, growth hormone, and place them in the same refrigerator. I got ready to inject my product in my face. I used a whole bottle. Later, I was ready do inject Cardalax. That is when I found I had injected the whole mixture of Cardilax in to my that's so technique. So far, my faces plumper, smile lines are gone, jowls are on, under eyes are smoother. Maybe you can experiment with this. Great results. so I haven't done that. But if you are a willing test dummy, sounds like a good idea. And what's interesting about Cardillax is it works to signal a more youthful state in your cartilage. We have cartilage in the face, and so it would make sense that that would help. So I don't know that it helped me look any prettier, but I think it'd be cool if someone wanted to try that. And if you're injecting your face I would just recommend using a pen because you can use a smaller MM syringe to do it. But make sure you know what you are doing before you inject anything into your So the next question is the peptide dada. Dada is actually not a peptid, but you can do it specifically it versus metformin and or a protocol to use it with met formin. They're really two fundamentally different things. I would definitely use them together. Don't know that I have to think about like synergies between them. But dara basically increases exercise performance. and you feel like you can go forever and train forever when you take Dada. So I like to start with 50 to 100 milligrams of DADA injected intramuscularly pre-workout into whatever muscle I'm training, but it absolutely works.",
+            "first_timestamp": "26:06"
+          },
+          {
+            "source_id": "saturday-morning-coffee-talk-31426--deb3667a",
+            "source_type": "library-video",
+            "source_title": "Saturday Morning Coffee Talk · 3/14/26",
+            "source_date": "2026-04-08",
+            "source_url": "https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-31426--deb3667a/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/saturday-morning-coffee-talk-31426--deb3667a.json",
+            "mention_count": 5,
+            "top_snippet": "Typically those right there are going to be a good, pretty good chemical signal to start getting things going in the right direction and get you on track. So that's what I do. I'd say with just those things right there that we mentioned, you'd probably be well on the way. What's good to take to get rid of lactic acid after weight training, recover from being sore immediately? I would really like, I mean, you could take it before weight-training. What really helps with the buildup of Lactic Acid is DADA, Dioisopropamine Dichloroacetate.",
+            "top_context": "A lot of 33 year olds have fatally low testosterone. They don't realize it and their testosterone comes back at 13 or 14 total. on the blood work and the doctor's like, oh, your testosterone is normal. To which I would say that would be like a death sentence for a woman to have that low of testosterone. And so I'd get that checked first. Then from there, I will say, okay, now the thyroid, desiccated thyroid where I start, would also get thiamin-sulfo-1. I also would get low-dose naltrexone. Typically those right there are going to be a good, pretty good chemical signal to start getting things going in the right direction and get you on track. So that's what I do. I'd say with just those things right there that we mentioned, you'd probably be well on the way. What's good to take to get rid of lactic acid after weight training, recover from being sore immediately? I would really like, I mean, you could take it before weight-training. What really helps with the buildup of Lactic Acid is DADA, Dioisopropamine Dichloroacetate. Say that 10 times fast. Just call it Dada, d-a-d-A. And you can get that, as an oral, get as injectable, but that actually like it will increase the threshold to which your body will start to build up lactic acid, which makes it good for endurance, makes a good weightlifting, and you definitely don't get as sore. I've actually been using a transdermal one lately and that's worked to me just as well, I think is the injectable milligram for milligram. Yeah. There's also an oral dropper. Yep. You can get an aural droppers or oral capsules.",
+            "first_timestamp": "1:17:33"
+          },
+          {
+            "source_id": "may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352",
+            "source_type": "library-video",
+            "source_title": "May 2026 Q&A | Retatrutide, Testosterone, Autoimmune, and Beyond",
+            "source_date": "2026-06-17",
+            "source_url": "https://library.hunterwilliamshealth.com/p/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352.json",
+            "mention_count": 4,
+            "top_snippet": "B733 dosing, I like 300 or 600 micrograms. That is a peptide that seems to lower blood pressure and have anti-fibrotic effects. I've used it, can't say I felt anything different, but I did like it. It did seem to have an antiinflammatory effect when I used. So I do like B 733, very lesser known peptides, there is some data with it helping directly with blood-pressure and then being antifibrodic as well. All right. Dada as a pre-workout research suggests two to three times a week, not every session thoughts.",
+            "top_context": "and you may have to go to the hospital. So always build up to those higher doses. Me personally, I dont go over one to two milligrams per day, but you want to over. to five milligrams or 10 milligrams, or whatever it is. And that's fine. If you want to do that, I personally don't. However, when you're starting out, please just start low because I've seen so many people have a bad response. So there's all the dosing of, Hey, you take five milligram three times a week or wherever. Totally fine if you wanna do, that I just personally know. All right, let's just move into some miscellaneous things. B733 dosing, I like 300 or 600 micrograms. That is a peptide that seems to lower blood pressure and have anti-fibrotic effects. I've used it, can't say I felt anything different, but I did like it. It did seem to have an antiinflammatory effect when I used. So I do like B 733, very lesser known peptides, there is some data with it helping directly with blood-pressure and then being antifibrodic as well. All right. Dada as a pre-workout research suggests two to three times a week, not every session thoughts. I think that's good. If you overdo it with DADA, you can potentially, one, just push yourself too hard. And then also two, I just think it's one of those things I like to cycle stuff. So do it two or three time per week but you don't need to do every day in my opinion. I would say Dada like, it makes me aggressive. It doesn't make me angry or anything, but it does make more aggressive in a workout sense. I don't get like angry, But I do get more agressive when I take Dara, which I think for a work out could be a good thing. Someone asked me about ACE167.",
+            "first_timestamp": "43:29"
+          },
+          {
+            "source_id": "saturday-morning-coffee-talk-51626--2ce3e83c",
+            "source_type": "library-video",
+            "source_title": "Saturday Morning Coffee Talk 5/16/26",
+            "source_date": "2026-05-25",
+            "source_url": "https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-51626--2ce3e83c/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/saturday-morning-coffee-talk-51626--2ce3e83c.json",
+            "mention_count": 4,
+            "top_snippet": "Some creatine, some injectable carnitine some dada, and maybe even some SLU. Like if you just give a 19-year-old those and their training and they're eating right and everything, they are going respond to really well. The eating is like the Well, yeah, you got it. I mean, I, when I was 19, what they're eating. So when was a pup, When I 19 I. Was a redshirt freshmen in college and I walk on, on a division one power five school football team.",
+            "top_context": "MK777 would be another one. GH, the only other ones that are like Kind of work for GHRP2, GHRP6, hexarelin. And again, those are much less efficacious. MK677, but I like MK777 better. Sunny says, my 19 year old son wants to gain muscle and get bigger. What do you suggest? I will say this. I mean, sure. You can take out peptides and stuff. A 19 year old is going to be, especially a boy is gonna respond really good to eating enough. Some creatine, some injectable carnitine some dada, and maybe even some SLU. Like if you just give a 19-year-old those and their training and they're eating right and everything, they are going respond to really well. The eating is like the Well, yeah, you got it. I mean, I, when I was 19, what they're eating. So when was a pup, When I 19 I. Was a redshirt freshmen in college and I walk on, on a division one power five school football team. And I wasn't nobody. and I was probably like 208 pounds and i was like probably 20 pounds too light. I didn't use any peptides, I mean I had creatine, i didn' use peptide and put on 20 lbs. How much was muscle? I don't know, around 13% body fat because they would test our bodyfat as part of our cattle call or whatever. So I put on 20 pounds and what did I do? I ate all the time, probably about 6,000 calories per day, breakfast snack, lunch snack dinner snack.",
+            "first_timestamp": "1:29:11"
           }
         ],
         "acute_signals": [
@@ -54,6 +151,13 @@
             "source_date": "2026-03-06",
             "timestamp": null,
             "source_url": "https://open.spotify.com/episode/0uRxClDt9iiUkqSK3BOc9R"
+          },
+          {
+            "snippet": "version of those. If you could buy a blend of PBC and TB500 in a vial, A lot of people ask me about that, so I wrote an email about it. Probably should do a video about this as well. So that is it for the slides. That is my comprehensive guide to Dada. Hopefully it was helpful to you. It's pretty straightforward. As far as who this is for, I would say obviously it's going to benefit more athletes. I think if you're a sedentary person or someone trying to lose weight, this would probably benefit you, but I'd think to me, just based on my own response, and I can't speak for anyone else, more potent or more impactful for someone that's like an experienced trainee that really",
+            "source_title": "How DADA Enhances Performance My Comprehensive Breakdown",
+            "source_date": "2026-03-29",
+            "timestamp": "12:02",
+            "source_url": "https://library.hunterwilliamshealth.com/p/how-dada-enhances-performance-my-comprehensive-breakdown--038a6feb/"
           }
         ],
         "chronic_signals": [
@@ -77,6 +181,20 @@
             "source_date": "2026-03-06",
             "timestamp": null,
             "source_url": "https://open.spotify.com/episode/0uRxClDt9iiUkqSK3BOc9R"
+          },
+          {
+            "snippet": "Probably start at the same, which is 50mg and then you kind of go up as needed. But obviously I the the oil you go higher because obviously you have it being broken down by the digestive system liver. What are some synergistic compounds that I would use alongside Dada? So first one is L-carnitine. I actually was injecting L carnitene before my workout. And I do think that enhanced the effects. So I did a couple of days on and a few days off with L carnetine, and I think I got just a better response out of that for the workout,",
+            "source_title": "How DADA Enhances Performance My Comprehensive Breakdown",
+            "source_date": "2026-03-29",
+            "timestamp": "9:50",
+            "source_url": "https://library.hunterwilliamshealth.com/p/how-dada-enhances-performance-my-comprehensive-breakdown--038a6feb/"
+          },
+          {
+            "snippet": "Just be carefully with the word to the wise. But yeah, it's a great compound. I'm probably coming to the determination that sloop should be cycled on and cyled off mildly. And I think Dada will be a great performance enhancer while I am not on sloop. I don't know what I m doing with that yet in terms of the cycle length. But just while I'm not taking sloop, because I will use s loop well into the future, it could be something while i'm off of that.",
+            "source_title": "How DADA Enhances Performance My Comprehensive Breakdown",
+            "source_date": "2026-03-29",
+            "timestamp": "13:13",
+            "source_url": "https://library.hunterwilliamshealth.com/p/how-dada-enhances-performance-my-comprehensive-breakdown--038a6feb/"
           }
         ]
       }
@@ -124,33 +242,26 @@
   },
   "reset_biology_synthesis": {
     "status": "distilled",
-    "recommendation": "Reset Biology suggests asking the practitioner to consider DADA (diisopropylamine dichloroacetate) as an injectable or transdermal pre-workout PDK4-inhibiting metabolic modulator that pushes the lactate threshold back, with Hunter (threadId 19cc568b0b452c4f 2026-03-06): \"It has quietly become one of the staples in my own pre-workout injection stack\" and Taylor (JC1poI1OEog 01:18:16.280): \"it will increase the threshold to which your body will start to build up lactic acid, which makes it good for endurance, makes it good for weightlifting, and you definitely don't get as sore.\" We'd ask the prescribing physician to weigh route, ceiling, and the injury-risk caveat because Hunter's deep-dive is explicit that oral underperforms for performance and that 200 mg/day removes the metabolic governor in a way that can outrun what joints/connective tissue can handle.",
-    "caveats": "- Avoid 200 mg/day ceiling: Hunter (threadId 19cc568b0b452c4f 2026-03-06): \"Absolutely works but I think it's too much\" and \"Removing the metabolic governor → push body beyond what joints/connective tissue can handle → injury risk.\"\n- Side-effect surface from clinical literature (Hunter, threadId 19cc568b0b452c4f 2026-03-06): \"Headache · GI upset · Appetite changes · Dry mouth · ⚠ At extremely high DCA exposures: peripheral neuropathy (clinical trials, much higher doses than discussed here).\"\n- Lactate-suppression theoretical caveat: Hunter (threadId 19cc568b0b452c4f 2026-03-06): \"Lactate isn't purely bad — it's a signaling molecule + fuel source\" and \"Suppressing too aggressively could theoretically alter training adaptations → dosing matters.\"\n- Oral underperforms for performance per Hunter (threadId 19cc568b0b452c4f 2026-03-06): \"Hunter's experience: oral doesn't produce noticeable performance effect — Injectable preferred for performance.\" Hunter's later podcast tempers this — Hunter (JgktB39WB_A 00:33:54.080): \"Yeah, the oral works pretty good, too. I like injecting the data, but the transmal does work well.\"\n- Trevor Bachmeyer has zero DADA mentions in the corpus — no SmashweRx-side validation or dissent on file.\n- Sourcing: Hunter (threadId 19cc568b0b452c4f 2026-03-06): \"BLL does NOT carry DADA · Parabolic Peptides — oral, transdermal, OR injectable forms.\"",
-    "cross_expert_consensus": "Hunter and Taylor agree DADA's mechanism shifts the lactate threshold and improves training output. Hunter (threadId 19cc568b0b452c4f 2026-03-06): \"Reduced lactate accumulation during intense training — pushes the threshold back · More reps before fatigue · Improved cardio capacity · Better pumps + training output.\" Taylor (JC1poI1OEog 01:18:16.280): \"it will increase the threshold to which your body will start to build up lactic acid, which makes it good for endurance, makes it good for weightlifting, and you definitely don't get as sore.\" Both also confirm transdermal works well — Hunter (JgktB39WB_A 00:33:44.799): \"And then Dada is great too. We've used a transdermal version of Dada that ... that's been I've been liking that the transermal data\"; Taylor (JC1poI1OEog 01:18:24.360): \"I've actually been using the transdermal one lately, and that's worked to me just as well, I think, as the injectable milligram for milligram.\" No Trevor data in the corpus.",
-    "cross_expert_disagreement": "No direct contradiction — Trevor is silent (zero DADA mentions across the corpus). The only intra-Hunter tension is between his 2026-03-06 email (\"Hunter's experience: oral doesn't produce noticeable performance effect — Injectable preferred for performance\") and his later 2026-04-10 podcast (JgktB39WB_A 00:33:54.080): \"Yeah, the oral works pretty good, too. I like injecting the data, but the transmal does work well.\" Newer podcast softens the older email's oral-doesn't-work stance; both are surfaced with dates so the practitioner can read the trajectory. Taylor never specifies a DADA dose on record (her top_doses \"60 mg\" is a same-window collision with an Accutane question, not a DADA dose).",
+    "recommendation": "Reset Biology suggests asking the prescribing practitioner to weigh Hunter's framing: Hunter Williams, \"How DADA Enhances Performance My Comprehensive Breakdown\" (2026-03-29, 0:42, https://library.hunterwilliamshealth.com/p/how-dada-enhances-performance-my-comprehensive-breakdown--038a6feb/): \"But I do really, really like this as a pre-workout agent and a precardio agent. Actually found it to be more effective as pre workout as in resistance training.\" Taylor Williams, \"Saturday Morning Coffee Talk 3/14/2026\" (2026-03-14, 01:18:16.280, https://youtu.be/JC1poI1OEog): \"it will increase the threshold to which your body will start to build up lactic acid, which makes it good for endurance, makes it good for weightlifting, and you definitely don't get as sore.\"",
+    "caveats": "- Hunter Williams, \"How DADA Enhances Performance My Comprehensive Breakdown\" (2026-03-29, 6:06, https://library.hunterwilliamshealth.com/p/how-dada-enhances-performance-my-comprehensive-breakdown--038a6feb/): \"prolonged use or too high of a dosage may lead to tingling or numbness.\"\n- Hunter Williams, \"How DADA Enhances Performance My Comprehensive Breakdown\" (2026-03-29, 7:41, https://library.hunterwilliamshealth.com/p/how-dada-enhances-performance-my-comprehensive-breakdown--038a6feb/): \"Electrolytes are crucial if you're using this.\"\n- Hunter Williams, \"How DADA Enhances Performance My Comprehensive Breakdown\" (2026-03-29, 12:41, https://library.hunterwilliamshealth.com/p/how-dada-enhances-performance-my-comprehensive-breakdown--038a6feb/): \"People who don't know their limits will hurt themselves.\"\n- Hunter Williams, \"May 2026 Q&A | Retatrutide, Testosterone, Autoimmune, and Beyond\" (2026-06-17, 44:01, https://library.hunterwilliamshealth.com/p/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352/): \"If you overdo it with DADA, you can potentially, one, just push yourself too hard.\"",
+    "cross_expert_consensus": "Hunter Williams, \"Saturday Morning Coffee Talk 5/16/26\" (2026-05-25, 1:49:10, https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-51626--2ce3e83c/): \"DADA is kind of think about it. Is it, it basically like, increases your lactate threshold.\" Taylor Williams, \"Saturday Morning Coffee Talk 3/14/2026\" (2026-03-14, 01:18:16.280, https://youtu.be/JC1poI1OEog): \"it will increase the threshold to which your body will start to build up lactic acid, which makes it good for endurance, makes it good for weightlifting, and you definitely don't get as sore.\" Hunter Williams, \"Reader Mailbag · Episode 1\" (2026-04-20, 33:46, https://library.hunterwilliamshealth.com/p/reader-mailbag-episode-1--31ea7a1b/): \"the Transderma does work pretty well.\" Taylor Williams, \"Saturday Morning Coffee Talk 3/14/2026\" (2026-03-14, 01:18:24.360, https://youtu.be/JC1poI1OEog): \"I've actually been using the transdermal one lately, and that's worked to me just as well, I think, as the injectable milligram for milligram.\"",
+    "cross_expert_disagreement": "Hunter Williams, \"How DADA Enhances Performance My Comprehensive Breakdown\" (2026-03-29, 8:15, https://library.hunterwilliamshealth.com/p/how-dada-enhances-performance-my-comprehensive-breakdown--038a6feb/): \"The oral ones tend to not be as strong. I tried both and I think the oral one I didn't really notice that much of an effect. And I was trying like 150 milligrams, the 200 milligrams of the oral, and I didn't really notice that much effect, but the injected one was pretty strong.\" Hunter Williams, \"Reader Mailbag · Episode 1\" (2026-04-20, 33:46, https://library.hunterwilliamshealth.com/p/reader-mailbag-episode-1--31ea7a1b/): \"The oral works pretty good too I like injecting the DADA, but the Transderma does work pretty well.\"",
     "acute_chronic_split": {
       "acute": {
-        "dose": "Hunter (threadId 19cc568b0b452c4f 2026-03-06): \"Start: 50 mg/day · Standard performance dose: 100 mg/day\" — injectable, pre-workout. Hunter (threadId 19cc568b0b452c4f 2026-03-06): \"Avoid 200 mg/day · Absolutely works but I think it's too much.\"",
-        "route": "Hunter (threadId 19cc568b0b452c4f 2026-03-06): \"Injectable preferred for performance.\" Transdermal also accepted: Hunter (JgktB39WB_A 00:33:44.799): \"We've used a transdermal version of Dada that ... that's been I've been liking that\"; Taylor (JC1poI1OEog 01:18:24.360): \"I've actually been using the transdermal one lately, and that's worked to me just as well, I think, as the injectable milligram for milligram.\"",
-        "frequency": "Hunter (threadId 19cc568b0b452c4f 2026-03-06): \"Take pre-workout / pre-cardio.\"",
-        "duration": null,
-        "verbatim_citation": "Hunter email threadId 19cc568b0b452c4f (2026-03-06): \"Start: 50 mg/day · Standard performance dose: 100 mg/day · Take pre-workout / pre-cardio.\"",
-        "episode_url": "https://open.spotify.com/episode/0uRxClDt9iiUkqSK3BOc9R",
-        "timestamp": "2026-03-06 (email — no VTT timestamp)"
+        "dose": "Hunter Williams, \"DADA — The Underrated Performance Enhancer\" (2026-03-06, threadId 19cc568b0b452c4f, https://open.spotify.com/episode/0uRxClDt9iiUkqSK3BOc9R): \"Start: 50 mg/day · Standard performance dose: 100 mg/day.\" Hunter Williams, \"How DADA Enhances Performance My Comprehensive Breakdown\" (2026-03-29, 8:45, https://library.hunterwilliamshealth.com/p/how-dada-enhances-performance-my-comprehensive-breakdown--038a6feb/): \"200 milligrams per day is the upper limit.\" Hunter Williams, \"How DADA Enhances Performance My Comprehensive Breakdown\" (2026-03-29, 8:15, https://library.hunterwilliamshealth.com/p/how-dada-enhances-performance-my-comprehensive-breakdown--038a6feb/): \"I was trying like 150 milligrams, the 200 milligrams of the oral, and I didn't really notice that much effect.\"",
+        "route": "Hunter Williams, \"How DADA Enhances Performance My Comprehensive Breakdown\" (2026-03-29, 8:15, https://library.hunterwilliamshealth.com/p/how-dada-enhances-performance-my-comprehensive-breakdown--038a6feb/): \"What I would start at is 50 milligrams per day and inject it intramuscularly. I recommend injecting this.\" Hunter Williams, \"Reader Mailbag · Episode 1\" (2026-04-20, 33:46, https://library.hunterwilliamshealth.com/p/reader-mailbag-episode-1--31ea7a1b/): \"The oral works pretty good too I like injecting the DADA, but the Transderma does work pretty well.\"",
+        "frequency": "Hunter Williams, \"May 2026 Q&A | Retatrutide, Testosterone, Autoimmune, and Beyond\" (2026-06-17, 44:01, https://library.hunterwilliamshealth.com/p/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352/): \"So do it two or three time per week but you don't need to do every day in my opinion.\"",
+        "duration": "Hunter Williams, \"How DADA Enhances Performance My Comprehensive Breakdown\" (2026-03-29, 9:19, https://library.hunterwilliamshealth.com/p/how-dada-enhances-performance-my-comprehensive-breakdown--038a6feb/): \"right now I'm just going off a cycle of four to six weeks for this followed by like a two to four week break just to prevent any peripheral side effects like peripheral neuropathy.\"",
+        "verbatim_citation": "Hunter Williams, \"May 2026 Q&A | Retatrutide, Testosterone, Autoimmune, and Beyond\" (2026-06-17, 44:01, https://library.hunterwilliamshealth.com/p/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352/): \"So do it two or three time per week but you don't need to do every day in my opinion.\"",
+        "episode_url": "https://library.hunterwilliamshealth.com/p/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352/",
+        "timestamp": "44:01"
       },
-      "chronic": {
-        "dose": "Hunter (threadId 19cc568b0b452c4f 2026-03-06) cites the clinical reference frame: \"Japan oral: 20-60 mg/day (liver use) · China NAFLD trial: 60-120 mg/day · One NAFLD trial: 60 mg vs 120 mg/day for 8 weeks → improvements in liver enzymes + metabolic markers.\" Hunter does NOT recommend chronic daily dosing for performance — performance use is pre-workout only.",
-        "route": "Oral has clinical history for liver/NAFLD use (Hunter, threadId 19cc568b0b452c4f 2026-03-06): \"Used clinically in Japan as liver-support medication (20-60 mg/day oral, chronic liver conditions).\"",
-        "frequency": "Hunter (threadId 19cc568b0b452c4f 2026-03-06): \"60 mg vs 120 mg/day for 8 weeks\" (NAFLD clinical trial framing — not a Hunter recommendation, a citation of the literature).",
-        "duration": "Hunter (threadId 19cc568b0b452c4f 2026-03-06): \"60 mg vs 120 mg/day for 8 weeks\" (clinical reference duration).",
-        "verbatim_citation": "Hunter email threadId 19cc568b0b452c4f (2026-03-06): \"Used clinically in Japan as liver-support medication (20-60 mg/day oral, chronic liver conditions) · Used in China as injectable regulated pharmaceutical (stronger safety labeling required after post-marketing adverse events) · One NAFLD trial: 60 mg vs 120 mg/day for 8 weeks.\"",
-        "episode_url": "https://open.spotify.com/episode/0uRxClDt9iiUkqSK3BOc9R",
-        "timestamp": "2026-03-06 (email — no VTT timestamp)"
-      }
+      "chronic": null
     },
-    "female_specific_notes": "Taylor does not give female-specific DADA guidance on the record. Her DADA discussion is general-population endurance/lactate context — Taylor (JC1poI1OEog 01:18:16.280): \"it will increase the threshold to which your body will start to build up lactic acid, which makes it good for endurance, makes it good for weightlifting, and you definitely don't get as sore\" — and a passing lipid-helper mention — Taylor (hgI5Mpc-xDQ 01:27:01.040): \"carterine actually can help with lipids. Dada is another one that can help with lipids.\" No fertility, hormone-context, or female-only dosing signal in the corpus.",
-    "distilled_at": "2026-04-27T05:40:24.525Z",
-    "distilled_by": "claude"
+    "female_specific_notes": null,
+    "distilled_at": "2026-07-17T09:32:58.353Z",
+    "distilled_by": "codex"
   },
-  "generated_at": "2026-04-27T02:02:34.970Z"
+  "generated_at": "2026-07-17T10:59:08.289Z",
+  "mentions_fingerprint": "fc08e1c51363"
 }

@@ -5,49 +5,62 @@
     "VIP",
     "vip",
     "Vasoactive Intestinal Peptide",
-    "vasoactive intestinal peptide"
+    "vasoactive intestinal peptide",
+    "Vasoactive intestinal peptide"
   ],
-  "category": "Uncategorized",
+  "category": "Healing",
   "experts": {
     "hunter-williams": {
       "baseline_protocol": null,
       "summary": {
-        "mention_count": 107,
+        "mention_count": 422,
         "top_doses": [
           {
             "dose": "5 mg",
+            "count": 25
+          },
+          {
+            "dose": "100 micrograms",
             "count": 21
           },
           {
             "dose": "3 mg",
-            "count": 18
+            "count": 20
           },
           {
             "dose": "2 mg",
-            "count": 4
+            "count": 15
           },
           {
-            "dose": "000 mcg",
-            "count": 4
+            "dose": "50 micrograms",
+            "count": 12
           },
           {
-            "dose": "50 mcg",
-            "count": 4
+            "dose": "20 units",
+            "count": 10
+          },
+          {
+            "dose": "200 micrograms",
+            "count": 9
           },
           {
             "dose": "100 mcg",
-            "count": 3
-          },
-          {
-            "dose": "666 mcg",
-            "count": 2
-          },
-          {
-            "dose": "10 mg",
-            "count": 2
+            "count": 8
           }
         ],
         "top_sources": [
+          {
+            "source_id": "vip-peptide-updated-guide-uses-beyond-mold-and-lung-health--c9c1171f",
+            "source_type": "library-video",
+            "source_title": "VIP Peptide Updated Guide: Uses Beyond Mold and Lung Health",
+            "source_date": "2026-03-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/vip-peptide-updated-guide-uses-beyond-mold-and-lung-health--c9c1171f/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/vip-peptide-updated-guide-uses-beyond-mold-and-lung-health--c9c1171f.json",
+            "mention_count": 98,
+            "top_snippet": "Hey everybody, this is Hunter Williams. I hope you're doing amazing wherever you might be in the world. Today's video is going to be a much needed update to my old video on a peptide called VIP. VIP stands for vasoactive intestinal peptides. I believe we were doing a coffee talk. It's been about a week ago now, Taylor and I, and someone was asking us what we thought the trends were for 2026 and peptides. And so I don't really know what the trend are going to be. I think obviously GLPs are here to stay, but my prediction and my hope, maybe I can have kind of an active role in making this a trend,",
+            "top_context": "Hey everybody, this is Hunter Williams. I hope you're doing amazing wherever you might be in the world. Today's video is going to be a much needed update to my old video on a peptide called VIP. VIP stands for vasoactive intestinal peptides. I believe we were doing a coffee talk. It's been about a week ago now, Taylor and I, and someone was asking us what we thought the trends were for 2026 and peptides. And so I don't really know what the trend are going to be. I think obviously GLPs are here to stay, but my prediction and my hope, maybe I can have kind of an active role in making this a trend, you can too, is bringing to spotlight some of these more, not fringe, I would call them, more ancillary peptide that seem to have very specific use cases, but actually do many more things than what we typically think of them for. And VIP is absolutely one of those peptides. So what I'm going to do today is an update video. I have an older video on VIP. Obviously that was deleted off of YouTube and it's just time to More stuff around just studies and personal use that I'm going to put into this video,",
+            "first_timestamp": "0:09"
+          },
           {
             "source_id": "197b36a2311ac066",
             "source_type": "email",
@@ -56,9 +69,21 @@
             "source_url": null,
             "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-06-27-vip-a-very-important-peptide.md",
             "mention_count": 34,
-            "top_snippet": "health issues after living or working in a moldy environment… this is _required viewing._ However, today I want to take it even further for my email list. While there are a handful of useful peptides ",
-            "top_context": "health issues after living or working in a moldy environment… this is _required viewing._ However, today I want to take it even further for my email list. While there are a handful of useful peptides for mold recovery, **one stands out as the absolute cornerstone of any mold healing protocol: VIP, or Vasoactive Intestinal Peptide.** This peptide is legendary in the mold recovery world for a reason, and if you stick with me to the end, I’ll show you exactly how to use it (by injection or nasal spray), plus hook you up with a massive discount at BioLongevity Labs. ——————————————————————",
+            "top_snippet": "ird health issues after living or working in a moldy environment… this is _required viewing._ However, today I want to take it even further for my email list. While there are a handful of useful pepti",
+            "top_context": "ird health issues after living or working in a moldy environment… this is _required viewing._ However, today I want to take it even further for my email list. While there are a handful of useful peptides for mold recovery, **one stands out as the absolute cornerstone of any mold healing protocol: VIP, or Vasoactive Intestinal Peptide.** This peptide is legendary in the mold recovery world for a reason, and if you stick with me to the end, I’ll show you exactly how to use it (by injection or nasal spray), plus hook you up with a massive discount at BioLongevity Labs. ——————————————————————————",
             "first_timestamp": null
+          },
+          {
+            "source_id": "how-id-recover-from-mold-toxicity-with-peptides-complete-guide--37df4c30",
+            "source_type": "library-video",
+            "source_title": "How Id Recover from Mold Toxicity with Peptides Complete Guide",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/how-id-recover-from-mold-toxicity-with-peptides-complete-guide--37df4c30/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/how-id-recover-from-mold-toxicity-with-peptides-complete-guide--37df4c30.json",
+            "mention_count": 26,
+            "top_snippet": "a lot of companies now that are selling ppctb 500 and kpv together so that's pretty cool something i need to work on that by longevity lapse and lastly we have Probably one of the ones that is lesser known but more important for mold exposure is going to be VIP. So VIP is vasoactive intestinal peptide. It's 28 amino acid neuro regulatory peptides hormone with diverse physiological roles. So it works as a vasodilator and anti-inflammatory immunomodulator.",
+            "top_context": "Dosing wise, for oral use, I'd say one to five milligrams per day, but for the case of mold exposure, i would really recommend injectable, and I would say 250 to 500 micrograms per. Day, very similar to BPC in terms of dosage. So 250, 500, micro grams, start with 250. But I think you'd be good with 500. Microgram per, day and then I, would do that for eight weeks. I use this really for 8 to 12 12 weeks probably a little bit longer and what's cool about this is you could put it with bpc and tb500 and there's even a lot of companies now that are selling ppctb 500 and kpv together so that's pretty cool something i need to work on that by longevity lapse and lastly we have Probably one of the ones that is lesser known but more important for mold exposure is going to be VIP. So VIP is vasoactive intestinal peptide. It's 28 amino acid neuro regulatory peptides hormone with diverse physiological roles. So it works as a vasodilator and anti-inflammatory immunomodulator. So binds to VPAC1 and VP AC2 receptors on cells, triggering cyclic AMP signaling. And then the immune system VIP generally shifts responses toward an anti inflammatory profile. so it inhibits pro-inflamatory cytokine production like TNF-alpha, interleukin-6 and inter-leucin 12, and promotes the development of regulatory and TH2 type responses. It also relaxes smooth muscles and dilates blood vessels in the lungs. It's a bronchodilator, improves blood oxygenation in brain, increases cerebral blood flow.",
+            "first_timestamp": "36:59"
           },
           {
             "source_id": "0TyW-wlJMxo",
@@ -73,6 +98,30 @@
             "first_timestamp": "00:08:12.440"
           },
           {
+            "source_id": "peptide-stack-for-lung-health-and-copd-recovery--4b867216",
+            "source_type": "library-video",
+            "source_title": "Peptide Stack for Lung Health and COPD Recovery",
+            "source_date": "2026-03-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-stack-for-lung-health-and-copd-recovery--4b867216/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-stack-for-lung-health-and-copd-recovery--4b867216.json",
+            "mention_count": 21,
+            "top_snippet": "So this is obviously not small potatoes when we look at it. Just to give you an overview of the stack, the first one's going to be bronchogen. We have another peptide called Conlutin, you may not have heard of. Another one called VIP, vasoactive intestinal peptides. we have TB 500 and then GHKCU. And I'm going talk specifically about some of those ones that you've probably heard and don't typically associate with lung health, what they're actually doing. But let's look at bronchogen first. This is going to be a very lung-specific peptide. So broncogen is a bioregulator peptides, and it's a synthetic tetrapeptide derived from broncho tissue.",
+            "top_context": "in 2019, responsible for approximately 4 million deaths in 454 million cases. And again, that's pre-COVID. I wasn't able to find any updated numbers just from doing a cursory, quick internet search. In standard treatments, managed symptoms would often fail to reverse underlying lung damage or halt disease progression of the lungs. This has sparked interest in regenerative and modulatory therapies, a la peptides, including peptide to support lung tissue repair and reduce chronic inflammation. We also Again, I just can't stress, man, think about that 4 million deaths in 2019 and 454 million global cases of people with lung health issues. So this is obviously not small potatoes when we look at it. Just to give you an overview of the stack, the first one's going to be bronchogen. We have another peptide called Conlutin, you may not have heard of. Another one called VIP, vasoactive intestinal peptides. we have TB 500 and then GHKCU. And I'm going talk specifically about some of those ones that you've probably heard and don't typically associate with lung health, what they're actually doing. But let's look at bronchogen first. This is going to be a very lung-specific peptide. So broncogen is a bioregulator peptides, and it's a synthetic tetrapeptide derived from broncho tissue. It acts as a gene expression modulator, giving lung tissues a molecular repair signal to restore normal function. Basically, the way these bioregulator peptides work, especially the injectable ones, which I feel are much more efficacious than the oral ones. The oral one's are still good to use, but when we look at the Injectable one, what is going on is that they bind to DNA and histone proteins inside of lung tissue, Which then modulates gene transcription in the lung cells.",
+            "first_timestamp": "5:06"
+          },
+          {
+            "source_id": "peptide-qa-january-2026--7994649b",
+            "source_type": "library-video",
+            "source_title": "Peptide Q&A · January 2026",
+            "source_date": "2026-03-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-january-2026--7994649b/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-qa-january-2026--7994649b.json",
+            "mention_count": 20,
+            "top_snippet": "I've got them on a document right here and I'm just going to go through them one by one and let us get started. First one, pretty good question. I've read, there's some new research about VIP for pain. Have I seen any of this research? I don't recall any specific research off the top of my head. However, VIP is really good at downshifting a nervous system that is just really stressed out and in doing so can help with pain And so if someone is experiencing chronic pain, I would absolutely say VIP is a good candidate to use.",
+            "top_context": "If you do want your questions answered directly with me on live calls in the group, we do that every Thursday night at 8 p.m. We have a group call and you can come on and ask questions. And we also have weekly book club just for personal and self development in there. It's a really fun place. Also too you could direct message me privately to make you get your question answered. Then also we have an amazing forum of other users in their. I think there's like 220 people in Now at this point that are in there interacting and there's some really good interactions and stuff in the forum. But without further ado, let's pop over to these questions. I've got them on a document right here and I'm just going to go through them one by one and let us get started. First one, pretty good question. I've read, there's some new research about VIP for pain. Have I seen any of this research? I don't recall any specific research off the top of my head. However, VIP is really good at downshifting a nervous system that is just really stressed out and in doing so can help with pain And so if someone is experiencing chronic pain, I would absolutely say VIP is a good candidate to use. I've started like 100 micrograms per day. VIP, is really one of the most versatile peptides out there. So I highly recommend everybody use it if you get a chance to, because it does a lot of amazing things. Next question. Peripheral nerve injury. I was stung on a lower leg by a stingray. Man, I'm sorry to hear that. Cause loss of ops to try to heal the wound and nerve damage. Any suggestions for oral? Ideally not injectable. Peptides could help my damaged nerves. Don't know specifically about oral ones. You could try some of the oral bioregulators.",
+            "first_timestamp": "2:11"
+          },
+          {
             "source_id": "19b7bdad152d7966",
             "source_type": "email",
             "source_title": "One of the Most Versatile Peptides",
@@ -85,97 +134,49 @@
             "first_timestamp": null
           },
           {
-            "source_id": "19bb99beadceda11",
-            "source_type": "email",
-            "source_title": "VIP Deep Dive (Is It The Most Versatile Peptide Ever?)",
-            "source_date": "2026-01-13",
-            "source_url": "https://open.spotify.com/episode/7q1KTcE7zonZwWVUCUenej",
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2026-01-13-vip-deep-dive.md",
-            "mention_count": 12,
-            "top_snippet": "cally relevant for ICU-level inflammatory lung disease | | **Mood/anxiety correlations** | Higher circulating VIP correlates with lower anxiety/depression scores + brain connectivity patterns of emoti",
-            "top_context": "cally relevant for ICU-level inflammatory lung disease | | **Mood/anxiety correlations** | Higher circulating VIP correlates with lower anxiety/depression scores + brain connectivity patterns of emotional regulation | | **CIRS / mold protocols** | Most well-known clinical use — typically intranasal VIP. Improvements in QoL + normalization of inflammatory markers in otherwise-stuck patients | ## ⭐ DOSING (VIP) — Hunter's protocol ### Reconstitution Recipe (5 mg vial) - **Add 3 mL bacteriostatic water** - **KEEP REFRIGERATED** - (10 mg vials also exist) ### Subcutaneous Doses (U-100 insulin syri",
-            "first_timestamp": null
-          },
-          {
-            "source_id": "E7GPNidicqY",
-            "source_type": "podcast",
-            "source_title": "Saturday Morning Coffee Talk 4/18/26",
-            "source_date": "2026-04-18",
-            "source_url": "https://youtu.be/E7GPNidicqY",
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-04-18-saturday-morning-coffee-talk-4-18-26-E7GPNidicqY.en.vtt",
-            "mention_count": 6,
-            "top_snippet": "any suggestions for Raynaud's. I just finished a 4-week cycle on VIP. Can you",
-            "top_context": "which is why we cycle on and cycle off. which is why we cycle on and cycle off. Now, I don't want you to think that Now, I don't want you to think that Now, I don't want you to think that means that you're like going to get an means that you're like going to get an means that you're like going to get an autoimmune disease from taking peptides. autoimmune disease from taking peptides. autoimmune disease from taking peptides. What it means is that you build up these What it means is that you build up these What it means is that you build up these things called anti-drug antibodies to things called anti-drug antibodies to things called anti-drug antibodies to the peptide. And when you do that, it the peptide. And when you do that, it the peptide. And when you do that, it stops working at the same dose at the stops working at the same dose at the stops working at the same dose at the same effectiveness. And what LDN does is same effectiveness. And what LDN does is same effectiveness. And what LDN does is it modulates that immune response to it modulates that immune response to it modulates that immune response to everything in the body, namely peptides. everything in the body, namely peptides. everything in the body, namely peptides. And when you take it, you maintain And when you take it, you maintain And when you take it, you maintain better sensitivity to the peptide over better sensitivity to the peptide over better sensitivity to the peptide over time with LDN because you're getting time with LDN because you're getting time with LDN because you're getting this this this constant signal of an immune modulation. constant signal of an immune modulation. constant signal of an immune modulation. And so, that's what it does. I And so, that's what it does. I And so, that's what it does. I personally take 3 mg at night before personally take 3 mg at night before personally take 3 mg at night before bed. And I love it. It's one of my bed. And I love it. It's one of my bed. And I love it. It's one of my favorite things. And I think it's very favorite things. And I think it's very favorite things. And I think it's very underrated to do. Lindsay says, love you guys. Wondering Lindsay says, love you guys. Wondering any suggestions for Raynaud's. I just any suggestions for Raynaud's. I just any suggestions for Raynaud's. I just finished a 4-week cycle on VIP. Can you finished a 4-week cycle on VIP. Can you finished a 4-week cycle on VIP. Can you run that longer or anything else you run that longer or anything else you run that longer or anything else you would recommend? Yeah, VIP could be would recommend? Yeah, VIP could be would recommend? Yeah, VIP could be great. You could probably do that for great. You could probably do that for great. You could probably do that for another like 4 to 6 weeks um another like 4 to 6 weeks um another like 4 to 6 weeks um at least. And I would say Raynaud's, I at least. And I would say Raynaud's, I at least. And I would say Raynaud's, I think a lot of times is a blood flow think a lot of times is a blood flow think a lot of times is a blood flow issue. So, BPC and TB 500 would help. issue. So, BPC and TB 500 would help. issue. So, BPC and TB 500 would help. ARA 290 would probably help with that. ARA 290 would probably help with that. ARA 290 would probably help with that. Vasogen would probably help with that. Vasogen would probably help with that. Vasogen would probably help with that. And I think thyroid a lot of times is And I think thyroid a lot of times is And I think thyroid a lot of times is very important for Raynaud's. Yeah. very important for Raynaud's. Yeah. very important for Raynaud's. Yeah. How much of that's related to the blood How much of that's related to the blood How much of that's related to the blood vessel constriction or lack of blood vessel constriction or lack of blood vessel constriction or lack of blood flow, I don't know. But what? You hear flow, I don't know. But what? You hear flow, I don't know. But what? You hear that? Somebody's like revving their that? Somebody's like revving their that? Somebody's like revving their engine outside of our house. engine outside of our house. engine outside of our house. &gt;&gt; That's our nephew's truck. [laughter] &gt;&gt; That's our nephew's truck. [laughter] &gt;&gt; That's our nephew's truck. [laughter] Oh, he was coming to pick up those Oh, he was coming to pick up those Oh, he was coming to pick up those chairs. chairs. chairs. &gt;&gt; Yeah. I was like, what is that? I did &gt;&gt; Yeah. I was like, what is that? I did &gt;&gt; Yeah. I was like, what is that? I did not realize how loud his truck is. You",
-            "first_timestamp": "01:08:38.440"
-          },
-          {
-            "source_id": "19af0c0c3b0300ba",
-            "source_type": "email",
-            "source_title": "The Peptide Stack for Lung Health",
-            "source_date": "2025-12-05",
-            "source_url": "https://open.spotify.com/episode/0heRIsC6pUEWN9mZptGkF2",
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-12-05-peptide-stack-lung-health.md",
-            "mention_count": 5,
-            "top_snippet": "lunts TNF-α, IL-6, IL-17 in LPS-activated immune cells - Reduces WBC adhesion to activated endothelium - Up-regulates antioxidant defenses - Suppresses COX-2 (drives chronic inflammation + fibrosis) #",
-            "top_context": "lunts TNF-α, IL-6, IL-17 in LPS-activated immune cells - Reduces WBC adhesion to activated endothelium - Up-regulates antioxidant defenses - Suppresses COX-2 (drives chronic inflammation + fibrosis) ### Frame **\"Bronchogen rewrites blueprint, Chonluten rewires immune response\"** ## ⭐ Peptide #3 — VIP (Vasoactive Intestinal Peptide) ### Why it's the clinical anchor - **One peptide in this stack with REAL human clinical data** - Phase 2 human data: inhaled/nebulized VIP safe + well tolerated - Significant TNF-α reductions + regulatory T-cell increases in lung fluid - Studied in: sarcoidosis, PAH",
-            "first_timestamp": null
-          },
-          {
-            "source_id": "195a100502257fc3",
-            "source_type": "email",
-            "source_title": "Peptides vs. The Law",
-            "source_date": "2025-03-16",
-            "source_url": null,
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-03-16-peptides-vs-the-law.md",
-            "mention_count": 2,
-            "top_snippet": "dGZvcm1pbi8_cmVmPU9wdGltaXplZA==)_, and _[Tesofensine](https://click.convertkit-mail2.com/38umqpzkrgakh2rolvpirh43grnnnh7/z2hghnhe9ggrvoip/aHR0cHM6Ly9iaW9sb25nZXZpdHlsYWJzLmNvbS9wcm9kdWN0L3Rlc29mZW5za",
-            "top_context": "dGZvcm1pbi8_cmVmPU9wdGltaXplZA==)_, and _[Tesofensine](https://click.convertkit-mail2.com/38umqpzkrgakh2rolvpirh43grnnnh7/z2hghnhe9ggrvoip/aHR0cHM6Ly9iaW9sb25nZXZpdHlsYWJzLmNvbS9wcm9kdWN0L3Rlc29mZW5zaW5lLz9yZWY9T3B0aW1pemVk)_ are all 15% OFF. **And don't forget to join the **_**BioLongevity Labs VIP Insider List **_**for FREE to gain access to exclusive savings and product launches**_**.**_ _[Click here to become a member!](https://biolongevitylabs.com/bll-vip-signup/)_​ ——— You are reading a plain text version of this post. For the best experience, copy and paste this link in your",
-            "first_timestamp": null
-          },
-          {
-            "source_id": "195c511683e59c24",
-            "source_type": "email",
-            "source_title": "LIVE Q&A Tonight",
-            "source_date": "2025-03-23",
-            "source_url": null,
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-03-23-live-q-a-tonight.md",
-            "mention_count": 2,
-            "top_snippet": "rder by using code HUNTER10!** All peptides, bioregulators, and supplements are automatically 15% off at checkout (no coupon code required) By using code **HUNTER10** at checkout, you'll get another 1",
-            "top_context": "rder by using code HUNTER10!** All peptides, bioregulators, and supplements are automatically 15% off at checkout (no coupon code required) By using code **HUNTER10** at checkout, you'll get another 10% giving you 25% OFF Total Savings! **And don't forget to join the **_**BioLongevity Labs VIP Insider List **_**for FREE to gain access to exclusive savings and product launches**_**.**_ _[Click here to become a member!](https://biolongevitylabs.com/bll-vip-signup/)_​ Best, Hunter ——— You are reading a plain text version of this post. For the best experience, copy and past",
-            "first_timestamp": null
+            "source_id": "saturday-morning-coffee-talk-32826--a0b19742",
+            "source_type": "library-video",
+            "source_title": "Saturday Morning Coffee Talk · 3/28/26",
+            "source_date": "2026-04-08",
+            "source_url": "https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-32826--a0b19742/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/saturday-morning-coffee-talk-32826--a0b19742.json",
+            "mention_count": 13,
+            "top_snippet": "category two advised against making them to which it became harder to prescribe them. Yeah. Basically, it's a point the finger type game in the research world, because of the nature of what it is, is the easiest one to point a finger at. But like you were saying, we now have the the Research World is what drove much of this information into the mainstream. Research world is The people that figured out how to use this. It's the people that figure out, hey, what is the dosing for VIP? We don't really know, but let's try it and figure it out.",
+            "top_context": "They're saying we're not bad. We're doing everything that we are supposed to do. Quote unquote getting inspected by the FDA, whatnot, blah, it's the research people that are. It's the four out of every five peptides right now that are being consumed on the market are research peptide. They're the bad guys. There are the back ones. And so you have this chain of blame that it goes from the compound or the big farmer to the Compounders. Then they're blaming the research world. Whereas the Research World just really came to exist because of what the government did to compounders in 2023, which is basically they made those 19 peptids category two advised against making them to which it became harder to prescribe them. Yeah. Basically, it's a point the finger type game in the research world, because of the nature of what it is, is the easiest one to point a finger at. But like you were saying, we now have the the Research World is what drove much of this information into the mainstream. Research world is The people that figured out how to use this. It's the people that figure out, hey, what is the dosing for VIP? We don't really know, but let's try it and figure it out. And then, oh my goodness, VIP helps heal gut issues. That helps you autoimmune disease. that helps bring down nervous system tone and everything. Helps you enter into more of a parasympathetic state. The compounders of the world, they're like, we want our money. We want hundreds of millions of dollars. We're little old compounders, we're making hundreds of millions, big farmers making billions, and you have the research world that really just exists to fill a gap, to avoid, that gets the short end of the stick and they really have no representation, nor do I think a lot of research worlds really want",
+            "first_timestamp": "7:45"
           }
         ],
         "acute_signals": [
           {
-            "snippet": "back to VIP as the game changer.** Why? Because mold exposure throws your body’s entire signaling system out of whack. After the initial damage, your immune system gets stuck in a perpetual “ON” mode,",
+            "snippet": "** comes back to VIP as the game changer.** Why? Because mold exposure throws your body’s entire signaling system out of whack. After the initial damage, your immune system gets stuck in a perpetual “",
             "source_title": "VIP: A Very Important Peptide",
             "source_date": "2025-06-27",
             "timestamp": null,
             "source_url": null
           },
           {
-            "snippet": "stry tanks, and hormone signaling goes haywire. VIP is the peptide that hits the reset button on this process. It literally brings your brain, immune system, and hormone axis _back online_, almost lik",
+            "snippet": "in chemistry tanks, and hormone signaling goes haywire. VIP is the peptide that hits the reset button on this process. It literally brings your brain, immune system, and hormone axis _back online_, al",
             "source_title": "VIP: A Very Important Peptide",
             "source_date": "2025-06-27",
             "timestamp": null,
             "source_url": null
           },
           {
-            "snippet": "e signaling goes haywire. VIP is the peptide that hits the reset button on this process. It literally brings your brain, immune system, and hormone axis _back online_, almost like rebooting the operat",
+            "snippet": "and hormone signaling goes haywire. VIP is the peptide that hits the reset button on this process. It literally brings your brain, immune system, and hormone axis _back online_, almost like rebooting ",
             "source_title": "VIP: A Very Important Peptide",
             "source_date": "2025-06-27",
             "timestamp": null,
             "source_url": null
           },
           {
-            "snippet": "s haywire. VIP is the peptide that hits the reset button on this process. It literally brings your brain, immune system, and hormone axis _back online_, almost like rebooting the operating system afte",
+            "snippet": "naling goes haywire. VIP is the peptide that hits the reset button on this process. It literally brings your brain, immune system, and hormone axis _back online_, almost like rebooting the operating s",
             "source_title": "VIP: A Very Important Peptide",
             "source_date": "2025-06-27",
             "timestamp": null,
             "source_url": null
           },
           {
-            "snippet": "* Controlling blood flow and oxygenation * Managing hormone and sleep-wake cycles * Restoring balance after stress or infection It’s your body’s natural “peacekeeper” and _orchestrator._ This endogeno",
+            "snippet": "and healthy * Controlling blood flow and oxygenation * Managing hormone and sleep-wake cycles * Restoring balance after stress or infection It’s your body’s natural “peacekeeper” and _orchestrator._ T",
             "source_title": "VIP: A Very Important Peptide",
             "source_date": "2025-06-27",
             "timestamp": null,
@@ -567,33 +568,34 @@
   },
   "reset_biology_synthesis": {
     "status": "distilled",
-    "recommendation": "Reset Biology suggests asking the practitioner to consider VIP (Vasoactive Intestinal Peptide) primarily as a regulatory peptide for patients with documented mold/CIRS exposure who have already removed the exposure, or for upper-respiratory, autonomic, circadian, or mast-cell-activation symptoms — Hunter (197b36a2311ac066 2025-06-27): \"every true expert like Dr. Ritchie Shoemaker comes back to VIP as the game changer.\" We'd ask the prescribing physician to weigh route (subcutaneous vs intranasal) and starting dose given Hunter's newer reconstitution math — Hunter (19b7bdad152d7966 2026-01-01): \"Most people start at 25-50 mcg\" — and the expected vasoactive flush within 10-15 minutes of injecting. Taylor (JccJTHbWF84 01:14:42.149): \"definitely try like 100 micrograms of VIP to help with some of the MCAST stuff\" supports a 100 mcg ceiling for mast-cell-activation cases; Trevor Bachmeyer's content has no peptide-VIP teaching in the corpus reviewed (his \"VIP\" mentions all refer to his Black Card membership tier, not the peptide).",
-    "caveats": "- Mold exposure must be removed first: Hunter (197b36a2311ac066 2025-06-27): \"VIP is NOT for people who: Are still exposed to mold (it won't work—gotta get out first)\" and \"Haven't addressed MARCoNS (nasal staph) or gut colonization.\"\n- Foundational work first: Hunter (197b36a2311ac066 2025-06-27): \"Are looking for a quick fix without doing the foundational work.\"\n- Expected vasoactive reaction is NOT an emergency: Hunter (19b7bdad152d7966 2026-01-01): \"Flushing + slight HR increase within 10-15 minutes of injecting (similar to oxytocin) = COMPLETELY NORMAL.\"\n- Transient side effects to titrate through: Hunter (19bb99beadceda11 2026-01-13): \"Niacin-like flush + warmth (first few uses)\"; \"Mild headache from vasodilation\"; \"Occasional GI urgency\"; \"Effects diminish as you dial in dose + frequency.\"\n- Start low / go slow / monitor: Hunter (197b36a2311ac066 2025-06-27): \"Pro tip: Start low, go slow, and monitor how you feel—some people are very sensitive and may need to titrate up over a week.\"\n- Storage: Hunter (197b36a2311ac066 2025-06-27): \"Store in the fridge and use within 14-21 days of reconstitution for best potency\"; Hunter (19bb99beadceda11 2026-01-13): \"Add 3 mL bacteriostatic water — KEEP REFRIGERATED.\"\n- Cycling — anti-drug-antibody framing applies generally: Hunter (E7GPNidicqY 01:08:38.440 2026-04-18) endorses \"a 4-week cycle on VIP\" with extension \"another like 4 to 6 weeks um at least\" for Raynaud's; Taylor's general guidance is pro-cycling.\n- Trevor Bachmeyer absence: across the Trevor corpus reviewed (252 raw 'VIP' string hits), zero are about Vasoactive Intestinal Peptide — every Trevor 'VIP' refers to his Black Card community/membership/area (e.g., 0Wfbn9GjTqs 00:01:30.760: \"It's access to the VIP\"). Practitioner should not treat 'three-expert consensus' as available for VIP — it is two-expert (Hunter + Taylor).",
-    "cross_expert_consensus": "Mold/CIRS as the canonical use case: Hunter (197b36a2311ac066 2025-06-27): \"one stands out as the absolute cornerstone of any mold healing protocol: VIP, or Vasoactive Intestinal Peptide\" and \"every true expert like Dr. Ritchie Shoemaker comes back to VIP as the game changer.\" Hunter (0TyW-wlJMxo 02:01:48.360 2026-03-28): \"If you've got the mold out, VIP, LL-37, those would all be things that I'd default to.\" Taylor (G27dIPBJUSs 02:01:48.600 2026-03-28): \"if you've got the if you've got the mold out, VIP, LL-37, those would all be\" (parallel co-host segment). Upper respiratory: Taylor (IW0-bllx4dk 01:03:27.520 2026-01-03): \"For someone getting over a virus impacting upper respiratory, would you suggest leveraging VIP? Absolutely, 1,000%\" and Taylor (IW0-bllx4dk 01:03:39.829): \"the summary of that is VIP TB500 GHK also helps a lot with the lungs.\" Both Hunter and Taylor identify VIP as a circadian/parasympathetic regulator: Hunter (19bb99beadceda11 2026-01-13): \"Synchronizes circadian rhythm\" and \"Calming effect that feels very stabilizing\"; Taylor (5ugqlYRSRSo 01:39:51.520 2026-01-17): \"Like VIP does that. So like VIP will help reset your circadian rhythm to kind of get you back on track from a brain standpoint.\" Definitional alignment: Taylor (JccJTHbWF84 01:14:33.350 2026-02-08): \"VIP stands for vasoactive intestinal peptide.\" Trevor Bachmeyer is silent on VIP-the-peptide across the reviewed corpus.",
+    "recommendation": "Reset Biology suggests that the prescribing physician weigh Hunter's updated library guidance: \"I prefer sub-cutanious injection. You can obviously use a nasal spray if you want to\" (2026-03-30, vip-peptide-updated-guide-uses-beyond-mold-and-lung-health--c9c1171f @ 16:04, https://library.hunterwilliamshealth.com/p/vip-peptide-updated-guide-uses-beyond-mold-and-lung-health--c9c1171f/). For a lung issue, Hunter says, \"I would say use at least 100 mcg\" (2026-03-30, peptide-stack-for-lung-health-and-copd-recovery--4b867216 @ 19:16, https://library.hunterwilliamshealth.com/p/peptide-stack-for-lung-health-and-copd-recovery--4b867216/).",
+    "caveats": "- Hunter: \"will VIP completely solve mold toxicity? No\" and \"the person needs to make sure they're removed from the mold environment and that also the mode is removed from them\" (2026-03-30, vip-peptide-updated-guide-uses-beyond-mold-and-lung-health--c9c1171f @ 15:32, https://library.hunterwilliamshealth.com/p/vip-peptide-updated-guide-uses-beyond-mold-and-lung-health--c9c1171f/).\n- Hunter: \"Cerebral vasodylation can cause mild headache or pressure\" (2026-03-30, vip-peptide-updated-guide-uses-beyond-mold-and-lung-health--c9c1171f @ 19:17, https://library.hunterwilliamshealth.com/p/vip-peptide-updated-guide-uses-beyond-mold-and-lung-health--c9c1171f/).\n- Hunter: \"loose stool or diarrhea from increased intestinal secretion, usually mild in transit and managed by lowering your dose\" and \"dizziness and fatigue, it can cause momentary diziness, especially when standing\" (2026-03-30, vip-peptide-updated-guide-uses-beyond-mold-and-lung-health--c9c1171f @ 19:48, https://library.hunterwilliamshealth.com/p/vip-peptide-updated-guide-uses-beyond-mold-and-lung-health--c9c1171f/).\n- Hunter: \"no adverse effects reported aside from transient nasal irritation\" (2026-03-29, how-id-recover-from-mold-toxicity-with-peptides-complete-guide--37df4c30 @ 40:16, https://library.hunterwilliamshealth.com/p/how-id-recover-from-mold-toxicity-with-peptides-complete-guide--37df4c30/).\n- Hunter: \"this is all experimental. This is just me. I'm a guy talking on the internet\" and \"this not a guarantee that it's going to fix all the tissue or issues in your lungs\" (2026-03-30, peptide-stack-for-lung-health-and-copd-recovery--4b867216 @ 20:48, https://library.hunterwilliamshealth.com/p/peptide-stack-for-lung-health-and-copd-recovery--4b867216/).",
+    "cross_expert_consensus": "Hunter: \"VIP is used a lot in mold cases. It's used for people with lung issues, which it is great for\" (2026-03-30, vip-peptide-updated-guide-uses-beyond-mold-and-lung-health--c9c1171f @ 1:45, https://library.hunterwilliamshealth.com/p/vip-peptide-updated-guide-uses-beyond-mold-and-lung-health--c9c1171f/). Taylor: \"For someone getting over a virus impacting upper respiratory, would you suggest leveraging VIP? Absolutely, 1,000%\" (Taylor, IW0-bllx4dk @ 01:03:27.520, 2026-01-03, https://youtu.be/IW0-bllx4dk). Hunter: \"It actually works to synchronize and sync up our circadian rhythm into a healthy pattern\" (2026-03-30, vip-peptide-updated-guide-uses-beyond-mold-and-lung-health--c9c1171f @ 9:20, https://library.hunterwilliamshealth.com/p/vip-peptide-updated-guide-uses-beyond-mold-and-lung-health--c9c1171f/). Taylor: \"Like VIP does that. So like VIP will help reset your circadian rhythm to kind of get you back on track from a brain standpoint\" (Taylor, 5ugqlYRSRSo @ 01:39:51.520, 2026-01-17, https://youtu.be/5ugqlYRSRSo). Trevor Bachmeyer has no peptide-VIP teaching in the reviewed corpus; his retrieved VIP references are membership-tier references, so a three-expert consensus is unavailable.",
     "cross_expert_disagreement": "Reconstitution math has shifted within Hunter's own content over time, and BOTH versions are still circulating in the corpus — newer overrides older but both are surfaced. Older Hunter (197b36a2311ac066 2025-06-27): \"Draw up 2ml of bacteriostatic water in a sterile syringe… Result: Each 0.1ml (10 units) contains 0.25mg (250mcg) of VIP\" with \"5 units = 125mcg, 10 units = 250mcg.\" Newer Hunter (19b7bdad152d7966 2026-01-01): \"Vial: 5 mg VIP (5,000 mcg) — Add: 3.0 mL bacteriostatic water — Final: 5,000 mcg ÷ 3.0 mL = 1,666 mcg per mL\" with \"50 mcg | 0.03 mL | 3 units\" and \"100 mcg | 0.06 mL | 6 units.\" Newer Hunter is the operative reconstitution and is corroborated by Hunter (19bb99beadceda11 2026-01-13): \"Add 3 mL bacteriostatic water.\" Dose ceiling: older Hunter (197b36a2311ac066 2025-06-27) cites \"50-200mcg per injection\" subQ; newer Hunter (19b7bdad152d7966 2026-01-01) cites \"Most people start at 25-50 mcg. Assess response → decide if 100 mcg appropriate\" and Hunter (19bb99beadceda11 2026-01-13): \"Hunter has gone up to 150 mcg single dose.\" Frequency: older Hunter (197b36a2311ac066 2025-06-27): \"Inject subcutaneously into the belly once daily in the AM\"; newer Hunter (19bb99beadceda11 2026-01-13): \"1 to 4 times per day depending on use case\" and \"Reasonable starter: 50-100 mcg morning, optionally another dose later.\" Taylor's MCAST dose (100 mcg) does not contradict but also does not derive from Hunter's reconstitution — Taylor (JccJTHbWF84 01:14:42.149 2026-02-08): \"definitely try like 100 micrograms of VIP to help with some of the MCAST stuff.\" No three-way disagreement is possible because Trevor Bachmeyer's reviewed corpus contains no peptide-VIP teaching.",
     "acute_chronic_split": {
       "acute": {
-        "dose": "Hunter (19b7bdad152d7966 2026-01-01): \"Most people start at 25-50 mcg\" subcutaneous; Hunter (19bb99beadceda11 2026-01-13): \"50-100 mcg morning, optionally another dose later\"; Taylor (JccJTHbWF84 01:14:42.149 2026-02-08): \"definitely try like 100 micrograms of VIP to help with some of the MCAST stuff.\"",
+        "dose": "Hunter: \"VIP, you can do VIP as a nasal spray or an injection. And I like 50 to 100 micrograms. In the case of a lung issue, I would say use at least 100 mcg\" (2026-03-30, peptide-stack-for-lung-health-and-copd-recovery--4b867216 @ 19:16, https://library.hunterwilliamshealth.com/p/peptide-stack-for-lung-health-and-copd-recovery--4b867216/).",
         "route": "Subcutaneous OR intranasal — Hunter (19bb99beadceda11 2026-01-13): \"Subcutaneous Doses (U-100 insulin syringe)… 50 mcg | 3 units, 100 mcg | 6 units\" and intranasal: \"Start: 50-100 mcg per spray. Start with: 1 spray, 1 nostril, 2x daily. Work up to: 1 spray each nostril, 4x daily (~400 mcg/day total).\" Hunter (197b36a2311ac066 2025-06-27): \"Intranasal = milder systemic, greater cognitive benefits for some.\"",
-        "frequency": "Hunter (19bb99beadceda11 2026-01-13): \"1 to 4 times per day depending on use case.\" Hunter (E7GPNidicqY 01:08:38.440 2026-04-18 Raynaud's listener): \"Yeah, VIP could be great. You could probably do that for another like 4 to 6 weeks um at least.\"",
-        "duration": "Hunter (E7GPNidicqY 01:08:38.440 2026-04-18): \"I just finished a 4-week cycle on VIP. Can you run that longer or anything else you would recommend? Yeah, VIP could be great. You could probably do that for another like 4 to 6 weeks um at least.\"",
-        "verbatim_citation": "Hunter (19b7bdad152d7966 2026-01-01): \"Most people start at 25-50 mcg. Assess response → decide if 100 mcg appropriate.\" Taylor (JccJTHbWF84 01:14:42.149 2026-02-08): \"definitely try like 100 micrograms of VIP to help with some of the MCAST stuff.\"",
-        "episode_url": "https://open.spotify.com/episode/7q1KTcE7zonZwWVUCUenej",
-        "timestamp": "Hunter email 19b7bdad152d7966 2026-01-01; Hunter podcast 19bb99beadceda11 2026-01-13; Taylor JccJTHbWF84 01:14:42.149 2026-02-08; Hunter cycling E7GPNidicqY 01:08:38.440 2026-04-18"
+        "frequency": "Hunter: \"for 12 weeks for every day\" (2026-03-30, peptide-stack-for-lung-health-and-copd-recovery--4b867216 @ 19:16, https://library.hunterwilliamshealth.com/p/peptide-stack-for-lung-health-and-copd-recovery--4b867216/).",
+        "duration": "Hunter: \"for 12 weeks\" (2026-03-30, peptide-stack-for-lung-health-and-copd-recovery--4b867216 @ 19:16, https://library.hunterwilliamshealth.com/p/peptide-stack-for-lung-health-and-copd-recovery--4b867216/).",
+        "verbatim_citation": "Hunter: \"especially if it is an acute issue\" (2026-03-30, peptide-stack-for-lung-health-and-copd-recovery--4b867216 @ 20:17, https://library.hunterwilliamshealth.com/p/peptide-stack-for-lung-health-and-copd-recovery--4b867216/).",
+        "episode_url": "https://library.hunterwilliamshealth.com/p/peptide-stack-for-lung-health-and-copd-recovery--4b867216/",
+        "timestamp": "19:16; 20:17"
       },
       "chronic": {
-        "dose": "Hunter (19bb99beadceda11 2026-01-13): \"50 mcg | 3 units\" or \"100 mcg | 6 units\" subcutaneous; intranasal \"~400 mcg/day total\" worked up to 4x daily 1 spray each nostril.",
+        "dose": "Older Hunter: \"Most people start at 25-50 mcg. Assess response → decide if 100 mcg appropriate\" (19b7bdad152d7966, 2026-01-01). Hunter: \"for a 50 to 100 microgram dose in five milligram bile with three back, three millimeters of bacteria, static water, that's going to be three to six units. Three being 50 micro grams, six being 100 micrograms\" and \"I've gone as high as like 150 micro-grams\" (2026-03-30, vip-peptide-updated-guide-uses-beyond-mold-and-lung-health--c9c1171f @ 16:41, https://library.hunterwilliamshealth.com/p/vip-peptide-updated-guide-uses-beyond-mold-and-lung-health--c9c1171f/). Hunter: \"the standard concentration is 50 micrograms per spray, so the recommended dosing is 15 micro grams and one nostril four times a day for a total of 200 micro-gram per day\" and \"50 to 200 micrograms per day intranasally is what you would want to use with VIP\" (2026-03-29, how-id-recover-from-mold-toxicity-with-peptides-complete-guide--37df4c30 @ 41:25; 42:34, https://library.hunterwilliamshealth.com/p/how-id-recover-from-mold-toxicity-with-peptides-complete-guide--37df4c30/).",
         "route": "Hunter (19bb99beadceda11 2026-01-13): subcutaneous via U-100 insulin syringe AND intranasal — \"Intranasal = milder systemic, greater cognitive benefits for some.\"",
-        "frequency": "Hunter (19bb99beadceda11 2026-01-13): \"1 to 4 times per day depending on use case\"; Hunter (197b36a2311ac066 2025-06-27 nasal): \"most protocols recommend 1 spray in each nostril 2-4 times daily.\"",
-        "duration": null,
+        "frequency": "Hunter: \"You can do that one to four times daily\" (2026-03-30, vip-peptide-updated-guide-uses-beyond-mold-and-lung-health--c9c1171f @ 16:41, https://library.hunterwilliamshealth.com/p/vip-peptide-updated-guide-uses-beyond-mold-and-lung-health--c9c1171f/). Hunter: \"Start with one spray and one nostril two times daily, build to one, spray in each natural four times, daily. You can do up to around 400 micro grams intranasally daily\" (2026-03-30, vip-peptide-updated-guide-uses-beyond-mold-and-lung-health--c9c1171f @ 17:12, https://library.hunterwilliamshealth.com/p/vip-peptide-updated-guide-uses-beyond-mold-and-lung-health--c9c1171f/).",
+        "duration": "Hunter: \"It really could be one that you do eight weeks on eight, weeks off\" (2026-03-30, vip-peptide-updated-guide-uses-beyond-mold-and-lung-health--c9c1171f @ 24:08, https://library.hunterwilliamshealth.com/p/vip-peptide-updated-guide-uses-beyond-mold-and-lung-health--c9c1171f/). Hunter: \"Intranasal VIP for at least 18 months led to significant improvements in their lab work\" (2026-03-29, how-id-recover-from-mold-toxicity-with-peptides-complete-guide--37df4c30 @ 39:42, https://library.hunterwilliamshealth.com/p/how-id-recover-from-mold-toxicity-with-peptides-complete-guide--37df4c30/).",
         "verbatim_citation": "Hunter (19bb99beadceda11 2026-01-13): \"Reasonable starter: 50-100 mcg morning, optionally another dose later. Hunter has gone up to 150 mcg single dose.\" Taylor (5ugqlYRSRSo 01:39:51.520 2026-01-17 circadian regulator): \"Like VIP does that. So like VIP will help reset your circadian rhythm to kind of get you back on track from a brain standpoint.\"",
         "episode_url": "https://open.spotify.com/episode/7q1KTcE7zonZwWVUCUenej",
         "timestamp": "Hunter podcast 19bb99beadceda11 2026-01-13; Hunter email 197b36a2311ac066 2025-06-27 (older nasal protocol); Taylor 5ugqlYRSRSo 01:39:51.520 2026-01-17"
       }
     },
-    "female_specific_notes": "Taylor's VIP-specific content does not single out a female-specific dose, contraindication, or fertility/hormone interaction in the reviewed corpus. Her practical VIP guidance applies to women asking about MCAST and upper-respiratory recovery: Taylor (JccJTHbWF84 01:14:42.149 2026-02-08): \"definitely try like 100 micrograms of VIP to help with some of the MCAST stuff\" and Taylor (IW0-bllx4dk 01:03:27.520 2026-01-03): \"For someone getting over a virus impacting upper respiratory, would you suggest leveraging VIP? Absolutely, 1,000%.\" Taylor (5ugqlYRSRSo 01:39:51.520 2026-01-17): \"Like VIP does that. So like VIP will help reset your circadian rhythm to kind of get you back on track from a brain standpoint.\" No female-specific dose ceiling, pregnancy contraindication, or hormone-axis interaction is taught in the reviewed Taylor content for VIP.",
-    "distilled_at": "2026-04-27T05:16:39.478Z",
-    "distilled_by": "claude"
+    "female_specific_notes": null,
+    "distilled_at": "2026-07-17T07:56:41.9598339Z",
+    "distilled_by": "codex"
   },
-  "generated_at": "2026-04-27T02:02:34.814Z"
+  "generated_at": "2026-07-17T10:59:06.321Z",
+  "mentions_fingerprint": "bd4227cd62d6"
 }

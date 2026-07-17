@@ -17,7 +17,7 @@ export default function PeptideLibraryHub() {
     if (!byCategory[cat]) byCategory[cat] = [];
     byCategory[cat].push(p);
   }
-  const orderedCats = ['Healing', 'Fat Loss', 'Longevity', 'Immunity', 'Cognitive Enhancement', 'Other']
+  const orderedCats = ['Fat Loss', 'Hormones', 'Growth Hormone', 'Healing', 'Longevity', 'Mitochondrial & Energy', 'Bioregulators', 'Immunity', 'Cognitive Enhancement', 'Sleep', 'Other']
     .filter(c => byCategory[c]);
 
   // JSON-LD for LLM ingestion

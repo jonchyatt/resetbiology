@@ -7,6 +7,9 @@
     "BPC-157",
     "bpc157",
     "bpc-157",
+    "Bpc 157",
+    "Bpc-157",
+    "Bpc157",
     "bpc 157"
   ],
   "category": "Healing",
@@ -25,42 +28,78 @@
         "duration": "8 weeks on, 8 weeks off"
       },
       "summary": {
-        "mention_count": 264,
+        "mention_count": 716,
         "top_doses": [
           {
             "dose": "10 mg",
-            "count": 96
+            "count": 124
           },
           {
             "dose": "50 mg",
-            "count": 36
-          },
-          {
-            "dose": "10 units",
-            "count": 26
-          },
-          {
-            "dose": "5 mg",
-            "count": 26
-          },
-          {
-            "dose": "70 mg",
-            "count": 25
+            "count": 41
           },
           {
             "dose": "500 micrograms",
-            "count": 18
+            "count": 37
           },
           {
-            "dose": "6 mg",
-            "count": 10
+            "dose": "10 units",
+            "count": 36
           },
           {
-            "dose": "80 mg",
-            "count": 9
+            "dose": "1 mg",
+            "count": 35
+          },
+          {
+            "dose": "500 mcg",
+            "count": 33
+          },
+          {
+            "dose": "250 mcg",
+            "count": 33
+          },
+          {
+            "dose": "5 mg",
+            "count": 33
           }
         ],
         "top_sources": [
+          {
+            "source_id": "bpc-157---the-goat-peptide-a-comprehensive-use-guide--227dda84",
+            "source_type": "library-video",
+            "source_title": "BPC-157 - The GOAT Peptide? A Comprehensive Use Guide",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/bpc-157---the-goat-peptide-a-comprehensive-use-guide--227dda84/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/bpc-157---the-goat-peptide-a-comprehensive-use-guide--227dda84.json",
+            "mention_count": 38,
+            "top_snippet": "Hey everybody, this is Hunter Williams. I hope you are doing amazing wherever you're at in the world. Today's video is going to be BPC 157, everything you need to know to get started. So this will be my best attempt at a comprehensive video of how to use Bpc 156, what you should know about it, are there any concerns, and what ways you can use it. what dosage of VPC-157 to take, how to reconstitute Vpc- 157, and as a little bonus, I'm going to include some peptides that you can include to work synergistically",
+            "top_context": "Hey everybody, this is Hunter Williams. I hope you are doing amazing wherever you're at in the world. Today's video is going to be BPC 157, everything you need to know to get started. So this will be my best attempt at a comprehensive video of how to use Bpc 156, what you should know about it, are there any concerns, and what ways you can use it. what dosage of VPC-157 to take, how to reconstitute Vpc- 157, and as a little bonus, I'm going to include some peptides that you can include to work synergistically with VPc 15 7, but you're gonna have to stick around to the end to see that part of the video. Or I guess you could click on the chapter timestamps and go there if you want to skip ahead. But anyway, that being said, If you're new here, welcome. My name is Hunter. I talk about peptides, hormones and fat loss. And today I'm going to be talking about BPC 157. So thank you so much for coming to the channel. Um, I hope that you would like comment, subscribe, and share this video with other people that may find it useful as it helps push it out to other like us that are interested in these topics. Before I get started, do have something called the peptide cheat sheet that I built, which is everything that know for the most part about peptides that",
+            "first_timestamp": "0:09"
+          },
+          {
+            "source_id": "bpc-157-and-cancer-should-you-be-worried--c31eebea",
+            "source_type": "library-video",
+            "source_title": "BPC 157 and Cancer Should You Be Worried",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/bpc-157-and-cancer-should-you-be-worried--c31eebea/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/bpc-157-and-cancer-should-you-be-worried--c31eebea.json",
+            "mention_count": 31,
+            "top_snippet": "Hey everybody, this is Hunter Williams. I hope you were doing amazing wherever you have the world. Well, man, oh man. This is one that just will not seem to die. Today's video is going to be about BPC 157 causing cancer. And yes, I'm going go ahead and say the C word because in some shape or form, probably going end up slipping and saying it once or twice in this video. So if not once, or once why not a thousand times? But the topic of today's video is does BPC 157 cause cancer?",
+            "top_context": "Hey everybody, this is Hunter Williams. I hope you were doing amazing wherever you have the world. Well, man, oh man. This is one that just will not seem to die. Today's video is going to be about BPC 157 causing cancer. And yes, I'm going go ahead and say the C word because in some shape or form, probably going end up slipping and saying it once or twice in this video. So if not once, or once why not a thousand times? But the topic of today's video is does BPC 157 cause cancer? So I guess this came from a very, very popular health and fitness educator slash influencer slash podcaster that talked about peptides once upon a time. And I. Guess one of the messages that was purported in that podcast was the BTC causes cancer. So this is a question I get if not once, at least a few times per week in my question box, which shameless plug, if you want to ask a questions that gets answered on the Q and a videos, head to that link down in the description of the videos and submit a and I have that go to a document to which I will answer",
+            "first_timestamp": "0:10"
+          },
+          {
+            "source_id": "peptide-qa-peptides-hormones-and-fat-loss--12075a2e",
+            "source_type": "library-video",
+            "source_title": "Peptide Q&A · Peptides, Hormones, and Fat Loss",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-peptides-hormones-and-fat-loss--12075a2e/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-qa-peptides-hormones-and-fat-loss--12075a2e.json",
+            "mention_count": 21,
+            "top_snippet": "Bpc 157, TB 500 is needed. Can they affect the two healing peptides? So you could definitely use SS31 and NAD plus together, I see no reason why those would not work synergistically because there are two different pathways, so you could definitely use those together. And then also too, they're not going to affect the healing peptides. If anything, their going enhance the effects that you'd get. Definitely could use SS-31 NAD+, BPC-137, TB-500. Now, N80+, I haven't done a new video about this. This is, it's kind of a weird one. So, in terms of like the administration route, you know, for all intents and purposes, You can buy it in injectic sub-substitutes and get results,",
+            "top_context": "of bed and get to the gym, you are kind of working uphill to get the results from the growth-hormone peptides. But if use MotC you get your energy back and now it's like boom, I'm ready to go to gym. I'd use a Growth Hormones Peptide, and maybe you could throw in a 5-amino 1MQ just to help with muscle growth and fat burning and everything. There you go. If this, you know, going off the limited information I have, I would use Ipamrelin plus five amino-Aftramot C. And you can take that to the bank and it'll probably work. So, next question. Is it safe to dose SS31 and NAD+, feeling more pain in my knee area, which eye injection, BPC, they're saying which I inject. Bpc 157, TB 500 is needed. Can they affect the two healing peptides? So you could definitely use SS31 and NAD plus together, I see no reason why those would not work synergistically because there are two different pathways, so you could definitely use those together. And then also too, they're not going to affect the healing peptides. If anything, their going enhance the effects that you'd get. Definitely could use SS-31 NAD+, BPC-137, TB-500. Now, N80+, I haven't done a new video about this. This is, it's kind of a weird one. So, in terms of like the administration route, you know, for all intents and purposes, You can buy it in injectic sub-substitutes and get results, but it is not one of those ones. You know I would like to have my research buttoned up a little bit more before I go into it. before I do a new video that's comprehensive on it. So, next question. Somebody says, let's say I just finished an eight week course of Jay's Godstack. What different peptides? He's referring to Jay Campbell's god stack. You can check that out on his website. Uh, you can opt in and get that via email or just check out God's, just Google God stack, Jay, Campbell, and it'll come up. Um, he says what different peptides could I start next and how long should I wait? Well, here's the thing. The God Stack, You Can Use Year Round.",
+            "first_timestamp": "10:45"
+          },
           {
             "source_id": "4igc2UpFr7Q",
             "source_type": "podcast",
@@ -86,6 +125,18 @@
             "first_timestamp": null
           },
           {
+            "source_id": "the-peptide-stack-for-autoimmune-conditions-a-comprehensive-guide--ad1f3e6d",
+            "source_type": "library-video",
+            "source_title": "The Peptide Stack For Autoimmune Conditions | A Comprehensive Guide",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/the-peptide-stack-for-autoimmune-conditions-a-comprehensive-guide--ad1f3e6d/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/the-peptide-stack-for-autoimmune-conditions-a-comprehensive-guide--ad1f3e6d.json",
+            "mention_count": 15,
+            "top_snippet": "And obviously if it is not doing enough, its going help bring back to improved function. Really, really cool with Ll37. The next one obviously is BPC-157, the Swiss army knife of peptides. So basically it's derived from a protective protein found in the stomach and we all have BTC- 157 in our stomach. And it promotes the healing of the gut lining, which is very, very crucial for autoimmune disease. It reduces inflammation, it supports tissue repair, and it is crucial, for some of these ones that are more related to the guts,",
+            "top_context": "So, there was a study in 2005 journal of immunology. So basically, LL37, the only human member of the catholicin family of antimicrobial peptides, modulates dendritic cell differentiation and dandritics cell T cell polarization, which basically just means it enhances immune defense mechanisms and modulate the immune response, making it beneficial for managing autoimmune. So remember with auto immune disease, the body is attacking itself and LL37 kind of is like a balancer to the immune system. Meaning if the bodies is too far one way on side of the response of attacking yourself, it's going to help modulate that and bring it back into homeostasis. And obviously if it is not doing enough, its going help bring back to improved function. Really, really cool with Ll37. The next one obviously is BPC-157, the Swiss army knife of peptides. So basically it's derived from a protective protein found in the stomach and we all have BTC- 157 in our stomach. And it promotes the healing of the gut lining, which is very, very crucial for autoimmune disease. It reduces inflammation, it supports tissue repair, and it is crucial, for some of these ones that are more related to the guts, like Crohn's disease and ulcerative colitis. um study 2010 journal of physiology and pharmacology effects of bpc bbc 157 on wound healing uh basically found that btc promotes healing of the gut lining and reduces inflammation uh which will help it with um crohn's disease and other things like that so whether or not you have crohns disease i think a lot of inflammation from the autoimmune disease comes from The Gut and BPC 157, the injectable version to me has proved to be very,",
+            "first_timestamp": "10:07"
+          },
+          {
             "source_id": "195b595300fd118e",
             "source_type": "email",
             "source_title": "Does BPC-157 Cause Cancer?",
@@ -105,56 +156,8 @@
             "source_url": null,
             "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-03-03-the-easy-way-to-mix-a-blended-peptide.md",
             "mention_count": 13,
-            "top_snippet": "most common questions I get from people new to peptides is how to reconstitute a blended peptide properly. I’ve answered this in numerous videos and emails, but for the sake of positive reinforcement,",
-            "top_context": "most common questions I get from people new to peptides is how to reconstitute a blended peptide properly. I’ve answered this in numerous videos and emails, but for the sake of positive reinforcement, let’s go over it again today. Just last week, someone asked me: ““Hunter, I just got a BPC-157/TB-500 blend (5mg/5mg), but I’m confused about reconstitution. Since there are two peptides in one vial, do I mix it the same way I would with a single peptide, or is there a different process? Can you break it down in a simple way?”“ — This is a great question, and if you’ve ever found yoursel",
-            "first_timestamp": null
-          },
-          {
-            "source_id": "0TyW-wlJMxo",
-            "source_type": "podcast",
-            "source_title": "Saturday Morning Coffee Talk | Peptides, Hormones & Fitness for Couples 3/28/26",
-            "source_date": "2026-03-28",
-            "source_url": "https://youtu.be/0TyW-wlJMxo",
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-03-28-saturday-morning-coffee-talk-peptides-hormones-fitness-for-couples-3-2-0TyW-wlJMxo.en.vtt",
-            "mention_count": 12,
-            "top_snippet": "email list, I sent out a survey for BPC-157.",
-            "top_context": "the dosing for VIP? We don't really the dosing for VIP? We don't really know, but let's let's try it let's try know, but let's let's try it let's try know, but let's let's try it let's try it and figure it out.\" And then, \"Oh my it and figure it out.\" And then, \"Oh my it and figure it out.\" And then, \"Oh my goodness, VIP helps heal gut issues. It goodness, VIP helps heal gut issues. It goodness, VIP helps heal gut issues. It helps heal autoimmune disease. It helps helps heal autoimmune disease. It helps helps heal autoimmune disease. It helps bring down nervous system tone and bring down nervous system tone and bring down nervous system tone and everything. Helps you enter into more of everything. Helps you enter into more of everything. Helps you enter into more of a parasympathetic state.\" And so the the a parasympathetic state.\" And so the the a parasympathetic state.\" And so the the compounders of the world, they're like, compounders of the world, they're like, compounders of the world, they're like, \"We want our money. We want our hundreds \"We want our money. We want our hundreds \"We want our money. We want our hundreds of millions of dollars. of millions of dollars. of millions of dollars. We're little old compounders. We're We're little old compounders. We're We're little old compounders. We're making hundreds of millions. Big pharma making hundreds of millions. Big pharma making hundreds of millions. Big pharma is making billions.\" And you have the is making billions.\" And you have the is making billions.\" And you have the research world that really just exists research world that really just exists research world that really just exists to fill a gap, fill a void, that gets to fill a gap, fill a void, that gets to fill a gap, fill a void, that gets the short end of the stick and they the short end of the stick and they the short end of the stick and they really have no representation. Nor do I really have no representation. Nor do I really have no representation. Nor do I think a lot of the research world really think a lot of the research world really think a lot of the research world really want representation because if they want representation because if they want representation because if they bring attention to themselves, bring attention to themselves, bring attention to themselves, everyone else is just going to try to everyone else is just going to try to everyone else is just going to try to make them look bad. And I admit that make them look bad. And I admit that make them look bad. And I admit that sucks. But anyway, one thing I was sucks. But anyway, one thing I was sucks. But anyway, one thing I was working on this week, if you're on my working on this week, if you're on my working on this week, if you're on my email list, I sent out a survey for email list, I sent out a survey for email list, I sent out a survey for BPC-157. BPC-157. BPC-157. And with some group of people, we're And with some group of people, we're And with some group of people, we're just working on bringing safety data just working on bringing safety data just working on bringing safety data around peptides. I think whatever around peptides. I think whatever around peptides. I think whatever spectrum you come at this, whatever side spectrum you come at this, whatever side spectrum you come at this, whatever side of the fence you come from, I think it's of the fence you come from, I think it's of the fence you come from, I think it's a good thing to say that we can have a good thing to say that we can have a good thing to say that we can have user crowd-sourced data around safety. user crowd-sourced data around safety. user crowd-sourced data around safety. Maybe not even efficacy so much as Maybe not even efficacy so much as Maybe not even efficacy so much as safety. Meaning that these are safe safety. Meaning that these are safe safety. Meaning that these are safe things. If we have a list of 10,000 things. If we have a list of 10,000 things. If we have a list of 10,000 people that have independently verified people that have independently verified people that have independently verified that they have taken something like that they have taken something like that they have taken something like BPC-157 safety safely, BPC-157 safety safely, BPC-157 safety safely, I don't know that they'll necessarily be I don't know that they'll necessarily be I don't know that they'll necessarily be able to shut down the research world. able to shut down the research world. able to shut down the research world. Yes, they may introduce it into the Yes, they may introduce it into the Yes, they may introduce it into the compounding world and have it have the compounding world and have it have the compounding world and have it have the ability to go through doctors. I just ability to go through doctors. I just ability to go through doctors. I just don't see the research world as being don't see the research world as being don't see the research world as being something that could necessarily be shut something that could necessarily be shut something that could necessarily be shut down. You can try to handicap it at the down. You can try to handicap it at the down. You can try to handicap it at the knees right now with payment processing",
-            "first_timestamp": "00:08:58.440"
-          },
-          {
-            "source_id": "198489a54128a775",
-            "source_type": "email",
-            "source_title": "1+1+1 = GLOW",
-            "source_date": "2025-07-26",
-            "source_url": null,
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-07-26-1-1-1-glow.md",
-            "mention_count": 10,
-            "top_snippet": "ecause it sounds advanced or looks cool on paper. But honestly, that’s not good enough for me. Nor should it be for you. Not all peptide stacks are created equal. Some are great, but others, not so mu",
-            "top_context": "ecause it sounds advanced or looks cool on paper. But honestly, that’s not good enough for me. Nor should it be for you. Not all peptide stacks are created equal. Some are great, but others, not so much. When I get the same question over and over (“Hunter, why should I use a blend of BPC-157, TB-500, and GHK-Cu instead of just picking one?”), I know it’s time to break down the _real_ reasons you should consider using these _together_. Whether you’re an athlete coming back from an injury, a weekend warrior wanting to heal faster, or a high-achiever looking to bounce back from the gri",
-            "first_timestamp": null
-          },
-          {
-            "source_id": "tFd00xrcwq4",
-            "source_type": "podcast",
-            "source_title": "Does BPC-157 Increase Cancer? The Answer #bpc157 #peptidetherapy #shorts",
-            "source_date": "2026-04-08",
-            "source_url": "https://youtu.be/tFd00xrcwq4",
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-04-08-does-bpc-157-increase-cancer-the-answer-bpc157-peptidetherapy-shorts-tFd00xrcwq4.en.vtt",
-            "mention_count": 9,
-            "top_snippet": "concern because if you look at what peptides like BPC-157 do, peptides and",
-            "top_context": "One of the questions I get all the time One of the questions I get all the time is about whether peptides are going to is about whether peptides are going to is about whether peptides are going to stimulate pathways in the body that end stimulate pathways in the body that end stimulate pathways in the body that end up causing cancer. And it's a very real up causing cancer. And it's a very real up causing cancer. And it's a very real concern because if you look at what concern because if you look at what concern because if you look at what peptides like BPC-157 do, peptides and peptides like BPC-157 do, peptides and peptides like BPC-157 do, peptides and growth hormone releasing hormones like growth hormone releasing hormones like growth hormone releasing hormones like tesamorelin and ipamorelin, they're tesamorelin and ipamorelin, they're tesamorelin and ipamorelin, they're stimulating growth in the body. And a stimulating growth in the body. And a stimulating growth in the body. And a lot of people get concerned of, \"Okay, lot of people get concerned of, \"Okay, lot of people get concerned of, \"Okay, well, I'm creating this growth in the well, I'm creating this growth in the well, I'm creating this growth in the body. Is that eventually going to lead body. Is that eventually going to lead body. Is that eventually going to lead to cancer? Or if I maybe have undetected to cancer? Or if I maybe have undetected to cancer? Or if I maybe have undetected cancer, is that going to increase the cancer, is that going to increase the cancer, is that going to increase the risk of that undetected cancer growing?\" risk of that undetected cancer growing?\" risk of that undetected cancer growing?\" Well, ultimately I don't know. I think Well, ultimately I don't know. I think Well, ultimately I don't know. I think it's kind of like saying does getting in it's kind of like saying does getting in it's kind of like saying does getting in a car increase your risk of getting in a a car increase your risk of getting in a a car increase your risk of getting in a car crash? Well, obviously it does, but car crash? Well, obviously it does, but car crash? Well, obviously it does, but a lot of people go through their whole a lot of people go through their whole a lot of people go through their whole lives and they're relatively safe in a lives and they're relatively safe in a lives and they're relatively safe in a car. But I want to talk about two car. But I want to talk about two car. But I want to talk about two studies and I'm going to have my editor studies and I'm going to have my editor studies and I'm going to have my editor flash them on the screen. One is about flash them on the screen. One is about flash them on the screen. One is about BPC-157. BPC-157. BPC-157. It actually looked at lung cancer in It actually looked at lung cancer in It actually looked at lung cancer in mice. mice. mice. And interestingly enough, the BPC-157 And interestingly enough, the BPC-157 And interestingly enough, the BPC-157 did not Not only did it not increase",
-            "first_timestamp": "00:00:12.960"
-          },
-          {
-            "source_id": "19d2c2e386869c33",
-            "source_type": "email",
-            "source_title": "Your BPC-157 Experience Could Change FDA policy",
-            "source_date": "2026-03-26",
-            "source_url": null,
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2026-03-26-peptide-safety-initiative-fda.md",
-            "mention_count": 9,
-            "top_snippet": "# The Peptide Safety Initiative — Real-World Evidence Push > \"FDA classified BPC-157 as Category 2 bulk drug substance in 2023. Their reasoning: insufficient evidence on whether it causes harm to huma",
-            "top_context": "# The Peptide Safety Initiative — Real-World Evidence Push > \"FDA classified BPC-157 as Category 2 bulk drug substance in 2023. Their reasoning: insufficient evidence on whether it causes harm to humans. But hundreds of thousands have used BPC-157 — most walked away with zero adverse events and a healed injury.\" ## The Strategic Gap ### What FDA sees - Razor-thin published clinic",
+            "top_snippet": "of the most common questions I get from people new to peptides is how to reconstitute a blended peptide properly. I’ve answered this in numerous videos and emails, but for the sake of positive reinfor",
+            "top_context": "of the most common questions I get from people new to peptides is how to reconstitute a blended peptide properly. I’ve answered this in numerous videos and emails, but for the sake of positive reinforcement, let’s go over it again today. Just last week, someone asked me: ““Hunter, I just got a BPC-157/TB-500 blend (5mg/5mg), but I’m confused about reconstitution. Since there are two peptides in one vial, do I mix it the same way I would with a single peptide, or is there a different process? Can you break it down in a simple way?”“ — This is a great question, and if you’ve ever found yourself",
             "first_timestamp": null
           }
         ],
@@ -661,33 +664,34 @@
   },
   "reset_biology_synthesis": {
     "status": "distilled",
-    "recommendation": "Reset Biology suggests asking the practitioner to consider the newer low-microgram chronic frame as the operative ceiling: Trevor (LPeTrmJI380 00:20:11.919) says, \"we're talking micrograms, not millig. We're talking 100, 200, 250, 500 micrograms at the max every day,\" while Hunter's 2023 baseline_protocol lists \"Dose\" \"250 mcg,\" \"Timing\" \"AM/PM,\" \"Frequency\" \"Every day,\" \"Duration\" \"8 weeks on, 8 weeks off.\" We'd ask the prescribing physician to weigh route and neuropsychiatric context because Hunter (4igc2UpFr7Q 00:23:33.200) says \"BPC-157 can affect dopamine regulation\" and Taylor (sRcDkKFFBG0 00:22:52.279) says \"you are better off um taking this peptide um subcutaneously.\"",
-    "caveats": "- Dopamine/psychotropic context: Hunter (4igc2UpFr7Q 00:23:33.200) \"BPC-157 can affect dopamine regulation\"; Hunter (4igc2UpFr7Q 00:23:53.560) \"it might be the peptide, or it could be the peptide with your unique neurochemistry with the psychotropic drug that you're combining with it.\"\n- Cancer-history caution: Hunter email threadId 195b595300fd118e (2025-03-20) uses the heading \"Personal/family history of cancer\" and says \"Reasonable to be extra cautious.\"\n- Route dispute: Hunter email threadId 1999788e1ce25670 (2025-09-29) \"Injections remain GOLD STANDARD\" and \"If someone refuses to inject, oral (especially arginate) may still provide benefits\"; Taylor (sRcDkKFFBG0 00:22:56.919) \"personally my opinion I don't think the oral bpc does much\"; Trevor (LPeTrmJI380 00:38:09.119) \"BPC57 is highly bioavailable when it's injected subcutaneously\" and (LPeTrmJI380 00:38:13.440) \"less than 1% bioavailability orally.\"\n- Dose ceiling/cycling tension: Trevor (O_hbAtgMSE8 00:03:21.360) \"do not take 2 milligs every day or anything like that\"; Trevor (LPeTrmJI380 00:20:15.679) \"We're talking 100, 200, 250, 500 micrograms at the max every day\"; Taylor (eWfRxGQ45jg 00:13:43.959) \"it's really important to do cycling with your peptides especially bpc 157.\"",
-    "cross_expert_consensus": "Quoted overlap: Hunter email threadId 1999788e1ce25670 (2025-09-29): \"Injections remain GOLD STANDARD\" and \"Powerful for digestive health, possibly supportive for whole-body healing.\" Taylor (eWfRxGQ45jg 00:04:15.079): \"it can help with um muscle tears and tendons and ligaments it can also help with gut health.\" Trevor (jD6S-RfYZhY 00:15:33.400): \"Regenerates damaged gastric mucosa\"; Trevor (jD6S-RfYZhY 00:15:38.040): \"Restores tight junctions in your intestinal lining\"; Trevor (jD6S-RfYZhY 00:15:40.920): \"Promotes angiogenesis, which is new blood flow formation in damaged tissues.\" Dose quotes: Hunter 2023 baseline_protocol lists \"Dose\" \"250 mcg\"; Taylor (eWfRxGQ45jg 00:13:13.000) \"250 micrograms of it\"; Trevor (LPeTrmJI380 00:20:15.679) \"100, 200, 250, 500 micrograms at the max every day.\"",
-    "cross_expert_disagreement": "Oral route differs sharply. Hunter email threadId 1999788e1ce25670 (2025-09-29): \"When I first started looking, I was convinced oral BPC-157 was overhyped. After poring over the studies, I've had to ADJUST my stance\" and \"If someone refuses to inject, oral (especially arginate) may still provide benefits.\" Taylor (sRcDkKFFBG0 00:22:35.080): \"you can take this peptide orally\" but Taylor (sRcDkKFFBG0 00:22:38.080) says \"my experience with this peptite Orly is that it doesn't do much other than help with a little bit with helping your stomach.\" Trevor (LPeTrmJI380 00:08:21.680) says \"cannot take it orally\" and Trevor (LPeTrmJI380 00:38:13.440) says \"It is almost worthless. When I say almost, less than 1% bioavailability orally.\" Cycling/forever also differs: Hunter 2023 baseline_protocol lists \"Duration\" \"8 weeks on, 8 weeks off\"; Taylor (eWfRxGQ45jg 00:13:25.959) says \"eight weeks\" and Taylor (eWfRxGQ45jg 00:13:43.959) says \"it's really important to do cycling\"; Trevor (LPeTrmJI380 00:19:53.280) says \"for longevity, taking this forever\" and (LPeTrmJI380 00:20:00.720) \"low dose, consistent daily works better.\" Newer Trevor dose content overrides older Trevor dose content: older Trevor (nRi9GqTfGqY 00:00:51.520) says \"one milligram every day\" and (nRi9GqTfGqY 00:00:54.000) \"I'm going to do that forever,\" while newer Trevor (LPeTrmJI380 00:20:15.679) says \"100, 200, 250, 500 micrograms at the max every day.\"",
+    "recommendation": "Reset Biology suggests asking the practitioner to consider Hunter's 2026-03-29 library split beside the 2023 baseline: Hunter (bpc-157---the-goat-peptide-a-comprehensive-use-guide--227dda84, 2026-03-29, 10:47, https://library.hunterwilliamshealth.com/p/bpc-157---the-goat-peptide-a-comprehensive-use-guide--227dda84/) says \"the starter dose is 250 micrograms\" and (11:20) \"dosages range from 250 mcg up to, Yeah, excuse me, one milligram per day.\" Hunter's 2023 baseline_protocol lists \"Dose\" \"250 mcg,\" \"Timing\" \"AM/PM,\" \"Frequency\" \"Every day,\" \"Duration\" \"8 weeks on, 8 weeks off.\" We'd ask the prescribing physician to weigh Hunter's 2026-03-29 injury/background quotes: Hunter (peptide-qa-fat-loss-injury-recovery-and-more--c6e897c6, 2026-03-29, 14:53, https://library.hunterwilliamshealth.com/p/peptide-qa-fat-loss-injury-recovery-and-more--c6e897c6/) says \"If you were healing an injury, you'd probably inject like 500 micrograms of BPC and one milligram of TB 500\" and \"if you're just doing it for overall anti... flammatory purposes, you could use 250 micrograms of both for probably like eight to 12 weeks.\"",
+    "caveats": "- Dopamine/psychotropic context: Hunter (4igc2UpFr7Q 00:23:33.200) \"BPC-157 can affect dopamine regulation\"; Hunter (4igc2UpFr7Q 00:23:53.560) \"it might be the peptide, or it could be the peptide with your unique neurochemistry with the psychotropic drug that you're combining with it.\"\n- Cancer-history caution: Hunter email threadId 195b595300fd118e (2025-03-20) uses the heading \"Personal/family history of cancer\" and says \"Reasonable to be extra cautious.\" Hunter (bpc-157-and-cancer-should-you-be-worried--c31eebea, 2026-03-29, 1:50, https://library.hunterwilliamshealth.com/p/bpc-157-and-cancer-should-you-be-worried--c31eebea/) says \"I cannot guarantee If you take something that you will or will not get cancer\"; (26:02) \"anecdotal absence of evidence is not conclusive.\"\n- Pregnancy/breastfeeding and medication context: Hunter (bpc-157---the-goat-peptide-a-comprehensive-use-guide--227dda84, 2026-03-29, 9:47, https://library.hunterwilliamshealth.com/p/bpc-157---the-goat-peptide-a-comprehensive-use-guide--227dda84/) says \"there is a potential that it could interact with other medications\" and \"We don't really know as far as use in pregnant women or breastfeeding women.\"\n- Route dispute: Hunter (bpc-157---the-goat-peptide-a-comprehensive-use-guide--227dda84, 2026-03-29, 2:53, https://library.hunterwilliamshealth.com/p/bpc-157---the-goat-peptide-a-comprehensive-use-guide--227dda84/) \"you can inject it or you could use orally but it will be more effective if you do inject\"; Hunter email threadId 1999788e1ce25670 (2025-09-29) \"If someone refuses to inject, oral (especially arginate) may still provide benefits\"; Taylor (sRcDkKFFBG0 00:22:56.919) \"personally my opinion I don't think the oral bpc does much\"; Trevor (LPeTrmJI380 00:38:13.440) \"less than 1% bioavailability orally.\"\n- Cycling/antibody context: Hunter (bpc-157---the-goat-peptide-a-comprehensive-use-guide--227dda84, 2026-03-29, 10:17, https://library.hunterwilliamshealth.com/p/bpc-157---the-goat-peptide-a-comprehensive-use-guide--227dda84/) \"if you're using it for longer than, I would say like 12 to 16 weeks at a time, It's going to come less effective\"; Hunter (peptide-qa-fat-loss-injury-recovery-and-more--c6e897c6, 2026-03-29, 12:02, https://library.hunterwilliamshealth.com/p/peptide-qa-fat-loss-injury-recovery-and-more--c6e897c6/) \"for something like a tear, any of these other injuries, the cycle on cycle off rule kind of goes out the window.\"",
+    "cross_expert_consensus": "Hunter (bpc-157---the-goat-peptide-a-comprehensive-use-guide--227dda84, 2026-03-29, 2:53, https://library.hunterwilliamshealth.com/p/bpc-157---the-goat-peptide-a-comprehensive-use-guide--227dda84/) \"you can inject it or you could use orally but it will be more effective if you do inject\"; Taylor (sRcDkKFFBG0 00:22:52.279) \"you are better off um taking this peptide um subcutaneously\"; Trevor (LPeTrmJI380 00:38:09.119) \"BPC57 is highly bioavailable when it's injected subcutaneously.\" Hunter's 2023 baseline_protocol lists \"Dose\" \"250 mcg\"; Hunter (bpc-157---the-goat-peptide-a-comprehensive-use-guide--227dda84, 2026-03-29, 10:47, https://library.hunterwilliamshealth.com/p/bpc-157---the-goat-peptide-a-comprehensive-use-guide--227dda84/) \"the starter dose is 250 micrograms\"; Taylor (eWfRxGQ45jg 00:13:13.000) \"250 micrograms of it\"; Trevor (LPeTrmJI380 00:20:15.679) \"100, 200, 250, 500 micrograms at the max every day.\"",
+    "cross_expert_disagreement": "Hunter's 2025-09-29 email says \"If someone refuses to inject, oral (especially arginate) may still provide benefits\"; Hunter's newer library guide (bpc-157---the-goat-peptide-a-comprehensive-use-guide--227dda84, 2026-03-29, 2:53, https://library.hunterwilliamshealth.com/p/bpc-157---the-goat-peptide-a-comprehensive-use-guide--227dda84/) says \"you can inject it or you could use orally but it will be more effective if you do inject\"; Taylor (sRcDkKFFBG0 00:22:38.080) \"my experience with this peptite Orly is that it doesn't do much other than help with a little bit with helping your stomach\"; Trevor (LPeTrmJI380 00:38:13.440) \"It is almost worthless. When I say almost, less than 1% bioavailability orally.\" Hunter's 2023 baseline_protocol lists \"Dose\" \"250 mcg\" and \"Duration\" \"8 weeks on, 8 weeks off\"; Hunter's newer 2026-03-29 guide (bpc-157---the-goat-peptide-a-comprehensive-use-guide--227dda84, 11:20, https://library.hunterwilliamshealth.com/p/bpc-157---the-goat-peptide-a-comprehensive-use-guide--227dda84/) says \"dosages range from 250 mcg up to, Yeah, excuse me, one milligram per day\"; Hunter's 2026-03-29 Q&A (peptide-qa-fat-loss-injury-recovery-and-more--c6e897c6, 12:02, https://library.hunterwilliamshealth.com/p/peptide-qa-fat-loss-injury-recovery-and-more--c6e897c6/) says \"for something like a tear, any of these other injuries, the cycle on cycle off rule kind of goes out the window\"; Taylor (eWfRxGQ45jg 00:13:43.959) \"it's really important to do cycling with your peptides especially bpc 157\"; Trevor (LPeTrmJI380 00:19:53.280) \"for longevity, taking this forever.\" Newer Hunter stack-specific content (the-tb-500-masterclass-the-complete-users-guide-2026--e8116a97, 2026-06-17, 17:58, https://library.hunterwilliamshealth.com/p/the-tb-500-masterclass-the-complete-users-guide-2026--e8116a97/) says \"we have a one to one ratio of TB 500 and BPC 157. And so I like 250 to 500 micrograms of each every day.\"",
     "acute_chronic_split": {
       "acute": {
-        "dose": "Trevor (O_hbAtgMSE8 00:04:04.799): \"Took 2 millig of BPC and 500 micrograms of KPV\"; Trevor (O_hbAtgMSE8 00:03:21.360): \"do not take 2 milligs every day or anything like that.\"",
+        "dose": "Hunter (peptide-qa-fat-loss-injury-recovery-and-more--c6e897c6, 2026-03-29, 14:53, https://library.hunterwilliamshealth.com/p/peptide-qa-fat-loss-injury-recovery-and-more--c6e897c6/) \"If you were healing an injury, you'd probably inject like 500 micrograms of BPC and one milligram of TB 500\"; Trevor (O_hbAtgMSE8 00:04:04.799) \"Took 2 millig of BPC and 500 micrograms of KPV\" and (00:03:21.360) \"do not take 2 milligs every day or anything like that.\"",
         "route": "Trevor (O_hbAtgMSE8 00:09:54.800): \"You cannot take it anything other than subq. Period.\"",
         "frequency": null,
         "duration": null,
-        "verbatim_citation": "Trevor (LPeTrmJI380 00:19:48.400): \"For an acute injury, bomb that thing.\" Trevor (O_hbAtgMSE8 00:04:04.799): \"Took 2 millig of BPC and 500 micrograms of KPV.\"",
-        "episode_url": "https://youtu.be/O_hbAtgMSE8",
-        "timestamp": "00:04:04.799; route 00:09:54.800; acute frame LPeTrmJI380 00:19:48.400"
+        "verbatim_citation": "Hunter (peptide-qa-fat-loss-injury-recovery-and-more--c6e897c6, 2026-03-29, 12:02, https://library.hunterwilliamshealth.com/p/peptide-qa-fat-loss-injury-recovery-and-more--c6e897c6/) \"for something like a tear, any of these other injuries, the cycle on cycle off rule kind of goes out the window\"; Trevor (LPeTrmJI380 00:19:48.400) \"For an acute injury, bomb that thing.\"",
+        "episode_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-fat-loss-injury-recovery-and-more--c6e897c6/",
+        "timestamp": "14:53; 12:02; Trevor 00:19:48.400; 00:04:04.799; route 00:09:54.800"
       },
       "chronic": {
-        "dose": "Trevor (LPeTrmJI380 00:20:11.919): \"we're talking micrograms, not millig. We're talking 100, 200, 250, 500 micrograms at the max every day.\"",
-        "route": "Trevor (LPeTrmJI380 00:38:09.119): \"BPC57 is highly bioavailable when it's injected subcutaneously\"; Trevor (LPeTrmJI380 00:38:13.440): \"less than 1% bioavailability orally.\"",
+        "dose": "Hunter (peptide-qa-fat-loss-injury-recovery-and-more--c6e897c6, 2026-03-29, 14:53, https://library.hunterwilliamshealth.com/p/peptide-qa-fat-loss-injury-recovery-and-more--c6e897c6/) \"if you're just doing it for overall anti... flammatory purposes, you could use 250 micrograms of both for probably like eight to 12 weeks\"; Trevor (LPeTrmJI380 00:20:11.919) \"we're talking micrograms, not millig. We're talking 100, 200, 250, 500 micrograms at the max every day.\"",
+        "route": "Hunter (bpc-157---the-goat-peptide-a-comprehensive-use-guide--227dda84, 2026-03-29, 2:53, https://library.hunterwilliamshealth.com/p/bpc-157---the-goat-peptide-a-comprehensive-use-guide--227dda84/) \"you can inject it or you could use orally but it will be more effective if you do inject\"; Trevor (LPeTrmJI380 00:38:09.119) \"BPC57 is highly bioavailable when it's injected subcutaneously\" and (00:38:13.440) \"less than 1% bioavailability orally.\"",
         "frequency": "Trevor (LPeTrmJI380 00:20:00.720): \"low dose, consistent daily works better.\"",
-        "duration": "Trevor (LPeTrmJI380 00:19:53.280): \"for longevity, taking this forever.\"",
-        "verbatim_citation": "Trevor (LPeTrmJI380 00:19:42.160): \"lower consistent daily dosing works far better than highdosese cycling.\" Trevor (LPeTrmJI380 00:20:15.679): \"We're talking 100, 200, 250, 500 micrograms at the max every day.\"",
-        "episode_url": "https://youtu.be/LPeTrmJI380",
-        "timestamp": "00:19:42.160; 00:20:15.679; 00:38:09.119"
+        "duration": "Hunter (peptide-qa-fat-loss-injury-recovery-and-more--c6e897c6, 2026-03-29, 14:53, https://library.hunterwilliamshealth.com/p/peptide-qa-fat-loss-injury-recovery-and-more--c6e897c6/) \"for probably like eight to 12 weeks\"; Trevor (LPeTrmJI380 00:19:53.280) \"for longevity, taking this forever.\"",
+        "verbatim_citation": "Hunter (peptide-qa-fat-loss-injury-recovery-and-more--c6e897c6, 2026-03-29, 14:53, https://library.hunterwilliamshealth.com/p/peptide-qa-fat-loss-injury-recovery-and-more--c6e897c6/) \"if you're just doing it for overall anti... flammatory purposes, you could use 250 micrograms of both for probably like eight to 12 weeks\"; Trevor (LPeTrmJI380 00:19:42.160) \"lower consistent daily dosing works far better than highdosese cycling.\"",
+        "episode_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-fat-loss-injury-recovery-and-more--c6e897c6/",
+        "timestamp": "14:53; route guide 2:53; Trevor 00:19:42.160; 00:20:15.679; 00:38:09.119"
       }
     },
     "female_specific_notes": "Taylor (sRcDkKFFBG0 00:20:34.880): \"bpc 157 is going to help with our postmenopausal ladies\"; Taylor (sRcDkKFFBG0 00:20:45.480): \"as we age unfortunately the inflammation goes up\"; Taylor (sRcDkKFFBG0 00:22:21.600): \"dosing recommendations is going to be 250 microgram 5 days a week with this peptide\" and (sRcDkKFFBG0 00:22:28.640) \"eight weeks on eight weeks off.\" Taylor (XyN5pku7hZM 00:08:12.560): \"bpc 157 is great if you are dealing with menstrual cramps\" and (XyN5pku7hZM 00:08:21.720) \"severe menstrual cramps for the ladies.\" Taylor (hjJPYEhOvAw 00:01:35.520): \"for women our thyroid is super super super important.\"",
-    "distilled_at": "2026-04-27T03:51:55.605Z",
+    "distilled_at": "2026-07-17T04:43:23.891Z",
     "distilled_by": "codex"
   },
-  "generated_at": "2026-04-27T02:02:34.746Z"
+  "generated_at": "2026-07-17T10:59:05.881Z",
+  "mentions_fingerprint": "13279419b69f"
 }

@@ -27,39 +27,39 @@
         "duration": "8 weeks on, 8 weeks off"
       },
       "summary": {
-        "mention_count": 261,
+        "mention_count": 580,
         "top_doses": [
           {
             "dose": "15 mg",
-            "count": 79
-          },
-          {
-            "dose": "2.5 mg",
-            "count": 66
-          },
-          {
-            "dose": "8 mg",
-            "count": 45
+            "count": 110
           },
           {
             "dose": "1 mg",
-            "count": 40
+            "count": 93
           },
           {
-            "dose": "6 mg",
-            "count": 14
-          },
-          {
-            "dose": "100 micrograms",
-            "count": 12
+            "dose": "2.5 mg",
+            "count": 91
           },
           {
             "dose": "2 mg",
-            "count": 12
+            "count": 64
+          },
+          {
+            "dose": "8 mg",
+            "count": 56
           },
           {
             "dose": "12 mg",
-            "count": 9
+            "count": 37
+          },
+          {
+            "dose": "10 mg",
+            "count": 30
+          },
+          {
+            "dose": "6 mg",
+            "count": 16
           }
         ],
         "top_sources": [
@@ -100,6 +100,42 @@
             "first_timestamp": "00:13:00.440"
           },
           {
+            "source_id": "tirzepatide-to-retatrutide-the-ultimate-transition-guide-dosing-protocols--9f1b0841",
+            "source_type": "library-article",
+            "source_title": "Tirzepatide to Retatrutide The Ultimate Transition Guide Dosing Protocols",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/tirzepatide-to-retatrutide-the-ultimate-transition-guide-dosing-protocols--9f1b0841/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/tirzepatide-to-retatrutide-the-ultimate-transition-guide-dosing-protocols--9f1b0841.json",
+            "mention_count": 23,
+            "top_snippet": "This is one of the most common questions I get right now. Compounding pharmacies are going the way of the dodo, so a lot of people are heading into the research world to get retatrutide or tirzepatide",
+            "top_context": "This is one of the most common questions I get right now. Compounding pharmacies are going the way of the dodo, so a lot of people are heading into the research world to get retatrutide or tirzepatide. And even folks already on tirzepatide know retatrutide is probably better based on the data we have. So let me walk through how I'd actually transition between the two. The short answer Titrate down from your current tirzepatide dose to around 2 mg per week over four to six weeks, then start ret",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "a-complete-guide-to-using-tirzepatide-plus-my-advice-for-2024--686767dc",
+            "source_type": "library-article",
+            "source_title": "A Complete Guide To Using Tirzepatide PLUS My Advice for 2024",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/a-complete-guide-to-using-tirzepatide-plus-my-advice-for-2024--686767dc/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/a-complete-guide-to-using-tirzepatide-plus-my-advice-for-2024--686767dc.json",
+            "mention_count": 20,
+            "top_snippet": "don't know how you'd drink water at 30 mg. Here's the thing most people miss. Your body builds antibodies to peptides over time, which is why you have to keep titrating up. But if you start low and cy",
+            "top_context": "don't know how you'd drink water at 30 mg. Here's the thing most people miss. Your body builds antibodies to peptides over time, which is why you have to keep titrating up. But if you start low and cycle properly, you can keep the receptors fresh and stay at a low dose long term. I've been using tirzepatide for over a year and I still get amazing results from just 2.5 mg per week because I cycle it. How to Reconstitute It If you buy from a research chemical company, you'll typically get a 10 mg vial. For 2.5 mg per week, add 1 mL of bacteriostatic water to the vial and inject 25 units on an insulin",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "retatrutide-overview-video-june-2024--8d2d01d7",
+            "source_type": "library-article",
+            "source_title": "Retatrutide Overview Video June 2024",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/retatrutide-overview-video-june-2024--8d2d01d7/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/retatrutide-overview-video-june-2024--8d2d01d7.json",
+            "mention_count": 16,
+            "top_snippet": "% of people over 40 in the US are obese, and the majority of the entire population is overweight or obese. Solve obesity, you solve most chronic disease. That's the bet pharma is making. Researchers w",
+            "top_context": "% of people over 40 in the US are obese, and the majority of the entire population is overweight or obese. Solve obesity, you solve most chronic disease. That's the bet pharma is making. Researchers wanted something more effective than the existing GLP-1 agonists. Semaglutide is a single agonist. Tirzepatide is a dual agonist. Retatrutide is a triple agonist. They looked at what else they could add to the mix to push fat loss further, and that's how retatrutide came about. How It Works Retatrutide targets three receptors at once. GLP-1, GIP, and glucagon. The GLP-1 piece is what semaglutide does. It",
+            "first_timestamp": null
+          },
+          {
             "source_id": "197fb83f13afc51f",
             "source_type": "email",
             "source_title": "The Transition: Tirzepatide to Retatrutide",
@@ -122,47 +158,11 @@
             "top_snippet": "Why is combining tirz and retatide",
             "top_context": "Why is combining tirz and retatide Why is combining tirz and retatide dangerous? Can you explain why this dangerous? Can you explain why this dangerous? Can you explain why this stack is safer than people think? I stack is safer than people think? I stack is safer than people think? I guess there was a meme going around or guess there was a meme going around or guess there was a meme going around or different influencers talking about tirz different influencers talking about tirz different influencers talking about tirz and reta being combined being dangerous. and reta being combined being dangerous. and reta being combined being dangerous. I've personally done this for several I've personally done this for several I've personally done this for several months at a time and got really good months at a time and got really good months at a time and got really good results. If it's dangerous, I didn't see results. If it's dangerous, I didn't see results. If it's dangerous, I didn't see any reason why it would have been any reason why it would have been any reason why it would have been dangerous. I didn't see anything in my dangerous. I didn't see anything in my dangerous. I didn't see anything in my blood work to reflect that or anything blood work to reflect that or anything blood work to reflect that or anything like that. I guess it makes good like that. I guess it makes good like that. I guess it makes good clickbait if you talk about combining clickbait if you talk about combining clickbait if you talk about combining tirz and reta, but no, I think it's it's tirz and reta, but no, I think it's it's tirz and reta, but no, I think it's it's a perfectly feasible strategy to do. And a perfectly feasible strategy to do. And a perfectly feasible strategy to do. And the reason that you would do that is you the reason that you would do that is you the reason that you would do that is you basically are bringing down the basically are bringing down the basically are bringing down the proportion of the glucagon agonism. And proportion of the glucagon agonism. And proportion of the glucagon agonism. And so if the glucagon agonism, to my best so if the glucagon agonism, to my best so if the glucagon agonism, to my best guess, is around like 20% of the guess, is around like 20% of the guess, is around like 20% of the component of reta is the glucagon piece. component of reta is the glucagon piece. component of reta is the glucagon piece. If we introduce tirzepatide on top of If we introduce tirzepatide on top of If we introduce tirzepatide on top of that, we're getting more GLP and we're that, we're getting more GLP and we're that, we're getting more GLP and we're getting more GIP. And so we now maybe getting more GIP. And so we now maybe getting more GIP. And so we now maybe bring down that glucagon from like 20%",
             "first_timestamp": "00:00:01.710"
-          },
-          {
-            "source_id": "195bac3e140a033c",
-            "source_type": "email",
-            "source_title": "Transitioning From Tirz to Reta",
-            "source_date": "2025-03-21",
-            "source_url": null,
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-03-21-transitioning-from-tirz-to-reta.md",
-            "mention_count": 10,
-            "top_snippet": "mber to submit your question or [video suggestion here.](https://hunterwilliamsvideotopic.carrd.co/) Youtube: March 2025 Peptides Q&A (https://youtu.be/_unLMWqe0cE?si=7hWBwDH4kT9DDeqr) ———————————————",
-            "top_context": "mber to submit your question or [video suggestion here.](https://hunterwilliamsvideotopic.carrd.co/) Youtube: March 2025 Peptides Q&A (https://youtu.be/_unLMWqe0cE?si=7hWBwDH4kT9DDeqr) ——————————————————————————— One of the more common questions I am seeing is about how to transition from tirzepatide to retatrutide. In my opinion, retatrutide is vastly superior to tirzepatide, and within the next two years, we will see many people transition over to reta from tirz. Today, I'm sharing a detailed and easy-to-follow strategy for transitioning from tirzepatide to retatrutide. Whether you",
-            "first_timestamp": null
-          },
-          {
-            "source_id": "1967e6f0ec9241dc",
-            "source_type": "email",
-            "source_title": "Retatrutide Vs. Alcohol",
-            "source_date": "2025-04-28",
-            "source_url": null,
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-04-28-retatrutide-vs-alcohol.md",
-            "mention_count": 10,
-            "top_snippet": "n - physically and metaphysically. Ironically enough, GLP-1 peptides seem to reduce interest and cravings for alcohol dramatically. And today, I’m sharing with you my insights on a groundbreaking new ",
-            "top_context": "n - physically and metaphysically. Ironically enough, GLP-1 peptides seem to reduce interest and cravings for alcohol dramatically. And today, I’m sharing with you my insights on a groundbreaking new study that puts this concept to the test. If you thought GLP-1 peptides like semaglutide, tirzepatide, and retatrutide were just about shredding body fat, buckle up—because we’re about to see just how powerful these compounds can be for the brain, addiction, and specifically alcohol cravings! ——————————————————————————— **GLP-1s and Alcohol** You’ve probably seen the headlines—GLP-1 ag",
-            "first_timestamp": null
-          },
-          {
-            "source_id": "196177296bf4b2dd",
-            "source_type": "email",
-            "source_title": "Do GLP-1s Drop Your Blood Sugar TOO Low?",
-            "source_date": "2025-04-08",
-            "source_url": null,
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-04-08-do-glp-1s-drop-your-blood-sugar-too-low.md",
-            "mention_count": 8,
-            "top_snippet": "sk of blood sugar crashes. Let’s dive in! ——————————————————————————— **How GLP-1 Peptides Actually Work (And Why That Matters)** First things first: to understand why hypoglycemia is rare with GLP-1 ",
-            "top_context": "sk of blood sugar crashes. Let’s dive in! ——————————————————————————— **How GLP-1 Peptides Actually Work (And Why That Matters)** First things first: to understand why hypoglycemia is rare with GLP-1 peptides, you need to know how they work. **GLP-1 peptides** (including Semaglutide, Tirzepatide, and Retatrutide) mimic a hormone naturally produced in your gut when you eat, called **GLP-1 (Glucagon-like peptide-1)**. Your body naturally releases GLP-1 after meals, signaling your pancreas to produce insulin—but **only when your blood sugar is already elevated.** This is critical to un",
-            "first_timestamp": null
           }
         ],
         "acute_signals": [
           {
-            "snippet": "ts to recognize the subjective feeling of alcohol intoxication using a method called operant drug discrimination. Basically, they taught the rats to push a specific lever after feeling alcohol’s effec",
+            "snippet": "d rats to recognize the subjective feeling of alcohol intoxication using a method called operant drug discrimination. Basically, they taught the rats to push a specific lever after feeling alcohol’s e",
             "source_title": "Retatrutide Vs. Alcohol",
             "source_date": "2025-04-28",
             "timestamp": null,
@@ -176,7 +176,7 @@
             "source_url": "https://open.spotify.com/episode/3uGkEegE8EpiklPExVvUt0"
           },
           {
-            "snippet": "eresting than people realize) * **Metformin + Jardiance** and how I think about that combo for longevity * **Cloudy peptides, threads, crystallization**, and when acetic acid might help vs when to tra",
+            "snippet": "re interesting than people realize) * **Metformin + Jardiance** and how I think about that combo for longevity * **Cloudy peptides, threads, crystallization**, and when acetic acid might help vs when ",
             "source_title": "December 2025 Q&A",
             "source_date": "2025-12-19",
             "timestamp": null,
@@ -188,6 +188,13 @@
             "source_date": "2026-01-06",
             "timestamp": null,
             "source_url": "https://open.spotify.com/episode/34rOradleDfBhah2W6fP6T"
+          },
+          {
+            "snippet": "percentage. We want to see 60 to 80% of weight loss coming from fat, with only 20 to 40% from lean mass. Across the 4, 8, and 12 mg groups, the mean fat loss index was 64.6%. So roughly 65% fat, 35% m",
+            "source_title": "Is Retatrutide the King of Fat Loss? Latest News & Study Breakdown",
+            "source_date": "2026-03-29",
+            "timestamp": null,
+            "source_url": "https://library.hunterwilliamshealth.com/p/is-retatrutide-the-king-of-fat-loss-latest-news-study-breakdown--3e62e829/"
           }
         ],
         "chronic_signals": [
@@ -513,25 +520,26 @@
   },
   "reset_biology_synthesis": {
     "status": "distilled",
-    "recommendation": "Reset Biology suggests asking the practitioner to consider tirzepatide as a dual GIP+GLP-1 tool whose minimum-effective-dose ceiling is sharply contested across these three experts: Hunter's 2023 baseline lists \"Dose\" \"2.5 mg\" once weekly with \"Duration\" \"8 weeks on, 8 weeks off,\" while his 2025-07-11 email warns \"MORE IS NOT BETTER. Peptides work best at MINIMUM EFFECTIVE DOSE\" and Trevor (8g4I9x22VNk 00:19:43.679) calls tirzepatide \"garbage\" relative to retatrutide. We'd ask the prescribing physician to weigh GLP-1-class side effects flagged by Trevor (TKxXLFAHfT4 00:02:27.760): \"GLP1 not understanding that it causes muscle wasting and all GI paralysis for the most part and Zepbound which is even worse has a blackbox warning,\" against Taylor's female-specific case for tirz-first in fragile-nervous-system or PCOS patients (Cg7JtpnfRY4 01:58:53.760): \"if your nervous system is a little bit more fragile, I would do Tirzepatide first.\"",
-    "caveats": "- Muscle wasting + GI paralysis class warning: Trevor (TKxXLFAHfT4 00:02:27.760): \"a GLP1 not understanding that it causes muscle wasting and all GI paralysis for the most part and Zepbound which is even worse has a blackbox warning.\"\n- Dose-creep ceiling: Hunter email threadId 197fb83f13afc51f (2025-07-11): \"Seeing people on 20-30 mg tirzepatide per week. MORE IS NOT BETTER. Peptides work best at MINIMUM EFFECTIVE DOSE.\"\n- Cold-turkey rebound: Hunter email threadId 197fb83f13afc51f (2025-07-11): \"Tirz appetite suppression is STRONG — stronger than most people expect\" and \"Cold turkey → appetite + cravings come roaring back.\"\n- High-fat-meal nausea: Hunter email threadId 197fb83f13afc51f (2025-07-11): \"GI worry → start lower (1-2 mg) + smaller, lower-fat meals (high fat + these peptides = more nausea).\"\n- Sourcing/availability flag: Hunter email threadId 197fb83f13afc51f (2025-07-11): \"Tirzepatide increasingly difficult to source reliably (FDA cracked down on compounding pharmacies).\"\n- Microdose-effect dispute: Trevor (PZtKV9DjRxQ 00:22:10.640): \"For you guys that are going, 'Well, tirzepatide worked better.' It's cuz you were taking a shitload more even though it wasn't doing nearly the effect\" — Trevor frames tirz as inferior at any dose to retatrutide; Hunter and Taylor explicitly use 1 mg–2 mg microdoses of tirz alongside reta, hedge \"in my experience.\"",
-    "cross_expert_consensus": "All three agree tirzepatide is a dual GIP + GLP-1 agonist that suppresses appetite and slows gastric emptying. Hunter email threadId 197fb83f13afc51f (2025-07-11): \"Tirzepatide | DUAL agonist — GIP + GLP-1\" and \"Boosts insulin secretion / Blunts appetite / Slows gastric emptying.\" Hunter (dSuf-_Bgb_8 00:00:39.920): \"If we introduce tirzepatide on top of that, we're getting more GLP and we're getting more GIP.\" Taylor (G27dIPBJUSs 00:36:43.840): \"skewing the balance to have more GLP-1 and GIP than\" glucagon. Trevor (PZtKV9DjRxQ 00:11:50.640): \"Semaglutide and tirzepatide\" are GLP-class agents — i.e., he categorizes them in the same metabolic-signaling family even when arguing they are inferior. All three also acknowledge tirzepatide produces real weight loss in trials: Hunter email threadId 197fb83f13afc51f (2025-07-11): \"Tirzepatide 15 mg | 15-22.5% body weight loss in 72 weeks.\" Trevor (PZtKV9DjRxQ 00:22:10.640): \"For you guys that are going, 'Well, tirzepatide worked better'\" — he doesn't deny the weight comes off, only that it does so at the cost of muscle and via dose-overshoot.",
-    "cross_expert_disagreement": "Tirzepatide-as-good-tool vs tirzepatide-as-trash splits sharply. Hunter email threadId 197fb83f13afc51f (2025-07-11): \"Tirzepatide ... Less GLP-1 dose = fewer GI side effects than semaglutide\" and frames tirz favorably as the prior generation worth titrating off. Taylor (Cg7JtpnfRY4 01:58:53.760): \"if your nervous system is a little bit more fragile, I would do Tirzepatide first\" and (Cg7JtpnfRY4 01:49:11.480): \"Tirzepatide for PCOS, yes, can be very beneficial. Yes. Along with Metformin.\" Trevor (8g4I9x22VNk 00:19:43.679): \"semaglutide and tirzepatide, both garbage\" and (PZtKV9DjRxQ 00:11:50.640): \"Semaglutide and tirzepatide are trash. You can argue with me all you want. Science is on my side.\" Microdosing GLP-class also splits: Hunter (0TyW-wlJMxo 00:37:39.640): \"if I was having food noise with Retatrutide cuz I've done this before, I would just add in like a microdose of Tirzepatide,\" Taylor (G27dIPBJUSs 00:37:17.000): \"if you put in 1 mg of Tirzepatide once a week alongside Reta, you will definitely have more appetite suppression. How do I know? Cuz I've done that a lot, and it works really well.\" Trevor (PZtKV9DjRxQ 00:22:01.880): \"You've turned a thermonuclear triple agonist into a mediocre overpriced GLP analog\" — Trevor explicitly opposes microdosing, says it never crosses the receptor-occupancy threshold. Cold-turkey vs taper differs from naive expectation: Hunter email threadId 197fb83f13afc51f (2025-07-11) prescribes a \"5-Week Step-Down Protocol\" — \"Week 1 | Reduce tirzepatide dose by 25% ... Week 5 | Discontinue tirzepatide → start retatrutide at 2 mg/week.\" Trevor offers no taper protocol — only the categorical \"trash\" frame.",
+    "recommendation": "Reset Biology suggests asking the practitioner to weigh Hunter's 2023 baseline \"Dose\" \"2.5 mg\" and \"Duration\" \"8 weeks on, 8 weeks off\" against: \"Tirzepatide starts at 2.5 mg for four weeks, then steps up by 2.5 mg every four weeks. The pharmaceutical max is 15 mg weekly. I've talked to people doing 20, 25, even 30 mg per week. I don't recommend that.\" Hunter library article (tirzepatide-to-retatrutide-the-ultimate-transition-guide-dosing-protocols--9f1b0841; cue timestamp unavailable; https://library.hunterwilliamshealth.com/p/tirzepatide-to-retatrutide-the-ultimate-transition-guide-dosing-protocols--9f1b0841/).",
+    "caveats": "Hunter library article (tirzepatide-to-retatrutide-the-ultimate-transition-guide-dosing-protocols--9f1b0841; cue timestamp unavailable; https://library.hunterwilliamshealth.com/p/tirzepatide-to-retatrutide-the-ultimate-transition-guide-dosing-protocols--9f1b0841/): \"GI side effects are dose-dependent on both drugs.\"\nHunter library article (tirzepatide-to-retatrutide-the-ultimate-transition-guide-dosing-protocols--9f1b0841; cue timestamp unavailable; https://library.hunterwilliamshealth.com/p/tirzepatide-to-retatrutide-the-ultimate-transition-guide-dosing-protocols--9f1b0841/): \"If you do get side effects, eat smaller and simpler meals, and cut the fat in your diet way down.\"\nHunter library article (glp-1s-and-anhedonia-why-some-people-lose-motivation-and-pleasure--6500beb6; cue timestamp unavailable; https://library.hunterwilliamshealth.com/p/glp-1s-and-anhedonia-why-some-people-lose-motivation-and-pleasure--6500beb6/): \"But a smaller group gets motivational blunting.\"",
+    "cross_expert_consensus": null,
+    "cross_expert_disagreement": "Hunter library article (semaglutide-vs-tirzepatide-vs-reta-a-critical-data-analysis--cbdc9b2a; cue timestamp unavailable; https://library.hunterwilliamshealth.com/p/semaglutide-vs-tirzepatide-vs-reta-a-critical-data-analysis--cbdc9b2a/): \"Tirz is still excellent.\" Taylor (Cg7JtpnfRY4 01:49:11.480; https://youtu.be/Cg7JtpnfRY4): \"Tirzepatide for PCOS, yes, can be very beneficial. Yes. Along with Metformin.\" Trevor (8g4I9x22VNk 00:19:43.679; https://youtu.be/8g4I9x22VNk): \"semaglutide and tirzepatide, both garbage.\"",
     "acute_chronic_split": {
       "acute": null,
       "chronic": {
-        "dose": "Hunter 2023 baseline_protocol lists \"Dose\" \"2.5 mg\" with \"Frequency\" \"Once per week.\" Hunter (E7GPNidicqY 01:39:33.840): \"I don't know that I'd go right to 8 mg of tirzepatide. You might be a little sensitive to it, so maybe start with like 2 mg a few times per week.\" Hunter email threadId 197fb83f13afc51f (2025-07-11): \"Tirzepatide 15 mg | 15-22.5% body weight loss in 72 weeks\" and \"Seeing people on 20-30 mg tirzepatide per week. MORE IS NOT BETTER.\" Taylor (G27dIPBJUSs 00:37:17.000): \"if you put in 1 mg of Tirzepatide once a week alongside Reta, you will definitely have more appetite suppression.\" Trevor offers no chronic-dose recommendation for tirzepatide because (PZtKV9DjRxQ 00:11:50.640): \"Semaglutide and tirzepatide are trash.\"",
-        "route": "Hunter 2023 baseline_protocol implies subcutaneous injection (vial 10 mg / BAC 1 mL / 25 units on 1 mL insulin syringe). No expert advocates oral tirzepatide.",
-        "frequency": "Hunter 2023 baseline_protocol: \"Frequency\" \"Once per week.\" Hunter (E7GPNidicqY 01:39:37.520): \"start with like 2 mg a few times per week.\" Taylor (G27dIPBJUSs 00:37:17.000): \"1 mg of Tirzepatide once a week alongside Reta.\"",
-        "duration": "Hunter 2023 baseline_protocol: \"Duration\" \"8 weeks on, 8 weeks off.\" Hunter email threadId 197fb83f13afc51f (2025-07-11) reframes duration as a transition window: \"5-Week Step-Down Protocol\" with \"Week 5 | Discontinue tirzepatide → start retatrutide at 2 mg/week.\"",
-        "verbatim_citation": "Hunter email threadId 197fb83f13afc51f (2025-07-11): \"Peptides work best at MINIMUM EFFECTIVE DOSE.\" Hunter (E7GPNidicqY 01:39:33.840): \"I don't know that I'd go right to 8 mg of tirzepatide. You might be a little sensitive to it, so maybe start with like 2 mg a few times per week.\"",
-        "episode_url": "https://youtu.be/E7GPNidicqY",
-        "timestamp": "2023 baseline_protocol; email threadId 197fb83f13afc51f (2025-07-11); E7GPNidicqY 01:39:33.840; G27dIPBJUSs 00:37:17.000"
+        "dose": "Hunter 2023 baseline_protocol: \"Dose\" \"2.5 mg.\" Hunter library article (a-complete-guide-to-using-tirzepatide-plus-my-advice-for-2024--686767dc; cue timestamp unavailable; https://library.hunterwilliamshealth.com/p/a-complete-guide-to-using-tirzepatide-plus-my-advice-for-2024--686767dc/): \"Start at 2.5 mg per week. Do not go higher than that to begin.\" \"If you're already lean, I'd argue starting at 1 mg per week and seeing how you feel after two weeks is smart.\" \"The dose can be increased to 5 mg per week after four weeks, with further increases in 2.5 mg steps.\" \"Maximum recommended is 15 mg once per week. I've heard of people going up to 30 mg per week, which is wild.\" Hunter library article (tirzepatide-to-retatrutide-the-ultimate-transition-guide-dosing-protocols--9f1b0841; cue timestamp unavailable; https://library.hunterwilliamshealth.com/p/tirzepatide-to-retatrutide-the-ultimate-transition-guide-dosing-protocols--9f1b0841/): \"I've talked to people doing 20, 25, even 30 mg per week. I don't recommend that.\"",
+        "route": "Hunter library article (a-complete-guide-to-using-tirzepatide-plus-my-advice-for-2024--686767dc; cue timestamp unavailable; https://library.hunterwilliamshealth.com/p/a-complete-guide-to-using-tirzepatide-plus-my-advice-for-2024--686767dc/): \"You inject subcutaneously one time a week.\"",
+        "frequency": "Hunter 2023 baseline_protocol: \"Frequency\" \"Once per week.\"",
+        "duration": "Hunter 2023 baseline_protocol: \"Duration\" \"8 weeks on, 8 weeks off.\" Hunter library article (a-complete-guide-to-using-tirzepatide-plus-my-advice-for-2024--686767dc; cue timestamp unavailable; https://library.hunterwilliamshealth.com/p/a-complete-guide-to-using-tirzepatide-plus-my-advice-for-2024--686767dc/): \"Use tirzepatide for 8 to 12 weeks at a time when you're cutting, then come off for 8 to 12 weeks.\"",
+        "verbatim_citation": "Hunter library article (tirzepatide-to-retatrutide-the-ultimate-transition-guide-dosing-protocols--9f1b0841; cue timestamp unavailable; https://library.hunterwilliamshealth.com/p/tirzepatide-to-retatrutide-the-ultimate-transition-guide-dosing-protocols--9f1b0841/): \"I'm a believer in the minimum effective dose.\"",
+        "episode_url": "https://library.hunterwilliamshealth.com/p/tirzepatide-to-retatrutide-the-ultimate-transition-guide-dosing-protocols--9f1b0841/",
+        "timestamp": "No cue timestamp is present in the cited library-article source; source date: 2026-03-29."
       }
     },
-    "female_specific_notes": "Taylor (Cg7JtpnfRY4 01:49:11.480): \"Tirzepatide for PCOS, yes, can be very beneficial. Yes. Along with Metformin.\" Taylor (Cg7JtpnfRY4 01:58:53.760): \"if your nervous system is a little bit more fragile, I would do Tirzepatide first\" — i.e., tirz before retatrutide for women whose autonomic tolerance is lower. Taylor (G27dIPBJUSs 00:37:17.000): \"if you put in 1 mg of Tirzepatide once a week alongside Reta, you will definitely have more appetite suppression. How do I know? Cuz I've done that a lot, and it works really well\" — Taylor's personal-experience hedge applies to her female-coaching practice. Note Trevor's (TKxXLFAHfT4 00:02:27.760) GLP-class warning of \"muscle wasting\" is especially relevant in the postmenopausal sarcopenia window where lean-mass preservation is doctrine; this is unaddressed by Hunter's or Taylor's tirz-specific content.",
-    "distilled_at": "2026-04-27T05:16:29.394Z",
-    "distilled_by": "claude"
+    "female_specific_notes": "Taylor (Cg7JtpnfRY4 01:49:11.480; https://youtu.be/Cg7JtpnfRY4): \"Tirzepatide for PCOS, yes, can be very beneficial. Yes. Along with Metformin.\" Taylor (Cg7JtpnfRY4 01:58:53.760; https://youtu.be/Cg7JtpnfRY4): \"if your nervous system is a little bit more fragile, I would do Tirzepatide first.\"",
+    "distilled_at": "2026-07-17T08:19:54.6148066Z",
+    "distilled_by": "codex"
   },
-  "generated_at": "2026-04-27T02:02:34.824Z"
+  "generated_at": "2026-07-17T10:59:06.350Z",
+  "mentions_fingerprint": "e5ea406e2d70"
 }

@@ -3,49 +3,75 @@
   "slug": "nad",
   "aliases": [
     "NAD",
-    "nad"
+    "nad",
+    "Nad",
+    "NAd"
   ],
-  "category": "Uncategorized",
+  "category": "Mitochondrial & Energy",
   "experts": {
     "hunter-williams": {
       "baseline_protocol": null,
       "summary": {
-        "mention_count": 300,
+        "mention_count": 632,
         "top_doses": [
           {
             "dose": "100 mg",
-            "count": 33
-          },
-          {
-            "dose": "500 mg",
-            "count": 20
-          },
-          {
-            "dose": "10 mg",
-            "count": 19
-          },
-          {
-            "dose": "1 mg",
-            "count": 19
-          },
-          {
-            "dose": "500 micrograms",
-            "count": 18
+            "count": 47
           },
           {
             "dose": "50 mg",
-            "count": 16
+            "count": 37
           },
           {
-            "dose": "750 micrograms",
-            "count": 12
+            "dose": "500 mg",
+            "count": 35
+          },
+          {
+            "dose": "10 mg",
+            "count": 34
+          },
+          {
+            "dose": "1 mg",
+            "count": 34
+          },
+          {
+            "dose": "500 micrograms",
+            "count": 23
+          },
+          {
+            "dose": "10 milligrams",
+            "count": 22
           },
           {
             "dose": "150 mg",
-            "count": 10
+            "count": 18
           }
         ],
         "top_sources": [
+          {
+            "source_id": "nad-benefits-my-ultimate-stacking-guide-for-energy-performance--a2788b07",
+            "source_type": "library-video",
+            "source_title": "NAD Benefits My Ultimate Stacking Guide for Energy Performance",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/nad-benefits-my-ultimate-stacking-guide-for-energy-performance--a2788b07/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/nad-benefits-my-ultimate-stacking-guide-for-energy-performance--a2788b07.json",
+            "mention_count": 109,
+            "top_snippet": "Hey everybody, this is Hunter Williams. I hope you're doing amazing wherever you are in the world. Today's video is going to be my overview of the NAD plus cycle. Now I will preface this by saying I am by no means an expert on N80 plus. Um, so this video's going be more or less my interpretation and best communication to the layman on what N A D is in body and how this whole cycle works. So I was recently inspired, uh, to do this, um, from listening to Dr. Sandra Kaufman, talk at our live seminar in Tampa recently.",
+            "top_context": "Hey everybody, this is Hunter Williams. I hope you're doing amazing wherever you are in the world. Today's video is going to be my overview of the NAD plus cycle. Now I will preface this by saying I am by no means an expert on N80 plus. Um, so this video's going be more or less my interpretation and best communication to the layman on what N A D is in body and how this whole cycle works. So I was recently inspired, uh, to do this, um, from listening to Dr. Sandra Kaufman, talk at our live seminar in Tampa recently. And everyone should go check out her work. She's one of the foremost experts on anti-aging and longevity medicine in the world that I know of, way smarter than me. But she did a presentation on exosomes and NAD+. And I was fascinated by the N, N A D plus conversation. Cause it's something, you know, like I've used N. A. D. I have used some of these other supplements to help support N and D, but they really have like a conceptual understanding. So, uh, after the seminar, I just went back. I was doing a lot of my own reading and wanted to put together something to kind of give you a framework for understanding NAD,",
+            "first_timestamp": "0:09"
+          },
+          {
+            "source_id": "why-5-amino-1mq-is-your-secret-weapon-for-fat-loss-longevity--4231a63a",
+            "source_type": "library-video",
+            "source_title": "Why 5 Amino 1MQ Is Your Secret Weapon for Fat Loss & Longevity",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/why-5-amino-1mq-is-your-secret-weapon-for-fat-loss-longevity--4231a63a/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/why-5-amino-1mq-is-your-secret-weapon-for-fat-loss-longevity--4231a63a.json",
+            "mention_count": 46,
+            "top_snippet": "which is actually injecting five amino with NAD to see how that does. And it seems to be working really well so far. So probably not a super long video today, but I think valuable nonetheless. If you want, as always, check out the Peptide Cheat Sheet. That link will be down in the description of all my videos. Also too, if you love geeking out on these topics and want a very supportive, amazing community of other people that are like-minded and love to do so as well. Check out Fully Optimized Health. That link is always in the description. And I just love that community. I love the people there. They are my people for sure.",
+            "top_context": "version that is now making the rounds in a lot of research companies. on their websites now and I really like it. And I definitely like compared to the oral version definitely seems to be more efficacious and does not seem to have the same sort of tolerance buildup that the world version seemed to at least in my case and many other cases of people that I've spoken with. So today I'm going to kind of do an updated and expanded version of my five amino video. Cause at that time when I made that one, injectable may have been out, but it wasn't something that had personally used. I wanted to update and expand just my thoughts on it, And also talk about something too that I have been playing around with, which is actually injecting five amino with NAD to see how that does. And it seems to be working really well so far. So probably not a super long video today, but I think valuable nonetheless. If you want, as always, check out the Peptide Cheat Sheet. That link will be down in the description of all my videos. Also too, if you love geeking out on these topics and want a very supportive, amazing community of other people that are like-minded and love to do so as well. Check out Fully Optimized Health. That link is always in the description. And I just love that community. I love the people there. They are my people for sure. So if you want to meet amazing other like minded people and also too, we do live Q and A's every Tuesday night where you can join in on those and ask all of your awesome questions. Without further ado, I'm going to share my screen and today we're going learn a little bit more about five amino. All right, I am Hunter Williams and today is the updated 2025 version of 5-amino and we're also going to talk a little bit more about the injectable version. So what is it? So I'm not gonna try to pronounce 5 amino 1MQ but it's 5 amino 1 methylquinolinium.",
+            "first_timestamp": "1:13"
+          },
           {
             "source_id": "197f13cc2a822e7e",
             "source_type": "email",
@@ -55,7 +81,7 @@
             "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-07-09-i-stack-this-with-nad-injections.md",
             "mention_count": 45,
             "top_snippet": "Happy Wednesday! Today I want to talk about a combination that’s had a huge impact on my mitochondrial health, energy, and overall sense of drive: **injecting NAD⁺ alongside 5-amino-1MQ**, and the lit",
-            "top_context": "Happy Wednesday! Today I want to talk about a combination that’s had a huge impact on my mitochondrial health, energy, and overall sense of drive: **injecting NAD⁺ alongside 5-amino-1MQ**, and the little-known supplement that has become a personal favorite of mine. **It’s called NAD Regen.** For the last year, I’ve been experimenting with **injecting 50–100 mg of NAD⁺, two to three times a week**, and stacking it with 1mg per day of injectable **5-amin",
+            "top_context": "Happy Wednesday! Today I want to talk about a combination that’s had a huge impact on my mitochondrial health, energy, and overall sense of drive: **injecting NAD⁺ alongside 5-amino-1MQ**, and the little-known supplement that has become a personal favorite of mine. **It’s called NAD Regen.** For the last year, I’ve been experimenting with **injecting 50–100 mg of NAD⁺, two to three times a week**, and stacking it with 1mg per day of injectable **5-amino-1M",
             "first_timestamp": null
           },
           {
@@ -66,8 +92,8 @@
             "source_url": null,
             "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-05-09-nad-and-fat-loss.md",
             "mention_count": 37,
-            "top_snippet": "composition and lasting fat loss involves addressing multiple interconnected pathways—from consistent exercise and nutrient-dense eating to advanced hormone optimization. Yet, even among biohackers an",
-            "top_context": "composition and lasting fat loss involves addressing multiple interconnected pathways—from consistent exercise and nutrient-dense eating to advanced hormone optimization. Yet, even among biohackers and longevity enthusiasts, there’s one critical pathway that remains criminally overlooked: **the NAD+ pathway**. Today, I’m going to shed light on NAD+, one of the body’s fundamental metabolic regulators, and how optimizing it—especially via injectable supplementation—could significantly accelerate your fat loss. ——————————————————————————— **Why NAD+ Matters for Metabolism and Fat Loss**",
+            "top_snippet": "y composition and lasting fat loss involves addressing multiple interconnected pathways—from consistent exercise and nutrient-dense eating to advanced hormone optimization. Yet, even among biohackers ",
+            "top_context": "y composition and lasting fat loss involves addressing multiple interconnected pathways—from consistent exercise and nutrient-dense eating to advanced hormone optimization. Yet, even among biohackers and longevity enthusiasts, there’s one critical pathway that remains criminally overlooked: **the NAD+ pathway**. Today, I’m going to shed light on NAD+, one of the body’s fundamental metabolic regulators, and how optimizing it—especially via injectable supplementation—could significantly accelerate your fat loss. ——————————————————————————— **Why NAD+ Matters for Metabolism and Fat Loss** Firs",
             "first_timestamp": null
           },
           {
@@ -78,8 +104,8 @@
             "source_url": null,
             "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-03-13-why-nad-might-not-work.md",
             "mention_count": 29,
-            "top_snippet": "ting NAD+ should turn you into a fat-burning, brain-boosted, age-reversing machine, right? Well… not exactly. Because here’s what most people don’t know: **1️⃣ Your body naturally destroys NAD+ faster",
-            "top_context": "ting NAD+ should turn you into a fat-burning, brain-boosted, age-reversing machine, right? Well… not exactly. Because here’s what most people don’t know: **1️⃣ Your body naturally destroys NAD+ faster than you can replace it.** **2️⃣ NNMT is actively working against you by shutting down NAD+ recycling.** **3️⃣ Even if you inject high doses, much of it gets wasted if NNMT is running wild.** NNMT is an enzyme that methylates nicotinamide (a key NAD+ precursor), rendering it useless for NAD+ production. This means even if you inject 100mg, 200mg, or more of NAD+, your body is s",
+            "top_snippet": "y, injecting NAD+ should turn you into a fat-burning, brain-boosted, age-reversing machine, right? Well… not exactly. Because here’s what most people don’t know: **1️⃣ Your body naturally destroys NAD",
+            "top_context": "y, injecting NAD+ should turn you into a fat-burning, brain-boosted, age-reversing machine, right? Well… not exactly. Because here’s what most people don’t know: **1️⃣ Your body naturally destroys NAD+ faster than you can replace it.** **2️⃣ NNMT is actively working against you by shutting down NAD+ recycling.** **3️⃣ Even if you inject high doses, much of it gets wasted if NNMT is running wild.** NNMT is an enzyme that methylates nicotinamide (a key NAD+ precursor), rendering it useless for NAD+ production. This means even if you inject 100mg, 200mg, or more of NAD+, your body is still s",
             "first_timestamp": null
           },
           {
@@ -91,7 +117,7 @@
             "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-03-11-nad-simplified.md",
             "mention_count": 25,
             "top_snippet": "If you’re feeling sluggish, mentally foggy, or struggling to recover from workouts like you used to, then you might be running low on one of the most essential molecules in your body: **NAD+.** **NAD+",
-            "top_context": "If you’re feeling sluggish, mentally foggy, or struggling to recover from workouts like you used to, then you might be running low on one of the most essential molecules in your body: **NAD+.** **NAD+ is the backbone of energy production, mitochondrial health, and longevity.** When your NAD+ levels drop (which they inevitably do with age and stress), you start experiencing all the telltale signs of aging—fatigue, slower recovery, metabolic slowdown, and brain fog. The good n",
+            "top_context": "If you’re feeling sluggish, mentally foggy, or struggling to recover from workouts like you used to, then you might be running low on one of the most essential molecules in your body: **NAD+.** **NAD+ is the backbone of energy production, mitochondrial health, and longevity.** When your NAD+ levels drop (which they inevitably do with age and stress), you start experiencing all the telltale signs of aging—fatigue, slower recovery, metabolic slowdown, and brain fog. The good news?",
             "first_timestamp": null
           },
           {
@@ -102,8 +128,8 @@
             "source_url": null,
             "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-09-17-fat-loss-doesn-t-have-to-mean-energy-loss.md",
             "mention_count": 24,
-            "top_snippet": "d longevity education, without worrying about big tech pulling the plug. Now, on to today’s email. A few months ago, [I sent out an email](https://huntershealthhacks.beehiiv.com/p/triple-threat-energy",
-            "top_context": "d longevity education, without worrying about big tech pulling the plug. Now, on to today’s email. A few months ago, [I sent out an email](https://huntershealthhacks.beehiiv.com/p/triple-threat-energy-stack-fc7316db9259dea4) where I shared how I experimented on myself with a research blend of NAD+, 5-Amino-1MQ, and MOTS-c. The results blew me away. I dropped fat faster than usual, but instead of feeling flat or tired, I actually felt **more energetic**. My recovery was better, my focus sharper, and more importantly, it helped Taylor and me keep our energy high after the stress o",
+            "top_snippet": "e and longevity education, without worrying about big tech pulling the plug. Now, on to today’s email. A few months ago, [I sent out an email](https://huntershealthhacks.beehiiv.com/p/triple-threat-en",
+            "top_context": "e and longevity education, without worrying about big tech pulling the plug. Now, on to today’s email. A few months ago, [I sent out an email](https://huntershealthhacks.beehiiv.com/p/triple-threat-energy-stack-fc7316db9259dea4) where I shared how I experimented on myself with a research blend of NAD+, 5-Amino-1MQ, and MOTS-c. The results blew me away. I dropped fat faster than usual, but instead of feeling flat or tired, I actually felt **more energetic**. My recovery was better, my focus sharper, and more importantly, it helped Taylor and me keep our energy high after the stress of plan",
             "first_timestamp": null
           },
           {
@@ -117,30 +143,6 @@
             "top_snippet": "that rather than just say retosi, NAD. Actually,&nbsp; that that makes me want to ask you, what is your&nbsp;&nbsp;",
             "top_context": "Saturday. I can go hypo sometimes with it if I&nbsp; Yeah. It'll make me go hypoglycemic even with&nbsp;&nbsp; like a low dose. If I do it and then go to the gym&nbsp; and I'm like strength training even with carbs and&nbsp;&nbsp; everything like I'll be like kind of be like whoa&nbsp; seeing stars and everything. Um, so I think it's&nbsp;&nbsp; one of those things people just like jump on and&nbsp; it's like, well, let's ask ourselves like what&nbsp;&nbsp; we're really doing. And also they get addicted&nbsp; to like the idea of like, oh, I need more. I'm&nbsp;&nbsp; going to get more fat loss. I'm going to get more&nbsp; I'm going to get more gains the more I add. Yeah.&nbsp;&nbsp; And it I mean someone might argue like, well, it&nbsp; worked for me, but it's also too I think it still&nbsp;&nbsp; it's not sustainable. Yeah. And it's the awareness&nbsp; part of the equation of like why are we doing&nbsp;&nbsp; this? And if it's like, okay, we really want to&nbsp; like focus on mitochondria. Let's like actually do&nbsp;&nbsp; that rather than just say retosi, NAD. Actually,&nbsp; that that makes me want to ask you, what is your&nbsp;&nbsp; approach to NAD? Because there's like big debates&nbsp; over like you're going to get cancer if you take&nbsp;&nbsp; NAD to like I'm going to use NAD every single day&nbsp; and never take a day off because it makes me feel&nbsp;&nbsp; so good. And then some people take 25 milligrams&nbsp; and they're like have like their heart rate is&nbsp;&nbsp; like over a hundred. How do you think about NAD&nbsp; and like what is the best approach? Because I'm&nbsp;&nbsp; not like someone that uses every day. I think&nbsp; they can use it to achieve a certain outcome.&nbsp;&nbsp; But honestly, I don't really use it that much, but&nbsp; I also don't feel the need to. Yeah, lifestyle has&nbsp;&nbsp; a lot. I think if some people are like drinking&nbsp; three or four times a week pretty heavily,&nbsp;&nbsp; like they probably feel better. Yeah. If you&nbsp; take NAD, so how do you think about NAD in all?&nbsp;&nbsp;",
             "first_timestamp": "01:32:13.360"
-          },
-          {
-            "source_id": "19b33b4a94196ed4",
-            "source_type": "email",
-            "source_title": "NAD+ vs. 5-Amino-1MQ",
-            "source_date": "2025-12-18",
-            "source_url": null,
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-12-18-nad-vs-5-amino-1mq.md",
-            "mention_count": 20,
-            "top_snippet": "first. **Refill the tank.** **Metabolically inefficient / stubborn fat / insulin resistant / diet rebound:** → 5-Amino-1MQ first. **Fix the drain.** **Longevity / durable metabolic change / sustainabl",
-            "top_context": "first. **Refill the tank.** **Metabolically inefficient / stubborn fat / insulin resistant / diet rebound:** → 5-Amino-1MQ first. **Fix the drain.** **Longevity / durable metabolic change / sustainable fat loss / better stress tolerance over time:** → **Use BOTH.** ## Source BioLongevity Labs — NAD⁺ 500mg — code HUNTERW (40% off + 15% off)",
-            "first_timestamp": null
-          },
-          {
-            "source_id": "rGQEAyVP6Ks",
-            "source_type": "podcast",
-            "source_title": "NAD Can Actually Cause Cancer #health #NAD #longevity",
-            "source_date": "2026-03-19",
-            "source_url": "https://youtu.be/rGQEAyVP6Ks",
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-03-19-nad-can-actually-cause-cancer-health-nad-longevity-rGQEAyVP6Ks.en.vtt",
-            "mention_count": 17,
-            "top_snippet": "So, how do you think about NAD?",
-            "top_context": "So, how do you think about NAD? So, how do you think about NAD? &gt;&gt; Don't follow trends about your health. &gt;&gt; Don't follow trends about your health. &gt;&gt; Don't follow trends about your health. Follow your personalized needs and be Follow your personalized needs and be Follow your personalized needs and be smart about what you're going to use, smart about what you're going to use, smart about what you're going to use, right? And do it in a really strategic right? And do it in a really strategic right? And do it in a really strategic way and take your time. That's number way and take your time. That's number way and take your time. That's number one. NAD is I smile cuz it is absolutely one. NAD is I smile cuz it is absolutely one. NAD is I smile cuz it is absolutely a can of worms. It's yeah, it's got a a can of worms. It's yeah, it's got a a can of worms. It's yeah, it's got a lot of different ways. lot of different ways. lot of different ways. &gt;&gt; everybody has an opinion about it. Yes. &gt;&gt; everybody has an opinion about it. Yes. &gt;&gt; everybody has an opinion about it. Yes. I do not profess to be an NAD expert. I do not profess to be an NAD expert. I do not profess to be an NAD expert. Can it be helpful? Absolutely. I think Can it be helpful? Absolutely. I think Can it be helpful? Absolutely. I think it can be just like any tool if it's it can be just like any tool if it's it can be just like any tool if it's used in the right scenario, it's very used in the right scenario, it's very used in the right scenario, it's very beneficial. But if you're going to abuse beneficial. But if you're going to abuse beneficial. But if you're going to abuse it, could it drive cancer? In my it, could it drive cancer? In my it, could it drive cancer? In my opinion, absolutely. What does NAD do? opinion, absolutely. What does NAD do? opinion, absolutely. What does NAD do? If you have a lot of inflammation, you If you have a lot of inflammation, you If you have a lot of inflammation, you are going to suck all of your NAD into a are going to suck all of your NAD into a are going to suck all of your NAD into a black hole. NAD is really great for DNA",
-            "first_timestamp": "00:00:01.270"
           }
         ],
         "acute_signals": [
@@ -173,7 +175,7 @@
             "source_url": "https://youtu.be/tYscWLLPkDE"
           },
           {
-            "snippet": "on stimulants** – If you’re stacking multiple mitochondrial activators at high doses, you’re asking for trouble in the long run. **2. Ignoring oxidative stress** – High-functioning mitochondria create",
+            "snippet": "hard on stimulants** – If you’re stacking multiple mitochondrial activators at high doses, you’re asking for trouble in the long run. **2. Ignoring oxidative stress** – High-functioning mitochondria c",
             "source_title": "The Dark Side Of Mitochondrial Peptides",
             "source_date": "2025-02-07",
             "timestamp": null,
@@ -642,33 +644,34 @@
   },
   "reset_biology_synthesis": {
     "status": "distilled",
-    "recommendation": "Reset Biology suggests asking the practitioner to consider NAD+ as substrate replacement (capacity, not stimulant) delivered subcutaneously, with the operative chronic-maintenance dose anchored to Trevor's 2026 protocol: Trevor (xsxq0Lb0kps 00:46:15.440): \"NAD+ 50 milligrams for your kangaroo subcutaneous… 50 mg daily subcutaneous.\" We'd ask the prescribing physician to weigh that against Hunter's earlier 2-3x/week framing (Hunter email threadId 196b719c9b96afc2 (2025-05-09): \"Inject 50 mg of NAD+ subcutaneously or IM 2-3 times per week\") and against pairing with 5-Amino-1MQ as an NNMT-inhibitor leak-plug — Hunter email threadId 19b33b4a94196ed4 (2025-12-18): \"NAD+ charges the battery. 5-Amino-1MQ stops the battery from leaking.\" Patient profile per Hunter: \"Feels FLAT… Wired but tired… Mentally dull… Unable to recover.\"",
-    "caveats": "- Oral is dramatically inferior; subcutaneous bypasses GI degradation: Trevor (xsxq0Lb0kps 00:46:43): \"oral NAD+ has poor bioavailability. Most gets broken down in the GI tract\"; Trevor (m8FwL9Xsk78 00:22:00.360): \"The only rational and effective delivery of any of this NAD+ is subcutaneous injection\"; Trevor (xsxq0Lb0kps): \"2015 study, Journal of Clinical Endocrinology Metabolism showed that subq NAD+ has 10 times higher bioavailability than oral.\"\n- NNMT enzyme silently drains NAD+: Hunter email threadId 1959187cc22d1581 (2025-03-13): \"Your body naturally destroys NAD+ faster than you can replace it\" and \"NNMT is actively working against you by shutting down NAD+ recycling\"; Hunter (2025-03-13): \"even if you inject 100mg, 200mg, or more of NAD+, your body is still struggling to hold onto it.\"\n- NAD+ does NOT fix metabolic inefficiency: Hunter email threadId 19b33b4a94196ed4 (2025-12-18): \"NAD+ does NOT fix metabolic inefficiency. It restores capacity\"; Hunter (2025-12-18): \"If NAD+ already depleted, blocking waste doesn't help much — protecting an empty system.\"\n- Don't pour fuel into a dirty engine — fix mitochondria first: Hunter email threadId 19c970e1745b6a39 (2026-02-25): \"If your mitochondria are dysfunctional, you are pouring premium fuel into a dirty engine\"; Hunter (2026-02-25): \"NAD+ provides the fuel and spermidine enhances the signaling response. They are complementary.\"\n- Personalize, don't follow trends: Hunter (PEU3ZE5axiQ 01:33:18.720): \"we don't follow trends. Don't follow trends about your health. Follow your personalized needs and be smart about what you're going to use\"; Hunter (PEU3ZE5axiQ 01:33:18.720): \"I'm not like someone that uses every day. I think they can use it to achieve a certain outcome. But honestly, I don't really use it that much, but I also don't feel the need to.\"\n- No loading phase: Trevor (m8FwL9Xsk78 00:25:33): \"Ideally with NAD+, I've seen people talk about about loading phases. No. You pick the same dose.\"\n- Cycling is unnecessary per Trevor (newer position): Trevor (m8FwL9Xsk78 00:26:06): \"People always ask me, 'Should I cycle on? Should I cycle off?' Why? Do you cycle on and off oxygen or water or food? Just follow me. Listen. NAD+ is a catalyst.\"\n- Hunter ceiling-warning on stacking with stimulants: Hunter email threadId 197f13cc2a822e7e (2025-07-09) acute_signals: \"on stimulants — If you're stacking multiple mitochondrial activators at high doses, you're asking for trouble in the long run\"; Hunter (2025-07-09): \"Ignoring oxidative stress — High-functioning mitochondria create\" reactive oxygen species — pair with antioxidant support.",
-    "cross_expert_consensus": "All three teach NAD+ as a substrate-replacement / cellular-energy compound, not a stimulant. Hunter email threadId 1958755a587d1088 (2025-03-11): \"NAD+ is the backbone of energy production, mitochondrial health, and longevity\"; Hunter (2025-03-11): \"By middle age, NAD+ reserves often drop by 50% compared to youthful levels.\" Taylor (UmEg_nxog0Y 00:03:52.640): \"Why NAD+ is going to be so powerful? This is going to help so much with your body making ATP which is cellular energy. It's also going to help support DNA repair, brain function, and again recovery.\" Trevor (m8FwL9Xsk78 00:26:13): \"NAD+ is a catalyst. It makes other interventions profoundly more effective.\" All three agree the route is injection, not oral — Hunter email threadId 1958755a587d1088 (2025-03-11): \"Injectable NAD+ – Delivers the coenzyme directly into your bloodstream for immediate effects\"; Taylor (UmEg_nxog0Y 00:09:37.120): \"if I inject this peptide intramuscularly into my glutes or into my delts, wow… It is a completely different experience\"; Trevor (m8FwL9Xsk78 00:22:00.360): \"The only rational and effective delivery of any of this NAD+ is subcutaneous injection.\" All three teach pairing with 5-Amino-1MQ to plug NNMT-driven NAD+ waste — Hunter email threadId 19b33b4a94196ed4 (2025-12-18): \"NAD+ charges the battery. 5-Amino-1MQ stops the battery from leaking\"; Taylor (UmEg_nxog0Y 00:06:03.120): \"NAD+ by inhibiting and breaking down and pushing more energy production through the mitochondria. Then you're going to add the NAD+ itself. That is just going to help as act as like a powerhouse to get the entire system going\"; Trevor frames the same NAD+ + bremelanotide + MOTS-c stack at m8FwL9Xsk78 00:25:17.200: \"MOTS-c, bremelanotide, and NAD+ together. What do you think would happen with that? With your insulin sensitivity?\"",
-    "cross_expert_disagreement": "Dose magnitude differs sharply. Trevor (xsxq0Lb0kps 00:46:15.440, 2026-03-18): \"NAD+ 50 milligrams for your kangaroo subcutaneous… 50. I'm giving you the instructions. 50 mg daily subcutaneous.\" Hunter email threadId 196b719c9b96afc2 (2025-05-09): \"Inject 50 mg of NAD+ subcutaneously or IM 2-3 times per week\" and \"Maintenance protocol: Once desired metabolic benefits are observed, many people settle at 50–100 mg injections 1–2 times weekly\"; Hunter email threadId 1958755a587d1088 (2025-03-11) Ultimate Fat Loss Stack: \"Injectable NAD+ (100mg, 2-3x per week)\"; Hunter email threadId 197f13cc2a822e7e (2025-07-09): \"injecting 50–100 mg of NAD+, two to three times a week.\" Taylor (UmEg_nxog0Y 00:03:09.480) anchors a much smaller routine dose embedded in a stack: \"that is going to be 10 milligrams of NAD+. Yes, only 10 milli\" — but this is her pre-workout blend with MOTS-c + 5-Amino-1MQ, not standalone substrate replacement. NEWER OVERRIDES OLDER (within Trevor): older Trevor (m8FwL9Xsk78 00:25:57.600, 2025-10-31): \"You take it two to three times a week. And you don't need to take it every day\"; newer Trevor (xsxq0Lb0kps 00:46:36, 2026-03-18): \"50 mg daily subcutaneous for your kangaroo.\" Frequency disagreement persists across experts: Hunter's 2-3x/week vs Trevor's daily. Route also differs: Hunter (2025-05-09): \"I prefer IM for a more potent effect\" (offers IM or subq); Taylor (UmEg_nxog0Y 00:09:37.120): \"if I inject this peptide intramuscularly into my glutes or into my delts… It is a completely different experience\" (favors IM); Trevor (xsxq0Lb0kps 00:46:36): \"50 mg daily subcutaneous\" and Trevor (m8FwL9Xsk78 00:22:00.360): \"The only rational and effective delivery… is subcutaneous injection\" (subq only). On personal use cadence Hunter (PEU3ZE5axiQ 01:33:18.720, 2026-03-13): \"I'm not like someone that uses every day. I think they can use it to achieve a certain outcome. But honestly, I don't really use it that much\" — sharply against Trevor's daily-forever framing. On cycling: Trevor (m8FwL9Xsk78 00:26:06): \"Should I cycle on? Should I cycle off? Why? Do you cycle on and off oxygen or water or food?\" rejects cycling; Hunter generally cycles based on goal phase (no equivalent direct quote rejecting cycling).",
+    "recommendation": "Reset Biology suggests asking the practitioner to consider Hunter's newer library frequency statement: Hunter (2026-04-30, saturday-morning-coffee-talk-41826--d0f249d7 01:55:44, https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-41826--d0f249d7/): \"N.A.D. I would use it as needed. You feel like your energy is pretty low, but I wouldn't want to use, I won't say like do it all the time.\" The separate 2026-03-29 library protocols remain distinct: Hunter (how-to-supercharge-your-mitochondria-with-these-powerful-peptides--22679a4f 08:38, https://library.hunterwilliamshealth.com/p/how-to-supercharge-your-mitochondria-with-these-powerful-peptides--22679a4f/): \"if you're gonna do it IV, 300 to 500 milligrams IV once a week\" and \"I would do 100 to 200 milligrams daily\"; Hunter (nad-benefits-my-ultimate-stacking-guide-for-energy-performance--a2788b07 12:05, https://library.hunterwilliamshealth.com/p/nad-benefits-my-ultimate-stacking-guide-for-energy-performance--a2788b07/): \"I think you can do it three or four times a week, 100, 200 milligrams and get pretty good results.\"",
+    "caveats": "- Hunter (2026-03-29, nad-benefits-my-ultimate-stacking-guide-for-energy-performance--a2788b07 00:09, https://library.hunterwilliamshealth.com/p/nad-benefits-my-ultimate-stacking-guide-for-energy-performance--a2788b07/): \"I am by no means an expert on N80 plus.\"\n- Hunter (2026-03-29, nad-benefits-my-ultimate-stacking-guide-for-energy-performance--a2788b07 09:24, https://library.hunterwilliamshealth.com/p/nad-benefits-my-ultimate-stacking-guide-for-energy-performance--a2788b07/): \"to my knowledge and based on my experience, I don't think any of the work. The precursors, yes, but not the N 80 itself.\"\n- Hunter (2026-04-30, saturday-morning-coffee-talk-41826--d0f249d7 01:55:44, https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-41826--d0f249d7/): \"I would use it as needed. You feel like your energy is pretty low, but I wouldn't want to use, I won't say like do it all the time.\"\n- Hunter (2026-03-29, nad-benefits-my-ultimate-stacking-guide-for-energy-performance--a2788b07, https://library.hunterwilliamshealth.com/p/nad-benefits-my-ultimate-stacking-guide-for-energy-performance--a2788b07/): \"If you're working through cancer, I'd be careful with aggressive NAD+ supplementation.\"",
+    "cross_expert_consensus": "Hunter (2026-03-29, nad-benefits-my-ultimate-stacking-guide-for-energy-performance--a2788b07 08:54, https://library.hunterwilliamshealth.com/p/nad-benefits-my-ultimate-stacking-guide-for-energy-performance--a2788b07/): \"injectable NAD plus delivers the coenzyme directly into the bloodstream via IV or IM shots, bypassing the digestive system for near instant bioavailability.\" Taylor (2025-06-06, UmEg_nxog0Y 00:03:52.640, https://youtu.be/UmEg_nxog0Y): \"This is going to help so much with your body making ATP which is cellular energy.\" Trevor (2025-10-31, m8FwL9Xsk78 00:26:13, https://youtu.be/m8FwL9Xsk78): \"NAD+ is a catalyst. It makes other interventions profoundly more effective.\"",
+    "cross_expert_disagreement": "Hunter's newer 2026-04-30 library cue differs from his 2026-03-29 scheduled protocols: newer Hunter (saturday-morning-coffee-talk-41826--d0f249d7 01:55:44, https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-41826--d0f249d7/): \"N.A.D. I would use it as needed. You feel like your energy is pretty low, but I wouldn't want to use, I won't say like do it all the time.\" Older Hunter (how-to-supercharge-your-mitochondria-with-these-powerful-peptides--22679a4f 08:38, https://library.hunterwilliamshealth.com/p/how-to-supercharge-your-mitochondria-with-these-powerful-peptides--22679a4f/): \"I would do 100 to 200 milligrams daily\" and \"If cost is an issue, you could do like three or four times per week\"; older Hunter (nad-benefits-my-ultimate-stacking-guide-for-energy-performance--a2788b07 12:05, https://library.hunterwilliamshealth.com/p/nad-benefits-my-ultimate-stacking-guide-for-energy-performance--a2788b07/): \"I think you can do it three or four times a week, 100, 200 milligrams and get pretty good results.\" Hunter's 10 mg blend is separately recorded: Hunter (struggling-with-fatigue-my-go-to-peptide-stack-for-instant-energy--d63e71d7 04:29, https://library.hunterwilliamshealth.com/p/struggling-with-fatigue-my-go-to-peptide-stack-for-instant-energy--d63e71d7/): \"Then 10 milligrams of NAD plus. And I injected that sub-q pre-workout.\" Trevor (2026-03-18, xsxq0Lb0kps 00:46:15.440, https://youtu.be/xsxq0Lb0kps): \"50 mg daily subcutaneous.\" Taylor (2025-06-06, UmEg_nxog0Y 00:03:09.480, https://youtu.be/UmEg_nxog0Y): \"that is going to be 10 milligrams of NAD+. Yes, only 10 milli\"",
     "acute_chronic_split": {
       "acute": {
-        "dose": "Hunter email threadId 196b719c9b96afc2 (2025-05-09): \"Starting protocol: Inject 50 mg of NAD+ subcutaneously or IM 2-3 times per week (I prefer IM for a more potent effect).\"",
-        "route": "Hunter email threadId 196b719c9b96afc2 (2025-05-09): \"Injecting NAD+ directly—intramuscularly (IM) or subcutaneously (SubQ)—ensures high bioavailability and immediate metabolic benefits.\"",
-        "frequency": "Hunter email threadId 196b719c9b96afc2 (2025-05-09): \"2-3 times per week\"; Hunter email threadId 197f13cc2a822e7e (2025-07-09): \"injecting 50–100 mg of NAD+, two to three times a week.\"",
+        "dose": "Hunter (2026-03-29, struggling-with-fatigue-my-go-to-peptide-stack-for-instant-energy--d63e71d7 04:29, https://library.hunterwilliamshealth.com/p/struggling-with-fatigue-my-go-to-peptide-stack-for-instant-energy--d63e71d7/): \"10 milligrams of NAD plus.\"",
+        "route": "Hunter (2026-03-29, struggling-with-fatigue-my-go-to-peptide-stack-for-instant-energy--d63e71d7 04:29, https://library.hunterwilliamshealth.com/p/struggling-with-fatigue-my-go-to-peptide-stack-for-instant-energy--d63e71d7/): \"And I injected that sub-q pre-workout.\"",
+        "frequency": null,
         "duration": null,
-        "verbatim_citation": "Hunter email threadId 196b719c9b96afc2 (2025-05-09): \"Starting protocol: Inject 50 mg of NAD+ subcutaneously or IM 2-3 times per week.\" Hunter email threadId 197f13cc2a822e7e (2025-07-09): \"injecting 50–100 mg of NAD+, two to three times a week.\"",
-        "episode_url": "https://huntershealthhacks.beehiiv.com/p/nad-and-fat-loss",
-        "timestamp": "email 2025-05-09 threadId 196b719c9b96afc2; email 2025-07-09 threadId 197f13cc2a822e7e"
+        "verbatim_citation": "Hunter (2026-03-29, struggling-with-fatigue-my-go-to-peptide-stack-for-instant-energy--d63e71d7 04:29, https://library.hunterwilliamshealth.com/p/struggling-with-fatigue-my-go-to-peptide-stack-for-instant-energy--d63e71d7/): \"Then 10 milligrams of NAD plus. And I injected that sub-q pre-workout.\"",
+        "episode_url": "https://library.hunterwilliamshealth.com/p/struggling-with-fatigue-my-go-to-peptide-stack-for-instant-energy--d63e71d7/",
+        "timestamp": "04:29"
       },
       "chronic": {
-        "dose": "Trevor (xsxq0Lb0kps 00:46:15.440): \"NAD+ 50 milligrams for your kangaroo subcutaneous. Stop. If you send me a message asking me, can I take oral instead? Can I take more? Can I take less? Don't bother me. 50. I'm giving you the instructions. 50 mg daily subcutaneous.\" Older Trevor (m8FwL9Xsk78 00:25:57.600, 2025-10-31): \"You take it two to three times a week. And you don't need to take it every day\" — superseded by newer 2026-03-18 daily framing. Hunter email threadId 196b719c9b96afc2 (2025-05-09): \"Maintenance protocol: Once desired metabolic benefits are observed, many people settle at 50–100 mg injections 1–2 times weekly for ongoing support.\"",
-        "route": "Trevor (xsxq0Lb0kps 00:46:36): \"50 mg daily subcutaneous for your kangaroo. And here's why subq. Because oral NAD+ has poor bioavailability. Most gets broken down in the GI tract.\" Trevor (m8FwL9Xsk78 00:22:00.360): \"The only rational and effective delivery of any of this NAD+ is subcutaneous injection.\"",
-        "frequency": "Trevor (xsxq0Lb0kps 00:46:36): \"50 mg daily subcutaneous.\" Hunter email threadId 196b719c9b96afc2 (2025-05-09): \"50–100 mg injections 1–2 times weekly for ongoing support.\"",
-        "duration": "Trevor (m8FwL9Xsk78 00:26:06): \"People always ask me, 'Should I cycle on? Should I cycle off?' Why? Do you cycle on and off oxygen or water or food? Just follow me. Listen. NAD+ is a catalyst.\" Trevor (m8FwL9Xsk78 00:26:01): \"just maintain the new upgraded baseline. That's it. It is physiological replacement.\"",
-        "verbatim_citation": "Trevor (xsxq0Lb0kps 00:46:15.440): \"NAD+ 50 milligrams for your kangaroo subcutaneous… 50 mg daily subcutaneous for your kangaroo.\" Trevor (xsxq0Lb0kps): \"2016 study cell metabolism showed that 50 milligrams daily subq NAD+ increases tissue NAD+ levels by 50%.\"",
-        "episode_url": "https://youtu.be/xsxq0Lb0kps",
-        "timestamp": "00:46:15.440; 00:46:36; 2025-10-31 m8FwL9Xsk78 00:25:57.600 (older 2-3x/week, superseded)"
+        "dose": "Hunter (2026-03-29, how-to-supercharge-your-mitochondria-with-these-powerful-peptides--22679a4f 08:38, https://library.hunterwilliamshealth.com/p/how-to-supercharge-your-mitochondria-with-these-powerful-peptides--22679a4f/): \"if you're gonna do it IV, 300 to 500 milligrams IV once a week, or if your doing it sub-Q or IM, I prefer IM over sub Q, that's just my personal preference. I would do 100 to 200 milligrams daily\"; Hunter (2026-03-29, nad-benefits-my-ultimate-stacking-guide-for-energy-performance--a2788b07 12:05, https://library.hunterwilliamshealth.com/p/nad-benefits-my-ultimate-stacking-guide-for-energy-performance--a2788b07/): \"I think you can do it three or four times a week, 100, 200 milligrams and get pretty good results.\"; Trevor (2026-03-18, xsxq0Lb0kps 00:46:15.440, https://youtu.be/xsxq0Lb0kps): \"50 mg daily subcutaneous.\"",
+        "route": "Hunter (2026-03-29, how-to-supercharge-your-mitochondria-with-these-powerful-peptides--22679a4f 08:38, https://library.hunterwilliamshealth.com/p/how-to-supercharge-your-mitochondria-with-these-powerful-peptides--22679a4f/): \"if your doing it sub-Q or IM, I prefer IM over sub Q, that's just my personal preference.\"; Trevor (2026-03-18, xsxq0Lb0kps 00:46:36, https://youtu.be/xsxq0Lb0kps): \"50 mg daily subcutaneous.\"",
+        "frequency": "Hunter (2026-04-30, saturday-morning-coffee-talk-41826--d0f249d7 01:55:44, https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-41826--d0f249d7/): \"N.A.D. I would use it as needed. You feel like your energy is pretty low, but I wouldn't want to use, I won't say like do it all the time.\" Hunter (2026-03-29, how-to-supercharge-your-mitochondria-with-these-powerful-peptides--22679a4f 08:38, https://library.hunterwilliamshealth.com/p/how-to-supercharge-your-mitochondria-with-these-powerful-peptides--22679a4f/): \"If cost is an issue, you could do like three or four times per week\"; Trevor (2026-03-18, xsxq0Lb0kps 00:46:15.440, https://youtu.be/xsxq0Lb0kps): \"50 mg daily subcutaneous.\"",
+        "duration": "Hunter's newer 2026-04-30 library cue is operative over his dated 2026-03-29 cycle statement: Hunter (saturday-morning-coffee-talk-41826--d0f249d7 01:55:44, https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-41826--d0f249d7/): \"I would use it as needed.\" Older Hunter (how-to-supercharge-your-mitochondria-with-these-powerful-peptides--22679a4f 09:09, https://library.hunterwilliamshealth.com/p/how-to-supercharge-your-mitochondria-with-these-powerful-peptides--22679a4f/): \"eight weeks on, 8 weeks off is good.\"",
+        "verbatim_citation": "Hunter (2026-04-30, saturday-morning-coffee-talk-41826--d0f249d7 01:55:44, https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-41826--d0f249d7/): \"N.A.D. I would use it as needed. You feel like your energy is pretty low, but I wouldn't want to use, I won't say like do it all the time.\"",
+        "episode_url": "https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-41826--d0f249d7/",
+        "timestamp": "01:55:44"
       }
     },
-    "female_specific_notes": "Taylor's flagship NAD+ teaching is the energy-stack pairing rather than female-specific contraindications. Taylor (UmEg_nxog0Y 00:03:09.480): \"that is going to be 10 milligrams of NAD+. Yes, only 10 milli\" framed as pre-workout for women. Taylor (UmEg_nxog0Y 00:01:46.000): \"this is going to give you extremely clean energy levels without feeling any kind of jitter… I definitely suggest taking this as a pre-workout, whether you're doing it before lifting or cardio.\" Taylor (UmEg_nxog0Y 00:09:37.120): \"if I inject this peptide intramuscularly into my glutes or into my delts… It is a completely different experience when you inject it that way. It gives you the energy release production is crazy.\" Trevor's women-focused episode applies: Trevor (hzff_ZqZp-8, 2025-09-20, \"Reverse Your Age (For Women)\") includes NAD+ in the women's longevity stack, but no female-specific dose modifier was found in the transcripts beyond the standard 50 mg subq daily.",
-    "distilled_at": "2026-04-27T04:50:39.845Z",
-    "distilled_by": "claude"
+    "female_specific_notes": null,
+    "distilled_at": "2026-07-17T06:00:41.502Z",
+    "distilled_by": "codex"
   },
-  "generated_at": "2026-04-27T02:02:34.580Z"
+  "generated_at": "2026-07-17T10:59:05.041Z",
+  "mentions_fingerprint": "d834b253849a"
 }

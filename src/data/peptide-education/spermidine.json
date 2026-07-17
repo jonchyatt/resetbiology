@@ -5,12 +5,12 @@
     "spermidine",
     "Spermidine"
   ],
-  "category": "Uncategorized",
+  "category": "Longevity",
   "experts": {
     "hunter-williams": {
       "baseline_protocol": null,
       "summary": {
-        "mention_count": 47,
+        "mention_count": 101,
         "top_doses": [
           {
             "dose": "500 mg",
@@ -18,30 +18,46 @@
           },
           {
             "dose": "10 mg",
-            "count": 28
+            "count": 32
           },
           {
             "dose": "40 mg",
-            "count": 5
+            "count": 11
+          },
+          {
+            "dose": "40 milligrams",
+            "count": 9
+          },
+          {
+            "dose": "10 milligrams",
+            "count": 6
           },
           {
             "dose": "5 mg",
-            "count": 3
+            "count": 5
+          },
+          {
+            "dose": "500 milligrams",
+            "count": 4
           },
           {
             "dose": "1.2 mg",
-            "count": 2
-          },
-          {
-            "dose": "0.9 mg",
-            "count": 2
-          },
-          {
-            "dose": "15 mg",
-            "count": 1
+            "count": 3
           }
         ],
         "top_sources": [
+          {
+            "source_id": "spermidine-the-longevity-supplement-i-take-daily--b7bbff8d",
+            "source_type": "library-video",
+            "source_title": "Spermidine: The Longevity Supplement I Take Daily",
+            "source_date": "2026-03-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/spermidine-the-longevity-supplement-i-take-daily--b7bbff8d/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/spermidine-the-longevity-supplement-i-take-daily--b7bbff8d.json",
+            "mention_count": 49,
+            "top_snippet": "Hey everybody, this is Hunter Williams. I hope you're doing amazing wherever you might be in the world. Today's video is going to be all about a little compound known as spermidine. This is one that I've actually known about for a while. And honestly, it kind of lays more on the normal supplement side of things. As you guys know, I tend to talk more about peptide stuff, but in a spirit of doing more content around things that I'm passionate about in the supplement world. This is one thing that i've kind of been geeking out on lately. One, just because I use it on a daily basis and two, because i think it's something that not all the people know about.",
+            "top_context": "Hey everybody, this is Hunter Williams. I hope you're doing amazing wherever you might be in the world. Today's video is going to be all about a little compound known as spermidine. This is one that I've actually known about for a while. And honestly, it kind of lays more on the normal supplement side of things. As you guys know, I tend to talk more about peptide stuff, but in a spirit of doing more content around things that I'm passionate about in the supplement world. This is one thing that i've kind of been geeking out on lately. One, just because I use it on a daily basis and two, because i think it's something that not all the people know about. It doesn't get a ton of love because it kind, of it,s in, the biohacking world but it exists kind. Of like not so much with the normal supplements like your multivitamins and fish oils but, it is also not, so, much, with, a peptides but I think there's benefits to taking it Obviously in the clinical arena, we don't see as much because it's relatively a newer compound compared to some of the other supplements like creatine and fish oil that have been around for decades. Nonetheless, I think it is very important for people to know about it.",
+            "first_timestamp": "0:09"
+          },
           {
             "source_id": "19cfdd3f61ffe05e",
             "source_type": "email",
@@ -86,9 +102,21 @@
             "source_url": null,
             "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-07-09-i-stack-this-with-nad-injections.md",
             "mention_count": 6,
-            "top_snippet": "tra building blocks or activate longevity pathways. * **NAD Regen supplies**: * Substrates for NAD⁺ recycling (niacinamide/copper) * Sirtuin activation (resveratrol) * Gut absorption support (AstraGin",
-            "top_context": "tra building blocks or activate longevity pathways. * **NAD Regen supplies**: * Substrates for NAD⁺ recycling (niacinamide/copper) * Sirtuin activation (resveratrol) * Gut absorption support (AstraGin®) * Detox and redox balance (wasabi extract) * Autophagy and cellular cleanup (spermidine) * Clean energy (theacrine) **Stacking all three is like switching from regular gasoline to rocket fuel.** Instead of a brief, fleeting peak, you create a sustained, multi-layered support system for cellular energy, repair, and resilience. ——————————————————————————— **The Science**",
+            "top_snippet": "t provide extra building blocks or activate longevity pathways. * **NAD Regen supplies**: * Substrates for NAD⁺ recycling (niacinamide/copper) * Sirtuin activation (resveratrol) * Gut absorption suppo",
+            "top_context": "t provide extra building blocks or activate longevity pathways. * **NAD Regen supplies**: * Substrates for NAD⁺ recycling (niacinamide/copper) * Sirtuin activation (resveratrol) * Gut absorption support (AstraGin®) * Detox and redox balance (wasabi extract) * Autophagy and cellular cleanup (spermidine) * Clean energy (theacrine) **Stacking all three is like switching from regular gasoline to rocket fuel.** Instead of a brief, fleeting peak, you create a sustained, multi-layered support system for cellular energy, repair, and resilience. ——————————————————————————— **The Science** Let’s br",
             "first_timestamp": null
+          },
+          {
+            "source_id": "peptide-qa-march-2026--dd9aa173",
+            "source_type": "library-video",
+            "source_title": "Peptide Q&A · March 2026",
+            "source_date": "2026-04-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-march-2026--dd9aa173/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-qa-march-2026--dd9aa173.json",
+            "mention_count": 4,
+            "top_snippet": "All right. Almost done here. So it looks like we're right at 30 minutes and I'm gonna have to shut it down. What is a really good one that I can go to? to finish it up. In experience with urolithin-A for mitophagy and spermidine for autophage, what dosing levels? Yes, I do. I love both of those compounds. Urolathin A, the capsules are typically like 500 milligrams.",
+            "top_context": "We can use a peptide like Cardilax. We could use peptides like KPV where we don't even have to worry about the quote-unquote risk, and I say quote unquote because it's obviously like risk in theory, we do not have worry those things and we could get as much or even better healing out of those than we would with BPC and TB500. And so that would be my recommendation is to have that conversation, like understand, you know, what's really going on there, get different opinions and whatnot. But, um, I would say, there's other peptides out there that can get you the same goal. All right. Almost done here. So it looks like we're right at 30 minutes and I'm gonna have to shut it down. What is a really good one that I can go to? to finish it up. In experience with urolithin-A for mitophagy and spermidine for autophage, what dosing levels? Yes, I do. I love both of those compounds. Urolathin A, the capsules are typically like 500 milligrams. So I would say one to two grams of spermidine, or excuse me, of uralithine A per day. And that'd be like two to four capsuls of most urolythin a brands. And then for spermidine, I like somewhere around like 10 milligrams per day of spermidine. You can go as high as 40 milligrams, but I love both of those. I have great energy when I take those, and I feel really good. And I've used both them and when i've gotten blood work in conjunction, obviously, with other things that I do, the blood works looked really. So I loved both.",
+            "first_timestamp": "33:31"
           },
           {
             "source_id": "19d5563af433c548",
@@ -101,33 +129,45 @@
             "top_snippet": "E tired instead of energized** - **ROS (reactive oxygen species) buildup** could be the culprit ### Peptides for Social Anxiety, Confidence, Fear - **Dihexa, Noopept, oxytocin** - Why chemical piece i",
             "top_context": "E tired instead of energized** - **ROS (reactive oxygen species) buildup** could be the culprit ### Peptides for Social Anxiety, Confidence, Fear - **Dihexa, Noopept, oxytocin** - Why chemical piece is only part of equation ### Mitophagy + Autophagy Background Players - **Urolithin A** dosing - **Spermidine** dosing ## Cross-Reference If a reader has these specific GLP-1 issues, this is the canonical Hunter Q&A episode they should check. Submit Q&A questions: hunterwilliamsvideotopic.carrd.co Live coaching: theaxioncollective.manus.space (Thursdays 8 PM Eastern)",
             "first_timestamp": null
+          },
+          {
+            "source_id": "peptides-longevity-medicine-explained-by-a-real-cardiologist-dr-abid-husain-md--202ed175",
+            "source_type": "library-article",
+            "source_title": "Peptides & Longevity Medicine Explained by a Real Cardiologist | Dr. Abid Husain, MD",
+            "source_date": "2026-04-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptides-longevity-medicine-explained-by-a-real-cardiologist-dr-abid-husain-md--202ed175/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptides-longevity-medicine-explained-by-a-real-cardiologist-dr-abid-husain-md--202ed175.json",
+            "mention_count": 1,
+            "top_snippet": "high fat. Doesn't count macros. Daily supplements and meds include baby aspirin, low-dose Cialis for vascular health, low-dose telmisartan (not enough to drop his normal blood pressure, just for the l",
+            "top_context": "high fat. Doesn't count macros. Daily supplements and meds include baby aspirin, low-dose Cialis for vascular health, low-dose telmisartan (not enough to drop his normal blood pressure, just for the longevity pathways), tirzepatide, testosterone replacement, vitamin D, magnesium, and urolithin A. Spermidine for a week before any extended fast. For peptides, he runs tesamorelin and ipamorelin regularly and cycles them. SS-31 and epitalon quarterly. BPC-157 and TB-500 are almost always in rotation for injuries. My take This was one of those conversations where every answer made me want to ask three m",
+            "first_timestamp": null
           }
         ],
         "acute_signals": [],
         "chronic_signals": [
           {
-            "snippet": "tra building blocks or activate longevity pathways. * **NAD Regen supplies**: * Substrates for NAD⁺ recycling (niacinamide/copper) * Sirtuin activation (resveratrol) * Gut absorption support (AstraGin",
+            "snippet": "t provide extra building blocks or activate longevity pathways. * **NAD Regen supplies**: * Substrates for NAD⁺ recycling (niacinamide/copper) * Sirtuin activation (resveratrol) * Gut absorption suppo",
             "source_title": "I Stack This With NAD+ Injections",
             "source_date": "2025-07-09",
             "timestamp": null,
             "source_url": null
           },
           {
-            "snippet": "15053522/](https://pubmed.ncbi.nlm.nih.gov/15053522/) (Plant-derived isothiocyanates induce Phase-II detox enzymes in rats) * [https://pubmed.ncbi.nlm.nih.gov/15832810/](https://pubmed.ncbi.nlm.nih.go",
+            "snippet": "h.gov/15053522/](https://pubmed.ncbi.nlm.nih.gov/15053522/) (Plant-derived isothiocyanates induce Phase-II detox enzymes in rats) * [https://pubmed.ncbi.nlm.nih.gov/15832810/](https://pubmed.ncbi.nlm.",
             "source_title": "I Stack This With NAD+ Injections",
             "source_date": "2025-07-09",
             "timestamp": null,
             "source_url": null
           },
           {
-            "snippet": "lm.nih.gov/15832810/) (Review of xenobiotic-induced Phase I/II/III metabolism & transport) * **Spermidine – autophagy, mitochondrial “house-cleaning,” longevity** * [https://pubmed.ncbi.nlm.nih.gov/19",
+            "snippet": "d.ncbi.nlm.nih.gov/15832810/) (Review of xenobiotic-induced Phase I/II/III metabolism & transport) * **Spermidine – autophagy, mitochondrial “house-cleaning,” longevity** * [https://pubmed.ncbi.nlm.ni",
             "source_title": "I Stack This With NAD+ Injections",
             "source_date": "2025-07-09",
             "timestamp": null,
             "source_url": null
           },
           {
-            "snippet": "mitochondrial “house-cleaning,” longevity** * [https://pubmed.ncbi.nlm.nih.gov/19801973/](https://pubmed.ncbi.nlm.nih.gov/19801973/) (“Induction of autophagy by spermidine promotes longevity”) * [http",
+            "snippet": "hagy, mitochondrial “house-cleaning,” longevity** * [https://pubmed.ncbi.nlm.nih.gov/19801973/](https://pubmed.ncbi.nlm.nih.gov/19801973/) (“Induction of autophagy by spermidine promotes longevity”) *",
             "source_title": "I Stack This With NAD+ Injections",
             "source_date": "2025-07-09",
             "timestamp": null,
@@ -146,25 +186,26 @@
   },
   "reset_biology_synthesis": {
     "status": "distilled",
-    "recommendation": "Reset Biology suggests asking the practitioner to consider Hunter's 5-10 mg/day oral chronic frame as the operative starting range, since Hunter (4igc2UpFr7Q 00:34:16.240): \"then for spermidine, I like somewhere around like 10 mg per day of spermidine\" and Hunter email threadId 19c970e1745b6a39 (2026-02-25): \"Hunter's sweet spot 5-10 mg per day - Above dietary intake - Well within studied safety margins.\" We'd ask the prescribing physician to weigh whether typical store-bought wheat-germ products even reach that floor, since Hunter email threadId 19cfdd3f61ffe05e (2026-03-17): \"Typical wheat germ / plant extract supplement: 0.6-1.2 mg/day - Probably TOO LOW to move the needle.\" Taylor and Trevor have no spermidine content in the corpus, so the recommendation rests entirely on Hunter; treat this as a longevity/autophagy background player rather than an acute-injury tool.",
-    "caveats": "- Single-expert sourcing: only Hunter has documented spermidine content; Taylor (women-focused) and Trevor (SmashweRx) have zero mentions in the corpus, so cross-validation is not available.\n- B12 depletion at higher doses: Hunter email threadId 19cfdd3f61ffe05e (2026-03-17): \"B12 depletion at higher doses (similar to metformin) -> just supplement B12.\"\n- Minor joint/muscle issues at higher doses: Hunter email threadId 19cfdd3f61ffe05e (2026-03-17): \"Some minor joint + muscle issues at higher doses.\"\n- Hypertrophy goal mismatch: Hunter email threadId 19cfdd3f61ffe05e (2026-03-17): \"If your only goal right now is putting on as much muscle as possible, maybe hold off.\"\n- Redundancy with other autophagy stacks: Hunter email threadId 19c970e1745b6a39 (2026-02-25): \"If you're already running rapamycin, aggressive fasting, or strong autophagy stacks -> may be redundant.\"\n- Dose ceiling reference: Hunter email threadId 19cfdd3f61ffe05e (2026-03-17): \"Highest dose tested: 40 mg/day for 28 days, ZERO adverse events in healthy older men\" and Hunter (4igc2UpFr7Q 00:34:19.600): \"You can go as high as 40 mg.\" Hunter email threadId 19cfdd3f61ffe05e (2026-03-17): \"Hunter wouldn't go that high himself.\"\n- Not an NAD+ precursor: Hunter email threadId 19c970e1745b6a39 (2026-02-25): \"Spermidine does NOT raise NAD+ levels directly + is NOT a precursor - BUT improves NAD+ efficiency.\"\n- 12-month memory trial null result was dose-related: Hunter email threadId 19cfdd3f61ffe05e (2026-03-17): \"Larger 12-month trial at only 0.9 mg/day: NO significant memory benefit -> Dose was too low - blood spermidine levels didn't change.\"",
-    "cross_expert_consensus": "Cross-expert consensus is not available for spermidine: only Hunter has documented spermidine content in the Reset Biology corpus. Hunter's own internal consistency across two emails and one podcast: Hunter email threadId 19c970e1745b6a39 (2026-02-25): \"Hunter's sweet spot 5-10 mg per day\"; Hunter email threadId 19cfdd3f61ffe05e (2026-03-17): \"Hunter's sweet spot 5-10 mg/day\"; Hunter (4igc2UpFr7Q 00:34:16.240): \"then for spermidine, I like somewhere around like 10 mg per day of spermidine.\" Mechanism framing is consistent across emails: Hunter email threadId 19c970e1745b6a39 (2026-02-25): \"Primary action: induces autophagy\" and \"works via EP300 acetyltransferase inhibition\"; Hunter email threadId 19cfdd3f61ffe05e (2026-03-17): \"Spermidine triggers it by blocking EP300 (protein that normally puts brakes on cleanup).\"",
-    "cross_expert_disagreement": "No cross-expert disagreement is documentable: Taylor and Trevor have no spermidine content in the corpus. Within Hunter's own material there is a tension between studied dose ranges and his personal sweet spot, captured verbatim: Hunter email threadId 19c970e1745b6a39 (2026-02-25): \"Plant-extract studies: 1-1.2 mg/day\" vs \"Safety in healthy older adults: 40 mg/day (good tolerability)\" vs \"PK studies: 15 mg/day\" vs \"Hunter's sweet spot 5-10 mg per day.\" There is also a hedge against high-end dosing: Hunter (4igc2UpFr7Q 00:34:19.600): \"You can go as high as 40 mg\" but Hunter email threadId 19cfdd3f61ffe05e (2026-03-17): \"Hunter wouldn't go that high himself.\"",
+    "recommendation": "Reset Biology practitioner consideration — Hunter (2026-04-30, peptide-qa-march-2026--dd9aa173, 34:02, https://library.hunterwilliamshealth.com/p/peptide-qa-march-2026--dd9aa173/): \"And then for spermidine, I like somewhere around like 10 milligrams per day of spermidine.\" Hunter (2026-03-30, spermidine-the-longevity-supplement-i-take-daily--b7bbff8d, 9:31, https://library.hunterwilliamshealth.com/p/spermidine-the-longevity-supplement-i-take-daily--b7bbff8d/): \"I probably won't ever do 40 mg per Day, but 5 to 10 mg, definitely, absolutely.\" Hunter (2026-03-30, spermidine-the-longevity-supplement-i-take-daily--b7bbff8d, 10:37, https://library.hunterwilliamshealth.com/p/spermidine-the-longevity-supplement-i-take-daily--b7bbff8d/): \"we probably would say 10 milligrams is the upper limit per day.\"",
+    "caveats": "- Hunter (2026-03-30, spermidine-the-longevity-supplement-i-take-daily--b7bbff8d, 7:12, https://library.hunterwilliamshealth.com/p/spermidine-the-longevity-supplement-i-take-daily--b7bbff8d/): \"And if putting on muscle is the most important thing, spermidine might not be something that you want to take all the time.\"\n- Hunter (2026-03-30, spermidine-the-longevity-supplement-i-take-daily--b7bbff8d, 11:07, https://library.hunterwilliamshealth.com/p/spermidine-the-longevity-supplement-i-take-daily--b7bbff8d/): \"It's not proven causal, but worth mentioning alongside, you know, things like metformin.\" Hunter (2026-03-30, spermidine-the-longevity-supplement-i-take-daily--b7bbff8d, 11:37, https://library.hunterwilliamshealth.com/p/spermidine-the-longevity-supplement-i-take-daily--b7bbff8d/): \"Just make sure you're replenishing B12.\"\n- Hunter (2026-03-30, spermidine-the-longevity-supplement-i-take-daily--b7bbff8d, 11:37, https://library.hunterwilliamshealth.com/p/spermidine-the-longevity-supplement-i-take-daily--b7bbff8d/): \"I wouldn't take it if I was pregnant or breastfeeding. If you have active cancer or high cancer risk, polyamines are also elevated in many cancers.\"\n- Hunter (2026-03-30, spermidine-the-longevity-supplement-i-take-daily--b7bbff8d, 12:10, https://library.hunterwilliamshealth.com/p/spermidine-the-longevity-supplement-i-take-daily--b7bbff8d/): \"we dont have a lot of data around drug interactions with spermidine\"\n- Hunter (2026-03-30, spermidine-the-longevity-supplement-i-take-daily--b7bbff8d, 13:14, https://library.hunterwilliamshealth.com/p/spermidine-the-longevity-supplement-i-take-daily--b7bbff8d/): \"That's just me kind of spitballing how I sector this together.\"",
+    "cross_expert_consensus": null,
+    "cross_expert_disagreement": null,
     "acute_chronic_split": {
       "acute": null,
       "chronic": {
-        "dose": "Hunter (4igc2UpFr7Q 00:34:16.240): \"then for spermidine, I like somewhere around like 10 mg per day of spermidine\"; Hunter email threadId 19c970e1745b6a39 (2026-02-25): \"Hunter's sweet spot 5-10 mg per day.\" Hunter (4igc2UpFr7Q 00:34:19.600) hedges higher: \"You can go as high as 40 mg.\"",
-        "route": "Oral. Hunter email threadId 19cfdd3f61ffe05e (2026-03-17): \"NAD Regen by BioStack Labs - biostacklabs.com/hunter - 5 mg spermidine per serving\" (oral capsule context, no injectable route taught).",
-        "frequency": "Daily. Hunter (4igc2UpFr7Q 00:34:16.240): \"10 mg per day of spermidine.\"",
-        "duration": "Continuous, not pulsed. Hunter email threadId 19c970e1745b6a39 (2026-02-25): \"Cycling philosophy - 'Not something I would pulse' - View as consistent background longevity signal - mitochondrial maintenance, not acute intervention.\"",
-        "verbatim_citation": "Hunter (4igc2UpFr7Q 00:34:16.240): \"then for spermidine, I like somewhere around like 10 mg per day of spermidine.\" Hunter email threadId 19c970e1745b6a39 (2026-02-25): \"Hunter's sweet spot 5-10 mg per day - Above dietary intake - Well within studied safety margins - Likely meaningful autophagy signaling without experimental megadosing.\" Hunter email threadId 19cfdd3f61ffe05e (2026-03-17): \"Hunter's sweet spot 5-10 mg/day - Where Hunter personally notices difference in energy + mental clarity.\"",
-        "episode_url": "https://youtu.be/4igc2UpFr7Q",
-        "timestamp": "00:34:16.240; email threadId 19c970e1745b6a39 (2026-02-25); email threadId 19cfdd3f61ffe05e (2026-03-17)"
+        "dose": "Hunter (2026-03-30, spermidine-the-longevity-supplement-i-take-daily--b7bbff8d, 8:58, https://library.hunterwilliamshealth.com/p/spermidine-the-longevity-supplement-i-take-daily--b7bbff8d/): \"a larger 12-month trial of spermatine supplementation at 0.9 milligrams per day\"; Hunter (2026-03-30, spermidine-the-longevity-supplement-i-take-daily--b7bbff8d, 10:06, https://library.hunterwilliamshealth.com/p/spermidine-the-longevity-supplement-i-take-daily--b7bbff8d/): \"So 3.3 mg and then upto 40mg per-day.\" Hunter (2026-03-30, spermidine-the-longevity-supplement-i-take-daily--b7bbff8d, 10:06, https://library.hunterwilliamshealth.com/p/spermidine-the-longevity-supplement-i-take-daily--b7bbff8d/): \"the 0.6 to 1.2 milligram per day is the typical weep germ or plant extract supplement amount.\" Hunter (2026-03-30, spermidine-the-longevity-supplement-i-take-daily--b7bbff8d, 9:31, https://library.hunterwilliamshealth.com/p/spermidine-the-longevity-supplement-i-take-daily--b7bbff8d/): \"but 5 to 10 mg, definitely, absolutely.\" Hunter (2026-03-30, spermidine-the-longevity-supplement-i-take-daily--b7bbff8d, 10:37, https://library.hunterwilliamshealth.com/p/spermidine-the-longevity-supplement-i-take-daily--b7bbff8d/): \"The high dose is going to be 15 to 40 milligrams per day of purified spermidine.\" Hunter (2026-04-30, peptide-qa-march-2026--dd9aa173, 34:02, https://library.hunterwilliamshealth.com/p/peptide-qa-march-2026--dd9aa173/): \"You can go as high as 40 milligrams\"",
+        "route": "Hunter (2026-03-30, spermidine-the-longevity-supplement-i-take-daily--b7bbff8d, 14:52, https://library.hunterwilliamshealth.com/p/spermidine-the-longevity-supplement-i-take-daily--b7bbff8d/): \"Most of the time you can get it in the form of a capsule. I do think there are some companies that sell it as a liquid that you could do it like a sublingual dropper or whatever, But I've used it In the Form of A Capsule.\"",
+        "frequency": "Hunter (2026-04-30, peptide-qa-march-2026--dd9aa173, 34:02, https://library.hunterwilliamshealth.com/p/peptide-qa-march-2026--dd9aa173/): \"And then for spermidine, I like somewhere around like 10 milligrams per day of spermidine.\"",
+        "duration": "Hunter (2026-03-30, spermidine-the-longevity-supplement-i-take-daily--b7bbff8d, 8:25, https://library.hunterwilliamshealth.com/p/spermidine-the-longevity-supplement-i-take-daily--b7bbff8d/): \"It can't be something that we are just doing once every three weeks.\"",
+        "verbatim_citation": "Hunter (2026-04-30, peptide-qa-march-2026--dd9aa173, 34:02, https://library.hunterwilliamshealth.com/p/peptide-qa-march-2026--dd9aa173/): \"And then for spermidine, I like somewhere around like 10 milligrams per day of spermidine.\" Hunter (2026-04-30, peptide-qa-march-2026--dd9aa173, 34:02, https://library.hunterwilliamshealth.com/p/peptide-qa-march-2026--dd9aa173/): \"You can go as high as 40 milligrams\" Hunter (2026-03-30, spermidine-the-longevity-supplement-i-take-daily--b7bbff8d, 11:37, https://library.hunterwilliamshealth.com/p/spermidine-the-longevity-supplement-i-take-daily--b7bbff8d/): \"at the high dose short term at 40 milligrams a day for 28 days in a healthy order of men, there were no adverse events.\"",
+        "episode_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-march-2026--dd9aa173/; https://library.hunterwilliamshealth.com/p/spermidine-the-longevity-supplement-i-take-daily--b7bbff8d/",
+        "timestamp": "34:02; 8:58; 9:31; 10:06; 10:37; 11:37; 14:52; 2026-04-30 and 2026-03-30"
       }
     },
     "female_specific_notes": null,
-    "distilled_at": "2026-04-27T05:31:38.017Z",
-    "distilled_by": "claude"
+    "distilled_at": "2026-07-17T09:36:55.2430442Z",
+    "distilled_by": "codex"
   },
-  "generated_at": "2026-04-27T02:02:34.961Z"
+  "generated_at": "2026-07-17T10:59:08.115Z",
+  "mentions_fingerprint": "2b5a7e80d5c8"
 }

@@ -5,20 +5,44 @@
     "rapamycin",
     "Rapamycin"
   ],
-  "category": "Uncategorized",
+  "category": "Fat Loss",
   "experts": {
     "hunter-williams": {
       "baseline_protocol": null,
       "summary": {
-        "mention_count": 27,
+        "mention_count": 76,
         "top_doses": [
           {
             "dose": "6 mg",
-            "count": 45
+            "count": 49
           },
           {
             "dose": "500 mg",
-            "count": 27
+            "count": 32
+          },
+          {
+            "dose": "500 milligrams",
+            "count": 10
+          },
+          {
+            "dose": "5 mg",
+            "count": 2
+          },
+          {
+            "dose": "15 milligrams",
+            "count": 2
+          },
+          {
+            "dose": "5 milligrams",
+            "count": 1
+          },
+          {
+            "dose": "10 milligrams",
+            "count": 1
+          },
+          {
+            "dose": "10 mg",
+            "count": 1
           }
         ],
         "top_sources": [
@@ -35,6 +59,66 @@
             "first_timestamp": "00:23:21.560"
           },
           {
+            "source_id": "saturday-morning-coffee-talk-5226--3cf808ca",
+            "source_type": "library-video",
+            "source_title": "Saturday Morning Coffee Talk 5/2/26",
+            "source_date": "2026-05-25",
+            "source_url": "https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-5226--3cf808ca/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/saturday-morning-coffee-talk-5226--3cf808ca.json",
+            "mention_count": 12,
+            "top_snippet": "What's up, Kelly? She says, please, give your thoughts on rapamycin for resetting hyperactive mTOR and activating autophagy. Any thoughts in general? Here's what I think, I, think rapamycin does what it does really well. Taylor's looking at me like what? No, you're fine. No. Are you good? Yeah. Rapamycin does, what does does well, which is suppress mTOR, or which can be good for longevity. However, that is not necessarily always the best thing. If you suppress MTOR too much, You will begin to lose muscle, Which then becomes counterproductive for Longevity.",
+            "top_context": "It's like oh, I gained 10 pounds and that was the one variable that they tried. Did you gain 10 lbs, but do your, do you're clothes still fit? Like what are your inches? What are, your clothes, still. Yeah, Also, too, I will always go back to the mirror. Like I can track in a mirror and my photos. Yeah, that's not looking good. Tighten it up. Versus like, OK, we're like sitting good right now. Very good question. I think very appropriate to what a lot of people are dealing with this as a very common thing. What's up, Kelly? She says, please, give your thoughts on rapamycin for resetting hyperactive mTOR and activating autophagy. Any thoughts in general? Here's what I think, I, think rapamycin does what it does really well. Taylor's looking at me like what? No, you're fine. No. Are you good? Yeah. Rapamycin does, what does does well, which is suppress mTOR, or which can be good for longevity. However, that is not necessarily always the best thing. If you suppress MTOR too much, You will begin to lose muscle, Which then becomes counterproductive for Longevity. I think if you wanted to do like six milligrams once a week of rapamycin, I don't have an issue with that. I would probably say that would be someone in their fifties and sixties. Also too, we have a lot of other agents out there right now that kind of give us this suppression of mTOR benefit without some of the drawbacks of rapamycin, one being ATX 304, another being the gold standard metformin. And so if you give me met formin, rapamysin ATx, I would pick that form in AT X over rapomycin because I'm not going to have rapamycin is so much stronger",
+            "first_timestamp": "39:52"
+          },
+          {
+            "source_id": "saturday-morning-coffee-talk-32826-peptides-hormones-and-fitness--1e3acdd4",
+            "source_type": "library-video",
+            "source_title": "Saturday Morning Coffee Talk · 3/28/26 · Peptides, Hormones, and Fitness",
+            "source_date": "2026-04-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-32826-peptides-hormones-and-fitness--1e3acdd4/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/saturday-morning-coffee-talk-32826-peptides-hormones-and-fitness--1e3acdd4.json",
+            "mention_count": 10,
+            "top_snippet": "Cause I even noticed that even, yeah. with my own. And I don't inject GHK. The only GH K I use is a serum on my face. Well, that's what I'm saying is not even from injecting it. It's just from the topical. I can put it topically on face, but it will make my body here. Jennifer says, do you have any feedback or results from people taking an mTOR inhibitor like rapamycin for longevity? Hunter, I've heard you talk about good effects from SGLT2 inhibitors.",
+            "top_context": "Good hair genes from both sides of my family. My dad's is late fifties. still has full head of hair, even though like shaves it bald. My grandpa's 84. He still. Has pretty much a hair. Your other grandpa that died 13 years ago, he had hair while he was doing chemotherapy, like it didn't even fall out therapy. And so yeah, fortunately for me, but even still it just makes my hair very thick. Yeah. Especially on my face too. I do think it does make, it doesn't make body hair I feel like thicker and coarser. Cause I even noticed that even, yeah. with my own. And I don't inject GHK. The only GH K I use is a serum on my face. Well, that's what I'm saying is not even from injecting it. It's just from the topical. I can put it topically on face, but it will make my body here. Jennifer says, do you have any feedback or results from people taking an mTOR inhibitor like rapamycin for longevity? Hunter, I've heard you talk about good effects from SGLT2 inhibitors. Are these opposites? I would not say an SglT22 is an opposite to an MTOR. They're kind of adjacent. To my knowledge, mechanistically, the SGLT2 is not going to inhibit mTOR as much. Now Metformin will. Met formin is like rapamycin light. That formal would be kind of something that I think a lot of people hate it. I still take 500 milligrams of metformins. Hey, met formins, I would think it'd be something there's a good balance of suppressing mtor, but not too much whereas rapomycin is a very large manual",
+            "first_timestamp": "22:57"
+          },
+          {
+            "source_id": "saturday-morning-coffee-talk-32826--a0b19742",
+            "source_type": "library-video",
+            "source_title": "Saturday Morning Coffee Talk · 3/28/26",
+            "source_date": "2026-04-08",
+            "source_url": "https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-32826--a0b19742/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/saturday-morning-coffee-talk-32826--a0b19742.json",
+            "mention_count": 9,
+            "top_snippet": "Cause I even noticed that even. with my own. Yeah, it's becoming more common. And I don't inject GHK. The only GH K I use is a serum. Well, that's what I'm saying is not even from injecting it. It's just from the topical. I can put it topically on my face, but it will make my body here grow more. Jennifer says, do you have any feedback or results from people taking an mTOR inhibitor like rapamycin for longevity? Hunter, I've heard you talk about good effects from SGLT2 inhibitors.",
+            "top_context": "Good hair genes from both sides of my family. My dad's is late fifties. Still has full head of hair, even like shaves it bald. My grandpa's 84. He still has pretty much a full of head hair. Your other grandpa that died 13 years ago, he had hair while he was doing chemotherapy. Like it didn't even fall out therapy. And so yeah, fortunately for me, but even still it just makes my hair very thick. Yeah. Especially on my face too. I do think it does make, it doesn't make body hair I feel like thicker and coarser. Cause I even noticed that even. with my own. Yeah, it's becoming more common. And I don't inject GHK. The only GH K I use is a serum. Well, that's what I'm saying is not even from injecting it. It's just from the topical. I can put it topically on my face, but it will make my body here grow more. Jennifer says, do you have any feedback or results from people taking an mTOR inhibitor like rapamycin for longevity? Hunter, I've heard you talk about good effects from SGLT2 inhibitors. Are these opposites? I would not say an Sgl22 is an opposite to an MTOR. They're kind of adjacent. To my knowledge, mechanistically, the SGLT2 is not going to inhibit mTOR as much. Now Metformin will. Met formin is like rapamycin light. That formal would be kind of something that I think a lot of people hate it. I still take 500 milligrams of metformins. Hey, met formins, I would think it'd be something there's a good balance of suppressing mtor, but not too much, whereas rapomycin is a very large manual",
+            "first_timestamp": "22:57"
+          },
+          {
+            "source_id": "may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352",
+            "source_type": "library-video",
+            "source_title": "May 2026 Q&A | Retatrutide, Testosterone, Autoimmune, and Beyond",
+            "source_date": "2026-06-17",
+            "source_url": "https://library.hunterwilliamshealth.com/p/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352.json",
+            "mention_count": 6,
+            "top_snippet": "That is very common. And so I would say get your thyroid checked. If your free T3 is not over 3.5, then you probably need some thyroid support, especially if you were on Reta. There's this new compound called MA5 mitoconic acid. Is it best for mitochondria? I don't know. I will be looking more into that. So for all you researchers out there, get on it. Let's go find out about MA five and see if it's out. They're, I didn't even know if he can source it anywhere yet. What are your thoughts on rapamycin? I like rapomycin, I think it's age dependent.",
+            "top_context": "And I never want to do that, but I just don't know of anything that actually helps with tinnitus, unfortunately. If I do, I'll tell you. So about thyroid health. I had a question. Is it okay to take thyroid bioregulator if on T3 and T4? I think so. You may not even need as a high dose after taking those. Definitely fine to use those, Believe I have underdiagnosed thyroid since starting RETA. That is very common. And so I would say get your thyroid checked. If your free T3 is not over 3.5, then you probably need some thyroid support, especially if you were on Reta. There's this new compound called MA5 mitoconic acid. Is it best for mitochondria? I don't know. I will be looking more into that. So for all you researchers out there, get on it. Let's go find out about MA five and see if it's out. They're, I didn't even know if he can source it anywhere yet. What are your thoughts on rapamycin? I like rapomycin, I think it's age dependent. I don't think anyone really needs it before their 50s or 60s. Uh, do you think you could do it once a week on a rest day to potentially improve, uh, longevity? But I also have so much out there now. that we might not need rapid myosin. I think if you look at SGLT2s with a GLP with metformin, you might need rapamycin on top of it, but I don't think it's harmful. For me, where I get kind of sketchy about it is that it does inhibit mTOR, and so if we're inhibiting mTor, obviously there's the potential that that could",
+            "first_timestamp": "40:45"
+          },
+          {
+            "source_id": "peptide-qa-july-2025--936e4b81",
+            "source_type": "library-video",
+            "source_title": "Peptide Q&A · July 2025",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-july-2025--936e4b81/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-qa-july-2025--936e4b81.json",
+            "mention_count": 4,
+            "top_snippet": "Someone says thoughts on rapamycin? I think rapomycin is good. I've never personally used it. Probably won't do so until I'm in my later forties or early fifties. And even then I would still probably do a low dose. So there's, there a lot of good data to support it as longevity medicine, but I don't think it's something that we necessarily need to be blasting because of the way it works. Just quick background. Rapamycine I believe is used as an immunosuppressant drug for people that get transplants. But when they were doing this, they noticed that it seemed to have longevity benefits.",
+            "top_context": "There's an injectable bi-regular peptid called Vessagen that works really well for blood vessel health. I think if you look at heart disease, it always ends up in some form or fashion going back to insulin resistance and inflammation. Vesagen helps clear inflammation from blood vessels. which I think over time would be good, but I would say low dose right up plus cardiogen plus just living healthy, having optimized hormone levels is going to do a lot to help stem the tide of that. But I, I will look at heart disease is more downstream from insulin resistance. And if we look what would help with insulin resistant, obviously that would true time, which is why it's one of the best longevity drugs. Someone says thoughts on rapamycin? I think rapomycin is good. I've never personally used it. Probably won't do so until I'm in my later forties or early fifties. And even then I would still probably do a low dose. So there's, there a lot of good data to support it as longevity medicine, but I don't think it's something that we necessarily need to be blasting because of the way it works. Just quick background. Rapamycine I believe is used as an immunosuppressant drug for people that get transplants. But when they were doing this, they noticed that it seemed to have longevity benefits. So they started testing in mice and I do think there are longevity benefits to it, but more or less what rapid mice does is it induces a state of fasting in the body. So it's kind of like a way to turn on all of the cascades that our body has in a fasting state without necessarily having to fast. You could pair it with fasting to accelerate those as well. I think it is good, I know for me I don't want my body to be in fasting all the time. because there are certain times when I do and there's certain terms when i don't because I want to build muscle and I wanna be healthy and i wanna have",
+            "first_timestamp": "6:04"
+          },
+          {
             "source_id": "19c970e1745b6a39",
             "source_type": "email",
             "source_title": "Spermidine, NAD+, and Longevity",
@@ -45,6 +129,18 @@
             "top_snippet": "** ## ⭐ Mechanism — Autophagy Activation ### Primary action: induces autophagy - Autophagy = cellular cleanup process — removes damaged proteins, dysfunctional mitochondria, debris - Most consistently",
             "top_context": "** ## ⭐ Mechanism — Autophagy Activation ### Primary action: induces autophagy - Autophagy = cellular cleanup process — removes damaged proteins, dysfunctional mitochondria, debris - Most consistently associated mechanism with **lifespan extension across species** ### How spermidine differs from rapamycin - Rapamycin: direct mTOR inhibition - **Spermidine: independent of mTOR** — works via **EP300 acetyltransferase inhibition** - EP300 promotes protein acetylation → suppresses autophagy - Spermidine inhibits EP300 → deacetylates key autophagy proteins → cleanup machinery turns back on ### Mitop",
             "first_timestamp": null
+          },
+          {
+            "source_id": "creatine-benefits-dosing-and-what-i-actually-take--e37ba9c4",
+            "source_type": "library-video",
+            "source_title": "Creatine: Benefits, Dosing, and What I Actually Take",
+            "source_date": "2026-03-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/creatine-benefits-dosing-and-what-i-actually-take--e37ba9c4/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/creatine-benefits-dosing-and-what-i-actually-take--e37ba9c4.json",
+            "mention_count": 2,
+            "top_snippet": "In animal research study, there was a mouse study and they found in the mice that a creatine supplemented diet increased median healthy lifespan by about 9% suggesting potential longevity benefits. There are some other ones out there. I'm not going to sit here and tell you that creatine does life extension like metformin or rapamycin or Jardience, but if we're doing all those things together, it's going help. Also ensuring good creatinine status as we age may aid in combating sarcopenia and cognitive decline, which again are crucial markers for longevity.",
+            "top_context": "that becomes a really big risk factor in how soon, unfortunately, they pass away. And I think creatine is obviously a big player in that. I did want to do a slide about longevity and brain health when we look at healthy aging. So by preserving muscle mass, strength, and cognitive function, creatinine supports key pillars of healthy ageing. Older adults using creatines with exercise, caveat, with exercises, often experience better muscle endurance and functional performance, improving quality of life and reducing fall risk. In animal research study, there was a mouse study and they found in the mice that a creatine supplemented diet increased median healthy lifespan by about 9% suggesting potential longevity benefits. There are some other ones out there. I'm not going to sit here and tell you that creatine does life extension like metformin or rapamycin or Jardience, but if we're doing all those things together, it's going help. Also ensuring good creatinine status as we age may aid in combating sarcopenia and cognitive decline, which again are crucial markers for longevity. Now let's get into the dosing. The dosage can kind of be weird for this and I don't think it needs to be. just to have it and cover my bases. Cause I think at the end of the day, you can look at studies to show you have to, and you could look and studies that show, don't have too traditionally. And this would have been when I started taking creatine all those years ago, which is about 20 yet over 20 years. Now we have a loading phase of 20 grams per day for five to seven days split into four or five gram doses. The thought of this is that it saturates the muscle with creatine quickly within a week.",
+            "first_timestamp": "17:48"
           }
         ],
         "acute_signals": [
@@ -189,25 +285,26 @@
   },
   "reset_biology_synthesis": {
     "status": "distilled",
-    "recommendation": "Reset Biology suggests asking the practitioner to consider rapamycin as a use-case-specific cyclical mTOR-suppression tool, not a daily longevity standard, and to position it as an option for patients in their late 40s or 50s who are running an autophagy-focused phase. Hunter (0TyW-wlJMxo 00:24:42.200): \"I personally don't use rapamycin.\" Hunter (0TyW-wlJMxo 00:26:02.120): \"I think rapamycin can be appropriate, but I just wouldn't want to do it all the time.\" We'd ask the prescribing physician to weigh muscle-loss and frailty risk because Hunter (0TyW-wlJMxo 00:25:28.560): \"The problem is if you take mTOR suppression too far, we end up losing muscle\" and (0TyW-wlJMxo 00:25:38.320): \"low muscle, eventually lead to bone density.\"",
-    "caveats": "- Muscle/frailty ceiling: Hunter (0TyW-wlJMxo 00:25:28.560): \"The problem is if you take mTOR suppression too far, we end up losing muscle\"; Hunter (0TyW-wlJMxo 00:25:38.320): \"low muscle, eventually lead to bone density\"; Taylor (G27dIPBJUSs 00:25:43.679): \"Especially Especially after the age of 50.\"\n- Cycle-don't-stack: Hunter (0TyW-wlJMxo 00:25:55.320): \"you want to be cyclical in how you do that\"; Hunter (0TyW-wlJMxo 00:26:05.430): \"I just wouldn't want to do it all the time.\"\n- Stack-redundancy with autophagy agents: Hunter email threadId 19c970e1745b6a39 (2026-02-25): \"If you're already running rapamycin, aggressive fasting, or strong autophagy stacks → may be redundant.\"\n- Hunter explicitly does not personally use it: Hunter (0TyW-wlJMxo 00:24:42.200): \"I personally don't use rapamycin. I might mess around with it in the future\"; Hunter (0TyW-wlJMxo 00:25:01.640): \"I don't feel like I'm in a state right now, just based on everything that I can objectively measure for my health, that I would do that.\"\n- Magnitude warning: Hunter (0TyW-wlJMxo 00:23:58.679): \"rapamycin is a very large manual lever to suppress mTOR\"; Hunter (0TyW-wlJMxo 00:23:44.960): \"metformin is like rapamycin light\" — framing rapamycin as the heavier mTOR lever.",
-    "cross_expert_consensus": "Substantive consensus is limited to a single co-hosted Saturday Morning Coffee Talk where Hunter answers the rapamycin question while Taylor co-hosts. Hunter (0TyW-wlJMxo 00:26:08.120): \"there is very compelling data around rapamycin.\" Hunter (0TyW-wlJMxo 00:25:23.920): \"Rapamycin can be good. I I just think it's a use case thing.\" Mechanism framing both Hunter and Trevor share: Hunter (0TyW-wlJMxo 00:23:58.679): \"rapamycin is a very large manual lever to suppress mTOR\"; Trevor (DuRVkxq9MpE 00:23:54.320): \"the mTOR, mammalian target of rapamycin pathway, is… the central regulator of cell growth and protein synthesis\" — both treat rapamycin as the canonical mTOR-pathway reference compound. Hunter email threadId 19c970e1745b6a39 (2026-02-25): \"Rapamycin: direct mTOR inhibition.\"",
-    "cross_expert_disagreement": "No meaningful three-way disagreement on rapamycin in the available expert content — Trevor (DuRVkxq9MpE 00:23:54.320) only references rapamycin as the namesake of the mTOR pathway (\"the mTOR, mammalian target of rapamycin pathway\") with no dose, route, frequency, or duration content. Taylor's mentions in G27dIPBJUSs are the same co-hosted episode where Hunter answers; Taylor does not contribute distinct dose/route guidance. The only expert-level dose claim across the corpus is Hunter (0TyW-wlJMxo 00:24:50.480): \"I think that the standard dose is 6 mg\" — there is no contradicting dose number from Taylor or Trevor to disagree with.",
+    "recommendation": "Reset Biology suggests asking the practitioner to weigh Hunter (may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352 41:15; https://library.hunterwilliamshealth.com/p/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352/; 2026-06-17): \"I don't think anyone really needs it before their 50s or 60s.\" The earlier explicit dose statement is retained: Hunter (saturday-morning-coffee-talk-5226--3cf808ca 40:26; https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-5226--3cf808ca/; 2026-05-25): \"I think if you wanted to do like six milligrams once a week of rapamycin, I don't have an issue with that. I would probably say that would be someone in their fifties and sixties.\"",
+    "caveats": "- Hunter (may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352 41:15; https://library.hunterwilliamshealth.com/p/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352/; 2026-06-17): \"For me, where I get kind of sketchy about it is that it does inhibit mTOR, and so if we're inhibiting mTor, obviously there's the potential that that could suppress muscle.\"\n- Hunter (saturday-morning-coffee-talk-5226--3cf808ca 39:52; https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-5226--3cf808ca/; 2026-05-25): \"If you suppress MTOR too much, You will begin to lose muscle, Which then becomes counterproductive for Longevity.\"\n- Hunter (saturday-morning-coffee-talk-5226--3cf808ca 41:35; https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-5226--3cf808ca/; 2026-05-25): \"I would concede that it's once a week or once every two weeks could be used like for a day or two for like a recovery phase.\"",
+    "cross_expert_consensus": null,
+    "cross_expert_disagreement": null,
     "acute_chronic_split": {
       "acute": null,
       "chronic": {
-        "dose": "Hunter (0TyW-wlJMxo 00:24:50.480): \"I think that the standard dose is 6 mg.\"",
-        "route": "Hunter (0TyW-wlJMxo 00:24:54.120): \"6 mg pill of rapamycin\" — oral pill.",
-        "frequency": "Hunter (0TyW-wlJMxo 00:24:52.240): \"You could maybe do on a rest day, take a 6 mg pill of rapamycin and get good mTOR suppression to which you're inducing some autophagy there\" — rest-day cadence, not daily; Hunter (0TyW-wlJMxo 00:26:05.430): \"I just wouldn't want to do it all the time.\"",
-        "duration": "Hunter (0TyW-wlJMxo 00:25:55.320): \"you want to be cyclical in how you do that\"; Hunter (0TyW-wlJMxo 00:26:00.120): \"if you're in a cycle or a phase where that would be more of the focus, I think rapamycin can be appropriate.\"",
-        "verbatim_citation": "Hunter (0TyW-wlJMxo 00:24:47.560): \"I think as people get into their late 40s and 50s, they could probably take… I think that the standard dose is 6 mg. You could maybe do on a rest day, take a 6 mg pill of rapamycin and get good mTOR suppression to which you're inducing some autophagy there.\"",
-        "episode_url": "https://youtu.be/0TyW-wlJMxo",
-        "timestamp": "00:24:47.560 — 00:25:01.630 (dose+route+frequency block); cyclical framing 00:25:55.320 — 00:26:08.110"
+        "dose": "Hunter (saturday-morning-coffee-talk-5226--3cf808ca 40:26; https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-5226--3cf808ca/; 2026-05-25): \"I think if you wanted to do like six milligrams once a week of rapamycin, I don't have an issue with that. I would probably say that would be someone in their fifties and sixties.\"",
+        "route": "Hunter (0TyW-wlJMxo 00:24:54.120; https://youtu.be/0TyW-wlJMxo; 2026-03-28): \"6 mg pill of rapamycin\"",
+        "frequency": "Hunter (may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352 41:15; https://library.hunterwilliamshealth.com/p/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352/; 2026-06-17): \"do you think you could do it once a week on a rest day to potentially improve, uh, longevity?\" Hunter (saturday-morning-coffee-talk-5226--3cf808ca 41:35; https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-5226--3cf808ca/; 2026-05-25): \"once a week or once every two weeks\"",
+        "duration": "Hunter (saturday-morning-coffee-talk-5226--3cf808ca 41:35; https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-5226--3cf808ca/; 2026-05-25): \"could be used like for a day or two for like a recovery phase\"",
+        "verbatim_citation": "Hunter (may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352 41:15; https://library.hunterwilliamshealth.com/p/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352/; 2026-06-17): \"I don't think anyone really needs it before their 50s or 60s.\" Hunter (saturday-morning-coffee-talk-5226--3cf808ca 40:26; https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-5226--3cf808ca/; 2026-05-25): \"I think if you wanted to do like six milligrams once a week of rapamycin, I don't have an issue with that.\"",
+        "episode_url": "https://library.hunterwilliamshealth.com/p/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352/\nhttps://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-5226--3cf808ca/\nhttps://youtu.be/0TyW-wlJMxo",
+        "timestamp": "41:15 (2026-06-17); 40:26 and 41:35 (2026-05-25); 00:24:54.120 (2026-03-28)"
       }
     },
     "female_specific_notes": null,
-    "distilled_at": "2026-04-27T05:30:31.154Z",
-    "distilled_by": "claude"
+    "distilled_at": "2026-07-17T09:45:01.897Z",
+    "distilled_by": "codex"
   },
-  "generated_at": "2026-04-27T02:02:34.832Z"
+  "generated_at": "2026-07-17T10:59:06.379Z",
+  "mentions_fingerprint": "23b0fea7412f"
 }

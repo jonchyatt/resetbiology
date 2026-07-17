@@ -1,0 +1,311 @@
+{
+  "peptide": "Humanin",
+  "slug": "humanin",
+  "aliases": [
+    "humanin",
+    "Humanin"
+  ],
+  "category": "Longevity",
+  "experts": {
+    "hunter-williams": {
+      "baseline_protocol": null,
+      "summary": {
+        "mention_count": 100,
+        "top_doses": [
+          {
+            "dose": "20 milligrams",
+            "count": 10
+          },
+          {
+            "dose": "10 mg",
+            "count": 6
+          },
+          {
+            "dose": "2 mg",
+            "count": 4
+          },
+          {
+            "dose": "4 mg",
+            "count": 4
+          },
+          {
+            "dose": "1 mg",
+            "count": 3
+          },
+          {
+            "dose": "10 milligram",
+            "count": 2
+          },
+          {
+            "dose": "100 milligrams",
+            "count": 1
+          },
+          {
+            "dose": "20 mg",
+            "count": 1
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "humanin-a-mitochondrial-peptide-for-brain-health-and-longevity--86943a46",
+            "source_type": "library-video",
+            "source_title": "Humanin: A Mitochondrial Peptide for Brain Health and Longevity",
+            "source_date": "2026-03-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/humanin-a-mitochondrial-peptide-for-brain-health-and-longevity--86943a46/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/humanin-a-mitochondrial-peptide-for-brain-health-and-longevity--86943a46.json",
+            "mention_count": 35,
+            "top_snippet": "Hey everybody, this is Hunter Williams. I hope you're doing amazing wherever you might be in the world. Today I have a really cool video. Humanin is actually an endogenous peptide, meaning that we actually make humanin naturally in our body. And it was discovered recently, I'll talk about this a little bit in the background of the slides going through it, but it discovered within the last few",
+            "top_context": "Hey everybody, this is Hunter Williams. I hope you're doing amazing wherever you might be in the world. Today I have a really cool video. Humanin is actually an endogenous peptide, meaning that we actually make humanin naturally in our body. And it was discovered recently, I'll talk about this a little bit in the background of the slides going through it, but it discovered within the last few decades and we can actually now supplement with human in as we age. When it comes to mitochondrial peptides, obviously if we improve mitochondria health, it kind of has these ripple effects throughout the rest of the body. So there's tons of benefits of supplementing with mitochondrio peptide. When it comes to Huminen, there's gonna be a little bit of the MOTC side in it. There's going to be little of SS31 side of it, but what I think is cool about it especially as this becomes a larger and larger issue, is that it actually is a much larger player in terms of brain health.",
+            "first_timestamp": "0:09"
+          },
+          {
+            "source_id": "why-humanin-could-be-the-next-big-peptide-for-longevity--889becde",
+            "source_type": "library-video",
+            "source_title": "Why Humanin Could Be the Next Big Peptide For Longevity",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/why-humanin-could-be-the-next-big-peptide-for-longevity--889becde/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/why-humanin-could-be-the-next-big-peptide-for-longevity--889becde.json",
+            "mention_count": 20,
+            "top_snippet": "The side effects have not been reported because we don't have a ton of long-term research. Obviously with any peptides, you might get a little red spot or rashy area, or you may have little pain around the injection when you inject subcutaneously into the belly fat. So again, that's really about it. You don' really necessarily get like a flushing or anything that I've noticed myself. Just looking at some published studies. A study in Nature in 2003 found that humanin could protect neurons from amyloid beta toxicity, which again goes back to reducing the onset of Alzheimer's.",
+            "top_context": "As our levels naturally decline with age, supplementation or increasing our own natural production of the body could theoretically, and I think practically, help combat age-related diseases. What are the side effects? Relatively nil. This is one of those ones. All things considered, I would be least concerned or more or less very non-concerned with some of the effects of mitochondrial derived peptides, but human is considered generally safe based on the studies. The side effects have not been reported because we don't have a ton of long-term research. Obviously with any peptides, you might get a little red spot or rashy area, or you may have little pain around the injection when you inject subcutaneously into the belly fat. So again, that's really about it. You don' really necessarily get like a flushing or anything that I've noticed myself. Just looking at some published studies. A study in Nature in 2003 found that humanin could protect neurons from amyloid beta toxicity, which again goes back to reducing the onset of Alzheimer's. So if that's something that quote unquote runs in your family, you know, be on the lookout for that. 2010 in cell metabolism showed that huminin enhances insulin sensitivity and reduces the risk of diabetes and obesity. And lastly, 2016 study and circulation found the human administration could detect the heart from ischemic injury injury in a rodent model. So definitely some research there. As everyone's favorite, the simple but most anticipated part is the dosage. The dosages of Humidem have primarily been studied in preclinical trials.",
+            "first_timestamp": "7:22"
+          },
+          {
+            "source_id": "19b2967c21d3f77d",
+            "source_type": "email",
+            "source_title": "Humanin | The Next Big Mitochondrial Peptide (Brain Health and Longevity)",
+            "source_date": "2025-12-16",
+            "source_url": "https://open.spotify.com/episode/0Fcmz44p5ooCpNJqSPv0zA",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-12-16-humanin-mitochondrial-peptide.md",
+            "mention_count": 8,
+            "top_snippet": "### Cardiovascular aging - Old mice treated long-term with **HNG** (Humanin analog): - Interstitial collagen (fibrosis): **0.24% → 0.07%** (massive reduction in scar-like remodeling) - **TUNEL-positiv",
+            "top_context": "### Cardiovascular aging - Old mice treated long-term with **HNG** (Humanin analog): - Interstitial collagen (fibrosis): **0.24% → 0.07%** (massive reduction in scar-like remodeling) - **TUNEL-positive apoptosis: 27.8% → 13.1%** - Supports mitochondrial integrity + cell survival ## ⭐ DOSING (Humanin) — Hunter's protocol ⚠️ **No large-scale human supplementation trials yet.** Practical framework only. ### Longevity range (Hunter's recommendation) - **1-2 mg per day** - **5 days on, 2 days off** - **8-12 weeks** - Total/week: 5-10 mg depending on daily dose ### Reconstitution Recipe (10 mg vi",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "peptide-replacement-therapy-restoring-endogenous-peptides-as-you-age--3ab8379b",
+            "source_type": "library-video",
+            "source_title": "Peptide Replacement Therapy: Restoring Endogenous Peptides as You Age",
+            "source_date": "2026-03-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-replacement-therapy-restoring-endogenous-peptides-as-you-age--3ab8379b/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-replacement-therapy-restoring-endogenous-peptides-as-you-age--3ab8379b.json",
+            "mention_count": 8,
+            "top_snippet": "I would say in practice, humanin is more of the mitochondrial peptide that works really well for the brain and works well in protecting those brain cells. But by middle age, most people have a 50% decline in human than they did when they were in early adulthood. And also children of centenarians, although this is funny, had higher human in than age match controls. Typically they had twice the level of human and peptides in their body than people that did not leave to be 100 or parents that do not live to 100. So",
+            "top_context": "environment in those areas, it's not going to work as well. And what KPV does a really good job doing is healing the inflammation environment and suppressing those inflammatory cytokines. That's why it works so well for so many different things. We also have Huminen. This is another mitochondrial peptide endogenous to the body. It's a 24 amino acid mitochondria derived peptides that functions as a cytoprotective or cell protective signaling molecule, basically protects neurons from oxidative stress, enhances insulin sensitivity and promotes cell survival under stress conditions. I would say in practice, humanin is more of the mitochondrial peptide that works really well for the brain and works well in protecting those brain cells. But by middle age, most people have a 50% decline in human than they did when they were in early adulthood. And also children of centenarians, although this is funny, had higher human in than age match controls. Typically they had twice the level of human and peptides in their body than people that did not leave to be 100 or parents that do not live to 100. So I thought that was interesting when we look at the centenarian world, but we looked at therapeutic benefits. Mice over-expressing human end showed improved insulin sensitivity and better memory. Human analogs improved metabolic health and delayed cognitive decline in middle-aged mice, and it also protected against macular degeneration and heart disease in models. And again, to go back to the brain, I would say if there was one peptide for eyesight, SS31 is great, but also human N is also great for eye sight as well. Again, it's a natural peptides with an excellent safety profile. Mice over-expressed in human develop normally with only positive results of having the over expressed human.",
+            "first_timestamp": "10:48"
+          },
+          {
+            "source_id": "the-ss-31-masterclass-the-complete-users-guide-2026--9c8f4814",
+            "source_type": "library-video",
+            "source_title": "The SS-31 Masterclass | The Complete User's Guide (2026)",
+            "source_date": "2026-06-17",
+            "source_url": "https://library.hunterwilliamshealth.com/p/the-ss-31-masterclass-the-complete-users-guide-2026--9c8f4814/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/the-ss-31-masterclass-the-complete-users-guide-2026--9c8f4814.json",
+            "mention_count": 6,
+            "top_snippet": "And then we can, after doing that, bring in humanin. So human in is more of a cell protective agent. And so it works on a site of protection. I would consider this after SS 31 and MATC are established. You could even do human before SS-31.I've kind of gone back and forth on that. Again, I don't think there's any wrong or right answer, but that's the typical order I go SS31, MAT-C, then human and then back to SS, 31, and human. And then again too, if you wanted to keep going with the SS31, bringing in the Mozi, I think that can work really well too.",
+            "top_context": "So when we look at SS31, obviously, like we said, it works on the structure. It repairs and stabilizes the physical infrastructure. And this is why I like doing four to eight weeks by itself. Now, where does MoZC come in? So MozC sends metabolic signals through AMPK activation and PGC1 alpha. I like to add after SS31 foundation is established. You can even do SS 31 in addition to Mozi so you can layer in the Moci on top of the SS-31. I think that works really well. When I've done that myself, it seems to work really and I have seen other people do that. And then we can, after doing that, bring in humanin. So human in is more of a cell protective agent. And so it works on a site of protection. I would consider this after SS 31 and MATC are established. You could even do human before SS-31.I've kind of gone back and forth on that. Again, I don't think there's any wrong or right answer, but that's the typical order I go SS31, MAT-C, then human and then back to SS, 31, and human. And then again too, if you wanted to keep going with the SS31, bringing in the Mozi, I think that can work really well too. And I've seen a lot of people have good results with that. Some complimentary stacks, i think SS 31 and BPC-TB works really for healing two to four milligrams of SS-31 while doing that SS31 plus a GH peptide, CJC IPA, TESSA, HGH itself, works on mitochondrial quality plus quantity. And so I like to run, obviously I'm running some sort of GH Peptide at all times. An SS 31 to GLP, I think this is one of the best things that we can add on to the GLPs in addition to hormone optimization and HTH. Supplementation via HEH or a peptide.",
+            "first_timestamp": "28:19"
+          },
+          {
+            "source_id": "JFrn_zX0RE4",
+            "source_type": "podcast",
+            "source_title": "Peptides & Longevity Medicine Explained by a Real Cardiologist | Dr. Abid Husain, MD",
+            "source_date": "2026-03-27",
+            "source_url": "https://youtu.be/JFrn_zX0RE4",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-03-27-peptides-longevity-medicine-explained-by-a-real-cardiologist-dr-abid-h-JFrn_zX0RE4.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "their own. And then I'll layer in some of the others. You know, humanin is",
+            "top_context": "mitochondrial health, I want to make mitochondrial health, I want to make sure membrane health is good because the sure membrane health is good because the sure membrane health is good because the mitochondria sits in the membrane. So, mitochondria sits in the membrane. So, mitochondria sits in the membrane. So, I'm going to feed them the right formula I'm going to feed them the right formula I'm going to feed them the right formula formulation of omega sixs, omega-3s, formulation of omega sixs, omega-3s, formulation of omega sixs, omega-3s, maybe get them on some uh urthan a some maybe get them on some uh urthan a some maybe get them on some uh urthan a some supplements to help improve the supplements to help improve the supplements to help improve the mitochondrial uh structure, and then hit mitochondrial uh structure, and then hit mitochondrial uh structure, and then hit them with an SS31. Um, and the dose them with an SS31. Um, and the dose them with an SS31. Um, and the dose usually ends up being higher than what usually ends up being higher than what usually ends up being higher than what we think. Um, probably on order of 20, we think. Um, probably on order of 20, we think. Um, probably on order of 20, you know, 20 milligrams a day. So, it's you know, 20 milligrams a day. So, it's you know, 20 milligrams a day. So, it's high and that because of that, it makes high and that because of that, it makes high and that because of that, it makes it expensive. But um that helps to it expensive. But um that helps to it expensive. But um that helps to reestablish the mitochondria and then reestablish the mitochondria and then reestablish the mitochondria and then when they do like when they exercise or when they do like when they exercise or when they do like when they exercise or when they want to do their activities when they want to do their activities when they want to do their activities they'll have the ability to do it on they'll have the ability to do it on they'll have the ability to do it on their own. And then I'll layer in some their own. And then I'll layer in some their own. And then I'll layer in some of the others. You know, humanin is of the others. You know, humanin is of the others. You know, humanin is really important too. Helps with really important too. Helps with really important too. Helps with autophagy, helps with I mean that it autophagy, helps with I mean that it autophagy, helps with I mean that it helps with the the vascular system. helps with the the vascular system. helps with the the vascular system. Again, back to the endothelium. Uh helps Again, back to the endothelium. Uh helps Again, back to the endothelium. Uh helps maintain a healthy endothelium and maintain a healthy endothelium and maintain a healthy endothelium and maintain reduction in inflammation maintain reduction in inflammation maintain reduction in inflammation because the endothelium itself regulates because the endothelium itself regulates because the endothelium itself regulates that. And if it's healthy, then that's that. And if it's healthy, then that's that. And if it's healthy, then that's going to do it. Um and then the last one going to do it. Um and then the last one going to do it. Um and then the last one I'll add in there. Once I know that I'll add in there. Once I know that I'll add in there. Once I know that their system can make energy well, if I their system can make energy well, if I their system can make energy well, if I want to push it, that's when I do M C. want to push it, that's when I do M C. want to push it, that's when I do M C. So M C is the sort of like it's not the So M C is the sort of like it's not the So M C is the sort of like it's not the first go-to because if I put that in a first go-to because if I put that in a first go-to because if I put that in a person that's got a system that can't person that's got a system that can't person that's got a system that can't really produce it, it's not really doing really produce it, it's not really doing really produce it, it's not really doing any good and it may actually tip them any good and it may actually tip them any good and it may actually tip them into a place where they're feeling into a place where they're feeling into a place where they're feeling worse. worse. worse. Yeah, I've seen a lot of people lately, Yeah, I've seen a lot of people lately, Yeah, I've seen a lot of people lately, again, just because peptides are so big,",
+            "first_timestamp": "00:59:42.880"
+          },
+          {
+            "source_id": "199ef13fd5ffd723",
+            "source_type": "email",
+            "source_title": "Peptide Replacement Therapy",
+            "source_date": "2025-10-16",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-10-16-peptide-replacement-therapy.md",
+            "mention_count": 3,
+            "top_snippet": "s. Micro** Our body depends on peptides for nearly everything. They tell cells when to divide, repair, and adapt. Every signal that keeps you alive runs through them. Most of the therapeutic peptides ",
+            "top_context": "s. Micro** Our body depends on peptides for nearly everything. They tell cells when to divide, repair, and adapt. Every signal that keeps you alive runs through them. Most of the therapeutic peptides people use today already exist within the human body. Molecules like Thymosin Alpha-1, GHK, Humanin, MOTS-c, and BPC are all endogenously derived. They come from your thymus, your plasma, your mitochondria, or your gut. They are part of us! In our younger years, these peptides are abundant. By the time most people reach middle age, their levels have fallen by half or more. And by the tim",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "saturday-morning-coffee-talk-2726--4d465560",
+            "source_type": "library-video",
+            "source_title": "Saturday Morning Coffee Talk · 2/7/26",
+            "source_date": "2026-04-08",
+            "source_url": "https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-2726--4d465560/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/saturday-morning-coffee-talk-2726--4d465560.json",
+            "mention_count": 3,
+            "top_snippet": "Next question. Is there any peptide comparable to SS 31? Chemically, not really. I would say a lesser known one is humanin, H-U-M-A-N-I- N. And that is, I'd say if there was anything that was close to it, it's probably closer to SS31 than MOTC is closer SS 31. Humanin is an endogenous peptide, declines as we age, whereas SS-31 is a synthetic, is not endogenously human body.",
+            "top_context": "Yeah. You think there's like maybe more nerves? Yeah, whereas like in your shoulder, it's comparable. And if you're pretty lean, It just goes right in. It's really like a shallow I am injection, but I have a video on Spotify. If you want to check it out, subcue versus intramuscular testosterone, probably beat, beat it to death more than it needed to be. But it was like 30 minutes explaining that if want check that out. Again, whatever floats your boat, subq does not necessarily mean it's bad, but I would, I advise everyone to try both and see what works for you. Some people like sub q better, some people, But I personally like I am better and I know a lot of people that like, so it really just whatever float your vote. Next question. Is there any peptide comparable to SS 31? Chemically, not really. I would say a lesser known one is humanin, H-U-M-A-N-I- N. And that is, I'd say if there was anything that was close to it, it's probably closer to SS31 than MOTC is closer SS 31. Humanin is an endogenous peptide, declines as we age, whereas SS-31 is a synthetic, is not endogenously human body. But I'll say human is probably the most similar, perhaps with a slight edge in terms of brain health that you would get out of it. And the dosing would be the exact same for Huminen as we would SS31. One milligram a day is where I would start five days on, two days off, eight week cycles. Yeah, Huminnen works really well for a lot of people. I'd say it's probably not as good therapeutically as SS 31, but still good nonetheless. This is a good question. It seems to be popping up more and more. Stacking Reda and Ters, it's great, but my appetite is dead.",
+            "first_timestamp": "24:26"
+          }
+        ],
+        "acute_signals": [
+          {
+            "snippet": "people get absolutely wiped out on GLPs — what that signals about their health - Hair loss on GLPs — what's really going on, NOT just thyroid - **MOTS-c + Retatrutide = potential crash and burn combo ",
+            "source_title": "TB4 vs. TB-500 (and lots of other peptide questions answered)",
+            "source_date": "2026-03-16",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "peptide. Good if you've got structural mitochondrial dysfunction. MOTS-c is the energy coach. It tells your body how to use the ATP you're already making. The catch is MOTS-c is naturally produced und",
+            "source_title": "Estrogen is Critical for Men Too - Here's Why Your Peptides Fail Without It with Sarah Morgan",
+            "source_date": "2026-04-30",
+            "timestamp": null,
+            "source_url": "https://library.hunterwilliamshealth.com/p/estrogen-is-critical-for-men-too---heres-why-your-peptides-fail-without-it-with---dbaa1c38/"
+          },
+          {
+            "snippet": "I did make a slide. I just wanted to go over how it differs from OTSI and SS31. Again, I know this stuff can be a little confusing sometimes. Obviously humanin is a natural mitochondrial peptide in the human body. It's a cell protective hormone, prevents apoptosis, reduces stress through signaling pathways. And again, right now we don't have any human trials on it yet, but there's lots of observational data about the benefits of supplementing with it. MotC is also a natural mitochondrial peptide. It's 16 amino acids, whereas humanin is 24 amino acid.",
+            "source_title": "Humanin: A Mitochondrial Peptide for Brain Health and Longevity",
+            "source_date": "2026-03-30",
+            "timestamp": "17:09",
+            "source_url": "https://library.hunterwilliamshealth.com/p/humanin-a-mitochondrial-peptide-for-brain-health-and-longevity--86943a46/"
+          },
+          {
+            "snippet": "I did make a slide. I just wanted to go over how it differs from OTSI and SS31. Again, I know this stuff can be a little confusing sometimes. Obviously humanin is a natural mitochondrial peptide in the human body. It's a cell protective hormone, prevents apoptosis, reduces stress through signaling pathways. And again, right now we don't have any human trials on it yet, but there's lots of observational data about the benefits of supplementing with it. MotC is also a natural mitochondrial peptide. It's 16 amino acids, whereas humanin is 24 amino acid.",
+            "source_title": "Humanin: A Mitochondrial Peptide for Brain Health and Longevity",
+            "source_date": "2026-03-30",
+            "timestamp": "17:09",
+            "source_url": "https://library.hunterwilliamshealth.com/p/humanin-a-mitochondrial-peptide-for-brain-health-and-longevity--86943a46/"
+          },
+          {
+            "snippet": "e vitamin D or fish oil. Run them throughout the year, not just for acute issues. The systemic effect of something as simple and affordable as SS-31 or MOTS-c can move someone away from chronic pain, ",
+            "source_title": "Peptide Replacement Therapy: Restoring Endogenous Peptides as You Age",
+            "source_date": "2026-03-30",
+            "timestamp": null,
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-replacement-therapy-restoring-endogenous-peptides-as-you-age--3ab8379b/"
+          }
+        ],
+        "chronic_signals": [
+          {
+            "snippet": "s** Let’s look at the standard rates of decline of endogenous peptides. **System ** **Key Peptides** **General Decline Rate by age 60** **Consequences** Thymic / Immune Tα1, Tβ4, Thymalin, KPV Severe ",
+            "source_title": "Peptide Replacement Therapy",
+            "source_date": "2025-10-16",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "# Humanin — The Mitochondrial Peptide for Brain Health and Longevity > \"Different from SS-31 and MOTS-c. Predict it will matter more and more as brain health becomes the issue of our lifetime.\" > \"If ",
+            "source_title": "Humanin | The Next Big Mitochondrial Peptide (Brain Health and Longevity)",
+            "source_date": "2025-12-16",
+            "timestamp": null,
+            "source_url": "https://open.spotify.com/episode/0Fcmz44p5ooCpNJqSPv0zA"
+          },
+          {
+            "snippet": "longevity → **circulating levels are HIGHER** ## Mechanisms (two levels) ### Level 1: Cell-surface receptor binding - Binds cell-surface receptors → turns on survival pathways - Tied to **STAT3** sign",
+            "source_title": "Humanin | The Next Big Mitochondrial Peptide (Brain Health and Longevity)",
+            "source_date": "2025-12-16",
+            "timestamp": null,
+            "source_url": "https://open.spotify.com/episode/0Fcmz44p5ooCpNJqSPv0zA"
+          },
+          {
+            "snippet": "n stress hits cell → mitochondria damaged → apoptosis pathways activate → **Humanin says \"No. Not today.\"** - Frame: **stress resilience peptide** ## ⭐ Quantified Benefits (Data) ### Brain / cognitive",
+            "source_title": "Humanin | The Next Big Mitochondrial Peptide (Brain Health and Longevity)",
+            "source_date": "2025-12-16",
+            "timestamp": null,
+            "source_url": "https://open.spotify.com/episode/0Fcmz44p5ooCpNJqSPv0zA"
+          },
+          {
+            "snippet": "### Brain / cognitive aging - 2018 Scientific Reports: Mitochondrial SNP **rs2854128** → **14% decrease in circulating Humanin** - Large US aging cohort: That SNP linked to ↑\"cognitive age\" - African-",
+            "source_title": "Humanin | The Next Big Mitochondrial Peptide (Brain Health and Longevity)",
+            "source_date": "2025-12-16",
+            "timestamp": null,
+            "source_url": "https://open.spotify.com/episode/0Fcmz44p5ooCpNJqSPv0zA"
+          }
+        ]
+      }
+    },
+    "taylor-williams": {
+      "summary": {
+        "mention_count": 9,
+        "top_doses": [
+          {
+            "dose": "5 milligram",
+            "count": 18
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "JccJTHbWF84",
+            "source_type": "podcast",
+            "source_title": "Saturday Morning Coffee Talk | 2/7/26",
+            "source_date": "2026-02-08",
+            "source_url": "https://youtu.be/JccJTHbWF84",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2026-02-08-saturday-morning-coffee-talk-2-7-26-JccJTHbWF84.en.vtt",
+            "mention_count": 9,
+            "top_snippet": "Chemically, not really. I would say a lesser known one is humanin. H U M A N I",
+            "top_context": "&gt;&gt; Whereas like in your shoulder it's &gt;&gt; Whereas like in your shoulder it's comparable. And if you're pretty lean, comparable. And if you're pretty lean, comparable. And if you're pretty lean, it just goes right in. It's really like it just goes right in. It's really like it just goes right in. It's really like a shallow IM injection. But I have a a shallow IM injection. But I have a a shallow IM injection. But I have a video on Spotify if you want to check it video on Spotify if you want to check it video on Spotify if you want to check it out. Subq versus intramuscular out. Subq versus intramuscular out. Subq versus intramuscular testosterone probably beat beat beat beat beat beat beat beat beat beat beat beat beat beat beat beat beat beat beat beat beat beat beat beat beat beat beat beat beat beat beat beat beat it it it beat beat beat beat beat beat it it it beat beat beat beat beat beat it it it to death more than it needed to be but to death more than it needed to be but to death more than it needed to be but it's like 30 minutes explaining that if it's like 30 minutes explaining that if it's like 30 minutes explaining that if you want to check it out you want to check it out you want to check it out &gt;&gt; again whatever floats your boat. Subq &gt;&gt; again whatever floats your boat. Subq &gt;&gt; again whatever floats your boat. Subq does not necessarily mean it's bad but I does not necessarily mean it's bad but I does not necessarily mean it's bad but I would I advise everyone to try both and would I advise everyone to try both and would I advise everyone to try both and see what works for you. Some people like see what works for you. Some people like see what works for you. Some people like subq better some people but I I subq better some people but I I subq better some people but I I personally like IM better and I know a personally like IM better and I know a personally like IM better and I know a lot of people that like IM better. So it lot of people that like IM better. So it lot of people that like IM better. So it really just whatever floats your boat. really just whatever floats your boat. really just whatever floats your boat. &gt;&gt; I agree. Um, next question. &gt;&gt; I agree. Um, next question. &gt;&gt; I agree. Um, next question. Is there any peptide comparable to SS31? Is there any peptide comparable to SS31? Is there any peptide comparable to SS31? Chemically, not really. I would say a Chemically, not really. I would say a Chemically, not really. I would say a lesser known one is humanin. H U M A N I lesser known one is humanin. H U M A N I lesser known one is humanin. H U M A N I N. And that is I would say if there was N. And that is I would say if there was N. And that is I would say if there was anything that was close to it, I would anything that was close to it, I would anything that was close to it, I would say it's probably closer to SS31. The say it's probably closer to SS31. The say it's probably closer to SS31. The MSI is closer to SS31. MSI is closer to SS31. MSI is closer to SS31. &gt;&gt; And I would say it's more human is an &gt;&gt; And I would say it's more human is an &gt;&gt; And I would say it's more human is an endogenous peptide declines as we age, endogenous peptide declines as we age, endogenous peptide declines as we age, whereas SS31 is a synthetic. It's not whereas SS31 is a synthetic. It's not whereas SS31 is a synthetic. It's not indogenous the human body but I would indogenous the human body but I would indogenous the human body but I would say human is probably the most similar say human is probably the most similar say human is probably the most similar perhaps with a slight edge in terms of perhaps with a slight edge in terms of perhaps with a slight edge in terms of brain health that you would get out of brain health that you would get out of brain health that you would get out of it and the dosing would be the exact it and the dosing would be the exact it and the dosing would be the exact same for humanin as you would SS31 same for humanin as you would SS31 same for humanin as you would SS31 milligram a day is where I would start 5 milligram a day is where I would start 5 milligram a day is where I would start 5 days on two days off 8week cycles yeah days on two days off 8week cycles yeah days on two days off 8week cycles yeah humanin works really well for a lot of humanin works really well for a lot of humanin works really well for a lot of people I would say it's probably not as people I would say it's probably not as people I would say it's probably not as good therapeutically as SS31 but still good therapeutically as SS31 but still good therapeutically as SS31 but still good nonetheless",
+            "first_timestamp": "00:24:36.240"
+          }
+        ],
+        "acute_signals": [],
+        "chronic_signals": [
+          {
+            "snippet": "it and the dosing would be the exact same for humanin as you would SS31",
+            "source_title": "Saturday Morning Coffee Talk | 2/7/26",
+            "source_date": "2026-02-08",
+            "timestamp": "00:25:05.440",
+            "source_url": "https://youtu.be/JccJTHbWF84"
+          },
+          {
+            "snippet": "same for humanin as you would SS31",
+            "source_title": "Saturday Morning Coffee Talk | 2/7/26",
+            "source_date": "2026-02-08",
+            "timestamp": "00:25:08.230",
+            "source_url": "https://youtu.be/JccJTHbWF84"
+          },
+          {
+            "snippet": "same for humanin as you would SS31 milligram a day is where I would start 5",
+            "source_title": "Saturday Morning Coffee Talk | 2/7/26",
+            "source_date": "2026-02-08",
+            "timestamp": "00:25:08.240",
+            "source_url": "https://youtu.be/JccJTHbWF84"
+          },
+          {
+            "snippet": "days on two days off 8week cycles yeah humanin works really well for a lot of",
+            "source_title": "Saturday Morning Coffee Talk | 2/7/26",
+            "source_date": "2026-02-08",
+            "timestamp": "00:25:12.880",
+            "source_url": "https://youtu.be/JccJTHbWF84"
+          },
+          {
+            "snippet": "humanin works really well for a lot of",
+            "source_title": "Saturday Morning Coffee Talk | 2/7/26",
+            "source_date": "2026-02-08",
+            "timestamp": "00:25:14.870",
+            "source_url": "https://youtu.be/JccJTHbWF84"
+          }
+        ]
+      },
+      "female_specific_note": "Taylor Williams Coaching focuses on female-specific HRT/peptide guidance. Per-peptide notes here often emphasize female dosing, fertility, hormone interactions."
+    }
+  },
+  "reset_biology_synthesis": {
+    "status": "distilled",
+    "recommendation": "Reset Biology suggests asking the prescribing physician to consider Hunter Williams's newer sequencing statement: Hunter Williams - the-ss-31-masterclass-the-complete-users-guide-2026--9c8f4814 (2026-06-17, 28:19, https://library.hunterwilliamshealth.com/p/the-ss-31-masterclass-the-complete-users-guide-2026--9c8f4814/): \"I would consider this after SS 31 and MATC are established. You could even do human before SS-31. I've kind of gone back and forth on that. Again, I don't think there's any wrong or right answer, but that's the typical order I go SS31, MAT-C, then human and then back to SS, 31, and human.\" For the dated dose record, Hunter Williams - saturday-morning-coffee-talk-2726--4d465560 (2026-04-08, 24:57, https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-2726--4d465560/): \"One milligram a day is where I would start five days on, two days off, eight week cycles.\"",
+    "caveats": "- Hunter Williams - why-humanin-could-be-the-next-big-peptide-for-longevity--889becde (2026-03-29, 7:22, https://library.hunterwilliamshealth.com/p/why-humanin-could-be-the-next-big-peptide-for-longevity--889becde/): \"The side effects have not been reported because we don't have a ton of long-term research.\"\n- Hunter Williams - humanin-a-mitochondrial-peptide-for-brain-health-and-longevity--86943a46 (2026-03-30, 15:33, https://library.hunterwilliamshealth.com/p/humanin-a-mitochondrial-peptide-for-brain-health-and-longevity--86943a46/): \"When we look at dosage, this is where it's a little bit of the wild west right now. There's no official dosing.\"\n- Hunter Williams - why-humanin-could-be-the-next-big-peptide-for-longevity--889becde (2026-03-29, 7:22, https://library.hunterwilliamshealth.com/p/why-humanin-could-be-the-next-big-peptide-for-longevity--889becde/): \"Obviously with any peptides, you might get a little red spot or rashy area, or you may have little pain around the injection when you inject subcutaneously into the belly fat.\"",
+    "cross_expert_consensus": "Hunter Williams - saturday-morning-coffee-talk-2726--4d465560 (2026-04-08, 24:26, https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-2726--4d465560/): \"Humanin is an endogenous peptide, declines as we age, whereas SS-31 is a synthetic.\" Taylor Williams - JccJTHbWF84 (2026-02-08, 00:24:50.720, https://youtu.be/JccJTHbWF84): \"human is an endogenous peptide declines as we age, whereas SS31 is a synthetic.\"",
+    "cross_expert_disagreement": "Hunter Williams's dated dose statements remain distinct: Hunter Williams - why-humanin-could-be-the-next-big-peptide-for-longevity--889becde (2026-03-29, 8:28, https://library.hunterwilliamshealth.com/p/why-humanin-could-be-the-next-big-peptide-for-longevity--889becde/): \"My recommendation personally would be a one milligram sub q injection three times per week. Then if you have more chronic disease or severe inflammation, obesity or something like that I would probably go up to five milligrams three times a week.\" Hunter Williams - humanin-a-mitochondrial-peptide-for-brain-health-and-longevity--86943a46 (2026-03-30, 15:33, https://library.hunterwilliamshealth.com/p/humanin-a-mitochondrial-peptide-for-brain-health-and-longevity--86943a46/): \"one to two milligrams per day range\" and Hunter Williams - saturday-morning-coffee-talk-2726--4d465560 (2026-04-08, 24:57, https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-2726--4d465560/): \"One milligram a day is where I would start five days on, two days off, eight week cycles.\"",
+    "acute_chronic_split": {
+      "acute": null,
+      "chronic": {
+        "dose": "Hunter email threadId 19b2967c21d3f77d (2025-12-16): \"1-2 mg per day\" and \"5-10 mg/day\" for an \"actual neurodegenerative situation.\" Hunter Williams - why-humanin-could-be-the-next-big-peptide-for-longevity--889becde (2026-03-29, 8:28, https://library.hunterwilliamshealth.com/p/why-humanin-could-be-the-next-big-peptide-for-longevity--889becde/): \"My recommendation personally would be a one milligram sub q injection three times per week. Then if you have more chronic disease or severe inflammation, obesity or something like that I would probably go up to five milligrams three times a week.\" Hunter Williams - humanin-a-mitochondrial-peptide-for-brain-health-and-longevity--86943a46 (2026-03-30, 15:33, https://library.hunterwilliamshealth.com/p/humanin-a-mitochondrial-peptide-for-brain-health-and-longevity--86943a46/): \"one to two milligrams per day range\" Hunter Williams - humanin-a-mitochondrial-peptide-for-brain-health-and-longevity--86943a46 (2026-03-30, 16:38, https://library.hunterwilliamshealth.com/p/humanin-a-mitochondrial-peptide-for-brain-health-and-longevity--86943a46/): \"you're probably going to want to be in that five to 10 milligram per day range.\" Hunter Williams - saturday-morning-coffee-talk-2726--4d465560 (2026-04-08, 24:57, https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-2726--4d465560/): \"One milligram a day is where I would start.\"",
+        "route": "Hunter Williams - why-humanin-could-be-the-next-big-peptide-for-longevity--889becde (2026-03-29, 8:28, https://library.hunterwilliamshealth.com/p/why-humanin-could-be-the-next-big-peptide-for-longevity--889becde/): \"In research settings, it's been administered sub-q or intramuscularly. I would recommend subq.\" Hunter Williams - humanin-a-mitochondrial-peptide-for-brain-health-and-longevity--86943a46 (2026-03-30, 16:04, https://library.hunterwilliamshealth.com/p/humanin-a-mitochondrial-peptide-for-brain-health-and-longevity--86943a46/): \"it's going to be a subcutaneous injection.\"",
+        "frequency": "Hunter email threadId 19b2967c21d3f77d (2025-12-16): \"5 days on, 2 days off.\" Hunter Williams - why-humanin-could-be-the-next-big-peptide-for-longevity--889becde (2026-03-29, 8:28, https://library.hunterwilliamshealth.com/p/why-humanin-could-be-the-next-big-peptide-for-longevity--889becde/): \"a one milligram sub q injection three times per week\" and \"five milligrams three times a week.\" Hunter Williams - humanin-a-mitochondrial-peptide-for-brain-health-and-longevity--86943a46 (2026-03-30, 15:33, https://library.hunterwilliamshealth.com/p/humanin-a-mitochondrial-peptide-for-brain-health-and-longevity--86943a46/): \"five days on, two days off.\" Hunter Williams - saturday-morning-coffee-talk-2726--4d465560 (2026-04-08, 24:57, https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-2726--4d465560/): \"five days on, two days off.\"",
+        "duration": "Hunter email threadId 19b2967c21d3f77d (2025-12-16): \"8-12 weeks.\" Hunter Williams - humanin-a-mitochondrial-peptide-for-brain-health-and-longevity--86943a46 (2026-03-30, 16:04, https://library.hunterwilliamshealth.com/p/humanin-a-mitochondrial-peptide-for-brain-health-and-longevity--86943a46/): \"over eight to 12 weeks.\" Hunter Williams - saturday-morning-coffee-talk-2726--4d465560 (2026-04-08, 24:57, https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-2726--4d465560/): \"eight week cycles.\"",
+        "verbatim_citation": "Hunter Williams - humanin-a-mitochondrial-peptide-for-brain-health-and-longevity--86943a46 (2026-03-30, 15:33, https://library.hunterwilliamshealth.com/p/humanin-a-mitochondrial-peptide-for-brain-health-and-longevity--86943a46/): \"There's no official dosing. However, I would recommend a very similar protocol to MOTC and SS31, which is in the one to two milligrams per day range.\" Hunter Williams - saturday-morning-coffee-talk-2726--4d465560 (2026-04-08, 24:57, https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-2726--4d465560/): \"One milligram a day is where I would start five days on, two days off, eight week cycles.\"",
+        "episode_url": "https://library.hunterwilliamshealth.com/p/why-humanin-could-be-the-next-big-peptide-for-longevity--889becde/; https://library.hunterwilliamshealth.com/p/humanin-a-mitochondrial-peptide-for-brain-health-and-longevity--86943a46/; https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-2726--4d465560/",
+        "timestamp": "2025-12-16 email threadId 19b2967c21d3f77d; 2026-03-29 8:28; 2026-03-30 15:33 and 16:04; 2026-04-08 24:57"
+      }
+    },
+    "female_specific_notes": null,
+    "distilled_at": "2026-07-17T04:54:01.6347915Z",
+    "distilled_by": "codex"
+  },
+  "generated_at": "2026-07-17T10:59:04.994Z",
+  "mentions_fingerprint": "83e8fdced170"
+}

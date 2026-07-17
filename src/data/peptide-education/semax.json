@@ -5,27 +5,107 @@
     "semax",
     "Semax"
   ],
-  "category": "Uncategorized",
+  "category": "Cognitive Enhancement",
   "experts": {
     "hunter-williams": {
       "baseline_protocol": null,
       "summary": {
-        "mention_count": 7,
+        "mention_count": 72,
         "top_doses": [
           {
+            "dose": "300 mcg",
+            "count": 8
+          },
+          {
+            "dose": "1 mg",
+            "count": 6
+          },
+          {
+            "dose": "600 mcg",
+            "count": 4
+          },
+          {
+            "dose": "100 mcg",
+            "count": 4
+          },
+          {
+            "dose": "100 micrograms",
+            "count": 4
+          },
+          {
+            "dose": "5 units",
+            "count": 4
+          },
+          {
             "dose": "500 mcg",
-            "count": 1
+            "count": 3
           },
           {
-            "dose": "20 mg",
-            "count": 1
-          },
-          {
-            "dose": "120 mg",
-            "count": 1
+            "dose": "2.5 mg",
+            "count": 3
           }
         ],
         "top_sources": [
+          {
+            "source_id": "semax-how-to-use-it-for-maximum-focus--cf7bc9d7",
+            "source_type": "library-article",
+            "source_title": "Semax How To Use It For Maximum Focus",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/semax-how-to-use-it-for-maximum-focus--cf7bc9d7/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/semax-how-to-use-it-for-maximum-focus--cf7bc9d7.json",
+            "mention_count": 16,
+            "top_snippet": "ople report dizziness or nausea Possible overstimulation or anxiety in sensitive individuals If you're sensitive to stimulants, start low. And if you're on SSRIs or other psychiatric meds, be careful ",
+            "top_context": "ople report dizziness or nausea Possible overstimulation or anxiety in sensitive individuals If you're sensitive to stimulants, start low. And if you're on SSRIs or other psychiatric meds, be careful since this affects neurotransmitter balance. Talk to your doctor. Hydration matters too. I think Semax increases blood flow and may deplete minerals, which can cause headaches. Drink water. Dosing Intranasal: 750 to 1000 mcg once a day. This is the most popular route, mostly because people don't want to inject. Subcutaneous: 100 to 300 mcg once a day. Start at 100 and titrate up based on how you",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "n-acetyl-versions-of-semax-selank-are-they-really-better--cf280eaf",
+            "source_type": "library-article",
+            "source_title": "N-Acetyl Versions of Semax Selank Are They Really Better",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/n-acetyl-versions-of-semax-selank-are-they-really-better--cf280eaf/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/n-acetyl-versions-of-semax-selank-are-they-really-better--cf280eaf.json",
+            "mention_count": 15,
+            "top_snippet": "t alternative, but I digress) Boosts antioxidant defenses in the brain, protecting brain cells from oxidative stress Benefits include better focus and mental clarity, improved memory, neuroprotection ",
+            "top_context": "t alternative, but I digress) Boosts antioxidant defenses in the brain, protecting brain cells from oxidative stress Benefits include better focus and mental clarity, improved memory, neuroprotection after brain injury, and reduced anxiety. One thing I'll add that doesn't get talked about enough, Semax is great for central nervous system recovery after intense exercise. I love taking it post-workout to wind down the CNS. Regular Semax dosing: 200 to 600 mcg, two to three times per day, intranasally or subcutaneously. I prefer subcutaneous because it works faster. Selank recap Selank is another",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "peptide-qa-listener-questions-and-youtube-comments--b4b38f22",
+            "source_type": "library-article",
+            "source_title": "Peptide Q&A · Listener Questions and YouTube Comments",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-listener-questions-and-youtube-comments--b4b38f22/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-qa-listener-questions-and-youtube-comments--b4b38f22.json",
+            "mention_count": 5,
+            "top_snippet": "Both work. AOD-9604 Timing Wait 90 minutes to two hours after injection before eating. If you can squeeze in fasted cardio in that window, even better for fat loss. And someone mentioned their knee pa",
+            "top_context": "Both work. AOD-9604 Timing Wait 90 minutes to two hours after injection before eating. If you can squeeze in fasted cardio in that window, even better for fat loss. And someone mentioned their knee pain went away after three weeks on AOD-9604. Not a coincidence. AOD has real joint benefits too. Semax for ADD Semax can work great. If you have a kid and someone wants to put them on Ritalin or Adderall, please try other things first. Clean up the diet, remove phytic acid, get exercise dialed in, and consider peptides like Semax. I'm not telling you how to raise your kids, but there are better fir",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "selank-how-to-use-it-to-reduce-anxiety--febe3e9a",
+            "source_type": "library-article",
+            "source_title": "Selank How To Use It To Reduce Anxiety",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/selank-how-to-use-it-to-reduce-anxiety--febe3e9a/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/selank-how-to-use-it-to-reduce-anxiety--febe3e9a.json",
+            "mention_count": 5,
+            "top_snippet": "ancing properties. How It Works Selank works through several mechanisms. It modulates the expression of interleukin-6 and affects T helper cell cytokine balance. That influences monoamine neurotransmi",
+            "top_context": "ancing properties. How It Works Selank works through several mechanisms. It modulates the expression of interleukin-6 and affects T helper cell cytokine balance. That influences monoamine neurotransmitter concentrations and increases brain-derived neurotrophic factor (BDNF). If you saw my recent Semax video, BDNF is what biohackers call miracle grow for the brain. Selank does the same thing. It also calms the central nervous system, which is where a lot of anxiety actually comes from. Overstimulation and inflammation in the CNS drive that anxious feeling. Selank works to bring that down. It en",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "which-peptides-can-you-combine-in-the-same-syringe-dont-be-a-pin-cushion--819718fb",
+            "source_type": "library-article",
+            "source_title": "Which Peptides Can You Combine In The Same Syringe Dont Be A Pin Cushion",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/which-peptides-can-you-combine-in-the-same-syringe-dont-be-a-pin-cushion--819718fb/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/which-peptides-can-you-combine-in-the-same-syringe-dont-be-a-pin-cushion--819718fb.json",
+            "mention_count": 4,
+            "top_snippet": "ll feel it, and not in a good way. Non-GLP-1 fat loss peptides AOD-9604 and Fragment 176-191. Technically a growth hormone fragment, but it works almost exclusively on fat loss without raising growth ",
+            "top_context": "ll feel it, and not in a good way. Non-GLP-1 fat loss peptides AOD-9604 and Fragment 176-191. Technically a growth hormone fragment, but it works almost exclusively on fat loss without raising growth hormone. MOTS-c and AOD-9604 The list gets shorter as we go. Cognitive and nootropic peptides Semax and N-Acetyl Semax Selank and N-Acetyl Selank Semax and Selank (often sold as a blend) Selank and Epitalon Semax helps cognitive function. Selank helps with anxiety. Epitalon is a pineal gland bioregulator that supports sleep, which feeds back into cognition. Mitochondrial health SS-31 and MO",
+            "first_timestamp": null
+          },
           {
             "source_id": "19d98523208598ae",
             "source_type": "email",
@@ -39,63 +119,27 @@
             "first_timestamp": null
           },
           {
-            "source_id": "195b0718ac68bbb2",
-            "source_type": "email",
-            "source_title": "Stop Buying Peptides!",
-            "source_date": "2025-03-19",
-            "source_url": null,
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-03-19-stop-buying-peptides.md",
-            "mention_count": 1,
-            "top_snippet": "ental focus by organizing your thoughts and reducing cognitive overload. Peptides can't give you clarity if your mind is cluttered and overwhelmed. Journaling provides the mental and emotional space p",
-            "top_context": "ental focus by organizing your thoughts and reducing cognitive overload. Peptides can't give you clarity if your mind is cluttered and overwhelmed. Journaling provides the mental and emotional space peptides need to be truly effective. If you're neglecting journaling, no amount of selank, semax, or cerebrolysin will fully optimize your brain health. Start journaling consistently, THEN invest in peptides. ——————————————————————————— ### Here’s the Cold, Hard Truth: Peptides and hormones are incredibly powerful tools. I love them. But they're exactly that—tools. Tools ar",
+            "source_id": "a-comprehensive-guide-to-cerebrolysin-uses-benefits-and-dosages-cognitive-enhanc--c330076b",
+            "source_type": "library-article",
+            "source_title": "A Comprehensive Guide to Cerebrolysin: Uses, Benefits, and Dosages | Cognitive Enhancement",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/a-comprehensive-guide-to-cerebrolysin-uses-benefits-and-dosages-cognitive-enhanc--c330076b/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/a-comprehensive-guide-to-cerebrolysin-uses-benefits-and-dosages-cognitive-enhanc--c330076b.json",
+            "mention_count": 2,
+            "top_snippet": "ive BPC-157 is. As someone with a concussion history, this has been a huge unexpected windfall for me over the years. It enhances healing and neuronal recovery and works well alongside Cerebrolysin. T",
+            "top_context": "ive BPC-157 is. As someone with a concussion history, this has been a huge unexpected windfall for me over the years. It enhances healing and neuronal recovery and works well alongside Cerebrolysin. TB-500. Often overlooked for brain health, but it promotes tissue repair and reduces inflammation. Semax. A nootropic peptide that boosts cognitive function and BDNF, which complements Cerebrolysin directly. Selank. Offers anxiolytic effects that create a better neurological environment for Cerebrolysin to do its work. Semax and Selank pair especially well if you're using Cerebrolysin for cognitive",
             "first_timestamp": null
           },
           {
-            "source_id": "19829deefaf29db8",
-            "source_type": "email",
-            "source_title": "Read Like Your Life Depends On It",
-            "source_date": "2025-07-20",
-            "source_url": null,
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-07-20-read-like-your-life-depends-on-it.md",
-            "mention_count": 1,
-            "top_snippet": "nstance, BDNF (brain-derived neurotrophic factor), a protein essential for neuroplasticity, is elevated by both physical exercise and intellectual stimulation, such as reading. When you combine the ne",
-            "top_context": "nstance, BDNF (brain-derived neurotrophic factor), a protein essential for neuroplasticity, is elevated by both physical exercise and intellectual stimulation, such as reading. When you combine the neural growth from regular reading with peptides known to boost cognitive function (think Dihexa, Semax, Cerebrolysin), you get a _synergistic effect_ which leads to more neural growth, better mood, and faster recovery from mental fatigue. Optimizing testosterone and thyroid, using mitochondrial peptides, and reading daily… That’s how you stay mentally and physically young, regardless of the nu",
-            "first_timestamp": null
-          },
-          {
-            "source_id": "19c06d9325e3862f",
-            "source_type": "email",
-            "source_title": "Men vs. Women Peptide Dosing",
-            "source_date": "2026-01-28",
-            "source_url": null,
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2026-01-28-men-vs-women-peptide-dosing.md",
-            "mention_count": 1,
-            "top_snippet": "pro-healing via growth factors, angiogenesis, inflammation modulation, tissue remodeling. No \"female tissue needs different dose\" - **Thymosin Alpha-1** — immunomodulator interacting with TLR signalin",
-            "top_context": "pro-healing via growth factors, angiogenesis, inflammation modulation, tissue remodeling. No \"female tissue needs different dose\" - **Thymosin Alpha-1** — immunomodulator interacting with TLR signaling that exists in every human. Goal: shift immune behavior, not set sex-specific hormone levels - **Semax + Selank** — neurotrophic signaling (BDNF/TrkB) + immune/cytokine modulation. Don't require gender dosing - **LL-37** — angiogenesis signaling tied to innate immunity + wound biology. Shared mechanisms ## ⭐ When Sex-Specific Adjustments DO Apply (The Exceptions) 1. **Side effects more severe in o",
-            "first_timestamp": null
-          },
-          {
-            "source_id": "19c112a2709941b7",
-            "source_type": "email",
-            "source_title": "January 2026 Q&A",
-            "source_date": "2026-01-30",
-            "source_url": "https://open.spotify.com/episode/2UpNk1gzskxFOy8y5hFjTY",
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2026-01-30-january-q-and-a.md",
-            "mention_count": 1,
-            "top_snippet": "c peptides, gut-focused compounds fit into a real strategy (not random stack) - Many people chase symptoms when underlying issue is: - Nervous system overload - Gut permeability - Mitochondrial dysfun",
-            "top_context": "c peptides, gut-focused compounds fit into a real strategy (not random stack) - Many people chase symptoms when underlying issue is: - Nervous system overload - Gut permeability - Mitochondrial dysfunction ### Brain + Cognitive Peptides - **Cerebrolysin alternatives:** P21, PE-22-28, Selank, Semax - How Hunter thinks about neuroprotection ### TRT + Hormones (Deep Coverage) - When it makes sense to start - When it doesn't - Fertility considerations - ⭐ **\"Peptides don't replace hormones (and never will)\"** - Why people get frustrated trying to solve hormone problem with peptide ### Unconven",
-            "first_timestamp": null
-          },
-          {
-            "source_id": "19c49cac85fb70ef",
-            "source_type": "email",
-            "source_title": "Pinealon for Longevity",
-            "source_date": "2026-02-10",
-            "source_url": "https://open.spotify.com/episode/6r4jji1nEwaFYsF0GfJiaD",
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2026-02-10-pinealon-for-longevity.md",
-            "mention_count": 1,
-            "top_snippet": "trate up to: **500 mcg/day over 8-12 weeks** - ~20 mg per cycle total ### Annual cap - **DO NOT exceed 100-120 mg total per year** - Effects persist well after stopping → suggests long-lasting regulat",
-            "top_context": "trate up to: **500 mcg/day over 8-12 weeks** - ~20 mg per cycle total ### Annual cap - **DO NOT exceed 100-120 mg total per year** - Effects persist well after stopping → suggests long-lasting regulatory changes, NOT transient stimulation ## Stacks Well With - **Epitalon** - **Cerebrolysin** - **Semax** - **Selank** ## Best Candidates - Concussion history - Disrupted sleep / circadian struggles - Chronic stress - Heavy travel - Long-term brain-aging proactive ## Source BioLongevity Labs — code HUNTERW (30% storewide + 15% off) ## Further Reading - pubmed: 21978084 - mdpi.com/1420-3049/26/1",
+            "source_id": "how-to-use-oxytocin-therapy-to-improve-connection-and-bonding--e2f6c2fa",
+            "source_type": "library-article",
+            "source_title": "How To Use Oxytocin Therapy To Improve Connection And Bonding",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/how-to-use-oxytocin-therapy-to-improve-connection-and-bonding--e2f6c2fa/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/how-to-use-oxytocin-therapy-to-improve-connection-and-bonding--e2f6c2fa.json",
+            "mention_count": 2,
+            "top_snippet": "that you can actually shift your personality with a peptide. If you label yourself as shy, oxytocin lets you experience what it's like to not be shy. That experience itself can be useful long after th",
+            "top_context": "that you can actually shift your personality with a peptide. If you label yourself as shy, oxytocin lets you experience what it's like to not be shy. That experience itself can be useful long after the peptide wears off. What To Stack It With For the social and cognitive side, stack oxytocin with Semax and Selank. A Semax/Selank blend plus oxytocin is great before public speaking or a big presentation. You get calm, grounded focus with social ease. For the bedroom side, stack it with PT-141. PT-141 was originally developed as a Viagra equivalent for women, though more men use it now. Oxytocin pl",
             "first_timestamp": null
           }
         ],
@@ -113,11 +157,32 @@
             "source_date": "2026-04-16",
             "timestamp": null,
             "source_url": null
+          },
+          {
+            "snippet": "for brain health, but it promotes tissue repair and reduces inflammation. Semax. A nootropic peptide that boosts cognitive function and BDNF, which complements Cerebrolysin directly. Selank. Offers an",
+            "source_title": "A Comprehensive Guide to Cerebrolysin: Uses, Benefits, and Dosages | Cognitive Enhancement",
+            "source_date": "2026-03-29",
+            "timestamp": null,
+            "source_url": "https://library.hunterwilliamshealth.com/p/a-comprehensive-guide-to-cerebrolysin-uses-benefits-and-dosages-cognitive-enhanc--c330076b/"
+          },
+          {
+            "snippet": "t alternative, but I digress) Boosts antioxidant defenses in the brain, protecting brain cells from oxidative stress Benefits include better focus and mental clarity, improved memory, neuroprotection ",
+            "source_title": "N-Acetyl Versions of Semax Selank Are They Really Better",
+            "source_date": "2026-03-29",
+            "timestamp": null,
+            "source_url": "https://library.hunterwilliamshealth.com/p/n-acetyl-versions-of-semax-selank-are-they-really-better--cf280eaf/"
+          },
+          {
+            "snippet": "better focus and mental clarity, improved memory, neuroprotection after brain injury, and reduced anxiety. One thing I'll add that doesn't get talked about enough, Semax is great for central nervous s",
+            "source_title": "N-Acetyl Versions of Semax Selank Are They Really Better",
+            "source_date": "2026-03-29",
+            "timestamp": null,
+            "source_url": "https://library.hunterwilliamshealth.com/p/n-acetyl-versions-of-semax-selank-are-they-really-better--cf280eaf/"
           }
         ],
         "chronic_signals": [
           {
-            "snippet": "nstance, BDNF (brain-derived neurotrophic factor), a protein essential for neuroplasticity, is elevated by both physical exercise and intellectual stimulation, such as reading. When you combine the ne",
+            "snippet": "instance, BDNF (brain-derived neurotrophic factor), a protein essential for neuroplasticity, is elevated by both physical exercise and intellectual stimulation, such as reading. When you combine the n",
             "source_title": "Read Like Your Life Depends On It",
             "source_date": "2025-07-20",
             "timestamp": null,
@@ -136,6 +201,20 @@
             "source_date": "2026-04-16",
             "timestamp": null,
             "source_url": null
+          },
+          {
+            "snippet": "anxiety tends to be more crippling than lack of focus, and N-Acetyl Selank handles it better than the regular version. Dosing: 100 to 300 mcg, one to two times per day. For severe anxiety or chronic s",
+            "source_title": "N-Acetyl Versions of Semax Selank Are They Really Better",
+            "source_date": "2026-03-29",
+            "timestamp": null,
+            "source_url": "https://library.hunterwilliamshealth.com/p/n-acetyl-versions-of-semax-selank-are-they-really-better--cf280eaf/"
+          },
+          {
+            "snippet": "r than the regular version. Dosing: 100 to 300 mcg, one to two times per day. For severe anxiety or chronic stress, I'd start at 500 mcg and work up to 1 mg per dose. Which version is right for you Re",
+            "source_title": "N-Acetyl Versions of Semax Selank Are They Really Better",
+            "source_date": "2026-03-29",
+            "timestamp": null,
+            "source_url": "https://library.hunterwilliamshealth.com/p/n-acetyl-versions-of-semax-selank-are-they-really-better--cf280eaf/"
           }
         ]
       }
@@ -178,25 +257,26 @@
   },
   "reset_biology_synthesis": {
     "status": "distilled",
-    "recommendation": "Reset Biology suggests asking the practitioner to consider Semax as a neurotrophic / cognitive-support peptide with the strongest expert overlap on dopamine + serotonin modulation, BDNF/TrkB signaling, and a Russian clinical track record cited as remarkably safe — Trevor (X4NsP-yhD-8 00:27:57.760): \"Decades of clinical use in Russia for stroke, brain injury, vascular disorders. Zero. I'll say it again. Zero adverse events. Impeccable toxicological profile.\" We'd ask the prescribing physician to weigh route carefully because the experts diverge sharply: Taylor (2m6fKa4Wd6k 00:07:14.520) \"for me I prefer nasal spray\" while Trevor (X4NsP-yhD-8 00:18:33.280) says \"stop squirting it in your nose. By the way, nasal sprays are bunk.\" Hunter (email threadId 19c06d9325e3862f 2026-01-28) frames Semax as gender-neutral: \"Semax + Selank — neurotrophic signaling (BDNF/TrkB) + immune/cytokine modulation. Don't require gender dosing.\"",
-    "caveats": "- Route dispute (nasal vs subq): Taylor (2m6fKa4Wd6k 00:06:16.360) \"inter nasally so with a nasal spray applicator\" and (00:06:29.960) \"when you do it inner nasal spray is that it's going directly to the brain quicker\"; Trevor (X4NsP-yhD-8 00:18:33.280) \"stop squirting it in your nose. By the way, nasal sprays are bunk\" and (00:18:43.120) \"the nasal membranes are not designed to transport in. It's not how it works.\"\n- Cycling required: Trevor (X4NsP-yhD-8 00:24:16.480) \"four weeks on, two weeks off\" and (00:24:23.840) \"you just want to prevent receptor down regulation, maintain efficacy.\"\n- Foundation-first sequencing: Hunter email threadId 195b0718ac68bbb2 (2025-03-19) \"no amount of selank, semax, or cerebrolysin will fully optimize your brain health. Start journaling consistently, THEN invest in peptides.\"\n- Specific clinical indications cited: Hunter email threadId 19d98523208598ae (2026-04-16) \"Semax — for cerebral ischemia, migraine, trigeminal neuralgia.\"\n- Regulatory status (April 2026): Hunter email threadId 19d98523208598ae (2026-04-16) lists Semax among 12 peptides removed from FDA Category 2; PCAC review July 24, 2026 — clinical-pathway access changing.\n- Hunter does NOT publish a Semax-specific dose ceiling in any of the surfaced emails — he only frames it as unisex receptor-binding neurotrophic peptide. Trevor does not state a milligram dose in the surfaced episode either; only cycling and route guidance.",
-    "cross_expert_consensus": "Mechanism — neurotrophic / BDNF + cognitive-support: Hunter email threadId 19c06d9325e3862f (2026-01-28): \"Semax + Selank — neurotrophic signaling (BDNF/TrkB) + immune/cytokine modulation.\" Taylor (2m6fKa4Wd6k 00:02:46.200): \"neuroprotective effects as well\" and (2m6fKa4Wd6k 00:02:54.879): \"it is going to help so much with your dopamine and serotonin levels.\" Trevor (X4NsP-yhD-8 00:25:08.000): describes a stack where \"the army is cerebral. This is a a peptide cocktail that is a direct infusion that just soaks you neurotrphic factors.\" Cognitive use case: Hunter email threadId 19829deefaf29db8 (2025-07-20): \"peptides known to boost cognitive function (think Dihexa, Semax, Cerebrolysin), you get a synergistic effect which leads to more neural growth, better mood, and faster recovery from mental fatigue.\" Hunter email threadId 19c112a2709941b7 (2026-01-30): \"Cerebrolysin alternatives: P21, PE-22-28, Selank, Semax.\" Taylor (2m6fKa4Wd6k 00:02:08.000): \"is a peptide that I have recently been using and it has made a huge difference in my brain cognition.\" Unisex dosing: Hunter email threadId 19c06d9325e3862f (2026-01-28): \"Don't require gender dosing.\"",
-    "cross_expert_disagreement": "Route disagreement is the central conflict. Taylor (2m6fKa4Wd6k 00:06:16.360): \"inter nasally so with a nasal spray applicator and you can use this um as a sub cute injection and I have done that and it works really great\" and Taylor (2m6fKa4Wd6k 00:07:14.520): \"for me I prefer nasal spray.\" Taylor (2m6fKa4Wd6k 00:06:29.960): \"when you do it inner nasal spray is that it's going directly to the brain quicker.\" Trevor (X4NsP-yhD-8 00:18:33.280): \"stop squirting it in your nose. By the way, nasal sprays are bunk.\" Trevor (X4NsP-yhD-8 00:18:43.120): \"the nasal membranes are not designed to transport in. It's not how it works.\" Dose: only Taylor publishes a number — Taylor (2m6fKa4Wd6k 00:06:09.800): \"I like to take anywhere between 200 to 600 micrograms.\" Hunter does not publish a Semax-specific dose in the surfaced emails (his email-summary 500 mcg / 20 mg / 120 mg numbers belong to a Pinealon protocol that merely lists Semax as a stack partner, not as Semax dosing). Trevor does not publish a numeric Semax dose in the surfaced episode. Frequency: Taylor (2m6fKa4Wd6k 00:07:21.639): \"you can actually take this anywhere between two to three times a day\" and (2m6fKa4Wd6k 00:07:35.759): \"I like to use it once a day.\" Cycling: Trevor (X4NsP-yhD-8 00:24:16.480): \"four weeks on, two weeks off\" — Taylor's 2024-11-15 video does not state a Semax-specific cycling window in the surfaced passages.",
+    "recommendation": "Reset Biology suggests asking the practitioner to consider Hunter's 2026-03-29 library source: \"CMAX is a synthetic analog of a fragment of adrenocortic tropic hormone, otherwise known as ACTH, and is considered nootropic, which is an agent that potentially improves cognitive function, memory, creativity, or motivation in healthy individuals. Keyword healthy. This is not one of those things we want to mask. any sort of problems with.\" [Hunter, semax-how-to-use-it-for-maximum-focus--cf7bc9d7, 00:02:54, https://library.hunterwilliamshealth.com/p/semax-how-to-use-it-for-maximum-focus--cf7bc9d7/] \"If you're not hormonally optimized, whether you are a man or woman, please look into that first before you go willy nilly and just to the hilt with nootropic peptides.\" [Hunter, semax-how-to-use-it-for-maximum-focus--cf7bc9d7, 00:01:13, https://library.hunterwilliamshealth.com/p/semax-how-to-use-it-for-maximum-focus--cf7bc9d7/]",
+    "caveats": "- Hunter (2026-03-29), semax-how-to-use-it-for-maximum-focus--cf7bc9d7, 00:10:02, https://library.hunterwilliamshealth.com/p/semax-how-to-use-it-for-maximum-focus--cf7bc9d7/: \"there's a potential for mild irritation in the administration type. There's the potential of headaches with initial use. And some people report dizziness and nausea. I've never had that but you could potentially get overstimulated or anxiety in sensitive individuals.\"\n- Hunter (2026-03-29), semax-how-to-use-it-for-maximum-focus--cf7bc9d7, 00:10:35, https://library.hunterwilliamshealth.com/p/semax-how-to-use-it-for-maximum-focus--cf7bc9d7/: \"if you are on an SSRI, if your on a bunch of different psychiatric medications, just be careful with these. I'm not saying it is necessarily going to do any harm to you. Just, be, careful. And again, just like make sure if you have any sort of like psychiatric physicians like consult with your doctor.\"\n- Hunter (2026-03-29), semax-how-to-use-it-for-maximum-focus--cf7bc9d7, 00:12:07, https://library.hunterwilliamshealth.com/p/semax-how-to-use-it-for-maximum-focus--cf7bc9d7/: \"anything over three hundred is usually just too much. and I think that's where you start to see more of the side effects of a headache and nausea and everything.\"\n- Trevor (2025-11-23), X4NsP-yhD-8, 00:24:16, https://youtu.be/X4NsP-yhD-8: \"four weeks on, two weeks off just because could you stay on it all the time? Always hesitant to answer that. I guess you could. I don't think it's a good idea.\" \"This you just want to prevent receptor down regulation, maintain efficacy.\" [00:24:23]",
+    "cross_expert_consensus": "Hunter (2026-03-29), semax-how-to-use-it-for-maximum-focus--cf7bc9d7, 00:05:04, https://library.hunterwilliamshealth.com/p/semax-how-to-use-it-for-maximum-focus--cf7bc9d7/: \"CMAX modulates BDNF expression and sensitivity.\" Taylor (2024-11-15), 2m6fKa4Wd6k, 00:05:54, https://youtu.be/2m6fKa4Wd6k: \"cmax being used for when you're really just needing to sharpen the mind and you're needing that cognitive boost.\" Trevor (2025-11-23), X4NsP-yhD-8, 00:24:54, https://youtu.be/X4NsP-yhD-8: \"CMAX. This is the CEO. This is the leader of the band. It issues the orders and upregulates neurotrophic command signals. BDNF, NGF.\"",
+    "cross_expert_disagreement": "Taylor (2024-11-15), 2m6fKa4Wd6k, 00:06:29, https://youtu.be/2m6fKa4Wd6k: \"when you do it inner nasal spray is that it's going directly to the brain quicker whereas in when you're doing a subq injection it does take a little bit longer.\" \"for me I prefer nasal spray\" [00:07:14]. Trevor (2025-11-23), X4NsP-yhD-8, 00:18:33, https://youtu.be/X4NsP-yhD-8: \"stop squirting it in your nose. By the way, nasal sprays are bunk.\" Hunter (2026-03-29), semax-how-to-use-it-for-maximum-focus--cf7bc9d7, 00:11:37, https://library.hunterwilliamshealth.com/p/semax-how-to-use-it-for-maximum-focus--cf7bc9d7/: \"if your like me and you just like to do subcutaneous injections because they're so easy and they are so effective, You're going to want to start at 100 to 300 micrograms once a day.\" Hunter (2026-03-29), n-acetyl-versions-of-semax-selank-are-they-really-better--cf280eaf, 00:13:17, https://library.hunterwilliamshealth.com/p/n-acetyl-versions-of-semax-selank-are-they-really-better--cf280eaf/: \"The nasal spray works. I just don't think it works as well. Actually think the injection works faster.\"",
     "acute_chronic_split": {
       "acute": null,
       "chronic": {
-        "dose": "Taylor (2m6fKa4Wd6k 00:06:09.800): \"I like to take anywhere between 200 to 600 micrograms\" — only expert publishing a numeric Semax dose in surfaced sources. Hunter and Trevor do not state a Semax-specific milligram/microgram dose in the surfaced sources.",
-        "route": "Disputed: Taylor (2m6fKa4Wd6k 00:07:14.520): \"for me I prefer nasal spray\" and (2m6fKa4Wd6k 00:06:22.599): \"you can use this um as a sub cute injection and I have done that and it works really great.\" Trevor (X4NsP-yhD-8 00:18:33.280): \"stop squirting it in your nose. By the way, nasal sprays are bunk\" and (X4NsP-yhD-8 00:18:43.120): \"the nasal membranes are not designed to transport in.\"",
-        "frequency": "Taylor (2m6fKa4Wd6k 00:07:21.639): \"you can actually take this anywhere between two to three times a day\"; Taylor (2m6fKa4Wd6k 00:07:35.759): \"I like to use it once a day.\"",
-        "duration": "Trevor (X4NsP-yhD-8 00:24:16.480): \"four weeks on, two weeks off\"; Trevor (X4NsP-yhD-8 00:24:23.840): \"you just want to prevent receptor down regulation, maintain efficacy.\"",
-        "verbatim_citation": "Taylor (2m6fKa4Wd6k 00:06:09.800): \"I like to take anywhere between 200 to 600 micrograms.\" Trevor (X4NsP-yhD-8 00:24:16.480): \"four weeks on, two weeks off.\"",
-        "episode_url": "https://youtu.be/2m6fKa4Wd6k",
-        "timestamp": "Taylor 00:06:09.800 dose; Taylor 00:07:14.520 route; Trevor X4NsP-yhD-8 00:24:16.480 cycling; Trevor X4NsP-yhD-8 00:18:33.280 nasal-bunk counterpoint"
+        "dose": "Hunter (2026-03-29), semax-how-to-use-it-for-maximum-focus--cf7bc9d7, 00:11:37, https://library.hunterwilliamshealth.com/p/semax-how-to-use-it-for-maximum-focus--cf7bc9d7/: \"750 to 1000 micrograms once a day if taken intra nasal\"; \"100 to 300 micrograms once a day\"; \"I would always say start a 100 and then kind of titrate from there based on how you feel.\" Hunter (2026-03-29), n-acetyl-versions-of-semax-selank-are-they-really-better--cf280eaf, 00:05:14, https://library.hunterwilliamshealth.com/p/n-acetyl-versions-of-semax-selank-are-they-really-better--cf280eaf/: \"regular C-max, typical dose is going to range from 200 to 600 micrograms, administered potentially two to three times per day.\" \"a lower dose of 100 to 300 micro grams taken one to two times per day of the Amidate version is often enough\"; 00:05:46: \"what I'll do a lot times is like one milligram and that's injected subcutaneously.\" Taylor (2024-11-15), 2m6fKa4Wd6k, 00:06:06, https://youtu.be/2m6fKa4Wd6k: \"I like to take anywhere between 200 to 600 micrograms.\"",
+        "route": "Hunter (2026-03-29), semax-how-to-use-it-for-maximum-focus--cf7bc9d7, 00:12:07, https://library.hunterwilliamshealth.com/p/semax-how-to-use-it-for-maximum-focus--cf7bc9d7/: \"my recommendation is to sub-q, but again if want to this intranasally.\" Taylor (2024-11-15), 2m6fKa4Wd6k, 00:06:16, https://youtu.be/2m6fKa4Wd6k: \"I like to do this um inter nasally so with a nasal spray applicator and you can use this um as a sub cute injection and I have done that and it works really great.\" Trevor (2025-11-23), X4NsP-yhD-8, 00:18:33, https://youtu.be/X4NsP-yhD-8: \"nasal sprays are bunk.\"",
+        "frequency": "Hunter (2026-03-29), semax-how-to-use-it-for-maximum-focus--cf7bc9d7, 00:11:37, https://library.hunterwilliamshealth.com/p/semax-how-to-use-it-for-maximum-focus--cf7bc9d7/: \"once a day\"; Hunter (2026-03-29), n-acetyl-versions-of-semax-selank-are-they-really-better--cf280eaf, 00:05:14, https://library.hunterwilliamshealth.com/p/n-acetyl-versions-of-semax-selank-are-they-really-better--cf280eaf/: \"two to three times per day\"; \"one to two times per day\" [N-Acetyl]. Taylor (2024-11-15), 2m6fKa4Wd6k, 00:07:21, https://youtu.be/2m6fKa4Wd6k: \"you can actually take this anywhere between two to three times a day\"; 00:07:29: \"I typically don't need to take it more than than once a day um but that's just my situation.\"",
+        "duration": "Trevor (2025-11-23), X4NsP-yhD-8, 00:24:16, https://youtu.be/X4NsP-yhD-8: \"four weeks on, two weeks off\"; Hunter (2026-03-29), semax-how-to-use-it-for-maximum-focus--cf7bc9d7, 00:16:20, https://library.hunterwilliamshealth.com/p/semax-how-to-use-it-for-maximum-focus--cf7bc9d7/: \"I'm not going to say like I use these all the time.\"",
+        "verbatim_citation": "Hunter (2026-03-29), semax-how-to-use-it-for-maximum-focus--cf7bc9d7, 00:11:37, https://library.hunterwilliamshealth.com/p/semax-how-to-use-it-for-maximum-focus--cf7bc9d7/: \"750 to 1000 micrograms once a day if taken intra nasal\"; \"100 to 300 micrograms once a day.\" Taylor (2024-11-15), 2m6fKa4Wd6k, 00:06:06, https://youtu.be/2m6fKa4Wd6k: \"I like to take anywhere between 200 to 600 micrograms.\"",
+        "episode_url": "https://library.hunterwilliamshealth.com/p/semax-how-to-use-it-for-maximum-focus--cf7bc9d7/; https://library.hunterwilliamshealth.com/p/n-acetyl-versions-of-semax-selank-are-they-really-better--cf280eaf/; https://youtu.be/2m6fKa4Wd6k; https://youtu.be/X4NsP-yhD-8",
+        "timestamp": "Hunter semax-how-to-use-it-for-maximum-focus--cf7bc9d7 00:11:37 dose/frequency; Hunter n-acetyl-versions-of-semax-selank-are-they-really-better--cf280eaf 00:05:14 dose/frequency and 00:05:46 1 mg; Taylor 2m6fKa4Wd6k 00:06:06 dose and 00:07:21 frequency; Trevor X4NsP-yhD-8 00:24:16 cycling"
       }
     },
-    "female_specific_notes": "Taylor's 2024-11-15 Semax-vs-Selank video frames Semax as the focus/cognition tool and reserves Selank for hormone-cycle-driven anxiety: Taylor (2m6fKa4Wd6k 00:17:29.200): \"my lit phase of my menstrual cycles are tough\" and (2m6fKa4Wd6k 00:17:33.039): \"I definitely will use slink during my Ludo phase of my cycle especially if I'm having to be social.\" No female-specific Semax dose ceiling is stated; Taylor uses the same 200-600 mcg range she gives generally. Hunter's gender-dosing email is explicit that Semax does NOT require sex-specific adjustment — Hunter email threadId 19c06d9325e3862f (2026-01-28): \"Semax + Selank — neurotrophic signaling (BDNF/TrkB) + immune/cytokine modulation. Don't require gender dosing.\"",
-    "distilled_at": "2026-04-27T05:44:15.497Z",
-    "distilled_by": "claude"
+    "female_specific_notes": "Taylor (2025-03-14), aYuXqSfhPYE, 00:13:02, https://youtu.be/aYuXqSfhPYE: \"this is also a really great peptide um combination to be using especially for my menopause women that are going through menopause because we all talk about like and hear about how bad like the brain fog and fatigue is during menopause\"; 00:13:34: \"it also would pair really well too with um semax.\"",
+    "distilled_at": "2026-07-17T03:44:33.5594265-06:00",
+    "distilled_by": "codex"
   },
-  "generated_at": "2026-04-27T02:02:34.998Z"
+  "generated_at": "2026-07-17T10:59:09.228Z",
+  "mentions_fingerprint": "f52e94367ed1"
 }

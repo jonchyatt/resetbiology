@@ -5,49 +5,63 @@
     "DSIP",
     "dsip",
     "Delta sleep inducing peptide",
-    "delta sleep inducing peptide"
+    "delta sleep inducing peptide",
+    "Delta Sleep Inducing Peptide",
+    "DSip"
   ],
-  "category": "Uncategorized",
+  "category": "Sleep",
   "experts": {
     "hunter-williams": {
       "baseline_protocol": null,
       "summary": {
-        "mention_count": 52,
+        "mention_count": 140,
         "top_doses": [
           {
             "dose": "5 mg",
-            "count": 11
-          },
-          {
-            "dose": "150 mcg",
-            "count": 3
-          },
-          {
-            "dose": "500 mcg",
-            "count": 3
+            "count": 13
           },
           {
             "dose": "10 units",
-            "count": 2
+            "count": 6
           },
           {
-            "dose": "250 mcg",
-            "count": 1
+            "dose": "500 mcg",
+            "count": 5
           },
           {
-            "dose": "200 mg",
-            "count": 1
+            "dose": "250 micrograms",
+            "count": 5
           },
           {
-            "dose": "1.5 mg",
-            "count": 1
+            "dose": "100 mg",
+            "count": 5
+          },
+          {
+            "dose": "150 mcg",
+            "count": 4
+          },
+          {
+            "dose": "4 iu",
+            "count": 4
           },
           {
             "dose": "400 mcg",
-            "count": 1
+            "count": 3
           }
         ],
         "top_sources": [
+          {
+            "source_id": "dsip-updated-dosing-sleep-and-opioid-withdrawal-research--a23e73c6",
+            "source_type": "library-video",
+            "source_title": "DSIP Updated: Dosing, Sleep, and Opioid Withdrawal Research",
+            "source_date": "2026-03-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/dsip-updated-dosing-sleep-and-opioid-withdrawal-research--a23e73c6/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/dsip-updated-dosing-sleep-and-opioid-withdrawal-research--a23e73c6.json",
+            "mention_count": 36,
+            "top_snippet": "Hey everybody, Suntra Williams. I hope you're doing amazing wherever you might be in the world. Today's video is going to be all about DCIP. DCIPS stands for Delta Sleep Inducing Peptide. And I made a video probably 18 or 20 months ago about So I figured it's time to do a new one. And actually, since then, there's actually been literature that I have found that kind of gives an updated and informed look into DSIP. Thanks to you guys through submitting questions and suggestions into my question box, which is always in the description of the videos,",
+            "top_context": "Hey everybody, Suntra Williams. I hope you're doing amazing wherever you might be in the world. Today's video is going to be all about DCIP. DCIPS stands for Delta Sleep Inducing Peptide. And I made a video probably 18 or 20 months ago about So I figured it's time to do a new one. And actually, since then, there's actually been literature that I have found that kind of gives an updated and informed look into DSIP. Thanks to you guys through submitting questions and suggestions into my question box, which is always in the description of the videos, I was turned on to some older literature around DSOP actually being used in opioid withdrawal. So DCIP, most people think, okay, DCEP is the sleep peptide, right? Yes and no. It's actually more of like a circadian rhythm peptides. That's really cool. And by being a circuitian rhythm, peptid, it can absolutely help with sleep. Today, I want to go over just some updated info that I have come across since I last talked about DCP. Also give a little bit of an update to the dosing because I've played around a lot with the docing.",
+            "first_timestamp": "0:09"
+          },
           {
             "source_id": "1975bfa8f26850f6",
             "source_type": "email",
@@ -56,9 +70,21 @@
             "source_url": null,
             "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-06-10-dsip-for-opiate-withdrawal.md",
             "mention_count": 32,
-            "top_snippet": "ew weeks back, I was scrolling through the submissions in my weekly [question box ](https://hunterwilliamsvideotopic.carrd.co/)(by the way, if you’re not submitting your peptide questions, get on it!)",
-            "top_context": "ew weeks back, I was scrolling through the submissions in my weekly [question box ](https://hunterwilliamsvideotopic.carrd.co/)(by the way, if you’re not submitting your peptide questions, get on it!), and I noticed something I’d never seen before. A reader tipped me off to a study showing that DSIP eliminated nearly all symptoms of opioid withdrawal. Now, after years in the trenches researching therapeutic peptides, I don’t get surprised easily. But DSIP? For opioid withdrawal? That was new—even for me. But the data is promising, and today I want to break down everything I’ve l",
+            "top_snippet": "few weeks back, I was scrolling through the submissions in my weekly [question box ](https://hunterwilliamsvideotopic.carrd.co/)(by the way, if you’re not submitting your peptide questions, get on it!",
+            "top_context": "few weeks back, I was scrolling through the submissions in my weekly [question box ](https://hunterwilliamsvideotopic.carrd.co/)(by the way, if you’re not submitting your peptide questions, get on it!), and I noticed something I’d never seen before. A reader tipped me off to a study showing that DSIP eliminated nearly all symptoms of opioid withdrawal. Now, after years in the trenches researching therapeutic peptides, I don’t get surprised easily. But DSIP? For opioid withdrawal? That was new—even for me. But the data is promising, and today I want to break down everything I’ve learned f",
             "first_timestamp": null
+          },
+          {
+            "source_id": "dsip-how-to-use-it-to-enhance-deep-sleep--ae3f528a",
+            "source_type": "library-video",
+            "source_title": "DSIP | How To Use It To Enhance Deep Sleep",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/dsip-how-to-use-it-to-enhance-deep-sleep--ae3f528a/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/dsip-how-to-use-it-to-enhance-deep-sleep--ae3f528a.json",
+            "mention_count": 30,
+            "top_snippet": "Hey everybody. This is Hunter Williams. I hope you were doing amazing wherever you are at in the world. Today's video is going to be everything you must know about DCIP, otherwise known as Delta sleep inducing peptide. So one of the most common questions I get asked by people on my channel and coaching clients and people in our private community. is what can I do to sleep better? I seriously think that maybe one out of three or one of the two people, at least in the United States and probably across the world right now have struggles or problems with sleep. So today I'm going to be explaining how you can use Delta sleep inducing peptide, AKA DCIP, to improve your sleep quality and overall your life quality.",
+            "top_context": "Hey everybody. This is Hunter Williams. I hope you were doing amazing wherever you are at in the world. Today's video is going to be everything you must know about DCIP, otherwise known as Delta sleep inducing peptide. So one of the most common questions I get asked by people on my channel and coaching clients and people in our private community. is what can I do to sleep better? I seriously think that maybe one out of three or one of the two people, at least in the United States and probably across the world right now have struggles or problems with sleep. So today I'm going to be explaining how you can use Delta sleep inducing peptide, AKA DCIP, to improve your sleep quality and overall your life quality. Cause there will be one thing in your that will absolutely guarantee you have a pretty good life or a bad life and that is how well you sleep. So I'm going to be covering all that. I want to talk about the benefits of it, the dosage, how to use it and how, to reconstitute, if you get it like in a five milligram bio or whatever it is,",
+            "first_timestamp": "0:09"
           },
           {
             "source_id": "19b055eeb0fca283",
@@ -80,64 +106,64 @@
             "source_url": null,
             "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-07-16-the-first-responder-peptide-stack.md",
             "mention_count": 6,
-            "top_snippet": "xins, and accelerate wound healing. If you’re constantly exposed to new bugs, LL-37 gives your immune system the edge it needs to prevent and quickly clear infections. It’s not a “maybe,” it’s a found",
-            "top_context": "xins, and accelerate wound healing. If you’re constantly exposed to new bugs, LL-37 gives your immune system the edge it needs to prevent and quickly clear infections. It’s not a “maybe,” it’s a foundational immune defense your body _should_ have more of. ——————————————————————————— **DSIP** You can train, you can eat right, but if you don’t sleep, you don’t recover. DSIP (Delta Sleep-Inducing Peptide) helps your brain achieve deep, restorative sleep, even when rotating shifts disrupt your circadian rhythm. In controlled studies, DSIP increased the time spent in deep (delt",
+            "top_snippet": "alize toxins, and accelerate wound healing. If you’re constantly exposed to new bugs, LL-37 gives your immune system the edge it needs to prevent and quickly clear infections. It’s not a “maybe,” it’s",
+            "top_context": "alize toxins, and accelerate wound healing. If you’re constantly exposed to new bugs, LL-37 gives your immune system the edge it needs to prevent and quickly clear infections. It’s not a “maybe,” it’s a foundational immune defense your body _should_ have more of. ——————————————————————————— **DSIP** You can train, you can eat right, but if you don’t sleep, you don’t recover. DSIP (Delta Sleep-Inducing Peptide) helps your brain achieve deep, restorative sleep, even when rotating shifts disrupt your circadian rhythm. In controlled studies, DSIP increased the time spent in deep (delta) sle",
             "first_timestamp": null
           },
           {
-            "source_id": "he_GzaUMwpI",
-            "source_type": "podcast",
-            "source_title": "The FDA Just Changed Everything for Peptides | My Honest Take",
-            "source_date": "2026-04-17",
-            "source_url": "https://youtu.be/he_GzaUMwpI",
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-04-17-the-fda-just-changed-everything-for-peptides-my-honest-take-he_GzaUMwpI.en.vtt",
-            "mention_count": 3,
-            "top_snippet": "more mainstream peptides that are out there like BPC, KPV, DSIP, epitalon,",
-            "top_context": "to government stuff, as they always say to government stuff, as they always say like you there's two things you don't like you there's two things you don't like you there's two things you don't want to be made as sausage and want to be made as sausage and want to be made as sausage and um laws. And this is one of those things um laws. And this is one of those things um laws. And this is one of those things it takes time to play out and uh we will it takes time to play out and uh we will it takes time to play out and uh we will likely see the fruits of whatever is likely see the fruits of whatever is likely see the fruits of whatever is happening probably another 1 to 2 years happening probably another 1 to 2 years happening probably another 1 to 2 years in the future. But at the end of the in the future. But at the end of the in the future. But at the end of the day, I would not fear I would not be day, I would not fear I would not be day, I would not fear I would not be worried that your peptides are going to worried that your peptides are going to worried that your peptides are going to be taken away. Yes, over the years I'm be taken away. Yes, over the years I'm be taken away. Yes, over the years I'm sure the access to them will change, um sure the access to them will change, um sure the access to them will change, um but to all the people in the research but to all the people in the research but to all the people in the research world, I wouldn't get super up in arms world, I wouldn't get super up in arms world, I wouldn't get super up in arms about what is going on. At least I'm not about what is going on. At least I'm not about what is going on. At least I'm not panicking right now and maybe there panicking right now and maybe there panicking right now and maybe there there is good reason to panic. I don't there is good reason to panic. I don't there is good reason to panic. I don't have all the insider information, have all the insider information, have all the insider information, um but at least that's not what I am um but at least that's not what I am um but at least that's not what I am thinking. I think this is going to be a thinking. I think this is going to be a thinking. I think this is going to be a good thing and I think eventually the good thing and I think eventually the good thing and I think eventually the prices will come down to meet the prices will come down to meet the prices will come down to meet the research world at least with some of the research world at least with some of the research world at least with some of the more mainstream peptides that are out more mainstream peptides that are out more mainstream peptides that are out there like BPC, KPV, DSIP, epitalon, there like BPC, KPV, DSIP, epitalon, there like BPC, KPV, DSIP, epitalon, GHK, some of those ones that are on the GHK, some of those ones that are on the GHK, some of those ones that are on the list. So, list. So, list. So, we will see what happen happens. It's we will see what happen happens. It's we will see what happen happens. It's definitely say what you will, it is definitely say what you will, it is definitely say what you will, it is interesting time to be alive seems like interesting time to be alive seems like interesting time to be alive seems like right now and uh maybe this is my own right now and uh maybe this is my own right now and uh maybe this is my own personal bias like AI and peptides are personal bias like AI and peptides are personal bias like AI and peptides are the two biggest things right now. And the two biggest things right now. And the two biggest things right now. And peptides maybe even be be bigger than peptides maybe even be be bigger than peptides maybe even be be bigger than AI. Probably not, but um it's fun to AI. Probably not, but um it's fun to AI. Probably not, but um it's fun to think about. So, uh that's it for this think about. So, uh that's it for this think about. So, uh that's it for this one. As always in closing, thank you one. As always in closing, thank you one. As always in closing, thank you guys so much for the overwhelming amount guys so much for the overwhelming amount guys so much for the overwhelming amount of support, whatever form or fashion it of support, whatever form or fashion it of support, whatever form or fashion it is, whether you share this video with is, whether you share this video with is, whether you share this video with friends and family, whether you sign up friends and family, whether you sign up friends and family, whether you sign up for the email list, whether you're in my for the email list, whether you're in my for the email list, whether you're in my private group, um or you use my code at private group, um or you use my code at private group, um or you use my code at places, thank you so much. It goes so places, thank you so much. It goes so places, thank you so much. It goes so far in helping me bring these messages far in helping me bring these messages far in helping me bring these messages to you and uh it's truly a dream come to you and uh it's truly a dream come to you and uh it's truly a dream come true for me to be able to do this and uh true for me to be able to do this and uh true for me to be able to do this and uh have the relationship I do with you",
-            "first_timestamp": "00:17:42.920"
+            "source_id": "peptide-cancer-claims-debunked-20-studies-analyzed--d875c3bf",
+            "source_type": "library-video",
+            "source_title": "Peptide Cancer Claims Debunked | 20+ Studies Analyzed",
+            "source_date": "2026-05-25",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-cancer-claims-debunked-20-studies-analyzed--d875c3bf/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-cancer-claims-debunked-20-studies-analyzed--d875c3bf.json",
+            "mention_count": 5,
+            "top_snippet": "All right, let's look at DCIP. This is pretty cool. So DCP is Delta Sleep Inducing Peptide. We have a 2003 study that looked at mechanisms of aging and development. So, female SHR mice injected monthly with DCEP from age 3 months until death. Dcep cuts spontaneous tumor incidence 2.6-fold versus controls, mainly mammary tumors and leukemias. So the maximum lifespan was extended 24% for the animals injected with bone marrow chromosome aberrations were reduced by 22.6%. And the reason that we",
+            "top_context": "So again, we can't say that it eliminated tumors, but it enhanced the health of the rodents to the point that a prolonged survival and the ones that took BPC 157 with cancer survived longer than the one's that did not. Can we extrapolate that to humans? No, there's obviously differences between humans and rodent, But that's the closest thing that we have around Bpc 15 7 as it relates to cancer. Take those with a grain of salt as you will, but this is real data that we have on it rather than just saying on a podcast clip, hey, BPC-157 causes cancer, stay away from it. All right, let's look at DCIP. This is pretty cool. So DCP is Delta Sleep Inducing Peptide. We have a 2003 study that looked at mechanisms of aging and development. So, female SHR mice injected monthly with DCEP from age 3 months until death. Dcep cuts spontaneous tumor incidence 2.6-fold versus controls, mainly mammary tumors and leukemias. So the maximum lifespan was extended 24% for the animals injected with bone marrow chromosome aberrations were reduced by 22.6%. And the reason that we think this is because it's an antioxidant and it works on pineal axis restoration, which obviously enhances a ton of things, including melatonin production, Looking at DCIP, does it eliminate tumors or prevent the creation of spontaneous tumors in humans? We don't know, but we do have direct evidence that it reduced the average rate of tumor incidence in mice and it had all these positive benefits for life extension and everything in my mice. And so mechanistically speaking, when you say, wow, DCEP looks pretty good as it relates to that.",
+            "first_timestamp": "8:38"
           },
           {
-            "source_id": "19d98523208598ae",
-            "source_type": "email",
-            "source_title": "New Peptide Announcement from the FDA (Category 2 → 503A)",
-            "source_date": "2026-04-16",
-            "source_url": null,
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2026-04-16-fda-peptide-announcement-pcac-503a.md",
-            "mention_count": 2,
-            "top_snippet": "extremely difficult → Most popular peptides placed in Category 2 → pharmacies stopped compounding → doctors couldn't prescribe → research peptide market exploded ## ⭐ April 15, 2026 — FDA Removes 12 P",
-            "top_context": "extremely difficult → Most popular peptides placed in Category 2 → pharmacies stopped compounding → doctors couldn't prescribe → research peptide market exploded ## ⭐ April 15, 2026 — FDA Removes 12 Peptides from Category 2 ### The 12 removed - **BPC-157** - **KPV** - **TB-500** - **MOTS-c** - **DSIP** - **Semax** - **Epitalon** - **GHK-Cu** (injectable) - **LL-37** - **Dihexa** - **PEG-MGF** - **Melanotan II** ## ⭐ April 16, 2026 — PCAC Meeting Scheduled (July 23-24, 2026) Federal Register notice — Pharmacy Compounding Advisory Committee (PCAC) meeting at FDA's White Oak Campus, Silver Sprin",
-            "first_timestamp": null
+            "source_id": "reader-mailbag-3-traveling-glutathione-sleep-more-hunter-taylor-williams--5863331e",
+            "source_type": "library-video",
+            "source_title": "Reader Mailbag 3 — Traveling, Glutathione, Sleep & More | Hunter & Taylor Williams",
+            "source_date": "2026-05-25",
+            "source_url": "https://library.hunterwilliamshealth.com/p/reader-mailbag-3-traveling-glutathione-sleep-more-hunter-taylor-williams--5863331e/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/reader-mailbag-3-traveling-glutathione-sleep-more-hunter-taylor-williams--5863331e.json",
+            "mention_count": 4,
+            "top_snippet": "But should she, really can't sleep and she Chronic female insomnia. She's going through perimenopause. Would DSIP and Solanke help? So we obviously talked to a lot of people like this, going to peri-menopausal, they can't sleep. They have a whole lot hormone issues going on. What would be your recommendation for someone that is struggling with this? Okay, so first of all, I would stop taking the MK 677. I will switch to MK 777 because it does tend to trigger less of that binge eating and that hunger.",
+            "top_context": "Like people I used to work with would drive 45 minutes to Work and not have any memory of ever driving. It's crazy. Yeah. So this person, this is actually interesting. They've been using, This is a woman. She's been Using MK six, seven, Seven. And she said she got really good benefit for sleep out of it. But now she's binge eating and worried about insulin resistance because she is on MK 6, 7, That's very common. Yeah, that's common with 677. With that. And now she's wondering, she doesn't like CJC or IPA because of the histamine reaction to those, which she didn't get from the AMK. But should she, really can't sleep and she Chronic female insomnia. She's going through perimenopause. Would DSIP and Solanke help? So we obviously talked to a lot of people like this, going to peri-menopausal, they can't sleep. They have a whole lot hormone issues going on. What would be your recommendation for someone that is struggling with this? Okay, so first of all, I would stop taking the MK 677. I will switch to MK 777 because it does tend to trigger less of that binge eating and that hunger. So I stop that one and I switch, try MK777. Also the foundation is going to be hormones. Where are we at with hormone replacement therapy? For women, sleep is gonna be such a big one and that's going to depend on where you're at with your testosterone, your estradiol, and progesterone. Progesteron is going help so much with you sleep, even if you are post-menopausal.",
+            "first_timestamp": "28:35"
           },
           {
-            "source_id": "196ff329b54df0ca",
-            "source_type": "email",
-            "source_title": "Credit Cards vs. Peptides",
-            "source_date": "2025-05-23",
-            "source_url": null,
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-05-23-credit-cards-vs-peptides.md",
-            "mention_count": 1,
-            "top_snippet": "ike BioLongevity Labs sell therapeutic peptides as “research chemicals,” we can deliver life-changing products at affordable prices. We’re talking about peptides like: * **Retatrutide (GLP-3) for fat ",
-            "top_context": "ike BioLongevity Labs sell therapeutic peptides as “research chemicals,” we can deliver life-changing products at affordable prices. We’re talking about peptides like: * **Retatrutide (GLP-3) for fat loss** * **Tesamorelin for fat loss and muscle gain** * **BPC-157 for healing** * **DSIP for better sleep** Eli Lilly—and other Big Pharma giants—sell many of these same molecules at exorbitant prices. We’re talking about a markup so extreme it would make your head spin—peptides that cost them a few dollars per vial, sold to consumers (or insurance companies) for hundreds or eve",
+            "source_id": "the-ultimate-sleep-stack-peptides-and-supplements-for-deep-sleep--50798333",
+            "source_type": "library-article",
+            "source_title": "The Ultimate Sleep Stack Peptides and Supplements for Deep Sleep",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/the-ultimate-sleep-stack-peptides-and-supplements-for-deep-sleep--50798333/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/the-ultimate-sleep-stack-peptides-and-supplements-for-deep-sleep--50798333.json",
+            "mention_count": 4,
+            "top_snippet": "rowth hormone has a powerful effect on relaxation and getting into deep sleep. Is 4 IU long term ideal? Probably not. But what's worse, taking 4 IU of GH or not sleeping? Not sleeping, every time. For",
+            "top_context": "rowth hormone has a powerful effect on relaxation and getting into deep sleep. Is 4 IU long term ideal? Probably not. But what's worse, taking 4 IU of GH or not sleeping? Not sleeping, every time. For someone really struggling, GH does a better job than Tesamorelin or Ipamorelin in my experience. DSIP (Delta Sleep-Inducing Peptide) Let me be very clear. DSIP does not help you fall asleep. Delta sleep is one of the later, deeper stages of sleep, and DSIP helps you get there and stay there. It regulates sleep cycles, reduces cortisol, and supports central nervous system relaxation. Dose is 200 t",
             "first_timestamp": null
           }
         ],
         "acute_signals": [
           {
-            "snippet": ": * Pair DSIP with social support (groups, therapy, accountability partners) * Optimize your nutrition, hydration, and mineral intake (withdrawal trashes electrolytes) * Exercise and sunlight, even in",
+            "snippet": "of success: * Pair DSIP with social support (groups, therapy, accountability partners) * Optimize your nutrition, hydration, and mineral intake (withdrawal trashes electrolytes) * Exercise and sunligh",
             "source_title": "DSIP for Opiate Withdrawal?",
             "source_date": "2025-06-10",
             "timestamp": null,
             "source_url": null
           },
           {
-            "snippet": "iene matters more than ever * **DSIP is just a tool.** Don’t skip the hard work. If you’re in crisis, reach out to a medical professional or addiction specialist. ——————————————————————————— **Further",
+            "snippet": "Sleep hygiene matters more than ever * **DSIP is just a tool.** Don’t skip the hard work. If you’re in crisis, reach out to a medical professional or addiction specialist. ——————————————————————————— ",
             "source_title": "DSIP for Opiate Withdrawal?",
             "source_date": "2025-06-10",
             "timestamp": null,
             "source_url": null
           },
           {
-            "snippet": "xins, and accelerate wound healing. If you’re constantly exposed to new bugs, LL-37 gives your immune system the edge it needs to prevent and quickly clear infections. It’s not a “maybe,” it’s a found",
+            "snippet": "alize toxins, and accelerate wound healing. If you’re constantly exposed to new bugs, LL-37 gives your immune system the edge it needs to prevent and quickly clear infections. It’s not a “maybe,” it’s",
             "source_title": "The First Responder Peptide Stack",
             "source_date": "2025-07-16",
             "timestamp": null,
@@ -160,35 +186,35 @@
         ],
         "chronic_signals": [
           {
-            "snippet": "Unlike benzos or heavy-duty narcotics, DSIP doesn’t sedate you into oblivion or carry a risk of dependency. Instead, it seems to modulate withdrawal at the source, by stabilizing the disrupted neuroch",
+            "snippet": "drawal. Unlike benzos or heavy-duty narcotics, DSIP doesn’t sedate you into oblivion or carry a risk of dependency. Instead, it seems to modulate withdrawal at the source, by stabilizing the disrupted",
             "source_title": "DSIP for Opiate Withdrawal?",
             "source_date": "2025-06-10",
             "timestamp": null,
             "source_url": null
           },
           {
-            "snippet": "Instead, it seems to modulate withdrawal at the source, by stabilizing the disrupted neurochemistry and blunting some of the harshest symptoms. ——————————————————————————— **How DSIP Works for Withdra",
+            "snippet": "ndency. Instead, it seems to modulate withdrawal at the source, by stabilizing the disrupted neurochemistry and blunting some of the harshest symptoms. ——————————————————————————— **How DSIP Works for",
             "source_title": "DSIP for Opiate Withdrawal?",
             "source_date": "2025-06-10",
             "timestamp": null,
             "source_url": null
           },
           {
-            "snippet": "——————————————————————————— **How DSIP Works for Withdrawal ** So, why would a “sleep peptide” help with opioid withdrawal? Mechanistically, DSIP is a bit of a Swiss Army knife. The research suggests ",
+            "snippet": "symptoms. ——————————————————————————— **How DSIP Works for Withdrawal ** So, why would a “sleep peptide” help with opioid withdrawal? Mechanistically, DSIP is a bit of a Swiss Army knife. The research",
             "source_title": "DSIP for Opiate Withdrawal?",
             "source_date": "2025-06-10",
             "timestamp": null,
             "source_url": null
           },
           {
-            "snippet": "h several systems that get trashed by chronic opioid use. First, DSIP appears to modulate the endogenous opioid system—think of it as gently “resetting” the body’s natural pain-relief and stress-respo",
+            "snippet": "with several systems that get trashed by chronic opioid use. First, DSIP appears to modulate the endogenous opioid system—think of it as gently “resetting” the body’s natural pain-relief and stress-re",
             "source_title": "DSIP for Opiate Withdrawal?",
             "source_date": "2025-06-10",
             "timestamp": null,
             "source_url": null
           },
           {
-            "snippet": "te for a comprehensive recovery plan. It seems to help take the edge off, making the process more tolerable so you can focus on the deep work: therapy, social support, and repairing your life. ———————",
+            "snippet": "substitute for a comprehensive recovery plan. It seems to help take the edge off, making the process more tolerable so you can focus on the deep work: therapy, social support, and repairing your life.",
             "source_title": "DSIP for Opiate Withdrawal?",
             "source_date": "2025-06-10",
             "timestamp": null,
@@ -387,33 +413,34 @@
   },
   "reset_biology_synthesis": {
     "status": "distilled",
-    "recommendation": "Reset Biology suggests asking the practitioner to consider DSIP (Delta Sleep-Inducing Peptide) as a circadian-rhythm and HPA-axis modulator rather than a sedative — primarily for stress-driven insomnia, jet lag / shift-work disruption, and as an adjunct in supervised opioid- or alcohol-withdrawal protocols where the 1980s human-data signal is strong. We'd ask the prescribing physician to weigh starting dose (Hunter and Taylor both anchor 100 mcg subQ; Bachmeyer's experimental ceiling is 500 mcg), timing (30 min to 3 hours before sleep depending on the expert), and a finite cycle (Bachmeyer suggests ~20 days; Hunter suggests 8-12 week blocks; Taylor cycles 5 days on / 2 days off for 8 weeks). DSIP is consistently framed as a tool, not a sleeping pill, and never as a stand-alone therapy for withdrawal.",
-    "caveats": "- Not a sedative and not Ambien — Hunter (19b055eeb0fca283 2025-12-09): \"DSIP is NOT Ambien. It's a tool that interfaces directly with your sleep architecture, circadian rhythm, and stress response.\"\n- Not a stand-alone withdrawal therapy — Hunter (1975bfa8f26850f6 2025-06-10): \"DSIP isn't FDA-approved for opioid withdrawal, and results vary. You should not view this as a stand-alone treatment.\"\n- Mostly small open-label trials, no large RCTs — Hunter (1975bfa8f26850f6 2025-06-10): \"The results, while promising, are based on small open-label studies—no massive gold-standard RCTs yet.\"\n- Headache is the recurring minor side effect — Hunter (1975bfa8f26850f6 2025-06-10): \"DSIP is well-tolerated in studies, with headaches as the only recurring minor side effect.\"\n- Don't push past Bachmeyer's experimental ceiling — Trevor (CksP80BjgpI 00:10:31.839): \"Don't go more than that.\"\n- Bachmeyer keeps the cycle short — Trevor (CksP80BjgpI 00:10:33.200): \"in your research and you don't stay on it forever, 20 days, take it once just to see how it is.\"\n- If still actively using opiates, DSIP doesn't block opiate effects or protect against overdose — Hunter (1975bfa8f26850f6 2025-06-10): \"If you're still taking opiates, it won't block their effects or protect you from overdose.\"\n- Pair with the foundational work, not in place of it — Hunter (1975bfa8f26850f6 2025-06-10): \"DSIP is just a tool. Don't skip the hard work. If you're in crisis, reach out to a medical professional or addiction specialist.\"",
-    "cross_expert_consensus": "All three experts anchor a starting dose of 100 mcg subcutaneously, in the evening before bed:\n- Hunter (19b055eeb0fca283 2025-12-09): \"Starting dose: 100-200 mcg subQ\" and \"1-3 hours before bed.\"\n- Taylor (9Ibjy2ROaA0 00:13:12.560): \"I would start off with a dose around 100 micrograms and I would take this anywhere between an hour to three hours before bed.\"\n- Trevor (CksP80BjgpI 00:10:27.040): \"100 micrograms to 500 micrograms 30 minutes prior to sleep.\"\nAll three frame DSIP as a circadian / HPA-axis modulator rather than a sedative:\n- Hunter (19b055eeb0fca283 2025-12-09): \"Less a 'sleep drug' and more a CIRCADIAN RHYTHM peptide that just happens to impact sleep dramatically.\"\n- Trevor (UrlUjuiur-8 00:09:57.920): \"DIP is the upstream command that reboots your entire system into repair mode.\"\n- Taylor (9Ibjy2ROaA0 00:00:35.239) introduces it as \"the Delta sleep inducing peptide... a natural occurrence in the body.\"\nAll three keep DSIP on a finite cycle rather than continuous daily use:\n- Hunter (19b055eeb0fca283 2025-12-09): \"Chronic issue: 8-12 week blocks, then cycle off or adjust.\"\n- Taylor (9Ibjy2ROaA0 00:13:47.639): \"five days with a two days off a week so five days a week off two days and then I would take that honestly for an 8 week cycle.\"\n- Trevor (CksP80BjgpI 00:10:35.600): \"20 days, take it once just to see how it is.\"",
-    "cross_expert_disagreement": "Working / target dose ceiling:\n- Hunter (19b055eeb0fca283 2025-12-09): \"Working range: 300-500 mcg subQ\" with \"Hunter's sweet spot: 500 mcg.\"\n- Hunter for opiate withdrawal (1975bfa8f26850f6 2025-06-10): \"Dose: 250 micrograms (mcg) per day\" for 8 weeks minimum.\n- Hunter in the First Responder stack (198154a515982b37 2025-07-16): \"300-400 mcg... SubQ injection. 30 min before desired sleep time.\"\n- Trevor (CksP80BjgpI 00:10:27.040): \"100 micrograms to 500 micrograms 30 minutes prior to sleep. Don't go more than that.\"\n- Taylor (9Ibjy2ROaA0 00:13:45.399): \"what I would take 100 micrograms\" (no titration upward described).\nTiming window:\n- Hunter (19b055eeb0fca283 2025-12-09): \"1-3 hours before bed... 2-3 hours = sweet spot... 'setting up circadian software for the night' NOT 'hitting sedative panic button at lights-out'.\"\n- Hunter in First Responder (198154a515982b37 2025-07-16): \"30 min before desired sleep time.\"\n- Taylor (9Ibjy2ROaA0 00:13:16.880): \"anywhere between an hour to three hours before bed.\"\n- Trevor (CksP80BjgpI 00:10:30.079): \"30 minutes prior to sleep.\"\nDuration of run:\n- Trevor advocates an explicit short run (CksP80BjgpI 00:10:35.600): \"20 days, take it once just to see how it is.\"\n- Hunter prescribes a longer block for chronic sleep issues (19b055eeb0fca283 2025-12-09): \"Chronic issue: 8-12 week blocks, then cycle off or adjust.\"\n- Hunter prescribes 8 weeks minimum for opioid withdrawal (1975bfa8f26850f6 2025-06-10): \"Duration: 8 weeks minimum (some go longer, but most benefits appear within 1-2 months).\"\n- Taylor cycles within the run (9Ibjy2ROaA0 00:13:47.639): \"five days with a two days off a week... for an 8 week cycle.\"\nRoute (only Hunter explicitly mentions a non-injection option):\n- Hunter (19b055eeb0fca283 2025-12-09): \"Nasal spray... Hunter's wife Taylor: 'loves DSIP, whether injectable or nasal — night-and-day difference in sleep'.\" (default route across all three experts is subQ injection.)",
+    "recommendation": "Reset Biology asks the practitioner to weigh Hunter (2026-03-30; dsip-updated-dosing-sleep-and-opioid-withdrawal-research--a23e73c6 @ 0:46; https://library.hunterwilliamshealth.com/p/dsip-updated-dosing-sleep-and-opioid-withdrawal-research--a23e73c6/): “It's actually more of like a circadian rhythm peptides.” Hunter (2026-03-30; dsip-updated-dosing-sleep-and-opioid-withdrawal-research--a23e73c6 @ 19:07; https://library.hunterwilliamshealth.com/p/dsip-updated-dosing-sleep-and-opioid-withdrawal-research--a23e73c6/): “It's on a cure-all that's going to fix everything.”",
+    "caveats": "- Hunter (2026-03-30; dsip-updated-dosing-sleep-and-opioid-withdrawal-research--a23e73c6 @ 14:48; https://library.hunterwilliamshealth.com/p/dsip-updated-dosing-sleep-and-opioid-withdrawal-research--a23e73c6/): “Again, when it comes to peptides, obviously long-term is unknown. There is the immunogenicity risk, meaning the immune system might create antibodies against it.”\n- Hunter (2026-03-30; dsip-updated-dosing-sleep-and-opioid-withdrawal-research--a23e73c6 @ 14:11; https://library.hunterwilliamshealth.com/p/dsip-updated-dosing-sleep-and-opioid-withdrawal-research--a23e73c6/): “the most commonly reported side effects have been mild and transient, brief headache, nausea, or slight dizziness after injection.”",
+    "cross_expert_consensus": "Hunter (2026-03-29; dsip-how-to-use-it-to-enhance-deep-sleep--ae3f528a @ 2:54; https://library.hunterwilliamshealth.com/p/dsip-how-to-use-it-to-enhance-deep-sleep--ae3f528a/): “DCEP does not help you fall sleep, it helps with delta sleep.”\nTaylor (2026-05-25; reader-mailbag-3-traveling-glutathione-sleep-more-hunter-taylor-williams--5863331e @ 30:46; https://library.hunterwilliamshealth.com/p/reader-mailbag-3-traveling-glutathione-sleep-more-hunter-taylor-williams--5863331e/): “DSEP isn't going help you fall asleep, it's just gonna help stay in your deep sleep realm longer.”",
+    "cross_expert_disagreement": "Newer 2026-03-30: Hunter (2026-03-30; dsip-updated-dosing-sleep-and-opioid-withdrawal-research--a23e73c6 @ 15:21; https://library.hunterwilliamshealth.com/p/dsip-updated-dosing-sleep-and-opioid-withdrawal-research--a23e73c6/): “I like starting around the 100 microgram mark and then going up to around 500 micro grams if needed.”\nOlder 2026-03-29: Hunter (2026-03-29; dsip-how-to-use-it-to-enhance-deep-sleep--ae3f528a @ 10:23; https://library.hunterwilliamshealth.com/p/dsip-how-to-use-it-to-enhance-deep-sleep--ae3f528a/): “The starting dose is going to be usually like 100 to 150 milligrams, or excuse me, micrograms, not milligrams. 150 micro grams, you can titrate up to 250 micro-gram.”",
     "acute_chronic_split": {
       "acute": {
-        "dose": "250 mcg per day",
-        "route": "subcutaneous (10 units on a U-100 insulin syringe = 0.1 mL of a 5 mg / 2 mL reconstitution)",
-        "frequency": "once daily, evening or before bed",
-        "duration": "8 weeks minimum",
-        "verbatim_citation": "Hunter email threadId 1975bfa8f26850f6 (2025-06-10): \"Dose: 250 micrograms (mcg) per day. Duration: 8 weeks minimum (some go longer, but most benefits appear within 1-2 months). Timing: Usually taken in the evening or before bed, to leverage its sleep-promoting effects, but timing can be adjusted if you notice grogginess.\"",
-        "episode_url": "https://huntershealthhacks.beehiiv.com/p/dsip-for-opiate-withdrawal-07710af98b40b994",
-        "timestamp": "2025-06-10 (email)"
+        "dose": "Hunter (2026-03-30; dsip-updated-dosing-sleep-and-opioid-withdrawal-research--a23e73c6 @ 14:48; https://library.hunterwilliamshealth.com/p/dsip-updated-dosing-sleep-and-opioid-withdrawal-research--a23e73c6/): “Now dosage protocols, the research doses, if you're doing IV, it's 25 nanomoles a kilogram per body weight.”",
+        "route": "Hunter (2026-03-30; dsip-updated-dosing-sleep-and-opioid-withdrawal-research--a23e73c6 @ 9:49; https://library.hunterwilliamshealth.com/p/dsip-updated-dosing-sleep-and-opioid-withdrawal-research--a23e73c6/): “there was an 1984 European trial, that was approximately 100 inpatients that received DSP intravenously during acute withdrawal.”",
+        "frequency": null,
+        "duration": null,
+        "verbatim_citation": "Hunter (2026-03-30; dsip-updated-dosing-sleep-and-opioid-withdrawal-research--a23e73c6 @ 9:49; https://library.hunterwilliamshealth.com/p/dsip-updated-dosing-sleep-and-opioid-withdrawal-research--a23e73c6/): “Obviously, this is IV administration.”",
+        "episode_url": "https://library.hunterwilliamshealth.com/p/dsip-updated-dosing-sleep-and-opioid-withdrawal-research--a23e73c6/",
+        "timestamp": "9:49"
       },
       "chronic": {
-        "dose": "100 mcg starting; 300-500 mcg working range (Hunter sweet spot 500 mcg); Bachmeyer ceiling 500 mcg",
-        "route": "subcutaneous injection (Hunter notes nasal spray formulations also exist)",
-        "frequency": "once nightly, 30 min to 3 hours before bed (timing varies by expert)",
-        "duration": "Trevor: 20-day trial run; Hunter: 8-12 week blocks then cycle off; Taylor: 5 days on / 2 days off for 8 weeks",
-        "verbatim_citation": "Hunter email threadId 19b055eeb0fca283 (2025-12-09): \"Starting dose: 100-200 mcg subQ. Working range: 300-500 mcg subQ. Hunter's sweet spot: 500 mcg... 1-3 hours before bed... Chronic issue: 8-12 week blocks, then cycle off or adjust.\" || Trevor (CksP80BjgpI 00:10:27.040): \"100 micrograms to 500 micrograms 30 minutes prior to sleep. Don't go more than that. And in your research and you don't stay on it forever, 20 days, take it once just to see how it is.\" || Taylor (9Ibjy2ROaA0 00:13:12.560): \"I would start off with a dose around 100 micrograms and I would take this anywhere between an hour to three hours before bed... five days with a two days off a week... for an 8 week cycle.\"",
-        "episode_url": "https://open.spotify.com/episode/3HbtQRFOYImCW0e8kjIrK1",
-        "timestamp": "00:10:27.040 (Bachmeyer Unbreakable #250) / 2025-12-09 (Hunter Deep Dive email) / 00:13:12.560 (Taylor)"
+        "dose": "Hunter (2026-03-30; dsip-updated-dosing-sleep-and-opioid-withdrawal-research--a23e73c6 @ 15:21; https://library.hunterwilliamshealth.com/p/dsip-updated-dosing-sleep-and-opioid-withdrawal-research--a23e73c6/): “the typical starting dose is 100 to 200 micrograms, and then you can increase up to 300 to 500 micro grams if needed.” Hunter (2026-03-30; dsip-updated-dosing-sleep-and-opioid-withdrawal-research--a23e73c6 @ 15:51; https://library.hunterwilliamshealth.com/p/dsip-updated-dosing-sleep-and-opioid-withdrawal-research--a23e73c6/): “a lot of people take 125 or 150 micrograms” Hunter (2026-03-30; dsip-updated-dosing-sleep-and-opioid-withdrawal-research--a23e73c6 @ 15:51; https://library.hunterwilliamshealth.com/p/dsip-updated-dosing-sleep-and-opioid-withdrawal-research--a23e73c6/): “I've even heard people as high, I haven't done this myself, people going up one milligram if you really need it.” Hunter (2026-03-29; dsip-how-to-use-it-to-enhance-deep-sleep--ae3f528a @ 10:23; https://library.hunterwilliamshealth.com/p/dsip-how-to-use-it-to-enhance-deep-sleep--ae3f528a/): “The starting dose is going to be usually like 100 to 150 milligrams, or excuse me, micrograms, not milligrams. 150 micro grams, you can titrate up to 250 micro-gram.”",
+        "route": "Hunter (2026-03-30; dsip-updated-dosing-sleep-and-opioid-withdrawal-research--a23e73c6 @ 15:21; https://library.hunterwilliamshealth.com/p/dsip-updated-dosing-sleep-and-opioid-withdrawal-research--a23e73c6/): “If you are listening to this, you will be doing it sub Q.”",
+        "frequency": "Hunter (2026-03-30; dsip-updated-dosing-sleep-and-opioid-withdrawal-research--a23e73c6 @ 16:25; https://library.hunterwilliamshealth.com/p/dsip-updated-dosing-sleep-and-opioid-withdrawal-research--a23e73c6/): “500 micrograms subcutaneously, usually two to three hours before bed would be a good protocol.”",
+        "duration": "Hunter (2026-03-30; dsip-updated-dosing-sleep-and-opioid-withdrawal-research--a23e73c6 @ 14:48; https://library.hunterwilliamshealth.com/p/dsip-updated-dosing-sleep-and-opioid-withdrawal-research--a23e73c6/): “if there is a chronic issue you're trying to heal, you can absolutely use for eight to 12 weeks at a time. You just might have to up the dose or cycle off to keep getting the benefits.”",
+        "verbatim_citation": "Hunter (2026-03-30; dsip-updated-dosing-sleep-and-opioid-withdrawal-research--a23e73c6 @ 15:21; https://library.hunterwilliamshealth.com/p/dsip-updated-dosing-sleep-and-opioid-withdrawal-research--a23e73c6/): “I like starting around the 100 microgram mark and then going up to around 500 micro grams if needed.”",
+        "episode_url": "https://library.hunterwilliamshealth.com/p/dsip-updated-dosing-sleep-and-opioid-withdrawal-research--a23e73c6/",
+        "timestamp": "15:21"
       }
     },
-    "female_specific_notes": "Taylor Williams's protocol (9Ibjy2ROaA0 2024-08-23) is the only female-specific DSIP guidance the three experts publish, and it stays at the conservative end of the dose range. Taylor (9Ibjy2ROaA0 00:13:12.560): \"I would start off with a dose around 100 micrograms and I would take this anywhere between an hour to three hours before bed.\" Taylor (9Ibjy2ROaA0 00:13:23.399): \"I would also wait at least 60 to 90 minutes... to take this after you've eaten.\" Taylor (9Ibjy2ROaA0 00:13:46.800): \"I take that for five days with a two days off a week so five days a week off two days and then I would take that honestly for an 8 week cycle.\" Taylor frames it as a \"game changer\" for sleep quality and reports no harsh side effects in her own use. Hunter separately notes (19b055eeb0fca283 2025-12-09): \"Hunter's wife Taylor: 'loves DSIP, whether injectable or nasal — night-and-day difference in sleep'.\" No expert in this corpus addresses pregnancy, lactation, or fertility-cycle interactions for DSIP — those questions are unanswered in the source material and should be brought to the prescribing physician.",
-    "distilled_at": "2026-04-27T05:35:55.786Z",
-    "distilled_by": "claude"
+    "female_specific_notes": "Taylor (2026-05-25; reader-mailbag-3-traveling-glutathione-sleep-more-hunter-taylor-williams--5863331e @ 29:08; https://library.hunterwilliamshealth.com/p/reader-mailbag-3-traveling-glutathione-sleep-more-hunter-taylor-williams--5863331e/): “For women, sleep is gonna be such a big one and that's going to depend on where you're at with your testosterone, your estradiol, and progesterone.” Taylor (2026-05-25; reader-mailbag-3-traveling-glutathione-sleep-more-hunter-taylor-williams--5863331e @ 30:46; https://library.hunterwilliamshealth.com/p/reader-mailbag-3-traveling-glutathione-sleep-more-hunter-taylor-williams--5863331e/): “DSEP isn't going help you fall asleep, it's just gonna help stay in your deep sleep realm longer.”",
+    "distilled_at": "2026-07-17T09:15:34.572Z",
+    "distilled_by": "codex"
   },
-  "generated_at": "2026-04-27T02:02:34.972Z"
+  "generated_at": "2026-07-17T10:59:08.356Z",
+  "mentions_fingerprint": "37fbe54940a9"
 }
