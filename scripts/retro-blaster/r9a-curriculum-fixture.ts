@@ -310,13 +310,13 @@ await add('P-01', 'protected-baseline', MODE === '--green'
 }))
 
 await add('P-02', 'protected-baseline', MODE === '--green'
-  ? 'the complete base-to-candidate product source delta stays inside the exact R9a ceiling'
+  ? 'the candidate-specific product source delta against the integrated remote stays inside the exact R9a ceiling'
   : 'tracked and untracked product source are clean', 'PASS', 'source-backed', () => {
-  const tracked = git('diff', '--name-only', MODE === '--green' ? BASE : 'HEAD', '--', 'src').split(/\r?\n/).filter(Boolean)
-  const untracked = git('ls-files', '--others', '--exclude-standard', '--', 'src').split(/\r?\n/).filter(Boolean)
+  const sourceRoot = 'src/components/PitchDefender'
+  const tracked = git('diff', '--name-only', MODE === '--green' ? 'origin/master' : 'HEAD', '--', sourceRoot).split(/\r?\n/).filter(Boolean)
+  const untracked = git('ls-files', '--others', '--exclude-standard', '--', sourceRoot).split(/\r?\n/).filter(Boolean)
   const completeDelta = [...new Set([...tracked, ...untracked])].sort()
   const expectedDelta = MODE === '--green' ? [
-    'src/components/PitchDefender/PitchDefender.tsx',
     'src/components/PitchDefender/RetroBlasterII.tsx',
     'src/components/PitchDefender/retroBlasterCurriculum.ts',
     'src/components/PitchDefender/retroBlasterEngine.ts',

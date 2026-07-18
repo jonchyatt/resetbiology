@@ -392,7 +392,7 @@ async function validateShellAudioContract(): Promise<void> {
     'pitched playback must remain limited to demand, replay/readiness, guarded R8b/R8c sites, and the one tutorial/placement coaching dispatcher')
   assert.match(shell, /getPianoReadiness\(RADIO_CHECK_NOTE\)/,
     'R8a output dispatch must be guarded by the ratified readiness observer')
-  assert.match(shell, /This checks audio and controls, never ability/,
+  assert.match(shell, /This checks audio and controls, never your musical ability/,
     'readiness must not represent the named radio check as a skill test')
   assert.equal(/startMusic\s*\(/.test(shell), false, 'Retro Blaster must not start ambient pitched music')
   assert.match(shell, /visibilitychange/)
