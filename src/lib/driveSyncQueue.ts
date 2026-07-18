@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto'
+import type { drive_v3 } from 'googleapis'
 import { prisma } from '@/lib/prisma'
-import { getDriveClient, getSubfolderId, syncDomainForDate } from '@/lib/google-drive'
+import { getDriveClient, syncDomainForDate } from '@/lib/google-drive'
 
 const CLAIM_LEASE_MS = 300 * 1000 // 5 min — must exceed worst-case single-domain Drive sync so the reconciler doesn't reclaim a still-running row
 const MAX_ATTEMPTS = 8
@@ -105,11 +106,11 @@ function backoffMinutes(attempts: number, rateLimited: boolean): number {
 // ---------------------------------------------------------------------------
 // Drift/durability instrumentation (Phase C, ticket C3 — dark, read-side only).
 // After a drain successfully processes a (user, domain, day) row, snapshot
-// what's ACTUALLY on Drive right now for that bucket: fileId + modifiedTime +
-// content sha256. This is the receipt drive-drift-report.ts's IN_SYNC/
-// HAND_EDITED classification reads back — no authority flip may ever trust a
-// stale verification (HIGH-3), so the durability layer has to be able to SEE
-// drift, which means recording ground truth at sync time.
+// what was ACTUALLY just written to Drive for that bucket: fileId +
+// modifiedTime + content sha256. Write-only instrumentation today — nothing
+// in the repo reads it back yet; future drift tooling (drive-drift-report.ts
+// et al.) may read it. No authority flip may ever trust a stale verification
+// (HIGH-3), so the durability layer needs ground truth recorded at sync time.
 //
 // Storage choice (no Prisma schema change, per ticket): DriveSyncOutbox has
 // exactly one free-text field, `lastError String?`. It's repurposed by
@@ -119,10 +120,22 @@ function backoffMinutes(attempts: number, rateLimited: boolean): number {
 // (grepped repo-wide), so no consumer's contract changes. The JSON payload is
 // self-describing (`v: 1`) so a reader can tell it apart from a plain error
 // string by attempting JSON.parse and checking the shape.
+//
+// ZERO additional Drive calls (fix-wave finding MED-1/LOW-2): the original
+// version re-listed the folder and re-downloaded every matching file after
+// the fact — unbounded extra latency on every save, and a substring filename
+// match that could pick up unrelated files. Fixed by capturing the upload(s)
+// that ALREADY happen inside syncDomainForDate's call to drive.files.create/
+// update, instead of asking Drive again afterward: wrapDriveForUploadCapture
+// wraps the SAME drive client with a Proxy that (a) widens the `fields` param
+// on create/update to also request `modifiedTime` (one extra response field
+// on a call that was happening anyway — not an extra call) and (b) reads the
+// exact content string off the request itself (`media.body`, the literal
+// bytes uploadTextFile just uploaded) to hash locally. No list, no get, no
+// folder resolution, no filename guessing.
 // ---------------------------------------------------------------------------
 interface SyncedFileRecord {
   fileId: string
-  name: string
   modifiedTime: string | null
   sha256: string
 }
@@ -133,70 +146,85 @@ export interface DriveSyncMeta {
   files: SyncedFileRecord[]
 }
 
-// Domain -> vault subfolder name, mirrors the folder names google-drive.ts's
-// syncDomainForDateWithResult switch already uses per domain (VAULT_SUBFOLDERS
-// contract) — duplicated as data here (not logic) since that switch has no
-// exported domain->folder map to import.
-const DOMAIN_FOLDER_NAMES: Record<string, string> = {
-  journal: 'Journal',
-  workouts: 'Workouts',
-  nutrition: 'Nutrition',
-  breath: 'Breath Sessions',
-  vision: 'Vision Training',
-  nback: 'Memory Training',
-  dailyTasks: 'Progress Reports',
-  checkins: 'Progress Reports',
-  modules: 'Progress Reports',
-  peptides: 'Peptides',
+interface CapturedUpload {
+  fileId: string | null
+  modifiedTime: string | null
+  content: string | null
 }
 
 function sha256Hex(text: string): string {
   return createHash('sha256').update(Buffer.from(text, 'utf8')).digest('hex')
 }
 
-// Best-effort snapshot of whatever's currently on Drive for this bucket.
-// NEVER throws — a recording failure must not undo the sync that just
-// succeeded; it only means this round's drift receipt is missing (the next
-// successful sync of the same day will record one). All subfolders in scope
-// here are pre-created at vault-init time (VAULT_SUBFOLDERS), so
-// getSubfolderId is a find-only lookup in practice for a connected vault —
-// this call does not create Drive state a healthy vault didn't already have.
-async function recordSyncedFileMetadata(
-  drive: Awaited<ReturnType<typeof getDriveClient>>,
-  driveFolder: string,
-  domain: string,
-  dateStr: string
-): Promise<string | null> {
-  const folderName = DOMAIN_FOLDER_NAMES[domain]
-  if (!drive || !folderName) return null
+function mergeFields(existing: unknown, extra: string): string {
+  const base = typeof existing === 'string' && existing.length > 0 ? existing.split(',') : []
+  const parts = new Set([...base.map((s) => s.trim()).filter(Boolean), ...extra.split(',')])
+  return [...parts].join(',')
+}
 
-  try {
-    const folderId = await getSubfolderId(drive, driveFolder, folderName)
-    if (!folderId) return null
+// Wraps a drive_v3.Drive client so every files.create/files.update call made
+// THROUGH THIS WRAPPER (i.e. the ones syncDomainForDate's uploadTextFile
+// makes) also reports {fileId, modifiedTime, content} to `onUpload` — with no
+// additional Drive round trip. Any capture-side error is swallowed (the real
+// upload's result is always returned untouched) so instrumentation can never
+// break a sync that would otherwise have succeeded.
+function wrapDriveForUploadCapture(
+  drive: drive_v3.Drive,
+  onUpload: (info: CapturedUpload) => void
+): drive_v3.Drive {
+  const files = drive.files
+  const originalCreate = files.create.bind(files)
+  const originalUpdate = files.update.bind(files)
 
-    const list = await drive.files.list({
-      q: `'${folderId}' in parents and trashed=false and name contains '${dateStr}'`,
-      fields: 'files(id,name,modifiedTime)',
-    })
-
-    const files: SyncedFileRecord[] = []
-    for (const f of list.data.files ?? []) {
-      if (!f.id) continue
-      const res = await drive.files.get({ fileId: f.id, alt: 'media' })
-      const text = typeof res.data === 'string' ? res.data : JSON.stringify(res.data)
-      files.push({ fileId: f.id, name: f.name ?? '', modifiedTime: f.modifiedTime ?? null, sha256: sha256Hex(text) })
+  const capture = (params: any, res: any) => {
+    try {
+      const content = typeof params?.media?.body === 'string' ? params.media.body : null
+      const fileId = (res?.data?.id as string | undefined) ?? (params?.fileId as string | undefined) ?? null
+      const modifiedTime = (res?.data?.modifiedTime as string | undefined) ?? null
+      onUpload({ fileId, modifiedTime, content })
+    } catch (error) {
+      console.error('[drive-drift] upload capture failed (instrumentation only, upload already succeeded):', errorMessage(error))
     }
-
-    const meta: DriveSyncMeta = { v: 1, syncedAt: new Date().toISOString(), files }
-    return JSON.stringify(meta)
-  } catch (error) {
-    console.error('[drive-drift] post-sync metadata recording failed (instrumentation only, sync already succeeded):', {
-      domain,
-      dateStr,
-      error: errorMessage(error),
-    })
-    return null
   }
+
+  const patchedFiles = new Proxy(files, {
+    get(target, prop, receiver) {
+      if (prop === 'create') {
+        return async (params?: any, options?: any) => {
+          const augmented = { ...params, fields: mergeFields(params?.fields, 'id,modifiedTime') }
+          const res = await originalCreate(augmented, options)
+          capture(augmented, res)
+          return res
+        }
+      }
+      if (prop === 'update') {
+        return async (params?: any, options?: any) => {
+          const augmented = { ...params, fields: mergeFields(params?.fields, 'id,modifiedTime') }
+          const res = await originalUpdate(augmented, options)
+          capture(augmented, res)
+          return res
+        }
+      }
+      return Reflect.get(target, prop, receiver)
+    },
+  })
+
+  return new Proxy(drive, {
+    get(target, prop, receiver) {
+      if (prop === 'files') return patchedFiles
+      return Reflect.get(target, prop, receiver)
+    },
+  })
+}
+
+function buildSyncMeta(capturedUploads: CapturedUpload[]): string | null {
+  const files: SyncedFileRecord[] = capturedUploads
+    .filter((u): u is CapturedUpload & { fileId: string; content: string } => !!u.fileId && u.content !== null)
+    .map((u) => ({ fileId: u.fileId, modifiedTime: u.modifiedTime, sha256: sha256Hex(u.content) }))
+
+  if (files.length === 0) return null
+  const meta: DriveSyncMeta = { v: 1, syncedAt: new Date().toISOString(), files }
+  return JSON.stringify(meta)
 }
 
 type DriveClientFactory = (userId: string) => ReturnType<typeof getDriveClient>
@@ -288,15 +316,18 @@ async function processClaimedRow(
       throw new Error('No Drive folder configured')
     }
 
+    const capturedUploads: CapturedUpload[] = []
+    const captureDrive = wrapDriveForUploadCapture(drive, (info) => capturedUploads.push(info))
+
     await syncDomainForDate(
-      drive,
+      captureDrive,
       user.driveFolder,
       row.userId,
       row.domain,
       dateFromDateStr(row.dateStr)
     )
 
-    const syncMeta = await recordSyncedFileMetadata(drive, user.driveFolder, row.domain, row.dateStr)
+    const syncMeta = buildSyncMeta(capturedUploads)
 
     await prisma.driveSyncOutbox.update({
       where: { id: row.id },
