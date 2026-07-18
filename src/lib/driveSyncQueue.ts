@@ -209,12 +209,29 @@ function wrapDriveForUploadCapture(
     },
   })
 
-  return new Proxy(drive, {
-    get(target, prop, receiver) {
-      if (prop === 'files') return patchedFiles
-      return Reflect.get(target, prop, receiver)
-    },
+  // `drive.files` is a non-configurable, non-writable OWN data property on
+  // the real client (confirmed via Object.getOwnPropertyDescriptor against a
+  // real google.drive() instance) — a Proxy `get` trap that reports a
+  // substitute value for it violates the ES2015 [[Get]] invariant and throws
+  // at runtime (live walkthrough repro, step5b-resync.log). Object.create(drive)
+  // sidesteps this entirely: it's a REAL object, not a Proxy, so there is no
+  // invariant to violate. Its prototype is `drive`, so every other property/
+  // method (including any other non-configurable ones) is reachable
+  // unchanged through the prototype chain; only `files` is shadowed.
+  // NOTE: plain assignment (`wrapped.files = ...` / Object.assign) is NOT
+  // enough here — a `[[Set]]` walks the prototype chain and refuses to write
+  // because `drive`'s own `files` is non-writable, throwing "Cannot assign
+  // to read only property" (caught by this fix's own self-test). Only
+  // Object.defineProperty creates a genuine OWN property on the new object,
+  // bypassing the prototype's descriptor entirely.
+  const wrapped = Object.create(drive)
+  Object.defineProperty(wrapped, 'files', {
+    value: patchedFiles,
+    writable: true,
+    enumerable: true,
+    configurable: true,
   })
+  return wrapped as drive_v3.Drive
 }
 
 function buildSyncMeta(capturedUploads: CapturedUpload[]): string | null {
@@ -570,4 +587,136 @@ export async function reconcileDriveSyncOutbox(): Promise<void> {
       leaseUntil: null,
     },
   })
+}
+
+// ---------------------------------------------------------------------------
+// Self-test (no DB, no Drive credentials — a synthetic fake client shaped
+// exactly like the real googleapis one) — run via:
+//   npx tsx src/lib/driveSyncQueue.ts self-test
+//
+// Reproduces the live-walkthrough bug (step5b-resync.log,
+// data/rb-drive-vault/runtime-logs/scratch-2026-07-18-9fe3/): the real
+// drive_v3.Drive client's `.files` is a non-configurable, non-writable OWN
+// data property (confirmed via Object.getOwnPropertyDescriptor against a
+// real google.drive() instance) — a `get`-trap Proxy that substitutes a
+// different value for it violates the ES2015 [[Get]] invariant and throws
+// `TypeError: 'get' on proxy: property 'files' is a read-only and
+// non-configurable data property...`.
+// ---------------------------------------------------------------------------
+function buildFakeDriveForCaptureTest(): { drive: any; calls: { create: any[]; update: any[] } } {
+  const calls = { create: [] as any[], update: [] as any[] }
+  const fakeFiles: any = {}
+  // `create`/`update` are prototype methods on the real Resource$Files
+  // instance (writable+configurable), not own-frozen properties — matches
+  // that shape exactly.
+  Object.defineProperty(fakeFiles, 'create', {
+    value: async (params: any) => {
+      calls.create.push(params)
+      return { data: { id: 'new-file-id', modifiedTime: '2026-07-18T00:00:00.000Z' } }
+    },
+    writable: true,
+    enumerable: false,
+    configurable: true,
+  })
+  Object.defineProperty(fakeFiles, 'update', {
+    value: async (params: any) => {
+      calls.update.push(params)
+      return { data: { id: params.fileId, modifiedTime: '2026-07-18T01:00:00.000Z' } }
+    },
+    writable: true,
+    enumerable: false,
+    configurable: true,
+  })
+
+  const fakeDrive: any = {}
+  // The exact shape that trips the bug: non-configurable, non-writable own
+  // data property.
+  Object.defineProperty(fakeDrive, 'files', {
+    value: fakeFiles,
+    writable: false,
+    enumerable: true,
+    configurable: false,
+  })
+  // An arbitrary OTHER non-configurable own property, to prove pass-through
+  // is unaffected by whatever approach patches `files`.
+  Object.defineProperty(fakeDrive, 'context', {
+    value: { marker: 'unchanged' },
+    writable: false,
+    enumerable: true,
+    configurable: false,
+  })
+
+  return { drive: fakeDrive, calls }
+}
+
+async function runSelfTest(): Promise<boolean> {
+  const assert = require('node:assert').strict
+  const results: string[] = []
+  let pass = true
+  const checkAsync = async (label: string, fn: () => Promise<void> | void) => {
+    try {
+      await fn()
+      results.push(`PASS: ${label}`)
+    } catch (err: any) {
+      pass = false
+      results.push(`FAIL: ${label} -- ${err?.message ?? err}`)
+    }
+  }
+
+  await checkAsync(
+    'wrapDriveForUploadCapture does not throw against a non-configurable/non-writable own `files` property (repro of the live Proxy-invariant TypeError, step5b-resync.log)',
+    () => {
+      const { drive } = buildFakeDriveForCaptureTest()
+      const wrapped: any = wrapDriveForUploadCapture(drive, () => {})
+      void wrapped.files // accessing .files must not throw
+    }
+  )
+
+  await checkAsync('create/update interception still captures fileId/modifiedTime/content', async () => {
+    const { drive, calls } = buildFakeDriveForCaptureTest()
+    const captured: CapturedUpload[] = []
+    const wrapped: any = wrapDriveForUploadCapture(drive, (info) => captured.push(info))
+
+    await wrapped.files.create({
+      requestBody: { name: 'x' },
+      media: { mimeType: 'text/markdown', body: 'hello world' },
+      fields: 'id',
+    })
+    await wrapped.files.update({ fileId: 'existing-id', media: { mimeType: 'text/markdown', body: 'updated body' } })
+
+    assert.equal(captured.length, 2)
+    assert.equal(captured[0].content, 'hello world')
+    assert.equal(captured[0].fileId, 'new-file-id')
+    assert.equal(captured[0].modifiedTime, '2026-07-18T00:00:00.000Z')
+    assert.equal(captured[1].content, 'updated body')
+    assert.equal(captured[1].fileId, 'existing-id')
+    assert.equal(captured[1].modifiedTime, '2026-07-18T01:00:00.000Z')
+
+    // fields param widened to request modifiedTime alongside whatever was already requested.
+    assert.ok(calls.create[0].fields.includes('id'))
+    assert.ok(calls.create[0].fields.includes('modifiedTime'))
+  })
+
+  await checkAsync('an arbitrary other non-configurable own property reads through unchanged', () => {
+    const { drive } = buildFakeDriveForCaptureTest()
+    const wrapped: any = wrapDriveForUploadCapture(drive, () => {})
+    assert.equal(wrapped.context, drive.context)
+    assert.deepEqual(wrapped.context, { marker: 'unchanged' })
+  })
+
+  console.log(results.join('\n'))
+  console.log(pass ? `\nSELF-TEST: ALL PASS (${results.length}/${results.length})` : '\nSELF-TEST: FAILURES PRESENT')
+  return pass
+}
+
+if (require.main === module) {
+  const command = process.argv[2]
+  if (command === 'self-test') {
+    runSelfTest().then((ok) => {
+      process.exitCode = ok ? 0 : 1
+    })
+  } else {
+    console.error('Usage: npx tsx src/lib/driveSyncQueue.ts self-test')
+    process.exitCode = 1
+  }
 }
