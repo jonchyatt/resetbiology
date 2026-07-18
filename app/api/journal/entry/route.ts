@@ -127,7 +127,11 @@ export async function POST(request: NextRequest) {
           entry: JSON.stringify(entryPayload),
           mood: normalizeString(body?.mood) || null,
           weight: typeof body?.weight === 'number' ? body.weight : body?.weight ? Number(body.weight) : null,
-          date: entryDate,
+          // dayStart (not the raw client instant) — the lookup window above
+          // and GET below both bucket by [dayStart, dayStart+1d), so a save
+          // near local midnight must land inside its OWN window or it goes
+          // invisible on next read and re-saving spawns a duplicate row.
+          date: dayStart,
         }
       })
       tasksMerged = entryPayload.tasksCompleted

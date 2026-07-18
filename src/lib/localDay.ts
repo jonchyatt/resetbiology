@@ -65,3 +65,45 @@ export function weekdayOfDayKey(key: string): number {
 export function dayOfMonthFromKey(key: string): number {
   return Number(key.slice(8, 10))
 }
+
+/**
+ * [start, end) bounds (local-midnight Date objects, calendar-integer math
+ * only) for the month named by `param` ("YYYY-MM"), defaulting to `now`'s
+ * own local month. Shared by the history route's DB query and its calendar
+ * grid so both agree on what "this month" means (F1.3 NEW-1a/b — replaces
+ * the hardcoded "convert to EDT" offset that rendered June 30 -> July 30).
+ */
+export function getMonthRange(param?: string | null, now: Date = new Date()): { start: Date; end: Date } {
+  let year = now.getFullYear()
+  let month = now.getMonth()
+
+  if (param) {
+    const [y, m] = param.split('-').map(Number)
+    if (!Number.isNaN(y) && !Number.isNaN(m) && m >= 1 && m <= 12) {
+      year = y
+      month = m - 1
+    }
+  }
+
+  const start = new Date(year, month, 1)
+  start.setHours(0, 0, 0, 0)
+  const end = new Date(start)
+  end.setMonth(end.getMonth() + 1)
+  return { start, end }
+}
+
+/**
+ * Day keys + display ISO strings for every calendar day in [start, end),
+ * one entry per day, in order. Extracted from the history route's inline
+ * cursor loop so the July-grid regression test can exercise the exact
+ * function the route calls instead of a test-constructed key array.
+ */
+export function buildMonthCalendarDays(start: Date, end: Date): Array<{ date: string; iso: string }> {
+  const days: Array<{ date: string; iso: string }> = []
+  const cursor = new Date(start)
+  while (cursor < end) {
+    days.push({ date: localDayKey(cursor), iso: cursor.toISOString() })
+    cursor.setDate(cursor.getDate() + 1)
+  }
+  return days
+}

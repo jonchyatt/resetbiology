@@ -2,32 +2,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth0 } from '@/lib/auth0'
 import { getUserFromSession } from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma'
-import { localDayKey, utcMidnightToDayKey } from '@/lib/localDay'
+import { localDayKey, utcMidnightToDayKey, getMonthRange, buildMonthCalendarDays } from '@/lib/localDay'
 
 function startOfDay(date: Date) {
   const d = new Date(date)
   d.setHours(0, 0, 0, 0)
   return d
-}
-
-function getMonthRange(param?: string | null) {
-  const now = new Date()
-  let year = now.getFullYear()
-  let month = now.getMonth()
-
-  if (param) {
-    const [y, m] = param.split('-').map(Number)
-    if (!Number.isNaN(y) && !Number.isNaN(m) && m >= 1 && m <= 12) {
-      year = y
-      month = m - 1
-    }
-  }
-
-  const start = new Date(year, month, 1)
-  start.setHours(0, 0, 0, 0)
-  const end = new Date(start)
-  end.setMonth(end.getMonth() + 1)
-  return { start, end }
 }
 
 export async function GET(request: NextRequest) {
@@ -47,13 +27,24 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const { start, end } = getMonthRange(searchParams.get('month'))
 
+    // DB query window widened ±1 day around the UTC month bounds — a row
+    // saved late-evening local time can land on the other side of a UTC
+    // month boundary (e.g. local Jul 31 evening = UTC Aug 1). The exact
+    // `start`/`end` month bounds stay in force for calendar-grid generation
+    // below; bucketing rows by their own localDate key already places a
+    // widened-in row on the right calendar cell (NEW-1 month-edge fix).
+    const queryStart = new Date(start)
+    queryStart.setDate(queryStart.getDate() - 1)
+    const queryEnd = new Date(end)
+    queryEnd.setDate(queryEnd.getDate() + 1)
+
     const [journalEntries, foodLogs, foodEntries, dailyTasks, workouts, breathSessions, peptideDoses, moduleCompletions] = await Promise.all([
       prisma.journalEntry.findMany({
         where: {
           userId: user.id,
           date: {
-            gte: start,
-            lt: end,
+            gte: queryStart,
+            lt: queryEnd,
           },
         },
       }),
@@ -61,8 +52,8 @@ export async function GET(request: NextRequest) {
         where: {
           userId: user.id,
           loggedAt: {
-            gte: start,
-            lt: end,
+            gte: queryStart,
+            lt: queryEnd,
           },
         },
         orderBy: { loggedAt: 'asc' },
@@ -74,8 +65,8 @@ export async function GET(request: NextRequest) {
         where: {
           userId: user.id,
           loggedAt: {
-            gte: start,
-            lt: end,
+            gte: queryStart,
+            lt: queryEnd,
           },
         },
         orderBy: { loggedAt: 'asc' },
@@ -86,8 +77,8 @@ export async function GET(request: NextRequest) {
         where: {
           userId: user.id,
           date: {
-            gte: start,
-            lt: end,
+            gte: queryStart,
+            lt: queryEnd,
           },
         },
       }),
@@ -95,8 +86,8 @@ export async function GET(request: NextRequest) {
         where: {
           userId: user.id,
           completedAt: {
-            gte: start,
-            lt: end,
+            gte: queryStart,
+            lt: queryEnd,
           },
         },
         orderBy: { completedAt: 'asc' },
@@ -105,8 +96,8 @@ export async function GET(request: NextRequest) {
         where: {
           userId: user.id,
           createdAt: {
-            gte: start,
-            lt: end,
+            gte: queryStart,
+            lt: queryEnd,
           },
         },
         orderBy: { createdAt: 'asc' },
@@ -114,8 +105,8 @@ export async function GET(request: NextRequest) {
       prisma.peptide_doses.findMany({
         where: {
           doseDate: {
-            gte: start,
-            lt: end,
+            gte: queryStart,
+            lt: queryEnd,
           },
           user_peptide_protocols: {
             userId: user.id,
@@ -134,8 +125,8 @@ export async function GET(request: NextRequest) {
         where: {
           userId: user.id,
           completedAt: {
-            gte: start,
-            lt: end,
+            gte: queryStart,
+            lt: queryEnd,
           },
         },
         orderBy: { completedAt: 'asc' },
@@ -317,22 +308,17 @@ export async function GET(request: NextRequest) {
     })
 
     // `start`/`end` were built purely from calendar integers (getMonthRange
-    // above), so the cursor's own local components already ARE the correct
-    // calendar day — no timezone shift belongs here at all. The hardcoded
-    // "convert to EDT" offset this replaces is what rendered June 30 -> July
-    // 30 for a July calendar and omitted July 31 entirely (F1.3 NEW-1a/b).
-    const calendar: Array<{ date: string; iso: string; count: number }> = []
-    const cursor = new Date(start)
-    while (cursor < end) {
-      const key = localDayKey(cursor)
-
-      calendar.push({
-        date: key,
-        iso: cursor.toISOString(),
-        count: days.get(key)?.eventCount ?? 0,
-      })
-      cursor.setDate(cursor.getDate() + 1)
-    }
+    // above), so buildMonthCalendarDays' cursor own local components already
+    // ARE the correct calendar day — no timezone shift belongs here at all.
+    // The hardcoded "convert to EDT" offset this replaces is what rendered
+    // June 30 -> July 30 for a July calendar and omitted July 31 entirely
+    // (F1.3 NEW-1a/b). Query bounds are widened (queryStart/queryEnd above)
+    // but the grid itself stays exactly this month.
+    const calendar = buildMonthCalendarDays(start, end).map(({ date, iso }) => ({
+      date,
+      iso,
+      count: days.get(date)?.eventCount ?? 0,
+    }))
 
     const dayList = Array.from(days.values()).sort((a, b) => (a.iso < b.iso ? -1 : 1))
 

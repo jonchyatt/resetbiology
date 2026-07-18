@@ -8,6 +8,7 @@ import {
   Headphones, Eye, Shuffle
 } from 'lucide-react'
 import { PortalHeader } from '@/components/Navigation/PortalHeader'
+import { localDayKey } from '@/lib/localDay'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -513,6 +514,7 @@ export default function NBackTrainer() {
           durationSeconds,
           levelAdvanced,
           levelDecreased,
+          localDate: localDayKey(new Date()),
         }),
       })
       const data = await res.json()

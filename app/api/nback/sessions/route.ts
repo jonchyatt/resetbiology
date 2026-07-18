@@ -117,7 +117,8 @@ export async function POST(req: NextRequest) {
       colorAccuracy,
       durationSeconds,
       levelAdvanced,
-      levelDecreased
+      levelDecreased,
+      localDate
     } = body
 
     const hasLetter = gameMode === 'triple' || gameMode === 'quad'
@@ -256,7 +257,10 @@ export async function POST(req: NextRequest) {
         ? `Advanced to ${nLevel + 1}-back in ${gameMode} N-Back training with ${Math.round(overallAccuracy)}% accuracy!`
         : `Completed ${gameMode} ${nLevel}-back training with ${Math.round(overallAccuracy)}% accuracy.`
 
-      const dayKey = todayLocalKey()
+      // Prefer the client-supplied localDate (the player's real browser
+      // timezone) — server-side todayLocalKey() is UTC on Vercel and merges
+      // an evening (post ~5-6pm Mountain) note into tomorrow's local day.
+      const dayKey = typeof localDate === 'string' && localDate ? localDate : todayLocalKey()
       const dayStart = dayKeyToUtcMidnight(dayKey)
       const nextDay = new Date(dayStart)
       nextDay.setUTCDate(nextDay.getUTCDate() + 1)
@@ -290,7 +294,7 @@ export async function POST(req: NextRequest) {
           data: {
             userId: user.id,
             entry: JSON.stringify({ mentalTrainingNotes: journalNote, localDate: dayKey }),
-            date: new Date()
+            date: dayStart
           }
         })
       }
