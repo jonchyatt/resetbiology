@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useState, useEffect } from "react"
-import { Trophy, Calendar, ChevronRight, Target, Dumbbell, Apple, Brain, Wind, BookOpen, ShoppingBag, Check, Flame, Sparkles, X, Eye, Zap, Music, HeartPulse, type LucideIcon } from "lucide-react"
+import { Trophy, Calendar, ChevronRight, Target, Dumbbell, Apple, Brain, Wind, BookOpen, ShoppingBag, Check, Flame, Sparkles, X, Eye, Zap, Music, HeartPulse, Cloud, type LucideIcon } from "lucide-react"
 import { PortalHeader } from "@/components/Navigation/PortalHeader"
 import { useUser } from "@auth0/nextjs-auth0"
 import { useRouter } from "next/navigation"
@@ -118,6 +118,12 @@ export function EnhancedDashboard() {
     breathNotes: "",
     moduleNotes: "",
   })
+
+  // Journal read-path provenance (Phase C, cf-c2-journal-inversion). Only
+  // ever non-null while the Drive read-authority flag is on for this user;
+  // null/'drive' render no banner (today's behavior / Drive-truth, silent).
+  const [journalProvenance, setJournalProvenance] = useState<'drive' | 'syncing' | 'app-cache' | null>(null)
+  const [journalDriveLastConfirmedAt, setJournalDriveLastConfirmedAt] = useState<string | null>(null)
 
   // Portal modules come from DB when available, with code fallbacks merged in
   // so newly surfaced areas are not hidden by stale portal_module rows.
@@ -321,6 +327,12 @@ export function EnhancedDashboard() {
           breathNotes: entry.breathNotes ?? prev.breathNotes,
           moduleNotes: entry.moduleNotes ?? prev.moduleNotes,
         }))
+        setJournalProvenance(
+          data.provenance === 'drive' || data.provenance === 'syncing' || data.provenance === 'app-cache'
+            ? data.provenance
+            : null
+        )
+        setJournalDriveLastConfirmedAt(typeof data.driveLastConfirmedAt === 'string' ? data.driveLastConfirmedAt : null)
       } catch (error) {
         console.error('Failed to load journal entry:', error)
       }
@@ -720,6 +732,28 @@ export function EnhancedDashboard() {
                 View History
               </Link>
             </div>
+
+            {/* Drive read-path provenance banner (Phase C, cf-c2-journal-inversion).
+                Silent for 'drive'/null (today's behavior / Drive-truth) — only the
+                two non-authoritative-Drive states get a plain-language banner. */}
+            {journalProvenance === 'syncing' && (
+              <div className="mb-4 flex items-center gap-2 rounded-lg border border-blue-400/30 bg-blue-500/20 px-3 py-2 text-sm text-blue-100">
+                <Cloud className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
+                Saving to your Google Drive…
+              </div>
+            )}
+            {journalProvenance === 'app-cache' && (
+              <div className="mb-4 flex items-center gap-2 rounded-lg border border-amber-400/30 bg-amber-500/20 px-3 py-2 text-sm text-amber-100">
+                <Cloud className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
+                <span>
+                  Showing your saved copy — your Google Drive isn&apos;t reachable right now
+                  {journalDriveLastConfirmedAt
+                    ? ` (last confirmed ${new Date(journalDriveLastConfirmedAt).toLocaleString()})`
+                    : ''}
+                  . It&apos;s still your data — we&apos;ll sync it back to your Drive as soon as it&apos;s reachable.
+                </span>
+              </div>
+            )}
 
             {/* Weight and Mood */}
             <div className="grid grid-cols-2 gap-4 mb-4">
