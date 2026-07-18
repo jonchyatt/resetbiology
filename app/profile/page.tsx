@@ -121,9 +121,13 @@ function ProfilePageContent() {
       if (res.ok) {
         setDriveConnected(false)
         setDriveFolderUrl(null)
+        toast.success('Google Drive disconnected')
+      } else {
+        toast.error("Couldn't disconnect Google Drive — try again")
       }
     } catch (error) {
       console.error('Error disconnecting Drive:', error)
+      toast.error("Couldn't disconnect Google Drive — try again")
     } finally {
       setDriveLoading(false)
       setShowDisconnectModal(false)
