@@ -91,11 +91,18 @@ export async function syncUserToDatabase(session: Session): Promise<void> {
       }
     }
 
-    // Check for quiz submission to determine if they should get introduction tier
-    const quizSubmission = await prisma.nEPQSubmission.findFirst({
-      where: { email },
-      orderBy: { createdAt: 'desc' }
-    });
+    // Check for quiz submission to determine if they should get introduction tier.
+    // ONLY for a session with a VERIFIED email claim: the funnel is public and
+    // unauthenticated, so linking by unverified email would let an attacker who
+    // signs up with someone else's address inherit that person's private
+    // submission (reason, scores). Unverified sessions link on a later verified
+    // login instead (this sync runs every session).
+    const quizSubmission = emailVerified
+      ? await prisma.nEPQSubmission.findFirst({
+          where: { email },
+          orderBy: { createdAt: 'desc' }
+        })
+      : null;
 
     if (!user) {
       // Create new user
