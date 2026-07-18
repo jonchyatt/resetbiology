@@ -1,6 +1,7 @@
 import { google, drive_v3 } from 'googleapis'
 import { prisma } from '@/lib/prisma'
 import { decryptToken, encryptToken } from '@/lib/vault-encryption'
+import { formatJournalDayFile, type JournalDayRow } from '@/lib/journal-day-file'
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET
@@ -376,41 +377,35 @@ export async function uploadTextFile(
   }
 }
 
-// Format journal entry for Drive
-export function formatJournalEntry(entry: {
-  createdAt: Date
-  content: string
-  mood?: string
-  weight?: number
-  goals?: string
-}): string {
-  const date = new Date(entry.createdAt)
-  const dateStr = date.toLocaleDateString('en-US', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  })
-
-  let content = `# Journal Entry - ${dateStr}\n\n`
-
-  if (entry.mood) {
-    content += `**Mood:** ${entry.mood}\n\n`
-  }
-
-  if (entry.weight) {
-    content += `**Weight:** ${entry.weight} lbs\n\n`
-  }
-
-  if (entry.goals) {
-    content += `## Goals for Today\n${entry.goals}\n\n`
-  }
-
-  if (entry.content) {
-    content += `## Entry\n${entry.content}\n`
-  }
-
-  return content
+// Format a journal day file for Drive (Phase C, cf-c2-journal-inversion).
+// Multi-entry, YAML-front-matter day-file truth format — every same-day row
+// is preserved as its own section (HIGH-2: last-write-wins collapse ruled
+// out). Shared with the migration harness (scripts/drive-migration-harness.ts)
+// via journal-day-file.ts so live sync and migration emit byte-identical
+// content for the same source rows.
+export function formatJournalEntry(
+  dateStr: string,
+  entries: Array<{
+    rowId: string
+    createdAt: Date
+    content: string
+    mood?: string | null
+    weight?: number | null
+    goals?: string | null
+  }>
+): string {
+  const rows: JournalDayRow[] = entries.map((e) => ({
+    rowId: e.rowId,
+    createdAt: e.createdAt,
+    mood: e.mood ?? null,
+    weight: e.weight ?? null,
+    // `goals` has no dedicated slot in the structured parse contract
+    // ({date, mood, weight, content, createdAt, rowId}) — folded into the
+    // content section rather than dropped, matching the byte-preservation
+    // bar (no data loss on the round-trip).
+    content: e.goals ? `## Goals for Today\n${e.goals}\n\n${e.content}` : e.content,
+  }))
+  return formatJournalDayFile(dateStr, rows)
 }
 
 // Format workout summary for Drive
@@ -908,8 +903,11 @@ async function syncDomainForDateWithResult(
       if (journalEntries.length === 0) return null
 
       const journalFolderId = await requireSubfolderId(drive, driveFolder, 'Journal')
-      for (const journalEntry of journalEntries) {
-        // Parse the entry JSON string if it exists
+
+      // Multi-entry day file (HIGH-2): every same-day row goes into ONE
+      // upload as its own section — no per-entry overwrite, no entry ever
+      // dropped by a same-day sibling.
+      const dayEntries = journalEntries.map((journalEntry) => {
         let parsedEntry: { content?: string; goals?: string } = {}
         try {
           if (journalEntry.entry) {
@@ -919,17 +917,19 @@ async function syncDomainForDateWithResult(
           // If parsing fails, treat entry as plain text content
           parsedEntry = { content: journalEntry.entry }
         }
-
-        const content = formatJournalEntry({
+        return {
+          rowId: journalEntry.id,
           createdAt: journalEntry.createdAt,
           content: parsedEntry.content || '',
           mood: journalEntry.mood || undefined,
           weight: journalEntry.weight || undefined,
           goals: parsedEntry.goals || undefined,
-        })
-        const fileName = `journal-${dateStr}.md`
-        await uploadRequiredTextFile(drive, journalFolderId, fileName, content, 'text/markdown')
-      }
+        }
+      })
+
+      const content = formatJournalEntry(dateStr, dayEntries)
+      const fileName = `journal-${dateStr}.md`
+      await uploadRequiredTextFile(drive, journalFolderId, fileName, content, 'text/markdown')
 
       return DRIVE_SYNC_LABELS.journal.synced
     }
